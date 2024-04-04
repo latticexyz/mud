@@ -13,7 +13,7 @@ import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 // Import user types
@@ -37,7 +37,7 @@ library FunctionSelectors {
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);
-    keyNames[0] = "functionSelector";
+    keyNames[0] = "worldFunctionSelector";
   }
 
   /**
@@ -67,9 +67,9 @@ library FunctionSelectors {
   /**
    * @notice Get systemId.
    */
-  function getSystemId(bytes4 functionSelector) internal view returns (ResourceId systemId) {
+  function getSystemId(bytes4 worldFunctionSelector) internal view returns (ResourceId systemId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
+    _keyTuple[0] = bytes32(worldFunctionSelector);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return ResourceId.wrap(bytes32(_blob));
@@ -78,9 +78,9 @@ library FunctionSelectors {
   /**
    * @notice Get systemId.
    */
-  function _getSystemId(bytes4 functionSelector) internal view returns (ResourceId systemId) {
+  function _getSystemId(bytes4 worldFunctionSelector) internal view returns (ResourceId systemId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
+    _keyTuple[0] = bytes32(worldFunctionSelector);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return ResourceId.wrap(bytes32(_blob));
@@ -89,9 +89,9 @@ library FunctionSelectors {
   /**
    * @notice Set systemId.
    */
-  function setSystemId(bytes4 functionSelector, ResourceId systemId) internal {
+  function setSystemId(bytes4 worldFunctionSelector, ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
+    _keyTuple[0] = bytes32(worldFunctionSelector);
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(ResourceId.unwrap(systemId)), _fieldLayout);
   }
@@ -99,9 +99,9 @@ library FunctionSelectors {
   /**
    * @notice Set systemId.
    */
-  function _setSystemId(bytes4 functionSelector, ResourceId systemId) internal {
+  function _setSystemId(bytes4 worldFunctionSelector, ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
+    _keyTuple[0] = bytes32(worldFunctionSelector);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(ResourceId.unwrap(systemId)), _fieldLayout);
   }
@@ -109,9 +109,11 @@ library FunctionSelectors {
   /**
    * @notice Get systemFunctionSelector.
    */
-  function getSystemFunctionSelector(bytes4 functionSelector) internal view returns (bytes4 systemFunctionSelector) {
+  function getSystemFunctionSelector(
+    bytes4 worldFunctionSelector
+  ) internal view returns (bytes4 systemFunctionSelector) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
+    _keyTuple[0] = bytes32(worldFunctionSelector);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return (bytes4(_blob));
@@ -120,9 +122,11 @@ library FunctionSelectors {
   /**
    * @notice Get systemFunctionSelector.
    */
-  function _getSystemFunctionSelector(bytes4 functionSelector) internal view returns (bytes4 systemFunctionSelector) {
+  function _getSystemFunctionSelector(
+    bytes4 worldFunctionSelector
+  ) internal view returns (bytes4 systemFunctionSelector) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
+    _keyTuple[0] = bytes32(worldFunctionSelector);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return (bytes4(_blob));
@@ -131,9 +135,9 @@ library FunctionSelectors {
   /**
    * @notice Set systemFunctionSelector.
    */
-  function setSystemFunctionSelector(bytes4 functionSelector, bytes4 systemFunctionSelector) internal {
+  function setSystemFunctionSelector(bytes4 worldFunctionSelector, bytes4 systemFunctionSelector) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
+    _keyTuple[0] = bytes32(worldFunctionSelector);
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((systemFunctionSelector)), _fieldLayout);
   }
@@ -141,9 +145,9 @@ library FunctionSelectors {
   /**
    * @notice Set systemFunctionSelector.
    */
-  function _setSystemFunctionSelector(bytes4 functionSelector, bytes4 systemFunctionSelector) internal {
+  function _setSystemFunctionSelector(bytes4 worldFunctionSelector, bytes4 systemFunctionSelector) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
+    _keyTuple[0] = bytes32(worldFunctionSelector);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((systemFunctionSelector)), _fieldLayout);
   }
@@ -151,11 +155,13 @@ library FunctionSelectors {
   /**
    * @notice Get the full data.
    */
-  function get(bytes4 functionSelector) internal view returns (ResourceId systemId, bytes4 systemFunctionSelector) {
+  function get(
+    bytes4 worldFunctionSelector
+  ) internal view returns (ResourceId systemId, bytes4 systemFunctionSelector) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
+    _keyTuple[0] = bytes32(worldFunctionSelector);
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -166,11 +172,13 @@ library FunctionSelectors {
   /**
    * @notice Get the full data.
    */
-  function _get(bytes4 functionSelector) internal view returns (ResourceId systemId, bytes4 systemFunctionSelector) {
+  function _get(
+    bytes4 worldFunctionSelector
+  ) internal view returns (ResourceId systemId, bytes4 systemFunctionSelector) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
+    _keyTuple[0] = bytes32(worldFunctionSelector);
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -181,14 +189,14 @@ library FunctionSelectors {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(bytes4 functionSelector, ResourceId systemId, bytes4 systemFunctionSelector) internal {
+  function set(bytes4 worldFunctionSelector, ResourceId systemId, bytes4 systemFunctionSelector) internal {
     bytes memory _staticData = encodeStatic(systemId, systemFunctionSelector);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
+    _keyTuple[0] = bytes32(worldFunctionSelector);
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
@@ -196,14 +204,14 @@ library FunctionSelectors {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(bytes4 functionSelector, ResourceId systemId, bytes4 systemFunctionSelector) internal {
+  function _set(bytes4 worldFunctionSelector, ResourceId systemId, bytes4 systemFunctionSelector) internal {
     bytes memory _staticData = encodeStatic(systemId, systemFunctionSelector);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
+    _keyTuple[0] = bytes32(worldFunctionSelector);
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -212,9 +220,9 @@ library FunctionSelectors {
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (ResourceId systemId, bytes4 systemFunctionSelector) {
-    systemId = ResourceId.wrap(Bytes.slice32(_blob, 0));
+    systemId = ResourceId.wrap(Bytes.getBytes32(_blob, 0));
 
-    systemFunctionSelector = (Bytes.slice4(_blob, 32));
+    systemFunctionSelector = (Bytes.getBytes4(_blob, 32));
   }
 
   /**
@@ -225,7 +233,7 @@ library FunctionSelectors {
    */
   function decode(
     bytes memory _staticData,
-    PackedCounter,
+    EncodedLengths,
     bytes memory
   ) internal pure returns (ResourceId systemId, bytes4 systemFunctionSelector) {
     (systemId, systemFunctionSelector) = decodeStatic(_staticData);
@@ -234,9 +242,9 @@ library FunctionSelectors {
   /**
    * @notice Delete all data for given keys.
    */
-  function deleteRecord(bytes4 functionSelector) internal {
+  function deleteRecord(bytes4 worldFunctionSelector) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
+    _keyTuple[0] = bytes32(worldFunctionSelector);
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -244,9 +252,9 @@ library FunctionSelectors {
   /**
    * @notice Delete all data for given keys.
    */
-  function _deleteRecord(bytes4 functionSelector) internal {
+  function _deleteRecord(bytes4 worldFunctionSelector) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
+    _keyTuple[0] = bytes32(worldFunctionSelector);
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
@@ -268,10 +276,10 @@ library FunctionSelectors {
   function encode(
     ResourceId systemId,
     bytes4 systemFunctionSelector
-  ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData = encodeStatic(systemId, systemFunctionSelector);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     return (_staticData, _encodedLengths, _dynamicData);
@@ -280,9 +288,9 @@ library FunctionSelectors {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
-  function encodeKeyTuple(bytes4 functionSelector) internal pure returns (bytes32[] memory) {
+  function encodeKeyTuple(bytes4 worldFunctionSelector) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
+    _keyTuple[0] = bytes32(worldFunctionSelector);
 
     return _keyTuple;
   }

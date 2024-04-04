@@ -3,7 +3,7 @@ import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
 import { buildTable } from "./buildTable";
-import { StoreConfig } from "@latticexyz/store";
+import { Store as StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import { getTableName } from "./getTableName";
 import { chainState, mudStoreTables } from "./internalTables";
@@ -13,17 +13,17 @@ import { StorageAdapter } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
-import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
+import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
 
 // TODO: upgrade drizzle and use async sqlite interface for consistency
 
-export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
+export async function sqliteStorage<config extends StoreConfig = StoreConfig>({
   database,
   publicClient,
 }: {
   database: BaseSQLiteDatabase<"sync", void>;
   publicClient: PublicClient;
-  config?: TConfig;
+  config?: config;
 }): Promise<StorageAdapter> {
   const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
 

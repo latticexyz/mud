@@ -6,6 +6,7 @@ import {
   SendTransactionParameters,
   Transport,
   SendTransactionReturnType,
+  PublicClient,
 } from "viem";
 import { call, sendTransaction as viem_sendTransaction } from "viem/actions";
 import pRetry from "p-retry";
@@ -15,16 +16,32 @@ import { parseAccount } from "viem/accounts";
 
 const debug = parentDebug.extend("sendTransaction");
 
-// TODO: migrate away from this approach once we can hook into viem's nonce management: https://github.com/wagmi-dev/viem/discussions/1230
+export type SendTransactionExtraOptions<chain extends Chain | undefined> = {
+  /**
+   * `publicClient` can be provided to be used in place of the extended viem client for making public action calls
+   * (`getChainId`, `getTransactionCount`, `call`). This helps in cases where the extended
+   * viem client is a smart account client, like in [permissionless.js](https://github.com/pimlicolabs/permissionless.js),
+   * where the transport is the bundler, not an RPC.
+   */
+  publicClient?: PublicClient<Transport, chain>;
+  /**
+   * Adjust the number of concurrent calls to the mempool. This defaults to `1` to ensure transactions are ordered
+   * and nonces are handled properly. Any number greater than that is likely to see nonce errors and/or transactions
+   * arriving out of order, but this may be an acceptable trade-off for some applications that can safely retry.
+   * @default 1
+   */
+  queueConcurrency?: number;
+};
 
 /** @deprecated Use `walletClient.extend(transactionQueue())` instead. */
 export async function sendTransaction<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined,
-  TChainOverride extends Chain | undefined,
+  chain extends Chain | undefined,
+  account extends Account | undefined,
+  chainOverride extends Chain | undefined,
 >(
-  client: Client<Transport, TChain, TAccount>,
-  request: SendTransactionParameters<TChain, TAccount, TChainOverride>,
+  client: Client<Transport, chain, account>,
+  request: SendTransactionParameters<chain, account, chainOverride>,
+  opts: SendTransactionExtraOptions<chain> = {},
 ): Promise<SendTransactionReturnType> {
   const rawAccount = request.account ?? client.account;
   if (!rawAccount) {
@@ -34,42 +51,41 @@ export async function sendTransaction<
   const account = parseAccount(rawAccount);
 
   const nonceManager = await getNonceManager({
-    client,
+    client: opts.publicClient ?? client,
     address: account.address,
     blockTag: "pending",
+    queueConcurrency: opts.queueConcurrency,
   });
 
-  async function prepare(): Promise<SendTransactionParameters<TChain, TAccount, TChainOverride>> {
+  async function prepare(): Promise<SendTransactionParameters<chain, account, chainOverride>> {
     if (request.gas) {
       debug("gas provided, skipping simulate", request.to);
       return request;
     }
 
     debug("simulating tx to", request.to);
-    await call(client, {
+    await call(opts.publicClient ?? client, {
       ...request,
       blockTag: "pending",
       account,
-    } as CallParameters<TChain>);
-
-    // TODO: estimate gas
+    } as CallParameters<chain>);
 
     return request;
   }
-
-  const preparedRequest = await prepare();
 
   return await nonceManager.mempoolQueue.add(
     () =>
       pRetry(
         async () => {
+          const preparedRequest = await prepare();
+
           if (!nonceManager.hasNonce()) {
             await nonceManager.resetNonce();
           }
 
           const nonce = nonceManager.nextNonce();
           debug("sending tx with nonce", nonce, "to", preparedRequest.to);
-          const parameters: SendTransactionParameters<TChain, TAccount, TChainOverride> = { nonce, ...preparedRequest };
+          const parameters: SendTransactionParameters<chain, account, chainOverride> = { nonce, ...preparedRequest };
           return await viem_sendTransaction(client, parameters);
         },
         {

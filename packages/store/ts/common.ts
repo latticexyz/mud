@@ -1,4 +1,4 @@
-import { SchemaAbiType, SchemaAbiTypeToPrimitiveType, StaticAbiType } from "@latticexyz/schema-type";
+import { SchemaAbiType, SchemaAbiTypeToPrimitiveType, StaticAbiType } from "@latticexyz/schema-type/internal";
 import { FieldData, FullSchemaConfig, StoreConfig } from "./config";
 import { Hex } from "viem";
 

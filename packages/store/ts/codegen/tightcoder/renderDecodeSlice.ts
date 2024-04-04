@@ -1,5 +1,5 @@
 import { renderedSolidityHeader } from "@latticexyz/common/codegen";
-import { staticAbiTypeToByteLength, staticAbiTypes } from "@latticexyz/schema-type";
+import { staticAbiTypeToByteLength, staticAbiTypes } from "@latticexyz/schema-type/internal";
 import { renderTightCoderDecode } from "./renderFunctions";
 
 /**

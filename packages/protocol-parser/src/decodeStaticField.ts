@@ -5,7 +5,7 @@ import {
   StaticAbiTypeToPrimitiveType,
   staticAbiTypeToByteLength,
   staticAbiTypeToDefaultValue,
-} from "@latticexyz/schema-type";
+} from "@latticexyz/schema-type/internal";
 import { InvalidHexLengthError, InvalidHexLengthForStaticFieldError } from "./errors";
 
 export function decodeStaticField<

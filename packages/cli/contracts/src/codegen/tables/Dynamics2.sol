@@ -13,7 +13,7 @@ import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 struct Dynamics2Data {
@@ -561,7 +561,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -576,7 +576,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -589,7 +589,7 @@ library Dynamics2 {
    */
   function set(bytes32 key, uint64[] memory u64, string memory str, bytes memory b) internal {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(u64, str, b);
+    EncodedLengths _encodedLengths = encodeLengths(u64, str, b);
     bytes memory _dynamicData = encodeDynamic(u64, str, b);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -603,7 +603,7 @@ library Dynamics2 {
    */
   function _set(bytes32 key, uint64[] memory u64, string memory str, bytes memory b) internal {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(u64, str, b);
+    EncodedLengths _encodedLengths = encodeLengths(u64, str, b);
     bytes memory _dynamicData = encodeDynamic(u64, str, b);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -617,7 +617,7 @@ library Dynamics2 {
    */
   function set(bytes32 key, Dynamics2Data memory _table) internal {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(_table.u64, _table.str, _table.b);
+    EncodedLengths _encodedLengths = encodeLengths(_table.u64, _table.str, _table.b);
     bytes memory _dynamicData = encodeDynamic(_table.u64, _table.str, _table.b);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -631,7 +631,7 @@ library Dynamics2 {
    */
   function _set(bytes32 key, Dynamics2Data memory _table) internal {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(_table.u64, _table.str, _table.b);
+    EncodedLengths _encodedLengths = encodeLengths(_table.u64, _table.str, _table.b);
     bytes memory _dynamicData = encodeDynamic(_table.u64, _table.str, _table.b);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -644,7 +644,7 @@ library Dynamics2 {
    * @notice Decode the tightly packed blob of dynamic data using the encoded lengths.
    */
   function decodeDynamic(
-    PackedCounter _encodedLengths,
+    EncodedLengths _encodedLengths,
     bytes memory _blob
   ) internal pure returns (uint64[] memory u64, string memory str, bytes memory b) {
     uint256 _start;
@@ -675,7 +675,7 @@ library Dynamics2 {
    */
   function decode(
     bytes memory,
-    PackedCounter _encodedLengths,
+    EncodedLengths _encodedLengths,
     bytes memory _dynamicData
   ) internal pure returns (Dynamics2Data memory _table) {
     (_table.u64, _table.str, _table.b) = decodeDynamic(_encodedLengths, _dynamicData);
@@ -709,10 +709,10 @@ library Dynamics2 {
     uint64[] memory u64,
     string memory str,
     bytes memory b
-  ) internal pure returns (PackedCounter _encodedLengths) {
+  ) internal pure returns (EncodedLengths _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
-      _encodedLengths = PackedCounterLib.pack(u64.length * 8, bytes(str).length, bytes(b).length);
+      _encodedLengths = EncodedLengthsLib.pack(u64.length * 8, bytes(str).length, bytes(b).length);
     }
   }
 
@@ -734,9 +734,9 @@ library Dynamics2 {
     uint64[] memory u64,
     string memory str,
     bytes memory b
-  ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(u64, str, b);
+    EncodedLengths _encodedLengths = encodeLengths(u64, str, b);
     bytes memory _dynamicData = encodeDynamic(u64, str, b);
 
     return (_staticData, _encodedLengths, _dynamicData);

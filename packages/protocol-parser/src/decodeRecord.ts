@@ -3,12 +3,12 @@ import {
   DynamicPrimitiveType,
   staticAbiTypeToByteLength,
   dynamicAbiTypeToDefaultValue,
-} from "@latticexyz/schema-type";
+} from "@latticexyz/schema-type/internal";
 import { Hex } from "viem";
 import { Schema } from "./common";
 import { decodeDynamicField } from "./decodeDynamicField";
 import { decodeStaticField } from "./decodeStaticField";
-import { hexToPackedCounter } from "./hexToPackedCounter";
+import { hexToEncodedLengths } from "./hexToEncodedLengths";
 import { staticDataLength } from "./staticDataLength";
 import { readHex } from "@latticexyz/common";
 
@@ -39,7 +39,7 @@ export function decodeRecord(valueSchema: Schema, data: Hex): readonly (StaticPr
   }
 
   if (valueSchema.dynamicFields.length > 0) {
-    const dataLayout = hexToPackedCounter(readHex(data, bytesOffset, bytesOffset + 32));
+    const dataLayout = hexToEncodedLengths(readHex(data, bytesOffset, bytesOffset + 32));
     bytesOffset += 32;
 
     valueSchema.dynamicFields.forEach((fieldType, i) => {

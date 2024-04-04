@@ -1,5 +1,6 @@
 import { Hex } from "viem";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type TupleSplit<T, N extends number, O extends readonly any[] = readonly []> = O["length"] extends N
   ? [O, T]
   : T extends readonly [infer F, ...infer R]

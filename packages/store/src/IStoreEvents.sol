@@ -2,7 +2,7 @@
 pragma solidity >=0.8.24;
 
 import { ResourceId } from "./ResourceId.sol";
-import { PackedCounter } from "./PackedCounter.sol";
+import { EncodedLengths } from "./EncodedLengths.sol";
 
 /**
  * @title IStoreEvents
@@ -10,8 +10,8 @@ import { PackedCounter } from "./PackedCounter.sol";
  */
 interface IStoreEvents {
   /**
-   * @notice Emitted when the store is initialized.
-   * @param storeVersion The version of the Store contract.
+   * @notice Emitted when the Store is created.
+   * @param storeVersion The protocol version of the Store.
    */
   event HelloStore(bytes32 indexed storeVersion);
 
@@ -27,7 +27,7 @@ interface IStoreEvents {
     ResourceId indexed tableId,
     bytes32[] keyTuple,
     bytes staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes dynamicData
   );
 
@@ -59,7 +59,7 @@ interface IStoreEvents {
     uint8 dynamicFieldIndex,
     uint48 start,
     uint40 deleteCount,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes data
   );
 

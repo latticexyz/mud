@@ -16,6 +16,7 @@ const mockTransport: Transport = () =>
   createTransport({
     key: "mock",
     name: "Mock Transport",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     request: mockedTransportRequest as any,
     type: "mock",
   });
@@ -30,6 +31,7 @@ describe("fetchLogs", () => {
   });
 
   it("yields chunks of logs for the block range", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const requests: any[] = [];
     mockedTransportRequest.mockImplementation(async ({ method, params }): Promise<RpcLog[]> => {
       requests.push(params);
@@ -136,14 +138,17 @@ describe("fetchLogs", () => {
   });
 
   it("reduces block range if block range is exceeded", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const requests: any[] = [];
     mockedTransportRequest.mockImplementation(async ({ method, params }): Promise<RpcLog[]> => {
       if (method !== "eth_getLogs") throw new Error("not implemented");
       requests.push(params);
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (hexToNumber((params as any)[0].toBlock) - hexToNumber((params as any)[0].fromBlock) > 500) {
         throw new LimitExceededRpcError(
           new RpcRequestError({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             body: (params as any)[0],
             url: "https://mud.dev",
             error: {
@@ -360,6 +365,7 @@ describe("fetchLogs", () => {
   });
 
   it("retries if rate limit is exceeded", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const requests: any[] = [];
     mockedTransportRequest.mockImplementation(async ({ method, params }): Promise<RpcLog[]> => {
       if (method !== "eth_getLogs") throw new Error("not implemented");
@@ -368,6 +374,7 @@ describe("fetchLogs", () => {
       if (requests.length < 3) {
         throw new LimitExceededRpcError(
           new RpcRequestError({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             body: (params as any)[0],
             url: "https://viem.sh",
             error: {

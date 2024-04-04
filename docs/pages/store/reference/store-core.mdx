@@ -186,20 +186,20 @@ function setRecord(
   ResourceId tableId,
   bytes32[] memory keyTuple,
   bytes memory staticData,
-  PackedCounter encodedLengths,
+  EncodedLengths encodedLengths,
   bytes memory dynamicData
 ) internal;
 ```
 
 **Parameters**
 
-| Name             | Type            | Description                                             |
-| ---------------- | --------------- | ------------------------------------------------------- |
-| `tableId`        | `ResourceId`    | The ID of the table to set the record for.              |
-| `keyTuple`       | `bytes32[]`     | An array representing the composite key for the record. |
-| `staticData`     | `bytes`         | The static data of the record.                          |
-| `encodedLengths` | `PackedCounter` | The encoded lengths of the dynamic data of the record.  |
-| `dynamicData`    | `bytes`         | The dynamic data of the record.                         |
+| Name             | Type             | Description                                             |
+| ---------------- | ---------------- | ------------------------------------------------------- |
+| `tableId`        | `ResourceId`     | The ID of the table to set the record for.              |
+| `keyTuple`       | `bytes32[]`      | An array representing the composite key for the record. |
+| `staticData`     | `bytes`          | The static data of the record.                          |
+| `encodedLengths` | `EncodedLengths` | The encoded lengths of the dynamic data of the record.  |
+| `dynamicData`    | `bytes`          | The dynamic data of the record.                         |
 
 #### setRecord
 
@@ -215,7 +215,7 @@ function setRecord(
   ResourceId tableId,
   bytes32[] memory keyTuple,
   bytes memory staticData,
-  PackedCounter encodedLengths,
+  EncodedLengths encodedLengths,
   bytes memory dynamicData,
   FieldLayout fieldLayout
 ) internal;
@@ -223,14 +223,14 @@ function setRecord(
 
 **Parameters**
 
-| Name             | Type            | Description                                             |
-| ---------------- | --------------- | ------------------------------------------------------- |
-| `tableId`        | `ResourceId`    | The ID of the table to set the record for.              |
-| `keyTuple`       | `bytes32[]`     | An array representing the composite key for the record. |
-| `staticData`     | `bytes`         | The static data of the record.                          |
-| `encodedLengths` | `PackedCounter` | The encoded lengths of the dynamic data of the record.  |
-| `dynamicData`    | `bytes`         | The dynamic data of the record.                         |
-| `fieldLayout`    | `FieldLayout`   | The field layout for the record.                        |
+| Name             | Type             | Description                                             |
+| ---------------- | ---------------- | ------------------------------------------------------- |
+| `tableId`        | `ResourceId`     | The ID of the table to set the record for.              |
+| `keyTuple`       | `bytes32[]`      | An array representing the composite key for the record. |
+| `staticData`     | `bytes`          | The static data of the record.                          |
+| `encodedLengths` | `EncodedLengths` | The encoded lengths of the dynamic data of the record.  |
+| `dynamicData`    | `bytes`          | The dynamic data of the record.                         |
+| `fieldLayout`    | `FieldLayout`    | The field layout for the record.                        |
 
 #### spliceStaticData
 
@@ -494,7 +494,7 @@ If the field layout is available to the caller, it is recommended to use the oth
 function getRecord(
   ResourceId tableId,
   bytes32[] memory keyTuple
-) internal view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
+) internal view returns (bytes memory staticData, EncodedLengths encodedLengths, bytes memory dynamicData);
 ```
 
 **Parameters**
@@ -506,11 +506,11 @@ function getRecord(
 
 **Returns**
 
-| Name             | Type            | Description                                            |
-| ---------------- | --------------- | ------------------------------------------------------ |
-| `staticData`     | `bytes`         | The static data of the record.                         |
-| `encodedLengths` | `PackedCounter` | The encoded lengths of the dynamic data of the record. |
-| `dynamicData`    | `bytes`         | The dynamic data of the record.                        |
+| Name             | Type             | Description                                            |
+| ---------------- | ---------------- | ------------------------------------------------------ |
+| `staticData`     | `bytes`          | The static data of the record.                         |
+| `encodedLengths` | `EncodedLengths` | The encoded lengths of the dynamic data of the record. |
+| `dynamicData`    | `bytes`          | The dynamic data of the record.                        |
 
 #### getRecord
 
@@ -521,7 +521,7 @@ function getRecord(
   ResourceId tableId,
   bytes32[] memory keyTuple,
   FieldLayout fieldLayout
-) internal view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
+) internal view returns (bytes memory staticData, EncodedLengths encodedLengths, bytes memory dynamicData);
 ```
 
 **Parameters**
@@ -534,11 +534,11 @@ function getRecord(
 
 **Returns**
 
-| Name             | Type            | Description                                            |
-| ---------------- | --------------- | ------------------------------------------------------ |
-| `staticData`     | `bytes`         | The static data of the record.                         |
-| `encodedLengths` | `PackedCounter` | The encoded lengths of the dynamic data of the record. |
-| `dynamicData`    | `bytes`         | The dynamic data of the record.                        |
+| Name             | Type             | Description                                            |
+| ---------------- | ---------------- | ------------------------------------------------------ |
+| `staticData`     | `bytes`          | The static data of the record.                         |
+| `encodedLengths` | `EncodedLengths` | The encoded lengths of the dynamic data of the record. |
+| `dynamicData`    | `bytes`          | The dynamic data of the record.                        |
 
 #### getField
 
@@ -811,21 +811,21 @@ function _spliceDynamicData(
   uint40 startWithinField,
   uint40 deleteCount,
   bytes memory data,
-  PackedCounter previousEncodedLengths
+  EncodedLengths previousEncodedLengths
 ) internal;
 ```
 
 **Parameters**
 
-| Name                     | Type            | Description                                                                                                                                               |
-| ------------------------ | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `tableId`                | `ResourceId`    | The ID of the table to splice dynamic data.                                                                                                               |
-| `keyTuple`               | `bytes32[]`     | An array representing the composite key for the record.                                                                                                   |
-| `dynamicFieldIndex`      | `uint8`         | The index of the dynamic field to splice data, relative to the start of the dynamic fields. (Dynamic field index = field index - number of static fields) |
-| `startWithinField`       | `uint40`        | The start index within the field for the splice operation.                                                                                                |
-| `deleteCount`            | `uint40`        | The number of bytes to delete in the splice operation.                                                                                                    |
-| `data`                   | `bytes`         | The data to insert into the dynamic data of the record at the start byte.                                                                                 |
-| `previousEncodedLengths` | `PackedCounter` | The previous encoded lengths of the dynamic data of the record.                                                                                           |
+| Name                     | Type             | Description                                                                                                                                               |
+| ------------------------ | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tableId`                | `ResourceId`     | The ID of the table to splice dynamic data.                                                                                                               |
+| `keyTuple`               | `bytes32[]`      | An array representing the composite key for the record.                                                                                                   |
+| `dynamicFieldIndex`      | `uint8`          | The index of the dynamic field to splice data, relative to the start of the dynamic fields. (Dynamic field index = field index - number of static fields) |
+| `startWithinField`       | `uint40`         | The start index within the field for the splice operation.                                                                                                |
+| `deleteCount`            | `uint40`         | The number of bytes to delete in the splice operation.                                                                                                    |
+| `data`                   | `bytes`          | The data to insert into the dynamic data of the record at the start byte.                                                                                 |
+| `previousEncodedLengths` | `EncodedLengths` | The previous encoded lengths of the dynamic data of the record.                                                                                           |
 
 #### \_getStaticData
 
@@ -999,7 +999,7 @@ Load the encoded dynamic data length from storage for the given table ID and key
 function _loadEncodedDynamicDataLength(
   ResourceId tableId,
   bytes32[] memory keyTuple
-) internal view returns (PackedCounter);
+) internal view returns (EncodedLengths);
 ```
 
 **Parameters**
@@ -1011,47 +1011,21 @@ function _loadEncodedDynamicDataLength(
 
 **Returns**
 
-| Name     | Type            | Description                                                                               |
-| -------- | --------------- | ----------------------------------------------------------------------------------------- |
-| `<none>` | `PackedCounter` | The loaded encoded dynamic data length from storage for the given table ID and key tuple. |
+| Name     | Type             | Description                                                                               |
+| -------- | ---------------- | ----------------------------------------------------------------------------------------- |
+| `<none>` | `EncodedLengths` | The loaded encoded dynamic data length from storage for the given table ID and key tuple. |
 
-## StoreData
+## Store
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreData.sol)
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/Store.sol)
 
 **Inherits:**
-[IStoreData](/store/reference/store#istoredata), [StoreRead](/store/reference/store-core#storeread)
+[IStore](/src/IStore.sol/interface.IStore.md), [StoreKernel](/src/StoreKernel.sol/abstract.StoreKernel.md)
 
 This contract integrates the core storage functionalities and provides an interface for data storage.
 
 _This abstract contract initializes `StoreCore`, implements `storeVersion`, and read methods,
 but not write methods._
-
-### Functions
-
-#### constructor
-
-Constructs the StoreData contract and initializes the StoreCore.
-
-_Emits a HelloStore event upon creation._
-
-```solidity
-constructor();
-```
-
-#### storeVersion
-
-Retrieves the version of the store.
-
-```solidity
-function storeVersion() public pure returns (bytes32);
-```
-
-**Returns**
-
-| Name     | Type      | Description                                    |
-| -------- | --------- | ---------------------------------------------- |
-| `<none>` | `bytes32` | The current version of the store as a bytes32. |
 
 ## StoreRead
 
@@ -1132,7 +1106,7 @@ Fetches a record from a specified table using a provided key tuple.
 function getRecord(
   ResourceId tableId,
   bytes32[] calldata keyTuple
-) public view virtual returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
+) public view virtual returns (bytes memory staticData, EncodedLengths encodedLengths, bytes memory dynamicData);
 ```
 
 **Parameters**
@@ -1144,11 +1118,11 @@ function getRecord(
 
 **Returns**
 
-| Name             | Type            | Description                      |
-| ---------------- | --------------- | -------------------------------- |
-| `staticData`     | `bytes`         | The static data of the record.   |
-| `encodedLengths` | `PackedCounter` | Encoded lengths of dynamic data. |
-| `dynamicData`    | `bytes`         | The dynamic data of the record.  |
+| Name             | Type             | Description                      |
+| ---------------- | ---------------- | -------------------------------- |
+| `staticData`     | `bytes`          | The static data of the record.   |
+| `encodedLengths` | `EncodedLengths` | Encoded lengths of dynamic data. |
+| `dynamicData`    | `bytes`          | The dynamic data of the record.  |
 
 #### getRecord
 
@@ -1159,7 +1133,7 @@ function getRecord(
   ResourceId tableId,
   bytes32[] calldata keyTuple,
   FieldLayout fieldLayout
-) public view virtual returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
+) public view virtual returns (bytes memory staticData, EncodedLengths encodedLengths, bytes memory dynamicData);
 ```
 
 **Parameters**
@@ -1172,11 +1146,11 @@ function getRecord(
 
 **Returns**
 
-| Name             | Type            | Description                      |
-| ---------------- | --------------- | -------------------------------- |
-| `staticData`     | `bytes`         | The static data of the record.   |
-| `encodedLengths` | `PackedCounter` | Encoded lengths of dynamic data. |
-| `dynamicData`    | `bytes`         | The dynamic data of the record.  |
+| Name             | Type             | Description                      |
+| ---------------- | ---------------- | -------------------------------- |
+| `staticData`     | `bytes`          | The static data of the record.   |
+| `encodedLengths` | `EncodedLengths` | Encoded lengths of dynamic data. |
+| `dynamicData`    | `bytes`          | The dynamic data of the record.  |
 
 #### getField
 
@@ -1600,20 +1574,20 @@ function setRecord(
   ResourceId tableId,
   bytes32[] memory keyTuple,
   bytes memory staticData,
-  PackedCounter encodedLengths,
+  EncodedLengths encodedLengths,
   bytes memory dynamicData
 ) internal;
 ```
 
 **Parameters**
 
-| Name             | Type            | Description                       |
-| ---------------- | --------------- | --------------------------------- |
-| `tableId`        | `ResourceId`    | The table's ID.                   |
-| `keyTuple`       | `bytes32[]`     | Array of key values.              |
-| `staticData`     | `bytes`         | Fixed-length fields data.         |
-| `encodedLengths` | `PackedCounter` | Encoded lengths for dynamic data. |
-| `dynamicData`    | `bytes`         | Dynamic-length fields data.       |
+| Name             | Type             | Description                       |
+| ---------------- | ---------------- | --------------------------------- |
+| `tableId`        | `ResourceId`     | The table's ID.                   |
+| `keyTuple`       | `bytes32[]`      | Array of key values.              |
+| `staticData`     | `bytes`          | Fixed-length fields data.         |
+| `encodedLengths` | `EncodedLengths` | Encoded lengths for dynamic data. |
+| `dynamicData`    | `bytes`          | Dynamic-length fields data.       |
 
 #### spliceStaticData
 
@@ -1812,7 +1786,7 @@ _Retrieves a record from a table._
 function getRecord(
   ResourceId tableId,
   bytes32[] memory keyTuple
-) internal view returns (bytes memory, PackedCounter, bytes memory);
+) internal view returns (bytes memory, EncodedLengths, bytes memory);
 ```
 
 **Parameters**
@@ -1824,11 +1798,11 @@ function getRecord(
 
 **Returns**
 
-| Name     | Type            | Description                                     |
-| -------- | --------------- | ----------------------------------------------- |
-| `<none>` | `bytes`         | staticData The static data of the record.       |
-| `<none>` | `PackedCounter` | encodedLengths Encoded lengths of dynamic data. |
-| `<none>` | `bytes`         | dynamicData The dynamic data of the record.     |
+| Name     | Type             | Description                                     |
+| -------- | ---------------- | ----------------------------------------------- |
+| `<none>` | `bytes`          | staticData The static data of the record.       |
+| `<none>` | `EncodedLengths` | encodedLengths Encoded lengths of dynamic data. |
+| `<none>` | `bytes`          | dynamicData The dynamic data of the record.     |
 
 #### getRecord
 
@@ -1839,7 +1813,7 @@ function getRecord(
   ResourceId tableId,
   bytes32[] memory keyTuple,
   FieldLayout fieldLayout
-) internal view returns (bytes memory, PackedCounter, bytes memory);
+) internal view returns (bytes memory, EncodedLengths, bytes memory);
 ```
 
 **Parameters**
@@ -1852,11 +1826,11 @@ function getRecord(
 
 **Returns**
 
-| Name     | Type            | Description                                     |
-| -------- | --------------- | ----------------------------------------------- |
-| `<none>` | `bytes`         | staticData The static data of the record.       |
-| `<none>` | `PackedCounter` | encodedLengths Encoded lengths of dynamic data. |
-| `<none>` | `bytes`         | dynamicData The dynamic data of the record.     |
+| Name     | Type             | Description                                     |
+| -------- | ---------------- | ----------------------------------------------- |
+| `<none>` | `bytes`          | staticData The static data of the record.       |
+| `<none>` | `EncodedLengths` | encodedLengths Encoded lengths of dynamic data. |
+| `<none>` | `bytes`          | dynamicData The dynamic data of the record.     |
 
 #### getField
 

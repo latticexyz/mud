@@ -13,7 +13,7 @@ import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 struct MultiData {
@@ -187,7 +187,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -205,7 +205,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -219,7 +219,7 @@ library Multi {
   function set(uint32 a, bool b, uint256 c, int120 d, int256 num, bool value) internal {
     bytes memory _staticData = encodeStatic(num, value);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](4);
@@ -237,7 +237,7 @@ library Multi {
   function _set(uint32 a, bool b, uint256 c, int120 d, int256 num, bool value) internal {
     bytes memory _staticData = encodeStatic(num, value);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](4);
@@ -255,7 +255,7 @@ library Multi {
   function set(uint32 a, bool b, uint256 c, int120 d, MultiData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.num, _table.value);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](4);
@@ -273,7 +273,7 @@ library Multi {
   function _set(uint32 a, bool b, uint256 c, int120 d, MultiData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.num, _table.value);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](4);
@@ -289,9 +289,9 @@ library Multi {
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
   function decodeStatic(bytes memory _blob) internal pure returns (int256 num, bool value) {
-    num = (int256(uint256(Bytes.slice32(_blob, 0))));
+    num = (int256(uint256(Bytes.getBytes32(_blob, 0))));
 
-    value = (_toBool(uint8(Bytes.slice1(_blob, 32))));
+    value = (_toBool(uint8(Bytes.getBytes1(_blob, 32))));
   }
 
   /**
@@ -302,7 +302,7 @@ library Multi {
    */
   function decode(
     bytes memory _staticData,
-    PackedCounter,
+    EncodedLengths,
     bytes memory
   ) internal pure returns (MultiData memory _table) {
     (_table.num, _table.value) = decodeStatic(_staticData);
@@ -348,10 +348,10 @@ library Multi {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(int256 num, bool value) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  function encode(int256 num, bool value) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData = encodeStatic(num, value);
 
-    PackedCounter _encodedLengths;
+    EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     return (_staticData, _encodedLengths, _dynamicData);

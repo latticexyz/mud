@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store",
-  "version": "2.0.0-next.17",
+  "version": "2.0.4",
   "description": "Store",
   "repository": {
     "type": "git",
@@ -10,23 +10,31 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/ts/index.js",
+    ".": "./dist/index.js",
+    "./internal": "./dist/internal.js",
     "./mud.config": "./dist/mud.config.js",
-    "./codegen": "./dist/ts/codegen/index.js",
-    "./config": "./dist/ts/config/index.js",
-    "./register": "./dist/ts/register/index.js",
+    "./codegen": "./dist/codegen.js",
+    "./config": "./dist/config.js",
+    "./config/v2": "./dist/config/v2.js",
+    "./register": "./dist/register.js",
     "./out/*": "./out/*"
   },
   "typesVersions": {
     "*": {
       "index": [
-        "./ts/index.ts"
+        "./ts/exports/index.ts"
+      ],
+      "internal": [
+        "./ts/exports/internal.ts"
       ],
       "codegen": [
         "./ts/codegen/index.ts"
       ],
       "config": [
         "./ts/config/index.ts"
+      ],
+      "config/v2": [
+        "./ts/config/v2/index.ts"
       ],
       "register": [
         "./ts/register/index.ts"
@@ -47,15 +55,17 @@
     "dev": "tsup --watch",
     "gas-report": "gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
-    "test": "vitest typecheck --run && vitest --run --passWithNoTests && forge test",
+    "test": "vitest --run --passWithNoTests && forge test",
     "test:ci": "pnpm run test"
   },
   "dependencies": {
+    "@arktype/util": "0.0.27",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "abitype": "1.0.0",
+    "arktype": "1.0.29-alpha",
     "viem": "2.7.12",
     "zod": "^3.21.4"
   },
@@ -72,6 +82,5 @@
     "tsup": "^6.7.0",
     "tsx": "^3.12.6",
     "vitest": "0.34.6"
-  },
-  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
+  }
 }

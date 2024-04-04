@@ -1,5 +1,4 @@
-import { createPublicClient, fallback, webSocket, http, createWalletClient, Hex, parseEther, ClientConfig } from "viem";
-import { createFaucetService } from "@latticexyz/services/faucet";
+import { createPublicClient, fallback, webSocket, http, createWalletClient, Hex, ClientConfig } from "viem";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import { getNetworkConfig } from "./getNetworkConfig";
 import { world } from "./world";

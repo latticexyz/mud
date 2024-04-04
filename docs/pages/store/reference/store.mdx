@@ -5,9 +5,7 @@
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStore.sol)
 
 **Inherits:**
-[IStoreData](/store/reference/store#istoredata), [IStoreRegistration](/store/reference/store#istoreregistration), [IStoreErrors](/store/reference/store#istoreerrors), [IFieldLayoutErrors](/src/IFieldLayoutErrors.sol/interface.IFieldLayoutErrors.md), [IPackedCounterErrors](/src/IPackedCounterErrors.sol/interface.IPackedCounterErrors.md), [ISchemaErrors](/src/ISchemaErrors.sol/interface.ISchemaErrors.md), [ISliceErrors](/src/ISliceErrors.sol/interface.ISliceErrors.md)
-
-IStore implements the error interfaces for each library that it uses.
+[IStoreKernel](/src/IStoreKernel.sol/interface.IStoreKernel.md), [IStoreRegistration](/store/reference/store#istoreregistration)
 
 ## IStoreEvents
 
@@ -17,7 +15,7 @@ IStore implements the error interfaces for each library that it uses.
 
 #### HelloStore
 
-Emitted when the store is initialized.
+Emitted when the Store is created.
 
 ```solidity
 event HelloStore(bytes32 indexed storeVersion);
@@ -27,7 +25,7 @@ event HelloStore(bytes32 indexed storeVersion);
 
 | Name           | Type      | Description                        |
 | -------------- | --------- | ---------------------------------- |
-| `storeVersion` | `bytes32` | The version of the Store contract. |
+| `storeVersion` | `bytes32` | The protocol version of the Store. |
 
 #### Store_SetRecord
 
@@ -38,20 +36,20 @@ event Store_SetRecord(
   ResourceId indexed tableId,
   bytes32[] keyTuple,
   bytes staticData,
-  PackedCounter encodedLengths,
+  EncodedLengths encodedLengths,
   bytes dynamicData
 );
 ```
 
 **Parameters**
 
-| Name             | Type            | Description                                             |
-| ---------------- | --------------- | ------------------------------------------------------- |
-| `tableId`        | `ResourceId`    | The ID of the table where the record is set.            |
-| `keyTuple`       | `bytes32[]`     | An array representing the composite key for the record. |
-| `staticData`     | `bytes`         | The static data of the record.                          |
-| `encodedLengths` | `PackedCounter` | The encoded lengths of the dynamic data of the record.  |
-| `dynamicData`    | `bytes`         | The dynamic data of the record.                         |
+| Name             | Type             | Description                                             |
+| ---------------- | ---------------- | ------------------------------------------------------- |
+| `tableId`        | `ResourceId`     | The ID of the table where the record is set.            |
+| `keyTuple`       | `bytes32[]`      | An array representing the composite key for the record. |
+| `staticData`     | `bytes`          | The static data of the record.                          |
+| `encodedLengths` | `EncodedLengths` | The encoded lengths of the dynamic data of the record.  |
+| `dynamicData`    | `bytes`          | The dynamic data of the record.                         |
 
 #### Store_SpliceStaticData
 
@@ -84,22 +82,22 @@ event Store_SpliceDynamicData(
   uint8 dynamicFieldIndex,
   uint48 start,
   uint40 deleteCount,
-  PackedCounter encodedLengths,
+  EncodedLengths encodedLengths,
   bytes data
 );
 ```
 
 **Parameters**
 
-| Name                | Type            | Description                                                                                                                                               |
-| ------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `tableId`           | `ResourceId`    | The ID of the table where the data is spliced.                                                                                                            |
-| `keyTuple`          | `bytes32[]`     | An array representing the composite key for the record.                                                                                                   |
-| `dynamicFieldIndex` | `uint8`         | The index of the dynamic field to splice data, relative to the start of the dynamic fields. (Dynamic field index = field index - number of static fields) |
-| `start`             | `uint48`        | The start position in bytes for the splice operation.                                                                                                     |
-| `deleteCount`       | `uint40`        | The number of bytes to delete in the splice operation.                                                                                                    |
-| `encodedLengths`    | `PackedCounter` | The encoded lengths of the dynamic data of the record.                                                                                                    |
-| `data`              | `bytes`         | The data to insert into the dynamic data of the record at the start byte.                                                                                 |
+| Name                | Type             | Description                                                                                                                                               |
+| ------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tableId`           | `ResourceId`     | The ID of the table where the data is spliced.                                                                                                            |
+| `keyTuple`          | `bytes32[]`      | An array representing the composite key for the record.                                                                                                   |
+| `dynamicFieldIndex` | `uint8`          | The index of the dynamic field to splice data, relative to the start of the dynamic fields. (Dynamic field index = field index - number of static fields) |
+| `start`             | `uint48`         | The start position in bytes for the splice operation.                                                                                                     |
+| `deleteCount`       | `uint40`         | The number of bytes to delete in the splice operation.                                                                                                    |
+| `encodedLengths`    | `EncodedLengths` | The encoded lengths of the dynamic data of the record.                                                                                                    |
+| `data`              | `bytes`          | The data to insert into the dynamic data of the record at the start byte.                                                                                 |
 
 #### Store_DeleteRecord
 
@@ -129,102 +127,189 @@ This ensures that all possible errors are included in the IStore ABI for proper 
 
 #### Store_TableAlreadyExists
 
+Error raised if the provided table already exists.
+
 ```solidity
 error Store_TableAlreadyExists(ResourceId tableId, string tableIdString);
 ```
 
+**Parameters**
+
+| Name            | Type         | Description                                                                            |
+| --------------- | ------------ | -------------------------------------------------------------------------------------- |
+| `tableId`       | `ResourceId` | The ID of the table.                                                                   |
+| `tableIdString` | `string`     | The stringified ID of the table (for easier debugging if cleartext tableIds are used). |
+
 #### Store_TableNotFound
+
+Error raised if the provided table cannot be found.
 
 ```solidity
 error Store_TableNotFound(ResourceId tableId, string tableIdString);
 ```
 
+**Parameters**
+
+| Name            | Type         | Description                                                                            |
+| --------------- | ------------ | -------------------------------------------------------------------------------------- |
+| `tableId`       | `ResourceId` | The ID of the table.                                                                   |
+| `tableIdString` | `string`     | The stringified ID of the table (for easier debugging if cleartext tableIds are used). |
+
 #### Store_InvalidResourceType
+
+Error raised if the provided resource ID cannot be found.
 
 ```solidity
 error Store_InvalidResourceType(bytes2 expected, ResourceId resourceId, string resourceIdString);
 ```
 
-#### Store_InvalidStaticDataLength
+**Parameters**
 
-```solidity
-error Store_InvalidStaticDataLength(uint256 expected, uint256 received);
-```
+| Name               | Type         | Description                                         |
+| ------------------ | ------------ | --------------------------------------------------- |
+| `expected`         | `bytes2`     | The expected resource type.                         |
+| `resourceId`       | `ResourceId` | The resource ID.                                    |
+| `resourceIdString` | `string`     | The stringified resource ID (for easier debugging). |
 
 #### Store_InvalidBounds
+
+Error raised if the provided slice bounds are invalid.
 
 ```solidity
 error Store_InvalidBounds(uint256 start, uint256 end);
 ```
 
+**Parameters**
+
+| Name    | Type      | Description                                                                   |
+| ------- | --------- | ----------------------------------------------------------------------------- |
+| `start` | `uint256` | The start index within the dynamic field for the slice operation (inclusive). |
+| `end`   | `uint256` | The end index within the dynamic field for the slice operation (exclusive).   |
+
 #### Store_IndexOutOfBounds
+
+Error raised if the provided index is out of bounds.
+
+_Raised if the start index is larger than the previous length of the field._
 
 ```solidity
 error Store_IndexOutOfBounds(uint256 length, uint256 accessedIndex);
 ```
 
+**Parameters**
+
+| Name            | Type      | Description |
+| --------------- | --------- | ----------- |
+| `length`        | `uint256` | FIXME       |
+| `accessedIndex` | `uint256` | FIXME       |
+
+#### Store_InvalidStaticDataLength
+
+Error raised if the provided static data length is invalid.
+
+```solidity
+error Store_InvalidStaticDataLength(uint256 expected, uint256 received);
+```
+
+**Parameters**
+
+| Name       | Type      | Description          |
+| ---------- | --------- | -------------------- |
+| `expected` | `uint256` | The expected length. |
+| `received` | `uint256` | The provided length. |
+
 #### Store_InvalidKeyNamesLength
+
+Error raised if the provided key names length is invalid.
 
 ```solidity
 error Store_InvalidKeyNamesLength(uint256 expected, uint256 received);
 ```
 
+**Parameters**
+
+| Name       | Type      | Description          |
+| ---------- | --------- | -------------------- |
+| `expected` | `uint256` | The expected length. |
+| `received` | `uint256` | The provided length. |
+
 #### Store_InvalidFieldNamesLength
+
+Error raised if the provided field names length is invalid.
 
 ```solidity
 error Store_InvalidFieldNamesLength(uint256 expected, uint256 received);
 ```
 
+**Parameters**
+
+| Name       | Type      | Description          |
+| ---------- | --------- | -------------------- |
+| `expected` | `uint256` | The expected length. |
+| `received` | `uint256` | The provided length. |
+
 #### Store_InvalidValueSchemaLength
+
+Error raised if the provided value schema length is invalid.
 
 ```solidity
 error Store_InvalidValueSchemaLength(uint256 expected, uint256 received);
 ```
 
+**Parameters**
+
+| Name       | Type      | Description          |
+| ---------- | --------- | -------------------- |
+| `expected` | `uint256` | The expected length. |
+| `received` | `uint256` | The provided length. |
+
 #### Store_InvalidValueSchemaStaticLength
+
+Error raised if the provided schema static length is invalid.
 
 ```solidity
 error Store_InvalidValueSchemaStaticLength(uint256 expected, uint256 received);
 ```
 
+**Parameters**
+
+| Name       | Type      | Description          |
+| ---------- | --------- | -------------------- |
+| `expected` | `uint256` | The expected length. |
+| `received` | `uint256` | The provided length. |
+
 #### Store_InvalidValueSchemaDynamicLength
+
+Error raised if the provided schema dynamic length is invalid.
 
 ```solidity
 error Store_InvalidValueSchemaDynamicLength(uint256 expected, uint256 received);
 ```
 
+**Parameters**
+
+| Name       | Type      | Description          |
+| ---------- | --------- | -------------------- |
+| `expected` | `uint256` | The expected length. |
+| `received` | `uint256` | The provided length. |
+
 #### Store_InvalidSplice
+
+Error raised if the provided splice is invalid.
+
+_Raised if the splice total length of the field is changed but the splice is not at the end of the field._
 
 ```solidity
 error Store_InvalidSplice(uint40 startWithinField, uint40 deleteCount, uint40 fieldLength);
 ```
 
-## IStoreData
+**Parameters**
 
-[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreData.sol)
-
-**Inherits:**
-[IStoreRead](/store/reference/store#istoreread), [IStoreWrite](/store/reference/store#istorewrite)
-
-The IStoreData interface includes methods for reading and writing table values.
-
-_These methods are frequently invoked during runtime, so it is essential to prioritize optimizing their gas cost._
-
-### Functions
-
-#### storeVersion
-
-Returns the version of the Store contract.
-
-```solidity
-function storeVersion() external view returns (bytes32 version);
-```
-
-**Returns**
-
-| Name      | Type      | Description                        |
-| --------- | --------- | ---------------------------------- |
-| `version` | `bytes32` | The version of the Store contract. |
+| Name               | Type     | Description                                                |
+| ------------------ | -------- | ---------------------------------------------------------- |
+| `startWithinField` | `uint40` | The start index within the field for the splice operation. |
+| `deleteCount`      | `uint40` | The number of bytes to delete in the splice operation.     |
+| `fieldLength`      | `uint40` | The field length for the splice operation.                 |
 
 ## IStoreRead
 
@@ -258,7 +343,7 @@ Get full record (all fields, static and dynamic data) for the given tableId and 
 function getRecord(
   ResourceId tableId,
   bytes32[] calldata keyTuple
-) external view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
+) external view returns (bytes memory staticData, EncodedLengths encodedLengths, bytes memory dynamicData);
 ```
 
 #### getRecord
@@ -270,7 +355,7 @@ function getRecord(
   ResourceId tableId,
   bytes32[] calldata keyTuple,
   FieldLayout fieldLayout
-) external view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
+) external view returns (bytes memory staticData, EncodedLengths encodedLengths, bytes memory dynamicData);
 ```
 
 #### getField
@@ -394,7 +479,7 @@ function setRecord(
   ResourceId tableId,
   bytes32[] calldata keyTuple,
   bytes calldata staticData,
-  PackedCounter encodedLengths,
+  EncodedLengths encodedLengths,
   bytes calldata dynamicData
 ) external;
 ```
