@@ -8,8 +8,6 @@ If you want to learn how to modify a `World` before it is deployed, [see the hel
 ## The sample program
 
 To learn how to extend a `World`, we will extend the `Counter` example to allow users to leave a message while incrementing the counter.
-[Follow these steps to create the example `World` that we'll extend](/templates/typescript/getting-started).
-You can either do it now, or wait until after you've created the extension resources.
 
 To extend the `World` with the message functionality requires adding several resources:
 
@@ -18,42 +16,53 @@ To extend the `World` with the message functionality requires adding several res
   In most cases, the only way you would be able to extend a `World` that somebody else owns is to create your own namespace within that world.
 
 - **Table**.
-  A table to store the messages that have been sent.
+  A [table](/world/tables) to store the messages that have been posted.
 
 - **System**.
-  A system that updates the messages table and then calls `increment` to update the counter.
+  A [`System`](/world/systems) that updates the messages table and then calls `increment` to update the counter.
+
+## Create the `World` to extend
+
+To have a `World` with the `Counter` example to modify, go to a separate command line window and create a blockchain with a `World` using [the TypeScript template](/quickstart) and start the execution.
+
+```sh copy
+pnpm create mud extendMe --template vanilla
+cd extendMe
+pnpm dev
+```
 
 ## Create the Solidity code
 
 The easiest way to create the Solidity code is to use the MUD template:
 
 1. Create a new MUD application.
-   Use the `vanilla` template.
 
    ```sh copy
-   pnpm create mud extension
+   pnpm create mud extension --template vanilla
    cd extension/packages/contracts
    ```
 
 1. Edit `mud.config.ts` to include the definitions we need.
+   You could also delete the counter definitions (lines 6-11), but it doesn't matter.
 
-   ```ts filename="mud.config.ts" copy showLineNumbers {4,10-17,19-24}
-   import { mudConfig } from "@latticexyz/world/register";
+   ```ts filename="mud.config.ts" copy showLineNumbers {4,12-18,20-25}
+   import { defineWorld } from "@latticexyz/world";
 
-   export default mudConfig({
+   export default defineWorld({
      namespace: "messaging",
      tables: {
        Counter: {
-         keySchema: {},
-         valueSchema: "uint32",
+         schema: {
+           value: "uint32",
+         },
+         key: [],
        },
        Messages: {
-         keySchema: {
+         schema: {
            counterValue: "uint32",
-         },
-         valueSchema: {
            message: "string",
          },
+         key: ["counterValue"],
        },
      },
      systems: {
@@ -108,7 +117,7 @@ The easiest way to create the Solidity code is to use the MUD template:
    However, as an extension author you might not have access to the source code of any `System` that isn't part of your extension.
 
    If you define your own interface for `World` you can add whatever function signatures are supported.
-   Note that in Ethereum [a function signature](https://docs.soliditylang.org/en/latest/abi-spec.html#function-selector) is the function name and its parameter types, it does not include the return type.
+   Note that [an Ethereum function selector](https://docs.soliditylang.org/en/latest/abi-spec.html#function-selector) is based on the function name and its parameter types, it does not include the return type.
    So if you are unsure of the return type that is not a huge problem.
 
    ```solidity
@@ -138,7 +147,7 @@ The easiest way to create the Solidity code is to use the MUD template:
 
    </details>
 
-1. Remove files that are part of the template but don't make sense when our extension doesn't have its own counter.
+1. Remove files that are part of the template, but not useful in an extension.
 
    ```sh copy
    rm src/systems/IncrementSystem.sol test/*.t.sol script/PostDeploy.s.sol
@@ -152,18 +161,10 @@ The easiest way to create the Solidity code is to use the MUD template:
 
 ## Deploy to the blockchain
 
-1. To have a `World` with the `Counter` example to modify, go to a separate command line window and create a blockchain with a `World` using [the TypeScript template](/templates/typescript/getting-started) and start the execution.
-   Choose either the `react-ecs` user interface or the `vanilla` one.
-
-   ```sh copy
-   pnpm create mud extendMe
-   cd extendMe
-   pnpm dev
-   ```
-
-1. Back in the extension's `packages/contracts` directory, create a `.env` file with:
+1. Create a `.env` file with:
 
    - `PRIVATE_KEY` - the private key of an account that has ETH on the blockchain.
+     Preferably, _not_ the one that deployed the `World`.
    - `WORLD_ADDRESS` - the address of the `World` to which you add the namespace.
 
    If you are using the template with a fresh `pnpm dev`, then you can use this `.env`:
@@ -174,7 +175,7 @@ The easiest way to create the Solidity code is to use the MUD template:
    PRIVATE_KEY=0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
 
    # Address for the world we are extending
-   WORLD_ADDRESS=0x256e6eaf6a6683ab771c576f2f5c8a774bdac8e3
+   WORLD_ADDRESS=0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1
    ```
 
 1. Create this script in `script/MessagingExtension.s.sol`.
@@ -195,7 +196,7 @@ The easiest way to create the Solidity code is to use the MUD template:
    import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 
    // For registering the table
-   import { Messages, MessagesTableId } from "../src/codegen/index.sol";
+   import { Messages } from "../src/codegen/index.sol";
    import { IStore } from "@latticexyz/store/src/IStore.sol";
    import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
@@ -404,7 +405,7 @@ The easiest way to create the Solidity code is to use the MUD template:
    cast send $WORLD_ADDRESS --rpc-url http://localhost:8545 --private-key $PRIVATE_KEY "messaging__incrementMessage(string)" "hello"
    ```
 
-   When a function is _not_ in the root namespace, it is accessible as `<namespace>__<function name>` (as long as it is [registered](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol#L164-L201)).
+   When a function is _not_ in the root namespace, it is accessible as `<namespace>__<function name>` (as long as it is [registered](/world/function-selectors).
 
    Here we call our `incrementMessage(string)` with the parameter `hello`.
 
@@ -499,8 +500,8 @@ Finally, we create a user interface that supports the messaging system.
 
 ### Run the user interface
 
-For the user interface to run properly, it cannot require resources that the template user interface is already using, or that are not available because of the changes we made in `packages/contracts`.
-Here we modify the template UI to so it will run properly.
+For the user interface to run permissionlessly, it cannot require resources that that are not available because of the changes we made in `packages/contracts`.
+Here we modify the template UI.
 
 1. Change to the client package of the extension.
 
@@ -546,12 +547,12 @@ Here we modify the template UI to so it will run properly.
    By default, you can see this value on the application at URL [http://localhost:3000](http://localhost:3000).
    Edit `../contracts/worlds.json` to set the `World` address for the chain ID (`31337`).
 
-   Note: If you followed the directions above to create `extendMe`, the `World` address is `0x6e9474e9c83676b9a71133ff96db43e7aa0a4342`.
+   Note: If you followed the directions above to create `extendMe`, the `World` address is `0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1`.
 
    ```json copy {3}
    {
      "31337": {
-       "address": "0x6e9474e9c83676b9a71133ff96db43e7aa0a4342"
+       "address": "0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1"
      }
    }
    ```
@@ -567,9 +568,9 @@ Edit `src/mud/createSystemCalls.ts` to use the new `messaging__incrementMessage`
 
     ```ts filename="createSystemCalls.ts" copy showLineNumbers {43-44}
     /*
-    * Create the system calls that the client can use to ask
-    * for changes in the World state (using the System contracts).
-    */
+     * Create the system calls that the client can use to ask
+     * for changes in the World state (using the System contracts).
+     */
 
     import { getComponentValue } from "@latticexyz/recs";
     import { ClientComponents } from "./createClientComponents";
@@ -623,7 +624,7 @@ Edit `src/mud/createSystemCalls.ts` to use the new `messaging__incrementMessage`
    </CollapseCode>
 
 Now you can click **Increment** in the user interface and create messages.
-The user interface does not display those messages, but you can open the **MUD Dev Tools**, click the **Components** tab, and select **messagings:Messages** to view them.
+The user interface does not display those messages, but you can open the **MUD Dev Tools**, click the **Components** tab, and select **messagings\_\_Messages** to view them.
 
 ![The extended UI with the messages shown in the MUD Dev Tools](./extend-ui-with-msgs.png)
 
@@ -634,24 +635,28 @@ We will now fix this.
 
 1. Add the `@latticexyz/store` package.
 
-   ```ts sh copy
+   ```sh copy
    pnpm add @latticexyz/store
    ```
 
 1. Copy the `mud.config.ts` from the application being extended (`extendMe`) to `src/mud/counter.config.ts`.
 
    ```ts filename="counter.config.ts" copy
-   import { mudConfig } from "@latticexyz/world/register";
+   import { defineWorld } from "@latticexyz/world";
 
-   export default mudConfig({
+   export default defineWorld({
      tables: {
        Counter: {
-         keySchema: {},
-         valueSchema: "uint32",
+         schema: {
+           value: "uint32",
+         },
+         key: [],
        },
      },
    });
    ```
+
+   Here we are using the definition from the original application for convenience, but we could have used [the schema](/store/encoding#schema) which is available in `store__Tables` to get all the required information to rebuild this file.
 
 1. Edit `src/mud/setupNetwork.ts` to add a `tables` parameter with the `Counter` object to the `syncToRecs` call.
 
@@ -659,10 +664,10 @@ We will now fix this.
 
    ```ts filename="setupNetwork.ts" copy showLineNumbers {36,91}
    /*
-    * The MUD client code is built on top of viem
-    * (https://viem.sh/docs/getting-started.html).
-    * This line imports the functions we need from it.
-    */
+   * The MUD client code is built on top of viem
+   * (https://viem.sh/docs/getting-started.html).
+   * This line imports the functions we need from it.
+   */
    import {
      createPublicClient,
      fallback,
@@ -672,6 +677,7 @@ We will now fix this.
      Hex,
      parseEther,
      ClientConfig,
+     getContract,
    } from "viem";
    import { createFaucetService } from "@latticexyz/services/faucet";
    import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
@@ -679,19 +685,19 @@ We will now fix this.
    import { getNetworkConfig } from "./getNetworkConfig";
    import { world } from "./world";
    import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
-   import { createBurnerAccount, getContract, transportObserver, ContractWrite } from "@latticexyz/common";
+   import { createBurnerAccount, transportObserver, ContractWrite } from "@latticexyz/common";
+   import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
 
    import { Subject, share } from "rxjs";
-   import { resolveConfig } from "@latticexyz/store";
 
    /*
-    * Import our MUD config, which includes strong types for
-    * our tables and other config options. We use this to generate
-    * things like RECS components and get back strong types for them.
-    *
-    * See https://mud.dev/templates/typescript/contracts#mudconfigts
-    * for the source of this information.
-    */
+   * Import our MUD config, which includes strong types for
+   * our tables and other config options. We use this to generate
+   * things like RECS components and get back strong types for them.
+   *
+   * See https://mud.dev/templates/typescript/contracts#mudconfigts
+   * for the source of this information.
+   */
    import mudConfig from "contracts/mud.config";
    import counterConfig from "./counter.config";
 
@@ -701,9 +707,9 @@ We will now fix this.
      const networkConfig = await getNetworkConfig();
 
      /*
-      * Create a viem public (read only) client
-      * (https://viem.sh/docs/clients/public.html)
-      */
+     * Create a viem public (read only) client
+     * (https://viem.sh/docs/clients/public.html)
+     */
      const clientOptions = {
        chain: networkConfig.chain,
        transport: transportObserver(fallback([webSocket(), http()])),
@@ -713,52 +719,52 @@ We will now fix this.
      const publicClient = createPublicClient(clientOptions);
 
      /*
-      * Create a temporary wallet and a viem client for it
-      * (see https://viem.sh/docs/clients/wallet.html).
-      */
+     * Create an observable for contract writes that we can
+     * pass into MUD dev tools for transaction observability.
+     */
+     const write$ = new Subject<ContractWrite>();
+
+     /*
+     * Create a temporary wallet and a viem client for it
+     * (see https://viem.sh/docs/clients/wallet.html).
+     */
      const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
      const burnerWalletClient = createWalletClient({
        ...clientOptions,
        account: burnerAccount,
-     });
+     })
+       .extend(transactionQueue())
+       .extend(writeObserver({ onWrite: (write) => write$.next(write) }));
 
      /*
-      * Create an observable for contract writes that we can
-      * pass into MUD dev tools for transaction observability.
-      */
-     const write$ = new Subject<ContractWrite>();
-
-     /*
-      * Create an object for communicating with the deployed World.
-      */
+     * Create an object for communicating with the deployed World.
+     */
      const worldContract = getContract({
        address: networkConfig.worldAddress as Hex,
        abi: IWorldAbi,
-       publicClient,
-       walletClient: burnerWalletClient,
-       onWrite: (write) => write$.next(write),
+       client: { public: publicClient, wallet: burnerWalletClient },
      });
 
      /*
-      * Sync on-chain state into RECS and keeps our client in sync.
-      * Uses the MUD indexer if available, otherwise falls back
-      * to the viem publicClient to make RPC calls to fetch MUD
-      * events from the chain.
-      */
+     * Sync on-chain state into RECS and keeps our client in sync.
+     * Uses the MUD indexer if available, otherwise falls back
+     * to the viem publicClient to make RPC calls to fetch MUD
+     * events from the chain.
+     */
      const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToRecs({
        world,
        config: mudConfig,
-       tables: resolveConfig(counterConfig).tables,
        address: networkConfig.worldAddress as Hex,
        publicClient,
+       tables: resolveConfig(counterConfig).tables, GOON
        startBlock: BigInt(networkConfig.initialBlockNumber),
      });
 
      /*
-      * If there is a faucet, request (test) ETH if you have
-      * less than 1 ETH. Repeat every 20 seconds to ensure you don't
-      * run out.
-      */
+     * If there is a faucet, request (test) ETH if you have
+     * less than 1 ETH. Repeat every 20 seconds to ensure you don't
+     * run out.
+     */
      if (networkConfig.faucetServiceUrl) {
        const address = burnerAccount.address;
        console.info("[Dev Faucet]: Player address -> ", address);
