@@ -31,6 +31,12 @@ address internal immutable balanceTransferSystem;
 address internal immutable batchCallSystem;
 ```
 
+#### storeReadSystem
+
+```solidity
+address internal immutable storeReadSystem;
+```
+
 #### registrationSystem
 
 ```solidity
@@ -46,6 +52,7 @@ constructor(
   AccessManagementSystem _accessManagementSystem,
   BalanceTransferSystem _balanceTransferSystem,
   BatchCallSystem _batchCallSystem,
+  StoreReadSystem _storeReadSystem,
   RegistrationSystem _registrationSystem
 );
 ```
@@ -155,6 +162,18 @@ _This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and the s
 ```solidity
 ResourceId constant BATCH_CALL_SYSTEM_ID = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("BatchCall")))
+);
+```
+
+#### STORE_READ_SYSTEM_ID
+
+_Resource ID for batch call system._
+
+_This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and the system name._
+
+```solidity
+ResourceId constant STORE_READ_SYSTEM_ID = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("StoreRead")))
 );
 ```
 
