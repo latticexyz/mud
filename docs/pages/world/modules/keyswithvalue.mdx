@@ -13,13 +13,12 @@ For example, here is the forge script to deploy it for the `Tasks` table in [the
 
 <CollapseCode>
 
-```solidity filename="DeployKeyWithValueModule.s.sol" copy showLineNumbers {9-12,25-29}
+```solidity filename="DeployKeyWithValueModule.s.sol" copy showLineNumbers {8-11,22-24}
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
-import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
@@ -30,11 +29,10 @@ import { KeysWithValueModule } from "@latticexyz/world-modules/src/modules/keysw
 contract DeployKeyWithValueModule is Script {
   function run() external {
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+    address worldAddress = 0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1;
 
     vm.startBroadcast(deployerPrivateKey);
     IWorld world = IWorld(worldAddress);
-    StoreSwitch.setStoreAddress(worldAddress);
 
     // Deploy the module
     KeysWithValueModule keysWithValueModule = new KeysWithValueModule();
@@ -78,7 +76,7 @@ In the future we might add a feature to allow it to be in a namespace.
 
 ## Usage
 
-Installing the module creates a table called `keywval:<table name>`.
+Installing the module creates a table called `keywval__<table name>`.
 When entries are added or modified in the source table, a hash of their values gets written to this table as a key, with the relevant key as the value.
 This only applies from the time the module is installed, entries created prior to that don't get the reverse mapping.
 
@@ -93,7 +91,7 @@ For example, here is the forge script to add a task to `Tasks` in [the React tem
 
 <CollapseCode>
 
-```solidity filename="UseKeysWithValues.s.sol" copy showLineNumbers {10,24-33}
+```solidity filename="UseKeysWithValues.s.sol" copy showLineNumbers {8,27,29-34}
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
@@ -103,14 +101,14 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { getKeysWithValue } from "@latticexyz/world-modules/src/modules/keyswithvalue/getKeysWithValue.sol";
-import { Tasks, TasksTableId } from "../src/codegen/index.sol";
+import { Tasks } from "../src/codegen/index.sol";
+
+import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 
 contract UseKeysWithValues is Script {
   function run() external {
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-    address worldAddress = vm.envAddress("WORLD_ADDRESS");
-
-    StoreSwitch.setStoreAddress(worldAddress);
+    address worldAddress = 0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1;
 
     uint createdAt = block.timestamp;
     uint completedAt = 0;
@@ -120,8 +118,10 @@ contract UseKeysWithValues is Script {
     IWorld(worldAddress).addTask(description);
     vm.stopBroadcast();
 
+    StoreSwitch.setStoreAddress(worldAddress);
+
     bytes32[] memory keys = getKeysWithValue(
-      TasksTableId,
+      Tasks._tableId,
       Tasks.encodeStatic(createdAt, completedAt),
       Tasks.encodeLengths(description),
       Tasks.encodeDynamic(description)
@@ -142,7 +142,7 @@ contract UseKeysWithValues is Script {
 <summary>Explanation</summary>
 
 ```solidity
-import { Tasks, TasksTableId } from "../src/codegen/index.sol";
+import { Tasks } from "../src/codegen/index.sol";
 ```
 
 It is easiest to use `getKeysWithValue` when you have the definition of the source table.
@@ -155,6 +155,12 @@ It is easiest to use `getKeysWithValue` when you have the definition of the sour
 
 Create an entry with this description.
 The two static fields, `createdAt` and `completedAt`, are filled by [`TasksSystem.addTask`](https://github.com/latticexyz/mud/blob/main/templates/react/packages/contracts/src/systems/TasksSystem.sol#L8-L11).
+
+```solidity
+    StoreSwitch.setStoreAddress(worldAddress);
+```
+
+To read from `keywval__Tasks` we need to set the store address to `worldAddress`.
 
 ```solidity
     bytes32[] memory keys = getKeysWithValue(
