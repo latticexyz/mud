@@ -45,7 +45,7 @@ import { Counter } from "../src/codegen/index.sol";
 
 contract ReadCounter is Script {
   function run() external {
-    address worldAddress = 0x4F4DDaFBc93Cf8d11a253f21dDbcF836139efdeC;
+    address worldAddress = 0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1;
     StoreSwitch.setStoreAddress(worldAddress);
     console.log("Counter value:", Counter.get());
   }
@@ -71,7 +71,7 @@ import { Counter } from "../src/codegen/index.sol";
 It is easiest if we import the definitions of the table that were generated using [`mud tablegen`](./cli/tablegen).
 
 ```solidity
-    address worldAddress = 0x4F4DDaFBc93Cf8d11a253f21dDbcF836139efdeC;
+    address worldAddress = 0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1;
     StoreSwitch.setStoreAddress(worldAddress);
 ```
 
@@ -106,7 +106,7 @@ import { Counter } from "../src/codegen/index.sol";
 contract ResetCounter is Script {
   function run() external {
     // Specify a store so that you can use tables directly
-    address worldAddress = 0x4F4DDaFBc93Cf8d11a253f21dDbcF836139efdeC;
+    address worldAddress = 0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1;
     StoreSwitch.setStoreAddress(worldAddress);
 
     // Load the private key from the `PRIVATE_KEY` environment variable (in .env)

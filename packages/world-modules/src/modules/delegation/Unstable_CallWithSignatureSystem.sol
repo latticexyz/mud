@@ -9,13 +9,10 @@ import { createDelegation } from "@latticexyz/world/src/modules/init/implementat
 import { CallWithSignatureNonces } from "./tables/CallWithSignatureNonces.sol";
 import { getSignedMessageHash } from "./getSignedMessageHash.sol";
 import { ECDSA } from "./ECDSA.sol";
+import { validateCallWithSignature } from "./validateCallWithSignature.sol";
+import { IUnstable_CallWithSignatureErrors } from "./IUnstable_CallWithSignatureErrors.sol";
 
-contract Unstable_CallWithSignatureSystem is System {
-  /**
-   * @dev Mismatched signature.
-   */
-  error InvalidSignature(address signer);
-
+contract Unstable_CallWithSignatureSystem is System, IUnstable_CallWithSignatureErrors {
   /**
    * @notice Calls a system with a given system ID using the given signature.
    * @param signer The address on whose behalf the system is called.
@@ -30,16 +27,9 @@ contract Unstable_CallWithSignatureSystem is System {
     bytes memory callData,
     bytes memory signature
   ) external payable returns (bytes memory) {
-    uint256 nonce = CallWithSignatureNonces.get(signer);
-    bytes32 hash = getSignedMessageHash(signer, systemId, callData, nonce, _world());
+    validateCallWithSignature(signer, systemId, callData, signature);
 
-    // If the message was not signed by the delegator or is invalid, revert
-    address recoveredSigner = ECDSA.recover(hash, signature);
-    if (recoveredSigner != signer) {
-      revert InvalidSignature(recoveredSigner);
-    }
-
-    CallWithSignatureNonces.set(signer, nonce + 1);
+    CallWithSignatureNonces._set(signer, CallWithSignatureNonces._get(signer) + 1);
 
     return SystemCall.callWithHooksOrRevert(signer, systemId, callData, _msgValue());
   }
