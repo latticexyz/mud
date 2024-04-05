@@ -1,6 +1,7 @@
 import accessManagementSystemBuild from "@latticexyz/world/out/AccessManagementSystem.sol/AccessManagementSystem.json" assert { type: "json" };
 import balanceTransferSystemBuild from "@latticexyz/world/out/BalanceTransferSystem.sol/BalanceTransferSystem.json" assert { type: "json" };
 import batchCallSystemBuild from "@latticexyz/world/out/BatchCallSystem.sol/BatchCallSystem.json" assert { type: "json" };
+import storeReadSystemBuild from "@latticexyz/world/out/StoreReadSystem.sol/StoreReadSystem.json" assert { type: "json" };
 import registrationSystemBuild from "@latticexyz/world/out/RegistrationSystem.sol/RegistrationSystem.json" assert { type: "json" };
 import initModuleBuild from "@latticexyz/world/out/InitModule.sol/InitModule.json" assert { type: "json" };
 import initModuleAbi from "@latticexyz/world/out/InitModule.sol/InitModule.abi.json" assert { type: "json" };
@@ -35,6 +36,10 @@ export async function ensureWorldFactory(
   const batchCallSystemBytecode = batchCallSystemBuild.bytecode.object as Hex;
   const batchCallSystem = getCreate2Address({ from: deployerAddress, bytecode: batchCallSystemBytecode, salt });
 
+  const storeReadSystemDeployedBytecodeSize = size(storeReadSystemBuild.deployedBytecode.object as Hex);
+  const storeReadSystemBytecode = storeReadSystemBuild.bytecode.object as Hex;
+  const storeReadSystem = getCreate2Address({ from: deployerAddress, bytecode: storeReadSystemBytecode, salt });
+
   const registrationDeployedBytecodeSize = size(registrationSystemBuild.deployedBytecode.object as Hex);
   const registrationBytecode = registrationSystemBuild.bytecode.object as Hex;
   const registration = getCreate2Address({
@@ -47,7 +52,7 @@ export async function ensureWorldFactory(
   const initModuleBytecode = encodeDeployData({
     bytecode: initModuleBuild.bytecode.object as Hex,
     abi: initModuleAbi,
-    args: [accessManagementSystem, balanceTransferSystem, batchCallSystem, registration],
+    args: [accessManagementSystem, balanceTransferSystem, batchCallSystem, storeReadSystem, registration],
   });
 
   const initModule = getCreate2Address({ from: deployerAddress, bytecode: initModuleBytecode, salt });
@@ -76,6 +81,11 @@ export async function ensureWorldFactory(
       bytecode: batchCallSystemBytecode,
       deployedBytecodeSize: batchCallSystemDeployedBytecodeSize,
       label: "batch call system",
+    },
+    {
+      bytecode: storeReadSystemBytecode,
+      deployedBytecodeSize: storeReadSystemDeployedBytecodeSize,
+      label: "store read system",
     },
     {
       bytecode: registrationBytecode,
