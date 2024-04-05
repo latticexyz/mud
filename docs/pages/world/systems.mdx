@@ -142,9 +142,9 @@ A `System` in the root namespace runs in the `World` context, and therefore cann
 <Callout type="error" emoji="🚫">
   You *could* use
   [`delegatecall`](https://docs.soliditylang.org/en/v0.8.16/introduction-to-smart-contracts.html#delegatecall-callcode-and-libraries),
-  but you should only do it if it's necessary. A root `System` acts as the `World`, so a `delegatecall` from a root `System` behaves exactly like a `delegatecall` from the `World`.
-  Any contract you `delegatecall` inherits your permissions, in this case unlimited access to the `World` and
-  the ability to change everything.
+  but you should only do it if it's necessary. A root `System` acts as the `World`, so a `delegatecall` from a root
+  `System` behaves exactly like a `delegatecall` from the `World`. Any contract you `delegatecall` inherits your
+  permissions, in this case unlimited access to the `World` and the ability to change everything.
 </Callout>
 
 An alternative solution is for the root `System` to do exactly what the `World` does with a normal call: check for access permission, run before hook (if configured), call the `System`, and then run the after hook (if configured).
