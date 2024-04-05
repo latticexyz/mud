@@ -115,19 +115,18 @@ This approach doesn't scale well to all tables of a chain, but it is a convenien
      Result:
 
      ```
-                              List of schemas
-                        Name                    |       Owner
-      --------------------------------------------+-------------------
-      0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec | qbzzt
-      mud                                        | qbzzt
-      public                                     | pg_database_owner
-      (3 rows)
+      List of schemas
+      Name  |       Owner
+      --------+-------------------
+      mud    | qbzzt
+      public | pg_database_owner
+      (2 rows)
      ```
 
    - Connect to the schema for your world.
 
      ```sql copy
-     set search_path to "0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec";
+     set search_path to "mud";
      ```
 
    - Get the list of tables.
@@ -402,7 +401,7 @@ If the client does not need all the information stored in the `World`, you can [
 
    ```sh copy
    INDEXER_URL=http://localhost:3001/trpc
-   WORLD_ADDRESS=0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec
+   WORLD_ADDRESS=0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1
    TABLE_ID=0x746200000000000000000000000000005461736b730000000000000000000000
    CHAIN_ID=31337
    JSON='{"0":{"json":{"chainId": '$CHAIN_ID', "address": "'$WORLD_ADDRESS'", "filters": [{"tableId": "'$TABLE_ID'"}]}}}'
