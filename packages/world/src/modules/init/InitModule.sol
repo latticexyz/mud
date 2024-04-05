@@ -156,7 +156,7 @@ contract InitModule is Module {
       _registerRootFunctionSelector(BATCH_CALL_SYSTEM_ID, functionSignaturesBatchCall[i]);
     }
 
-    string[12] memory functionSignaturesStoreRead = getFunctionSignaturesStoreRead();
+    string[13] memory functionSignaturesStoreRead = getFunctionSignaturesStoreRead();
     for (uint256 i = 0; i < functionSignaturesStoreRead.length; i++) {
       _registerRootFunctionSelector(STORE_READ_SYSTEM_ID, functionSignaturesStoreRead[i]);
     }

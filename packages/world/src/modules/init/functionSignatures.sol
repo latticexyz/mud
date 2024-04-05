@@ -64,10 +64,10 @@ function getFunctionSignaturesRegistration() pure returns (string[14] memory) {
 /**
  * @dev Function signatures for balance transfer system
  */
-function getFunctionSignaturesStoreRead() pure returns (string[12] memory) {
+function getFunctionSignaturesStoreRead() pure returns (string[13] memory) {
   return [
     // --- StoreReadSystem ---
-    "getFieldLayout(bytes32)"
+    "getFieldLayout(bytes32)",
     "getValueSchema(bytes32)",
     "getKeySchema(bytes32)",
     "getRecord(bytes32,bytes32[])",
