@@ -9,6 +9,7 @@ import {
   WriteContractReturnType,
   ContractFunctionName,
   ContractFunctionArgs,
+  PublicClient,
 } from "viem";
 import { simulateContract, writeContract as viem_writeContract } from "viem/actions";
 import pRetry from "p-retry";
@@ -18,7 +19,22 @@ import { parseAccount } from "viem/accounts";
 
 const debug = parentDebug.extend("writeContract");
 
-// TODO: migrate away from this approach once we can hook into viem's nonce management: https://github.com/wagmi-dev/viem/discussions/1230
+export type WriteContractExtraOptions<chain extends Chain | undefined> = {
+  /**
+   * `publicClient` can be provided to be used in place of the extended viem client for making public action calls
+   * (`getChainId`, `getTransactionCount`, `simulateContract`). This helps in cases where the extended
+   * viem client is a smart account client, like in [permissionless.js](https://github.com/pimlicolabs/permissionless.js),
+   * where the transport is the bundler, not an RPC.
+   */
+  publicClient?: PublicClient<Transport, chain>;
+  /**
+   * Adjust the number of concurrent calls to the mempool. This defaults to `1` to ensure transactions are ordered
+   * and nonces are handled properly. Any number greater than that is likely to see nonce errors and/or transactions
+   * arriving out of order, but this may be an acceptable trade-off for some applications that can safely retry.
+   * @default 1
+   */
+  queueConcurrency?: number;
+};
 
 /** @deprecated Use `walletClient.extend(transactionQueue())` instead. */
 export async function writeContract<
@@ -31,6 +47,7 @@ export async function writeContract<
 >(
   client: Client<Transport, chain, account>,
   request: WriteContractParameters<abi, functionName, args, chain, account, chainOverride>,
+  opts: WriteContractExtraOptions<chain> = {},
 ): Promise<WriteContractReturnType> {
   const rawAccount = request.account ?? client.account;
   if (!rawAccount) {
@@ -40,9 +57,10 @@ export async function writeContract<
   const account = parseAccount(rawAccount);
 
   const nonceManager = await getNonceManager({
-    client,
+    client: opts.publicClient ?? client,
     address: account.address,
     blockTag: "pending",
+    queueConcurrency: opts.queueConcurrency,
   });
 
   async function prepareWrite(): Promise<
@@ -54,11 +72,14 @@ export async function writeContract<
     }
 
     debug("simulating", request.functionName, "at", request.address);
-    const result = await simulateContract<chain, account, abi, functionName, args, chainOverride>(client, {
-      ...request,
-      blockTag: "pending",
-      account,
-    } as unknown as SimulateContractParameters<abi, functionName, args, chain, chainOverride>);
+    const result = await simulateContract<chain, account | undefined, abi, functionName, args, chainOverride>(
+      opts.publicClient ?? client,
+      {
+        ...request,
+        blockTag: "pending",
+        account,
+      } as unknown as SimulateContractParameters<abi, functionName, args, chain, chainOverride>,
+    );
 
     return result.request as unknown as WriteContractParameters<abi, functionName, args, chain, account, chainOverride>;
   }
@@ -75,7 +96,10 @@ export async function writeContract<
 
           const nonce = nonceManager.nextNonce();
           debug("calling", preparedWrite.functionName, "with nonce", nonce, "at", preparedWrite.address);
-          return await viem_writeContract(client, { nonce, ...preparedWrite } as typeof preparedWrite);
+          return await viem_writeContract(client, {
+            nonce,
+            ...preparedWrite,
+          } as typeof preparedWrite);
         },
         {
           retries: 3,
