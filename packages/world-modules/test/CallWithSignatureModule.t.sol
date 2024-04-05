@@ -14,20 +14,22 @@ import { System } from "@latticexyz/world/src/System.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 import { UNLIMITED_DELEGATION } from "@latticexyz/world/src/constants.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { REGISTRATION_SYSTEM_ID } from "@latticexyz/world/src/modules/init/constants.sol";
 
 import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { WorldTestSystem } from "@latticexyz/world/test/World.t.sol";
 
-import { Unstable_DelegationWithSignatureModule } from "../src/modules/delegation/Unstable_DelegationWithSignatureModule.sol";
-import { Unstable_DelegationWithSignatureSystem } from "../src/modules/delegation/Unstable_DelegationWithSignatureSystem.sol";
+import { Unstable_CallWithSignatureModule } from "../src/modules/delegation/Unstable_CallWithSignatureModule.sol";
+import { Unstable_CallWithSignatureSystem } from "../src/modules/delegation/Unstable_CallWithSignatureSystem.sol";
+import { IUnstable_CallWithSignatureErrors } from "../src/modules/delegation/IUnstable_CallWithSignatureErrors.sol";
 import { getSignedMessageHash } from "../src/modules/delegation/getSignedMessageHash.sol";
 import { ECDSA } from "../src/modules/delegation/ECDSA.sol";
 
-contract Unstable_DelegationWithSignatureModuleTest is Test, GasReporter {
+contract Unstable_CallWithSignatureModuleTest is Test, GasReporter {
   using WorldResourceIdInstance for ResourceId;
 
   IBaseWorld world;
-  Unstable_DelegationWithSignatureModule delegationWithSignatureModule = new Unstable_DelegationWithSignatureModule();
+  Unstable_CallWithSignatureModule callWithSignatureModule = new Unstable_CallWithSignatureModule();
 
   function setUp() public {
     world = createWorld();
@@ -36,7 +38,7 @@ contract Unstable_DelegationWithSignatureModuleTest is Test, GasReporter {
 
   function testInstallRoot() public {
     startGasReport("install delegation module");
-    world.installRootModule(delegationWithSignatureModule, new bytes(0));
+    world.installRootModule(callWithSignatureModule, new bytes(0));
     endGasReport();
   }
 
@@ -51,32 +53,32 @@ contract Unstable_DelegationWithSignatureModuleTest is Test, GasReporter {
     world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
 
-    world.installRootModule(delegationWithSignatureModule, new bytes(0));
+    world.installRootModule(callWithSignatureModule, new bytes(0));
 
     // Register a limited delegation using signature
     (address delegator, uint256 delegatorPk) = makeAddrAndKey("delegator");
     address delegatee = address(2);
 
-    bytes32 hash = getSignedMessageHash(delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, 0, address(world));
+    bytes memory callData = abi.encodeCall(world.registerDelegation, (delegatee, UNLIMITED_DELEGATION, new bytes(0)));
+
+    bytes32 hash = getSignedMessageHash(delegator, REGISTRATION_SYSTEM_ID, callData, 0, address(world));
     (uint8 v, bytes32 r, bytes32 s) = vm.sign(delegatorPk, hash);
     bytes memory signature = abi.encodePacked(r, s, v);
 
     // Attempt to register a limited delegation using an empty signature
-    vm.expectRevert(abi.encodeWithSelector(Unstable_DelegationWithSignatureSystem.InvalidSignature.selector));
-    Unstable_DelegationWithSignatureSystem(address(world)).registerDelegationWithSignature(
-      delegatee,
-      UNLIMITED_DELEGATION,
-      new bytes(0),
+    vm.expectRevert(abi.encodeWithSelector(IUnstable_CallWithSignatureErrors.InvalidSignature.selector));
+    Unstable_CallWithSignatureSystem(address(world)).callWithSignature(
       delegator,
+      REGISTRATION_SYSTEM_ID,
+      callData,
       new bytes(0)
     );
 
     startGasReport("register an unlimited delegation with signature");
-    Unstable_DelegationWithSignatureSystem(address(world)).registerDelegationWithSignature(
-      delegatee,
-      UNLIMITED_DELEGATION,
-      new bytes(0),
+    Unstable_CallWithSignatureSystem(address(world)).callWithSignature(
       delegator,
+      REGISTRATION_SYSTEM_ID,
+      callData,
       signature
     );
     endGasReport();
@@ -99,12 +101,11 @@ contract Unstable_DelegationWithSignatureModuleTest is Test, GasReporter {
     world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Attempt to register a limited delegation using an old signature
-    vm.expectRevert(abi.encodeWithSelector(Unstable_DelegationWithSignatureSystem.InvalidSignature.selector));
-    Unstable_DelegationWithSignatureSystem(address(world)).registerDelegationWithSignature(
-      delegatee,
-      UNLIMITED_DELEGATION,
-      new bytes(0),
+    vm.expectRevert(abi.encodeWithSelector(IUnstable_CallWithSignatureErrors.InvalidSignature.selector));
+    Unstable_CallWithSignatureSystem(address(world)).callWithSignature(
       delegator,
+      REGISTRATION_SYSTEM_ID,
+      callData,
       signature
     );
 
@@ -114,15 +115,14 @@ contract Unstable_DelegationWithSignatureModuleTest is Test, GasReporter {
     world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Register a limited delegation using a new signature
-    hash = getSignedMessageHash(delegatee, UNLIMITED_DELEGATION, new bytes(0), delegator, 1, address(world));
+    hash = getSignedMessageHash(delegator, REGISTRATION_SYSTEM_ID, callData, 1, address(world));
     (v, r, s) = vm.sign(delegatorPk, hash);
     signature = abi.encodePacked(r, s, v);
 
-    Unstable_DelegationWithSignatureSystem(address(world)).registerDelegationWithSignature(
-      delegatee,
-      UNLIMITED_DELEGATION,
-      new bytes(0),
+    Unstable_CallWithSignatureSystem(address(world)).callWithSignature(
       delegator,
+      REGISTRATION_SYSTEM_ID,
+      callData,
       signature
     );
 
