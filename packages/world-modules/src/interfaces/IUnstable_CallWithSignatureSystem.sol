@@ -11,8 +11,6 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IUnstable_CallWithSignatureSystem {
-  error InvalidSignature(address signer);
-
   function callWithSignature(
     address signer,
     ResourceId systemId,
