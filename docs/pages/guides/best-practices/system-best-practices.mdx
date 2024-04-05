@@ -55,6 +55,6 @@ You _have_ to use `BalanceTransferSystem`.
 ### Use libraries to bypass the contract size limit
 
 If you have a large `System` and you come up against the [contract size limit](https://ethereum.org/en/developers/docs/smart-contracts/#limitations), don't split it in two.
-Instead, use [libraries](https://docs.soliditylang.org/en/latest/contracts.html#libraries).
+Instead, use [public libraries](https://docs.soliditylang.org/en/latest/contracts.html#libraries).
 Libraries are called using [`delegatecall`](https://docs.soliditylang.org/en/latest/introduction-to-smart-contracts.html#delegatecall-and-libraries), so they have the same permissions as the calling contract.
 This includes the ability to write to MUD tables when the calling `System` is permitted to do so.
