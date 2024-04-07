@@ -2,6 +2,7 @@ import { Button } from "./ui/Button";
 import { useLoginDialog } from "./useLoginDialog";
 import { LoginDialog } from "./LoginDialog";
 import { useLoginRequirements } from "./useLoginRequirements";
+import { Shadow } from "./Shadow";
 
 export function LoginButton() {
   const { requirement } = useLoginRequirements();
@@ -9,27 +10,29 @@ export function LoginButton() {
 
   if (requirement === "connectedWallet") {
     return (
-      <div id="mud-login">
+      <Shadow>
         <Button onClick={openConnectModal} pending={!openConnectModal}>
           Connect wallet
         </Button>
-      </div>
+      </Shadow>
     );
   }
 
   if (requirement != null) {
     return (
-      <div id="mud-login">
-        <Button onClick={openLoginDialog}>Log in</Button>
+      <>
+        <Shadow>
+          <Button onClick={openLoginDialog}>Log in</Button>
+        </Shadow>
         <LoginDialog requirement={requirement} open={loginDialogOpen} onOpenChange={toggleLoginDialog} />
-      </div>
+      </>
     );
   }
 
   // TODO
   return (
-    <div id="mud-login">
+    <Shadow>
       <Button disabled>All good!</Button>
-    </div>
+    </Shadow>
   );
 }

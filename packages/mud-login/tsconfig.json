@@ -12,5 +12,5 @@
     "skipLibCheck": true,
     "jsxImportSource": "react"
   },
-  "include": ["src"]
+  "include": ["src", "inline-import.d.ts"]
 }
