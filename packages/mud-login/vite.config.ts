@@ -1,4 +1,7 @@
 import { defineConfig } from "vite";
+import packageJson from "./package.json";
+
+const deps = Object.keys(packageJson.dependencies);
 
 export default defineConfig({
   build: {
@@ -11,8 +14,8 @@ export default defineConfig({
       formats: ["es"],
     },
     rollupOptions: {
-      // TODO: move these to peer deps
-      external: ["react", "react-dom", "wagmi", "viem", "@rainbow-me/rainbowkit", "@tanstack/react-query"],
+      // TODO: move these to peer deps?
+      external: deps,
     },
   },
 });

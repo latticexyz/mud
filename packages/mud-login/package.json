@@ -21,10 +21,10 @@
   },
   "scripts": {
     "build": "pnpm run build:js",
-    "build:js": "tsup",
+    "build:js": "vite build",
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
-    "dev": "tsup --watch",
+    "dev": "vite build --watch",
     "test": "tsc --noEmit",
     "test:ci": "pnpm run test"
   },
