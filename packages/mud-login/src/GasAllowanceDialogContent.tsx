@@ -1,4 +1,3 @@
-import { Button, Dialog, Flex } from "@radix-ui/themes";
 import { parseEther } from "viem";
 import { useAccount, useConfig, useWriteContract } from "wagmi";
 import { useLoginConfig } from "./Context";
@@ -6,6 +5,8 @@ import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
 import { getGasTankBalanceQueryKey } from "./useGasTankBalance";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { useQueryClient } from "@tanstack/react-query";
+import { Button } from "./ui/Button";
+import { ModalContent } from "./ui/ModalContent";
 
 export function GasAllowanceDialogContent() {
   const queryClient = useQueryClient();
@@ -27,17 +28,12 @@ export function GasAllowanceDialogContent() {
   });
 
   return (
-    <Dialog.Content>
-      <Dialog.Title>Fund Redstone Balance</Dialog.Title>
-      <Dialog.Description size="2" mb="4">
-        Fund Redstone Balance description
-      </Dialog.Description>
-
+    <ModalContent title="Fund Redstone balance" description="TODO">
       {error ? <div>{String(error)}</div> : null}
 
-      <Flex direction="column" gap="2">
+      <div className="flex flex-col gap-2">
         <Button
-          loading={!userAccountAddress || isPending}
+          pending={!userAccountAddress || isPending}
           onClick={async () => {
             if (!userAccountAddress) return;
 
@@ -55,7 +51,7 @@ export function GasAllowanceDialogContent() {
         </Button>
         <Button disabled>Relay.link</Button>
         <Button disabled>Redstone ETH</Button>
-      </Flex>
-    </Dialog.Content>
+      </div>
+    </ModalContent>
   );
 }

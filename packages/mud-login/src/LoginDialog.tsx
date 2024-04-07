@@ -1,4 +1,4 @@
-import { Dialog } from "@radix-ui/themes";
+import * as Dialog from "@radix-ui/react-dialog";
 import { AppSignerDialogContent } from "./AppSignerDialogContent";
 import { GasAllowanceDialogContent } from "./GasAllowanceDialogContent";
 import { AccountDelegationDialogContent } from "./AccountDelegationDialogContent";
@@ -7,8 +7,9 @@ import { useMemo } from "react";
 import { assertExhaustive } from "@latticexyz/common/utils";
 import { GasSpenderDialogContent } from "./GasSpenderDialogContent";
 import { ConnectedChainDialogContent } from "./ConnectedChainDialogContent";
+import { Modal } from "./ui/Modal";
 
-export type Props = Pick<Dialog.RootProps, "open" | "onOpenChange"> & {
+export type Props = Pick<Dialog.DialogProps, "open" | "onOpenChange"> & {
   requirement: Exclude<LoginRequirement, "connectedWallet">;
 };
 
@@ -30,5 +31,5 @@ export function LoginDialog({ requirement, ...dialogProps }: Props) {
     }
   }, [requirement]);
 
-  return <Dialog.Root {...dialogProps}>{content}</Dialog.Root>;
+  return <Modal {...dialogProps}>{content}</Modal>;
 }

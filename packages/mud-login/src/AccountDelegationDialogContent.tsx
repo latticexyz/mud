@@ -1,4 +1,4 @@
-import { Button, Dialog, Flex } from "@radix-ui/themes";
+import * as Dialog from "@radix-ui/react-dialog";
 import { useAppAccountClient } from "./useAppAccountClient";
 import { usePublicClient, useWalletClient } from "wagmi";
 import { useLoginConfig } from "./Context";
@@ -10,6 +10,8 @@ import { resourceToHex } from "@latticexyz/common";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { callWithSignature } from "./callWithSignature";
 import { hasDelegationQueryKey } from "./useHasDelegation";
+import { Button } from "./ui/Button";
+import { ModalContent } from "./ui/ModalContent";
 
 export function AccountDelegationDialogContent() {
   const queryClient = useQueryClient();
@@ -59,24 +61,17 @@ export function AccountDelegationDialogContent() {
   });
 
   return (
-    <Dialog.Content>
-      <Dialog.Title>Delegation</Dialog.Title>
-      <Dialog.Description size="2" mb="4">
-        Delegation description
-      </Dialog.Description>
-
+    <ModalContent title="Delegation" description="Delegation description">
       {error ? <>Error: {String(error)}</> : null}
 
-      <Flex gap="3" mt="4" justify="end">
+      <div className="flex gap-3 justify-end">
         <Dialog.Close>
-          <Button variant="soft" color="gray">
-            Cancel
-          </Button>
+          <Button>Cancel</Button>
         </Dialog.Close>
-        <Button loading={isPending} onClick={() => mutate()}>
+        <Button pending={isPending} onClick={() => mutate()}>
           Set up delegation
         </Button>
-      </Flex>
-    </Dialog.Content>
+      </div>
+    </ModalContent>
   );
 }

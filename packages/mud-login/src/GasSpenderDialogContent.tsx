@@ -1,4 +1,4 @@
-import { Button, Dialog, Flex } from "@radix-ui/themes";
+import * as Dialog from "@radix-ui/react-dialog";
 import { useAppAccountClient } from "./useAppAccountClient";
 import { usePublicClient, useWalletClient } from "wagmi";
 import { useLoginConfig } from "./Context";
@@ -9,6 +9,8 @@ import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
 import { callWithSignature } from "./callWithSignature";
 import { isGasSpenderQueryKey } from "./useIsGasSpender";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Button } from "./ui/Button";
+import { ModalContent } from "./ui/ModalContent";
 
 export function GasSpenderDialogContent() {
   const queryClient = useQueryClient();
@@ -63,24 +65,17 @@ export function GasSpenderDialogContent() {
   });
 
   return (
-    <Dialog.Content>
-      <Dialog.Title>Gas spender</Dialog.Title>
-      <Dialog.Description size="2" mb="4">
-        Spend my gas plz
-      </Dialog.Description>
-
+    <ModalContent title="Gas spender" description="TODO">
       {error ? <>Error: {String(error)}</> : null}
 
-      <Flex gap="3" mt="4" justify="end">
+      <div className="flex gap-3 justify-end">
         <Dialog.Close>
-          <Button variant="soft" color="gray">
-            Cancel
-          </Button>
+          <Button>Cancel</Button>
         </Dialog.Close>
-        <Button loading={isPending} onClick={() => mutate()}>
+        <Button pending={isPending} onClick={() => mutate()}>
           Set up spender
         </Button>
-      </Flex>
-    </Dialog.Content>
+      </div>
+    </ModalContent>
   );
 }

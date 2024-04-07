@@ -12,7 +12,13 @@
   "exports": {
     ".": "./dist/index.js"
   },
-  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./src/exports/index.ts"
+      ]
+    }
+  },
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",
@@ -31,7 +37,7 @@
     "@latticexyz/store": "workspace:*",
     "@latticexyz/world": "workspace:*",
     "@latticexyz/world-modules": "workspace:*",
-    "@radix-ui/themes": "^3.0.0",
+    "@radix-ui/react-dialog": "^1.0.5",
     "@rainbow-me/rainbowkit": "^2.0.2",
     "@tanstack/react-query": "^5.28.8",
     "permissionless": "^0.1.10",

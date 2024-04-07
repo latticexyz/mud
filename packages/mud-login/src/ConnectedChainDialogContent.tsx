@@ -1,6 +1,8 @@
-import { Button, Dialog, Flex } from "@radix-ui/themes";
+import * as Dialog from "@radix-ui/react-dialog";
 import { useSwitchChain } from "wagmi";
 import { useLoginConfig } from "./Context";
+import { Button } from "./ui/Button";
+import { ModalContent } from "./ui/ModalContent";
 
 export function ConnectedChainDialogContent() {
   const { chainId } = useLoginConfig();
@@ -9,24 +11,17 @@ export function ConnectedChainDialogContent() {
   // TODO: prompt user to add chain if missing
 
   return (
-    <Dialog.Content>
-      <Dialog.Title>Switch chain</Dialog.Title>
-      <Dialog.Description size="2" mb="4">
-        Switch chain to login
-      </Dialog.Description>
-
+    <ModalContent title="Switch chain" description="Switch chain to login">
       {error ? <>Error: {String(error)}</> : null}
 
-      <Flex gap="3" mt="4" justify="end">
+      <div className="flex gap-3 justify-end">
         <Dialog.Close>
-          <Button variant="soft" color="gray">
-            Cancel
-          </Button>
+          <Button>Cancel</Button>
         </Dialog.Close>
-        <Button loading={isPending} onClick={() => switchChain({ chainId })}>
+        <Button pending={isPending} onClick={() => switchChain({ chainId })}>
           Switch chain
         </Button>
-      </Flex>
-    </Dialog.Content>
+      </div>
+    </ModalContent>
   );
 }

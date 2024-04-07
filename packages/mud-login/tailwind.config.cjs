@@ -1,3 +1,5 @@
+import { animate } from "./src/tailwindcss-plugins/animate";
+
 /** @type {import('tailwindcss').Config} */
 export default {
   important: "#mud-login",
@@ -9,5 +11,5 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [animate],
 };

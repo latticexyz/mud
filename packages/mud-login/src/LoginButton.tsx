@@ -1,4 +1,4 @@
-import { Button } from "@radix-ui/themes";
+import { Button } from "./ui/Button";
 import { useLoginDialog } from "./useLoginDialog";
 import { LoginDialog } from "./LoginDialog";
 import { useLoginRequirements } from "./useLoginRequirements";
@@ -9,21 +9,27 @@ export function LoginButton() {
 
   if (requirement === "connectedWallet") {
     return (
-      <Button onClick={openConnectModal} loading={!openConnectModal}>
-        Connect wallet
-      </Button>
+      <div id="mud-login">
+        <Button onClick={openConnectModal} pending={!openConnectModal}>
+          Connect wallet
+        </Button>
+      </div>
     );
   }
 
   if (requirement != null) {
     return (
-      <>
+      <div id="mud-login">
         <Button onClick={openLoginDialog}>Log in</Button>
         <LoginDialog requirement={requirement} open={loginDialogOpen} onOpenChange={toggleLoginDialog} />
-      </>
+      </div>
     );
   }
 
   // TODO
-  return <Button disabled>All good!</Button>;
+  return (
+    <div id="mud-login">
+      <Button disabled>All good!</Button>
+    </div>
+  );
 }
