@@ -7,7 +7,7 @@ export type Props = {
 };
 
 export function Shadow({ children }: Props) {
-  const placeholderRef = useRef<HTMLTemplateElement | null>(null);
+  const placeholderRef = useRef<HTMLDivElement | null>(null);
   const [shadowRoot, setShadowRoot] = useState<ShadowRoot | null>(null);
 
   useEffect(() => {
@@ -20,5 +20,9 @@ export function Shadow({ children }: Props) {
     }
   }, []);
 
-  return <span ref={placeholderRef}>{shadowRoot ? ReactDOM.createPortal(children, shadowRoot) : null}</span>;
+  return (
+    <div ref={placeholderRef} style={{ display: "unset" }}>
+      {shadowRoot ? ReactDOM.createPortal(children, shadowRoot) : null}
+    </div>
+  );
 }
