@@ -15,10 +15,10 @@ export function Shadow({ children }: Props) {
       const root = placeholderRef.current.attachShadow({ mode: "open", delegatesFocus: true });
       setShadowRoot(root);
       const sheet = new CSSStyleSheet();
-      sheet.replaceSync(css.replace("html{", ":host{"));
+      sheet.replaceSync(css);
       root.adoptedStyleSheets = [sheet];
     }
   }, []);
 
-  return <span ref={placeholderRef}>{shadowRoot ? ReactDOM.createPortal(<>{children}</>, shadowRoot) : null}</span>;
+  return <span ref={placeholderRef}>{shadowRoot ? ReactDOM.createPortal(children, shadowRoot) : null}</span>;
 }

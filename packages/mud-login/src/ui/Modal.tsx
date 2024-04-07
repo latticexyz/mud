@@ -14,13 +14,14 @@ export function Modal({ open, onOpenChange, trigger, children }: Props) {
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       {trigger ? <Dialog.Trigger asChild>{trigger}</Dialog.Trigger> : null}
       <Dialog.Portal>
-        <div>
+        {/* This is intentionally wrapped in an empty fragment to avoid React errors related to Radix portals. Maybe fixable by using forwardRef in Shadow. */}
+        <>
           <Shadow>
             <Dialog.Overlay className="bg-neutral-950/80 animate-in fade-in fixed inset-0 grid place-items-center overflow-y-auto backdrop-blur">
               {children}
             </Dialog.Overlay>
           </Shadow>
-        </div>
+        </>
       </Dialog.Portal>
     </Dialog.Root>
   );
