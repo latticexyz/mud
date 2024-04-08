@@ -43,20 +43,13 @@ The easiest way to create the Solidity code is to use the MUD template:
    ```
 
 1. Edit `mud.config.ts` to include the definitions we need.
-   You could also delete the counter definitions (lines 6-11), but it doesn't matter.
 
-   ```ts filename="mud.config.ts" copy showLineNumbers {4,12-18,20-25}
+   ```ts filename="mud.config.ts" copy showLineNumbers {4,6-12,14-19}
    import { defineWorld } from "@latticexyz/world";
 
    export default defineWorld({
      namespace: "messaging",
      tables: {
-       Counter: {
-         schema: {
-           value: "uint32",
-         },
-         key: [],
-       },
        Messages: {
          schema: {
            counterValue: "uint32",
@@ -405,7 +398,7 @@ The easiest way to create the Solidity code is to use the MUD template:
    cast send $WORLD_ADDRESS --rpc-url http://localhost:8545 --private-key $PRIVATE_KEY "messaging__incrementMessage(string)" "hello"
    ```
 
-   When a function is _not_ in the root namespace, it is accessible as `<namespace>__<function name>` (as long as it is [registered](/world/function-selectors).
+   When a function is _not_ in the root namespace, it is accessible as `<namespace>__<function name>` (as long as it is [registered](/world/function-selectors)).
 
    Here we call our `incrementMessage(string)` with the parameter `hello`.
 
@@ -562,25 +555,25 @@ We will fix these problems now.
 
 ### Increment and send a message
 
-Edit `src/mud/createSystemCalls.ts` to use the new `messaging__incrementMessage` function instead of `increment`.
+1. Edit `src/mud/createSystemCalls.ts` to use the new `messaging__incrementMessage` function instead of `increment`.
 
    <CollapseCode>
 
-    ```ts filename="createSystemCalls.ts" copy showLineNumbers {43-44}
-    /*
-     * Create the system calls that the client can use to ask
-     * for changes in the World state (using the System contracts).
-     */
+   ```ts filename="createSystemCalls.ts" copy showLineNumbers {43-44}
+   /*
+    * Create the system calls that the client can use to ask
+    * for changes in the World state (using the System contracts).
+    */
 
-    import { getComponentValue } from "@latticexyz/recs";
-    import { ClientComponents } from "./createClientComponents";
-    import { SetupNetworkResult } from "./setupNetwork";
-    import { singletonEntity } from "@latticexyz/store-sync/recs";
+   import { getComponentValue } from "@latticexyz/recs";
+   import { ClientComponents } from "./createClientComponents";
+   import { SetupNetworkResult } from "./setupNetwork";
+   import { singletonEntity } from "@latticexyz/store-sync/recs";
 
-    export type SystemCalls = ReturnType<typeof createSystemCalls>;
+   export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
-    export function createSystemCalls(
-      /*
+   export function createSystemCalls(
+     /*
       * The parameter list informs TypeScript that:
       *
       * - The first parameter is expected to be a
@@ -599,34 +592,77 @@ Edit `src/mud/createSystemCalls.ts` to use the new `messaging__incrementMessage`
       *   syncToRecs
       *   (https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/client/src/mud/setupNetwork.ts#L77-L83).
       */
-      { worldContract, waitForTransaction }: SetupNetworkResult,
-      { Counter }: ClientComponents
-    ) {
-      const increment = async () => {
-        /*
+     { worldContract, waitForTransaction }: SetupNetworkResult,
+     { Counter }: ClientComponents,
+   ) {
+     const increment = async () => {
+       /*
         * Because IncrementSystem
         * (https://mud.dev/templates/typescript/contracts#incrementsystemsol)
         * is in the root namespace, `.increment` can be called directly
         * on the World contract.
         */
-          const tx = await worldContract.write.messaging__incrementMessage(
-              [`message at ${Date()}`]);
-          await waitForTransaction(tx);
-          return getComponentValue(Counter, singletonEntity);
-      };
+       const tx = await worldContract.write.messaging__incrementMessage([`message at ${Date()}`]);
+       await waitForTransaction(tx);
+       return getComponentValue(Counter, singletonEntity);
+     };
 
-      return {
-        increment,
-      };
-    }
-    ```
+     return {
+       increment,
+     };
+   }
+   ```
 
    </CollapseCode>
 
-Now you can click **Increment** in the user interface and create messages.
-The user interface does not display those messages, but you can open the **MUD Dev Tools**, click the **Components** tab, and select **messagings\_\_Messages** to view them.
+1. We no longer have a `Counter` component.
+   Modify `src/index.ts` to be able to run without it.
 
-![The extended UI with the messages shown in the MUD Dev Tools](./extend-ui-with-msgs.png)
+   <CollapseCode>
+
+   ```ts filename="index.ts" copy showLineNumbers {11}
+   import { setup } from "./mud/setup";
+   import mudConfig from "contracts/mud.config";
+
+   const {
+     components,
+     systemCalls: { increment },
+     network,
+   } = await setup();
+
+   // Components expose a stream that triggers when the component is updated.
+   components.Counter && components.Counter.update$.subscribe((update) => {
+     const [nextValue, prevValue] = update.value;
+     console.log("Counter updated", update, { nextValue, prevValue });
+     document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset"$
+   });
+
+   // Attach the increment function to the html element with ID `incrementButton` (if i$
+   document.querySelector("#incrementButton")?.addEventListener("click", increment);
+
+   // https://vitejs.dev/guide/env-and-mode.html
+   if (import.meta.env.DEV) {
+     const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
+     mountDevTools({
+       config: mudConfig,
+       publicClient: network.publicClient,
+       walletClient: network.walletClient,
+       latestBlock$: network.latestBlock$,
+       storedBlockLogs$: network.storedBlockLogs$,
+       worldAddress: network.worldContract.address,
+       worldAbi: network.worldContract.abi,
+       write$: network.write$,
+       recsWorld: network.world,
+     });
+   }
+   ```
+
+   </CollapseCode>
+
+1. Now you can click **Increment** in the user interface and create messages.
+   The user interface does not display those messages, but you can open the **MUD Dev Tools**, click the **Components** tab, and select **messagings\_\_Messages** to view them.
+
+   ![The extended UI with the messages shown in the MUD Dev Tools](./extend-ui-with-msgs.png)
 
 ### Read the counter
 
@@ -658,16 +694,16 @@ We will now fix this.
 
    Here we are using the definition from the original application for convenience, but we could have used [the schema](/store/encoding#schema) which is available in `store__Tables` to get all the required information to rebuild this file.
 
-1. Edit `src/mud/setupNetwork.ts` to add a `tables` parameter with the `Counter` object to the `syncToRecs` call.
+1. Edit `src/mud/setupNetwork.ts` to add a `tables` parameter with the `Counter` component's tables to the `syncToRecs` call.
 
    <CollapseCode>
 
-   ```ts filename="setupNetwork.ts" copy showLineNumbers {36,91}
+   ```ts filename="setupNetwork.ts" copy showLineNumbers {26-27,40,97}
    /*
-   * The MUD client code is built on top of viem
-   * (https://viem.sh/docs/getting-started.html).
-   * This line imports the functions we need from it.
-   */
+    * The MUD client code is built on top of viem
+    * (https://viem.sh/docs/getting-started.html).
+    * This line imports the functions we need from it.
+    */
    import {
      createPublicClient,
      fallback,
@@ -688,16 +724,19 @@ We will now fix this.
    import { createBurnerAccount, transportObserver, ContractWrite } from "@latticexyz/common";
    import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
 
+   import { resolveConfig } from "@latticexyz/store/internal";
+   import { storeToV1 } from "@latticexyz/store/config/v2";
+
    import { Subject, share } from "rxjs";
 
    /*
-   * Import our MUD config, which includes strong types for
-   * our tables and other config options. We use this to generate
-   * things like RECS components and get back strong types for them.
-   *
-   * See https://mud.dev/templates/typescript/contracts#mudconfigts
-   * for the source of this information.
-   */
+    * Import our MUD config, which includes strong types for
+    * our tables and other config options. We use this to generate
+    * things like RECS components and get back strong types for them.
+    *
+    * See https://mud.dev/templates/typescript/contracts#mudconfigts
+    * for the source of this information.
+    */
    import mudConfig from "contracts/mud.config";
    import counterConfig from "./counter.config";
 
@@ -707,9 +746,9 @@ We will now fix this.
      const networkConfig = await getNetworkConfig();
 
      /*
-     * Create a viem public (read only) client
-     * (https://viem.sh/docs/clients/public.html)
-     */
+      * Create a viem public (read only) client
+      * (https://viem.sh/docs/clients/public.html)
+      */
      const clientOptions = {
        chain: networkConfig.chain,
        transport: transportObserver(fallback([webSocket(), http()])),
@@ -719,15 +758,15 @@ We will now fix this.
      const publicClient = createPublicClient(clientOptions);
 
      /*
-     * Create an observable for contract writes that we can
-     * pass into MUD dev tools for transaction observability.
-     */
+      * Create an observable for contract writes that we can
+      * pass into MUD dev tools for transaction observability.
+      */
      const write$ = new Subject<ContractWrite>();
 
      /*
-     * Create a temporary wallet and a viem client for it
-     * (see https://viem.sh/docs/clients/wallet.html).
-     */
+      * Create a temporary wallet and a viem client for it
+      * (see https://viem.sh/docs/clients/wallet.html).
+      */
      const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
      const burnerWalletClient = createWalletClient({
        ...clientOptions,
@@ -737,8 +776,8 @@ We will now fix this.
        .extend(writeObserver({ onWrite: (write) => write$.next(write) }));
 
      /*
-     * Create an object for communicating with the deployed World.
-     */
+      * Create an object for communicating with the deployed World.
+      */
      const worldContract = getContract({
        address: networkConfig.worldAddress as Hex,
        abi: IWorldAbi,
@@ -746,25 +785,25 @@ We will now fix this.
      });
 
      /*
-     * Sync on-chain state into RECS and keeps our client in sync.
-     * Uses the MUD indexer if available, otherwise falls back
-     * to the viem publicClient to make RPC calls to fetch MUD
-     * events from the chain.
-     */
+      * Sync on-chain state into RECS and keeps our client in sync.
+      * Uses the MUD indexer if available, otherwise falls back
+      * to the viem publicClient to make RPC calls to fetch MUD
+      * events from the chain.
+      */
      const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToRecs({
        world,
        config: mudConfig,
        address: networkConfig.worldAddress as Hex,
        publicClient,
-       tables: resolveConfig(counterConfig).tables, GOON
+       tables: resolveConfig(storeToV1(counterConfig)).tables,
        startBlock: BigInt(networkConfig.initialBlockNumber),
      });
 
      /*
-     * If there is a faucet, request (test) ETH if you have
-     * less than 1 ETH. Repeat every 20 seconds to ensure you don't
-     * run out.
-     */
+      * If there is a faucet, request (test) ETH if you have
+      * less than 1 ETH. Repeat every 20 seconds to ensure you don't
+      * run out.
+      */
      if (networkConfig.faucetServiceUrl) {
        const address = burnerAccount.address;
        console.info("[Dev Faucet]: Player address -> ", address);
@@ -806,4 +845,4 @@ We will now fix this.
    </CollapseCode>
 
 Now you can click **Increment** and see the update.
-Also, you can look in **Components > :Counter** and see the counter value.
+Also, you can look in **Components > Counter** and see the counter value.
