@@ -1,15 +1,14 @@
-import * as Dialog from "@radix-ui/react-dialog";
+import { useMemo } from "react";
+import { assertExhaustive } from "@latticexyz/common/utils";
 import { AppSignerDialogContent } from "./AppSignerDialogContent";
 import { GasAllowanceDialogContent } from "./GasAllowanceDialogContent";
 import { AccountDelegationDialogContent } from "./AccountDelegationDialogContent";
 import { LoginRequirement } from "./common";
-import { useMemo } from "react";
-import { assertExhaustive } from "@latticexyz/common/utils";
 import { GasSpenderDialogContent } from "./GasSpenderDialogContent";
 import { ConnectedChainDialogContent } from "./ConnectedChainDialogContent";
-import { Modal } from "./ui/Modal";
+import { Modal, Props as ModalProps } from "./ui/Modal";
 
-export type Props = Pick<Dialog.DialogProps, "open" | "onOpenChange"> & {
+export type Props = Pick<ModalProps, "open" | "onOpenChange" | "trigger"> & {
   requirement: LoginRequirement;
 };
 

@@ -11,13 +11,14 @@ export function Shadow({ children }: Props) {
   const [shadowRoot, setShadowRoot] = useState<ShadowRoot | null>(null);
 
   useEffect(() => {
-    if (containerRef.current) {
-      const root = containerRef.current.attachShadow({ mode: "open", delegatesFocus: true });
-      setShadowRoot(root);
-      const sheet = new CSSStyleSheet();
-      sheet.replaceSync(css);
-      root.adoptedStyleSheets = [sheet];
-    }
+    const container = containerRef.current;
+    if (!container) return;
+
+    const root = container.attachShadow({ mode: "open", delegatesFocus: true });
+    setShadowRoot(root);
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(css);
+    root.adoptedStyleSheets = [sheet];
   }, []);
 
   return (
