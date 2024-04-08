@@ -6,8 +6,8 @@ import { createStore } from "zustand/vanilla";
 const store = createStore(() => ({ open: false }));
 
 export type UseLoginDialogResult = {
-  // TODO: figure out how to get this to be not undefined?
   readonly openConnectModal: (() => void) | undefined;
+  readonly connectPending: boolean;
   readonly loginDialogOpen: boolean;
   readonly openLoginDialog: () => void;
   readonly closeLoginDialog: () => void;
@@ -15,7 +15,9 @@ export type UseLoginDialogResult = {
 };
 
 export function useLoginDialog(): UseLoginDialogResult {
-  const { openConnectModal } = useConnectModal();
+  const { openConnectModal, connectModalOpen } = useConnectModal();
+  const connectPending = !openConnectModal || connectModalOpen;
+
   const loginDialogOpen = useStore(store, (state) => state.open);
 
   const openLoginDialog = useCallback(() => {
@@ -33,11 +35,12 @@ export function useLoginDialog(): UseLoginDialogResult {
   return useMemo(
     () => ({
       openConnectModal,
+      connectPending,
       loginDialogOpen,
       openLoginDialog,
       closeLoginDialog,
       toggleLoginDialog,
     }),
-    [closeLoginDialog, loginDialogOpen, openConnectModal, openLoginDialog, toggleLoginDialog],
+    [closeLoginDialog, connectPending, loginDialogOpen, openConnectModal, openLoginDialog, toggleLoginDialog],
   );
 }
