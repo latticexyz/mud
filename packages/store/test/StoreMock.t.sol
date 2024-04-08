@@ -8,11 +8,17 @@ import { StoreCore } from "../src/StoreCore.sol";
 import { StoreMock } from "../test/StoreMock.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { IStoreEvents } from "../src/IStoreEvents.sol";
+import { Initializable } from "../src/Initializable.sol";
 
 contract StoreMockTest is Test {
-  function testStoreMockConstrctor() public {
+  function testStoreMockInitialize() public {
+    StoreMock store = new StoreMock();
+
     vm.expectEmit(true, true, true, true);
     emit IStoreEvents.HelloStore(STORE_VERSION);
-    new StoreMock();
+    store.initialize();
+
+    vm.expectRevert(abi.encodeWithSelector(Initializable.InvalidInitialization.selector));
+    store.initialize();
   }
 }
