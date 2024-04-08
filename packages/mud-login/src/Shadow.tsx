@@ -21,7 +21,7 @@ export function Shadow({ children }: Props) {
   }, []);
 
   return (
-    <span ref={containerRef} style={{ display: "unset" }}>
+    <span ref={containerRef} style={{ display: "unset", outline: "none" }}>
       {shadowRoot ? ReactDOM.createPortal(children, shadowRoot) : null}
     </span>
   );

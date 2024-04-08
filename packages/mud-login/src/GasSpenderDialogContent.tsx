@@ -69,9 +69,9 @@ export function GasSpenderDialogContent() {
 
       <div className="flex gap-3 justify-end">
         <Dialog.Close asChild>
-          <Button>Cancel</Button>
+          <Button variant="tertiary">Cancel</Button>
         </Dialog.Close>
-        <Button pending={isPending} onClick={() => mutate()}>
+        <Button pending={isPending} onClick={() => mutate()} variant="secondary">
           Set up spender
         </Button>
       </div>

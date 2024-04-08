@@ -4,6 +4,8 @@ import { LoginDialog } from "./LoginDialog";
 import { useLoginRequirements } from "./useLoginRequirements";
 import { Shadow } from "./Shadow";
 
+const buttonClassName = "w-48";
+
 export function LoginButton() {
   const { requirement } = useLoginRequirements();
   const { openConnectModal, connectPending, openLoginDialog, toggleLoginDialog, loginDialogOpen } = useLoginDialog();
@@ -11,7 +13,14 @@ export function LoginButton() {
   if (requirement === "connectedWallet") {
     return (
       <Shadow>
-        <Button onClick={openConnectModal} pending={connectPending}>
+        <Button
+          className={buttonClassName}
+          pending={connectPending}
+          onClick={() => {
+            openConnectModal?.();
+            openLoginDialog();
+          }}
+        >
           Connect wallet
         </Button>
       </Shadow>
@@ -22,7 +31,9 @@ export function LoginButton() {
     return (
       <>
         <Shadow>
-          <Button onClick={openLoginDialog}>Log in</Button>
+          <Button className={buttonClassName} onClick={openLoginDialog}>
+            Log in
+          </Button>
         </Shadow>
         <LoginDialog requirement={requirement} open={loginDialogOpen} onOpenChange={toggleLoginDialog} />
       </>
@@ -32,7 +43,9 @@ export function LoginButton() {
   // TODO
   return (
     <Shadow>
-      <Button disabled>All good!</Button>
+      <Button className={buttonClassName} disabled>
+        All good!
+      </Button>
     </Shadow>
   );
 }

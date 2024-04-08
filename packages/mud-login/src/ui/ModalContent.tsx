@@ -10,7 +10,7 @@ export type Props = {
 
 export function ModalContent({ title, description, children }: Props) {
   return (
-    <Dialog.Content className="flex w-[28rem] flex-col gap-6 border border-white/20 bg-neutral-800/60 p-6">
+    <Dialog.Content className="flex w-[28rem] flex-col gap-6 bg-neutral-800 text-neutral-400 border border-white/20 p-6 outline-none">
       <div className="flex flex-col gap-3">
         <div className="flex items-start gap-4">
           <Dialog.Title className="flex-grow font-mono text-xl uppercase text-white">{title}</Dialog.Title>

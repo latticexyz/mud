@@ -10,12 +10,15 @@ import { ConnectedChainDialogContent } from "./ConnectedChainDialogContent";
 import { Modal } from "./ui/Modal";
 
 export type Props = Pick<Dialog.DialogProps, "open" | "onOpenChange"> & {
-  requirement: Exclude<LoginRequirement, "connectedWallet">;
+  requirement: LoginRequirement;
 };
 
 export function LoginDialog({ requirement, ...dialogProps }: Props) {
   const content = useMemo(() => {
     switch (requirement) {
+      case "connectedWallet":
+        // TODO
+        return <>Connect wallet</>;
       case "connectedChain":
         return <ConnectedChainDialogContent />;
       case "appSigner":
