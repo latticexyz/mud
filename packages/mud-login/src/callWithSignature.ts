@@ -7,30 +7,26 @@ import { signCall } from "./signCall";
 import modulesConfig from "@latticexyz/world-modules/internal/mud.config";
 import CallWithSignatureAbi from "@latticexyz/world-modules/out/IUnstable_CallWithSignatureSystem.sol/IUnstable_CallWithSignatureSystem.abi.json";
 
-// TODO: adjust type to be publicClient OR nonce
-// TODO: redo generics, they don't allow for good type hinting
-
 export type CallWithSignatureOptions = {
-  chainId: number;
+  userAccountClient: WalletClient<Transport, Chain, Account>;
   worldAddress: Address;
   systemId: Hex;
   callData: Hex;
-  publicClient: PublicClient;
-  userAccountClient: WalletClient<Transport, Chain, Account>;
+  publicClient: PublicClient<Transport, Chain>;
   appAccountClient: AppAccountClient;
   nonce?: bigint | null;
 };
 
 export async function callWithSignature({
-  chainId,
+  userAccountClient,
   worldAddress,
   systemId,
   callData,
   publicClient,
-  userAccountClient,
   appAccountClient,
   nonce: initialNonce,
 }: CallWithSignatureOptions) {
+  // TODO: use nonce manager? need to be able to pass in method to "get current nonce" and also "should reset nonce" (unclear what errors are thrown for bad nonces here)
   const nonce =
     initialNonce ??
     (
@@ -42,7 +38,7 @@ export async function callWithSignature({
       })
     ).nonce;
 
-  const signature = await signCall(chainId, worldAddress, userAccountClient, systemId, callData, nonce);
+  const signature = await signCall({ worldAddress, userAccountClient, systemId, callData, nonce });
 
   return writeContract(appAccountClient, {
     address: worldAddress,

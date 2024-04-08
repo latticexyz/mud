@@ -2,19 +2,19 @@ import { Account, Address, Chain, Hex, Transport, WalletClient } from "viem";
 import { signTypedData } from "viem/actions";
 import { callWithSignatureTypes } from "@latticexyz/world/internal";
 
-// TODO: turn args into object
-export async function signCall(
-  chainId: number,
-  worldAddress: Address,
-  userAccountClient: WalletClient<Transport, Chain, Account>,
-  systemId: Hex,
-  callData: Hex,
-  nonce: bigint,
-) {
+export type SignCallOptions = {
+  userAccountClient: WalletClient<Transport, Chain, Account>;
+  worldAddress: Address;
+  systemId: Hex;
+  callData: Hex;
+  nonce: bigint;
+};
+
+export async function signCall({ userAccountClient, worldAddress, systemId, callData, nonce }: SignCallOptions) {
   return await signTypedData(userAccountClient, {
     account: userAccountClient.account,
     domain: {
-      chainId,
+      chainId: userAccountClient.chain.id,
       verifyingContract: worldAddress,
     },
     types: callWithSignatureTypes,

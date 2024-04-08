@@ -16,7 +16,7 @@ export function GasSpenderDialogContent() {
   const queryClient = useQueryClient();
   const { chainId, gasTankAddress } = useLoginConfig();
   const publicClient = usePublicClient({ chainId });
-  const { data: userAccountClient } = useWalletClient();
+  const { data: userAccountClient } = useWalletClient({ chainId });
   const appAccountClient = useAppAccountClient();
 
   const { mutate, isPending, error } = useMutation({
@@ -27,7 +27,6 @@ export function GasSpenderDialogContent() {
 
       console.log("registerSpender");
       const hash = await callWithSignature({
-        chainId,
         worldAddress: gasTankAddress,
         systemId: resourceToHex({ type: "system", namespace: "", name: "PaymasterSystem" }),
         callData: encodeFunctionData({
