@@ -14,6 +14,6 @@ export default defineConfig({
   // TODO: figure out how to do this conditionally for only specific imports?
   injectStyle: false,
   loader: {
-    ".css": "base64",
+    ".css": "text",
   },
 });
