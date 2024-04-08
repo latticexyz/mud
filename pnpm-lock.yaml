@@ -572,6 +572,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.28.8
         version: 5.29.0(react@18.2.0)
+      abitype:
+        specifier: 1.0.0
+        version: 1.0.0(typescript@5.4.2)(zod@3.21.4)
       permissionless:
         specifier: ^0.1.10
         version: 0.1.14(viem@2.7.12)
