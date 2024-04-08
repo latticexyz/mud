@@ -49,6 +49,8 @@ contract World is StoreKernel, IWorldKernel {
 
   /// @dev Event emitted when the World contract is created.
   constructor() {
+    initialize();
+
     creator = msg.sender;
     emit IWorldEvents.HelloWorld(WORLD_VERSION);
   }
