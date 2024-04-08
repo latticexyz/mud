@@ -17,7 +17,7 @@ export function Shadow({ children }: Props) {
     const root = container.attachShadow({ mode: "open", delegatesFocus: true });
     setShadowRoot(root);
     const sheet = new CSSStyleSheet();
-    sheet.replaceSync(css);
+    sheet.replaceSync(atob(css));
     root.adoptedStyleSheets = [sheet];
   }, []);
 

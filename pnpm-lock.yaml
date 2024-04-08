@@ -630,9 +630,6 @@ importers:
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.4.2)
-      vite:
-        specifier: ^4.3.6
-        version: 4.3.6(@types/node@18.15.11)
       vitest:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0)
