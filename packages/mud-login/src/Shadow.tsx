@@ -7,12 +7,12 @@ export type Props = {
 };
 
 export function Shadow({ children }: Props) {
-  const placeholderRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLSpanElement | null>(null);
   const [shadowRoot, setShadowRoot] = useState<ShadowRoot | null>(null);
 
   useEffect(() => {
-    if (placeholderRef.current) {
-      const root = placeholderRef.current.attachShadow({ mode: "open", delegatesFocus: true });
+    if (containerRef.current) {
+      const root = containerRef.current.attachShadow({ mode: "open", delegatesFocus: true });
       setShadowRoot(root);
       const sheet = new CSSStyleSheet();
       sheet.replaceSync(css);
@@ -21,8 +21,8 @@ export function Shadow({ children }: Props) {
   }, []);
 
   return (
-    <div ref={placeholderRef} style={{ display: "unset" }}>
+    <span ref={containerRef} style={{ display: "unset" }}>
       {shadowRoot ? ReactDOM.createPortal(children, shadowRoot) : null}
-    </div>
+    </span>
   );
 }
