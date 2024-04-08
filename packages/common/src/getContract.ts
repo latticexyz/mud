@@ -118,10 +118,14 @@ export function getContract<
               TChain,
               TAccount
             >;
-            const result = writeContract(walletClient, request);
+            const result = writeContract(walletClient, request, { publicClient });
 
             const id = `${walletClient.chain.id}:${walletClient.account.address}:${nextWriteId++}`;
-            onWrite?.({ id, request: request as WriteContractParameters, result });
+            onWrite?.({
+              id,
+              request: request as WriteContractParameters,
+              result,
+            });
 
             return result;
           };

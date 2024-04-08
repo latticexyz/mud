@@ -1,5 +1,26 @@
 # Change Log
 
+## 2.0.4
+
+### Patch Changes
+
+- @latticexyz/store@2.0.4
+- @latticexyz/recs@2.0.4
+
+## 2.0.3
+
+### Patch Changes
+
+- @latticexyz/store@2.0.3
+- @latticexyz/recs@2.0.3
+
+## 2.0.2
+
+### Patch Changes
+
+- @latticexyz/recs@2.0.2
+- @latticexyz/store@2.0.2
+
 ## 2.0.1
 
 ### Patch Changes
