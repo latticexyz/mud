@@ -13,10 +13,11 @@ export function AppSignerDialogContent() {
     <ModalContent title="Generate app signer" description="TODO">
       <div className="flex gap-3 justify-end">
         <Dialog.Close asChild>
-          <Button>Cancel</Button>
+          <Button variant="tertiary">Cancel</Button>
         </Dialog.Close>
 
         <Button
+          variant="secondary"
           pending={isPending}
           onClick={async () => {
             const signature = await signMessageAsync({

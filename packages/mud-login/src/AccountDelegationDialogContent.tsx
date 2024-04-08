@@ -65,9 +65,9 @@ export function AccountDelegationDialogContent() {
 
       <div className="flex gap-3 justify-end">
         <Dialog.Close asChild>
-          <Button>Cancel</Button>
+          <Button variant="tertiary">Cancel</Button>
         </Dialog.Close>
-        <Button pending={isPending} onClick={() => mutate()}>
+        <Button variant="secondary" pending={isPending} onClick={() => mutate()}>
           Set up delegation
         </Button>
       </div>

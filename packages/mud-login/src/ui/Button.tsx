@@ -12,7 +12,7 @@ const buttonClassName = ({ variant = "primary" }: ButtonClassNameOptions = {}) =
     "self-center text-sm font-medium px-4 py-2 border border-transparent inline-flex justify-center",
     {
       primary:
-        "text-white disabled:text-neutral-400 bg-orange-500 hover:bg-orange-400 active:bg-orange-600 disabled:bg-stone-400",
+        "text-white bg-orange-500 hover:bg-orange-400 active:bg-orange-600 disabled:bg-neutral-400 disabled:text-neutral-200",
       secondary:
         "text-white disabled:text-neutral-400 bg-neutral-600 hover:bg-neutral-500 active:bg-neutral-700 border-white/20",
       tertiary: "text-white disabled:text-neutral-400 border-white/20 hover:bg-white/10 active:bg-black/10",

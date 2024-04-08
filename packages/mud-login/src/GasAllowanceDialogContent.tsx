@@ -33,6 +33,7 @@ export function GasAllowanceDialogContent() {
 
       <div className="flex flex-col gap-2">
         <Button
+          variant="secondary"
           pending={!userAccountAddress || isPending}
           onClick={async () => {
             if (!userAccountAddress) return;
@@ -49,8 +50,12 @@ export function GasAllowanceDialogContent() {
         >
           Deposit to gas tank
         </Button>
-        <Button disabled>Relay.link</Button>
-        <Button disabled>Redstone ETH</Button>
+        <Button variant="secondary" disabled>
+          Relay.link
+        </Button>
+        <Button variant="secondary" disabled>
+          Redstone ETH
+        </Button>
       </div>
     </ModalContent>
   );

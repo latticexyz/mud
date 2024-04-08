@@ -71,7 +71,7 @@ export function GasSpenderDialogContent() {
         <Dialog.Close asChild>
           <Button variant="tertiary">Cancel</Button>
         </Dialog.Close>
-        <Button pending={isPending} onClick={() => mutate()} variant="secondary">
+        <Button variant="secondary" pending={isPending} onClick={() => mutate()}>
           Set up spender
         </Button>
       </div>

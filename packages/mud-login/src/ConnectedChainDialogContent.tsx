@@ -16,9 +16,9 @@ export function ConnectedChainDialogContent() {
 
       <div className="flex gap-3 justify-end">
         <Dialog.Close>
-          <Button>Cancel</Button>
+          <Button variant="tertiary">Cancel</Button>
         </Dialog.Close>
-        <Button pending={isPending} onClick={() => switchChain({ chainId })}>
+        <Button variant="secondary" pending={isPending} onClick={() => switchChain({ chainId })}>
           Switch chain
         </Button>
       </div>
