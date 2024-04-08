@@ -69,7 +69,7 @@ export function GasSpenderDialogContent() {
       {error ? <>Error: {String(error)}</> : null}
 
       <div className="flex gap-3 justify-end">
-        <Dialog.Close>
+        <Dialog.Close asChild>
           <Button>Cancel</Button>
         </Dialog.Close>
         <Button pending={isPending} onClick={() => mutate()}>

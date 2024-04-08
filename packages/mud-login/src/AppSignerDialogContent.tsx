@@ -12,7 +12,7 @@ export function AppSignerDialogContent() {
   return (
     <ModalContent title="Generate app signer" description="TODO">
       <div className="flex gap-3 justify-end">
-        <Dialog.Close>
+        <Dialog.Close asChild>
           <Button>Cancel</Button>
         </Dialog.Close>
 
