@@ -45,7 +45,7 @@
     "file": "test/BatchCall.t.sol",
     "test": "testBatchCallFromReturnData",
     "name": "call systems with batchCallFrom",
-    "gasUsed": 80765
+    "gasUsed": 80657
   },
   {
     "file": "test/BatchCall.t.sol",
@@ -57,13 +57,13 @@
     "file": "test/Factories.t.sol",
     "test": "testCreate2Factory",
     "name": "deploy contract via Create2",
-    "gasUsed": 4960875
+    "gasUsed": 5144624
   },
   {
     "file": "test/Factories.t.sol",
     "test": "testWorldFactoryGas",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 12796213
+    "gasUsed": 12931159
   },
   {
     "file": "test/World.t.sol",
@@ -75,7 +75,7 @@
     "file": "test/World.t.sol",
     "test": "testCallFromNamespaceDelegation",
     "name": "call a system via a namespace fallback delegation",
-    "gasUsed": 59816
+    "gasUsed": 59751
   },
   {
     "file": "test/World.t.sol",
@@ -87,7 +87,7 @@
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "call a system via an unlimited delegation",
-    "gasUsed": 40663
+    "gasUsed": 40598
   },
   {
     "file": "test/World.t.sol",
@@ -153,7 +153,7 @@
     "file": "test/World.t.sol",
     "test": "testUnregisterNamespaceDelegation",
     "name": "unregister a namespace delegation",
-    "gasUsed": 60328
+    "gasUsed": 60350
   },
   {
     "file": "test/World.t.sol",
