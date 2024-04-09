@@ -10,7 +10,7 @@ export function AppSignerContent() {
   const { signMessageAsync, isPending } = useSignMessage();
 
   return (
-    <AccountModalContent title="Generate app signer" description="TODO">
+    <AccountModalContent title="Generate app signer">
       <div className="flex gap-3 justify-end">
         <Dialog.Close asChild>
           <Button variant="tertiary">Cancel</Button>

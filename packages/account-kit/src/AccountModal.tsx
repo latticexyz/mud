@@ -54,8 +54,8 @@ export function AccountModal({ requirement, ...modalProps }: Props) {
 
   return (
     <Modal {...modalProps}>
-      <DialogContent className="flex w-[36rem] min-h-[24rem] bg-neutral-800 text-neutral-400 border border-white/20 outline-none">
-        <div className="w-[12rem] bg-neutral-900">
+      <DialogContent className="flex w-[48rem] min-h-[24rem] bg-neutral-800 text-neutral-400 border border-neutral-600 divide-x divide-neutral-600 outline-none">
+        <div className="w-[16rem] bg-neutral-900">
           <AccountModalSidebar activeStep={activeStep} />
         </div>
         <div className="flex-grow flex">{content}</div>

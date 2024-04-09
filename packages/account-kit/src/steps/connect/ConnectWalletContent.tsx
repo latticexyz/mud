@@ -13,7 +13,7 @@ export function ConnectWalletContent() {
   // TODO: show connected wallet info if all connected
 
   return (
-    <AccountModalContent title="Switch chain" description="Switch chain to sign in">
+    <AccountModalContent title="Switch chain">
       {error ? <>Error: {String(error)}</> : null}
 
       <div className="flex gap-3 justify-end">

@@ -19,7 +19,7 @@ export function Modal({ open, onOpenChange, children }: Props) {
              * This intentionally does not use `Dialog.Overlay` due to an issue it causes with scrolling the modal contents.
              * See https://github.com/radix-ui/primitives/issues/1159#issuecomment-1105320294
              */}
-            <div className="bg-neutral-950/60 animate-in fade-in fixed inset-0 grid place-items-center overflow-y-auto p-4">
+            <div className="bg-neutral-800/30 animate-in fade-in fixed inset-0 grid place-items-center overflow-y-auto p-4">
               {children}
             </div>
           </Shadow>

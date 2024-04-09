@@ -28,7 +28,7 @@ export function GasAllowanceContent() {
   });
 
   return (
-    <AccountModalContent title="Fund Redstone balance" description="TODO">
+    <AccountModalContent title="Fund Redstone balance">
       {error ? <div>{String(error)}</div> : null}
 
       <div className="flex flex-col gap-2">

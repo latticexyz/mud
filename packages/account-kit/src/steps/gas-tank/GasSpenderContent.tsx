@@ -64,7 +64,7 @@ export function GasSpenderContent() {
   });
 
   return (
-    <AccountModalContent title="Gas spender" description="TODO">
+    <AccountModalContent title="Gas spender">
       {error ? <>Error: {String(error)}</> : null}
 
       <div className="flex gap-3 justify-end">

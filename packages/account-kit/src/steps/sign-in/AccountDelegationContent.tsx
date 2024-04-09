@@ -60,7 +60,7 @@ export function AccountDelegationContent() {
   });
 
   return (
-    <AccountModalContent title="Delegation" description="Delegation description">
+    <AccountModalContent title="Delegation">
       {error ? <>Error: {String(error)}</> : null}
 
       <div className="flex gap-3 justify-end">
