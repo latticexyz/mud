@@ -7,6 +7,8 @@ import { signCall } from "./signCall";
 import modulesConfig from "@latticexyz/world-modules/internal/mud.config";
 import CallWithSignatureAbi from "@latticexyz/world-modules/out/IUnstable_CallWithSignatureSystem.sol/IUnstable_CallWithSignatureSystem.abi.json";
 
+// TODO: move this to world package or similar
+
 export type CallWithSignatureOptions = {
   userAccountClient: WalletClient<Transport, Chain, Account>;
   worldAddress: Address;

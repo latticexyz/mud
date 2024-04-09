@@ -2,6 +2,8 @@ import { Account, Address, Chain, Hex, Transport, WalletClient } from "viem";
 import { signTypedData } from "viem/actions";
 import { callWithSignatureTypes } from "@latticexyz/world/internal";
 
+// TODO: move this to world package or similar
+
 export type SignCallOptions = {
   userAccountClient: WalletClient<Transport, Chain, Account>;
   worldAddress: Address;

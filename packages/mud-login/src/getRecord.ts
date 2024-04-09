@@ -6,6 +6,8 @@ import IStoreReadAbi from "@latticexyz/store/out/IStoreRead.sol/IStoreRead.abi.j
 import { schemaToPrimitives } from "./common";
 import { encodeKeyTuple } from "./encodeKeyTuple";
 
+// TODO: move this to store package or similar
+
 export type GetRecordOptions<table extends Table> = {
   storeAddress: Address;
   table: table;
