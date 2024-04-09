@@ -11,7 +11,7 @@ import { DialogContent } from "@radix-ui/react-dialog";
 import { AccountModalSidebar } from "./AccountModalSidebar";
 
 export type Props = Pick<ModalProps, "open" | "onOpenChange"> & {
-  requirement: AccountRequirement;
+  requirement?: AccountRequirement;
 };
 
 export function AccountModal({ requirement, ...modalProps }: Props) {
@@ -19,6 +19,7 @@ export function AccountModal({ requirement, ...modalProps }: Props) {
     switch (requirement) {
       case "connectedWallet":
       case "connectedChain":
+      case undefined:
         return "connect";
       case "appSigner":
         return "set-up";
@@ -36,6 +37,7 @@ export function AccountModal({ requirement, ...modalProps }: Props) {
     switch (requirement) {
       case "connectedWallet":
       case "connectedChain":
+      case undefined:
         return <ConnectWalletContent />;
       case "appSigner":
         return <AppSignerContent />;

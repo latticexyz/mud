@@ -9,7 +9,7 @@ type ButtonClassNameOptions = {
 
 const buttonClassName = ({ variant = "primary" }: ButtonClassNameOptions = {}) =>
   twMerge(
-    "self-center text-sm font-medium px-4 py-2 border border-transparent inline-flex justify-center",
+    "self-center font-sm font-medium px-4 py-2 border border-transparent inline-flex justify-center",
     {
       primary:
         "text-white bg-orange-500 hover:bg-orange-400 active:bg-orange-600 disabled:bg-neutral-400 disabled:text-neutral-200",
@@ -36,6 +36,7 @@ export const Button = ({ pending, variant, type, className, children, disabled, 
       {...props}
     >
       {children}
+      {/* TODO: better pending state */}
       {pending ? (
         <span className="self-center ml-2 -mr-1">
           <PendingIcon />
