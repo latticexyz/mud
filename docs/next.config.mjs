@@ -218,12 +218,7 @@ export default withNextra({
       },
       {
         source: "/guides/extending-world",
-        destination: "/guides/extending/extending-a-world",
-        permanent: false,
-      },
-      {
-        source: "/guides/extending-a-world",
-        destination: "/guides/extending/extending-a-world",
+        destination: "/guides/extending-a-world",
         permanent: false,
       },
       {
