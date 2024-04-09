@@ -64,7 +64,7 @@ contract WorldProxyFactoryTest is Test, GasReporter {
     address worldImplementationAddress = address(
       uint160(uint256(vm.load(worldAddress, ERC1967Utils.IMPLEMENTATION_SLOT)))
     );
-    // assertEq(worldImplementationAddress, calculatedAddress);
+    assertEq(worldImplementationAddress, calculatedAddress);
     // address proxyAdmin = address(uint160(uint256(vm.load(worldAddress, ERC1967Utils.ADMIN_SLOT))));
     // assertEq(proxyAdmin, account);
 
