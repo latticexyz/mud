@@ -19,7 +19,7 @@ export function AccountModalContent({ title, children }: Props) {
           <CloseIcon />
         </Dialog.Close>
       </div>
-      <div className="flex-grow flex items-start gap-5 p-5">{children}</div>
+      <div className="flex-grow flex flex-col items-start gap-5 p-5">{children}</div>
     </div>
   );
 }
