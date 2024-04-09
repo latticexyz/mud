@@ -21,7 +21,7 @@ abstract contract StoreKernel is IStoreKernel, StoreRead, Initializable {
    * @notice Initializes the StoreKernel contract and StoreCore.
    * @dev Emits a HelloStore event upon creation.
    */
-  function initialize() public initializer {
+  function __StoreKernel_init() public onlyInitializing {
     StoreCore.initialize();
     emit IStoreEvents.HelloStore(STORE_VERSION);
   }

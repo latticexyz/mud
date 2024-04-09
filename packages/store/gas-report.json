@@ -357,7 +357,7 @@
     "file": "test/KeyEncoding.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register KeyEncoding table",
-    "gasUsed": 717787
+    "gasUsed": 717799
   },
   {
     "file": "test/Mixed.t.sol",
@@ -723,7 +723,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set static field on table with subscriber",
-    "gasUsed": 52904
+    "gasUsed": 52882
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -747,7 +747,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) field on table with subscriber",
-    "gasUsed": 60374
+    "gasUsed": 60419
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -771,7 +771,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "StoreCore: register table",
-    "gasUsed": 647841
+    "gasUsed": 647847
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -783,13 +783,13 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "StoreCore: get value schema (warm)",
-    "gasUsed": 1441
+    "gasUsed": 1447
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "StoreCore: get key schema (warm)",
-    "gasUsed": 2313
+    "gasUsed": 2319
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -807,7 +807,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetDynamicData",
     "name": "compare: Set complex record with dynamic data using native solidity",
-    "gasUsed": 116845
+    "gasUsed": 116821
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -1113,7 +1113,7 @@
     "file": "test/Vector2.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register Vector2 field layout",
-    "gasUsed": 443849
+    "gasUsed": 443861
   },
   {
     "file": "test/Vector2.t.sol",

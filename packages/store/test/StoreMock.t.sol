@@ -12,13 +12,8 @@ import { Initializable } from "../src/Initializable.sol";
 
 contract StoreMockTest is Test {
   function testStoreMockInitialize() public {
-    StoreMock store = new StoreMock();
-
     vm.expectEmit(true, true, true, true);
     emit IStoreEvents.HelloStore(STORE_VERSION);
-    store.initialize();
-
-    vm.expectRevert(abi.encodeWithSelector(Initializable.InvalidInitialization.selector));
-    store.initialize();
+    new StoreMock();
   }
 }

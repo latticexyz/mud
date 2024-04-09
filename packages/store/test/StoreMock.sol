@@ -11,15 +11,22 @@ import { Schema } from "../src/Schema.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { StoreRead } from "../src/StoreRead.sol";
 import { ResourceId } from "../src/ResourceId.sol";
+import { StoreKernel } from "../src/StoreKernel.sol";
+
+import { Initializable } from "../src/Initializable.sol";
 
 /**
  * StoreMock is a contract wrapper around the StoreCore library for testing purposes.
  */
-contract StoreMock is Store {
+contract StoreMock is Initializable, Store {
   constructor() {
-    StoreCore.initialize();
+    __StoreMock_init();
+  }
+
+  function __StoreMock_init() public initializer {
+    __StoreKernel_init();
+
     StoreCore.registerInternalTables();
-    StoreSwitch.setStoreAddress(address(this));
   }
 
   // Set full record (including full dynamic data)
