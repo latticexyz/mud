@@ -7,7 +7,7 @@ import { IWorldFactory } from "./IWorldFactory.sol";
 import { IBaseWorld } from "./codegen/interfaces/IBaseWorld.sol";
 import { IModule } from "./IModule.sol";
 import { ROOT_NAMESPACE_ID } from "./constants.sol";
-import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import { TransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
 /**
  * @title WorldProxyFactory
@@ -38,7 +38,9 @@ contract WorldProxyFactory is IWorldFactory {
     // Deploy the world implementation
     address worldImplementationAddress = Create2.deploy(bytecode, _salt);
     // Deploy the world proxy
-    worldAddress = address(new ERC1967Proxy(worldImplementationAddress, abi.encodeCall(World.__World_init, ())));
+    worldAddress = address(
+      new TransparentUpgradeableProxy(worldImplementationAddress, msg.sender, abi.encodeCall(World.__World_init, ()))
+    );
 
     IBaseWorld world = IBaseWorld(worldAddress);
 
