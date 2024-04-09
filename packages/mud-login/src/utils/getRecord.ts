@@ -3,7 +3,7 @@ import { Table } from "@latticexyz/config";
 import { decodeValueArgs, getKeySchema, getSchemaTypes, getValueSchema } from "@latticexyz/protocol-parser/internal";
 import { readContract } from "viem/actions";
 import IStoreReadAbi from "@latticexyz/store/out/IStoreRead.sol/IStoreRead.abi.json";
-import { schemaToPrimitives } from "./common";
+import { schemaToPrimitives } from "./schemaToPrimitives";
 import { encodeKeyTuple } from "./encodeKeyTuple";
 
 // TODO: move this to store package or similar

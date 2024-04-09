@@ -1,7 +1,7 @@
 import { useAccount, usePublicClient } from "wagmi";
 import { useLoginConfig } from "./Context";
 import { useQuery } from "@tanstack/react-query";
-import { getRecord } from "./getRecord";
+import { getRecord } from "./utils/getRecord";
 import { Address } from "abitype";
 import { PublicClient } from "viem";
 import gasTankConfig from "@latticexyz/gas-tank/mud.config";

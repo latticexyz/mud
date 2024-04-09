@@ -8,7 +8,7 @@ import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.j
 import { unlimitedDelegationControlId } from "./common";
 import { resourceToHex } from "@latticexyz/common";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { callWithSignature } from "./callWithSignature";
+import { callWithSignature } from "./utils/callWithSignature";
 import { hasDelegationQueryKey } from "./useHasDelegation";
 import { Button } from "./ui/Button";
 import { ModalContent } from "./ui/ModalContent";

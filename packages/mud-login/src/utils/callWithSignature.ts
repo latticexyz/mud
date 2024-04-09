@@ -1,7 +1,7 @@
 import { Address } from "abitype";
 import { Hex, WalletClient, Transport, Chain, Account, PublicClient } from "viem";
 import { writeContract } from "viem/actions";
-import { AppAccountClient } from "./common";
+import { AppAccountClient } from "../common";
 import { getRecord } from "./getRecord";
 import { signCall } from "./signCall";
 import modulesConfig from "@latticexyz/world-modules/internal/mud.config";

@@ -6,7 +6,7 @@ import { encodeFunctionData } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
 import { resourceToHex } from "@latticexyz/common";
 import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
-import { callWithSignature } from "./callWithSignature";
+import { callWithSignature } from "./utils/callWithSignature";
 import { isGasSpenderQueryKey } from "./useIsGasSpender";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "./ui/Button";

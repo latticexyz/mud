@@ -9,7 +9,7 @@ import { useLoginConfig } from "./Context";
 import { useAppSigner } from "./useAppSigner";
 import { useAppAccount } from "./useAppAccount";
 import { AppAccountClient, entryPointAddress } from "./common";
-import { getUserBalanceSlot } from "./getUserBalanceSlot";
+import { getUserBalanceSlot } from "./utils/getUserBalanceSlot";
 import { getEntryPointDepositSlot } from "./getEntryPointDepositSlot";
 
 export function useAppAccountClient(): AppAccountClient | undefined {

@@ -1,6 +1,6 @@
 import { Hex, encodeAbiParameters } from "viem";
 import { Schema } from "@latticexyz/config";
-import { schemaToPrimitives } from "./common";
+import { schemaToPrimitives } from "./schemaToPrimitives";
 
 // TODO: move this to protocol-parser package or similar
 

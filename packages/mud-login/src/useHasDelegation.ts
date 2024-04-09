@@ -3,7 +3,7 @@ import { useLoginConfig } from "./Context";
 import { useQuery } from "@tanstack/react-query";
 import { useAppAccount } from "./useAppAccount";
 import { useAppSigner } from "./useAppSigner";
-import { getRecord } from "./getRecord";
+import { getRecord } from "./utils/getRecord";
 import { Address } from "abitype";
 import { PublicClient } from "viem";
 import { unlimitedDelegationControlId } from "./common";

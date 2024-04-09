@@ -1,6 +1,4 @@
 import { resourceToHex } from "@latticexyz/common";
-import { Schema } from "@latticexyz/config";
-import { AbiTypeToPrimitiveType } from "abitype";
 import { ENTRYPOINT_ADDRESS_V07, SmartAccountClient } from "permissionless";
 import { SmartAccount } from "permissionless/accounts";
 import { Address, Chain, Transport } from "viem";
@@ -35,7 +33,3 @@ export const loginRequirements = [
 export type LoginRequirement = (typeof loginRequirements)[number];
 
 export const unlimitedDelegationControlId = resourceToHex({ type: "system", namespace: "", name: "unlimited" });
-
-export type schemaToPrimitives<schema extends Schema> = {
-  readonly [key in keyof schema]: AbiTypeToPrimitiveType<schema[key]["type"]>;
-};
