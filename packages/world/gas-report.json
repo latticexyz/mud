@@ -186,6 +186,12 @@
     "gasUsed": 44023
   },
   {
+    "file": "test/WorldProxyFactory.t.sol",
+    "test": "testWorldProxyFactoryGas",
+    "name": "deploy world via WorldProxyFactory",
+    "gasUsed": 13084284
+  },
+  {
     "file": "test/WorldResourceId.t.sol",
     "test": "testGetNamespace",
     "name": "encode namespace, name and type",
