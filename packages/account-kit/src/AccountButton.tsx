@@ -33,7 +33,7 @@ export function AccountButton() {
       <>
         <Shadow>
           <Button className={buttonClassName} onClick={openAccountModal}>
-            Log in
+            Sign in
           </Button>
         </Shadow>
         <AccountModal requirement={requirement} open={accountModalOpen} onOpenChange={toggleAccountModal} />

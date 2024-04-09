@@ -11,7 +11,7 @@ export function ConnectedChainDialogContent() {
   // TODO: prompt user to add chain if missing
 
   return (
-    <ModalContent title="Switch chain" description="Switch chain to login">
+    <ModalContent title="Switch chain" description="Switch chain to sign in">
       {error ? <>Error: {String(error)}</> : null}
 
       <div className="flex gap-3 justify-end">
