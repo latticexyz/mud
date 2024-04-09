@@ -17,7 +17,6 @@ import { InstalledModules } from "../src/codegen/tables/InstalledModules.sol";
 import { NamespaceOwner } from "../src/codegen/tables/NamespaceOwner.sol";
 import { ROOT_NAMESPACE_ID } from "../src/constants.sol";
 import { createInitModule } from "./createInitModule.sol";
-import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ERC1967Utils } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
 
 contract WorldProxyFactoryTest is Test, GasReporter {
