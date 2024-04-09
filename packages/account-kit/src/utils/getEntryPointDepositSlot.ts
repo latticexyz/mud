@@ -1,5 +1,7 @@
 import { Address, Hex, encodeAbiParameters, keccak256 } from "viem";
-import { entryPointDepositsSlot } from "./common";
+import { entryPointDepositsSlot } from "../common";
+
+// TODO: move this to gas-tank package or similar
 
 export function getEntryPointDepositSlot(gasTankAddress: Address): Hex {
   return keccak256(

@@ -1,6 +1,6 @@
 import { parseEther } from "viem";
-import { useAccount, useConfig, useWriteContract } from "wagmi";
-import { useLoginConfig } from "./Context";
+import { useAccount, useConfig as useWagmiConfig, useWriteContract } from "wagmi";
+import { useConfig } from "./MUDAccountKitProvider";
 import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
 import { getGasTankBalanceQueryKey } from "./useGasTankBalance";
 import { waitForTransactionReceipt } from "wagmi/actions";
@@ -10,8 +10,8 @@ import { ModalContent } from "./ui/ModalContent";
 
 export function GasAllowanceDialogContent() {
   const queryClient = useQueryClient();
-  const wagmiConfig = useConfig();
-  const { chainId, gasTankAddress } = useLoginConfig();
+  const wagmiConfig = useWagmiConfig();
+  const { chainId, gasTankAddress } = useConfig();
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
   const { writeContractAsync, isPending, error } = useWriteContract({

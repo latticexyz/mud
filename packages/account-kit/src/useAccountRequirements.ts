@@ -1,19 +1,29 @@
 import { useAccount } from "wagmi";
-import { LoginRequirement, loginRequirements } from "./common";
 import { useAppSigner } from "./useAppSigner";
 import { useHasDelegation } from "./useHasDelegation";
 import { useMemo } from "react";
 import { useGasTankBalance } from "./useGasTankBalance";
 import { useIsGasSpender } from "./useIsGasSpender";
-import { useLoginConfig } from "./Context";
+import { useConfig } from "./MUDAccountKitProvider";
 
-export type UseLoginRequirementsResult = {
-  readonly requirement: LoginRequirement | null;
-  readonly requirements: readonly LoginRequirement[];
+export const accountRequirements = [
+  "connectedWallet",
+  "connectedChain",
+  "appSigner",
+  "gasAllowance",
+  "gasSpender",
+  "accountDelegation",
+] as const;
+
+export type AccountRequirement = (typeof accountRequirements)[number];
+
+export type UseAccountRequirementsResult = {
+  readonly requirement: AccountRequirement | null;
+  readonly requirements: readonly AccountRequirement[];
 };
 
-export function useLoginRequirements(): UseLoginRequirementsResult {
-  const { chainId } = useLoginConfig();
+export function useAccountRequirements(): UseAccountRequirementsResult {
+  const { chainId } = useConfig();
   const userAccount = useAccount();
 
   const [appSignerAccount] = useAppSigner();
@@ -29,9 +39,9 @@ export function useLoginRequirements(): UseLoginRequirementsResult {
       gasAllowance: () => gasTankBalance != null && gasTankBalance > 0n,
       gasSpender: () => isGasSpender === true,
       accountDelegation: () => hasDelegation === true,
-    } as const satisfies Record<LoginRequirement, () => boolean>;
+    } as const satisfies Record<AccountRequirement, () => boolean>;
 
-    const requirements = loginRequirements.filter((requirement) => !satisfiesRequirement[requirement]());
+    const requirements = accountRequirements.filter((requirement) => !satisfiesRequirement[requirement]());
 
     return {
       requirement: requirements.at(0) ?? null,

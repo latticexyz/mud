@@ -5,16 +5,16 @@ import { callFrom } from "@latticexyz/world/internal";
 import { createSmartAccountClient } from "permissionless";
 import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
 import { call, getTransactionCount } from "viem/actions";
-import { useLoginConfig } from "./Context";
+import { useConfig } from "./MUDAccountKitProvider";
 import { useAppSigner } from "./useAppSigner";
 import { useAppAccount } from "./useAppAccount";
 import { AppAccountClient, entryPointAddress } from "./common";
 import { getUserBalanceSlot } from "./utils/getUserBalanceSlot";
-import { getEntryPointDepositSlot } from "./getEntryPointDepositSlot";
+import { getEntryPointDepositSlot } from "./utils/getEntryPointDepositSlot";
 
 export function useAppAccountClient(): AppAccountClient | undefined {
   const [appSignerAccount] = useAppSigner();
-  const { chainId, worldAddress, gasTankAddress } = useLoginConfig();
+  const { chainId, worldAddress, gasTankAddress } = useConfig();
   const { address: userAddress } = useAccount();
   const publicClient = usePublicClient({ chainId });
   const { data: appAccount } = useAppAccount({ publicClient, appSignerAccount });

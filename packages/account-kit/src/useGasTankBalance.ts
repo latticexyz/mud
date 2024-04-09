@@ -1,5 +1,5 @@
 import { useAccount, usePublicClient } from "wagmi";
-import { useLoginConfig } from "./Context";
+import { useConfig } from "./MUDAccountKitProvider";
 import { useQuery } from "@tanstack/react-query";
 import { getRecord } from "./utils/getRecord";
 import { Address } from "abitype";
@@ -37,7 +37,7 @@ export async function getGasTankBalance({
 }
 
 export function useGasTankBalance(): bigint | undefined {
-  const { chainId, gasTankAddress } = useLoginConfig();
+  const { chainId, gasTankAddress } = useConfig();
   const publicClient = usePublicClient({ chainId });
 
   const userAccount = useAccount();

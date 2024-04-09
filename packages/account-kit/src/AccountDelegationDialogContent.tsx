@@ -1,7 +1,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useAppAccountClient } from "./useAppAccountClient";
 import { usePublicClient, useWalletClient } from "wagmi";
-import { useLoginConfig } from "./Context";
+import { useConfig } from "./MUDAccountKitProvider";
 import { encodeFunctionData } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
@@ -15,7 +15,7 @@ import { ModalContent } from "./ui/ModalContent";
 
 export function AccountDelegationDialogContent() {
   const queryClient = useQueryClient();
-  const { chainId, worldAddress } = useLoginConfig();
+  const { chainId, worldAddress } = useConfig();
   const publicClient = usePublicClient({ chainId });
   const { data: userAccountClient } = useWalletClient({ chainId });
   const appAccountClient = useAppAccountClient();

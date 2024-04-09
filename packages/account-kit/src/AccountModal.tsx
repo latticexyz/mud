@@ -3,16 +3,16 @@ import { assertExhaustive } from "@latticexyz/common/utils";
 import { AppSignerDialogContent } from "./AppSignerDialogContent";
 import { GasAllowanceDialogContent } from "./GasAllowanceDialogContent";
 import { AccountDelegationDialogContent } from "./AccountDelegationDialogContent";
-import { LoginRequirement } from "./common";
 import { GasSpenderDialogContent } from "./GasSpenderDialogContent";
 import { ConnectedChainDialogContent } from "./ConnectedChainDialogContent";
 import { Modal, Props as ModalProps } from "./ui/Modal";
+import { AccountRequirement } from "./useAccountRequirements";
 
 export type Props = Pick<ModalProps, "open" | "onOpenChange" | "trigger"> & {
-  requirement: LoginRequirement;
+  requirement: AccountRequirement;
 };
 
-export function LoginDialog({ requirement, ...dialogProps }: Props) {
+export function AccountModal({ requirement, ...dialogProps }: Props) {
   const content = useMemo(() => {
     switch (requirement) {
       case "connectedWallet":

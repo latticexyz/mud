@@ -1,11 +1,11 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useSwitchChain } from "wagmi";
-import { useLoginConfig } from "./Context";
+import { useConfig } from "./MUDAccountKitProvider";
 import { Button } from "./ui/Button";
 import { ModalContent } from "./ui/ModalContent";
 
 export function ConnectedChainDialogContent() {
-  const { chainId } = useLoginConfig();
+  const { chainId } = useConfig();
   const { switchChain, isPending, error } = useSwitchChain();
 
   // TODO: prompt user to add chain if missing

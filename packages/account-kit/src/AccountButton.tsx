@@ -1,14 +1,15 @@
 import { Button } from "./ui/Button";
-import { useLoginDialog } from "./useLoginDialog";
-import { LoginDialog } from "./LoginDialog";
-import { useLoginRequirements } from "./useLoginRequirements";
+import { useAccountModal } from "./useAccountModal";
+import { AccountModal } from "./AccountModal";
+import { useAccountRequirements } from "./useAccountRequirements";
 import { Shadow } from "./Shadow";
 
 const buttonClassName = "w-48";
 
-export function LoginButton() {
-  const { requirement } = useLoginRequirements();
-  const { openConnectModal, connectPending, openLoginDialog, toggleLoginDialog, loginDialogOpen } = useLoginDialog();
+export function AccountButton() {
+  const { requirement } = useAccountRequirements();
+  const { openConnectModal, connectPending, openAccountModal, toggleAccountModal, accountModalOpen } =
+    useAccountModal();
 
   if (requirement === "connectedWallet") {
     return (
@@ -18,7 +19,7 @@ export function LoginButton() {
           pending={connectPending}
           onClick={() => {
             openConnectModal?.();
-            openLoginDialog();
+            openAccountModal();
           }}
         >
           Connect wallet
@@ -31,11 +32,11 @@ export function LoginButton() {
     return (
       <>
         <Shadow>
-          <Button className={buttonClassName} onClick={openLoginDialog}>
+          <Button className={buttonClassName} onClick={openAccountModal}>
             Log in
           </Button>
         </Shadow>
-        <LoginDialog requirement={requirement} open={loginDialogOpen} onOpenChange={toggleLoginDialog} />
+        <AccountModal requirement={requirement} open={accountModalOpen} onOpenChange={toggleAccountModal} />
       </>
     );
   }
