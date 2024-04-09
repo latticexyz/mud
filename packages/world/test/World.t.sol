@@ -198,10 +198,12 @@ contract WorldTest is Test, GasReporter {
 
   function testConstructorAndInitialize() public {
     InitModule initModule = createInitModule();
+    IBaseWorld newWorld = IBaseWorld(address(new World()));
 
     vm.expectEmit(true, true, true, true);
     emit IWorldEvents.HelloWorld(WORLD_VERSION);
-    IBaseWorld newWorld = IBaseWorld(address(new World()));
+    newWorld.__World_init();
+
     StoreSwitch.setStoreAddress(address(newWorld));
 
     // Expect the creator to be the original deployer

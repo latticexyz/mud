@@ -47,11 +47,6 @@ contract World is StoreKernel, IWorldKernel {
     return WORLD_VERSION;
   }
 
-  /// @dev Event emitted when the World contract is created.
-  constructor() {
-    __World_init();
-  }
-
   function __World_init() public initializer {
     __StoreKernel_init();
 

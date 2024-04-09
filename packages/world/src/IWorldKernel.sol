@@ -76,6 +76,8 @@ interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors, IW
    */
   function creator() external view returns (address);
 
+  function __World_init() external;
+
   /**
    * @notice Initializes the World.
    * @dev Can only be called once by the creator.
