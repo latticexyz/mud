@@ -317,7 +317,7 @@ This command starts both the indexer and the query frontend.
 If you use either SQLite or PostgreSQL with the query frontend (using PostgreSQL only as storage), you can run this command to test the indexer.
 
 ```sh copy
-curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x4f4ddafbc93cf8d11a253f21ddbcf836139efdec%22%7D%7D%7D' | jq
+curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%0A%20%20%220%22%3A%20%7B%0A%20%20%20%20%22json%22%3A%20%7B%0A%20%20%20%20%20%20%22chainId%22%3A%2031337%2C%0A%20%20%20%20%20%20%22address%22%3A%20%220xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1%22%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D' | jq
 ```
 
 The result should be nicely formatted (and long) JSON output with all the data stored in the `World`.
@@ -333,7 +333,7 @@ The URL has these parameters:
 | Server    | http://localhost:3001 | By default the indexer listens on port 3001    |
 | Path      | trpc/findAll          | Return all entries (based on the input filter) |
 | `batch`   | `1`                   | A required field                               |
-| `input`   | `%7B%22 ... %7D%7D`   | See below                                      |
+| `input`   | `%7B%0A ... %0A%7D`   | See below                                      |
 
 The input is the JSON filter that tells the server what we need.
 It is [URL encoded](https://en.wikipedia.org/wiki/Percent-encoding), you can decode it [using an online calculator](https://www.urldecoder.org/).
@@ -343,13 +343,13 @@ It is [URL encoded](https://en.wikipedia.org/wiki/Percent-encoding), you can dec
   "0": {
     "json": {
       "chainId": 31337,
-      "address": "0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec"
+      "address": "0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1"
     }
   }
 }
 ```
 
-Meaning that query 0 is for everything in the `World` at address `0x4f4ddafbc93cf8d11a253f21ddbcf836139efdec`, on the chain with chain ID `31337`.
+Meaning that query 0 is for everything in the `World` at address `0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1`, on the chain with chain ID `31337`.
 
 </details>
 
