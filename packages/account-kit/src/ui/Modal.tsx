@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Shadow } from "../Shadow";
+import { Shadow } from "./Shadow";
 
 export type Props = {
   open?: boolean;

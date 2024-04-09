@@ -1,18 +1,18 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { useAppAccountClient } from "./useAppAccountClient";
+import { useAppAccountClient } from "../../useAppAccountClient";
 import { usePublicClient, useWalletClient } from "wagmi";
-import { useConfig } from "./MUDAccountKitProvider";
+import { useConfig } from "../../MUDAccountKitProvider";
 import { encodeFunctionData } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
 import { resourceToHex } from "@latticexyz/common";
 import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
-import { callWithSignature } from "./utils/callWithSignature";
-import { isGasSpenderQueryKey } from "./useIsGasSpender";
+import { callWithSignature } from "../../utils/callWithSignature";
+import { isGasSpenderQueryKey } from "../../useIsGasSpender";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button } from "./ui/Button";
-import { ModalContent } from "./ui/ModalContent";
+import { Button } from "../../ui/Button";
+import { ModalContent } from "../../ui/ModalContent";
 
-export function GasSpenderDialogContent() {
+export function GasSpenderContent() {
   const queryClient = useQueryClient();
   const { chainId, gasTankAddress } = useConfig();
   const publicClient = usePublicClient({ chainId });

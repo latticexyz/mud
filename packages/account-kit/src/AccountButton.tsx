@@ -2,7 +2,7 @@ import { Button } from "./ui/Button";
 import { useAccountModal } from "./useAccountModal";
 import { AccountModal } from "./AccountModal";
 import { useAccountRequirements } from "./useAccountRequirements";
-import { Shadow } from "./Shadow";
+import { Shadow } from "./ui/Shadow";
 
 const buttonClassName = "w-48";
 

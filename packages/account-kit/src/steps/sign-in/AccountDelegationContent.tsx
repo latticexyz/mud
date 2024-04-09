@@ -1,19 +1,19 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { useAppAccountClient } from "./useAppAccountClient";
+import { useAppAccountClient } from "../../useAppAccountClient";
 import { usePublicClient, useWalletClient } from "wagmi";
-import { useConfig } from "./MUDAccountKitProvider";
+import { useConfig } from "../../MUDAccountKitProvider";
 import { encodeFunctionData } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
-import { unlimitedDelegationControlId } from "./common";
+import { unlimitedDelegationControlId } from "../../common";
 import { resourceToHex } from "@latticexyz/common";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { callWithSignature } from "./utils/callWithSignature";
-import { hasDelegationQueryKey } from "./useHasDelegation";
-import { Button } from "./ui/Button";
-import { ModalContent } from "./ui/ModalContent";
+import { callWithSignature } from "../../utils/callWithSignature";
+import { hasDelegationQueryKey } from "../../useHasDelegation";
+import { Button } from "../../ui/Button";
+import { ModalContent } from "../../ui/ModalContent";
 
-export function AccountDelegationDialogContent() {
+export function AccountDelegationContent() {
   const queryClient = useQueryClient();
   const { chainId, worldAddress } = useConfig();
   const publicClient = usePublicClient({ chainId });

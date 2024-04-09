@@ -1,11 +1,11 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { keccak256 } from "viem";
 import { useSignMessage } from "wagmi";
-import { useAppSigner } from "./useAppSigner";
-import { Button } from "./ui/Button";
-import { ModalContent } from "./ui/ModalContent";
+import { useAppSigner } from "../../useAppSigner";
+import { Button } from "../../ui/Button";
+import { ModalContent } from "../../ui/ModalContent";
 
-export function AppSignerDialogContent() {
+export function AppSignerContent() {
   const [, setAppSigner] = useAppSigner();
   const { signMessageAsync, isPending } = useSignMessage();
 

@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import { assertExhaustive } from "@latticexyz/common/utils";
-import { AppSignerDialogContent } from "./AppSignerDialogContent";
-import { GasAllowanceDialogContent } from "./GasAllowanceDialogContent";
-import { AccountDelegationDialogContent } from "./AccountDelegationDialogContent";
-import { GasSpenderDialogContent } from "./GasSpenderDialogContent";
-import { ConnectedChainDialogContent } from "./ConnectedChainDialogContent";
+import { AppSignerContent } from "./steps/set-up/AppSignerContent";
+import { GasAllowanceContent } from "./steps/gas-tank/GasAllowanceContent";
+import { AccountDelegationContent } from "./steps/sign-in/AccountDelegationContent";
+import { GasSpenderContent } from "./steps/gas-tank/GasSpenderContent";
+import { ConnectWalletContent } from "./steps/connect/ConnectWalletContent";
 import { Modal, Props as ModalProps } from "./ui/Modal";
 import { AccountRequirement } from "./useAccountRequirements";
 
@@ -16,18 +16,16 @@ export function AccountModal({ requirement, ...dialogProps }: Props) {
   const content = useMemo(() => {
     switch (requirement) {
       case "connectedWallet":
-        // TODO
-        return <>Connect wallet</>;
       case "connectedChain":
-        return <ConnectedChainDialogContent />;
+        return <ConnectWalletContent />;
       case "appSigner":
-        return <AppSignerDialogContent />;
+        return <AppSignerContent />;
       case "gasAllowance":
-        return <GasAllowanceDialogContent />;
+        return <GasAllowanceContent />;
       case "gasSpender":
-        return <GasSpenderDialogContent />;
+        return <GasSpenderContent />;
       case "accountDelegation":
-        return <AccountDelegationDialogContent />;
+        return <AccountDelegationContent />;
       default:
         return assertExhaustive(requirement);
     }
