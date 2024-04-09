@@ -13,12 +13,10 @@ import { StoreRead } from "../src/StoreRead.sol";
 import { ResourceId } from "../src/ResourceId.sol";
 import { StoreKernel } from "../src/StoreKernel.sol";
 
-import { Initializable } from "../src/Initializable.sol";
-
 /**
  * StoreMock is a contract wrapper around the StoreCore library for testing purposes.
  */
-contract StoreMock is Initializable, Store {
+contract StoreMock is Store {
   constructor() {
     __StoreMock_init();
   }
