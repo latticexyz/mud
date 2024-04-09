@@ -5,14 +5,12 @@ import { Shadow } from "./Shadow";
 export type Props = {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  trigger?: ReactNode;
   children: ReactNode;
 };
 
-export function Modal({ open, onOpenChange, trigger, children }: Props) {
+export function Modal({ open, onOpenChange, children }: Props) {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      {trigger ? <Dialog.Trigger asChild>{trigger}</Dialog.Trigger> : null}
       <Dialog.Portal>
         {/* This is intentionally wrapped in an empty fragment to avoid React errors related to Radix portals. Maybe fixable by using forwardRef in Shadow. */}
         <>

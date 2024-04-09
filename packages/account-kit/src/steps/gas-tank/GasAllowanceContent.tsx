@@ -6,7 +6,7 @@ import { getGasTankBalanceQueryKey } from "../../useGasTankBalance";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "../../ui/Button";
-import { ModalContent } from "../../ui/ModalContent";
+import { AccountModalContent } from "../../AccountModalContent";
 
 export function GasAllowanceContent() {
   const queryClient = useQueryClient();
@@ -28,7 +28,7 @@ export function GasAllowanceContent() {
   });
 
   return (
-    <ModalContent title="Fund Redstone balance" description="TODO">
+    <AccountModalContent title="Fund Redstone balance" description="TODO">
       {error ? <div>{String(error)}</div> : null}
 
       <div className="flex flex-col gap-2">
@@ -57,6 +57,6 @@ export function GasAllowanceContent() {
           Redstone ETH
         </Button>
       </div>
-    </ModalContent>
+    </AccountModalContent>
   );
 }

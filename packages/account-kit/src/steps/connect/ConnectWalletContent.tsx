@@ -2,7 +2,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useSwitchChain } from "wagmi";
 import { useConfig } from "../../MUDAccountKitProvider";
 import { Button } from "../../ui/Button";
-import { ModalContent } from "../../ui/ModalContent";
+import { AccountModalContent } from "../../AccountModalContent";
 
 export function ConnectWalletContent() {
   const { chainId } = useConfig();
@@ -13,7 +13,7 @@ export function ConnectWalletContent() {
   // TODO: show connected wallet info if all connected
 
   return (
-    <ModalContent title="Switch chain" description="Switch chain to sign in">
+    <AccountModalContent title="Switch chain" description="Switch chain to sign in">
       {error ? <>Error: {String(error)}</> : null}
 
       <div className="flex gap-3 justify-end">
@@ -24,6 +24,6 @@ export function ConnectWalletContent() {
           Switch chain
         </Button>
       </div>
-    </ModalContent>
+    </AccountModalContent>
   );
 }

@@ -10,7 +10,7 @@ import { callWithSignature } from "../../utils/callWithSignature";
 import { isGasSpenderQueryKey } from "../../useIsGasSpender";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "../../ui/Button";
-import { ModalContent } from "../../ui/ModalContent";
+import { AccountModalContent } from "../../AccountModalContent";
 
 export function GasSpenderContent() {
   const queryClient = useQueryClient();
@@ -64,7 +64,7 @@ export function GasSpenderContent() {
   });
 
   return (
-    <ModalContent title="Gas spender" description="TODO">
+    <AccountModalContent title="Gas spender" description="TODO">
       {error ? <>Error: {String(error)}</> : null}
 
       <div className="flex gap-3 justify-end">
@@ -75,6 +75,6 @@ export function GasSpenderContent() {
           Set up spender
         </Button>
       </div>
-    </ModalContent>
+    </AccountModalContent>
   );
 }

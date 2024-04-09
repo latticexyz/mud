@@ -11,7 +11,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { callWithSignature } from "../../utils/callWithSignature";
 import { hasDelegationQueryKey } from "../../useHasDelegation";
 import { Button } from "../../ui/Button";
-import { ModalContent } from "../../ui/ModalContent";
+import { AccountModalContent } from "../../AccountModalContent";
 
 export function AccountDelegationContent() {
   const queryClient = useQueryClient();
@@ -60,7 +60,7 @@ export function AccountDelegationContent() {
   });
 
   return (
-    <ModalContent title="Delegation" description="Delegation description">
+    <AccountModalContent title="Delegation" description="Delegation description">
       {error ? <>Error: {String(error)}</> : null}
 
       <div className="flex gap-3 justify-end">
@@ -71,6 +71,6 @@ export function AccountDelegationContent() {
           Set up delegation
         </Button>
       </div>
-    </ModalContent>
+    </AccountModalContent>
   );
 }
