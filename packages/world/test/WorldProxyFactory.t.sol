@@ -136,7 +136,9 @@ contract WorldProxyFactoryTest is Test, GasReporter {
     vm.startPrank(account1);
 
     // Set proxy implementation to new world
+    startGasReport("set WorldProxy implementation");
     WorldProxy(payable(worldAddress)).setImplementation(newWorldImplementationAddress);
+    endGasReport();
 
     worldImplementationAddress = address(uint160(uint256(vm.load(worldAddress, ERC1967Utils.IMPLEMENTATION_SLOT))));
     assertEq(worldImplementationAddress, newWorldImplementationAddress);
