@@ -1,6 +1,7 @@
 import { useWalletClient } from "wagmi";
 import { AccountModalContent } from "../../AccountModalContent";
 import { useCallback, useEffect } from "react";
+import PaymasterSystemABI from "../../abis/PaymasterSystem.json";
 
 import {
   getClient,
@@ -10,18 +11,18 @@ import {
   TESTNET_RELAY_API,
 } from "@reservoir0x/relay-sdk";
 import { holesky } from "viem/chains";
-import { zeroAddress } from "viem";
+import { createPublicClient, http, parseEther, zeroAddress } from "viem";
 
 // TODO: move elsewhere?
 createClient({
   baseApiUrl: TESTNET_RELAY_API,
-  source: "YOUR.SOURCE", // TODO: what should be set as source?
+  source: "YOUR.SOURCE", // TODO: set app URL as source
   chains: [convertViemChainToRelayChain(holesky)],
 });
 
 const CHAIN_FROM = 17000;
 const CHAIN_TO = 17069;
-// const CHAIN_TO = 84532; // Base Sepolia
+const PAYMASTER_ADDRESS = "0xba0149DE3486935D29b0e50DfCc9e61BD40Ae095";
 
 export function RelayLinkContent() {
   const wallet = useWalletClient();
@@ -54,27 +55,52 @@ export function RelayLinkContent() {
     console.log("quote", quote);
   }, [wallet.data]);
 
-  const executeBridge = useCallback(async () => {
+  const executeDeposit = useCallback(async () => {
     if (!wallet.data) return;
 
-    await getClient()?.actions.bridge({
-      wallet: wallet.data,
-      chainId: CHAIN_FROM, // The chain id to bridge from
-      toChainId: CHAIN_TO, // The chain id to bridge to
-      amount: "100000000000000000", // Amount in wei to bridge
-      currency: "eth", // `eth` | `usdc`
-      recipient: wallet.data.account.address, // A valid address to send the funds to
-      onProgress: (steps, fees, currentStep, currentStepItem) => {
-        console.log(steps, fees, currentStep, currentStepItem);
-      },
+    const publicClient = createPublicClient({
+      chain: holesky,
+      transport: http(),
     });
+
+    const { request } = await publicClient.simulateContract({
+      address: PAYMASTER_ADDRESS,
+      abi: PaymasterSystemABI,
+      functionName: "depositTo",
+      args: ["0x91102b828B5142a3C0365b3bED7A8D535DD51fBe"],
+      value: parseEther("0.01"),
+      account: wallet.data.account,
+    });
+
+    console.log("request 2:", request);
+
+    const client = getClient();
+    await client.actions.call({
+      chainId: CHAIN_FROM,
+      toChainId: CHAIN_TO,
+      txs: [request],
+      wallet: wallet.data,
+      onProgress: () => {},
+    });
+
+    // await client.actions.bridge({
+    //   wallet: wallet.data,
+    //   chainId: CHAIN_FROM, // The chain id to bridge from
+    //   toChainId: CHAIN_TO, // The chain id to bridge to
+    //   amount: "10000000000000000", // Amount in wei to bridge
+    //   currency: "eth", // `eth` | `usdc`
+    //   recipient: wallet.data.account.address, // A valid address to send the funds to
+    //   onProgress: (steps, fees, currentStep, currentStepItem) => {
+    //     console.log(steps, fees, currentStep, currentStepItem);
+    //   },
+    // });
   }, [wallet.data]);
 
   useEffect(() => {
     getSolver();
     getBridgeQuote();
-    executeBridge();
-  }, [getBridgeQuote, executeBridge]);
+    executeDeposit();
+  }, [getBridgeQuote, executeDeposit]);
 
   return (
     <AccountModalContent title="Relay.link balance top-up">
