@@ -7,6 +7,7 @@ import { IStoreEvents } from "@latticexyz/store/src/IStoreEvents.sol";
 import { WORLD_VERSION } from "./version.sol";
 import { IWorldEvents } from "./IWorldEvents.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import { ERC1967Utils } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
 
 contract WorldProxy is ERC1967Proxy {
   address public creator;
@@ -17,5 +18,9 @@ contract WorldProxy is ERC1967Proxy {
 
     creator = msg.sender;
     emit IWorldEvents.HelloWorld(WORLD_VERSION);
+  }
+
+  function setImplementation(address newImplementation) public {
+    ERC1967Utils.upgradeToAndCall(newImplementation, new bytes(0));
   }
 }

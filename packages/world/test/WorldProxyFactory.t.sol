@@ -11,6 +11,7 @@ import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { ResourceId } from "../src/WorldResourceId.sol";
 import { InitModule } from "../src/modules/init/InitModule.sol";
 import { Create2Factory } from "../src/Create2Factory.sol";
+import { WorldProxy } from "../src/WorldProxy.sol";
 import { WorldProxyFactory } from "../src/WorldProxyFactory.sol";
 import { IWorldFactory } from "../src/IWorldFactory.sol";
 import { IWorldEvents } from "../src/IWorldEvents.sol";
@@ -120,6 +121,13 @@ contract WorldProxyFactoryTest is Test, GasReporter {
       abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, ROOT_NAMESPACE_ID.toString(), account)
     );
     IBaseWorld(address(worldAddress)).initialize(initModule);
+
+    address newWorldImplementationAddress = address(new World());
+
+    WorldProxy(payable(worldAddress)).setImplementation(newWorldImplementationAddress);
+
+    worldImplementationAddress = address(uint160(uint256(vm.load(worldAddress, ERC1967Utils.IMPLEMENTATION_SLOT))));
+    assertEq(worldImplementationAddress, newWorldImplementationAddress);
   }
 
   function testWorldProxyFactoryGas() public {
