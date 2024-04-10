@@ -58,7 +58,7 @@ contract WorldProxyFactoryTest is Test, GasReporter {
     emit IWorldEvents.HelloWorld(WORLD_VERSION);
 
     startGasReport("deploy world via WorldProxyFactory");
-    address worldAddress = address(worldFactory.deployWorld(_salt1));
+    address worldAddress = worldFactory.deployWorld(_salt1);
     endGasReport();
 
     address worldImplementationAddress = address(
@@ -92,7 +92,7 @@ contract WorldProxyFactoryTest is Test, GasReporter {
     vm.expectEmit(true, true, true, true);
     emit IWorldEvents.HelloWorld(WORLD_VERSION);
 
-    worldAddress = address(worldFactory.deployWorld(_salt2));
+    worldAddress = worldFactory.deployWorld(_salt2);
 
     worldImplementationAddress = address(uint160(uint256(vm.load(worldAddress, ERC1967Utils.IMPLEMENTATION_SLOT))));
     assertEq(worldImplementationAddress, calculatedAddress);
