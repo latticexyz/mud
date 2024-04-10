@@ -1,5 +1,6 @@
 import TableInWorld from "../../components/common-text/TableInWorld.mdx";
 import { CollapseCode } from "../../components/CollapseCode";
+import { Callout } from "nextra/components";
 
 # Systems
 
@@ -47,7 +48,7 @@ import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 
 contract Call is Script {
   function run() external {
-    address worldAddress = 0x4F4DDaFBc93Cf8d11a253f21dDbcF836139efdeC;
+    address worldAddress = 0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1;
 
     // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -135,7 +136,26 @@ There are two ways to call one `System` from another one.
 
 #### Calling from a root `System`
 
-If you need to call a `System` from a `System` in the root namespace you can use [`SystemSwitch`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/utils/SystemSwitch.sol).
+For [security reasons](/retrospectives/2023-09-12-register-system-vulnerability) the `World` cannot call itself.
+A `System` in the root namespace runs in the `World` context, and therefore cannot call the `World` either.
+
+<Callout type="error" emoji="🚫">
+  You *could* use
+  [`delegatecall`](https://docs.soliditylang.org/en/v0.8.16/introduction-to-smart-contracts.html#delegatecall-callcode-and-libraries),
+  but you should only do it if it's necessary. A root `System` acts as the `World`, so a `delegatecall` from a root
+  `System` behaves exactly like a `delegatecall` from the `World`. Any contract you `delegatecall` inherits your
+  permissions, in this case unlimited access to the `World` and the ability to change everything.
+</Callout>
+
+An alternative solution is for the root `System` to do exactly what the `World` does with a normal call: check for access permission, run before hook (if configured), call the `System`, and then run the after hook (if configured).
+To do that, you can use [`SystemCall.callWithHooks()`](https://github.com/latticexyz/mud/blob/main/packages/world/src/SystemCall.sol#L77-L114).
+
+If you need to specify values for [`_msgSender()`](/world/reference/world-context#_msgsender) and [`_msgValue()`](/world/reference/world-context#_msgvalue) to provide for the called `System`, you can use [`WorldContextProviderLib.callWithContext`](https://github.com/latticexyz/mud/blob/main/packages/world/src/WorldContext.sol#L122-L140).
+Note that this function is _extremely_ low level, and if you use it you have to process hooks and access control yourself.
+
+#### `SystemSwitch`
+
+If your `System` needs run both from the root namespace and from other namespaces, you can call other `System`s using [`SystemSwitch`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/utils/SystemSwitch.sol).
 
 1. Import `SystemSwitch`.
 
