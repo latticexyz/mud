@@ -79,7 +79,7 @@ export async function deploy<configInput extends ConfigInput>({
 
   const worldDeploy = existingWorldAddress
     ? await getWorldDeploy(client, existingWorldAddress)
-    : await deployWorld(client, deployerAddress, salt ?? `0x${randomBytes(32).toString("hex")}`, proxy);
+    : await deployWorld(client, deployerAddress, salt ?? `0x${randomBytes(32).toString("hex")}`, deployAsProxy);
 
   if (!supportedStoreVersions.includes(worldDeploy.storeVersion)) {
     throw new Error(`Unsupported Store version: ${worldDeploy.storeVersion}`);
