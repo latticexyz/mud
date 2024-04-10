@@ -15,6 +15,7 @@ import { resourceToLabel } from "@latticexyz/common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";
 import { ensureWorldFactory } from "./ensureWorldFactory";
+import { ensureWorldProxyFactory } from "./ensureWorldProxyFactory";
 
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
@@ -28,6 +29,7 @@ type DeployOptions<configInput extends ConfigInput> = {
    * not have a deterministic address.
    */
   deployerAddress?: Hex;
+  deployAsProxy: boolean;
 };
 
 /**
@@ -42,12 +44,15 @@ export async function deploy<configInput extends ConfigInput>({
   salt,
   worldAddress: existingWorldAddress,
   deployerAddress: initialDeployerAddress,
+  deployAsProxy,
 }: DeployOptions<configInput>): Promise<WorldDeploy> {
   const tables = Object.values(config.tables) as Table[];
 
   const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
 
-  await ensureWorldFactory(client, deployerAddress);
+  deployAsProxy
+    ? await ensureWorldProxyFactory(client, deployerAddress)
+    : await ensureWorldFactory(client, deployerAddress);
 
   // deploy all dependent contracts, because system registration, module install, etc. all expect these contracts to be callable.
   await ensureContractsDeployed({
@@ -74,7 +79,7 @@ export async function deploy<configInput extends ConfigInput>({
 
   const worldDeploy = existingWorldAddress
     ? await getWorldDeploy(client, existingWorldAddress)
-    : await deployWorld(client, deployerAddress, salt ?? `0x${randomBytes(32).toString("hex")}`);
+    : await deployWorld(client, deployerAddress, salt ?? `0x${randomBytes(32).toString("hex")}`, proxy);
 
   if (!supportedStoreVersions.includes(worldDeploy.storeVersion)) {
     throw new Error(`Unsupported Store version: ${worldDeploy.storeVersion}`);

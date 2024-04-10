@@ -8,14 +8,13 @@ import { debug } from "./debug";
 import { logsToWorldDeploy } from "./logsToWorldDeploy";
 import { WorldDeploy } from "./common";
 
-const PROXY = true;
-
 export async function deployWorld(
   client: Client<Transport, Chain | undefined, Account>,
   deployerAddress: Hex,
   salt: Hex,
+  deployAsProxy: boolean,
 ): Promise<WorldDeploy> {
-  const worldFactory = PROXY
+  const worldFactory = deployAsProxy
     ? await ensureWorldProxyFactory(client, deployerAddress)
     : await ensureWorldFactory(client, deployerAddress);
 
