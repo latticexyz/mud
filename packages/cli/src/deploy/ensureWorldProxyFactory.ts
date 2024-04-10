@@ -4,8 +4,8 @@ import batchCallSystemBuild from "@latticexyz/world/out/BatchCallSystem.sol/Batc
 import registrationSystemBuild from "@latticexyz/world/out/RegistrationSystem.sol/RegistrationSystem.json" assert { type: "json" };
 import initModuleBuild from "@latticexyz/world/out/InitModule.sol/InitModule.json" assert { type: "json" };
 import initModuleAbi from "@latticexyz/world/out/InitModule.sol/InitModule.abi.json" assert { type: "json" };
-import worldFactoryBuild from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.json" assert { type: "json" };
-import worldFactoryAbi from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.abi.json" assert { type: "json" };
+import worldFactoryBuild from "@latticexyz/world/out/WorldProxyFactory.sol/WorldProxyFactory.json" assert { type: "json" };
+import worldFactoryAbi from "@latticexyz/world/out/WorldProxyFactory.sol/WorldProxyFactory.abi.json" assert { type: "json" };
 import { Client, Transport, Chain, Account, Hex, getCreate2Address, encodeDeployData, size, Address } from "viem";
 import { salt } from "./common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
