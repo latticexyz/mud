@@ -7,6 +7,8 @@ import { waitForTransactionReceipt } from "wagmi/actions";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "../../ui/Button";
 import { AccountModalContent } from "../../AccountModalContent";
+import { useState } from "react";
+import { RelayLinkContent } from "./RelayLinkContent";
 
 export function GasAllowanceContent() {
   const queryClient = useQueryClient();
@@ -27,36 +29,48 @@ export function GasAllowanceContent() {
     },
   });
 
+  // TODO: clean up
+  const [depositMethod, setDepositMethod] = useState<string | undefined>();
+
+  if (depositMethod === "relayLink") return <RelayLinkContent />;
+
   return (
     <AccountModalContent title="Fund Redstone balance">
       {error ? <div>{String(error)}</div> : null}
 
-      <div className="flex flex-col gap-2">
-        <Button
-          variant="secondary"
-          pending={!userAccountAddress || isPending}
-          onClick={async () => {
-            if (!userAccountAddress) return;
+      {!depositMethod && (
+        <div className="flex flex-col gap-2">
+          <Button
+            variant="secondary"
+            pending={!userAccountAddress || isPending}
+            onClick={async () => {
+              if (!userAccountAddress) return;
 
-            await writeContractAsync({
-              chainId,
-              address: gasTankAddress,
-              abi: GasTankAbi,
-              functionName: "depositTo",
-              args: [userAccountAddress],
-              value: parseEther("0.01"),
-            });
-          }}
-        >
-          Deposit to gas tank
-        </Button>
-        <Button variant="secondary" disabled>
-          Relay.link
-        </Button>
-        <Button variant="secondary" disabled>
-          Redstone ETH
-        </Button>
-      </div>
+              await writeContractAsync({
+                chainId,
+                address: gasTankAddress,
+                abi: GasTankAbi,
+                functionName: "depositTo",
+                args: [userAccountAddress],
+                value: parseEther("0.01"),
+              });
+            }}
+          >
+            Deposit to gas tank
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setDepositMethod("relayLink");
+            }}
+          >
+            Relay.link
+          </Button>
+          <Button variant="secondary" disabled>
+            Redstone ETH
+          </Button>
+        </div>
+      )}
     </AccountModalContent>
   );
 }
