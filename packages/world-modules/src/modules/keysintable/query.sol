@@ -2,7 +2,7 @@
 pragma solidity >=0.8.24;
 
 import { IStore } from "@latticexyz/store/src/IStore.sol";
-import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 import { getKeysInTable } from "./getKeysInTable.sol";
@@ -50,7 +50,7 @@ function passesQueryFragment(bytes32[] memory keyTuple, QueryFragment memory fra
     return
       ArrayLib.includes(
         valuesToTuples(
-          getKeysWithValue(fragment.tableId, fragment.value, PackedCounter.wrap(bytes32(0)), new bytes(0))
+          getKeysWithValue(fragment.tableId, fragment.value, EncodedLengths.wrap(bytes32(0)), new bytes(0))
         ),
         keyTuple
       );
@@ -66,7 +66,7 @@ function passesQueryFragment(bytes32[] memory keyTuple, QueryFragment memory fra
     return
       !ArrayLib.includes(
         valuesToTuples(
-          getKeysWithValue(fragment.tableId, fragment.value, PackedCounter.wrap(bytes32(0)), new bytes(0))
+          getKeysWithValue(fragment.tableId, fragment.value, EncodedLengths.wrap(bytes32(0)), new bytes(0))
         ),
         keyTuple
       );
@@ -95,7 +95,7 @@ function passesQueryFragment(
     return
       ArrayLib.includes(
         valuesToTuples(
-          getKeysWithValue(store, fragment.tableId, fragment.value, PackedCounter.wrap(bytes32(0)), new bytes(0))
+          getKeysWithValue(store, fragment.tableId, fragment.value, EncodedLengths.wrap(bytes32(0)), new bytes(0))
         ),
         keyTuple
       );
@@ -111,7 +111,7 @@ function passesQueryFragment(
     return
       !ArrayLib.includes(
         valuesToTuples(
-          getKeysWithValue(store, fragment.tableId, fragment.value, PackedCounter.wrap(bytes32(0)), new bytes(0))
+          getKeysWithValue(store, fragment.tableId, fragment.value, EncodedLengths.wrap(bytes32(0)), new bytes(0))
         ),
         keyTuple
       );
@@ -135,7 +135,7 @@ function query(QueryFragment[] memory fragments) view returns (bytes32[][] memor
   keyTuples = fragments[0].queryType == QueryType.Has
     ? getKeysInTable(fragments[0].tableId)
     : valuesToTuples(
-      getKeysWithValue(fragments[0].tableId, fragments[0].value, PackedCounter.wrap(bytes32(0)), new bytes(0))
+      getKeysWithValue(fragments[0].tableId, fragments[0].value, EncodedLengths.wrap(bytes32(0)), new bytes(0))
     );
 
   for (uint256 i = 1; i < fragments.length; i++) {
@@ -172,7 +172,7 @@ function query(IStore store, QueryFragment[] memory fragments) view returns (byt
   keyTuples = fragments[0].queryType == QueryType.Has
     ? getKeysInTable(store, fragments[0].tableId)
     : valuesToTuples(
-      getKeysWithValue(store, fragments[0].tableId, fragments[0].value, PackedCounter.wrap(bytes32(0)), new bytes(0))
+      getKeysWithValue(store, fragments[0].tableId, fragments[0].value, EncodedLengths.wrap(bytes32(0)), new bytes(0))
     );
 
   for (uint256 i = 1; i < fragments.length; i++) {

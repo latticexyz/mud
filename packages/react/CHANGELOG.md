@@ -1,5 +1,202 @@
 # Change Log
 
+## 2.0.4
+
+### Patch Changes
+
+- @latticexyz/store@2.0.4
+- @latticexyz/recs@2.0.4
+
+## 2.0.3
+
+### Patch Changes
+
+- @latticexyz/store@2.0.3
+- @latticexyz/recs@2.0.3
+
+## 2.0.2
+
+### Patch Changes
+
+- @latticexyz/recs@2.0.2
+- @latticexyz/store@2.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- Updated dependencies [4a6b4598]
+  - @latticexyz/store@2.0.1
+  - @latticexyz/recs@2.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- e3de1a338: Removes `useRow` and `useRows` hooks, previously powered by `store-cache`, which is now deprecated. Please use `recs` and the corresponding `useEntityQuery` and `useComponentValue` hooks. We'll have more hooks soon for SQL.js sync backends.
+
+### Minor Changes
+
+- 939916bcd: Adds a `usePromise` hook that returns a [native `PromiseSettledResult` object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled).
+
+  ```tsx
+  const promise = fetch(url);
+  const result = usePromise(promise);
+
+  if (result.status === "idle" || result.status === "pending") {
+    return <>fetching</>;
+  }
+
+  if (result.status === "rejected") {
+    return <>error fetching: {String(result.reason)}</>;
+  }
+
+  if (result.status === "fulfilled") {
+    return <>fetch status: {result.value.status}</>;
+  }
+  ```
+
+### Patch Changes
+
+- 01e46d99: Removed some unused files, namely `curry` in `@latticexyz/common` and `useDeprecatedComputedValue` from `@latticexyz/react`.
+- 590542030: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- 9ef3f9a7c: Fixed an issue where `useComponentValue` would not detect a change and re-render if the component value was immediately removed.
+- Updated dependencies [7ce82b6fc]
+- Updated dependencies [d8c8f66bf]
+- Updated dependencies [c6c13f2ea]
+- Updated dependencies [1b86eac05]
+- Updated dependencies [a35c05ea9]
+- Updated dependencies [c9ee5e4a]
+- Updated dependencies [c963b46c7]
+- Updated dependencies [05b3e8882]
+- Updated dependencies [ce7125a1b]
+- Updated dependencies [aea67c580]
+- Updated dependencies [07dd6f32c]
+- Updated dependencies [c14f8bf1e]
+- Updated dependencies [90e4161bb]
+- Updated dependencies [aabd30767]
+- Updated dependencies [331dbfdcb]
+- Updated dependencies [1d60930d6]
+- Updated dependencies [f9f9609ef]
+- Updated dependencies [904fd7d4e]
+- Updated dependencies [e6c03a87a]
+- Updated dependencies [1077c7f53]
+- Updated dependencies [2c920de7]
+- Updated dependencies [b9e562d8f]
+- Updated dependencies [44236041f]
+- Updated dependencies [759514d8b]
+- Updated dependencies [952cd5344]
+- Updated dependencies [d5094a242]
+- Updated dependencies [a25881160]
+- Updated dependencies [c4d5eb4e4]
+- Updated dependencies [f62c767e7]
+- Updated dependencies [9aa5e786]
+- Updated dependencies [de151fec0]
+- Updated dependencies [37c228c63]
+- Updated dependencies [c991c71a]
+- Updated dependencies [ae340b2bf]
+- Updated dependencies [1bf2e9087]
+- Updated dependencies [211be2a1e]
+- Updated dependencies [0f3e2e02b]
+- Updated dependencies [d08789282]
+- Updated dependencies [5c965a919]
+- Updated dependencies [f99e88987]
+- Updated dependencies [d5b73b126]
+- Updated dependencies [190fdd11]
+- Updated dependencies [433078c54]
+- Updated dependencies [b2d2aa715]
+- Updated dependencies [83583a505]
+- Updated dependencies [5e723b90e]
+- Updated dependencies [6573e38e9]
+- Updated dependencies [afaf2f5ff]
+- Updated dependencies [37c228c63]
+- Updated dependencies [37c228c63]
+- Updated dependencies [44a5432ac]
+- Updated dependencies [6e66c5b74]
+- Updated dependencies [8d51a0348]
+- Updated dependencies [1e2ad78e2]
+- Updated dependencies [65c9546c4]
+- Updated dependencies [48909d151]
+- Updated dependencies [7b28d32e5]
+- Updated dependencies [590542030]
+- Updated dependencies [48c51b52a]
+- Updated dependencies [9f8b84e73]
+- Updated dependencies [66cc35a8c]
+- Updated dependencies [672d05ca1]
+- Updated dependencies [55a05fd7a]
+- Updated dependencies [63831a264]
+- Updated dependencies [6db95ce15]
+- Updated dependencies [8193136a9]
+- Updated dependencies [5d737cf2e]
+- Updated dependencies [a7b30c79b]
+- Updated dependencies [92de59982]
+- Updated dependencies [22ee44700]
+- Updated dependencies [ad4ac4459]
+- Updated dependencies [be313068b]
+- Updated dependencies [ac508bf18]
+- Updated dependencies [93390d89]
+- Updated dependencies [bb91edaa0]
+- Updated dependencies [144c0d8d]
+- Updated dependencies [5ac4c97f4]
+- Updated dependencies [bfcb293d1]
+- Updated dependencies [1890f1a06]
+- Updated dependencies [e48171741]
+- Updated dependencies [9b43029c3]
+- Updated dependencies [37c228c63]
+- Updated dependencies [55ab88a60]
+- Updated dependencies [c58da9ad]
+- Updated dependencies [37c228c63]
+- Updated dependencies [535229984]
+- Updated dependencies [af639a264]
+- Updated dependencies [5e723b90e]
+- Updated dependencies [99ab9cd6f]
+- Updated dependencies [0d12db8c2]
+- Updated dependencies [c049c23f4]
+- Updated dependencies [80dd6992e]
+- Updated dependencies [60cfd089f]
+- Updated dependencies [24a6cd536]
+- Updated dependencies [37c228c63]
+- Updated dependencies [708b49c50]
+- Updated dependencies [3ac68ade6]
+- Updated dependencies [22ba7b675]
+- Updated dependencies [3042f86e]
+- Updated dependencies [5e71e1cb5]
+- Updated dependencies [d7b1c588a]
+- Updated dependencies [5c52bee09]
+- Updated dependencies [8025c3505]
+- Updated dependencies [745485cda]
+- Updated dependencies [afdba793f]
+- Updated dependencies [37c228c63]
+- Updated dependencies [3e7d83d0]
+- Updated dependencies [cea754dde]
+- Updated dependencies [cc2c8da00]
+- Updated dependencies [252a1852]
+- Updated dependencies [103f635eb]
+  - @latticexyz/store@2.0.0
+  - @latticexyz/recs@2.0.0
+
+## 2.0.0-next.18
+
+### Patch Changes
+
+- 01e46d99: Removed some unused files, namely `curry` in `@latticexyz/common` and `useDeprecatedComputedValue` from `@latticexyz/react`.
+- Updated dependencies [c9ee5e4a]
+- Updated dependencies [2c920de7]
+- Updated dependencies [44236041]
+- Updated dependencies [9aa5e786]
+- Updated dependencies [c991c71a]
+- Updated dependencies [190fdd11]
+- Updated dependencies [8193136a9]
+- Updated dependencies [93390d89]
+- Updated dependencies [144c0d8d]
+- Updated dependencies [c58da9ad]
+- Updated dependencies [3042f86e]
+- Updated dependencies [d7b1c588a]
+- Updated dependencies [3e7d83d0]
+- Updated dependencies [252a1852]
+  - @latticexyz/store@2.0.0-next.18
+  - @latticexyz/recs@2.0.0-next.18
+
 ## 2.0.0-next.17
 
 ### Patch Changes

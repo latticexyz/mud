@@ -13,7 +13,7 @@ import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 library Singleton {
@@ -148,6 +148,14 @@ library Singleton {
   function getItemV2(uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    uint256 dynamicLength = _byteLength / 4;
+    uint256 staticLength = 2;
+
+    if (_index < staticLength && _index >= dynamicLength) {
+      return (uint32(bytes4(new bytes(0))));
+    }
+
     unchecked {
       bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
@@ -160,6 +168,14 @@ library Singleton {
    */
   function _getItemV2(uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
+
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    uint256 dynamicLength = _byteLength / 4;
+    uint256 staticLength = 2;
+
+    if (_index < staticLength && _index >= dynamicLength) {
+      return (uint32(bytes4(new bytes(0))));
+    }
 
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 4, (_index + 1) * 4);
@@ -239,6 +255,14 @@ library Singleton {
   function getItemV3(uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 1);
+    uint256 dynamicLength = _byteLength / 4;
+    uint256 staticLength = 2;
+
+    if (_index < staticLength && _index >= dynamicLength) {
+      return (uint32(bytes4(new bytes(0))));
+    }
+
     unchecked {
       bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
@@ -251,6 +275,14 @@ library Singleton {
    */
   function _getItemV3(uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
+
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 1);
+    uint256 dynamicLength = _byteLength / 4;
+    uint256 staticLength = 2;
+
+    if (_index < staticLength && _index >= dynamicLength) {
+      return (uint32(bytes4(new bytes(0))));
+    }
 
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 4, (_index + 1) * 4);
@@ -330,6 +362,14 @@ library Singleton {
   function getItemV4(uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 2);
+    uint256 dynamicLength = _byteLength / 4;
+    uint256 staticLength = 1;
+
+    if (_index < staticLength && _index >= dynamicLength) {
+      return (uint32(bytes4(new bytes(0))));
+    }
+
     unchecked {
       bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 4, (_index + 1) * 4);
       return (uint32(bytes4(_blob)));
@@ -342,6 +382,14 @@ library Singleton {
    */
   function _getItemV4(uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
+
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 2);
+    uint256 dynamicLength = _byteLength / 4;
+    uint256 staticLength = 1;
+
+    if (_index < staticLength && _index >= dynamicLength) {
+      return (uint32(bytes4(new bytes(0))));
+    }
 
     unchecked {
       bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 2, _index * 4, (_index + 1) * 4);
@@ -379,7 +427,7 @@ library Singleton {
   function get() internal view returns (int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -393,7 +441,7 @@ library Singleton {
   function _get() internal view returns (int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -407,7 +455,7 @@ library Singleton {
   function set(int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) internal {
     bytes memory _staticData = encodeStatic(v1);
 
-    PackedCounter _encodedLengths = encodeLengths(v2, v3, v4);
+    EncodedLengths _encodedLengths = encodeLengths(v2, v3, v4);
     bytes memory _dynamicData = encodeDynamic(v2, v3, v4);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -421,7 +469,7 @@ library Singleton {
   function _set(int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) internal {
     bytes memory _staticData = encodeStatic(v1);
 
-    PackedCounter _encodedLengths = encodeLengths(v2, v3, v4);
+    EncodedLengths _encodedLengths = encodeLengths(v2, v3, v4);
     bytes memory _dynamicData = encodeDynamic(v2, v3, v4);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -440,7 +488,7 @@ library Singleton {
    * @notice Decode the tightly packed blob of dynamic data using the encoded lengths.
    */
   function decodeDynamic(
-    PackedCounter _encodedLengths,
+    EncodedLengths _encodedLengths,
     bytes memory _blob
   ) internal pure returns (uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
     uint256 _start;
@@ -471,7 +519,7 @@ library Singleton {
    */
   function decode(
     bytes memory _staticData,
-    PackedCounter _encodedLengths,
+    EncodedLengths _encodedLengths,
     bytes memory _dynamicData
   ) internal pure returns (int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
     (v1) = decodeStatic(_staticData);
@@ -513,10 +561,10 @@ library Singleton {
     uint32[2] memory v2,
     uint32[2] memory v3,
     uint32[1] memory v4
-  ) internal pure returns (PackedCounter _encodedLengths) {
+  ) internal pure returns (EncodedLengths _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
-      _encodedLengths = PackedCounterLib.pack(v2.length * 4, v3.length * 4, v4.length * 4);
+      _encodedLengths = EncodedLengthsLib.pack(v2.length * 4, v3.length * 4, v4.length * 4);
     }
   }
 
@@ -548,10 +596,10 @@ library Singleton {
     uint32[2] memory v2,
     uint32[2] memory v3,
     uint32[1] memory v4
-  ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData = encodeStatic(v1);
 
-    PackedCounter _encodedLengths = encodeLengths(v2, v3, v4);
+    EncodedLengths _encodedLengths = encodeLengths(v2, v3, v4);
     bytes memory _dynamicData = encodeDynamic(v2, v3, v4);
 
     return (_staticData, _encodedLengths, _dynamicData);

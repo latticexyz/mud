@@ -1,5 +1,651 @@
 # @latticexyz/dev-tools
 
+## 2.0.4
+
+### Patch Changes
+
+- Updated dependencies [620e4ec1]
+  - @latticexyz/common@2.0.4
+  - @latticexyz/store@2.0.4
+  - @latticexyz/store-sync@2.0.4
+  - @latticexyz/world@2.0.4
+  - @latticexyz/react@2.0.4
+  - @latticexyz/recs@2.0.4
+  - @latticexyz/schema-type@2.0.4
+  - @latticexyz/utils@2.0.4
+
+## 2.0.3
+
+### Patch Changes
+
+- Updated dependencies [d2e4d0fb]
+- Updated dependencies [d2e4d0fb]
+  - @latticexyz/common@2.0.3
+  - @latticexyz/world@2.0.3
+  - @latticexyz/store@2.0.3
+  - @latticexyz/store-sync@2.0.3
+  - @latticexyz/react@2.0.3
+  - @latticexyz/recs@2.0.3
+  - @latticexyz/schema-type@2.0.3
+  - @latticexyz/utils@2.0.3
+
+## 2.0.2
+
+### Patch Changes
+
+- Updated dependencies [e86bd14d]
+- Updated dependencies [a09bf251]
+  - @latticexyz/world@2.0.2
+  - @latticexyz/store-sync@2.0.2
+  - @latticexyz/common@2.0.2
+  - @latticexyz/react@2.0.2
+  - @latticexyz/recs@2.0.2
+  - @latticexyz/schema-type@2.0.2
+  - @latticexyz/store@2.0.2
+  - @latticexyz/utils@2.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- Updated dependencies [4a6b4598]
+  - @latticexyz/store@2.0.1
+  - @latticexyz/world@2.0.1
+  - @latticexyz/react@2.0.1
+  - @latticexyz/store-sync@2.0.1
+  - @latticexyz/common@2.0.1
+  - @latticexyz/recs@2.0.1
+  - @latticexyz/schema-type@2.0.1
+  - @latticexyz/utils@2.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- 331dbfdcb: We've updated Store events to be "schemaless", meaning there is enough information in each event to only need to operate on the bytes of each record to make an update to that record without having to first decode the record by its schema. This enables new kinds of indexers and sync strategies.
+
+  As such, we've replaced `blockStorageOperations# @latticexyz/dev-tools with `storedBlockLogs# @latticexyz/dev-tools, a stream of simplified Store event logs after they've been synced to the configured storage adapter. These logs may not reflect exactly the events that are on chain when e.g. hydrating from an indexer, but they will still allow the client to "catch up" to the on-chain state of your tables.
+
+- 939916bcd: MUD dev tools is updated to latest sync stack. You must now pass in all of its data requirements rather than relying on magic globals.
+
+  ```diff
+  import { mount as mountDevTools } from "@latticexyz/dev-tools";
+
+  - mountDevTools();
+  + mountDevTools({
+  +   config,
+  +   publicClient,
+  +   walletClient,
+  +   latestBlock$,
+  +   blockStorageOperations$,
+  +   worldAddress,
+  +   worldAbi,
+  +   write$,
+  +   // if you're using recs
+  +   recsWorld,
+  + });
+  ```
+
+  It's also advised to wrap dev tools so that it is only mounted during development mode. Here's how you do this with Vite:
+
+  ```ts
+  // https://vitejs.dev/guide/env-and-mode.html
+  if (import.meta.env.DEV) {
+    mountDevTools({ ... });
+  }
+  ```
+
+- 252a1852: Migrated to new config format.
+
+### Minor Changes
+
+- 24a0dd444: Improved rendering of transactions that make calls via World's `call` and `callFrom` methods
+- 1faf7f697: Added Zustand support to Dev Tools:
+
+  ```ts
+  const { syncToZustand } from "@latticexyz/store-sync";
+  const { mount as mountDevTools } from "@latticexyz/dev-tools";
+
+  const { useStore } = syncToZustand({ ... });
+
+  mountDevTools({
+    ...
+    useStore,
+  });
+  ```
+
+- d7b1c588a: Upgraded all packages and templates to viem v2.7.12 and abitype v1.0.0.
+
+  Some viem APIs have changed and we've updated `getContract` to reflect those changes and keep it aligned with viem. It's one small code change:
+
+  ```diff
+   const worldContract = getContract({
+     address: worldAddress,
+     abi: IWorldAbi,
+  -  publicClient,
+  -  walletClient,
+  +  client: { public: publicClient, wallet: walletClient },
+   });
+  ```
+
+### Patch Changes
+
+- d5c0682fb: Updated all human-readable resource IDs to use `{namespace}__{name}` for consistency with world function signatures.
+- f99e88987: Bump viem to 1.14.0 and abitype to 0.9.8
+- 590542030: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- b8a6158d6: bump viem to 1.6.0
+- e0193e573: Updates store event `key` reference to `keyTuple`
+- e0377761c: Updates `table` reference to `tableId`
+- bfcb293d1: What used to be known as `ephemeral` table is now called `offchain` table.
+  The previous `ephemeral` tables only supported an `emitEphemeral` method, which emitted a `StoreSetEphemeralRecord` event.
+
+  Now `offchain` tables support all regular table methods, except partial operations on dynamic fields (`push`, `pop`, `update`).
+  Unlike regular tables they don't store data on-chain but emit the same events as regular tables (`StoreSetRecord`, `StoreSpliceStaticData`, `StoreDeleteRecord`), so their data can be indexed by offchain indexers/clients.
+
+  ```diff
+  - EphemeralTable.emitEphemeral(value);
+  + OffchainTable.set(value);
+  ```
+
+- 753bdce41: Store sync logic is now consolidated into a `createStoreSync` function exported from `@latticexyz/store-sync`. This simplifies each storage sync strategy to just a simple wrapper around the storage adapter. You can now sync to RECS with `syncToRecs` or SQLite with `syncToSqlite` and PostgreSQL support coming soon.
+
+  There are no breaking changes if you were just using `syncToRecs` from `@latticexyz/store-sync` or running the `sqlite-indexer` binary from `@latticexyz/store-indexer`.
+
+- 5294a7d59: Improves support for internal/client-only RECS components
+- 535229984: - bump to viem 1.3.0 and abitype 0.9.3
+  - move `@wagmi/chains` imports to `viem/chains`
+  - refine a few types
+- af639a264: `Store` events have been renamed for consistency and readability.
+  If you're parsing `Store` events manually, you need to update your ABI.
+  If you're using the MUD sync stack, the new events are already integrated and no further changes are necessary.
+
+  ```diff
+  - event StoreSetRecord(
+  + event Store_SetRecord(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple,
+      bytes staticData,
+      bytes32 encodedLengths,
+      bytes dynamicData
+    );
+  - event StoreSpliceStaticData(
+  + event Store_SpliceStaticData(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple,
+      uint48 start,
+      uint40 deleteCount,
+      bytes data
+    );
+  - event StoreSpliceDynamicData(
+  + event Store_SpliceDynamicData(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple,
+      uint48 start,
+      uint40 deleteCount,
+      bytes data,
+      bytes32 encodedLengths
+    );
+  - event StoreDeleteRecord(
+  + event Store_DeleteRecord(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple
+    );
+  ```
+
+- 6c6733256: Add `tableIdToHex` and `hexToTableId` pure functions and move/deprecate `TableId`.
+- cea754dde: - The external `setRecord` and `deleteRecord` methods of `IStore` no longer accept a `FieldLayout` as input, but load it from storage instead.
+  This is to prevent invalid `FieldLayout` values being passed, which could cause the onchain state to diverge from the indexer state.
+  However, the internal `StoreCore` library still exposes a `setRecord` and `deleteRecord` method that allows a `FieldLayout` to be passed.
+  This is because `StoreCore` can only be used internally, so the `FieldLayout` value can be trusted and we can save the gas for accessing storage.
+
+  ```diff
+  interface IStore {
+    function setRecord(
+      ResourceId tableId,
+      bytes32[] calldata keyTuple,
+      bytes calldata staticData,
+      PackedCounter encodedLengths,
+      bytes calldata dynamicData,
+  -   FieldLayout fieldLayout
+    ) external;
+
+    function deleteRecord(
+      ResourceId tableId,
+      bytes32[] memory keyTuple,
+  -   FieldLayout fieldLayout
+    ) external;
+  }
+  ```
+
+  - The `spliceStaticData` method and `Store_SpliceStaticData` event of `IStore` and `StoreCore` no longer include `deleteCount` in their signature.
+    This is because when splicing static data, the data after `start` is always overwritten with `data` instead of being shifted, so `deleteCount` is always the length of the data to be written.
+
+    ```diff
+
+    event Store_SpliceStaticData(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple,
+      uint48 start,
+    - uint40 deleteCount,
+      bytes data
+    );
+
+    interface IStore {
+      function spliceStaticData(
+        ResourceId tableId,
+        bytes32[] calldata keyTuple,
+        uint48 start,
+    -   uint40 deleteCount,
+        bytes calldata data
+      ) external;
+    }
+    ```
+
+  - The `updateInField` method has been removed from `IStore`, as it's almost identical to the more general `spliceDynamicData`.
+    If you're manually calling `updateInField`, here is how to upgrade to `spliceDynamicData`:
+
+    ```diff
+    - store.updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
+    + uint8 dynamicFieldIndex = fieldIndex - fieldLayout.numStaticFields();
+    + store.spliceDynamicData(tableId, keyTuple, dynamicFieldIndex, uint40(startByteIndex), uint40(dataToSet.length), dataToSet);
+    ```
+
+  - All other methods that are only valid for dynamic fields (`pushToField`, `popFromField`, `getFieldSlice`)
+    have been renamed to make this more explicit (`pushToDynamicField`, `popFromDynamicField`, `getDynamicFieldSlice`).
+
+    Their `fieldIndex` parameter has been replaced by a `dynamicFieldIndex` parameter, which is the index relative to the first dynamic field (i.e. `dynamicFieldIndex` = `fieldIndex` - `numStaticFields`).
+    The `FieldLayout` parameter has been removed, as it was only used to calculate the `dynamicFieldIndex` in the method.
+
+    ```diff
+    interface IStore {
+    - function pushToField(
+    + function pushToDynamicField(
+        ResourceId tableId,
+        bytes32[] calldata keyTuple,
+    -   uint8 fieldIndex,
+    +   uint8 dynamicFieldIndex,
+        bytes calldata dataToPush,
+    -   FieldLayout fieldLayout
+      ) external;
+
+    - function popFromField(
+    + function popFromDynamicField(
+        ResourceId tableId,
+        bytes32[] calldata keyTuple,
+    -   uint8 fieldIndex,
+    +   uint8 dynamicFieldIndex,
+        uint256 byteLengthToPop,
+    -   FieldLayout fieldLayout
+      ) external;
+
+    - function getFieldSlice(
+    + function getDynamicFieldSlice(
+        ResourceId tableId,
+        bytes32[] memory keyTuple,
+    -   uint8 fieldIndex,
+    +   uint8 dynamicFieldIndex,
+    -   FieldLayout fieldLayout,
+        uint256 start,
+        uint256 end
+      ) external view returns (bytes memory data);
+    }
+    ```
+
+  - `IStore` has a new `getDynamicFieldLength` length method, which returns the byte length of the given dynamic field and doesn't require the `FieldLayout`.
+
+    ```diff
+    IStore {
+    + function getDynamicFieldLength(
+    +   ResourceId tableId,
+    +   bytes32[] memory keyTuple,
+    +   uint8 dynamicFieldIndex
+    + ) external view returns (uint256);
+    }
+
+    ```
+
+  - `IStore` now has additional overloads for `getRecord`, `getField`, `getFieldLength` and `setField` that don't require a `FieldLength` to be passed, but instead load it from storage.
+  - `IStore` now exposes `setStaticField` and `setDynamicField` to save gas by avoiding the dynamic inference of whether the field is static or dynamic.
+  - The `getDynamicFieldSlice` method no longer accepts reading outside the bounds of the dynamic field.
+    This is to avoid returning invalid data, as the data of a dynamic field is not deleted when the record is deleted, but only its length is set to zero.
+
+- d2f8e9400: Moved to new resource ID utils.
+- Updated dependencies [7ce82b6fc]
+- Updated dependencies [5df1f31bc]
+- Updated dependencies [d8c8f66bf]
+- Updated dependencies [c6c13f2ea]
+- Updated dependencies [77dce993a]
+- Updated dependencies [ce97426c0]
+- Updated dependencies [1b86eac05]
+- Updated dependencies [a35c05ea9]
+- Updated dependencies [c9ee5e4a]
+- Updated dependencies [3622e39dd]
+- Updated dependencies [c963b46c7]
+- Updated dependencies [08d7c471f]
+- Updated dependencies [05b3e8882]
+- Updated dependencies [52182f70d]
+- Updated dependencies [0f27afddb]
+- Updated dependencies [748f4588a]
+- Updated dependencies [865253dba]
+- Updated dependencies [8f49c277d]
+- Updated dependencies [7fa2ca183]
+- Updated dependencies [ce7125a1b]
+- Updated dependencies [745485cda]
+- Updated dependencies [16b13ea8f]
+- Updated dependencies [aea67c580]
+- Updated dependencies [82693072]
+- Updated dependencies [07dd6f32c]
+- Updated dependencies [c14f8bf1e]
+- Updated dependencies [c07fa0215]
+- Updated dependencies [90e4161bb]
+- Updated dependencies [aabd30767]
+- Updated dependencies [65c9546c4]
+- Updated dependencies [6ca1874e0]
+- Updated dependencies [331dbfdcb]
+- Updated dependencies [504e25dc8]
+- Updated dependencies [e86fbc126]
+- Updated dependencies [d5c0682fb]
+- Updated dependencies [1d60930d6]
+- Updated dependencies [01e46d99]
+- Updated dependencies [430e6b29a]
+- Updated dependencies [f9f9609ef]
+- Updated dependencies [904fd7d4e]
+- Updated dependencies [e6c03a87a]
+- Updated dependencies [1077c7f53]
+- Updated dependencies [de47d698f]
+- Updated dependencies [e48fb3b03]
+- Updated dependencies [2c920de7]
+- Updated dependencies [0a3b9b1c9]
+- Updated dependencies [b9e562d8f]
+- Updated dependencies [331dbfdcb]
+- Updated dependencies [44236041f]
+- Updated dependencies [066056154]
+- Updated dependencies [759514d8b]
+- Updated dependencies [952cd5344]
+- Updated dependencies [d5094a242]
+- Updated dependencies [6c615b608]
+- Updated dependencies [3fb9ce283]
+- Updated dependencies [c207d35e8]
+- Updated dependencies [db7798be2]
+- Updated dependencies [bb6ada740]
+- Updated dependencies [85b94614b]
+- Updated dependencies [35c9f33df]
+- Updated dependencies [3be4deecf]
+- Updated dependencies [a25881160]
+- Updated dependencies [a4aff73c5]
+- Updated dependencies [0b8ce3f2c]
+- Updated dependencies [933b54b5f]
+- Updated dependencies [5debcca8]
+- Updated dependencies [c4d5eb4e4]
+- Updated dependencies [f8dab7334]
+- Updated dependencies [1a0fa7974]
+- Updated dependencies [57a526083]
+- Updated dependencies [f62c767e7]
+- Updated dependencies [d00c4a9af]
+- Updated dependencies [9e5baf4ff]
+- Updated dependencies [9aa5e786]
+- Updated dependencies [307abab3]
+- Updated dependencies [de151fec0]
+- Updated dependencies [c32a9269a]
+- Updated dependencies [eb384bb0e]
+- Updated dependencies [37c228c63]
+- Updated dependencies [618dd0e89]
+- Updated dependencies [aacffcb59]
+- Updated dependencies [c991c71a]
+- Updated dependencies [1faf7f697]
+- Updated dependencies [ae340b2bf]
+- Updated dependencies [1bf2e9087]
+- Updated dependencies [e5d208e40]
+- Updated dependencies [b38c096d]
+- Updated dependencies [211be2a1e]
+- Updated dependencies [0f3e2e02b]
+- Updated dependencies [131c63e53]
+- Updated dependencies [1f80a0b52]
+- Updated dependencies [712866f5f]
+- Updated dependencies [d08789282]
+- Updated dependencies [5c965a919]
+- Updated dependencies [f99e88987]
+- Updated dependencies [939916bcd]
+- Updated dependencies [e5a962bc3]
+- Updated dependencies [331f0d636]
+- Updated dependencies [f6f402896]
+- Updated dependencies [d5b73b126]
+- Updated dependencies [e34d1170]
+- Updated dependencies [08b422171]
+- Updated dependencies [b8a6158d6]
+- Updated dependencies [190fdd11]
+- Updated dependencies [4e445a1ab]
+- Updated dependencies [37c228c63]
+- Updated dependencies [37c228c63]
+- Updated dependencies [433078c54]
+- Updated dependencies [669fa43e5]
+- Updated dependencies [db314a74]
+- Updated dependencies [b2d2aa715]
+- Updated dependencies [4c7fd3eb2]
+- Updated dependencies [a0341daf9]
+- Updated dependencies [83583a505]
+- Updated dependencies [5e723b90e]
+- Updated dependencies [582388ba5]
+- Updated dependencies [6573e38e9]
+- Updated dependencies [51914d656]
+- Updated dependencies [eeb15cc06]
+- Updated dependencies [063daf80e]
+- Updated dependencies [afaf2f5ff]
+- Updated dependencies [37c228c63]
+- Updated dependencies [59267655]
+- Updated dependencies [37c228c63]
+- Updated dependencies [997286bac]
+- Updated dependencies [2bfee9217]
+- Updated dependencies [1ca35e9a1]
+- Updated dependencies [4081493b8]
+- Updated dependencies [44a5432ac]
+- Updated dependencies [6e66c5b74]
+- Updated dependencies [582388ba5]
+- Updated dependencies [8d51a0348]
+- Updated dependencies [c162ad5a5]
+- Updated dependencies [a735e14b4]
+- Updated dependencies [88b1a5a19]
+- Updated dependencies [1e2ad78e2]
+- Updated dependencies [65c9546c4]
+- Updated dependencies [48909d151]
+- Updated dependencies [7b28d32e5]
+- Updated dependencies [3e024fcf3]
+- Updated dependencies [b02f9d0e4]
+- Updated dependencies [2ca75f9b9]
+- Updated dependencies [f62c767e7]
+- Updated dependencies [bb91edaa0]
+- Updated dependencies [590542030]
+- Updated dependencies [1a82c278]
+- Updated dependencies [1b5eb0d07]
+- Updated dependencies [44a5432ac]
+- Updated dependencies [48c51b52a]
+- Updated dependencies [9f8b84e73]
+- Updated dependencies [66cc35a8c]
+- Updated dependencies [672d05ca1]
+- Updated dependencies [f1cd43bf9]
+- Updated dependencies [9d0f492a9]
+- Updated dependencies [55a05fd7a]
+- Updated dependencies [7e6e5157b]
+- Updated dependencies [f03531d97]
+- Updated dependencies [c583f3cd0]
+- Updated dependencies [31ffc9d5d]
+- Updated dependencies [5e723b90e]
+- Updated dependencies [63831a264]
+- Updated dependencies [b8a6158d6]
+- Updated dependencies [6db95ce15]
+- Updated dependencies [8193136a9]
+- Updated dependencies [5d737cf2e]
+- Updated dependencies [d075f82f3]
+- Updated dependencies [331dbfdcb]
+- Updated dependencies [a7b30c79b]
+- Updated dependencies [6470fe1fd]
+- Updated dependencies [86766ce1]
+- Updated dependencies [92de59982]
+- Updated dependencies [5741d53d0]
+- Updated dependencies [aee8020a6]
+- Updated dependencies [22ee44700]
+- Updated dependencies [e2d089c6d]
+- Updated dependencies [1327ea8c8]
+- Updated dependencies [ad4ac4459]
+- Updated dependencies [f6d214e3d]
+- Updated dependencies [3f5d33af]
+- Updated dependencies [be313068b]
+- Updated dependencies [ac508bf18]
+- Updated dependencies [331dbfdcb]
+- Updated dependencies [93390d89]
+- Updated dependencies [57d8965df]
+- Updated dependencies [18d3aea55]
+- Updated dependencies [fa7763583]
+- Updated dependencies [7987c94d6]
+- Updated dependencies [bb91edaa0]
+- Updated dependencies [144c0d8d]
+- Updated dependencies [5ac4c97f4]
+- Updated dependencies [bfcb293d1]
+- Updated dependencies [3e057061d]
+- Updated dependencies [1890f1a06]
+- Updated dependencies [e48171741]
+- Updated dependencies [e4a6189df]
+- Updated dependencies [753bdce41]
+- Updated dependencies [5294a7d59]
+- Updated dependencies [69a96f109]
+- Updated dependencies [9b43029c3]
+- Updated dependencies [37c228c63]
+- Updated dependencies [55ab88a60]
+- Updated dependencies [e3de1a338]
+- Updated dependencies [c58da9ad]
+- Updated dependencies [37c228c63]
+- Updated dependencies [b8a6158d6]
+- Updated dependencies [4e4a34150]
+- Updated dependencies [535229984]
+- Updated dependencies [af639a264]
+- Updated dependencies [5e723b90e]
+- Updated dependencies [99ab9cd6f]
+- Updated dependencies [be18b75b]
+- Updated dependencies [0c4f9fea9]
+- Updated dependencies [0d12db8c2]
+- Updated dependencies [c049c23f4]
+- Updated dependencies [80dd6992e]
+- Updated dependencies [60cfd089f]
+- Updated dependencies [9ef3f9a7c]
+- Updated dependencies [34203e4ed]
+- Updated dependencies [24a6cd536]
+- Updated dependencies [37c228c63]
+- Updated dependencies [708b49c50]
+- Updated dependencies [d2f8e9400]
+- Updated dependencies [17f987209]
+- Updated dependencies [25086be5f]
+- Updated dependencies [37c228c63]
+- Updated dependencies [b1d41727d]
+- Updated dependencies [3ac68ade6]
+- Updated dependencies [c642ff3a0]
+- Updated dependencies [22ba7b675]
+- Updated dependencies [4c1dcd81e]
+- Updated dependencies [3042f86e]
+- Updated dependencies [c049c23f4]
+- Updated dependencies [5e71e1cb5]
+- Updated dependencies [7eabd06f7]
+- Updated dependencies [6071163f7]
+- Updated dependencies [6c6733256]
+- Updated dependencies [cd5abcc3b]
+- Updated dependencies [d7b1c588a]
+- Updated dependencies [5c52bee09]
+- Updated dependencies [939916bcd]
+- Updated dependencies [251170e1e]
+- Updated dependencies [8025c3505]
+- Updated dependencies [c4f49240d]
+- Updated dependencies [745485cda]
+- Updated dependencies [95f64c85]
+- Updated dependencies [afdba793f]
+- Updated dependencies [37c228c63]
+- Updated dependencies [3e7d83d0]
+- Updated dependencies [5df1f31bc]
+- Updated dependencies [29c3f5087]
+- Updated dependencies [cea754dde]
+- Updated dependencies [331f0d636]
+- Updated dependencies [1b5eb0d07]
+- Updated dependencies [95c59b203]
+- Updated dependencies [d2f8e9400]
+- Updated dependencies [4c1dcd81e]
+- Updated dependencies [adc68225]
+- Updated dependencies [cc2c8da00]
+- Updated dependencies [252a1852]
+- Updated dependencies [7b73f44d9]
+- Updated dependencies [103f635eb]
+  - @latticexyz/store@2.0.0
+  - @latticexyz/world@2.0.0
+  - @latticexyz/store-sync@2.0.0
+  - @latticexyz/common@2.0.0
+  - @latticexyz/utils@2.0.0
+  - @latticexyz/recs@2.0.0
+  - @latticexyz/schema-type@2.0.0
+  - @latticexyz/react@2.0.0
+
+## 2.0.0-next.18
+
+### Major Changes
+
+- 252a1852: Migrated to new config format.
+
+### Minor Changes
+
+- d7b1c588a: Upgraded all packages and templates to viem v2.7.12 and abitype v1.0.0.
+
+  Some viem APIs have changed and we've updated `getContract` to reflect those changes and keep it aligned with viem. It's one small code change:
+
+  ```diff
+   const worldContract = getContract({
+     address: worldAddress,
+     abi: IWorldAbi,
+  -  publicClient,
+  -  walletClient,
+  +  client: { public: publicClient, wallet: walletClient },
+   });
+  ```
+
+### Patch Changes
+
+- d5c0682fb: Updated all human-readable resource IDs to use `{namespace}__{name}` for consistency with world function signatures.
+- Updated dependencies [c9ee5e4a]
+- Updated dependencies [3622e39dd]
+- Updated dependencies [8f49c277d]
+- Updated dependencies [82693072]
+- Updated dependencies [d5c0682fb]
+- Updated dependencies [01e46d99]
+- Updated dependencies [2c920de7]
+- Updated dependencies [44236041]
+- Updated dependencies [3be4deecf]
+- Updated dependencies [5debcca8]
+- Updated dependencies [9aa5e786]
+- Updated dependencies [307abab3]
+- Updated dependencies [c991c71a]
+- Updated dependencies [b38c096d]
+- Updated dependencies [e34d1170]
+- Updated dependencies [190fdd11]
+- Updated dependencies [db314a74]
+- Updated dependencies [59267655]
+- Updated dependencies [1a82c278]
+- Updated dependencies [8193136a9]
+- Updated dependencies [86766ce1]
+- Updated dependencies [3f5d33af]
+- Updated dependencies [93390d89]
+- Updated dependencies [144c0d8d]
+- Updated dependencies [c58da9ad]
+- Updated dependencies [be18b75b]
+- Updated dependencies [3042f86e]
+- Updated dependencies [d7b1c588a]
+- Updated dependencies [95f64c85]
+- Updated dependencies [3e7d83d0]
+- Updated dependencies [adc68225]
+- Updated dependencies [252a1852]
+  - @latticexyz/store@2.0.0-next.18
+  - @latticexyz/world@2.0.0-next.18
+  - @latticexyz/store-sync@2.0.0-next.18
+  - @latticexyz/common@2.0.0-next.18
+  - @latticexyz/react@2.0.0-next.18
+  - @latticexyz/schema-type@2.0.0-next.18
+  - @latticexyz/recs@2.0.0-next.18
+  - @latticexyz/utils@2.0.0-next.18
+
 ## 2.0.0-next.17
 
 ### Patch Changes

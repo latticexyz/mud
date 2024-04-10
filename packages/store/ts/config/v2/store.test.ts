@@ -1,9 +1,9 @@
 import { describe, it } from "vitest";
 import { defineStore } from "./store";
-import { Config } from "./output";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
-import { CODEGEN_DEFAULTS, TABLE_CODEGEN_DEFAULTS } from "./defaults";
+import { CODEGEN_DEFAULTS, TABLE_CODEGEN_DEFAULTS, TABLE_DEPLOY_DEFAULTS } from "./defaults";
+import { Store } from "./output";
 
 describe("defineStore", () => {
   it("should return the full config given a full config with one key", () => {
@@ -34,27 +34,12 @@ describe("defineStore", () => {
               internalType: "uint256",
             },
           },
-          keySchema: {
-            age: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
-          valueSchema: {
-            id: {
-              type: "address",
-              internalType: "address",
-            },
-            name: {
-              type: "string",
-              internalType: "string",
-            },
-          },
           key: ["age"],
           name: "Example",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
           type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: {},
@@ -98,27 +83,12 @@ describe("defineStore", () => {
               internalType: "static",
             },
           },
-          keySchema: {
-            age: {
-              type: "address",
-              internalType: "static",
-            },
-          },
-          valueSchema: {
-            id: {
-              type: "string",
-              internalType: "dynamic",
-            },
-            name: {
-              type: "string",
-              internalType: "string",
-            },
-          },
           key: ["age"],
           name: "Example",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
           type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: {
@@ -161,27 +131,12 @@ describe("defineStore", () => {
               internalType: "uint256",
             },
           },
-          keySchema: {
-            age: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-            id: {
-              type: "address",
-              internalType: "address",
-            },
-          },
-          valueSchema: {
-            name: {
-              type: "string",
-              internalType: "string",
-            },
-          },
           key: ["age", "id"],
           name: "Example",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
           type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: {},
@@ -225,27 +180,12 @@ describe("defineStore", () => {
               internalType: "uint256",
             },
           },
-          keySchema: {
-            firstKey: {
-              type: "address",
-              internalType: "address",
-            },
-            firstAge: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
-          valueSchema: {
-            firstName: {
-              type: "string",
-              internalType: "string",
-            },
-          },
           key: ["firstKey", "firstAge"],
           name: "First",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
           type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
         },
         Second: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
@@ -263,27 +203,12 @@ describe("defineStore", () => {
               internalType: "uint256",
             },
           },
-          keySchema: {
-            secondKey: {
-              type: "address",
-              internalType: "address",
-            },
-            secondAge: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
-          valueSchema: {
-            secondName: {
-              type: "string",
-              internalType: "string",
-            },
-          },
           key: ["secondKey", "secondAge"],
           name: "Second",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
           type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: {},
@@ -331,27 +256,12 @@ describe("defineStore", () => {
               internalType: "uint256",
             },
           },
-          keySchema: {
-            firstKey: {
-              type: "address",
-              internalType: "Static",
-            },
-            firstAge: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
-          valueSchema: {
-            firstName: {
-              type: "string",
-              internalType: "Dynamic",
-            },
-          },
           key: ["firstKey", "firstAge"],
           name: "First",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
           type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
         },
         Second: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
@@ -369,27 +279,12 @@ describe("defineStore", () => {
               internalType: "uint256",
             },
           },
-          keySchema: {
-            secondKey: {
-              type: "address",
-              internalType: "Static",
-            },
-            secondAge: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
-          valueSchema: {
-            secondName: {
-              type: "string",
-              internalType: "Dynamic",
-            },
-          },
           key: ["secondKey", "secondAge"],
           name: "Second",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
           type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: {
@@ -493,27 +388,12 @@ describe("defineStore", () => {
               internalType: "static",
             },
           },
-          keySchema: {
-            name: {
-              type: "uint8",
-              internalType: "ValidNames",
-            },
-          },
-          valueSchema: {
-            age: {
-              type: "address",
-              internalType: "static",
-            },
-            id: {
-              type: "string",
-              internalType: "dynamic",
-            },
-          },
           key: ["name"],
           name: "Example",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
           type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: {
@@ -548,7 +428,7 @@ describe("defineStore", () => {
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
     });
 
-    attest<true, typeof config extends Config ? true : false>();
+    attest<true, typeof config extends Store ? true : false>();
   });
 
   it("should use the global namespace instead for tables", () => {
@@ -563,8 +443,9 @@ describe("defineStore", () => {
     });
 
     attest<"namespace">(config.namespace).equals("namespace");
-    attest<"namespace">(config.tables.Example.namespace).equals("namespace");
-    attest(config.tables.Example.tableId).equals(
+    attest<"namespace">(config.tables.namespace__Example.namespace).equals("namespace");
+    attest<"Example">(config.tables.namespace__Example.name).equals("Example");
+    attest(config.tables.namespace__Example.tableId).equals(
       resourceToHex({ type: "table", name: "Example", namespace: "namespace" }),
     );
   });
@@ -581,5 +462,58 @@ describe("defineStore", () => {
     attest(() => defineStore({ tables: { Invalid: { invalidKey: 1 } } })).type.errors(
       "Key `invalidKey` does not exist in TableInput",
     );
+  });
+
+  it("should throw if name is overridden in the store context", () => {
+    attest(() =>
+      defineStore({
+        namespace: "CustomNamespace",
+        tables: {
+          Example: {
+            schema: { id: "address" },
+            key: ["id"],
+            // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
+            name: "NotAllowed",
+          },
+        },
+      }),
+    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
+  });
+
+  it("should throw if namespace is overridden in the store context", () => {
+    attest(() =>
+      defineStore({
+        namespace: "CustomNamespace",
+        tables: {
+          Example: {
+            schema: { id: "address" },
+            key: ["id"],
+            // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
+            namespace: "NotAllowed",
+          },
+        },
+      }),
+    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
+  });
+
+  it("should allow const enum as input", () => {
+    const enums = {
+      Example: ["First", "Second"],
+    } as const;
+
+    attest(defineStore({ enums }).enums).equals(enums);
+  });
+
+  it("should allow a const config as input", () => {
+    const config = {
+      tables: {
+        Example: {
+          schema: { id: "address", name: "string", age: "uint256" },
+          key: ["age"],
+        },
+      },
+    } as const;
+
+    defineStore(config);
   });
 });

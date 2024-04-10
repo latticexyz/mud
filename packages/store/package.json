@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store",
-  "version": "2.0.0-next.17",
+  "version": "2.0.4",
   "description": "Store",
   "repository": {
     "type": "git",
@@ -10,18 +10,22 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/ts/index.js",
+    ".": "./dist/index.js",
+    "./internal": "./dist/internal.js",
     "./mud.config": "./dist/mud.config.js",
-    "./codegen": "./dist/ts/codegen/index.js",
-    "./config": "./dist/ts/config/index.js",
-    "./config/v2": "./dist/ts/config/v2/index.js",
-    "./register": "./dist/ts/register/index.js",
+    "./codegen": "./dist/codegen.js",
+    "./config": "./dist/config.js",
+    "./config/v2": "./dist/config/v2.js",
+    "./register": "./dist/register.js",
     "./out/*": "./out/*"
   },
   "typesVersions": {
     "*": {
       "index": [
-        "./ts/index.ts"
+        "./ts/exports/index.ts"
+      ],
+      "internal": [
+        "./ts/exports/internal.ts"
       ],
       "codegen": [
         "./ts/codegen/index.ts"
@@ -55,7 +59,7 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@arktype/util": "0.0.25",
+    "@arktype/util": "0.0.27",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",

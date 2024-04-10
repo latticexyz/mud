@@ -1,4 +1,12 @@
+import { Callout } from "nextra/components";
+
 # System hooks
+
+<Callout type="info" emoji="ⓘ">
+  This page is about hooks that are called before or after a `System` call. You can also use [store
+  hooks](../store/store-hooks) that are called whenever information in a table is modified, regardless of the source of
+  the change.
+</Callout>
 
 The [namespace owner](/world/namespaces-access-control#ownership) can [register](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol#L68-L99) hooks that are called before and/or after calls to a specific `System`.
 

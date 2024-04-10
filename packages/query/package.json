@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/query",
-  "version": "2.0.0-next.17",
+  "version": "2.0.4",
   "description": "Tools for interacting with the MUD query API",
   "repository": {
     "type": "git",
@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@latticexyz/common": "workspace:*",
+    "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "viem": "2.7.12"

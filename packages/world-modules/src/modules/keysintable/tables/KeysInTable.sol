@@ -13,7 +13,7 @@ import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 // Import user types
@@ -1304,7 +1304,7 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -1319,7 +1319,7 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -1334,7 +1334,7 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
 
-    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
+    (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
       _tableId,
       _keyTuple,
       _fieldLayout
@@ -1354,7 +1354,7 @@ library KeysInTable {
     bytes32[] memory keys4
   ) internal {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(keys0, keys1, keys2, keys3, keys4);
+    EncodedLengths _encodedLengths = encodeLengths(keys0, keys1, keys2, keys3, keys4);
     bytes memory _dynamicData = encodeDynamic(keys0, keys1, keys2, keys3, keys4);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -1375,7 +1375,7 @@ library KeysInTable {
     bytes32[] memory keys4
   ) internal {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(keys0, keys1, keys2, keys3, keys4);
+    EncodedLengths _encodedLengths = encodeLengths(keys0, keys1, keys2, keys3, keys4);
     bytes memory _dynamicData = encodeDynamic(keys0, keys1, keys2, keys3, keys4);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -1397,7 +1397,7 @@ library KeysInTable {
     bytes32[] memory keys4
   ) internal {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(keys0, keys1, keys2, keys3, keys4);
+    EncodedLengths _encodedLengths = encodeLengths(keys0, keys1, keys2, keys3, keys4);
     bytes memory _dynamicData = encodeDynamic(keys0, keys1, keys2, keys3, keys4);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -1411,7 +1411,13 @@ library KeysInTable {
    */
   function set(ResourceId sourceTableId, KeysInTableData memory _table) internal {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(_table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4);
+    EncodedLengths _encodedLengths = encodeLengths(
+      _table.keys0,
+      _table.keys1,
+      _table.keys2,
+      _table.keys3,
+      _table.keys4
+    );
     bytes memory _dynamicData = encodeDynamic(_table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -1425,7 +1431,13 @@ library KeysInTable {
    */
   function _set(ResourceId sourceTableId, KeysInTableData memory _table) internal {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(_table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4);
+    EncodedLengths _encodedLengths = encodeLengths(
+      _table.keys0,
+      _table.keys1,
+      _table.keys2,
+      _table.keys3,
+      _table.keys4
+    );
     bytes memory _dynamicData = encodeDynamic(_table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -1439,7 +1451,13 @@ library KeysInTable {
    */
   function set(IStore _store, ResourceId sourceTableId, KeysInTableData memory _table) internal {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(_table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4);
+    EncodedLengths _encodedLengths = encodeLengths(
+      _table.keys0,
+      _table.keys1,
+      _table.keys2,
+      _table.keys3,
+      _table.keys4
+    );
     bytes memory _dynamicData = encodeDynamic(_table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -1452,7 +1470,7 @@ library KeysInTable {
    * @notice Decode the tightly packed blob of dynamic data using the encoded lengths.
    */
   function decodeDynamic(
-    PackedCounter _encodedLengths,
+    EncodedLengths _encodedLengths,
     bytes memory _blob
   )
     internal
@@ -1505,7 +1523,7 @@ library KeysInTable {
    */
   function decode(
     bytes memory,
-    PackedCounter _encodedLengths,
+    EncodedLengths _encodedLengths,
     bytes memory _dynamicData
   ) internal pure returns (KeysInTableData memory _table) {
     (_table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4) = decodeDynamic(
@@ -1554,10 +1572,10 @@ library KeysInTable {
     bytes32[] memory keys2,
     bytes32[] memory keys3,
     bytes32[] memory keys4
-  ) internal pure returns (PackedCounter _encodedLengths) {
+  ) internal pure returns (EncodedLengths _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
-      _encodedLengths = PackedCounterLib.pack(
+      _encodedLengths = EncodedLengthsLib.pack(
         keys0.length * 32,
         keys1.length * 32,
         keys2.length * 32,
@@ -1600,9 +1618,9 @@ library KeysInTable {
     bytes32[] memory keys2,
     bytes32[] memory keys3,
     bytes32[] memory keys4
-  ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData;
-    PackedCounter _encodedLengths = encodeLengths(keys0, keys1, keys2, keys3, keys4);
+    EncodedLengths _encodedLengths = encodeLengths(keys0, keys1, keys2, keys3, keys4);
     bytes memory _dynamicData = encodeDynamic(keys0, keys1, keys2, keys3, keys4);
 
     return (_staticData, _encodedLengths, _dynamicData);

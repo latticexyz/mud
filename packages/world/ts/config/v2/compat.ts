@@ -1,6 +1,7 @@
 import { conform, mutable } from "@arktype/util";
 import { Module, World, Systems } from "./output";
-import { storeToV1, Store } from "@latticexyz/store/config/v2";
+import { Store } from "@latticexyz/store";
+import { storeToV1 } from "@latticexyz/store/config/v2";
 
 type modulesToV1<modules extends readonly Module[]> = mutable<{
   [key in keyof modules]: Required<modules[key]>;
@@ -26,17 +27,18 @@ function systemsToV1<systems extends Systems>(systems: systems): systemsToV1<sys
 }
 
 export type worldToV1<world> = world extends World
-  ? storeToV1<world> & {
+  ? Omit<storeToV1<world>, "v2"> & {
       systems: systemsToV1<world["systems"]>;
       excludeSystems: mutable<world["excludeSystems"]>;
       modules: modulesToV1<world["modules"]>;
-      worldContractName: world["deployment"]["customWorldContract"];
-      postDeployScript: world["deployment"]["postDeployScript"];
-      deploysDirectory: world["deployment"]["deploysDirectory"];
-      worldsFile: world["deployment"]["worldsFile"];
+      worldContractName: world["deploy"]["customWorldContract"];
+      postDeployScript: world["deploy"]["postDeployScript"];
+      deploysDirectory: world["deploy"]["deploysDirectory"];
+      worldsFile: world["deploy"]["worldsFile"];
       worldInterfaceName: world["codegen"]["worldInterfaceName"];
       worldgenDirectory: world["codegen"]["worldgenDirectory"];
       worldImportPath: world["codegen"]["worldImportPath"];
+      v2: world;
     }
   : never;
 
@@ -45,14 +47,14 @@ export function worldToV1<world>(world: conform<world, World>): worldToV1<world>
     systems: systemsToV1(world.systems),
     excludeSystems: world.excludeSystems,
     modules: modulesToV1(world.modules),
-    worldContractName: world.deployment.customWorldContract,
-    postDeployScript: world.deployment.postDeployScript,
-    deploysDirectory: world.deployment.deploysDirectory,
-    worldsFile: world.deployment.worldsFile,
+    worldContractName: world.deploy.customWorldContract,
+    postDeployScript: world.deploy.postDeployScript,
+    deploysDirectory: world.deploy.deploysDirectory,
+    worldsFile: world.deploy.worldsFile,
     worldInterfaceName: world.codegen.worldInterfaceName,
     worldgenDirectory: world.codegen.worldgenDirectory,
     worldImportPath: world.codegen.worldImportPath,
   };
 
-  return { ...storeToV1(world as Store), ...v1WorldConfig } as worldToV1<world>;
+  return { ...storeToV1(world as Store), ...v1WorldConfig, v2: world } as worldToV1<world>;
 }

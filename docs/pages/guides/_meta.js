@@ -4,4 +4,5 @@ export default {
   "extending-a-world": "Extending a World",
   "adding-delegation": "Adding Delegation",
   emojimon: "Emojimon",
+  "best-practices": "Best Practices",
 };

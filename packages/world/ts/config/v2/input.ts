@@ -14,14 +14,14 @@ export type SystemInput = {
    */
   registerFunctionSelectors?: boolean;
   /** If openAccess is true, any address can call the system */
-  openAccess?: true;
+  openAccess?: boolean;
   /** An array of addresses or system names that can access the system */
   accessList?: string[];
 };
 
 export type SystemsInput = { [key: string]: SystemInput };
 
-export type DeploymentInput = {
+export type DeployInput = {
   /**
    * Script to execute after the deployment is complete (Default "PostDeploy").
    * Script must be placed in the forge scripts directory (see foundry.toml) and have a ".s.sol" extension.
@@ -57,8 +57,8 @@ export type WorldInput = evaluate<
     excludeSystems?: string[];
     /** Modules to in the World */
     modules?: Module[];
-    /** Deployment config */
-    deployment?: DeploymentInput;
+    /** Deploy config */
+    deploy?: DeployInput;
     /** Codegen config */
     codegen?: CodegenInput;
   }
