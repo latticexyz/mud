@@ -8,13 +8,15 @@ import { WORLD_VERSION } from "./version.sol";
 import { IWorldEvents } from "./IWorldEvents.sol";
 import { AccessControl } from "./AccessControl.sol";
 import { ROOT_NAMESPACE_ID } from "./constants.sol";
-import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import { Proxy } from "@openzeppelin/contracts/proxy/Proxy.sol";
 import { ERC1967Utils } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
 
-contract WorldProxy is ERC1967Proxy {
+contract WorldProxy is Proxy {
   address public creator;
 
-  constructor(address implementation, bytes memory _data) ERC1967Proxy(implementation, _data) {
+  constructor(address implementation, bytes memory _data) payable {
+    ERC1967Utils.upgradeToAndCall(implementation, _data);
+
     StoreCore.initialize();
     emit IStoreEvents.HelloStore(STORE_VERSION);
 
@@ -26,5 +28,16 @@ contract WorldProxy is ERC1967Proxy {
     AccessControl.requireOwner(ROOT_NAMESPACE_ID, msg.sender);
 
     ERC1967Utils.upgradeToAndCall(newImplementation, new bytes(0));
+  }
+
+  /**
+   * @dev Returns the current implementation address.
+   *
+   * TIP: To get this value clients can read directly from the storage slot shown below (specified by EIP1967) using
+   * the https://eth.wiki/json-rpc/API#eth_getstorageat[`eth_getStorageAt`] RPC call.
+   * `0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc`
+   */
+  function _implementation() internal view virtual override returns (address) {
+    return ERC1967Utils.getImplementation();
   }
 }
