@@ -7,20 +7,25 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { WORLD_VERSION } from "../src/version.sol";
 import { World } from "../src/World.sol";
+import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { ResourceId } from "../src/WorldResourceId.sol";
 import { InitModule } from "../src/modules/init/InitModule.sol";
 import { Create2Factory } from "../src/Create2Factory.sol";
 import { WorldProxyFactory } from "../src/WorldProxyFactory.sol";
 import { IWorldFactory } from "../src/IWorldFactory.sol";
 import { IWorldEvents } from "../src/IWorldEvents.sol";
+import { IWorldErrors } from "../src/IWorldErrors.sol";
 import { InstalledModules } from "../src/codegen/tables/InstalledModules.sol";
 import { NamespaceOwner } from "../src/codegen/tables/NamespaceOwner.sol";
+import { ResourceId, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { ROOT_NAMESPACE_ID } from "../src/constants.sol";
 import { createInitModule } from "./createInitModule.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ERC1967Utils } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
 
 contract WorldProxyFactoryTest is Test, GasReporter {
+  using WorldResourceIdInstance for ResourceId;
+
   event ContractDeployed(address addr, uint256 salt);
   event WorldDeployed(address indexed newContract, uint256 salt);
 
@@ -109,6 +114,12 @@ contract WorldProxyFactoryTest is Test, GasReporter {
     // Expect revert when deploying world with same bytes salt as already deployed world
     vm.expectRevert();
     worldFactory.deployWorld(_salt1);
+
+    // Expect revert when initializing world as not the creator
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, ROOT_NAMESPACE_ID.toString(), account)
+    );
+    IBaseWorld(address(worldAddress)).initialize(initModule);
   }
 
   function testWorldProxyFactoryGas() public {
