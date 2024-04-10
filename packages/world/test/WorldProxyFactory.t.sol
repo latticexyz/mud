@@ -40,9 +40,10 @@ contract WorldProxyFactoryTest is Test, GasReporter {
     return address(uint160(uint256(data)));
   }
 
-  function testWorldProxyFactory(address account, uint256 salt1, uint256 salt2) public {
+  function testWorldProxyFactory(address account1, address account2, uint256 salt1, uint256 salt2) public {
     vm.assume(salt1 != salt2);
-    vm.startPrank(account);
+    vm.assume(account1 != account2);
+    vm.startPrank(account1);
 
     // Deploy WorldFactory with current InitModule
     InitModule initModule = createInitModule();
@@ -55,7 +56,7 @@ contract WorldProxyFactoryTest is Test, GasReporter {
     // Address we expect for first World
     address calculatedAddress = calculateAddress(
       worldFactoryAddress,
-      keccak256(abi.encode(account, _salt1)),
+      keccak256(abi.encode(account1, _salt1)),
       type(World).creationCode
     );
 
@@ -79,7 +80,7 @@ contract WorldProxyFactoryTest is Test, GasReporter {
     assertTrue(InstalledModules.get(address(initModule), keccak256(new bytes(0))));
 
     // Confirm the msg.sender is owner of the root namespace of the new world
-    assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), account);
+    assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), account1);
 
     // Deploy a second world
 
@@ -90,7 +91,7 @@ contract WorldProxyFactoryTest is Test, GasReporter {
     // Address we expect for second World
     calculatedAddress = calculateAddress(
       worldFactoryAddress,
-      keccak256(abi.encode(account, _salt2)),
+      keccak256(abi.encode(account1, _salt2)),
       type(World).creationCode
     );
 
@@ -110,7 +111,7 @@ contract WorldProxyFactoryTest is Test, GasReporter {
     assertTrue(InstalledModules.get(address(initModule), keccak256(new bytes(0))));
 
     // Confirm the msg.sender is owner of the root namespace of the new world
-    assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), account);
+    assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), account1);
 
     // Expect revert when deploying world with same bytes salt as already deployed world
     vm.expectRevert();
@@ -118,11 +119,20 @@ contract WorldProxyFactoryTest is Test, GasReporter {
 
     // Expect revert when initializing world as not the creator
     vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, ROOT_NAMESPACE_ID.toString(), account)
+      abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, ROOT_NAMESPACE_ID.toString(), account1)
     );
     IBaseWorld(address(worldAddress)).initialize(initModule);
 
     address newWorldImplementationAddress = address(new World());
+
+    // Expect revert when changing implementation as not root namespace owner
+    vm.startPrank(account2);
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, ROOT_NAMESPACE_ID.toString(), account2)
+    );
+    WorldProxy(payable(worldAddress)).setImplementation(newWorldImplementationAddress);
+
+    vm.startPrank(account1);
 
     WorldProxy(payable(worldAddress)).setImplementation(newWorldImplementationAddress);
 
@@ -131,6 +141,6 @@ contract WorldProxyFactoryTest is Test, GasReporter {
   }
 
   function testWorldProxyFactoryGas() public {
-    testWorldProxyFactory(address(this), 0, 1);
+    testWorldProxyFactory(address(this), address(1), 0, 1);
   }
 }

@@ -6,6 +6,8 @@ import { STORE_VERSION } from "@latticexyz/store/src/version.sol";
 import { IStoreEvents } from "@latticexyz/store/src/IStoreEvents.sol";
 import { WORLD_VERSION } from "./version.sol";
 import { IWorldEvents } from "./IWorldEvents.sol";
+import { AccessControl } from "./AccessControl.sol";
+import { ROOT_NAMESPACE_ID } from "./constants.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ERC1967Utils } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
 
@@ -21,6 +23,8 @@ contract WorldProxy is ERC1967Proxy {
   }
 
   function setImplementation(address newImplementation) public {
+    AccessControl.requireOwner(ROOT_NAMESPACE_ID, msg.sender);
+
     ERC1967Utils.upgradeToAndCall(newImplementation, new bytes(0));
   }
 }
