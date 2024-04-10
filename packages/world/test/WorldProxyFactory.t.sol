@@ -11,7 +11,7 @@ import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { ResourceId } from "../src/WorldResourceId.sol";
 import { InitModule } from "../src/modules/init/InitModule.sol";
 import { Create2Factory } from "../src/Create2Factory.sol";
-import { WorldProxy } from "../src/WorldProxy.sol";
+import { WorldProxy, IMPLEMENTATION_SLOT } from "../src/WorldProxy.sol";
 import { WorldProxyFactory } from "../src/WorldProxyFactory.sol";
 import { IWorldFactory } from "../src/IWorldFactory.sol";
 import { IWorldEvents } from "../src/IWorldEvents.sol";
@@ -21,8 +21,6 @@ import { NamespaceOwner } from "../src/codegen/tables/NamespaceOwner.sol";
 import { ResourceId, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { ROOT_NAMESPACE_ID } from "../src/constants.sol";
 import { createInitModule } from "./createInitModule.sol";
-import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import { ERC1967Utils } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
 
 contract WorldProxyFactoryTest is Test, GasReporter {
   using WorldResourceIdInstance for ResourceId;
@@ -68,9 +66,7 @@ contract WorldProxyFactoryTest is Test, GasReporter {
     address worldAddress = worldFactory.deployWorld(_salt1);
     endGasReport();
 
-    address worldImplementationAddress = address(
-      uint160(uint256(vm.load(worldAddress, ERC1967Utils.IMPLEMENTATION_SLOT)))
-    );
+    address worldImplementationAddress = address(uint160(uint256(vm.load(worldAddress, IMPLEMENTATION_SLOT))));
     assertEq(worldImplementationAddress, calculatedAddress);
 
     // Set the store address manually
@@ -101,7 +97,7 @@ contract WorldProxyFactoryTest is Test, GasReporter {
 
     worldAddress = worldFactory.deployWorld(_salt2);
 
-    worldImplementationAddress = address(uint160(uint256(vm.load(worldAddress, ERC1967Utils.IMPLEMENTATION_SLOT))));
+    worldImplementationAddress = address(uint160(uint256(vm.load(worldAddress, IMPLEMENTATION_SLOT))));
     assertEq(worldImplementationAddress, calculatedAddress);
 
     // Set the store address manually
@@ -140,7 +136,7 @@ contract WorldProxyFactoryTest is Test, GasReporter {
     WorldProxy(payable(worldAddress)).setImplementation(newWorldImplementationAddress);
     endGasReport();
 
-    worldImplementationAddress = address(uint160(uint256(vm.load(worldAddress, ERC1967Utils.IMPLEMENTATION_SLOT))));
+    worldImplementationAddress = address(uint160(uint256(vm.load(worldAddress, IMPLEMENTATION_SLOT))));
     assertEq(worldImplementationAddress, newWorldImplementationAddress);
   }
 

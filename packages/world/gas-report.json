@@ -189,13 +189,13 @@
     "file": "test/WorldProxyFactory.t.sol",
     "test": "testWorldProxyFactoryGas",
     "name": "deploy world via WorldProxyFactory",
-    "gasUsed": 13456792
+    "gasUsed": 13361373
   },
   {
     "file": "test/WorldProxyFactory.t.sol",
     "test": "testWorldProxyFactoryGas",
     "name": "set WorldProxy implementation",
-    "gasUsed": 34381
+    "gasUsed": 30342
   },
   {
     "file": "test/WorldResourceId.t.sol",

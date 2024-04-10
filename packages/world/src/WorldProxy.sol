@@ -8,14 +8,21 @@ import { WORLD_VERSION } from "./version.sol";
 import { IWorldEvents } from "./IWorldEvents.sol";
 import { AccessControl } from "./AccessControl.sol";
 import { ROOT_NAMESPACE_ID } from "./constants.sol";
-import { Proxy } from "@openzeppelin/contracts/proxy/Proxy.sol";
-import { ERC1967Utils } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
+import { Proxy } from "./Proxy.sol";
+import { StorageSlot } from "./StorageSlot.sol";
+
+/**
+ * @dev Storage slot with the address of the current implementation.
+ * This is the keccak-256 hash of "eip1967.proxy.implementation" subtracted by 1.
+ */
+// solhint-disable-next-line private-vars-leading-underscore
+bytes32 constant IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
 contract WorldProxy is Proxy {
   address public creator;
 
-  constructor(address implementation, bytes memory _data) payable {
-    ERC1967Utils.upgradeToAndCall(implementation, _data);
+  constructor(address implementation) payable {
+    _setImplementation(implementation);
 
     StoreCore.initialize();
     emit IStoreEvents.HelloStore(STORE_VERSION);
@@ -24,10 +31,17 @@ contract WorldProxy is Proxy {
     emit IWorldEvents.HelloWorld(WORLD_VERSION);
   }
 
+  function _setImplementation(address newImplementation) internal {
+    StorageSlot.getAddressSlot(IMPLEMENTATION_SLOT).value = newImplementation;
+  }
+
+  /**
+   * @dev Stores a new address in the EIP1967 implementation slot.
+   */
   function setImplementation(address newImplementation) public {
     AccessControl.requireOwner(ROOT_NAMESPACE_ID, msg.sender);
 
-    ERC1967Utils.upgradeToAndCall(newImplementation, new bytes(0));
+    _setImplementation(newImplementation);
   }
 
   /**
@@ -38,6 +52,6 @@ contract WorldProxy is Proxy {
    * `0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc`
    */
   function _implementation() internal view virtual override returns (address) {
-    return ERC1967Utils.getImplementation();
+    return StorageSlot.getAddressSlot(IMPLEMENTATION_SLOT).value;
   }
 }

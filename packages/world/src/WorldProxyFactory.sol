@@ -38,7 +38,7 @@ contract WorldProxyFactory is IWorldFactory {
     // Deploy the world implementation
     address worldImplementationAddress = Create2.deploy(bytecode, _salt);
     // Deploy the world proxy
-    worldAddress = address(new WorldProxy(worldImplementationAddress, new bytes(0)));
+    worldAddress = address(new WorldProxy(worldImplementationAddress));
 
     IBaseWorld world = IBaseWorld(worldAddress);
 
