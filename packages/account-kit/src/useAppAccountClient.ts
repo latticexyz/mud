@@ -27,14 +27,16 @@ export function useAppAccountClient(): AppAccountClient | undefined {
 
     const pimlicoBundlerClient = createPimlicoBundlerClient({
       chain: publicClient.chain,
-      transport: http("http://127.0.0.1:4337"),
+      // transport: http("http://127.0.0.1:4337"), // TODO: make bundler url dynamic
+      transport: http("https://bundler.garnet.qry.live"), // TODO: make bundler url dynamic
       entryPoint: entryPointAddress,
     });
 
     const appAccountClient = createSmartAccountClient({
       chain: publicClient.chain,
       account: appAccount,
-      bundlerTransport: http("http://127.0.0.1:4337"),
+      // bundlerTransport: http("http://127.0.0.1:4337"), // TODO: make bundler url dynamic
+      bundlerTransport: http("https://bundler.garnet.qry.live"), // TODO: make bundler url dynamic
       middleware: {
         sponsorUserOperation: async ({ userOperation }) => {
           const gasEstimates = await pimlicoBundlerClient.estimateUserOperationGas(
