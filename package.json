@@ -20,6 +20,7 @@
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
     "gas-report": "pnpm run --recursive --parallel gas-report",
     "lint": "pnpm prettier:check && eslint . --ext .ts --ext .tsx",
+    "nothing": "",
     "prepare": "husky install && (forge --version || pnpm foundryup)",
     "prettier": "prettier --write '**/*.{ts,tsx,css,md,mdx,sol}'",
     "prettier:check": "prettier --check '**/*.{ts,tsx,css,md,mdx,sol}'",
