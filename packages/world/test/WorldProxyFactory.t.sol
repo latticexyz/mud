@@ -123,6 +123,7 @@ contract WorldProxyFactoryTest is Test, GasReporter {
     );
     IBaseWorld(address(worldAddress)).initialize(initModule);
 
+    // Deploy a new world
     address newWorldImplementationAddress = address(new World());
 
     // Expect revert when changing implementation as not root namespace owner
@@ -134,6 +135,7 @@ contract WorldProxyFactoryTest is Test, GasReporter {
 
     vm.startPrank(account1);
 
+    // Set proxy implementation to new world
     WorldProxy(payable(worldAddress)).setImplementation(newWorldImplementationAddress);
 
     worldImplementationAddress = address(uint160(uint256(vm.load(worldAddress, ERC1967Utils.IMPLEMENTATION_SLOT))));
