@@ -18,6 +18,10 @@ import { StorageSlot } from "./StorageSlot.sol";
 // solhint-disable-next-line private-vars-leading-underscore
 bytes32 constant IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
+function _setImplementation(address newImplementation) {
+  StorageSlot.getAddressSlot(IMPLEMENTATION_SLOT).value = newImplementation;
+}
+
 contract WorldProxy is Proxy {
   address public creator;
 
@@ -29,10 +33,6 @@ contract WorldProxy is Proxy {
 
     creator = msg.sender;
     emit IWorldEvents.HelloWorld(WORLD_VERSION);
-  }
-
-  function _setImplementation(address newImplementation) internal {
-    StorageSlot.getAddressSlot(IMPLEMENTATION_SLOT).value = newImplementation;
   }
 
   /**
