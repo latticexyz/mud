@@ -37,7 +37,7 @@ contract WorldProxy is Proxy {
    * @notice Constructs the World Proxy.
    * @dev Mimics the behaviour of the StoreKernel and World constructors.
    */
-  constructor(address implementation) payable {
+  constructor(address implementation) {
     _setImplementation(implementation);
 
     StoreCore.initialize();
