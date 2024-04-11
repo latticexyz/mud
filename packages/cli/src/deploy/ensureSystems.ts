@@ -73,6 +73,8 @@ export async function ensureSystems({
     })),
   });
 
+  // ATTEMPT TO VERIFY HERE
+
   const registerTxs = await Promise.all(
     missingSystems.map((system) =>
       pRetry(
