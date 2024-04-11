@@ -3,7 +3,6 @@ import {
   Account,
   Chain,
   Client,
-  SimulateContractParameters,
   Transport,
   WriteContractParameters,
   WriteContractReturnType,
@@ -11,7 +10,7 @@ import {
   ContractFunctionArgs,
   PublicClient,
 } from "viem";
-import { simulateContract, writeContract as viem_writeContract } from "viem/actions";
+import { writeContract as viem_writeContract } from "viem/actions";
 import pRetry from "p-retry";
 import { debug as parentDebug } from "./debug";
 import { getNonceManager } from "./getNonceManager";
@@ -56,6 +55,13 @@ export async function writeContract<
   }
   const account = parseAccount(rawAccount);
 
+  const defaultParameters = {
+    chain: client.chain,
+    type: "eip1559",
+    maxFeePerGas: 2n, // TODO: refetch this in regular intervals
+    maxPriorityFeePerGas: 2n, // TODO: refetch this in regular intervals
+  } satisfies Omit<WriteContractParameters, "address" | "abi" | "account" | "functionName">;
+
   const nonceManager = await getNonceManager({
     client: opts.publicClient ?? client,
     address: account.address,
@@ -63,43 +69,18 @@ export async function writeContract<
     queueConcurrency: opts.queueConcurrency,
   });
 
-  async function prepareWrite(): Promise<
-    WriteContractParameters<abi, functionName, args, chain, account, chainOverride>
-  > {
-    if (request.gas) {
-      debug("gas provided, skipping simulate", request.functionName, request.address);
-      return request;
-    }
-
-    debug("simulating", request.functionName, "at", request.address);
-    const result = await simulateContract<chain, account | undefined, abi, functionName, args, chainOverride>(
-      opts.publicClient ?? client,
-      {
-        ...request,
-        blockTag: "pending",
-        account,
-      } as unknown as SimulateContractParameters<abi, functionName, args, chain, chainOverride>,
-    );
-
-    return result.request as unknown as WriteContractParameters<abi, functionName, args, chain, account, chainOverride>;
-  }
-
   return nonceManager.mempoolQueue.add(
     () =>
       pRetry(
         async () => {
-          const preparedWrite = await prepareWrite();
-
           if (!nonceManager.hasNonce()) {
             await nonceManager.resetNonce();
           }
 
           const nonce = nonceManager.nextNonce();
-          debug("calling", preparedWrite.functionName, "with nonce", nonce, "at", preparedWrite.address);
-          return await viem_writeContract(client, {
-            nonce,
-            ...preparedWrite,
-          } as typeof preparedWrite);
+          const fullRequest = { ...defaultParameters, ...request, nonce };
+          debug("calling", fullRequest.functionName, "with nonce", nonce, "at", fullRequest.address);
+          return await viem_writeContract(client, fullRequest as never);
         },
         {
           retries: 3,
