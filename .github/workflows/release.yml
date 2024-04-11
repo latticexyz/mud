@@ -51,6 +51,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  docker:
-    uses: ./.github/workflows/docker.yml
-    needs: release
+  # docker:
+  #   uses: ./.github/workflows/docker.yml
+  #   needs: release
