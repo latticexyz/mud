@@ -15,6 +15,7 @@ import pRetry from "p-retry";
 import { debug as parentDebug } from "./debug";
 import { getNonceManager } from "./getNonceManager";
 import { parseAccount } from "viem/accounts";
+import { getFeeRef } from "./getFeeRef";
 
 const debug = parentDebug.extend("writeContract");
 
@@ -55,11 +56,14 @@ export async function writeContract<
   }
   const account = parseAccount(rawAccount);
 
+  const chain = client.chain;
+  if (!chain) {
+    throw new Error("Client must be connected to a chain");
+  }
+
   const defaultParameters = {
-    type: "eip1559",
-    maxFeePerGas: 2n, // TODO: refetch this in regular intervals
-    maxPriorityFeePerGas: 2n, // TODO: refetch this in regular intervals
-    chain: client.chain,
+    chain,
+    ...(chain.fees ? { type: "eip1559" } : {}),
   } satisfies Omit<WriteContractParameters, "address" | "abi" | "account" | "functionName">;
 
   const nonceManager = await getNonceManager({
@@ -68,6 +72,8 @@ export async function writeContract<
     blockTag: "pending",
     queueConcurrency: opts.queueConcurrency,
   });
+
+  const feeRef = getFeeRef({ client: opts.publicClient ?? client, refreshInterval: 10000 });
 
   async function prepare(): Promise<WriteContractParameters<abi, functionName, args, chain, account, chainOverride>> {
     if (request.gas) {
@@ -98,7 +104,7 @@ export async function writeContract<
           }
 
           const nonce = nonceManager.nextNonce();
-          const fullRequest = { ...preparedRequest, nonce };
+          const fullRequest = { ...preparedRequest, nonce, ...feeRef.fees };
           debug("calling", fullRequest.functionName, "with nonce", nonce, "at", fullRequest.address);
           return await viem_writeContract(client, fullRequest as never);
         },
