@@ -18,13 +18,25 @@ import { StorageSlot } from "./StorageSlot.sol";
 // solhint-disable-next-line private-vars-leading-underscore
 bytes32 constant IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
+/**
+ * @dev Stores a new address in the EIP1967 implementation slot.
+ */
 function _setImplementation(address newImplementation) {
   StorageSlot.getAddressSlot(IMPLEMENTATION_SLOT).value = newImplementation;
 }
 
+/**
+ * @title World Proxy Contract
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ * @dev This contract is a proxy that uses a World contract as an implementation.
+ */
 contract WorldProxy is Proxy {
   address public creator;
 
+  /**
+   * @notice Constructs the World Proxy.
+   * @dev Mimics the behaviour of the StoreKernel and World constructors.
+   */
   constructor(address implementation) payable {
     _setImplementation(implementation);
 

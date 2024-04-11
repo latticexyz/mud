@@ -12,8 +12,8 @@ import { WorldProxy } from "./WorldProxy.sol";
 /**
  * @title WorldProxyFactory
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
- * @notice A factory contract to deploy new World instances.
- * @dev This contract allows users to deploy a new World, install the InitModule, and transfer the ownership.
+ * @notice A factory contract to deploy new WorldProxy instances.
+ * @dev This contract allows users to deploy a new World and WorldProxy, install the InitModule, and transfer the ownership.
  */
 contract WorldProxyFactory is IWorldFactory {
   /// @notice Address of the init module to be set in the World instances.
@@ -25,10 +25,10 @@ contract WorldProxyFactory is IWorldFactory {
   }
 
   /**
-   * @notice Deploys a new World instance, installs the InitModule and transfers ownership to the caller.
+   * @notice Deploys a new World and WorldProxy instance, installs the InitModule and transfers ownership to the caller.
    * @dev Uses the Create2 for deterministic deployment.
    * @param salt User defined salt for deterministic world addresses across chains
-   * @return worldAddress The address of the newly deployed World contract.
+   * @return worldAddress The address of the newly deployed WorldProxy contract.
    */
   function deployWorld(bytes memory salt) public returns (address worldAddress) {
     // Deploy a new World and increase the WorldCount
@@ -38,6 +38,7 @@ contract WorldProxyFactory is IWorldFactory {
     // Deploy the world implementation
     address worldImplementationAddress = Create2.deploy(bytecode, _salt);
     // Deploy the world proxy
+    // TODO: use Create2 for the proxy
     worldAddress = address(new WorldProxy(worldImplementationAddress));
 
     IBaseWorld world = IBaseWorld(worldAddress);
