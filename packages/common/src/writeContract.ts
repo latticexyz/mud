@@ -85,6 +85,8 @@ export async function writeContract<
       // The nonce does not need to be accurate for gas estimation and we can save
       // one `eth_getTransactionCount` rpc call by providing a stub here
       nonce: 0,
+      maxFeePerGas: 0n,
+      maxPriorityFeePerGas: 0n,
       ...defaultParameters,
       ...request,
     } as never) as never;
