@@ -32,14 +32,18 @@ contract WorldProxyFactory is IWorldFactory {
    */
   function deployWorld(bytes memory salt) public returns (address worldAddress) {
     // Deploy a new World and increase the WorldCount
-    bytes memory bytecode = type(World).creationCode;
     uint256 _salt = uint256(keccak256(abi.encode(msg.sender, salt)));
 
     // Deploy the world implementation
-    address worldImplementationAddress = Create2.deploy(bytecode, _salt);
+    bytes memory worldBytecode = type(World).creationCode;
+    address worldImplementationAddress = Create2.deploy(worldBytecode, _salt);
+
     // Deploy the world proxy
-    // TODO: use Create2 for the proxy
-    worldAddress = address(new WorldProxy(worldImplementationAddress));
+    bytes memory worldProxyBytecode = abi.encodePacked(
+      type(WorldProxy).creationCode,
+      abi.encode(worldImplementationAddress)
+    );
+    worldAddress = Create2.deploy(worldProxyBytecode, _salt);
 
     IBaseWorld world = IBaseWorld(worldAddress);
 
