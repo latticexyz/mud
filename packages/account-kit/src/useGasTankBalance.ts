@@ -40,8 +40,6 @@ export function useGasTankBalance(): bigint | undefined {
   const { chainId, gasTankAddress } = useConfig();
   const publicClient = usePublicClient({ chainId });
 
-  console.log("chain id", chainId);
-
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
 
