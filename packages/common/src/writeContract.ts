@@ -81,15 +81,21 @@ export async function writeContract<
       return request;
     }
 
-    return prepareTransactionRequest(opts.publicClient ?? client, {
-      // The nonce does not need to be accurate for gas estimation and we can save
-      // one `eth_getTransactionCount` rpc call by providing a stub here
-      nonce: 0,
-      maxFeePerGas: 0n,
-      maxPriorityFeePerGas: 0n,
-      ...defaultParameters,
-      ...request,
-    } as never) as never;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { nonce, maxFeePerGas, maxPriorityFeePerGas, ...preparedTransaction } = await prepareTransactionRequest(
+      opts.publicClient ?? client,
+      {
+        // The nonce and fee values don't not need to be accurate for gas estimation
+        // and we can save a couple rpc calls by providing stubs here
+        nonce: 0,
+        maxFeePerGas: 0n,
+        maxPriorityFeePerGas: 0n,
+        ...defaultParameters,
+        ...request,
+      } as never,
+    );
+
+    return preparedTransaction as never;
   }
 
   return nonceManager.mempoolQueue.add(
