@@ -10,7 +10,7 @@ import {
   ContractFunctionArgs,
   PublicClient,
 } from "viem";
-import { writeContract as viem_writeContract } from "viem/actions";
+import { prepareTransactionRequest, writeContract as viem_writeContract } from "viem/actions";
 import pRetry from "p-retry";
 import { debug as parentDebug } from "./debug";
 import { getNonceManager } from "./getNonceManager";
@@ -56,10 +56,10 @@ export async function writeContract<
   const account = parseAccount(rawAccount);
 
   const defaultParameters = {
-    chain: client.chain,
     type: "eip1559",
     maxFeePerGas: 2n, // TODO: refetch this in regular intervals
     maxPriorityFeePerGas: 2n, // TODO: refetch this in regular intervals
+    chain: client.chain,
   } satisfies Omit<WriteContractParameters, "address" | "abi" | "account" | "functionName">;
 
   const nonceManager = await getNonceManager({
@@ -69,16 +69,36 @@ export async function writeContract<
     queueConcurrency: opts.queueConcurrency,
   });
 
+  async function prepare(): Promise<WriteContractParameters<abi, functionName, args, chain, account, chainOverride>> {
+    if (request.gas) {
+      debug("gas provided, skipping preparation", request.functionName, request.address);
+      return request;
+    }
+
+    return prepareTransactionRequest(opts.publicClient ?? client, {
+      // The nonce does not need to be accurate for gas estimation and we can save
+      // one `eth_getTransactionCount` rpc call by providing a stub here
+      nonce: 0,
+      ...defaultParameters,
+      ...request,
+    } as never) as never;
+  }
+
   return nonceManager.mempoolQueue.add(
     () =>
       pRetry(
         async () => {
+          // We estimate gas before increasing the local nonce to prevent nonce gaps.
+          // Invalid transactions fail the gas estimation step are never submitted
+          // to the network, so they should not increase the nonce.
+          const preparedRequest = await prepare();
+
           if (!nonceManager.hasNonce()) {
             await nonceManager.resetNonce();
           }
 
           const nonce = nonceManager.nextNonce();
-          const fullRequest = { ...defaultParameters, ...request, nonce };
+          const fullRequest = { ...preparedRequest, nonce };
           debug("calling", fullRequest.functionName, "with nonce", nonce, "at", fullRequest.address);
           return await viem_writeContract(client, fullRequest as never);
         },
