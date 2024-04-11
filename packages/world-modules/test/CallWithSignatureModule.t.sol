@@ -21,6 +21,7 @@ import { WorldTestSystem } from "@latticexyz/world/test/World.t.sol";
 
 import { Unstable_CallWithSignatureModule } from "../src/modules/delegation/Unstable_CallWithSignatureModule.sol";
 import { Unstable_CallWithSignatureSystem } from "../src/modules/delegation/Unstable_CallWithSignatureSystem.sol";
+import { IUnstable_CallWithSignatureErrors } from "../src/modules/delegation/IUnstable_CallWithSignatureErrors.sol";
 import { getSignedMessageHash } from "../src/modules/delegation/getSignedMessageHash.sol";
 import { ECDSA } from "../src/modules/delegation/ECDSA.sol";
 
@@ -102,7 +103,7 @@ contract Unstable_CallWithSignatureModuleTest is Test, GasReporter {
     // Attempt to register a limited delegation using an old signature
     vm.expectRevert(
       abi.encodeWithSelector(
-        Unstable_CallWithSignatureSystem.InvalidSignature.selector,
+        IUnstable_CallWithSignatureErrors.InvalidSignature.selector,
         0x824E5E0aF3eA693b906527Dc41E4a29F037d515b
       )
     );

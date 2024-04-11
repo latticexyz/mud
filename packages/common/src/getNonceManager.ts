@@ -7,6 +7,7 @@ export async function getNonceManager({
   client,
   address, // TODO: rename to account?
   blockTag = "pending",
+  ...opts
 }: CreateNonceManagerOptions): Promise<CreateNonceManagerResult> {
   const id = await getNonceManagerId({ client, address, blockTag });
 
@@ -15,7 +16,7 @@ export async function getNonceManager({
     return existingNonceManager;
   }
 
-  const nonceManager = createNonceManager({ client, address, blockTag });
+  const nonceManager = createNonceManager({ client, address, blockTag, ...opts });
   nonceManagers.set(id, nonceManager);
   return nonceManager;
 }
