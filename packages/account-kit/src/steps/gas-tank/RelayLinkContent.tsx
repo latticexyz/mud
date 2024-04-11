@@ -101,7 +101,7 @@ export function RelayLinkContent() {
     });
 
     console.log("tx", tx);
-  }, [wallet.data]);
+  }, [amount, wallet.data]);
 
   const handleSubmit = async () => {
     await executeDeposit();
