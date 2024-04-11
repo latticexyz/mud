@@ -9,6 +9,7 @@ import { Button } from "../../ui/Button";
 import { AccountModalContent } from "../../AccountModalContent";
 import { useState } from "react";
 import { RelayLinkContent } from "./RelayLinkContent";
+import { StandardBridgeContent } from "./StandardBridgeContent";
 
 export function GasAllowanceContent() {
   const queryClient = useQueryClient();
@@ -29,10 +30,14 @@ export function GasAllowanceContent() {
     },
   });
 
-  // TODO: clean up
+  // TODO: clean up, add TS
   const [depositMethod, setDepositMethod] = useState<string | undefined>();
 
-  if (depositMethod === "relayLink") return <RelayLinkContent />;
+  if (depositMethod === "relayLink") {
+    return <RelayLinkContent />;
+  } else if (depositMethod === "standardBridge") {
+    return <StandardBridgeContent />;
+  }
 
   return (
     <AccountModalContent title="Fund Redstone balance">
@@ -57,6 +62,14 @@ export function GasAllowanceContent() {
             }}
           >
             Deposit to gas tank
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setDepositMethod("standardBridge");
+            }}
+          >
+            Standard bridge
           </Button>
           <Button
             variant="secondary"
