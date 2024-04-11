@@ -1,12 +1,18 @@
 import { useWalletClient } from "wagmi";
 import { AccountModalContent } from "../../AccountModalContent";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import PaymasterSystemABI from "../../abis/PaymasterSystem.json";
 import { Button } from "../../ui/Button";
 
-import { getClient, createClient, convertViemChainToRelayChain, TESTNET_RELAY_API } from "@reservoir0x/relay-sdk";
+import {
+  getClient,
+  createClient,
+  convertViemChainToRelayChain,
+  TESTNET_RELAY_API,
+  Execute,
+} from "@reservoir0x/relay-sdk";
 import { holesky } from "viem/chains";
-import { createPublicClient, http, parseEther } from "viem";
+import { createPublicClient, formatEther, http, parseEther } from "viem";
 
 createClient({
   baseApiUrl: TESTNET_RELAY_API,
@@ -16,10 +22,19 @@ createClient({
 
 const CHAIN_FROM = 17000;
 const CHAIN_TO = 17069;
+const AMOUNT_STEP = 0.000000000000000001; // 1 wei
 const PAYMASTER_ADDRESS = "0xba0149DE3486935D29b0e50DfCc9e61BD40Ae095";
+
+// TODO: move to utils, or check if available already
+const publicClient = createPublicClient({
+  chain: holesky,
+  transport: http(),
+});
 
 export function RelayLinkContent() {
   const wallet = useWalletClient();
+  const [amount, setAmount] = useState<bigint>(parseEther("0.1"));
+  const [quote, setQuote] = useState<null | Execute>(null);
   const [tx, setTx] = useState(null);
 
   // TODO: check solver capacity
@@ -38,66 +53,63 @@ export function RelayLinkContent() {
   // };
 
   // TODO: show bridge quote to user
-  // const getBridgeQuote = useCallback(async () => {
-  //   const quote = await getClient()?.methods.getBridgeQuote({
-  //     wallet: wallet.data,
-  //     chainId: CHAIN_FROM, // The chain id to bridge from
-  //     toChainId: CHAIN_TO, // The chain id to bridge to
-  //     amount: "100000000000000", // Amount in wei to bridge
-  //     currency: "eth", // `eth` | `usdc`
-  //     recipient: zeroAddress, // A valid address to send the funds to
-  //   });
+  const getBridgeQuote = useCallback(async () => {
+    if (!wallet.data || amount === BigInt(0)) return;
 
-  //   console.log("quote", quote);
-  // }, [wallet.data]);
+    setQuote(null);
 
-  const executeDeposit = useCallback(
-    async (amount: string) => {
-      if (!wallet.data) return;
+    const quote = await getClient()?.methods.getBridgeQuote({
+      wallet: wallet.data,
+      chainId: CHAIN_FROM, // The chain id to bridge from
+      toChainId: CHAIN_TO, // The chain id to bridge to
+      amount: amount.toString(), // Amount in wei to bridge
+      currency: "eth", // `eth` | `usdc`
+      recipient: wallet.data.account.address, // A valid address to send the funds to
+    });
 
-      const publicClient = createPublicClient({
-        chain: holesky,
-        transport: http(),
-      });
+    // check if quote is objet
+    if (quote instanceof Object) {
+      console.log("quote", quote);
+      setQuote(quote);
+    }
+  }, [amount, wallet.data]);
 
-      const { request } = await publicClient.simulateContract({
-        address: PAYMASTER_ADDRESS,
-        abi: PaymasterSystemABI,
-        functionName: "depositTo",
-        args: [wallet.data.account.address],
-        value: parseEther(amount),
-        account: wallet.data.account,
-      });
+  const executeDeposit = useCallback(async () => {
+    if (!wallet.data) return;
 
-      console.log("depositTo request:", request);
+    const { request } = await publicClient.simulateContract({
+      address: PAYMASTER_ADDRESS,
+      abi: PaymasterSystemABI,
+      functionName: "depositTo",
+      args: [wallet.data.account.address],
+      value: amount,
+      account: wallet.data.account,
+    });
 
-      const client = getClient();
-      const tx = await client.actions.call({
-        chainId: CHAIN_FROM,
-        toChainId: CHAIN_TO,
-        txs: [request],
-        wallet: wallet.data,
-        onProgress: (data1, data2, data3, data4, data5) => {
-          if (data5?.txHashes?.[0]) {
-            const tx = data5.txHashes[0];
-            setTx(`https://holesky.etherscan.io/tx/${tx.txHash}`);
-          }
-        },
-      });
+    const client = getClient();
+    const tx = await client.actions.call({
+      chainId: CHAIN_FROM,
+      toChainId: CHAIN_TO,
+      txs: [request],
+      wallet: wallet.data,
+      onProgress: (data1, data2, data3, data4, data5) => {
+        if (data5?.txHashes?.[0]) {
+          const tx = data5.txHashes[0];
+          setTx(`https://holesky.etherscan.io/tx/${tx.txHash}`);
+        }
+      },
+    });
 
-      console.log("tx", tx);
-    },
-    [wallet.data],
-  );
+    console.log("tx", tx);
+  }, [wallet.data]);
 
-  const handleSubmit = async (evt: React.FormEvent) => {
-    evt.preventDefault();
-
-    const data = new FormData(evt.target);
-    const amount = data.get("amount") as string;
-
-    await executeDeposit(amount);
+  const handleSubmit = async () => {
+    await executeDeposit();
   };
+
+  useEffect(() => {
+    getBridgeQuote();
+  }, [getBridgeQuote, wallet.data]);
 
   return (
     <AccountModalContent title="Relay.link balance top-up">
@@ -105,15 +117,35 @@ export function RelayLinkContent() {
         <form onSubmit={handleSubmit}>
           <h3>Chain from:</h3>
           <select>
-            <option value="17000">Holesky</option>
+            <option value={CHAIN_FROM}>Holesky</option>
           </select>
           <h3>Chain to:</h3>
           <select>
-            <option value="17069">Garnet</option>
+            <option value={CHAIN_TO}>Garnet</option>
           </select>
 
           <h3>Amount to deposit:</h3>
-          <input type="number" placeholder="Amount" name="amount" step={0.000001} />
+          <input
+            type="number"
+            placeholder="Amount"
+            name="amount"
+            step={AMOUNT_STEP}
+            value={formatEther(amount)}
+            onChange={(evt) => {
+              setAmount(parseEther(evt.target.value));
+            }}
+          />
+
+          {quote ? (
+            <div className="mt-[15px]">
+              <p>Time estimate: ~{quote?.breakdown?.[0]?.timeEstimate}s</p>
+              <p>Deposit gas (Holesky): {formatEther(BigInt(quote?.fees?.gas || 0))} ETH</p>
+              <p>Fill gas (Garnet): {formatEther(BigInt(quote?.fees?.relayerGas || 0))} ETH</p>
+              <p>Relay fee: {formatEther(BigInt(quote?.fees?.relayerService || 0))} ETH</p>
+            </div>
+          ) : (
+            <p className="mt-[15px]">Fetching the best price ...</p>
+          )}
 
           <div className="mt-[15px]">
             <Button type="submit">Deposit to Redstone gas tank</Button>
