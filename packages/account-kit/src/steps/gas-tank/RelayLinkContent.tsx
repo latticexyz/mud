@@ -1,9 +1,4 @@
 import { useWalletClient } from "wagmi";
-import { AccountModalContent } from "../../AccountModalContent";
-import { useCallback, useEffect, useState } from "react";
-import PaymasterSystemABI from "../../abis/PaymasterSystem.json";
-import { Button } from "../../ui/Button";
-
 import {
   getClient,
   createClient,
@@ -13,6 +8,10 @@ import {
   Execute,
   RelayChain,
 } from "@reservoir0x/relay-sdk";
+import { AccountModalContent } from "../../AccountModalContent";
+import { useCallback, useEffect, useState } from "react";
+import PaymasterSystemAbi from "../../abis/PaymasterSystem.json";
+import { Button } from "../../ui/Button";
 import { holesky } from "viem/chains";
 import { createPublicClient, formatEther, http, parseEther } from "viem";
 
@@ -36,7 +35,7 @@ const publicClient = createPublicClient({
 export function RelayLinkContent() {
   const wallet = useWalletClient();
   const [chains, setChains] = useState<RelayChain[]>([]);
-  const [amount, setAmount] = useState<bigint>(BigInt(0));
+  const [amount, setAmount] = useState<string | undefined>("0.01");
   const [quote, setQuote] = useState<null | Execute>(null);
   const [tx, setTx] = useState(null);
 
@@ -58,13 +57,13 @@ export function RelayLinkContent() {
   // TODO: show bridge quote to user
   const fetchQuote = useCallback(async () => {
     setQuote(null);
-    if (!wallet.data || amount === BigInt(0)) return;
+    if (!wallet.data || !amount) return;
 
     const quote = await getClient()?.methods.getBridgeQuote({
       wallet: wallet.data,
       chainId: CHAIN_FROM, // The chain id to bridge from
       toChainId: CHAIN_TO, // The chain id to bridge to
-      amount: amount.toString(), // Amount in wei to bridge
+      amount: parseEther(amount).toString(), // Amount in wei to bridge
       currency: "eth", // `eth` | `usdc`
       recipient: wallet.data.account.address, // A valid address to send the funds to
     });
@@ -76,14 +75,14 @@ export function RelayLinkContent() {
   }, [amount, wallet.data]);
 
   const executeDeposit = useCallback(async () => {
-    if (!wallet.data) return;
+    if (!wallet.data || !amount) return;
 
     const { request } = await publicClient.simulateContract({
       address: PAYMASTER_ADDRESS,
-      abi: PaymasterSystemABI,
+      abi: PaymasterSystemAbi,
       functionName: "depositTo",
       args: [wallet.data.account.address],
-      value: amount,
+      value: parseEther(amount),
       account: wallet.data.account,
     });
 
@@ -109,12 +108,8 @@ export function RelayLinkContent() {
     setChains(chains);
   }, []);
 
-  const handleAmountChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const newAmount = parseEther(evt.target.value);
-    setAmount(newAmount);
-  };
-
-  const handleSubmit = async () => {
+  const handleSubmit = async (evt) => {
+    evt.preventDefault();
     await executeDeposit();
   };
 
@@ -150,8 +145,8 @@ export function RelayLinkContent() {
             placeholder="Amount"
             name="amount"
             step={AMOUNT_STEP}
-            value={formatEther(amount)}
-            onChange={handleAmountChange}
+            value={amount}
+            onChange={(evt) => setAmount(evt.target.value)}
           />
 
           {quote && (
@@ -162,7 +157,7 @@ export function RelayLinkContent() {
               <p>Relay fee: {formatEther(BigInt(quote?.fees?.relayerService || 0))} ETH</p>
             </div>
           )}
-          {!quote && amount !== BigInt(0) && <p className="mt-[15px]">Fetching the best price ...</p>}
+          {!quote && amount && <p className="mt-[15px]">Fetching the best price ...</p>}
 
           <div className="mt-[15px]">
             <Button type="submit">Deposit to Redstone gas tank</Button>
