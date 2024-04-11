@@ -8,8 +8,10 @@ import {
   getClient,
   createClient,
   convertViemChainToRelayChain,
+  configureDynamicChains,
   TESTNET_RELAY_API,
   Execute,
+  RelayChain,
 } from "@reservoir0x/relay-sdk";
 import { holesky } from "viem/chains";
 import { createPublicClient, formatEther, http, parseEther } from "viem";
@@ -33,7 +35,8 @@ const publicClient = createPublicClient({
 
 export function RelayLinkContent() {
   const wallet = useWalletClient();
-  const [amount, setAmount] = useState<bigint>(parseEther("0.1"));
+  const [chains, setChains] = useState<RelayChain[]>([]);
+  const [amount, setAmount] = useState<bigint>(BigInt(0));
   const [quote, setQuote] = useState<null | Execute>(null);
   const [tx, setTx] = useState(null);
 
@@ -53,10 +56,9 @@ export function RelayLinkContent() {
   // };
 
   // TODO: show bridge quote to user
-  const getBridgeQuote = useCallback(async () => {
-    if (!wallet.data || amount === BigInt(0)) return;
-
+  const fetchQuote = useCallback(async () => {
     setQuote(null);
+    if (!wallet.data || amount === BigInt(0)) return;
 
     const quote = await getClient()?.methods.getBridgeQuote({
       wallet: wallet.data,
@@ -69,7 +71,6 @@ export function RelayLinkContent() {
 
     // check if quote is objet
     if (quote instanceof Object) {
-      console.log("quote", quote);
       setQuote(quote);
     }
   }, [amount, wallet.data]);
@@ -103,13 +104,27 @@ export function RelayLinkContent() {
     console.log("tx", tx);
   }, [amount, wallet.data]);
 
+  const fetchChains = useCallback(async () => {
+    const chains = await configureDynamicChains();
+    setChains(chains);
+  }, []);
+
+  const handleAmountChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const newAmount = parseEther(evt.target.value);
+    setAmount(newAmount);
+  };
+
   const handleSubmit = async () => {
     await executeDeposit();
   };
 
   useEffect(() => {
-    getBridgeQuote();
-  }, [getBridgeQuote, wallet.data]);
+    fetchQuote();
+  }, [fetchQuote]);
+
+  useEffect(() => {
+    fetchChains();
+  }, [fetchChains]);
 
   return (
     <AccountModalContent title="Relay.link balance top-up">
@@ -118,6 +133,11 @@ export function RelayLinkContent() {
           <h3>Chain from:</h3>
           <select>
             <option value={CHAIN_FROM}>Holesky</option>
+            {chains.map((chain) => (
+              <option key={chain.id} value={chain.id}>
+                {chain.name}
+              </option>
+            ))}
           </select>
           <h3>Chain to:</h3>
           <select>
@@ -131,21 +151,18 @@ export function RelayLinkContent() {
             name="amount"
             step={AMOUNT_STEP}
             value={formatEther(amount)}
-            onChange={(evt) => {
-              setAmount(parseEther(evt.target.value));
-            }}
+            onChange={handleAmountChange}
           />
 
-          {quote ? (
+          {quote && (
             <div className="mt-[15px]">
               <p>Time estimate: ~{quote?.breakdown?.[0]?.timeEstimate}s</p>
               <p>Deposit gas (Holesky): {formatEther(BigInt(quote?.fees?.gas || 0))} ETH</p>
               <p>Fill gas (Garnet): {formatEther(BigInt(quote?.fees?.relayerGas || 0))} ETH</p>
               <p>Relay fee: {formatEther(BigInt(quote?.fees?.relayerService || 0))} ETH</p>
             </div>
-          ) : (
-            <p className="mt-[15px]">Fetching the best price ...</p>
           )}
+          {!quote && amount !== BigInt(0) && <p className="mt-[15px]">Fetching the best price ...</p>}
 
           <div className="mt-[15px]">
             <Button type="submit">Deposit to Redstone gas tank</Button>
