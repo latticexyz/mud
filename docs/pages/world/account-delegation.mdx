@@ -164,10 +164,9 @@ contract TestDelegation is Script {
     // Run as the second address
     vm.startBroadcast(userPrivateKey2);
 
-    bytes memory returnData = world.callFrom(userAddress, systemId, 
-      abi.encodeWithSignature("increment()"));
+    bytes memory returnData = world.callFrom(userAddress, systemId, abi.encodeWithSignature("increment()"));
     console.logBytes(returnData);
- 
+
     vm.stopBroadcast();
   }
 }
@@ -219,7 +218,7 @@ contract TestDelegation is Script {
       typeId: RESOURCE_SYSTEM,
       namespace: "",
       name: "IncrementSystem"
-    });    
+    });
 ```
 
 The system where `increment`, the function to which we are delegating access, is located in `IncrementSystem` at the root namespace.
@@ -303,10 +302,9 @@ contract TestDelegation is Script {
     // Run as the second address
     vm.startBroadcast(userPrivateKey2);
 
-    bytes memory returnData = world.callFrom(userAddress, systemId, 
-      abi.encodeWithSignature("increment()"));
+    bytes memory returnData = world.callFrom(userAddress, systemId, abi.encodeWithSignature("increment()"));
     console.logBytes(returnData);
- 
+
     vm.stopBroadcast();
   }
 }
@@ -327,7 +325,7 @@ The beginning of the script, which registers a delegation, is in the previous se
     // Run as the second address
     vm.startBroadcast(userPrivateKey2);
 
-    bytes memory returnData = world.callFrom(userAddress, systemId, 
+    bytes memory returnData = world.callFrom(userAddress, systemId,
       abi.encodeWithSignature("increment()"));
     console.logBytes(returnData);
 ```
