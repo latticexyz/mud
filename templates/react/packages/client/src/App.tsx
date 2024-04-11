@@ -1,11 +1,11 @@
-import { useMUD } from "./MUDContext";
+import { useMUD } from "./mud/useMUD";
 
 const styleUnset = { all: "unset" } as const;
 
 export const App = () => {
   const {
     network: { tables, useStore },
-    systemCalls: { addTask, toggleTask, deleteTask },
+    burner,
   } = useMUD();
 
   const tasks = useStore((state) => {
@@ -25,13 +25,15 @@ export const App = () => {
                   type="checkbox"
                   checked={task.value.completedAt > 0n}
                   title={task.value.completedAt === 0n ? "Mark task as completed" : "Mark task as incomplete"}
+                  disabled={!burner}
                   onChange={async (event) => {
                     event.preventDefault();
+                    if (!burner) return;
                     const checkbox = event.currentTarget;
 
                     checkbox.disabled = true;
                     try {
-                      await toggleTask(task.key.id);
+                      await burner.systemCalls.toggleTask(task.key.id);
                     } finally {
                       checkbox.disabled = false;
                     }
@@ -44,14 +46,16 @@ export const App = () => {
                   type="button"
                   title="Delete task"
                   style={styleUnset}
+                  disabled={!burner}
                   onClick={async (event) => {
                     event.preventDefault();
+                    if (!burner) return;
                     if (!window.confirm("Are you sure you want to delete this task?")) return;
 
                     const button = event.currentTarget;
                     button.disabled = true;
                     try {
-                      await deleteTask(task.key.id);
+                      await burner.systemCalls.deleteTask(task.key.id);
                     } finally {
                       button.disabled = false;
                     }
@@ -72,6 +76,7 @@ export const App = () => {
               <form
                 onSubmit={async (event) => {
                   event.preventDefault();
+                  if (!burner) return;
                   const form = event.currentTarget;
                   const fieldset = form.querySelector("fieldset");
                   if (!(fieldset instanceof HTMLFieldSetElement)) return;
@@ -82,14 +87,14 @@ export const App = () => {
 
                   fieldset.disabled = true;
                   try {
-                    await addTask(desc);
+                    await burner.systemCalls.addTask(desc);
                     form.reset();
                   } finally {
                     fieldset.disabled = false;
                   }
                 }}
               >
-                <fieldset style={styleUnset}>
+                <fieldset disabled={!burner} style={styleUnset}>
                   <input type="text" name="description" />{" "}
                   <button type="submit" title="Add task">
                     Add
