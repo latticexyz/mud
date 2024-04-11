@@ -43,7 +43,7 @@ export const deployOptions = {
   },
   deployAsProxy: {
     type: "boolean",
-    desc: "Whether to deploy the world as an EIP1967 proxy.",
+    desc: "Whether to deploy the world as an upgradable proxy contract.",
     default: false,
   },
 } as const satisfies Record<string, Options>;
