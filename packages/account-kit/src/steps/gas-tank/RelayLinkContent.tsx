@@ -18,7 +18,7 @@ import { createPublicClient, formatEther, http, parseEther } from "viem";
 
 createClient({
   baseApiUrl: TESTNET_RELAY_API,
-  source: "YOUR.SOURCE", // TODO: set app URL as source
+  source: window.location.hostname,
   chains: [convertViemChainToRelayChain(holesky)],
 });
 
