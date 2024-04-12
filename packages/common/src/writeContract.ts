@@ -9,6 +9,8 @@ import {
   ContractFunctionName,
   ContractFunctionArgs,
   PublicClient,
+  encodeFunctionData,
+  EncodeFunctionDataParameters,
 } from "viem";
 import { prepareTransactionRequest, writeContract as viem_writeContract } from "viem/actions";
 import pRetry from "p-retry";
@@ -81,9 +83,16 @@ export async function writeContract<
       return request;
     }
 
+    const { abi, address, args, dataSuffix, functionName } = request;
+    const data = encodeFunctionData({
+      abi,
+      args,
+      functionName,
+    } as EncodeFunctionDataParameters);
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { nonce, maxFeePerGas, maxPriorityFeePerGas, ...preparedTransaction } = await prepareTransactionRequest(
-      opts.publicClient ?? client,
+      client,
       {
         // The nonce and fee values don't not need to be accurate for gas estimation
         // and we can save a couple rpc calls by providing stubs here
@@ -92,6 +101,10 @@ export async function writeContract<
         maxPriorityFeePerGas: 0n,
         ...defaultParameters,
         ...request,
+        account,
+        // From `viem/writeContract`
+        data: `${data}${dataSuffix ? dataSuffix.replace("0x", "") : ""}`,
+        to: address,
       } as never,
     );
 
