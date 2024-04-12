@@ -35,7 +35,7 @@
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
-    "viem": "2.7.12"
+    "viem": "2.9.16"
   },
   "devDependencies": {
     "tsup": "^6.7.0",
