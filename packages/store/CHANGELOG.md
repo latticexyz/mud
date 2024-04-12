@@ -1,5 +1,16 @@
 # Change Log
 
+## 2.0.5
+
+### Patch Changes
+
+- b798ccb2: Fixed the behaviour of static arrays, so that they return zero for uninitialised values, to mirror the native Solidity behavior. Previously they reverted with `Store_IndexOutOfBounds` if the index had not been set yet.
+- Updated dependencies [a9e8a407]
+  - @latticexyz/common@2.0.5
+  - @latticexyz/config@2.0.5
+  - @latticexyz/protocol-parser@2.0.5
+  - @latticexyz/schema-type@2.0.5
+
 ## 2.0.4
 
 ### Patch Changes
