@@ -2,4 +2,4 @@
 "create-mud": patch
 ---
 
-feat(create-mud): change `anvil` to create a block every two seconds
+Updated `anvil` args with two second block time to better reflect L2s
