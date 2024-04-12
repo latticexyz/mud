@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 /**
  * @title World Errors Interface
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This interface contains custom error types for the World contract. These errors provide
  * more informative messages for certain operations within the World contract.
  */
@@ -41,6 +42,12 @@ interface IWorldErrors {
    * @param resourceIdString The string representation of the resource ID.
    */
   error World_InvalidResourceId(ResourceId resourceId, string resourceIdString);
+
+  /**
+   * @notice Raised when an namespace contains an invalid sequence of characters ("__").
+   * @param namespace The invalid namespace.
+   */
+  error World_InvalidNamespace(bytes14 namespace);
 
   /**
    * @notice Raised when trying to register a system that already exists.

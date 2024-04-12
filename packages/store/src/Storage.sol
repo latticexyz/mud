@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
-import { leftMask } from "./leftMask.sol";
+import { rightMask } from "./rightMask.sol";
 import { Memory } from "./Memory.sol";
+import { BYTE_TO_BITS } from "./constants.sol";
 
 /**
  * @title Storage Library
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Provides functions for low-level storage manipulation, including storing and retrieving bytes.
  */
 library Storage {
@@ -27,7 +29,7 @@ library Storage {
    * @param data Bytes to store.
    */
   function store(uint256 storagePointer, uint256 offset, bytes memory data) internal {
-    store(storagePointer, offset, Memory.dataPointer(data), data.length);
+    store(storagePointer, offset, data.length, Memory.dataPointer(data));
   }
 
   /**
@@ -37,7 +39,7 @@ library Storage {
    * @param memoryPointer Pointer to the start of the data in memory.
    * @param length Length of the data in bytes.
    */
-  function store(uint256 storagePointer, uint256 offset, uint256 memoryPointer, uint256 length) internal {
+  function store(uint256 storagePointer, uint256 offset, uint256 length, uint256 memoryPointer) internal {
     if (offset > 0) {
       // Support offsets that are greater than 32 bytes by incrementing the storagePointer and decrementing the offset
       if (offset >= 32) {
@@ -56,11 +58,11 @@ library Storage {
           wordRemainder = 32 - offset;
         }
 
-        uint256 mask = leftMask(length);
+        uint256 mask = ~rightMask(length);
         /// @solidity memory-safe-assembly
         assembly {
           // Load data from memory and offset it to match storage
-          let bitOffset := mul(offset, 8)
+          let bitOffset := mul(offset, BYTE_TO_BITS)
           mask := shr(bitOffset, mask)
           let offsetData := shr(bitOffset, mload(memoryPointer))
 
@@ -102,16 +104,16 @@ library Storage {
 
     // For the last partial word, apply a mask to the end
     if (length > 0) {
-      uint256 mask = leftMask(length);
+      uint256 mask = rightMask(length);
       /// @solidity memory-safe-assembly
       assembly {
         sstore(
           storagePointer,
           or(
             // store the left part
-            and(mload(memoryPointer), mask),
+            and(mload(memoryPointer), not(mask)),
             // preserve the right part
-            and(sload(storagePointer), not(mask))
+            and(sload(storagePointer), mask)
           )
         )
       }
@@ -121,7 +123,7 @@ library Storage {
   /**
    * @notice Set multiple storage locations to zero.
    * @param storagePointer The starting storage location.
-   * @param length The number of storage locations to set to zero.
+   * @param length The number of storage locations to set to zero, in bytes
    */
   function zero(uint256 storagePointer, uint256 length) internal {
     // Ceil division to round up to the nearest word
@@ -153,13 +155,13 @@ library Storage {
    * @param offset Offset within the storage location.
    * @return result The loaded bytes of data.
    */
-  function load(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes memory result) {
+  function load(uint256 storagePointer, uint256 offset, uint256 length) internal view returns (bytes memory result) {
     uint256 memoryPointer;
     /// @solidity memory-safe-assembly
     assembly {
       // Solidity's YulUtilFunctions::roundUpFunction
       function round_up_to_mul_of_32(value) -> _result {
-        _result := and(add(value, 31), not(31))
+        _result := and(add(value, 0x1F), not(0x1F))
       }
 
       // Allocate memory
@@ -169,7 +171,7 @@ library Storage {
       // Store length
       mstore(result, length)
     }
-    load(storagePointer, length, offset, memoryPointer);
+    load(storagePointer, offset, length, memoryPointer);
     return result;
   }
 
@@ -180,7 +182,7 @@ library Storage {
    * @param offset Offset within the storage location.
    * @param memoryPointer Pointer to the location in memory to append the data.
    */
-  function load(uint256 storagePointer, uint256 length, uint256 offset, uint256 memoryPointer) internal view {
+  function load(uint256 storagePointer, uint256 offset, uint256 length, uint256 memoryPointer) internal view {
     if (offset > 0) {
       // Support offsets that are greater than 32 bytes by incrementing the storagePointer and decrementing the offset
       if (offset >= 32) {
@@ -201,22 +203,22 @@ library Storage {
 
         uint256 mask;
         if (length < wordRemainder) {
-          mask = leftMask(length);
+          mask = rightMask(length);
         } else {
-          mask = leftMask(wordRemainder);
+          mask = rightMask(wordRemainder);
         }
         /// @solidity memory-safe-assembly
         assembly {
           // Load data from storage and offset it to match memory
-          let offsetData := shl(mul(offset, 8), sload(storagePointer))
+          let offsetData := shl(mul(offset, BYTE_TO_BITS), sload(storagePointer))
 
           mstore(
             memoryPointer,
             or(
-              // store the middle part
-              and(offsetData, mask),
-              // preserve the surrounding parts
-              and(mload(memoryPointer), not(mask))
+              // store the left part
+              and(offsetData, not(mask)),
+              // preserve the right parts
+              and(mload(memoryPointer), mask)
             )
           )
         }
@@ -248,16 +250,16 @@ library Storage {
 
     // For the last partial word, apply a mask to the end
     if (length > 0) {
-      uint256 mask = leftMask(length);
+      uint256 mask = rightMask(length);
       /// @solidity memory-safe-assembly
       assembly {
         mstore(
           memoryPointer,
           or(
             // store the left part
-            and(sload(storagePointer), mask),
+            and(sload(storagePointer), not(mask)),
             // preserve the right part
-            and(mload(memoryPointer), not(mask))
+            and(mload(memoryPointer), mask)
           )
         )
       }
@@ -271,7 +273,7 @@ library Storage {
    * @param storagePointer The base storage location.
    * @param length Length of the data in bytes.
    * @param offset Offset within the storage location.
-   * @return result The loaded bytes, left-aligned bytes. Bytes beyond the length are zeroed.
+   * @return result The loaded bytes, left-aligned bytes. Bytes beyond the length are not zeroed.
    */
   function loadField(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes32 result) {
     if (offset >= 32) {
@@ -284,7 +286,7 @@ library Storage {
     // Extra data past length is not truncated
     // This assumes that the caller will handle the overflow bits appropriately
     assembly {
-      result := shl(mul(offset, 8), sload(storagePointer))
+      result := shl(mul(offset, BYTE_TO_BITS), sload(storagePointer))
     }
 
     uint256 wordRemainder;
@@ -296,7 +298,7 @@ library Storage {
     // Read from the next slot if field spans 2 slots
     if (length > wordRemainder) {
       assembly {
-        result := or(result, shr(mul(wordRemainder, 8), sload(add(storagePointer, 1))))
+        result := or(result, shr(mul(wordRemainder, BYTE_TO_BITS), sload(add(storagePointer, 1))))
       }
     }
   }

@@ -23,7 +23,7 @@ export const indexerEnvSchema = z.intersection(
       RPC_HTTP_URL: z.string().optional(),
       RPC_WS_URL: z.string(),
     }),
-  ])
+  ]),
 );
 
 export function parseEnv<TSchema extends ZodTypeAny>(envSchema: TSchema): z.infer<TSchema> {
@@ -31,7 +31,7 @@ export function parseEnv<TSchema extends ZodTypeAny>(envSchema: TSchema): z.infe
     return envSchema.parse(process.env);
   } catch (error) {
     if (error instanceof ZodError) {
-      const { _errors, ...invalidEnvVars } = error.format();
+      const { ...invalidEnvVars } = error.format();
       console.error(`\nMissing or invalid environment variables:\n\n  ${Object.keys(invalidEnvVars).join("\n  ")}\n`);
       process.exit(1);
     }

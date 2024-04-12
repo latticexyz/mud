@@ -1,0 +1,123 @@
+# MUD config
+
+Certain CLI commands, such as [`mud tablegen`](/cli/tablegen) and [`mud worldgen`](/cli/worldgen) require the MUD configuration file.
+This file needs to be named `mud.config.ts` and be in the same folder as your `foundry.toml` file.
+
+The config is used to define:
+
+- The tables in your project in the `tables` object of your configuration.
+- The [namespace](/world/namespaces-access-control) that [systems](/world/systems) and tables will be deployed in.
+- The `System`s in your project.
+  By default, the deployer will find all Solidity matching `*System.sol` (so any file ending in `System.sol`, in any folder) and deploy them as public `System`.
+  If you want greater control over your systems (to change their public access or their name), you can use the `systems` object in the config.
+- The [modules](/world/modules) that will be installed in the `World`.
+
+The is an example of a `World` config:
+
+```tsx
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
+  enums: {
+    TerrainType: ["None", "TallGrass", "Boulder"],
+  },
+  excludeSystems: ["System3", "System2"],
+  worldContractName: "CustomWorld",
+  namespace: "mud",
+  systems: {
+    IncrementSystem: {
+      name: "increment",
+      openAccess: true,
+    },
+  },
+  tables: {
+    Counter: {
+      schema: {
+        value: "uint32",
+      },
+      key: [],
+    },
+    Tasks: {
+      schema: {
+        id: "bytes32",
+        createdAt: "uint256",
+        completedAt: "uint256",
+        description: "string",
+      },
+      key: ["id"],
+    },
+  },
+  deploysDirectory: "./mud-deploys",
+});
+```
+
+## Global configuration keys
+
+The global configuration keys are all optional.
+
+- **`namespace`**: a `string`: which namespace to deploy the resources defined in the config into.
+  The default value is the ROOT namespace.
+
+- **`tables`**: a record of tables. The keys in the record are table names.
+  The value is a record of [table properties](https://github.com/latticexyz/mud/blob/main/packages/store/ts/config/storeConfig.ts#L110-L135).
+
+  - **`schema`** (record):
+    The keys of this record are the field names in the data, which includes both the key fields and the value fields.
+    By convention, these keys start with a lowercase letter.
+    The values are strings that contain the data types of the fields.
+    Note that this is the sole required field, all the others are optional.
+
+  - **`key`** (list):
+    A list of the `schema` fields that are the key for that table.
+    If you want a singleton table, use an empty list (as in `Counter` table above).
+
+  - **`type`** (either `table` or `offchainTable`): [The table type](/store/tables#types-of-tables).
+    The default is `table`, which is a table stored onchain.
+    If you specify `offchainTable`, the table's data is only available offchain through events.
+
+- **`systems`**: a record of system definitions. The keys in the record are file names without the `.sol` extension. For example, if your system is named `TestSystem.sol`, use `TestSystem` as the key.
+
+  The value is a record of system configuration properties:
+
+  - `registerFunctionSelectors` (optional, default `true`): a `bool`.
+    Whether we want to automatically register the `public` functions of the `System` as
+    [function selectors](/world/function-selectors)
+  - `openAccess` (optional, default `true`): a `bool`.
+    If set to `false`, only the systems in the same namespace and the addresses or systems listed in the `accessList` array have access.
+  - `accessList` (required if openAccess is `false`): an array of `string`. Each address in the array will be granted access to this system, allowing them to call it.
+
+- **`enums`**: a record of [enumerations](https://solidity-by-example.org/enum/).
+  The keys are the names of the enumerations.
+  The values are arrays of the strings for the values the enumeration can take.
+
+- **`tables`**: a record of tables. The keys in the record are table names.
+  The value is a record of [table properties](https://github.com/latticexyz/mud/blob/main/packages/store/ts/config/storeConfig.ts#L110-L135).
+
+- **`excludeSystems`**: an array of `string`: which systems to not deploy, even if their name ends with “System”.
+
+- **`modules`** an array of module definitions: each module definition has a `name`, `root` (optional), and `args` key.
+
+  - `name`: Name of the module to install. The same module can be installed multiple times. This should be the name of the contract file without `.sol` (eg: if the file is named `DopeModule.sol`, the name of the module is `DopeModule`)
+
+  - `root`: whether to create a `root` module or not. `root` modules have access to all tables and are not bound to namespace restrictions.
+
+  - `args`: a list of arguments to be sent to the `install` function of the module. In this array, you can use the function `resolveTableId`. This function will turn a table name from your config into its low-level ID in the World. It is useful to pass references of a table to a module.
+
+- **`codegen`**: a record of code generation options.
+
+  - **`worldInterfaceName`** a `string`: The name of the interface for the `World`.
+    The default value is `IWorld`.
+  - **`worldgenDirectory`** a `string`: The directory for system and world interfaces.
+    The default value is `world`.
+
+- **`deploy`**: a record of deployment options.
+
+  - **`postDeployScript`** a `string`: Script to execute after the deployment is complete.
+    This script must be placed in the forge scripts directory (see `foundry.toml`) and have a `.s.sol` extension.
+    The default is `PostDeploy`.
+
+  - **`deploysDirectory`** a `string`: Which folder to put the deployment artifacts into after deployment.
+    The default is `./deploys`.
+
+  - **`worldsFile`** a `string`: JSON file for the chain to `World` deploy address mapping.
+    The default is `./worlds.json`.

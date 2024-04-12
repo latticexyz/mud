@@ -1,25 +1,18 @@
-import { resolveWorldConfig } from "@latticexyz/world";
-import { Config, ConfigInput, WorldFunction, salt } from "./common";
-import { resourceToHex, hexToResource } from "@latticexyz/common";
-import { resolveWithContext } from "@latticexyz/config";
-import { encodeField } from "@latticexyz/protocol-parser";
-import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
-import {
-  getFunctionSelector,
-  Hex,
-  getCreate2Address,
-  getAddress,
-  hexToBytes,
-  Abi,
-  bytesToHex,
-  getFunctionSignature,
-} from "viem";
+import path from "path";
+import { resolveWorldConfig } from "@latticexyz/world/internal";
+import { Config, ConfigInput, Library, Module, System, WorldFunction } from "./common";
+import { resourceToHex } from "@latticexyz/common";
+import { resolveWithContext } from "@latticexyz/config/library";
+import { encodeField } from "@latticexyz/protocol-parser/internal";
+import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type/internal";
+import { Hex, hexToBytes, bytesToHex, toFunctionSelector, toFunctionSignature } from "viem";
 import { getExistingContracts } from "../utils/getExistingContracts";
-import { defaultModuleContracts } from "../utils/modules/constants";
-import { getContractData } from "../utils/utils/getContractData";
+import { defaultModuleContracts } from "../utils/defaultModuleContracts";
+import { getContractData } from "../utils/getContractData";
 import { configToTables } from "./configToTables";
-import { deployer } from "./ensureDeployer";
-import { resourceLabel } from "./resourceLabel";
+import { groupBy } from "@latticexyz/common/utils";
+import { findLibraries } from "./findLibraries";
+import { createPrepareDeploy } from "./createPrepareDeploy";
 
 // TODO: this should be replaced by https://github.com/latticexyz/mud/issues/1668
 
@@ -32,35 +25,47 @@ export function resolveConfig<config extends ConfigInput>({
   forgeSourceDir: string;
   forgeOutDir: string;
 }): Config<config> {
+  const libraries = findLibraries(forgeOutDir).map((library): Library => {
+    // foundry/solc flattens artifacts, so we just use the path basename
+    const contractData = getContractData(path.basename(library.path), library.name, forgeOutDir);
+    return {
+      path: library.path,
+      name: library.name,
+      abi: contractData.abi,
+      prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
+      deployedBytecodeSize: contractData.deployedBytecodeSize,
+    };
+  });
+
   const tables = configToTables(config);
 
   // TODO: should the config parser/loader help with resolving systems?
   const contractNames = getExistingContracts(forgeSourceDir).map(({ basename }) => basename);
   const resolvedConfig = resolveWorldConfig(config, contractNames);
-  const baseSystemContractData = getContractData("System", forgeOutDir);
+  const baseSystemContractData = getContractData("System.sol", "System", forgeOutDir);
   const baseSystemFunctions = baseSystemContractData.abi
     .filter((item): item is typeof item & { type: "function" } => item.type === "function")
-    .map(getFunctionSignature);
+    .map(toFunctionSignature);
 
-  const systems = Object.entries(resolvedConfig.systems).map(([systemName, system]) => {
+  const systems = Object.entries(resolvedConfig.systems).map(([systemName, system]): System => {
     const namespace = config.namespace;
     const name = system.name;
     const systemId = resourceToHex({ type: "system", namespace, name });
-    const contractData = getContractData(systemName, forgeOutDir);
+    const contractData = getContractData(`${systemName}.sol`, systemName, forgeOutDir);
 
     const systemFunctions = contractData.abi
       .filter((item): item is typeof item & { type: "function" } => item.type === "function")
-      .map(getFunctionSignature)
+      .map(toFunctionSignature)
       .filter((sig) => !baseSystemFunctions.includes(sig))
       .map((sig): WorldFunction => {
         // TODO: figure out how to not duplicate contract behavior (https://github.com/latticexyz/mud/issues/1708)
-        const worldSignature = namespace === "" ? sig : `${namespace}_${name}_${sig}`;
+        const worldSignature = namespace === "" ? sig : `${namespace}__${sig}`;
         return {
           signature: worldSignature,
-          selector: getFunctionSelector(worldSignature),
+          selector: toFunctionSelector(worldSignature),
           systemId,
           systemFunctionSignature: sig,
-          systemFunctionSelector: getFunctionSelector(sig),
+          systemFunctionSelector: toFunctionSelector(sig),
         };
       });
 
@@ -71,37 +76,29 @@ export function resolveConfig<config extends ConfigInput>({
       allowAll: system.openAccess,
       allowedAddresses: system.accessListAddresses as Hex[],
       allowedSystemIds: system.accessListSystems.map((name) =>
-        resourceToHex({ type: "system", namespace, name: resolvedConfig.systems[name].name })
+        resourceToHex({ type: "system", namespace, name: resolvedConfig.systems[name].name }),
       ),
-      address: getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
-      bytecode: contractData.bytecode,
+      prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
       deployedBytecodeSize: contractData.deployedBytecodeSize,
       abi: contractData.abi,
       functions: systemFunctions,
     };
   });
 
-  // resolve allowedSystemIds
-  // TODO: resolve this at deploy time so we can allow for arbitrary system IDs registered in the world as the source-of-truth rather than config
-  const systemsWithAccess = systems.map(({ allowedAddresses, allowedSystemIds, ...system }) => {
-    const allowedSystemAddresses = allowedSystemIds.map((systemId) => {
-      const targetSystem = systems.find((s) => s.systemId === systemId);
-      if (!targetSystem) {
-        throw new Error(
-          `System ${resourceLabel(system)} wanted access to ${resourceLabel(
-            hexToResource(systemId)
-          )}, but it wasn't found in the config.`
-        );
-      }
-      return targetSystem.address;
-    });
-    return {
-      ...system,
-      allowedAddresses: Array.from(
-        new Set([...allowedAddresses, ...allowedSystemAddresses].map((addr) => getAddress(addr)))
-      ),
-    };
-  });
+  // Check for overlapping system IDs (since names get truncated when turning into IDs)
+  // TODO: move this into the world config resolve step once it resolves system IDs
+  const systemsById = groupBy(systems, (system) => system.systemId);
+  const overlappingSystems = Array.from(systemsById.values())
+    .filter((matches) => matches.length > 1)
+    .flat();
+  if (overlappingSystems.length) {
+    const names = overlappingSystems.map((system) => system.name);
+    throw new Error(
+      `Found systems with overlapping system ID: ${names.join(
+        ", ",
+      )}.\n\nSystem IDs are generated from the first 16 bytes of the name, so you may need to rename them to avoid the overlap.`,
+    );
+  }
 
   // ugh (https://github.com/latticexyz/mud/issues/1668)
   const resolveContext = {
@@ -113,16 +110,16 @@ export function resolveConfig<config extends ConfigInput>({
             type: table.offchainOnly ? "offchainTable" : "table",
             namespace: config.namespace,
             name: table.name,
-          })
+          }),
         ),
-      ])
+      ]),
     ),
   };
 
-  const modules = config.modules.map((mod) => {
+  const modules = config.modules.map((mod): Module => {
     const contractData =
       defaultModuleContracts.find((defaultMod) => defaultMod.name === mod.name) ??
-      getContractData(mod.name, forgeOutDir);
+      getContractData(`${mod.name}.sol`, mod.name, forgeOutDir);
     const installArgs = mod.args
       .map((arg) => resolveWithContext(arg, resolveContext))
       .map((arg) => {
@@ -136,8 +133,7 @@ export function resolveConfig<config extends ConfigInput>({
       name: mod.name,
       installAsRoot: mod.root,
       installData: installArgs.length === 0 ? "0x" : installArgs[0],
-      address: getCreate2Address({ from: deployer, bytecode: contractData.bytecode, salt }),
-      bytecode: contractData.bytecode,
+      prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
       deployedBytecodeSize: contractData.deployedBytecodeSize,
       abi: contractData.abi,
     };
@@ -145,7 +141,8 @@ export function resolveConfig<config extends ConfigInput>({
 
   return {
     tables,
-    systems: systemsWithAccess,
+    systems,
     modules,
+    libraries,
   };
 }

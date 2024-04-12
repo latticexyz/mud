@@ -1,5 +1,316 @@
 # Change Log
 
+## 2.0.4
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.0.4
+- @latticexyz/utils@2.0.4
+
+## 2.0.3
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.0.3
+- @latticexyz/utils@2.0.3
+
+## 2.0.2
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.0.2
+- @latticexyz/utils@2.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.0.1
+- @latticexyz/utils@2.0.1
+
+## 2.0.0
+
+### Minor Changes
+
+- c14f8bf1e: - Moved `createActionSystem` from `std-client` to `recs` package and updated it to better support v2 sync stack.
+
+  If you want to use `createActionSystem` alongside `syncToRecs`, you'll need to pass in arguments like so:
+
+  ```ts
+  import { syncToRecs } from "@latticexyz/store-sync/recs";
+  import { createActionSystem } from "@latticexyz/recs/deprecated";
+  import { from, mergeMap } from "rxjs";
+
+  const { blockLogsStorage$, waitForTransaction } = syncToRecs({
+    world,
+    ...
+  });
+
+  const txReduced$ = blockLogsStorage$.pipe(
+    mergeMap(({ operations }) => from(operations.map((op) => op.log?.transactionHash).filter(isDefined)))
+  );
+
+  const actionSystem = createActionSystem(world, txReduced$, waitForTransaction);
+  ```
+
+  - Fixed a bug in `waitForComponentValueIn` that caused the promise to not resolve if the component value was already set when the function was called.
+  - Fixed a bug in `createActionSystem` that caused optimistic updates to be incorrectly propagated to requirement checks. To fix the bug, you must now pass in the full component object to the action's `updates` instead of just the component name.
+
+    ```diff
+      actions.add({
+        updates: () => [
+          {
+    -       component: "Resource",
+    +       component: Resource,
+            ...
+          }
+        ],
+        ...
+      });
+    ```
+
+### Patch Changes
+
+- ce7125a1b: Removes `solecs` package. These were v1 contracts, now entirely replaced by our v2 tooling. See the [MUD docs](https://mud.dev/) for building with v2 or create a new project from our v2 templates with `pnpm create mud@next your-app-name`.
+- 1e2ad78e2: improve RECS error messages for v2 components
+- 590542030: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- 60cfd089f: Templates and examples now use MUD's new sync packages, all built on top of [viem](https://viem.sh/). This greatly speeds up and stabilizes our networking code and improves types throughout.
+
+  These new sync packages come with support for our `recs` package, including `encodeEntity` and `decodeEntity` utilities for composite keys.
+
+  If you're using `store-cache` and `useRow`/`useRows`, you should wait to upgrade until we have a suitable replacement for those libraries. We're working on a [sql.js](https://github.com/sql-js/sql.js/)-powered sync module that will replace `store-cache`.
+
+  **Migrate existing RECS apps to new sync packages**
+
+  As you migrate, you may find some features replaced, removed, or not included by default. Please [open an issue](https://github.com/latticexyz/mud/issues/new) and let us know if we missed anything.
+
+  1. Add `@latticexyz/store-sync` package to your app's `client` package and make sure `viem` is pinned to version `1.3.1` (otherwise you may get type errors)
+  2. In your `supportedChains.ts`, replace `foundry` chain with our new `mudFoundry` chain.
+
+     ```diff
+     - import { foundry } from "viem/chains";
+     - import { MUDChain, latticeTestnet } from "@latticexyz/common/chains";
+     + import { MUDChain, latticeTestnet, mudFoundry } from "@latticexyz/common/chains";
+
+     - export const supportedChains: MUDChain[] = [foundry, latticeTestnet];
+     + export const supportedChains: MUDChain[] = [mudFoundry, latticeTestnet];
+     ```
+
+  3. In `getNetworkConfig.ts`, remove the return type (to let TS infer it for now), remove now-unused config values, and add the viem `chain` object.
+
+     ```diff
+     - export async function getNetworkConfig(): Promise<NetworkConfig> {
+     + export async function getNetworkConfig() {
+     ```
+
+     ```diff
+       const initialBlockNumber = params.has("initialBlockNumber")
+         ? Number(params.get("initialBlockNumber"))
+     -   : world?.blockNumber ?? -1; // -1 will attempt to find the block number from RPC
+     +   : world?.blockNumber ?? 0n;
+     ```
+
+     ```diff
+     + return {
+     +   privateKey: getBurnerWallet().value,
+     +   chain,
+     +   worldAddress,
+     +   initialBlockNumber,
+     +   faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
+     + };
+     ```
+
+  4. In `setupNetwork.ts`, replace `setupMUDV2Network` with `syncToRecs`.
+
+     ```diff
+     - import { setupMUDV2Network } from "@latticexyz/std-client";
+     - import { createFastTxExecutor, createFaucetService, getSnapSyncRecords } from "@latticexyz/network";
+     + import { createFaucetService } from "@latticexyz/network";
+     + import { createPublicClient, fallback, webSocket, http, createWalletClient, getContract, Hex, parseEther, ClientConfig } from "viem";
+     + import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
+     + import { createBurnerAccount, createContract, transportObserver } from "@latticexyz/common";
+     ```
+
+     ```diff
+     - const result = await setupMUDV2Network({
+     -   ...
+     - });
+
+     + const clientOptions = {
+     +   chain: networkConfig.chain,
+     +   transport: transportObserver(fallback([webSocket(), http()])),
+     +   pollingInterval: 1000,
+     + } as const satisfies ClientConfig;
+
+     + const publicClient = createPublicClient(clientOptions);
+
+     + const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
+     + const burnerWalletClient = createWalletClient({
+     +   ...clientOptions,
+     +   account: burnerAccount,
+     + });
+
+     + const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
+     +   world,
+     +   config: storeConfig,
+     +   address: networkConfig.worldAddress as Hex,
+     +   publicClient,
+     +   components: contractComponents,
+     +   startBlock: BigInt(networkConfig.initialBlockNumber),
+     +   indexerUrl: networkConfig.indexerUrl ?? undefined,
+     + });
+
+     + const worldContract = createContract({
+     +   address: networkConfig.worldAddress as Hex,
+     +   abi: IWorld__factory.abi,
+     +   publicClient,
+     +   walletClient: burnerWalletClient,
+     + });
+     ```
+
+     ```diff
+       // Request drip from faucet
+     - const signer = result.network.signer.get();
+     - if (networkConfig.faucetServiceUrl && signer) {
+     -   const address = await signer.getAddress();
+     + if (networkConfig.faucetServiceUrl) {
+     +   const address = burnerAccount.address;
+     ```
+
+     ```diff
+       const requestDrip = async () => {
+     -   const balance = await signer.getBalance();
+     +   const balance = await publicClient.getBalance({ address });
+         console.info(`[Dev Faucet]: Player balance -> ${balance}`);
+     -   const lowBalance = balance?.lte(utils.parseEther("1"));
+     +   const lowBalance = balance < parseEther("1");
+     ```
+
+     You can remove the previous ethers `worldContract`, snap sync code, and fast transaction executor.
+
+     The return of `setupNetwork` is a bit different than before, so you may have to do corresponding app changes.
+
+     ```diff
+     + return {
+     +   world,
+     +   components,
+     +   playerEntity: encodeEntity({ address: "address" }, { address: burnerWalletClient.account.address }),
+     +   publicClient,
+     +   walletClient: burnerWalletClient,
+     +   latestBlock$,
+     +   blockStorageOperations$,
+     +   waitForTransaction,
+     +   worldContract,
+     + };
+     ```
+
+  5. Update `createSystemCalls` with the new return type of `setupNetwork`.
+
+     ```diff
+       export function createSystemCalls(
+     -   { worldSend, txReduced$, singletonEntity }: SetupNetworkResult,
+     +   { worldContract, waitForTransaction }: SetupNetworkResult,
+         { Counter }: ClientComponents
+       ) {
+          const increment = async () => {
+     -      const tx = await worldSend("increment", []);
+     -      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+     +      const tx = await worldContract.write.increment();
+     +      await waitForTransaction(tx);
+            return getComponentValue(Counter, singletonEntity);
+          };
+     ```
+
+  6. (optional) If you still need a clock, you can create it with:
+
+     ```ts
+     import { map, filter } from "rxjs";
+     import { createClock } from "@latticexyz/network";
+
+     const clock = createClock({
+       period: 1000,
+       initialTime: 0,
+       syncInterval: 5000,
+     });
+
+     world.registerDisposer(() => clock.dispose());
+
+     latestBlock$
+       .pipe(
+         map((block) => Number(block.timestamp) * 1000), // Map to timestamp in ms
+         filter((blockTimestamp) => blockTimestamp !== clock.lastUpdateTime), // Ignore if the clock was already refreshed with this block
+         filter((blockTimestamp) => blockTimestamp !== clock.currentTime), // Ignore if the current local timestamp is correct
+       )
+       .subscribe(clock.update); // Update the local clock
+     ```
+
+  If you're using the previous `LoadingState` component, you'll want to migrate to the new `SyncProgress`:
+
+  ```ts
+  import { SyncStep, singletonEntity } from "@latticexyz/store-sync/recs";
+
+  const syncProgress = useComponentValue(SyncProgress, singletonEntity, {
+    message: "Connecting",
+    percentage: 0,
+    step: SyncStep.INITIALIZE,
+  });
+
+  if (syncProgress.step === SyncStep.LIVE) {
+    // we're live!
+  }
+  ```
+
+- afdba793f: Update RECS components with v2 key/value schemas. This helps with encoding/decoding composite keys and strong types for keys/values.
+
+  This may break if you were previously dependent on `component.id`, `component.metadata.componentId`, or `component.metadata.tableId`:
+
+  - `component.id` is now the on-chain `bytes32` hex representation of the table ID
+  - `component.metadata.componentName` is the table name (e.g. `Position`)
+  - `component.metadata.tableName` is the namespaced table name (e.g. `myworld:Position`)
+  - `component.metadata.keySchema` is an object with key names and their corresponding ABI types
+  - `component.metadata.valueSchema` is an object with field names and their corresponding ABI types
+
+- Updated dependencies [52182f70d]
+- Updated dependencies [aabd30767]
+- Updated dependencies [b38c096d]
+- Updated dependencies [f99e88987]
+- Updated dependencies [48909d151]
+- Updated dependencies [b02f9d0e4]
+- Updated dependencies [bb91edaa0]
+- Updated dependencies [590542030]
+- Updated dependencies [f03531d97]
+- Updated dependencies [b8a6158d6]
+- Updated dependencies [92de59982]
+- Updated dependencies [4e4a34150]
+- Updated dependencies [535229984]
+- Updated dependencies [d7b1c588a]
+  - @latticexyz/utils@2.0.0
+  - @latticexyz/schema-type@2.0.0
+
+## 2.0.0-next.18
+
+### Patch Changes
+
+- Updated dependencies [b38c096d]
+- Updated dependencies [d7b1c588a]
+  - @latticexyz/schema-type@2.0.0-next.18
+  - @latticexyz/utils@2.0.0-next.18
+
+## 2.0.0-next.17
+
+### Patch Changes
+
+- Updated dependencies [aabd3076]
+  - @latticexyz/schema-type@2.0.0-next.17
+  - @latticexyz/utils@2.0.0-next.17
+
+## 2.0.0-next.16
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.0.0-next.16
+- @latticexyz/utils@2.0.0-next.16
+
 ## 2.0.0-next.15
 
 ### Patch Changes
@@ -324,7 +635,7 @@
        .pipe(
          map((block) => Number(block.timestamp) * 1000), // Map to timestamp in ms
          filter((blockTimestamp) => blockTimestamp !== clock.lastUpdateTime), // Ignore if the clock was already refreshed with this block
-         filter((blockTimestamp) => blockTimestamp !== clock.currentTime) // Ignore if the current local timestamp is correct
+         filter((blockTimestamp) => blockTimestamp !== clock.currentTime), // Ignore if the current local timestamp is correct
        )
        .subscribe(clock.update); // Update the local clock
      ```

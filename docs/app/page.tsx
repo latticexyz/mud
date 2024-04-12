@@ -10,8 +10,10 @@ import { ContributeIcon } from "../src/icons/ContributeIcon";
 import { ChangelogIcon } from "../src/icons/ChangelogIcon";
 
 export const metadata: Metadata = {
-  title: "MUD",
-  description: "Battle-tested onchain framework for developers.",
+  title: "MUD | Framework for onchain applications",
+  description:
+    // eslint-disable-next-line max-len
+    "MUD provides you with the tools to build onchain applications and autonomous worlds, with a framework and protocol that simplifies development on Ethereum and other EVM chains.",
   icons: "/images/logos/circle/mud.svg",
 };
 
@@ -24,7 +26,7 @@ export default async function HomePage() {
             "min-h-screen flex flex-col animate-in animate-duration-500 fade-in",
             "gap-12 p-8",
             "sm:justify-between",
-            "md:gap-16 md:p-16"
+            "md:gap-16 md:p-16",
           )}
         >
           <div className="flex items-center justify-between">
@@ -231,13 +233,13 @@ export default async function HomePage() {
             <div className="font-mono uppercase text-2xl">Find us</div>
             <p className="text-lg text-white/60">Discover more MUD resources, and join our community online.</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <a
-              href="https://world.mirror.xyz/"
+              href="https://newsletter.lattice.xyz/"
               // eslint-disable-next-line max-len
               className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
-              Magazine
+              Newsletter
             </a>
             <a
               href="https://discord.lattice.xyz/"
@@ -265,6 +267,15 @@ export default async function HomePage() {
               className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
               YouTube
+            </a>
+            <a
+              href="https://airtable.com/apph2KJY9nRM37M8Z/pag1r9S91UIkIoPsm/form"
+              target="_blank"
+              rel="noopener noreferrer"
+              // eslint-disable-next-line max-len
+              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
+            >
+              Reach out
             </a>
           </div>
         </div>

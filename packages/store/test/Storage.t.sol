@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -59,12 +59,12 @@ contract StorageTest is Test, GasReporter {
     // Assert we can load the correct partial value from storage
 
     startGasReport("load 34 bytes over 3 storage slots (with offset and safeTrail))");
-    bytes memory data = Storage.load({ storagePointer: storagePointer, length: 34, offset: 31 });
+    bytes memory data = Storage.load({ storagePointer: storagePointer, offset: 31, length: 34 });
     endGasReport();
 
-    assertEq(Bytes.slice1(data, 0), bytes1(0x01));
-    assertEq(Bytes.slice32(data, 1), bytes32(0x0200000000000000000000000000000000000000000000000000000000000003));
-    assertEq(Bytes.slice1(data, 33), bytes1(0x04));
+    assertEq(Bytes.getBytes1(data, 0), bytes1(0x01));
+    assertEq(Bytes.getBytes32(data, 1), bytes32(0x0200000000000000000000000000000000000000000000000000000000000003));
+    assertEq(Bytes.getBytes1(data, 33), bytes1(0x04));
     assertEq(keccak256(data), keccak256(data1));
   }
 
@@ -73,7 +73,7 @@ contract StorageTest is Test, GasReporter {
     vm.assume(storagePointer > 0);
 
     Storage.store({ storagePointer: uint256(storagePointer), offset: offset, data: data });
-    assertEq(Storage.load({ storagePointer: uint256(storagePointer), length: data.length, offset: offset }), data);
+    assertEq(Storage.load({ storagePointer: uint256(storagePointer), offset: offset, length: data.length }), data);
   }
 
   function testStoreLoadFieldBytes32Fuzzy(bytes32 data, uint256 storagePointer, uint256 offset) public {
@@ -126,7 +126,7 @@ contract StorageTest is Test, GasReporter {
     uint256 storagePointer = uint256(keccak256("some location"));
     Storage.store({ storagePointer: storagePointer, offset: 10, data: abi.encodePacked(dataAfterLoad) });
 
-    Storage.load({ storagePointer: storagePointer, length: 10, offset: 10, memoryPointer: memoryPointer });
+    Storage.load({ storagePointer: storagePointer, offset: 10, length: 10, memoryPointer: memoryPointer });
 
     assertEq(testData, expectedData);
   }

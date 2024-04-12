@@ -1,9 +1,9 @@
 export default {
   introduction: "Introduction",
+  "data-model": "Data model",
   tables: "Tables",
-  "table-libraries": "Table Libraries",
+  "table-libraries": "Table libraries",
   encoding: "Encoding",
-  "store-hooks": "Store Hooks",
+  "store-hooks": "Store hooks",
   reference: "Reference",
-  "table-intro": { display: "hidden" }, // imported
 };

@@ -1,5 +1,449 @@
 # @latticexyz/block-logs-stream
 
+## 2.0.4
+
+### Patch Changes
+
+- Updated dependencies [620e4ec1]
+  - @latticexyz/common@2.0.4
+
+## 2.0.3
+
+### Patch Changes
+
+- Updated dependencies [d2e4d0fb]
+  - @latticexyz/common@2.0.3
+
+## 2.0.2
+
+### Patch Changes
+
+- @latticexyz/common@2.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- @latticexyz/common@2.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- b8a6158d6: - removes our own `getLogs` function now that viem's `getLogs` supports using multiple `events` per RPC call.
+  - removes `isNonPendingBlock` and `isNonPendingLog` helpers now that viem narrows `Block` and `Log` types based on inputs
+  - simplifies `groupLogsByBlockNumber` types and tests
+
+### Minor Changes
+
+- eeb15cc06: - Replace `blockEventsToStorage` with `blockLogsToStorage` that exposes a `storeOperations` callback to perform database writes from store operations. This helps encapsulates database adapters into a single wrapper/instance of `blockLogsToStorage` and allows for wrapping a block of store operations in a database transaction.
+  - Add `toBlock` option to `groupLogsByBlockNumber` and remove `blockHash` from results. This helps track the last block number for a given set of logs when used in the context of RxJS streams.
+- 72b806979: Add block logs stream package
+
+  ```ts
+  import { filter, map, mergeMap } from "rxjs";
+  import { createPublicClient, parseAbi } from "viem";
+  import {
+    createBlockStream,
+    isNonPendingBlock,
+    groupLogsByBlockNumber,
+    blockRangeToLogs,
+  } from "@latticexyz/block-logs-stream";
+
+  const publicClient = createPublicClient({
+    // your viem public client config here
+  });
+
+  const latestBlock$ = await createBlockStream({
+    publicClient,
+    blockTag: "latest",
+  });
+
+  const latestBlockNumber$ = latestBlock$.pipe(
+    filter(isNonPendingBlock),
+    map((block) => block.number),
+  );
+
+  latestBlockNumber$
+    .pipe(
+      map((latestBlockNumber) => ({
+        startBlock: 0n,
+        endBlock: latestBlockNumber,
+      })),
+      blockRangeToLogs({
+        publicClient,
+        address,
+        events: parseAbi([
+          "event StoreDeleteRecord(bytes32 table, bytes32[] key)",
+          "event StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data)",
+          "event StoreSetRecord(bytes32 table, bytes32[] key, bytes data)",
+          "event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data)",
+        ]),
+      }),
+      mergeMap(({ logs }) => from(groupLogsByBlockNumber(logs))),
+    )
+    .subscribe((block) => {
+      console.log("got events for block", block);
+    });
+  ```
+
+- d7b1c588a: Upgraded all packages and templates to viem v2.7.12 and abitype v1.0.0.
+
+  Some viem APIs have changed and we've updated `getContract` to reflect those changes and keep it aligned with viem. It's one small code change:
+
+  ```diff
+   const worldContract = getContract({
+     address: worldAddress,
+     abi: IWorldAbi,
+  -  publicClient,
+  -  walletClient,
+  +  client: { public: publicClient, wallet: walletClient },
+   });
+  ```
+
+### Patch Changes
+
+- 904fd7d4e: Add store sync package
+- f99e88987: Bump viem to 1.14.0 and abitype to 0.9.8
+- 6573e38e9: Renamed all occurrences of `table` where it is used as "table ID" to `tableId`.
+  This is only a breaking change for consumers who manually decode `Store` events, but not for consumers who use the MUD libraries.
+
+  ```diff
+  event StoreSetRecord(
+  - bytes32 table,
+  + bytes32 tableId,
+    bytes32[] key,
+    bytes data
+  );
+
+  event StoreSetField(
+  - bytes32 table,
+  + bytes32 tableId,
+    bytes32[] key,
+    uint8 fieldIndex,
+    bytes data
+  );
+
+  event StoreDeleteRecord(
+  - bytes32 table,
+  + bytes32 tableId,
+    bytes32[] key
+  );
+
+  event StoreEphemeralRecord(
+  - bytes32 table,
+  + bytes32 tableId,
+    bytes32[] key,
+    bytes data
+  );
+  ```
+
+- 6e66c5b74: Renamed all occurrences of `key` where it is used as "key tuple" to `keyTuple`.
+  This is only a breaking change for consumers who manually decode `Store` events, but not for consumers who use the MUD libraries.
+
+  ```diff
+  event StoreSetRecord(
+    bytes32 tableId,
+  - bytes32[] key,
+  + bytes32[] keyTuple,
+    bytes data
+  );
+
+  event StoreSetField(
+    bytes32 tableId,
+  - bytes32[] key,
+  + bytes32[] keyTuple,
+    uint8 fieldIndex,
+    bytes data
+  );
+
+  event StoreDeleteRecord(
+    bytes32 tableId,
+  - bytes32[] key,
+  + bytes32[] keyTuple,
+  );
+
+  event StoreEphemeralRecord(
+    bytes32 tableId,
+  - bytes32[] key,
+  + bytes32[] keyTuple,
+    bytes data
+  );
+  ```
+
+- 590542030: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- b8a6158d6: bump viem to 1.6.0
+- 5d737cf2e: Updated the `debug` util to pipe to `stdout` and added an additional util to explicitly pipe to `stderr` when needed.
+- bfcb293d1: What used to be known as `ephemeral` table is now called `offchain` table.
+  The previous `ephemeral` tables only supported an `emitEphemeral` method, which emitted a `StoreSetEphemeralRecord` event.
+
+  Now `offchain` tables support all regular table methods, except partial operations on dynamic fields (`push`, `pop`, `update`).
+  Unlike regular tables they don't store data on-chain but emit the same events as regular tables (`StoreSetRecord`, `StoreSpliceStaticData`, `StoreDeleteRecord`), so their data can be indexed by offchain indexers/clients.
+
+  ```diff
+  - EphemeralTable.emitEphemeral(value);
+  + OffchainTable.set(value);
+  ```
+
+- 535229984: - bump to viem 1.3.0 and abitype 0.9.3
+  - move `@wagmi/chains` imports to `viem/chains`
+  - refine a few types
+- af639a264: `Store` events have been renamed for consistency and readability.
+  If you're parsing `Store` events manually, you need to update your ABI.
+  If you're using the MUD sync stack, the new events are already integrated and no further changes are necessary.
+
+  ```diff
+  - event StoreSetRecord(
+  + event Store_SetRecord(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple,
+      bytes staticData,
+      bytes32 encodedLengths,
+      bytes dynamicData
+    );
+  - event StoreSpliceStaticData(
+  + event Store_SpliceStaticData(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple,
+      uint48 start,
+      uint40 deleteCount,
+      bytes data
+    );
+  - event StoreSpliceDynamicData(
+  + event Store_SpliceDynamicData(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple,
+      uint48 start,
+      uint40 deleteCount,
+      bytes data,
+      bytes32 encodedLengths
+    );
+  - event StoreDeleteRecord(
+  + event Store_DeleteRecord(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple
+    );
+  ```
+
+- cea754dde: - The external `setRecord` and `deleteRecord` methods of `IStore` no longer accept a `FieldLayout` as input, but load it from storage instead.
+  This is to prevent invalid `FieldLayout` values being passed, which could cause the onchain state to diverge from the indexer state.
+  However, the internal `StoreCore` library still exposes a `setRecord` and `deleteRecord` method that allows a `FieldLayout` to be passed.
+  This is because `StoreCore` can only be used internally, so the `FieldLayout` value can be trusted and we can save the gas for accessing storage.
+
+  ```diff
+  interface IStore {
+    function setRecord(
+      ResourceId tableId,
+      bytes32[] calldata keyTuple,
+      bytes calldata staticData,
+      PackedCounter encodedLengths,
+      bytes calldata dynamicData,
+  -   FieldLayout fieldLayout
+    ) external;
+
+    function deleteRecord(
+      ResourceId tableId,
+      bytes32[] memory keyTuple,
+  -   FieldLayout fieldLayout
+    ) external;
+  }
+  ```
+
+  - The `spliceStaticData` method and `Store_SpliceStaticData` event of `IStore` and `StoreCore` no longer include `deleteCount` in their signature.
+    This is because when splicing static data, the data after `start` is always overwritten with `data` instead of being shifted, so `deleteCount` is always the length of the data to be written.
+
+    ```diff
+
+    event Store_SpliceStaticData(
+      ResourceId indexed tableId,
+      bytes32[] keyTuple,
+      uint48 start,
+    - uint40 deleteCount,
+      bytes data
+    );
+
+    interface IStore {
+      function spliceStaticData(
+        ResourceId tableId,
+        bytes32[] calldata keyTuple,
+        uint48 start,
+    -   uint40 deleteCount,
+        bytes calldata data
+      ) external;
+    }
+    ```
+
+  - The `updateInField` method has been removed from `IStore`, as it's almost identical to the more general `spliceDynamicData`.
+    If you're manually calling `updateInField`, here is how to upgrade to `spliceDynamicData`:
+
+    ```diff
+    - store.updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
+    + uint8 dynamicFieldIndex = fieldIndex - fieldLayout.numStaticFields();
+    + store.spliceDynamicData(tableId, keyTuple, dynamicFieldIndex, uint40(startByteIndex), uint40(dataToSet.length), dataToSet);
+    ```
+
+  - All other methods that are only valid for dynamic fields (`pushToField`, `popFromField`, `getFieldSlice`)
+    have been renamed to make this more explicit (`pushToDynamicField`, `popFromDynamicField`, `getDynamicFieldSlice`).
+
+    Their `fieldIndex` parameter has been replaced by a `dynamicFieldIndex` parameter, which is the index relative to the first dynamic field (i.e. `dynamicFieldIndex` = `fieldIndex` - `numStaticFields`).
+    The `FieldLayout` parameter has been removed, as it was only used to calculate the `dynamicFieldIndex` in the method.
+
+    ```diff
+    interface IStore {
+    - function pushToField(
+    + function pushToDynamicField(
+        ResourceId tableId,
+        bytes32[] calldata keyTuple,
+    -   uint8 fieldIndex,
+    +   uint8 dynamicFieldIndex,
+        bytes calldata dataToPush,
+    -   FieldLayout fieldLayout
+      ) external;
+
+    - function popFromField(
+    + function popFromDynamicField(
+        ResourceId tableId,
+        bytes32[] calldata keyTuple,
+    -   uint8 fieldIndex,
+    +   uint8 dynamicFieldIndex,
+        uint256 byteLengthToPop,
+    -   FieldLayout fieldLayout
+      ) external;
+
+    - function getFieldSlice(
+    + function getDynamicFieldSlice(
+        ResourceId tableId,
+        bytes32[] memory keyTuple,
+    -   uint8 fieldIndex,
+    +   uint8 dynamicFieldIndex,
+    -   FieldLayout fieldLayout,
+        uint256 start,
+        uint256 end
+      ) external view returns (bytes memory data);
+    }
+    ```
+
+  - `IStore` has a new `getDynamicFieldLength` length method, which returns the byte length of the given dynamic field and doesn't require the `FieldLayout`.
+
+    ```diff
+    IStore {
+    + function getDynamicFieldLength(
+    +   ResourceId tableId,
+    +   bytes32[] memory keyTuple,
+    +   uint8 dynamicFieldIndex
+    + ) external view returns (uint256);
+    }
+
+    ```
+
+  - `IStore` now has additional overloads for `getRecord`, `getField`, `getFieldLength` and `setField` that don't require a `FieldLength` to be passed, but instead load it from storage.
+  - `IStore` now exposes `setStaticField` and `setDynamicField` to save gas by avoiding the dynamic inference of whether the field is static or dynamic.
+  - The `getDynamicFieldSlice` method no longer accepts reading outside the bounds of the dynamic field.
+    This is to avoid returning invalid data, as the data of a dynamic field is not deleted when the record is deleted, but only its length is set to zero.
+
+- Updated dependencies [a35c05ea9]
+- Updated dependencies [16b13ea8f]
+- Updated dependencies [82693072]
+- Updated dependencies [aabd30767]
+- Updated dependencies [65c9546c4]
+- Updated dependencies [d5c0682fb]
+- Updated dependencies [01e46d99]
+- Updated dependencies [331dbfdcb]
+- Updated dependencies [44236041f]
+- Updated dependencies [066056154]
+- Updated dependencies [3fb9ce283]
+- Updated dependencies [bb6ada740]
+- Updated dependencies [35c9f33df]
+- Updated dependencies [0b8ce3f2c]
+- Updated dependencies [933b54b5f]
+- Updated dependencies [307abab3]
+- Updated dependencies [aacffcb59]
+- Updated dependencies [f99e88987]
+- Updated dependencies [939916bcd]
+- Updated dependencies [e34d1170]
+- Updated dependencies [b8a6158d6]
+- Updated dependencies [db314a74]
+- Updated dependencies [59267655]
+- Updated dependencies [8d51a0348]
+- Updated dependencies [c162ad5a5]
+- Updated dependencies [f62c767e7]
+- Updated dependencies [590542030]
+- Updated dependencies [1b5eb0d07]
+- Updated dependencies [44a5432ac]
+- Updated dependencies [b8a6158d6]
+- Updated dependencies [5d737cf2e]
+- Updated dependencies [d075f82f3]
+- Updated dependencies [331dbfdcb]
+- Updated dependencies [92de59982]
+- Updated dependencies [bfcb293d1]
+- Updated dependencies [3e057061d]
+- Updated dependencies [535229984]
+- Updated dependencies [5e723b90e]
+- Updated dependencies [0c4f9fea9]
+- Updated dependencies [60cfd089f]
+- Updated dependencies [24a6cd536]
+- Updated dependencies [708b49c50]
+- Updated dependencies [d2f8e9400]
+- Updated dependencies [25086be5f]
+- Updated dependencies [b1d41727d]
+- Updated dependencies [4c1dcd81e]
+- Updated dependencies [6071163f7]
+- Updated dependencies [6c6733256]
+- Updated dependencies [cd5abcc3b]
+- Updated dependencies [d7b1c588a]
+- Updated dependencies [c4f49240d]
+- Updated dependencies [5df1f31bc]
+- Updated dependencies [cea754dde]
+- Updated dependencies [331f0d636]
+- Updated dependencies [cc2c8da00]
+  - @latticexyz/common@2.0.0
+
+## 2.0.0-next.18
+
+### Minor Changes
+
+- d7b1c588a: Upgraded all packages and templates to viem v2.7.12 and abitype v1.0.0.
+
+  Some viem APIs have changed and we've updated `getContract` to reflect those changes and keep it aligned with viem. It's one small code change:
+
+  ```diff
+   const worldContract = getContract({
+     address: worldAddress,
+     abi: IWorldAbi,
+  -  publicClient,
+  -  walletClient,
+  +  client: { public: publicClient, wallet: walletClient },
+   });
+  ```
+
+### Patch Changes
+
+- Updated dependencies [82693072]
+- Updated dependencies [d5c0682fb]
+- Updated dependencies [01e46d99]
+- Updated dependencies [44236041]
+- Updated dependencies [307abab3]
+- Updated dependencies [e34d1170]
+- Updated dependencies [db314a74]
+- Updated dependencies [59267655]
+- Updated dependencies [d7b1c588a]
+  - @latticexyz/common@2.0.0-next.18
+
+## 2.0.0-next.17
+
+### Patch Changes
+
+- Updated dependencies [a35c05ea]
+- Updated dependencies [aabd3076]
+- Updated dependencies [c162ad5a]
+  - @latticexyz/common@2.0.0-next.17
+
+## 2.0.0-next.16
+
+### Patch Changes
+
+- @latticexyz/common@2.0.0-next.16
+
 ## 2.0.0-next.15
 
 ### Patch Changes
@@ -399,16 +843,22 @@
     // your viem public client config here
   });
 
-  const latestBlock$ = await createBlockStream({ publicClient, blockTag: "latest" });
+  const latestBlock$ = await createBlockStream({
+    publicClient,
+    blockTag: "latest",
+  });
 
   const latestBlockNumber$ = latestBlock$.pipe(
     filter(isNonPendingBlock),
-    map((block) => block.number)
+    map((block) => block.number),
   );
 
   latestBlockNumber$
     .pipe(
-      map((latestBlockNumber) => ({ startBlock: 0n, endBlock: latestBlockNumber })),
+      map((latestBlockNumber) => ({
+        startBlock: 0n,
+        endBlock: latestBlockNumber,
+      })),
       blockRangeToLogs({
         publicClient,
         address,
@@ -419,7 +869,7 @@
           "event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data)",
         ]),
       }),
-      mergeMap(({ logs }) => from(groupLogsByBlockNumber(logs)))
+      mergeMap(({ logs }) => from(groupLogsByBlockNumber(logs))),
     )
     .subscribe((block) => {
       console.log("got events for block", block);

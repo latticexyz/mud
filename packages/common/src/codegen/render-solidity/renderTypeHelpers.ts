@@ -1,5 +1,8 @@
 import { RenderField, RenderKeyTuple, RenderType } from "./types";
 
+/**
+ * Renders the necessary helper functions to typecast to/from the types of given fields and keys
+ */
 export function renderTypeHelpers(options: { fields: RenderField[]; keyTuple: RenderKeyTuple[] }): string {
   const { fields, keyTuple } = options;
 
@@ -59,11 +62,19 @@ function getWrappingHelpers(array: RenderType[]): string[] {
   return [...wrappers.values(), ...unwrappers.values()];
 }
 
+/**
+ * Renders a function to cast a dynamic array to a static array.
+ * @param functionName name of the function to be rendered
+ * @param elementType type of the array's element
+ * @param staticLength length of the static array
+ * @param internalTypeId solidity type name of the dynamic array
+ * @returns
+ */
 function renderWrapperStaticArray(
   functionName: string,
   elementType: string,
   staticLength: number,
-  internalTypeId: string
+  internalTypeId: string,
 ): string {
   // WARNING: ensure this still works if changing major solidity versions!
   // (the memory layout for static arrays may change)
@@ -96,11 +107,19 @@ function renderWrapperStaticArray(
   `;
 }
 
+/**
+ * Renders a function to cast a static array to a dynamic array.
+ * @param functionName name of the function to be rendered
+ * @param elementType type of the array's element
+ * @param staticLength length of the static array
+ * @param internalTypeId solidity type name of the dynamic array
+ * @returns
+ */
 function renderUnwrapperStaticArray(
   functionName: string,
   elementType: string,
   staticLength: number,
-  internalTypeId: string
+  internalTypeId: string,
 ): string {
   // byte length for memory copying (more efficient than a loop)
   const byteLength = staticLength * 32;

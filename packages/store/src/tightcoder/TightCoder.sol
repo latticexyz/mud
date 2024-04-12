@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Slice } from "../Slice.sol";
 
 /**
  * @title TightCoder
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Provides low-level generic implementations of tight encoding and decoding for arrays.
  * This is consistent with Solidity's internal tight encoding for array data in storage.
  */
@@ -13,7 +14,7 @@ library TightCoder {
    * @dev Copies the array to a new bytes array, tightly packing its elements.
    * @param array The array to encode.
    * @param elementSize The size of each element in bytes.
-   * @param leftPaddingBits The number of bits to pad on the left for each element.
+   * @param leftPaddingBits The amount to shift each element to the left.
    * @return data A tightly packed byte array.
    * @notice elementSize and leftPaddingBits must be correctly provided by the caller based on the array's element type.
    */
@@ -30,7 +31,7 @@ library TightCoder {
     assembly {
       // Solidity's YulUtilFunctions::roundUpFunction
       function round_up_to_mul_of_32(value) -> _result {
-        _result := and(add(value, 31), not(31))
+        _result := and(add(value, 0x1F), not(0x1F))
       }
 
       // Allocate memory
@@ -84,7 +85,7 @@ library TightCoder {
       // Allocate memory
       array := mload(0x40)
       let arrayPointer := add(array, 0x20)
-      mstore(0x40, add(arrayPointer, mul(arrayLength, 32)))
+      mstore(0x40, add(arrayPointer, mul(arrayLength, 0x20)))
       // Store length
       mstore(array, arrayLength)
 

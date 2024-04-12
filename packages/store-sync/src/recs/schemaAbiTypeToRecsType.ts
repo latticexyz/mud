@@ -1,5 +1,5 @@
 import { Type as RecsType } from "@latticexyz/recs";
-import { SchemaAbiType } from "@latticexyz/schema-type";
+import { SchemaAbiType } from "@latticexyz/schema-type/internal";
 
 export const schemaAbiTypeToRecsType = {
   uint8: RecsType.Number,

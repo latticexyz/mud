@@ -1,0 +1,146 @@
+import { Callout } from "nextra/components";
+import { CollapseCode } from "../../components/CollapseCode";
+import { MUDTable } from "../../components/MUDTable";
+
+# How MUD models data
+
+The MUD framework helps you to model your onchain state in a way that enables building applications with familiar tooling, like relational databases.
+
+In your MUD config, you define data as a set of tables. Like relational databases, these tables have “columns” by way of two MUD concepts: a schema and a key. A schema is set of fields that map to Solidity types and a key is the list of fields that combine to form the table's primary key.
+
+## Defining tables
+
+Let's say we're making a game where players can move around a map. The definition for a `Position` table might look something like:
+
+<CollapseCode>
+
+```tsx filename="mud.config.ts" {5-12} showLineNumbers
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
+  tables: {
+    Position: {
+      schema: {
+        player: "address",
+        x: "int32",
+        y: "int32",
+      },
+      key: ["player"],
+    },
+  },
+});
+```
+
+</CollapseCode>
+
+Translating the table definition above would look like this in a relational database:
+
+<MUDTable>
+  <thead>
+    <tr>
+      <th>player</th>
+      <th>x</th>
+      <th>y</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0x1234</th>
+      <td>-5</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>0x5678</th>
+      <td>3</td>
+      <td>6</td>
+    </tr>
+  </tbody>
+</MUDTable>
+
+Because `player` is the key, we would have a unique/primary key constraint on `player`.
+
+Let's add another table for terrain at a given position on the map. MUD allows for multiple fields in the key and, like databases, we call these composite keys.
+
+<CollapseCode>
+
+```tsx filename="mud.config.ts" {13-20} showLineNumbers
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
+  tables: {
+    Position: {
+      schema: {
+        player: "address",
+        x: "int32",
+        y: "int32",
+      },
+      key: ["player"],
+    },
+    Terrain: {
+      schema: {
+        x: "int32",
+        y: "int32",
+        terrainType: "string",
+      },
+      key: ["x", "y"],
+    },
+  },
+});
+```
+
+</CollapseCode>
+
+Similarly, the relational database representation of that table would look like:
+
+<MUDTable>
+  <thead>
+    <tr>
+      <th>x</th>
+      <th>y</th>
+      <th>terrainType</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>-1</th>
+      <th>0</th>
+      <td>grass</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <th>1</th>
+      <td>tree</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <th>0</th>
+      <td>grass</td>
+    </tr>
+  </tbody>
+</MUDTable>
+
+Because we have a composite key of `x` and `y`, we would have a unique/primary key constraint on the tuple of `(x, y)`.
+
+## Tables on chain
+
+Solidity and the EVM have much more limited data structures, so how can we express a relational database onchain? MUD takes the concept of tables and does a few things with them:
+
+- [encodes each table record as a key/value pair](./encoding) before storing onchain
+- [emits an event for each mutation](/guides/replicating-onchain-state)
+- [provides a typed Solidity libraries](./table-libraries) to abstract this away
+
+## Field types
+
+Schema fields can use all of Solidity's static-length primitive types, arrays of those static-length primitive types, as well as `string` and `bytes`.
+
+Key can only be used with fields that are defined as static-length Solidity primitive types.
+
+Enums and user types are also supported and automatically map down to their Solidity primitive types.
+
+<Callout type="info" emoji="ⓘ">
+  The code and the rest of the documentation call some fields *static* and others *dynamic*. In MUD terminology *static*
+  means *static length* (`uint16`, `int32`, `bytes32`, etc.) and *dynamic* means *dynamic length* (`uint[]`, `string`,
+  `bytes`, etc.).
+</Callout>
+
+More complex types like structs, `string[]`, and `bytes[]` are not yet supported. We'll cover the reasons why in our encoding/decoding guide.

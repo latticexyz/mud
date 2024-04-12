@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Hook } from "@latticexyz/store/src/Hook.sol";
 
@@ -19,6 +19,7 @@ import { Balances } from "./codegen/tables/Balances.sol";
 
 /**
  * @title SystemCall
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev The SystemCall library provides functions for interacting with systems using their unique Resource IDs.
  * It ensures the necessary access control checks, handles system hooks, and performs system calls.
  */

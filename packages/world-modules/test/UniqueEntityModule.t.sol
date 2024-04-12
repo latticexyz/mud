@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -7,12 +7,13 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { World } from "@latticexyz/world/src/World.sol";
 import { IModule } from "@latticexyz/world/src/IModule.sol";
+import { IModuleErrors } from "@latticexyz/world/src/IModuleErrors.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
 import { System } from "@latticexyz/world/src/System.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 
-import { CoreModule } from "@latticexyz/world/src/modules/core/CoreModule.sol";
+import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { UniqueEntityModule } from "../src/modules/uniqueentity/UniqueEntityModule.sol";
 import { UniqueEntity } from "../src/modules/uniqueentity/tables/UniqueEntity.sol";
 import { getUniqueEntity } from "../src/modules/uniqueentity/getUniqueEntity.sol";
@@ -36,8 +37,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
   ResourceId _tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: NAMESPACE, name: TABLE_NAME });
 
   function setUp() public {
-    world = IBaseWorld(address(new World()));
-    world.initialize(new CoreModule());
+    world = createWorld();
     StoreSwitch.setStoreAddress(address(world));
   }
 
@@ -61,7 +61,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
 
   function testInstallTwice() public {
     world.installModule(uniqueEntityModule, new bytes(0));
-    vm.expectRevert(IModule.Module_AlreadyInstalled.selector);
+    vm.expectRevert(IModuleErrors.Module_AlreadyInstalled.selector);
     world.installModule(uniqueEntityModule, new bytes(0));
   }
 
@@ -85,7 +85,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
 
   function testInstallRootTwice() public {
     world.installRootModule(uniqueEntityModule, new bytes(0));
-    vm.expectRevert(IModule.Module_AlreadyInstalled.selector);
+    vm.expectRevert(IModuleErrors.Module_AlreadyInstalled.selector);
     world.installRootModule(uniqueEntityModule, new bytes(0));
   }
 
@@ -126,6 +126,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
       namespace: "somens",
       name: "echoUniqueEntity"
     });
+    world.registerNamespace(uniqueEntityTestSystemId.getNamespaceId());
     world.registerSystem(uniqueEntityTestSystemId, uniqueEntityTestSystem, true);
 
     // Execute `getUniqueEntity` from the context of a World

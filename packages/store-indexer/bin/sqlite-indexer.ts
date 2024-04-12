@@ -8,7 +8,6 @@ import Database from "better-sqlite3";
 import { createPublicClient, fallback, webSocket, http, Transport } from "viem";
 import Koa from "koa";
 import cors from "@koa/cors";
-import Router from "@koa/router";
 import { createKoaMiddleware } from "trpc-koa-adapter";
 import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { chainState, schemaVersion, syncToSqlite } from "@latticexyz/store-sync/sqlite";
@@ -16,8 +15,10 @@ import { createQueryAdapter } from "../src/sqlite/createQueryAdapter";
 import { isDefined } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
 import { frontendEnvSchema, indexerEnvSchema, parseEnv } from "./parseEnv";
+import { healthcheck } from "../src/koa-middleware/healthcheck";
+import { helloWorld } from "../src/koa-middleware/helloWorld";
 import { apiRoutes } from "../src/sqlite/apiRoutes";
-import { registerSentryMiddlewares } from "../src/sentry";
+import { sentry } from "../src/koa-middleware/sentry";
 
 const env = parseEnv(
   z.intersection(
@@ -25,8 +26,8 @@ const env = parseEnv(
     z.object({
       SQLITE_FILENAME: z.string().default("indexer.db"),
       SENTRY_DSN: z.string().optional(),
-    })
-  )
+    }),
+  ),
 );
 
 const transports: Transport[] = [
@@ -59,7 +60,7 @@ try {
         currentChainState.schemaVersion,
         "to",
         schemaVersion,
-        "recreating database"
+        "recreating database",
       );
       fs.truncateSync(env.SQLITE_FILENAME);
     } else if (currentChainState.lastUpdatedBlockNumber != null) {
@@ -84,9 +85,10 @@ let isCaughtUp = false;
 combineLatest([latestBlockNumber$, storedBlockLogs$])
   .pipe(
     filter(
-      ([latestBlockNumber, { blockNumber: lastBlockNumberProcessed }]) => latestBlockNumber === lastBlockNumberProcessed
+      ([latestBlockNumber, { blockNumber: lastBlockNumberProcessed }]) =>
+        latestBlockNumber === lastBlockNumberProcessed,
     ),
-    first()
+    first(),
   )
   .subscribe(() => {
     isCaughtUp = true;
@@ -94,35 +96,19 @@ combineLatest([latestBlockNumber$, storedBlockLogs$])
   });
 
 const server = new Koa();
-server.use(cors());
-server.use(apiRoutes(database));
 
 if (env.SENTRY_DSN) {
-  registerSentryMiddlewares(server);
+  server.use(sentry(env.SENTRY_DSN));
 }
 
-const router = new Router();
-
-router.get("/", (ctx) => {
-  ctx.body = "emit HelloWorld();";
-});
-
-// k8s healthchecks
-router.get("/healthz", (ctx) => {
-  ctx.status = 200;
-});
-router.get("/readyz", (ctx) => {
-  if (isCaughtUp) {
-    ctx.status = 200;
-    ctx.body = "ready";
-  } else {
-    ctx.status = 424;
-    ctx.body = "backfilling";
-  }
-});
-
-server.use(router.routes());
-server.use(router.allowedMethods());
+server.use(cors());
+server.use(
+  healthcheck({
+    isReady: () => isCaughtUp,
+  }),
+);
+server.use(helloWorld());
+server.use(apiRoutes(database));
 
 server.use(
   createKoaMiddleware({
@@ -131,7 +117,7 @@ server.use(
     createContext: async () => ({
       queryAdapter: await createQueryAdapter(database),
     }),
-  })
+  }),
 );
 
 server.listen({ host: env.HOST, port: env.PORT });
