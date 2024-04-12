@@ -104,6 +104,7 @@ export async function writeContract<
       nonce: nonceManager.getNonce(),
       ...defaultParameters,
       ...request,
+      blockTag: "pending",
       account,
       // From `viem/writeContract`
       data: `${data}${dataSuffix ? dataSuffix.replace("0x", "") : ""}`,
