@@ -11,6 +11,7 @@ import CallWithSignatureAbi from "@latticexyz/world-modules/out/IUnstable_CallWi
 
 export type CallWithSignatureOptions = {
   userAccountClient: WalletClient<Transport, Chain, Account>;
+  worldChainId: number;
   worldAddress: Address;
   systemId: Hex;
   callData: Hex;
@@ -21,6 +22,7 @@ export type CallWithSignatureOptions = {
 
 export async function callWithSignature({
   userAccountClient,
+  worldChainId,
   worldAddress,
   systemId,
   callData,
@@ -40,7 +42,7 @@ export async function callWithSignature({
       })
     ).nonce;
 
-  const signature = await signCall({ worldAddress, userAccountClient, systemId, callData, nonce });
+  const signature = await signCall({ userAccountClient, worldChainId, worldAddress, systemId, callData, nonce });
 
   return writeContract(appAccountClient, {
     address: worldAddress,

@@ -32,6 +32,7 @@ export function GasAllowanceContent() {
       {error ? <div>{String(error)}</div> : null}
 
       <div className="flex flex-col gap-2">
+        {/* TODO: switch network */}
         <Button
           variant="secondary"
           pending={!userAccountAddress || isPending}

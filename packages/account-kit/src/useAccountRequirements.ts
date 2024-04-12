@@ -8,7 +8,6 @@ import { useConfig } from "./MUDAccountKitProvider";
 
 export const accountRequirements = [
   "connectedWallet",
-  "connectedChain",
   "appSigner",
   "gasAllowance",
   "gasSpender",
@@ -34,7 +33,6 @@ export function useAccountRequirements(): UseAccountRequirementsResult {
   return useMemo(() => {
     const satisfiesRequirement = {
       connectedWallet: () => userAccount.status === "connected",
-      connectedChain: () => userAccount.chainId === chainId,
       appSigner: () => appSignerAccount != null,
       gasAllowance: () => gasTankBalance != null && gasTankBalance > 0n,
       gasSpender: () => isGasSpender === true,

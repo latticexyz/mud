@@ -60,7 +60,6 @@ export function AccountModal({ requirement, open, onOpenChange }: Props) {
   const activeStep = useMemo(() => {
     switch (requirement) {
       case "connectedWallet":
-      case "connectedChain":
       case undefined:
         return "connect";
       case "appSigner":
@@ -78,7 +77,6 @@ export function AccountModal({ requirement, open, onOpenChange }: Props) {
   const content = useMemo(() => {
     switch (requirement) {
       case "connectedWallet":
-      case "connectedChain":
       case undefined:
         return <ConnectWalletContent />;
       case "appSigner":

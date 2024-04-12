@@ -27,6 +27,7 @@ export function GasSpenderContent() {
 
       console.log("registerSpender");
       const hash = await callWithSignature({
+        worldChainId: chainId,
         worldAddress: gasTankAddress,
         systemId: resourceToHex({ type: "system", namespace: "", name: "PaymasterSystem" }),
         callData: encodeFunctionData({
