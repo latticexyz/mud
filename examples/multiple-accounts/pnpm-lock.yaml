@@ -72,8 +72,8 @@ importers:
         specifier: 7.5.5
         version: 7.5.5
       viem:
-        specifier: 2.7.12
-        version: 2.7.12(typescript@5.4.2)
+        specifier: 2.9.16
+        version: 2.9.16(typescript@5.4.2)
     devDependencies:
       '@types/react':
         specifier: 18.2.22
@@ -2749,8 +2749,8 @@ packages:
       punycode: 2.3.1
     dev: true
 
-  /viem@2.7.12(typescript@5.4.2):
-    resolution: {integrity: sha512-NbV+Bycw0I4X8y6A04mgJ6+Imt7xXwflgnqisR3JXoJRNc77YSaQCscFN/dmwGLESTkgegJvi+j4nZY32GTpwQ==}
+  /viem@2.9.16(typescript@5.4.2):
+    resolution: {integrity: sha512-FQRfN4G7uKEUs5DYvVrH/kZmTkwcSDpTBxnadpwG1EEP8nHm57WDpSaGN7PwSPVgJ6rMo5MENT5hgnqaNTlb2w==}
     peerDependencies:
       typescript: '>=5.0.4'
     peerDependenciesMeta:
