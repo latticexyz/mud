@@ -1,5 +1,21 @@
 # Change Log
 
+## 2.0.5
+
+### Patch Changes
+
+- d02efd80: Replaced the `Unstable_DelegationWithSignatureModule` preview module with a more generalized `Unstable_CallWithSignatureModule` that allows making arbitrary calls (similar to `callFrom`).
+
+  This module is still marked as `Unstable`, because it will be removed and included in the default `World` deployment once it is audited.
+
+- Updated dependencies [a9e8a407]
+- Updated dependencies [b798ccb2]
+  - @latticexyz/common@2.0.5
+  - @latticexyz/store@2.0.5
+  - @latticexyz/config@2.0.5
+  - @latticexyz/protocol-parser@2.0.5
+  - @latticexyz/schema-type@2.0.5
+
 ## 2.0.4
 
 ### Patch Changes
