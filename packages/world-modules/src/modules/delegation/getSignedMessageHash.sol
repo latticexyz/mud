@@ -24,7 +24,7 @@ function getSignedMessageHash(
   address worldAddress
 ) view returns (bytes32) {
   bytes32 domainSeperator = keccak256(
-    abi.encode(keccak256("EIP712Domain(uint256 chainId,address verifyingContract)"), block.chainid, worldAddress)
+    abi.encode(keccak256("EIP712Domain(address verifyingContract,bytes32 salt)"), worldAddress, bytes32(block.chainid))
   );
 
   return
