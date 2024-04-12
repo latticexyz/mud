@@ -1,6 +1,11 @@
 {
   "name": "@latticexyz/gas-tank",
   "version": "2.0.5",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git",
+    "directory": "packages/gas-tank"
+  },
   "license": "MIT",
   "type": "module",
   "scripts": {
