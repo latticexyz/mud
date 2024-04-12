@@ -9,16 +9,16 @@ services:
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: skystrife-indexer-db
+          name: prod-skystrife-indexer-db
           property: connectionString
       - key: RPC_HTTP_URL
-        value: https://rpc.holesky.redstone.xyz
+        value: https://rpc.redstonechain.com
       - key: DEBUG
         value: mud:store-sync:createStoreSync
       - key: STORE_ADDRESS
-        value: "0x7203e7ADfDF38519e1ff4f8Da7DCdC969371f377"
+        value: "0x52dddebd3b424af358723eb2bc97112447f4157f"
       - key: START_BLOCK
-        value: 895629
+        value: 318695
 
   - type: web
     name: skystrife-indexer-api
@@ -33,12 +33,14 @@ services:
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: skystrife-indexer-db-replica
+          name: prod-skystrife-indexer-db-replica
           property: connectionString
       - key: DEBUG
         value: mud:*
 
 databases:
-  - name: skystrife-indexer-db
+  - name: prod-skystrife-indexer-db
     plan: pro
     region: ohio
+  readReplicas:
+      - name: prod-skystrife-indexer-db-replica
