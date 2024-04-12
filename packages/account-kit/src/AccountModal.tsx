@@ -54,6 +54,7 @@ export function AccountModal({ open, onOpenChange }: Props) {
     status,
   ]);
 
+  // TODO: each step should have an `onComplete` that we can use to auto-advance if you've selected a step already
   const { step } = useOnboardingSteps();
   const content = useMemo(() => {
     switch (step) {
