@@ -77,7 +77,7 @@ export function AccountModal({ open, onOpenChange }: Props) {
   return (
     <Modal open={shown} onOpenChange={onOpenChange}>
       <DialogContent className="flex w-[48rem] min-h-[24rem] bg-neutral-800 text-neutral-400 border border-neutral-600 divide-x divide-neutral-600 outline-none">
-        <div className="w-[16rem] bg-neutral-900">
+        <div className="flex-shrink-0 w-[16rem] bg-neutral-900">
           <AccountModalSidebar />
         </div>
         <div className="flex-grow flex-col">{content}</div>
