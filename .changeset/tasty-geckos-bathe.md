@@ -1,4 +1,5 @@
 ---
+"create-mud": patch
 "@latticexyz/block-logs-stream": patch
 "@latticexyz/protocol-parser": patch
 "@latticexyz/store-indexer": patch
