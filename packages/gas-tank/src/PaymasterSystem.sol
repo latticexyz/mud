@@ -25,6 +25,11 @@ ResourceId constant PAYMASTER_SYSTEM_ID = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_SYSTEM, bytes14(""), bytes16("PaymasterSystem")))
 );
 
+/**
+ * @title GasTank PaymasterSystem
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ * @dev This system implements an ERC4337 paymaster that allows users to share gas balance between different spenders.
+ */
 contract PaymasterSystem is System, IPaymaster, IAllowance {
   using UserOperationLib for PackedUserOperation;
   using SimpleAccountUserOperationLib for PackedUserOperation;
