@@ -33,6 +33,9 @@ export async function getGasTankBalance({
     },
     blockTag: "pending",
   });
+
+  console.log("record", record);
+
   return record.balance;
 }
 
@@ -55,6 +58,7 @@ export function useGasTankBalance(): bigint | undefined {
               worldAddress: gasTankAddress,
               userAccountAddress,
             }),
+          refetchInterval: 2_000,
         }
       : {
           queryKey,
