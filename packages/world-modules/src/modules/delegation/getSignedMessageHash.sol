@@ -3,6 +3,10 @@ pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
+// Note the intended value of the `salt` field is the chain ID.
+// It is not included in `chainId`, to allow cross-chain signing without requiring wallets to switch networks.
+// The value of this field should be the chain on which the world lives, rather than the chain the wallet is connected to.
+bytes32 constant DOMAIN_TYPEHASH = keccak256("EIP712Domain(address verifyingContract,bytes32 salt)");
 bytes32 constant CALL_TYPEHASH = keccak256("Call(address signer,bytes32 systemId,bytes callData,uint256 nonce)");
 
 /**
@@ -23,9 +27,7 @@ function getSignedMessageHash(
   uint256 nonce,
   address worldAddress
 ) view returns (bytes32) {
-  bytes32 domainSeperator = keccak256(
-    abi.encode(keccak256("EIP712Domain(address verifyingContract,bytes32 salt)"), worldAddress, bytes32(block.chainid))
-  );
+  bytes32 domainSeperator = keccak256(abi.encode(DOMAIN_TYPEHASH, worldAddress, bytes32(block.chainid)));
 
   return
     keccak256(
