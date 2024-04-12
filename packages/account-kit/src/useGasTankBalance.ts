@@ -1,6 +1,6 @@
 import { useAccount, usePublicClient } from "wagmi";
 import { useConfig } from "./MUDAccountKitProvider";
-import { useQuery } from "@tanstack/react-query";
+import { QueryObserverOptions, useQuery } from "@tanstack/react-query";
 import { getRecord } from "./utils/getRecord";
 import { Address } from "abitype";
 import { PublicClient } from "viem";
@@ -47,7 +47,7 @@ export function useGasTankBalance(): bigint | undefined {
 
   const result = useQuery(
     publicClient && gasTankAddress && userAccountAddress
-      ? {
+      ? ({
           queryKey,
           queryFn: () =>
             getGasTankBalance({
@@ -55,7 +55,8 @@ export function useGasTankBalance(): bigint | undefined {
               worldAddress: gasTankAddress,
               userAccountAddress,
             }),
-        }
+          refetchInterval: 5000,
+        } satisfies QueryObserverOptions)
       : {
           queryKey,
           enabled: false,
