@@ -53,7 +53,7 @@ export function createNonceManager({
   }
 
   function getNonce(): number {
-    if (!hasNonce()) throw new Error("call resetNonce before using getCurrentNonce");
+    if (!hasNonce()) throw new Error("call resetNonce before using getNonce");
     return nonceRef.current;
   }
 
