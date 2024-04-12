@@ -90,11 +90,12 @@ export async function writeContract<
     const { nonce, maxFeePerGas, maxPriorityFeePerGas, ...preparedTransaction } = await prepareTransactionRequest(
       client,
       {
-        // The nonce and fee values don't need to be accurate for gas estimation
+        // The fee values don't need to be accurate for gas estimation
         // and we can save a couple rpc calls by providing stubs here
-        nonce: 0,
         maxFeePerGas: 0n,
         maxPriorityFeePerGas: 0n,
+        // Send the current nonce without increasing the stored value
+        nonce: nonceManager.getNonce(),
         ...defaultParameters,
         ...request,
         account,
@@ -111,16 +112,17 @@ export async function writeContract<
     () =>
       pRetry(
         async () => {
+          if (!nonceManager.hasNonce()) {
+            await nonceManager.resetNonce();
+          }
+
           // We estimate gas before increasing the local nonce to prevent nonce gaps.
           // Invalid transactions fail the gas estimation step are never submitted
           // to the network, so they should not increase the nonce.
           const preparedRequest = await prepare();
 
-          if (!nonceManager.hasNonce()) {
-            await nonceManager.resetNonce();
-          }
-
           const nonce = nonceManager.nextNonce();
+
           const fullRequest = { ...preparedRequest, nonce, ...feeRef.fees };
           debug("calling", fullRequest.functionName, "with nonce", nonce, "at", fullRequest.address);
           return await viem_writeContract(client, fullRequest as never);
