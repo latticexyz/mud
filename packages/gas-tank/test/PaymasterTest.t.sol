@@ -17,7 +17,8 @@ import { ROOT_NAMESPACE_ID } from "@latticexyz/world/src/constants.sol";
 import { Unstable_CallWithSignatureSystem } from "@latticexyz/world-modules/src/modules/callwithsignature/Unstable_CallWithSignatureModule.sol";
 import { getSignedMessageHash } from "@latticexyz/world-modules/src/modules/callwithsignature/getSignedMessageHash.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { PAYMASTER_SYSTEM_ID, ENTRYPOINT_V07 } from "../src/PaymasterSystem.sol";
+import { EntryPoint as EntryPointTable } from "../src/codegen/tables/EntryPoint.sol";
+import { PAYMASTER_SYSTEM_ID } from "../src/PaymasterSystem.sol";
 
 import { TestCounter } from "./utils/TestCounter.sol";
 import { BytesLib } from "./utils/BytesLib.sol";
@@ -46,10 +47,7 @@ contract PaymasterTest is MudTest {
     paymasterOperator = makeAddr("paymasterOperator");
     (user, userKey) = makeAddrAndKey("user");
     (guarantor, guarantorKey) = makeAddrAndKey("guarantor");
-
-    // Deploy the EntryPoint at the expected deterministic address
-    vm.etch(ENTRYPOINT_V07, type(EntryPoint).creationCode);
-    entryPoint = EntryPoint(ENTRYPOINT_V07);
+    entryPoint = new EntryPoint();
     entryPointSimulations = new EntryPointSimulations();
     accountFactory = new SimpleAccountFactory(entryPoint);
     paymaster = IWorld(worldAddress);
@@ -57,6 +55,7 @@ contract PaymasterTest is MudTest {
     counter = new TestCounter();
 
     vm.prank(NamespaceOwner.get(ROOT_NAMESPACE_ID));
+    EntryPointTable.set(address(entryPoint));
   }
 
   function testDepositTo(uint256 amount) external {

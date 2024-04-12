@@ -15,15 +15,12 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 import { Unstable_CallWithSignatureSystem } from "@latticexyz/world-modules/src/modules/callwithsignature/Unstable_CallWithSignatureModule.sol";
 import { validateCallWithSignature } from "@latticexyz/world-modules/src/modules/callwithsignature/validateCallWithSignature.sol";
+import { EntryPoint } from "./codegen/tables/EntryPoint.sol";
 import { UserBalances } from "./codegen/tables/UserBalances.sol";
 import { Spender } from "./codegen/tables/Spender.sol";
 import { IAllowance } from "./IAllowance.sol";
 
-// Deterministic EntryPoint v0.7 address
-address payable constant ENTRYPOINT_V07 = payable(0x0000000071727De22E5E9d8BAf0edAc6f37da032);
-
 uint256 constant POST_OP_OVERHEAD = 40000;
-
 ResourceId constant PAYMASTER_SYSTEM_ID = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_SYSTEM, bytes14(""), bytes16("PaymasterSystem")))
 );
@@ -173,7 +170,7 @@ contract PaymasterSystem is System, IPaymaster, IAllowance {
     uint256 balance = UserBalances.get(user);
     require(balance >= withdrawAmount, "Insufficient balance");
     UserBalances.set(user, balance - withdrawAmount);
-    IEntryPoint(ENTRYPOINT_V07).withdrawTo(withdrawAddress, withdrawAmount);
+    IEntryPoint(EntryPoint.get()).withdrawTo(withdrawAddress, withdrawAmount);
   }
 
   function registerSpender(address spender) public {
@@ -190,12 +187,12 @@ contract PaymasterSystem is System, IPaymaster, IAllowance {
    * Validate the call is made from a valid entrypoint
    */
   function _requireFromEntryPoint() internal virtual {
-    require(_msgSender() == ENTRYPOINT_V07, "Sender not EntryPoint");
+    require(_msgSender() == EntryPoint.get(), "Sender not EntryPoint");
   }
 
   function _depositToEntryPoint(uint256 amount) internal {
     WorldBalances.set(ROOT_NAMESPACE_ID, WorldBalances.get(ROOT_NAMESPACE_ID) - amount);
-    IEntryPoint(ENTRYPOINT_V07).depositTo{ value: amount }(address(this));
+    IEntryPoint(EntryPoint.get()).depositTo{ value: amount }(address(this));
   }
 }
 
