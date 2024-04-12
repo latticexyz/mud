@@ -57,15 +57,11 @@ export async function writeContract<
     throw new Error("No account provided");
   }
   const account = parseAccount(rawAccount);
-
   const chain = client.chain;
-  if (!chain) {
-    throw new Error("Client must be connected to a chain");
-  }
 
   const defaultParameters = {
     chain,
-    ...(chain.fees ? { type: "eip1559" } : {}),
+    ...(chain?.fees ? { type: "eip1559" } : {}),
   } satisfies Omit<WriteContractParameters, "address" | "abi" | "account" | "functionName">;
 
   const nonceManager = await getNonceManager({
