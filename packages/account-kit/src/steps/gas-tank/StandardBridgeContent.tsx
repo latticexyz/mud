@@ -11,7 +11,6 @@ import OptimismPortalAbi from "../../abis/OptimismPortal.json";
 import PaymasterSystemAbi from "../../abis/PaymasterSystem.json";
 import { AMOUNT_STEP, OPTIMISM_PORTAL_ADDRESS, PAYMASTER_ADDRESS } from "./consts";
 import { holesky } from "viem/chains";
-import { switchChain } from "viem/actions";
 import { getExplorerUrl } from "./utils/getExplorerUrl";
 
 export function StandardBridgeContent() {
@@ -41,10 +40,11 @@ export function StandardBridgeContent() {
 
   const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
+
     if (!wallet.data || !userAccountAddress || !amount || Number(amount) === 0) return;
-    if (wallet.data.chain.id !== holesky.id) {
-      await switchChain(wallet.data, { id: holesky.id });
-    }
+
+    // TODO: make source chain configurable
+    await wallet.data.switchChain({ id: holesky.id });
 
     const gasLimit = BigInt(1_000_000); // TODO: better gas limit config
     const amountWei = parseEther(amount);
