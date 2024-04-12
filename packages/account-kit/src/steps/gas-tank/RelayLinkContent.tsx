@@ -7,6 +7,10 @@ import { Button } from "../../ui/Button";
 import { holesky } from "viem/chains";
 import { createPublicClient, formatEther, http, parseEther } from "viem";
 import { CHAIN_FROM, CHAIN_TO, AMOUNT_STEP, PAYMASTER_ADDRESS } from "./consts";
+import { createRelayCLient } from "./utils/createRelayClient";
+import { switchChain } from "viem/actions";
+
+createRelayCLient();
 
 // TODO: move to utils, or check if available already
 const publicClient = createPublicClient({
@@ -62,6 +66,9 @@ export function RelayLinkContent() {
 
   const executeDeposit = useCallback(async () => {
     if (!wallet.data || !amount) return;
+    if (wallet.data.chain.id !== holesky.id) {
+      await switchChain(wallet.data, { id: holesky.id });
+    }
 
     const { request } = await publicClient.simulateContract({
       address: PAYMASTER_ADDRESS,
