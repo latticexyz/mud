@@ -94,7 +94,7 @@ export async function writeContract<
     const { nonce, maxFeePerGas, maxPriorityFeePerGas, ...preparedTransaction } = await prepareTransactionRequest(
       client,
       {
-        // The nonce and fee values don't not need to be accurate for gas estimation
+        // The nonce and fee values don't need to be accurate for gas estimation
         // and we can save a couple rpc calls by providing stubs here
         nonce: 0,
         maxFeePerGas: 0n,
