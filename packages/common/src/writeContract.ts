@@ -12,12 +12,16 @@ import {
   encodeFunctionData,
   EncodeFunctionDataParameters,
 } from "viem";
-import { prepareTransactionRequest, writeContract as viem_writeContract } from "viem/actions";
+import {
+  prepareTransactionRequest as viem_prepareTransactionRequest,
+  writeContract as viem_writeContract,
+} from "viem/actions";
 import pRetry from "p-retry";
 import { debug as parentDebug } from "./debug";
 import { getNonceManager } from "./getNonceManager";
 import { parseAccount } from "viem/accounts";
 import { getFeeRef } from "./getFeeRef";
+import { getAction } from "viem/utils";
 
 const debug = parentDebug.extend("writeContract");
 
@@ -87,23 +91,24 @@ export async function writeContract<
     } as EncodeFunctionDataParameters);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { nonce, maxFeePerGas, maxPriorityFeePerGas, ...preparedTransaction } = await prepareTransactionRequest(
+    const { nonce, maxFeePerGas, maxPriorityFeePerGas, ...preparedTransaction } = await getAction(
       client,
-      {
-        // The fee values don't need to be accurate for gas estimation
-        // and we can save a couple rpc calls by providing stubs here
-        maxFeePerGas: 0n,
-        maxPriorityFeePerGas: 0n,
-        // Send the current nonce without increasing the stored value
-        nonce: nonceManager.getNonce(),
-        ...defaultParameters,
-        ...request,
-        account,
-        // From `viem/writeContract`
-        data: `${data}${dataSuffix ? dataSuffix.replace("0x", "") : ""}`,
-        to: address,
-      } as never,
-    );
+      viem_prepareTransactionRequest,
+      "prepareTransactionRequest",
+    )({
+      // The fee values don't need to be accurate for gas estimation
+      // and we can save a couple rpc calls by providing stubs here
+      maxFeePerGas: 0n,
+      maxPriorityFeePerGas: 0n,
+      // Send the current nonce without increasing the stored value
+      nonce: nonceManager.getNonce(),
+      ...defaultParameters,
+      ...request,
+      account,
+      // From `viem/writeContract`
+      data: `${data}${dataSuffix ? dataSuffix.replace("0x", "") : ""}`,
+      to: address,
+    } as never);
 
     return preparedTransaction as never;
   }
