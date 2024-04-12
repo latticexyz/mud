@@ -1,3 +1,5 @@
+import { CollapseCode } from "../../../components/CollapseCode";
+
 # Three.js
 
 This template is for developers who use [Three.js](https://threejs.org/).
@@ -188,21 +190,34 @@ export const useKeyboardMovement = () => {
 
 `useMUD()` gives us the `moveBy` system call, which lets us move.
 
-```ts
-  useEffect(() => {
-    const listener = (e: KeyboardEvent) => {
-      if (e.key === "w") {
-        moveBy(1, 0, 0);
-      }
-      if (e.key === "s") {
-        moveBy(-1, 0, 0);
-      }
-      .
-      .
-      .
-      .
-    };
+<CollapseCode>
+
+```ts {1-5}
+useEffect(() => {
+  const listener = (e: KeyboardEvent) => {
+    if (e.key === "w") {
+      moveBy(1, 0, 0);
+    }
+    if (e.key === "s") {
+      moveBy(-1, 0, 0);
+    }
+    if (e.key === "a") {
+      moveBy(0, 0, -1);
+    }
+    if (e.key === "d") {
+      moveBy(0, 0, 1);
+    }
+    if (e.key === "t") {
+      moveBy(0, 1, 0);
+    }
+    if (e.key === "g") {
+      moveBy(0, -1, 0);
+    }
+  };
+});
 ```
+
+</CollapseCode>
 
 Call `moveBy` with different parameters depending on the key pressed.
 
