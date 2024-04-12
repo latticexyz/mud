@@ -6,6 +6,8 @@ import { Shadow } from "./ui/Shadow";
 import { Logo } from "./icons/Logo";
 import { useAccount } from "wagmi";
 import { TruncatedHex } from "./ui/TruncateHex";
+import { useChainModal, useConnectModal, useAccountModal as useWalletModal } from "@rainbow-me/rainbowkit";
+import { useConnect } from "./useConnect";
 
 // TODO: move this away from UI button so we have better control over how it's styled (since we'll deviate a fair bit from it)
 
@@ -13,9 +15,14 @@ const buttonClassName = "w-48 p-3 leading-none";
 
 export function AccountButton() {
   const { requirement } = useAccountRequirements();
-  const { openConnectModal, connectPending, openAccountModal, toggleAccountModal, accountModalOpen } =
-    useAccountModal();
+  const { openAccountModal, toggleAccountModal, accountModalOpen } = useAccountModal();
   const { address } = useAccount();
+
+  const { mutateAsync: connect, isPending: connectIsPending } = useConnect();
+  const { connectModalOpen } = useConnectModal();
+  const { chainModalOpen } = useChainModal();
+  const { accountModalOpen: walletModalOpen } = useWalletModal();
+  const accountModalHidden = connectModalOpen || chainModalOpen || walletModalOpen;
 
   if (requirement === "connectedWallet") {
     return (
@@ -23,10 +30,12 @@ export function AccountButton() {
         <Shadow>
           <Button
             className={buttonClassName}
-            pending={connectPending}
+            pending={connectIsPending}
             onClick={() => {
-              openConnectModal?.();
-              openAccountModal();
+              connect().then(
+                () => openAccountModal(),
+                (error) => console.log(error.message),
+              );
             }}
           >
             <span className="inline-flex gap-2.5 items-center">
@@ -51,7 +60,11 @@ export function AccountButton() {
             </span>
           </Button>
         </Shadow>
-        <AccountModal requirement={requirement} open={accountModalOpen} onOpenChange={toggleAccountModal} />
+        <AccountModal
+          requirement={requirement}
+          open={accountModalOpen && !accountModalHidden}
+          onOpenChange={toggleAccountModal}
+        />
       </>
     );
   }
@@ -67,7 +80,7 @@ export function AccountButton() {
           </span>
         </Button>
       </Shadow>
-      <AccountModal open={accountModalOpen} onOpenChange={toggleAccountModal} />
+      <AccountModal open={accountModalOpen && !accountModalHidden} onOpenChange={toggleAccountModal} />
     </>
   );
 }
