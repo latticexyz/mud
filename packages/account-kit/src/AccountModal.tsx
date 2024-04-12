@@ -3,21 +3,18 @@ import { assertExhaustive } from "@latticexyz/common/utils";
 import { AppSignerContent } from "./steps/set-up/AppSignerContent";
 import { GasAllowanceContent } from "./steps/gas-tank/GasAllowanceContent";
 import { AccountDelegationContent } from "./steps/sign-in/AccountDelegationContent";
-import { GasSpenderContent } from "./steps/gas-tank/GasSpenderContent";
-import { ConnectWalletContent } from "./steps/connect/ConnectWalletContent";
 import { Modal, Props as ModalProps } from "./ui/Modal";
-import { AccountRequirement } from "./useAccountRequirements";
 import { DialogContent } from "@radix-ui/react-dialog";
 import { AccountModalSidebar } from "./AccountModalSidebar";
 import { useAccount } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { usePrevious } from "./utils/usePrevious";
+import { useOnboardingSteps } from "./useOnboardingSteps";
+import { GasSpenderContent } from "./steps/gas-tank/GasSpenderContent";
 
-export type Props = Pick<ModalProps, "open" | "onOpenChange"> & {
-  requirement?: AccountRequirement;
-};
+export type Props = Pick<ModalProps, "open" | "onOpenChange">;
 
-export function AccountModal({ requirement, open, onOpenChange }: Props) {
+export function AccountModal({ open, onOpenChange }: Props) {
   const { status } = useAccount();
   const { openConnectModal, connectModalOpen } = useConnectModal();
   const shown = open && status === "connected";
@@ -57,48 +54,33 @@ export function AccountModal({ requirement, open, onOpenChange }: Props) {
     status,
   ]);
 
-  const activeStep = useMemo(() => {
-    switch (requirement) {
-      case "connectedWallet":
-      case undefined:
-        return "connect";
-      case "appSigner":
-        return "set-up";
-      case "gasAllowance":
-      case "gasSpender":
-        return "gas-tank";
-      case "accountDelegation":
-        return "sign-in";
-      default:
-        return assertExhaustive(requirement);
-    }
-  }, [requirement]);
-
+  const { step } = useOnboardingSteps();
   const content = useMemo(() => {
-    switch (requirement) {
-      case "connectedWallet":
-      case undefined:
-        return <ConnectWalletContent />;
-      case "appSigner":
+    switch (step) {
+      case "app-signer":
         return <AppSignerContent />;
-      case "gasAllowance":
-        return <GasAllowanceContent />;
-      case "gasSpender":
-        return <GasSpenderContent />;
-      case "accountDelegation":
+      case "gas-tank":
+        // TODO: combine this better
+        return (
+          <>
+            <GasAllowanceContent />
+            <GasSpenderContent />
+          </>
+        );
+      case "account-delegation":
         return <AccountDelegationContent />;
       default:
-        return assertExhaustive(requirement);
+        return assertExhaustive(step);
     }
-  }, [requirement]);
+  }, [step]);
 
   return (
     <Modal open={shown} onOpenChange={onOpenChange}>
       <DialogContent className="flex w-[48rem] min-h-[24rem] bg-neutral-800 text-neutral-400 border border-neutral-600 divide-x divide-neutral-600 outline-none">
         <div className="w-[16rem] bg-neutral-900">
-          <AccountModalSidebar activeStep={activeStep} />
+          <AccountModalSidebar />
         </div>
-        <div className="flex-grow flex">{content}</div>
+        <div className="flex-grow flex-col">{content}</div>
       </DialogContent>
     </Modal>
   );

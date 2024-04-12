@@ -27,7 +27,7 @@ export function AccountButton() {
             </span>
           </Button>
         </Shadow>
-        <AccountModal requirement={requirement} open={accountModalOpen} onOpenChange={toggleAccountModal} />
+        <AccountModal open={accountModalOpen} onOpenChange={toggleAccountModal} />
       </>
     );
   }
