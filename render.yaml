@@ -42,5 +42,5 @@ databases:
   - name: prod-skystrife-indexer-db
     plan: pro
     region: ohio
-  readReplicas:
-    - name: prod-skystrife-indexer-db-replica
+    readReplicas:
+      - name: prod-skystrife-indexer-db-replica
