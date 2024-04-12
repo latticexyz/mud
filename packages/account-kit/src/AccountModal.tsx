@@ -29,6 +29,7 @@ export function AccountModal({ requirement, open, onOpenChange }: Props) {
   // We are temporarily leaning on RainbowKit for connect wallet UI, but RainbowKit
   // doesn't give us much data, so we'll work around it here to reactively open/close
   // based on state transitions.
+  // TODO: remove this once we can inline connect wallet UI into our own modal
   useEffect(() => {
     // account modal is open and account is not connected
     if (open && status !== "connected" && !connectModalOpen) {
