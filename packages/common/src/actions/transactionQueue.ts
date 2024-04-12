@@ -1,6 +1,7 @@
 import type { Transport, Chain, Account, WalletActions, Client, PublicClient } from "viem";
 import { writeContract as mud_writeContract } from "../writeContract";
 import { sendTransaction as mud_sendTransaction } from "../sendTransaction";
+import { getChainId as mud_getChainId } from "./getChainId";
 
 export type TransactionQueueOptions<chain extends Chain> = {
   /**
@@ -24,10 +25,13 @@ export function transactionQueue<chain extends Chain, account extends Account>(
 ): (
   client: Client<Transport, chain, account>,
 ) => Pick<WalletActions<chain, account>, "writeContract" | "sendTransaction"> {
-  return (client) => ({
-    // Applies to: `client.writeContract`, `getContract(client, ...).write`
-    writeContract: (args) => mud_writeContract(client, args, opts),
-    // Applies to: `client.sendTransaction`
-    sendTransaction: (args) => mud_sendTransaction(client, args, opts),
-  });
+  return (client) => {
+    // const cachedClient = client.extend((c) => ({ getChainId: () => mud_getChainId(c) }));
+    return {
+      // Applies to: `client.writeContract`, `getContract(client, ...).write`
+      writeContract: (args) => mud_writeContract(client, args, opts),
+      // Applies to: `client.sendTransaction`
+      sendTransaction: (args) => mud_sendTransaction(client, args, opts),
+    };
+  };
 }

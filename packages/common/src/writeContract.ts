@@ -13,6 +13,7 @@ import {
   EncodeFunctionDataParameters,
 } from "viem";
 import {
+  getChainId,
   prepareTransactionRequest as viem_prepareTransactionRequest,
   writeContract as viem_writeContract,
 } from "viem/actions";
@@ -55,6 +56,10 @@ export async function writeContract<
   request: WriteContractParameters<abi, functionName, args, chain, account, chainOverride>,
   opts: WriteContractExtraOptions<chain> = {},
 ): Promise<WriteContractReturnType> {
+  console.log("test");
+  // const result = await getAction(client, getChainId, "getChainId")({});
+  // console.log("chainId call", result);
+
   const rawAccount = request.account ?? client.account;
   if (!rawAccount) {
     // TODO: replace with viem AccountNotFoundError once its exported
