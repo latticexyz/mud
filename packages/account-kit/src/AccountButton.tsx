@@ -13,32 +13,8 @@ const buttonClassName = "w-48 p-3 leading-none";
 
 export function AccountButton() {
   const { requirement } = useAccountRequirements();
-  const { openConnectModal, connectPending, openAccountModal, toggleAccountModal, accountModalOpen } =
-    useAccountModal();
+  const { openAccountModal, toggleAccountModal, accountModalOpen } = useAccountModal();
   const { address } = useAccount();
-
-  if (requirement === "connectedWallet") {
-    return (
-      <>
-        <Shadow>
-          <Button
-            className={buttonClassName}
-            pending={connectPending}
-            onClick={() => {
-              openConnectModal?.();
-              openAccountModal();
-            }}
-          >
-            <span className="inline-flex gap-2.5 items-center">
-              <Logo />
-              Sign in
-            </span>
-          </Button>
-        </Shadow>
-        <AccountModal requirement={requirement} open={accountModalOpen} onOpenChange={toggleAccountModal} />
-      </>
-    );
-  }
 
   if (requirement != null) {
     return (

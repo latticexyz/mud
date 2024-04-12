@@ -3,6 +3,7 @@ export * from "./bigIntMax";
 export * from "./bigIntMin";
 export * from "./bigIntSort";
 export * from "./chunk";
+export * from "./defer";
 export * from "./groupBy";
 export * from "./identity";
 export * from "./includes";
