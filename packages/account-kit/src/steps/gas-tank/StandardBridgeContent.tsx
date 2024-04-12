@@ -6,38 +6,33 @@ import { waitForTransactionReceipt } from "wagmi/actions";
 import { AccountModalContent } from "../../AccountModalContent";
 import { Button } from "../../ui/Button";
 import { useConfig } from "../../MUDAccountKitProvider";
-import { getGasTankBalanceQueryKey, useGasTankBalance } from "../../useGasTankBalance";
+import { getGasTankBalanceQueryKey } from "../../useGasTankBalance";
 import OptimismPortalAbi from "../../abis/OptimismPortal.json";
 import PaymasterSystemAbi from "../../abis/PaymasterSystem.json";
-
-const CHAIN_FROM = 17000;
-const CHAIN_TO = 17069;
-const AMOUNT_STEP = 0.000000000000000001; // 1 wei
-const PAYMASTER_ADDRESS = "0xba0149DE3486935D29b0e50DfCc9e61BD40Ae095"; // Garnet
-const OPTIMISM_PORTAL_ADDRESS = "0x57ee40586fbE286AfC75E67cb69511A6D9aF5909"; // Holesky
+import { AMOUNT_STEP, OPTIMISM_PORTAL_ADDRESS, PAYMASTER_ADDRESS } from "./consts";
+import { holesky } from "viem/chains";
+import { switchChain } from "viem/actions";
+import { getExplorerUrl } from "./utils/getExplorerUrl";
 
 export function StandardBridgeContent() {
   const queryClient = useQueryClient();
   const wagmiConfig = useWagmiConfig();
-  const { chainId, gasTankAddress } = useConfig();
+  const wallet = useWalletClient();
+  const { chainId: appChainId, gasTankAddress } = useConfig();
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
-  const wallet = useWalletClient();
-  const gasTankBalance = useGasTankBalance();
-  console.log("gasTankBalance", gasTankBalance);
 
   const [tx, setTx] = useState<string | null>(null);
   const [amount, setAmount] = useState<string | undefined>("0.01");
   const { writeContractAsync } = useWriteContract({
     mutation: {
       onSuccess: async (hash) => {
-        setTx(`https://holesky.etherscan.io/tx/${hash}`);
-        const receipt = await waitForTransactionReceipt(wagmiConfig, { hash });
-        console.log("receipt", receipt);
+        setTx(getExplorerUrl(hash, holesky.id));
 
+        const receipt = await waitForTransactionReceipt(wagmiConfig, { hash });
         if (receipt.status === "success") {
           queryClient.invalidateQueries({
-            queryKey: getGasTankBalanceQueryKey({ chainId, gasTankAddress, userAccountAddress }),
+            queryKey: getGasTankBalanceQueryKey({ chainId: appChainId, gasTankAddress, userAccountAddress }),
           });
         }
       },
@@ -46,21 +41,22 @@ export function StandardBridgeContent() {
 
   const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
-    if (!userAccountAddress || !amount || Number(amount) === 0) return;
+    if (!wallet.data || !userAccountAddress || !amount || Number(amount) === 0) return;
+    if (wallet.data.chain.id !== holesky.id) {
+      await switchChain(wallet.data, { id: holesky.id });
+    }
 
     const gasLimit = BigInt(1_000_000); // TODO: better gas limit config
+    const amountWei = parseEther(amount);
     const data = encodeFunctionData({
       abi: PaymasterSystemAbi,
       functionName: "depositTo",
       args: [userAccountAddress],
     });
-    const amountWei = parseEther(amount);
-
-    console.log("amountWei", amountWei);
 
     await writeContractAsync({
-      account: wallet?.data?.account,
-      chainId: 17000,
+      account: wallet.data.account,
+      chainId: holesky.id,
       address: OPTIMISM_PORTAL_ADDRESS,
       abi: OptimismPortalAbi,
       functionName: "depositTransaction",
@@ -75,11 +71,11 @@ export function StandardBridgeContent() {
         <form onSubmit={handleSubmit}>
           <h3>Chain from:</h3>
           <select>
-            <option value={CHAIN_FROM}>Holesky</option>
+            <option value={holesky.id}>Holesky</option>
           </select>
           <h3>Chain to:</h3>
           <select>
-            <option value={CHAIN_TO}>Garnet</option>
+            <option value={appChainId}>Garnet</option>
           </select>
 
           <h3>Amount to deposit:</h3>

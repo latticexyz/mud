@@ -4,11 +4,9 @@ import { useHasDelegation } from "./useHasDelegation";
 import { useMemo } from "react";
 import { useGasTankBalance } from "./useGasTankBalance";
 import { useIsGasSpender } from "./useIsGasSpender";
-import { useConfig } from "./MUDAccountKitProvider";
 
 export const accountRequirements = [
   "connectedWallet",
-  "connectedChain",
   "appSigner",
   "gasAllowance",
   "gasSpender",
@@ -23,9 +21,7 @@ export type UseAccountRequirementsResult = {
 };
 
 export function useAccountRequirements(): UseAccountRequirementsResult {
-  const { chainId } = useConfig();
   const userAccount = useAccount();
-
   const [appSignerAccount] = useAppSigner();
   const gasTankBalance = useGasTankBalance();
   const isGasSpender = useIsGasSpender();
@@ -34,7 +30,6 @@ export function useAccountRequirements(): UseAccountRequirementsResult {
   return useMemo(() => {
     const satisfiesRequirement = {
       connectedWallet: () => userAccount.status === "connected",
-      connectedChain: () => userAccount.chainId === chainId,
       appSigner: () => appSignerAccount != null,
       gasAllowance: () => gasTankBalance != null && gasTankBalance > 0n,
       gasSpender: () => isGasSpender === true,
@@ -47,5 +42,5 @@ export function useAccountRequirements(): UseAccountRequirementsResult {
       requirement: requirements.at(0) ?? null,
       requirements,
     };
-  }, [appSignerAccount, chainId, gasTankBalance, hasDelegation, isGasSpender, userAccount.chainId, userAccount.status]);
+  }, [appSignerAccount, gasTankBalance, hasDelegation, isGasSpender, userAccount.status]);
 }

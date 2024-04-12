@@ -1,30 +1,12 @@
 import { useWalletClient } from "wagmi";
-import {
-  getClient,
-  createClient,
-  convertViemChainToRelayChain,
-  configureDynamicChains,
-  TESTNET_RELAY_API,
-  Execute,
-  RelayChain,
-} from "@reservoir0x/relay-sdk";
+import { getClient, configureDynamicChains, Execute, RelayChain } from "@reservoir0x/relay-sdk";
 import { AccountModalContent } from "../../AccountModalContent";
 import { useCallback, useEffect, useState } from "react";
 import PaymasterSystemAbi from "../../abis/PaymasterSystem.json";
 import { Button } from "../../ui/Button";
 import { holesky } from "viem/chains";
 import { createPublicClient, formatEther, http, parseEther } from "viem";
-
-createClient({
-  baseApiUrl: TESTNET_RELAY_API,
-  source: window.location.hostname,
-  chains: [convertViemChainToRelayChain(holesky)],
-});
-
-const CHAIN_FROM = 17000;
-const CHAIN_TO = 17069;
-const AMOUNT_STEP = 0.000000000000000001; // 1 wei
-const PAYMASTER_ADDRESS = "0xba0149DE3486935D29b0e50DfCc9e61BD40Ae095";
+import { CHAIN_FROM, CHAIN_TO, AMOUNT_STEP, PAYMASTER_ADDRESS } from "./consts";
 
 // TODO: move to utils, or check if available already
 const publicClient = createPublicClient({
@@ -35,9 +17,9 @@ const publicClient = createPublicClient({
 export function RelayLinkContent() {
   const wallet = useWalletClient();
   const [chains, setChains] = useState<RelayChain[]>([]);
-  const [amount, setAmount] = useState<string | undefined>("0.01");
-  const [quote, setQuote] = useState<null | Execute>(null);
-  const [tx, setTx] = useState(null);
+  const [amount, setAmount] = useState<string>("0.01");
+  const [quote, setQuote] = useState<Execute | null>(null);
+  const [tx, setTx] = useState<string | null>(null);
 
   // TODO: check solver capacity
   // const getSolver = async () => {
@@ -54,7 +36,11 @@ export function RelayLinkContent() {
   //   return { solver, enabled };
   // };
 
-  // TODO: show bridge quote to user
+  const fetchChains = useCallback(async () => {
+    const chains = await configureDynamicChains();
+    setChains(chains);
+  }, []);
+
   const fetchQuote = useCallback(async () => {
     setQuote(null);
     if (!wallet.data || !amount) return;
@@ -87,7 +73,7 @@ export function RelayLinkContent() {
     });
 
     const client = getClient();
-    const tx = await client.actions.call({
+    await client.actions.call({
       chainId: CHAIN_FROM,
       toChainId: CHAIN_TO,
       txs: [request],
@@ -99,16 +85,9 @@ export function RelayLinkContent() {
         }
       },
     });
-
-    console.log("tx", tx);
   }, [amount, wallet.data]);
 
-  const fetchChains = useCallback(async () => {
-    const chains = await configureDynamicChains();
-    setChains(chains);
-  }, []);
-
-  const handleSubmit = async (evt) => {
+  const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     await executeDeposit();
   };
