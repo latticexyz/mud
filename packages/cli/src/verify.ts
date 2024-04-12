@@ -8,7 +8,7 @@ export async function verify({ foundryProfile = process.env.FOUNDRY_PROFILE }: V
   await forge(
     [
       "verify-contract",
-      "0xA04EA49CCA55B764B1EADE56e60d63D8592e9E97",
+      "0x8838Cfe2E7D96c5b77E4D84EF0612f5C37F45D6A",
       "IncrementSystem",
       "--verifier",
       "sourcify",

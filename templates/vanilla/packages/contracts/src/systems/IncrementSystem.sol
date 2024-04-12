@@ -6,6 +6,8 @@ import { Counter } from "../codegen/index.sol";
 
 contract IncrementSystem is System {
   function increment() public returns (uint32) {
+    uint256 i = 1;
+
     uint32 counter = Counter.get();
     uint32 newValue = counter + 1;
     Counter.set(newValue);
