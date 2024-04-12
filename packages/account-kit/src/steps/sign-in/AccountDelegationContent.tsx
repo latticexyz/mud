@@ -28,7 +28,7 @@ export function AccountDelegationContent() {
 
       console.log("registerDelegation");
       const hash = await callWithSignature({
-        worldChainId: chainId,
+        chainId,
         worldAddress,
         systemId: resourceToHex({ type: "system", namespace: "", name: "Registration" }),
         callData: encodeFunctionData({
