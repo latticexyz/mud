@@ -151,10 +151,20 @@ const players = useEntityQuery([Has(Position)]).map((entity) => {
 Get the list of players (with the entityId and position).
 Both `useComponentValue` and `useEntityQuery` cause the React component in which they are registered (in this case, `Scene`) to be rendered again when the information changes.
 
-```ts {10-16}
-.
-.
-.
+<CollapseCode>
+
+```ts {18-24}
+  useThree(({ camera }) => {
+    if (playerPosition) {
+      camera.position.set(playerPosition.x - 5, playerPosition.y + 5, playerPosition.z + 5);
+    } else {
+      camera.position.set(-5, 5, 5);
+    }
+    camera.rotation.order = "YXZ";
+    camera.rotation.y = -Math.PI / 4;
+    camera.rotation.x = Math.atan(-1 / Math.sqrt(2));
+  });
+
   return (
     <group>
       <ambientLight />
@@ -170,7 +180,10 @@ Both `useComponentValue` and `useEntityQuery` cause the React component in which
       ))}
     </group>
   );
+};
 ```
+
+</CollapseCode>
 
 Return the React component, including the players.
 
