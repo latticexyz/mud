@@ -11,6 +11,7 @@ import { isGasSpenderQueryKey } from "../../useIsGasSpender";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "../../ui/Button";
 import { AccountModalContent } from "../../AccountModalContent";
+import { useOnboardingSteps } from "../../useOnboardingSteps";
 
 export function GasSpenderContent() {
   const queryClient = useQueryClient();
@@ -18,6 +19,7 @@ export function GasSpenderContent() {
   const publicClient = usePublicClient({ chainId });
   const { data: userAccountClient } = useWalletClient({ chainId });
   const appAccountClient = useAppAccountClient();
+  const { resetStep } = useOnboardingSteps();
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: async () => {
@@ -61,6 +63,7 @@ export function GasSpenderContent() {
           appAccountAddress: appAccountClient.account.address,
         }),
       });
+      resetStep();
     },
   });
 

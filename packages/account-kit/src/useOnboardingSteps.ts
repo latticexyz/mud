@@ -1,7 +1,7 @@
 import { createStore } from "zustand/vanilla";
 import { AccountRequirement, useAccountRequirements } from "./useAccountRequirements";
 import { useStore } from "zustand";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { keysOf } from "./utils/keysOf";
 
 // TODO: rename steps dirs to match below
@@ -35,25 +35,35 @@ const store = createStore<{ readonly step: OnboardingStep | null }>(() => ({ ste
 
 export function useOnboardingSteps() {
   const initialStep = useStore(store, (state) => state.step);
-  const setStep = useCallback((step: OnboardingStep): void => store.setState({ step }), []);
   const { requirements } = useAccountRequirements();
 
-  const steps = keysOf(onboardingSteps).map((id) => {
-    const step = onboardingSteps[id];
+  const setStep = useCallback((step: OnboardingStep): void => {
+    store.setState({ step });
+  }, []);
+
+  const resetStep = useCallback((): void => {
+    store.setState({ step: null });
+  }, []);
+
+  return useMemo(() => {
+    const steps = keysOf(onboardingSteps).map((id) => {
+      const step = onboardingSteps[id];
+      return {
+        id,
+        ...step,
+        canComplete: step.requires.every((req) => !requirements.includes(req)),
+        isComplete: step.satisfies.every((req) => !requirements.includes(req)),
+      };
+    });
+
+    const lastIncompleteStep = steps.filter((step) => !step.isComplete).at(0) ?? steps.at(-1)!;
+    const step = initialStep ?? lastIncompleteStep.id;
+
     return {
-      id,
-      ...step,
-      canComplete: step.requires.every((req) => !requirements.includes(req)),
-      isComplete: step.satisfies.every((req) => !requirements.includes(req)),
+      step,
+      setStep,
+      resetStep,
+      steps,
     };
-  });
-
-  const lastIncompleteStep = steps.filter((step) => !step.isComplete).at(0) ?? steps.at(-1)!;
-  const step = initialStep ?? lastIncompleteStep.id;
-
-  return {
-    step,
-    setStep,
-    steps,
-  };
+  }, [initialStep, requirements, resetStep, setStep]);
 }

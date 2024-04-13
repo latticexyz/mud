@@ -7,11 +7,13 @@ import { waitForTransactionReceipt } from "wagmi/actions";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "../../ui/Button";
 import { AccountModalContent } from "../../AccountModalContent";
+import { useOnboardingSteps } from "../../useOnboardingSteps";
 
 export function GasAllowanceContent() {
   const queryClient = useQueryClient();
   const wagmiConfig = useWagmiConfig();
   const { chainId, gasTankAddress } = useConfig();
+  const { resetStep } = useOnboardingSteps();
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
   const { switchChain, isPending: switchChainPending } = useSwitchChain();
@@ -23,6 +25,7 @@ export function GasAllowanceContent() {
           queryClient.invalidateQueries({
             queryKey: getGasTankBalanceQueryKey({ chainId, gasTankAddress, userAccountAddress }),
           });
+          resetStep();
         }
       },
     },

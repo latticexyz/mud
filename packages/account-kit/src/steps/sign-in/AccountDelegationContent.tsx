@@ -12,6 +12,7 @@ import { callWithSignature } from "../../utils/callWithSignature";
 import { hasDelegationQueryKey } from "../../useHasDelegation";
 import { Button } from "../../ui/Button";
 import { AccountModalContent } from "../../AccountModalContent";
+import { useOnboardingSteps } from "../../useOnboardingSteps";
 
 export function AccountDelegationContent() {
   const queryClient = useQueryClient();
@@ -19,6 +20,7 @@ export function AccountDelegationContent() {
   const publicClient = usePublicClient({ chainId });
   const { data: userAccountClient } = useWalletClient({ chainId });
   const appAccountClient = useAppAccountClient();
+  const { resetStep } = useOnboardingSteps();
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: async () => {
@@ -57,6 +59,7 @@ export function AccountDelegationContent() {
           appAccountAddress: appAccountClient.account.address,
         }),
       });
+      resetStep();
     },
   });
 

@@ -4,10 +4,12 @@ import { useSignMessage } from "wagmi";
 import { useAppSigner } from "../../useAppSigner";
 import { Button } from "../../ui/Button";
 import { AccountModalContent } from "../../AccountModalContent";
+import { useOnboardingSteps } from "../../useOnboardingSteps";
 
 export function AppSignerContent() {
   const [, setAppSigner] = useAppSigner();
   const { signMessageAsync, isPending } = useSignMessage();
+  const { resetStep } = useOnboardingSteps();
 
   return (
     <AccountModalContent title="Generate app signer">
@@ -25,6 +27,7 @@ export function AppSignerContent() {
               message: "Create app-signer",
             });
             setAppSigner(keccak256(signature));
+            resetStep();
           }}
         >
           Generate signer
