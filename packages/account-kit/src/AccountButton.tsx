@@ -100,14 +100,13 @@ export function AccountButton() {
             <span className="flex-grow inline-flex gap-2.5 items-center">
               <Logo className="flex-shrink-0 text-orange-500" />
               <span className="flex-grow text-left">{address ? <TruncatedHex hex={address} /> : null}</span>
-              {/* TODO: animate these nicely */}
 
               <span className="flex-shrink-0 pointer-events-none inline-grid place-items-center -mr-1.5">
                 <span
                   className={twMerge(
                     "col-start-1 row-start-1 leading-none",
                     "transition duration-300",
-                    menuOpen ? "opacity-0 scale-50" : "opacity-100 scale-100",
+                    menuOpen ? "opacity-0 scale-50 rotate-90" : "opacity-100 scale-100",
                   )}
                 >
                   <MoreIcon className="flex-shrink-0 opacity-50" />
@@ -116,8 +115,8 @@ export function AccountButton() {
                   aria-hidden
                   className={twMerge(
                     "col-start-1 row-start-1",
-                    "transition duration-300 delay-50",
-                    menuOpen ? "opacity-100 scale-100" : "opacity-0 scale-125",
+                    "transition duration-300",
+                    menuOpen ? "opacity-100 scale-100" : "opacity-0 scale-50 -rotate-90",
                   )}
                 >
                   <ChevronUpIcon className="flex-shrink-0 opacity-50" />
@@ -135,7 +134,7 @@ export function AccountButton() {
               containerClassNames,
               secondaryClassNames,
               menuClassNames,
-              "-mt-px flex-col animate-in fade-in",
+              "-mt-px flex-col animate-in fade-in slide-in-from-top-2 animate-duration-200",
             )}
           >
             <DropdownMenu.Item className={twMerge(secondaryInteractiveClassNames, "flex gap-2.5 p-3 items-center")}>
