@@ -1,0 +1,13 @@
+{
+  "networkName": "local",
+  "entryPoint": "0x0000000071727De22E5E9d8BAf0edAc6f37da032",
+  "entryPointSimulationsAddress": "0xe629eB112f891a341Cd2B66b2376ba68e7011241",
+  "entryPointVersion": "0.7",
+  "apiVersion": "v2",
+  "rpcUrl": "http://127.0.0.1:8545",
+  "minBalance": "0",
+  "utilityPrivateKey": "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+  "signerPrivateKeys": "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d",
+  "rpcMaxBlockRange": 10000,
+  "port": 4337
+}

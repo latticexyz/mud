@@ -4,6 +4,8 @@ export default defineConfig({
   entry: {
     index: "src/exports/index.ts",
     internal: "src/exports/internal.ts",
+    fund: "cli/fund.ts",
+    "aa-setup": "cli/aa-setup.ts",
   },
   target: "esnext",
   format: ["esm"],
