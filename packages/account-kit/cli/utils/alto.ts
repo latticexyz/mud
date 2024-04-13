@@ -1,6 +1,6 @@
 import { existsSync } from "fs";
 import { $, execa } from "execa";
-import config from "./config.localhost.json" assert { type: "json" };
+import config from "./alto.localhost.json" assert { type: "json" };
 import { join, dirname } from "path";
 
 const accountKitPath = join(dirname(process.argv[1]), "..");
@@ -20,15 +20,17 @@ export async function alto() {
     }
   }
 
-  if (!existsSync(altoCliPath)) {
+  if (!existsSync(join(altoPath, "node_modules"))) {
     console.log("Installing alto dependencies.");
-    let result = await $({ cwd: altoPath })`pnpm install`;
+    const result = await $({ cwd: altoPath })`pnpm install`;
     if (result.failed) {
       console.log(result.stderr);
     }
+  }
 
+  if (!existsSync(altoCliPath)) {
     console.log("Building alto.");
-    result = await $({ cwd: altoPath })`pnpm build`;
+    const result = await $({ cwd: altoPath })`pnpm build`;
     if (result.failed) {
       console.log(result.stderr);
     }
