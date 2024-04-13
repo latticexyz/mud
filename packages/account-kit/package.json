@@ -33,7 +33,6 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
-    "prepare": "pnpm build",
     "test": "tsc --noEmit",
     "test:ci": "pnpm run test"
   },
