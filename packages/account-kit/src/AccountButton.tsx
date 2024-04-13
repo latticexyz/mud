@@ -24,9 +24,9 @@ const containerClassNames = twMerge(
 
 const secondaryClassNames = twMerge(
   "bg-neutral-100 border-neutral-300 text-black",
-  "dark:bg-neutral-800 dark:border-neutral-600 dark:text-white",
+  "dark:bg-neutral-800 dark:border-neutral-700 dark:text-white",
 );
-const menuClassNames = twMerge("divide-y divide-neutral-300 dark:divide-neutral-600");
+const menuClassNames = twMerge("divide-y divide-neutral-300 dark:divide-neutral-700");
 const secondaryInteractiveClassNames = twMerge(
   "cursor-pointer outline-none hover:bg-neutral-200 data-[highlighted]:bg-neutral-200 dark:hover:bg-neutral-700",
 );

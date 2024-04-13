@@ -11,6 +11,7 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { usePrevious } from "./utils/usePrevious";
 import { useOnboardingSteps } from "./useOnboardingSteps";
 import { GasSpenderContent } from "./steps/gas-tank/GasSpenderContent";
+import { twMerge } from "tailwind-merge";
 
 export type Props = Pick<ModalProps, "open" | "onOpenChange">;
 
@@ -80,8 +81,14 @@ export function AccountModal({ open, onOpenChange }: Props) {
 
   return (
     <Modal open={shown} onOpenChange={onOpenChange}>
-      <DialogContent className="flex w-[48rem] min-h-[24rem] bg-neutral-800 text-neutral-400 border border-neutral-600 divide-x divide-neutral-600 outline-none">
-        <div className="flex-shrink-0 w-[16rem] bg-neutral-900">
+      <DialogContent
+        className={twMerge(
+          "flex w-[48rem] min-h-[24rem] border divide-x outline-none",
+          "bg-neutral-100 text-black border-neutral-300 divide-neutral-300",
+          "dark:bg-neutral-800 dark:text-white dark:border-neutral-700 dark:divide-neutral-700",
+        )}
+      >
+        <div className="flex-shrink-0 w-[16rem] bg-neutral-200 dark:bg-neutral-900">
           <AccountModalSidebar />
         </div>
         <div className="flex-grow flex-col">{content}</div>

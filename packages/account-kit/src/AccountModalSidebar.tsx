@@ -8,9 +8,11 @@ function StepNavItem({ isActive, onClick, children }: { isActive: boolean; onCli
   return (
     <button
       type="button"
+      // TODO: use radix menu or use aria menu item tags?
       className={twMerge(
-        "p-5 text-white font-medium outline-none text-left",
-        isActive ? "bg-neutral-800 hover:bg-neutral-700" : "hover:bg-neutral-800",
+        "p-5 font-medium outline-none text-left transition",
+        isActive ? "bg-neutral-100 text-black" : "text-neutral-600 hover:bg-neutral-100",
+        isActive ? "dark:bg-neutral-800 dark:text-white" : "dark:text-neutral-400 dark:hover:bg-neutral-800",
       )}
       onClick={onClick}
     >
@@ -22,7 +24,7 @@ function StepNavItem({ isActive, onClick, children }: { isActive: boolean; onCli
 export function AccountModalSidebar() {
   const { step: activeStep, setStep } = useOnboardingSteps();
   return (
-    <nav className="flex flex-col divide-y divide-neutral-600 border-y border-neutral-600 -my-px leading-none">
+    <nav className="flex flex-col divide-y divide-neutral-300 dark:divide-neutral-700 border-y border-neutral-300 dark:border-neutral-700 -my-px leading-none">
       <div className="px-5 py-3 text-orange-500">
         <Logo />
       </div>

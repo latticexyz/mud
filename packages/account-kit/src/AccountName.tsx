@@ -32,11 +32,7 @@ export function AccountName({ address }: Props) {
           )}
         />
       </span>
-      {ens.name ? (
-        <span className="flex-grow">{ens.name}</span>
-      ) : (
-        <span className="flex-grow">{address ? <TruncatedHex hex={address} /> : null}</span>
-      )}
+      <span className="flex-grow">{ens.name ?? (address ? <TruncatedHex hex={address} /> : null)}</span>
     </>
   );
 }
