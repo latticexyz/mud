@@ -112,8 +112,8 @@ importers:
         specifier: workspace:*
         version: link:../config
       '@latticexyz/gas-tank':
-        specifier: link:../../../gas-tank
-        version: link:../../../gas-tank
+        specifier: workspace:*
+        version: link:../gas-tank
       '@latticexyz/protocol-parser':
         specifier: workspace:*
         version: link:../protocol-parser
@@ -5195,7 +5195,7 @@ packages:
     engines: {node: '>=14.0.0'}
     dependencies:
       '@ethereumjs/tx': 4.2.0
-      '@types/debug': 4.1.7
+      '@types/debug': 4.1.12
       debug: 4.3.4(supports-color@8.1.1)
       semver: 7.6.0
       superstruct: 1.0.4
@@ -5208,9 +5208,9 @@ packages:
     engines: {node: '>=16.0.0'}
     dependencies:
       '@ethereumjs/tx': 4.2.0
-      '@noble/hashes': 1.3.2
+      '@noble/hashes': 1.4.0
       '@scure/base': 1.1.6
-      '@types/debug': 4.1.7
+      '@types/debug': 4.1.12
       debug: 4.3.4(supports-color@8.1.1)
       pony-cause: 2.1.10
       semver: 7.6.0
@@ -5309,7 +5309,6 @@ packages:
   /@noble/hashes@1.4.0:
     resolution: {integrity: sha512-V1JJ1WTRUqHHrOSh597hURcMqVKVGL/ea3kv0gSnEdsEZ0/+VyPghM1lMNGc00z7CIQorSvbKpuJkxvuHbvdbg==}
     engines: {node: '>= 16'}
-    dev: true
 
   /@noble/secp256k1@1.7.1:
     resolution: {integrity: sha512-hOUk6AyBFmqVrv7k5WAw/LpszxVbj9gGN4JRkIX52fdFAj1UA61KXmZDvqVEm+pOyec3+fIeZB02LYa/pWOArw==}
@@ -7304,12 +7303,12 @@ packages:
     resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
     dependencies:
       '@types/ms': 0.7.31
-    dev: true
 
   /@types/debug@4.1.7:
     resolution: {integrity: sha512-9AonUzyTjXXhEOa0DnqpzZi6VHlqKMswga9EXjpXnnqxwLtdvPPtlO8evrI5D9S6asFRCQ6v+wpiUKbw+vKqyg==}
     dependencies:
       '@types/ms': 0.7.31
+    dev: true
 
   /@types/dom-screen-wake-lock@1.0.3:
     resolution: {integrity: sha512-3Iten7X3Zgwvk6kh6/NRdwN7WbZ760YgFCsF5AxDifltUQzW1RaW+WRmcVtgwFzLjaNu64H+0MPJ13yRa8g3Dw==}

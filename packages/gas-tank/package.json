@@ -17,7 +17,7 @@
     "clean:js": "rimraf dist",
     "clean:mud": "rimraf src/codegen",
     "deploy:garnet": "pnpm run build && mud deploy --profile=garnet",
-    "deploy:local": "pnpm run build && mud deploy",
+    "deploy:local": "pnpm run build && mud deploy --salt 0x",
     "deploy:testnet": "pnpm run build && mud deploy --profile=lattice-testnet",
     "dev": "mud dev-contracts --rpc http://127.0.0.1:8545",
     "lint": "pnpm run prettier && pnpm run solhint",

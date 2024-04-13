@@ -48,8 +48,7 @@ export async function alto() {
   try {
     await execa("pnpm", ["start", ...args], {
       cwd: altoPath,
-      stdout: process.stdout,
-      stderr: process.stderr,
+      stdio: "inherit",
     });
   } catch (e) {
     console.error("Alto failed.", e);

@@ -40,7 +40,7 @@
     "@account-abstraction/contracts": "0.7.0",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
-    "@latticexyz/gas-tank": "link:../../../gas-tank",
+    "@latticexyz/gas-tank": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/react": "workspace:*",
     "@latticexyz/store": "workspace:*",
