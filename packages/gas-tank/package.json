@@ -8,6 +8,21 @@
   },
   "license": "MIT",
   "type": "module",
+  "exports": {
+    "./mud.config": "./dist/mud.config.js",
+    "./worlds.json": "./worlds.json",
+    "./out/*": "./out/*"
+  },
+  "typesVersions": {
+    "*": {
+      "worlds.json": [
+        "./worlds.json"
+      ],
+      "mud.config": [
+        "./mud.config.ts"
+      ]
+    }
+  },
   "scripts": {
     "build": "pnpm build:js && pnpm build:mud",
     "build:js": "tsup",
