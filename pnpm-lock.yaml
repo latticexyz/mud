@@ -156,6 +156,9 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
+      react-merge-refs:
+        specifier: ^2.1.1
+        version: 2.1.1
       react-router-dom:
         specifier: ^6.11.0
         version: 6.11.0(react-dom@18.2.0)(react@18.2.0)
@@ -170,7 +173,7 @@ importers:
         version: 2.9.16(typescript@5.4.2)(zod@3.21.4)
       wagmi:
         specifier: ^2.5.12
-        version: 2.5.19(@tanstack/react-query@5.29.2)(@types/react@18.2.22)(react-dom@18.2.0)(react-native@0.73.6)(react@18.2.0)(typescript@5.4.2)(viem@2.9.16)(zod@3.21.4)
+        version: 2.5.19(@tanstack/react-query@5.29.2)(@types/react@18.2.22)(react-dom@18.2.0)(react-native@0.73.6)(react@18.2.0)(typescript@5.4.2)(viem@2.9.16)
       zustand:
         specifier: ^4.5.2
         version: 4.5.2(@types/react@18.2.22)(react@18.2.0)
@@ -1832,7 +1835,7 @@ packages:
     dependencies:
       '@babel/core': 7.24.4
       '@babel/helper-environment-visitor': 7.22.20
-      '@babel/helper-plugin-utils': 7.20.2
+      '@babel/helper-plugin-utils': 7.24.0
       '@babel/helper-remap-async-to-generator': 7.22.20(@babel/core@7.24.4)
       '@babel/plugin-syntax-async-generators': 7.8.4(@babel/core@7.24.4)
     dev: false
@@ -1846,7 +1849,7 @@ packages:
     dependencies:
       '@babel/core': 7.24.4
       '@babel/helper-create-class-features-plugin': 7.24.4(@babel/core@7.24.4)
-      '@babel/helper-plugin-utils': 7.20.2
+      '@babel/helper-plugin-utils': 7.24.0
     dev: false
 
   /@babel/plugin-proposal-export-default-from@7.24.1(@babel/core@7.24.4):
@@ -1868,7 +1871,7 @@ packages:
       '@babel/core': ^7.0.0-0
     dependencies:
       '@babel/core': 7.24.4
-      '@babel/helper-plugin-utils': 7.20.2
+      '@babel/helper-plugin-utils': 7.24.0
       '@babel/plugin-syntax-nullish-coalescing-operator': 7.8.3(@babel/core@7.24.4)
     dev: false
 
@@ -1880,7 +1883,7 @@ packages:
       '@babel/core': ^7.0.0-0
     dependencies:
       '@babel/core': 7.24.4
-      '@babel/helper-plugin-utils': 7.20.2
+      '@babel/helper-plugin-utils': 7.24.0
       '@babel/plugin-syntax-numeric-separator': 7.10.4(@babel/core@7.24.4)
     dev: false
 
@@ -1894,7 +1897,7 @@ packages:
       '@babel/compat-data': 7.24.4
       '@babel/core': 7.24.4
       '@babel/helper-compilation-targets': 7.23.6
-      '@babel/helper-plugin-utils': 7.20.2
+      '@babel/helper-plugin-utils': 7.24.0
       '@babel/plugin-syntax-object-rest-spread': 7.8.3(@babel/core@7.24.4)
       '@babel/plugin-transform-parameters': 7.24.1(@babel/core@7.24.4)
     dev: false
@@ -1907,7 +1910,7 @@ packages:
       '@babel/core': ^7.0.0-0
     dependencies:
       '@babel/core': 7.24.4
-      '@babel/helper-plugin-utils': 7.20.2
+      '@babel/helper-plugin-utils': 7.24.0
       '@babel/plugin-syntax-optional-catch-binding': 7.8.3(@babel/core@7.24.4)
     dev: false
 
@@ -1919,7 +1922,7 @@ packages:
       '@babel/core': ^7.0.0-0
     dependencies:
       '@babel/core': 7.24.4
-      '@babel/helper-plugin-utils': 7.20.2
+      '@babel/helper-plugin-utils': 7.24.0
       '@babel/helper-skip-transparent-expression-wrappers': 7.22.5
       '@babel/plugin-syntax-optional-chaining': 7.8.3(@babel/core@7.24.4)
     dev: false
@@ -1994,7 +1997,7 @@ packages:
       '@babel/core': ^7.0.0-0
     dependencies:
       '@babel/core': 7.24.4
-      '@babel/helper-plugin-utils': 7.20.2
+      '@babel/helper-plugin-utils': 7.24.0
     dev: false
 
   /@babel/plugin-syntax-export-default-from@7.24.1(@babel/core@7.24.4):
@@ -5395,6 +5398,7 @@ packages:
     dependencies:
       is-glob: 4.0.3
       micromatch: 4.0.5
+      napi-wasm: 1.1.0
     dev: false
     bundledDependencies:
       - napi-wasm
@@ -5783,7 +5787,7 @@ packages:
       react-remove-scroll: 2.5.7(@types/react@18.2.22)(react@18.2.0)
       ua-parser-js: 1.0.37
       viem: 2.9.16(typescript@5.4.2)(zod@3.21.4)
-      wagmi: 2.5.19(@tanstack/react-query@5.29.2)(@types/react@18.2.22)(react-dom@18.2.0)(react-native@0.73.6)(react@18.2.0)(typescript@5.4.2)(viem@2.9.16)(zod@3.21.4)
+      wagmi: 2.5.19(@tanstack/react-query@5.29.2)(@types/react@18.2.22)(react-dom@18.2.0)(react-native@0.73.6)(react@18.2.0)(typescript@5.4.2)(viem@2.9.16)
     transitivePeerDependencies:
       - '@types/react'
     dev: false
@@ -5918,7 +5922,7 @@ packages:
       chalk: 4.1.2
       find-up: 5.0.0
       mime: 2.6.0
-      node-fetch: 2.6.9
+      node-fetch: 2.7.0
       open: 6.4.0
       ora: 5.4.1
       semver: 7.6.0
@@ -6063,7 +6067,7 @@ packages:
       metro: 0.80.8
       metro-config: 0.80.8
       metro-core: 0.80.8
-      node-fetch: 2.6.9
+      node-fetch: 2.7.0
       readline: 1.3.0
     transitivePeerDependencies:
       - '@babel/core'
@@ -6089,7 +6093,7 @@ packages:
       chromium-edge-launcher: 1.0.0
       connect: 3.7.0
       debug: 2.6.9
-      node-fetch: 2.6.9
+      node-fetch: 2.7.0
       open: 7.4.2
       serve-static: 1.15.0
       temp-dir: 2.0.0
@@ -6146,10 +6150,10 @@ packages:
     engines: {node: '>=14'}
     dev: false
 
-  /@safe-global/safe-apps-provider@0.18.1(typescript@5.4.2)(zod@3.21.4):
+  /@safe-global/safe-apps-provider@0.18.1(typescript@5.4.2):
     resolution: {integrity: sha512-V4a05A3EgJcriqtDoJklDz1BOinWhC6P0hjUSxshA4KOZM7rGPCTto/usXs09zr1vvL28evl/NldSTv97j2bmg==}
     dependencies:
-      '@safe-global/safe-apps-sdk': 8.1.0(typescript@5.4.2)(zod@3.21.4)
+      '@safe-global/safe-apps-sdk': 8.1.0(typescript@5.4.2)
       events: 3.3.0
     transitivePeerDependencies:
       - bufferutil
@@ -6158,11 +6162,11 @@ packages:
       - zod
     dev: false
 
-  /@safe-global/safe-apps-sdk@8.1.0(typescript@5.4.2)(zod@3.21.4):
+  /@safe-global/safe-apps-sdk@8.1.0(typescript@5.4.2):
     resolution: {integrity: sha512-XJbEPuaVc7b9n23MqlF6c+ToYIS3f7P2Sel8f3cSBQ9WORE4xrSuvhMpK9fDSFqJ7by/brc+rmJR/5HViRr0/w==}
     dependencies:
       '@safe-global/safe-gateway-typescript-sdk': 3.19.0
-      viem: 1.21.4(typescript@5.4.2)(zod@3.21.4)
+      viem: 1.21.4(typescript@5.4.2)
     transitivePeerDependencies:
       - bufferutil
       - typescript
@@ -7168,7 +7172,7 @@ packages:
       pretty-format: 29.5.0
     dev: true
 
-  /@wagmi/connectors@4.1.25(@types/react@18.2.22)(@wagmi/core@2.6.16)(react-dom@18.2.0)(react-native@0.73.6)(react@18.2.0)(typescript@5.4.2)(viem@2.9.16)(zod@3.21.4):
+  /@wagmi/connectors@4.1.25(@types/react@18.2.22)(@wagmi/core@2.6.16)(react-dom@18.2.0)(react-native@0.73.6)(react@18.2.0)(typescript@5.4.2)(viem@2.9.16):
     resolution: {integrity: sha512-4Tot1Gtiv7uhiUAxZ9On37aai35l5S0sV7N2yQSNgzqXe55bAlI0cqyBAIJRvyKwOe1+hzKfoFqYQSaoCgj5Lg==}
     peerDependencies:
       '@wagmi/core': 2.6.16
@@ -7180,9 +7184,9 @@ packages:
     dependencies:
       '@coinbase/wallet-sdk': 3.9.1
       '@metamask/sdk': 0.14.3(@types/react@18.2.22)(react-dom@18.2.0)(react-native@0.73.6)(react@18.2.0)
-      '@safe-global/safe-apps-provider': 0.18.1(typescript@5.4.2)(zod@3.21.4)
-      '@safe-global/safe-apps-sdk': 8.1.0(typescript@5.4.2)(zod@3.21.4)
-      '@wagmi/core': 2.6.16(@types/react@18.2.22)(react@18.2.0)(typescript@5.4.2)(viem@2.9.16)(zod@3.21.4)
+      '@safe-global/safe-apps-provider': 0.18.1(typescript@5.4.2)
+      '@safe-global/safe-apps-sdk': 8.1.0(typescript@5.4.2)
+      '@wagmi/core': 2.6.16(@types/react@18.2.22)(react@18.2.0)(typescript@5.4.2)(viem@2.9.16)
       '@walletconnect/ethereum-provider': 2.11.2(@types/react@18.2.22)(react@18.2.0)
       '@walletconnect/modal': 2.6.2(@types/react@18.2.22)(react@18.2.0)
       typescript: 5.4.2
@@ -7214,7 +7218,7 @@ packages:
       - zod
     dev: false
 
-  /@wagmi/core@2.6.16(@types/react@18.2.22)(react@18.2.0)(typescript@5.4.2)(viem@2.9.16)(zod@3.21.4):
+  /@wagmi/core@2.6.16(@types/react@18.2.22)(react@18.2.0)(typescript@5.4.2)(viem@2.9.16):
     resolution: {integrity: sha512-95r+2CCf4Yz4CWG7UZMALIcGSUfpr9YbZ2HOqmz6gJEBaW9Cf9xUEZj2MXOHZIP+Ri/3CZJtbBEclDot4enZWA==}
     peerDependencies:
       '@tanstack/query-core': '>=5.0.0'
@@ -7227,7 +7231,7 @@ packages:
         optional: true
     dependencies:
       eventemitter3: 5.0.1
-      mipd: 0.0.5(typescript@5.4.2)(zod@3.21.4)
+      mipd: 0.0.5(typescript@5.4.2)
       typescript: 5.4.2
       viem: 2.9.16(typescript@5.4.2)(zod@3.21.4)
       zustand: 4.4.1(@types/react@18.2.22)(react@18.2.0)
@@ -7627,7 +7631,7 @@ packages:
     engines: {node: '>=6', npm: '>=3'}
     dev: false
 
-  /abitype@0.9.8(typescript@5.4.2)(zod@3.21.4):
+  /abitype@0.9.8(typescript@5.4.2):
     resolution: {integrity: sha512-puLifILdm+8sjyss4S+fsUN09obiT1g2YW6CtcQF+QDzxR0euzgEB29MZujC6zMk2a6SVmtttq1fc6+YFA7WYQ==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -7639,7 +7643,6 @@ packages:
         optional: true
     dependencies:
       typescript: 5.4.2
-      zod: 3.21.4
     dev: false
 
   /abitype@1.0.0(typescript@5.4.2)(zod@3.21.4):
@@ -13143,7 +13146,7 @@ packages:
     resolution: {integrity: sha512-2oScjfv6Yb79PelU1+p8SVrCMW9ZjgEiipxq7jMRn8mbbtWzyv3g8Mkwr+KwOoDFI/61hYPUbY8cUnu278+x1g==}
     engines: {node: '>=18'}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.24.4
     dev: false
 
   /metro-source-map@0.80.8:
@@ -13252,7 +13255,7 @@ packages:
       metro-transform-plugins: 0.80.8
       metro-transform-worker: 0.80.8
       mime-types: 2.1.35
-      node-fetch: 2.6.9
+      node-fetch: 2.7.0
       nullthrows: 1.1.1
       rimraf: 3.0.2
       serialize-error: 2.1.0
@@ -13432,7 +13435,7 @@ packages:
       yallist: 4.0.0
     dev: false
 
-  /mipd@0.0.5(typescript@5.4.2)(zod@3.21.4):
+  /mipd@0.0.5(typescript@5.4.2):
     resolution: {integrity: sha512-gbKA784D2WKb5H/GtqEv+Ofd1S9Zj+Z/PGDIl1u1QAbswkxD28BQ5bSXQxkeBzPBABg1iDSbiwGG1XqlOxRspA==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -13441,7 +13444,7 @@ packages:
         optional: true
     dependencies:
       typescript: 5.4.2
-      viem: 1.21.4(typescript@5.4.2)(zod@3.21.4)
+      viem: 1.21.4(typescript@5.4.2)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -13555,6 +13558,10 @@ packages:
 
   /napi-build-utils@1.0.2:
     resolution: {integrity: sha512-ONmRUqK7zj7DWX0D9ADe03wbwOBZxNAfF20PlGfCWQcD3+/MakShIHrMqx9YwPTfxDdF1zLeL+RGZiR9kGMLdg==}
+    dev: false
+
+  /napi-wasm@1.1.0:
+    resolution: {integrity: sha512-lHwIAJbmLSjF9VDRm9GoVOy9AGp3aIvkjv+Kvz9h16QR3uSVYH78PNQUnT2U4X53mhlnV2M7wrhibQ3GHicDmg==}
     dev: false
 
   /natural-compare@1.4.0:
@@ -14791,7 +14798,7 @@ packages:
     resolution: {integrity: sha512-cq/o30z9W2Wb4rzBefjv5fBalHU0rJGZCHAkf/RHSBWSSYwh8PlQTqqOJmgIIbBtpj27T6FIPXeomIjZtCNVqA==}
     dependencies:
       shell-quote: 1.8.1
-      ws: 7.4.6
+      ws: 7.5.9
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -14846,6 +14853,10 @@ packages:
 
   /react-is@18.2.0:
     resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
+
+  /react-merge-refs@2.1.1:
+    resolution: {integrity: sha512-jLQXJ/URln51zskhgppGJ2ub7b2WFKGq3cl3NYKtlHoTG+dN2q7EzWrn3hN3EgPsTMvpR9tpq5ijdp7YwFZkag==}
+    dev: false
 
   /react-native-webview@11.26.1(react-native@0.73.6)(react@18.2.0):
     resolution: {integrity: sha512-hC7BkxOpf+z0UKhxFSFTPAM4shQzYmZHoELa6/8a/MspcjEP7ukYKpuSUTLDywQditT8yI9idfcKvfZDKQExGw==}
@@ -15179,7 +15190,7 @@ packages:
   /regenerator-transform@0.15.2:
     resolution: {integrity: sha512-hfMp2BoF0qOk3uc5V20ALGDS2ddjQaLrdl7xrGXvAIow7qeWRM2VA2HuCHkUKk9slq3VwEwLNK3DFBqDfPGYtg==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.24.4
     dev: false
 
   /regexp.prototype.flags@1.4.3:
@@ -17093,7 +17104,7 @@ packages:
     engines: {node: '>= 0.8'}
     dev: false
 
-  /viem@1.21.4(typescript@5.4.2)(zod@3.21.4):
+  /viem@1.21.4(typescript@5.4.2):
     resolution: {integrity: sha512-BNVYdSaUjeS2zKQgPs+49e5JKocfo60Ib2yiXOWBT6LuVxY1I/6fFX3waEtpXvL1Xn4qu+BVitVtMh9lyThyhQ==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -17106,7 +17117,7 @@ packages:
       '@noble/hashes': 1.3.2
       '@scure/bip32': 1.3.2
       '@scure/bip39': 1.2.1
-      abitype: 0.9.8(typescript@5.4.2)(zod@3.21.4)
+      abitype: 0.9.8(typescript@5.4.2)
       isows: 1.0.3(ws@8.13.0)
       typescript: 5.4.2
       ws: 8.13.0
@@ -17297,7 +17308,7 @@ packages:
       xml-name-validator: 4.0.0
     dev: true
 
-  /wagmi@2.5.19(@tanstack/react-query@5.29.2)(@types/react@18.2.22)(react-dom@18.2.0)(react-native@0.73.6)(react@18.2.0)(typescript@5.4.2)(viem@2.9.16)(zod@3.21.4):
+  /wagmi@2.5.19(@tanstack/react-query@5.29.2)(@types/react@18.2.22)(react-dom@18.2.0)(react-native@0.73.6)(react@18.2.0)(typescript@5.4.2)(viem@2.9.16):
     resolution: {integrity: sha512-fy6s3qTuXpfrrghhoNXuV92yqOqJI7m/9iLIejHxEYxiddVDTR8BVdkt0BuBQZzoXSAutDkyIlJbtFcpX5dfrQ==}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
@@ -17309,8 +17320,8 @@ packages:
         optional: true
     dependencies:
       '@tanstack/react-query': 5.29.2(react@18.2.0)
-      '@wagmi/connectors': 4.1.25(@types/react@18.2.22)(@wagmi/core@2.6.16)(react-dom@18.2.0)(react-native@0.73.6)(react@18.2.0)(typescript@5.4.2)(viem@2.9.16)(zod@3.21.4)
-      '@wagmi/core': 2.6.16(@types/react@18.2.22)(react@18.2.0)(typescript@5.4.2)(viem@2.9.16)(zod@3.21.4)
+      '@wagmi/connectors': 4.1.25(@types/react@18.2.22)(@wagmi/core@2.6.16)(react-dom@18.2.0)(react-native@0.73.6)(react@18.2.0)(typescript@5.4.2)(viem@2.9.16)
+      '@wagmi/core': 2.6.16(@types/react@18.2.22)(react@18.2.0)(typescript@5.4.2)(viem@2.9.16)
       react: 18.2.0
       typescript: 5.4.2
       use-sync-external-store: 1.2.0(react@18.2.0)

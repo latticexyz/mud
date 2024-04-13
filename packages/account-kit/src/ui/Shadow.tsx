@@ -1,12 +1,16 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, forwardRef, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
+import { mergeRefs } from "react-merge-refs";
 import css from "tailwindcss/tailwind.css?inline";
+
+const sheet = new CSSStyleSheet();
+sheet.replaceSync(css);
 
 export type Props = {
   children: ReactNode;
 };
 
-export function Shadow({ children }: Props) {
+export const Shadow = forwardRef<HTMLSpanElement, Props>(function Shadow({ children }, forwardedRef) {
   const containerRef = useRef<HTMLSpanElement | null>(null);
   const [shadowRoot, setShadowRoot] = useState<ShadowRoot | null>(null);
 
@@ -15,15 +19,13 @@ export function Shadow({ children }: Props) {
     if (!container) return;
 
     const root = container.attachShadow({ mode: "open", delegatesFocus: true });
-    setShadowRoot(root);
-    const sheet = new CSSStyleSheet();
-    sheet.replaceSync(css);
     root.adoptedStyleSheets = [sheet];
+    setShadowRoot(root);
   }, []);
 
   return (
-    <span ref={containerRef} style={{ display: "unset", outline: "none" }}>
+    <span ref={mergeRefs([containerRef, forwardedRef])} style={{ display: "unset", outline: "none" }}>
       {shadowRoot ? ReactDOM.createPortal(children, shadowRoot) : null}
     </span>
   );
-}
+});
