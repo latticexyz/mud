@@ -12,7 +12,7 @@ type ExpectedContract = {
   args?: Hex;
 };
 
-const expectedContracts: Record<string, ExpectedContract> = {
+export const contracts: Record<string, ExpectedContract> = {
   EntryPoint: {
     address: "0x0000000071727de22e5e9d8baf0edac6f37da032",
     bytecode: EntryPointAbi.bytecode as Hex,
@@ -41,8 +41,8 @@ const expectedContracts: Record<string, ExpectedContract> = {
   },
 };
 
-export async function deployContracts() {
-  for (const [name, { address, bytecode, salt, args }] of Object.entries(expectedContracts)) {
+export async function deployEIP4337Contracts() {
+  for (const [name, { address, bytecode, salt, args }] of Object.entries(contracts)) {
     console.log("Deploying", name, "to", address);
     const deploymentCode = concatHex([salt, bytecode, args ?? "0x"]);
     await deployLocal(deploymentCode, address);

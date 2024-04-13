@@ -25,7 +25,7 @@
   },
   "bin": {
     "aa-setup": "./dist/aa-setup.js",
-    "fund": "./dist/fund.js"
+    "anvil-set-balance": "./dist/anvil-set-balance.js"
   },
   "scripts": {
     "build": "pnpm run build:js",

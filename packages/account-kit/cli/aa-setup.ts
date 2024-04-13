@@ -1,7 +1,7 @@
-import { deployContracts } from "./utils/deployContracts";
+import { deployEIP4337Contracts } from "./utils/deployEIP4337Contracts";
 import { alto } from "./utils/alto";
 
 // Usage: `pnpm aa-setup`
 
-await deployContracts();
+await deployEIP4337Contracts();
 await alto();

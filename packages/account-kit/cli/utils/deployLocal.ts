@@ -1,9 +1,10 @@
 import { Address, Hex, createWalletClient, http, publicActions } from "viem";
-import { mnemonicToAccount } from "viem/accounts";
+import { privateKeyToAccount } from "viem/accounts";
 import { foundry } from "viem/chains";
 
-// Anvil dev mnemonic, automatically funded when running `anvil`
-const account = mnemonicToAccount("test test test test test test test test test test test junk", { addressIndex: 7 });
+// Anvil dev private key #7, automatically funded when running `anvil`
+export const devPrivateKey = "0x4bbbf85ce3377467afe5d46f804f221813b2bb87f24d81f60f1fcdbf7cbf4356";
+const account = privateKeyToAccount(devPrivateKey);
 
 export const deployerClient = createWalletClient({
   account,
