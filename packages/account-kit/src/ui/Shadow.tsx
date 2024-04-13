@@ -24,7 +24,7 @@ export const Shadow = forwardRef<HTMLSpanElement, Props>(function Shadow({ child
   }, []);
 
   return (
-    <span ref={mergeRefs([containerRef, forwardedRef])} style={{ display: "unset", outline: "none" }}>
+    <span ref={mergeRefs([containerRef, forwardedRef])} style={{ display: "inline-block", outline: "none" }}>
       {shadowRoot ? ReactDOM.createPortal(children, shadowRoot) : null}
     </span>
   );

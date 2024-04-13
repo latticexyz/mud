@@ -42,6 +42,7 @@
     "@latticexyz/world": "workspace:*",
     "@latticexyz/world-modules": "workspace:*",
     "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@rainbow-me/rainbowkit": "^2.0.2",
     "@tanstack/react-query": "^5.28.8",
     "abitype": "1.0.0",
