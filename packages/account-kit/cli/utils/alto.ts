@@ -1,13 +1,23 @@
 import { existsSync } from "fs";
 import { $, execa } from "execa";
 import config from "./config.localhost.json" assert { type: "json" };
+import { join, dirname } from "path";
 
-const altoPath = "node_modules/@pimlicolabs/alto";
-const altoCliPath = altoPath + "/src/lib/cli/alto.js";
+const accountKitPath = join(dirname(process.argv[1]), "..");
+const altoPath = join(accountKitPath, "node_modules/@pimlicolabs/alto");
+const altoCliPath = join(altoPath, "src/lib/cli/alto.js");
 
 export async function alto() {
-  if (!existsSync("node_modules/@pimlicolabs/alto")) {
-    console.log("Alto not found. Do you have `@pimlicolabs/alto` installed?");
+  if (!existsSync(altoPath)) {
+    console.log("Installing alto.");
+    const result = await $({ cwd: accountKitPath })`pnpm install`;
+    if (result.failed) {
+      console.log(result.stderr);
+    }
+
+    if (!existsSync(altoPath)) {
+      console.log("Alto not found. Is `@pimlicolabs/alto` installed?");
+    }
   }
 
   if (!existsSync(altoCliPath)) {
@@ -24,7 +34,8 @@ export async function alto() {
     }
 
     if (!existsSync(altoCliPath)) {
-      throw new Error("Building alto failed.");
+      console.error("Building alto failed.");
+      return;
     }
   }
 
@@ -41,6 +52,6 @@ export async function alto() {
       stderr: process.stderr,
     });
   } catch (e) {
-    console.log("Alto failed.", e);
+    console.error("Alto failed.", e);
   }
 }
