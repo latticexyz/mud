@@ -1,7 +1,8 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
 import { useAccountRequirements } from "./useAccountRequirements";
+import { usePrevious } from "./utils/usePrevious";
 
 const store = createStore(() => ({ open: false }));
 
@@ -31,6 +32,14 @@ export function useAccountModal(): UseAccountModalResult {
     },
     [hasRequirements],
   );
+
+  // Close account modal once we've completed all the requirements
+  const previousHasRequirements = usePrevious(hasRequirements);
+  useEffect(() => {
+    if (previousHasRequirements && !hasRequirements) {
+      closeAccountModal();
+    }
+  }, [closeAccountModal, hasRequirements, previousHasRequirements]);
 
   return useMemo(
     () => ({

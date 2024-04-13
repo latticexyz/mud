@@ -32,14 +32,17 @@ export function AccountModal({ open, onOpenChange }: Props) {
     if (open && status !== "connected" && !connectModalOpen) {
       // opening account modal should open connect modal
       if (!previousOpen) {
+        console.debug("opening connect modal");
         openConnectModal?.();
       }
       // disconnecting account should re-open connect modal
       else if (previousStatus === "connected") {
+        console.debug("disconnected, reopening connect modal");
         openConnectModal?.();
       }
       // closing connect modal should close account modal
       else if (previousConnectModalOpen) {
+        console.debug("connect modal closed, closing account modal");
         onOpenChange?.(false);
       }
     }
