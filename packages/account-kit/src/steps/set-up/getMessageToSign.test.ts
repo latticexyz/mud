@@ -9,7 +9,7 @@ describe("getMessageToSign", () => {
 
       Only sign this message if it came from an app you are interacting with at localhost.
 
-      An app signer and smart account will be derived from this message signature and be used to transact on your behalf within this app. Do not share this message signature with anyone else.
+      A private key will be derived from this message signature and be used to transact on your behalf within this app. Do not share this message signature with anyone else.
 
 
       version=1 account=0"
@@ -22,7 +22,7 @@ describe("getMessageToSign", () => {
 
       Only sign this message if it came from an app you are interacting with at localhost.
 
-      An app signer and smart account will be derived from this message signature and be used to transact on your behalf within this app. Do not share this message signature with anyone else.
+      A private key will be derived from this message signature and be used to transact on your behalf within this app. Do not share this message signature with anyone else.
 
 
       version=1 account=1"

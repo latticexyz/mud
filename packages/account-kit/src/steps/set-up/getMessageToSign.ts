@@ -9,7 +9,7 @@ export function getMessageToSign(origin: string, account: number = 0) {
     "",
     `Only sign this message if it came from an app you are interacting with at ${origin}.`,
     "",
-    "An app signer and smart account will be derived from this message signature and be used to transact on your behalf within this app. Do not share this message signature with anyone else.",
+    "A private key will be derived from this message signature and be used to transact on your behalf within this app. Do not share this message signature with anyone else.",
     "",
     "",
     // We append a message version (to recover accounts from older messages)
