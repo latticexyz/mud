@@ -4,10 +4,11 @@ import { join, dirname } from "path";
 import { deployerClient, devPrivateKey } from "./deployLocal";
 import worlds from "@latticexyz/gas-tank/worlds.json" assert { type: "json" };
 
-const accountKitPath = join(dirname(process.argv[1]), "..");
-const gasTankPath = join(accountKitPath, "node_modules/@latticexyz/gas-tank");
-
 export async function deployGasTank() {
+  // process.argv[1] is the path to the currently executing script
+  const nodeModulesPath = (await $({ cwd: dirname(process.argv[1]) })`pnpm root`).stdout;
+  const gasTankPath = join(nodeModulesPath, "@latticexyz/gas-tank");
+
   const expectedAddress = worlds[31337]?.address;
   console.log(`Checking for GasTank at ${expectedAddress}.`);
   if (expectedAddress) {
@@ -22,7 +23,7 @@ export async function deployGasTank() {
 
   if (!existsSync(gasTankPath)) {
     console.log("Installing GasTank Paymaster.");
-    const result = await $({ cwd: accountKitPath })`pnpm install`;
+    const result = await $({ cwd: nodeModulesPath })`pnpm install`;
     if (result.failed) {
       console.log(result.stderr);
     }

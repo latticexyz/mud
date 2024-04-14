@@ -24,8 +24,7 @@
     }
   },
   "bin": {
-    "aa-setup": "./dist/aa-setup.js",
-    "anvil-set-balance": "./dist/anvil-set-balance.js"
+    "local-bundler": "./dist/bin/local-bundler.js"
   },
   "scripts": {
     "build": "pnpm run build:js",
@@ -33,6 +32,7 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
+    "local-bundler": "pnpx tsx cli/local-bundler.ts",
     "test": "tsc --noEmit",
     "test:ci": "pnpm run test"
   },

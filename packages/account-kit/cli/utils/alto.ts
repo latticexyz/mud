@@ -3,14 +3,15 @@ import { $, execa } from "execa";
 import config from "./altoV1.localhost.json" assert { type: "json" };
 import { join, dirname } from "path";
 
-const accountKitPath = join(dirname(process.argv[1]), "..");
-const altoPath = join(accountKitPath, "node_modules/@pimlicolabs/alto");
-const altoCliPath = join(altoPath, "src/lib/cli/alto.js");
-
 export async function alto() {
+  // process.argv[1] is the path to the currently executing script
+  const nodeModulesPath = (await $({ cwd: dirname(process.argv[1]) })`pnpm root`).stdout;
+  const altoPath = join(nodeModulesPath, "@pimlicolabs/alto");
+  const altoCliPath = join(altoPath, "src/lib/cli/alto.js");
+
   if (!existsSync(altoPath)) {
     console.log("Installing alto.");
-    const result = await $({ cwd: accountKitPath })`pnpm install`;
+    const result = await $({ cwd: nodeModulesPath })`pnpm install`;
     if (result.failed) {
       console.log(result.stderr);
     }

@@ -4,8 +4,7 @@ export default defineConfig({
   entry: {
     index: "src/exports/index.ts",
     internal: "src/exports/internal.ts",
-    "anvil-set-balance": "cli/anvil-set-balance.ts",
-    "aa-setup": "cli/aa-setup.ts",
+    "bin/local-bundler": "cli/local-bundler.ts",
   },
   target: "esnext",
   format: ["esm"],
