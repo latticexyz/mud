@@ -1,24 +1,32 @@
-import { forge } from "@latticexyz/common/foundry";
+import { forge, getRpcUrl } from "@latticexyz/common/foundry";
+import { Hex, createWalletClient, http } from "viem";
+import { getSystems } from "./deploy/getSystems";
+import { getWorldDeploy } from "./deploy/getWorldDeploy";
 
 type VerifyOptions = {
+  worldAddress: Hex;
   foundryProfile?: string;
 };
 
-export async function verify({ foundryProfile = process.env.FOUNDRY_PROFILE }: VerifyOptions): Promise<void> {
-  await forge(
-    [
-      "verify-contract",
-      "0x8838Cfe2E7D96c5b77E4D84EF0612f5C37F45D6A",
-      "IncrementSystem",
-      "--verifier",
-      "sourcify",
-      "--chain",
-      "holesky",
-      "--optimizer-runs",
-      "3000",
-      "--compiler-version",
-      "v0.8.24+commit.e11b9ed9",
-    ],
-    { profile: foundryProfile },
+export async function verify({
+  worldAddress,
+  foundryProfile = process.env.FOUNDRY_PROFILE,
+}: VerifyOptions): Promise<void> {
+  const rpc = await getRpcUrl(foundryProfile);
+
+  const client = createWalletClient({
+    transport: http(rpc),
+  });
+
+  const worldDeploy = await getWorldDeploy(client, worldAddress);
+
+  const systems = await getSystems({ client, worldDeploy });
+
+  await Promise.all(
+    systems.map((system) =>
+      forge(["verify-contract", system.address, system.name, "--verifier", "sourcify"], {
+        profile: foundryProfile,
+      }),
+    ),
   );
 }

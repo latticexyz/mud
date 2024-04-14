@@ -14,7 +14,7 @@
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
     "test": "tsc --noEmit && mud test",
-    "verify": "pnpm mud verify"
+    "verify": "pnpm mud verify --profile=holesky --worldAddress=0x848ecb1ec9c7706c11a8e1b2bf8e53df16ad8e44"
   },
   "dependencies": {
     "@latticexyz/cli": "link:../../../../packages/cli",
