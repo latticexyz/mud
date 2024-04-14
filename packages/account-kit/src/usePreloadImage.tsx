@@ -4,6 +4,9 @@ export function usePreloadImage(url: string | undefined) {
   return useQuery({
     enabled: !!url,
     retry: false,
+    retryOnMount: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     queryKey: [url],
     queryFn: () =>
       new Promise<InstanceType<typeof Image>>((resolve, reject) => {
