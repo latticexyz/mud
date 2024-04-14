@@ -30,6 +30,8 @@ export function useAppAccountClient(): AppAccountClient | undefined {
       return;
     }
 
+    console.log("Bundler:", chain.erc4337BundlerUrl.http);
+
     const pimlicoBundlerClient = createPimlicoBundlerClient({
       chain: publicClient.chain,
       transport: http(chain.erc4337BundlerUrl.http),
