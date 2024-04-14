@@ -10,21 +10,26 @@ import CallWithSignatureAbi from "@latticexyz/world-modules/out/IUnstable_CallWi
 // TODO: move this to world package or similar
 
 export type CallWithSignatureOptions = {
-  userAccountClient: WalletClient<Transport, Chain, Account>;
+  chainId: number;
   worldAddress: Address;
   systemId: Hex;
   callData: Hex;
+  /**
+   * This should be bound to the same chain as `chainId` option.
+   */
   publicClient: PublicClient<Transport, Chain>;
+  userAccountClient: WalletClient<Transport, Chain, Account>;
   appAccountClient: AppAccountClient;
   nonce?: bigint | null;
 };
 
 export async function callWithSignature({
-  userAccountClient,
+  chainId,
   worldAddress,
   systemId,
   callData,
   publicClient,
+  userAccountClient,
   appAccountClient,
   nonce: initialNonce,
 }: CallWithSignatureOptions) {
@@ -40,7 +45,7 @@ export async function callWithSignature({
       })
     ).nonce;
 
-  const signature = await signCall({ worldAddress, userAccountClient, systemId, callData, nonce });
+  const signature = await signCall({ userAccountClient, chainId, worldAddress, systemId, callData, nonce });
 
   return writeContract(appAccountClient, {
     address: worldAddress,

@@ -1,0 +1,16 @@
+{
+  "network-name": "local",
+  "rpc-url": "http://127.0.0.1:8545",
+  "min-entity-stake": 0,
+  "min-executor-balance": "1000000000000000000",
+  "min-entity-unstake-delay": 0,
+  "max-bundle-wait": 0,
+  "max-bundle-size": 10,
+  "port": 4337,
+  "executor-private-keys": "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+  "utility-private-key": "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+  "entrypoints": "0x0000000071727De22E5E9d8BAf0edAc6f37da032",
+  "entrypoint-simulation-contract": "0x729da8e46e44a5191fdfb19062d91d05380c6fd5",
+  "enable-debug-endpoints": true,
+  "safe-mode": false
+}

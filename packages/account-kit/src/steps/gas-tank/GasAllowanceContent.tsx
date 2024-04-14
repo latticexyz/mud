@@ -1,5 +1,5 @@
 import { parseEther } from "viem";
-import { useAccount, useConfig as useWagmiConfig, useWriteContract } from "wagmi";
+import { useAccount, useSwitchChain, useConfig as useWagmiConfig, useWriteContract } from "wagmi";
 import { useConfig } from "../../MUDAccountKitProvider";
 import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
 import { getGasTankBalanceQueryKey } from "../../useGasTankBalance";
@@ -10,13 +10,16 @@ import { AccountModalContent } from "../../AccountModalContent";
 import { useState } from "react";
 import { RelayLinkContent } from "./RelayLinkContent";
 import { StandardBridgeContent } from "./StandardBridgeContent";
+import { useOnboardingSteps } from "../../useOnboardingSteps";
 
 export function GasAllowanceContent() {
   const queryClient = useQueryClient();
   const wagmiConfig = useWagmiConfig();
   const { chainId, gasTankAddress } = useConfig();
+  const { resetStep } = useOnboardingSteps();
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
+  const { switchChain, isPending: switchChainPending } = useSwitchChain();
   const { writeContractAsync, isPending, error } = useWriteContract({
     mutation: {
       onSuccess: async (hash) => {
@@ -25,6 +28,7 @@ export function GasAllowanceContent() {
           queryClient.invalidateQueries({
             queryKey: getGasTankBalanceQueryKey({ chainId, gasTankAddress, userAccountAddress }),
           });
+          resetStep();
         }
       },
     },
@@ -40,29 +44,35 @@ export function GasAllowanceContent() {
   }
 
   return (
-    <AccountModalContent title="Fund Redstone balance">
+    <AccountModalContent>
       {error ? <div>{String(error)}</div> : null}
 
       {!depositMethod && (
         <div className="flex flex-col gap-2">
-          <Button
-            variant="secondary"
-            pending={!userAccountAddress || isPending}
-            onClick={async () => {
-              if (!userAccountAddress) return;
+          {userAccount.chainId !== chainId ? (
+            <Button pending={switchChainPending} onClick={() => switchChain({ chainId })}>
+              Switch chain to deposit
+            </Button>
+          ) : (
+            <Button
+              pending={!userAccountAddress || isPending}
+              onClick={async () => {
+                if (!userAccountAddress) return;
 
-              await writeContractAsync({
-                chainId,
-                address: gasTankAddress,
-                abi: GasTankAbi,
-                functionName: "depositTo",
-                args: [userAccountAddress],
-                value: parseEther("0.01"),
-              });
-            }}
-          >
-            Deposit to gas tank
-          </Button>
+                await writeContractAsync({
+                  chainId,
+                  address: gasTankAddress,
+                  abi: GasTankAbi,
+                  functionName: "depositTo",
+                  args: [userAccountAddress],
+                  value: parseEther("0.01"),
+                });
+              }}
+            >
+              Deposit to gas tank
+            </Button>
+          )}
+
           <Button
             variant="secondary"
             onClick={() => {

@@ -11,6 +11,7 @@ import { isGasSpenderQueryKey } from "../../useIsGasSpender";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "../../ui/Button";
 import { AccountModalContent } from "../../AccountModalContent";
+import { useOnboardingSteps } from "../../useOnboardingSteps";
 
 export function GasSpenderContent() {
   const queryClient = useQueryClient();
@@ -18,6 +19,7 @@ export function GasSpenderContent() {
   const publicClient = usePublicClient({ chainId });
   const { data: userAccountClient } = useWalletClient({ chainId });
   const appAccountClient = useAppAccountClient();
+  const { resetStep } = useOnboardingSteps();
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: async () => {
@@ -27,6 +29,7 @@ export function GasSpenderContent() {
 
       console.log("registerSpender");
       const hash = await callWithSignature({
+        chainId,
         worldAddress: gasTankAddress,
         systemId: resourceToHex({ type: "system", namespace: "", name: "PaymasterSystem" }),
         callData: encodeFunctionData({
@@ -60,6 +63,7 @@ export function GasSpenderContent() {
           appAccountAddress: appAccountClient.account.address,
         }),
       });
+      resetStep();
     },
   });
 
@@ -69,9 +73,9 @@ export function GasSpenderContent() {
 
       <div className="flex gap-3 justify-end">
         <Dialog.Close asChild>
-          <Button variant="tertiary">Cancel</Button>
+          <Button variant="secondary">Cancel</Button>
         </Dialog.Close>
-        <Button variant="secondary" pending={isPending} onClick={() => mutate()}>
+        <Button pending={isPending} onClick={() => mutate()}>
           Set up spender
         </Button>
       </div>

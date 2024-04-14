@@ -1,43 +1,69 @@
-import * as Dialog from "@radix-ui/react-dialog";
 import { keccak256 } from "viem";
-import { useSignMessage, useWalletClient } from "wagmi";
+import { useSignMessage } from "wagmi";
 import { useAppSigner } from "../../useAppSigner";
 import { Button } from "../../ui/Button";
 import { AccountModalContent } from "../../AccountModalContent";
+import { useOnboardingSteps } from "../../useOnboardingSteps";
 import { useConfig } from "../../MUDAccountKitProvider";
-import { switchChain } from "viem/actions";
+import { Logo } from "../../icons/Logo";
+import { AccountModalTitle } from "../../AccoutModalTitle";
 
 export function AppSignerContent() {
-  const wallet = useWalletClient();
-  const { chainId: appChainId } = useConfig();
+  const { appInfo } = useConfig();
   const [, setAppSigner] = useAppSigner();
   const { signMessageAsync, isPending } = useSignMessage();
+  const { resetStep } = useOnboardingSteps();
+
+  const appName = appInfo?.name ?? document.title;
+  const appOrigin = location.hostname;
+
+  // TODO: add "already signed" state
 
   return (
-    <AccountModalContent title="Generate app signer">
-      <div className="flex gap-3 justify-end">
-        <Dialog.Close asChild>
-          <Button variant="tertiary">Cancel</Button>
-        </Dialog.Close>
-
-        <Button
-          variant="secondary"
-          pending={isPending}
-          onClick={async () => {
-            if (!wallet.data) return;
-            if (wallet.data.chain.id !== appChainId) {
-              await switchChain(wallet.data, { id: appChainId });
-            }
-
-            const signature = await signMessageAsync({
-              message: `Create app-signer (${window.location.hostname})`,
-            });
-            setAppSigner(keccak256(signature));
-          }}
-        >
-          Generate signer
-        </Button>
-      </div>
-    </AccountModalContent>
+    <>
+      <AccountModalTitle title={appName} />
+      <AccountModalContent className="flex-grow bg-white dark:bg-neutral-700">
+        {appInfo?.image ? (
+          <img src={appInfo.image} />
+        ) : (
+          <div className="flex-grow flex flex-col items-center justify-center p-5">
+            {appInfo?.icon ? (
+              <img src={appInfo.icon} />
+            ) : (
+              <div className="p-4">
+                {/* TODO: swap with favicon */}
+                <Logo className="w-16 h-16 text-orange-500 dark:bg-neutral-800" />
+              </div>
+            )}
+            <div className="flex flex-col gap-1 items-center justify-center">
+              <div className="text-2xl">{appName}</div>
+              <div className="text-sm font-mono text-neutral-400">{appOrigin}</div>
+            </div>
+          </div>
+        )}
+      </AccountModalContent>
+      <AccountModalContent>
+        <div className="flex flex-col gap-5 p-5">
+          <p>
+            To get started with Application Name by proving your identity. You will be asked for a signature via your
+            wallet. This will not cost you anything.
+          </p>
+          <Button
+            className="self-stretch"
+            pending={isPending}
+            onClick={async () => {
+              const signature = await signMessageAsync({
+                // TODO: improve message, include location.origin
+                message: "Create app-signer",
+              });
+              setAppSigner(keccak256(signature));
+              resetStep();
+            }}
+          >
+            Continue
+          </Button>
+        </div>
+      </AccountModalContent>
+    </>
   );
 }

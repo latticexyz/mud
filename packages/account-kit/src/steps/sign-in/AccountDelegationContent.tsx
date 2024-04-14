@@ -12,6 +12,7 @@ import { callWithSignature } from "../../utils/callWithSignature";
 import { hasDelegationQueryKey } from "../../useHasDelegation";
 import { Button } from "../../ui/Button";
 import { AccountModalContent } from "../../AccountModalContent";
+import { useOnboardingSteps } from "../../useOnboardingSteps";
 
 export function AccountDelegationContent() {
   const queryClient = useQueryClient();
@@ -19,6 +20,7 @@ export function AccountDelegationContent() {
   const publicClient = usePublicClient({ chainId });
   const { data: userAccountClient } = useWalletClient({ chainId });
   const appAccountClient = useAppAccountClient();
+  const { resetStep } = useOnboardingSteps();
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: async () => {
@@ -28,6 +30,7 @@ export function AccountDelegationContent() {
 
       console.log("registerDelegation");
       const hash = await callWithSignature({
+        chainId,
         worldAddress,
         systemId: resourceToHex({ type: "system", namespace: "", name: "Registration" }),
         callData: encodeFunctionData({
@@ -56,6 +59,7 @@ export function AccountDelegationContent() {
           appAccountAddress: appAccountClient.account.address,
         }),
       });
+      resetStep();
     },
   });
 
@@ -65,9 +69,9 @@ export function AccountDelegationContent() {
 
       <div className="flex gap-3 justify-end">
         <Dialog.Close asChild>
-          <Button variant="tertiary">Cancel</Button>
+          <Button variant="secondary">Cancel</Button>
         </Dialog.Close>
-        <Button variant="secondary" pending={isPending} onClick={() => mutate()}>
+        <Button pending={isPending} onClick={() => mutate()}>
           Set up delegation
         </Button>
       </div>
