@@ -34,7 +34,7 @@
     "deploy:garnet": "pnpm run build && mud deploy --profile=garnet",
     "deploy:local": "pnpm run build && mud deploy --salt 0x",
     "deploy:testnet": "pnpm run build && mud deploy --profile=lattice-testnet",
-    "dev": "mud dev-contracts --rpc http://127.0.0.1:8545",
+    "dev": "tsup --watch",
     "lint": "pnpm run prettier && pnpm run solhint",
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
