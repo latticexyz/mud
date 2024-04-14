@@ -44,9 +44,10 @@ export function AppSignerContent() {
       </AccountModalContent>
       <AccountModalContent>
         <div className="flex flex-col gap-5 p-5">
+          {/* TODO: rework this copy */}
           <p>
-            To get started with Application Name by proving your identity. You will be asked for a signature via your
-            wallet. This will not cost you anything.
+            To get started with <span className="font-medium">{appName}</span> by proving your identity. You will be
+            asked for a signature via your wallet. This will not cost you anything.
           </p>
           <Button
             className="self-stretch"
