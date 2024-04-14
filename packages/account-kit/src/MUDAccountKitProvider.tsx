@@ -2,9 +2,20 @@ import { createContext, useContext, type ReactNode } from "react";
 import { Address } from "viem";
 
 export type Config = {
-  chainId: number;
-  worldAddress: Address;
-  gasTankAddress: Address;
+  readonly chainId: number;
+  readonly worldAddress: Address;
+  readonly gasTankAddress: Address;
+  readonly appInfo?: {
+    readonly name?: string;
+    /**
+     * The app icon used throughout the onboarding process. It will be used as a fallback if no `image` is provided. Icon should be 1:1 aspect ratio, at least 200x200.
+     */
+    readonly icon?: string;
+    /**
+     * The image displayed during the first step of onboarding. Ideally around 600x250.
+     */
+    readonly image?: string;
+  };
 };
 
 /** @internal */
