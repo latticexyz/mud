@@ -15,9 +15,9 @@ import { useOnboardingSteps } from "../../useOnboardingSteps";
 
 export function GasSpenderContent() {
   const queryClient = useQueryClient();
-  const { chainId, gasTankAddress } = useConfig();
-  const publicClient = usePublicClient({ chainId });
-  const { data: userAccountClient } = useWalletClient({ chainId });
+  const { chain, gasTankAddress } = useConfig();
+  const publicClient = usePublicClient({ chainId: chain.id });
+  const { data: userAccountClient } = useWalletClient({ chainId: chain.id });
   const appAccountClient = useAppAccountClient();
   const { resetStep } = useOnboardingSteps();
 
@@ -29,7 +29,7 @@ export function GasSpenderContent() {
 
       console.log("registerSpender");
       const hash = await callWithSignature({
-        chainId,
+        chainId: chain.id,
         worldAddress: gasTankAddress,
         systemId: resourceToHex({ type: "system", namespace: "", name: "PaymasterSystem" }),
         callData: encodeFunctionData({
@@ -57,7 +57,7 @@ export function GasSpenderContent() {
       // TODO: figure out a better fix? maybe just assume we're good to go?
       queryClient.invalidateQueries({
         queryKey: isGasSpenderQueryKey({
-          chainId,
+          chainId: chain.id,
           gasTankAddress,
           userAccountAddress: userAccountClient.account.address,
           appAccountAddress: appAccountClient.account.address,
@@ -68,7 +68,7 @@ export function GasSpenderContent() {
   });
 
   return (
-    <AccountModalContent title="Gas spender">
+    <AccountModalContent>
       {error ? <>Error: {String(error)}</> : null}
 
       <div className="flex gap-3 justify-end">

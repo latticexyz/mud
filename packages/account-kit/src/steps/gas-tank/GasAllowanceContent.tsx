@@ -15,7 +15,7 @@ import { useOnboardingSteps } from "../../useOnboardingSteps";
 export function GasAllowanceContent() {
   const queryClient = useQueryClient();
   const wagmiConfig = useWagmiConfig();
-  const { chainId, gasTankAddress } = useConfig();
+  const { chain, gasTankAddress } = useConfig();
   const { resetStep } = useOnboardingSteps();
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
@@ -26,7 +26,7 @@ export function GasAllowanceContent() {
         const receipt = await waitForTransactionReceipt(wagmiConfig, { hash });
         if (receipt.status === "success") {
           queryClient.invalidateQueries({
-            queryKey: getGasTankBalanceQueryKey({ chainId, gasTankAddress, userAccountAddress }),
+            queryKey: getGasTankBalanceQueryKey({ chainId: chain.id, gasTankAddress, userAccountAddress }),
           });
           resetStep();
         }
@@ -49,8 +49,8 @@ export function GasAllowanceContent() {
 
       {!depositMethod && (
         <div className="flex flex-col gap-2">
-          {userAccount.chainId !== chainId ? (
-            <Button pending={switchChainPending} onClick={() => switchChain({ chainId })}>
+          {userAccount.chainId !== chain.id ? (
+            <Button pending={switchChainPending} onClick={() => switchChain({ chainId: chain.id })}>
               Switch chain to deposit
             </Button>
           ) : (
@@ -60,7 +60,7 @@ export function GasAllowanceContent() {
                 if (!userAccountAddress) return;
 
                 await writeContractAsync({
-                  chainId,
+                  chainId: chain.id,
                   address: gasTankAddress,
                   abi: GasTankAbi,
                   functionName: "depositTo",
@@ -73,14 +73,17 @@ export function GasAllowanceContent() {
             </Button>
           )}
 
-          <Button
-            variant="secondary"
-            onClick={() => {
-              setDepositMethod("standardBridge");
-            }}
-          >
-            Standard bridge
-          </Button>
+          {chain.sourceId != null && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setDepositMethod("standardBridge");
+              }}
+            >
+              Standard bridge
+            </Button>
+          )}
+
           <Button
             variant="secondary"
             onClick={() => {

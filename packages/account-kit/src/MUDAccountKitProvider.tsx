@@ -1,8 +1,9 @@
 import { createContext, useContext, type ReactNode } from "react";
 import { Address } from "viem";
+import { MUDChain } from "@latticexyz/common/chains";
 
 export type Config = {
-  readonly chainId: number;
+  readonly chain: MUDChain;
   readonly worldAddress: Address;
   readonly gasTankAddress: Address;
   readonly appInfo?: {

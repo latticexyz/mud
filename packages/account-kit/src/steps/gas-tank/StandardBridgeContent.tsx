@@ -8,30 +8,33 @@ import { Button } from "../../ui/Button";
 import { useConfig } from "../../MUDAccountKitProvider";
 import { getGasTankBalanceQueryKey } from "../../useGasTankBalance";
 import OptimismPortalAbi from "../../abis/OptimismPortal.json";
-import PaymasterSystemAbi from "../../abis/PaymasterSystem.json";
-import { AMOUNT_STEP, OPTIMISM_PORTAL_ADDRESS, PAYMASTER_ADDRESS } from "./consts";
-import { holesky } from "viem/chains";
+import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
+import { AMOUNT_STEP, OPTIMISM_PORTAL_ADDRESS } from "./constants";
 import { getExplorerUrl } from "./utils/getExplorerUrl";
 
 export function StandardBridgeContent() {
   const queryClient = useQueryClient();
   const wagmiConfig = useWagmiConfig();
   const wallet = useWalletClient();
-  const { chainId: appChainId, gasTankAddress } = useConfig();
+  const { chain, gasTankAddress } = useConfig();
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
+
+  if (chain.sourceId == null) {
+    throw new Error("No source chain available for " + chain.name);
+  }
 
   const [tx, setTx] = useState<string | null>(null);
   const [amount, setAmount] = useState<string | undefined>("0.01");
   const { writeContractAsync } = useWriteContract({
     mutation: {
       onSuccess: async (hash) => {
-        setTx(getExplorerUrl(hash, holesky.id));
+        setTx(getExplorerUrl(hash, chain.sourceId!));
 
         const receipt = await waitForTransactionReceipt(wagmiConfig, { hash });
         if (receipt.status === "success") {
           queryClient.invalidateQueries({
-            queryKey: getGasTankBalanceQueryKey({ chainId: appChainId, gasTankAddress, userAccountAddress }),
+            queryKey: getGasTankBalanceQueryKey({ chainId: chain.id, gasTankAddress, userAccountAddress }),
           });
         }
       },
@@ -43,39 +46,38 @@ export function StandardBridgeContent() {
 
     if (!wallet.data || !userAccountAddress || !amount || Number(amount) === 0) return;
 
-    // TODO: make source chain configurable
-    await wallet.data.switchChain({ id: holesky.id });
+    await wallet.data.switchChain({ id: chain.sourceId! });
 
     const gasLimit = BigInt(1_000_000); // TODO: better gas limit config
     const amountWei = parseEther(amount);
     const data = encodeFunctionData({
-      abi: PaymasterSystemAbi,
+      abi: GasTankAbi,
       functionName: "depositTo",
       args: [userAccountAddress],
     });
 
     await writeContractAsync({
       account: wallet.data.account,
-      chainId: holesky.id,
+      chainId: chain.sourceId,
       address: OPTIMISM_PORTAL_ADDRESS,
       abi: OptimismPortalAbi,
       functionName: "depositTransaction",
-      args: [PAYMASTER_ADDRESS, amountWei, gasLimit, false, data],
+      args: [gasTankAddress, amountWei, gasLimit, false, data],
       value: amountWei,
     });
   };
 
   return (
-    <AccountModalContent title="Bridge balance top-up">
+    <AccountModalContent>
       <div className="flex flex-col gap-2">
         <form onSubmit={handleSubmit}>
           <h3>Chain from:</h3>
           <select>
-            <option value={holesky.id}>Holesky</option>
+            <option value={chain.sourceId}>L1</option>
           </select>
           <h3>Chain to:</h3>
           <select>
-            <option value={appChainId}>Garnet</option>
+            <option value={chain.id}>L2</option>
           </select>
 
           <h3>Amount to deposit:</h3>

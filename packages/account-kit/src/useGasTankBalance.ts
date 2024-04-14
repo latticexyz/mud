@@ -40,13 +40,13 @@ export async function getGasTankBalance({
 }
 
 export function useGasTankBalance(): bigint | undefined {
-  const { chainId, gasTankAddress } = useConfig();
-  const publicClient = usePublicClient({ chainId });
+  const { chain, gasTankAddress } = useConfig();
+  const publicClient = usePublicClient({ chainId: chain.id });
 
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
 
-  const queryKey = getGasTankBalanceQueryKey({ chainId, gasTankAddress, userAccountAddress });
+  const queryKey = getGasTankBalanceQueryKey({ chainId: chain.id, gasTankAddress, userAccountAddress });
 
   const result = useQuery(
     publicClient && gasTankAddress && userAccountAddress

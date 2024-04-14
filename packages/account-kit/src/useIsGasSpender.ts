@@ -42,8 +42,8 @@ export async function isGasSpender({
 }
 
 export function useIsGasSpender(): boolean | undefined {
-  const { chainId, gasTankAddress } = useConfig();
-  const publicClient = usePublicClient({ chainId });
+  const { chain, gasTankAddress } = useConfig();
+  const publicClient = usePublicClient({ chainId: chain.id });
 
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
@@ -52,7 +52,7 @@ export function useIsGasSpender(): boolean | undefined {
   const appAccount = useAppAccount({ publicClient, appSignerAccount });
   const appAccountAddress = appAccount.data?.address;
 
-  const queryKey = isGasSpenderQueryKey({ chainId, gasTankAddress, userAccountAddress, appAccountAddress });
+  const queryKey = isGasSpenderQueryKey({ chainId: chain.id, gasTankAddress, userAccountAddress, appAccountAddress });
 
   const result = useQuery(
     publicClient && gasTankAddress && userAccountAddress && appAccountAddress

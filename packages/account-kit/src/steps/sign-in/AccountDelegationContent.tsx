@@ -16,9 +16,9 @@ import { useOnboardingSteps } from "../../useOnboardingSteps";
 
 export function AccountDelegationContent() {
   const queryClient = useQueryClient();
-  const { chainId, worldAddress } = useConfig();
-  const publicClient = usePublicClient({ chainId });
-  const { data: userAccountClient } = useWalletClient({ chainId });
+  const { chain, worldAddress } = useConfig();
+  const publicClient = usePublicClient({ chainId: chain.id });
+  const { data: userAccountClient } = useWalletClient({ chainId: chain.id });
   const appAccountClient = useAppAccountClient();
   const { resetStep } = useOnboardingSteps();
 
@@ -30,7 +30,7 @@ export function AccountDelegationContent() {
 
       console.log("registerDelegation");
       const hash = await callWithSignature({
-        chainId,
+        chainId: chain.id,
         worldAddress,
         systemId: resourceToHex({ type: "system", namespace: "", name: "Registration" }),
         callData: encodeFunctionData({
@@ -53,7 +53,7 @@ export function AccountDelegationContent() {
 
       queryClient.invalidateQueries({
         queryKey: hasDelegationQueryKey({
-          chainId,
+          chainId: chain.id,
           worldAddress,
           userAccountAddress: userAccountClient.account.address,
           appAccountAddress: appAccountClient.account.address,
@@ -64,7 +64,7 @@ export function AccountDelegationContent() {
   });
 
   return (
-    <AccountModalContent title="Delegation">
+    <AccountModalContent>
       {error ? <>Error: {String(error)}</> : null}
 
       <div className="flex gap-3 justify-end">

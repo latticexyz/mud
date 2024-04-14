@@ -2,14 +2,15 @@ import { useWalletClient } from "wagmi";
 import { getClient, configureDynamicChains, Execute, RelayChain } from "@reservoir0x/relay-sdk";
 import { AccountModalContent } from "../../AccountModalContent";
 import { useCallback, useEffect, useState } from "react";
-import PaymasterSystemAbi from "../../abis/PaymasterSystem.json";
+import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
 import { Button } from "../../ui/Button";
-import { holesky } from "viem/chains";
 import { createPublicClient, formatEther, http, parseEther } from "viem";
-import { CHAIN_FROM, CHAIN_TO, AMOUNT_STEP, PAYMASTER_ADDRESS } from "./consts";
-import { createRelayCLient } from "./utils/createRelayClient";
+import { AMOUNT_STEP } from "./constants";
+import { createRelayClient } from "./utils/createRelayClient";
+import { holesky } from "viem/chains";
+import { useConfig } from "../../MUDAccountKitProvider";
 
-createRelayCLient();
+createRelayClient();
 
 // TODO: move to utils, or check if available already
 const publicClient = createPublicClient({
@@ -19,7 +20,9 @@ const publicClient = createPublicClient({
 
 export function RelayLinkContent() {
   const wallet = useWalletClient();
-  const [chains, setChains] = useState<RelayChain[]>([]);
+  const { chain, gasTankAddress } = useConfig();
+  const [sourceChains, setSourceChains] = useState<RelayChain[]>([]);
+  const [selectedSourceChainId, setSelectedSourceChainId] = useState<number>();
   const [amount, setAmount] = useState<string>("0.01");
   const [quote, setQuote] = useState<Execute | null>(null);
   const [tx, setTx] = useState<string | null>(null);
@@ -40,18 +43,18 @@ export function RelayLinkContent() {
   // };
 
   const fetchChains = useCallback(async () => {
-    const chains = await configureDynamicChains();
-    setChains(chains);
+    const sourceChains = await configureDynamicChains();
+    setSourceChains(sourceChains);
   }, []);
 
   const fetchQuote = useCallback(async () => {
     setQuote(null);
-    if (!wallet.data || !amount) return;
+    if (!wallet.data || !amount || selectedSourceChainId == null) return;
 
     const quote = await getClient()?.methods.getBridgeQuote({
       wallet: wallet.data,
-      chainId: CHAIN_FROM, // The chain id to bridge from
-      toChainId: CHAIN_TO, // The chain id to bridge to
+      chainId: selectedSourceChainId, // The chain id to bridge from
+      toChainId: chain.id, // The chain id to bridge to
       amount: parseEther(amount).toString(), // Amount in wei to bridge
       currency: "eth", // `eth` | `usdc`
       recipient: wallet.data.account.address, // A valid address to send the funds to
@@ -61,17 +64,16 @@ export function RelayLinkContent() {
     if (quote instanceof Object) {
       setQuote(quote);
     }
-  }, [amount, wallet.data]);
+  }, [amount, wallet.data, chain, selectedSourceChainId]);
 
   const executeDeposit = useCallback(async () => {
-    if (!wallet.data || !amount) return;
+    if (!wallet.data || !amount || selectedSourceChainId == null) return;
 
-    // TODO: make source chain configurable
-    await wallet.data.switchChain({ id: holesky.id });
+    await wallet.data.switchChain({ id: selectedSourceChainId });
 
     const { request } = await publicClient.simulateContract({
-      address: PAYMASTER_ADDRESS,
-      abi: PaymasterSystemAbi,
+      address: gasTankAddress,
+      abi: GasTankAbi,
       functionName: "depositTo",
       args: [wallet.data.account.address],
       value: parseEther(amount),
@@ -80,8 +82,8 @@ export function RelayLinkContent() {
 
     const client = getClient();
     await client.actions.call({
-      chainId: CHAIN_FROM,
-      toChainId: CHAIN_TO,
+      chainId: selectedSourceChainId,
+      toChainId: chain.id,
       txs: [request],
       wallet: wallet.data,
       onProgress: (data1, data2, data3, data4, data5) => {
@@ -91,7 +93,7 @@ export function RelayLinkContent() {
         }
       },
     });
-  }, [amount, wallet.data]);
+  }, [amount, wallet.data, chain, selectedSourceChainId, gasTankAddress]);
 
   const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
@@ -107,21 +109,20 @@ export function RelayLinkContent() {
   }, [fetchChains]);
 
   return (
-    <AccountModalContent title="Relay.link balance top-up">
+    <AccountModalContent>
       <div className="flex flex-col gap-2">
         <form onSubmit={handleSubmit}>
           <h3>Chain from:</h3>
-          <select>
-            <option value={CHAIN_FROM}>Holesky</option>
-            {chains.map((chain) => (
-              <option key={chain.id} value={chain.id}>
-                {chain.name}
+          <select value={selectedSourceChainId} onChange={(e) => setSelectedSourceChainId(Number(e.target.value))}>
+            {sourceChains.map((sourceChain) => (
+              <option key={sourceChain.id} value={sourceChain.id}>
+                {sourceChain.name}
               </option>
             ))}
           </select>
           <h3>Chain to:</h3>
           <select>
-            <option value={CHAIN_TO}>Garnet</option>
+            <option value={chain.id}>Garnet</option>
           </select>
 
           <h3>Amount to deposit:</h3>
