@@ -33,17 +33,20 @@ export async function getGasTankBalance({
     },
     blockTag: "pending",
   });
+
+  console.log("record", record);
+
   return record.balance;
 }
 
 export function useGasTankBalance(): bigint | undefined {
-  const { chainId, gasTankAddress } = useConfig();
-  const publicClient = usePublicClient({ chainId });
+  const { chain, gasTankAddress } = useConfig();
+  const publicClient = usePublicClient({ chainId: chain.id });
 
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
 
-  const queryKey = getGasTankBalanceQueryKey({ chainId, gasTankAddress, userAccountAddress });
+  const queryKey = getGasTankBalanceQueryKey({ chainId: chain.id, gasTankAddress, userAccountAddress });
 
   const result = useQuery(
     publicClient && gasTankAddress && userAccountAddress
@@ -55,7 +58,7 @@ export function useGasTankBalance(): bigint | undefined {
               worldAddress: gasTankAddress,
               userAccountAddress,
             }),
-          refetchInterval: 5000,
+          refetchInterval: 2000,
         } satisfies QueryObserverOptions)
       : {
           queryKey,

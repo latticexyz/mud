@@ -14,9 +14,9 @@ import { getEntryPointDepositSlot } from "./utils/getEntryPointDepositSlot";
 
 export function useAppAccountClient(): AppAccountClient | undefined {
   const [appSignerAccount] = useAppSigner();
-  const { chainId, worldAddress, gasTankAddress } = useConfig();
+  const { chain, worldAddress, gasTankAddress } = useConfig();
   const { address: userAddress } = useAccount();
-  const publicClient = usePublicClient({ chainId });
+  const publicClient = usePublicClient({ chainId: chain.id });
   const { data: appAccount } = useAppAccount({ publicClient, appSignerAccount });
 
   return useMemo(() => {
@@ -25,16 +25,23 @@ export function useAppAccountClient(): AppAccountClient | undefined {
     if (!publicClient) return;
     if (!appAccount) return;
 
+    if (!chain.erc4337BundlerUrl) {
+      console.warn("No ERC4337 bundler URL found for chain", chain.name);
+      return;
+    }
+
+    console.log("Bundler:", chain.erc4337BundlerUrl.http);
+
     const pimlicoBundlerClient = createPimlicoBundlerClient({
       chain: publicClient.chain,
-      transport: http("http://127.0.0.1:4337"),
+      transport: http(chain.erc4337BundlerUrl.http),
       entryPoint: entryPointAddress,
     });
 
     const appAccountClient = createSmartAccountClient({
       chain: publicClient.chain,
       account: appAccount,
-      bundlerTransport: http("http://127.0.0.1:4337"),
+      bundlerTransport: http(chain.erc4337BundlerUrl.http),
       middleware: {
         sponsorUserOperation: async ({ userOperation }) => {
           const gasEstimates = await pimlicoBundlerClient.estimateUserOperationGas(
@@ -92,5 +99,5 @@ export function useAppAccountClient(): AppAccountClient | undefined {
       );
 
     return appAccountClient;
-  }, [appSignerAccount, userAddress, publicClient, appAccount, worldAddress, gasTankAddress]);
+  }, [appSignerAccount, userAddress, publicClient, appAccount, worldAddress, gasTankAddress, chain]);
 }

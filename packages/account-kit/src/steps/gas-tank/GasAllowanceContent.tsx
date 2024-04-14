@@ -7,12 +7,15 @@ import { waitForTransactionReceipt } from "wagmi/actions";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "../../ui/Button";
 import { AccountModalContent } from "../../AccountModalContent";
+import { useState } from "react";
+import { RelayLinkContent } from "./RelayLinkContent";
+import { StandardBridgeContent } from "./StandardBridgeContent";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
 
 export function GasAllowanceContent() {
   const queryClient = useQueryClient();
   const wagmiConfig = useWagmiConfig();
-  const { chainId, gasTankAddress } = useConfig();
+  const { chain, gasTankAddress } = useConfig();
   const { resetStep } = useOnboardingSteps();
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
@@ -23,7 +26,7 @@ export function GasAllowanceContent() {
         const receipt = await waitForTransactionReceipt(wagmiConfig, { hash });
         if (receipt.status === "success") {
           queryClient.invalidateQueries({
-            queryKey: getGasTankBalanceQueryKey({ chainId, gasTankAddress, userAccountAddress }),
+            queryKey: getGasTankBalanceQueryKey({ chainId: chain.id, gasTankAddress, userAccountAddress }),
           });
           resetStep();
         }
@@ -31,39 +34,69 @@ export function GasAllowanceContent() {
     },
   });
 
+  // TODO: clean up, add TS
+  const [depositMethod, setDepositMethod] = useState<string | undefined>();
+
+  if (depositMethod === "relayLink") {
+    return <RelayLinkContent />;
+  } else if (depositMethod === "standardBridge") {
+    return <StandardBridgeContent />;
+  }
+
   return (
-    <AccountModalContent title="Fund Redstone balance">
+    <AccountModalContent>
       {error ? <div>{String(error)}</div> : null}
 
-      <div className="flex flex-col gap-2">
-        {userAccount.chainId !== chainId ? (
-          <Button pending={switchChainPending} onClick={() => switchChain({ chainId })}>
-            Switch chain to deposit
-          </Button>
-        ) : (
-          <Button
-            pending={!userAccountAddress || isPending}
-            onClick={async () => {
-              if (!userAccountAddress) return;
+      {!depositMethod && (
+        <div className="flex flex-col gap-2">
+          {userAccount.chainId !== chain.id ? (
+            <Button pending={switchChainPending} onClick={() => switchChain({ chainId: chain.id })}>
+              Switch chain to deposit
+            </Button>
+          ) : (
+            <Button
+              pending={!userAccountAddress || isPending}
+              onClick={async () => {
+                if (!userAccountAddress) return;
 
-              await writeContractAsync({
-                chainId,
-                address: gasTankAddress,
-                abi: GasTankAbi,
-                functionName: "depositTo",
-                args: [userAccountAddress],
-                value: parseEther("0.01"),
-              });
+                await writeContractAsync({
+                  chainId: chain.id,
+                  address: gasTankAddress,
+                  abi: GasTankAbi,
+                  functionName: "depositTo",
+                  args: [userAccountAddress],
+                  value: parseEther("0.01"),
+                });
+              }}
+            >
+              Deposit to gas tank
+            </Button>
+          )}
+
+          {chain.sourceId != null && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setDepositMethod("standardBridge");
+              }}
+            >
+              Standard bridge
+            </Button>
+          )}
+
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setDepositMethod("relayLink");
             }}
           >
-            Deposit to gas tank
+            Relay.link
           </Button>
-        )}
-        <Button disabled>Relay.link</Button>
-        <Button variant="secondary" disabled>
-          Redstone ETH
-        </Button>
-      </div>
+          <Button variant="secondary" disabled>
+            Redstone ETH
+          </Button>
+        </div>
+      )}
     </AccountModalContent>
   );
 }

@@ -44,8 +44,8 @@ export async function hasDelegation({
 }
 
 export function useHasDelegation(): boolean | undefined {
-  const { chainId, worldAddress } = useConfig();
-  const publicClient = usePublicClient({ chainId });
+  const { chain, worldAddress } = useConfig();
+  const publicClient = usePublicClient({ chainId: chain.id });
   const userAccount = useAccount();
   const [appSignerAccount] = useAppSigner();
   const appAccount = useAppAccount({ publicClient, appSignerAccount });
@@ -54,7 +54,7 @@ export function useHasDelegation(): boolean | undefined {
   const appAccountAddress = appAccount.data?.address;
 
   const queryKey = hasDelegationQueryKey({
-    chainId,
+    chainId: chain.id,
     worldAddress,
     userAccountAddress,
     appAccountAddress,
