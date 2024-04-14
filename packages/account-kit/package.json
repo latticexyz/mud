@@ -33,8 +33,8 @@
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
     "local-bundler": "pnpx tsx cli/local-bundler.ts",
-    "test": "tsc --noEmit",
-    "test:ci": "pnpm run test"
+    "test": "tsc --noEmit && vitest",
+    "test:ci": "tsc --noEmit && vitest --run"
   },
   "dependencies": {
     "@account-abstraction/contracts": "0.7.0",

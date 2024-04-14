@@ -13,6 +13,7 @@ import { hasDelegationQueryKey } from "../../useHasDelegation";
 import { Button } from "../../ui/Button";
 import { AccountModalContent } from "../../AccountModalContent";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
+import { AccountModalTitle } from "../../AccoutModalTitle";
 
 export function AccountDelegationContent() {
   const queryClient = useQueryClient();
@@ -64,17 +65,20 @@ export function AccountDelegationContent() {
   });
 
   return (
-    <AccountModalContent>
-      {error ? <>Error: {String(error)}</> : null}
+    <>
+      <AccountModalTitle title="Sign in" />
+      <AccountModalContent>
+        {error ? <>Error: {String(error)}</> : null}
 
-      <div className="flex gap-3 justify-end">
-        <Dialog.Close asChild>
-          <Button variant="secondary">Cancel</Button>
-        </Dialog.Close>
-        <Button pending={isPending} onClick={() => mutate()}>
-          Set up delegation
-        </Button>
-      </div>
-    </AccountModalContent>
+        <div className="flex gap-3 justify-end">
+          <Dialog.Close asChild>
+            <Button variant="secondary">Cancel</Button>
+          </Dialog.Close>
+          <Button pending={isPending} onClick={() => mutate()}>
+            Set up delegation
+          </Button>
+        </div>
+      </AccountModalContent>
+    </>
   );
 }

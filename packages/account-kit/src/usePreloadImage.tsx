@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 export function usePreloadImage(url: string | undefined) {
   return useQuery({
     enabled: !!url,
+    retry: false,
     queryKey: [url],
     queryFn: () =>
       new Promise<InstanceType<typeof Image>>((resolve, reject) => {
