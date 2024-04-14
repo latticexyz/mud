@@ -43,7 +43,7 @@ export const Button = ({ pending, variant, type, className, children, disabled, 
       aria-disabled={disabled}
       {...props}
     >
-      <span className="inline-grid place-items-center overflow-hidden px-4 py-3">
+      <span className="inline-grid place-items-center overflow-hidden p-4">
         <span
           className={twMerge(
             "col-start-1 row-start-1 leading-none",
