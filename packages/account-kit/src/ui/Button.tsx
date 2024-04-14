@@ -4,18 +4,25 @@ import { twMerge } from "tailwind-merge";
 import { PendingIcon } from "../icons/PendingIcon";
 
 type ButtonClassNameOptions = {
-  variant?: "primary" | "secondary" | "tertiary";
+  variant?: "primary" | "secondary";
 };
 
 const buttonClassName = ({ variant = "primary" }: ButtonClassNameOptions = {}) =>
   twMerge(
-    "self-center font-sm font-medium px-4 py-2 border border-transparent inline-flex justify-center",
+    // eslint-disable-next-line max-len
+    "group self-center font-medium leading-none outline-none border border-transparent ring-2 ring-transparent focus:ring-orange-500 transition aria-disabled:pointer-events-none aria-busy:pointer-events-none",
     {
-      primary:
-        "text-white bg-orange-500 hover:bg-orange-400 active:bg-orange-600 disabled:bg-neutral-400 disabled:text-neutral-200",
-      secondary:
-        "text-white disabled:text-neutral-400 bg-neutral-600 hover:bg-neutral-500 active:bg-neutral-700 border-white/20",
-      tertiary: "text-white disabled:text-neutral-400 border-white/20 hover:bg-white/10 active:bg-black/10",
+      primary: twMerge(
+        "bg-neutral-900 text-white hover:bg-neutral-700 active:bg-neutral-600 aria-disabled:bg-neutral-200 aria-disabled:text-neutral-400",
+        // eslint-disable-next-line max-len
+        "dark:bg-neutral-100 dark:text-black dark:hover:bg-neutral-200 dark:active:bg-neutral-300 dark:aria-disabled:bg-neutral-400 dark:aria-disabled:text-neutral-600",
+      ),
+      secondary: twMerge(
+        // eslint-disable-next-line max-len
+        "text-black border-neutral-400 hover:bg-neutral-200 hover:border-neutral-500 active:bg-neutral-300 active:border-neutral-600 aria-disabled:text-neutral-400 aria-disabled:border-neutral-300",
+        // eslint-disable-next-line max-len
+        "dark:text-white dark:border-neutral-400 dark:hover:bg-neutral-700 dark:hover:border-neutral-300 dark:active:bg-neutral-600 dark:active:border-neutral-200 dark:aria-disabled:text-neutral-500 dark:aria-disabled:border-neutral-600",
+      ),
     }[variant],
   );
 
@@ -32,16 +39,32 @@ export const Button = ({ pending, variant, type, className, children, disabled, 
     <button
       type={type || "button"}
       className={twMerge(buttonClassName({ variant }), className)}
-      disabled={disabled || pending}
+      aria-busy={pending}
+      aria-disabled={disabled}
       {...props}
     >
-      {children}
-      {/* TODO: better pending state */}
-      {pending ? (
-        <span className="self-center ml-2 -mr-1">
+      <span className="inline-grid place-items-center overflow-hidden px-4 py-3">
+        <span
+          className={twMerge(
+            "col-start-1 row-start-1 leading-none",
+            "translate-y-0 opacity-100 transition",
+            "group-aria-busy:-translate-y-2 group-aria-busy:opacity-0",
+          )}
+        >
+          {children}
+        </span>
+
+        <span
+          aria-hidden
+          className={twMerge(
+            "col-start-1 row-start-1",
+            "translate-y-2 opacity-0 transition",
+            "group-aria-busy:translate-y-0 group-aria-busy:opacity-100",
+          )}
+        >
           <PendingIcon />
         </span>
-      ) : null}
+      </span>
     </button>
   );
 };
