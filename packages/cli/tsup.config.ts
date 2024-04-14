@@ -21,7 +21,7 @@ export default defineConfig({
   entry: ["src/index.ts", "src/mud.ts"],
   target: "esnext",
   format: ["esm"],
-  dts: false,
+  dts: !process.env.TSUP_SKIP_DTS,
   sourcemap: true,
   clean: true,
   minify: true,
