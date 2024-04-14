@@ -15,10 +15,9 @@ export function AppSignerContent() {
     <AccountModalContent title="Generate app signer">
       <div className="flex gap-3 justify-end">
         <Dialog.Close asChild>
-          <Button variant="tertiary">Cancel</Button>
+          <Button variant="secondary">Cancel</Button>
         </Dialog.Close>
         <Button
-          variant="secondary"
           pending={isPending}
           onClick={async () => {
             const signature = await signMessageAsync({

@@ -83,7 +83,7 @@ export function AccountModal({ open, onOpenChange }: Props) {
     <Modal open={shown} onOpenChange={onOpenChange}>
       <DialogContent
         className={twMerge(
-          "flex w-[48rem] min-h-[24rem] border divide-x outline-none",
+          "flex w-[48rem] min-h-[28rem] border divide-x outline-none",
           "bg-neutral-100 text-black border-neutral-300 divide-neutral-300",
           "dark:bg-neutral-800 dark:text-white dark:border-neutral-700 dark:divide-neutral-700",
         )}

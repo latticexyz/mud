@@ -37,12 +37,11 @@ export function GasAllowanceContent() {
 
       <div className="flex flex-col gap-2">
         {userAccount.chainId !== chainId ? (
-          <Button variant="secondary" pending={switchChainPending} onClick={() => switchChain({ chainId })}>
+          <Button pending={switchChainPending} onClick={() => switchChain({ chainId })}>
             Switch chain to deposit
           </Button>
         ) : (
           <Button
-            variant="secondary"
             pending={!userAccountAddress || isPending}
             onClick={async () => {
               if (!userAccountAddress) return;
@@ -60,9 +59,7 @@ export function GasAllowanceContent() {
             Deposit to gas tank
           </Button>
         )}
-        <Button variant="secondary" disabled>
-          Relay.link
-        </Button>
+        <Button disabled>Relay.link</Button>
         <Button variant="secondary" disabled>
           Redstone ETH
         </Button>

@@ -26,7 +26,7 @@ export function AccountModalSidebar() {
   return (
     <nav className="flex flex-col divide-y divide-neutral-300 dark:divide-neutral-700 border-y border-neutral-300 dark:border-neutral-700 -my-px leading-none">
       <div className="px-5 py-3 text-orange-500">
-        <Logo />
+        <Logo className="bg-neutral-100 dark:bg-transparent" />
       </div>
       {keysOf(onboardingSteps).map((key) => (
         <StepNavItem key={key} isActive={key === activeStep} onClick={() => setStep(key)}>
