@@ -21,6 +21,7 @@ export async function getRecord<table extends Table>(
 ): Promise<schemaToPrimitives<table["schema"]>> {
   const keyTuple = encodeKeyTuple(getKeySchema(table), key);
 
+  // @ts-expect-error https://github.com/wevm/viem/issues/2125
   const [staticData, encodedLengths, dynamicData] = await readContract(publicClient, {
     address: storeAddress,
     abi: IStoreReadAbi,

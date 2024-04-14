@@ -1,0 +1,19 @@
+[profile.default]
+solc = "0.8.24"
+ffi = false
+fuzz_runs = 256
+optimizer = true
+optimizer_runs = 3000
+verbosity = 2
+src = "src"
+test = "test"
+out = "out"
+allow_paths = ["../../node_modules", "../"]
+extra_output_files = [
+  "abi",
+  "evm.bytecode"
+]
+fs_permissions = [{ access = "read", path = "./"}]
+
+[profile.garnet]
+eth_rpc_url = "https://rpc.garnet.qry.live"

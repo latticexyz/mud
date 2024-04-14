@@ -23,29 +23,36 @@
       ]
     }
   },
+  "bin": {
+    "local-bundler": "./dist/bin/local-bundler.js"
+  },
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
+    "local-bundler": "pnpx tsx cli/local-bundler.ts",
     "test": "tsc --noEmit",
     "test:ci": "pnpm run test"
   },
   "dependencies": {
+    "@account-abstraction/contracts": "0.7.0",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
-    "@latticexyz/gas-tank": "link:../../../gas-tank",
+    "@latticexyz/gas-tank": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/react": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/world": "workspace:*",
     "@latticexyz/world-modules": "workspace:*",
+    "@pimlicolabs/alto": "git+https://github.com/latticexyz/alto.git#3192a9a",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@rainbow-me/rainbowkit": "^2.0.2",
     "@tanstack/react-query": "^5.28.8",
     "abitype": "1.0.0",
+    "execa": "^7.0.0",
     "permissionless": "^0.1.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
