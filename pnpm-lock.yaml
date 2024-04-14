@@ -139,8 +139,8 @@ importers:
         specifier: workspace:*
         version: link:../world-modules
       '@pimlicolabs/alto':
-        specifier: git+https://github.com/pimlicolabs/alto.git#8567ac1
-        version: github.com/pimlicolabs/alto/8567ac1
+        specifier: git+https://github.com/latticexyz/alto.git#3192a9a
+        version: github.com/latticexyz/alto/3192a9a
       '@radix-ui/react-dialog':
         specifier: ^1.0.5
         version: 1.0.5(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.2.0)(react@18.2.0)
@@ -19674,9 +19674,12 @@ packages:
       - encoding
     dev: false
 
-  github.com/pimlicolabs/alto/8567ac1:
-    resolution: {tarball: https://codeload.github.com/pimlicolabs/alto/tar.gz/8567ac1}
+  github.com/latticexyz/alto/3192a9a:
+    resolution: {tarball: https://codeload.github.com/latticexyz/alto/tar.gz/3192a9a}
     name: root
     version: 0.0.1
     engines: {node: '>=18.0.0'}
+    hasBin: true
+    prepare: true
+    requiresBuild: true
     dev: false

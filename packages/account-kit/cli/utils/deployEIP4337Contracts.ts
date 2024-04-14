@@ -2,7 +2,8 @@ import { deployLocal } from "./deployLocal";
 import { Hex, concatHex, toHex } from "viem";
 import EntryPointAbi from "@account-abstraction/contracts/artifacts/EntryPoint.json" assert { type: "json" };
 import SimpleAccountFactoryAbi from "@account-abstraction/contracts/artifacts/SimpleAccountFactory.json" assert { type: "json" };
-import PimlicoEntryPointSimulationsAbi from "./PimlicoEntryPointSimulations.json" assert { type: "json" };
+import PimlicoEntryPointSimulationsV1Abi from "./PimlicoEntryPointSimulationsV1.json" assert { type: "json" };
+import PimlicoEntryPointSimulationsV2Abi from "./PimlicoEntryPointSimulationsV2.json" assert { type: "json" };
 
 type ExpectedContract = {
   address: Hex;
@@ -17,9 +18,14 @@ export const contracts: Record<string, ExpectedContract> = {
     bytecode: EntryPointAbi.bytecode as Hex,
     salt: "0x90d8084deab30c2a37c45e8d47f49f2f7965183cb6990a98943ef94940681de3",
   },
-  PimlicoEntryPointSimulations: {
+  PimlicoEntryPointSimulationsV1: {
+    address: "0xe629eB112f891a341Cd2B66b2376ba68e7011241",
+    bytecode: PimlicoEntryPointSimulationsV1Abi.bytecode as Hex,
+    salt: toHex(0, { size: 32 }),
+  },
+  PimlicoEntryPointSimulationsV2: {
     address: "0x729da8e46e44a5191fdfb19062d91d05380c6fd5",
-    bytecode: PimlicoEntryPointSimulationsAbi.bytecode as Hex,
+    bytecode: PimlicoEntryPointSimulationsV2Abi.bytecode as Hex,
     salt: toHex(0, { size: 32 }),
   },
   SimpleAccountFactory: {

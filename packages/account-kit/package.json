@@ -46,7 +46,7 @@
     "@latticexyz/store": "workspace:*",
     "@latticexyz/world": "workspace:*",
     "@latticexyz/world-modules": "workspace:*",
-    "@pimlicolabs/alto": "git+https://github.com/pimlicolabs/alto.git#8567ac1",
+    "@pimlicolabs/alto": "git+https://github.com/latticexyz/alto.git#3192a9a",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@rainbow-me/rainbowkit": "^2.0.2",
