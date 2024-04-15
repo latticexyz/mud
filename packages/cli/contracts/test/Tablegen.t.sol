@@ -248,21 +248,22 @@ contract TablegenTest is Test, StoreMock {
   //   uint256 cost,
   //   int32 skillModifier
   // ) public {
-  //   UnitConstantsData memory _table = UnitConstantsData(
-  //     hp,
-  //     mana,
-  //     castMana,
-  //     maxMana,
-  //     meleeDamage,
-  //     rangeDamage,
-  //     critDamage,
-  //     critChance,
-  //     gateDamage,
-  //     attackRange,
-  //     cost,
-  //     skillModifier
+  //   UnitConstants.set(
+  //     unitType,
+  //     UnitConstantsData(
+  //       hp,
+  //       mana,
+  //       castMana,
+  //       maxMana,
+  //       meleeDamage,
+  //       rangeDamage,
+  //       critDamage,
+  //       critChance,
+  //       gateDamage,
+  //       attackRange,
+  //       cost,
+  //       skillModifier
+  //     )
   //   );
-
-  //   UnitConstants.set(unitType, _table);
   // }
 }
