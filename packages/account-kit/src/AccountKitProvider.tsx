@@ -25,7 +25,7 @@ const Context = createContext<Config | null>(null);
 
 export type Props = {
   config: Config;
-  children: ReactNode;
+  children?: ReactNode;
 };
 
 export function AccountKitProvider({ config, children }: Props) {

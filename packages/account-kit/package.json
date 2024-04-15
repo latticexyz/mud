@@ -11,7 +11,8 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
-    "./internal": "./dist/internal.js"
+    "./internal": "./dist/internal.js",
+    "./bundle": "./dist/bundle.js"
   },
   "typesVersions": {
     "*": {
@@ -19,6 +20,9 @@
         "./src/exports/index.ts"
       ],
       "internal": [
+        "./src/exports/internal.ts"
+      ],
+      "bundle": [
         "./src/exports/internal.ts"
       ]
     }
