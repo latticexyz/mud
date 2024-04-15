@@ -3,9 +3,11 @@ import { AccountModalContent } from "../../AccountModalContent";
 import { AccountModalTitle } from "../../AccoutModalTitle";
 import { AppInfo } from "./AppInfo";
 import { useSignRegisterDelegation } from "./useSignRegisterDelegation";
+import { useOnboardingSteps } from "../../useOnboardingSteps";
 
 export function AccountDelegationContent() {
-  const { signRegisterDelegation, isPending, error } = useSignRegisterDelegation();
+  const { signRegisterDelegationAsync, isPending, error } = useSignRegisterDelegation();
+  const { resetStep } = useOnboardingSteps();
 
   return (
     <>
@@ -36,7 +38,14 @@ export function AccountDelegationContent() {
             for this app, and creating a signing key for a frictionless experience.
           </p>
 
-          <Button className="self-stretch" pending={isPending} onClick={() => signRegisterDelegation()}>
+          <Button
+            className="self-stretch"
+            pending={isPending}
+            onClick={async () => {
+              await signRegisterDelegationAsync();
+              resetStep();
+            }}
+          >
             Sign in
           </Button>
         </div>

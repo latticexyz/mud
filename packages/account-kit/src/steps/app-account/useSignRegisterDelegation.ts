@@ -63,6 +63,7 @@ export function useSignRegisterDelegation() {
     () => ({
       ...result,
       signRegisterDelegation: result.mutate,
+      signRegisterDelegationAsync: result.mutateAsync,
       registerDelegationSignature,
     }),
     [registerDelegationSignature, result],
