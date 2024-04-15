@@ -30,7 +30,7 @@ const WORLD_FACTORY = [
 async function verifyContract(foundryProfile: string | undefined, deployerAddress: Hex, name: string, bytecode: Hex) {
   const system = getCreate2Address({ from: deployerAddress, bytecode, salt });
 
-  forge(["verify-contract", system, name, "--verifier", "sourcify"], {
+  await forge(["verify-contract", system, name, "--verifier", "sourcify"], {
     profile: foundryProfile,
   });
 }
@@ -69,6 +69,10 @@ in your contracts directory to use the default anvil private key.`,
     })),
   ];
 
-  contracts.map(({ label, bytecode }) => verifyContract(foundryProfile, deployerAddress, label, bytecode));
-  WORLD_FACTORY.map(({ name, bytecode }) => verifyContract(foundryProfile, deployerAddress, name, bytecode));
+  await Promise.all(
+    contracts.map(({ label, bytecode }) => verifyContract(foundryProfile, deployerAddress, label, bytecode)),
+  );
+  await Promise.all(
+    WORLD_FACTORY.map(({ name, bytecode }) => verifyContract(foundryProfile, deployerAddress, name, bytecode)),
+  );
 }
