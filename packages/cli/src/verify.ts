@@ -23,12 +23,10 @@ export async function verify({
   const systems = await getSystems({ client, worldDeploy });
 
   await Promise.all(
-    systems
-      .filter((system) => system.name === "increment")
-      .map((system) =>
-        forge(["verify-contract", system.address, "IncrementSystem", "--verifier", "sourcify"], {
-          profile: foundryProfile,
-        }),
-      ),
+    systems.map((system) =>
+      forge(["verify-contract", system.address, system.name, "--verifier", "sourcify"], {
+        profile: foundryProfile,
+      }),
+    ),
   );
 }
