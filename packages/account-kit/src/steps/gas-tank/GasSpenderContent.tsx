@@ -1,7 +1,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useAppAccountClient } from "../../useAppAccountClient";
 import { usePublicClient, useWalletClient } from "wagmi";
-import { useConfig } from "../../MUDAccountKitProvider";
+import { useConfig } from "../../AccountKitProvider";
 import { encodeFunctionData } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
 import { resourceToHex } from "@latticexyz/common";
@@ -10,7 +10,7 @@ import { callWithSignature } from "../../utils/callWithSignature";
 import { isGasSpenderQueryKey } from "../../useIsGasSpender";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "../../ui/Button";
-import { AccountModalContent } from "../../AccountModalContent";
+import { AccountModalSection } from "../../AccountModalSection";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
 
 export function GasSpenderContent() {
@@ -50,6 +50,8 @@ export function GasSpenderContent() {
         throw new Error("Failed to register spender.");
       }
 
+      // TODO: registerDelegation
+
       // invalidating this cache will cause the balance to be fetched again
       // but this could fail for load balanced RPCs that aren't fully in sync
       // where the one we got the receipt one is ahead of the one that will
@@ -68,7 +70,7 @@ export function GasSpenderContent() {
   });
 
   return (
-    <AccountModalContent>
+    <AccountModalSection>
       {error ? <>Error: {String(error)}</> : null}
 
       <div className="flex gap-3 justify-end">
@@ -79,6 +81,6 @@ export function GasSpenderContent() {
           Set up spender
         </Button>
       </div>
-    </AccountModalContent>
+    </AccountModalSection>
   );
 }

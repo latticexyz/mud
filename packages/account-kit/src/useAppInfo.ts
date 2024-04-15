@@ -1,4 +1,4 @@
-import { useConfig } from "./MUDAccountKitProvider";
+import { useConfig } from "./AccountKitProvider";
 
 export function useAppInfo() {
   const { appInfo } = useConfig();

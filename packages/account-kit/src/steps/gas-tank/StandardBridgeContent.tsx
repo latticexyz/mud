@@ -3,9 +3,9 @@ import { encodeFunctionData, parseEther } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
 import { useWriteContract, useConfig as useWagmiConfig, useAccount, useWalletClient } from "wagmi";
 import { waitForTransactionReceipt } from "wagmi/actions";
-import { AccountModalContent } from "../../AccountModalContent";
+import { AccountModalSection } from "../../AccountModalSection";
 import { Button } from "../../ui/Button";
-import { useConfig } from "../../MUDAccountKitProvider";
+import { useConfig } from "../../AccountKitProvider";
 import { getGasTankBalanceQueryKey } from "../../useGasTankBalance";
 import OptimismPortalAbi from "../../abis/OptimismPortal.json";
 import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
@@ -68,7 +68,7 @@ export function StandardBridgeContent() {
   };
 
   return (
-    <AccountModalContent>
+    <AccountModalSection>
       <div className="flex flex-col gap-2">
         <form onSubmit={handleSubmit}>
           <h3>Chain from:</h3>
@@ -103,6 +103,6 @@ export function StandardBridgeContent() {
           )}
         </form>
       </div>
-    </AccountModalContent>
+    </AccountModalSection>
   );
 }

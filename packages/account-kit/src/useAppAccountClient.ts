@@ -5,7 +5,7 @@ import { callFrom } from "@latticexyz/world/internal";
 import { createSmartAccountClient } from "permissionless";
 import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
 import { call, getTransactionCount } from "viem/actions";
-import { useConfig } from "./MUDAccountKitProvider";
+import { useConfig } from "./AccountKitProvider";
 import { useAppSigner } from "./useAppSigner";
 import { useAppAccount } from "./useAppAccount";
 import { AppAccountClient, entryPointAddress } from "./common";

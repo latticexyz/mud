@@ -1,5 +1,5 @@
 import { useAccount, usePublicClient } from "wagmi";
-import { useConfig } from "./MUDAccountKitProvider";
+import { useConfig } from "./AccountKitProvider";
 import { useQuery } from "@tanstack/react-query";
 import { useAppAccount } from "./useAppAccount";
 import { useAppSigner } from "./useAppSigner";

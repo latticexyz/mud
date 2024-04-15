@@ -1,15 +1,48 @@
-import { ReactNode } from "react";
+import { useMemo } from "react";
+import { assertExhaustive } from "@latticexyz/common/utils";
+import { GasAllowanceContent } from "./steps/gas-tank/GasAllowanceContent";
+import { DialogContent } from "@radix-ui/react-dialog";
+import { AccountModalSidebar } from "./AccountModalSidebar";
+import { useOnboardingSteps } from "./useOnboardingSteps";
+import { GasSpenderContent } from "./steps/gas-tank/GasSpenderContent";
 import { twMerge } from "tailwind-merge";
+import { WalletStep } from "./steps/wallet/WalletStep";
+import { AppAccountStep } from "./steps/app-account/AppAccountStep";
 
-export type Props = {
-  className?: string;
-  children: ReactNode;
-};
+export function AccountModalContent() {
+  // TODO: each step should have an `onComplete` that we can use to auto-advance if you've selected a step already
+  const { step } = useOnboardingSteps();
+  const content = useMemo(() => {
+    switch (step) {
+      case "wallet":
+        return <WalletStep />;
+      case "app-account":
+        return <AppAccountStep />;
+      case "gas-tank":
+        // TODO: combine this better
+        return (
+          <>
+            <GasAllowanceContent />
+            <GasSpenderContent />
+          </>
+        );
+      default:
+        return assertExhaustive(step);
+    }
+  }, [step]);
 
-export function AccountModalContent({ className, children }: Props) {
   return (
-    <div className={twMerge("flex", className)}>
-      <div className={twMerge("flex-grow flex flex-col", "animate-in fade-in slide-in-from-left-2")}>{children}</div>
-    </div>
+    <DialogContent
+      className={twMerge(
+        "flex w-[44rem] min-h-[28rem] border divide-x outline-none",
+        "bg-neutral-100 text-black border-neutral-300 divide-neutral-300",
+        "dark:bg-neutral-800 dark:text-white dark:border-neutral-700 dark:divide-neutral-700",
+      )}
+    >
+      <div className="flex-shrink-0 w-[16rem] bg-neutral-200 dark:bg-neutral-900">
+        <AccountModalSidebar />
+      </div>
+      <div className="flex-grow flex flex-col divide-y divide-neutral-300 dark:divide-neutral-700">{content}</div>
+    </DialogContent>
   );
 }

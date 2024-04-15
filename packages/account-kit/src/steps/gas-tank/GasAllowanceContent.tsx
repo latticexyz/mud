@@ -1,12 +1,12 @@
 import { parseEther } from "viem";
 import { useAccount, useSwitchChain, useConfig as useWagmiConfig, useWriteContract } from "wagmi";
-import { useConfig } from "../../MUDAccountKitProvider";
+import { useConfig } from "../../AccountKitProvider";
 import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
 import { getGasTankBalanceQueryKey } from "../../useGasTankBalance";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "../../ui/Button";
-import { AccountModalContent } from "../../AccountModalContent";
+import { AccountModalSection } from "../../AccountModalSection";
 import { useState } from "react";
 import { RelayLinkContent } from "./RelayLinkContent";
 import { StandardBridgeContent } from "./StandardBridgeContent";
@@ -44,7 +44,7 @@ export function GasAllowanceContent() {
   }
 
   return (
-    <AccountModalContent>
+    <AccountModalSection>
       {error ? <div>{String(error)}</div> : null}
 
       {!depositMethod && (
@@ -97,6 +97,6 @@ export function GasAllowanceContent() {
           </Button>
         </div>
       )}
-    </AccountModalContent>
+    </AccountModalSection>
   );
 }

@@ -1,6 +1,7 @@
 import { createContext, useContext, type ReactNode } from "react";
 import { Address } from "viem";
 import { MUDChain } from "@latticexyz/common/chains";
+import { AccountModal } from "./AccountModal";
 
 export type Config = {
   readonly chain: MUDChain;
@@ -27,14 +28,19 @@ export type Props = {
   children: ReactNode;
 };
 
-export function MUDAccountKitProvider({ config, children }: Props) {
+export function AccountKitProvider({ config, children }: Props) {
   const currentConfig = useContext(Context);
-  if (currentConfig) throw new Error("`MUDAccountKitProvider` can only be used once.");
-  return <Context.Provider value={config}>{children}</Context.Provider>;
+  if (currentConfig) throw new Error("`AccountKitProvider` can only be used once.");
+  return (
+    <Context.Provider value={config}>
+      {children}
+      <AccountModal />
+    </Context.Provider>
+  );
 }
 
 export function useConfig(): Config {
   const config = useContext(Context);
-  if (!config) throw new Error("`useConfig` be used within a `MUDAccountKitProvider`.");
+  if (!config) throw new Error("`useConfig` be used within a `AccountKitProvider`.");
   return config;
 }

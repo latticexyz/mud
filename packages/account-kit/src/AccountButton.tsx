@@ -1,5 +1,4 @@
 import { useAccountModal } from "./useAccountModal";
-import { AccountModal } from "./AccountModal";
 import { useAccountRequirements } from "./useAccountRequirements";
 import { Shadow } from "./ui/Shadow";
 import { Logo } from "./icons/Logo";
@@ -33,55 +32,52 @@ const secondaryInteractiveClassNames = twMerge(
 
 export function AccountButton() {
   const { requirement } = useAccountRequirements();
-  const { openAccountModal, toggleAccountModal, accountModalOpen } = useAccountModal();
+  const { openAccountModal, accountModalOpen } = useAccountModal();
   const { address } = useAccount();
   const [menuOpen, setMenuOpen] = useState(false);
   const { disconnect, isPending: disconnectPending } = useDisconnect();
 
   if (requirement != null) {
     return (
-      <>
-        <Shadow>
-          <button
-            type="button"
-            className={twMerge(
-              containerClassNames,
-              "group",
-              "items-center justify-center gap-2.5 p-3",
-              "bg-orange-500 text-white font-medium",
-              "hover:bg-orange-400",
-              "active:bg-orange-600",
-              "aria-busy:saturate-50",
-            )}
-            aria-busy={accountModalOpen}
-            onClick={openAccountModal}
-          >
-            <span className="pointer-events-none inline-grid place-items-center -ml-3">
-              <span
-                className={twMerge(
-                  "col-start-1 row-start-1 leading-none",
-                  "scale-100 opacity-100 transition duration-300",
-                  "group-aria-busy:scale-125 group-aria-busy:opacity-0",
-                )}
-              >
-                <Logo />
-              </span>
-              <span
-                aria-hidden
-                className={twMerge(
-                  "col-start-1 row-start-1",
-                  "scale-50 opacity-0 transition duration-300 delay-50",
-                  "group-aria-busy:scale-100 group-aria-busy:opacity-100",
-                )}
-              >
-                <PendingIcon />
-              </span>
+      <Shadow>
+        <button
+          type="button"
+          className={twMerge(
+            containerClassNames,
+            "group",
+            "items-center justify-center gap-2.5 p-3",
+            "bg-orange-500 text-white font-medium",
+            "hover:bg-orange-400",
+            "active:bg-orange-600",
+            "aria-busy:saturate-50",
+          )}
+          aria-busy={accountModalOpen}
+          onClick={openAccountModal}
+        >
+          <span className="pointer-events-none inline-grid place-items-center -ml-3">
+            <span
+              className={twMerge(
+                "col-start-1 row-start-1 leading-none",
+                "scale-100 opacity-100 transition duration-300",
+                "group-aria-busy:scale-125 group-aria-busy:opacity-0",
+              )}
+            >
+              <Logo />
             </span>
-            <span className="font-medium">Sign in</span>
-          </button>
-        </Shadow>
-        <AccountModal open={accountModalOpen} onOpenChange={toggleAccountModal} />
-      </>
+            <span
+              aria-hidden
+              className={twMerge(
+                "col-start-1 row-start-1",
+                "scale-50 opacity-0 transition duration-300 delay-50",
+                "group-aria-busy:scale-100 group-aria-busy:opacity-100",
+              )}
+            >
+              <PendingIcon />
+            </span>
+          </span>
+          <span className="font-medium">Sign in</span>
+        </button>
+      </Shadow>
     );
   }
 

@@ -1,5 +1,5 @@
 import { useAccount, usePublicClient } from "wagmi";
-import { useConfig } from "./MUDAccountKitProvider";
+import { useConfig } from "./AccountKitProvider";
 import { QueryObserverOptions, useQuery } from "@tanstack/react-query";
 import { getRecord } from "./utils/getRecord";
 import { Address } from "abitype";

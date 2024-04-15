@@ -2,7 +2,7 @@ import { keccak256 } from "viem";
 import { useSignMessage } from "wagmi";
 import { useAppSigner } from "../../useAppSigner";
 import { Button } from "../../ui/Button";
-import { AccountModalContent } from "../../AccountModalContent";
+import { AccountModalSection } from "../../AccountModalSection";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
 import { AccountModalTitle } from "../../AccoutModalTitle";
 import { usePreloadImage } from "../../usePreloadImage";
@@ -23,10 +23,10 @@ export function AppSignerContent() {
   return (
     <>
       <AccountModalTitle title="Create account" />
-      <AccountModalContent className="flex-grow bg-white dark:bg-neutral-700">
+      <AccountModalSection className="flex-grow bg-white dark:bg-neutral-700">
         {hasAppImage ? <img src={appImage} className="w-full" /> : <AppInfo />}
-      </AccountModalContent>
-      <AccountModalContent>
+      </AccountModalSection>
+      <AccountModalSection>
         <div className="flex flex-col gap-6 px-5 py-6">
           {/* TODO: rework this copy */}
           <p>
@@ -50,7 +50,7 @@ export function AppSignerContent() {
             Continue
           </Button>
         </div>
-      </AccountModalContent>
+      </AccountModalSection>
     </>
   );
 }

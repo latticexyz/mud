@@ -1,24 +1,16 @@
-import { useEffect, useMemo } from "react";
-import { assertExhaustive } from "@latticexyz/common/utils";
-import { GasAllowanceContent } from "./steps/gas-tank/GasAllowanceContent";
-import { Modal, Props as ModalProps } from "./ui/Modal";
-import { DialogContent } from "@radix-ui/react-dialog";
-import { AccountModalSidebar } from "./AccountModalSidebar";
+import { useEffect } from "react";
+import { Modal } from "./ui/Modal";
 import { useAccount } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { usePrevious } from "./utils/usePrevious";
-import { useOnboardingSteps } from "./useOnboardingSteps";
-import { GasSpenderContent } from "./steps/gas-tank/GasSpenderContent";
-import { twMerge } from "tailwind-merge";
-import { WalletStep } from "./steps/wallet/WalletStep";
-import { AppAccountStep } from "./steps/app-account/AppAccountStep";
+import { AccountModalContent } from "./AccountModalContent";
+import { useAccountModal } from "./useAccountModal";
 
-export type Props = Pick<ModalProps, "open" | "onOpenChange">;
-
-export function AccountModal({ open, onOpenChange }: Props) {
+export function AccountModal() {
   const { status } = useAccount();
+  const { accountModalOpen, toggleAccountModal } = useAccountModal();
   const { openConnectModal, connectModalOpen } = useConnectModal();
-  const shown = open && status === "connected";
+  const shown = accountModalOpen && status === "connected";
 
   const previousOpen = usePrevious(open);
   const previousConnectModalOpen = usePrevious(connectModalOpen);
@@ -30,7 +22,7 @@ export function AccountModal({ open, onOpenChange }: Props) {
   // TODO: remove this once we can inline connect wallet UI into our own modal
   useEffect(() => {
     // account modal is open and account is not connected
-    if (open && status !== "connected" && !connectModalOpen) {
+    if (accountModalOpen && status !== "connected" && !connectModalOpen) {
       // opening account modal should open connect modal
       if (!previousOpen) {
         console.debug("opening connect modal");
@@ -44,55 +36,23 @@ export function AccountModal({ open, onOpenChange }: Props) {
       // closing connect modal should close account modal
       else if (previousConnectModalOpen) {
         console.debug("connect modal closed, closing account modal");
-        onOpenChange?.(false);
+        toggleAccountModal(false);
       }
     }
   }, [
+    accountModalOpen,
     connectModalOpen,
-    onOpenChange,
-    open,
     openConnectModal,
     previousConnectModalOpen,
     previousOpen,
     previousStatus,
     status,
+    toggleAccountModal,
   ]);
 
-  // TODO: each step should have an `onComplete` that we can use to auto-advance if you've selected a step already
-  const { step } = useOnboardingSteps();
-  const content = useMemo(() => {
-    switch (step) {
-      case "wallet":
-        return <WalletStep />;
-      case "app-account":
-        return <AppAccountStep />;
-      case "gas-tank":
-        // TODO: combine this better
-        return (
-          <>
-            <GasAllowanceContent />
-            <GasSpenderContent />
-          </>
-        );
-      default:
-        return assertExhaustive(step);
-    }
-  }, [step]);
-
   return (
-    <Modal open={shown} onOpenChange={onOpenChange}>
-      <DialogContent
-        className={twMerge(
-          "flex w-[44rem] min-h-[28rem] border divide-x outline-none",
-          "bg-neutral-100 text-black border-neutral-300 divide-neutral-300",
-          "dark:bg-neutral-800 dark:text-white dark:border-neutral-700 dark:divide-neutral-700",
-        )}
-      >
-        <div className="flex-shrink-0 w-[16rem] bg-neutral-200 dark:bg-neutral-900">
-          <AccountModalSidebar />
-        </div>
-        <div className="flex-grow flex flex-col divide-y divide-neutral-300 dark:divide-neutral-700">{content}</div>
-      </DialogContent>
+    <Modal open={shown} onOpenChange={toggleAccountModal}>
+      {shown ? <AccountModalContent /> : null}
     </Modal>
   );
 }

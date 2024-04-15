@@ -1,4 +1,4 @@
-import { AccountModalContent } from "../../AccountModalContent";
+import { AccountModalSection } from "../../AccountModalSection";
 import { AccountModalTitle } from "../../AccoutModalTitle";
 
 export function WalletStep() {
@@ -6,7 +6,7 @@ export function WalletStep() {
   return (
     <>
       <AccountModalTitle title="Connect wallet" />
-      <AccountModalContent>Did you do it?</AccountModalContent>
+      <AccountModalSection>Did you do it?</AccountModalSection>
     </>
   );
 }

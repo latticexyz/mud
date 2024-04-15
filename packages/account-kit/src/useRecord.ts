@@ -3,7 +3,7 @@ import { GetRecordOptions, getRecord } from "./utils/getRecord";
 import { Table } from "@latticexyz/config";
 import { schemaToPrimitives } from "./utils/schemaToPrimitives";
 import { usePublicClient } from "wagmi";
-import { useConfig } from "./MUDAccountKitProvider";
+import { useConfig } from "./AccountKitProvider";
 
 export type UseRecordOptions<table extends Table> = GetRecordOptions<table> & {
   query: Omit<UseQueryOptions<typeof getRecord<table>>, "queryKey" | "queryFn">;

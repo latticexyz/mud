@@ -1,5 +1,5 @@
 import { Button } from "../../ui/Button";
-import { AccountModalContent } from "../../AccountModalContent";
+import { AccountModalSection } from "../../AccountModalSection";
 import { AccountModalTitle } from "../../AccoutModalTitle";
 import { AppInfo } from "./AppInfo";
 import { useSignRegisterDelegation } from "./useSignRegisterDelegation";
@@ -12,10 +12,10 @@ export function AccountDelegationContent() {
   return (
     <>
       <AccountModalTitle title="Sign in" />
-      <AccountModalContent className="flex-grow bg-white dark:bg-neutral-700">
+      <AccountModalSection className="flex-grow bg-white dark:bg-neutral-700">
         <AppInfo />
-      </AccountModalContent>
-      <AccountModalContent>
+      </AccountModalSection>
+      <AccountModalSection>
         <div className="flex flex-col gap-6 px-5 py-6">
           {/* TODO: better error display */}
           {error ? <p className="whitespace-break-spaces break-all">Error: {String(error)}</p> : null}
@@ -49,7 +49,7 @@ export function AccountDelegationContent() {
             Sign in
           </Button>
         </div>
-      </AccountModalContent>
+      </AccountModalSection>
     </>
   );
 }

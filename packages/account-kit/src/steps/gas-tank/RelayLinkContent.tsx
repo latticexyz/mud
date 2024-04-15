@@ -1,6 +1,6 @@
 import { useWalletClient } from "wagmi";
 import { getClient, configureDynamicChains, Execute, RelayChain } from "@reservoir0x/relay-sdk";
-import { AccountModalContent } from "../../AccountModalContent";
+import { AccountModalSection } from "../../AccountModalSection";
 import { useCallback, useEffect, useState } from "react";
 import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
 import { Button } from "../../ui/Button";
@@ -8,7 +8,7 @@ import { createPublicClient, formatEther, http, parseEther } from "viem";
 import { AMOUNT_STEP } from "./constants";
 import { createRelayClient } from "./utils/createRelayClient";
 import { holesky } from "viem/chains";
-import { useConfig } from "../../MUDAccountKitProvider";
+import { useConfig } from "../../AccountKitProvider";
 
 createRelayClient();
 
@@ -109,7 +109,7 @@ export function RelayLinkContent() {
   }, [fetchChains]);
 
   return (
-    <AccountModalContent>
+    <AccountModalSection>
       <div className="flex flex-col gap-2">
         <form onSubmit={handleSubmit}>
           <h3>Chain from:</h3>
@@ -158,6 +158,6 @@ export function RelayLinkContent() {
           )}
         </form>
       </div>
-    </AccountModalContent>
+    </AccountModalSection>
   );
 }
