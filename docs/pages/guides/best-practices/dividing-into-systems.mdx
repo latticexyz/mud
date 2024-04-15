@@ -1,0 +1,49 @@
+import { Callout } from "nextra/components";
+
+# Dividing Code into `System`s
+
+## Good reasons
+
+There are several reasons to divide the code in a namespace into multiple `System`s.
+
+### Access Control
+
+Each `System` is either publicly accessible (can be called by anybody) or accessible only from authorized addresses.
+These addresses are can be:
+
+- [Externally owned accounts](https://ethereum.org/en/developers/docs/accounts/#types-of-account)
+- Contracts outside of the `World`
+- `System`s that are _not_ in the root namespace
+
+If access to a function (or multiple functions), needs to be restricted to specific addresses, they belong in a separate `System` than the rest of the namespace.
+
+<Callout type="warning" emoji="⚠️">
+  Access to a private `System` in a namespace is [granted to the namespace owner, as well as all `System`s within that
+  namespace](/world/namespaces-access-control#modifying-access-control). If you need to disallow access from a separate
+  `System`, put the private `System` in a different namespace.
+</Callout>
+
+### Modularity
+
+It is easier to write and maintain code that is [modular](https://en.wikipedia.org/wiki/Modularity).
+If two parts are logically distinct, with a limited interface between them, it makes sense to make them different `System`s.
+Such a division can simplify QA and upgrades.
+
+### Access to the root namespace
+
+If you need any code to run in the root namespace, that code has to be in a root namespace `System`.
+However, you want to minimize the code in the root namespace, [because it is privileged](/guides/best-practices/system-best-practices#avoid-the-root-namespace-if-possible).
+So the code that has to run the root namespace should be a separate `System` from the code that can be in a different namespace.
+
+## Bad reasons
+
+There are problems that could be solved by dividing your logic into multiple `System`s, but that can be better handled by other solutions.
+
+### Shared logic
+
+If some logic is shared between two different `System`s, it is tempting to write a third `System` that implements it and call it from both of them.
+However, a simpler solution is to use a [Solidity library](https://solidity-by-example.org/library/) to implement the shared logic.
+
+### Contract size limit
+
+Ethereum contracts are limited in size, but you can always use [a public library](/guides/best-practices/system-best-practices#use-libraries-to-bypass-the-contract-size-limit) to work around that limit.
