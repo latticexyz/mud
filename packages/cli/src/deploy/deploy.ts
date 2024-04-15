@@ -15,7 +15,6 @@ import { resourceToLabel } from "@latticexyz/common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";
 import { ensureWorldFactory } from "./ensureWorldFactory";
-import { ensureWorldProxyFactory } from "./ensureWorldProxyFactory";
 
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
@@ -50,9 +49,7 @@ export async function deploy<configInput extends ConfigInput>({
 
   const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
 
-  deployAsProxy
-    ? await ensureWorldProxyFactory(client, deployerAddress)
-    : await ensureWorldFactory(client, deployerAddress);
+  await ensureWorldFactory(client, deployerAddress, deployAsProxy);
 
   // deploy all dependent contracts, because system registration, module install, etc. all expect these contracts to be callable.
   await ensureContractsDeployed({
