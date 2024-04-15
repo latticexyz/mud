@@ -61,7 +61,7 @@ in your contracts directory to use the default anvil private key.`,
     })),
     ...config.systems.map((system) => ({
       bytecode: system.prepareDeploy(deployerAddress, config.libraries).bytecode,
-      label: `${resourceToLabel(system)} system`,
+      label: resourceToLabel(system),
     })),
     ...config.modules.map((mod) => ({
       bytecode: mod.prepareDeploy(deployerAddress, config.libraries).bytecode,
