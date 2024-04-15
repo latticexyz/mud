@@ -4,22 +4,21 @@ import { useStore } from "zustand";
 import { useCallback, useMemo } from "react";
 import { keysOf } from "./utils/keysOf";
 
-// TODO: rename steps dirs to match below
 export const onboardingSteps = {
-  "app-signer": {
-    label: "Set up account",
+  wallet: {
+    label: "Connect wallet",
+    requires: [],
+    satisfies: ["connectedWallet"],
+  },
+  "app-account": {
+    label: "Sign in to app",
     requires: ["connectedWallet"],
-    satisfies: ["appSigner"],
+    satisfies: ["appSigner", "accountDelegation"],
   },
   "gas-tank": {
-    label: "Deposit funds",
-    requires: ["connectedWallet", "appSigner"],
+    label: "Fund gas tank",
+    requires: ["connectedWallet", "appSigner", "accountDelegation"],
     satisfies: ["gasAllowance", "gasSpender"],
-  },
-  "account-delegation": {
-    label: "Sign in to account",
-    requires: ["connectedWallet", "appSigner", "gasAllowance", "gasSpender"],
-    satisfies: ["accountDelegation"],
   },
 } as const satisfies {
   readonly [key: string]: {

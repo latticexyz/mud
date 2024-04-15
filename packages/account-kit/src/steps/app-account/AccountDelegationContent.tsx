@@ -13,7 +13,7 @@ import { Button } from "../../ui/Button";
 import { AccountModalContent } from "../../AccountModalContent";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
 import { AccountModalTitle } from "../../AccoutModalTitle";
-import { AppInfo } from "../set-up/AppInfo";
+import { AppInfo } from "./AppInfo";
 
 export function AccountDelegationContent() {
   const queryClient = useQueryClient();
