@@ -1,4 +1,3 @@
-import * as Dialog from "@radix-ui/react-dialog";
 import { useAppAccountClient } from "../../useAppAccountClient";
 import { usePublicClient, useWalletClient } from "wagmi";
 import { useConfig } from "../../MUDAccountKitProvider";
@@ -14,6 +13,7 @@ import { Button } from "../../ui/Button";
 import { AccountModalContent } from "../../AccountModalContent";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
 import { AccountModalTitle } from "../../AccoutModalTitle";
+import { AppInfo } from "../set-up/AppInfo";
 
 export function AccountDelegationContent() {
   const queryClient = useQueryClient();
@@ -67,15 +67,34 @@ export function AccountDelegationContent() {
   return (
     <>
       <AccountModalTitle title="Sign in" />
+      <AccountModalContent className="flex-grow bg-white dark:bg-neutral-700">
+        <AppInfo />
+      </AccountModalContent>
       <AccountModalContent>
-        {error ? <>Error: {String(error)}</> : null}
+        <div className="flex flex-col gap-6 px-5 py-6">
+          {/* TODO: better error display */}
+          {error ? <p className="whitespace-break-spaces break-all">Error: {String(error)}</p> : null}
 
-        <div className="flex gap-3 justify-end">
-          <Dialog.Close asChild>
-            <Button variant="secondary">Cancel</Button>
-          </Dialog.Close>
-          <Button pending={isPending} onClick={() => mutate()}>
-            Set up delegation
+          <p>
+            By signing in, you are agreeing to the{" "}
+            <a
+              href="#"
+              className="font-medium underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-500 hover:decoration-orange-500"
+            >
+              Terms of Use
+            </a>{" "}
+            and{" "}
+            <a
+              href="#"
+              className="font-medium underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-500 hover:decoration-orange-500"
+            >
+              Privacy Policy
+            </a>{" "}
+            for this app, and creating a signing key for a frictionless experience.
+          </p>
+
+          <Button className="self-stretch" pending={isPending} onClick={() => mutate()}>
+            Sign in
           </Button>
         </div>
       </AccountModalContent>
