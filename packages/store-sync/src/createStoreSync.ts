@@ -26,6 +26,7 @@ import {
   combineLatest,
   scan,
   identity,
+  mergeMap,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
@@ -197,7 +198,9 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
       startBlock = range.startBlock;
       endBlock = range.endBlock;
     }),
-    concatMap((range) => {
+    // We use `map` instead of `concatMap` here to send the fetch request immediately when a new block range appears,
+    // instead of sending the next request only when the previous one completed.
+    map((range) => {
       const storedBlocks = fetchAndStoreLogs({
         publicClient,
         address,
@@ -213,6 +216,8 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
 
       return from(storedBlocks);
     }),
+    // `concatMap` turns the stream of promises into their awaited values
+    concatMap(identity),
     tap(({ blockNumber, logs }) => {
       debug("stored", logs.length, "logs for block", blockNumber);
       lastBlockNumberProcessed = blockNumber;
@@ -263,7 +268,9 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
     // This currently blocks for async call on each block processed
     // We could potentially speed this up a tiny bit by racing to see if 1) tx exists in processed block or 2) fetch tx receipt for latest block processed
     const hasTransaction$ = recentBlocks$.pipe(
-      concatMap(async (blocks) => {
+      // We use `mergeMap` instead of `concatMap` here to send the fetch request immediately when a new block range appears,
+      // instead of sending the next request only when the previous one completed.
+      mergeMap(async (blocks) => {
         const txs = blocks.flatMap((block) => block.logs.map((op) => op.transactionHash).filter(isDefined));
         if (txs.includes(tx)) return true;
 
