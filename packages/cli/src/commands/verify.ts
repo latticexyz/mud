@@ -1,6 +1,11 @@
 import type { CommandModule } from "yargs";
 import { verify } from "../verify";
 import { logError } from "../utils/errors";
+import { loadConfig } from "@latticexyz/config/node";
+import { WorldConfig } from "@latticexyz/world/internal";
+import { worldToV1 } from "@latticexyz/world/config/v2";
+import { resolveConfig } from "../deploy/resolveConfig";
+import { getOutDirectory, getSrcDirectory } from "@latticexyz/common/foundry";
 
 type Options = {
   profile?: string;
@@ -14,13 +19,22 @@ const commandModule: CommandModule<Options, Options> = {
   builder(yargs) {
     return yargs.options({
       profile: { type: "string", desc: "The foundry profile to use" },
+      worldAddress: { type: "string", desc: "Deploy to an existing World at the given address" },
     });
   },
 
   async handler({ profile }) {
+    const configV2 = (await loadConfig(undefined)) as WorldConfig;
+    const config = worldToV1(configV2);
+
+    const srcDir = await getSrcDirectory(profile);
+    const outDir = await getOutDirectory(profile);
+
+    const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
+
     // Wrap in try/catch, because yargs seems to swallow errors
     try {
-      await verify({ foundryProfile: profile });
+      await verify({ config: resolvedConfig, foundryProfile: profile });
     } catch (error) {
       logError(error);
       process.exit(1);
