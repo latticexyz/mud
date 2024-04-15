@@ -55,8 +55,8 @@ export async function ensureWorldFactory(
 
   const initModule = getCreate2Address({ from: deployerAddress, bytecode: initModuleBytecode, salt });
 
-  const build = deployAsProxy ? worldFactoryBuild : worldProxyFactoryBuild;
-  const abi = deployAsProxy ? worldFactoryAbi : worldProxyFactoryAbi;
+  const build = deployAsProxy ? worldProxyFactoryBuild : worldFactoryBuild;
+  const abi = deployAsProxy ? worldProxyFactoryAbi : worldFactoryAbi;
 
   const worldFactoryDeployedBytecodeSize = size(build.deployedBytecode.object as Hex);
   const worldFactoryBytecode = encodeDeployData({
