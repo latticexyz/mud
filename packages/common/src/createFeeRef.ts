@@ -13,7 +13,7 @@ export type FeeRef = {
 };
 
 /** Update fee values once every `refreshInterval` instead of right before every request */
-export function createFeeRef({ client, args, refreshInterval }: CreateFeeRefOptions): FeeRef {
+export async function createFeeRef({ client, args, refreshInterval }: CreateFeeRefOptions): Promise<FeeRef> {
   const feeRef: FeeRef = { fees: {}, lastUpdatedTimestamp: 0 };
 
   async function updateFees(): Promise<void> {
@@ -22,8 +22,8 @@ export function createFeeRef({ client, args, refreshInterval }: CreateFeeRefOpti
     feeRef.lastUpdatedTimestamp = Date.now();
   }
 
-  updateFees();
   setInterval(updateFees, refreshInterval);
+  await updateFees();
 
   return feeRef;
 }

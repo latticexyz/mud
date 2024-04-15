@@ -75,7 +75,7 @@ export async function writeContract<
     queueConcurrency: opts.queueConcurrency,
   });
 
-  const feeRef = getFeeRef({ client: opts.publicClient ?? client, refreshInterval: 10000 });
+  const feeRef = await getFeeRef({ client: opts.publicClient ?? client, refreshInterval: 10000 });
 
   async function prepare(): Promise<WriteContractParameters<abi, functionName, args, chain, account, chainOverride>> {
     if (request.gas) {
@@ -97,7 +97,8 @@ export async function writeContract<
       "prepareTransactionRequest",
     )({
       // The fee values don't need to be accurate for gas estimation
-      // and we can save a couple rpc calls by providing stubs here
+      // and we can save a couple rpc calls by providing stubs here.
+      // These are later overridden with accurate values from `feeRef`.
       maxFeePerGas: 0n,
       maxPriorityFeePerGas: 0n,
       // Send the current nonce without increasing the stored value
