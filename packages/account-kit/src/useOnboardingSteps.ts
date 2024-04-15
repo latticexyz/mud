@@ -35,6 +35,7 @@ const store = createStore<{ readonly step: OnboardingStep | null }>(() => ({ ste
 export function useOnboardingSteps() {
   const initialStep = useStore(store, (state) => state.step);
   const { requirements } = useAccountRequirements();
+  console.log("requirements", requirements);
 
   const setStep = useCallback((step: OnboardingStep): void => {
     store.setState({ step });

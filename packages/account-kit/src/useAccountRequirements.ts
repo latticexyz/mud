@@ -4,6 +4,7 @@ import { useHasDelegation } from "./useHasDelegation";
 import { useMemo } from "react";
 import { useGasTankBalance } from "./useGasTankBalance";
 import { useIsGasSpender } from "./useIsGasSpender";
+import { useSignRegisterDelegation } from "./steps/app-account/useSignRegisterDelegation";
 
 export const accountRequirements = [
   "connectedWallet",
@@ -26,6 +27,9 @@ export function useAccountRequirements(): UseAccountRequirementsResult {
   const gasTankBalance = useGasTankBalance();
   const isGasSpender = useIsGasSpender();
   const hasDelegation = useHasDelegation();
+  const { registerDelegationSignature } = useSignRegisterDelegation();
+
+  console.log("useAccountRequirements: got registerDelegation signature", registerDelegationSignature);
 
   return useMemo(() => {
     const satisfiesRequirement = {
@@ -33,7 +37,7 @@ export function useAccountRequirements(): UseAccountRequirementsResult {
       appSigner: () => appSignerAccount != null,
       gasAllowance: () => gasTankBalance != null && gasTankBalance > 0n,
       gasSpender: () => isGasSpender === true,
-      accountDelegation: () => hasDelegation === true,
+      accountDelegation: () => hasDelegation === true || registerDelegationSignature != null,
     } as const satisfies Record<AccountRequirement, () => boolean>;
 
     const requirements = accountRequirements.filter((requirement) => !satisfiesRequirement[requirement]());
@@ -42,5 +46,5 @@ export function useAccountRequirements(): UseAccountRequirementsResult {
       requirement: requirements.at(0) ?? null,
       requirements,
     };
-  }, [appSignerAccount, gasTankBalance, hasDelegation, isGasSpender, userAccount.status]);
+  }, [appSignerAccount, gasTankBalance, hasDelegation, isGasSpender, registerDelegationSignature, userAccount.status]);
 }

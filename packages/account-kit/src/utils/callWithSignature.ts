@@ -2,12 +2,11 @@ import { Address } from "abitype";
 import { Hex, WalletClient, Transport, Chain, Account, PublicClient } from "viem";
 import { writeContract } from "viem/actions";
 import { AppAccountClient } from "../common";
-import { getRecord } from "./getRecord";
 import { signCall } from "./signCall";
-import modulesConfig from "@latticexyz/world-modules/internal/mud.config";
 import CallWithSignatureAbi from "@latticexyz/world-modules/out/IUnstable_CallWithSignatureSystem.sol/IUnstable_CallWithSignatureSystem.abi.json";
 
 // TODO: move this to world package or similar
+// TODO: nonce _or_ publicClient?
 
 export type CallWithSignatureOptions = {
   chainId: number;
@@ -31,21 +30,17 @@ export async function callWithSignature({
   publicClient,
   userAccountClient,
   appAccountClient,
-  nonce: initialNonce,
+  nonce,
 }: CallWithSignatureOptions) {
-  // TODO: use nonce manager? need to be able to pass in method to "get current nonce" and also "should reset nonce" (unclear what errors are thrown for bad nonces here)
-  const nonce =
-    initialNonce ??
-    (
-      await getRecord(publicClient, {
-        storeAddress: worldAddress,
-        table: modulesConfig.tables.CallWithSignatureNonces,
-        key: { signer: userAccountClient.account.address },
-        blockTag: "pending",
-      })
-    ).nonce;
-
-  const signature = await signCall({ userAccountClient, chainId, worldAddress, systemId, callData, nonce });
+  const signature = await signCall({
+    userAccountClient,
+    chainId,
+    worldAddress,
+    systemId,
+    callData,
+    nonce,
+    publicClient,
+  });
 
   return writeContract(appAccountClient, {
     address: worldAddress,

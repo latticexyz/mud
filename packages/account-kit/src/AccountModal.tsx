@@ -1,8 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { assertExhaustive } from "@latticexyz/common/utils";
-import { AppSignerContent } from "./steps/app-account/AppSignerContent";
 import { GasAllowanceContent } from "./steps/gas-tank/GasAllowanceContent";
-import { AccountDelegationContent } from "./steps/app-account/AccountDelegationContent";
 import { Modal, Props as ModalProps } from "./ui/Modal";
 import { DialogContent } from "@radix-ui/react-dialog";
 import { AccountModalSidebar } from "./AccountModalSidebar";
@@ -13,6 +11,7 @@ import { useOnboardingSteps } from "./useOnboardingSteps";
 import { GasSpenderContent } from "./steps/gas-tank/GasSpenderContent";
 import { twMerge } from "tailwind-merge";
 import { WalletStep } from "./steps/wallet/WalletStep";
+import { AppAccountStep } from "./steps/app-account/AppAccountStep";
 
 export type Props = Pick<ModalProps, "open" | "onOpenChange">;
 
@@ -66,13 +65,7 @@ export function AccountModal({ open, onOpenChange }: Props) {
       case "wallet":
         return <WalletStep />;
       case "app-account":
-        // TODO: combine this better
-        return (
-          <>
-            <AppSignerContent />
-            <AccountDelegationContent />
-          </>
-        );
+        return <AppAccountStep />;
       case "gas-tank":
         // TODO: combine this better
         return (
