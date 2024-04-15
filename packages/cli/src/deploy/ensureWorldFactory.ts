@@ -16,7 +16,7 @@ import { Contract } from "./ensureContract";
 export async function ensureWorldFactory(
   client: Client<Transport, Chain | undefined, Account>,
   deployerAddress: Hex,
-  deployAsProxy: boolean,
+  withWorldProxy: boolean,
 ): Promise<Address> {
   const accessManagementSystemDeployedBytecodeSize = size(accessManagementSystemBuild.deployedBytecode.object as Hex);
   const accessManagementSystemBytecode = accessManagementSystemBuild.bytecode.object as Hex;
@@ -55,8 +55,8 @@ export async function ensureWorldFactory(
 
   const initModule = getCreate2Address({ from: deployerAddress, bytecode: initModuleBytecode, salt });
 
-  const build = deployAsProxy ? worldProxyFactoryBuild : worldFactoryBuild;
-  const abi = deployAsProxy ? worldProxyFactoryAbi : worldFactoryAbi;
+  const build = withWorldProxy ? worldProxyFactoryBuild : worldFactoryBuild;
+  const abi = withWorldProxy ? worldProxyFactoryAbi : worldFactoryAbi;
 
   const worldFactoryDeployedBytecodeSize = size(build.deployedBytecode.object as Hex);
   const worldFactoryBytecode = encodeDeployData({

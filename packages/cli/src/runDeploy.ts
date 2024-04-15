@@ -41,7 +41,7 @@ export const deployOptions = {
     type: "string",
     desc: "The deployment salt to use. Defaults to a random salt.",
   },
-  deployAsProxy: {
+  withWorldProxy: {
     type: "boolean",
     desc: "Whether to deploy the world as an upgradable proxy contract.",
     default: false,
@@ -115,7 +115,7 @@ in your contracts directory to use the default anvil private key.`,
     worldAddress: opts.worldAddress as Hex | undefined,
     client,
     config: resolvedConfig,
-    deployAsProxy: opts.deployAsProxy,
+    withWorldProxy: opts.withWorldProxy,
   });
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
     await postDeploy(config.postDeployScript, worldDeploy.address, rpc, profile);
