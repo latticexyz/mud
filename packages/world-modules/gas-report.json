@@ -3,7 +3,7 @@
     "file": "test/CallWithSignatureModule.t.sol",
     "test": "testInstallRoot",
     "name": "install delegation module",
-    "gasUsed": 687912
+    "gasUsed": 764622
   },
   {
     "file": "test/CallWithSignatureModule.t.sol",
@@ -315,7 +315,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstall",
     "name": "install unique entity module",
-    "gasUsed": 715495
+    "gasUsed": 814378
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
@@ -327,7 +327,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstallRoot",
     "name": "installRoot unique entity module",
-    "gasUsed": 685964
+    "gasUsed": 784847
   },
   {
     "file": "test/UniqueEntityModule.t.sol",

@@ -91,7 +91,6 @@ export default defineWorld({
       codegen: { dataStruct: false },
     },
     FunctionSignatures: {
-      type: "offchainTable",
       schema: {
         functionSelector: "bytes4",
         functionSignature: "string",
