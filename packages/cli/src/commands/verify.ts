@@ -7,6 +7,7 @@ import { worldToV1 } from "@latticexyz/world/config/v2";
 import { getOutDirectory, getSrcDirectory } from "@latticexyz/common/foundry";
 import { getExistingContracts } from "../utils/getExistingContracts";
 import { getContractData } from "../utils/getContractData";
+import { defaultModuleContracts } from "../utils/defaultModuleContracts";
 
 type Options = {
   profile?: string;
@@ -35,22 +36,32 @@ const commandModule: CommandModule<Options, Options> = {
     const contractNames = getExistingContracts(forgeSourceDir).map(({ basename }) => basename);
 
     const resolvedWorldConfig = resolveWorldConfig(config, contractNames);
-    const systems = Object.keys(resolvedWorldConfig.systems).map((systemName) => {
-      const contractData = getContractData(`${systemName}.sol`, systemName, outDir);
+    const systems = Object.keys(resolvedWorldConfig.systems).map((name) => {
+      const contractData = getContractData(`${name}.sol`, name, outDir);
 
       return {
-        systemName,
+        name,
         bytecode: contractData.bytecode,
       };
     });
 
-    console.log(systems);
+    const modules = config.modules.map((mod) => {
+      const contractData =
+        defaultModuleContracts.find((defaultMod) => defaultMod.name === mod.name) ??
+        getContractData(`${mod.name}.sol`, mod.name, outDir);
+
+      return {
+        name: mod.name,
+        bytecode: contractData.bytecode,
+      };
+    });
 
     // Wrap in try/catch, because yargs seems to swallow errors
     try {
       await verify({
         foundryProfile: profile,
         systems,
+        modules,
       });
     } catch (error) {
       logError(error);

@@ -13,7 +13,8 @@ import worldFactoryBuild from "@latticexyz/world/out/WorldFactory.sol/WorldFacto
 
 type VerifyOptions = {
   foundryProfile?: string;
-  systems: { systemName: string; bytecode: Hex }[];
+  systems: { name: string; bytecode: Hex }[];
+  modules: { name: string; bytecode: Hex }[];
 };
 
 // The contracts that are deployed in ensureWorldFactory
@@ -34,7 +35,11 @@ async function verifyContract(foundryProfile: string | undefined, deployerAddres
   });
 }
 
-export async function verify({ foundryProfile = process.env.FOUNDRY_PROFILE, systems }: VerifyOptions): Promise<void> {
+export async function verify({
+  foundryProfile = process.env.FOUNDRY_PROFILE,
+  systems,
+  modules,
+}: VerifyOptions): Promise<void> {
   const privateKey = process.env.PRIVATE_KEY as Hex;
   if (!privateKey) {
     throw new MUDError(
@@ -54,8 +59,13 @@ in your contracts directory to use the default anvil private key.`,
   const deployerAddress = await ensureDeployer(client);
 
   await Promise.all(
-    systems.map(({ systemName, bytecode }) => verifyContract(foundryProfile, deployerAddress, systemName, bytecode)),
+    systems.map(({ name, bytecode }) => verifyContract(foundryProfile, deployerAddress, name, bytecode)),
   );
+  // TODO: fetch these from world-modules
+  await Promise.all(
+    modules.map(({ name, bytecode }) => verifyContract(foundryProfile, deployerAddress, name, bytecode)),
+  );
+  // TODO: fetch these from world
   await Promise.all(
     WORLD_FACTORY.map(({ name, bytecode }) => verifyContract(foundryProfile, deployerAddress, name, bytecode)),
   );
