@@ -89,6 +89,24 @@ const config = defineStore({
       },
       key: ["k1", "k2", "k3", "k4", "k5"],
     },
+    UnitConstants: {
+      schema: {
+        unitType: "bytes32",
+        hp: "int32",
+        mana: "int32",
+        castMana: "int32",
+        maxMana: "int32",
+        meleeDamage: "int32",
+        rangeDamage: "int32",
+        critDamage: "int32",
+        critChance: "uint32",
+        gateDamage: "int32",
+        attackRange: "uint32",
+        cost: "uint256",
+        skillModifier: "int32",
+      },
+      key: ["unitType"],
+    },
   },
 });
 
