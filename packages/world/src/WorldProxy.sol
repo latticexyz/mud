@@ -9,6 +9,7 @@ import { IWorldEvents } from "./IWorldEvents.sol";
 import { AccessControl } from "./AccessControl.sol";
 import { ROOT_NAMESPACE_ID } from "./constants.sol";
 import { Proxy } from "./Proxy.sol";
+import { IERC1967 } from "./IERC1967.sol";
 import { StorageSlot } from "./StorageSlot.sol";
 
 /**
@@ -22,6 +23,8 @@ bytes32 constant IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e207
  */
 function _setImplementation(address newImplementation) {
   StorageSlot.getAddressSlot(IMPLEMENTATION_SLOT).value = newImplementation;
+
+  emit IERC1967.Upgraded(newImplementation);
 }
 
 /**
