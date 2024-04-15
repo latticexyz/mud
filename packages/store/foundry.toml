@@ -1,5 +1,5 @@
 [profile.default]
-solc = "0.8.24"
+solc = "0.8.25"
 ffi = true
 fuzz_runs = 256
 optimizer = true

@@ -57,7 +57,7 @@
     "file": "test/Factories.t.sol",
     "test": "testCreate2Factory",
     "name": "deploy contract via Create2",
-    "gasUsed": 4960875
+    "gasUsed": 4960275
   },
   {
     "file": "test/Factories.t.sol",
