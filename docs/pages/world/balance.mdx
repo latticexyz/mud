@@ -41,12 +41,20 @@ uint256 balance = Balances.get(<namespace>);
    If you are using the template with a fresh `pnpm dev`, then you can use this `.env`:
 
    ```sh filename=".env" copy
-   # Anvil default private key for the second account
-   # (NOT the account that deployed the World)
-   PRIVATE_KEY=0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
+   # This .env file is for demonstration purposes only.
+   #
+   # This should usually be excluded via .gitignore and the env vars attached to
+   # your deployment enviroment, but we're including this here for ease of local
+   # development. Please do not commit changes to this file!
+   #
+   # Enable debug logs for MUD CLI
+   DEBUG=mud:*
+   #
+   # Anvil default private key:
+   PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
    # Address for the world we are extending
-   WORLD_ADDRESS=0x256e6eaf6a6683ab771c576f2f5c8a774bdac8e3
+   WORLD_ADDRESS=0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1
    ```
 
 1. Create this file as `scripts/GetBalance.s.sol`.
@@ -183,13 +191,13 @@ uint256 balance = Balances.get(<namespace>);
 
    </CollapseCode>
 
-1. `pnpm dev` deploys the new code, but it deploys it to a new `World`.
-   Restart `pnpm dev` to have a `World` in the same address as before.
+1. `pnpm dev` deploys the new code, but it might deploy it to a new `World`.
+   Restart `pnpm dev` to ensure you have a `World` in the same address as before.
 
 1. Call `increment` with ETH.
 
    ```sh copy
-   cast send --private-key $PRIVATE_KEY 0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342 --value 1ether "increment()"
+   cast send --private-key $PRIVATE_KEY $WORLD_ADDRESS --value 1ether "increment()"
    ```
 
 1. Run the script again to see that the balance is higher.
@@ -214,7 +222,7 @@ These steps assume you already transferred 1 ether to the root namespace.
 1. Run this command to transfer 10 wei to the zero address.
 
    ```sh copy
-   cast send --private-key $PRIVATE_KEY 0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342 "transferBalanceToAddress(bytes32,address,uint256)" 0x6e73000000000000000000000000000000000000000000000000000000000000 `cast address-zero` 10
+   cast send --private-key $PRIVATE_KEY $WORLD_ADDRESS "transferBalanceToAddress(bytes32,address,uint256)" 0x6e73000000000000000000000000000000000000000000000000000000000000 `cast address-zero` 10
    ```
 
 1. See that the namespace's balance is lower by 10 wei.
