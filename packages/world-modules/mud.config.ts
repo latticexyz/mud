@@ -282,7 +282,7 @@ export default defineWorld({
       schema: { signer: "address", nonce: "uint256" },
       key: ["signer"],
       codegen: {
-        outputDirectory: "modules/delegation/tables",
+        outputDirectory: "modules/callwithsignature/tables",
       },
     },
   },
