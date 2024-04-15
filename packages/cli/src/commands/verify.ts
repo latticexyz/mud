@@ -2,10 +2,11 @@ import type { CommandModule } from "yargs";
 import { verify } from "../verify";
 import { logError } from "../utils/errors";
 import { loadConfig } from "@latticexyz/config/node";
-import { WorldConfig } from "@latticexyz/world/internal";
+import { WorldConfig, resolveWorldConfig } from "@latticexyz/world/internal";
 import { worldToV1 } from "@latticexyz/world/config/v2";
-import { resolveConfig } from "../deploy/resolveConfig";
 import { getOutDirectory, getSrcDirectory } from "@latticexyz/common/foundry";
+import { getExistingContracts } from "../utils/getExistingContracts";
+import { getContractData } from "../utils/getContractData";
 
 type Options = {
   profile?: string;
@@ -30,11 +31,27 @@ const commandModule: CommandModule<Options, Options> = {
     const srcDir = await getSrcDirectory(profile);
     const outDir = await getOutDirectory(profile);
 
-    const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
+    const forgeSourceDir = srcDir;
+    const contractNames = getExistingContracts(forgeSourceDir).map(({ basename }) => basename);
+
+    const resolvedWorldConfig = resolveWorldConfig(config, contractNames);
+    const systems = Object.keys(resolvedWorldConfig.systems).map((systemName) => {
+      const contractData = getContractData(`${systemName}.sol`, systemName, outDir);
+
+      return {
+        systemName,
+        bytecode: contractData.bytecode,
+      };
+    });
+
+    console.log(systems);
 
     // Wrap in try/catch, because yargs seems to swallow errors
     try {
-      await verify({ config: resolvedConfig, foundryProfile: profile });
+      await verify({
+        foundryProfile: profile,
+        systems,
+      });
     } catch (error) {
       logError(error);
       process.exit(1);

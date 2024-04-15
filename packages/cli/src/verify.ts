@@ -1,6 +1,6 @@
 import { forge, getRpcUrl } from "@latticexyz/common/foundry";
 import { Hex, createWalletClient, getCreate2Address, http } from "viem";
-import { Config, ConfigInput, salt } from "./deploy/common";
+import { salt } from "./deploy/common";
 import { ensureDeployer } from "./deploy/ensureDeployer";
 import { privateKeyToAccount } from "viem/accounts";
 import { MUDError } from "@latticexyz/common/errors";
@@ -10,11 +10,10 @@ import batchCallSystemBuild from "@latticexyz/world/out/BatchCallSystem.sol/Batc
 import registrationSystemBuild from "@latticexyz/world/out/RegistrationSystem.sol/RegistrationSystem.json" assert { type: "json" };
 import initModuleBuild from "@latticexyz/world/out/InitModule.sol/InitModule.json" assert { type: "json" };
 import worldFactoryBuild from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.json" assert { type: "json" };
-import { resourceToLabel } from "@latticexyz/common";
 
 type VerifyOptions = {
-  config: Config<ConfigInput>;
   foundryProfile?: string;
+  systems: { systemName: string; bytecode: Hex }[];
 };
 
 // The contracts that are deployed in ensureWorldFactory
@@ -35,7 +34,7 @@ async function verifyContract(foundryProfile: string | undefined, deployerAddres
   });
 }
 
-export async function verify({ config, foundryProfile = process.env.FOUNDRY_PROFILE }: VerifyOptions): Promise<void> {
+export async function verify({ foundryProfile = process.env.FOUNDRY_PROFILE, systems }: VerifyOptions): Promise<void> {
   const privateKey = process.env.PRIVATE_KEY as Hex;
   if (!privateKey) {
     throw new MUDError(
@@ -54,23 +53,8 @@ in your contracts directory to use the default anvil private key.`,
 
   const deployerAddress = await ensureDeployer(client);
 
-  const contracts = [
-    ...config.libraries.map((library) => ({
-      bytecode: library.prepareDeploy(deployerAddress, config.libraries).bytecode,
-      label: library.name,
-    })),
-    ...config.systems.map((system) => ({
-      bytecode: system.prepareDeploy(deployerAddress, config.libraries).bytecode,
-      label: resourceToLabel(system),
-    })),
-    ...config.modules.map((mod) => ({
-      bytecode: mod.prepareDeploy(deployerAddress, config.libraries).bytecode,
-      label: mod.name,
-    })),
-  ];
-
   await Promise.all(
-    contracts.map(({ label, bytecode }) => verifyContract(foundryProfile, deployerAddress, label, bytecode)),
+    systems.map(({ systemName, bytecode }) => verifyContract(foundryProfile, deployerAddress, systemName, bytecode)),
   );
   await Promise.all(
     WORLD_FACTORY.map(({ name, bytecode }) => verifyContract(foundryProfile, deployerAddress, name, bytecode)),
