@@ -46,7 +46,6 @@
     "@latticexyz/config": "workspace:*",
     "@latticexyz/gas-tank": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
-    "@latticexyz/react": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/world": "workspace:*",
     "@latticexyz/world-modules": "workspace:*",
