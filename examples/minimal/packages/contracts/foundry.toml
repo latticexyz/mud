@@ -22,3 +22,7 @@ fs_permissions = [{ access = "read", path = "./"}]
 
 [profile.lattice-testnet]
 eth_rpc_url = "https://follower.testnet-chain.linfra.xyz"
+
+[profile.holesky]
+eth_rpc_url = "https://17000.rpc.thirdweb.com"
+# eth_rpc_url = "https://ethereum-holesky.publicnode.com"
