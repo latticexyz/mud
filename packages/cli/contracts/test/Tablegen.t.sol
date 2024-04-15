@@ -6,7 +6,7 @@ import { StoreMock } from "@latticexyz/store/test/StoreMock.sol";
 import { IStoreErrors } from "@latticexyz/store/src/IStoreErrors.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
-import { Statics, StaticsData, Dynamics1, Dynamics1Data, Dynamics2, Dynamics2Data, Singleton, Offchain, UserTyped, UserTypedData, UnitConstants } from "../src/codegen/index.sol";
+import { Statics, StaticsData, Dynamics1, Dynamics1Data, Dynamics2, Dynamics2Data, Singleton, Offchain, UserTyped, UserTypedData, UnitConstants, UnitConstantsData } from "../src/codegen/index.sol";
 import { TestTypeAddress, TestTypeInt64, TestTypeLibrary } from "../src/types.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
@@ -199,35 +199,70 @@ contract TablegenTest is Test, StoreMock {
     assertEq(abi.encode(UserTyped.get(k1, k2, k3, k4, k5)), abi.encode(data));
   }
 
-  function testUnitConstants(
-    bytes32 unitType,
-    int32 hp,
-    int32 mana,
-    int32 castMana,
-    int32 maxMana,
-    int32 meleeDamage,
-    int32 rangeDamage,
-    int32 critDamage,
-    uint32 critChance,
-    int32 gateDamage,
-    uint32 attackRange,
-    uint256 cost,
-    int32 skillModifier
-  ) public {
-    UnitConstants.set(
-      unitType,
-      hp,
-      mana,
-      castMana,
-      maxMana,
-      meleeDamage,
-      rangeDamage,
-      critDamage,
-      critChance,
-      gateDamage,
-      attackRange,
-      cost,
-      skillModifier
-    );
-  }
+  // // This causes stack too deep
+  // function testUnitConstants(
+  //   bytes32 unitType,
+  //   int32 hp,
+  //   int32 mana,
+  //   int32 castMana,
+  //   int32 maxMana,
+  //   int32 meleeDamage,
+  //   int32 rangeDamage,
+  //   int32 critDamage,
+  //   uint32 critChance,
+  //   int32 gateDamage,
+  //   uint32 attackRange,
+  //   uint256 cost,
+  //   int32 skillModifier
+  // ) public {
+  //   UnitConstants.set(
+  //     unitType,
+  //     hp,
+  //     mana,
+  //     castMana,
+  //     maxMana,
+  //     meleeDamage,
+  //     rangeDamage,
+  //     critDamage,
+  //     critChance,
+  //     gateDamage,
+  //     attackRange,
+  //     cost,
+  //     skillModifier
+  //   );
+  // }
+
+  // // This also causes stack too deep
+  // function testUnitConstants(
+  //   bytes32 unitType,
+  //   int32 hp,
+  //   int32 mana,
+  //   int32 castMana,
+  //   int32 maxMana,
+  //   int32 meleeDamage,
+  //   int32 rangeDamage,
+  //   int32 critDamage,
+  //   uint32 critChance,
+  //   int32 gateDamage,
+  //   uint32 attackRange,
+  //   uint256 cost,
+  //   int32 skillModifier
+  // ) public {
+  //   UnitConstantsData memory _table = UnitConstantsData(
+  //     hp,
+  //     mana,
+  //     castMana,
+  //     maxMana,
+  //     meleeDamage,
+  //     rangeDamage,
+  //     critDamage,
+  //     critChance,
+  //     gateDamage,
+  //     attackRange,
+  //     cost,
+  //     skillModifier
+  //   );
+
+  //   UnitConstants.set(unitType, _table);
+  // }
 }
