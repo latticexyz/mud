@@ -29,8 +29,6 @@ export function useAccountRequirements(): UseAccountRequirementsResult {
   const hasDelegation = useHasDelegation();
   const { registerDelegationSignature } = useSignRegisterDelegation();
 
-  console.log("useAccountRequirements: got registerDelegation signature", registerDelegationSignature);
-
   return useMemo(() => {
     const satisfiesRequirement = {
       connectedWallet: () => userAccount.status === "connected",
@@ -41,6 +39,7 @@ export function useAccountRequirements(): UseAccountRequirementsResult {
     } as const satisfies Record<AccountRequirement, () => boolean>;
 
     const requirements = accountRequirements.filter((requirement) => !satisfiesRequirement[requirement]());
+    console.log("requirements", requirements);
 
     return {
       requirement: requirements.at(0) ?? null,

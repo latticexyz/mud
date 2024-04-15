@@ -13,12 +13,12 @@ export const onboardingSteps = {
   "app-account": {
     label: "Sign in to app",
     requires: ["connectedWallet"],
-    satisfies: ["appSigner", "accountDelegation"],
+    satisfies: ["appSigner"],
   },
   "gas-tank": {
     label: "Fund gas tank",
-    requires: ["connectedWallet", "appSigner", "accountDelegation"],
-    satisfies: ["gasAllowance", "gasSpender"],
+    requires: ["connectedWallet", "appSigner"],
+    satisfies: ["gasAllowance", "gasSpender", "accountDelegation"],
   },
 } as const satisfies {
   readonly [key: string]: {
