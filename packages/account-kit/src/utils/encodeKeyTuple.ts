@@ -7,6 +7,6 @@ import { schemaToPrimitives } from "./schemaToPrimitives";
 export function encodeKeyTuple<keySchema extends Schema, key extends schemaToPrimitives<keySchema>>(
   keySchema: keySchema,
   key: key,
-): Hex[] {
+): readonly Hex[] {
   return Object.keys(keySchema).map((name) => encodeAbiParameters([keySchema[name]], [key[name]]));
 }

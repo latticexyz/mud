@@ -34,8 +34,6 @@ export async function getGasTankBalance({
     blockTag: "pending",
   });
 
-  console.log("record", record);
-
   return record.balance;
 }
 

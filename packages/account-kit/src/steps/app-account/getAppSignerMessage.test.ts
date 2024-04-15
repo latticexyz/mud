@@ -1,10 +1,10 @@
 /* eslint-disable max-len */
 import { describe, it, expect } from "vitest";
-import { getMessageToSign } from "./getMessageToSign";
+import { getAppSignerMessage } from "./getAppSignerMessage";
 
-describe("getMessageToSign", () => {
+describe("getAppSignerMessage", () => {
   it("generates message to sign", () => {
-    expect(getMessageToSign("localhost")).toMatchInlineSnapshot(`
+    expect(getAppSignerMessage("localhost")).toMatchInlineSnapshot(`
       "localhost is requesting proof of ownership of this address.
 
       Only sign this message if it came from an app you are interacting with at localhost.
@@ -17,7 +17,7 @@ describe("getMessageToSign", () => {
   });
 
   it("generates message to sign for another account ID", () => {
-    expect(getMessageToSign("localhost", 1)).toMatchInlineSnapshot(`
+    expect(getAppSignerMessage("localhost", 1)).toMatchInlineSnapshot(`
       "localhost is requesting proof of ownership of this address.
 
       Only sign this message if it came from an app you are interacting with at localhost.

@@ -1,6 +1,4 @@
-/* eslint-disable max-len */
-
-export function getMessageToSign(origin: string, account: number = 0) {
+export function getAppSignerMessage(origin: string, account: number = 0) {
   // BE CAREFUL MODIFYING THIS MESSAGE!
   //
   // Once modified, all prior accounts will not be easily retrievable.

@@ -8,7 +8,7 @@ import { AccountModalTitle } from "../../AccoutModalTitle";
 import { usePreloadImage } from "../../usePreloadImage";
 import { AppInfo } from "./AppInfo";
 import { useAppInfo } from "../../useAppInfo";
-import { getMessageToSign } from "./getMessageToSign";
+import { getAppSignerMessage } from "./getAppSignerMessage";
 
 export function AppSignerContent() {
   const { appName, appImage } = useAppInfo();
@@ -41,7 +41,7 @@ export function AppSignerContent() {
                 // BE CAREFUL MODIFYING THESE ARGUMENTS!
                 //
                 // Once modified, all prior accounts will not be easily retrievable.
-                message: getMessageToSign(location.host),
+                message: getAppSignerMessage(location.host),
               });
               setAppSigner(keccak256(signature));
               resetStep();
