@@ -23,7 +23,7 @@
         "./src/exports/internal.ts"
       ],
       "bundle": [
-        "./src/exports/internal.ts"
+        "./src/exports/bundle.ts"
       ]
     }
   },
