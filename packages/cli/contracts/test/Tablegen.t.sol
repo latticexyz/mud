@@ -266,4 +266,14 @@ contract TablegenTest is Test, StoreMock {
   //     )
   //   );
   // }
+
+  // This also causes stack to deep
+  // function testUnitConstants(bytes32 unitType) public {
+  //   UnitConstants.set(unitType, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  // }
+
+  // but this is fine
+  function testUnitConstantsStruct(bytes32 unitType) public {
+    UnitConstants.set(unitType, UnitConstantsData(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+  }
 }
