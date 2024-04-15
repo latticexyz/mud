@@ -62,9 +62,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  # docker:
-  #   uses: ./.github/workflows/docker.yml
-  #   needs: release-snapshot
+  docker:
+    uses: ./.github/workflows/docker.yml
+    needs: release-snapshot
 
   test-snapshot:
     uses: ./.github/workflows/test-published-packages.yml
