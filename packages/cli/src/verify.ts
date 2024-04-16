@@ -35,6 +35,20 @@ async function verifyContract(foundryProfile: string | undefined, deployerAddres
   });
 }
 
+async function verifyContractWorld(
+  foundryProfile: string | undefined,
+  deployerAddress: Hex,
+  name: string,
+  bytecode: Hex,
+) {
+  const system = getCreate2Address({ from: deployerAddress, bytecode, salt });
+
+  await forge(["verify-contract", system, name, "--verifier", "sourcify"], {
+    profile: foundryProfile,
+    cwd: "node_modules/@latticexyz/world",
+  });
+}
+
 export async function verify({
   foundryProfile = process.env.FOUNDRY_PROFILE,
   systems,
@@ -61,12 +75,13 @@ in your contracts directory to use the default anvil private key.`,
   await Promise.all(
     systems.map(({ name, bytecode }) => verifyContract(foundryProfile, deployerAddress, name, bytecode)),
   );
+
+  // TODO: fetch these from world
+  await Promise.all(
+    WORLD_FACTORY.map(({ name, bytecode }) => verifyContractWorld(foundryProfile, deployerAddress, name, bytecode)),
+  );
   // TODO: fetch these from world-modules
   await Promise.all(
     modules.map(({ name, bytecode }) => verifyContract(foundryProfile, deployerAddress, name, bytecode)),
-  );
-  // TODO: fetch these from world
-  await Promise.all(
-    WORLD_FACTORY.map(({ name, bytecode }) => verifyContract(foundryProfile, deployerAddress, name, bytecode)),
   );
 }
