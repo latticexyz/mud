@@ -1,5 +1,7 @@
+import "@rainbow-me/rainbowkit/styles.css";
 import type { Config as WagmiConfig } from "wagmi";
 import type { Config as AccountKitConfig } from "../AccountKitProvider";
+import { Store, store } from "./store";
 
 export type MountOptions = {
   rootElementId?: string;
@@ -7,15 +9,18 @@ export type MountOptions = {
   accountKitConfig: AccountKitConfig;
 };
 
-export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountKitConfig }: MountOptions): () => void {
+export type MountResult = {
+  unmount: () => void;
+  store: Store;
+};
+
+export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountKitConfig }: MountOptions): MountResult {
   if (typeof window === "undefined") {
-    console.warn("MUD Account Kit should only be used in browser bundles.");
-    return () => {};
+    throw new Error("MUD Account Kit should only be used in browser bundles.");
   }
 
   if (document.getElementById(rootElementId)) {
-    console.warn("MUD Account Kit is already mounted.");
-    return () => {};
+    throw new Error("MUD Account Kit is already mounted.");
   }
 
   async function setup() {
@@ -26,6 +31,7 @@ export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountK
     const { QueryClientProvider, QueryClient } = await import("@tanstack/react-query");
     const { RainbowKitProvider, lightTheme, midnightTheme } = await import("@rainbow-me/rainbowkit");
     const { AccountKitProvider } = await import("../AccountKitProvider");
+    const { SyncStore } = await import("./SyncStore");
 
     const queryClient = new QueryClient();
 
@@ -34,6 +40,7 @@ export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountK
     // Create a new stacking context
     // https://web.dev/learn/css/z-index/#stacking-context
     rootElement.style.willChange = "contents";
+    document.body.appendChild(rootElement);
 
     const root = ReactDOM.createRoot(rootElement);
     root.render(
@@ -50,14 +57,14 @@ export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountK
                 darkMode: midnightTheme({ borderRadius: "none" }),
               }}
             >
-              <AccountKitProvider config={accountKitConfig} />
+              <AccountKitProvider config={accountKitConfig}>
+                <SyncStore store={store} />
+              </AccountKitProvider>
             </RainbowKitProvider>
           </QueryClientProvider>
         </WagmiProvider>
       </React.StrictMode>,
     );
-
-    document.body.appendChild(rootElement);
 
     return () => {
       root.unmount();
@@ -69,5 +76,8 @@ export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountK
     console.error("Failed to mount MUD Account Kit.", error);
   });
 
-  return () => setupPromise.then((unmount) => unmount?.());
+  return {
+    unmount: () => setupPromise.then((unmount) => unmount?.()),
+    store,
+  };
 }

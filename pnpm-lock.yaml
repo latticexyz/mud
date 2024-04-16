@@ -217,6 +217,9 @@ importers:
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.4.2)
+      vite:
+        specifier: ^4.3.6
+        version: 4.3.6(@types/node@18.15.11)
       vitest:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0)
@@ -11784,7 +11787,7 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.7
-      has-tostringtag: 1.0.0
+      has-tostringtag: 1.0.2
     dev: false
 
   /is-arrayish@0.2.1:

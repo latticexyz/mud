@@ -10,9 +10,9 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
-    "./internal": "./dist/internal.js",
-    "./bundle": "./dist/bundle.js"
+    ".": "./dist/tsup/index.js",
+    "./internal": "./dist/tsup/internal.js",
+    "./bundle": "./dist/vite/bundle.js"
   },
   "typesVersions": {
     "*": {
@@ -28,14 +28,14 @@
     }
   },
   "bin": {
-    "local-bundler": "./dist/bin/local-bundler.js"
+    "local-bundler": "./dist/tsup/bin/local-bundler.js"
   },
   "scripts": {
     "build": "pnpm run build:js",
-    "build:js": "tsup",
+    "build:js": "tsup & vite build",
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
-    "dev": "tsup --watch",
+    "dev": "tsup --watch & vite build --watch",
     "local-bundler": "pnpx tsx cli/local-bundler.ts",
     "test": "tsc --noEmit && vitest",
     "test:ci": "tsc --noEmit && vitest --run"
@@ -78,6 +78,7 @@
     "postcss": "^8.4.23",
     "tailwindcss": "^3.4.3",
     "tsup": "^6.7.0",
+    "vite": "^4.3.6",
     "vitest": "0.34.6"
   },
   "peerDependencies": {
