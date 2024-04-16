@@ -11,7 +11,7 @@ export async function deployWorld(
   client: Client<Transport, Chain | undefined, Account>,
   deployerAddress: Hex,
   salt: Hex,
-  withWorldProxy: boolean,
+  withWorldProxy?: boolean,
 ): Promise<WorldDeploy> {
   const worldFactory = await ensureWorldFactory(client, deployerAddress, withWorldProxy);
 

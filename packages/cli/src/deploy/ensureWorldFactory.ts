@@ -16,7 +16,7 @@ import { Contract } from "./ensureContract";
 export async function ensureWorldFactory(
   client: Client<Transport, Chain | undefined, Account>,
   deployerAddress: Hex,
-  withWorldProxy: boolean,
+  withWorldProxy?: boolean,
 ): Promise<Address> {
   const accessManagementSystemDeployedBytecodeSize = size(accessManagementSystemBuild.deployedBytecode.object as Hex);
   const accessManagementSystemBytecode = accessManagementSystemBuild.bytecode.object as Hex;

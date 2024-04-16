@@ -28,7 +28,7 @@ type DeployOptions<configInput extends ConfigInput> = {
    * not have a deterministic address.
    */
   deployerAddress?: Hex;
-  withWorldProxy: boolean;
+  withWorldProxy?: boolean;
 };
 
 /**
