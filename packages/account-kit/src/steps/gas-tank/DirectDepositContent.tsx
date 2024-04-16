@@ -1,8 +1,8 @@
-import { ReactNode, Ref, forwardRef } from "react";
+import { ReactNode, Ref, forwardRef, useState } from "react";
 import { parseEther } from "viem";
 import { twMerge } from "tailwind-merge";
 import { AccountModalSection } from "../../AccountModalSection";
-import { useAccount, useSwitchChain, useConfig as useWagmiConfig, useWriteContract } from "wagmi";
+import { useAccount, useConfig as useWagmiConfig, useWriteContract } from "wagmi";
 import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
 import * as Select from "@radix-ui/react-select";
 import { useConfig } from "../../AccountKitProvider";
@@ -18,6 +18,18 @@ type SelectItemProps = {
   children: ReactNode;
   className?: string;
   disabled?: boolean;
+};
+
+const AmountInput = () => {
+  const [amount, setAmount] = useState<number>(0.01);
+  return (
+    <input
+      className="w-full px-[16px] border border-neutral-300"
+      type="number"
+      value={amount}
+      onChange={(evt) => setAmount(parseFloat(evt.target.value))}
+    />
+  );
 };
 
 const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(function SelectItem(
@@ -73,7 +85,7 @@ function ChainSelect() {
             </Select.ScrollUpButton>
             <Select.Viewport className="p-[5px]">
               <Select.Group>
-                <Select.Label className="px-[25px] text-xs leading-[25px] text-mauve11">Fruits</Select.Label>
+                <Select.Label className="px-[25px] text-xs leading-[25px]">Select chain:</Select.Label>
                 <SelectItem value="17069">Redstone</SelectItem>
                 <SelectItem value="1">Ethereum</SelectItem>
                 <SelectItem value="7777777">Zora</SelectItem>
@@ -97,7 +109,6 @@ export function DirectDepositContent() {
   const { resetStep } = useOnboardingSteps();
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
-  const { switchChain, isPending: switchChainPending } = useSwitchChain();
   const { writeContractAsync, isPending, error } = useWriteContract({
     mutation: {
       onSuccess: async (hash) => {
@@ -130,17 +141,35 @@ export function DirectDepositContent() {
       <div className="flex flex-col gap-2">
         {error ? <div>{String(error)}</div> : null}
 
-        <ChainSelect />
+        <div className="flex gap-[12px]">
+          <ChainSelect />
+          <AmountInput />
+        </div>
 
-        {userAccount.chainId !== chain.id ? (
-          <Button pending={switchChainPending} onClick={() => switchChain({ chainId: chain.id })}>
-            Switch chain to deposit
-          </Button>
-        ) : (
-          <Button pending={!userAccountAddress || isPending} onClick={handleDeposit}>
-            Deposit to gas tank
-          </Button>
-        )}
+        <div>
+          <ul>
+            <li className="flex justify-between py-[8px] border-b border-black border-opacity-10">
+              <span className="opacity-50">Available to deposit</span>
+              <span className="font-medium">
+                1.000 ETH <span className="text-neutral-800">($3,605.21)</span>
+              </span>
+            </li>
+            <li className="flex justify-between py-[8px] border-b border-black border-opacity-10">
+              <span className="opacity-50">Estimated fee</span>
+              <span className="font-medium">
+                0.025 ETH <span className="text-neutral-800">($3.40)</span>
+              </span>
+            </li>
+            <li className="flex justify-between py-[8px]">
+              <span className="opacity-50">Transfer time</span>
+              <span className="font-medium">~5 seconds</span>
+            </li>
+          </ul>
+        </div>
+
+        <Button className="w-full" pending={!userAccountAddress || isPending} onClick={handleDeposit}>
+          Deposit
+        </Button>
       </div>
     </AccountModalSection>
   );

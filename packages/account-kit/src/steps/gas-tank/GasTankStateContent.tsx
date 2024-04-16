@@ -10,7 +10,7 @@ export function GasTankStateContent() {
       <GasTankIcon />
 
       {!gasTankBalance || gasTankBalance === BigInt(0) ? (
-        <p>Gas tank is empty</p>
+        <p>Empty</p>
       ) : (
         <>
           <p>Gas tank balance: {gasTankBalance.toString()}</p>
