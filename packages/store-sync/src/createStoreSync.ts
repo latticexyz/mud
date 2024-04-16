@@ -275,15 +275,17 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
         for (const block of blocks) {
           const txs = block.logs.map((op) => op.transactionHash);
           // If the transaction caused a log, it must have succeeded
-          if (txs.includes(tx)) return { blockNumber: block.blockNumber, status: "success" as const };
+          if (txs.includes(tx)) {
+            return { blockNumber: block.blockNumber, status: "success" as const, transactionHash: tx };
+          }
         }
 
         try {
           const lastBlock = blocks[0];
           debug("fetching tx receipt for block", lastBlock.blockNumber);
-          const { status, blockNumber } = await publicClient.getTransactionReceipt({ hash: tx });
+          const { status, blockNumber, transactionHash } = await publicClient.getTransactionReceipt({ hash: tx });
           if (lastBlock.blockNumber >= blockNumber) {
-            return { status, blockNumber };
+            return { status, blockNumber, transactionHash };
           }
         } catch (error) {
           if (error instanceof TransactionReceiptNotFoundError) {

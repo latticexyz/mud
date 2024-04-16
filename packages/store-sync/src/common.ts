@@ -113,7 +113,7 @@ export type SyncOptions<config extends StoreConfig = StoreConfig> = {
   };
 };
 
-export type WaitForTransactionResult = Pick<TransactionReceipt, "blockNumber" | "status">;
+export type WaitForTransactionResult = Pick<TransactionReceipt, "blockNumber" | "status" | "transactionHash">;
 
 export type SyncResult = {
   latestBlock$: Observable<Block>;
