@@ -45,10 +45,16 @@ export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountK
                 appName: accountKitConfig.appInfo?.name,
                 // TODO: learn more and disclaimer
               }}
-              theme={{
-                lightMode: lightTheme({ borderRadius: "none" }),
-                darkMode: midnightTheme({ borderRadius: "none" }),
-              }}
+              theme={
+                accountKitConfig.theme === "light"
+                  ? lightTheme({ borderRadius: "none" })
+                  : accountKitConfig.theme === "dark"
+                    ? midnightTheme({ borderRadius: "none" })
+                    : {
+                        lightMode: lightTheme({ borderRadius: "none" }),
+                        darkMode: midnightTheme({ borderRadius: "none" }),
+                      }
+              }
             >
               <AccountKitProvider config={accountKitConfig}>
                 <SyncStore store={store} />

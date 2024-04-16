@@ -18,6 +18,7 @@ export type Config = {
      */
     readonly image?: string;
   };
+  theme?: "dark" | "light";
 };
 
 /** @internal */

@@ -7,4 +7,5 @@ export default {
     extend: {},
   },
   plugins: [animate],
+  darkMode: ["selector", ['[data-theme="dark"]']],
 };
