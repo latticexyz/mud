@@ -88,7 +88,7 @@ export function useAppAccountClient(): AppAccountClient | undefined {
     })
       // TODO: can we replace the below with all publicActions?
       // .extend(publicActions(publicClient))
-      .extend(publicActions(publicClient))
+      .extend(() => publicActions(publicClient))
       .extend(() => ({
         getTransactionCount: (args) => {
           console.log("getTransactionCount, ", args);
