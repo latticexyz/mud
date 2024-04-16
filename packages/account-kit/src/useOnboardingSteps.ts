@@ -20,6 +20,12 @@ export const onboardingSteps = {
     requires: ["connectedWallet", "appSigner", "accountDelegation"],
     satisfies: ["gasAllowance", "gasSpender"],
   },
+  // TODO: rework this, feels weird to show this as a step on the left
+  finalizing: {
+    label: "Finalizing",
+    requires: ["accountDelegation"],
+    satisfies: ["accountDelegationConfirmed"],
+  },
 } as const satisfies {
   readonly [key: string]: {
     readonly label: string;

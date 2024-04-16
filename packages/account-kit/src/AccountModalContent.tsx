@@ -1,13 +1,13 @@
 import { useMemo } from "react";
 import { assertExhaustive } from "@latticexyz/common/utils";
-import { GasAllowanceContent } from "./steps/gas-tank/GasAllowanceContent";
+import { GasTankStep } from "./steps/gas-tank/GasTankStep";
 import { DialogContent } from "@radix-ui/react-dialog";
 import { AccountModalSidebar } from "./AccountModalSidebar";
 import { useOnboardingSteps } from "./useOnboardingSteps";
-// import { GasSpenderContent } from "./steps/gas-tank/GasSpenderContent";
 import { twMerge } from "tailwind-merge";
 import { WalletStep } from "./steps/wallet/WalletStep";
 import { AppAccountStep } from "./steps/app-account/AppAccountStep";
+import { FinalizingStep } from "./steps/finalizing/FinalizingStep";
 
 export function AccountModalContent() {
   // TODO: each step should have an `onComplete` that we can use to auto-advance if you've selected a step already
@@ -19,13 +19,9 @@ export function AccountModalContent() {
       case "app-account":
         return <AppAccountStep />;
       case "gas-tank":
-        // TODO: combine this better
-        return (
-          <>
-            <GasAllowanceContent />
-            {/* <GasSpenderContent /> */}
-          </>
-        );
+        return <GasTankStep />;
+      case "finalizing":
+        return <FinalizingStep />;
       default:
         return assertExhaustive(step);
     }

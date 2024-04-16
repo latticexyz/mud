@@ -39,15 +39,21 @@ export function AccountModalSidebar() {
       <div className="px-5 py-3 text-orange-500">
         <Logo className="bg-neutral-100 dark:bg-transparent" />
       </div>
-      {steps.map((step) => (
-        <StepNavItem
-          key={step.id}
-          isActive={step.id === activeStep}
-          isComplete={step.isComplete}
-          onClick={() => setStep(step.id)}
-          label={step.label}
-        />
-      ))}
+      {steps.map((step) => {
+        // TODO: make this less weird/janky
+        if (step.id === "finalizing" && !step.canComplete) {
+          return null;
+        }
+        return (
+          <StepNavItem
+            key={step.id}
+            isActive={step.id === activeStep}
+            isComplete={step.isComplete}
+            onClick={() => setStep(step.id)}
+            label={step.label}
+          />
+        );
+      })}
     </nav>
   );
 }
