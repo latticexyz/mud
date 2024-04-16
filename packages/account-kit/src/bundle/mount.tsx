@@ -2,7 +2,6 @@ import "@rainbow-me/rainbowkit/styles.css";
 import type { Config as WagmiConfig } from "wagmi";
 import type { Config as AccountKitConfig } from "../AccountKitProvider";
 import { Store, store } from "./store";
-import { Shadow } from "../ui/Shadow";
 
 export type MountOptions = {
   rootElementId?: string;
@@ -60,7 +59,6 @@ export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountK
             >
               <AccountKitProvider config={accountKitConfig}>
                 <SyncStore store={store} />
-                <Shadow>hello</Shadow>
               </AccountKitProvider>
             </RainbowKitProvider>
           </QueryClientProvider>

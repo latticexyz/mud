@@ -29,8 +29,6 @@ export function useAppAccountClient(): AppAccountClient | undefined {
       throw new Error(`No ERC4337 bundler URL found for chain ${chain.name} (id: ${chain.id})`);
     }
 
-    console.log("Bundler:", chain.erc4337BundlerUrl.http);
-
     const pimlicoBundlerClient = createPimlicoBundlerClient({
       chain: publicClient.chain,
       transport: http(chain.erc4337BundlerUrl.http),

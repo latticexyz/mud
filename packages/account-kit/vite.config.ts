@@ -7,7 +7,7 @@ const deps = Object.keys(packageJson.dependencies);
 
 export default defineConfig({
   build: {
-    outDir: "dist-bundle",
+    outDir: "dist/vite",
     sourcemap: true,
     lib: {
       entry: "src/exports/bundle.ts",

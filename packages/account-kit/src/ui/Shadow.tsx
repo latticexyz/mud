@@ -18,9 +18,13 @@ export const Shadow = forwardRef<HTMLSpanElement, Props>(function Shadow({ child
     const container = containerRef.current;
     if (!container) return;
 
-    const root = container.attachShadow({ mode: "open", delegatesFocus: true });
-    root.adoptedStyleSheets = [sheet];
-    setShadowRoot(root);
+    if (container.shadowRoot) {
+      setShadowRoot(container.shadowRoot);
+    } else {
+      const root = container.attachShadow({ mode: "open", delegatesFocus: true });
+      root.adoptedStyleSheets = [sheet];
+      setShadowRoot(root);
+    }
   }, []);
 
   return (
