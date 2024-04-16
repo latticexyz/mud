@@ -23,7 +23,7 @@ export const onboardingSteps = {
   // TODO: rework this, feels weird to show this as a step on the left
   finalizing: {
     label: "Finalizing",
-    requires: ["accountDelegation"],
+    requires: ["connectedWallet", "gasAllowance", "gasSpender", "accountDelegation"],
     satisfies: ["accountDelegationConfirmed"],
   },
 } as const satisfies {
