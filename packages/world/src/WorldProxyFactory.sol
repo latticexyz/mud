@@ -25,8 +25,7 @@ contract WorldProxyFactory is IWorldFactory {
     initModule = _initModule;
 
     // Deploy a world implementation
-    bytes memory worldBytecode = type(World).creationCode;
-    worldImplementation = Create2.deploy(worldBytecode, 0);
+    worldImplementation = address(new World());
   }
 
   /**
