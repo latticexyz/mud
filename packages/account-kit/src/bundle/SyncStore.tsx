@@ -1,5 +1,5 @@
 import { useAccountModal } from "../useAccountModal";
-import { useAppAccountClient } from "../useAppAccountClient";
+import { usePreparedAppAccountClient } from "../usePreparedAppAccountClient";
 import { useEffect } from "react";
 import { Store } from "./store";
 
@@ -9,7 +9,7 @@ export type Props = {
 
 export function SyncStore({ store }: Props) {
   const { accountModalOpen, openAccountModal, closeAccountModal, toggleAccountModal } = useAccountModal();
-  const appAccountClient = useAppAccountClient();
+  const appAccountClient = usePreparedAppAccountClient();
 
   useEffect(() => {
     store.setState({
