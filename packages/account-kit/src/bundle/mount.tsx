@@ -1,7 +1,7 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import type { Config as WagmiConfig } from "wagmi";
 import type { Config as AccountKitConfig } from "../AccountKitProvider";
-import { Store, store } from "./store";
+import { store } from "./store";
 
 export type MountOptions = {
   rootElementId?: string;
@@ -9,12 +9,7 @@ export type MountOptions = {
   accountKitConfig: AccountKitConfig;
 };
 
-export type MountResult = {
-  unmount: () => void;
-  store: Store;
-};
-
-export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountKitConfig }: MountOptions): MountResult {
+export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountKitConfig }: MountOptions): () => void {
   if (typeof window === "undefined") {
     throw new Error("MUD Account Kit should only be used in browser bundles.");
   }
@@ -76,8 +71,5 @@ export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountK
     console.error("Failed to mount MUD Account Kit.", error);
   });
 
-  return {
-    unmount: () => setupPromise.then((unmount) => unmount?.()),
-    store,
-  };
+  return () => setupPromise.then((unmount) => unmount?.());
 }
