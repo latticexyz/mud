@@ -2,6 +2,14 @@
 
 The vanilla template uses plain HTML and JavaScript for the web client.
 
+You can start a new project using this template with:
+
+```sh copy
+pnpm create mud tutorial --template vanilla
+```
+
+For more information, [see the quickstart guide](/quickstart).
+
 ## Onchain code
 
 This template uses [the standard `Counter` onchain code](./contracts).
@@ -34,15 +42,27 @@ Create [an HTML span](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/
 This span will be updated every time the value of the counter changes.
 
 ```html
-<button onclick="window.increment()">Increment</button>
+<button id="incrementButton">Increment</button>
 ```
 
-A button that calls `window.increment()`, which calls the onchain system to increment the counter.
+A button that is set to call `window.increment()`, which calls the onchain system to increment the counter.
 
 ### index.ts
 
 This is the main TypeScript file.
-It calls the general setup code for MUD, and then does application-specific setup actions.
+
+```ts
+import { setup } from "./mud/setup";
+import mudConfig from "contracts/mud.config";
+
+const {
+  components,
+  systemCalls: { increment },
+  network,
+} = await setup();
+```
+
+The [general setup code](https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/client/src/mud/setup.ts) for MUD.
 
 ```ts
 // Components expose a stream that triggers when the component is updated.
@@ -57,16 +77,11 @@ Specify a function to be called when the value of `Counter` changes.
 This function emits [a log message](https://developer.mozilla.org/en-US/docs/Web/API/console/log) and then updates the `counter` span.
 
 ```ts
-// Just for demonstration purposes: we create a global function that can be
-// called to invoke the Increment system contract via the world. (See IncrementSystem.sol.)
-(window as any).increment = async () => {
-  console.log("new counter value:", await increment());
-};
+// Attach the increment function to the html element with ID `incrementButton` (if it exists)
+document.querySelector("#incrementButton")?.addEventListener("click", increment);
 ```
 
-Here we know how to call a system call, but the code inside the HTML does not.
-We use a global function to share this knowledge.
-Generally speaking global definitions are considered bad, but this is sample code written to optimize understanding, not maintainability.
+Here we attach the `increment` function from `createSystemCalls.ts` to `incrementButton`.
 
 ### `createSystemCalls.ts`
 

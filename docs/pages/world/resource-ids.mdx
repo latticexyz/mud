@@ -1,0 +1,143 @@
+import { CollapseCode } from "../../components/CollapseCode";
+
+# Resource identifiers
+
+A `ResourceId` is a 32-byte value that uniquely identifies a resource in a `World`.
+It is two bytes of resource type followed by 14 bytes of namespace and then 16 bytes of the name of the actual resource.
+
+Currently, MUD supports these resource types:
+
+- [Table (`tb`)](https://github.com/latticexyz/mud/blob/main/packages/store/src/storeResourceTypes.sol#L12).
+  An onchain table whose information is available both onchain (through calls to `view` functions) and offchain (either through calls to `view` functions, events, or an [indexer](/services/indexer)).
+- [Offchain table (`ot`)](https://github.com/latticexyz/mud/blob/main/packages/store/src/storeResourceTypes.sol#L15).
+  An offchain table whose information is only available offchain (either through events, or through an [indexer](/services/indexer)).
+- [Namespace (`ns`)](https://github.com/latticexyz/mud/blob/main/packages/world/src/worldResourceTypes.sol#L13).
+  A namespace is a container for tables, offchain tables, and systems.
+  Namespaces are used for [access control](/world/namespaces-access-control).
+- [System (`sy`)](https://github.com/latticexyz/mud/blob/main/packages/world/src/worldResourceTypes.sol#L17).
+  A [system](/world/systems) contains logic that interact with table data onchain.
+
+## Creating resource identifiers
+
+To create a resource ID in your Solidity code you typically use [`WorldResourceIdLib.encode`](https://github.com/latticexyz/mud/blob/main/packages/world/src/WorldResourceId.sol#L22-L34).
+This function accepts three fields:
+
+- `typeId` is the resource type.
+- `namespace` is the namespace in which the resource is located.
+  If this is the root namespace, use the empty string.
+- `name` is the name of the resource, except in the case of namespaces, where it is empty.
+
+For a namespace resource ID you can either have a `name` that is all zeros, or use [`WorldResourceIdLib.encodeNamespace`](https://github.com/latticexyz/mud/blob/main/packages/world/src/WorldResourceId.sol#L36-L43).
+
+For example, the code below creates the resource ID for a namespace and a `System` inside it.
+
+<CollapseCode>
+
+```solidity filename="MessagingExtension.s.sol" copy showLineNumbers {29-30}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { IBaseWorld } from "@latticexyz/world-modules/src/interfaces/IBaseWorld.sol";
+
+import { WorldRegistrationSystem } from "@latticexyz/world/src/modules/init/implementations/WorldRegistrationSystem.sol";
+
+// Create resource identifiers (for the namespace and system)
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+// For registering the table
+import { Messages, MessagesTableId } from "../src/codegen/index.sol";
+import { IStore } from "@latticexyz/store/src/IStore.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+// For deploying MessageSystem
+import { MessageSystem } from "../src/systems/MessageSystem.sol";
+
+contract MessagingExtension is Script {
+  function run() external {
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+
+    WorldRegistrationSystem world = WorldRegistrationSystem(worldAddress);
+    ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("messaging"));
+    ResourceId systemResource = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "messaging", "MessageSystem");
+
+    vm.startBroadcast(deployerPrivateKey);
+    world.registerNamespace(namespaceResource);
+
+    StoreSwitch.setStoreAddress(worldAddress);
+    Messages.register();
+
+    MessageSystem messageSystem = new MessageSystem();
+    console.log("MessageSystem address: ", address(messageSystem));
+
+    world.registerSystem(systemResource, messageSystem, true);
+    world.registerFunctionSelector(systemResource, "incrementMessage(string)");
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+## Understanding resource identifiers
+
+Resource identifiers can be represented as 32-byte hexadecimal values.
+For example, in the MUD Dev Tools, you can see values such as `0x7462...0000`.
+
+These values can be parsed with [`hexToResource`](https://github.com/latticexyz/mud/blob/main/packages/common/src/hexToResource.ts), which converts resource IDs to human readable values.
+
+For example, we can parse these four resource ID's:
+
+```ts
+import { hexToResource } from "@latticexyz/common";
+
+const sampleResourceIds: Hex[] = [
+  "0x6e7373746f726500000000000000000000000000000000000000000000000000", // namespace
+  "0x746273746f72650000000000000000005461626c657300000000000000000000", // table
+  "0x6f74776f726c6400000000000000000046756e6374696f6e5369676e61747572", // offchain table
+  "0x737900000000000000000000000000004163636573734d616e6167656d656e74", // system
+];
+
+sampleResourceIds.map((resourceId) => {
+  console.log("----------");
+  console.log(hexToResource(resourceId));
+});
+```
+
+Which logs the following types, namespaces, and names:
+
+```console
+----------
+{
+  resourceId: '0x6e7373746f726500000000000000000000000000000000000000000000000000',
+  type: 'namespace',
+  namespace: 'store',
+  name: ''
+}
+----------
+{
+  resourceId: '0x746273746f72650000000000000000005461626c657300000000000000000000',
+  type: 'table',
+  namespace: 'store',
+  name: 'Tables'
+}
+----------
+{
+  resourceId: '0x6f74776f726c6400000000000000000046756e6374696f6e5369676e61747572',
+  type: 'offchainTable',
+  namespace: 'world',
+  name: 'FunctionSignatur'
+}
+----------
+{
+  resourceId: '0x737900000000000000000000000000004163636573734d616e6167656d656e74',
+  type: 'system',
+  namespace: '',
+  name: 'AccessManagement'
+}
+```

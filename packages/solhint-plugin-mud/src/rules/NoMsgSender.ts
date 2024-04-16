@@ -3,11 +3,14 @@ import { SolhintRule } from "../solhintTypes";
 
 export class NoMsgSender implements SolhintRule {
   ruleId = "no-msg-sender";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   reporter: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   config: any;
 
   isSystemOrLibrary = false;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(reporter: any, config: any) {
     this.reporter = reporter;
     this.config = config;
@@ -29,7 +32,7 @@ export class NoMsgSender implements SolhintRule {
       this.reporter.error(
         node,
         this.ruleId,
-        `Systems and their libraries should use "_msgSender()" or "_world()" instead of "msg.sender".`
+        `Systems and their libraries should use "_msgSender()" or "_world()" instead of "msg.sender".`,
       );
     }
   }

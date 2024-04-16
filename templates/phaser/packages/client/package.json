@@ -13,7 +13,7 @@
   "dependencies": {
     "@latticexyz/common": "link:../../../../packages/common",
     "@latticexyz/dev-tools": "link:../../../../packages/dev-tools",
-    "@latticexyz/phaserx": "link:../../../../packages/phaserx",
+    "@latticexyz/phaserx": "2.0.0-next.17",
     "@latticexyz/react": "link:../../../../packages/react",
     "@latticexyz/recs": "link:../../../../packages/recs",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
@@ -29,7 +29,7 @@
     "simplex-noise": "^4.0.1",
     "styled-components": "^5.3.10",
     "use-resize-observer": "^9.1.0",
-    "viem": "2.7.12",
+    "viem": "2.9.16",
     "zustand": "^4.3.8"
   },
   "devDependencies": {

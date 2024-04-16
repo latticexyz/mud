@@ -2,9 +2,19 @@
 pragma solidity >=0.8.24;
 
 import { ResourceId } from "./ResourceId.sol";
-import { PackedCounter } from "./PackedCounter.sol";
+import { EncodedLengths } from "./EncodedLengths.sol";
 
+/**
+ * @title IStoreEvents
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ */
 interface IStoreEvents {
+  /**
+   * @notice Emitted when the Store is created.
+   * @param storeVersion The protocol version of the Store.
+   */
+  event HelloStore(bytes32 indexed storeVersion);
+
   /**
    * @notice Emitted when a new record is set in the store.
    * @param tableId The ID of the table where the record is set.
@@ -17,7 +27,7 @@ interface IStoreEvents {
     ResourceId indexed tableId,
     bytes32[] keyTuple,
     bytes staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes dynamicData
   );
 
@@ -49,7 +59,7 @@ interface IStoreEvents {
     uint8 dynamicFieldIndex,
     uint48 start,
     uint40 deleteCount,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes data
   );
 

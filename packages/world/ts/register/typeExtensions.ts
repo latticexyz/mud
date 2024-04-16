@@ -1,5 +1,5 @@
 import { OrDefaults } from "@latticexyz/common/type-utils";
-import { MUDCoreUserConfig } from "@latticexyz/config";
+import { MUDCoreUserConfig } from "@latticexyz/config/library";
 
 import "@latticexyz/store/register";
 import { WORLD_DEFAULTS } from "../config/defaults";
@@ -8,7 +8,7 @@ import { WorldUserConfig, WorldConfig, ExpandSystemsConfig } from "../config/typ
 // Inject the plugin options into the core config.
 // Re-exporting an interface of an existing module merges them, adding new options to the interface.
 // (typescript has no way to override types)
-declare module "@latticexyz/config" {
+declare module "@latticexyz/config/library" {
   // Extend the user config type, which represents the config as written by the users.
   // Most things are optional here.
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -22,21 +22,7 @@ declare module "@latticexyz/config" {
 }
 
 declare module "@latticexyz/store/register" {
-  export interface ExpandMUDUserConfig<T extends MUDCoreUserConfig>
-    extends OrDefaults<
-      T,
-      {
-        worldContractName: typeof WORLD_DEFAULTS.worldContractName;
-        worldInterfaceName: typeof WORLD_DEFAULTS.worldInterfaceName;
-        excludeSystems: typeof WORLD_DEFAULTS.excludeSystems;
-        postDeployScript: typeof WORLD_DEFAULTS.postDeployScript;
-        deploysDirectory: typeof WORLD_DEFAULTS.deploysDirectory;
-        worldsFile: typeof WORLD_DEFAULTS.worldsFile;
-        worldgenDirectory: typeof WORLD_DEFAULTS.worldgenDirectory;
-        worldImportPath: typeof WORLD_DEFAULTS.worldImportPath;
-        modules: typeof WORLD_DEFAULTS.modules;
-      }
-    > {
+  export interface ExpandMUDUserConfig<T extends MUDCoreUserConfig> extends OrDefaults<T, WORLD_DEFAULTS> {
     systems: ExpandSystemsConfig<T["systems"] extends Record<string, unknown> ? T["systems"] : Record<string, never>>;
   }
 }

@@ -1,4 +1,4 @@
-import { isStaticAbiType, isDynamicAbiType } from "@latticexyz/schema-type";
+import { isStaticAbiType, isDynamicAbiType } from "@latticexyz/schema-type/internal";
 import { Hex } from "viem";
 import { SchemaToPrimitives, ValueSchema } from "./common";
 import { decodeRecord } from "./decodeRecord";
@@ -11,6 +11,6 @@ export function decodeValue<TSchema extends ValueSchema>(valueSchema: TSchema, d
   const valueTuple = decodeRecord({ staticFields, dynamicFields }, data);
 
   return Object.fromEntries(
-    Object.keys(valueSchema).map((name, i) => [name, valueTuple[i]])
+    Object.keys(valueSchema).map((name, i) => [name, valueTuple[i]]),
   ) as SchemaToPrimitives<TSchema>;
 }

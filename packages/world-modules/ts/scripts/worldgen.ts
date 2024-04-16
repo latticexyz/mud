@@ -3,9 +3,8 @@ import path, { basename } from "path";
 import { rmSync } from "fs";
 import { loadConfig } from "@latticexyz/config/node";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
-import { WorldConfig } from "@latticexyz/world";
+import { World as WorldConfig } from "@latticexyz/world";
 import { worldgen } from "@latticexyz/world/node";
-import { StoreConfig } from "@latticexyz/store";
 
 // TODO dedupe this and cli's worldgen command
 const configPath = undefined;
@@ -19,12 +18,14 @@ const existingContracts = glob.sync(`${srcDir}/**/*.sol`).map((path) => ({
 }));
 
 // Load and resolve the config
-const mudConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
+const mudConfig = (await loadConfig(configPath)) as WorldConfig;
 
-const outputBaseDirectory = path.join(srcDir, mudConfig.codegenDirectory);
+const outputBaseDirectory = path.join(srcDir, mudConfig.codegen.outputDirectory);
 
 // clear the worldgen directory
-if (clean) rmSync(path.join(outputBaseDirectory, mudConfig.worldgenDirectory), { recursive: true, force: true });
+if (clean) {
+  rmSync(path.join(outputBaseDirectory, mudConfig.codegen.worldgenDirectory), { recursive: true, force: true });
+}
 
 // generate new interfaces
 await worldgen(mudConfig, existingContracts, outputBaseDirectory);

@@ -74,7 +74,7 @@ function renderWrapperStaticArray(
   functionName: string,
   elementType: string,
   staticLength: number,
-  internalTypeId: string
+  internalTypeId: string,
 ): string {
   // WARNING: ensure this still works if changing major solidity versions!
   // (the memory layout for static arrays may change)
@@ -119,7 +119,7 @@ function renderUnwrapperStaticArray(
   functionName: string,
   elementType: string,
   staticLength: number,
-  internalTypeId: string
+  internalTypeId: string,
 ): string {
   // byte length for memory copying (more efficient than a loop)
   const byteLength = staticLength * 32;

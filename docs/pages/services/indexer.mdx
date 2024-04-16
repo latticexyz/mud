@@ -1,3 +1,4 @@
+import { Callout } from "nextra/components";
 import { CollapseCode } from "../../components/CollapseCode";
 
 # Indexer
@@ -49,7 +50,7 @@ To run the indexer directly on your computer using SQLite:
    If necessary, install it first.
 
    ```bash copy
-   npx -y -p @latticexyz/store-indexer@next sqlite-indexer
+   npx -y -p @latticexyz/store-indexer sqlite-indexer
    ```
 
 **Note:** The `indexer.db` is persistent if you stop and restart the indexer.
@@ -76,7 +77,7 @@ The main purpose of this variant of the indexer is to efficiently hydrate a MUD 
    Install it first if necessary.
 
    ```bash copy
-   npx -y -p @latticexyz/store-indexer@next postgres-indexer
+   npx -y -p @latticexyz/store-indexer postgres-indexer
    ```
 
 1. Open a separate command line.
@@ -84,7 +85,7 @@ The main purpose of this variant of the indexer is to efficiently hydrate a MUD 
 
    ```bash copy
    export DATABASE_URL=postgres://127.0.0.1/postgres
-   npx -y -p @latticexyz/store-indexer@next postgres-frontend
+   npx -y -p @latticexyz/store-indexer postgres-frontend
    ```
 
 ### Schemaful indexing with PostgreSQL via npx
@@ -101,7 +102,7 @@ This approach doesn't scale well to all tables of a chain, but it is a convenien
    ```bash copy
    export RPC_HTTP_URL=http://127.0.0.1:8545
    export DATABASE_URL=postgres://127.0.0.1/postgres
-   npx -y -p @latticexyz/store-indexer@next postgres-decoded-indexer
+   npx -y -p @latticexyz/store-indexer postgres-decoded-indexer
    ```
 
 1. To verify the installation, run `psql` and then:
@@ -115,21 +116,17 @@ This approach doesn't scale well to all tables of a chain, but it is a convenien
      Result:
 
      ```
-                                     List of schemas
-                          Name                         |       Owner
-     --------------------------------------------------+-------------------
-     0x6e9474e9c83676b9a71133ff96db43e7aa0a4342__      | qbzzt
-     0x6e9474e9c83676b9a71133ff96db43e7aa0a4342__store | qbzzt
-     0x6e9474e9c83676b9a71133ff96db43e7aa0a4342__world | qbzzt
-     mud                                               | qbzzt
-     public                                            | pg_database_owner
-     (5 rows)
+                       List of schemas
+                       Name                    | Owner
+     --------------------------------------------+-------
+     0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1 | qbzzt
+     mud                                        | qbzzt
      ```
 
    - Connect to the schema for your world.
 
      ```sql copy
-     set search_path to "0x6e9474e9c83676b9a71133ff96db43e7aa0a4342__";
+     SET search_path TO "0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1";
      ```
 
    - Get the list of tables.
@@ -141,27 +138,42 @@ This approach doesn't scale well to all tables of a chain, but it is a convenien
      Result (When using the React template):
 
      ```
-                             List of relations
-                       Schema                      | Name  | Type  | Owner
-     ----------------------------------------------+-------+-------+-------
-     0x6e9474e9c83676b9a71133ff96db43e7aa0a4342__  | tasks | table | qbzzt
-     (1 row)
+                                      List of relations
+                       Schema                   |           Name            | Type  | Owner
+     --------------------------------------------+---------------------------+-------+-------
+     0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1 | store__resource_ids       | table | qbzzt
+     0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1 | store__store_hooks        | table | qbzzt
+     0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1 | store__tables             | table | qbzzt
+     0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1 | tasks                     | table | qbzzt
+     0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1 | world__balances           | table | qbzzt
+     0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1 | world__function_selector  | table | qbzzt
+     0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1 | world__function_signatur  | table | qbzzt
+     0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1 | world__init_module_addres | table | qbzzt
+     0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1 | world__installed_modules  | table | qbzzt
+     0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1 | world__namespace_delegat  | table | qbzzt
+     0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1 | world__namespace_owner    | table | qbzzt
+     0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1 | world__resource_access    | table | qbzzt
+     0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1 | world__system_hooks       | table | qbzzt
+     0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1 | world__system_registry    | table | qbzzt
+     0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1 | world__systems            | table | qbzzt
+     0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1 | world__user_delegation_co | table | qbzzt
+     (16 rows)
      ```
 
    - Read the actual data.
 
      ```sql copy
-     select * from tasks;
+     SELECT * FROM tasks;
      ```
 
      Result:
 
      ```
-                                   key                                  | created_at | completed_at |    description     |                            __key_bytes                             | __last_updated_block_number
-     --------------------------------------------------------------------+------------+--------------+--------------------+--------------------------------------------------------------------+-----------------------------
-     \x3100000000000000000000000000000000000000000000000000000000000000 | 1702401236 |            0 | Walk the dog       | \x3100000000000000000000000000000000000000000000000000000000000000 |                          17
-     \x5e9c11602057fbf149cca23095b1863f7ffa8d0d0bd9434005a344ad612488a7 | 1702401238 |            0 | Take out the trash | \x5e9c11602057fbf149cca23095b1863f7ffa8d0d0bd9434005a344ad612488a7 |                          17
-     \x0c9151148be227a42be8d3e3e7e61da28a532f2340b0ad9ca8bc747703ec2417 | 1702401238 |   1702401238 | Do the dishes      | \x0c9151148be227a42be8d3e3e7e61da28a532f2340b0ad9ca8bc747703ec2417 |                          17
+                                     id                                 | created_at | completed_at |    description     |                            __key_bytes                             | __last_updated_block_number
+     -------------------------------------------------------------------+------------+--------------+--------------------+--------------------------------------------------------------------+-----------------------------
+     \x3100000000000000000000000000000000000000000000000000000000000000 | 1712714176 |            0 | Walk the dog       | \x3100000000000000000000000000000000000000000000000000000000000000 |                          10
+     \x5e9c11602057fbf149cca23095b1863f7ffa8d0d0bd9434005a344ad612488a7 | 1712714178 |            0 | Take out the trash | \x5e9c11602057fbf149cca23095b1863f7ffa8d0d0bd9434005a344ad612488a7 |                          10
+     \x0c9151148be227a42be8d3e3e7e61da28a532f2340b0ad9ca8bc747703ec2417 | 1712714178 |   1712714178 | Do the dishes      | \x0c9151148be227a42be8d3e3e7e61da28a532f2340b0ad9ca8bc747703ec2417 |                          10
      (3 rows)
      ```
 
@@ -302,7 +314,7 @@ This command starts both the indexer and the query frontend.
 If you use either SQLite or PostgreSQL with the query frontend (using PostgreSQL only as storage), you can run this command to test the indexer.
 
 ```sh copy
-curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x6e9474e9c83676b9a71133ff96db43e7aa0a4342%22%7D%7D%7D' | jq
+curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%20%220%22%3A%20%7B%22json%22%3A%20%7B%22chainId%22%3A%2031337%2C%20%22address%22%3A%20%220xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1%22%20%7D%20%7D%20%7D' | jq
 ```
 
 The result should be nicely formatted (and long) JSON output with all the data stored in the `World`.
@@ -318,7 +330,7 @@ The URL has these parameters:
 | Server    | http://localhost:3001 | By default the indexer listens on port 3001    |
 | Path      | trpc/findAll          | Return all entries (based on the input filter) |
 | `batch`   | `1`                   | A required field                               |
-| `input`   | `%7B%22 ... %7D%7D`   | See below                                      |
+| `input`   | `%7B%20 ... %20%7D`   | See below                                      |
 
 The input is the JSON filter that tells the server what we need.
 It is [URL encoded](https://en.wikipedia.org/wiki/Percent-encoding), you can decode it [using an online calculator](https://www.urldecoder.org/).
@@ -328,13 +340,22 @@ It is [URL encoded](https://en.wikipedia.org/wiki/Percent-encoding), you can dec
   "0": {
     "json": {
       "chainId": 31337,
-      "address": "0x6e9474e9c83676b9a71133ff96db43e7aa0a4342"
+      "address": "0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1"
     }
   }
 }
 ```
 
-Meaning that query 0 is for everything in the `World` at address `0x6e9474e9c83676b9a71133ff96db43e7aa0a4342`, on the chain with chain ID `31337`.
+Meaning that query 0 is for everything in the `World` at address `0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1`, on the chain with chain ID `31337`.
+
+{" "}
+
+<Callout type="info" emoji="ⓘ">
+
+The JSON here is written in multiple lines for readablility.
+However, when you encode the JSON for the URL it is necessary to place the entire string on one line.
+
+</Callout>
 
 </details>
 
@@ -362,6 +383,39 @@ const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await
 
 If the client does not need all the information stored in the `World`, you can [filter the synchronization](/guides/hello-world/filter-sync) to save on resources.
 
+### Clearing the information
+
+If you restart the blockchain, you need to clear all the information stored by the indexer otherwise you'll have an inconsistent state.
+
+- If you are using SQLite, remove `indexer.db`.
+
+- If you are using schemaless PostgreSQL, you just need to remove the `mud` schema:
+
+  ```sql copy
+  DROP SCHEMA "mud" CASCADE;
+  ```
+
+- If you are using schemaful PostgreSQL, you need to also remove the schemas for the `World`s indexed.
+
+  1. Get the list of `World`s using this command:
+
+     ```sql copy
+     SELECT DISTINCT address FROM mud.records;
+     ```
+
+  1. Delete those schemas.
+     For example, if you use one of the TypeScript templates, run this command:
+
+     ```sql copy
+     DROP SCHEMA "0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1" CASCADE;
+     ```
+
+  1. Drop the `mud` schema.
+
+     ```sql copy
+     DROP SCHEMA mud CASCADE;
+     ```
+
 ## Usage examples
 
 ### SQLite to view the tasks from the React template
@@ -370,23 +424,23 @@ If the client does not need all the information stored in the `World`, you can [
 
    ```sh copy
    export RPC_HTTP_URL=http://127.0.0.1:8545
-   npx -y -p @latticexyz/store-indexer@next sqlite-indexer
+   npx -y -p @latticexyz/store-indexer sqlite-indexer
    ```
 
 1. Get the list of tables.
    To do that, we read all the data and filter it locally.
 
    ```sh copy
-   curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x6e9474e9c83676b9a71133ff96db43e7aa0a4342%22%7D%7D%7D' > alldata.json
+   curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x4f4ddafbc93cf8d11a253f21ddbcf836139efdec%22%7D%7D%7D' > alldata.json
    cat alldata.json | jq '.[0].result.data.json.tables[]' > tables.json
-   cat tables.json | jq '.name + " " + .tableId'
+   cat tables.json | jq '.namespace + "__" + .name + " " + .tableId'
    ```
 
 1. Ask the indexer for only the information in a specific table (which requires you to know the `tableId` for it).
 
    ```sh copy
    INDEXER_URL=http://localhost:3001/trpc
-   WORLD_ADDRESS=0x256e6eaf6a6683ab771c576f2f5c8a774bdac8e3
+   WORLD_ADDRESS=0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1
    TABLE_ID=0x746200000000000000000000000000005461736b730000000000000000000000
    CHAIN_ID=31337
    JSON='{"0":{"json":{"chainId": '$CHAIN_ID', "address": "'$WORLD_ADDRESS'", "filters": [{"tableId": "'$TABLE_ID'"}]}}}'
@@ -399,49 +453,4 @@ If the client does not need all the information stored in the `World`, you can [
 
    ```sh copy
    cat data.json | jq '.[0].result.data.json.tables[].name'
-   ```
-
-### Postgres to read data from SkyStrife season 0
-
-1. If necessary, start Docker and PostgreSQL.
-
-1. Start the Postgres Docker container.
-
-   ```sh copy
-   docker run \
-      --platform linux/amd64 \
-      -e RPC_HTTP_URL=https://rpc.holesky.redstone.xyz \
-      -e RPC_WS_URL=wss://rpc.holesky.redstone.xyz/ws \
-      -e DATABASE_URL=postgres://host.docker.internal/postgres \
-      -e START_BLOCK=895629 \
-      -p 3001:3001  \
-      ghcr.io/latticexyz/store-indexer:latest  \
-      pnpm start:postgres
-   ```
-
-1. It will take a while until the indexer synchronizes all the way to the present.
-   However, we can already read information and it will give us the latest it has.
-
-1. Read the data from the indexer.
-
-   ```sh copy
-   INDEXER_URL=http://localhost:3001/trpc
-   WORLD_ADDRESS=0x256e6eaf6a6683ab771c576f2f5c8a774bdac8e3
-   CHAIN_ID=17001
-   JSON='{"0":{"json":{"chainId":'$CHAIN_ID', "address":"'$WORLD_ADDRESS'"}}}'
-   ENCODED_JSON=`echo "console.log(encodeURI('$JSON'))" | node`
-   curl $INDEXER_URL'/findAll?batch=1&input='$ENCODED_JSON > data.json
-   ```
-
-1. Obtain the list of tables.
-
-   ```sh copy
-   TABLES=`cat data.json | jq '.[0].result.data.json.tables'`
-   echo $TABLES | jq '.[].name'
-   ```
-
-1. Get the combatant entities.
-
-   ```sh copy
-   echo $TABLES | jq '.[] | select (.name=="Combat")'
    ```

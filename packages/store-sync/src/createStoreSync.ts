@@ -1,4 +1,4 @@
-import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
+import { storeEventsAbi } from "@latticexyz/store";
 import { Hex, TransactionReceiptNotFoundError } from "viem";
 import {
   StorageAdapter,
@@ -26,18 +26,20 @@ import {
   combineLatest,
   scan,
   identity,
+  mergeMap,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
 import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/utils";
 import { getSnapshot } from "./getSnapshot";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
+import { Store as StoreConfig } from "@latticexyz/store";
 
 const debug = parentDebug.extend("createStoreSync");
 
 const defaultFilters: SyncFilter[] = internalTableIds.map((tableId) => ({ tableId }));
 
-type CreateStoreSyncOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
+type CreateStoreSyncOptions<config extends StoreConfig = StoreConfig> = SyncOptions<config> & {
   storageAdapter: StorageAdapter;
   onProgress?: (opts: {
     step: SyncStep;
@@ -48,7 +50,7 @@ type CreateStoreSyncOptions<TConfig extends StoreConfig = StoreConfig> = SyncOpt
   }) => void;
 };
 
-export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>({
+export async function createStoreSync<config extends StoreConfig = StoreConfig>({
   storageAdapter,
   onProgress,
   publicClient,
@@ -61,7 +63,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   initialState,
   initialBlockLogs,
   indexerUrl,
-}: CreateStoreSyncOptions<TConfig>): Promise<SyncResult> {
+}: CreateStoreSyncOptions<config>): Promise<SyncResult> {
   const filters: SyncFilter[] =
     initialFilters.length || tableIds.length
       ? [...initialFilters, ...tableIds.map((tableId) => ({ tableId })), ...defaultFilters]
@@ -73,7 +75,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
           (filter) =>
             filter.tableId === log.args.tableId &&
             (filter.key0 == null || filter.key0 === log.args.keyTuple[0]) &&
-            (filter.key1 == null || filter.key1 === log.args.keyTuple[1])
+            (filter.key1 == null || filter.key1 === log.args.keyTuple[1]),
         )
     : undefined;
 
@@ -120,7 +122,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
 
       return of(undefined);
     }),
-    shareReplay(1)
+    shareReplay(1),
   );
 
   const storedInitialBlockLogs$ = initialBlockLogs$.pipe(
@@ -168,13 +170,13 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
 
       return { blockNumber, logs };
     }),
-    shareReplay(1)
+    shareReplay(1),
   );
 
   const startBlock$ = initialBlockLogs$.pipe(
     map((block) => bigIntMax(block?.blockNumber ?? 0n, initialStartBlock)),
     // TODO: if start block is still 0, find via deploy event
-    tap((startBlock) => debug("starting sync from block", startBlock))
+    tap((startBlock) => debug("starting sync from block", startBlock)),
   );
 
   const latestBlock$ = createBlockStream({ publicClient, blockTag: followBlockTag }).pipe(shareReplay(1));
@@ -183,7 +185,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
     tap((blockNumber) => {
       debug("on block number", blockNumber, "for", followBlockTag, "block tag");
     }),
-    shareReplay(1)
+    shareReplay(1),
   );
 
   let startBlock: bigint | null = null;
@@ -196,7 +198,9 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
       startBlock = range.startBlock;
       endBlock = range.endBlock;
     }),
-    concatMap((range) => {
+    // We use `map` instead of `concatMap` here to send the fetch request immediately when a new block range appears,
+    // instead of sending the next request only when the previous one completed.
+    map((range) => {
       const storedBlocks = fetchAndStoreLogs({
         publicClient,
         address,
@@ -212,6 +216,8 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
 
       return from(storedBlocks);
     }),
+    // `concatMap` turns the stream of promises into their awaited values
+    concatMap(identity),
     tap(({ blockNumber, logs }) => {
       debug("stored", logs.length, "logs for block", blockNumber);
       lastBlockNumberProcessed = blockNumber;
@@ -238,7 +244,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
         }
       }
     }),
-    share()
+    share(),
   );
 
   const storedBlockLogs$ = concat(storedInitialBlockLogs$, storedBlock$).pipe(share());
@@ -249,10 +255,10 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   const recentBlocks$ = storedBlockLogs$.pipe(
     scan<StorageAdapterBlock, StorageAdapterBlock[]>(
       (recentBlocks, block) => [block, ...recentBlocks].slice(0, recentBlocksWindow),
-      []
+      [],
     ),
     filter((recentBlocks) => recentBlocks.length > 0),
-    shareReplay(1)
+    shareReplay(1),
   );
 
   // TODO: move to its own file so we can test it, have its own debug instance, etc.
@@ -262,7 +268,9 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
     // This currently blocks for async call on each block processed
     // We could potentially speed this up a tiny bit by racing to see if 1) tx exists in processed block or 2) fetch tx receipt for latest block processed
     const hasTransaction$ = recentBlocks$.pipe(
-      concatMap(async (blocks) => {
+      // We use `mergeMap` instead of `concatMap` here to send the fetch request immediately when a new block range appears,
+      // instead of sending the next request only when the previous one completed.
+      mergeMap(async (blocks) => {
         const txs = blocks.flatMap((block) => block.logs.map((op) => op.transactionHash).filter(isDefined));
         if (txs.includes(tx)) return true;
 
@@ -278,7 +286,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
           throw error;
         }
       }),
-      tap((result) => debug("has tx?", tx, result))
+      tap((result) => debug("has tx?", tx, result)),
     );
 
     await firstValueFrom(hasTransaction$.pipe(filter(identity)));

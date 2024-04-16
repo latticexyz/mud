@@ -31,14 +31,14 @@ type WorldContract = GetContractReturnType<
 
 export async function generateLogs(
   rpc: string,
-  transactionHook: (worldContract: WorldContract) => Promise<Hex>
+  transactionHook: (worldContract: WorldContract) => Promise<Hex>,
 ): Promise<RpcLog[]> {
   console.log("deploying world");
   const { stdout, stderr } = await execa("pnpm", ["mud", "deploy", "--rpc", rpc, "--saveDeployment", "false"], {
     cwd: "../contracts",
     stdio: "pipe",
     env: {
-      DEBUG: "mud:*",
+      DEBUG: "mud:store-sync:createStoreSync",
     },
   });
   if (stderr) console.error(stderr);
@@ -88,7 +88,7 @@ export async function generateLogs(
             encodeEventTopics({
               abi: [event],
               eventName: event.name,
-            })
+            }),
           ),
         ],
         fromBlock: numberToHex(0n),

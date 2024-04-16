@@ -15,11 +15,11 @@
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../packages/cli",
-    "@typescript-eslint/eslint-plugin": "5.46.1",
-    "@typescript-eslint/parser": "5.46.1",
-    "eslint": "8.29.0",
+    "@typescript-eslint/eslint-plugin": "7.1.1",
+    "@typescript-eslint/parser": "7.1.1",
+    "eslint": "8.57.0",
     "mprocs": "^0.6.4",
-    "typescript": "5.1.6"
+    "typescript": "5.4.2"
   },
   "engines": {
     "node": "18.x",

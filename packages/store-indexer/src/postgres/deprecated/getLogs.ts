@@ -11,6 +11,7 @@ import { createBenchmark } from "@latticexyz/common";
  * @deprecated
  */
 export async function getLogs(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   database: PgDatabase<any>,
   {
     chainId,
@@ -20,7 +21,7 @@ export async function getLogs(
     readonly chainId: number;
     readonly address?: Hex;
     readonly filters?: readonly SyncFilter[];
-  }
+  },
 ): Promise<{ blockNumber: bigint; logs: (StorageAdapterLog & { eventName: "Store_SetRecord" })[] }> {
   const benchmark = createBenchmark("drizzleGetLogs");
 
@@ -30,12 +31,12 @@ export async function getLogs(
           address != null ? eq(tables.recordsTable.address, address) : undefined,
           eq(tables.recordsTable.tableId, filter.tableId),
           filter.key0 != null ? eq(tables.recordsTable.key0, filter.key0) : undefined,
-          filter.key1 != null ? eq(tables.recordsTable.key1, filter.key1) : undefined
-        )
+          filter.key1 != null ? eq(tables.recordsTable.key1, filter.key1) : undefined,
+        ),
       )
     : address != null
-    ? [eq(tables.recordsTable.address, address)]
-    : [];
+      ? [eq(tables.recordsTable.address, address)]
+      : [];
   benchmark("parse config");
 
   // Query for the block number that the indexer (i.e. chain) is at, in case the
@@ -63,7 +64,7 @@ export async function getLogs(
     .from(tables.recordsTable)
     .where(or(...conditions))
     .orderBy(
-      asc(tables.recordsTable.blockNumber)
+      asc(tables.recordsTable.blockNumber),
       // TODO: add logIndex (https://github.com/latticexyz/mud/issues/1979)
     );
   benchmark("query records");
