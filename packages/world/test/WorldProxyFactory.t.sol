@@ -43,7 +43,6 @@ contract WorldProxyFactoryTest is Test, GasReporter {
   function testWorldProxyFactory(address account1, address account2, uint256 salt1, uint256 salt2) public {
     vm.assume(salt1 != salt2);
     vm.assume(account1 != account2);
-    vm.startPrank(account1);
 
     // Deploy WorldFactory with current InitModule
     InitModule initModule = createInitModule();
@@ -64,6 +63,8 @@ contract WorldProxyFactoryTest is Test, GasReporter {
     vm.expectEmit(true, true, true, true);
     emit IWorldEvents.HelloWorld(WORLD_VERSION);
 
+    // Deploy world proxy
+    vm.prank(account1);
     startGasReport("deploy world via WorldProxyFactory");
     address worldAddress = worldFactory.deployWorld(_salt1);
     endGasReport();
@@ -93,9 +94,9 @@ contract WorldProxyFactoryTest is Test, GasReporter {
     );
 
     // Check for HelloWorld event from World
+    vm.prank(account1);
     vm.expectEmit(true, true, true, true);
     emit IWorldEvents.HelloWorld(WORLD_VERSION);
-
     worldAddress = worldFactory.deployWorld(_salt2);
 
     worldImplementationAddress = address(uint160(uint256(vm.load(worldAddress, IMPLEMENTATION_SLOT))));
@@ -110,10 +111,12 @@ contract WorldProxyFactoryTest is Test, GasReporter {
     assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), account1);
 
     // Expect revert when deploying world with same bytes salt as already deployed world
+    vm.prank(account1);
     vm.expectRevert();
     worldFactory.deployWorld(_salt1);
 
     // Expect revert when initializing world as not the creator
+    vm.prank(account1);
     vm.expectRevert(
       abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, ROOT_NAMESPACE_ID.toString(), account1)
     );
@@ -123,15 +126,14 @@ contract WorldProxyFactoryTest is Test, GasReporter {
     address newWorldImplementationAddress = address(new World());
 
     // Expect revert when changing implementation as not root namespace owner
-    vm.startPrank(account2);
+    vm.prank(account2);
     vm.expectRevert(
       abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, ROOT_NAMESPACE_ID.toString(), account2)
     );
     WorldProxy(payable(worldAddress)).setImplementation(newWorldImplementationAddress);
 
-    vm.startPrank(account1);
-
     // Set proxy implementation to new world
+    vm.prank(account1);
     startGasReport("set WorldProxy implementation");
     WorldProxy(payable(worldAddress)).setImplementation(newWorldImplementationAddress);
     endGasReport();
@@ -146,6 +148,7 @@ contract WorldProxyFactoryTest is Test, GasReporter {
     assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), account1);
 
     // Test we can execute a world function
+    vm.prank(account1);
     IBaseWorld(address(worldAddress)).registerDelegation(account2, UNLIMITED_DELEGATION, new bytes(0));
     assertEq(ResourceId.unwrap(UserDelegationControl.get(account1, account2)), ResourceId.unwrap(UNLIMITED_DELEGATION));
   }
