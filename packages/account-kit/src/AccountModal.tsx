@@ -12,7 +12,7 @@ export function AccountModal() {
   const { openConnectModal, connectModalOpen } = useConnectModal();
   const shown = accountModalOpen && status === "connected";
 
-  const previousOpen = usePrevious(open);
+  const previousOpen = usePrevious(accountModalOpen);
   const previousConnectModalOpen = usePrevious(connectModalOpen);
   const previousStatus = usePrevious(status);
 

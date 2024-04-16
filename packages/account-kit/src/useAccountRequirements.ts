@@ -12,6 +12,7 @@ export const accountRequirements = [
   "gasAllowance",
   "gasSpender",
   "accountDelegation",
+  "accountDelegationConfirmed",
 ] as const;
 
 export type AccountRequirement = (typeof accountRequirements)[number];
@@ -29,8 +30,6 @@ export function useAccountRequirements(): UseAccountRequirementsResult {
   const hasDelegation = useHasDelegation();
   const { registerDelegationSignature } = useSignRegisterDelegation();
 
-  console.log("useAccountRequirements: got registerDelegation signature", registerDelegationSignature);
-
   return useMemo(() => {
     const satisfiesRequirement = {
       connectedWallet: () => userAccount.status === "connected",
@@ -38,6 +37,7 @@ export function useAccountRequirements(): UseAccountRequirementsResult {
       gasAllowance: () => gasTankBalance != null && gasTankBalance > 0n,
       gasSpender: () => isGasSpender === true,
       accountDelegation: () => hasDelegation === true || registerDelegationSignature != null,
+      accountDelegationConfirmed: () => hasDelegation === true,
     } as const satisfies Record<AccountRequirement, () => boolean>;
 
     const requirements = accountRequirements.filter((requirement) => !satisfiesRequirement[requirement]());

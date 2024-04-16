@@ -1,4 +1,4 @@
-import { ErrorMessage, conform, narrow, requiredKeyOf } from "@arktype/util";
+import { ErrorMessage, conform, evaluate, narrow, requiredKeyOf } from "@arktype/util";
 import { isStaticAbiType } from "@latticexyz/schema-type/internal";
 import { Hex } from "viem";
 import { get, hasOwnKey, mergeIfUndefined } from "./generics";
@@ -20,7 +20,7 @@ function getValidKeys<schema extends SchemaInput, scope extends Scope = AbiTypeS
 ): ValidKeys<schema, scope> {
   return Object.entries(schema)
     .filter(([, internalType]) => hasOwnKey(scope.types, internalType) && isStaticAbiType(scope.types[internalType]))
-    .map(([key]) => key) as unknown as ValidKeys<schema, scope>;
+    .map(([key]) => key) as never;
 }
 
 export function isValidPrimaryKey<schema extends SchemaInput, scope extends Scope>(
@@ -45,17 +45,17 @@ export type validateKeys<validKeys extends PropertyKey, keys> = keys extends rea
 
 export type ValidateTableOptions = { inStoreContext: boolean };
 
+export type requiredTableKey<inStoreContext extends boolean> = Exclude<
+  requiredKeyOf<TableInput>,
+  inStoreContext extends true ? "name" | "namespace" : ""
+>;
+
 export type validateTable<
   input,
   scope extends Scope = AbiTypeScope,
   options extends ValidateTableOptions = { inStoreContext: false },
 > = {
-  [key in
-    | keyof input
-    | Exclude<
-        requiredKeyOf<TableInput>,
-        options["inStoreContext"] extends true ? "name" | "namespace" : ""
-      >]: key extends "key"
+  [key in keyof input | requiredTableKey<options["inStoreContext"]>]: key extends "key"
     ? validateKeys<getStaticAbiTypeKeys<conform<get<input, "schema">, SchemaInput>, scope>, get<input, key>>
     : key extends "schema"
       ? validateSchema<get<input, key>, scope>
@@ -101,22 +101,22 @@ export function validateTable<input, scope extends Scope = AbiTypeScope>(
   }
 }
 
-export type resolveTableCodegen<input extends TableInput> = {
+export type resolveTableCodegen<input extends TableInput> = evaluate<{
   [key in keyof TableCodegen]-?: key extends keyof input["codegen"]
     ? undefined extends input["codegen"][key]
       ? key extends "dataStruct"
         ? boolean
-        : key extends keyof typeof TABLE_CODEGEN_DEFAULTS
-          ? (typeof TABLE_CODEGEN_DEFAULTS)[key]
+        : key extends keyof TABLE_CODEGEN_DEFAULTS
+          ? TABLE_CODEGEN_DEFAULTS[key]
           : never
       : input["codegen"][key]
     : // dataStruct isn't narrowed, because its value is conditional on the number of value schema fields
       key extends "dataStruct"
       ? boolean
-      : key extends keyof typeof TABLE_CODEGEN_DEFAULTS
-        ? (typeof TABLE_CODEGEN_DEFAULTS)[key]
+      : key extends keyof TABLE_CODEGEN_DEFAULTS
+        ? TABLE_CODEGEN_DEFAULTS[key]
         : never;
-};
+}>;
 
 export function resolveTableCodegen<input extends TableInput>(input: input): resolveTableCodegen<input> {
   const options = input.codegen;
@@ -140,7 +140,7 @@ export type resolveTable<input, scope extends Scope = Scope> = input extends Tab
       readonly codegen: resolveTableCodegen<input>;
       readonly deploy: mergeIfUndefined<
         undefined extends input["deploy"] ? {} : input["deploy"],
-        typeof TABLE_DEPLOY_DEFAULTS
+        TABLE_DEPLOY_DEFAULTS
       >;
     }
   : never;
@@ -163,7 +163,7 @@ export function resolveTable<input extends TableInput, scope extends Scope = Abi
     schema: resolveSchema(input.schema, scope),
     codegen: resolveTableCodegen(input),
     deploy: mergeIfUndefined(input.deploy ?? {}, TABLE_DEPLOY_DEFAULTS),
-  } as unknown as resolveTable<input, scope>;
+  } as never;
 }
 
 export function defineTable<input, scope extends Scope = AbiTypeScope>(
@@ -171,5 +171,5 @@ export function defineTable<input, scope extends Scope = AbiTypeScope>(
   scope: scope = AbiTypeScope as unknown as scope,
 ): resolveTable<input, scope> {
   validateTable(input, scope);
-  return resolveTable(input, scope) as resolveTable<input, scope>;
+  return resolveTable(input, scope) as never;
 }

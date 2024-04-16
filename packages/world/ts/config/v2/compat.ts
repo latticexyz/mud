@@ -12,7 +12,7 @@ function modulesToV1<modules extends readonly Module[]>(modules: modules): modul
     name: module.name,
     root: module.root ?? false,
     args: module.args ?? [],
-  })) as modulesToV1<modules>;
+  })) as never;
 }
 
 type systemsToV1<systems extends Systems> = {
@@ -56,5 +56,5 @@ export function worldToV1<world>(world: conform<world, World>): worldToV1<world>
     worldImportPath: world.codegen.worldImportPath,
   };
 
-  return { ...storeToV1(world as Store), ...v1WorldConfig, v2: world } as worldToV1<world>;
+  return { ...storeToV1(world as Store), ...v1WorldConfig, v2: world } as never;
 }

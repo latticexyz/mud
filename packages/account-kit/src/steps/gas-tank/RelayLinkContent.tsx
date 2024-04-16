@@ -27,21 +27,6 @@ export function RelayLinkContent() {
   const [quote, setQuote] = useState<Execute | null>(null);
   const [tx, setTx] = useState<string | null>(null);
 
-  // TODO: check solver capacity
-  // const getSolver = async () => {
-  //   const client = getClient();
-  //   const { solver, enabled } = await client.methods.getSolverCapacity({
-  //     originChainId: String(CHAIN_FROM), // The chain id to bridge from
-  //     destinationChainId: String(CHAIN_TO), // The chain id to bridge to
-  //     currency: zeroAddress,
-  //   });
-
-  //   console.log("solver:", solver);
-  //   console.log("enabled:", enabled);
-
-  //   return { solver, enabled };
-  // };
-
   const fetchChains = useCallback(async () => {
     const sourceChains = await configureDynamicChains();
     setSourceChains(sourceChains);

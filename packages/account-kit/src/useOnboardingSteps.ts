@@ -16,9 +16,15 @@ export const onboardingSteps = {
     satisfies: ["appSigner", "accountDelegation"],
   },
   "gas-tank": {
-    label: "Fund gas tank",
+    label: "Deposit funds",
     requires: ["connectedWallet", "appSigner", "accountDelegation"],
     satisfies: ["gasAllowance", "gasSpender"],
+  },
+  // TODO: rework this, feels weird to show this as a step on the left
+  finalizing: {
+    label: "Finalizing",
+    requires: ["connectedWallet", "gasAllowance", "gasSpender", "accountDelegation"],
+    satisfies: ["accountDelegationConfirmed"],
   },
 } as const satisfies {
   readonly [key: string]: {

@@ -1,19 +1,19 @@
+import { mapObject } from "@latticexyz/common/utils";
 import {
   AbiTypeScope,
+  Scope,
   extendedScope,
-  get,
+  getPath,
   hasOwnKey,
   isObject,
   isTableShorthandInput,
   resolveTableShorthand,
   resolveTablesWithShorthands,
   validateTablesWithShorthands,
-  Scope,
 } from "@latticexyz/store/config/v2";
-import { mapObject } from "@latticexyz/common/utils";
-import { resolveWorld, validateWorld } from "./world";
 import { WorldWithShorthandsInput } from "./input";
 import { validateNamespaces } from "./namespaces";
+import { resolveWorld, validateWorld } from "./world";
 
 export type resolveWorldWithShorthands<world> = resolveWorld<{
   [key in keyof world]: key extends "tables"
@@ -45,7 +45,7 @@ function validateWorldWithShorthands(world: unknown): asserts world is WorldWith
 
   if (hasOwnKey(world, "namespaces") && isObject(world.namespaces)) {
     for (const namespaceKey of Object.keys(world.namespaces)) {
-      validateTablesWithShorthands(get(get(world.namespaces, namespaceKey), "tables") ?? {}, scope);
+      validateTablesWithShorthands(getPath(world.namespaces, [namespaceKey, "tables"]) ?? {}, scope);
     }
   }
 }
@@ -75,12 +75,12 @@ export function resolveWorldWithShorthands<world extends WorldWithShorthandsInpu
   const fullConfig = { ...world, tables, namespaces };
   validateWorld(fullConfig);
 
-  return resolveWorld(fullConfig) as unknown as resolveWorldWithShorthands<world>;
+  return resolveWorld(fullConfig) as never;
 }
 
 export function defineWorldWithShorthands<world>(
   world: validateWorldWithShorthands<world>,
 ): resolveWorldWithShorthands<world> {
   validateWorldWithShorthands(world);
-  return resolveWorldWithShorthands(world) as unknown as resolveWorldWithShorthands<world>;
+  return resolveWorldWithShorthands(world) as never;
 }

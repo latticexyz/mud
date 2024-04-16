@@ -1,4 +1,3 @@
-import * as Dialog from "@radix-ui/react-dialog";
 import { useAppAccountClient } from "../../useAppAccountClient";
 import { usePublicClient, useWalletClient } from "wagmi";
 import { useConfig } from "../../AccountKitProvider";
@@ -73,14 +72,9 @@ export function GasSpenderContent() {
     <AccountModalSection>
       {error ? <>Error: {String(error)}</> : null}
 
-      <div className="flex gap-3 justify-end">
-        <Dialog.Close asChild>
-          <Button variant="secondary">Cancel</Button>
-        </Dialog.Close>
-        <Button pending={isPending} onClick={() => mutate()}>
-          Set up spender
-        </Button>
-      </div>
+      <Button pending={isPending} onClick={() => mutate()}>
+        Set up spender
+      </Button>
     </AccountModalSection>
   );
 }

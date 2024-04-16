@@ -26,8 +26,7 @@ export function useAppAccountClient(): AppAccountClient | undefined {
     if (!appAccount) return;
 
     if (!chain.erc4337BundlerUrl) {
-      console.warn("No ERC4337 bundler URL found for chain", chain.name);
-      return;
+      throw new Error(`No ERC4337 bundler URL found for chain ${chain.name} (id: ${chain.id})`);
     }
 
     console.log("Bundler:", chain.erc4337BundlerUrl.http);
