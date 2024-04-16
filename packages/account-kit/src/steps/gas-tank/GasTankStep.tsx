@@ -16,7 +16,7 @@ export function GasTankStep() {
 
   // TODO: make min balance configurable
   // TODO: allow passing in gas per action, min actions
-  if (balance < parseEther("1")) {
+  if (balance < parseEther("0.00001")) {
     return <DepositContent />;
   }
 
