@@ -18,9 +18,11 @@ import { IWorldEvents } from "../src/IWorldEvents.sol";
 import { IWorldErrors } from "../src/IWorldErrors.sol";
 import { InstalledModules } from "../src/codegen/tables/InstalledModules.sol";
 import { NamespaceOwner } from "../src/codegen/tables/NamespaceOwner.sol";
+import { UserDelegationControl } from "../src/codegen/tables/UserDelegationControl.sol";
 import { ResourceId, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { ROOT_NAMESPACE_ID } from "../src/constants.sol";
 import { createInitModule } from "./createInitModule.sol";
+import { UNLIMITED_DELEGATION } from "../src/constants.sol";
 
 contract WorldProxyFactoryTest is Test, GasReporter {
   using WorldResourceIdInstance for ResourceId;
@@ -138,6 +140,16 @@ contract WorldProxyFactoryTest is Test, GasReporter {
 
     worldImplementationAddress = address(uint160(uint256(vm.load(worldAddress, IMPLEMENTATION_SLOT))));
     assertEq(worldImplementationAddress, newWorldImplementationAddress);
+
+    // Confirm correct Core is installed
+    assertTrue(InstalledModules.get(address(initModule), keccak256(new bytes(0))));
+
+    // Confirm the msg.sender is owner of the root namespace of the new world
+    assertEq(NamespaceOwner.get(ROOT_NAMESPACE_ID), account1);
+
+    // Test we can execute a world function
+    IBaseWorld(address(worldAddress)).registerDelegation(account2, UNLIMITED_DELEGATION, new bytes(0));
+    assertEq(ResourceId.unwrap(UserDelegationControl.get(account1, account2)), ResourceId.unwrap(UNLIMITED_DELEGATION));
   }
 
   function testWorldProxyFactoryGas() public {
