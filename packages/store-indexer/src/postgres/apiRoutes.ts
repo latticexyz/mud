@@ -34,6 +34,22 @@ export function apiRoutes(database: Sql): Middleware {
       const logs = records.map(recordToLog);
       benchmark("map records to logs");
 
+      // Ideally we would immediately return an error if the request is for a Store that the indexer
+      // is not configured to index. Since we don't have easy access to this information here,
+      // we return an error if there are no logs found for a given Store, since that would never
+      // be the case for a Store that is being indexed (since there would at least be records for the
+      // Tables table with tables created during Store initialization).
+      if (records.length === 0) {
+        ctx.status = 404;
+        ctx.body = "no logs found";
+        error(
+          `no logs found for chainId ${options.chainId}, address ${options.address}, filters ${JSON.stringify(
+            options.filters,
+          )}`,
+        );
+        return;
+      }
+
       const blockNumber = records[0].chainBlockNumber;
       ctx.status = 200;
 
