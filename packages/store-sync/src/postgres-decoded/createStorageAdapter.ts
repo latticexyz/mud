@@ -81,6 +81,7 @@ export async function createStorageAdapter<config extends StoreConfig = StoreCon
                 eq(internalTables.recordsTable.address, log.address),
                 eq(internalTables.recordsTable.tableId, log.args.tableId),
                 eq(internalTables.recordsTable.keyBytes, keyBytes),
+                eq(internalTables.recordsTable.blockNumber, blockNumber),
               ),
             )
             .limit(1)
@@ -117,7 +118,7 @@ export async function createStorageAdapter<config extends StoreConfig = StoreCon
               ...value,
             })
             .onConflictDoUpdate({
-              target: sqlTable.__keyBytes,
+              target: [sqlTable.__keyBytes, sqlTable.__lastUpdatedBlockNumber],
               set: {
                 __lastUpdatedBlockNumber: blockNumber,
                 ...value,
@@ -125,13 +126,34 @@ export async function createStorageAdapter<config extends StoreConfig = StoreCon
             })
             .execute();
         } else if (log.eventName === "Store_DeleteRecord") {
+          const value = decodeValueArgs(table.valueSchema, {
+            staticData: "0x",
+            encodedLengths: "0x",
+            dynamicData: "0x",
+          });
+
           debug("deleting record", {
             namespace: table.namespace,
             name: table.name,
             key,
           });
 
-          await tx.delete(sqlTable).where(eq(sqlTable.__keyBytes, keyBytes)).execute();
+          await tx
+            .insert(sqlTable)
+            .values({
+              __keyBytes: keyBytes,
+              __lastUpdatedBlockNumber: blockNumber,
+              ...key,
+              ...value,
+            })
+            .onConflictDoUpdate({
+              target: [sqlTable.__keyBytes, sqlTable.__lastUpdatedBlockNumber],
+              set: {
+                __lastUpdatedBlockNumber: blockNumber,
+                ...value,
+              },
+            })
+            .execute();
         }
       }
     });
