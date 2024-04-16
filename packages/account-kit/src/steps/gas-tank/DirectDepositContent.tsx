@@ -20,8 +20,12 @@ type SelectItemProps = {
   disabled?: boolean;
 };
 
-const AmountInput = () => {
-  const [amount, setAmount] = useState<number>(0.01);
+type AmountProps = {
+  amount: number;
+  setAmount: (amount: number) => void;
+};
+
+const AmountInput = ({ amount, setAmount }: AmountProps) => {
   return (
     <input
       className="w-full px-[16px] border border-neutral-300"
@@ -103,6 +107,7 @@ function ChainSelect() {
 }
 
 export function DirectDepositContent() {
+  const [amount, setAmount] = useState<number>(0.01);
   const queryClient = useQueryClient();
   const wagmiConfig = useWagmiConfig();
   const { chain, gasTankAddress } = useConfig();
@@ -132,7 +137,7 @@ export function DirectDepositContent() {
       abi: GasTankAbi,
       functionName: "depositTo",
       args: [userAccountAddress],
-      value: parseEther("0.01"), // TODO: amount input
+      value: parseEther(amount.toString()),
     });
   };
 
@@ -143,7 +148,7 @@ export function DirectDepositContent() {
 
         <div className="flex gap-[12px]">
           <ChainSelect />
-          <AmountInput />
+          <AmountInput amount={amount} setAmount={setAmount} />
         </div>
 
         <div>
@@ -151,7 +156,7 @@ export function DirectDepositContent() {
             <li className="flex justify-between py-[8px] border-b border-black border-opacity-10">
               <span className="opacity-50">Available to deposit</span>
               <span className="font-medium">
-                1.000 ETH <span className="text-neutral-800">($3,605.21)</span>
+                {amount} ETH <span className="text-neutral-800">($3,605.21)</span>
               </span>
             </li>
             <li className="flex justify-between py-[8px] border-b border-black border-opacity-10">
