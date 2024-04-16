@@ -1,5 +1,5 @@
-import { ReactNode, Ref, forwardRef, useState } from "react";
-import { parseEther } from "viem";
+import { ReactNode, Ref, forwardRef } from "react";
+import { formatEther, parseEther } from "viem";
 import { twMerge } from "tailwind-merge";
 import { AccountModalSection } from "../../AccountModalSection";
 import { useAccount, useConfig as useWagmiConfig, useWriteContract } from "wagmi";
@@ -21,8 +21,8 @@ type SelectItemProps = {
 };
 
 type AmountProps = {
-  amount: number;
-  setAmount: (amount: number) => void;
+  amount: bigint;
+  setAmount: (amount: bigint) => void;
 };
 
 const AmountInput = ({ amount, setAmount }: AmountProps) => {
@@ -30,8 +30,9 @@ const AmountInput = ({ amount, setAmount }: AmountProps) => {
     <input
       className="w-full px-[16px] border border-neutral-300"
       type="number"
-      value={amount}
-      onChange={(evt) => setAmount(parseFloat(evt.target.value))}
+      value={formatEther(amount)}
+      onChange={(evt) => setAmount(parseEther(evt.target.value))}
+      step={0.000000000000000001}
     />
   );
 };
@@ -106,8 +107,12 @@ function ChainSelect() {
   );
 }
 
-export function DirectDepositContent() {
-  const [amount, setAmount] = useState<number>(0.01);
+type DirectDepositContentProps = {
+  amount: bigint | null;
+  setAmount: (amount: bigint) => void;
+};
+
+export function DirectDepositContent({ amount = BigInt(0), setAmount }: DirectDepositContentProps) {
   const queryClient = useQueryClient();
   const wagmiConfig = useWagmiConfig();
   const { chain, gasTankAddress } = useConfig();
@@ -156,7 +161,7 @@ export function DirectDepositContent() {
             <li className="flex justify-between py-[8px] border-b border-black border-opacity-10">
               <span className="opacity-50">Available to deposit</span>
               <span className="font-medium">
-                {amount} ETH <span className="text-neutral-800">($3,605.21)</span>
+                {parseEther(amount.toString()).toString()} ETH <span className="text-neutral-800">($3,605.21)</span>
               </span>
             </li>
             <li className="flex justify-between py-[8px] border-b border-black border-opacity-10">

@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useConfig } from "../../AccountKitProvider";
 import { RelayLinkContent } from "./RelayLinkContent";
@@ -7,24 +8,42 @@ import { AccountModalTitle } from "../../AccoutModalTitle";
 import { AccountModalSection } from "../../AccountModalSection";
 import { GasTankStateContent } from "./GasTankStateContent";
 
+type DepositMethod = "direct" | "bridge" | "relay" | null;
+
 export function DepositContent() {
   const { chain } = useConfig();
   const userAccount = useAccount();
   const userAccountChainId = userAccount?.chain?.id;
+  const [depositMethod, setDepositMethod] = useState<DepositMethod>();
+  const [depositAmount, setDepositAmount] = useState<bigint | null>(BigInt(0));
+
+  useEffect(() => {
+    if (!depositMethod) {
+      if (chain.id === userAccountChainId) {
+        setDepositMethod("direct");
+      } else if (chain.sourceId === userAccountChainId) {
+        setDepositMethod("bridge");
+      } else {
+        setDepositMethod("relay");
+      }
+    }
+  }, [chain.id, chain.sourceId, userAccountChainId, depositMethod]);
 
   return (
     <>
       <AccountModalTitle title="Gas tank" />
 
       <AccountModalSection>
-        <GasTankStateContent />
+        <GasTankStateContent amount={depositAmount} />
       </AccountModalSection>
 
       <AccountModalSection>
         <div className="flex flex-col gap-2 p-5">
           <p>Add funds from your wallet to your tank to fund transactions for any MUD apps on Chain Name.</p>
 
-          {chain.id === userAccountChainId && <DirectDepositContent />}
+          {chain.id === userAccountChainId && (
+            <DirectDepositContent amount={depositAmount} setAmount={setDepositAmount} />
+          )}
           {chain.sourceId === userAccountChainId && <StandardBridgeContent />}
           {chain.id !== userAccountChainId && chain.sourceId !== userAccountChainId && <RelayLinkContent />}
         </div>
