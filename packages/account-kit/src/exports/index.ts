@@ -6,6 +6,5 @@
 
 export { AccountButton } from "../AccountButton";
 export { useAccountModal } from "../useAccountModal";
-export { useAccountRequirements } from "../useAccountRequirements";
 export { AccountKitProvider } from "../AccountKitProvider";
 export { useAppAccountClient } from "../useAppAccountClient";
