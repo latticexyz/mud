@@ -47,8 +47,8 @@ export function apiRoutes(database: Sql): Middleware {
       const staleWhileRevalidateSeconds = 4000 * 2;
 
       ctx.set(
-        "CDN-Cache-Control",
-        `public, max-age=${maxAgeSeconds}, stale-while-revalidate=${staleWhileRevalidateSeconds}`
+        "Cache-Control",
+        `public, max-age=${maxAgeSeconds}, stale-while-revalidate=${staleWhileRevalidateSeconds}`,
       );
 
       ctx.set("Content-Type", "application/json");
