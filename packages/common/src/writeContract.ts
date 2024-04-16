@@ -75,7 +75,11 @@ export async function writeContract<
     queueConcurrency: opts.queueConcurrency,
   });
 
-  const feeRef = await getFeeRef({ client: opts.publicClient ?? client, refreshInterval: 10000 });
+  const feeRef = await getFeeRef({
+    client: opts.publicClient ?? client,
+    refreshInterval: 10000,
+    args: { chain },
+  });
 
   async function prepare(): Promise<WriteContractParameters<abi, functionName, args, chain, account, chainOverride>> {
     if (request.gas) {
