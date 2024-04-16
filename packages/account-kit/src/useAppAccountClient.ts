@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { useAccount, usePublicClient } from "wagmi";
-import { http, maxUint256, toHex } from "viem";
+import { http, maxUint256, toHex, publicActions } from "viem";
 import { callFrom } from "@latticexyz/world/internal";
 import { createSmartAccountClient } from "permissionless";
 import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
@@ -88,6 +88,7 @@ export function useAppAccountClient(): AppAccountClient | undefined {
     })
       // TODO: can we replace the below with all publicActions?
       // .extend(publicActions(publicClient))
+      .extend(publicActions(publicClient))
       .extend(() => ({
         getTransactionCount: (args) => {
           console.log("getTransactionCount, ", args);
