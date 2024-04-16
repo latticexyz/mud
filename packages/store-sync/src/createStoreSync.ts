@@ -8,6 +8,7 @@ import {
   SyncOptions,
   SyncResult,
   internalTableIds,
+  WaitForTransactionResult,
 } from "./common";
 import { createBlockStream } from "@latticexyz/block-logs-stream";
 import {
@@ -262,7 +263,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
   );
 
   // TODO: move to its own file so we can test it, have its own debug instance, etc.
-  async function waitForTransaction(tx: Hex): Promise<void> {
+  async function waitForTransaction(tx: Hex): Promise<WaitForTransactionResult> {
     debug("waiting for tx", tx);
 
     // This currently blocks for async call on each block processed
@@ -271,17 +272,22 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
       // We use `mergeMap` instead of `concatMap` here to send the fetch request immediately when a new block range appears,
       // instead of sending the next request only when the previous one completed.
       mergeMap(async (blocks) => {
-        const txs = blocks.flatMap((block) => block.logs.map((op) => op.transactionHash).filter(isDefined));
-        if (txs.includes(tx)) return true;
+        for (const block of blocks) {
+          const txs = block.logs.map((op) => op.transactionHash);
+          // If the transaction caused a log, it must have succeeded
+          if (txs.includes(tx)) return { blockNumber: block.blockNumber, status: "success" as const };
+        }
 
         try {
           const lastBlock = blocks[0];
           debug("fetching tx receipt for block", lastBlock.blockNumber);
-          const receipt = await publicClient.getTransactionReceipt({ hash: tx });
-          return lastBlock.blockNumber >= receipt.blockNumber;
+          const { status, blockNumber } = await publicClient.getTransactionReceipt({ hash: tx });
+          if (lastBlock.blockNumber >= blockNumber) {
+            return { status, blockNumber };
+          }
         } catch (error) {
           if (error instanceof TransactionReceiptNotFoundError) {
-            return false;
+            return;
           }
           throw error;
         }
@@ -289,7 +295,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
       tap((result) => debug("has tx?", tx, result)),
     );
 
-    await firstValueFrom(hasTransaction$.pipe(filter(identity)));
+    return await firstValueFrom(hasTransaction$.pipe(filter(isDefined)));
   }
 
   return {
