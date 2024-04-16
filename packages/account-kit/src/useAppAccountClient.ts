@@ -88,7 +88,11 @@ export function useAppAccountClient(): AppAccountClient | undefined {
     })
       // TODO: can we replace the below with all publicActions?
       // .extend(publicActions(publicClient))
-      .extend(() => publicActions(publicClient))
+      .extend(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { prepareTransactionRequest, ...otherPublicActions } = publicActions(publicClient);
+        return otherPublicActions;
+      })
       .extend(() => ({
         getTransactionCount: (args) => {
           console.log("getTransactionCount, ", args);
