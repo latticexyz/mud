@@ -31,6 +31,19 @@ export function DirectDepositContent() {
     },
   });
 
+  const handleDeposit = async () => {
+    if (!userAccountAddress) return;
+
+    await writeContractAsync({
+      chainId: chain.id,
+      address: gasTankAddress,
+      abi: GasTankAbi,
+      functionName: "depositTo",
+      args: [userAccountAddress],
+      value: parseEther("0.01"), // TODO: amount input
+    });
+  };
+
   return (
     <AccountModalSection>
       <div className="flex flex-col gap-2">
@@ -41,21 +54,7 @@ export function DirectDepositContent() {
             Switch chain to deposit
           </Button>
         ) : (
-          <Button
-            pending={!userAccountAddress || isPending}
-            onClick={async () => {
-              if (!userAccountAddress) return;
-
-              await writeContractAsync({
-                chainId: chain.id,
-                address: gasTankAddress,
-                abi: GasTankAbi,
-                functionName: "depositTo",
-                args: [userAccountAddress],
-                value: parseEther("0.01"), // TODO: amount input
-              });
-            }}
-          >
+          <Button pending={!userAccountAddress || isPending} onClick={handleDeposit}>
             Deposit to gas tank
           </Button>
         )}
