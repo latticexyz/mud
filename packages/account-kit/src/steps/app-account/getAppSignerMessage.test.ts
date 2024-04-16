@@ -5,7 +5,7 @@ import { getAppSignerMessage } from "./getAppSignerMessage";
 describe("getAppSignerMessage", () => {
   it("generates message to sign", () => {
     expect(getAppSignerMessage("localhost")).toMatchInlineSnapshot(`
-      "localhost is requesting proof of ownership of this address.
+      "localhost is requesting proof of ownership of your connected account.
 
       Only sign this message if it came from an app you are interacting with at localhost.
 
@@ -18,7 +18,7 @@ describe("getAppSignerMessage", () => {
 
   it("generates message to sign for another account ID", () => {
     expect(getAppSignerMessage("localhost", 1)).toMatchInlineSnapshot(`
-      "localhost is requesting proof of ownership of this address.
+      "localhost is requesting proof of ownership of your connected account.
 
       Only sign this message if it came from an app you are interacting with at localhost.
 

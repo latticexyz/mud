@@ -1,9 +1,9 @@
-export function getAppSignerMessage(origin: string, account: number = 0) {
+export function getAppSignerMessage(origin: string, appAccountNonce: number = 0) {
   // BE CAREFUL MODIFYING THIS MESSAGE!
   //
   // Once modified, all prior accounts will not be easily retrievable.
   return [
-    `${origin} is requesting proof of ownership of this address.`,
+    `${origin} is requesting proof of ownership of your connected account.`,
     "",
     `Only sign this message if it came from an app you are interacting with at ${origin}.`,
     "",
@@ -11,7 +11,7 @@ export function getAppSignerMessage(origin: string, account: number = 0) {
     "",
     "",
     // We append a message version (to recover accounts from older messages)
-    // and an optional account ID (to create more than one account per origin)
-    `version=1 account=${account}`,
+    // and an optional app account nonce (to create more than one app account per origin)
+    `version=1 account=${appAccountNonce}`,
   ].join("\n");
 }
