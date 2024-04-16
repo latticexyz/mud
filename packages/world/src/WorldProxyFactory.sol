@@ -18,10 +18,15 @@ import { WorldProxy } from "./WorldProxy.sol";
 contract WorldProxyFactory is IWorldFactory {
   /// @notice Address of the init module to be set in the World instances.
   IModule public immutable initModule;
+  address public immutable worldImplementation;
 
   /// @param _initModule The address of the init module.
   constructor(IModule _initModule) {
     initModule = _initModule;
+
+    // Deploy a world implementation
+    bytes memory worldBytecode = type(World).creationCode;
+    worldImplementation = Create2.deploy(worldBytecode, 0);
   }
 
   /**
@@ -34,15 +39,8 @@ contract WorldProxyFactory is IWorldFactory {
     // Deploy a new World and increase the WorldCount
     uint256 _salt = uint256(keccak256(abi.encode(msg.sender, salt)));
 
-    // Deploy the world implementation
-    bytes memory worldBytecode = type(World).creationCode;
-    address worldImplementationAddress = Create2.deploy(worldBytecode, _salt);
-
     // Deploy the world proxy
-    bytes memory worldProxyBytecode = abi.encodePacked(
-      type(WorldProxy).creationCode,
-      abi.encode(worldImplementationAddress)
-    );
+    bytes memory worldProxyBytecode = abi.encodePacked(type(WorldProxy).creationCode, abi.encode(worldImplementation));
     worldAddress = Create2.deploy(worldProxyBytecode, _salt);
 
     IBaseWorld world = IBaseWorld(worldAddress);

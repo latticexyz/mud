@@ -285,7 +285,7 @@
     "file": "test/WorldProxyFactory.t.sol",
     "test": "testWorldProxyFactoryGas",
     "name": "deploy world via WorldProxyFactory",
-    "gasUsed": 13326980
+    "gasUsed": 9032337
   },
   {
     "file": "test/WorldProxyFactory.t.sol",
