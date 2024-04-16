@@ -1,4 +1,7 @@
 import { defineConfig } from "vite";
+import dts from "vite-plugin-dts";
+
+// TODO: add vite react plugin
 
 export default defineConfig({
   build: {
@@ -12,4 +15,5 @@ export default defineConfig({
       formats: ["es"],
     },
   },
+  plugins: [!process.env.TSUP_SKIP_DTS ? dts() : undefined],
 });
