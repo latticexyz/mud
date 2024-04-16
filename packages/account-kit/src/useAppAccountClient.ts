@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useAccount, usePublicClient } from "wagmi";
 import { http, maxUint256, toHex } from "viem";
 import { callFrom } from "@latticexyz/world/internal";
@@ -17,8 +17,18 @@ export function useAppAccountClient(): AppAccountClient | undefined {
   const { chain, worldAddress, gasTankAddress } = useConfig();
   const { address: userAddress } = useAccount();
   const publicClient = usePublicClient({ chainId: chain.id });
-  const { data: appAccount } = useAppAccount({ publicClient, appSignerAccount });
+  const { data: appAccount, error: appAccountError } = useAppAccount({ publicClient, appSignerAccount });
 
+  useEffect(() => {
+    if (appAccountError?.message) {
+      console.error(
+        "Error getting app account. Is the bundler fully deployed and running? If not, you may need to run `pnpm local-bundler`.",
+        appAccountError.message,
+      );
+    }
+  }, [appAccountError?.message]);
+
+  // TODO: move this to a query so we can surface app account errors
   return useMemo(() => {
     if (!appSignerAccount) return;
     if (!userAddress) return;

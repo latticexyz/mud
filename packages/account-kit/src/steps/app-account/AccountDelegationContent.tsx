@@ -6,6 +6,7 @@ import { useSignRegisterDelegation } from "./useSignRegisterDelegation";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
 
 export function AccountDelegationContent() {
+  // TODO: pass in app account client, display error if pending or not ready
   const { signRegisterDelegationAsync, isPending, error } = useSignRegisterDelegation();
   const { resetStep } = useOnboardingSteps();
 

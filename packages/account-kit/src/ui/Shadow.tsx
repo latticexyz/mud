@@ -1,6 +1,5 @@
-import { ReactNode, forwardRef, useEffect, useRef, useState } from "react";
+import { ReactNode, forwardRef, useEffect, useReducer, useRef } from "react";
 import ReactDOM from "react-dom";
-import { mergeRefs } from "react-merge-refs";
 import css from "tailwindcss/tailwind.css?inline";
 
 const sheet = new CSSStyleSheet();
@@ -10,26 +9,25 @@ export type Props = {
   children: ReactNode;
 };
 
-export const Shadow = forwardRef<HTMLSpanElement, Props>(function Shadow({ children }, forwardedRef) {
-  const containerRef = useRef<HTMLSpanElement | null>(null);
-  const [shadowRoot, setShadowRoot] = useState<ShadowRoot | null>(null);
+export const Shadow = forwardRef<HTMLDivElement, Props>(function Shadow({ children }, forwardedRef) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const shadowRef = useRef<ShadowRoot | null>(null);
+  const [, forceUpdate] = useReducer(() => ({}), {});
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+    if (shadowRef.current) return;
 
-    if (container.shadowRoot) {
-      setShadowRoot(container.shadowRoot);
-    } else {
-      const root = container.attachShadow({ mode: "open", delegatesFocus: true });
-      root.adoptedStyleSheets = [sheet];
-      setShadowRoot(root);
-    }
+    const root = container.attachShadow({ mode: "open", delegatesFocus: true });
+    root.adoptedStyleSheets = [sheet];
+    shadowRef.current = root;
+    forceUpdate();
   }, []);
 
   return (
-    <span ref={mergeRefs([containerRef, forwardedRef])} style={{ display: "inline-block", outline: "none" }}>
-      {shadowRoot ? ReactDOM.createPortal(children, shadowRoot) : null}
-    </span>
+    <div ref={forwardedRef} style={{ all: "initial" }}>
+      <div ref={containerRef}>{shadowRef.current ? ReactDOM.createPortal(children, shadowRef.current) : null}</div>
+    </div>
   );
 });

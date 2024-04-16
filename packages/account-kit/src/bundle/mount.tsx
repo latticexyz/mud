@@ -1,4 +1,4 @@
-import "@rainbow-me/rainbowkit/styles.css";
+import rainbowKitCss from "@rainbow-me/rainbowkit/styles.css?inline";
 import type { Config as WagmiConfig } from "wagmi";
 import type { Config as AccountKitConfig } from "../AccountKitProvider";
 import { store } from "./store";
@@ -7,6 +7,7 @@ export type MountOptions = {
   rootElementId?: string;
   wagmiConfig: WagmiConfig;
   accountKitConfig: AccountKitConfig;
+  // TODO: allow overriding light/dark mode
 };
 
 export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountKitConfig }: MountOptions): () => void {
@@ -32,9 +33,6 @@ export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountK
 
     const rootElement = document.createElement("div");
     rootElement.id = rootElementId;
-    // Create a new stacking context
-    // https://web.dev/learn/css/z-index/#stacking-context
-    rootElement.style.willChange = "contents";
     document.body.appendChild(rootElement);
 
     const root = ReactDOM.createRoot(rootElement);
@@ -54,6 +52,7 @@ export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountK
             >
               <AccountKitProvider config={accountKitConfig}>
                 <SyncStore store={store} />
+                <style dangerouslySetInnerHTML={{ __html: rainbowKitCss }} />
               </AccountKitProvider>
             </RainbowKitProvider>
           </QueryClientProvider>

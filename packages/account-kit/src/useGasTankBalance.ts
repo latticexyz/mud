@@ -41,6 +41,12 @@ export function useGasTankBalance(): bigint | undefined {
   const { chain, gasTankAddress } = useConfig();
   const publicClient = usePublicClient({ chainId: chain.id });
 
+  // TODO: better error
+  // TODO: make gas tank address optional, display diffent step if none configured
+  if (!gasTankAddress) {
+    throw new Error("No gas tank address");
+  }
+
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
 

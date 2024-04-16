@@ -21,14 +21,17 @@ export function Modal({ open, onOpenChange, children }: Props) {
            */}
           <div
             className={twMerge(
-              "fixed inset-0",
+              // I'm so sorry for this z-index, but this is what both RainbowKit and ConnectKit do.
+              "fixed inset-0 z-[2147483646]",
               "bg-neutral-700/50 dark:bg-neutral-900/75",
               "animate-in animate-duration-500 fade-in",
             )}
           />
           <div
             className={twMerge(
-              "fixed inset-0 grid items-start justify-center overflow-y-auto py-[8vh]",
+              // I'm so sorry for this z-index, but this is what both RainbowKit and ConnectKit do.
+              "fixed inset-0 z-[2147483646]",
+              "grid items-start justify-center overflow-y-auto py-[8vh]",
               "animate-in animate-duration-200 fade-in slide-in-from-bottom-4",
             )}
           >

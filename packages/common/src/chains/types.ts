@@ -1,3 +1,4 @@
+import { ChainContract } from "viem";
 import type { Chain } from "viem/chains";
 
 export type MUDChain = Chain & {
@@ -5,5 +6,8 @@ export type MUDChain = Chain & {
   erc4337BundlerUrl?: {
     http: string;
     webSocket?: string;
+  };
+  contracts?: Chain["contracts"] & {
+    readonly gasTank?: ChainContract;
   };
 };
