@@ -16,7 +16,7 @@ export const onboardingSteps = {
     satisfies: ["appSigner", "accountDelegation"],
   },
   "gas-tank": {
-    label: "Fund gas tank",
+    label: "Deposit funds",
     requires: ["connectedWallet", "appSigner", "accountDelegation"],
     satisfies: ["gasAllowance", "gasSpender"],
   },

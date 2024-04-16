@@ -4,7 +4,7 @@ import { GasAllowanceContent } from "./steps/gas-tank/GasAllowanceContent";
 import { DialogContent } from "@radix-ui/react-dialog";
 import { AccountModalSidebar } from "./AccountModalSidebar";
 import { useOnboardingSteps } from "./useOnboardingSteps";
-import { GasSpenderContent } from "./steps/gas-tank/GasSpenderContent";
+// import { GasSpenderContent } from "./steps/gas-tank/GasSpenderContent";
 import { twMerge } from "tailwind-merge";
 import { WalletStep } from "./steps/wallet/WalletStep";
 import { AppAccountStep } from "./steps/app-account/AppAccountStep";
@@ -23,7 +23,7 @@ export function AccountModalContent() {
         return (
           <>
             <GasAllowanceContent />
-            <GasSpenderContent />
+            {/* <GasSpenderContent /> */}
           </>
         );
       default:

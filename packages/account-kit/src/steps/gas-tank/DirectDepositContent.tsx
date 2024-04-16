@@ -1,7 +1,7 @@
-import { AccountModalContent } from "../../AccountModalContent";
+import { AccountModalSection } from "../../AccountModalSection";
 import { useAccount, useSwitchChain, useConfig as useWagmiConfig, useWriteContract } from "wagmi";
 import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
-import { useConfig } from "../../MUDAccountKitProvider";
+import { useConfig } from "../../AccountKitProvider";
 import { getGasTankBalanceQueryKey } from "../../useGasTankBalance";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { useQueryClient } from "@tanstack/react-query";
@@ -32,7 +32,7 @@ export function DirectDepositContent() {
   });
 
   return (
-    <AccountModalContent>
+    <AccountModalSection>
       <div className="flex flex-col gap-2">
         {error ? <div>{String(error)}</div> : null}
 
@@ -60,6 +60,6 @@ export function DirectDepositContent() {
           </Button>
         )}
       </div>
-    </AccountModalContent>
+    </AccountModalSection>
   );
 }
