@@ -4,6 +4,8 @@ export const SYSTEM_DEFAULTS = {
   accessList: [] as string[],
 } as const;
 
+export type SYSTEM_DEFAULTS = typeof SYSTEM_DEFAULTS;
+
 export const WORLD_DEFAULTS = {
   worldContractName: undefined,
   worldInterfaceName: "IWorld",
@@ -16,3 +18,5 @@ export const WORLD_DEFAULTS = {
   worldImportPath: "@latticexyz/world/src/",
   modules: [] as [],
 } as const;
+
+export type WORLD_DEFAULTS = typeof WORLD_DEFAULTS;
