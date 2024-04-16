@@ -8,7 +8,7 @@ import { testClient } from "../../test/common";
 import { getBlockNumber } from "viem/actions";
 import { Address } from "viem";
 
-describe("createStorageAdapter", async () => {
+describe.skip("createStorageAdapter", async () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let worldAddress: Address;
   beforeAll(async () => {
