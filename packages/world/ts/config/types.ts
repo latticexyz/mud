@@ -34,11 +34,11 @@ export interface ExpandSystemConfig<T extends SystemUserConfig, SystemName exten
     T,
     {
       name: SystemName;
-      registerFunctionSelectors: typeof SYSTEM_DEFAULTS.registerFunctionSelector;
-      openAccess: typeof SYSTEM_DEFAULTS.openAccess;
+      registerFunctionSelectors: SYSTEM_DEFAULTS["registerFunctionSelector"];
+      openAccess: SYSTEM_DEFAULTS["openAccess"];
     }
   > {
-  accessList: T extends { accessList: string[] } ? T["accessList"] : typeof SYSTEM_DEFAULTS.accessList;
+  accessList: T extends { accessList: string[] } ? T["accessList"] : SYSTEM_DEFAULTS["accessList"];
 }
 
 export type SystemsUserConfig = Record<string, SystemUserConfig>;
