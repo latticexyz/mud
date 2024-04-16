@@ -33,8 +33,6 @@ function _setImplementation(address newImplementation) {
  * @dev This contract is a proxy that uses a World contract as an implementation.
  */
 contract WorldProxy is Proxy {
-  address public creator;
-
   /**
    * @notice Constructs the World Proxy.
    * @dev Mimics the behaviour of the StoreKernel and World constructors.
@@ -45,7 +43,6 @@ contract WorldProxy is Proxy {
     StoreCore.initialize();
     emit IStoreEvents.HelloStore(STORE_VERSION);
 
-    creator = msg.sender;
     emit IWorldEvents.HelloWorld(WORLD_VERSION);
   }
 
