@@ -6,7 +6,7 @@ import { StoreMock } from "@latticexyz/store/test/StoreMock.sol";
 import { IStoreErrors } from "@latticexyz/store/src/IStoreErrors.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
-import { Statics, StaticsData, Dynamics1, Dynamics1Data, Dynamics2, Dynamics2Data, Singleton, Offchain, UserTyped, UserTypedData, Players } from "../src/codegen/index.sol";
+import { Statics, StaticsData, Dynamics1, Dynamics1Data, Dynamics2, Dynamics2Data, Singleton, Offchain, UserTyped, UserTypedData } from "../src/codegen/index.sol";
 import { TestTypeAddress, TestTypeInt64, TestTypeLibrary } from "../src/types.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
@@ -197,22 +197,5 @@ contract TablegenTest is Test, StoreMock {
     UserTypedData memory data = UserTypedData(k1, k2, k3, k4, k5);
     UserTyped.set(k1, k2, k3, k4, k5, data);
     assertEq(abi.encode(UserTyped.get(k1, k2, k3, k4, k5)), abi.encode(data));
-  }
-
-  function testPlayers(address alice) public {
-    Players.register();
-
-    uint256 aliceGold = 150;
-    uint256[5] memory resources = [aliceGold, 0, 0, 0, 0];
-
-    assertEq(Players.getItemResources(alice, 0), 0);
-    assertEq(Players.getResources(alice)[0], 0);
-    assertEq(resources[0], 150);
-
-    Players.setResources(alice, resources);
-    Players.setIsTeamRight(alice, true);
-
-    assertEq(Players.getItemResources(alice, 0), 150);
-    assertEq(Players.getResources(alice)[0], 150);
   }
 }

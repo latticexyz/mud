@@ -9,4 +9,3 @@ import { Dynamics2, Dynamics2Data } from "./tables/Dynamics2.sol";
 import { Singleton } from "./tables/Singleton.sol";
 import { Offchain } from "./tables/Offchain.sol";
 import { UserTyped, UserTypedData } from "./tables/UserTyped.sol";
-import { Players, PlayersData } from "./tables/Players.sol";
