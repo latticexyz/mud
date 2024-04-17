@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { useAccount, usePublicClient } from "wagmi";
-import { http, maxUint256, toHex, publicActions } from "viem";
+import { http, maxUint256, toHex } from "viem";
 import { callFrom } from "@latticexyz/world/internal";
 import { createSmartAccountClient } from "permissionless";
 import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
@@ -10,6 +10,7 @@ import { useAppAccount } from "./useAppAccount";
 import { AppAccountClient, entryPointAddress } from "./common";
 import { getUserBalanceSlot } from "./utils/getUserBalanceSlot";
 import { getEntryPointDepositSlot } from "./utils/getEntryPointDepositSlot";
+import { call, getTransactionCount } from "viem/actions";
 
 export function useAppAccountClient(): AppAccountClient | undefined {
   const [appSignerAccount] = useAppSigner();
@@ -87,18 +88,19 @@ export function useAppAccountClient(): AppAccountClient | undefined {
     })
       // TODO: can we replace the below with all publicActions?
       // .extend(publicActions(publicClient))
-      .extend(() => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { prepareTransactionRequest, ...otherPublicActions } = publicActions(publicClient);
-        return otherPublicActions;
-      })
-      // .extend(() => ({
-      //   getTransactionCount: (args) => {
-      //     console.log("getTransactionCount, ", args);
-      //     return getTransactionCount(publicClient, args);
-      //   },
-      //   call: (args) => call(publicClient, args),
-      // }))
+      // NOTE: the stuff below here breaks the public client for some reason
+      // .extend(() => {
+      //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      //   const { prepareTransactionRequest, ...otherPublicActions } = publicActions(publicClient);
+      //   return otherPublicActions;
+      // })
+      .extend(() => ({
+        getTransactionCount: (args) => {
+          console.log("getTransactionCount, ", args);
+          return getTransactionCount(publicClient, args);
+        },
+        call: (args) => call(publicClient, args),
+      }))
       // .extend(transactionQueue(publicClient))
       // .extend(writeObserver({ onWrite: (write) => write$.next(write) }))
       .extend(
