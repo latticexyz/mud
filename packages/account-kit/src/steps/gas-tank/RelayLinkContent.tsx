@@ -1,6 +1,5 @@
 import { usePublicClient, useWalletClient } from "wagmi";
 import { getClient, configureDynamicChains, Execute, RelayChain } from "@reservoir0x/relay-sdk";
-import { AccountModalSection } from "../../AccountModalSection";
 import { useCallback, useEffect, useState } from "react";
 import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
 import { Button } from "../../ui/Button";
@@ -93,7 +92,7 @@ export function RelayLinkContent({ amount, sourceChainId }: RelayLinkContentProp
   }, [fetchChains]);
 
   return (
-    <AccountModalSection>
+    <>
       <div className="flex flex-col gap-2">
         <form onSubmit={handleSubmit}>
           {/* <select value={selectedSourceChainId} onChange={(e) => setSelectedSourceChainId(Number(e.target.value))}>
@@ -127,6 +126,6 @@ export function RelayLinkContent({ amount, sourceChainId }: RelayLinkContentProp
           )}
         </form>
       </div>
-    </AccountModalSection>
+    </>
   );
 }

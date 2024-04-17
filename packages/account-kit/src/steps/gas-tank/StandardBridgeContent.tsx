@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { AccountModalSection } from "../../AccountModalSection";
 import { Button } from "../../ui/Button";
 import { useDepositQuery } from "./hooks/useDepositQuery";
 import { useStandardBridgeSubmit } from "./hooks/useStandardBridgeSubmit";
@@ -18,7 +17,7 @@ export function StandardBridgeContent({ amount }: StandardBridgeContentProps) {
   };
 
   return (
-    <AccountModalSection>
+    <>
       <div className="mt-[15px] w-full">
         <Button onClick={handleSubmit}>Bridge to Redstone gas tank</Button>
       </div>
@@ -30,6 +29,6 @@ export function StandardBridgeContent({ amount }: StandardBridgeContentProps) {
           </a>
         </div>
       )}
-    </AccountModalSection>
+    </>
   );
 }
