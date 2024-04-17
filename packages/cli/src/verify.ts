@@ -5,11 +5,12 @@ import { ensureDeployer } from "./deploy/ensureDeployer";
 import { privateKeyToAccount } from "viem/accounts";
 import { MUDError } from "@latticexyz/common/errors";
 import { getWorldFactoryContracts } from "./deploy/ensureWorldFactory";
+import { Contract } from "./deploy/ensureContract";
 
 type VerifyOptions = {
   foundryProfile?: string;
-  systems: { name: string; bytecode: Hex }[];
-  modules: { name: string; bytecode: Hex }[];
+  systems: Contract[];
+  modules: Contract[];
 };
 
 async function verifyContract(
@@ -51,7 +52,11 @@ in your contracts directory to use the default anvil private key.`,
   const deployerAddress = await ensureDeployer(client);
 
   await Promise.all(
-    systems.map(({ name, bytecode }) => verifyContract(foundryProfile, deployerAddress, name, bytecode)),
+    systems.map(({ label, bytecode }) => {
+      if (label) {
+        verifyContract(foundryProfile, deployerAddress, label, bytecode);
+      }
+    }),
   );
 
   await Promise.all(
@@ -62,8 +67,10 @@ in your contracts directory to use the default anvil private key.`,
     }),
   );
   await Promise.all(
-    modules.map(({ name, bytecode }) =>
-      verifyContract(foundryProfile, deployerAddress, name, bytecode, "node_modules/@latticexyz/world-modules"),
-    ),
+    modules.map(({ label, bytecode }) => {
+      if (label) {
+        verifyContract(foundryProfile, deployerAddress, label, bytecode, "node_modules/@latticexyz/world-modules");
+      }
+    }),
   );
 }

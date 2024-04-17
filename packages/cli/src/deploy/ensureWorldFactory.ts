@@ -11,10 +11,7 @@ import { salt } from "./common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { Contract } from "./ensureContract";
 
-export async function ensureWorldFactory(
-  client: Client<Transport, Chain | undefined, Account>,
-  deployerAddress: Hex,
-): Promise<Address> {
+export function getWorldFactoryContracts(deployerAddress: Hex): readonly Contract[] {
   const accessManagementSystemDeployedBytecodeSize = size(accessManagementSystemBuild.deployedBytecode.object as Hex);
   const accessManagementSystemBytecode = accessManagementSystemBuild.bytecode.object as Hex;
   const accessManagementSystem = getCreate2Address({
@@ -59,40 +56,85 @@ export async function ensureWorldFactory(
     args: [initModule],
   });
 
-  const worldFactory = getCreate2Address({ from: deployerAddress, bytecode: worldFactoryBytecode, salt });
-
-  const worldFactoryContracts: readonly Contract[] = [
+  return [
     {
       bytecode: accessManagementSystemBytecode,
       deployedBytecodeSize: accessManagementSystemDeployedBytecodeSize,
-      label: "access management system",
+      label: "AccessManagementSystem",
     },
     {
       bytecode: balanceTransferSystemBytecode,
       deployedBytecodeSize: balanceTransferSystemDeployedBytecodeSize,
-      label: "balance transfer system",
+      label: "BalanceTransferSystem",
     },
     {
       bytecode: batchCallSystemBytecode,
       deployedBytecodeSize: batchCallSystemDeployedBytecodeSize,
-      label: "batch call system",
+      label: "BatchCallSystem",
     },
     {
       bytecode: registrationBytecode,
       deployedBytecodeSize: registrationDeployedBytecodeSize,
-      label: "core registration system",
+      label: "RegistrationSystem",
     },
     {
       bytecode: initModuleBytecode,
       deployedBytecodeSize: initModuleDeployedBytecodeSize,
-      label: "core module",
+      label: "InitModule",
     },
     {
       bytecode: worldFactoryBytecode,
       deployedBytecodeSize: worldFactoryDeployedBytecodeSize,
-      label: "world factory",
+      label: "WorldFactory",
     },
   ];
+}
+
+export async function ensureWorldFactory(
+  client: Client<Transport, Chain | undefined, Account>,
+  deployerAddress: Hex,
+): Promise<Address> {
+  const accessManagementSystemBytecode = accessManagementSystemBuild.bytecode.object as Hex;
+  const accessManagementSystem = getCreate2Address({
+    from: deployerAddress,
+    bytecode: accessManagementSystemBytecode,
+    salt,
+  });
+
+  const balanceTransferSystemBytecode = balanceTransferSystemBuild.bytecode.object as Hex;
+  const balanceTransferSystem = getCreate2Address({
+    from: deployerAddress,
+    bytecode: balanceTransferSystemBytecode,
+    salt,
+  });
+
+  const batchCallSystemBytecode = batchCallSystemBuild.bytecode.object as Hex;
+  const batchCallSystem = getCreate2Address({ from: deployerAddress, bytecode: batchCallSystemBytecode, salt });
+
+  const registrationBytecode = registrationSystemBuild.bytecode.object as Hex;
+  const registration = getCreate2Address({
+    from: deployerAddress,
+    bytecode: registrationBytecode,
+    salt,
+  });
+
+  const initModuleBytecode = encodeDeployData({
+    bytecode: initModuleBuild.bytecode.object as Hex,
+    abi: initModuleAbi,
+    args: [accessManagementSystem, balanceTransferSystem, batchCallSystem, registration],
+  });
+
+  const initModule = getCreate2Address({ from: deployerAddress, bytecode: initModuleBytecode, salt });
+
+  const worldFactoryBytecode = encodeDeployData({
+    bytecode: worldFactoryBuild.bytecode.object as Hex,
+    abi: worldFactoryAbi,
+    args: [initModule],
+  });
+
+  const worldFactory = getCreate2Address({ from: deployerAddress, bytecode: worldFactoryBytecode, salt });
+
+  const worldFactoryContracts = getWorldFactoryContracts(deployerAddress);
 
   // WorldFactory constructor doesn't call InitModule, only sets its address, so we can do these in parallel since the address is deterministic
   await ensureContractsDeployed({

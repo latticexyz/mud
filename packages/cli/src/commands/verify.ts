@@ -21,7 +21,6 @@ const commandModule: CommandModule<Options, Options> = {
   builder(yargs) {
     return yargs.options({
       profile: { type: "string", desc: "The foundry profile to use" },
-      worldAddress: { type: "string", desc: "Deploy to an existing World at the given address" },
     });
   },
 
@@ -40,8 +39,9 @@ const commandModule: CommandModule<Options, Options> = {
       const contractData = getContractData(`${name}.sol`, name, outDir);
 
       return {
-        name,
+        label: name,
         bytecode: contractData.bytecode,
+        deployedBytecodeSize: contractData.deployedBytecodeSize,
       };
     });
 
@@ -51,8 +51,9 @@ const commandModule: CommandModule<Options, Options> = {
         getContractData(`${mod.name}.sol`, mod.name, outDir);
 
       return {
-        name: mod.name,
+        label: mod.name,
         bytecode: contractData.bytecode,
+        deployedBytecodeSize: contractData.deployedBytecodeSize,
       };
     });
 
