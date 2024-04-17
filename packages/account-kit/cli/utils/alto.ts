@@ -1,24 +1,16 @@
 import { existsSync } from "fs";
 import { $, execa } from "execa";
 import config from "./altoV1.localhost.json" assert { type: "json" };
-import { join, dirname } from "path";
+import { join } from "path";
 
 export async function alto() {
   // process.argv[1] is the path to the currently executing script
-  const nodeModulesPath = (await $({ cwd: dirname(process.argv[1]) })`pnpm root`).stdout;
+  const nodeModulesPath = (await $`pnpm root`).stdout;
   const altoPath = join(nodeModulesPath, "@pimlicolabs/alto");
   const altoCliPath = join(altoPath, "src/lib/cli/alto.js");
 
   if (!existsSync(altoPath)) {
-    console.log("Installing alto.");
-    const result = await $({ cwd: nodeModulesPath })`pnpm install`;
-    if (result.failed) {
-      console.log(result.stderr);
-    }
-
-    if (!existsSync(altoPath)) {
-      console.log("Alto not found. Is `@pimlicolabs/alto` installed?");
-    }
+    console.log("Alto not found. Is `@pimlicolabs/alto` installed?");
   }
 
   console.log("Installing alto dependencies.");
@@ -27,6 +19,7 @@ export async function alto() {
     console.log(result.stderr);
   }
 
+  // TODO: remove this once alto is in npm and has this binary prebuilt
   if (!existsSync(altoCliPath)) {
     console.log("Building alto.");
     const result = await $({ cwd: altoPath })`pnpm build`;

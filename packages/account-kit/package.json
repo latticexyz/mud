@@ -89,6 +89,14 @@
     "@latticexyz/gas-tank": "*",
     "@pimlicolabs/alto": "git+https://github.com/latticexyz/alto.git#3192a9a"
   },
+  "peerDependenciesMeta": {
+    "@latticexyz/gas-tank": {
+      "optional": true
+    },
+    "@pimlicolabs/alto": {
+      "optional": true
+    }
+  },
   "publishConfig": {
     "access": "public"
   }
