@@ -41,7 +41,7 @@ export type CodegenInput = {
   /** Path for world package imports. Default is "@latticexyz/world/src/" */
   worldImportPath?: string;
   /** Deploy the World as an upgradable proxy */
-  useProxy: boolean;
+  useProxy?: boolean;
 };
 
 export type WorldInput = evaluate<
