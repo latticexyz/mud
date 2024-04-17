@@ -6,6 +6,10 @@ import { AccountModal } from "./AccountModal";
 export type Config = {
   readonly chain: MUDChain;
   readonly worldAddress: Address;
+  /**
+   * Address of the `GasTank` paymaster. Defaults to `chain.contracts.gasTank.address` if set.
+   * @link http://www.npmjs.com/package/@latticexyz/gas-tank
+   */
   readonly gasTankAddress?: Address;
   readonly appInfo?: {
     readonly name?: string;
