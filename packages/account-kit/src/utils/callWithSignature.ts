@@ -1,9 +1,11 @@
 import { Address } from "abitype";
 import { Hex, WalletClient, Transport, Chain, Account, PublicClient } from "viem";
-import { writeContract } from "viem/actions";
+import { writeContract as vite_writeContract } from "viem/actions";
+import { getAction } from "viem/utils";
 import { AppAccountClient } from "../common";
 import { signCall } from "./signCall";
 import CallWithSignatureAbi from "@latticexyz/world-modules/out/IUnstable_CallWithSignatureSystem.sol/IUnstable_CallWithSignatureSystem.abi.json";
+import { debug } from "../debug";
 
 // TODO: move this to world package or similar
 // TODO: nonce _or_ publicClient?
@@ -32,6 +34,7 @@ export async function callWithSignature({
   appAccountClient,
   nonce,
 }: CallWithSignatureOptions) {
+  debug("callWithSignature", { appAccountClient, userAccountClient, worldAddress, systemId, callData });
   const signature = await signCall({
     userAccountClient,
     chainId,
@@ -42,10 +45,13 @@ export async function callWithSignature({
     publicClient,
   });
 
-  return writeContract(appAccountClient, {
+  debug("callWithSignature", { signature });
+  const writeContract = getAction(appAccountClient, vite_writeContract, "writeContract");
+  debug("callWithSignature", { writeContract });
+  return writeContract({
     address: worldAddress,
     abi: CallWithSignatureAbi,
     functionName: "callWithSignature",
     args: [userAccountClient.account.address, systemId, callData, signature],
-  });
+  } as never);
 }
