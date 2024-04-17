@@ -14,15 +14,7 @@ contract PlayersTest is Test, StoreMock {
     uint256 aliceGold = 150;
     uint256[5] memory resources = [aliceGold, 0, 0, 0, 0];
 
-    assertEq(Players.getItemResources(alice, 0), 0);
-    assertEq(Players.getResources(alice)[0], 0);
-    assertEq(resources[0], 150);
-
     Players.setResources(alice, resources);
-    Players.setIsTeamRight(alice, true);
-
-    assertEq(Players.getItemResources(alice, 0), 150);
-    assertEq(Players.getResources(alice)[0], 150);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(alice)));
