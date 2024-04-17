@@ -40,6 +40,8 @@ export type CodegenInput = {
   worldgenDirectory?: string;
   /** Path for world package imports. Default is "@latticexyz/world/src/" */
   worldImportPath?: string;
+  /** Deploy the World as an upgradable proxy */
+  useProxy: boolean;
 };
 
 export type WorldInput = evaluate<
