@@ -1168,16 +1168,16 @@ importers:
   test/mock-game-contracts:
     devDependencies:
       '@latticexyz/cli':
-        specifier: link:../../packages/cli
+        specifier: workspace:*
         version: link:../../packages/cli
       '@latticexyz/schema-type':
-        specifier: link:../../packages/schema-type
+        specifier: workspace:*
         version: link:../../packages/schema-type
       '@latticexyz/store':
-        specifier: link:../../packages/store
+        specifier: workspace:*
         version: link:../../packages/store
       '@latticexyz/world':
-        specifier: link:../../packages/world
+        specifier: workspace:*
         version: link:../../packages/world
       dotenv:
         specifier: ^16.0.3
