@@ -18,6 +18,7 @@ async function verifyContract(
   foundryProfile: string | undefined,
   deployerAddress: Hex,
   contract: Contract,
+  rpc: string,
   cwd?: string,
 ) {
   if (!contract.label) {
@@ -26,7 +27,7 @@ async function verifyContract(
 
   const system = getCreate2Address({ from: deployerAddress, bytecode: contract.bytecode, salt });
 
-  await forge(["verify-contract", system, contract.label, "--verifier", "sourcify", "--chain", "holesky"], {
+  await forge(["verify-contract", system, contract.label, "--verifier", "sourcify", "--rpc-url", rpc], {
     profile: foundryProfile,
     cwd,
   });
@@ -56,22 +57,22 @@ in your contracts directory to use the default anvil private key.`,
 
   const deployerAddress = await ensureDeployer(client);
 
-  await Promise.all(systems.map((contract) => verifyContract(foundryProfile, deployerAddress, contract)));
+  await Promise.all(systems.map((contract) => verifyContract(foundryProfile, deployerAddress, contract, rpc)));
 
   await Promise.all(
     getWorldFactoryContracts(deployerAddress).map((contract) =>
-      verifyContract(foundryProfile, deployerAddress, contract, "node_modules/@latticexyz/world"),
+      verifyContract(foundryProfile, deployerAddress, contract, rpc, "node_modules/@latticexyz/world"),
     ),
   );
 
   await Promise.all(
     modules.map((contract) =>
-      verifyContract(foundryProfile, deployerAddress, contract, "node_modules/@latticexyz/world-modules"),
+      verifyContract(foundryProfile, deployerAddress, contract, rpc, "node_modules/@latticexyz/world-modules"),
     ),
   );
 
   if (worldAddress) {
-    await forge(["verify-contract", worldAddress, "World", "--verifier", "sourcify", "--chain", "holesky"], {
+    await forge(["verify-contract", worldAddress, "World", "--verifier", "sourcify", "--rpc-url", rpc], {
       profile: foundryProfile,
       cwd: "node_modules/@latticexyz/world",
     });
