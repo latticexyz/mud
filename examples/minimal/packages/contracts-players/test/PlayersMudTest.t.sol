@@ -9,7 +9,7 @@ import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOw
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { Players } from "../src/codegen/index.sol";
 
-contract PlayersTest is MudTest {
+contract PlayersMudTest is MudTest {
   IWorld world;
 
   function setUp() public override {

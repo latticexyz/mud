@@ -6,7 +6,7 @@ import { StoreMock } from "@latticexyz/store/test/StoreMock.sol";
 
 import { Players } from "../src/codegen/index.sol";
 
-contract TablegenTest is Test, StoreMock {
+contract PlayersTest is Test, StoreMock {
   function testPlayers(address alice) public {
     Players.register();
 
