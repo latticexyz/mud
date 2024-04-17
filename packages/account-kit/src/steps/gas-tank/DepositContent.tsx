@@ -10,7 +10,6 @@ import { GasTankStateContent } from "./GasTankStateContent";
 import { ChainSelect } from "./components/ChainSelect";
 import { AmountInput } from "./components/AmountInput";
 import { BalancesFees } from "./components/BalancesFees";
-import { Button } from "../../ui/Button";
 
 type DepositMethod = "direct" | "bridge" | "relay" | null;
 
@@ -20,6 +19,8 @@ export function DepositContent() {
   const userAccountChainId = userAccount?.chain?.id;
   const [depositMethod, setDepositMethod] = useState<DepositMethod>();
   const [depositAmount, setDepositAmount] = useState<string>("");
+  // TODO: add tx state
+  // const [tx, setTx] = useState<string | null>(null);
 
   useEffect(() => {
     if (!depositMethod) {
@@ -55,15 +56,10 @@ export function DepositContent() {
           <BalancesFees />
 
           {chain.id === userAccountChainId && <DirectDepositContent amount={depositAmount} />}
-          {chain.sourceId === userAccountChainId && (
-            <StandardBridgeContent amount={depositAmount} sourceChainId={userAccountChainId!} />
-          )}
+          {chain.sourceId === userAccountChainId && <StandardBridgeContent amount={depositAmount} />}
           {chain.id !== userAccountChainId && chain.sourceId !== userAccountChainId && (
             <RelayLinkContent amount={depositAmount} sourceChainId={userAccountChainId!} />
           )}
-
-          {/* pending={!userAccountAddress || isPending} onClick={handleDeposit} */}
-          <Button className="w-full">Deposit</Button>
         </div>
       </AccountModalSection>
     </>
