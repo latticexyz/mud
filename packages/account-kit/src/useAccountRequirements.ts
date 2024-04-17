@@ -25,9 +25,9 @@ export type UseAccountRequirementsResult = {
 export function useAccountRequirements(): UseAccountRequirementsResult {
   const userAccount = useAccount();
   const [appSignerAccount] = useAppSigner();
-  const gasTankBalance = useGasTankBalance();
-  const isGasSpender = useIsGasSpender();
-  const hasDelegation = useHasDelegation();
+  const { gasTankBalance } = useGasTankBalance();
+  const { isGasSpender } = useIsGasSpender();
+  const { hasDelegation } = useHasDelegation();
   const { registerDelegationSignature } = useSignRegisterDelegation();
 
   return useMemo(() => {

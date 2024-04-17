@@ -1,49 +1,12 @@
 import { useAccount, usePublicClient } from "wagmi";
 import { useConfig } from "./AccountKitProvider";
-import { useQuery } from "@tanstack/react-query";
 import { useAppAccount } from "./useAppAccount";
 import { useAppSigner } from "./useAppSigner";
-import { getRecord } from "./utils/getRecord";
-import { Address } from "abitype";
-import { PublicClient } from "viem";
 import { unlimitedDelegationControlId } from "./common";
 import worldConfig from "@latticexyz/world/mud.config";
+import { useRecord } from "./useRecord";
 
-export type HasDelegationOptions = {
-  publicClient: PublicClient;
-  worldAddress: Address;
-  userAccountAddress: Address;
-  appAccountAddress: Address;
-};
-
-export function hasDelegationQueryKey(data: {
-  chainId: number;
-  worldAddress: Address;
-  userAccountAddress: Address | undefined;
-  appAccountAddress: Address | undefined;
-}) {
-  return ["mud:hasDelegation", data] as const;
-}
-
-export async function hasDelegation({
-  publicClient,
-  worldAddress,
-  userAccountAddress,
-  appAccountAddress,
-}: HasDelegationOptions): Promise<boolean> {
-  const record = await getRecord(publicClient, {
-    storeAddress: worldAddress,
-    table: worldConfig.tables.world__UserDelegationControl,
-    key: {
-      delegator: userAccountAddress,
-      delegatee: appAccountAddress,
-    },
-    blockTag: "pending",
-  });
-  return record.delegationControlId === unlimitedDelegationControlId;
-}
-
-export function useHasDelegation(): boolean | undefined {
+export function useHasDelegation() {
   const { chain, worldAddress } = useConfig();
   const publicClient = usePublicClient({ chainId: chain.id });
   const userAccount = useAccount();
@@ -53,31 +16,26 @@ export function useHasDelegation(): boolean | undefined {
   const userAccountAddress = userAccount.address;
   const appAccountAddress = appAccount.data?.address;
 
-  const queryKey = hasDelegationQueryKey({
-    chainId: chain.id,
-    worldAddress,
-    userAccountAddress,
-    appAccountAddress,
-  });
-
-  const result = useQuery(
-    publicClient && worldAddress && userAccountAddress && appAccountAddress
+  const result = useRecord(
+    userAccountAddress && appAccountAddress
       ? {
-          queryKey,
-          queryFn: () =>
-            hasDelegation({
-              publicClient,
-              worldAddress,
-              userAccountAddress,
-              appAccountAddress,
-            }),
-          staleTime: 1000 * 60 * 5,
+          chainId: chain.id,
+          address: worldAddress,
+          table: worldConfig.tables.world__UserDelegationControl,
+          key: {
+            delegator: userAccountAddress,
+            delegatee: appAccountAddress,
+          },
+          blockTag: "pending",
+          query: {
+            staleTime: 1000 * 60 * 5,
+          },
         }
-      : {
-          queryKey,
-          enabled: false,
-        },
+      : {},
   );
 
-  return result.data;
+  return {
+    ...result,
+    hasDelegation: result.record?.delegationControlId === unlimitedDelegationControlId,
+  };
 }

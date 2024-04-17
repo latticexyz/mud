@@ -8,15 +8,15 @@ type GasTankStateContentProps = {
   amount: string;
 };
 
-const ACTIONS_PER_ETHER = BigInt(100_000);
+const ACTIONS_PER_ETHER = 100_000n;
 
 export function GasTankStateContent({ amount }: GasTankStateContentProps) {
-  const gasTankBalance = useGasTankBalance() || BigInt(0);
-  const amountWei = BigInt(amount ? parseEther(amount) : 0);
+  const { gasTankBalance } = useGasTankBalance();
+  const amountWei = parseEther(amount);
   const newGasTankBalance = gasTankBalance ? gasTankBalance + amountWei : amountWei;
-  const estimateActions = (ACTIONS_PER_ETHER * parseEther(amount)) / BigInt(1e18);
-  const isTankEmpty = !gasTankBalance || gasTankBalance === BigInt(0);
-  const isAmountSet = Boolean(amountWei > BigInt(0));
+  const estimateActions = (ACTIONS_PER_ETHER * amountWei) / BigInt(1e18);
+  const isTankEmpty = !gasTankBalance || gasTankBalance === 0n;
+  const isAmountSet = Boolean(amountWei > 0n);
 
   return (
     <div className="flex items-center gap-[12px] bg-neutral-200 p-5">
@@ -34,7 +34,8 @@ export function GasTankStateContent({ amount }: GasTankStateContentProps) {
       {isAmountSet && (
         <div className="flex justify-between items-center w-full">
           <p className="font-mono text-[22px]">
-            {formatEther(gasTankBalance)} <span className="text-green-500">→</span> {formatEther(newGasTankBalance!)}Ξ
+            {formatEther(gasTankBalance ?? 0n)} <span className="text-green-500">→</span>{" "}
+            {formatEther(newGasTankBalance!)}Ξ
           </p>
           <p className="font-mono text-[14px] text-neutral-700">~{formatActionsNumber(estimateActions)} actions</p>
         </div>

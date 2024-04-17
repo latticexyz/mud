@@ -6,7 +6,7 @@ import { useSignRegisterDelegation } from "./useSignRegisterDelegation";
 
 export function AppAccountStep() {
   const [appSigner] = useAppSigner();
-  const hasDelegation = useHasDelegation();
+  const { hasDelegation } = useHasDelegation();
   const { registerDelegationSignature } = useSignRegisterDelegation();
 
   if (!appSigner) {

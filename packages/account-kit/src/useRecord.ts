@@ -1,36 +1,47 @@
-import { UseQueryOptions, UseQueryResult, useQuery } from "@tanstack/react-query";
-import { GetRecordOptions, getRecord } from "./utils/getRecord";
 import { Table } from "@latticexyz/config";
 import { schemaToPrimitives } from "./utils/schemaToPrimitives";
-import { usePublicClient } from "wagmi";
-import { useConfig } from "./AccountKitProvider";
+import { UseReadContractParameters, UseReadContractReturnType, useReadContract } from "wagmi";
+import IStoreReadAbi from "@latticexyz/store/out/IStoreRead.sol/IStoreRead.abi.json";
+import { encodeKeyTuple } from "./utils/encodeKeyTuple";
+import { decodeValueArgs, getKeySchema, getSchemaTypes, getValueSchema } from "@latticexyz/protocol-parser/internal";
+import { Hex } from "viem";
 
-export type UseRecordOptions<table extends Table> = GetRecordOptions<table> & {
-  query: Omit<UseQueryOptions<typeof getRecord<table>>, "queryKey" | "queryFn">;
-};
+export function useRecord<table extends Table>({
+  table,
+  key,
+  ...opts
+}: Omit<
+  UseReadContractParameters<typeof IStoreReadAbi, "getRecord", [Hex, readonly Hex[]]>,
+  "abi" | "functionName" | "args"
+> & {
+  readonly table?: table;
+  readonly key?: schemaToPrimitives<getKeySchema<table>>;
+}): UseReadContractReturnType<typeof IStoreReadAbi, "getRecord", [Hex, readonly Hex[]]> & {
+  readonly record: schemaToPrimitives<table["schema"]> | undefined;
+} {
+  const result = useReadContract(
+    table && key && opts.query?.enabled !== false
+      ? {
+          ...opts,
+          abi: IStoreReadAbi,
+          functionName: "getRecord",
+          args: [table.tableId, encodeKeyTuple(getKeySchema(table), key)],
+        }
+      : {},
+  );
 
-export function getRecordKey<table extends Table>(
-  data: {
-    chainId: number;
-  } & GetRecordOptions<table>,
-) {
-  return ["mud:getRecord", data] as const;
-}
-
-export function useRecord<table extends Table>(
-  args: GetRecordOptions<table>,
-  query: Omit<UseQueryOptions<schemaToPrimitives<table["schema"]>>, "queryKey" | "queryFn"> = {},
-): UseQueryResult<schemaToPrimitives<table["schema"]>> {
-  // TODO: move this "app chain's publicClient" logic into a hook that we can use everywhere
-  const { chain } = useConfig();
-  const publicClient = usePublicClient({ chainId: chain.id });
-  if (!publicClient) {
-    throw new Error(`No public client available for chain ${chain.id}. Is wagmi properly configured with this chain?`);
-  }
-
-  return useQuery({
-    ...query,
-    queryKey: getRecordKey({ chainId: chain.id, ...args }),
-    queryFn: () => getRecord(publicClient, args),
-  });
+  return {
+    ...result,
+    record:
+      table && key && result.data != null
+        ? {
+            ...key,
+            ...decodeValueArgs(getSchemaTypes(getValueSchema(table)), {
+              staticData: result.data[0],
+              encodedLengths: result.data[1],
+              dynamicData: result.data[2],
+            }),
+          }
+        : undefined,
+  };
 }

@@ -10,7 +10,6 @@ import { writeContract, waitForTransactionReceipt } from "viem/actions";
 import { usePublicClient, useWalletClient } from "wagmi";
 import { unlimitedDelegationControlId } from "../../common";
 import { useAppAccountClient } from "../../useAppAccountClient";
-import { hasDelegationQueryKey } from "../../useHasDelegation";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
 import { useConfig } from "../../AccountKitProvider";
 import CallWithSignatureAbi from "@latticexyz/world-modules/out/IUnstable_CallWithSignatureSystem.sol/IUnstable_CallWithSignatureSystem.abi.json";
@@ -55,14 +54,7 @@ export function FinalizingStep() {
         throw new Error("Failed to register delegation.");
       }
 
-      queryClient.invalidateQueries({
-        queryKey: hasDelegationQueryKey({
-          chainId: chain.id,
-          worldAddress,
-          userAccountAddress: userAccountClient.account.address,
-          appAccountAddress: appAccountClient.account.address,
-        }),
-      });
+      queryClient.invalidateQueries();
       resetStep();
     },
   });

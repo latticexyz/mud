@@ -7,7 +7,6 @@ import { unlimitedDelegationControlId } from "../../common";
 import { useAppAccountClient } from "../../useAppAccountClient";
 import { signCall } from "../../utils/signCall";
 import { useConfig } from "../../AccountKitProvider";
-import { hasDelegationQueryKey } from "../../useHasDelegation";
 import { useCallWithSignatureNonce } from "../../useCallWithSignatureNonce";
 import { createStore } from "zustand/vanilla";
 import { useMemo } from "react";
@@ -21,7 +20,7 @@ export function useSignRegisterDelegation() {
   const publicClient = usePublicClient({ chainId: chain.id });
   const { data: userAccountClient } = useWalletClient({ chainId: chain.id });
   const appAccountClient = useAppAccountClient();
-  const { data: nonce } = useCallWithSignatureNonce();
+  const { nonce } = useCallWithSignatureNonce();
   const registerDelegationSignature = useStore(store, (state) => state.signature);
 
   const result = useMutation({
@@ -29,7 +28,7 @@ export function useSignRegisterDelegation() {
       if (!publicClient) throw new Error("Public client not ready. Not connected?");
       if (!userAccountClient) throw new Error("Wallet client not ready. Not connected?");
       if (!appAccountClient) throw new Error("App account client not ready.");
-      if (!nonce) throw new Error("Nonce not ready.");
+      if (nonce == null) throw new Error("Nonce not ready.");
 
       const signature = await signCall({
         userAccountClient,
@@ -41,19 +40,12 @@ export function useSignRegisterDelegation() {
           functionName: "registerDelegation",
           args: [appAccountClient.account.address, unlimitedDelegationControlId, "0x"],
         }),
-        nonce: nonce.nonce,
+        nonce,
       });
 
-      await queryClient.invalidateQueries({
-        queryKey: hasDelegationQueryKey({
-          chainId: chain.id,
-          worldAddress,
-          userAccountAddress: userAccountClient.account.address,
-          appAccountAddress: appAccountClient.account.address,
-        }),
-      });
-
+      await queryClient.invalidateQueries();
       store.setState({ signature });
+      // TODO: reset step?
 
       return signature;
     },
