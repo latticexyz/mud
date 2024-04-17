@@ -11,6 +11,7 @@ type VerifyOptions = {
   foundryProfile?: string;
   systems: Contract[];
   modules: Contract[];
+  worldAddress?: Hex;
 };
 
 async function verifyContract(
@@ -35,6 +36,7 @@ export async function verify({
   foundryProfile = process.env.FOUNDRY_PROFILE,
   systems,
   modules,
+  worldAddress,
 }: VerifyOptions): Promise<void> {
   const privateKey = process.env.PRIVATE_KEY as Hex;
   if (!privateKey) {
@@ -67,4 +69,11 @@ in your contracts directory to use the default anvil private key.`,
       verifyContract(foundryProfile, deployerAddress, contract, "node_modules/@latticexyz/world-modules"),
     ),
   );
+
+  if (worldAddress) {
+    await forge(["verify-contract", worldAddress, "World", "--verifier", "sourcify", "--chain", "holesky"], {
+      profile: foundryProfile,
+      cwd: "node_modules/@latticexyz/world",
+    });
+  }
 }

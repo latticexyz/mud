@@ -8,8 +8,10 @@ import { getOutDirectory, getSrcDirectory } from "@latticexyz/common/foundry";
 import { getExistingContracts } from "../utils/getExistingContracts";
 import { getContractData } from "../utils/getContractData";
 import { defaultModuleContracts } from "../utils/defaultModuleContracts";
+import { Hex } from "viem";
 
 type Options = {
+  worldAddress?: string;
   configPath?: string;
   profile?: string;
   srcDir?: string;
@@ -24,6 +26,7 @@ const commandModule: CommandModule<Options, Options> = {
     return yargs.options({
       configPath: { type: "string", desc: "Path to the config file" },
       profile: { type: "string", desc: "The foundry profile to use" },
+      worldAddress: { type: "string", desc: "Deploy to an existing World at the given address" },
       srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
     });
   },
@@ -68,6 +71,7 @@ const commandModule: CommandModule<Options, Options> = {
         foundryProfile: profile,
         systems,
         modules,
+        worldAddress: opts.worldAddress ? (opts.worldAddress as Hex) : undefined,
       });
     } catch (error) {
       logError(error);
