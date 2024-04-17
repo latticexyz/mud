@@ -15,7 +15,7 @@ export async function deployGasTank() {
   }
 
   console.log("Installing gas-tank dependencies.");
-  const result = await $({ cwd: gasTankPath })`pnpm install`;
+  const result = await $({ cwd: gasTankPath })`npm install`;
   if (result.failed) {
     console.log(result.stderr);
   }
@@ -34,7 +34,7 @@ export async function deployGasTank() {
 
   console.log("Deploying GasTank Paymaster.");
   try {
-    await execa("pnpm", ["deploy:local"], {
+    await execa("npm", ["run", "deploy:local"], {
       cwd: gasTankPath,
       stdio: "inherit",
       env: {
