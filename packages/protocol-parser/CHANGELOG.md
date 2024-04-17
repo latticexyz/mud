@@ -1,5 +1,18 @@
 # @latticexyz/protocol-parser
 
+## 2.0.6
+
+### Patch Changes
+
+- c18e93c5: Bumped viem to 2.9.20.
+- d95028a6: Bumped viem to 2.9.16.
+- Updated dependencies [6c8ab471]
+- Updated dependencies [c18e93c5]
+- Updated dependencies [d95028a6]
+  - @latticexyz/common@2.0.6
+  - @latticexyz/config@2.0.6
+  - @latticexyz/schema-type@2.0.6
+
 ## 2.0.5
 
 ### Patch Changes
