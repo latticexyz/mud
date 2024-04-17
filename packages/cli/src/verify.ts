@@ -3,8 +3,8 @@ import { Hex, getCreate2Address } from "viem";
 import { salt } from "./deploy/common";
 import { deployer } from "./deploy/ensureDeployer";
 import { MUDError } from "@latticexyz/common/errors";
-import { getWorldFactoryContracts } from "./deploy/ensureWorldFactory";
 import { Contract } from "./deploy/ensureContract";
+import { getWorldFactoryContracts } from "./deploy/getWorldFactoryContracts";
 
 type VerifyOptions = {
   foundryProfile?: string;
