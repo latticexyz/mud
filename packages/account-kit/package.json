@@ -86,12 +86,8 @@
     "vitest": "0.34.6"
   },
   "peerDependencies": {
-    "@latticexyz/common": "2.0.4",
-    "@latticexyz/recs": "2.0.4",
-    "@latticexyz/store": "2.0.4",
-    "@latticexyz/store-sync": "2.0.4",
-    "@latticexyz/utils": "2.0.4",
-    "@latticexyz/world": "2.0.4"
+    "@latticexyz/gas-tank": "*",
+    "@pimlicolabs/alto": "git+https://github.com/latticexyz/alto.git#3192a9a"
   },
   "publishConfig": {
     "access": "public"
