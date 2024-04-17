@@ -41,11 +41,11 @@
     "test": "tsc --noEmit && mud test"
   },
   "dependencies": {
-    "@latticexyz/cli": "workspace:*",
-    "@latticexyz/schema-type": "workspace:*",
-    "@latticexyz/store": "workspace:*",
-    "@latticexyz/world": "workspace:*",
-    "@latticexyz/world-modules": "workspace:*"
+    "@latticexyz/cli": "account-kit",
+    "@latticexyz/schema-type": "account-kit",
+    "@latticexyz/store": "account-kit",
+    "@latticexyz/world": "account-kit",
+    "@latticexyz/world-modules": "account-kit"
   },
   "devDependencies": {
     "@account-abstraction/contracts": "0.7.0",
