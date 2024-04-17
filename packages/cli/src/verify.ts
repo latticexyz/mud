@@ -54,21 +54,17 @@ in your contracts directory to use the default anvil private key.`,
 
   const deployerAddress = await ensureDeployer(client);
 
+  await Promise.all(systems.map((contract) => verifyContract(foundryProfile, deployerAddress, contract)));
+
   await Promise.all(
-    systems.map((contract) => {
-      verifyContract(foundryProfile, deployerAddress, contract);
-    }),
+    getWorldFactoryContracts(deployerAddress).map((contract) =>
+      verifyContract(foundryProfile, deployerAddress, contract, "node_modules/@latticexyz/world"),
+    ),
   );
 
   await Promise.all(
-    getWorldFactoryContracts(deployerAddress).map((contract) => {
-      verifyContract(foundryProfile, deployerAddress, contract, "node_modules/@latticexyz/world");
-    }),
-  );
-
-  await Promise.all(
-    modules.map((contract) => {
-      verifyContract(foundryProfile, deployerAddress, contract, "node_modules/@latticexyz/world-modules");
-    }),
+    modules.map((contract) =>
+      verifyContract(foundryProfile, deployerAddress, contract, "node_modules/@latticexyz/world-modules"),
+    ),
   );
 }

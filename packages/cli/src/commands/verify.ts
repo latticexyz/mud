@@ -10,7 +10,9 @@ import { getContractData } from "../utils/getContractData";
 import { defaultModuleContracts } from "../utils/defaultModuleContracts";
 
 type Options = {
+  configPath?: string;
   profile?: string;
+  srcDir?: string;
 };
 
 const commandModule: CommandModule<Options, Options> = {
@@ -20,21 +22,24 @@ const commandModule: CommandModule<Options, Options> = {
 
   builder(yargs) {
     return yargs.options({
+      configPath: { type: "string", desc: "Path to the config file" },
       profile: { type: "string", desc: "The foundry profile to use" },
+      srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
     });
   },
 
-  async handler({ profile }) {
-    const configV2 = (await loadConfig(undefined)) as WorldConfig;
+  async handler(opts) {
+    const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
+
+    const configV2 = (await loadConfig(opts.configPath)) as WorldConfig;
     const config = worldToV1(configV2);
 
-    const srcDir = await getSrcDirectory(profile);
+    const srcDir = opts.srcDir ?? (await getSrcDirectory(profile));
     const outDir = await getOutDirectory(profile);
 
-    const forgeSourceDir = srcDir;
-    const contractNames = getExistingContracts(forgeSourceDir).map(({ basename }) => basename);
-
+    const contractNames = getExistingContracts(srcDir).map(({ basename }) => basename);
     const resolvedWorldConfig = resolveWorldConfig(config, contractNames);
+
     const systems = Object.keys(resolvedWorldConfig.systems).map((name) => {
       const contractData = getContractData(`${name}.sol`, name, outDir);
 
