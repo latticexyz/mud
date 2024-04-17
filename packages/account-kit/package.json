@@ -35,7 +35,7 @@
     "build:js": "tsup & vite build",
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
-    "dev": "tsup --watch & vite build --watch",
+    "dev": "tsup --watch && vite build --watch",
     "local-bundler": "pnpx tsx cli/local-bundler.ts",
     "test": "tsc --noEmit && vitest",
     "test:ci": "tsc --noEmit && vitest --run"
@@ -60,7 +60,7 @@
     "abitype": "1.0.0",
     "debug": "^4.3.4",
     "execa": "^7.0.0",
-    "permissionless": "^0.1.10",
+    "permissionless": "^0.1.17",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.0",

@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from "react";
 import { useAccount, usePublicClient } from "wagmi";
-import { http, maxUint256, toHex, publicActions } from "viem";
+import { http, maxUint256, toHex, publicActions, createClient, ClientConfig } from "viem";
 import { callFrom } from "@latticexyz/world/internal";
-import { createSmartAccountClient } from "permissionless";
+import { SmartAccountClientConfig, smartAccountActions } from "permissionless";
 import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
 import { useConfig } from "./AccountKitProvider";
 import { useAppSigner } from "./useAppSigner";
@@ -10,6 +10,8 @@ import { useAppAccount } from "./useAppAccount";
 import { AppAccountClient, entryPointAddress } from "./common";
 import { getUserBalanceSlot } from "./utils/getUserBalanceSlot";
 import { getEntryPointDepositSlot } from "./utils/getEntryPointDepositSlot";
+import { transportObserver } from "./transportObserver";
+import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types/entrypoint";
 
 export function useAppAccountClient(): AppAccountClient | undefined {
   const [appSignerAccount] = useAppSigner();
@@ -40,14 +42,17 @@ export function useAppAccountClient(): AppAccountClient | undefined {
 
     const pimlicoBundlerClient = createPimlicoBundlerClient({
       chain: publicClient.chain,
-      transport: http(chain.erc4337BundlerUrl.http),
+      transport: transportObserver("pimlico bundler client", http(chain.erc4337BundlerUrl.http)),
       entryPoint: entryPointAddress,
-    });
+    }).extend(() => publicActions(publicClient));
 
-    const appAccountClient = createSmartAccountClient({
+    const smartAccountClientConfig = {
+      key: "Account",
+      name: "Smart Account Client",
+      type: "smartAccountClient",
       chain: publicClient.chain,
       account: appAccount,
-      bundlerTransport: http(chain.erc4337BundlerUrl.http),
+      transport: transportObserver("bundler transport", http(chain.erc4337BundlerUrl.http)),
       middleware: {
         sponsorUserOperation: async ({ userOperation }) => {
           const gasEstimates = await pimlicoBundlerClient.estimateUserOperationGas(
@@ -84,17 +89,21 @@ export function useAppAccountClient(): AppAccountClient | undefined {
         },
         gasPrice: async () => (await pimlicoBundlerClient.getUserOperationGasPrice()).fast, // use pimlico bundler to get gas prices
       },
-    })
-      .extend(() => publicActions(publicClient))
-      // .extend(transactionQueue(publicClient))
-      // .extend(writeObserver({ onWrite: (write) => write$.next(write) }))
+    } as const satisfies Omit<SmartAccountClientConfig<ENTRYPOINT_ADDRESS_V07_TYPE>, "bundlerTransport"> &
+      Pick<ClientConfig, "type" | "transport">;
+
+    const appAccountClient = createClient(smartAccountClientConfig)
       .extend(
         callFrom({
           worldAddress,
           delegatorAddress: userAddress,
           publicClient,
         }),
-      );
+      )
+      .extend(smartAccountActions({ middleware: smartAccountClientConfig.middleware }))
+      // .extend(transactionQueue(publicClient))
+      // .extend(writeObserver({ onWrite: (write) => write$.next(write) }))
+      .extend(() => publicActions(publicClient));
 
     return appAccountClient;
   }, [appSignerAccount, userAddress, publicClient, appAccount, worldAddress, gasTankAddress, chain]);

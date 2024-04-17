@@ -169,8 +169,8 @@ importers:
         specifier: ^7.0.0
         version: 7.2.0
       permissionless:
-        specifier: ^0.1.10
-        version: 0.1.16(viem@2.9.20)
+        specifier: ^0.1.17
+        version: 0.1.17(viem@2.9.20)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -10495,6 +10495,7 @@ packages:
   /escalade@3.1.1:
     resolution: {integrity: sha512-k0er2gUkLf8O0zKJiAhmkTnJlTvINGv7ygDNPbeIsX/TJjGJZHuh9B2UxbsaEkmlEo9MfhrSzmhIlhRlI2GXnw==}
     engines: {node: '>=6'}
+    dev: false
 
   /escalade@3.1.2:
     resolution: {integrity: sha512-ErCHMCae19vR8vQGe50xIsVomy19rg6gFu3+r3jkEO46suLMWBksvVyoGgQV+jOfl84ZSOSlmv6Gxa89PmTGmA==}
@@ -14933,10 +14934,10 @@ packages:
       through2: 2.0.5
     dev: false
 
-  /permissionless@0.1.16(viem@2.9.20):
-    resolution: {integrity: sha512-UGC3yJiGYcPHJ+LohSFJSIxQGIQ2DMREYXGwVtb0DdvTVuO+uqqEymD6LZnKdtLF2KGhBPODv37LqvRyh+ma3g==}
+  /permissionless@0.1.17(viem@2.9.20):
+    resolution: {integrity: sha512-xesPWvTvLb5yWB7CzH3W1e989gzqx6EKKo2/jIELLpA5si11yEFnD1rbWxKKwvREip0mJzzIzUbQepQBIhk3Kg==}
     peerDependencies:
-      viem: ^2.0.0
+      viem: ^2.9.17
     dependencies:
       viem: 2.9.20(typescript@5.4.2)(zod@3.21.4)
     dev: false
@@ -18525,7 +18526,7 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       cliui: 7.0.4
-      escalade: 3.1.1
+      escalade: 3.1.2
       get-caller-file: 2.0.5
       require-directory: 2.1.1
       string-width: 4.2.3
@@ -18551,7 +18552,7 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       cliui: 8.0.1
-      escalade: 3.1.1
+      escalade: 3.1.2
       get-caller-file: 2.0.5
       require-directory: 2.1.1
       string-width: 4.2.3
