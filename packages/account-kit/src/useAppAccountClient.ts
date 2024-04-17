@@ -4,7 +4,6 @@ import { http, maxUint256, toHex, publicActions } from "viem";
 import { callFrom } from "@latticexyz/world/internal";
 import { createSmartAccountClient } from "permissionless";
 import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
-import { call, getTransactionCount } from "viem/actions";
 import { useConfig } from "./AccountKitProvider";
 import { useAppSigner } from "./useAppSigner";
 import { useAppAccount } from "./useAppAccount";
@@ -93,13 +92,13 @@ export function useAppAccountClient(): AppAccountClient | undefined {
         const { prepareTransactionRequest, ...otherPublicActions } = publicActions(publicClient);
         return otherPublicActions;
       })
-      .extend(() => ({
-        getTransactionCount: (args) => {
-          console.log("getTransactionCount, ", args);
-          return getTransactionCount(publicClient, args);
-        },
-        call: (args) => call(publicClient, args),
-      }))
+      // .extend(() => ({
+      //   getTransactionCount: (args) => {
+      //     console.log("getTransactionCount, ", args);
+      //     return getTransactionCount(publicClient, args);
+      //   },
+      //   call: (args) => call(publicClient, args),
+      // }))
       // .extend(transactionQueue(publicClient))
       // .extend(writeObserver({ onWrite: (write) => write$.next(write) }))
       .extend(

@@ -25,6 +25,7 @@ export async function getGasTankBalance({
   worldAddress,
   userAccountAddress,
 }: GetGasTankBalanceOptions): Promise<bigint> {
+  console.log("getting gas tank balance record");
   const record = await getRecord(publicClient, {
     storeAddress: worldAddress,
     table: gasTankConfig.tables.UserBalances,
@@ -33,6 +34,7 @@ export async function getGasTankBalance({
     },
     blockTag: "pending",
   });
+  console.log("got gas tank balance record", record);
 
   return record.balance;
 }

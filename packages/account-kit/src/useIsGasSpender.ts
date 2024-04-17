@@ -30,6 +30,7 @@ export async function isGasSpender({
   userAccountAddress,
   appAccountAddress,
 }: IsGasSpenderOptions): Promise<boolean> {
+  console.log("getting gas spender record");
   const record = await getRecord(publicClient, {
     storeAddress: gasTankAddress,
     table: gasTankConfig.tables.Spender,
@@ -38,6 +39,7 @@ export async function isGasSpender({
     },
     blockTag: "pending",
   });
+  console.log("got gas spender record", record);
   return record.userAccount === userAccountAddress;
 }
 

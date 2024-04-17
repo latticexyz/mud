@@ -8,6 +8,7 @@ import { GasSpenderContent } from "./GasSpenderContent";
 export function GasTankStep() {
   const balance = useGasTankBalance();
   const isGasSpender = useIsGasSpender();
+  console.log({ balance, isGasSpender });
 
   if (balance == null || isGasSpender == null) {
     // TODO: better load state
