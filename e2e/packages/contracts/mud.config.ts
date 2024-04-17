@@ -49,6 +49,13 @@ export default defineWorld({
       },
       key: [],
     },
+    StaticArrayWithNumber: {
+      schema: {
+        num: "uint256",
+        value: "uint256[3]",
+      },
+      key: [],
+    },
   },
   modules: [
     {
