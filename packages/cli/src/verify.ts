@@ -4,12 +4,7 @@ import { salt } from "./deploy/common";
 import { ensureDeployer } from "./deploy/ensureDeployer";
 import { privateKeyToAccount } from "viem/accounts";
 import { MUDError } from "@latticexyz/common/errors";
-import accessManagementSystemBuild from "@latticexyz/world/out/AccessManagementSystem.sol/AccessManagementSystem.json" assert { type: "json" };
-import balanceTransferSystemBuild from "@latticexyz/world/out/BalanceTransferSystem.sol/BalanceTransferSystem.json" assert { type: "json" };
-import batchCallSystemBuild from "@latticexyz/world/out/BatchCallSystem.sol/BatchCallSystem.json" assert { type: "json" };
-import registrationSystemBuild from "@latticexyz/world/out/RegistrationSystem.sol/RegistrationSystem.json" assert { type: "json" };
-import initModuleBuild from "@latticexyz/world/out/InitModule.sol/InitModule.json" assert { type: "json" };
-import worldFactoryBuild from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.json" assert { type: "json" };
+import { getWorldFactoryContracts } from "./deploy/ensureWorldFactory";
 
 type VerifyOptions = {
   foundryProfile?: string;
@@ -17,35 +12,18 @@ type VerifyOptions = {
   modules: { name: string; bytecode: Hex }[];
 };
 
-// The contracts that are deployed in ensureWorldFactory
-const WORLD_FACTORY = [
-  { name: "AccessManagementSystem", bytecode: accessManagementSystemBuild.bytecode.object as Hex },
-  { name: "BalanceTransferSystem", bytecode: balanceTransferSystemBuild.bytecode.object as Hex },
-  { name: "BatchCallSystem", bytecode: batchCallSystemBuild.bytecode.object as Hex },
-  { name: "RegistrationSystem", bytecode: registrationSystemBuild.bytecode.object as Hex },
-  { name: "InitModule", bytecode: initModuleBuild.bytecode.object as Hex },
-  { name: "WorldFactory", bytecode: worldFactoryBuild.bytecode.object as Hex },
-];
-
-async function verifyContract(foundryProfile: string | undefined, deployerAddress: Hex, name: string, bytecode: Hex) {
-  const system = getCreate2Address({ from: deployerAddress, bytecode, salt });
-
-  await forge(["verify-contract", system, name, "--verifier", "sourcify"], {
-    profile: foundryProfile,
-  });
-}
-
-async function verifyContractWorld(
+async function verifyContract(
   foundryProfile: string | undefined,
   deployerAddress: Hex,
   name: string,
   bytecode: Hex,
+  cwd?: string,
 ) {
   const system = getCreate2Address({ from: deployerAddress, bytecode, salt });
 
-  await forge(["verify-contract", system, name, "--verifier", "sourcify"], {
+  await forge(["verify-contract", system, name, "--verifier", "sourcify", "--chain", "holesky"], {
     profile: foundryProfile,
-    cwd: "node_modules/@latticexyz/world",
+    cwd,
   });
 }
 
@@ -76,12 +54,16 @@ in your contracts directory to use the default anvil private key.`,
     systems.map(({ name, bytecode }) => verifyContract(foundryProfile, deployerAddress, name, bytecode)),
   );
 
-  // TODO: fetch these from world
   await Promise.all(
-    WORLD_FACTORY.map(({ name, bytecode }) => verifyContractWorld(foundryProfile, deployerAddress, name, bytecode)),
+    getWorldFactoryContracts(deployerAddress).map(({ label, bytecode }) => {
+      if (label) {
+        verifyContract(foundryProfile, deployerAddress, label, bytecode, "node_modules/@latticexyz/world");
+      }
+    }),
   );
-  // TODO: fetch these from world-modules
   await Promise.all(
-    modules.map(({ name, bytecode }) => verifyContract(foundryProfile, deployerAddress, name, bytecode)),
+    modules.map(({ name, bytecode }) =>
+      verifyContract(foundryProfile, deployerAddress, name, bytecode, "node_modules/@latticexyz/world-modules"),
+    ),
   );
 }
