@@ -13,6 +13,7 @@ import { useOnboardingSteps } from "../../useOnboardingSteps";
 import { Button } from "../../ui/Button";
 import { useDirectDepositSubmit } from "./hooks/useDirectDepositSubmit";
 import { useStandardBridgeSubmit } from "./hooks/useStandardBridgeSubmit";
+import { useGasTankBalance } from "../../useGasTankBalance";
 
 type DepositMethod = "direct" | "bridge" | "relay" | null;
 
@@ -23,8 +24,12 @@ export function DepositContent() {
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
   const userAccountChainId = userAccount?.chain?.id;
+
+  const [success, setSuccess] = useState(false);
   const [depositAmount, setDepositAmount] = useState<string>("");
   const [depositMethod, setDepositMethod] = useState<DepositMethod>();
+  const { gasTankBalance } = useGasTankBalance();
+
   const { data: txHash, writeContractAsync, isPending, error } = useWriteContract();
   const directDeposit = useDirectDepositSubmit(depositAmount, writeContractAsync);
   const standardBridgeDeposit = useStandardBridgeSubmit(depositAmount, writeContractAsync);
@@ -32,6 +37,12 @@ export function DepositContent() {
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash: txHash,
   });
+
+  const [prevGasTankBalance, setPrevGasTankBalance] = useState(gasTankBalance);
+  if (prevGasTankBalance !== gasTankBalance) {
+    setPrevGasTankBalance(gasTankBalance);
+    setSuccess(true);
+  }
 
   useEffect(() => {
     if (!depositMethod) {
@@ -67,12 +78,12 @@ export function DepositContent() {
       <AccountModalTitle title="Gas tank" />
 
       <AccountModalSection>
-        <GasTankStateContent amount={depositAmount} isSuccess={isConfirmed} />
+        <GasTankStateContent amount={depositAmount} isSuccess={success} />
       </AccountModalSection>
 
       <AccountModalSection>
         <div className="flex flex-col gap-2 p-5">
-          {!isConfirmed && (
+          {!success && (
             <>
               <p className="pb-2">
                 Add funds from your wallet to your tank to fund transactions for any MUD apps on Chain Name.
@@ -101,7 +112,7 @@ export function DepositContent() {
             </>
           )}
 
-          {isConfirmed && (
+          {success && (
             <>
               <h3>You’re good to go!</h3>
               <p>
