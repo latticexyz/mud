@@ -16,13 +16,16 @@ type VerifyOptions = {
 async function verifyContract(
   foundryProfile: string | undefined,
   deployerAddress: Hex,
-  name: string,
-  bytecode: Hex,
+  contract: Contract,
   cwd?: string,
 ) {
-  const system = getCreate2Address({ from: deployerAddress, bytecode, salt });
+  if (!contract.label) {
+    throw new MUDError("Need a label");
+  }
 
-  await forge(["verify-contract", system, name, "--verifier", "sourcify", "--chain", "holesky"], {
+  const system = getCreate2Address({ from: deployerAddress, bytecode: contract.bytecode, salt });
+
+  await forge(["verify-contract", system, contract.label, "--verifier", "sourcify", "--chain", "holesky"], {
     profile: foundryProfile,
     cwd,
   });
@@ -52,25 +55,20 @@ in your contracts directory to use the default anvil private key.`,
   const deployerAddress = await ensureDeployer(client);
 
   await Promise.all(
-    systems.map(({ label, bytecode }) => {
-      if (label) {
-        verifyContract(foundryProfile, deployerAddress, label, bytecode);
-      }
+    systems.map((contract) => {
+      verifyContract(foundryProfile, deployerAddress, contract);
     }),
   );
 
   await Promise.all(
-    getWorldFactoryContracts(deployerAddress).map(({ label, bytecode }) => {
-      if (label) {
-        verifyContract(foundryProfile, deployerAddress, label, bytecode, "node_modules/@latticexyz/world");
-      }
+    getWorldFactoryContracts(deployerAddress).map((contract) => {
+      verifyContract(foundryProfile, deployerAddress, contract, "node_modules/@latticexyz/world");
     }),
   );
+
   await Promise.all(
-    modules.map(({ label, bytecode }) => {
-      if (label) {
-        verifyContract(foundryProfile, deployerAddress, label, bytecode, "node_modules/@latticexyz/world-modules");
-      }
+    modules.map((contract) => {
+      verifyContract(foundryProfile, deployerAddress, contract, "node_modules/@latticexyz/world-modules");
     }),
   );
 }
