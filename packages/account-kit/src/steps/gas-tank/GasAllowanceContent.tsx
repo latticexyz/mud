@@ -2,7 +2,7 @@ import { useAccount } from "wagmi";
 import { useConfig } from "../../AccountKitProvider";
 import { RelayLinkContent } from "./RelayLinkContent";
 import { StandardBridgeContent } from "./StandardBridgeContent";
-import { DirectDepositContent } from "./DirectDepositContent";
+import { DirectDepositContent } from "./DirectDepositContent.1";
 import { AccountModalSection } from "../../AccountModalSection";
 import { AccountModalTitle } from "../../AccoutModalTitle";
 import { GasTankStateContent } from "./GasTankStateContent";

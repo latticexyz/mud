@@ -7,6 +7,9 @@ import { DirectDepositContent } from "./DirectDepositContent";
 import { AccountModalTitle } from "../../AccoutModalTitle";
 import { AccountModalSection } from "../../AccountModalSection";
 import { GasTankStateContent } from "./GasTankStateContent";
+import { ChainSelect } from "./components/ChainSelect";
+import { AmountInput } from "./components/AmountInput";
+import { BalancesFees } from "./components/BalancesFees";
 
 type DepositMethod = "direct" | "bridge" | "relay" | null;
 
@@ -43,9 +46,14 @@ export function DepositContent() {
             Add funds from your wallet to your tank to fund transactions for any MUD apps on Chain Name.
           </p>
 
-          {chain.id === userAccountChainId && (
-            <DirectDepositContent amount={depositAmount} setAmount={setDepositAmount} />
-          )}
+          <div className="flex gap-[12px]">
+            <ChainSelect />
+            <AmountInput amount={depositAmount} setAmount={setDepositAmount} />
+          </div>
+
+          <BalancesFees />
+
+          {chain.id === userAccountChainId && <DirectDepositContent amount={depositAmount} />}
           {chain.sourceId === userAccountChainId && <StandardBridgeContent />}
           {chain.id !== userAccountChainId && chain.sourceId !== userAccountChainId && <RelayLinkContent />}
         </div>
