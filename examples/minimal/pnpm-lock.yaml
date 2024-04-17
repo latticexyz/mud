@@ -67,7 +67,7 @@ importers:
         version: 0.4.0
       contracts:
         specifier: workspace:*
-        version: link:../contracts
+        version: link:../contracts-players
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -179,7 +179,7 @@ importers:
         version: 0.4.0
       contracts:
         specifier: workspace:*
-        version: link:../contracts
+        version: link:../contracts-players
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -267,7 +267,7 @@ importers:
         version: 0.4.0
       contracts:
         specifier: workspace:*
-        version: link:../contracts
+        version: link:../contracts-players
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -304,6 +304,66 @@ importers:
         version: 1.0.4
 
   packages/contracts:
+    devDependencies:
+      '@latticexyz/cli':
+        specifier: link:../../../../packages/cli
+        version: link:../../../../packages/cli
+      '@latticexyz/config':
+        specifier: link:../../../../packages/config
+        version: link:../../../../packages/config
+      '@latticexyz/faucet':
+        specifier: link:../../../../packages/faucet
+        version: link:../../../../packages/faucet
+      '@latticexyz/schema-type':
+        specifier: link:../../../../packages/schema-type
+        version: link:../../../../packages/schema-type
+      '@latticexyz/store':
+        specifier: link:../../../../packages/store
+        version: link:../../../../packages/store
+      '@latticexyz/world':
+        specifier: link:../../../../packages/world
+        version: link:../../../../packages/world
+      '@latticexyz/world-modules':
+        specifier: link:../../../../packages/world-modules
+        version: link:../../../../packages/world-modules
+      '@solidstate/contracts':
+        specifier: ^0.0.52
+        version: 0.0.52
+      '@types/node':
+        specifier: ^18.15.11
+        version: 18.15.11
+      ds-test:
+        specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
+        version: github.com/dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0
+      forge-std:
+        specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
+        version: github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1
+      prettier:
+        specifier: 3.2.5
+        version: 3.2.5
+      prettier-plugin-solidity:
+        specifier: 1.3.1
+        version: 1.3.1(prettier@3.2.5)
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      solhint:
+        specifier: ^3.4.1
+        version: 3.4.1
+      solhint-config-mud:
+        specifier: file:../../../../packages/solhint-config-mud
+        version: file:../../packages/solhint-config-mud
+      solhint-plugin-mud:
+        specifier: file:../../../../packages/solhint-plugin-mud
+        version: file:../../packages/solhint-plugin-mud
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.1(@types/node@18.15.11)(typescript@5.4.2)
+      typescript:
+        specifier: 5.4.2
+        version: 5.4.2
+
+  packages/contracts-players:
     devDependencies:
       '@latticexyz/cli':
         specifier: link:../../../../packages/cli
