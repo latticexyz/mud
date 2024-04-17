@@ -16,6 +16,7 @@ type Options = {
   configPath?: string;
   profile?: string;
   srcDir?: string;
+  verifier?: string;
 };
 
 const commandModule: CommandModule<Options, Options> = {
@@ -29,6 +30,7 @@ const commandModule: CommandModule<Options, Options> = {
       profile: { type: "string", desc: "The foundry profile to use" },
       worldAddress: { type: "string", desc: "Verify an existing World at the given address" },
       srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
+      verifier: { type: "string", desc: "The verifier to use" },
     });
   },
 
@@ -77,6 +79,7 @@ const commandModule: CommandModule<Options, Options> = {
         systems,
         modules,
         worldAddress: opts.worldAddress as Hex,
+        verifier: opts.verifier,
       });
     } catch (error) {
       logError(error);
