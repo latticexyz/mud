@@ -26,7 +26,7 @@ const commandModule: CommandModule<Options, Options> = {
 
   builder(yargs) {
     return yargs.options({
-      configPath: { type: "string", desc: "Path to the config file" },
+      configPath: { type: "string", desc: "Path to the MUD config file" },
       profile: { type: "string", desc: "The foundry profile to use" },
       worldAddress: { type: "string", desc: "Verify an existing World at the given address" },
       srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },

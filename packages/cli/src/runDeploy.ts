@@ -17,7 +17,7 @@ import { WorldDeploy } from "./deploy/common";
 import { build } from "./build";
 
 export const deployOptions = {
-  configPath: { type: "string", desc: "Path to the config file" },
+  configPath: { type: "string", desc: "Path to the MUD config file" },
   printConfig: { type: "boolean", desc: "Print the resolved config" },
   profile: { type: "string", desc: "The foundry profile to use" },
   saveDeployment: { type: "boolean", desc: "Save the deployment info to a file", default: true },
