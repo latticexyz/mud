@@ -11,6 +11,7 @@ export async function alto() {
 
   if (!existsSync(altoPath)) {
     console.log("Alto not found. Is `@pimlicolabs/alto` installed?");
+    return;
   }
 
   console.log("Installing alto dependencies.");
