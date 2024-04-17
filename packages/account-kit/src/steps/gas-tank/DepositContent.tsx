@@ -14,6 +14,7 @@ import { Button } from "../../ui/Button";
 import { useDirectDepositSubmit } from "./hooks/useDirectDepositSubmit";
 import { useStandardBridgeSubmit } from "./hooks/useStandardBridgeSubmit";
 import { useGasTankBalance } from "../../useGasTankBalance";
+import { usePrevious } from "../../utils/usePrevious";
 
 type DepositMethod = "direct" | "bridge" | "relay" | null;
 
@@ -28,7 +29,9 @@ export function DepositContent() {
   const [success, setSuccess] = useState(false);
   const [depositAmount, setDepositAmount] = useState<string>("");
   const [depositMethod, setDepositMethod] = useState<DepositMethod>();
+
   const { gasTankBalance } = useGasTankBalance();
+  const prevGasTankBalance = usePrevious(gasTankBalance);
 
   const { data: txHash, writeContractAsync, isPending, error } = useWriteContract();
   const directDeposit = useDirectDepositSubmit(depositAmount, writeContractAsync);
@@ -38,11 +41,11 @@ export function DepositContent() {
     hash: txHash,
   });
 
-  const [prevGasTankBalance, setPrevGasTankBalance] = useState(gasTankBalance);
-  if (prevGasTankBalance !== gasTankBalance) {
-    setPrevGasTankBalance(gasTankBalance);
-    setSuccess(true);
-  }
+  useEffect(() => {
+    if (prevGasTankBalance && prevGasTankBalance !== gasTankBalance) {
+      setSuccess(true);
+    }
+  }, [gasTankBalance, prevGasTankBalance]);
 
   useEffect(() => {
     if (!depositMethod) {
@@ -56,6 +59,13 @@ export function DepositContent() {
     }
   }, [chain.id, chain.sourceId, userAccountChainId, depositMethod]);
 
+  useEffect(() => {
+    if (isConfirmed) {
+      queryClient.invalidateQueries();
+      resetStep();
+    }
+  }, [isConfirmed, queryClient, resetStep]);
+
   const handleSubmit = async () => {
     if (depositMethod === "direct") {
       await directDeposit();
@@ -65,13 +75,6 @@ export function DepositContent() {
       // TODO: submit relay.link
     }
   };
-
-  useEffect(() => {
-    if (isConfirmed) {
-      queryClient.invalidateQueries();
-      resetStep();
-    }
-  }, [isConfirmed, queryClient, resetStep]);
 
   return (
     <>

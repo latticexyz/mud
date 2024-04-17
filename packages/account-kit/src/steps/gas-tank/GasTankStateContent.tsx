@@ -43,7 +43,7 @@ export function GasTankStateContent({ amount, isSuccess }: GasTankStateContentPr
           <p className="font-mono text-[14px] text-neutral-700">~{formatActionsNumber(estimateActions)} actions</p>
         </div>
       )}
-      {!isTankEmpty && !isAmountSet && (
+      {!isTankEmpty && !isAmountSet && !isSuccess && (
         <div className="flex justify-between items-center w-full">
           <p className="font-mono text-[22px]">{formatEther(gasTankBalance)}Ξ</p>
           <p className="font-mono text-[14px] text-neutral-700">~{formatActionsNumber(estimateActions)} actions</p>
