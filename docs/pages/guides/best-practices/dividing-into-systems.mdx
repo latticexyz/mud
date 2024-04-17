@@ -2,8 +2,8 @@ import { Callout } from "nextra/components";
 
 # Dividing Code into `System`s
 
-It is usually simplest to keep all the logic that needs the same permissions and lives in the same namespace in a single `System`.
-Here is a decision tree to help
+It is usually simplest to keep all the code that needs the same permissions and lives in the same namespace in a single `System`.
+This page discusses situations in which either you need to divide your code into multiple `System`s, or it seems like that would be a good solution.
 
 ## Good reasons
 
@@ -29,18 +29,25 @@ If access to a function (or multiple functions), needs to be restricted to speci
 ### Modularity
 
 It is easier to write and maintain code that is [modular](https://en.wikipedia.org/wiki/Modularity).
-If two parts are logically distinct, with a limited interface between them, it makes sense to make them different `System`s.
+If two parts are logically distinct, with a limited interface between them, it might make sense to create them as two different `System`s.
 Such a division can simplify QA and upgrades.
 
-### Access to the root namespace
+### Different privileges
 
-If you need any code to run in the root namespace, that code has to be in a root namespace `System`.
-However, you want to minimize the code in the root namespace, [because it is privileged](/guides/best-practices/system-best-practices#avoid-the-root-namespace-if-possible).
+In general, code should be given only those permissions necessary to perform its tasks ([the Principle of Least Privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege)).
+In MUD [access is granted by ethereum address](/world/namespaces-access-control#modifying-access-control).
+`System`s outside of the root namespace each have their own addresses, so you can give them different permissions.
+So if you need a specific function to have higher privileges, it might make sense to put just that function in a separate `System`.
+
+#### Access to the root namespace
+
+This is a particularly extreme example of least privilege.
+The root namespace is [extremely privileged](/guides/best-practices/system-best-practices#avoid-the-root-namespace-if-possible).
 So the code that has to run the root namespace should be a separate `System` from the code that can be in a different namespace.
 
 ## Bad reasons
 
-There are problems that could be solved by dividing your logic into multiple `System`s, but that can be better handled by other solutions.
+There are problems that could be solved by dividing your logic into multiple `System`s, but that are better handled by other solutions.
 
 ### Shared logic
 
@@ -96,6 +103,8 @@ These libraries can then be called from `LocationSystem`, `EnergySystem`, and `C
   <summary>Illustration</summary>
   ![](./libraries.svg)
 </details>
+
+Alternatively, you might be able to unite `LocationSystem` and `EnergySystem` into a single `GameSystem`, which turns the calls from `eatAndMove` into standard function calls within a contract.
 
 ### More complicated solutions
 
