@@ -14,28 +14,28 @@ type VerifyOptions = {
   worldAddress: Hex;
 };
 
-async function verifyContractUnderlying(
-  system: Hex,
+async function verifyContract(
+  address: Hex,
   label: string,
   rpc: string,
+  verifier?: string,
   foundryProfile?: string,
   cwd?: string,
-  verifier?: string,
 ) {
   if (verifier) {
-    await forge(["verify-contract", system, label, "--rpc-url", rpc, "--verifier", verifier], {
+    await forge(["verify-contract", address, label, "--rpc-url", rpc, "--verifier", verifier], {
       profile: foundryProfile,
       cwd,
     });
   } else {
-    await forge(["verify-contract", system, label, "--rpc-url", rpc], {
+    await forge(["verify-contract", address, label, "--rpc-url", rpc], {
       profile: foundryProfile,
       cwd,
     });
   }
 }
 
-async function verifyContract(
+async function verifyContractFromBytecode(
   deployerAddress: Hex,
   contract: Contract,
   rpc: string,
@@ -47,9 +47,9 @@ async function verifyContract(
     throw new MUDError("Need a label");
   }
 
-  const system = getCreate2Address({ from: deployerAddress, bytecode: contract.bytecode, salt });
+  const address = getCreate2Address({ from: deployerAddress, bytecode: contract.bytecode, salt });
 
-  return verifyContractUnderlying(system, contract.label, rpc, foundryProfile, cwd, verifier);
+  return verifyContract(address, contract.label, rpc, verifier, foundryProfile, cwd);
 }
 
 export async function verify({
@@ -61,19 +61,28 @@ export async function verify({
 }: VerifyOptions): Promise<void> {
   const rpc = await getRpcUrl(foundryProfile);
 
-  await Promise.all(systems.map((contract) => verifyContract(deployer, contract, rpc, verifier, foundryProfile)));
+  await Promise.all(
+    systems.map((contract) => verifyContractFromBytecode(deployer, contract, rpc, verifier, foundryProfile)),
+  );
 
   await Promise.all(
     getWorldFactoryContracts(deployer).map((contract) =>
-      verifyContract(deployer, contract, rpc, verifier, foundryProfile, "node_modules/@latticexyz/world"),
+      verifyContractFromBytecode(deployer, contract, rpc, verifier, foundryProfile, "node_modules/@latticexyz/world"),
     ),
   );
 
   await Promise.all(
     modules.map((contract) =>
-      verifyContract(deployer, contract, rpc, verifier, foundryProfile, "node_modules/@latticexyz/world-modules"),
+      verifyContractFromBytecode(
+        deployer,
+        contract,
+        rpc,
+        verifier,
+        foundryProfile,
+        "node_modules/@latticexyz/world-modules",
+      ),
     ),
   );
 
-  verifyContractUnderlying(worldAddress, "World", rpc, verifier, "node_modules/@latticexyz/world");
+  verifyContract(worldAddress, "World", rpc, verifier, "node_modules/@latticexyz/world");
 }
