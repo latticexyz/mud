@@ -9,6 +9,7 @@ import { getExistingContracts } from "../utils/getExistingContracts";
 import { getContractData } from "../utils/getContractData";
 import { defaultModuleContracts } from "../utils/defaultModuleContracts";
 import { Hex } from "viem";
+import { MUDError } from "@latticexyz/common/errors";
 
 type Options = {
   worldAddress?: string;
@@ -32,6 +33,10 @@ const commandModule: CommandModule<Options, Options> = {
   },
 
   async handler(opts) {
+    if (!opts.worldAddress) {
+      throw new MUDError("Need a world address");
+    }
+
     const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
 
     const configV2 = (await loadConfig(opts.configPath)) as WorldConfig;
@@ -71,7 +76,7 @@ const commandModule: CommandModule<Options, Options> = {
         foundryProfile: profile,
         systems,
         modules,
-        worldAddress: opts.worldAddress ? (opts.worldAddress as Hex) : undefined,
+        worldAddress: opts.worldAddress as Hex,
       });
     } catch (error) {
       logError(error);

@@ -10,7 +10,7 @@ type VerifyOptions = {
   foundryProfile?: string;
   systems: Contract[];
   modules: Contract[];
-  worldAddress?: Hex;
+  worldAddress: Hex;
 };
 
 async function verifyContract(
@@ -54,10 +54,8 @@ export async function verify({
     ),
   );
 
-  if (worldAddress) {
-    await forge(["verify-contract", worldAddress, "World", "--verifier", "sourcify", "--rpc-url", rpc], {
-      profile: foundryProfile,
-      cwd: "node_modules/@latticexyz/world",
-    });
-  }
+  await forge(["verify-contract", worldAddress, "World", "--verifier", "sourcify", "--rpc-url", rpc], {
+    profile: foundryProfile,
+    cwd: "node_modules/@latticexyz/world",
+  });
 }
