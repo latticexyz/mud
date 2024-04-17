@@ -3,19 +3,25 @@ import {
   Account,
   Chain,
   Client,
-  SimulateContractParameters,
   Transport,
   WriteContractParameters,
   WriteContractReturnType,
   ContractFunctionName,
   ContractFunctionArgs,
   PublicClient,
+  encodeFunctionData,
+  EncodeFunctionDataParameters,
 } from "viem";
-import { simulateContract, writeContract as viem_writeContract } from "viem/actions";
+import {
+  prepareTransactionRequest as viem_prepareTransactionRequest,
+  writeContract as viem_writeContract,
+} from "viem/actions";
 import pRetry from "p-retry";
 import { debug as parentDebug } from "./debug";
 import { getNonceManager } from "./getNonceManager";
 import { parseAccount } from "viem/accounts";
+import { getFeeRef } from "./getFeeRef";
+import { getAction } from "viem/utils";
 
 const debug = parentDebug.extend("writeContract");
 
@@ -55,6 +61,12 @@ export async function writeContract<
     throw new Error("No account provided");
   }
   const account = parseAccount(rawAccount);
+  const chain = client.chain;
+
+  const defaultParameters = {
+    chain,
+    ...(chain?.fees ? { type: "eip1559" } : {}),
+  } satisfies Omit<WriteContractParameters, "address" | "abi" | "account" | "functionName">;
 
   const nonceManager = await getNonceManager({
     client: opts.publicClient ?? client,
@@ -63,43 +75,68 @@ export async function writeContract<
     queueConcurrency: opts.queueConcurrency,
   });
 
-  async function prepareWrite(): Promise<
-    WriteContractParameters<abi, functionName, args, chain, account, chainOverride>
-  > {
+  const feeRef = await getFeeRef({
+    client: opts.publicClient ?? client,
+    refreshInterval: 10000,
+    args: { chain },
+  });
+
+  async function prepare(): Promise<WriteContractParameters<abi, functionName, args, chain, account, chainOverride>> {
     if (request.gas) {
-      debug("gas provided, skipping simulate", request.functionName, request.address);
+      debug("gas provided, skipping preparation", request.functionName, request.address);
       return request;
     }
 
-    debug("simulating", request.functionName, "at", request.address);
-    const result = await simulateContract<chain, account | undefined, abi, functionName, args, chainOverride>(
-      opts.publicClient ?? client,
-      {
-        ...request,
-        blockTag: "pending",
-        account,
-      } as unknown as SimulateContractParameters<abi, functionName, args, chain, chainOverride>,
-    );
+    const { abi, address, args, dataSuffix, functionName } = request;
+    const data = encodeFunctionData({
+      abi,
+      args,
+      functionName,
+    } as EncodeFunctionDataParameters);
 
-    return result.request as unknown as WriteContractParameters<abi, functionName, args, chain, account, chainOverride>;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { nonce, maxFeePerGas, maxPriorityFeePerGas, ...preparedTransaction } = await getAction(
+      client,
+      viem_prepareTransactionRequest,
+      "prepareTransactionRequest",
+    )({
+      // The fee values don't need to be accurate for gas estimation
+      // and we can save a couple rpc calls by providing stubs here.
+      // These are later overridden with accurate values from `feeRef`.
+      maxFeePerGas: 0n,
+      maxPriorityFeePerGas: 0n,
+      // Send the current nonce without increasing the stored value
+      nonce: nonceManager.getNonce(),
+      ...defaultParameters,
+      ...request,
+      blockTag: "pending",
+      account,
+      // From `viem/writeContract`
+      data: `${data}${dataSuffix ? dataSuffix.replace("0x", "") : ""}`,
+      to: address,
+    } as never);
+
+    return preparedTransaction as never;
   }
 
   return nonceManager.mempoolQueue.add(
     () =>
       pRetry(
         async () => {
-          const preparedWrite = await prepareWrite();
-
           if (!nonceManager.hasNonce()) {
             await nonceManager.resetNonce();
           }
 
+          // We estimate gas before increasing the local nonce to prevent nonce gaps.
+          // Invalid transactions fail the gas estimation step are never submitted
+          // to the network, so they should not increase the nonce.
+          const preparedRequest = await prepare();
+
           const nonce = nonceManager.nextNonce();
-          debug("calling", preparedWrite.functionName, "with nonce", nonce, "at", preparedWrite.address);
-          return await viem_writeContract(client, {
-            nonce,
-            ...preparedWrite,
-          } as typeof preparedWrite);
+
+          const fullRequest = { ...preparedRequest, nonce, ...feeRef.fees };
+          debug("calling", fullRequest.functionName, "with nonce", nonce, "at", fullRequest.address);
+          return await viem_writeContract(client, fullRequest as never);
         },
         {
           retries: 3,

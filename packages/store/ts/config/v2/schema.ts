@@ -14,7 +14,7 @@ export type validateSchema<schema, scope extends Scope = AbiTypeScope> = schema 
 
 export function validateSchema<scope extends Scope = AbiTypeScope>(
   schema: unknown,
-  scope: scope = AbiTypeScope as unknown as scope,
+  scope: scope = AbiTypeScope as never,
 ): asserts schema is SchemaInput {
   if (!isObject(schema)) {
     throw new Error(`Expected schema, received ${JSON.stringify(schema)}`);
@@ -46,13 +46,11 @@ export function resolveSchema<schema extends SchemaInput, scope extends Scope = 
     Object.entries(schema).map(([key, internalType]) => [
       key,
       {
-        type: isFixedArrayAbiType(internalType)
-          ? fixedArrayToArray(internalType)
-          : scope.types[internalType as keyof typeof scope.types],
+        type: isFixedArrayAbiType(internalType) ? fixedArrayToArray(internalType) : scope.types[internalType as never],
         internalType,
       },
     ]),
-  ) as unknown as resolveSchema<schema, scope>;
+  ) as never;
 }
 
 export function defineSchema<schema, scope extends AbiTypeScope = AbiTypeScope>(
@@ -60,12 +58,12 @@ export function defineSchema<schema, scope extends AbiTypeScope = AbiTypeScope>(
   scope: scope = AbiTypeScope as scope,
 ): resolveSchema<schema, scope> {
   validateSchema(schema, scope);
-  return resolveSchema(schema, scope) as resolveSchema<schema, scope>;
+  return resolveSchema(schema, scope) as never;
 }
 
 export function isSchemaInput<scope extends Scope = AbiTypeScope>(
   input: unknown,
-  scope: scope = AbiTypeScope as unknown as scope,
+  scope: scope = AbiTypeScope as never,
 ): input is SchemaInput {
   return (
     typeof input === "object" &&

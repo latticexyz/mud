@@ -38,7 +38,7 @@ export async function generateLogs(
     cwd: "../contracts",
     stdio: "pipe",
     env: {
-      DEBUG: "mud:*",
+      DEBUG: "mud:store-sync:createStoreSync",
     },
   });
   if (stderr) console.error(stderr);

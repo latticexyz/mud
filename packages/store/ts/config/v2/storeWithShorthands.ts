@@ -40,12 +40,12 @@ export function resolveStoreWithShorthands<const store extends StoreWithShorthan
   };
 
   validateStore(fullConfig);
-  return resolveStore(fullConfig) as unknown as resolveStoreWithShorthands<store>;
+  return resolveStore(fullConfig) as never;
 }
 
 export function defineStoreWithShorthands<const store>(
   store: validateStoreWithShorthands<store>,
 ): resolveStoreWithShorthands<store> {
   validateStoreWithShorthands(store);
-  return resolveStoreWithShorthands(store) as unknown as resolveStoreWithShorthands<store>;
+  return resolveStoreWithShorthands(store) as never;
 }

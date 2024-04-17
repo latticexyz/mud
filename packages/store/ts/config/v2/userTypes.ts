@@ -24,10 +24,7 @@ export function scopeWithUserTypes<userTypes, scope extends AbiTypeScope = AbiTy
   userTypes: userTypes,
   scope: scope = AbiTypeScope as scope,
 ): scopeWithUserTypes<userTypes, scope> {
-  return (isUserTypes(userTypes) ? extendScope(scope, extractInternalType(userTypes)) : scope) as scopeWithUserTypes<
-    userTypes,
-    scope
-  >;
+  return (isUserTypes(userTypes) ? extendScope(scope, extractInternalType(userTypes)) : scope) as never;
 }
 
 export function validateUserTypes(userTypes: unknown): asserts userTypes is UserTypes {
