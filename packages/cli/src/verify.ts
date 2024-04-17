@@ -66,7 +66,7 @@ export async function verify({
   );
 
   await Promise.all(
-    getWorldFactoryContracts(deployer).map((contract) =>
+    Object.values(getWorldFactoryContracts(deployer)).map((contract) =>
       verifyContractFromBytecode(deployer, contract, rpc, verifier, foundryProfile, "node_modules/@latticexyz/world"),
     ),
   );

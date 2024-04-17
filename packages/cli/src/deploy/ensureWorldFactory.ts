@@ -11,7 +11,7 @@ import { salt } from "./common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { Contract } from "./ensureContract";
 
-export function getWorldFactoryContracts(deployerAddress: Hex): readonly Contract[] {
+export function getWorldFactoryContracts(deployerAddress: Hex): Record<string, Contract & { address: Hex }> {
   const accessManagementSystemDeployedBytecodeSize = size(accessManagementSystemBuild.deployedBytecode.object as Hex);
   const accessManagementSystemBytecode = accessManagementSystemBuild.bytecode.object as Hex;
   const accessManagementSystem = getCreate2Address({
@@ -46,7 +46,6 @@ export function getWorldFactoryContracts(deployerAddress: Hex): readonly Contrac
     abi: initModuleAbi,
     args: [accessManagementSystem, balanceTransferSystem, batchCallSystem, registration],
   });
-
   const initModule = getCreate2Address({ from: deployerAddress, bytecode: initModuleBytecode, salt });
 
   const worldFactoryDeployedBytecodeSize = size(worldFactoryBuild.deployedBytecode.object as Hex);
@@ -55,93 +54,60 @@ export function getWorldFactoryContracts(deployerAddress: Hex): readonly Contrac
     abi: worldFactoryAbi,
     args: [initModule],
   });
+  const worldFactory = getCreate2Address({ from: deployerAddress, bytecode: worldFactoryBytecode, salt });
 
-  return [
-    {
+  return {
+    AccessManagementSystem: {
       bytecode: accessManagementSystemBytecode,
       deployedBytecodeSize: accessManagementSystemDeployedBytecodeSize,
       label: "AccessManagementSystem",
+      address: accessManagementSystem,
     },
-    {
+    BalanceTransferSystem: {
       bytecode: balanceTransferSystemBytecode,
       deployedBytecodeSize: balanceTransferSystemDeployedBytecodeSize,
       label: "BalanceTransferSystem",
+      address: balanceTransferSystem,
     },
-    {
+    BatchCallSystem: {
       bytecode: batchCallSystemBytecode,
       deployedBytecodeSize: batchCallSystemDeployedBytecodeSize,
       label: "BatchCallSystem",
+      address: batchCallSystem,
     },
-    {
+    RegistrationSystem: {
       bytecode: registrationBytecode,
       deployedBytecodeSize: registrationDeployedBytecodeSize,
       label: "RegistrationSystem",
+      address: registration,
     },
-    {
+    InitModule: {
       bytecode: initModuleBytecode,
       deployedBytecodeSize: initModuleDeployedBytecodeSize,
       label: "InitModule",
+      address: initModule,
     },
-    {
+    WorldFactory: {
       bytecode: worldFactoryBytecode,
       deployedBytecodeSize: worldFactoryDeployedBytecodeSize,
       label: "WorldFactory",
+      address: worldFactory,
     },
-  ];
+  };
 }
 
 export async function ensureWorldFactory(
   client: Client<Transport, Chain | undefined, Account>,
   deployerAddress: Hex,
 ): Promise<Address> {
-  const accessManagementSystemBytecode = accessManagementSystemBuild.bytecode.object as Hex;
-  const accessManagementSystem = getCreate2Address({
-    from: deployerAddress,
-    bytecode: accessManagementSystemBytecode,
-    salt,
-  });
-
-  const balanceTransferSystemBytecode = balanceTransferSystemBuild.bytecode.object as Hex;
-  const balanceTransferSystem = getCreate2Address({
-    from: deployerAddress,
-    bytecode: balanceTransferSystemBytecode,
-    salt,
-  });
-
-  const batchCallSystemBytecode = batchCallSystemBuild.bytecode.object as Hex;
-  const batchCallSystem = getCreate2Address({ from: deployerAddress, bytecode: batchCallSystemBytecode, salt });
-
-  const registrationBytecode = registrationSystemBuild.bytecode.object as Hex;
-  const registration = getCreate2Address({
-    from: deployerAddress,
-    bytecode: registrationBytecode,
-    salt,
-  });
-
-  const initModuleBytecode = encodeDeployData({
-    bytecode: initModuleBuild.bytecode.object as Hex,
-    abi: initModuleAbi,
-    args: [accessManagementSystem, balanceTransferSystem, batchCallSystem, registration],
-  });
-
-  const initModule = getCreate2Address({ from: deployerAddress, bytecode: initModuleBytecode, salt });
-
-  const worldFactoryBytecode = encodeDeployData({
-    bytecode: worldFactoryBuild.bytecode.object as Hex,
-    abi: worldFactoryAbi,
-    args: [initModule],
-  });
-
-  const worldFactory = getCreate2Address({ from: deployerAddress, bytecode: worldFactoryBytecode, salt });
-
   const worldFactoryContracts = getWorldFactoryContracts(deployerAddress);
 
   // WorldFactory constructor doesn't call InitModule, only sets its address, so we can do these in parallel since the address is deterministic
   await ensureContractsDeployed({
     client,
     deployerAddress,
-    contracts: worldFactoryContracts,
+    contracts: Object.values(worldFactoryContracts),
   });
 
-  return worldFactory;
+  return worldFactoryContracts["WorldFactory"].address;
 }
