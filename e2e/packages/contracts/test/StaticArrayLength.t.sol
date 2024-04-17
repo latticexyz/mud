@@ -8,8 +8,8 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { ROOT_NAMESPACE_ID } from "@latticexyz/world/src/constants.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
 
-import { StaticArrayWithNumber } from "../src/codegen/index.sol";
-import { toStaticArray_uint256_3 } from "../src/codegen/tables/StaticArrayWithNumber.sol";
+import { StaticArray } from "../src/codegen/index.sol";
+import { toStaticArray_uint256_3 } from "../src/codegen/tables/StaticArray.sol";
 
 /**
  * @title GetItemValueWrapper
@@ -20,24 +20,24 @@ contract GetItemValueWrapper {
   function getItemValue(address worldAddress, uint256 _index) public {
     StoreSwitch.setStoreAddress(worldAddress);
 
-    StaticArrayWithNumber.getItemValue(_index);
+    StaticArray.getItemValue(_index);
   }
 }
 
-contract StaticArrayWithNumberTest is MudTest {
+contract StaticArrayTest is MudTest {
   function testLength() public {
-    assertEq(StaticArrayWithNumber.lengthValue, 3);
-    assertEq(StaticArrayWithNumber.getValue().length, 3);
+    assertEq(StaticArray.lengthValue, 3);
+    assertEq(StaticArray.getValue().length, 3);
 
     // Values within the static length return the default zeros value
-    assertEq(StaticArrayWithNumber.getValue()[0], 0);
-    assertEq(StaticArrayWithNumber.getItemValue(0), 0);
+    assertEq(StaticArray.getValue()[0], 0);
+    assertEq(StaticArray.getItemValue(0), 0);
 
-    assertEq(StaticArrayWithNumber.getValue()[1], 0);
-    assertEq(StaticArrayWithNumber.getItemValue(1), 0);
+    assertEq(StaticArray.getValue()[1], 0);
+    assertEq(StaticArray.getItemValue(1), 0);
 
-    assertEq(StaticArrayWithNumber.getValue()[2], 0);
-    assertEq(StaticArrayWithNumber.getItemValue(2), 0);
+    assertEq(StaticArray.getValue()[2], 0);
+    assertEq(StaticArray.getItemValue(2), 0);
 
     // Values beyond the static length revert
     GetItemValueWrapper wrapper = new GetItemValueWrapper();
@@ -49,16 +49,16 @@ contract StaticArrayWithNumberTest is MudTest {
 
     uint256[3] memory value = [uint256(1), 2, 3];
     vm.prank(NamespaceOwner.get(ROOT_NAMESPACE_ID));
-    StaticArrayWithNumber.set(0, value);
+    StaticArray.set(0, value);
 
     // Values within the static length return the correct value
-    assertEq(StaticArrayWithNumber.getValue()[0], 1);
-    assertEq(StaticArrayWithNumber.getItemValue(0), 1);
+    assertEq(StaticArray.getValue()[0], 1);
+    assertEq(StaticArray.getItemValue(0), 1);
 
-    assertEq(StaticArrayWithNumber.getValue()[1], 2);
-    assertEq(StaticArrayWithNumber.getItemValue(1), 2);
+    assertEq(StaticArray.getValue()[1], 2);
+    assertEq(StaticArray.getItemValue(1), 2);
 
-    assertEq(StaticArrayWithNumber.getValue()[2], 3);
-    assertEq(StaticArrayWithNumber.getItemValue(2), 3);
+    assertEq(StaticArray.getValue()[2], 3);
+    assertEq(StaticArray.getItemValue(2), 3);
   }
 }

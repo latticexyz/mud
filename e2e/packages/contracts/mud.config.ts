@@ -45,12 +45,6 @@ export default defineWorld({
     },
     StaticArray: {
       schema: {
-        value: "uint256[3]",
-      },
-      key: [],
-    },
-    StaticArrayWithNumber: {
-      schema: {
         num: "uint256",
         value: "uint256[3]",
       },
