@@ -89,6 +89,17 @@ const config = defineStore({
       },
       key: ["k1", "k2", "k3", "k4", "k5"],
     },
+    Players: {
+      schema: {
+        player: "address",
+        isTeamRight: "bool",
+        title: "string",
+        items: "uint32[69]",
+        resources: "uint256[5]",
+        units: "uint32[14]",
+      },
+      key: ["player"],
+    },
   },
 });
 
