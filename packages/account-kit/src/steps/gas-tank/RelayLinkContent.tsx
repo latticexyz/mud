@@ -1,30 +1,29 @@
-import { useWalletClient } from "wagmi";
+import { usePublicClient, useWalletClient } from "wagmi";
 import { getClient, configureDynamicChains, Execute, RelayChain } from "@reservoir0x/relay-sdk";
 import { AccountModalSection } from "../../AccountModalSection";
 import { useCallback, useEffect, useState } from "react";
 import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
 import { Button } from "../../ui/Button";
-import { createPublicClient, formatEther, http, parseEther } from "viem";
-import { AMOUNT_STEP } from "./constants";
+import { parseEther } from "viem";
 import { createRelayClient } from "./utils/createRelayClient";
-import { holesky } from "viem/chains";
 import { useConfig } from "../../AccountKitProvider";
 
 createRelayClient();
 
-// TODO: move to utils, or check if available already
-const publicClient = createPublicClient({
-  chain: holesky,
-  transport: http(),
-});
+type RelayLinkContentProps = {
+  amount: string;
+  sourceChainId: number;
+};
 
-export function RelayLinkContent() {
+export function RelayLinkContent({ amount, sourceChainId }: RelayLinkContentProps) {
   const wallet = useWalletClient();
   const { chain, gasTankAddress } = useConfig();
-  const [sourceChains, setSourceChains] = useState<RelayChain[]>([]);
-  const [selectedSourceChainId, setSelectedSourceChainId] = useState<number>();
-  const [amount, setAmount] = useState<string>("0.01");
-  const [quote, setQuote] = useState<Execute | null>(null);
+  const publicClient = usePublicClient({
+    chainId: sourceChainId,
+  });
+  const [, setSourceChains] = useState<RelayChain[]>([]);
+  const [selectedSourceChainId] = useState<number>();
+  const [, setQuote] = useState<Execute | null>(null);
   const [tx, setTx] = useState<string | null>(null);
 
   const fetchChains = useCallback(async () => {
@@ -52,7 +51,7 @@ export function RelayLinkContent() {
   }, [amount, wallet.data, chain, selectedSourceChainId]);
 
   const executeDeposit = useCallback(async () => {
-    if (!wallet.data || !amount || selectedSourceChainId == null) return;
+    if (!wallet.data || !amount || selectedSourceChainId == null || !publicClient) return;
 
     await wallet.data.switchChain({ id: selectedSourceChainId });
 
@@ -78,7 +77,7 @@ export function RelayLinkContent() {
         }
       },
     });
-  }, [amount, wallet.data, chain, selectedSourceChainId, gasTankAddress]);
+  }, [wallet.data, amount, selectedSourceChainId, publicClient, gasTankAddress, chain.id]);
 
   const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
@@ -97,30 +96,15 @@ export function RelayLinkContent() {
     <AccountModalSection>
       <div className="flex flex-col gap-2">
         <form onSubmit={handleSubmit}>
-          <h3>Chain from:</h3>
-          <select value={selectedSourceChainId} onChange={(e) => setSelectedSourceChainId(Number(e.target.value))}>
+          {/* <select value={selectedSourceChainId} onChange={(e) => setSelectedSourceChainId(Number(e.target.value))}>
             {sourceChains.map((sourceChain) => (
               <option key={sourceChain.id} value={sourceChain.id}>
                 {sourceChain.name}
               </option>
             ))}
-          </select>
-          <h3>Chain to:</h3>
-          <select>
-            <option value={chain.id}>Garnet</option>
-          </select>
+          </select> */}
 
-          <h3>Amount to deposit:</h3>
-          <input
-            type="number"
-            placeholder="Amount"
-            name="amount"
-            step={AMOUNT_STEP}
-            value={amount}
-            onChange={(evt) => setAmount(evt.target.value)}
-          />
-
-          {quote && (
+          {/* {quote && (
             <div className="mt-[15px]">
               <p>Time estimate: ~{quote?.breakdown?.[0]?.timeEstimate}s</p>
               <p>Deposit gas (Holesky): {formatEther(BigInt(quote?.fees?.gas || 0))} ETH</p>
@@ -128,10 +112,10 @@ export function RelayLinkContent() {
               <p>Relay fee: {formatEther(BigInt(quote?.fees?.relayerService || 0))} ETH</p>
             </div>
           )}
-          {!quote && amount && <p className="mt-[15px]">Fetching the best price ...</p>}
+          {!quote && amount && <p className="mt-[15px]">Fetching the best price ...</p>} */}
 
           <div className="mt-[15px]">
-            <Button type="submit">Deposit to Redstone gas tank</Button>
+            <Button type="submit">Deposit</Button>
           </div>
 
           {tx && (

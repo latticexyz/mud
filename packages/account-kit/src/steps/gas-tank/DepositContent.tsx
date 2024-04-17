@@ -10,6 +10,7 @@ import { GasTankStateContent } from "./GasTankStateContent";
 import { ChainSelect } from "./components/ChainSelect";
 import { AmountInput } from "./components/AmountInput";
 import { BalancesFees } from "./components/BalancesFees";
+import { Button } from "../../ui/Button";
 
 type DepositMethod = "direct" | "bridge" | "relay" | null;
 
@@ -54,8 +55,15 @@ export function DepositContent() {
           <BalancesFees />
 
           {chain.id === userAccountChainId && <DirectDepositContent amount={depositAmount} />}
-          {chain.sourceId === userAccountChainId && <StandardBridgeContent />}
-          {chain.id !== userAccountChainId && chain.sourceId !== userAccountChainId && <RelayLinkContent />}
+          {chain.sourceId === userAccountChainId && (
+            <StandardBridgeContent amount={depositAmount} sourceChainId={userAccountChainId!} />
+          )}
+          {chain.id !== userAccountChainId && chain.sourceId !== userAccountChainId && (
+            <RelayLinkContent amount={depositAmount} sourceChainId={userAccountChainId!} />
+          )}
+
+          {/* pending={!userAccountAddress || isPending} onClick={handleDeposit} */}
+          <Button className="w-full">Deposit</Button>
         </div>
       </AccountModalSection>
     </>

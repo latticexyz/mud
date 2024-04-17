@@ -9,10 +9,15 @@ import { useConfig } from "../../AccountKitProvider";
 import { getGasTankBalanceQueryKey } from "../../useGasTankBalance";
 import OptimismPortalAbi from "../../abis/OptimismPortal.json";
 import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
-import { AMOUNT_STEP, OPTIMISM_PORTAL_ADDRESS } from "./constants";
+import { OPTIMISM_PORTAL_ADDRESS } from "./constants";
 import { getExplorerUrl } from "./utils/getExplorerUrl";
 
-export function StandardBridgeContent() {
+type StandardBridgeContentProps = {
+  amount: string;
+  sourceChainId: number;
+};
+
+export function StandardBridgeContent({ amount, sourceChainId }: StandardBridgeContentProps) {
   const queryClient = useQueryClient();
   const wagmiConfig = useWagmiConfig();
   const wallet = useWalletClient();
@@ -20,16 +25,11 @@ export function StandardBridgeContent() {
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
 
-  if (chain.sourceId == null) {
-    throw new Error("No source chain available for " + chain.name);
-  }
-
   const [tx, setTx] = useState<string | null>(null);
-  const [amount, setAmount] = useState<string | undefined>("0.01");
   const { writeContractAsync } = useWriteContract({
     mutation: {
       onSuccess: async (hash) => {
-        setTx(getExplorerUrl(hash, chain.sourceId!));
+        setTx(getExplorerUrl(hash, sourceChainId));
 
         const receipt = await waitForTransactionReceipt(wagmiConfig, { hash });
         if (receipt.status === "success") {
@@ -46,8 +46,6 @@ export function StandardBridgeContent() {
 
     if (!wallet.data || !userAccountAddress || !amount || Number(amount) === 0) return;
 
-    await wallet.data.switchChain({ id: chain.sourceId! });
-
     const gasLimit = BigInt(1_000_000); // TODO: better gas limit config
     const amountWei = parseEther(amount);
     const data = encodeFunctionData({
@@ -58,7 +56,7 @@ export function StandardBridgeContent() {
 
     await writeContractAsync({
       account: wallet.data.account,
-      chainId: chain.sourceId,
+      chainId: sourceChainId,
       address: OPTIMISM_PORTAL_ADDRESS,
       abi: OptimismPortalAbi,
       functionName: "depositTransaction",
@@ -69,40 +67,19 @@ export function StandardBridgeContent() {
 
   return (
     <AccountModalSection>
-      <div className="flex flex-col gap-2">
-        <form onSubmit={handleSubmit}>
-          <h3>Chain from:</h3>
-          <select>
-            <option value={chain.sourceId}>L1</option>
-          </select>
-          <h3>Chain to:</h3>
-          <select>
-            <option value={chain.id}>L2</option>
-          </select>
+      <form onSubmit={handleSubmit}>
+        <div className="mt-[15px] w-full">
+          <Button type="submit">Bridge to Redstone gas tank</Button>
+        </div>
 
-          <h3>Amount to deposit:</h3>
-          <input
-            type="number"
-            placeholder="Amount"
-            name="amount"
-            step={AMOUNT_STEP}
-            value={amount}
-            onChange={(evt) => setAmount(evt.target.value)}
-          />
-
+        {tx && (
           <div className="mt-[15px]">
-            <Button type="submit">Bridge to Redstone gas tank</Button>
+            <a href={tx} target="_blank" rel="noopener noreferrer" className="underline">
+              View transaction
+            </a>
           </div>
-
-          {tx && (
-            <div className="mt-[15px]">
-              <a href={tx} target="_blank" rel="noopener noreferrer" className="underline">
-                View transaction
-              </a>
-            </div>
-          )}
-        </form>
-      </div>
+        )}
+      </form>
     </AccountModalSection>
   );
 }
