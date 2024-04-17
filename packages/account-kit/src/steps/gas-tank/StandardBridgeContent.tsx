@@ -1,16 +1,13 @@
 import { useState } from "react";
 import { encodeFunctionData, parseEther } from "viem";
-import { useQueryClient } from "@tanstack/react-query";
-import { useWriteContract, useConfig as useWagmiConfig, useAccount, useWalletClient } from "wagmi";
-import { waitForTransactionReceipt } from "wagmi/actions";
+import { useAccount, useWalletClient } from "wagmi";
 import { AccountModalSection } from "../../AccountModalSection";
 import { Button } from "../../ui/Button";
 import { useConfig } from "../../AccountKitProvider";
-import { getGasTankBalanceQueryKey } from "../../useGasTankBalance";
 import OptimismPortalAbi from "../../abis/OptimismPortal.json";
 import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
 import { OPTIMISM_PORTAL_ADDRESS } from "./constants";
-import { getExplorerUrl } from "./utils/getExplorerUrl";
+import { useDepositQuery } from "./hooks/useDepositQuery";
 
 type StandardBridgeContentProps = {
   amount: string;
@@ -18,28 +15,13 @@ type StandardBridgeContentProps = {
 };
 
 export function StandardBridgeContent({ amount, sourceChainId }: StandardBridgeContentProps) {
-  const queryClient = useQueryClient();
-  const wagmiConfig = useWagmiConfig();
   const wallet = useWalletClient();
-  const { chain, gasTankAddress } = useConfig();
+  const { gasTankAddress } = useConfig();
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
 
-  const [tx, setTx] = useState<string | null>(null);
-  const { writeContractAsync } = useWriteContract({
-    mutation: {
-      onSuccess: async (hash) => {
-        setTx(getExplorerUrl(hash, sourceChainId));
-
-        const receipt = await waitForTransactionReceipt(wagmiConfig, { hash });
-        if (receipt.status === "success") {
-          queryClient.invalidateQueries({
-            queryKey: getGasTankBalanceQueryKey({ chainId: chain.id, gasTankAddress, userAccountAddress }),
-          });
-        }
-      },
-    },
-  });
+  const [tx] = useState<string | null>(null); // TODO: remove this
+  const { writeContractAsync } = useDepositQuery();
 
   const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();

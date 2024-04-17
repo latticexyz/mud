@@ -1,10 +1,10 @@
 import { parseEther } from "viem";
 import { useAccount } from "wagmi";
+import { useDepositQuery } from "./hooks/useDepositQuery";
 import { AccountModalSection } from "../../AccountModalSection";
 import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
 import { useConfig } from "../../AccountKitProvider";
 import { Button } from "../../ui/Button";
-import { useDirectDeposit } from "./hooks/useDirectDeposit";
 
 type DirectDepositContentProps = {
   amount: string | undefined;
@@ -14,7 +14,7 @@ export function DirectDepositContent({ amount }: DirectDepositContentProps) {
   const { chain, gasTankAddress } = useConfig();
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
-  const { writeContractAsync, isPending, error } = useDirectDeposit();
+  const { writeContractAsync, isPending, error } = useDepositQuery();
 
   const handleDeposit = async () => {
     if (!userAccountAddress || !amount) return;

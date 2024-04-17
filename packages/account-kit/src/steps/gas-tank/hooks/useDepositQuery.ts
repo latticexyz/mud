@@ -1,11 +1,11 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useAccount, useConfig as useWagmiConfig, useWriteContract } from "wagmi";
 import { useConfig } from "../../../AccountKitProvider";
 import { getGasTankBalanceQueryKey } from "../../../useGasTankBalance";
 import { waitForTransactionReceipt } from "wagmi/actions";
-import { useQueryClient } from "@tanstack/react-query";
 import { useOnboardingSteps } from "../../../useOnboardingSteps";
 
-export const useDirectDeposit = () => {
+export const useDepositQuery = () => {
   const queryClient = useQueryClient();
   const wagmiConfig = useWagmiConfig();
   const { chain, gasTankAddress } = useConfig();
