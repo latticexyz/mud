@@ -1,26 +1,37 @@
 import { useState, useEffect } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { useConfig } from "../../AccountKitProvider";
-import { RelayLinkContent } from "./RelayLinkContent";
-import { StandardBridgeContent } from "./StandardBridgeContent";
-import { DirectDepositContent } from "./DirectDepositContent";
 import { AccountModalTitle } from "../../AccoutModalTitle";
 import { AccountModalSection } from "../../AccountModalSection";
 import { GasTankStateContent } from "./GasTankStateContent";
 import { ChainSelect } from "./components/ChainSelect";
 import { AmountInput } from "./components/AmountInput";
 import { BalancesFees } from "./components/BalancesFees";
+import { ViewTransaction } from "./ViewTransaction";
+import { useQueryClient } from "@tanstack/react-query";
+import { useOnboardingSteps } from "../../useOnboardingSteps";
+import { Button } from "../../ui/Button";
+import { useDirectDepositSubmit } from "./hooks/useDirectDepositSubmit";
+import { useStandardBridgeSubmit } from "./hooks/useStandardBridgeSubmit";
 
 type DepositMethod = "direct" | "bridge" | "relay" | null;
 
 export function DepositContent() {
   const { chain } = useConfig();
+  const queryClient = useQueryClient();
+  const { resetStep } = useOnboardingSteps();
   const userAccount = useAccount();
+  const userAccountAddress = userAccount.address;
   const userAccountChainId = userAccount?.chain?.id;
-  const [depositMethod, setDepositMethod] = useState<DepositMethod>();
   const [depositAmount, setDepositAmount] = useState<string>("");
-  // TODO: add tx state
-  // const [tx, setTx] = useState<string | null>(null);
+  const [depositMethod, setDepositMethod] = useState<DepositMethod>();
+  const { data: txHash, writeContractAsync, isPending, error } = useWriteContract();
+  const directDeposit = useDirectDepositSubmit(depositAmount, writeContractAsync);
+  const standardBridgeDeposit = useStandardBridgeSubmit(depositAmount, writeContractAsync);
+
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash: txHash,
+  });
 
   useEffect(() => {
     if (!depositMethod) {
@@ -34,31 +45,75 @@ export function DepositContent() {
     }
   }, [chain.id, chain.sourceId, userAccountChainId, depositMethod]);
 
+  const handleSubmit = async () => {
+    if (depositMethod === "direct") {
+      await directDeposit();
+    } else if (depositMethod === "bridge") {
+      await standardBridgeDeposit();
+    } else {
+      // TODO: submit relay.link
+    }
+  };
+
+  useEffect(() => {
+    if (isConfirmed) {
+      queryClient.invalidateQueries();
+      resetStep();
+    }
+  }, [isConfirmed, queryClient, resetStep]);
+
   return (
     <>
       <AccountModalTitle title="Gas tank" />
 
       <AccountModalSection>
-        <GasTankStateContent amount={depositAmount} />
+        <GasTankStateContent amount={depositAmount} isSuccess={isConfirmed} />
       </AccountModalSection>
 
       <AccountModalSection>
         <div className="flex flex-col gap-2 p-5">
-          <p className="pb-2">
-            Add funds from your wallet to your tank to fund transactions for any MUD apps on Chain Name.
-          </p>
+          {!isConfirmed && (
+            <>
+              <p className="pb-2">
+                Add funds from your wallet to your tank to fund transactions for any MUD apps on Chain Name.
+              </p>
 
-          <div className="flex gap-[12px]">
-            <ChainSelect />
-            <AmountInput amount={depositAmount} setAmount={setDepositAmount} />
-          </div>
+              <div className="flex gap-[12px]">
+                <ChainSelect />
+                <AmountInput amount={depositAmount} setAmount={setDepositAmount} />
+              </div>
 
-          <BalancesFees />
+              <BalancesFees />
 
-          {chain.id === userAccountChainId && <DirectDepositContent amount={depositAmount} />}
-          {chain.sourceId === userAccountChainId && <StandardBridgeContent amount={depositAmount} />}
-          {chain.id !== userAccountChainId && chain.sourceId !== userAccountChainId && (
-            <RelayLinkContent amount={depositAmount} sourceChainId={userAccountChainId!} />
+              {error ? <div>{String(error)}</div> : null}
+
+              <Button
+                className="w-full"
+                pending={!userAccountAddress || isPending || isConfirming}
+                onClick={handleSubmit}
+              >
+                {isPending && "Confirm in wallet"}
+                {isConfirming && "Awaiting network"}
+                {!isPending && !isConfirming && "Deposit"}
+              </Button>
+
+              {txHash && <ViewTransaction hash={txHash} />}
+            </>
+          )}
+
+          {isConfirmed && (
+            <>
+              <h3>You’re good to go!</h3>
+              <p>
+                You can now use this to fund any of your transactions on MUD apps deployed to Chain Name. We have
+                estimated of the number of transactions you can take above.
+              </p>
+
+              <div className="flex justify-between gap-[10px]">
+                <Button className="w-full">Deposit more</Button>
+                <Button className="w-full">Continue</Button>
+              </div>
+            </>
           )}
         </div>
       </AccountModalSection>

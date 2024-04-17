@@ -1,4 +1,4 @@
-import { usePublicClient, useWalletClient } from "wagmi";
+import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { getClient, configureDynamicChains, Execute, RelayChain } from "@reservoir0x/relay-sdk";
 import { useCallback, useEffect, useState } from "react";
 import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
@@ -11,14 +11,15 @@ createRelayClient();
 
 type RelayLinkContentProps = {
   amount: string;
-  sourceChainId: number;
 };
 
-export function RelayLinkContent({ amount, sourceChainId }: RelayLinkContentProps) {
+export function RelayLinkContent({ amount }: RelayLinkContentProps) {
   const wallet = useWalletClient();
   const { chain, gasTankAddress } = useConfig();
+  const userAccount = useAccount();
+  const userAccountChainId = userAccount?.chain?.id;
   const publicClient = usePublicClient({
-    chainId: sourceChainId,
+    chainId: userAccountChainId,
   });
   const [, setSourceChains] = useState<RelayChain[]>([]);
   const [selectedSourceChainId] = useState<number>();
