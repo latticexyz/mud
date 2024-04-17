@@ -14,7 +14,7 @@ export async function deployGasTank() {
     return;
   }
 
-  const expectedAddress = worlds[31337]?.address as `0x${string}` | undefined;
+  const expectedAddress = worlds[31337]?.address;
   console.log(`Checking for GasTank at ${expectedAddress}.`);
   if (expectedAddress) {
     const bytecodeBefore = await deployerClient.getBytecode({
