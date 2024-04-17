@@ -15,7 +15,7 @@ export function DepositContent() {
   const userAccount = useAccount();
   const userAccountChainId = userAccount?.chain?.id;
   const [depositMethod, setDepositMethod] = useState<DepositMethod>();
-  const [depositAmount, setDepositAmount] = useState<bigint | null>();
+  const [depositAmount, setDepositAmount] = useState<string>("");
 
   useEffect(() => {
     if (!depositMethod) {
@@ -34,7 +34,7 @@ export function DepositContent() {
       <AccountModalTitle title="Gas tank" />
 
       <AccountModalSection>
-        <GasTankStateContent amount={depositAmount || BigInt(0)} />
+        <GasTankStateContent amount={depositAmount} />
       </AccountModalSection>
 
       <AccountModalSection>
@@ -44,7 +44,7 @@ export function DepositContent() {
           </p>
 
           {chain.id === userAccountChainId && (
-            <DirectDepositContent amount={depositAmount || BigInt(0)} setAmount={setDepositAmount} />
+            <DirectDepositContent amount={depositAmount} setAmount={setDepositAmount} />
           )}
           {chain.sourceId === userAccountChainId && <StandardBridgeContent />}
           {chain.id !== userAccountChainId && chain.sourceId !== userAccountChainId && <RelayLinkContent />}

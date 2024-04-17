@@ -1,18 +1,19 @@
-import { formatEther } from "viem";
+import { formatEther, parseEther } from "viem";
 import { twMerge } from "tailwind-merge";
 import { GasTankIcon } from "../../icons/GasTankIcon";
 import { useGasTankBalance } from "../../useGasTankBalance";
 
 type GasTankStateContentProps = {
-  amount: bigint;
+  amount: string;
 };
 
 export function GasTankStateContent({ amount }: GasTankStateContentProps) {
   const gasTankBalance = useGasTankBalance() || BigInt(0);
-  const newGasTankBalance = gasTankBalance ? gasTankBalance + amount : amount;
+  const amountWei = BigInt(amount ? parseEther(amount) : 0);
+  const newGasTankBalance = gasTankBalance ? gasTankBalance + amountWei : amountWei;
   const estimateActions = BigInt(15000); // TODO: estimate gas tank actions
   const isTankEmpty = !gasTankBalance || gasTankBalance === BigInt(0);
-  const isAmountSet = Boolean(amount && amount > BigInt(0));
+  const isAmountSet = Boolean(amountWei > BigInt(0));
 
   return (
     <div className="flex items-center gap-[12px] bg-neutral-200 p-5">

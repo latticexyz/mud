@@ -1,5 +1,5 @@
 import { ReactNode, Ref, forwardRef } from "react";
-import { formatEther, parseEther } from "viem";
+import { parseEther } from "viem";
 import { twMerge } from "tailwind-merge";
 import { AccountModalSection } from "../../AccountModalSection";
 import { useAccount, useBalance, useConfig as useWagmiConfig, useWriteContract } from "wagmi";
@@ -12,6 +12,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
 import { Button } from "../../ui/Button";
 import { Shadow } from "../../ui/Shadow";
+import { useEstimatedFees } from "./hooks/useEstimatedFees";
 
 type SelectItemProps = {
   value: string;
@@ -21,8 +22,8 @@ type SelectItemProps = {
 };
 
 type AmountProps = {
-  amount: bigint;
-  setAmount: (amount: bigint) => void;
+  amount: string | undefined;
+  setAmount: (amount: string) => void;
 };
 
 const AmountInput = ({ amount, setAmount }: AmountProps) => {
@@ -30,8 +31,9 @@ const AmountInput = ({ amount, setAmount }: AmountProps) => {
     <input
       className="w-full px-[16px] border border-neutral-300"
       type="number"
-      value={formatEther(amount)}
-      onChange={(evt) => setAmount(parseEther(evt.target.value))}
+      value={amount}
+      onChange={(evt) => setAmount(evt.target.value)}
+      placeholder="0.01"
       step={0.000000000000000001}
     />
   );
@@ -108,8 +110,8 @@ function ChainSelect() {
 }
 
 type DirectDepositContentProps = {
-  amount: bigint;
-  setAmount: (amount: bigint) => void;
+  amount: string | undefined;
+  setAmount: (amount: string) => void;
 };
 
 export function DirectDepositContent({ amount, setAmount }: DirectDepositContentProps) {
@@ -117,6 +119,7 @@ export function DirectDepositContent({ amount, setAmount }: DirectDepositContent
   const wagmiConfig = useWagmiConfig();
   const { chain, gasTankAddress } = useConfig();
   const { resetStep } = useOnboardingSteps();
+  const estimatedFees = useEstimatedFees();
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
   const userBalance = useBalance({
@@ -138,7 +141,7 @@ export function DirectDepositContent({ amount, setAmount }: DirectDepositContent
   });
 
   const handleDeposit = async () => {
-    if (!userAccountAddress) return;
+    if (!userAccountAddress || !amount) return;
 
     await writeContractAsync({
       chainId: chain.id,
@@ -171,7 +174,7 @@ export function DirectDepositContent({ amount, setAmount }: DirectDepositContent
             <li className="flex justify-between py-[8px] border-b border-black border-opacity-10">
               <span className="opacity-50">Estimated fee</span>
               <span className="font-medium">
-                0.025 ETH <span className="text-neutral-800">($3.40)</span>
+                {estimatedFees || "..."} ETH <span className="text-neutral-800">($3.40)</span>
               </span>
             </li>
             <li className="flex justify-between py-[8px]">
