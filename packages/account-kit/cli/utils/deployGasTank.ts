@@ -14,6 +14,12 @@ export async function deployGasTank() {
     return;
   }
 
+  console.log("Installing gas-tank dependencies.");
+  const result = await $({ cwd: gasTankPath })`pnpm install`;
+  if (result.failed) {
+    console.log(result.stderr);
+  }
+
   const expectedAddress = worlds[31337]?.address;
   console.log(`Checking for GasTank at ${expectedAddress}.`);
   if (expectedAddress) {
