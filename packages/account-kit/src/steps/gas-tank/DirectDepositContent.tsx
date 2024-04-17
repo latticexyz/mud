@@ -2,7 +2,7 @@ import { ReactNode, Ref, forwardRef } from "react";
 import { formatEther, parseEther } from "viem";
 import { twMerge } from "tailwind-merge";
 import { AccountModalSection } from "../../AccountModalSection";
-import { useAccount, useConfig as useWagmiConfig, useWriteContract } from "wagmi";
+import { useAccount, useBalance, useConfig as useWagmiConfig, useWriteContract } from "wagmi";
 import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
 import * as Select from "@radix-ui/react-select";
 import { useConfig } from "../../AccountKitProvider";
@@ -108,17 +108,21 @@ function ChainSelect() {
 }
 
 type DirectDepositContentProps = {
-  amount: bigint | null;
+  amount: bigint;
   setAmount: (amount: bigint) => void;
 };
 
-export function DirectDepositContent({ amount = BigInt(0), setAmount }: DirectDepositContentProps) {
+export function DirectDepositContent({ amount, setAmount }: DirectDepositContentProps) {
   const queryClient = useQueryClient();
   const wagmiConfig = useWagmiConfig();
   const { chain, gasTankAddress } = useConfig();
   const { resetStep } = useOnboardingSteps();
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
+  const userBalance = useBalance({
+    chainId: chain.id,
+    address: userAccountAddress,
+  });
   const { writeContractAsync, isPending, error } = useWriteContract({
     mutation: {
       onSuccess: async (hash) => {
@@ -161,7 +165,7 @@ export function DirectDepositContent({ amount = BigInt(0), setAmount }: DirectDe
             <li className="flex justify-between py-[8px] border-b border-black border-opacity-10">
               <span className="opacity-50">Available to deposit</span>
               <span className="font-medium">
-                {parseEther(amount.toString()).toString()} ETH <span className="text-neutral-800">($3,605.21)</span>
+                {userBalance?.data?.formatted || "..."} ETH <span className="text-neutral-800">($3,605.21)</span>
               </span>
             </li>
             <li className="flex justify-between py-[8px] border-b border-black border-opacity-10">

@@ -15,7 +15,7 @@ export function DepositContent() {
   const userAccount = useAccount();
   const userAccountChainId = userAccount?.chain?.id;
   const [depositMethod, setDepositMethod] = useState<DepositMethod>();
-  const [depositAmount, setDepositAmount] = useState<bigint | null>(BigInt(0));
+  const [depositAmount, setDepositAmount] = useState<bigint | null>();
 
   useEffect(() => {
     if (!depositMethod) {
@@ -34,15 +34,17 @@ export function DepositContent() {
       <AccountModalTitle title="Gas tank" />
 
       <AccountModalSection>
-        <GasTankStateContent amount={depositAmount} />
+        <GasTankStateContent amount={depositAmount || BigInt(0)} />
       </AccountModalSection>
 
       <AccountModalSection>
         <div className="flex flex-col gap-2 p-5">
-          <p>Add funds from your wallet to your tank to fund transactions for any MUD apps on Chain Name.</p>
+          <p className="pb-2">
+            Add funds from your wallet to your tank to fund transactions for any MUD apps on Chain Name.
+          </p>
 
           {chain.id === userAccountChainId && (
-            <DirectDepositContent amount={depositAmount} setAmount={setDepositAmount} />
+            <DirectDepositContent amount={depositAmount || BigInt(0)} setAmount={setDepositAmount} />
           )}
           {chain.sourceId === userAccountChainId && <StandardBridgeContent />}
           {chain.id !== userAccountChainId && chain.sourceId !== userAccountChainId && <RelayLinkContent />}
