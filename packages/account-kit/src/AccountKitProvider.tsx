@@ -6,7 +6,7 @@ import { AccountModal } from "./AccountModal";
 export type Config = {
   readonly chain: MUDChain;
   readonly worldAddress: Address;
-  readonly gasTankAddress: Address;
+  readonly gasTankAddress?: Address;
   readonly appInfo?: {
     readonly name?: string;
     /**
@@ -33,7 +33,12 @@ export function AccountKitProvider({ config, children }: Props) {
   const currentConfig = useContext(Context);
   if (currentConfig) throw new Error("`AccountKitProvider` can only be used once.");
   return (
-    <Context.Provider value={config}>
+    <Context.Provider
+      value={{
+        ...config,
+        gasTankAddress: config.gasTankAddress ?? config.chain.contracts?.gasTank?.address,
+      }}
+    >
       {children}
       <AccountModal />
     </Context.Provider>
