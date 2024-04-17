@@ -50,6 +50,13 @@ export default defineWorld({
       },
       key: [],
     },
+    DynamicArray: {
+      schema: {
+        num: "uint256",
+        value: "uint256[]",
+      },
+      key: [],
+    },
   },
   modules: [
     {
