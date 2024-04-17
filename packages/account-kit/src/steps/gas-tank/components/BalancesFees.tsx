@@ -1,3 +1,4 @@
+import { formatEther } from "viem";
 import { AccountModalSection } from "../../../AccountModalSection";
 import { useAccount, useBalance } from "wagmi";
 import { useConfig } from "../../../AccountKitProvider";
@@ -20,7 +21,12 @@ export function BalancesFees() {
           <li className="flex justify-between py-[8px] border-b border-black border-opacity-10">
             <span className="opacity-50">Available to deposit</span>
             <span className="font-medium">
-              {userBalance?.data?.formatted || "..."} ETH <span className="text-neutral-800">($3,605.21)</span>
+              {userBalance?.data?.value
+                ? parseFloat(formatEther(userBalance?.data?.value)).toLocaleString("en", {
+                    minimumFractionDigits: 5,
+                  })
+                : "..."}{" "}
+              ETH <span className="text-neutral-800">($3,605.21)</span>
             </span>
           </li>
           <li className="flex justify-between py-[8px] border-b border-black border-opacity-10">
