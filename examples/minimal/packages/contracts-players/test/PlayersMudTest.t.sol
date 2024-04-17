@@ -18,8 +18,6 @@ contract PlayersTest is MudTest {
   }
 
   function testPlayers(address alice) public {
-    vm.startPrank(NamespaceOwner.get(ROOT_NAMESPACE_ID));
-
     uint256 aliceGold = 150;
     uint256[5] memory resources = [aliceGold, 0, 0, 0, 0];
 
@@ -27,7 +25,9 @@ contract PlayersTest is MudTest {
     assertEq(Players.getResources(alice)[0], 0);
     assertEq(resources[0], 150);
 
+    vm.prank(NamespaceOwner.get(ROOT_NAMESPACE_ID));
     Players.setResources(alice, resources);
+    vm.prank(NamespaceOwner.get(ROOT_NAMESPACE_ID));
     Players.setIsTeamRight(alice, true);
 
     assertEq(Players.getItemResources(alice, 0), 150);
