@@ -3,7 +3,7 @@ import { getBalance, getBytecode, sendRawTransaction, sendTransaction, waitForTr
 import deployment from "./create2/deployment.json";
 import { debug } from "./debug";
 
-const deployer = `0x${deployment.address}` as const;
+export const deployer = `0x${deployment.address}` as const;
 const deployerBytecode = `0x${deployment.bytecode}` as const;
 
 export async function ensureDeployer(client: Client<Transport, Chain | undefined, Account>): Promise<Address> {
