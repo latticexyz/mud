@@ -2,7 +2,7 @@ import { getRpcUrl } from "@latticexyz/common/foundry";
 import { Hex } from "viem";
 import { deployer } from "./deploy/ensureDeployer";
 import { getWorldFactoryContracts } from "./deploy/getWorldFactoryContracts";
-import { verifyContract, verifyContractCreate2 } from "./verifyContract";
+import { verifyContract } from "./verifyContract";
 import PQueue from "p-queue";
 
 type VerifyOptions = {
@@ -30,14 +30,14 @@ export async function verify({
     ...systems.map(
       ({ name, bytecode }) =>
         () =>
-          verifyContractCreate2(
+          verifyContract(
             {
               name,
-              from: deployer,
-              bytecode,
               rpc,
               verifier,
               verifierUrl,
+              from: deployer,
+              bytecode,
             },
             { profile: foundryProfile },
           ).catch((error) => {
@@ -47,14 +47,14 @@ export async function verify({
     ...Object.entries(getWorldFactoryContracts(deployer)).map(
       ([name, { bytecode }]) =>
         () =>
-          verifyContractCreate2(
+          verifyContract(
             {
               name,
-              from: deployer,
-              bytecode,
               rpc,
               verifier,
               verifierUrl,
+              from: deployer,
+              bytecode,
             },
             {
               profile: foundryProfile,
@@ -67,14 +67,14 @@ export async function verify({
     ...modules.map(
       ({ name, bytecode }) =>
         () =>
-          verifyContractCreate2(
+          verifyContract(
             {
               name: name,
-              from: deployer,
-              bytecode: bytecode,
               rpc,
               verifier,
               verifierUrl,
+              from: deployer,
+              bytecode,
             },
             {
               profile: foundryProfile,
@@ -86,7 +86,7 @@ export async function verify({
     ),
     () =>
       verifyContract(
-        { name: "World", address: worldAddress, rpc, verifier, verifierUrl },
+        { name: "World", rpc, verifier, verifierUrl, address: worldAddress },
         {
           profile: foundryProfile,
           cwd: "node_modules/@latticexyz/world",

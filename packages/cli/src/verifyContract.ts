@@ -1,43 +1,41 @@
 import { forge } from "@latticexyz/common/foundry";
 import { Address, ByteArray, Hex, getCreate2Address } from "viem";
-import { salt as defaultSalt } from "./deploy/common";
-
-type VerificationOptions = {
-  address: Hex;
-  name: string;
-  rpc: string;
-  verifier?: string;
-  verifierUrl?: string;
-};
-
-type ForgeOptions = { profile?: string; silent?: boolean; env?: NodeJS.ProcessEnv; cwd?: string };
+import { salt } from "./deploy/common";
 
 type Create2Options = {
   bytecode: ByteArray | Hex;
   from: Address;
-  salt?: ByteArray | Hex;
 };
 
-export async function verifyContract(
-  { address, name, rpc, verifier, verifierUrl }: VerificationOptions,
-  options?: ForgeOptions,
-) {
-  const args = ["verify-contract", address, name, "--rpc-url", rpc];
+type VerifyContractOptions = {
+  name: string;
+  rpc: string;
+  verifier?: string;
+  verifierUrl?: string;
+} & ({ address: Hex } | Create2Options);
 
-  if (verifier) {
-    args.push("--verifier", verifier);
+type ForgeOptions = { profile?: string; silent?: boolean; env?: NodeJS.ProcessEnv; cwd?: string };
+
+export async function verifyContract(options: VerifyContractOptions, forgeOptions?: ForgeOptions) {
+  const args = [
+    "verify-contract",
+    "address" in options
+      ? options.address
+      : getCreate2Address({
+          from: options.from,
+          bytecode: options.bytecode,
+          salt,
+        }),
+    options.name,
+    "--rpc-url",
+    options.rpc,
+  ];
+
+  if (options.verifier) {
+    args.push("--verifier", options.verifier);
   }
-  if (verifierUrl) {
-    args.push("--verifier-url", verifierUrl);
+  if (options.verifierUrl) {
+    args.push("--verifier-url", options.verifierUrl);
   }
-  await forge(args, options);
-}
-
-export async function verifyContractCreate2(
-  { name, rpc, verifier, verifierUrl, from, bytecode, salt }: Omit<VerificationOptions, "address"> & Create2Options,
-  options?: ForgeOptions,
-) {
-  const address = getCreate2Address({ from, bytecode, salt: salt !== undefined ? salt : defaultSalt });
-
-  return verifyContract({ address, name, rpc, verifier, verifierUrl }, options);
+  await forge(args, forgeOptions);
 }
