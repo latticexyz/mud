@@ -17,19 +17,16 @@ type VerifyContractOptions = {
 type ForgeOptions = { profile?: string; silent?: boolean; env?: NodeJS.ProcessEnv; cwd?: string };
 
 export async function verifyContract(options: VerifyContractOptions, forgeOptions?: ForgeOptions) {
-  const args = [
-    "verify-contract",
+  const address =
     "address" in options
       ? options.address
       : getCreate2Address({
           from: options.from,
           bytecode: options.bytecode,
           salt,
-        }),
-    options.name,
-    "--rpc-url",
-    options.rpc,
-  ];
+        });
+
+  const args = ["verify-contract", address, options.name, "--rpc-url", options.rpc];
 
   if (options.verifier) {
     args.push("--verifier", options.verifier);
