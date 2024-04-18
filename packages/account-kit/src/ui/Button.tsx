@@ -7,15 +7,9 @@ type ButtonClassNameOptions = {
   size?: "sm" | "md";
   variant?: "primary" | "secondary" | "tertiary";
   pending?: boolean;
-  selected?: boolean;
 };
 
-const buttonClassName = ({
-  size = "md",
-  variant = "primary",
-  pending = false,
-  selected = false,
-}: ButtonClassNameOptions = {}) =>
+const buttonClassName = ({ size = "md", variant = "primary", pending = false }: ButtonClassNameOptions = {}) =>
   twMerge(
     // eslint-disable-next-line max-len
     "group self-center leading-none outline-none border border-transparent ring-2 ring-transparent focus:ring-orange-500 transition aria-disabled:pointer-events-none aria-busy:pointer-events-none",
@@ -44,7 +38,6 @@ const buttonClassName = ({
       md: twMerge("p-4 font-semibold text-[16px]"),
     }[size],
     pending && "cursor-wait pointer-events-none",
-    selected && "",
   );
 
 type Props = {
