@@ -13,7 +13,7 @@ export const mudFoundry = {
   contracts: {
     ...foundry.contracts,
     gasTank: {
-      address: "0x9453321e3bece7caa1a65ed2df1304d9aed13a72",
+      address: "0x932c23946aba851829553ddd5e22d68b57a81f0d",
     },
   },
 } as const satisfies MUDChain;
