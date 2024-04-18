@@ -23,8 +23,8 @@ export async function verify({
 }: VerifyOptions): Promise<void> {
   const rpc = await getRpcUrl(foundryProfile);
 
-  await Promise.all(
-    systems.map(({ name, bytecode }) =>
+  await Promise.all([
+    ...systems.map(({ name, bytecode }) =>
       verifyContractCreate2DefaultSalt(
         {
           name,
@@ -37,10 +37,7 @@ export async function verify({
         { profile: foundryProfile },
       ),
     ),
-  );
-
-  await Promise.all(
-    Object.entries(getWorldFactoryContracts(deployer)).map(([name, { bytecode }]) =>
+    ...Object.entries(getWorldFactoryContracts(deployer)).map(([name, { bytecode }]) =>
       verifyContractCreate2DefaultSalt(
         {
           name,
@@ -56,10 +53,7 @@ export async function verify({
         },
       ),
     ),
-  );
-
-  await Promise.all(
-    modules.map(({ name, bytecode }) =>
+    ...modules.map(({ name, bytecode }) =>
       verifyContractCreate2DefaultSalt(
         {
           name: name,
@@ -75,13 +69,12 @@ export async function verify({
         },
       ),
     ),
-  );
-
-  verifyContract(
-    { name: "World", address: worldAddress, rpc, verifier, verifierUrl },
-    {
-      profile: foundryProfile,
-      cwd: "node_modules/@latticexyz/world",
-    },
-  );
+    verifyContract(
+      { name: "World", address: worldAddress, rpc, verifier, verifierUrl },
+      {
+        profile: foundryProfile,
+        cwd: "node_modules/@latticexyz/world",
+      },
+    ),
+  ]);
 }
