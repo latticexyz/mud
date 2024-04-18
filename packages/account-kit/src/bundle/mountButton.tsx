@@ -4,6 +4,8 @@ import type { Config as AccountKitConfig } from "../AccountKitProvider";
 import { store } from "./store";
 import { AccountButton } from "../AccountButton";
 
+// TODO: ensure we only mount modal
+
 export type MountOptions = {
   wagmiConfig: WagmiConfig;
   accountKitConfig: AccountKitConfig;

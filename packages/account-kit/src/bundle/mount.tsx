@@ -3,6 +3,8 @@ import type { Config as WagmiConfig } from "wagmi";
 import type { Config as AccountKitConfig } from "../AccountKitProvider";
 import { store } from "./store";
 
+// TODO: ensure we only mount modal
+
 export type MountOptions = {
   rootElementId?: string;
   wagmiConfig: WagmiConfig;

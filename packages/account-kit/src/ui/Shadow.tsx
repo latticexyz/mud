@@ -39,12 +39,27 @@ export const Shadow = forwardRef<HTMLIFrameElement, Props>(function Shadow({ mod
   const darkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const theme = initialTheme ?? (darkMode ? "dark" : "light");
 
-  const modeStyle: CSSProperties =
+  const frameStyle: CSSProperties =
     mode === "modal"
-      ? { display: "block", position: "fixed", inset: "0", width: "100vw", height: "100vh", zIndex: "2147483646" }
+      ? {
+          all: "unset",
+          display: "block",
+          position: "fixed",
+          inset: "0",
+          width: "100vw",
+          height: "100vh",
+          zIndex: "2147483646",
+        }
       : frameSize.width && frameSize.height
-        ? { display: "inline-block", width: `${frameSize.width}px`, height: `${frameSize.height}px` }
+        ? {
+            all: "unset",
+            display: "inline-block",
+            width: `${frameSize.width}px`,
+            height: `${frameSize.height}px`,
+            boxShadow: "0 0 0 4px red",
+          }
         : {
+            all: "unset",
             display: "block",
             position: "fixed",
             inset: "0",
@@ -57,20 +72,20 @@ export const Shadow = forwardRef<HTMLIFrameElement, Props>(function Shadow({ mod
   return (
     <iframe
       ref={mergeRefs([forwardedRef, frameRef])}
-      style={{ border: "0", ...modeStyle }}
+      style={frameStyle}
       onLoad={() => setLoaded(true)}
       srcDoc="<!doctype html><title>…</title>"
     >
       {frame?.contentDocument
         ? ReactDOM.createPortal(
             <FrameProvider frame={frame}>
-              {mode === "modal" ? (
-                <div data-theme={theme}>{children}</div>
-              ) : (
-                <Resizer data-theme={theme} onSize={setFrameSize}>
-                  {children}
-                </Resizer>
-              )}
+              {/*
+               * TODO: make this the size of the outer window so that any container-based resizing in iframe
+               *       is done from that rather than the potentially-small size of this iframe
+               */}
+              <div data-theme={theme}>
+                {mode === "modal" ? children : <Resizer onSize={setFrameSize}>{children}</Resizer>}
+              </div>
               <style dangerouslySetInnerHTML={{ __html: css }} />
             </FrameProvider>,
             frame.contentDocument.body,
