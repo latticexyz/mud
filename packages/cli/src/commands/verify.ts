@@ -54,9 +54,8 @@ const commandModule: CommandModule<Options, Options> = {
       const contractData = getContractData(`${name}.sol`, name, outDir);
 
       return {
-        label: name,
+        name,
         bytecode: contractData.bytecode,
-        deployedBytecodeSize: contractData.deployedBytecodeSize,
       };
     });
 
@@ -66,9 +65,8 @@ const commandModule: CommandModule<Options, Options> = {
         getContractData(`${mod.name}.sol`, mod.name, outDir);
 
       return {
-        label: mod.name,
+        name: mod.name,
         bytecode: contractData.bytecode,
-        deployedBytecodeSize: contractData.deployedBytecodeSize,
       };
     });
 

@@ -59,37 +59,37 @@ export function getWorldFactoryContracts(deployerAddress: Hex): Record<string, C
     AccessManagementSystem: {
       bytecode: accessManagementSystemBytecode,
       deployedBytecodeSize: accessManagementSystemDeployedBytecodeSize,
-      label: "AccessManagementSystem",
+      label: "access management system",
       address: accessManagementSystem,
     },
     BalanceTransferSystem: {
       bytecode: balanceTransferSystemBytecode,
       deployedBytecodeSize: balanceTransferSystemDeployedBytecodeSize,
-      label: "BalanceTransferSystem",
+      label: "balance transfer system",
       address: balanceTransferSystem,
     },
     BatchCallSystem: {
       bytecode: batchCallSystemBytecode,
       deployedBytecodeSize: batchCallSystemDeployedBytecodeSize,
-      label: "BatchCallSystem",
+      label: "batch call system",
       address: batchCallSystem,
     },
     RegistrationSystem: {
       bytecode: registrationBytecode,
       deployedBytecodeSize: registrationDeployedBytecodeSize,
-      label: "RegistrationSystem",
+      label: "core registration system",
       address: registration,
     },
     InitModule: {
       bytecode: initModuleBytecode,
       deployedBytecodeSize: initModuleDeployedBytecodeSize,
-      label: "InitModule",
+      label: "core module",
       address: initModule,
     },
     WorldFactory: {
       bytecode: worldFactoryBytecode,
       deployedBytecodeSize: worldFactoryDeployedBytecodeSize,
-      label: "WorldFactory",
+      label: "world factory",
       address: worldFactory,
     },
   };

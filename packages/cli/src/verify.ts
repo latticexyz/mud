@@ -1,56 +1,16 @@
-import { forge, getRpcUrl } from "@latticexyz/common/foundry";
-import { Hex, getCreate2Address } from "viem";
-import { salt } from "./deploy/common";
+import { getRpcUrl } from "@latticexyz/common/foundry";
+import { Hex } from "viem";
 import { deployer } from "./deploy/ensureDeployer";
-import { MUDError } from "@latticexyz/common/errors";
-import { Contract } from "./deploy/ensureContract";
 import { getWorldFactoryContracts } from "./deploy/getWorldFactoryContracts";
+import { verifyContract, verifyContractCreate2DefaultSalt } from "./verifyContract";
 
 type VerifyOptions = {
   foundryProfile?: string;
   verifier?: string;
-  systems: Contract[];
-  modules: Contract[];
+  systems: { name: string; bytecode: Hex }[];
+  modules: { name: string; bytecode: Hex }[];
   worldAddress: Hex;
 };
-
-async function verifyContract(
-  address: Hex,
-  label: string,
-  rpc: string,
-  verifier?: string,
-  foundryProfile?: string,
-  cwd?: string,
-) {
-  if (verifier) {
-    await forge(["verify-contract", address, label, "--rpc-url", rpc, "--verifier", verifier], {
-      profile: foundryProfile,
-      cwd,
-    });
-  } else {
-    await forge(["verify-contract", address, label, "--rpc-url", rpc], {
-      profile: foundryProfile,
-      cwd,
-    });
-  }
-}
-
-async function verifyContractFromBytecode(
-  deployerAddress: Hex,
-  contract: Contract,
-  rpc: string,
-  verifier?: string,
-  foundryProfile?: string,
-  cwd?: string,
-) {
-  if (!contract.label) {
-    throw new MUDError("Need a label");
-  }
-
-  const address = getCreate2Address({ from: deployerAddress, bytecode: contract.bytecode, salt });
-
-  return verifyContract(address, contract.label, rpc, verifier, foundryProfile, cwd);
-}
 
 export async function verify({
   foundryProfile = process.env.FOUNDRY_PROFILE,
@@ -62,27 +22,61 @@ export async function verify({
   const rpc = await getRpcUrl(foundryProfile);
 
   await Promise.all(
-    systems.map((contract) => verifyContractFromBytecode(deployer, contract, rpc, verifier, foundryProfile)),
-  );
-
-  await Promise.all(
-    Object.values(getWorldFactoryContracts(deployer)).map((contract) =>
-      verifyContractFromBytecode(deployer, contract, rpc, verifier, foundryProfile, "node_modules/@latticexyz/world"),
-    ),
-  );
-
-  await Promise.all(
-    modules.map((contract) =>
-      verifyContractFromBytecode(
-        deployer,
-        contract,
-        rpc,
-        verifier,
-        foundryProfile,
-        "node_modules/@latticexyz/world-modules",
+    systems.map(({ name, bytecode }) =>
+      verifyContractCreate2DefaultSalt(
+        {
+          name,
+          from: deployer,
+          bytecode,
+          rpc,
+          verifier,
+        },
+        { profile: foundryProfile },
       ),
     ),
   );
 
-  verifyContract(worldAddress, "World", rpc, verifier, "node_modules/@latticexyz/world");
+  await Promise.all(
+    Object.entries(getWorldFactoryContracts(deployer)).map(([name, { bytecode }]) =>
+      verifyContractCreate2DefaultSalt(
+        {
+          name,
+          from: deployer,
+          bytecode,
+          rpc,
+          verifier,
+        },
+        {
+          profile: foundryProfile,
+          cwd: "node_modules/@latticexyz/world",
+        },
+      ),
+    ),
+  );
+
+  await Promise.all(
+    modules.map(({ name, bytecode }) =>
+      verifyContractCreate2DefaultSalt(
+        {
+          name: name,
+          from: deployer,
+          bytecode: bytecode,
+          rpc,
+          verifier,
+        },
+        {
+          profile: foundryProfile,
+          cwd: "node_modules/@latticexyz/world-modules",
+        },
+      ),
+    ),
+  );
+
+  verifyContract(
+    { name: "World", address: worldAddress, rpc, verifier },
+    {
+      profile: foundryProfile,
+      cwd: "node_modules/@latticexyz/world",
+    },
+  );
 }
