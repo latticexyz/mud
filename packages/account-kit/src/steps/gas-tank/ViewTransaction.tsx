@@ -17,7 +17,7 @@ export function ViewTransaction({ hash, status }: Props) {
   if (!hash) return null;
 
   return (
-    <p className="text-neutral-400 text-center text-[14px]">
+    <p className="mt-[12px] text-neutral-400 text-center text-[14px]">
       {status === "loading" && (
         <>
           View the status of your deposit{" "}

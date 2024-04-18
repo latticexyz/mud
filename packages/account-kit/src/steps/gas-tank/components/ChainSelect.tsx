@@ -17,10 +17,9 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(function SelectIt
   return (
     <Select.Item
       className={twMerge(
-        "text-[13px] leading-none text-violet11 rounded-[3px] flex items-center",
-        "h-[25px] pr-[35px] pl-[25px] relative select-none data-[disabled]:text-mauve8",
+        "text-[13px] leading-none flex items-center",
+        "h-[25px] pr-[35px] pl-[25px] relative select-none",
         "data-[disabled]:pointer-events-none data-[highlighted]:outline-none",
-        "data-[highlighted]:bg-violet9 data-[highlighted]:text-violet1",
         className,
       )}
       ref={forwardedRef as Ref<HTMLDivElement>}
@@ -42,8 +41,7 @@ export function ChainSelect() {
         className={twMerge(
           "inline-flex items-center justify-center h-[50px] w-[70px]",
           "text-[13px] leading-none gap-[5px]",
-          "bg-white",
-          "border border-neutral-300",
+          "border border-neutral-300 dark:bg-neutral-700 dark:border-none",
           "outline-none",
         )}
         aria-label="Food"
