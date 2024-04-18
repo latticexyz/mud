@@ -56,7 +56,6 @@ export const Shadow = forwardRef<HTMLIFrameElement, Props>(function Shadow({ mod
             display: "inline-block",
             width: `${frameSize.width}px`,
             height: `${frameSize.height}px`,
-            boxShadow: "0 0 0 4px red",
           }
         : {
             all: "unset",
