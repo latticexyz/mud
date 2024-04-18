@@ -67,7 +67,7 @@ export type resolveWorld<world> = evaluate<
         },
         "namespaces" | keyof Store
       >,
-      typeof CONFIG_DEFAULTS
+      CONFIG_DEFAULTS
     >
 >;
 
@@ -102,10 +102,10 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
       modules: world.modules,
     },
     CONFIG_DEFAULTS,
-  ) as unknown as resolveWorld<world>;
+  ) as never;
 }
 
 export function defineWorld<const world>(world: validateWorld<world>): resolveWorld<world> {
   validateWorld(world);
-  return resolveWorld(world) as unknown as resolveWorld<world>;
+  return resolveWorld(world) as never;
 }

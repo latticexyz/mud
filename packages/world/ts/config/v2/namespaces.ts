@@ -6,16 +6,17 @@ import {
   hasOwnKey,
   resolveTable,
   mergeIfUndefined,
-  get,
   extendedScope,
+  getPath,
 } from "@latticexyz/store/config/v2";
 import { NamespacesInput } from "./input";
 
-export type namespacedTableKeys<world> = "namespaces" extends keyof world
-  ? "tables" extends keyof world["namespaces"][keyof world["namespaces"]]
-    ? `${keyof world["namespaces"] & string}__${keyof world["namespaces"][keyof world["namespaces"]]["tables"] &
-        string}`
-    : never
+export type namespacedTableKeys<world> = world extends { namespaces: infer namespaces }
+  ? {
+      [k in keyof namespaces]: namespaces[k] extends { tables: infer tables }
+        ? `${k & string}__${keyof tables & string}`
+        : never;
+    }[keyof namespaces]
   : never;
 
 export type validateNamespaces<namespaces, scope extends Scope = AbiTypeScope> = {
@@ -47,7 +48,7 @@ export type resolveNamespacedTables<world> = "namespaces" extends keyof world
       readonly [key in namespacedTableKeys<world>]: key extends `${infer namespace}__${infer table}`
         ? resolveTable<
             mergeIfUndefined<
-              get<get<get<get<world, "namespaces">, namespace>, "tables">, table>,
+              getPath<world, ["namespaces", namespace, "tables", table]>,
               { name: table; namespace: namespace }
             >,
             extendedScope<world>
