@@ -36,3 +36,25 @@ function _tokenUriTableId(bytes14 namespace) pure returns (ResourceId) {
 function _erc721SystemId(bytes14 namespace) pure returns (ResourceId) {
   return WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: ERC721_SYSTEM_NAME });
 }
+
+function uintToString(uint256 value) pure returns (string memory) {
+  // Base case
+  if (value == 0) {
+    return "0";
+  }
+  // Temporarily store the value to calculate the number of digits
+  uint256 temp = value;
+  uint256 digits;
+  while (temp != 0) {
+    digits++;
+    temp /= 10;
+  }
+  // Allocate enough memory to store the string
+  bytes memory buffer = new bytes(digits);
+  while (value != 0) {
+    digits -= 1;
+    buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
+    value /= 10;
+  }
+  return string(buffer);
+}

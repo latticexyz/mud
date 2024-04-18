@@ -20,7 +20,7 @@ import { Owners } from "./tables/Owners.sol";
 import { TokenApproval } from "./tables/TokenApproval.sol";
 import { TokenURI } from "./tables/TokenURI.sol";
 
-import { _balancesTableId, _metadataTableId, _tokenUriTableId, _operatorApprovalTableId, _ownersTableId, _tokenApprovalTableId } from "./utils.sol";
+import { _balancesTableId, _metadataTableId, _tokenUriTableId, _operatorApprovalTableId, _ownersTableId, _tokenApprovalTableId, uintToString } from "./utils.sol";
 
 contract ERC721System is IERC721Mintable, System, PuppetMaster {
   using WorldResourceIdInstance for ResourceId;
@@ -64,7 +64,7 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
 
     string memory baseURI = _baseURI();
     string memory _tokenURI = TokenURI.get(_tokenUriTableId(_namespace()), tokenId);
-    _tokenURI = bytes(_tokenURI).length > 0 ? _tokenURI : string(abi.encodePacked(tokenId));
+    _tokenURI = bytes(_tokenURI).length > 0 ? _tokenURI : uintToString(tokenId);
     return bytes(baseURI).length > 0 ? string.concat(baseURI, _tokenURI) : _tokenURI;
   }
 
