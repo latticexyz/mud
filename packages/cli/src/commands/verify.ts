@@ -46,14 +46,14 @@ const commandModule: CommandModule<Options, Options> = {
 
     const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
 
-    const configV2 = (await loadConfig(opts.configPath)) as WorldConfig;
-    const config = worldToV1(configV2);
+    const mudConfig = (await loadConfig(opts.configPath)) as WorldConfig;
+    const configV1 = worldToV1(mudConfig);
 
     const srcDir = opts.srcDir ?? (await getSrcDirectory(profile));
     const outDir = await getOutDirectory(profile);
 
     const contractNames = getExistingContracts(srcDir).map(({ basename }) => basename);
-    const resolvedWorldConfig = resolveWorldConfig(config, contractNames);
+    const resolvedWorldConfig = resolveWorldConfig(configV1, contractNames);
 
     const systems = Object.keys(resolvedWorldConfig.systems).map((name) => {
       const contractData = getContractData(`${name}.sol`, name, outDir);
@@ -64,7 +64,7 @@ const commandModule: CommandModule<Options, Options> = {
       };
     });
 
-    const modules = config.modules.map((mod) => {
+    const modules = mudConfig.modules.map((mod) => {
       const contractData =
         defaultModuleContracts.find((defaultMod) => defaultMod.name === mod.name) ??
         getContractData(`${mod.name}.sol`, mod.name, outDir);
