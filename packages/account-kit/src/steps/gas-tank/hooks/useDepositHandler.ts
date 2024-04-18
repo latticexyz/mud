@@ -20,14 +20,39 @@ export type UseDepositHandlerReturnType = {
   isSuccess: boolean;
 };
 
-const initialState = {
+type StateType = {
+  receipt: WaitForTransactionReceiptReturnType | undefined;
+  txHash: Hex | undefined;
+  status: StatusType;
+  error: Error | undefined;
+};
+
+type ActionType =
+  | {
+      type: "SET_STATUS";
+      payload: StatusType;
+    }
+  | {
+      type: "SET_TX_HASH";
+      payload: Hex;
+    }
+  | {
+      type: "SET_RECEIPT";
+      payload: WaitForTransactionReceiptReturnType;
+    }
+  | {
+      type: "SET_ERROR";
+      payload: Error;
+    };
+
+const initialState: StateType = {
   receipt: undefined,
   txHash: undefined,
   status: "idle",
   error: undefined,
 };
 
-function reducer(state, action) {
+function reducer(state: StateType, action: ActionType): StateType {
   switch (action.type) {
     case "SET_STATUS":
       if (action.payload === "pending") {
@@ -41,7 +66,7 @@ function reducer(state, action) {
     case "SET_ERROR":
       return { ...state, status: "error", error: action.payload };
     default:
-      throw new Error("Unhandled action type");
+      return state;
   }
 }
 

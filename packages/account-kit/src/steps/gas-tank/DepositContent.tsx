@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAccount } from "wagmi";
 import { useConfig } from "../../AccountKitProvider";
 import { AccountModalTitle } from "../../AccoutModalTitle";
@@ -11,7 +11,7 @@ import { ViewTransaction } from "./ViewTransaction";
 import { Button } from "../../ui/Button";
 import { useDepositHandler } from "./hooks/useDepositHandler";
 
-export type DepositMethod = "direct" | "bridge" | "relay" | undefined;
+export type DepositMethod = "direct" | "bridge" | "relay";
 
 export function DepositContent() {
   const { chain } = useConfig();
@@ -19,7 +19,11 @@ export function DepositContent() {
   const userAccountAddress = userAccount.address;
   const userAccountChainId = userAccount?.chain?.id;
   const [depositAmount, setDepositAmount] = useState<string>("");
-  const [depositMethod, setDepositMethod] = useState<DepositMethod>();
+  const [depositMethod] = useState<DepositMethod>(() => {
+    if (chain.id === userAccountChainId) return "direct";
+    else if (chain.sourceId === userAccountChainId) return "bridge";
+    else return "relay";
+  });
   const { txHash, error, deposit, isPending, isLoading, isSuccess } = useDepositHandler(depositMethod);
 
   // TODO: move to useDepositHandler
@@ -33,18 +37,6 @@ export function DepositContent() {
   //     setSuccess(true);
   //   }
   // }, [gasTankBalance, prevGasTankBalance]);
-
-  useEffect(() => {
-    if (!depositMethod) {
-      if (chain.id === userAccountChainId) {
-        setDepositMethod("direct");
-      } else if (chain.sourceId === userAccountChainId) {
-        setDepositMethod("bridge");
-      } else {
-        setDepositMethod("relay");
-      }
-    }
-  }, [chain.id, chain.sourceId, userAccountChainId, depositMethod]);
 
   // TODO: add back
   // const queryClient = useQueryClient();
