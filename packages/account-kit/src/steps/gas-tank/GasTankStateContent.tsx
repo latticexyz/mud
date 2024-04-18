@@ -9,6 +9,7 @@ type GasTankStateContentProps = {
   isSuccess: boolean;
 };
 
+// TODO: get from config
 const ACTIONS_PER_ETHER = 100_000n;
 
 export function GasTankStateContent({ amount, isSuccess }: GasTankStateContentProps) {
