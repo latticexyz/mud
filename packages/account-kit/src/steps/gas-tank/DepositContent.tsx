@@ -10,6 +10,7 @@ import { BalancesFees } from "./components/BalancesFees";
 import { ViewTransaction } from "./ViewTransaction";
 import { Button } from "../../ui/Button";
 import { useDepositHandler } from "./hooks/useDepositHandler";
+import { useTransactionFees } from "./hooks/useTranasctionFees";
 
 export type DepositMethod = "direct" | "bridge" | "relay";
 
@@ -24,19 +25,8 @@ export function DepositContent() {
     else if (chain.sourceId === userAccountChainId) return "bridge";
     else return "relay";
   });
-  const { txHash, error, deposit, isPending, isLoading, isSuccess } = useDepositHandler(depositMethod);
-
-  // TODO: move to useDepositHandler
-  // const { gasTankBalance } = useGasTankBalance();
-  // const prevGasTankBalance = usePrevious(gasTankBalance);
-  // const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
-  //   hash: txHash,
-  // });
-  // useEffect(() => {
-  //   if (prevGasTankBalance && prevGasTankBalance !== gasTankBalance) {
-  //     setSuccess(true);
-  //   }
-  // }, [gasTankBalance, prevGasTankBalance]);
+  const { txHash, error, deposit, status, isPending, isLoading, isSuccess } = useDepositHandler(depositMethod);
+  const { fees } = useTransactionFees(depositMethod);
 
   // TODO: add back
   // const queryClient = useQueryClient();
@@ -74,7 +64,7 @@ export function DepositContent() {
                 <AmountInput amount={depositAmount} setAmount={setDepositAmount} />
               </div>
 
-              <BalancesFees />
+              <BalancesFees fees={fees} />
 
               {error ? <div>{String(error)}</div> : null}
 
@@ -84,7 +74,7 @@ export function DepositContent() {
                 {!isPending && !isLoading && "Deposit"}
               </Button>
 
-              {txHash && <ViewTransaction hash={txHash} />}
+              {txHash && <ViewTransaction hash={txHash} status={status} />}
             </>
           )}
 

@@ -22,8 +22,6 @@ export const standardBridgeDeposit = ({
   gasTankAddress,
   amount,
 }: Props) => {
-  if (!wallet.data) return;
-
   const gasLimit = BigInt(1000000); // TODO: better gas limit config
   const amountWei = parseEther(amount);
   const data = encodeFunctionData({

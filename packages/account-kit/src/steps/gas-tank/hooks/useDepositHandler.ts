@@ -1,52 +1,51 @@
-import { useCallback, useMemo, useReducer } from "react";
+import { useCallback, useEffect, useMemo, useReducer } from "react";
 import { Hex } from "viem";
 import { useAccount, useConfig as useWagmiConfig, useWalletClient } from "wagmi";
-import { WaitForTransactionReceiptReturnType, waitForTransactionReceipt } from "wagmi/actions";
+import { waitForTransactionReceipt } from "wagmi/actions";
 import { DepositMethod } from "../DepositContent";
 import { useConfig } from "../../../AccountKitProvider";
 import { directDeposit } from "./directDeposit";
 import { standardBridgeDeposit } from "./standardBridgeDeposit";
 import { relayLinkDeposit } from "./relayLinkDeposit";
+import { useGasTankBalance } from "../../../useGasTankBalance";
+import { usePrevious } from "../../../utils/usePrevious";
 
-export type StatusType = "pending" | "loading" | "success" | "error" | "idle";
+export type StatusType = "pending" | "loading" | "loadingL2" | "success" | "error" | "idle";
+
+type StateType = {
+  txHash: Hex | undefined;
+  status: StatusType;
+  error: unknown;
+};
+
+type StatusActionType = {
+  type: "SET_STATUS";
+  payload: StatusType;
+};
+
+type TxHashActionType = {
+  type: "SET_TX_HASH";
+  payload: Hex;
+};
+
+type ErrorActionType = {
+  type: "SET_ERROR";
+  payload: unknown;
+};
+
+type ActionType = StatusActionType | TxHashActionType | ErrorActionType;
 
 export type UseDepositHandlerReturnType = {
-  receipt: WaitForTransactionReceiptReturnType | undefined;
   error: Error | undefined;
   txHash: Hex | undefined;
   deposit: () => void;
+  status: StatusType;
   isPending: boolean;
   isLoading: boolean;
   isSuccess: boolean;
 };
 
-type StateType = {
-  receipt: WaitForTransactionReceiptReturnType | undefined;
-  txHash: Hex | undefined;
-  status: StatusType;
-  error: Error | undefined;
-};
-
-type ActionType =
-  | {
-      type: "SET_STATUS";
-      payload: StatusType;
-    }
-  | {
-      type: "SET_TX_HASH";
-      payload: Hex;
-    }
-  | {
-      type: "SET_RECEIPT";
-      payload: WaitForTransactionReceiptReturnType;
-    }
-  | {
-      type: "SET_ERROR";
-      payload: Error;
-    };
-
 const initialState: StateType = {
-  receipt: undefined,
   txHash: undefined,
   status: "idle",
   error: undefined,
@@ -61,8 +60,6 @@ function reducer(state: StateType, action: ActionType): StateType {
       return { ...state, status: action.payload };
     case "SET_TX_HASH":
       return { ...state, status: "loading", txHash: action.payload };
-    case "SET_RECEIPT":
-      return { ...state, status: "success", receipt: action.payload };
     case "SET_ERROR":
       return { ...state, status: "error", error: action.payload };
     default:
@@ -78,6 +75,14 @@ export const useDepositHandler = (depositMethod: DepositMethod) => {
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
   const userAccountChainId = userAccount?.chain?.id;
+  const { gasTankBalance } = useGasTankBalance();
+  const prevGasTankBalance = usePrevious(gasTankBalance);
+
+  useEffect(() => {
+    if (prevGasTankBalance && state.status === "loadingL2" && prevGasTankBalance !== gasTankBalance) {
+      dispatch({ type: "SET_STATUS", payload: "success" });
+    }
+  }, [gasTankBalance, prevGasTankBalance, state.status]);
 
   const deposit = useCallback(
     async (amount: string) => {
@@ -86,25 +91,20 @@ export const useDepositHandler = (depositMethod: DepositMethod) => {
       try {
         dispatch({ type: "SET_STATUS", payload: "pending" });
 
-        let txHash;
         if (depositMethod === "direct") {
-          txHash = await directDeposit({
+          const txHash = await directDeposit({
             config: wagmiConfig,
             chainId: chain.id,
             gasTankAddress,
             userAccountAddress,
             amount,
           });
-
           dispatch({ type: "SET_TX_HASH", payload: txHash });
 
-          const receipt = await waitForTransactionReceipt(wagmiConfig, {
-            hash: txHash,
-          });
-
-          dispatch({ type: "SET_RECEIPT", payload: receipt });
+          await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
+          dispatch({ type: "SET_STATUS", payload: "success" });
         } else if (depositMethod === "bridge") {
-          txHash = await standardBridgeDeposit({
+          const txHash = await standardBridgeDeposit({
             config: wagmiConfig,
             wallet,
             chainId: userAccountChainId,
@@ -112,14 +112,12 @@ export const useDepositHandler = (depositMethod: DepositMethod) => {
             userAccountAddress,
             amount,
           });
-
           dispatch({ type: "SET_TX_HASH", payload: txHash });
 
-          const receipt = await waitForTransactionReceipt(wagmiConfig, {
+          await waitForTransactionReceipt(wagmiConfig, {
             hash: txHash,
           });
-
-          dispatch({ type: "SET_RECEIPT", payload: receipt });
+          dispatch({ type: "SET_STATUS", payload: "loadingL2" });
         } else if (depositMethod === "relay") {
           relayLinkDeposit({
             config: wagmiConfig,
@@ -132,6 +130,8 @@ export const useDepositHandler = (depositMethod: DepositMethod) => {
               if (data5?.txHashes?.[0]) {
                 const tx = data5.txHashes[0];
                 dispatch({ type: "SET_TX_HASH", payload: tx.txHash });
+
+                // TODO: wait for L2 tx
               }
             },
           });
@@ -146,13 +146,13 @@ export const useDepositHandler = (depositMethod: DepositMethod) => {
 
   return useMemo(() => {
     return {
-      receipt: state.receipt,
       error: state.error,
       txHash: state.txHash,
       deposit,
+      status: state.status,
       isPending: state.status === "pending",
-      isLoading: state.status === "loading",
+      isLoading: state.status === "loading" || state.status === "loadingL2",
       isSuccess: state.status === "success",
     };
-  }, [deposit, state.error, state.receipt, state.status, state.txHash]);
+  }, [deposit, state.error, state.status, state.txHash]);
 };

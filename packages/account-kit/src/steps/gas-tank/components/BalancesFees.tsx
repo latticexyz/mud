@@ -2,11 +2,9 @@ import { formatEther } from "viem";
 import { AccountModalSection } from "../../../AccountModalSection";
 import { useAccount, useBalance } from "wagmi";
 import { useConfig } from "../../../AccountKitProvider";
-import { useEstimatedFees } from "../hooks/useEstimatedFees";
 
-export function BalancesFees() {
+export function BalancesFees({ fees }: { fees: string }) {
   const { chain } = useConfig();
-  const estimatedFees = useEstimatedFees();
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
   const userBalance = useBalance({
@@ -32,7 +30,7 @@ export function BalancesFees() {
           <li className="flex justify-between py-[8px] border-b border-black border-opacity-10">
             <span className="opacity-50">Estimated fee</span>
             <span className="font-medium">
-              {estimatedFees || "..."} ETH <span className="text-neutral-800">($3.40)</span>
+              {fees || "..."} ETH <span className="text-neutral-800">($3.40)</span>
             </span>
           </li>
           <li className="flex justify-between py-[8px]">
