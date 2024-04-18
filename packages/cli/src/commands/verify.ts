@@ -17,6 +17,7 @@ type Options = {
   profile?: string;
   srcDir?: string;
   verifier?: string;
+  verifierUrl?: string;
 };
 
 const commandModule: CommandModule<Options, Options> = {
