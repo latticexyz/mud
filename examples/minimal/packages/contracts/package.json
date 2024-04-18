@@ -6,7 +6,6 @@
   "scripts": {
     "build": "mud build",
     "clean": "forge clean && rimraf src/codegen",
-    "deploy:holesky": "pnpm run build && mud deploy --profile=holesky",
     "deploy:local": "pnpm run build && mud deploy",
     "deploy:testnet": "pnpm run build && mud deploy --profile=lattice-testnet",
     "dev": "pnpm mud dev-contracts",
@@ -14,8 +13,7 @@
     "lint": "pnpm run prettier && pnpm run solhint",
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
-    "test": "mud test",
-    "verify": "pnpm mud verify --profile=holesky --worldAddress=0xcf6179d4c4ddc99ba29709d87c6bf9b0fefae0fc --verifier sourcify"
+    "test": "mud test"
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../../../packages/cli",
