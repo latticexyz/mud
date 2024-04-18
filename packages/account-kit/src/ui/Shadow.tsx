@@ -19,12 +19,21 @@ function Resizer({
 } & HTMLProps<HTMLDivElement>) {
   const ref = useRef<HTMLDivElement | null>(null);
   useResizeObserver({ ref, onResize: onSize });
-  return <div ref={ref} style={{ ...props.style, display: "inline-block" }} {...props} />;
+  return <div ref={ref} {...props} style={{ ...props.style, display: "inline-block" }} />;
 }
+
+// TODO: make a container inside the iframe that is at least the size of the window, render content into that so we can correctly measure size relative to window
+//       otherwise as the iframe shrinks, the measurement will be based on that shrunk value and it'll never get bigger, only smaller
 
 export const Shadow = forwardRef<HTMLIFrameElement, Props>(function Shadow({ mode, children }, forwardedRef) {
   const frameRef = useRef<HTMLIFrameElement | null>(null);
-  const [frameSize, setFrameSize] = useState<{ width: number; height: number } | null>(null);
+  const [loaded, setLoaded] = useState(false);
+  const frame = loaded ? frameRef.current : null;
+
+  const [frameSize, setFrameSize] = useState<{ width: number | undefined; height: number | undefined }>({
+    width: undefined,
+    height: undefined,
+  });
 
   const { theme: initialTheme } = useConfig();
   const darkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -33,7 +42,7 @@ export const Shadow = forwardRef<HTMLIFrameElement, Props>(function Shadow({ mod
   const modeStyle: CSSProperties =
     mode === "modal"
       ? { display: "block", position: "fixed", inset: "0", width: "100vw", height: "100vh", zIndex: "2147483646" }
-      : frameSize
+      : frameSize.width && frameSize.height
         ? { display: "inline-block", width: `${frameSize.width}px`, height: `${frameSize.height}px` }
         : {
             display: "block",
@@ -46,29 +55,25 @@ export const Shadow = forwardRef<HTMLIFrameElement, Props>(function Shadow({ mod
           };
 
   return (
-    <iframe ref={mergeRefs([forwardedRef, frameRef])} style={{ border: "0", ...modeStyle }}>
-      {frameRef.current
+    <iframe
+      ref={mergeRefs([forwardedRef, frameRef])}
+      style={{ border: "0", ...modeStyle }}
+      onLoad={() => setLoaded(true)}
+      srcDoc="<!doctype html><title>…</title>"
+    >
+      {frame?.contentDocument
         ? ReactDOM.createPortal(
-            <FrameProvider frame={frameRef.current}>
-              <>
-                {mode === "modal" ? (
-                  <div data-theme={theme}>{children}</div>
-                ) : (
-                  <Resizer
-                    data-theme={theme}
-                    onSize={({ width, height }) => {
-                      if (width && height) {
-                        setFrameSize({ width, height });
-                      }
-                    }}
-                  >
-                    {children}
-                  </Resizer>
-                )}
-                <style dangerouslySetInnerHTML={{ __html: css }} />
-              </>
+            <FrameProvider frame={frame}>
+              {mode === "modal" ? (
+                <div data-theme={theme}>{children}</div>
+              ) : (
+                <Resizer data-theme={theme} onSize={setFrameSize}>
+                  {children}
+                </Resizer>
+              )}
+              <style dangerouslySetInnerHTML={{ __html: css }} />
             </FrameProvider>,
-            frameRef.current.contentWindow!.document.body,
+            frame.contentDocument.body,
           )
         : null}
     </iframe>

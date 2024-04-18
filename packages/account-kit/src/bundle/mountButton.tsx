@@ -26,6 +26,9 @@ export function mountButton(element: HTMLElement, { wagmiConfig, accountKitConfi
 
     const queryClient = new QueryClient();
 
+    // RainbowKit renders an outer <div>
+    // TODO: move to rendering the actual button into a portal as a sibling of the tree
+
     const root = ReactDOM.createRoot(element);
     root.render(
       <React.StrictMode>

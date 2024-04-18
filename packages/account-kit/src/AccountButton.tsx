@@ -121,43 +121,44 @@ export function AccountButton() {
         </Shadow>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
-        <Shadow mode="child">
-          <DropdownMenu.Content
-            align="start"
-            className={twMerge(
-              containerClassNames,
-              secondaryClassNames,
-              menuClassNames,
-              "-mt-px flex-col animate-in fade-in slide-in-from-top-2 animate-duration-200",
-            )}
-          >
-            <DropdownMenu.Item className={twMerge(secondaryInteractiveClassNames, "flex gap-2.5 p-3 items-center")}>
-              <CashIcon className="flex-shrink-0 opacity-50" />
-              <span className="flex-grow">Gas tank</span>
-            </DropdownMenu.Item>
-            <DropdownMenu.Item className={twMerge(secondaryInteractiveClassNames, "flex gap-2.5 p-3 items-center")}>
-              <CopyIcon className="flex-shrink-0 opacity-50" />
-              <span className="flex-grow">Copy address</span>
-            </DropdownMenu.Item>
-            <DropdownMenu.Item className={twMerge(secondaryInteractiveClassNames, "flex gap-2.5 p-3 items-center")}>
-              <GlobeIcon className="flex-shrink-0 opacity-50" />
-              <span className="flex-grow">Switch chain</span>
-            </DropdownMenu.Item>
-            <DropdownMenu.Item
+        <DropdownMenu.Content align="start" style={{ zIndex: "2147483646" }}>
+          <Shadow mode="child">
+            <div
               className={twMerge(
-                secondaryInteractiveClassNames,
-                "flex gap-2.5 p-3 items-center",
-                // TODO: better pending state
-                "aria-busy:opacity-50",
+                containerClassNames,
+                secondaryClassNames,
+                menuClassNames,
+                "-mt-px flex-col animate-in fade-in slide-in-from-top-2 animate-duration-200",
               )}
-              aria-busy={disconnectPending}
-              onSelect={() => disconnect()}
             >
-              <LogoutIcon className="flex-shrink-0 text-red-500" />
-              <span className="flex-grow">Disconnect</span>
-            </DropdownMenu.Item>
-          </DropdownMenu.Content>
-        </Shadow>
+              <DropdownMenu.Item className={twMerge(secondaryInteractiveClassNames, "flex gap-2.5 p-3 items-center")}>
+                <CashIcon className="flex-shrink-0 opacity-50" />
+                <span className="flex-grow">Gas tank</span>
+              </DropdownMenu.Item>
+              <DropdownMenu.Item className={twMerge(secondaryInteractiveClassNames, "flex gap-2.5 p-3 items-center")}>
+                <CopyIcon className="flex-shrink-0 opacity-50" />
+                <span className="flex-grow">Copy address</span>
+              </DropdownMenu.Item>
+              <DropdownMenu.Item className={twMerge(secondaryInteractiveClassNames, "flex gap-2.5 p-3 items-center")}>
+                <GlobeIcon className="flex-shrink-0 opacity-50" />
+                <span className="flex-grow">Switch chain</span>
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                className={twMerge(
+                  secondaryInteractiveClassNames,
+                  "flex gap-2.5 p-3 items-center",
+                  // TODO: better pending state
+                  "aria-busy:opacity-50",
+                )}
+                aria-busy={disconnectPending}
+                onSelect={() => disconnect()}
+              >
+                <LogoutIcon className="flex-shrink-0 text-red-500" />
+                <span className="flex-grow">Disconnect</span>
+              </DropdownMenu.Item>
+            </div>
+          </Shadow>
+        </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
   );
