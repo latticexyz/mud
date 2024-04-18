@@ -2,7 +2,7 @@ import { getRpcUrl } from "@latticexyz/common/foundry";
 import { Hex } from "viem";
 import { deployer } from "./deploy/ensureDeployer";
 import { getWorldFactoryContracts } from "./deploy/getWorldFactoryContracts";
-import { verifyContract, verifyContractCreate2DefaultSalt } from "./verifyContract";
+import { verifyContract, verifyContractCreate2 } from "./verifyContract";
 import PQueue from "p-queue";
 
 type VerifyOptions = {
@@ -30,7 +30,7 @@ export async function verify({
     ...systems.map(
       ({ name, bytecode }) =>
         () =>
-          verifyContractCreate2DefaultSalt(
+          verifyContractCreate2(
             {
               name,
               from: deployer,
@@ -47,7 +47,7 @@ export async function verify({
     ...Object.entries(getWorldFactoryContracts(deployer)).map(
       ([name, { bytecode }]) =>
         () =>
-          verifyContractCreate2DefaultSalt(
+          verifyContractCreate2(
             {
               name,
               from: deployer,
@@ -67,7 +67,7 @@ export async function verify({
     ...modules.map(
       ({ name, bytecode }) =>
         () =>
-          verifyContractCreate2DefaultSalt(
+          verifyContractCreate2(
             {
               name: name,
               from: deployer,
