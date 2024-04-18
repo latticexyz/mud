@@ -185,7 +185,7 @@ contract StoreRead is IStoreRead {
     bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex
   ) public view virtual returns (uint256) {
-    return StoreCore.getFieldLength(tableId, keyTuple, dynamicFieldIndex);
+    return StoreCore.getDynamicFieldLength(tableId, keyTuple, dynamicFieldIndex);
   }
 
   /**
