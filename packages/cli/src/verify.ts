@@ -7,6 +7,7 @@ import { verifyContract, verifyContractCreate2DefaultSalt } from "./verifyContra
 type VerifyOptions = {
   foundryProfile?: string;
   verifier?: string;
+  verifierUrl?: string;
   systems: { name: string; bytecode: Hex }[];
   modules: { name: string; bytecode: Hex }[];
   worldAddress: Hex;
@@ -18,6 +19,7 @@ export async function verify({
   modules,
   worldAddress,
   verifier,
+  verifierUrl,
 }: VerifyOptions): Promise<void> {
   const rpc = await getRpcUrl(foundryProfile);
 
@@ -30,6 +32,7 @@ export async function verify({
           bytecode,
           rpc,
           verifier,
+          verifierUrl,
         },
         { profile: foundryProfile },
       ),
@@ -45,6 +48,7 @@ export async function verify({
           bytecode,
           rpc,
           verifier,
+          verifierUrl,
         },
         {
           profile: foundryProfile,
@@ -63,6 +67,7 @@ export async function verify({
           bytecode: bytecode,
           rpc,
           verifier,
+          verifierUrl,
         },
         {
           profile: foundryProfile,
@@ -73,7 +78,7 @@ export async function verify({
   );
 
   verifyContract(
-    { name: "World", address: worldAddress, rpc, verifier },
+    { name: "World", address: worldAddress, rpc, verifier, verifierUrl },
     {
       profile: foundryProfile,
       cwd: "node_modules/@latticexyz/world",

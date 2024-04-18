@@ -31,6 +31,10 @@ const commandModule: CommandModule<Options, Options> = {
       worldAddress: { type: "string", desc: "Verify an existing World at the given address" },
       srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
       verifier: { type: "string", desc: "The verifier to use" },
+      verifierUrl: {
+        type: "string",
+        desc: "The verification provider.",
+      },
     });
   },
 
@@ -78,6 +82,7 @@ const commandModule: CommandModule<Options, Options> = {
         modules,
         worldAddress: opts.worldAddress as Hex,
         verifier: opts.verifier,
+        verifierUrl: opts.verifierUrl,
       });
     } catch (error) {
       logError(error);

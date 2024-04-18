@@ -16,19 +16,27 @@ export async function verifyContract(
     name,
     rpc,
     verifier,
+    verifierUrl,
   }: {
     address: Hex;
     name: string;
     rpc: string;
     verifier?: string;
+    verifierUrl?: string;
   },
   options?: ForgeOptions,
 ) {
+  const args = ["verify-contract", address, name, "--rpc-url", rpc];
+
   if (verifier) {
-    await forge(["verify-contract", address, name, "--rpc-url", rpc, "--verifier", verifier], options);
-  } else {
-    await forge(["verify-contract", address, name, "--rpc-url", rpc], options);
+    args.push("--verifier");
+    args.push(verifier);
   }
+  if (verifierUrl) {
+    args.push("--verifier-url");
+    args.push(verifierUrl);
+  }
+  await forge(args, options);
 }
 
 export async function verifyContractCreate2(
@@ -36,6 +44,7 @@ export async function verifyContractCreate2(
     name,
     rpc,
     verifier,
+    verifierUrl,
     from,
     bytecode,
     salt,
@@ -43,12 +52,13 @@ export async function verifyContractCreate2(
     name: string;
     rpc: string;
     verifier?: string;
+    verifierUrl?: string;
   } & Create2Options,
   options?: ForgeOptions,
 ) {
   const address = getCreate2Address({ from, bytecode, salt });
 
-  return verifyContract({ address, name, rpc, verifier }, options);
+  return verifyContract({ address, name, rpc, verifier, verifierUrl }, options);
 }
 
 export async function verifyContractCreate2DefaultSalt(
@@ -56,14 +66,16 @@ export async function verifyContractCreate2DefaultSalt(
     name,
     rpc,
     verifier,
+    verifierUrl,
     from,
     bytecode,
   }: {
     name: string;
     rpc: string;
     verifier?: string;
+    verifierUrl?: string;
   } & Omit<Create2Options, "salt">,
   options?: ForgeOptions,
 ) {
-  return verifyContractCreate2({ name, rpc, verifier, from, bytecode, salt }, options);
+  return verifyContractCreate2({ name, rpc, verifier, verifierUrl, from, bytecode, salt }, options);
 }
