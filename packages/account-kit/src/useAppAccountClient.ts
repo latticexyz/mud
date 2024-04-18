@@ -7,7 +7,7 @@ import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
 import { useConfig } from "./AccountKitProvider";
 import { useAppSigner } from "./useAppSigner";
 import { useAppAccount } from "./useAppAccount";
-import { AppAccountClient, entryPointAddress } from "./common";
+import { AppAccountClient, defaultPollingInterval, entryPointAddress } from "./common";
 import { getUserBalanceSlot } from "./utils/getUserBalanceSlot";
 import { getEntryPointDepositSlot } from "./utils/getEntryPointDepositSlot";
 import { transportObserver } from "./transportObserver";
@@ -51,6 +51,7 @@ export function useAppAccountClient(): AppAccountClient | undefined {
       chain: publicClient.chain,
       transport: transportObserver("pimlico bundler client", erc4337Config.transport),
       entryPoint: entryPointAddress,
+      pollingInterval: defaultPollingInterval,
     }).extend(() => publicActions(publicClient));
 
     const baseMiddleware = {
@@ -101,6 +102,7 @@ export function useAppAccountClient(): AppAccountClient | undefined {
       type: "smartAccountClient",
       chain: publicClient.chain,
       account: appAccount,
+      pollingInterval: defaultPollingInterval,
       transport: transportObserver("bundler transport", erc4337Config.transport),
     })
       .extend(
@@ -118,7 +120,7 @@ export function useAppAccountClient(): AppAccountClient | undefined {
           },
         }),
       )
-      // .extend(transactionQueue(publicClient))
+      // .extend(transactionQueue({ publicClient }))
       // .extend(writeObserver({ onWrite: (write) => write$.next(write) }))
       .extend(() => publicActions(publicClient));
 

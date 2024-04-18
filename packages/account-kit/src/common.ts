@@ -16,3 +16,5 @@ export type AppAccountClient = SmartAccountClient<typeof entryPointAddress, Tran
 export const smartAccountFactory = "0x91E60e0613810449d098b0b5Ec8b51A0FE8c8985";
 
 export const unlimitedDelegationControlId = resourceToHex({ type: "system", namespace: "", name: "unlimited" });
+
+export const defaultPollingInterval = 300;
