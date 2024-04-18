@@ -92,7 +92,7 @@ const commandModule: CommandModule<Options, Options> = {
       logError(error);
       process.exit(1);
     }
-    process.exit(0);
+    // process.exit(0);
   },
 };
 

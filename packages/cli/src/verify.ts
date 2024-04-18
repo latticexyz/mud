@@ -3,6 +3,7 @@ import { Hex } from "viem";
 import { deployer } from "./deploy/ensureDeployer";
 import { getWorldFactoryContracts } from "./deploy/getWorldFactoryContracts";
 import { verifyContract, verifyContractCreate2DefaultSalt } from "./verifyContract";
+import PQueue from "p-queue";
 
 type VerifyOptions = {
   foundryProfile?: string;
@@ -23,58 +24,78 @@ export async function verify({
 }: VerifyOptions): Promise<void> {
   const rpc = await getRpcUrl(foundryProfile);
 
-  await Promise.all([
-    ...systems.map(({ name, bytecode }) =>
-      verifyContractCreate2DefaultSalt(
-        {
-          name,
-          from: deployer,
-          bytecode,
-          rpc,
-          verifier,
-          verifierUrl,
-        },
-        { profile: foundryProfile },
-      ),
+  const queueConcurrency = 1;
+  const verifyQueue = new PQueue({ concurrency: queueConcurrency });
+
+  const tasks = [
+    ...systems.map(
+      ({ name, bytecode }) =>
+        () =>
+          verifyContractCreate2DefaultSalt(
+            {
+              name,
+              from: deployer,
+              bytecode,
+              rpc,
+              verifier,
+              verifierUrl,
+            },
+            { profile: foundryProfile },
+          ).catch((error) => {
+            console.error(`Error verifying system contract ${name}:`, error);
+          }),
     ),
-    ...Object.entries(getWorldFactoryContracts(deployer)).map(([name, { bytecode }]) =>
-      verifyContractCreate2DefaultSalt(
-        {
-          name,
-          from: deployer,
-          bytecode,
-          rpc,
-          verifier,
-          verifierUrl,
-        },
+    ...Object.entries(getWorldFactoryContracts(deployer)).map(
+      ([name, { bytecode }]) =>
+        () =>
+          verifyContractCreate2DefaultSalt(
+            {
+              name,
+              from: deployer,
+              bytecode,
+              rpc,
+              verifier,
+              verifierUrl,
+            },
+            {
+              profile: foundryProfile,
+              cwd: "node_modules/@latticexyz/world",
+            },
+          ).catch((error) => {
+            console.error(`Error verifying world factory contract ${name}:`, error);
+          }),
+    ),
+    ...modules.map(
+      ({ name, bytecode }) =>
+        () =>
+          verifyContractCreate2DefaultSalt(
+            {
+              name: name,
+              from: deployer,
+              bytecode: bytecode,
+              rpc,
+              verifier,
+              verifierUrl,
+            },
+            {
+              profile: foundryProfile,
+              cwd: "node_modules/@latticexyz/world-modules",
+            },
+          ).catch((error) => {
+            console.error(`Error verifying module contract ${name}:`, error);
+          }),
+    ),
+    () =>
+      verifyContract(
+        { name: "World", address: worldAddress, rpc, verifier, verifierUrl },
         {
           profile: foundryProfile,
           cwd: "node_modules/@latticexyz/world",
         },
-      ),
-    ),
-    ...modules.map(({ name, bytecode }) =>
-      verifyContractCreate2DefaultSalt(
-        {
-          name: name,
-          from: deployer,
-          bytecode: bytecode,
-          rpc,
-          verifier,
-          verifierUrl,
-        },
-        {
-          profile: foundryProfile,
-          cwd: "node_modules/@latticexyz/world-modules",
-        },
-      ),
-    ),
-    verifyContract(
-      { name: "World", address: worldAddress, rpc, verifier, verifierUrl },
-      {
-        profile: foundryProfile,
-        cwd: "node_modules/@latticexyz/world",
-      },
-    ),
-  ]);
+      ).catch((error) => {
+        console.error(`Error verifying World contract:`, error);
+      }),
+  ];
+
+  tasks.forEach((task) => verifyQueue.add(task));
 }
