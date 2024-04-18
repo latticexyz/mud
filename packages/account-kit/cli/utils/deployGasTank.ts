@@ -1,4 +1,4 @@
-import { existsSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { $, execa } from "execa";
 import { join } from "path";
 import { deployerClient, devPrivateKey } from "./deployLocal";
@@ -15,7 +15,12 @@ export async function deployGasTank() {
   }
 
   console.log("Installing gas-tank dependencies.");
-  const result = await $({ cwd: gasTankPath })`npm install`;
+  // This is a horrible workaround for making this script work both when MUD is locally linked
+  // and when `account-kit` is installed from npm.
+  // TODO: expose a bundled bin from `gas-tank` to deploy the gas tank contract.
+  const packageJson = readFileSync(join(gasTankPath, "package.json"));
+  const packageManager = packageJson.includes("workspace:*") ? "pnpm" : "npm";
+  const result = await $({ cwd: gasTankPath })`${packageManager} install`;
   if (result.failed) {
     console.log(result.stderr);
   }
