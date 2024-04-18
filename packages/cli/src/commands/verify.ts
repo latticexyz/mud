@@ -10,10 +10,9 @@ import { getExistingContracts } from "../utils/getExistingContracts";
 import { getContractData } from "../utils/getContractData";
 import { defaultModuleContracts } from "../utils/defaultModuleContracts";
 import { Hex } from "viem";
-import { MUDError } from "@latticexyz/common/errors";
 
 type Options = {
-  worldAddress?: string;
+  worldAddress: string;
   configPath?: string;
   profile?: string;
   srcDir?: string;
@@ -28,9 +27,9 @@ const commandModule: CommandModule<Options, Options> = {
 
   builder(yargs) {
     return yargs.options({
+      worldAddress: { type: "string", required: true, desc: "Verify an existing World at the given address" },
       configPath: { type: "string", desc: "Path to the MUD config file" },
       profile: { type: "string", desc: "The foundry profile to use" },
-      worldAddress: { type: "string", desc: "Verify an existing World at the given address" },
       srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
       verifier: { type: "string", desc: "The verifier to use" },
       verifierUrl: {
@@ -41,10 +40,6 @@ const commandModule: CommandModule<Options, Options> = {
   },
 
   async handler(opts) {
-    if (!opts.worldAddress) {
-      throw new MUDError("Need a world address");
-    }
-
     const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
 
     const config = (await loadConfig(opts.configPath)) as WorldConfig;
