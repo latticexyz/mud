@@ -2,20 +2,16 @@ import rainbowKitCss from "@rainbow-me/rainbowkit/styles.css?inline";
 import type { Config as WagmiConfig } from "wagmi";
 import type { Config as AccountKitConfig } from "../AccountKitProvider";
 import { store } from "./store";
+import { AccountButton } from "../AccountButton";
 
 export type MountOptions = {
-  rootElementId?: string;
   wagmiConfig: WagmiConfig;
   accountKitConfig: AccountKitConfig;
 };
 
-export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountKitConfig }: MountOptions): () => void {
+export function mountButton(element: HTMLElement, { wagmiConfig, accountKitConfig }: MountOptions): () => void {
   if (typeof window === "undefined") {
     throw new Error("MUD Account Kit should only be used in browser bundles.");
-  }
-
-  if (document.getElementById(rootElementId)) {
-    throw new Error("MUD Account Kit is already mounted.");
   }
 
   async function setup() {
@@ -30,11 +26,7 @@ export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountK
 
     const queryClient = new QueryClient();
 
-    const rootElement = document.createElement("div");
-    rootElement.id = rootElementId;
-    document.body.appendChild(rootElement);
-
-    const root = ReactDOM.createRoot(rootElement);
+    const root = ReactDOM.createRoot(element);
     root.render(
       <React.StrictMode>
         <WagmiProvider config={wagmiConfig}>
@@ -56,6 +48,7 @@ export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountK
               }
             >
               <AccountKitProvider config={accountKitConfig}>
+                <AccountButton />
                 <SyncStore store={store} />
                 <style dangerouslySetInnerHTML={{ __html: rainbowKitCss }} />
               </AccountKitProvider>
@@ -67,7 +60,6 @@ export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountK
 
     return () => {
       root.unmount();
-      rootElement.remove();
     };
   }
 

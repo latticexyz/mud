@@ -84,7 +84,7 @@ export function AccountButton() {
   return (
     <DropdownMenu.Root open={menuOpen} onOpenChange={setMenuOpen}>
       <DropdownMenu.Trigger asChild>
-        <Shadow>
+        <Shadow mode="child">
           <button
             type="button"
             className={twMerge(containerClassNames, secondaryClassNames, secondaryInteractiveClassNames, "p-3")}
@@ -121,7 +121,7 @@ export function AccountButton() {
         </Shadow>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
-        <Shadow>
+        <Shadow mode="child">
           <DropdownMenu.Content
             align="start"
             className={twMerge(

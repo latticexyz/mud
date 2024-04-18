@@ -1,48 +1,73 @@
-import { ReactNode, forwardRef, useEffect, useReducer, useRef } from "react";
+import { CSSProperties, HTMLProps, ReactNode, forwardRef, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import css from "tailwindcss/tailwind.css?inline";
-import { useMediaQuery } from "usehooks-ts";
+import { useMediaQuery, useResizeObserver } from "usehooks-ts";
 import { useConfig } from "../AccountKitProvider";
-
-const sheet = new CSSStyleSheet();
-sheet.replaceSync(css);
+import { mergeRefs } from "react-merge-refs";
 
 export type Props = {
+  mode: "modal" | "child";
   children: ReactNode;
 };
 
-export const Shadow = forwardRef<HTMLDivElement, Props>(function Shadow({ children }, forwardedRef) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const shadowRef = useRef<ShadowRoot | null>(null);
-  const [, forceUpdate] = useReducer(() => ({}), {});
+function Resizer({
+  onSize,
+  ...props
+}: {
+  onSize: (size: { width: number | undefined; height: number | undefined }) => void;
+} & HTMLProps<HTMLDivElement>) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  useResizeObserver({ ref, onResize: onSize });
+  return <div ref={ref} style={{ ...props.style, display: "inline-block" }} {...props} />;
+}
+
+export const Shadow = forwardRef<HTMLIFrameElement, Props>(function Shadow({ mode, children }, forwardedRef) {
+  const frameRef = useRef<HTMLIFrameElement | null>(null);
+  const [frameSize, setFrameSize] = useState<{ width: number; height: number } | null>(null);
 
   const { theme: initialTheme } = useConfig();
   const darkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const theme = initialTheme ?? (darkMode ? "dark" : "light");
 
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    if (shadowRef.current) return;
-
-    const root = container.attachShadow({ mode: "open", delegatesFocus: true });
-    root.adoptedStyleSheets = [sheet];
-    shadowRef.current = root;
-    forceUpdate();
-  }, []);
+  const modeStyle: CSSProperties =
+    mode === "modal"
+      ? { display: "block", position: "fixed", inset: "0", width: "100vw", height: "100vh", zIndex: "2147483646" }
+      : frameSize
+        ? { display: "inline-block", width: `${frameSize.width}px`, height: `${frameSize.height}px` }
+        : {
+            display: "block",
+            position: "fixed",
+            inset: "0",
+            width: "100vw",
+            height: "100vh",
+            opacity: 0,
+            pointerEvents: "none",
+          };
 
   return (
-    <div ref={forwardedRef} style={{ all: "initial", display: "inline-block" }}>
-      <div ref={containerRef} style={{ display: "inline-block" }}>
-        {shadowRef.current
-          ? ReactDOM.createPortal(
-              <div data-theme={theme} style={{ display: "inline-block" }}>
-                {children}
-              </div>,
-              shadowRef.current,
-            )
-          : null}
-      </div>
-    </div>
+    <iframe ref={mergeRefs([forwardedRef, frameRef])} style={{ border: "0", ...modeStyle }}>
+      {frameRef.current
+        ? ReactDOM.createPortal(
+            <>
+              {mode === "modal" ? (
+                <div data-theme={theme}>{children}</div>
+              ) : (
+                <Resizer
+                  data-theme={theme}
+                  onSize={({ width, height }) => {
+                    if (width != null && height != null) {
+                      setFrameSize({ width, height });
+                    }
+                  }}
+                >
+                  {children}
+                </Resizer>
+              )}
+              <style dangerouslySetInnerHTML={{ __html: css }} />
+            </>,
+            frameRef.current.contentWindow!.document.body,
+          )
+        : null}
+    </iframe>
   );
 });

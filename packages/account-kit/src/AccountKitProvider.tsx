@@ -51,6 +51,6 @@ export function AccountKitProvider({ config, children }: Props) {
 
 export function useConfig(): Config {
   const config = useContext(Context);
-  if (!config) throw new Error("`useConfig` be used within a `AccountKitProvider`.");
+  if (!config) throw new Error("`useConfig` can only be used within a `AccountKitProvider`.");
   return config;
 }

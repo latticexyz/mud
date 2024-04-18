@@ -10,11 +10,22 @@ export type Props = {
 };
 
 export function Modal({ open, onOpenChange, children }: Props) {
+  // console.log("frame id", document.querySelector("[data-frame-id]"));
+
+  (window.top ?? window).postMessage(
+    {
+      event: "mud-account-kit-frame",
+      frameId: document.querySelector("[data-frame-id]")?.getAttribute("data-frame-id"),
+      mode: "modal",
+    },
+    "*",
+  );
+
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       {/* This intentionally does not use `Dialog.Trigger` because it doesn't play nicely with `<Shadow>` trigger (our primary use case). */}
       <Dialog.Portal>
-        <Shadow>
+        <Shadow mode="modal">
           {/**
            * This intentionally does not use `Dialog.Overlay` due to an issue it causes with scrolling the modal contents.
            * See https://github.com/radix-ui/primitives/issues/1159#issuecomment-1105320294
