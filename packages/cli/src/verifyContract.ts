@@ -2,6 +2,14 @@ import { forge } from "@latticexyz/common/foundry";
 import { Address, ByteArray, Hex, getCreate2Address } from "viem";
 import { salt } from "./deploy/common";
 
+type VerificationOptions = {
+  address: Hex;
+  name: string;
+  rpc: string;
+  verifier?: string;
+  verifierUrl?: string;
+};
+
 type ForgeOptions = { profile?: string; silent?: boolean; env?: NodeJS.ProcessEnv; cwd?: string };
 
 type Create2Options = {
@@ -11,19 +19,7 @@ type Create2Options = {
 };
 
 export async function verifyContract(
-  {
-    address,
-    name,
-    rpc,
-    verifier,
-    verifierUrl,
-  }: {
-    address: Hex;
-    name: string;
-    rpc: string;
-    verifier?: string;
-    verifierUrl?: string;
-  },
+  { address, name, rpc, verifier, verifierUrl }: VerificationOptions,
   options?: ForgeOptions,
 ) {
   const args = ["verify-contract", address, name, "--rpc-url", rpc];
@@ -38,20 +34,7 @@ export async function verifyContract(
 }
 
 export async function verifyContractCreate2(
-  {
-    name,
-    rpc,
-    verifier,
-    verifierUrl,
-    from,
-    bytecode,
-    salt,
-  }: {
-    name: string;
-    rpc: string;
-    verifier?: string;
-    verifierUrl?: string;
-  } & Create2Options,
+  { name, rpc, verifier, verifierUrl, from, bytecode, salt }: Omit<VerificationOptions, "address"> & Create2Options,
   options?: ForgeOptions,
 ) {
   const address = getCreate2Address({ from, bytecode, salt });
@@ -67,12 +50,7 @@ export async function verifyContractCreate2DefaultSalt(
     verifierUrl,
     from,
     bytecode,
-  }: {
-    name: string;
-    rpc: string;
-    verifier?: string;
-    verifierUrl?: string;
-  } & Omit<Create2Options, "salt">,
+  }: Omit<VerificationOptions, "address"> & Omit<Create2Options, "salt">,
   options?: ForgeOptions,
 ) {
   return verifyContractCreate2({ name, rpc, verifier, verifierUrl, from, bytecode, salt }, options);
