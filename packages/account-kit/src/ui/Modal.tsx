@@ -10,17 +10,6 @@ export type Props = {
 };
 
 export function Modal({ open, onOpenChange, children }: Props) {
-  // console.log("frame id", document.querySelector("[data-frame-id]"));
-
-  (window.top ?? window).postMessage(
-    {
-      event: "mud-account-kit-frame",
-      frameId: document.querySelector("[data-frame-id]")?.getAttribute("data-frame-id"),
-      mode: "modal",
-    },
-    "*",
-  );
-
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       {/* This intentionally does not use `Dialog.Trigger` because it doesn't play nicely with `<Shadow>` trigger (our primary use case). */}

@@ -1,7 +1,8 @@
-import { ReactNode, Ref, forwardRef } from "react";
+import { ReactNode, Ref, forwardRef, useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 import * as Select from "@radix-ui/react-select";
-import { Shadow } from "../../../ui/Shadow";
+import { useFrame } from "../../../ui/FrameProvider";
+import { CheckIcon } from "../../../icons/CheckIcon";
 
 type SelectItemProps = {
   value: string;
@@ -27,13 +28,14 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(function SelectIt
     >
       <Select.ItemText>{children}</Select.ItemText>
       <Select.ItemIndicator className="absolute left-0 w-[25px] inline-flex items-center justify-center">
-        {/* <CheckIcon /> */}
-        CheckIcon
+        <CheckIcon />
       </Select.ItemIndicator>
     </Select.Item>
   );
 });
 export function ChainSelect() {
+  const { frame } = useFrame();
+  const container = useMemo(() => frame.contentDocument!.body, [frame]);
   return (
     <Select.Root defaultValue="17069">
       <Select.Trigger
@@ -50,34 +52,34 @@ export function ChainSelect() {
         <Select.Icon>{/* <ChevronDownIcon /> */}</Select.Icon>
       </Select.Trigger>
 
-      <Select.Portal>
-        <Shadow>
-          <Select.Content
-            className={twMerge(
-              // Add `z-index` to match `Modal`. Internally, Radix copies this `z-index` to the popover, so we don't need to set `position` here:
-              // https://github.com/radix-ui/primitives/blob/b32a93318cdfce383c2eec095710d35ffbd33a1c/packages/react/select/src/Select.tsx#L919-L923
-              "z-[2147483646]",
-              "overflow-hidden bg-white rounded-md shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]",
-            )}
-          >
-            <Select.ScrollUpButton className="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default">
-              {/* <ChevronUpIcon /> */}
-              Up
-            </Select.ScrollUpButton>
-            <Select.Viewport className="p-[5px]">
-              <Select.Group>
-                <Select.Label className="px-[25px] text-xs leading-[25px]">Select chain:</Select.Label>
-                <SelectItem value="17069">Redstone</SelectItem>
-                <SelectItem value="1">Ethereum</SelectItem>
-                <SelectItem value="7777777">Zora</SelectItem>
-              </Select.Group>
-            </Select.Viewport>
-            <Select.ScrollDownButton className="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default">
-              {/* <ChevronDownIcon /> */}
-              Down
-            </Select.ScrollDownButton>
-          </Select.Content>
-        </Shadow>
+      <Select.Portal container={container}>
+        <Select.Content
+          // `popper` and `container` are necessary for this to work with the iframe.
+          position="popper"
+          className={twMerge(
+            // Add `z-index` to match `Modal`. Internally, Radix copies this `z-index` to the popover, so we don't need to set `position` here:
+            // https://github.com/radix-ui/primitives/blob/b32a93318cdfce383c2eec095710d35ffbd33a1c/packages/react/select/src/Select.tsx#L919-L923
+            "z-[2147483646]",
+            "overflow-hidden bg-white rounded-md shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]",
+          )}
+        >
+          <Select.ScrollUpButton className="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default">
+            {/* <ChevronUpIcon /> */}
+            Up
+          </Select.ScrollUpButton>
+          <Select.Viewport className="p-[5px]">
+            <Select.Group>
+              <Select.Label className="px-[25px] text-xs leading-[25px]">Select chain:</Select.Label>
+              <SelectItem value="17069">Redstone</SelectItem>
+              <SelectItem value="1">Ethereum</SelectItem>
+              <SelectItem value="7777777">Zora</SelectItem>
+            </Select.Group>
+          </Select.Viewport>
+          <Select.ScrollDownButton className="flex items-center justify-center h-[25px] bg-white text-violet11 cursor-default">
+            {/* <ChevronDownIcon /> */}
+            Down
+          </Select.ScrollDownButton>
+        </Select.Content>
       </Select.Portal>
     </Select.Root>
   );

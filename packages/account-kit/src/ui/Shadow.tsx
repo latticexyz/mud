@@ -4,6 +4,7 @@ import css from "tailwindcss/tailwind.css?inline";
 import { useMediaQuery, useResizeObserver } from "usehooks-ts";
 import { useConfig } from "../AccountKitProvider";
 import { mergeRefs } from "react-merge-refs";
+import { FrameProvider } from "./FrameProvider";
 
 export type Props = {
   mode: "modal" | "child";
@@ -48,23 +49,25 @@ export const Shadow = forwardRef<HTMLIFrameElement, Props>(function Shadow({ mod
     <iframe ref={mergeRefs([forwardedRef, frameRef])} style={{ border: "0", ...modeStyle }}>
       {frameRef.current
         ? ReactDOM.createPortal(
-            <>
-              {mode === "modal" ? (
-                <div data-theme={theme}>{children}</div>
-              ) : (
-                <Resizer
-                  data-theme={theme}
-                  onSize={({ width, height }) => {
-                    if (width != null && height != null) {
-                      setFrameSize({ width, height });
-                    }
-                  }}
-                >
-                  {children}
-                </Resizer>
-              )}
-              <style dangerouslySetInnerHTML={{ __html: css }} />
-            </>,
+            <FrameProvider frame={frameRef.current}>
+              <>
+                {mode === "modal" ? (
+                  <div data-theme={theme}>{children}</div>
+                ) : (
+                  <Resizer
+                    data-theme={theme}
+                    onSize={({ width, height }) => {
+                      if (width && height) {
+                        setFrameSize({ width, height });
+                      }
+                    }}
+                  >
+                    {children}
+                  </Resizer>
+                )}
+                <style dangerouslySetInnerHTML={{ __html: css }} />
+              </>
+            </FrameProvider>,
             frameRef.current.contentWindow!.document.body,
           )
         : null}

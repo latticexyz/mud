@@ -39,7 +39,7 @@ export function AccountButton() {
 
   if (requirement != null) {
     return (
-      <Shadow>
+      <Shadow mode="child">
         <button
           type="button"
           className={twMerge(
