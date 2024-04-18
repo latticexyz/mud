@@ -5,10 +5,11 @@ import { DepositMethod } from "../DepositContent";
 import { useTransactionFees } from "../hooks/useTransactionFees";
 
 type Props = {
+  amount: string;
   depositMethod: DepositMethod;
 };
 
-export function BalancesFees({ depositMethod }: Props) {
+export function BalancesFees({ amount, depositMethod }: Props) {
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
   const userAccountChainId = userAccount?.chain?.id;
@@ -16,7 +17,7 @@ export function BalancesFees({ depositMethod }: Props) {
     chainId: userAccountChainId,
     address: userAccountAddress,
   });
-  const { fees, transferTime } = useTransactionFees(depositMethod);
+  const { fees, transferTime } = useTransactionFees(amount, depositMethod);
 
   return (
     <AccountModalSection>
@@ -36,7 +37,12 @@ export function BalancesFees({ depositMethod }: Props) {
           <li className="flex justify-between py-[8px] border-b border-black border-opacity-10">
             <span className="opacity-50">Estimated fee</span>
             <span className="font-medium">
-              {fees || "..."} ETH <span className="text-neutral-800">($3.40)</span>
+              {fees
+                ? parseFloat(fees).toLocaleString("en", {
+                    minimumFractionDigits: 5,
+                  })
+                : "..."}{" "}
+              ETH <span className="text-neutral-800">($3.40)</span>
             </span>
           </li>
           <li className="flex justify-between py-[8px]">

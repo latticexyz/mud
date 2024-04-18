@@ -5,7 +5,7 @@ import { waitForTransactionReceipt } from "wagmi/actions";
 import { DepositMethod } from "../DepositContent";
 import { useConfig } from "../../../AccountKitProvider";
 import { directDeposit } from "./directDeposit";
-import { standardBridgeDeposit } from "./standardBridgeDeposit";
+import { nativeDeposit } from "./nativeDeposit";
 import { relayLinkDeposit } from "./relayLinkDeposit";
 import { useGasTankBalance } from "../../../useGasTankBalance";
 import { usePrevious } from "../../../utils/usePrevious";
@@ -103,8 +103,8 @@ export const useDepositHandler = (depositMethod: DepositMethod) => {
 
           await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
           dispatch({ type: "SET_STATUS", payload: "success" });
-        } else if (depositMethod === "bridge") {
-          const txHash = await standardBridgeDeposit({
+        } else if (depositMethod === "native") {
+          const txHash = await nativeDeposit({
             config: wagmiConfig,
             wallet,
             chainId: userAccountChainId,

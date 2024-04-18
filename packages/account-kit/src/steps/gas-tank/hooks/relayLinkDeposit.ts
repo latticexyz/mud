@@ -1,6 +1,6 @@
-import { Hex, parseEther } from "viem";
+import { Hex, formatEther, parseEther } from "viem";
 import { type UseConfigReturnType, type UseWalletClientReturnType } from "wagmi";
-import { simulateContract } from "wagmi/actions";
+import { getWalletClient, simulateContract } from "wagmi/actions";
 import { getClient } from "@reservoir0x/relay-sdk";
 import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
 import { createRelayClient } from "../utils/createRelayClient";
@@ -46,27 +46,39 @@ export const relayLinkDeposit = async ({
 };
 
 export const fetchRelayLinkQuote = async ({
-  wallet,
+  config,
   chainId,
   toChainId,
   amount,
 }: {
-  wallet: UseWalletClientReturnType;
+  config: UseConfigReturnType;
   chainId: number;
   toChainId: number;
   amount: string;
 }) => {
   createRelayClient();
 
+  const walletClient = await getWalletClient(config);
   const client = getClient();
+
+  console.log(chainId, toChainId, amount, walletClient.account.address);
+
   const quote = await client.methods.getBridgeQuote({
-    wallet: wallet.data,
+    wallet: walletClient,
     chainId,
     toChainId,
     amount: parseEther(amount).toString(),
     currency: "eth",
-    recipient: wallet.data!.account.address,
+    recipient: walletClient.account.address,
   });
 
-  return quote;
+  // <p>Time estimate: ~{quote?.breakdown?.[0]?.timeEstimate}s</p>
+  // <p>Deposit gas (Holesky): {formatEther(BigInt(quote?.fees?.gas || 0))} ETH</p>
+  // <p>Fill gas (Garnet): {formatEther(BigInt(quote?.fees?.relayerGas || 0))} ETH</p>
+  // <p>Relay fee: {formatEther(BigInt(quote?.fees?.relayerService || 0))} ETH</p>
+  const depositFee = BigInt(quote.fees?.gas);
+  const fillFee = BigInt(quote.fees?.relayerGas);
+  const relayFee = BigInt(quote.fees?.relayerService);
+
+  return formatEther(depositFee + fillFee + relayFee);
 };

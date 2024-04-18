@@ -11,7 +11,7 @@ import { ViewTransaction } from "./ViewTransaction";
 import { Button } from "../../ui/Button";
 import { useDepositHandler } from "./hooks/useDepositHandler";
 
-export type DepositMethod = "direct" | "bridge" | "relay";
+export type DepositMethod = "direct" | "native" | "relay";
 
 export function DepositContent() {
   const { chain } = useConfig();
@@ -19,9 +19,9 @@ export function DepositContent() {
   const userAccountAddress = userAccount.address;
   const userAccountChainId = userAccount?.chain?.id;
   const [depositAmount, setDepositAmount] = useState<string>("");
-  const [depositMethod] = useState<DepositMethod>(() => {
+  const [depositMethod, setDepositMethod] = useState<DepositMethod>(() => {
     if (chain.id === userAccountChainId) return "direct";
-    else if (chain.sourceId === userAccountChainId) return "bridge";
+    else if (chain.sourceId === userAccountChainId) return "native";
     else return "relay";
   });
   const { txHash, error, deposit, status, isPending, isLoading, isSuccess } = useDepositHandler(depositMethod);
@@ -51,7 +51,11 @@ export function DepositContent() {
                 <AmountInput amount={depositAmount} setAmount={setDepositAmount} />
               </div>
 
-              <BalancesFees depositMethod={depositMethod} />
+              {(depositMethod === "relay" || depositMethod === "native") && (
+                <BridgeTabs depositMethod={depositMethod} setDepositMethod={setDepositMethod} />
+              )}
+
+              <BalancesFees amount={depositAmount} depositMethod={depositMethod} />
 
               {error ? <div>{String(error)}</div> : null}
               <Button className="w-full" pending={!userAccountAddress || isPending || isLoading} onClick={handleSubmit}>
@@ -83,3 +87,37 @@ export function DepositContent() {
     </>
   );
 }
+
+const BridgeTabs = ({
+  depositMethod,
+  setDepositMethod,
+}: {
+  depositMethod: DepositMethod;
+  setDepositMethod: (depositMethod: DepositMethod) => void;
+}) => {
+  return (
+    <div className="flex justify-between">
+      <Button
+        className="w-full"
+        variant={depositMethod === "native" ? "secondary" : "primary"}
+        onClick={() => {
+          setDepositMethod("native");
+        }}
+      >
+        Native
+      </Button>
+
+      <Button
+        className="w-full"
+        variant={depositMethod === "relay" ? "secondary" : "primary"}
+        onClick={() => {
+          setDepositMethod("relay");
+        }}
+      >
+        Relay
+      </Button>
+    </div>
+  );
+};
+
+export default BridgeTabs;

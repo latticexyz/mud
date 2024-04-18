@@ -104,16 +104,6 @@ export function RelayLinkContent({ amount }: RelayLinkContentProps) {
             ))}
           </select> */}
 
-          {/* {quote && (
-            <div className="mt-[15px]">
-              <p>Time estimate: ~{quote?.breakdown?.[0]?.timeEstimate}s</p>
-              <p>Deposit gas (Holesky): {formatEther(BigInt(quote?.fees?.gas || 0))} ETH</p>
-              <p>Fill gas (Garnet): {formatEther(BigInt(quote?.fees?.relayerGas || 0))} ETH</p>
-              <p>Relay fee: {formatEther(BigInt(quote?.fees?.relayerService || 0))} ETH</p>
-            </div>
-          )}
-          {!quote && amount && <p className="mt-[15px]">Fetching the best price ...</p>} */}
-
           <div className="mt-[15px]">
             <Button type="submit">Deposit</Button>
           </div>
