@@ -24,8 +24,7 @@ export async function verify({
 }: VerifyOptions): Promise<void> {
   const rpc = await getRpcUrl(foundryProfile);
 
-  const queueConcurrency = 1;
-  const verifyQueue = new PQueue({ concurrency: queueConcurrency });
+  const verifyQueue = new PQueue({ concurrency: 1 });
 
   const tasks = [
     ...systems.map(
