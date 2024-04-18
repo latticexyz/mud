@@ -6,6 +6,7 @@ import { Button } from "../../ui/Button";
 import { parseEther } from "viem";
 import { createRelayClient } from "./utils/createRelayClient";
 import { useConfig } from "../../AccountKitProvider";
+import { usePaymaster } from "../../usePaymaster";
 
 createRelayClient();
 
@@ -15,7 +16,8 @@ type RelayLinkContentProps = {
 
 export function RelayLinkContent({ amount }: RelayLinkContentProps) {
   const wallet = useWalletClient();
-  const { chain, gasTankAddress } = useConfig();
+  const { chain } = useConfig();
+  const gasTank = usePaymaster("gasTank");
   const userAccount = useAccount();
   const userAccountChainId = userAccount?.chain?.id;
   const publicClient = usePublicClient({
@@ -51,12 +53,12 @@ export function RelayLinkContent({ amount }: RelayLinkContentProps) {
   }, [amount, wallet.data, chain, selectedSourceChainId]);
 
   const executeDeposit = useCallback(async () => {
-    if (!wallet.data || !amount || selectedSourceChainId == null || !publicClient) return;
+    if (!wallet.data || !amount || selectedSourceChainId == null || !publicClient || !gasTank) return;
 
     await wallet.data.switchChain({ id: selectedSourceChainId });
 
     const { request } = await publicClient.simulateContract({
-      address: gasTankAddress,
+      address: gasTank.address,
       abi: GasTankAbi,
       functionName: "depositTo",
       args: [wallet.data.account.address],
@@ -77,7 +79,7 @@ export function RelayLinkContent({ amount }: RelayLinkContentProps) {
         }
       },
     });
-  }, [wallet.data, amount, selectedSourceChainId, publicClient, gasTankAddress, chain.id]);
+  }, [wallet.data, amount, selectedSourceChainId, publicClient, gasTank, chain.id]);
 
   const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();

@@ -1,20 +1,18 @@
 import { ChainContract } from "viem";
 import type { Chain } from "viem/chains";
 
+// TODO: import from viem once available
+export type RpcUrls = {
+  http: readonly [string, ...string[]];
+  webSocket?: readonly [string, ...string[]] | undefined;
+};
+
 export type MUDChain = Chain & {
   faucetUrl?: string;
-  erc4337BundlerUrl?: {
-    http: string;
-    webSocket?: string;
-  };
   rpcUrls?: Chain["rpcUrls"] & {
-    // TODO: replace with ChainRpcURLs from viem once exported
-    readonly erc4337Bundler?: {
-      http: readonly string[];
-      webSocket?: readonly string[] | undefined;
-    };
+    erc4337Bundler?: RpcUrls | undefined;
   };
   contracts?: Chain["contracts"] & {
-    readonly gasTank?: ChainContract | undefined;
+    gasTank?: ChainContract | undefined;
   };
 };

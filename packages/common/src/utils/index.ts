@@ -1,3 +1,4 @@
+export * from "./assert";
 export * from "./assertExhaustive";
 export * from "./bigIntMax";
 export * from "./bigIntMin";

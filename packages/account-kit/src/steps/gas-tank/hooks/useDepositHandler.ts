@@ -9,6 +9,7 @@ import { nativeDeposit } from "./nativeDeposit";
 import { relayLinkDeposit } from "./relayLinkDeposit";
 import { useGasTankBalance } from "../../../useGasTankBalance";
 import { usePrevious } from "../../../utils/usePrevious";
+import { usePaymaster } from "../../../usePaymaster";
 
 export type StatusType = "pending" | "loading" | "loadingL2" | "success" | "error" | "idle";
 
@@ -69,7 +70,8 @@ function reducer(state: StateType, action: ActionType): StateType {
 
 export const useDepositHandler = (depositMethod: DepositMethod) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { chain, gasTankAddress } = useConfig();
+  const { chain } = useConfig();
+  const gasTank = usePaymaster("gasTank");
   const wagmiConfig = useWagmiConfig();
   const wallet = useWalletClient();
   const userAccount = useAccount();
@@ -86,7 +88,7 @@ export const useDepositHandler = (depositMethod: DepositMethod) => {
 
   const deposit = useCallback(
     async (amount: string) => {
-      if (!wallet.data || !userAccountAddress || !userAccountChainId || !gasTankAddress || !amount) return;
+      if (!wallet.data || !userAccountAddress || !userAccountChainId || !amount || !gasTank) return;
 
       try {
         dispatch({ type: "SET_STATUS", payload: "pending" });
@@ -95,7 +97,7 @@ export const useDepositHandler = (depositMethod: DepositMethod) => {
           const txHash = await directDeposit({
             config: wagmiConfig,
             chainId: chain.id,
-            gasTankAddress,
+            gasTankAddress: gasTank.address,
             userAccountAddress,
             amount,
           });
@@ -108,7 +110,7 @@ export const useDepositHandler = (depositMethod: DepositMethod) => {
             config: wagmiConfig,
             wallet,
             chainId: userAccountChainId,
-            gasTankAddress,
+            gasTankAddress: gasTank.address,
             userAccountAddress,
             amount,
           });
@@ -123,7 +125,7 @@ export const useDepositHandler = (depositMethod: DepositMethod) => {
             config: wagmiConfig,
             chainId: userAccountChainId,
             toChainId: chain.id,
-            gasTankAddress,
+            gasTankAddress: gasTank.address,
             wallet,
             amount,
             onProgress: (data1, data2, data3, data4, data5) => {
@@ -141,7 +143,7 @@ export const useDepositHandler = (depositMethod: DepositMethod) => {
         dispatch({ type: "SET_ERROR", payload: error });
       }
     },
-    [userAccountAddress, depositMethod, wagmiConfig, chain.id, gasTankAddress, wallet, userAccountChainId],
+    [userAccountAddress, depositMethod, wagmiConfig, chain.id, gasTank, wallet, userAccountChainId],
   );
 
   return useMemo(() => {

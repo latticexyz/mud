@@ -9,6 +9,7 @@ import { useConfig } from "../../../AccountKitProvider";
 import { encodeFullNativeDeposit } from "./nativeDeposit";
 import { OPTIMISM_PORTAL_ADDRESS } from "../constants";
 import { fetchRelayLinkQuote } from "./relayLinkDeposit";
+import { usePaymaster } from "../../../usePaymaster";
 
 const estimateDirectFee = async ({
   config,
@@ -80,7 +81,9 @@ const estimateNativeFee = async ({
 
 export const useTransactionFees = (amount: string, depositMethod: DepositMethod) => {
   const [fees, setFees] = useState<string>("");
-  const { chain, gasTankAddress } = useConfig();
+  const { chain } = useConfig();
+  const gasTank = usePaymaster("gasTank");
+  if (!gasTank) throw new Error("No gas tank configured.");
   const wagmiConfig = useWagmiConfig();
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
@@ -93,7 +96,7 @@ export const useTransactionFees = (amount: string, depositMethod: DepositMethod)
         fees = await estimateDirectFee({
           config: wagmiConfig,
           chainId: userAccountChainId,
-          gasTankAddress,
+          gasTankAddress: gasTank.address,
           userAccountAddress,
         });
 
@@ -102,7 +105,7 @@ export const useTransactionFees = (amount: string, depositMethod: DepositMethod)
         fees = await estimateNativeFee({
           config: wagmiConfig,
           chainId: userAccountChainId,
-          gasTankAddress,
+          gasTankAddress: gasTank.address,
           userAccountAddress,
         });
 
@@ -120,7 +123,7 @@ export const useTransactionFees = (amount: string, depositMethod: DepositMethod)
     };
 
     fetchFees();
-  }, [amount, chain, depositMethod, gasTankAddress, userAccountAddress, userAccountChainId, wagmiConfig]);
+  }, [amount, chain, depositMethod, gasTank, userAccountAddress, userAccountChainId, wagmiConfig]);
 
   return {
     fees,

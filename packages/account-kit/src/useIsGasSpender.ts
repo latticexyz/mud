@@ -4,9 +4,11 @@ import gasTankConfig from "@latticexyz/gas-tank/mud.config";
 import { useAppSigner } from "./useAppSigner";
 import { useAppAccount } from "./useAppAccount";
 import { useRecord } from "./useRecord";
+import { usePaymaster } from "./usePaymaster";
 
 export function useIsGasSpender() {
-  const { chain, gasTankAddress } = useConfig();
+  const { chain } = useConfig();
+  const gasTank = usePaymaster("gasTank");
 
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
@@ -17,10 +19,10 @@ export function useIsGasSpender() {
   const appAccountAddress = appAccount.data?.address;
 
   const result = useRecord(
-    appAccountAddress
+    appAccountAddress && gasTank
       ? {
           chainId: chain.id,
-          address: gasTankAddress,
+          address: gasTank.address,
           table: gasTankConfig.tables.Spender,
           key: { spender: appAccountAddress },
           blockTag: "pending",
