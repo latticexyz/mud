@@ -29,12 +29,10 @@ export async function verifyContract(
   const args = ["verify-contract", address, name, "--rpc-url", rpc];
 
   if (verifier) {
-    args.push("--verifier");
-    args.push(verifier);
+    args.push("--verifier", verifier);
   }
   if (verifierUrl) {
-    args.push("--verifier-url");
-    args.push(verifierUrl);
+    args.push("--verifier-url", verifierUrl);
   }
   await forge(args, options);
 }
