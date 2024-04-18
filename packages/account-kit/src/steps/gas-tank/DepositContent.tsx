@@ -10,7 +10,6 @@ import { BalancesFees } from "./components/BalancesFees";
 import { ViewTransaction } from "./ViewTransaction";
 import { Button } from "../../ui/Button";
 import { useDepositHandler } from "./hooks/useDepositHandler";
-import { useTransactionFees } from "./hooks/useTranasctionFees";
 
 export type DepositMethod = "direct" | "bridge" | "relay";
 
@@ -26,20 +25,8 @@ export function DepositContent() {
     else return "relay";
   });
   const { txHash, error, deposit, status, isPending, isLoading, isSuccess } = useDepositHandler(depositMethod);
-  const { fees } = useTransactionFees(depositMethod);
-
-  // TODO: add back
-  // const queryClient = useQueryClient();
-  // const { resetStep } = useOnboardingSteps();
-  // useEffect(() => {
-  //   if (isConfirmed) {
-  //     queryClient.invalidateQueries();
-  //     resetStep();
-  //   }
-  // }, [isConfirmed, queryClient, resetStep]);
 
   const handleSubmit = async () => {
-    // TODO: rename to onDeposit?
     await deposit(depositAmount);
   };
 
@@ -64,10 +51,9 @@ export function DepositContent() {
                 <AmountInput amount={depositAmount} setAmount={setDepositAmount} />
               </div>
 
-              <BalancesFees fees={fees} />
+              <BalancesFees depositMethod={depositMethod} />
 
               {error ? <div>{String(error)}</div> : null}
-
               <Button className="w-full" pending={!userAccountAddress || isPending || isLoading} onClick={handleSubmit}>
                 {isPending && "Confirm in wallet"}
                 {isLoading && "Awaiting network"}

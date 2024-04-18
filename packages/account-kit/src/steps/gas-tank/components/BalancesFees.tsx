@@ -1,16 +1,22 @@
 import { formatEther } from "viem";
 import { AccountModalSection } from "../../../AccountModalSection";
 import { useAccount, useBalance } from "wagmi";
-import { useConfig } from "../../../AccountKitProvider";
+import { DepositMethod } from "../DepositContent";
+import { useTransactionFees } from "../hooks/useTransactionFees";
 
-export function BalancesFees({ fees }: { fees: string }) {
-  const { chain } = useConfig();
+type Props = {
+  depositMethod: DepositMethod;
+};
+
+export function BalancesFees({ depositMethod }: Props) {
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
+  const userAccountChainId = userAccount?.chain?.id;
   const userBalance = useBalance({
-    chainId: chain.id,
+    chainId: userAccountChainId,
     address: userAccountAddress,
   });
+  const { fees, transferTime } = useTransactionFees(depositMethod);
 
   return (
     <AccountModalSection>
@@ -35,7 +41,7 @@ export function BalancesFees({ fees }: { fees: string }) {
           </li>
           <li className="flex justify-between py-[8px]">
             <span className="opacity-50">Transfer time</span>
-            <span className="font-medium">~5 seconds</span>
+            <span className="font-medium">~{transferTime} seconds</span>
           </li>
         </ul>
       </div>

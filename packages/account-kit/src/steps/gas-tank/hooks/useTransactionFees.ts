@@ -11,5 +11,6 @@ export const useTransactionFees = (depositMethod: DepositMethod) => {
 
   return {
     fees: depositMethod === "direct" ? "0.0001" : "0.0002",
+    transferTime: depositMethod === "direct" ? 5 : 60,
   };
 };
