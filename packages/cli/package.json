@@ -30,6 +30,7 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
+    "@aws-sdk/client-kms": "*",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@improbable-eng/grpc-web": "^0.15.0",
