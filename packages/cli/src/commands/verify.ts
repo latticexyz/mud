@@ -47,6 +47,8 @@ const commandModule: CommandModule<Options, Options> = {
     const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
 
     const config = (await loadConfig(opts.configPath)) as WorldConfig;
+
+    // Get user-defined systems
     const configV1 = worldToV1(config);
 
     const srcDir = opts.srcDir ?? (await getSrcDirectory(profile));
@@ -64,6 +66,7 @@ const commandModule: CommandModule<Options, Options> = {
       };
     });
 
+    // Get modules
     const modules = config.modules.map((mod) => {
       const contractData =
         defaultModuleContracts.find((defaultMod) => defaultMod.name === mod.name) ??
