@@ -18,7 +18,7 @@ const EcdsaPubKey = asn1.define("EcdsaPubKey", function (this: any) {
 });
 
 const getRS = async (signParams: {
-  hash: string;
+  hash: Hex;
   keyId: SignCommandInput["KeyId"];
   kmsInstance: KMSClient;
 }): Promise<{ r: Hex; s: Hex }> => {
@@ -74,7 +74,7 @@ export const getEthAddressFromPublicKey = (publicKey: Uint8Array): Address => {
 };
 
 type SignParameters = {
-  hash: string;
+  hash: Hex;
   keyId: SignCommandInput["KeyId"];
   kmsInstance: KMSClient;
   address: Hex;

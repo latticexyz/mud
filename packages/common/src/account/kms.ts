@@ -6,8 +6,7 @@ import {
   SignCommandInput,
   SignCommandOutput,
 } from "@aws-sdk/client-kms";
-import { utils } from "ethers";
-import { Address } from "viem";
+import { Address, Hex } from "viem";
 import { getEthAddressFromPublicKey } from "./sign";
 
 type GetPublicKeyParams = {
@@ -21,7 +20,7 @@ type GetEthAddressFromKMSparams = {
 };
 
 type SignParams = {
-  hash: string;
+  hash: Hex;
   keyId: SignCommandInput["KeyId"];
   kmsInstance: KMSClient;
 };
@@ -42,8 +41,19 @@ export const getEthAddressFromKMS = async (
   return getEthAddressFromPublicKey(KMSKey.PublicKey as Uint8Array);
 };
 
+function arrayify(value: Hex): Uint8Array {
+  const hex = value.substring(2);
+
+  const result = [];
+  for (let i = 0; i < hex.length; i += 2) {
+    result.push(parseInt(hex.substring(i, i + 2), 16));
+  }
+
+  return new Uint8Array(result);
+}
+
 export const signWithKMS = async ({ keyId, hash, kmsInstance }: SignParams): Promise<SignCommandOutput> => {
-  const formatted = Buffer.from(utils.arrayify(hash));
+  const formatted = Buffer.from(arrayify(hash));
 
   const command = new SignCommand({
     KeyId: keyId,
