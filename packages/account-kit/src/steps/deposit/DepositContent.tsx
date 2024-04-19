@@ -37,9 +37,7 @@ export function DepositContent() {
     <>
       <AccountModalTitle title="Gas tank" />
 
-      <AccountModalSection>
-        <GasTankStateContent amount={depositAmount} isSuccess={isSuccess} />
-      </AccountModalSection>
+      <GasTankStateContent amount={depositAmount} isSuccess={isSuccess} />
 
       <AccountModalSection className="h-full">
         <div className="flex flex-col h-full gap-2 p-5">
