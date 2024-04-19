@@ -1,4 +1,5 @@
 import { KMSClient, SignCommandInput } from "@aws-sdk/client-kms";
+import { Hex } from "viem";
 
 export type SignParams = {
   keyId: SignCommandInput["KeyId"];
@@ -17,5 +18,5 @@ export type GetPublicKeyParams = {
 };
 
 export type CreateSignatureParams = SignParams & {
-  address: string;
+  address: Hex;
 };

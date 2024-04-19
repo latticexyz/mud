@@ -33,8 +33,6 @@ describe("kmsAccount", () => {
   });
 
   it("signTypedData", async () => {
-    // Test signTypedData
-
     const chainId = 1;
     const verifyingContract = "0x95222290dd7278aa3ddd389cc1e1d165cc4bafe5";
     const domain = { chainId, verifyingContract } as const;

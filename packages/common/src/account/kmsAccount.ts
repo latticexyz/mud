@@ -12,8 +12,8 @@ export async function createKmsAccount(keyId: string, kmsInstance: KMSClient): P
     async signMessage({ message }) {
       const hash = hashMessage(message);
       const signature = await createSignature({
-        kmsInstance: kmsInstance,
-        keyId: keyId,
+        kmsInstance,
+        keyId,
         message: hash,
         address,
       });
@@ -25,12 +25,9 @@ export async function createKmsAccount(keyId: string, kmsInstance: KMSClient): P
     },
     async signTypedData(typedData) {
       const hash = hashTypedData(typedData);
-
-      const address = await getEthAddressFromKMS({ kmsInstance, keyId });
-
       const signature = await createSignature({
-        kmsInstance: kmsInstance,
-        keyId: keyId,
+        kmsInstance,
+        keyId,
         message: hash,
         address,
       });
