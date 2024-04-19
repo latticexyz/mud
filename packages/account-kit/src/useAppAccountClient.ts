@@ -1,5 +1,5 @@
-import { useAccount, usePublicClient } from "wagmi";
-import { maxUint256, toHex, publicActions, createClient, Chain } from "viem";
+import { http, useAccount, usePublicClient } from "wagmi";
+import { maxUint256, toHex, publicActions, createClient, Chain, walletActions } from "viem";
 import { callFrom } from "@latticexyz/world/internal";
 import { SmartAccountClientConfig, smartAccountActions } from "permissionless";
 import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
@@ -41,9 +41,35 @@ export function useAppAccountClient(): UseQueryResult<AppAccountClient> {
       ? {
           queryKey,
           queryFn: async () => {
-            // TODO: return a different client if we're not using ERC-4337
             if (!erc4337Config) {
-              throw new Error("No ERC-4337 config was found.");
+              console.log("no ERC-4337 config, using app signer as app account");
+
+              // We create our own client here so we can provide a custom client `type` that we'll use
+              // later in the app to determine how deposits should work.
+              const appAccountClient = createClient({
+                type: "appSignerClient",
+                // TODO: figure out what effect `key` has and how to use this option properly
+                key: "appSignerClient",
+                // TODO: figure out what effect `name` has and how to use this option properly
+                name: "App Signer Client",
+                chain,
+                account: appSignerAccount,
+                pollingInterval: defaultPollingInterval,
+                // TODO: add websocket + fallback?
+                // TODO: provide way to override this transport?
+                transport: transportObserver("app account (signer) client", http()),
+              })
+                .extend(walletActions)
+                // .extend(transactionQueue({ publicClient }))
+                .extend(
+                  callFrom({
+                    worldAddress,
+                    delegatorAddress: userAddress,
+                    publicClient,
+                  }),
+                )
+                .extend(() => publicActions(publicClient));
+              return appAccountClient;
             }
 
             // TODO: nicer error if this fails (e.g. bundler is unreachable)

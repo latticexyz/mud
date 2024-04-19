@@ -1,7 +1,14 @@
 import { resourceToHex } from "@latticexyz/common";
-import { ENTRYPOINT_ADDRESS_V07, SmartAccountClient } from "permissionless";
-import { SmartAccount } from "permissionless/accounts";
-import { Chain, Transport } from "viem";
+import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
+import { Client, Chain, Transport, Account } from "viem";
+
+export type AppAccountClient = Client<Transport, Chain, Account>;
+
+export const unlimitedDelegationControlId = resourceToHex({ type: "system", namespace: "", name: "unlimited" });
+
+export const defaultPollingInterval = 250;
+
+// ERC-4337
 
 export const entryPointAddress = ENTRYPOINT_ADDRESS_V07;
 /**
@@ -9,12 +16,5 @@ export const entryPointAddress = ENTRYPOINT_ADDRESS_V07;
  * used to override contract state when doing paymaster gas estimation.
  */
 export const entryPointDepositsSlot = 0n;
-
-export type AppAccount = SmartAccount<typeof entryPointAddress>;
-export type AppAccountClient = SmartAccountClient<typeof entryPointAddress, Transport, Chain, AppAccount>;
-
+// TODO: should this be configurable or part of the chain contracts?
 export const smartAccountFactory = "0x91E60e0613810449d098b0b5Ec8b51A0FE8c8985";
-
-export const unlimitedDelegationControlId = resourceToHex({ type: "system", namespace: "", name: "unlimited" });
-
-export const defaultPollingInterval = 250;
