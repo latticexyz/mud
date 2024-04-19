@@ -26,7 +26,8 @@ export function DepositContent() {
   });
   const { txHash, error, deposit, status, isPending, isLoading, isSuccess } = useDepositHandler(depositMethod);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
+    evt.preventDefault();
     await deposit(depositAmount);
   };
 
@@ -41,7 +42,7 @@ export function DepositContent() {
       <AccountModalSection className="h-full">
         <div className="flex flex-col h-full gap-2 p-5">
           {!isSuccess && (
-            <>
+            <form onSubmit={handleSubmit}>
               <p className="pb-2 text-[15px] leading-[140%] dark:color-neutral-300">
                 Add funds from your wallet to your tank to fund transactions for any MUD apps on {chain.name}
               </p>
@@ -57,19 +58,19 @@ export function DepositContent() {
 
               <BalancesFees amount={depositAmount} depositMethod={depositMethod} />
 
-              {error ? <div>{String(error)}</div> : null}
-              <Button
-                className="w-full mt-[8px]"
-                pending={!userAccountAddress || isPending || isLoading}
-                onClick={handleSubmit}
-              >
+              {error ? (
+                <pre className="p-5 my-2 break-all whitespace-pre-wrap bg-red-200 text-red-700 border border-red-700">
+                  {String(error)}
+                </pre>
+              ) : null}
+              <Button type="submit" className="w-full mt-[8px]" pending={!userAccountAddress || isPending || isLoading}>
                 {isPending && "Confirm in wallet"}
                 {isLoading && "Awaiting network"}
                 {!isPending && !isLoading && "Deposit"}
               </Button>
 
               {txHash && <ViewTransaction hash={txHash} status={status} />}
-            </>
+            </form>
           )}
 
           {isSuccess && (

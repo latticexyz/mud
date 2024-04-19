@@ -12,6 +12,7 @@ export const AmountInput = ({ amount, setAmount }: AmountProps) => {
       onChange={(evt) => setAmount(evt.target.value)}
       placeholder="0.01"
       step={1e-18}
+      required
     />
   );
 };
