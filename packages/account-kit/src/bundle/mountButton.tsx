@@ -1,10 +1,11 @@
 import { internalStore } from "./internalStore";
 
 export function mountButton(container: Element): () => void {
-  // if (!internalStore.getState().rootContainer) {
-  //   // TODO: convert this to a warning instead so folks can use `mountButton` ahead of `mount`?
-  //   throw new Error("MUD Account Kit is not yet mounted. Call `mount` first.");
-  // }
+  if (!internalStore.getState().rootContainer) {
+    console.warn(
+      "MUD Account Kit `mountButton` was called before `mount`. You will not see buttons rendered until `mount` is called.",
+    );
+  }
 
   internalStore.setState((state) => ({
     buttonContainers: [...state.buttonContainers, container],

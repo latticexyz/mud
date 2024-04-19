@@ -25,6 +25,13 @@ export function mount({
   wagmiConfig,
   accountKitConfig,
 }: MountOptions): () => void {
+  if (internalStore.getState().rootContainer) {
+    throw new Error("MUD Account Kit is already mounted and only one instance is allowed on the page at a time.");
+  }
+
+  const rootContainer = initialRootContainer ?? document.body.appendChild(document.createElement("div"));
+  internalStore.setState({ rootContainer });
+
   async function setup() {
     // TODO: do async imports like this help us at all with bundle sizes/code splitting?
     const React = await import("react");
@@ -35,12 +42,7 @@ export function mount({
     const { AccountKitProvider } = await import("../AccountKitProvider");
     const { SyncStore } = await import("./SyncStore");
 
-    if (internalStore.getState().rootContainer) {
-      throw new Error("MUD Account Kit is already mounted and only one instance is allowed on the page at a time.");
-    }
-
     const queryClient = new QueryClient();
-    const rootContainer = initialRootContainer ?? document.body.appendChild(document.createElement("div"));
 
     const root = ReactDOM.createRoot(rootContainer);
     root.render(
@@ -74,14 +76,8 @@ export function mount({
       </React.StrictMode>,
     );
 
-    internalStore.setState({ rootContainer });
-
     return () => {
-      // TODO: can we do this after removing from DOM tree? if so, do this via mutation observer instead?
       root.unmount();
-      rootContainer.remove();
-      // TODO: do this via a mutation observer instead?
-      internalStore.setState({ rootContainer: undefined });
     };
   }
 
@@ -89,5 +85,9 @@ export function mount({
     console.error("Failed to mount MUD Account Kit.", error);
   });
 
-  return () => setupPromise.then((unmount) => unmount?.());
+  return () => {
+    // TODO: do this via a mutation observer instead?
+    internalStore.setState({ rootContainer: undefined });
+    setupPromise.then((unmount) => unmount?.());
+  };
 }
