@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { useAccount, usePublicClient } from "wagmi";
-import { maxUint256, toHex, publicActions, createClient } from "viem";
+import { maxUint256, toHex, publicActions, createClient, Chain } from "viem";
 import { callFrom } from "@latticexyz/world/internal";
 import { SmartAccountClientConfig, smartAccountActions } from "permissionless";
 import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
@@ -14,6 +14,8 @@ import { transportObserver } from "./transportObserver";
 import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types/entrypoint";
 import { useErc4337Config } from "./useErc4337Config";
 import { usePaymaster } from "./usePaymaster";
+import { SendTransactionWithPaymasterParameters, sendTransaction } from "./actions/sendTransaction";
+import { SmartAccount } from "permissionless/accounts";
 
 type Middleware = SmartAccountClientConfig<ENTRYPOINT_ADDRESS_V07_TYPE>["middleware"];
 
@@ -96,6 +98,11 @@ export function useAppAccountClient(): AppAccountClient | undefined {
         } satisfies Middleware)
       : null;
 
+    const middleware = {
+      ...baseMiddleware,
+      ...gasTankMiddleware,
+    };
+
     const appAccountClient = createClient({
       key: "Account",
       name: "Smart Account Client",
@@ -112,14 +119,23 @@ export function useAppAccountClient(): AppAccountClient | undefined {
           publicClient,
         }),
       )
-      .extend(
-        smartAccountActions({
-          middleware: {
-            ...baseMiddleware,
-            ...gasTankMiddleware,
-          },
-        }),
-      )
+      .extend((client) => ({
+        sendTransaction: (args) => {
+          console.log("bundler hijacked send transaction");
+          return sendTransaction<Chain, SmartAccount<ENTRYPOINT_ADDRESS_V07_TYPE>, ENTRYPOINT_ADDRESS_V07_TYPE>(
+            client,
+            {
+              ...args,
+              middleware,
+            } as SendTransactionWithPaymasterParameters<
+              ENTRYPOINT_ADDRESS_V07_TYPE,
+              Chain,
+              SmartAccount<ENTRYPOINT_ADDRESS_V07_TYPE>
+            >,
+          );
+        },
+      }))
+      .extend(smartAccountActions({ middleware }))
       // .extend(transactionQueue({ publicClient }))
       // .extend(writeObserver({ onWrite: (write) => write$.next(write) }))
       .extend(() => publicActions(publicClient));
