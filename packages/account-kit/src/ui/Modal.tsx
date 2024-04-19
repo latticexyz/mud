@@ -35,7 +35,7 @@ export function Modal({ open, onOpenChange, children }: Props) {
               "animate-in animate-duration-200 fade-in slide-in-from-bottom-4",
             )}
           >
-            <Dialog.Content>{children}</Dialog.Content>
+            <Dialog.Content className="outline-none">{children}</Dialog.Content>
           </div>
         </Shadow>
       </Dialog.Portal>
