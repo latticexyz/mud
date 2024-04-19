@@ -108,7 +108,7 @@ export const waitForUserOperationTransactionHash = async <
   });
 
   try {
-    return (await getUserOperationStatusPromise) as never;
+    return (await getUserOperationStatusPromise) as WaitForUserOperationTransactionHashReturnType;
   } catch (e) {
     const result = await getAction(bundlerClient, waitForUserOperationReceipt, "waitForUserOperationReceipt")({ hash });
     return { transactionHash: result.receipt.transactionHash };
