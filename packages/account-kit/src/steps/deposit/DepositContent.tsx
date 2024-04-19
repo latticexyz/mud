@@ -28,21 +28,21 @@ export function DepositContent() {
   });
   const { txHash, error, deposit, status, isPending, isLoading, isSuccess } = useDepositHandler(depositMethod);
 
-  const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
-    evt.preventDefault();
-    await deposit(depositAmount);
-  };
-
   return (
     <>
-      <AccountModalTitle title="Gas tank" />
+      <AccountModalTitle title="Deposit" />
 
       <GasTankStateContent amount={depositAmount} isSuccess={isSuccess} />
 
       <AccountModalSection className="h-full">
         <div className="flex flex-col h-full gap-2 p-5">
           {!isSuccess && (
-            <form onSubmit={handleSubmit}>
+            <form
+              onSubmit={async (event) => {
+                event.preventDefault();
+                await deposit(depositAmount);
+              }}
+            >
               <p className="pb-2 text-[15px] leading-[140%] dark:color-neutral-300">
                 Add funds from your wallet to your tank to fund transactions for any MUD apps on {chain.name}
               </p>

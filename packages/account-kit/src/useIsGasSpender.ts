@@ -16,7 +16,7 @@ export function useIsGasSpender() {
   const appAccountAddress = appAccountClient?.account.address;
 
   const result = useRecord(
-    appAccountAddress && gasTank
+    appAccountClient?.type === "smartAccountClient" && appAccountAddress && gasTank
       ? {
           chainId: chain.id,
           address: gasTank.address,
@@ -29,6 +29,9 @@ export function useIsGasSpender() {
 
   return {
     ...result,
-    isGasSpender: userAccountAddress && userAccountAddress === result.record?.userAccount,
+    isGasSpender:
+      appAccountClient?.type === "smartAccountClient"
+        ? userAccountAddress && userAccountAddress === result.record?.userAccount
+        : true,
   };
 }

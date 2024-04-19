@@ -2,6 +2,7 @@ import { resourceToHex } from "@latticexyz/common";
 import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
 import { Client, Chain, Transport, Account } from "viem";
 
+// TODO: it'd be great if we could have strong types around `client.type` to do downstream checks
 export type AppAccountClient = Client<Transport, Chain, Account>;
 
 export const unlimitedDelegationControlId = resourceToHex({ type: "system", namespace: "", name: "unlimited" });

@@ -6,8 +6,8 @@ import { useSignRegisterDelegation } from "../app-account/useSignRegisterDelegat
 import { resourceToHex } from "@latticexyz/common";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { encodeFunctionData } from "viem";
-import { writeContract, waitForTransactionReceipt } from "viem/actions";
-import { usePublicClient, useWalletClient } from "wagmi";
+import { writeContract } from "viem/actions";
+import { usePublicClient, useWaitForTransactionReceipt, useWalletClient } from "wagmi";
 import { unlimitedDelegationControlId } from "../../common";
 import { useAppAccountClient } from "../../useAppAccountClient";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
@@ -23,15 +23,17 @@ export function FinalizingStep() {
   const { resetStep } = useOnboardingSteps();
   const { registerDelegationSignature } = useSignRegisterDelegation();
 
-  const { mutate, isPending, error } = useMutation({
+  // We `writeContract` in a mutation here so we can control the client.
+  // If we used wagmi's `useWriteContract`, it would write with the connected account instead, which is not what we want.
+  const registerDelegation = useMutation({
     mutationFn: async () => {
       if (!publicClient) throw new Error("Public client not ready. Not connected?");
       if (!userAccountClient) throw new Error("Wallet client not ready. Not connected?");
       if (!appAccountClient) throw new Error("App account client not ready.");
       if (!registerDelegationSignature) throw new Error("No delegation signature.");
 
-      console.log("registerDelegation");
-      const delegationHash = await writeContract(appAccountClient, {
+      console.log("calling registerDelegation");
+      return await writeContract(appAccountClient, {
         address: worldAddress,
         abi: CallWithSignatureAbi,
         functionName: "callWithSignature",
@@ -47,24 +49,39 @@ export function FinalizingStep() {
         ],
       });
 
-      const receipt = await waitForTransactionReceipt(publicClient, { hash: delegationHash });
-      console.log("registerDelegation receipt", receipt);
-      if (receipt.status === "reverted") {
-        console.error("Failed to register delegation.", receipt);
-        throw new Error("Failed to register delegation.");
-      }
+      // console.log("registerDelegation tx", delegationHash);
 
-      queryClient.invalidateQueries();
-      resetStep();
+      // const receipt = await waitForTransactionReceipt(publicClient, {
+      //   hash: delegationHash,
+      //   pollingInterval: defaultPollingInterval,
+      //   retryCount: 10,
+      // });
+      // console.log("registerDelegation receipt", receipt);
+      // if (receipt.status === "reverted") {
+      //   console.error("Failed to register delegation.", receipt);
+      //   throw new Error("Failed to register delegation.");
+      // }
+
+      // queryClient.invalidateQueries();
+      // resetStep();
     },
   });
 
+  const receipt = useWaitForTransactionReceipt({ chainId: chain.id, hash: registerDelegation.data });
+
+  useEffect(() => {
+    if (receipt.data?.status === "success") {
+      queryClient.invalidateQueries();
+      resetStep();
+    }
+  }, [queryClient, receipt.data, resetStep]);
+
   useEffect(() => {
     console.log("finalizing");
-    mutate();
-  }, [mutate]);
+    registerDelegation.mutate();
+  }, [registerDelegation.mutate]);
 
-  if (isPending) {
+  if (receipt.isPending) {
     // TODO: make this prettier
     return (
       <AccountModalSection className="flew-grow">
@@ -75,8 +92,14 @@ export function FinalizingStep() {
     );
   }
 
-  if (error) {
+  if (registerDelegation.error) {
     // TODO: make this prettier
-    return <AccountModalSection>{String(error)}</AccountModalSection>;
+    return <AccountModalSection>{String(registerDelegation.error)}</AccountModalSection>;
   }
+  if (receipt.error) {
+    // TODO: make this prettier
+    return <AccountModalSection>{String(receipt.error)}</AccountModalSection>;
+  }
+
+  return <></>;
 }

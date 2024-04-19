@@ -1,17 +1,30 @@
-import { useAccount } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { useConfig } from "./AccountKitProvider";
 import gasTankConfig from "@latticexyz/gas-tank/mud.config";
 import { useRecord } from "./useRecord";
 import { usePaymaster } from "./usePaymaster";
+import { useAppAccountClient } from "./useAppAccountClient";
 
 export function useGasTankBalance() {
   const { chain } = useConfig();
+  const { data: appAccountClient } = useAppAccountClient();
+  const appAccountBalance = useBalance(
+    appAccountClient && appAccountClient.type !== "smartAccountClient"
+      ? {
+          address: appAccountClient.account.address,
+          query: {
+            refetchInterval: 2000,
+          },
+        }
+      : { query: { enabled: false } },
+  );
+
   const gasTank = usePaymaster("gasTank");
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
 
-  const result = useRecord(
-    userAccountAddress && gasTank
+  const gasTankBalance = useRecord(
+    appAccountClient?.type === "smartAccountClient" && userAccountAddress && gasTank
       ? {
           chainId: chain.id,
           address: gasTank.address,
@@ -25,8 +38,13 @@ export function useGasTankBalance() {
       : {},
   );
 
-  return {
-    ...result,
-    gasTankBalance: result.record?.balance,
-  };
+  return appAccountClient?.type === "smartAccountClient"
+    ? {
+        ...gasTankBalance,
+        gasTankBalance: gasTankBalance.record?.balance,
+      }
+    : {
+        ...appAccountBalance,
+        gasTankBalance: appAccountBalance.data?.value,
+      };
 }

@@ -1,10 +1,11 @@
 import { useAccount } from "wagmi";
 import { useAppSigner } from "./useAppSigner";
 import { useHasDelegation } from "./useHasDelegation";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { useGasTankBalance } from "./useGasTankBalance";
 import { useIsGasSpender } from "./useIsGasSpender";
 import { useSignRegisterDelegation } from "./steps/app-account/useSignRegisterDelegation";
+import { useIsFree } from "./useIsFree";
 
 export const accountRequirements = [
   "connectedWallet",
@@ -29,12 +30,13 @@ export function useAccountRequirements(): UseAccountRequirementsResult {
   const { isGasSpender } = useIsGasSpender();
   const { hasDelegation } = useHasDelegation();
   const { registerDelegationSignature } = useSignRegisterDelegation();
+  const isFree = useIsFree();
 
-  return useMemo(() => {
+  const requirements = useMemo(() => {
     const satisfiesRequirement = {
       connectedWallet: () => userAccount.status === "connected",
       appSigner: () => appSignerAccount != null,
-      gasAllowance: () => gasTankBalance != null && gasTankBalance > 0n,
+      gasAllowance: () => isFree || (gasTankBalance != null && gasTankBalance > 0n),
       gasSpender: () => isGasSpender === true,
       accountDelegation: () => hasDelegation === true || registerDelegationSignature != null,
       accountDelegationConfirmed: () => hasDelegation === true,
@@ -46,5 +48,19 @@ export function useAccountRequirements(): UseAccountRequirementsResult {
       requirement: requirements.at(0) ?? null,
       requirements,
     };
-  }, [appSignerAccount, gasTankBalance, hasDelegation, isGasSpender, registerDelegationSignature, userAccount.status]);
+  }, [
+    appSignerAccount,
+    gasTankBalance,
+    hasDelegation,
+    isFree,
+    isGasSpender,
+    registerDelegationSignature,
+    userAccount.status,
+  ]);
+
+  useEffect(() => {
+    console.log("requirements", requirements.requirements);
+  }, [requirements.requirements]);
+
+  return requirements;
 }
