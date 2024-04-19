@@ -8,7 +8,7 @@ type Props = {
   chainId: number;
   userAccountAddress: Hex;
   gasTankAddress: Hex;
-  amount: string;
+  amount: number;
 };
 
 export const directDeposit = ({ config, chainId, userAccountAddress, gasTankAddress, amount }: Props) => {

@@ -54,24 +54,22 @@ export const fetchRelayLinkQuote = async ({
   config: UseConfigReturnType;
   chainId: number;
   toChainId: number;
-  amount: string;
+  amount: number;
 }) => {
   createRelayClient();
 
   const walletClient = await getWalletClient(config);
   const client = getClient();
-
-  console.log(chainId, toChainId, amount, walletClient.account.address);
-
   const quote = await client.methods.getBridgeQuote({
     wallet: walletClient,
     chainId,
     toChainId,
-    amount: parseEther(amount).toString(),
+    amount: parseEther(amount.toString()).toString(),
     currency: "eth",
     recipient: walletClient.account.address,
   });
 
+  // TODO: show estimated time
   // <p>Time estimate: ~{quote?.breakdown?.[0]?.timeEstimate}s</p>
   // <p>Deposit gas (Holesky): {formatEther(BigInt(quote?.fees?.gas || 0))} ETH</p>
   // <p>Fill gas (Garnet): {formatEther(BigInt(quote?.fees?.relayerGas || 0))} ETH</p>

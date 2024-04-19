@@ -13,12 +13,14 @@ import { Button } from "../../ui/Button";
 
 export type DepositMethod = "direct" | "native" | "relay";
 
+export const DEFAULT_DEPOSIT_AMOUNT = 0.005;
+
 export function DepositContent() {
   const { chain } = useConfig();
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
   const userAccountChainId = userAccount?.chain?.id;
-  const [depositAmount, setDepositAmount] = useState<string>("0.005");
+  const [depositAmount, setDepositAmount] = useState<number | undefined>(DEFAULT_DEPOSIT_AMOUNT);
   const [depositMethod, setDepositMethod] = useState<DepositMethod>(() => {
     if (chain.id === userAccountChainId) return "direct";
     else if (chain.sourceId === userAccountChainId) return "native";

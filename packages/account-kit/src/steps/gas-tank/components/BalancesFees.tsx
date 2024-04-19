@@ -5,7 +5,7 @@ import { DepositMethod } from "../DepositContent";
 import { useTransactionFees } from "../hooks/useTransactionFees";
 
 type Props = {
-  amount: string;
+  amount: number | undefined;
   depositMethod: DepositMethod;
 };
 

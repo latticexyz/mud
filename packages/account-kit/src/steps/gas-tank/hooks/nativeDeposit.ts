@@ -45,7 +45,7 @@ export const nativeDeposit = ({
   chainId: number;
   userAccountAddress: Hex;
   gasTankAddress: Hex;
-  amount: string;
+  amount: number;
 }) => {
   const gasLimit = BigInt(1000000); // TODO: better gas limit config
   const data = encodeNativeDeposit(userAccountAddress);
@@ -56,7 +56,7 @@ export const nativeDeposit = ({
     address: OPTIMISM_PORTAL_ADDRESS,
     abi: OptimismPortalAbi,
     functionName: "depositTransaction",
-    args: [gasTankAddress, parseEther(amount), gasLimit, false, data],
-    value: parseEther(amount),
+    args: [gasTankAddress, parseEther(amount.toString()), gasLimit, false, data],
+    value: parseEther(amount.toString()),
   });
 };

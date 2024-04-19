@@ -5,7 +5,7 @@ import { useGasTankBalance } from "../../useGasTankBalance";
 import { formatActionsNumber } from "./utils/formatActionsNumber";
 
 type GasTankStateContentProps = {
-  amount: string;
+  amount: number | undefined;
   isSuccess: boolean;
 };
 
@@ -14,7 +14,7 @@ const ACTIONS_PER_ETHER = 100_000n;
 
 export function GasTankStateContent({ amount, isSuccess }: GasTankStateContentProps) {
   const { gasTankBalance } = useGasTankBalance();
-  const amountWei = parseEther(amount);
+  const amountWei = parseEther(amount?.toString() ?? "0");
   const newGasTankBalance = gasTankBalance ? gasTankBalance + amountWei : amountWei;
   const estimateActions = (ACTIONS_PER_ETHER * amountWei) / BigInt(1e18);
   const isTankEmpty = !gasTankBalance || gasTankBalance === 0n;

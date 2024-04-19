@@ -87,8 +87,8 @@ export const useDepositHandler = (depositMethod: DepositMethod) => {
   }, [gasTankBalance, prevGasTankBalance, state.status]);
 
   const deposit = useCallback(
-    async (amount: string) => {
-      if (!wallet.data || !userAccountAddress || !userAccountChainId || !amount || !gasTank) return;
+    async (amount: number | undefined) => {
+      if (!amount || !wallet.data || !userAccountAddress || !userAccountChainId || !amount || !gasTank) return;
 
       try {
         dispatch({ type: "SET_STATUS", payload: "pending" });
