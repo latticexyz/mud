@@ -1,13 +1,10 @@
 // @ts-expect-error
 import asn1 from "asn1.js";
 import { utils } from "ethers";
-import { sign } from "./kms";
-import { SignParams } from "./types";
+import { signWithKMS } from "./kms";
 import { Address, Hex, isAddressEqual, signatureToHex, toHex } from "viem";
-
-type CreateSignatureParams = SignParams & {
-  address: Hex;
-};
+import { KMSClient, SignCommandInput } from "@aws-sdk/client-kms";
+import { publicKeyToAddress } from "viem/utils";
 
 const EcdsaSigAsnParse = asn1.define("EcdsaSig", function (this: any) {
   this.seq().obj(this.key("r").int(), this.key("s").int());
@@ -17,8 +14,12 @@ const EcdsaPubKey = asn1.define("EcdsaPubKey", function (this: any) {
   this.seq().obj(this.key("algo").seq().obj(this.key("a").objid(), this.key("b").objid()), this.key("pubKey").bitstr());
 });
 
-const getRS = async (signParams: SignParams): Promise<{ r: Hex; s: Hex }> => {
-  const signature = await sign(signParams);
+const getRS = async (signParams: {
+  hash: string;
+  keyId: SignCommandInput["KeyId"];
+  kmsInstance: KMSClient;
+}): Promise<{ r: Hex; s: Hex }> => {
+  const signature = await signWithKMS(signParams);
 
   if (signature.Signature === undefined) {
     throw new Error("Signature is undefined.");
@@ -42,11 +43,10 @@ const getRS = async (signParams: SignParams): Promise<{ r: Hex; s: Hex }> => {
   };
 };
 
-const getRecoveryParam = (msg: string, r: string, s: string, expectedEthAddr: Hex): number => {
-  const formatted = msg;
+const getRecoveryParam = (message: string, r: Hex, s: Hex, expectedEthAddr: Hex): number => {
   let recoveryParam: number;
   for (recoveryParam = 0; recoveryParam <= 1; recoveryParam++) {
-    const address = utils.recoverAddress(formatted, {
+    const address = utils.recoverAddress(message, {
       r,
       s,
       recoveryParam,
@@ -68,18 +68,30 @@ export const getEthAddressFromPublicKey = (publicKey: Uint8Array): Address => {
   return address;
 };
 
-export const createSignature = async ({
-  keyId,
-  message,
-  address,
-  kmsInstance,
-}: CreateSignatureParams): Promise<Hex> => {
-  const { r, s } = await getRS({ keyId, message, kmsInstance });
-  const yParity = getRecoveryParam(message, r, s, address);
+type SignParameters = {
+  hash: string;
+  keyId: SignCommandInput["KeyId"];
+  kmsInstance: KMSClient;
+  address: Hex;
+};
+
+type SignReturnType = Hex;
+
+/**
+ * @description Signs a hash with a given KMS key.
+ *
+ * @param hash The hash to sign.
+ *
+ * @returns The signature.
+ */
+export const sign = async ({ hash, address, keyId, kmsInstance }: SignParameters): Promise<SignReturnType> => {
+  const { r, s } = await getRS({ keyId, hash, kmsInstance });
+  const recovery = getRecoveryParam(hash, r, s, address);
 
   return signatureToHex({
     r,
     s,
-    yParity,
+    v: recovery ? 28n : 27n,
+    yParity: recovery,
   });
 };

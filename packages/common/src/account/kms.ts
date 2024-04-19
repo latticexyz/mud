@@ -8,8 +8,7 @@ import {
 } from "@aws-sdk/client-kms";
 import { utils } from "ethers";
 import { Address } from "viem";
-import { SignParams } from "./types";
-import { getEthAddressFromPublicKey } from "./eth";
+import { getEthAddressFromPublicKey } from "./sign";
 
 type GetPublicKeyParams = {
   keyId: SignCommandInput["KeyId"];
@@ -17,6 +16,12 @@ type GetPublicKeyParams = {
 };
 
 type GetEthAddressFromKMSparams = {
+  keyId: SignCommandInput["KeyId"];
+  kmsInstance: KMSClient;
+};
+
+type SignParams = {
+  hash: string;
   keyId: SignCommandInput["KeyId"];
   kmsInstance: KMSClient;
 };
@@ -37,9 +42,8 @@ export const getEthAddressFromKMS = async (
   return getEthAddressFromPublicKey(KMSKey.PublicKey as Uint8Array);
 };
 
-export const sign = async (signParams: SignParams): Promise<SignCommandOutput> => {
-  const { keyId, message, kmsInstance } = signParams;
-  const formatted = Buffer.from(utils.arrayify(message));
+export const signWithKMS = async ({ keyId, hash, kmsInstance }: SignParams): Promise<SignCommandOutput> => {
+  const formatted = Buffer.from(utils.arrayify(hash));
 
   const command = new SignCommand({
     KeyId: keyId,
