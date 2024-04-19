@@ -3,7 +3,7 @@ import { BigNumber, utils } from "ethers";
 
 import { sign } from "./kms";
 import { CreateSignatureParams, SignParams } from "./types";
-import { BytesLike, SignatureLike } from "@ethersproject/bytes";
+import { Hex, hexToSignature } from "viem";
 
 const EcdsaSigAsnParse = asn1.define("EcdsaSig", function (this: any) {
   this.seq().obj(this.key("r").int(), this.key("s").int());
@@ -66,18 +66,15 @@ export const getEthAddressFromPublicKey = (publicKey: Uint8Array): string => {
   return address;
 };
 
-export const createSignature = async ({
-  keyId,
-  message,
-  address,
-  kmsInstance,
-}: CreateSignatureParams): Promise<Exclude<SignatureLike, BytesLike>> => {
+export const createSignature = async ({ keyId, message, address, kmsInstance }: CreateSignatureParams) => {
   const { r, s } = await getRS({ keyId, message, kmsInstance });
   const recoveryParam = getRecoveryParam(message, r, s, address);
 
-  return {
+  const ethersSignature = utils.joinSignature({
     r: r,
     s: s,
     v: recoveryParam,
-  };
+  }) as Hex;
+
+  return hexToSignature(ethersSignature);
 };
