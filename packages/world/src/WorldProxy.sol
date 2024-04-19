@@ -32,9 +32,6 @@ contract WorldProxy is Proxy {
     _setImplementation(implementation);
 
     StoreCore.initialize();
-    emit IStoreEvents.HelloStore(STORE_VERSION);
-
-    emit IWorldEvents.HelloWorld(WORLD_VERSION);
   }
 
   /**
@@ -44,6 +41,8 @@ contract WorldProxy is Proxy {
     StorageSlot.getAddressSlot(IMPLEMENTATION_SLOT).value = newImplementation;
 
     emit IERC1967.Upgraded(newImplementation);
+    emit IStoreEvents.HelloStore(STORE_VERSION);
+    emit IWorldEvents.HelloWorld(WORLD_VERSION);
   }
 
   /**
