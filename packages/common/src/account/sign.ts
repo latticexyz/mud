@@ -1,15 +1,18 @@
-// @ts-expect-error
+// @ts-expect-error types
 import asn1 from "asn1.js";
 import { utils } from "ethers";
 import { signWithKMS } from "./kms";
 import { Address, Hex, isAddressEqual, signatureToHex, toHex } from "viem";
 import { KMSClient, SignCommandInput } from "@aws-sdk/client-kms";
 import { publicKeyToAddress } from "viem/utils";
+import { computePublicKey } from "ethers/lib/utils";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const EcdsaSigAsnParse = asn1.define("EcdsaSig", function (this: any) {
   this.seq().obj(this.key("r").int(), this.key("s").int());
 });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const EcdsaPubKey = asn1.define("EcdsaPubKey", function (this: any) {
   this.seq().obj(this.key("algo").seq().obj(this.key("a").objid(), this.key("b").objid()), this.key("pubKey").bitstr());
 });
@@ -51,10 +54,10 @@ const getRecoveryParam = (message: string, r: Hex, s: Hex, expectedEthAddr: Hex)
       s,
       recoveryParam,
     }) as Hex;
-    if (!isAddressEqual(address, expectedEthAddr)) {
-      continue;
+
+    if (isAddressEqual(address, expectedEthAddr)) {
+      return recoveryParam;
     }
-    return recoveryParam;
   }
   throw new Error("Failed to calculate recovery param");
 };
@@ -62,9 +65,11 @@ const getRecoveryParam = (message: string, r: Hex, s: Hex, expectedEthAddr: Hex)
 export const getEthAddressFromPublicKey = (publicKey: Uint8Array): Address => {
   const res = EcdsaPubKey.decode(Buffer.from(publicKey));
 
-  const pubKeyBuffer: Buffer = res.pubKey.data;
+  const publicKeyBuffer: Buffer = res.pubKey.data;
 
-  const address = utils.computeAddress(pubKeyBuffer) as Address;
+  const publicKeyString = computePublicKey(publicKeyBuffer);
+  const address = publicKeyToAddress(publicKeyString as Hex);
+
   return address;
 };
 
