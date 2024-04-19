@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { createKmsAccount } from "./kmsAccount";
+import { kmsToAccount } from "./kmsToAccount";
 import { CreateKeyCommand, KMSClient } from "@aws-sdk/client-kms";
 import { LocalAccount, parseGwei, verifyMessage, verifyTypedData } from "viem";
 
@@ -30,7 +30,7 @@ describe("kmsAccount", () => {
 
     keyId = createResponse.KeyMetadata.KeyId;
 
-    account = await createKmsAccount(keyId, kmsInstance);
+    account = await kmsToAccount(keyId, kmsInstance);
   });
 
   it("signMessage", async () => {

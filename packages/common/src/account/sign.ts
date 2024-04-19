@@ -1,8 +1,8 @@
 // @ts-expect-error types
 import asn1 from "asn1.js";
 import { Address, Hex, isAddressEqual, signatureToHex, toHex } from "viem";
-import { KMSClient, SignCommandInput } from "@aws-sdk/client-kms";
 import { publicKeyToAddress, recoverAddress } from "viem/utils";
+import { KMSClient, SignCommandInput } from "@aws-sdk/client-kms";
 import { computePublicKey } from "@ethersproject/signing-key";
 import { signWithKMS } from "./kms";
 
