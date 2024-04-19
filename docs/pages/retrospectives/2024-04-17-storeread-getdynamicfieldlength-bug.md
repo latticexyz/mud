@@ -22,7 +22,7 @@ You can see the fix in [PR #2680](https://github.com/latticexyz/mud/pull/2680).
 
 ## How the bug was discovered
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/0857dec6-6364-4f79-87ea-ff7da1ce8868/7add321e-9294-4edb-a874-32029cd5660a/Untitled.png)
+![Screen capture from Discord of how it was discovered](./2024-04-17-discovery.png)
 
 Marcineq from Minters raised that they were getting incorrect values from the `getItem` method for static arrays.
 
