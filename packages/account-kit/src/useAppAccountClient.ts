@@ -112,13 +112,6 @@ export function useAppAccountClient(): AppAccountClient | undefined {
       pollingInterval: defaultPollingInterval,
       transport: transportObserver("bundler transport", erc4337Config.transport),
     })
-      .extend(
-        callFrom({
-          worldAddress,
-          delegatorAddress: userAddress,
-          publicClient,
-        }),
-      )
       .extend((client) => ({
         sendTransaction: (args) => {
           console.log("bundler hijacked send transaction");
@@ -137,6 +130,13 @@ export function useAppAccountClient(): AppAccountClient | undefined {
       }))
       .extend(smartAccountActions({ middleware }))
       // .extend(transactionQueue({ publicClient }))
+      .extend(
+        callFrom({
+          worldAddress,
+          delegatorAddress: userAddress,
+          publicClient,
+        }),
+      )
       // .extend(writeObserver({ onWrite: (write) => write$.next(write) }))
       .extend(() => publicActions(publicClient));
 
