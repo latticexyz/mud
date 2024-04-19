@@ -57,9 +57,12 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
+    "@aws-sdk/client-kms": "*",
     "@latticexyz/schema-type": "workspace:*",
     "@solidity-parser/parser": "^0.16.0",
+    "asn1.js": "^5.4.1",
     "debug": "^4.3.4",
+    "ethers": "^5.7.2",
     "execa": "^7.0.0",
     "p-queue": "^7.4.1",
     "p-retry": "^5.1.2",

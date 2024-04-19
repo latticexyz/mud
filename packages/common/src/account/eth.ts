@@ -1,3 +1,4 @@
+// @ts-ignore
 import asn1 from "asn1.js";
 import { BigNumber, utils } from "ethers";
 

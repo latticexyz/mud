@@ -284,15 +284,24 @@ importers:
 
   packages/common:
     dependencies:
+      '@aws-sdk/client-kms':
+        specifier: '*'
+        version: 3.556.0
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
       '@solidity-parser/parser':
         specifier: ^0.16.0
         version: 0.16.0
+      asn1.js:
+        specifier: ^5.4.1
+        version: 5.4.1
       debug:
         specifier: ^4.3.4
         version: 4.3.4
+      ethers:
+        specifier: ^5.7.2
+        version: 5.7.2
       execa:
         specifier: ^7.0.0
         version: 7.0.0
