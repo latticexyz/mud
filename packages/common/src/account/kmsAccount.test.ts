@@ -1,20 +1,34 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { createKmsAccount } from "./kmsAccount";
-import { KMSClient } from "@aws-sdk/client-kms";
+import { CreateKeyCommand, KMSClient } from "@aws-sdk/client-kms";
 import { LocalAccount, parseGwei, verifyMessage, verifyTypedData } from "viem";
 
 describe("kmsAccount", () => {
   let account: LocalAccount;
+  let keyId: string;
 
   beforeEach(async () => {
-    const keyId = "PLACE";
     const kmsInstance = new KMSClient({
-      region: "eu-west-2",
+      endpoint: process.env.KMS_ENDPOINT,
+      region: "local",
       credentials: {
-        accessKeyId: "PLACE",
-        secretAccessKey: "PLACE",
+        accessKeyId: "AKIAXTTRUF7NU7KDMIED",
+        secretAccessKey: "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",
       },
     });
+
+    const command = new CreateKeyCommand({
+      KeyUsage: "SIGN_VERIFY",
+      CustomerMasterKeySpec: "ECC_SECG_P256K1",
+    });
+
+    const createResponse = await kmsInstance.send(command);
+
+    if (!createResponse.KeyMetadata || !createResponse.KeyMetadata.KeyId) {
+      throw new Error("key creation failed");
+    }
+
+    keyId = createResponse.KeyMetadata.KeyId;
 
     account = await createKmsAccount(keyId, kmsInstance);
   });
