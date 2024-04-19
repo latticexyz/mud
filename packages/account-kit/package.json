@@ -41,6 +41,7 @@
     "test:ci": "tsc --noEmit && vitest --run"
   },
   "dependencies": {
+    "@account-abstraction/contracts": "0.7.0",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
@@ -69,7 +70,6 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
-    "@account-abstraction/contracts": "0.7.0",
     "@latticexyz/gas-tank": "workspace:*",
     "@pimlicolabs/alto": "git+https://github.com/latticexyz/alto.git#3192a9a",
     "@types/debug": "^4.1.7",
@@ -88,14 +88,10 @@
     "vitest": "0.34.6"
   },
   "peerDependencies": {
-    "@account-abstraction/contracts": "0.7.0",
     "@latticexyz/gas-tank": "*",
     "@pimlicolabs/alto": "git+https://github.com/latticexyz/alto.git#3192a9a"
   },
   "peerDependenciesMeta": {
-    "@account-abstraction/contracts": {
-      "optional": true
-    },
     "@latticexyz/gas-tank": {
       "optional": true
     },
