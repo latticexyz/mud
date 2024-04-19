@@ -133,24 +133,9 @@ importers:
       '@aws-sdk/client-kms':
         specifier: '*'
         version: 3.556.0
-      '@ethersproject/abi':
-        specifier: ^5.7.0
-        version: 5.7.0
-      '@ethersproject/abstract-signer':
-        specifier: ^5.5.4
-        version: 5.7.0
       '@ethersproject/bytes':
         specifier: ^5.5.4
         version: 5.7.0
-      '@ethersproject/hash':
-        specifier: ^5.5.4
-        version: 5.7.0
-      '@ethersproject/keccak256':
-        specifier: ^5.5.4
-        version: 5.7.0
-      '@ethersproject/providers':
-        specifier: ^5.7.2
-        version: 5.7.2
       '@improbable-eng/grpc-web':
         specifier: ^0.15.0
         version: 0.15.0(google-protobuf@3.21.2)
@@ -193,9 +178,6 @@ importers:
       asn1.js:
         specifier: ^5.4.1
         version: 5.4.1
-      bn.js:
-        specifier: ^4.12.0
-        version: 4.12.0
       chalk:
         specifier: ^5.0.1
         version: 5.2.0
