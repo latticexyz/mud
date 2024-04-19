@@ -5,7 +5,7 @@ import { useIsGasSpender } from "../../useIsGasSpender";
 import { DepositContent } from "./DepositContent";
 import { GasSpenderContent } from "./GasSpenderContent";
 
-export function GasTankStep() {
+export function DepositStep() {
   const { gasTankBalance } = useGasTankBalance();
   const { isGasSpender } = useIsGasSpender();
   console.log({ gasTankBalance, isGasSpender });
