@@ -69,8 +69,8 @@ export const getEthAddressFromPublicKey = (publicKey: Uint8Array): Address => {
 
   const publicKeyBuffer: Buffer = res.pubKey.data;
 
-  const publicKeyString = computePublicKey(publicKeyBuffer);
-  const address = publicKeyToAddress(publicKeyString as Hex);
+  const publicKeyHex = computePublicKey(publicKeyBuffer) as Hex;
+  const address = publicKeyToAddress(publicKeyHex);
 
   return address;
 };
