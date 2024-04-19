@@ -18,7 +18,7 @@ export function GasSpenderContent() {
   const gasTank = usePaymaster("gasTank");
   const publicClient = usePublicClient({ chainId: chain.id });
   const { data: userAccountClient } = useWalletClient({ chainId: chain.id });
-  const appAccountClient = useAppAccountClient();
+  const { data: appAccountClient } = useAppAccountClient();
   const { resetStep } = useOnboardingSteps();
 
   const { mutate, isPending, error } = useMutation({

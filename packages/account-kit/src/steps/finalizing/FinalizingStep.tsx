@@ -19,7 +19,7 @@ export function FinalizingStep() {
   const { chain, worldAddress } = useConfig();
   const publicClient = usePublicClient({ chainId: chain.id });
   const { data: userAccountClient } = useWalletClient({ chainId: chain.id });
-  const appAccountClient = useAppAccountClient();
+  const { data: appAccountClient } = useAppAccountClient();
   const { resetStep } = useOnboardingSteps();
   const { registerDelegationSignature } = useSignRegisterDelegation();
 
