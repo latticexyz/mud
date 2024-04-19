@@ -3,7 +3,7 @@ import asn1 from "asn1.js";
 import { utils } from "ethers";
 import { sign } from "./kms";
 import { SignParams } from "./types";
-import { Address, Hex, Signature, hexToSignature, isAddressEqual, toHex } from "viem";
+import { Address, Hex, isAddressEqual, signatureToHex, toHex } from "viem";
 
 type CreateSignatureParams = SignParams & {
   address: Hex;
@@ -73,16 +73,13 @@ export const createSignature = async ({
   message,
   address,
   kmsInstance,
-}: CreateSignatureParams): Promise<Signature> => {
+}: CreateSignatureParams): Promise<Hex> => {
   const { r, s } = await getRS({ keyId, message, kmsInstance });
-  const recoveryParam = getRecoveryParam(message, r, s, address);
+  const yParity = getRecoveryParam(message, r, s, address);
 
-  // REMOVE THIS
-  const ethersSignature = utils.joinSignature({
-    r: r,
-    s: s,
-    v: recoveryParam,
-  }) as Hex;
-
-  return hexToSignature(ethersSignature);
+  return signatureToHex({
+    r,
+    s,
+    yParity,
+  });
 };

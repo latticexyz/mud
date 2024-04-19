@@ -1,5 +1,5 @@
 import { KMSClient } from "@aws-sdk/client-kms";
-import { LocalAccount, hashMessage, hashTypedData, keccak256, serializeTransaction, signatureToHex } from "viem";
+import { LocalAccount, hashMessage, hashTypedData, keccak256, serializeTransaction } from "viem";
 import { toAccount } from "viem/accounts";
 import { getEthAddressFromKMS } from "./kms";
 import { createSignature } from "./eth";
@@ -18,7 +18,7 @@ export async function createKmsAccount(keyId: string, kmsInstance: KMSClient): P
         address,
       });
 
-      return signatureToHex(signature);
+      return signature;
     },
     async signTransaction(transaction) {
       const unsignedTx = serializeTransaction(transaction);
@@ -30,7 +30,7 @@ export async function createKmsAccount(keyId: string, kmsInstance: KMSClient): P
         address,
       });
 
-      return signatureToHex(signature);
+      return signature;
     },
     async signTypedData(typedData) {
       const hash = hashTypedData(typedData);
@@ -41,7 +41,7 @@ export async function createKmsAccount(keyId: string, kmsInstance: KMSClient): P
         address,
       });
 
-      return signatureToHex(signature);
+      return signature;
     },
   });
 
