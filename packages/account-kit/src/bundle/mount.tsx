@@ -88,6 +88,10 @@ export function mount({
   return () => {
     // TODO: do this via a mutation observer instead?
     internalStore.setState({ rootContainer: undefined });
+    // If we created this root container, we can clean it up.
+    if (rootContainer !== initialRootContainer) {
+      rootContainer.remove();
+    }
     setupPromise.then((unmount) => unmount?.());
   };
 }
