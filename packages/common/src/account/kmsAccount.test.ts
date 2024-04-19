@@ -1,18 +1,18 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { createKmsAccount } from "./kmsAccount";
 import { KMSClient } from "@aws-sdk/client-kms";
-import { LocalAccount, verifyMessage, verifyTypedData } from "viem";
+import { LocalAccount, parseGwei, verifyMessage, verifyTypedData } from "viem";
 
 describe("kmsAccount", () => {
   let account: LocalAccount;
 
   beforeEach(async () => {
-    const keyId = "PLACEHOLDER";
+    const keyId = "PLACE";
     const kmsInstance = new KMSClient({
       region: "eu-west-2",
       credentials: {
-        accessKeyId: "PLACEHOLDER",
-        secretAccessKey: "PLACEHOLDER",
+        accessKeyId: "PLACE",
+        secretAccessKey: "PLACE",
       },
     });
 
@@ -30,6 +30,17 @@ describe("kmsAccount", () => {
     });
 
     expect(valid).toBeTruthy();
+  });
+
+  it("signTransaction", async () => {
+    await account.signTransaction({
+      chainId: 1,
+      maxFeePerGas: parseGwei("20"),
+      maxPriorityFeePerGas: parseGwei("3"),
+      gas: 21000n,
+      nonce: 69,
+      to: "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+    });
   });
 
   it("signTypedData", async () => {

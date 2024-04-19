@@ -1,5 +1,5 @@
 import { KMSClient } from "@aws-sdk/client-kms";
-import { LocalAccount, hashMessage, hashTypedData, signatureToHex } from "viem";
+import { LocalAccount, hashMessage, hashTypedData, keccak256, serializeTransaction, signatureToHex } from "viem";
 import { toAccount } from "viem/accounts";
 import { getEthAddressFromKMS } from "./kms";
 import { createSignature } from "./eth";
@@ -20,8 +20,17 @@ export async function createKmsAccount(keyId: string, kmsInstance: KMSClient): P
 
       return signatureToHex(signature);
     },
-    async signTransaction() {
-      return "0x"; // TODO
+    async signTransaction(transaction) {
+      const unsignedTx = serializeTransaction(transaction);
+      const hash = keccak256(unsignedTx);
+      const signature = await createSignature({
+        kmsInstance,
+        keyId,
+        message: hash,
+        address,
+      });
+
+      return signatureToHex(signature);
     },
     async signTypedData(typedData) {
       const hash = hashTypedData(typedData);
