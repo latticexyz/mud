@@ -1,11 +1,10 @@
 // @ts-expect-error types
 import asn1 from "asn1.js";
-import { utils } from "ethers";
-import { signWithKMS } from "./kms";
 import { Address, Hex, isAddressEqual, signatureToHex, toHex } from "viem";
 import { KMSClient, SignCommandInput } from "@aws-sdk/client-kms";
-import { publicKeyToAddress } from "viem/utils";
+import { publicKeyToAddress, recoverAddress } from "viem/utils";
 import { computePublicKey } from "ethers/lib/utils";
+import { signWithKMS } from "./kms";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const EcdsaSigAsnParse = asn1.define("EcdsaSig", function (this: any) {
@@ -46,17 +45,20 @@ const getRS = async (signParams: {
   };
 };
 
-const getRecoveryParam = (message: string, r: Hex, s: Hex, expectedEthAddr: Hex): number => {
-  let recoveryParam: number;
-  for (recoveryParam = 0; recoveryParam <= 1; recoveryParam++) {
-    const address = utils.recoverAddress(message, {
+const getRecovery = async (hash: Hex, r: Hex, s: Hex, expectedAddress: Hex): Promise<number> => {
+  let recovery: number;
+  for (recovery = 0; recovery <= 1; recovery++) {
+    const signature = signatureToHex({
       r,
       s,
-      recoveryParam,
-    }) as Hex;
+      v: recovery ? 28n : 27n,
+      yParity: recovery,
+    });
 
-    if (isAddressEqual(address, expectedEthAddr)) {
-      return recoveryParam;
+    const address = await recoverAddress({ hash, signature });
+
+    if (isAddressEqual(address, expectedAddress)) {
+      return recovery;
     }
   }
   throw new Error("Failed to calculate recovery param");
@@ -91,7 +93,7 @@ type SignReturnType = Hex;
  */
 export const sign = async ({ hash, address, keyId, kmsInstance }: SignParameters): Promise<SignReturnType> => {
   const { r, s } = await getRS({ keyId, hash, kmsInstance });
-  const recovery = getRecoveryParam(hash, r, s, address);
+  const recovery = await getRecovery(hash, r, s, address);
 
   return signatureToHex({
     r,
