@@ -70,7 +70,6 @@ export const waitForUserOperationTransactionHash = async <
           if (timeout) clearTimeout(timeoutTimer);
         };
         try {
-          console.log("pimlico hash", hash);
           const _userOperationStatus = await getAction(
             bundlerClient,
             getUserOperationStatus,

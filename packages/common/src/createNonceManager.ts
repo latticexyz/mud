@@ -4,7 +4,6 @@ import { getNonceManagerId } from "./getNonceManagerId";
 import { getTransactionCount } from "viem/actions";
 import PQueue from "p-queue";
 import { getAction } from "viem/utils";
-import { ENTRYPOINT_ADDRESS_V07, getAccountNonce } from "permissionless";
 
 const debug = parentDebug.extend("createNonceManager");
 
@@ -67,17 +66,7 @@ export function createNonceManager({
   }
 
   async function resetNonce(): Promise<void> {
-    console.log("resetting nonce for", client);
-    const nonce =
-      client.type === "smartAccountClient"
-        ? Number(
-            await getAction(
-              client,
-              getAccountNonce,
-              "getAccountNonce",
-            )({ sender: address, entryPoint: ENTRYPOINT_ADDRESS_V07 }),
-          )
-        : await getAction(client, getTransactionCount, "getTransactionCount")({ address, blockTag });
+    const nonce = await getAction(client, getTransactionCount, "getTransactionCount")({ address, blockTag });
 
     nonceRef.current = nonce;
     channel?.postMessage(JSON.stringify(nonceRef.current));
