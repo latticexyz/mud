@@ -57,8 +57,27 @@ export function useAppAccountClient(): AppAccountClient | undefined {
     }).extend(() => publicActions(publicClient));
 
     const baseMiddleware = {
-      gasPrice: async () => (await pimlicoBundlerClient.getUserOperationGasPrice()).fast, // use pimlico bundler to get gas prices
+      // gasPrice: async () => (await pimlicoBundlerClient.getUserOperationGasPrice()).fast, // use pimlico bundler to get gas prices
     } satisfies Middleware;
+
+    const gasEstimationStateOverrides = gasTank
+      ? {
+          // Pimlico's gas estimation runs with high gas limits, which can make the estimation fail if
+          // the cost would exceed the user's balance.
+          // We override the user's balance in the paymaster contract and the deposit balance of the
+          // paymaster in the entry point contract to make the gas estimation succeed.
+          [gasTank.address]: {
+            stateDiff: {
+              [getUserBalanceSlot(userAddress)]: toHex(maxUint256),
+            },
+          },
+          [entryPointAddress]: {
+            stateDiff: {
+              [getEntryPointDepositSlot(gasTank.address)]: toHex(maxUint256),
+            },
+          },
+        }
+      : undefined;
 
     const gasTankMiddleware = gasTank
       ? ({
@@ -71,22 +90,7 @@ export function useAppAccountClient(): AppAccountClient | undefined {
                   paymasterData: "0x",
                 },
               },
-              {
-                // Pimlico's gas estimation runs with high gas limits, which can make the estimation fail if
-                // the cost would exceed the user's balance.
-                // We override the user's balance in the paymaster contract and the deposit balance of the
-                // paymaster in the entry point contract to make the gas estimation succeed.
-                [gasTank.address]: {
-                  stateDiff: {
-                    [getUserBalanceSlot(userAddress)]: toHex(maxUint256),
-                  },
-                },
-                [entryPointAddress]: {
-                  stateDiff: {
-                    [getEntryPointDepositSlot(gasTank.address)]: toHex(maxUint256),
-                  },
-                },
-              },
+              gasEstimationStateOverrides,
             );
 
             return {
@@ -112,7 +116,9 @@ export function useAppAccountClient(): AppAccountClient | undefined {
       pollingInterval: defaultPollingInterval,
       transport: transportObserver("bundler transport", erc4337Config.transport),
     })
+      .extend(() => publicActions(publicClient))
       .extend((client) => ({
+        // TODO: rip out into a userOperationQueue (transactionQueue equivalent)
         sendTransaction: (args) => {
           console.log("bundler hijacked send transaction");
           return sendTransaction<Chain, SmartAccount<ENTRYPOINT_ADDRESS_V07_TYPE>, ENTRYPOINT_ADDRESS_V07_TYPE>(
@@ -125,20 +131,29 @@ export function useAppAccountClient(): AppAccountClient | undefined {
               Chain,
               SmartAccount<ENTRYPOINT_ADDRESS_V07_TYPE>
             >,
+            {
+              estimateFeesPerGas: async () => (await pimlicoBundlerClient.getUserOperationGasPrice()).fast,
+              queueConcurrency: 10,
+            },
           );
         },
       }))
+      // .extend((client) => ({
+      //   prepareUserOperationRequest: (args) => {
+      //     console.log("bundler hijacked prepareUserOperationRequest");
+      //     const { nonce, ...callsWithoutNonce } = args;
+      //     return prepareUserOperationRequest(client, callsWithoutNonce);
+      //   },
+      // }))
       .extend(smartAccountActions({ middleware }))
-      // .extend(transactionQueue({ publicClient }))
       .extend(
         callFrom({
           worldAddress,
           delegatorAddress: userAddress,
           publicClient,
         }),
-      )
-      // .extend(writeObserver({ onWrite: (write) => write$.next(write) }))
-      .extend(() => publicActions(publicClient));
+      );
+    // .extend(writeObserver({ onWrite: (write) => write$.next(write) }))
 
     return appAccountClient;
   }, [appSignerAccount, userAddress, publicClient, appAccount, erc4337Config, gasTank, worldAddress]);
