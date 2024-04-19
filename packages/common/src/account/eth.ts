@@ -1,9 +1,13 @@
-// @ts-ignore
+// @ts-expect-error
 import asn1 from "asn1.js";
 import { utils } from "ethers";
 import { sign } from "./kms";
-import { CreateSignatureParams, SignParams } from "./types";
-import { Hex, Signature, hexToSignature, isAddressEqual, toHex } from "viem";
+import { SignParams } from "./types";
+import { Address, Hex, Signature, hexToSignature, isAddressEqual, toHex } from "viem";
+
+type CreateSignatureParams = SignParams & {
+  address: Hex;
+};
 
 const EcdsaSigAsnParse = asn1.define("EcdsaSig", function (this: any) {
   this.seq().obj(this.key("r").int(), this.key("s").int());
@@ -55,12 +59,12 @@ const getRecoveryParam = (msg: string, r: string, s: string, expectedEthAddr: He
   throw new Error("Failed to calculate recovery param");
 };
 
-export const getEthAddressFromPublicKey = (publicKey: Uint8Array): string => {
+export const getEthAddressFromPublicKey = (publicKey: Uint8Array): Address => {
   const res = EcdsaPubKey.decode(Buffer.from(publicKey));
 
   const pubKeyBuffer: Buffer = res.pubKey.data;
 
-  const address = utils.computeAddress(pubKeyBuffer);
+  const address = utils.computeAddress(pubKeyBuffer) as Address;
   return address;
 };
 
@@ -73,6 +77,7 @@ export const createSignature = async ({
   const { r, s } = await getRS({ keyId, message, kmsInstance });
   const recoveryParam = getRecoveryParam(message, r, s, address);
 
+  // REMOVE THIS
   const ethersSignature = utils.joinSignature({
     r: r,
     s: s,

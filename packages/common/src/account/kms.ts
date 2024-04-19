@@ -1,10 +1,27 @@
-import { GetPublicKeyCommand, GetPublicKeyCommandOutput, SignCommand, SignCommandOutput } from "@aws-sdk/client-kms";
-import { SignParams, GetEthAddressFromKMSparams, GetPublicKeyParams } from "./types";
-import { getEthAddressFromPublicKey } from "./eth";
+import {
+  GetPublicKeyCommand,
+  GetPublicKeyCommandOutput,
+  KMSClient,
+  SignCommand,
+  SignCommandInput,
+  SignCommandOutput,
+} from "@aws-sdk/client-kms";
 import { utils } from "ethers";
 import { Address } from "viem";
+import { SignParams } from "./types";
+import { getEthAddressFromPublicKey } from "./eth";
 
-export const getPublicKey = (getPublicKeyParams: GetPublicKeyParams): Promise<GetPublicKeyCommandOutput> => {
+type GetPublicKeyParams = {
+  keyId: SignCommandInput["KeyId"];
+  kmsInstance: KMSClient;
+};
+
+type GetEthAddressFromKMSparams = {
+  keyId: SignCommandInput["KeyId"];
+  kmsInstance: KMSClient;
+};
+
+const getPublicKey = (getPublicKeyParams: GetPublicKeyParams): Promise<GetPublicKeyCommandOutput> => {
   const { keyId, kmsInstance } = getPublicKeyParams;
   const command = new GetPublicKeyCommand({ KeyId: keyId });
 
@@ -17,7 +34,7 @@ export const getEthAddressFromKMS = async (
   const { keyId, kmsInstance } = getEthAddressFromKMSparams;
   const KMSKey = await getPublicKey({ keyId, kmsInstance });
 
-  return getEthAddressFromPublicKey(KMSKey.PublicKey as Uint8Array) as Address;
+  return getEthAddressFromPublicKey(KMSKey.PublicKey as Uint8Array);
 };
 
 export const sign = async (signParams: SignParams): Promise<SignCommandOutput> => {
