@@ -281,6 +281,9 @@ importers:
       '@aws-sdk/client-kms':
         specifier: '*'
         version: 3.556.0
+      '@ethersproject/signing-key':
+        specifier: ^5.7.0
+        version: 5.7.0
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
@@ -293,9 +296,6 @@ importers:
       debug:
         specifier: ^4.3.4
         version: 4.3.4
-      ethers:
-        specifier: ^5.7.2
-        version: 5.7.2
       execa:
         specifier: ^7.0.0
         version: 7.0.0
@@ -1249,7 +1249,7 @@ packages:
       '@arktype/util': 0.0.23
       '@typescript/analyze-trace': 0.10.1
       '@typescript/vfs': 1.5.0
-      arktype: 1.0.29-alpha
+      arktype: 2.0.0-dev.7
       typescript: 5.4.2
     transitivePeerDependencies:
       - supports-color
@@ -1259,6 +1259,12 @@ packages:
     resolution: {integrity: sha512-f3p8apUMOTl6KlFNTrOX6twQJDeSdSmtYPVca7SaQjUUTAxfUlaROY1/i1C3y2llYDrrQBEbsggk8k2Oxxgrvw==}
     dev: true
 
+  /@arktype/schema@0.0.7:
+    resolution: {integrity: sha512-awo14Oi98bn6pEgN7soiXvD+mQzidLgzABVO7Tpbw6xtU7+XRWp6JucSEmWLASC+fcoK0QSJxdoC+rm3iIKarQ==}
+    dependencies:
+      '@arktype/util': 0.0.33
+    dev: true
+
   /@arktype/util@0.0.23:
     resolution: {integrity: sha512-MwtDGjbgfXWxlExjIL78HvPlWOma1XFEcDd3VWuCPMt/f+3TR7fXyiGFNlIYZGOYdOIU7qgjaE8dmbd6jdJa3Q==}
     dev: true
@@ -1266,6 +1272,10 @@ packages:
   /@arktype/util@0.0.29:
     resolution: {integrity: sha512-fDTBSVzxLj9k1ZjinkawmaQdcXFKMBVK8c+vqMPxwoa94mPMZxBo84yQcqyFVcIcWIkg6qQQmH1ozyT4nqFT/g==}
     dev: false
+
+  /@arktype/util@0.0.33:
+    resolution: {integrity: sha512-MYbrLHf0tVYjxI84m0mMRISmKKVoPzv25B1/X05nePUcyPqROoDBn+hYhHpB0GqnJZQOr8UG1CyMuxjFeVbTNg==}
+    dev: true
 
   /@aws-crypto/ie11-detection@3.0.0:
     resolution: {integrity: sha512-341lBBkiY1DfDNKai/wXM3aujNBkXR7tq1URPQDL9wi3AUbI80NR74uF1TXHMm7po1AcnFk8iu2S2IeU/+/A+Q==}
@@ -5201,6 +5211,14 @@ packages:
 
   /arktype@1.0.29-alpha:
     resolution: {integrity: sha512-glMLgVhIQRSkR3tymiS+POAcWVJH09sfrgic0jHnyFL8BlhHAJZX2BzdImU9zYr1y9NBqy+U93ZNrRTHXsKRDw==}
+    dev: false
+
+  /arktype@2.0.0-dev.7:
+    resolution: {integrity: sha512-TeehK+ExNsvqNoEccNOMs73LcNwR9+gX9pQsoCIvZfuxrQ24nB5MUQGweAAuNSwVX7GUUU9Ad0BWGnsvD8ST+g==}
+    dependencies:
+      '@arktype/schema': 0.0.7
+      '@arktype/util': 0.0.33
+    dev: true
 
   /array-includes@3.1.6:
     resolution: {integrity: sha512-sgTbLvL6cNnw24FnbaDyjmvddQ2ML8arZsgaJhoABMoplz/4QRhtrYS+alr1BUM1Bwp6dhx8vVCBSLG+StwOFw==}
