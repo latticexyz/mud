@@ -57,7 +57,7 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@aws-sdk/client-kms": "*",
+    "@aws-sdk/client-kms": "^3.556.0",
     "@ethersproject/signing-key": "^5.7.0",
     "@latticexyz/schema-type": "workspace:*",
     "@solidity-parser/parser": "^0.16.0",
