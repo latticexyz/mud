@@ -19,15 +19,6 @@ import { StorageSlot } from "./StorageSlot.sol";
 bytes32 constant IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
 /**
- * @dev Stores a new address in the EIP1967 implementation slot.
- */
-function _setImplementation(address newImplementation) {
-  StorageSlot.getAddressSlot(IMPLEMENTATION_SLOT).value = newImplementation;
-
-  emit IERC1967.Upgraded(newImplementation);
-}
-
-/**
  * @title World Proxy Contract
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This contract is a proxy that uses a World contract as an implementation.
@@ -48,6 +39,15 @@ contract WorldProxy is Proxy {
 
   /**
    * @dev Stores a new address in the EIP1967 implementation slot.
+   */
+  function _setImplementation(address newImplementation) internal {
+    StorageSlot.getAddressSlot(IMPLEMENTATION_SLOT).value = newImplementation;
+
+    emit IERC1967.Upgraded(newImplementation);
+  }
+
+  /**
+   * @dev Stores a new address in the EIP1967 implementation slot with access control checks.
    */
   function setImplementation(address newImplementation) public {
     AccessControl.requireOwner(ROOT_NAMESPACE_ID, msg.sender);
