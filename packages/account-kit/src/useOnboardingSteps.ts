@@ -3,6 +3,7 @@ import { AccountRequirement, useAccountRequirements } from "./useAccountRequirem
 import { useStore } from "zustand";
 import { useCallback, useMemo } from "react";
 import { keysOf } from "./utils/keysOf";
+import { useIsFree } from "./useIsFree";
 
 export const onboardingSteps = {
   wallet: {
@@ -41,6 +42,7 @@ const store = createStore<{ readonly step: OnboardingStep | null }>(() => ({ ste
 export function useOnboardingSteps() {
   const initialStep = useStore(store, (state) => state.step);
   const { requirements } = useAccountRequirements();
+  const isFree = useIsFree();
 
   const setStep = useCallback((step: OnboardingStep): void => {
     store.setState({ step });
@@ -51,15 +53,17 @@ export function useOnboardingSteps() {
   }, []);
 
   return useMemo(() => {
-    const steps = keysOf(onboardingSteps).map((id) => {
-      const step = onboardingSteps[id];
-      return {
-        id,
-        ...step,
-        canComplete: step.requires.every((req) => !requirements.includes(req)),
-        isComplete: step.satisfies.every((req) => !requirements.includes(req)),
-      };
-    });
+    const steps = keysOf(onboardingSteps)
+      // .filter((id) => (isFree ? id !== "deposit" : id))
+      .map((id) => {
+        const step = onboardingSteps[id];
+        return {
+          id,
+          ...step,
+          canComplete: step.requires.every((req) => !requirements.includes(req)),
+          isComplete: step.satisfies.every((req) => !requirements.includes(req)),
+        };
+      });
 
     const lastIncompleteStep = steps.filter((step) => !step.isComplete).at(0) ?? steps.at(-1)!;
     const step = initialStep ?? lastIncompleteStep.id;
@@ -70,5 +74,5 @@ export function useOnboardingSteps() {
       resetStep,
       steps,
     };
-  }, [initialStep, requirements, resetStep, setStep]);
+  }, [initialStep, isFree, requirements, resetStep, setStep]);
 }

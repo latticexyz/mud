@@ -85,7 +85,6 @@ export const useTransactionFees = (amount: number | undefined, depositMethod: De
   const [fees, setFees] = useState<string>("");
   const { chain } = useConfig();
   const gasTank = usePaymaster("gasTank");
-  if (!gasTank) throw new Error("No gas tank configured.");
   const wagmiConfig = useWagmiConfig();
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
@@ -93,6 +92,12 @@ export const useTransactionFees = (amount: number | undefined, depositMethod: De
 
   useEffect(() => {
     const fetchFees = async () => {
+      if (!gasTank) {
+        // TODO: implement non-gas tank flow
+        console.warn("useTransactionFees expects a gas tank.");
+        return;
+      }
+
       let fees;
       if (depositMethod === "direct") {
         fees = await estimateDirectFee({

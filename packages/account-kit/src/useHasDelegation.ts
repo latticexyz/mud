@@ -1,20 +1,18 @@
-import { useAccount, usePublicClient } from "wagmi";
+import { useAccount } from "wagmi";
 import { useConfig } from "./AccountKitProvider";
-import { useAppAccount } from "./useAppAccount";
-import { useAppSigner } from "./useAppSigner";
 import { unlimitedDelegationControlId } from "./common";
 import worldConfig from "@latticexyz/world/mud.config";
 import { useRecord } from "./useRecord";
+import { useAppAccountClient } from "./useAppAccountClient";
 
 export function useHasDelegation() {
   const { chain, worldAddress } = useConfig();
-  const publicClient = usePublicClient({ chainId: chain.id });
-  const userAccount = useAccount();
-  const [appSignerAccount] = useAppSigner();
-  const appAccount = useAppAccount({ publicClient, appSignerAccount });
 
+  const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
-  const appAccountAddress = appAccount.data?.address;
+
+  const { data: appAccountClient } = useAppAccountClient();
+  const appAccountAddress = appAccountClient?.account.address;
 
   const result = useRecord(
     userAccountAddress && appAccountAddress
