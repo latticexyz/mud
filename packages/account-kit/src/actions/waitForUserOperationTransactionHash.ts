@@ -58,8 +58,6 @@ export const waitForUserOperationTransactionHash = async <
 ): Promise<WaitForUserOperationTransactionHashReturnType> => {
   const observerId = stringify(["waitForUserOperationReceipt", bundlerClient.uid, hash]);
 
-  let userOperationTransactionHash: WaitForUserOperationTransactionHashReturnType;
-
   const getUserOperationStatusPromise = new Promise((resolve, reject) => {
     const unobserve = observe(observerId, { resolve, reject }, async (emit) => {
       let timeoutTimer: ReturnType<typeof setTimeout>;
@@ -79,12 +77,13 @@ export const waitForUserOperationTransactionHash = async <
           )({ hash });
 
           if (_userOperationStatus.transactionHash !== null) {
-            userOperationTransactionHash = { transactionHash: _userOperationStatus.transactionHash };
+            done(() => emit.resolve({ transactionHash: _userOperationStatus.transactionHash }));
+            return;
           }
 
-          if (userOperationTransactionHash) {
-            done(() => emit.resolve(userOperationTransactionHash));
-            return;
+          // The only valid state in which the status doesn not include a tx hash is "not_submitted" or "not_found"
+          if (_userOperationStatus.status !== "not_submitted" && _userOperationStatus.status !== "not_found") {
+            done(() => emit.reject("Unexpected transaction status: " + _userOperationStatus.status));
           }
         } catch (err) {
           done(() => emit.reject(err));

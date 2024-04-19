@@ -13,6 +13,7 @@ import { useAppAccountClient } from "../../useAppAccountClient";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
 import { useConfig } from "../../AccountKitProvider";
 import CallWithSignatureAbi from "@latticexyz/world-modules/out/IUnstable_CallWithSignatureSystem.sol/IUnstable_CallWithSignatureSystem.abi.json";
+import { getAction } from "viem/utils";
 
 export function FinalizingStep() {
   const queryClient = useQueryClient();
@@ -32,11 +33,18 @@ export function FinalizingStep() {
       if (!appAccountClient) throw new Error("App account client not ready.");
       if (!registerDelegationSignature) throw new Error("No delegation signature.");
 
+      // TODO: should this use `callWithSignature`?
       console.log("calling registerDelegation");
-      return await writeContract(appAccountClient, {
+      return await getAction(
+        appAccountClient,
+        writeContract,
+        "writeContract",
+      )({
         address: worldAddress,
         abi: CallWithSignatureAbi,
         functionName: "callWithSignature",
+        account: appAccountClient.account,
+        chain,
         args: [
           userAccountClient.account.address,
           resourceToHex({ type: "system", namespace: "", name: "Registration" }),
