@@ -1,25 +1,30 @@
 import rainbowKitCss from "@rainbow-me/rainbowkit/styles.css?inline";
 import type { Config as WagmiConfig } from "wagmi";
-import type { Config as AccountKitConfig } from "../AccountKitProvider";
+import type { Config as AccountKitConfig } from "../config";
 import { store } from "./store";
-
-// TODO: ensure we only mount modal
+import { internalStore } from "./internalStore";
+import { Buttons } from "./Buttons";
 
 export type MountOptions = {
-  rootElementId?: string;
-  wagmiConfig: WagmiConfig;
+  // TODO: accept a CSS selector?
+  rootContainer?: Element | undefined;
+  // TODO: make this a top-level config
   accountKitConfig: AccountKitConfig;
+  // TODO: can we do sane defaults here based on e.g. chain?
+  wagmiConfig: WagmiConfig;
+  // TODO: add walletConnectProjectId
 };
 
-export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountKitConfig }: MountOptions): () => void {
-  if (typeof window === "undefined") {
-    throw new Error("MUD Account Kit should only be used in browser bundles.");
-  }
+if (typeof window === "undefined" || typeof document === "undefined") {
+  // TODO: should we throw inside `mount()` instead of at import time?
+  throw new Error("MUD Account Kit should only be used in browser bundles.");
+}
 
-  if (document.getElementById(rootElementId)) {
-    throw new Error("MUD Account Kit is already mounted.");
-  }
-
+export function mount({
+  rootContainer: initialRootContainer,
+  wagmiConfig,
+  accountKitConfig,
+}: MountOptions): () => void {
   async function setup() {
     // TODO: do async imports like this help us at all with bundle sizes/code splitting?
     const React = await import("react");
@@ -30,13 +35,14 @@ export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountK
     const { AccountKitProvider } = await import("../AccountKitProvider");
     const { SyncStore } = await import("./SyncStore");
 
+    if (internalStore.getState().rootContainer) {
+      throw new Error("MUD Account Kit is already mounted and only one instance is allowed on the page at a time.");
+    }
+
     const queryClient = new QueryClient();
+    const rootContainer = initialRootContainer ?? document.body.appendChild(document.createElement("div"));
 
-    const rootElement = document.createElement("div");
-    rootElement.id = rootElementId;
-    document.body.appendChild(rootElement);
-
-    const root = ReactDOM.createRoot(rootElement);
+    const root = ReactDOM.createRoot(rootContainer);
     root.render(
       <React.StrictMode>
         <WagmiProvider config={wagmiConfig}>
@@ -59,6 +65,7 @@ export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountK
             >
               <AccountKitProvider config={accountKitConfig}>
                 <SyncStore store={store} />
+                <Buttons />
                 <style dangerouslySetInnerHTML={{ __html: rainbowKitCss }} />
               </AccountKitProvider>
             </RainbowKitProvider>
@@ -67,9 +74,14 @@ export function mount({ rootElementId = "mud-account-kit", wagmiConfig, accountK
       </React.StrictMode>,
     );
 
+    internalStore.setState({ rootContainer });
+
     return () => {
+      // TODO: can we do this after removing from DOM tree? if so, do this via mutation observer instead?
       root.unmount();
-      rootElement.remove();
+      rootContainer.remove();
+      // TODO: do this via a mutation observer instead?
+      internalStore.setState({ rootContainer: undefined });
     };
   }
 
