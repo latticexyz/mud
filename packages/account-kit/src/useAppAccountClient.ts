@@ -154,7 +154,6 @@ export function useAppAccountClient(): UseQueryResult<AppAccountClient> {
                     >,
                     {
                       estimateFeesPerGas: async () => (await pimlicoBundlerClient.getUserOperationGasPrice()).fast,
-                      queueConcurrency: 10,
                     },
                   );
                 },
