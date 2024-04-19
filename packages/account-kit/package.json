@@ -41,15 +41,12 @@
     "test:ci": "tsc --noEmit && vitest --run"
   },
   "dependencies": {
-    "@account-abstraction/contracts": "0.7.0",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
-    "@latticexyz/gas-tank": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/world": "workspace:*",
     "@latticexyz/world-modules": "workspace:*",
-    "@pimlicolabs/alto": "git+https://github.com/latticexyz/alto.git#3192a9a",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-select": "^2.0.0",
