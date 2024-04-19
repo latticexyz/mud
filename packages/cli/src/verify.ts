@@ -4,6 +4,7 @@ import { deployer } from "./deploy/ensureDeployer";
 import { getWorldFactoryContracts } from "./deploy/getWorldFactoryContracts";
 import { verifyContract } from "./verifyContract";
 import PQueue from "p-queue";
+import { getWorldProxyFactoryContracts } from "./deploy/getWorldProxyFactoryContracts";
 
 type VerifyOptions = {
   foundryProfile?: string;
@@ -12,6 +13,7 @@ type VerifyOptions = {
   systems: { name: string; bytecode: Hex }[];
   modules: { name: string; bytecode: Hex }[];
   worldAddress: Hex;
+  useProxy?: boolean;
 };
 
 export async function verify({
@@ -21,6 +23,7 @@ export async function verify({
   worldAddress,
   verifier,
   verifierUrl,
+  useProxy,
 }: VerifyOptions): Promise<void> {
   const rpc = await getRpcUrl(foundryProfile);
 
@@ -44,7 +47,7 @@ export async function verify({
             console.error(`Error verifying system contract ${name}:`, error);
           }),
     ),
-    ...Object.entries(getWorldFactoryContracts(deployer)).map(
+    ...Object.entries(useProxy ? getWorldProxyFactoryContracts(deployer) : getWorldFactoryContracts(deployer)).map(
       ([name, { bytecode }]) =>
         () =>
           verifyContract(

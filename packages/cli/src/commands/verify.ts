@@ -18,6 +18,7 @@ type Options = {
   srcDir?: string;
   verifier?: string;
   verifierUrl?: string;
+  useProxy?: boolean;
 };
 
 const commandModule: CommandModule<Options, Options> = {
@@ -35,6 +36,10 @@ const commandModule: CommandModule<Options, Options> = {
       verifierUrl: {
         type: "string",
         desc: "The verification provider.",
+      },
+      useProxy: {
+        type: "boolean",
+        desc: "Whether the World was deployed with a proxy.",
       },
     });
   },
@@ -83,6 +88,7 @@ const commandModule: CommandModule<Options, Options> = {
         worldAddress: opts.worldAddress as Hex,
         verifier: opts.verifier,
         verifierUrl: opts.verifierUrl,
+        useProxy: opts.useProxy,
       });
     } catch (error) {
       logError(error);
