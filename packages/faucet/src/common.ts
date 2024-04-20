@@ -6,3 +6,6 @@ export type FaucetContext = {
   dripAmount: bigint;
   signMessagePrefix: string;
 };
+
+export const encodedSignatureLength = 214;
+export const tweetMaxLength = 280;

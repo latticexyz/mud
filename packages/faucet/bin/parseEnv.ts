@@ -1,5 +1,8 @@
 import { isHex, parseEther } from "viem";
 import { z, ZodError, ZodIntersection, ZodTypeAny } from "zod";
+import { encodedSignatureLength, tweetMaxLength } from "../src/common";
+
+const signMessagePrefixMaxLength = tweetMaxLength - encodedSignatureLength - 1;
 
 const commonSchema = z.object({
   HOST: z.string().default("0.0.0.0"),
@@ -11,7 +14,13 @@ const commonSchema = z.object({
     .default("1")
     .transform((ether) => parseEther(ether)),
   DEV: z.boolean().default(false),
-  SIGN_MESSAGE_PREFIX: z.string().default(""),
+  SIGN_MESSAGE_PREFIX: z
+    .string()
+    .max(
+      signMessagePrefixMaxLength,
+      `Prefix must be short than ${signMessagePrefixMaxLength + 1} characters to fit in a tweet.`,
+    )
+    .default(""),
 });
 
 export function parseEnv<TSchema extends ZodTypeAny | undefined = undefined>(
@@ -22,8 +31,7 @@ export function parseEnv<TSchema extends ZodTypeAny | undefined = undefined>(
     return envSchema.parse(process.env);
   } catch (error) {
     if (error instanceof ZodError) {
-      const { ...invalidEnvVars } = error.format();
-      console.error(`\nMissing or invalid environment variables:\n\n  ${Object.keys(invalidEnvVars).join("\n  ")}\n`);
+      console.error(`\nMissing or invalid environment variables:\n\n`, error.flatten());
       process.exit(1);
     }
     throw error;

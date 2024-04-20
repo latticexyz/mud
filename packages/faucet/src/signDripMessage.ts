@@ -10,10 +10,10 @@ export type SignDripMessageParams = {
   username: string;
 };
 
-export function signDripMessage({ client, account, username }: SignDripMessageParams): Promise<Hex> {
+export function signDripMessage({ client, account, username, signMessagePrefix }: SignDripMessageParams): Promise<Hex> {
   return getAction(
     client,
     signMessage,
     "signMessage",
-  )({ account, message: getDripMessage({ address: account.address, username }) });
+  )({ account, message: getDripMessage({ address: account.address, username, signMessagePrefix }) });
 }

@@ -15,8 +15,10 @@ describe("verifyDripMessage", () => {
 
   it("should verify a message signed with `signDripMessage`", async () => {
     const signature = await signDripMessage({ client, account, username, signMessagePrefix });
-    expect(await verifyDripMessage({ address: account.address, signature, username })).toBe(true);
-    expect(await verifyDripMessage({ address: account.address, signature, username: "@bob" })).toBe(false);
-    expect(await verifyDripMessage({ address: account2.address, signature, username })).toBe(false);
+    expect(await verifyDripMessage({ address: account.address, signature, username, signMessagePrefix })).toBe(true);
+    expect(await verifyDripMessage({ address: account.address, signature, username: "@bob", signMessagePrefix })).toBe(
+      false,
+    );
+    expect(await verifyDripMessage({ address: account2.address, signature, username, signMessagePrefix })).toBe(false);
   });
 });
