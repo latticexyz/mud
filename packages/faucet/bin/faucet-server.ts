@@ -7,26 +7,33 @@ import { createKoaMiddleware } from "trpc-koa-adapter";
 import { healthcheck } from "../src/koa-middleware/healthcheck";
 import { helloWorld } from "../src/koa-middleware/helloWorld";
 import { apiRoutes } from "../src/apiRoutes";
-import { http, createClient } from "viem";
+import { http, createWalletClient } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { createAppRouter } from "../src/trpc/createAppRouter";
 import { parseEnv } from "./parseEnv";
+import { FaucetContext } from "../src/common";
 
 const env = parseEnv();
 
-const client = createClient({
-  transport: http(env.RPC_HTTP_URL),
-});
-
 const faucetAccount = privateKeyToAccount(env.FAUCET_PRIVATE_KEY);
 
+const client = createWalletClient({
+  transport: http(env.RPC_HTTP_URL),
+  account: faucetAccount,
+});
+
 const server = new Koa();
+
+const faucetContext = {
+  dripAmount: env.DRIP_AMOUNT_ETHER,
+  client,
+} satisfies FaucetContext;
 
 server.use(cors());
 server.use(bodyParser());
 server.use(healthcheck());
 server.use(helloWorld());
-server.use(apiRoutes());
+server.use(apiRoutes(faucetContext));
 
 server.use(
   createKoaMiddleware({

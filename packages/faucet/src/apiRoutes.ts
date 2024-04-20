@@ -2,8 +2,9 @@ import { Middleware } from "koa";
 import Router from "@koa/router";
 import compose from "koa-compose";
 import { debug, error } from "./debug";
+import { FaucetContext } from "./common";
 
-export function apiRoutes(): Middleware {
+export function apiRoutes(faucetContext: FaucetContext): Middleware {
   const router = new Router();
 
   router.post("/api/dripX", async (ctx) => {
@@ -11,7 +12,7 @@ export function apiRoutes(): Middleware {
       // Do things
       ctx.status = 200;
       ctx.set("Content-Type", "application/json");
-      debug("dripped", ctx.request.body);
+      debug("dripped", ctx.request.body, faucetContext);
       ctx.body = JSON.stringify({ status: "success" });
     } catch (e) {
       ctx.status = 500;
