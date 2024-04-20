@@ -2,6 +2,7 @@
 import "dotenv/config";
 import Koa from "koa";
 import cors from "@koa/cors";
+import bodyParser from "koa-bodyparser";
 import { createKoaMiddleware } from "trpc-koa-adapter";
 import { healthcheck } from "../src/koa-middleware/healthcheck";
 import { helloWorld } from "../src/koa-middleware/helloWorld";
@@ -22,6 +23,7 @@ const faucetAccount = privateKeyToAccount(env.FAUCET_PRIVATE_KEY);
 const server = new Koa();
 
 server.use(cors());
+server.use(bodyParser());
 server.use(healthcheck());
 server.use(helloWorld());
 server.use(apiRoutes());
