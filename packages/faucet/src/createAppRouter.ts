@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { initTRPC } from "@trpc/server";
+import { TRPCError, initTRPC } from "@trpc/server";
 import { Client, Hex, LocalAccount, formatEther, isHex } from "viem";
 import { sendTransaction } from "@latticexyz/common";
 import { debug } from "./debug";
@@ -8,6 +8,7 @@ export type AppContext = {
   client: Client;
   faucetAccount: LocalAccount<string>;
   dripAmount: bigint;
+  dev: boolean;
 };
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -22,7 +23,13 @@ export function createAppRouter() {
         }),
       )
       .mutation(async (opts): Promise<Hex> => {
-        const { client, faucetAccount, dripAmount } = opts.ctx;
+        const { client, faucetAccount, dripAmount, dev } = opts.ctx;
+        if (!dev) {
+          throw new TRPCError({
+            code: "METHOD_NOT_SUPPORTED",
+            message: "The /drip endpoint is only enabled in dev mode.",
+          });
+        }
 
         const { address } = opts.input;
         const tx = await sendTransaction(client, {

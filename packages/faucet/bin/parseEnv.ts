@@ -10,6 +10,7 @@ const commonSchema = z.object({
     .string()
     .default("1")
     .transform((ether) => parseEther(ether)),
+  DEV: z.boolean().default(false),
 });
 
 export function parseEnv<TSchema extends ZodTypeAny | undefined = undefined>(

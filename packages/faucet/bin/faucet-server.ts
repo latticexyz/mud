@@ -37,6 +37,7 @@ server.register(fastifyTRPCPlugin<AppRouter>, {
       client,
       faucetAccount,
       dripAmount: env.DRIP_AMOUNT_ETHER,
+      dev: env.DEV,
     }),
   },
 });
