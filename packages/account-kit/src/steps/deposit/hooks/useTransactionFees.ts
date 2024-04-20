@@ -5,7 +5,7 @@ import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
 import { DepositMethod } from "../DepositContent";
 import { estimateGas, getGasPrice } from "wagmi/actions";
 import { useEffect } from "react";
-import { useConfig } from "../../../AccountKitProvider";
+import { useConfig } from "../../../AccountKitConfigProvider";
 import { encodeFullNativeDeposit } from "./nativeDeposit";
 import { OPTIMISM_PORTAL_ADDRESS } from "../constants";
 import { fetchRelayLinkQuote } from "./relayLinkDeposit";

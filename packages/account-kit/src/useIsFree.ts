@@ -1,5 +1,5 @@
 import { useBlock } from "wagmi";
-import { useConfig } from "./AccountKitProvider";
+import { useConfig } from "./AccountKitConfigProvider";
 
 // TODO: figure out a better name
 export function useIsFree() {

@@ -1,9 +1,11 @@
-import { createContext, useContext, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { AccountModal } from "./AccountModal";
 import { Config } from "./config";
+import { AccountKitConfigProvider } from "./AccountKitConfigProvider";
 
-/** @internal */
-const Context = createContext<Config | null>(null);
+// We separate the config provider and wrap it here to always include the modal.
+// We could do this in AccountKitConfigProvider directly, but it mucks with hot
+// reloading in development and this approach lets us work around it more easily.
 
 export type Props = {
   config: Config;
@@ -11,18 +13,10 @@ export type Props = {
 };
 
 export function AccountKitProvider({ config, children }: Props) {
-  const currentConfig = useContext(Context);
-  if (currentConfig) throw new Error("`AccountKitProvider` can only be used once.");
   return (
-    <Context.Provider value={config}>
+    <AccountKitConfigProvider config={config}>
       {children}
       <AccountModal />
-    </Context.Provider>
+    </AccountKitConfigProvider>
   );
-}
-
-export function useConfig(): Config {
-  const config = useContext(Context);
-  if (!config) throw new Error("`useConfig` can only be used within a `AccountKitProvider`.");
-  return config;
 }

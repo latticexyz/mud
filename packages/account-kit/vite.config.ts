@@ -1,5 +1,4 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
 import dts from "vite-plugin-dts";
 
 export default defineConfig({
@@ -14,5 +13,5 @@ export default defineConfig({
       formats: ["es"],
     },
   },
-  plugins: [react(), !process.env.TSUP_SKIP_DTS ? dts() : undefined],
+  plugins: [!process.env.TSUP_SKIP_DTS ? dts() : undefined],
 });

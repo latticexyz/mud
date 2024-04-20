@@ -2,7 +2,7 @@ import { useAccount } from "wagmi";
 import { getExplorerUrl } from "./utils/getExplorerUrl";
 import { Hex } from "viem";
 import { StatusType } from "./hooks/useDepositHandler";
-import { useConfig } from "../../AccountKitProvider";
+import { useConfig } from "../../AccountKitConfigProvider";
 
 type Props = {
   hash: Hex;

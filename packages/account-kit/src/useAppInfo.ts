@@ -1,4 +1,4 @@
-import { useConfig } from "./AccountKitProvider";
+import { useConfig } from "./AccountKitConfigProvider";
 
 export function useAppInfo() {
   const { appInfo } = useConfig();

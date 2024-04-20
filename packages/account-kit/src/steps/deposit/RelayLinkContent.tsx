@@ -5,7 +5,7 @@ import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
 import { Button } from "../../ui/Button";
 import { parseEther } from "viem";
 import { createRelayClient } from "./utils/createRelayClient";
-import { useConfig } from "../../AccountKitProvider";
+import { useConfig } from "../../AccountKitConfigProvider";
 import { usePaymaster } from "../../usePaymaster";
 
 createRelayClient();

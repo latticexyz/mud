@@ -1,5 +1,5 @@
 import { useAccount } from "wagmi";
-import { useConfig } from "./AccountKitProvider";
+import { useConfig } from "./AccountKitConfigProvider";
 import gasTankConfig from "@latticexyz/gas-tank/mud.config";
 import { useRecord } from "./useRecord";
 import { usePaymaster } from "./usePaymaster";

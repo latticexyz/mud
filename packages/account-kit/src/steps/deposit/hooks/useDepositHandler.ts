@@ -3,7 +3,7 @@ import { Hex } from "viem";
 import { useAccount, useConfig as useWagmiConfig, useWalletClient } from "wagmi";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { DepositMethod } from "../DepositContent";
-import { useConfig } from "../../../AccountKitProvider";
+import { useConfig } from "../../../AccountKitConfigProvider";
 import { directDeposit } from "./directDeposit";
 import { nativeDeposit } from "./nativeDeposit";
 import { relayLinkDeposit } from "./relayLinkDeposit";

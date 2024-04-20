@@ -11,7 +11,7 @@ import { usePublicClient, useWaitForTransactionReceipt, useWalletClient } from "
 import { unlimitedDelegationControlId } from "../../common";
 import { useAppAccountClient } from "../../useAppAccountClient";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
-import { useConfig } from "../../AccountKitProvider";
+import { useConfig } from "../../AccountKitConfigProvider";
 import CallWithSignatureAbi from "@latticexyz/world-modules/out/IUnstable_CallWithSignatureSystem.sol/IUnstable_CallWithSignatureSystem.abi.json";
 import { getAction } from "viem/utils";
 

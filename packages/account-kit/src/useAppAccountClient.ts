@@ -3,7 +3,7 @@ import { maxUint256, toHex, publicActions, createClient, Chain, walletActions } 
 import { callFrom } from "@latticexyz/world/internal";
 import { SmartAccountClientConfig, smartAccountActions } from "permissionless";
 import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
-import { useConfig } from "./AccountKitProvider";
+import { useConfig } from "./AccountKitConfigProvider";
 import { useAppSigner } from "./useAppSigner";
 import { AppAccountClient, defaultPollingInterval, entryPointAddress, smartAccountFactory } from "./common";
 import { getUserBalanceSlot } from "./utils/getUserBalanceSlot";

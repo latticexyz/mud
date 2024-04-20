@@ -6,7 +6,7 @@ import { usePublicClient, useWalletClient } from "wagmi";
 import { unlimitedDelegationControlId } from "../../common";
 import { useAppAccountClient } from "../../useAppAccountClient";
 import { signCall } from "../../utils/signCall";
-import { useConfig } from "../../AccountKitProvider";
+import { useConfig } from "../../AccountKitConfigProvider";
 import { useCallWithSignatureNonce } from "../../useCallWithSignatureNonce";
 import { createStore } from "zustand/vanilla";
 import { useMemo } from "react";

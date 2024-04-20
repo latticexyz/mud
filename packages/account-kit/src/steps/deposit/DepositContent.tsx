@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAccount } from "wagmi";
-import { useConfig } from "../../AccountKitProvider";
+import { useConfig } from "../../AccountKitConfigProvider";
 import { AccountModalTitle } from "../../AccoutModalTitle";
 import { AccountModalSection } from "../../AccountModalSection";
 import { useDepositHandler } from "./hooks/useDepositHandler";

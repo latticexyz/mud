@@ -36,6 +36,7 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch & vite build --watch",
+    "dev:server": "mprocs",
     "local-bundler": "pnpx tsx cli/local-bundler.ts",
     "test": "tsc --noEmit && vitest",
     "test:ci": "tsc --noEmit && vitest --run"
@@ -80,6 +81,7 @@
     "autoprefixer": "^10.4.14",
     "eslint-plugin-react": "7.31.11",
     "eslint-plugin-react-hooks": "4.6.0",
+    "mprocs": "^0.6.4",
     "postcss": "^8.4.23",
     "tailwindcss": "^3.4.3",
     "tsup": "^6.7.0",

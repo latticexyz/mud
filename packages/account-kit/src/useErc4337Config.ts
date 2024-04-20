@@ -1,7 +1,7 @@
 import { http } from "wagmi";
 import { assert } from "@latticexyz/common/utils";
 import { Erc4337Config } from "./config";
-import { useConfig } from "./AccountKitProvider";
+import { useConfig } from "./AccountKitConfigProvider";
 
 export function useErc4337Config(): Erc4337Config | undefined {
   const config = useConfig();

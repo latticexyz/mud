@@ -1,6 +1,6 @@
 import { useAppAccountClient } from "../../useAppAccountClient";
 import { usePublicClient, useWalletClient } from "wagmi";
-import { useConfig } from "../../AccountKitProvider";
+import { useConfig } from "../../AccountKitConfigProvider";
 import { encodeFunctionData } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
 import { resourceToHex } from "@latticexyz/common";

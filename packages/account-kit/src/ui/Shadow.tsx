@@ -2,7 +2,7 @@ import { CSSProperties, HTMLProps, ReactNode, forwardRef, useRef, useState } fro
 import ReactDOM from "react-dom";
 import css from "tailwindcss/tailwind.css?inline";
 import { useMediaQuery, useResizeObserver } from "usehooks-ts";
-import { useConfig } from "../AccountKitProvider";
+import { useConfig } from "../AccountKitConfigProvider";
 import { mergeRefs } from "react-merge-refs";
 import { FrameProvider } from "./FrameProvider";
 
