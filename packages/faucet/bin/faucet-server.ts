@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 import "dotenv/config";
-import fastify from "fastify";
-import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
+import Koa from "koa";
+import cors from "@koa/cors";
+import { createKoaMiddleware } from "trpc-koa-adapter";
+import { healthcheck } from "../src/koa-middleware/healthcheck";
+import { helloWorld } from "../src/koa-middleware/helloWorld";
+import { apiRoutes } from "../src/apiRoutes";
 import { http, createClient } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { AppRouter, createAppRouter } from "../src/createAppRouter";
+import { createAppRouter } from "../src/trpc/createAppRouter";
 import { parseEnv } from "./parseEnv";
 
 const env = parseEnv();
@@ -15,23 +19,16 @@ const client = createClient({
 
 const faucetAccount = privateKeyToAccount(env.FAUCET_PRIVATE_KEY);
 
-// @see https://fastify.dev/docs/latest/
-const server = fastify({
-  maxParamLength: 5000,
-  logger: true,
-});
+const server = new Koa();
 
-await server.register(import("@fastify/compress"));
-await server.register(import("@fastify/cors"));
+server.use(cors());
+server.use(healthcheck());
+server.use(helloWorld());
+server.use(apiRoutes());
 
-// k8s healthchecks
-server.get("/healthz", (req, res) => res.code(200).send());
-server.get("/readyz", (req, res) => res.code(200).send());
-
-// @see https://trpc.io/docs/server/adapters/fastify
-server.register(fastifyTRPCPlugin<AppRouter>, {
-  prefix: "/trpc",
-  trpcOptions: {
+server.use(
+  createKoaMiddleware({
+    prefix: "/trpc",
     router: createAppRouter(),
     createContext: async () => ({
       client,
@@ -39,8 +36,8 @@ server.register(fastifyTRPCPlugin<AppRouter>, {
       dripAmount: env.DRIP_AMOUNT_ETHER,
       dev: env.DEV,
     }),
-  },
-});
+  }),
+);
 
-await server.listen({ host: env.HOST, port: env.PORT });
+server.listen({ host: env.HOST, port: env.PORT });
 console.log(`faucet server listening on http://${env.HOST}:${env.PORT}`);
