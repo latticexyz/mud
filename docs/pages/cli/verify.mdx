@@ -1,0 +1,51 @@
+# mud verify
+
+This command verifies the deployed contracts on a blockchain.
+
+## Using the command
+
+Before you run `mud verify` you need to create a [Foundry profile](https://book.getfoundry.sh/reference/config/overview).
+
+1. Change to the `packages/contract` directory and edit `foundry.toml` to add a profile with the `eth_rpc_url` for your network (if needed).
+   For example, add these lines to add Holesky.
+
+   ```toml copy
+   [profile.holesky]
+   eth_rpc_url = "https://ethereum-holesky.publicnode.com"
+   ```
+
+Note that the blockchain has to be one that the verifier supports.
+
+1. If using Etherscan or Blockscout, you need to specify the API key:
+
+   ```sh copy
+   export ETHERSCAN_API_KEY=<value goes here>
+   ```
+
+1. These are the command line options you can specify on `mud verify`:
+
+   | Option           | Meaning                                                        | Type    | Default value                |
+   | ---------------- | -------------------------------------------------------------- | ------- | ---------------------------- |
+   | `--worldAddress` | Verify the contracts of the `World` at the given address       | string  | none, error if unspecified   |
+   | `--version`      | Show version number                                            | boolean | `false`                      |
+   | `--configPath`   | Path to the config file                                        | string  | `mud.config.ts`              |
+   | `--verifier`     | The verifier to use (`etherscan`, `sourcify`, or `blockscout`) | string  | `etherscan`                  |
+   | - `--verifier`   | URL to use to access the verifier's API                        | string  | depends on the verifier used |
+   | `--profile`      | The foundry profile to use                                     | string  | `local`                      |
+   | `--srcDir`       | Source directory                                               | string  | Foundry `src` directory      |
+
+## Examples
+
+To verify the world at that address on Holesky (_after_ adding the profile to `foundry.toml`) on [sourcify](https://sourcify.dev/):
+
+```sh copy
+pnpm mud verify --profile holesky --worldAddress 0x505ecdeb1483a5aa4209289905bcdc21611ba6df --verifier sourcify
+```
+
+## Debugging
+
+To generate debug messages, use this command:
+
+```sh copy
+export DEBUG=mud:cli:verify
+```
