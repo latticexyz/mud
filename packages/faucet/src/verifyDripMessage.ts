@@ -1,7 +1,7 @@
 import { Hex, verifyMessage } from "viem";
-import { GetDripMessageParams, getDripMessage } from "./getDripMessage";
+import { GetDripSignatureMessageParams, getDripSignatureMessage } from "./getDripSignatureMessage";
 
-export type VerifyDripMessageParams = GetDripMessageParams & {
+export type VerifyDripMessageParams = GetDripSignatureMessageParams & {
   signature: Hex;
 };
 
@@ -9,7 +9,11 @@ export function verifyDripMessage({
   address,
   username,
   signature,
-  signMessagePrefix,
+  postContentPrefix,
 }: VerifyDripMessageParams): Promise<boolean> {
-  return verifyMessage({ address, message: getDripMessage({ address, username, signMessagePrefix }), signature });
+  return verifyMessage({
+    address,
+    message: getDripSignatureMessage({ address, username, postContentPrefix }),
+    signature,
+  });
 }

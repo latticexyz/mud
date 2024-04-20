@@ -10,10 +10,10 @@ describe("encodeSignature", () => {
   const account = mnemonicToAccount("test test test test test test test test test test test junk");
   const username = "@user";
   const client = createClient({ transport: http("http://127.0.0.1:8545") });
-  const signMessagePrefix = "prefix";
+  const postContentPrefix = "prefix";
 
   it("should encode a signature as emojis", async () => {
-    const signature = await signDripMessage({ client, account, username, signMessagePrefix });
+    const signature = await signDripMessage({ client, account, username, postContentPrefix });
     const encodedSignature = encodeSignature(signature);
     expect(decodeSignature(encodedSignature)).toBe(signature);
     expect(encodedSignature.length).toBe(encodedSignatureLength);
@@ -22,7 +22,7 @@ describe("encodeSignature", () => {
       client,
       account,
       username,
-      signMessagePrefix: "a different and longer prefix",
+      postContentPrefix: "a different and longer prefix",
     });
     expect(encodeSignature(signature2).length).toBe(encodedSignatureLength);
   });

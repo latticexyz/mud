@@ -1,10 +1,12 @@
+import { TwitterApiReadOnly } from "twitter-api-v2";
 import { Account, Client } from "viem";
 
 export type FaucetContext = {
-  client: Client;
-  account: Account;
+  faucetClient: Client;
+  faucetAccount: Account;
   dripAmount: bigint;
-  signMessagePrefix: string;
+  postContentPrefix: string;
+  xApi: TwitterApiReadOnly | null;
 };
 
 export const encodedSignatureLength = 214;

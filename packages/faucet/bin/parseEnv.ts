@@ -2,7 +2,7 @@ import { isHex, parseEther } from "viem";
 import { z, ZodError, ZodIntersection, ZodTypeAny } from "zod";
 import { encodedSignatureLength, tweetMaxLength } from "../src/common";
 
-const signMessagePrefixMaxLength = tweetMaxLength - encodedSignatureLength - 1;
+const postContentPrefixMaxLength = tweetMaxLength - encodedSignatureLength - 1;
 
 const commonSchema = z.object({
   HOST: z.string().default("0.0.0.0"),
@@ -14,13 +14,14 @@ const commonSchema = z.object({
     .default("1")
     .transform((ether) => parseEther(ether)),
   DEV: z.boolean().default(false),
-  SIGN_MESSAGE_PREFIX: z
+  POST_CONTENT_PREFIX: z
     .string()
     .max(
-      signMessagePrefixMaxLength,
-      `Prefix must be short than ${signMessagePrefixMaxLength + 1} characters to fit in a tweet.`,
+      postContentPrefixMaxLength,
+      `Prefix must be shorter than ${postContentPrefixMaxLength + 1} characters to fit in a tweet.`,
     )
     .default(""),
+  X_API_BEARER_TOKEN: z.string().optional(),
 });
 
 export function parseEnv<TSchema extends ZodTypeAny | undefined = undefined>(

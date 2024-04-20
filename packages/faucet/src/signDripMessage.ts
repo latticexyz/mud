@@ -1,19 +1,19 @@
 import { Account, Client, Hex } from "viem";
 import { signMessage } from "viem/actions";
 import { getAction } from "viem/utils";
-import { getDripMessage } from "./getDripMessage";
+import { getDripSignatureMessage } from "./getDripSignatureMessage";
 
 export type SignDripMessageParams = {
   client: Client;
-  signMessagePrefix: string;
+  postContentPrefix: string;
   account: Account;
   username: string;
 };
 
-export function signDripMessage({ client, account, username, signMessagePrefix }: SignDripMessageParams): Promise<Hex> {
+export function signDripMessage({ client, account, username, postContentPrefix }: SignDripMessageParams): Promise<Hex> {
   return getAction(
     client,
     signMessage,
     "signMessage",
-  )({ account, message: getDripMessage({ address: account.address, username, signMessagePrefix }) });
+  )({ account, message: getDripSignatureMessage({ address: account.address, username, postContentPrefix }) });
 }

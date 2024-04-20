@@ -489,6 +489,9 @@ importers:
       trpc-koa-adapter:
         specifier: ^1.1.3
         version: 1.1.3(@trpc/server@10.34.0)(koa@2.14.2)
+      twitter-api-v2:
+        specifier: ^1.16.1
+        version: 1.16.1
       viem:
         specifier: 2.9.20
         version: 2.9.20(typescript@5.4.2)(zod@3.21.4)
@@ -11286,6 +11289,10 @@ packages:
       turbo-windows-64: 1.9.3
       turbo-windows-arm64: 1.9.3
     dev: true
+
+  /twitter-api-v2@1.16.1:
+    resolution: {integrity: sha512-76hZsRmVdFQu2MvN2oBw0RjTsYmgqnef1bWb4/Ds54CrcTXvtTZFCp3d6FMdeKp9m2PIx2l9MIJWvs5PjQN/Dw==}
+    dev: false
 
   /type-check@0.3.2:
     resolution: {integrity: sha512-ZCmOJdvOWDBYJlzAoFkC+Q0+bUyEOS1ltgp1MGU03fqHG+dbi9tBFU2Rd9QKiDZFAYrhPh2JUf7rZRIuHRKtOg==}

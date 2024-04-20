@@ -11,14 +11,14 @@ describe("verifyDripMessage", () => {
   });
   const username = "@user";
   const client = createClient({ transport: http("http://127.0.0.1:8545") });
-  const signMessagePrefix = "prefix";
+  const postContentPrefix = "prefix";
 
   it("should verify a message signed with `signDripMessage`", async () => {
-    const signature = await signDripMessage({ client, account, username, signMessagePrefix });
-    expect(await verifyDripMessage({ address: account.address, signature, username, signMessagePrefix })).toBe(true);
-    expect(await verifyDripMessage({ address: account.address, signature, username: "@bob", signMessagePrefix })).toBe(
+    const signature = await signDripMessage({ client, account, username, postContentPrefix });
+    expect(await verifyDripMessage({ address: account.address, signature, username, postContentPrefix })).toBe(true);
+    expect(await verifyDripMessage({ address: account.address, signature, username: "@bob", postContentPrefix })).toBe(
       false,
     );
-    expect(await verifyDripMessage({ address: account2.address, signature, username, signMessagePrefix })).toBe(false);
+    expect(await verifyDripMessage({ address: account2.address, signature, username, postContentPrefix })).toBe(false);
   });
 });

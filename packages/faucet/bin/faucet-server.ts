@@ -12,6 +12,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { createAppRouter } from "../src/trpc/createAppRouter";
 import { parseEnv } from "./parseEnv";
 import { FaucetContext } from "../src/common";
+import { TwitterApi } from "twitter-api-v2";
 
 const env = parseEnv();
 
@@ -26,9 +27,10 @@ const server = new Koa();
 
 const faucetContext = {
   dripAmount: env.DRIP_AMOUNT_ETHER,
-  signMessagePrefix: env.SIGN_MESSAGE_PREFIX,
-  client,
-  account: faucetAccount,
+  postContentPrefix: env.POST_CONTENT_PREFIX,
+  faucetClient: client,
+  faucetAccount: faucetAccount,
+  xApi: env.X_API_BEARER_TOKEN ? new TwitterApi(env.X_API_BEARER_TOKEN).readOnly : null,
 } satisfies FaucetContext;
 
 server.use(cors());
