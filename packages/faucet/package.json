@@ -25,7 +25,7 @@
     "dev:server": "nodemon --exec tsx bin/faucet-server",
     "lint": "eslint .",
     "start": "tsx bin/faucet-server",
-    "test": "tsc --noEmit --skipLibCheck",
+    "test": " tsc --noEmit --skipLibCheck && vitest --run",
     "test:ci": "pnpm run test"
   },
   "dependencies": {
