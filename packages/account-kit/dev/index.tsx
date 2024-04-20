@@ -23,7 +23,7 @@ const accountKitConfig = {
   chain: mudFoundry,
   worldAddress: "0x6906906906906906906906906906906906906906",
   erc4337: false,
-};
+} as const;
 
 const root = ReactDOM.createRoot(document.querySelector("#react-root")!);
 root.render(
