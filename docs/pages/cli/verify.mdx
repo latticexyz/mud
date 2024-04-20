@@ -4,9 +4,8 @@ This command verifies the deployed contracts on a blockchain.
 
 ## Using the command
 
-Before you run `mud verify` you need to create a [Foundry profile](https://book.getfoundry.sh/reference/config/overview).
-
-1. Change to the `packages/contract` directory and edit `foundry.toml` to add a profile with the `eth_rpc_url` for your network (if needed).
+1. Before you run `mud verify` you need to create a [Foundry profile](https://book.getfoundry.sh/reference/config/overview).
+   Change to the `packages/contract` directory and edit `foundry.toml` to add a profile with the `eth_rpc_url` for your network (if needed).
    For example, add these lines to add Holesky.
 
    ```toml copy
@@ -22,7 +21,13 @@ Before you run `mud verify` you need to create a [Foundry profile](https://book.
    export ETHERSCAN_API_KEY=<value goes here>
    ```
 
-1. These are the command line options you can specify on `mud verify`:
+1. Run the command.
+
+   ```sh copy
+   pnpm mud --version --worldAddress <address here>
+   ```
+
+   These are the command line options you can specify on `mud verify`:
 
    | Option           | Meaning                                                        | Type    | Default value                |
    | ---------------- | -------------------------------------------------------------- | ------- | ---------------------------- |
