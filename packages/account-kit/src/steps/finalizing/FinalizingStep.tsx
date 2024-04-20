@@ -33,7 +33,6 @@ export function FinalizingStep() {
       if (!appAccountClient) throw new Error("App account client not ready.");
       if (!registerDelegationSignature) throw new Error("No delegation signature.");
 
-      // TODO: should this use `callWithSignature`?
       console.log("calling registerDelegation");
       return await getAction(
         appAccountClient,

@@ -429,9 +429,6 @@ importers:
       p-retry:
         specifier: ^5.1.2
         version: 5.1.2
-      permissionless:
-        specifier: ^0.1.17
-        version: 0.1.17(viem@2.9.20)
       prettier:
         specifier: 3.2.5
         version: 3.2.5
