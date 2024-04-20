@@ -1,7 +1,8 @@
-import { WalletClient } from "viem";
+import { Account, Client } from "viem";
 
 export type FaucetContext = {
-  client: WalletClient;
+  client: Client;
+  account: Account;
   dripAmount: bigint;
   signMessagePrefix: string;
 };

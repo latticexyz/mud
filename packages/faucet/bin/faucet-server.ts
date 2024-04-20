@@ -26,7 +26,9 @@ const server = new Koa();
 
 const faucetContext = {
   dripAmount: env.DRIP_AMOUNT_ETHER,
+  signMessagePrefix: env.SIGN_MESSAGE_PREFIX,
   client,
+  account: faucetAccount,
 } satisfies FaucetContext;
 
 server.use(cors());
