@@ -6,13 +6,20 @@ import { FaucetContext } from "./common";
 import { ZodError, z } from "zod";
 import { isAddress } from "viem";
 import { verifyDripPost } from "./verifyDripPost";
+import { sendTransaction } from "viem/actions";
 
 export const dripXSchema = z.object({
   username: z.string(),
   address: z.string().refine(isAddress),
 });
 
-export function apiRoutes({ postContentPrefix, xApi }: FaucetContext): Middleware {
+export function apiRoutes({
+  postContentPrefix,
+  xApi,
+  faucetClient,
+  faucetAccount,
+  dripAmount,
+}: FaucetContext): Middleware {
   const router = new Router();
 
   router.post("/api/dripX", async (ctx) => {
@@ -23,12 +30,14 @@ export function apiRoutes({ postContentPrefix, xApi }: FaucetContext): Middlewar
       }
 
       if (await verifyDripPost({ xApi, username, address, postContentPrefix })) {
+        await sendTransaction(faucetClient, { account: faucetAccount, to: address, value: dripAmount, chain: null });
+        // TODO: store user to prevent further drips
+
         ctx.status = 200;
         ctx.set("Content-Type", "application/json");
         ctx.body = JSON.stringify({ status: "success" });
         debug(`Successful drip to ${username} / ${address}`);
-        // TODO: send eth to address
-        // TODO: store user to prevent further drips
+        return;
       }
 
       // Verification not successful
@@ -46,7 +55,7 @@ export function apiRoutes({ postContentPrefix, xApi }: FaucetContext): Middlewar
 
       ctx.status = 500;
       ctx.set("Content-Type", "application/json");
-      ctx.body = JSON.stringify(e);
+      ctx.body = JSON.stringify({ status: "internal error" });
       error(e);
     }
   });
