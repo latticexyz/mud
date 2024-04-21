@@ -18,6 +18,7 @@ export async function verifyDripPost({
   address,
   postContentPrefix,
 }: VerifyXPostParams): Promise<boolean> {
+  // return true;
   try {
     const user = await xApi.v2.userByUsername(username);
     // 5 is the minimum according to https://api.twitter.com/2/openapi.json

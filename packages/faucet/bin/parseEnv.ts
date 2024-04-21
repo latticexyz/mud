@@ -22,6 +22,7 @@ const commonSchema = z.object({
     )
     .default(""),
   X_API_BEARER_TOKEN: z.string().optional(),
+  DRIP_HISTORY_PATH: z.string().default("dripHistory.json"),
 });
 
 export function parseEnv<TSchema extends ZodTypeAny | undefined = undefined>(

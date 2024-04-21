@@ -29,6 +29,9 @@ export function apiRoutes({
         throw new Error("X api not set up");
       }
 
+      // TODO: apply checks on drip history for this username / address
+
+      // Verify the signature tweet
       if (await verifyDripPost({ xApi, username, address, postContentPrefix })) {
         await sendTransaction(faucetClient, { account: faucetAccount, to: address, value: dripAmount, chain: null });
         // TODO: store user to prevent further drips
