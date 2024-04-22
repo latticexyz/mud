@@ -57,7 +57,6 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@ethersproject/signing-key": "^5.7.0",
     "@latticexyz/schema-type": "workspace:*",
     "@solidity-parser/parser": "^0.16.0",
     "debug": "^4.3.4",

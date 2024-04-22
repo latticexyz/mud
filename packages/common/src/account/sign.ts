@@ -3,7 +3,6 @@ import asn1 from "asn1.js";
 import { Address, Hex, isAddressEqual, signatureToHex, toHex } from "viem";
 import { publicKeyToAddress, recoverAddress } from "viem/utils";
 import { KMSClient, SignCommandInput } from "@aws-sdk/client-kms";
-import { computePublicKey } from "@ethersproject/signing-key";
 import { signWithKMS } from "./kms";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,7 +68,7 @@ export const getEthAddressFromPublicKey = (publicKey: Uint8Array): Address => {
 
   const publicKeyBuffer: Buffer = res.pubKey.data;
 
-  const publicKeyHex = computePublicKey(publicKeyBuffer) as Hex;
+  const publicKeyHex = toHex(publicKeyBuffer);
   const address = publicKeyToAddress(publicKeyHex);
 
   return address;

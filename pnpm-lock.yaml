@@ -281,9 +281,6 @@ importers:
       '@aws-sdk/client-kms':
         specifier: ^3.556.0
         version: 3.556.0
-      '@ethersproject/signing-key':
-        specifier: ^5.7.0
-        version: 5.7.0
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
