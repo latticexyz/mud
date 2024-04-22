@@ -57,11 +57,9 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@aws-sdk/client-kms": "^3.556.0",
     "@ethersproject/signing-key": "^5.7.0",
     "@latticexyz/schema-type": "workspace:*",
     "@solidity-parser/parser": "^0.16.0",
-    "asn1.js": "^5.4.1",
     "debug": "^4.3.4",
     "execa": "^7.0.0",
     "p-queue": "^7.4.1",
@@ -75,5 +73,17 @@
     "@types/node": "^18.15.11",
     "tsup": "^6.7.0",
     "vitest": "0.34.6"
+  },
+  "peerDependencies": {
+    "@aws-sdk/client-kms": "^3.556.0",
+    "asn1.js": "^5.4.1"
+  },
+  "peerDependenciesMeta": {
+    "@aws-sdk/client-kms": {
+      "optional": true
+    },
+    "asn1.js": {
+      "optional": true
+    }
   }
 }
