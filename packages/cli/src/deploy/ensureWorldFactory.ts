@@ -6,6 +6,8 @@ import initModuleBuild from "@latticexyz/world/out/InitModule.sol/InitModule.jso
 import initModuleAbi from "@latticexyz/world/out/InitModule.sol/InitModule.abi.json" assert { type: "json" };
 import worldFactoryBuild from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.json" assert { type: "json" };
 import worldFactoryAbi from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.abi.json" assert { type: "json" };
+import worldProxyFactoryBuild from "@latticexyz/world/out/WorldProxyFactory.sol/WorldProxyFactory.json" assert { type: "json" };
+import worldProxyFactoryAbi from "@latticexyz/world/out/WorldProxyFactory.sol/WorldProxyFactory.abi.json" assert { type: "json" };
 import { Client, Transport, Chain, Account, Hex, getCreate2Address, encodeDeployData, size, Address } from "viem";
 import { salt } from "./common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
@@ -14,6 +16,7 @@ import { Contract } from "./ensureContract";
 export async function ensureWorldFactory(
   client: Client<Transport, Chain | undefined, Account>,
   deployerAddress: Hex,
+  withWorldProxy?: boolean,
 ): Promise<Address> {
   const accessManagementSystemDeployedBytecodeSize = size(accessManagementSystemBuild.deployedBytecode.object as Hex);
   const accessManagementSystemBytecode = accessManagementSystemBuild.bytecode.object as Hex;
@@ -52,10 +55,13 @@ export async function ensureWorldFactory(
 
   const initModule = getCreate2Address({ from: deployerAddress, bytecode: initModuleBytecode, salt });
 
-  const worldFactoryDeployedBytecodeSize = size(worldFactoryBuild.deployedBytecode.object as Hex);
+  const build = withWorldProxy ? worldProxyFactoryBuild : worldFactoryBuild;
+  const abi = withWorldProxy ? worldProxyFactoryAbi : worldFactoryAbi;
+
+  const worldFactoryDeployedBytecodeSize = size(build.deployedBytecode.object as Hex);
   const worldFactoryBytecode = encodeDeployData({
-    bytecode: worldFactoryBuild.bytecode.object as Hex,
-    abi: worldFactoryAbi,
+    bytecode: build.bytecode.object as Hex,
+    abi: abi,
     args: [initModule],
   });
 

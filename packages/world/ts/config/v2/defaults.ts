@@ -19,6 +19,7 @@ export const DEPLOY_DEFAULTS = {
   postDeployScript: "PostDeploy",
   deploysDirectory: "./deploys",
   worldsFile: "./worlds.json",
+  useProxy: false,
 } as const;
 
 export type DEPLOY_DEFAULTS = typeof DEPLOY_DEFAULTS;
