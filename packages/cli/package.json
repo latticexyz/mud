@@ -80,5 +80,9 @@
     "tsup": "^6.7.0",
     "tsx": "^3.12.6",
     "vitest": "0.34.6"
+  },
+  "peerDependencies": {
+    "@aws-sdk/client-kms": "^3.556.0",
+    "asn1.js": "^5.4.1"
   }
 }

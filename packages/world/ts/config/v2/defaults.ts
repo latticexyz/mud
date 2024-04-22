@@ -20,6 +20,7 @@ export const DEPLOY_DEFAULTS = {
   deploysDirectory: "./deploys",
   worldsFile: "./worlds.json",
   useProxy: false,
+  useKms: false,
 } as const;
 
 export type DEPLOY_DEFAULTS = typeof DEPLOY_DEFAULTS;

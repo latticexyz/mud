@@ -43,6 +43,8 @@ export type Deploy = {
   readonly worldsFile: string;
   /** Deploy the World as an upgradable proxy */
   readonly useProxy: boolean;
+  /** Deploy the World using KMS */
+  readonly useKms: boolean;
 };
 
 export type Codegen = {
