@@ -40,10 +40,8 @@ contract WorldProxy is Proxy {
     StorageSlot.getAddressSlot(IMPLEMENTATION_SLOT).value = newImplementation;
 
     emit IERC1967.Upgraded(newImplementation);
-
-    IBaseWorld world = IBaseWorld(newImplementation);
-    emit IStoreEvents.HelloStore(world.storeVersion());
-    emit IWorldEvents.HelloWorld(world.worldVersion());
+    emit IStoreEvents.HelloStore(IBaseWorld(newImplementation).storeVersion());
+    emit IWorldEvents.HelloWorld(IBaseWorld(newImplementation).worldVersion());
   }
 
   /**
