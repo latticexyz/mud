@@ -38,7 +38,13 @@ function getSignedMessageHash(
         "\x19\x01",
         domainSeperator,
         keccak256(
-          abi.encode(CALL_TYPEHASH, signer, keccak256(abi.encode(systemId.toString())), keccak256(callData), nonce)
+          abi.encode(
+            CALL_TYPEHASH,
+            signer,
+            keccak256(abi.encodePacked(systemId.toString())),
+            keccak256(callData),
+            nonce
+          )
         )
       )
     );

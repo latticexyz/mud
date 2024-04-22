@@ -86,7 +86,7 @@ describe("callWithSignature", async () => {
       primaryType: "Call",
       message: {
         signer: delegator.address,
-        systemId: "syRegistration",
+        systemId: "sy:<root>:Registration",
         callData,
         nonce,
       },
