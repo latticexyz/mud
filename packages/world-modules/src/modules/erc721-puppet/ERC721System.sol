@@ -21,11 +21,11 @@ import { TokenApproval } from "./tables/TokenApproval.sol";
 import { TokenURI } from "./tables/TokenURI.sol";
 
 import { _balancesTableId, _metadataTableId, _tokenUriTableId, _operatorApprovalTableId, _ownersTableId, _tokenApprovalTableId } from "./utils.sol";
-import { Strings } from "./libraries/Strings.sol";
+import { LibString } from "./libraries/LibString.sol";
 
 contract ERC721System is IERC721Mintable, System, PuppetMaster {
   using WorldResourceIdInstance for ResourceId;
-  using Strings for uint256;
+  using LibString for uint256;
 
   /**
    * @dev See {IERC721-balanceOf}.
