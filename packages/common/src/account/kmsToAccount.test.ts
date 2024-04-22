@@ -9,7 +9,7 @@ describe("kmsAccount", () => {
 
   beforeEach(async () => {
     const kmsInstance = new KMSClient({
-      endpoint: "http://localhost:8080",
+      endpoint: process.env.KMS_ENDPOINT,
       region: "local",
       credentials: {
         accessKeyId: "AKIAXTTRUF7NU7KDMIED",
