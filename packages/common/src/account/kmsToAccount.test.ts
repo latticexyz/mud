@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { kmsToAccount } from "./kmsToAccount";
 import { CreateKeyCommand, KMSClient } from "@aws-sdk/client-kms";
 import { LocalAccount, parseGwei, verifyMessage, verifyTypedData } from "viem";
@@ -7,7 +7,7 @@ describe("kmsAccount", () => {
   let account: LocalAccount;
   let keyId: string;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const kmsInstance = new KMSClient({
       endpoint: process.env.KMS_ENDPOINT,
       region: "local",
