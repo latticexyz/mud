@@ -2,7 +2,7 @@
 pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 
 using WorldResourceIdInstance for ResourceId;
 
@@ -10,7 +10,9 @@ using WorldResourceIdInstance for ResourceId;
 // It is not included in `chainId`, to allow cross-chain signing without requiring wallets to switch networks.
 // The value of this field should be the chain on which the world lives, rather than the chain the wallet is connected to.
 bytes32 constant DOMAIN_TYPEHASH = keccak256("EIP712Domain(address verifyingContract,bytes32 salt)");
-bytes32 constant CALL_TYPEHASH = keccak256("Call(address signer,string systemId,bytes callData,uint256 nonce)");
+bytes32 constant CALL_TYPEHASH = keccak256(
+  "Call(address signer,string systemNamespace,string systemName,bytes callData,uint256 nonce)"
+);
 
 /**
  * @notice Generate the message hash for a given delegation signature.
@@ -41,7 +43,8 @@ function getSignedMessageHash(
           abi.encode(
             CALL_TYPEHASH,
             signer,
-            keccak256(abi.encodePacked(systemId.toString())),
+            keccak256(abi.encodePacked(WorldResourceIdLib.toTrimmedString(systemId.getNamespace()))),
+            keccak256(abi.encodePacked(WorldResourceIdLib.toTrimmedString(systemId.getName()))),
             keccak256(callData),
             nonce
           )
