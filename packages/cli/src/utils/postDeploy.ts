@@ -8,13 +8,26 @@ export async function postDeploy(
   worldAddress: string,
   rpc: string,
   profile: string | undefined,
+  forgeOptions: string | undefined,
 ): Promise<void> {
   // Execute postDeploy forge script
   const postDeployPath = path.join(await getScriptDirectory(), postDeployScript + ".s.sol");
   if (existsSync(postDeployPath)) {
+    const userOptions = forgeOptions?.replaceAll("\\", "").split(" ") ?? [];
     console.log(chalk.blue(`Executing post deploy script at ${postDeployPath}`));
     await forge(
-      ["script", postDeployScript, "--sig", "run(address)", worldAddress, "--broadcast", "--rpc-url", rpc, "-vvv"],
+      [
+        "script",
+        postDeployScript,
+        "--sig",
+        "run(address)",
+        worldAddress,
+        "--broadcast",
+        "--rpc-url",
+        rpc,
+        "-vvv",
+        ...userOptions,
+      ],
       {
         profile: profile,
       },
