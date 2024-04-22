@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { InferredOptionTypes, Options } from "yargs";
 import { deploy } from "./deploy/deploy";
 import { createWalletClient, http, Hex, isHex } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
 import { worldToV1 } from "@latticexyz/world/config/v2";
@@ -90,18 +91,24 @@ in your contracts directory to use the default anvil private key.`,
 
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
 
-  const kmsInstance = new KMSClient({
-    endpoint: process.env.KMS_ENDPOINT,
-    region: "local",
-    credentials: {
-      accessKeyId: "",
-      secretAccessKey: "",
-    },
-  });
+  const accessKeyId = "PLACEHOLDER";
+  const secretAccessKey = "PLACEHOLDER";
+  const keyId = "PLACEHOLDER";
+  const endpoint = "PLACEHOLDER";
 
-  const keyId = "";
-
-  const account = await createKmsAccount(keyId, kmsInstance);
+  const account = configV2.deploy.useKms
+    ? await createKmsAccount(
+        keyId,
+        new KMSClient({
+          endpoint,
+          region: "local",
+          credentials: {
+            accessKeyId,
+            secretAccessKey,
+          },
+        }),
+      )
+    : privateKeyToAccount(privateKey);
 
   const client = createWalletClient({
     transport: http(rpc, {
