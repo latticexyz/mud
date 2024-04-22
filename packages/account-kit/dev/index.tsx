@@ -5,9 +5,9 @@ import { WagmiProvider, createConfig, http } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider, lightTheme, midnightTheme } from "@rainbow-me/rainbowkit";
 import { mudFoundry } from "@latticexyz/common/chains";
-import { AccountButton } from "../src/exports";
 import { AccountModal } from "../src/AccountModal";
 import { AccountKitConfigProvider } from "../src/AccountKitConfigProvider";
+import { App } from "./App";
 
 const queryClient = new QueryClient();
 
@@ -21,7 +21,7 @@ const wagmiConfig = createConfig({
 
 const accountKitConfig = {
   chain: mudFoundry,
-  worldAddress: "0x6906906906906906906906906906906906906906",
+  worldAddress: "0xd6c8022f1af8e9d7c3825557a1374ee518c65a4e",
   erc4337: false,
 } as const;
 
@@ -38,7 +38,7 @@ root.render(
         >
           {/* Mount context and modal ourselves to avoid hot reloading issues */}
           <AccountKitConfigProvider config={accountKitConfig}>
-            <AccountButton />
+            <App />
             <AccountModal />
           </AccountKitConfigProvider>
         </RainbowKitProvider>
