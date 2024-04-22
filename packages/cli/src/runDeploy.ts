@@ -91,21 +91,13 @@ in your contracts directory to use the default anvil private key.`,
 
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
 
-  const accessKeyId = "PLACEHOLDER";
-  const secretAccessKey = "PLACEHOLDER";
-  const keyId = "PLACEHOLDER";
-  const endpoint = "PLACEHOLDER";
-
-  const account = configV2.deploy.useKms
+  const account = configV2.deploy.kms
     ? await createKmsAccount(
-        keyId,
+        configV2.deploy.kms.keyId,
         new KMSClient({
-          endpoint,
-          region: "local",
-          credentials: {
-            accessKeyId,
-            secretAccessKey,
-          },
+          endpoint: configV2.deploy.kms.endpoint,
+          region: configV2.deploy.kms.region,
+          credentials: configV2.deploy.kms.credentials,
         }),
       )
     : privateKeyToAccount(privateKey);
