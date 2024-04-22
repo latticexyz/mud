@@ -24,9 +24,12 @@ export const borderGradient = plugin(function ({ addUtilities }) {
         ),
         border-box conic-gradient(
           from var(--tw-border-gradient-angle),
-          var(--tw-gradient-from),
-          var(--tw-gradient-to),
-          var(--tw-gradient-from)
+          var(--tw-gradient-from) 0%,
+          var(--tw-gradient-to) 45%,
+          white 50%,
+          var(--tw-gradient-from) 50%,
+          var(--tw-gradient-to) 95%,
+          white 100%
         )
       `,
       // background: `
