@@ -1,7 +1,7 @@
 import { KMSClient, SignCommand, SignCommandInput, SignCommandOutput } from "@aws-sdk/client-kms";
 import { Hex, fromHex } from "viem";
 
-export const sign = async ({
+export async function sign({
   keyId,
   hash,
   client,
@@ -9,7 +9,7 @@ export const sign = async ({
   hash: Hex;
   keyId: SignCommandInput["KeyId"];
   client: KMSClient;
-}): Promise<SignCommandOutput> => {
+}): Promise<SignCommandOutput> {
   const formatted = Buffer.from(fromHex(hash, "bytes"));
 
   const command = new SignCommand({
@@ -20,4 +20,4 @@ export const sign = async ({
   });
 
   return client.send(command);
-};
+}

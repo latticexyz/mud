@@ -74,7 +74,7 @@ type SignReturnType = Hex;
  *
  * @returns The signature.
  */
-export const signWithKms = async ({ hash, address, keyId, client }: SignParameters): Promise<SignReturnType> => {
+export async function signWithKms({ hash, address, keyId, client }: SignParameters): Promise<SignReturnType> {
   const { r, s } = await getRS({ keyId, hash, client });
   const recovery = await getRecovery(hash, r, s, address);
 
@@ -84,4 +84,4 @@ export const signWithKms = async ({ hash, address, keyId, client }: SignParamete
     v: recovery ? 28n : 27n,
     yParity: recovery,
   });
-};
+}
