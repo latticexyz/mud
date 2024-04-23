@@ -30,6 +30,7 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
+    "@aws-sdk/client-kms": "^3.556.0",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@improbable-eng/grpc-web": "^0.15.0",
@@ -45,6 +46,7 @@
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
     "@latticexyz/world-modules": "workspace:*",
+    "asn1.js": "^5.4.1",
     "chalk": "^5.0.1",
     "chokidar": "^3.5.3",
     "debug": "^4.3.4",
@@ -80,8 +82,5 @@
     "tsup": "^6.7.0",
     "tsx": "^3.12.6",
     "vitest": "0.34.6"
-  },
-  "peerDependencies": {
-    "@aws-sdk/client-kms": "^3.556.0"
   }
 }
