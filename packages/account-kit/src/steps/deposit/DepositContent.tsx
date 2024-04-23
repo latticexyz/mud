@@ -1,9 +1,10 @@
 import { AccountModalTitle } from "../../AccoutModalTitle";
 import { AccountModalSection } from "../../AccountModalSection";
-import { GasTankStateContent } from "./GasTankStateContent";
 import { Button } from "../../ui/Button";
 import { DepositViaTransferForm } from "./via-transfer/DepositViaTransferForm";
 import { useAppChain } from "../../useAppChain";
+import { GasBalanceSection } from "./GasBalanceSection";
+import { useState } from "react";
 
 export type DepositMethod = "direct" | "native" | "relay";
 
@@ -11,19 +12,26 @@ export const DEFAULT_DEPOSIT_AMOUNT = 0.005;
 
 export function DepositContent() {
   const chain = useAppChain();
+  const [sourceChainId, setSourceChainId] = useState(chain.id);
+  const [amount, setAmount] = useState<bigint | undefined>();
 
   return (
     <>
       <AccountModalTitle title="Deposit" />
 
-      <GasTankStateContent amount={undefined} isSuccess={false} />
+      <GasBalanceSection />
 
       <AccountModalSection>
         <div className="flex flex-col py-5 gap-5">
           <p className="px-5">
             Pick the chain to fund your app account with gas to interact with this app on {chain.name}.
           </p>
-          <DepositViaTransferForm />
+          <DepositViaTransferForm
+            sourceChainId={sourceChainId}
+            setSourceChainId={setSourceChainId}
+            amount={amount}
+            setAmount={setAmount}
+          />
         </div>
       </AccountModalSection>
 

@@ -16,7 +16,6 @@ export type Props = {
 };
 
 export function ChainSelect({ value, onChange }: Props) {
-  console.log("got value", value);
   const theme = useTheme();
   const { frame } = useFrame();
   const chains = useChains();

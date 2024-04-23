@@ -1,16 +1,28 @@
-import { useState } from "react";
-import { DepositForm } from "../DepositForm";
+import { DepositForm, type Props as DepositFormProps } from "../DepositForm";
+import { useSendTransaction } from "wagmi";
+import { useAppAccountClient } from "../../../useAppAccountClient";
 
-export function DepositViaTransferForm() {
-  const [amount, setAmount] = useState<bigint | undefined>();
+export type Props = Pick<DepositFormProps, "sourceChainId" | "setSourceChainId" | "amount" | "setAmount">;
+
+export function DepositViaTransferForm(props: Props) {
+  const { data: appAccountClient } = useAppAccountClient();
+  const sendTransaction = useSendTransaction();
 
   return (
     <DepositForm
-      amount={amount}
-      setAmount={setAmount}
-      onSubmit={async () => {
-        console.log("submitting");
-      }}
+      {...props}
+      pending={sendTransaction.isPending}
+      onSubmit={
+        appAccountClient
+          ? async () => {
+              await sendTransaction.sendTransactionAsync({
+                chainId: props.sourceChainId,
+                to: appAccountClient.account.address,
+                value: props.amount,
+              });
+            }
+          : undefined
+      }
     />
   );
 }

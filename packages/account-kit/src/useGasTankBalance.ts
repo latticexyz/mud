@@ -11,6 +11,7 @@ export function useGasTankBalance() {
   const appAccountBalance = useBalance(
     appAccountClient && appAccountClient.type !== "smartAccountClient"
       ? {
+          chainId,
           address: appAccountClient.account.address,
           query: {
             refetchInterval: 2000,

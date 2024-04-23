@@ -1,41 +1,54 @@
-import { useState } from "react";
 import { useAccount, useSwitchChain } from "wagmi";
 import { ChainSelect } from "./ChainSelect";
 import { AmountInput } from "./AmountInput";
 import { Button } from "../../ui/Button";
-import { useAppChain } from "../../useAppChain";
+import { useOnboardingSteps } from "../../useOnboardingSteps";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const DEFAULT_DEPOSIT_AMOUNT = 0.005;
 
 export type Props = {
+  sourceChainId: number;
+  setSourceChainId: (chainId: number) => void;
   amount: bigint | undefined;
   setAmount: (amount: bigint | undefined) => void;
   // TODO: should we use UseWriteContractReturnType instead?
-  onSubmit: () => void;
+  // TODO: `undefined` here is meant to capture "pending requirements for onSubmit", but maybe we need a better way to express this, like `useQuery`'s `enabled`
+  onSubmit: (() => Promise<void>) | undefined;
   disabled?: boolean;
   pending?: boolean;
   submitButtonLabel?: string;
 };
 
-export function DepositForm({ amount, setAmount, onSubmit, disabled, pending, submitButtonLabel = "Deposit" }: Props) {
-  const chain = useAppChain();
-  const [fundSourceChainId, setFundSourceChainId] = useState(chain.id);
-
-  const { chainId } = useAccount();
-  const shouldSwitchChain = chainId !== chain.id;
+export function DepositForm({
+  sourceChainId,
+  setSourceChainId,
+  amount,
+  setAmount,
+  onSubmit,
+  disabled,
+  pending,
+  submitButtonLabel = "Deposit",
+}: Props) {
+  const { chainId: userChainId } = useAccount();
+  const shouldSwitchChain = userChainId !== sourceChainId;
   const switchChain = useSwitchChain();
+  const queryClient = useQueryClient();
+  const { resetStep } = useOnboardingSteps();
 
   return (
     <form
       className="flex flex-col px-5 gap-2"
-      onSubmit={(event) => {
+      onSubmit={async (event) => {
         event.preventDefault();
-        onSubmit();
+        // TODO: return (optional) tx hash from onSubmit so we can wait for it here
+        await onSubmit?.();
+        await queryClient.invalidateQueries();
+        resetStep();
       }}
     >
       <div className="flex gap-2">
-        <ChainSelect value={fundSourceChainId} onChange={setFundSourceChainId} />
-        {/* <ChainDropdown /> */}
+        <ChainSelect value={sourceChainId} onChange={setSourceChainId} />
         <AmountInput initialAmount={amount} onChange={setAmount} />
       </div>
 
@@ -53,12 +66,12 @@ export function DepositForm({ amount, setAmount, onSubmit, disabled, pending, su
           type="button"
           className="w-full"
           pending={switchChain.isPending}
-          onClick={() => switchChain.switchChain({ chainId: fundSourceChainId })}
+          onClick={() => switchChain.switchChain({ chainId: sourceChainId })}
         >
           Switch chain
         </Button>
       ) : (
-        <Button type="submit" className="w-full" pending={pending} disabled={disabled}>
+        <Button type="submit" className="w-full" pending={pending || !onSubmit} disabled={disabled}>
           {submitButtonLabel}
         </Button>
       )}
