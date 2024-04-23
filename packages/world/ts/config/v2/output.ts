@@ -44,9 +44,7 @@ export type Deploy = {
   /** Deploy the World as an upgradable proxy */
   readonly useProxy: boolean;
   /** Deploy the World using KMS */
-  readonly kms?: {
-    readonly keyId: string;
-  };
+  readonly keyId?: string;
 };
 
 export type Codegen = {
