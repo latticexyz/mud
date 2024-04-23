@@ -43,9 +43,7 @@ export type CodegenInput = {
   /** Deploy the World as an upgradable proxy */
   useProxy?: boolean;
   /** Deploy the World using KMS */
-  kms?: {
-    keyId: string;
-  };
+  keyId?: string;
 };
 
 export type WorldInput = evaluate<
