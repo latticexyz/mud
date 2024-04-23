@@ -18,7 +18,7 @@ const EcdsaPubKey = asn1.define("EcdsaPubKey", function (this: any) {
 const getRS = async (signParams: {
   hash: Hex;
   keyId: SignCommandInput["KeyId"];
-  kmsInstance: KMSClient;
+  client: KMSClient;
 }): Promise<{ r: Hex; s: Hex }> => {
   const signature = await signWithKMS(signParams);
 
@@ -77,7 +77,7 @@ export const getEthAddressFromPublicKey = (publicKey: Uint8Array): Address => {
 type SignParameters = {
   hash: Hex;
   keyId: SignCommandInput["KeyId"];
-  kmsInstance: KMSClient;
+  client: KMSClient;
   address: Hex;
 };
 
@@ -90,8 +90,8 @@ type SignReturnType = Hex;
  *
  * @returns The signature.
  */
-export const sign = async ({ hash, address, keyId, kmsInstance }: SignParameters): Promise<SignReturnType> => {
-  const { r, s } = await getRS({ keyId, hash, kmsInstance });
+export const sign = async ({ hash, address, keyId, client }: SignParameters): Promise<SignReturnType> => {
+  const { r, s } = await getRS({ keyId, hash, client });
   const recovery = await getRecovery(hash, r, s, address);
 
   return signatureToHex({

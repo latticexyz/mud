@@ -11,37 +11,37 @@ import { getEthAddressFromPublicKey } from "./sign";
 
 type GetPublicKeyParams = {
   keyId: SignCommandInput["KeyId"];
-  kmsInstance: KMSClient;
+  client: KMSClient;
 };
 
 type GetEthAddressFromKMSparams = {
   keyId: SignCommandInput["KeyId"];
-  kmsInstance: KMSClient;
+  client: KMSClient;
 };
 
 type SignParams = {
   hash: Hex;
   keyId: SignCommandInput["KeyId"];
-  kmsInstance: KMSClient;
+  client: KMSClient;
 };
 
 const getPublicKey = (getPublicKeyParams: GetPublicKeyParams): Promise<GetPublicKeyCommandOutput> => {
-  const { keyId, kmsInstance } = getPublicKeyParams;
+  const { keyId, client } = getPublicKeyParams;
   const command = new GetPublicKeyCommand({ KeyId: keyId });
 
-  return kmsInstance.send(command);
+  return client.send(command);
 };
 
 export const getEthAddressFromKMS = async (
   getEthAddressFromKMSparams: GetEthAddressFromKMSparams,
 ): Promise<Address> => {
-  const { keyId, kmsInstance } = getEthAddressFromKMSparams;
-  const KMSKey = await getPublicKey({ keyId, kmsInstance });
+  const { keyId, client } = getEthAddressFromKMSparams;
+  const KMSKey = await getPublicKey({ keyId, client });
 
   return getEthAddressFromPublicKey(KMSKey.PublicKey as Uint8Array);
 };
 
-export const signWithKMS = async ({ keyId, hash, kmsInstance }: SignParams): Promise<SignCommandOutput> => {
+export const signWithKMS = async ({ keyId, hash, client }: SignParams): Promise<SignCommandOutput> => {
   const formatted = Buffer.from(fromHex(hash, "bytes"));
 
   const command = new SignCommand({
@@ -51,5 +51,5 @@ export const signWithKMS = async ({ keyId, hash, kmsInstance }: SignParams): Pro
     MessageType: "DIGEST",
   });
 
-  return kmsInstance.send(command);
+  return client.send(command);
 };

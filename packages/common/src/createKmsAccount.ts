@@ -4,20 +4,28 @@ import { toAccount } from "viem/accounts";
 import { getEthAddressFromKMS } from "./account/kms";
 import { sign } from "./account/sign";
 
+export type CreateKmsAccountOptions = {
+  keyId: string;
+  client?: KMSClient;
+};
+
 /**
  * @description Creates an Account from a KMS key and instance.
  *
  * @returns A Local Account.
  */
-export async function createKmsAccount(keyId: string, kmsInstance: KMSClient): Promise<LocalAccount> {
-  const address = await getEthAddressFromKMS({ kmsInstance, keyId });
+export async function createKmsAccount({
+  keyId,
+  client = new KMSClient(),
+}: CreateKmsAccountOptions): Promise<LocalAccount> {
+  const address = await getEthAddressFromKMS({ client, keyId });
 
   const account = toAccount({
     address,
     async signMessage({ message }) {
       const hash = hashMessage(message);
       const signature = await sign({
-        kmsInstance,
+        client,
         keyId,
         hash,
         address,
@@ -29,7 +37,7 @@ export async function createKmsAccount(keyId: string, kmsInstance: KMSClient): P
       const unsignedTx = serializeTransaction(transaction);
       const hash = keccak256(unsignedTx);
       const signature = await sign({
-        kmsInstance,
+        client,
         keyId,
         hash,
         address,
@@ -40,7 +48,7 @@ export async function createKmsAccount(keyId: string, kmsInstance: KMSClient): P
     async signTypedData(typedData) {
       const hash = hashTypedData(typedData);
       const signature = await sign({
-        kmsInstance,
+        client,
         keyId,
         hash,
         address,
