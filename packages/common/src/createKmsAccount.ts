@@ -9,6 +9,8 @@ export type CreateKmsAccountOptions = {
   client?: KMSClient;
 };
 
+export type KMSAccount = LocalAccount<"aws-kms">;
+
 /**
  * @description Creates an Account from a KMS key and instance.
  *
@@ -17,7 +19,7 @@ export type CreateKmsAccountOptions = {
 export async function createKmsAccount({
   keyId,
   client = new KMSClient(),
-}: CreateKmsAccountOptions): Promise<LocalAccount> {
+}: CreateKmsAccountOptions): Promise<KMSAccount> {
   const address = await getAddressFromKMS({ keyId, client });
 
   const account = toAccount({
@@ -58,5 +60,8 @@ export async function createKmsAccount({
     },
   });
 
-  return account;
+  return {
+    ...account,
+    source: "aws-kms",
+  };
 }

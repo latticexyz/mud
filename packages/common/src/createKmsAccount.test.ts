@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { createKmsAccount } from "./createKmsAccount";
+import { KMSAccount, createKmsAccount } from "./createKmsAccount";
 import { CreateKeyCommand, KMSClient } from "@aws-sdk/client-kms";
-import { LocalAccount, parseGwei, verifyMessage, verifyTypedData } from "viem";
+import { parseGwei, verifyMessage, verifyTypedData } from "viem";
 
 describe("createKmsAccount", () => {
-  let account: LocalAccount;
+  let account: KMSAccount;
   let keyId: string;
 
   beforeAll(async () => {
