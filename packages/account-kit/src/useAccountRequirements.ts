@@ -6,6 +6,7 @@ import { useGasTankBalance } from "./useGasTankBalance";
 import { useIsGasSpender } from "./useIsGasSpender";
 import { useSignRegisterDelegation } from "./steps/app-account/useSignRegisterDelegation";
 import { useIsFree } from "./useIsFree";
+import { debug } from "./debug";
 
 export const accountRequirements = [
   "connectedWallet",
@@ -59,7 +60,7 @@ export function useAccountRequirements(): UseAccountRequirementsResult {
   ]);
 
   useEffect(() => {
-    console.log("requirements", requirements.requirements);
+    debug("useAccountRequirements requirements", requirements.requirements);
   }, [requirements.requirements]);
 
   return requirements;

@@ -14,10 +14,12 @@ import { useOnboardingSteps } from "../../useOnboardingSteps";
 import { useConfig } from "../../AccountKitConfigProvider";
 import CallWithSignatureAbi from "@latticexyz/world-modules/out/IUnstable_CallWithSignatureSystem.sol/IUnstable_CallWithSignatureSystem.abi.json";
 import { getAction } from "viem/utils";
+import { useAppChain } from "../../useAppChain";
 
 export function FinalizingStep() {
   const queryClient = useQueryClient();
-  const { chain, worldAddress } = useConfig();
+  const { worldAddress } = useConfig();
+  const chain = useAppChain();
   const publicClient = usePublicClient({ chainId: chain.id });
   const { data: userAccountClient } = useWalletClient({ chainId: chain.id });
   const { data: appAccountClient } = useAppAccountClient();

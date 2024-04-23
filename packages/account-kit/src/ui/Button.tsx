@@ -12,7 +12,7 @@ type ButtonClassNameOptions = {
 const buttonClassName = ({ size = "md", variant = "primary", pending = false }: ButtonClassNameOptions = {}) =>
   twMerge(
     // eslint-disable-next-line max-len
-    "group self-center leading-none outline-none border border-transparent ring-2 ring-transparent focus:ring-orange-500 transition aria-disabled:pointer-events-none aria-busy:pointer-events-none",
+    "group self-center leading-none outline-none border border-transparent ring-2 ring-transparent focus:ring-orange-500 focus:border-transparent transition aria-disabled:pointer-events-none aria-busy:pointer-events-none",
     {
       primary: twMerge(
         "bg-neutral-900 text-white hover:bg-neutral-700 active:bg-neutral-600 aria-disabled:bg-neutral-200 aria-disabled:text-neutral-400",

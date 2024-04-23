@@ -15,12 +15,14 @@ import { usePaymaster } from "./usePaymaster";
 import { SendTransactionWithPaymasterParameters, sendTransaction } from "./actions/sendTransaction";
 import { SmartAccount, signerToSimpleSmartAccount } from "permissionless/accounts";
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
+import { useAppChain } from "./useAppChain";
 
 type Middleware = SmartAccountClientConfig<ENTRYPOINT_ADDRESS_V07_TYPE>["middleware"];
 
 export function useAppAccountClient(): UseQueryResult<AppAccountClient> {
   const [appSignerAccount] = useAppSigner();
-  const { chain, worldAddress } = useConfig();
+  const { worldAddress } = useConfig();
+  const chain = useAppChain();
   const erc4337Config = useErc4337Config();
   const gasTank = usePaymaster("gasTank");
   const { address: userAddress } = useAccount();

@@ -1,8 +1,8 @@
 import { formatEther } from "viem";
-import { AccountModalSection } from "../../../AccountModalSection";
+import { AccountModalSection } from "../../AccountModalSection";
 import { useAccount, useBalance } from "wagmi";
-import { DepositMethod } from "../DepositContent";
-import { useTransactionFees } from "../hooks/useTransactionFees";
+import { DepositMethod } from "./DepositContent";
+import { useTransactionFees } from "./hooks/useTransactionFees";
 
 type Props = {
   amount: number | undefined;

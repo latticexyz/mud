@@ -22,21 +22,8 @@ export function AccountDelegationContent() {
           {error ? <p className="whitespace-break-spaces break-all">Error: {String(error)}</p> : null}
 
           <p>
-            By signing in, you are agreeing to the{" "}
-            <a
-              href="#"
-              className="font-medium underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-500 hover:decoration-orange-500"
-            >
-              Terms of Use
-            </a>{" "}
-            and{" "}
-            <a
-              href="#"
-              className="font-medium underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-500 hover:decoration-orange-500"
-            >
-              Privacy Policy
-            </a>{" "}
-            for this app, and creating a signing key for a frictionless experience.
+            By signing in, you are agreeing to the <a href="#">Terms of Use</a> and <a href="#">Privacy Policy</a> for
+            this app, and creating a signing key for a frictionless experience.
           </p>
 
           <Button

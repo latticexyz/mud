@@ -2,7 +2,7 @@ import { useAccount } from "wagmi";
 import { getExplorerUrl } from "./utils/getExplorerUrl";
 import { Hex } from "viem";
 import { StatusType } from "./hooks/useDepositHandler";
-import { useConfig } from "../../AccountKitConfigProvider";
+import { useAppChain } from "../../useAppChain";
 
 type Props = {
   hash: Hex;
@@ -12,7 +12,7 @@ type Props = {
 export function ViewTransaction({ hash, status }: Props) {
   const userAccount = useAccount();
   const userAccountChainId = userAccount.chain?.id;
-  const { chain } = useConfig();
+  const { chain } = useAppChain();
 
   if (!hash) return null;
 

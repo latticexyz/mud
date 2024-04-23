@@ -11,7 +11,11 @@ export function AccountModalTitle({ title }: Props) {
   return (
     <div className="flex-shrink-0 flex items-start gap-5 p-5">
       <Dialog.Title
-        className={twMerge("flex-grow text-lg leading-none font-medium", "animate-in fade-in slide-in-from-left-2")}
+        className={twMerge(
+          "flex-grow text-lg leading-none font-medium",
+          "text-black dark:text-white",
+          "animate-in fade-in slide-in-from-left-2",
+        )}
       >
         {title}
       </Dialog.Title>

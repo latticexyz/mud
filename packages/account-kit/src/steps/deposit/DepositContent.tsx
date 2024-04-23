@@ -1,40 +1,33 @@
-import { useState } from "react";
-import { useAccount } from "wagmi";
-import { useConfig } from "../../AccountKitConfigProvider";
 import { AccountModalTitle } from "../../AccoutModalTitle";
 import { AccountModalSection } from "../../AccountModalSection";
-import { useDepositHandler } from "./hooks/useDepositHandler";
 import { GasTankStateContent } from "./GasTankStateContent";
-import { ChainSelect } from "./components/ChainSelect";
-import { AmountInput } from "./components/AmountInput";
-import { BalancesFees } from "./components/BalancesFees";
-import { ViewTransaction } from "./ViewTransaction";
 import { Button } from "../../ui/Button";
+import { DepositViaTransferForm } from "./via-transfer/DepositViaTransferForm";
+import { useAppChain } from "../../useAppChain";
 
 export type DepositMethod = "direct" | "native" | "relay";
 
 export const DEFAULT_DEPOSIT_AMOUNT = 0.005;
 
 export function DepositContent() {
-  const { chain } = useConfig();
-  const userAccount = useAccount();
-  const userAccountAddress = userAccount.address;
-  const userAccountChainId = userAccount?.chain?.id;
-  const [depositAmount, setDepositAmount] = useState<number | undefined>(DEFAULT_DEPOSIT_AMOUNT);
-  const [depositMethod, setDepositMethod] = useState<DepositMethod>(() => {
-    if (chain.id === userAccountChainId) return "direct";
-    else if (chain.sourceId === userAccountChainId) return "native";
-    else return "relay";
-  });
-  const { txHash, error, deposit, status, isPending, isLoading, isSuccess } = useDepositHandler(depositMethod);
+  const chain = useAppChain();
 
   return (
     <>
       <AccountModalTitle title="Deposit" />
 
-      <GasTankStateContent amount={depositAmount} isSuccess={isSuccess} />
+      <GasTankStateContent amount={undefined} isSuccess={false} />
 
-      <AccountModalSection className="h-full">
+      <AccountModalSection>
+        <div className="flex flex-col py-5 gap-5">
+          <p className="px-5">
+            Pick the chain to fund your app account with gas to interact with this app on {chain.name}.
+          </p>
+          <DepositViaTransferForm />
+        </div>
+      </AccountModalSection>
+
+      {/* <AccountModalSection className="h-full">
         <div className="flex flex-col h-full gap-2 p-5">
           {!isSuccess && (
             <form
@@ -90,7 +83,7 @@ export function DepositContent() {
             </>
           )}
         </div>
-      </AccountModalSection>
+      </AccountModalSection> */}
     </>
   );
 }

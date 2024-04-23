@@ -24,6 +24,7 @@ export function GasTankStateContent({ amount, isSuccess }: GasTankStateContentPr
   return (
     <AccountModalSection
       className={twMerge(
+        // TODO: dark style for success
         isSuccess ? "bg-green-900 text-white" : "bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white",
       )}
     >

@@ -70,7 +70,7 @@ function reducer(state: StateType, action: ActionType): StateType {
 
 export const useDepositHandler = (depositMethod: DepositMethod) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { chain } = useConfig();
+  const { chainId } = useConfig();
   const gasTank = usePaymaster("gasTank");
   const wagmiConfig = useWagmiConfig();
   const wallet = useWalletClient();
@@ -96,7 +96,7 @@ export const useDepositHandler = (depositMethod: DepositMethod) => {
         if (depositMethod === "direct") {
           const txHash = await directDeposit({
             config: wagmiConfig,
-            chainId: chain.id,
+            chainId,
             gasTankAddress: gasTank.address,
             userAccountAddress,
             amount,
@@ -124,7 +124,7 @@ export const useDepositHandler = (depositMethod: DepositMethod) => {
           relayLinkDeposit({
             config: wagmiConfig,
             chainId: userAccountChainId,
-            toChainId: chain.id,
+            toChainId: chainId,
             gasTankAddress: gasTank.address,
             wallet,
             amount,
@@ -143,7 +143,7 @@ export const useDepositHandler = (depositMethod: DepositMethod) => {
         dispatch({ type: "SET_ERROR", payload: error });
       }
     },
-    [userAccountAddress, depositMethod, wagmiConfig, chain.id, gasTank, wallet, userAccountChainId],
+    [userAccountAddress, depositMethod, wagmiConfig, chainId, gasTank, wallet, userAccountChainId],
   );
 
   return useMemo(() => {

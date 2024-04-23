@@ -132,6 +132,9 @@ importers:
       '@radix-ui/react-select':
         specifier: ^2.0.0
         version: 2.0.0(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-slot':
+        specifier: ^1.0.2
+        version: 1.0.2(@types/react@18.2.22)(react@18.2.0)
       '@rainbow-me/rainbowkit':
         specifier: ^2.0.2
         version: 2.0.5(@types/react@18.2.22)(react-dom@18.2.0)(react@18.2.0)(viem@2.9.20)(wagmi@2.5.19)

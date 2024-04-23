@@ -8,7 +8,6 @@ import { GasSpenderContent } from "./GasSpenderContent";
 export function DepositStep() {
   const { gasTankBalance } = useGasTankBalance();
   const { isGasSpender } = useIsGasSpender();
-  console.log({ gasTankBalance, isGasSpender });
 
   if (gasTankBalance == null || isGasSpender == null) {
     // TODO: better load state

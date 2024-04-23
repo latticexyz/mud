@@ -83,7 +83,7 @@ const estimateNativeFee = async ({
 
 export const useTransactionFees = (amount: number | undefined, depositMethod: DepositMethod) => {
   const [fees, setFees] = useState<string>("");
-  const { chain } = useConfig();
+  const { chainId } = useConfig();
   const gasTank = usePaymaster("gasTank");
   const wagmiConfig = useWagmiConfig();
   const userAccount = useAccount();
@@ -121,7 +121,7 @@ export const useTransactionFees = (amount: number | undefined, depositMethod: De
         fees = await fetchRelayLinkQuote({
           config: wagmiConfig,
           chainId: userAccountChainId!,
-          toChainId: chain.id,
+          toChainId: chainId,
           amount: amount || DEFAULT_DEPOSIT_AMOUNT,
         });
 
@@ -130,7 +130,7 @@ export const useTransactionFees = (amount: number | undefined, depositMethod: De
     };
 
     fetchFees();
-  }, [amount, chain, depositMethod, gasTank, userAccountAddress, userAccountChainId, wagmiConfig]);
+  }, [amount, chainId, depositMethod, gasTank, userAccountAddress, userAccountChainId, wagmiConfig]);
 
   return {
     fees,

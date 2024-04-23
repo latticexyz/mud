@@ -16,7 +16,7 @@ type RelayLinkContentProps = {
 
 export function RelayLinkContent({ amount }: RelayLinkContentProps) {
   const wallet = useWalletClient();
-  const { chain } = useConfig();
+  const { chainId } = useConfig();
   const gasTank = usePaymaster("gasTank");
   const userAccount = useAccount();
   const userAccountChainId = userAccount?.chain?.id;
@@ -40,7 +40,7 @@ export function RelayLinkContent({ amount }: RelayLinkContentProps) {
     const quote = await getClient()?.methods.getBridgeQuote({
       wallet: wallet.data,
       chainId: selectedSourceChainId, // The chain id to bridge from
-      toChainId: chain.id, // The chain id to bridge to
+      toChainId: chainId, // The chain id to bridge to
       amount: parseEther(amount).toString(), // Amount in wei to bridge
       currency: "eth", // `eth` | `usdc`
       recipient: wallet.data.account.address, // A valid address to send the funds to
@@ -50,7 +50,7 @@ export function RelayLinkContent({ amount }: RelayLinkContentProps) {
     if (quote instanceof Object) {
       setQuote(quote);
     }
-  }, [amount, wallet.data, chain, selectedSourceChainId]);
+  }, [amount, wallet.data, chainId, selectedSourceChainId]);
 
   const executeDeposit = useCallback(async () => {
     if (!wallet.data || !amount || selectedSourceChainId == null || !publicClient || !gasTank) return;
@@ -69,7 +69,7 @@ export function RelayLinkContent({ amount }: RelayLinkContentProps) {
     const client = getClient();
     await client.actions.call({
       chainId: selectedSourceChainId,
-      toChainId: chain.id,
+      toChainId: chainId,
       txs: [request],
       wallet: wallet.data,
       onProgress: (data1, data2, data3, data4, data5) => {
@@ -79,7 +79,7 @@ export function RelayLinkContent({ amount }: RelayLinkContentProps) {
         }
       },
     });
-  }, [wallet.data, amount, selectedSourceChainId, publicClient, gasTank, chain.id]);
+  }, [wallet.data, amount, selectedSourceChainId, publicClient, gasTank, chainId]);
 
   const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();

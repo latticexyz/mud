@@ -14,10 +14,10 @@ import { usePaymaster } from "../../usePaymaster";
 
 export function GasSpenderContent() {
   const queryClient = useQueryClient();
-  const { chain } = useConfig();
+  const { chainId } = useConfig();
   const gasTank = usePaymaster("gasTank");
-  const publicClient = usePublicClient({ chainId: chain.id });
-  const { data: userAccountClient } = useWalletClient({ chainId: chain.id });
+  const publicClient = usePublicClient({ chainId });
+  const { data: userAccountClient } = useWalletClient({ chainId });
   const { data: appAccountClient } = useAppAccountClient();
   const { resetStep } = useOnboardingSteps();
 
@@ -30,7 +30,7 @@ export function GasSpenderContent() {
 
       console.log("registerSpender");
       const hash = await callWithSignature({
-        chainId: chain.id,
+        chainId,
         worldAddress: gasTank.address,
         systemId: resourceToHex({ type: "system", namespace: "", name: "PaymasterSystem" }),
         callData: encodeFunctionData({

@@ -8,19 +8,23 @@ import { mudFoundry } from "@latticexyz/common/chains";
 import { AccountModal } from "../src/AccountModal";
 import { AccountKitConfigProvider } from "../src/AccountKitConfigProvider";
 import { App } from "./App";
+import { createClient, fallback, webSocket } from "viem";
+import { chains } from "../src/exports/chains";
 
 const queryClient = new QueryClient();
 
 const wagmiConfig = createConfig({
-  chains: [mudFoundry],
-  pollingInterval: 1_000,
-  transports: {
-    [mudFoundry.id]: http(),
-  },
+  chains: [mudFoundry, ...chains],
+  client: ({ chain }) =>
+    createClient({
+      chain,
+      transport: fallback([webSocket(), http()]),
+      pollingInterval: 1_000,
+    }),
 });
 
 const accountKitConfig = {
-  chain: mudFoundry,
+  chainId: mudFoundry.id,
   worldAddress: "0xd6c8022f1af8e9d7c3825557a1374ee518c65a4e",
   erc4337: false,
 } as const;
@@ -36,7 +40,6 @@ root.render(
             darkMode: midnightTheme({ borderRadius: "none" }),
           }}
         >
-          {/* Mount context and modal ourselves to avoid hot reloading issues */}
           <AccountKitConfigProvider config={accountKitConfig}>
             <App />
             <AccountModal />

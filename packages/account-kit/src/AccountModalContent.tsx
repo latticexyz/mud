@@ -30,8 +30,11 @@ export function AccountModalContent() {
     <div
       className={twMerge(
         "flex w-[44rem] min-h-[28rem] border divide-x",
-        "bg-neutral-100 text-black border-neutral-300 divide-neutral-300",
-        "dark:bg-neutral-800 dark:text-white dark:border-neutral-700 dark:divide-neutral-700",
+        "bg-neutral-100 text-neutral-700 border-neutral-300 divide-neutral-300",
+        "dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-700 dark:divide-neutral-700",
+        "[&_a]:font-medium [&_a]:underline [&_a]:underline-offset-4",
+        "[&_a]:text-black dark:[&_a]:text-white",
+        "[&_a]:decoration-neutral-300 dark:[&_a]:decoration-neutral-500 hover:[&_a]:decoration-orange-500",
       )}
     >
       <div className="flex-shrink-0 w-[16rem] bg-neutral-200 dark:bg-neutral-900">

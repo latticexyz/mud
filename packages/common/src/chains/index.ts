@@ -1,3 +1,3 @@
 export type { MUDChain } from "./types";
-export { latticeTestnet } from "./latticeTestnet";
+export { garnet } from "./garnet";
 export { mudFoundry } from "./mudFoundry";
