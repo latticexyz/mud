@@ -2,9 +2,8 @@
 pragma solidity >=0.8.24;
 
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
-import { STORE_VERSION } from "@latticexyz/store/src/version.sol";
 import { IStoreEvents } from "@latticexyz/store/src/IStoreEvents.sol";
-import { WORLD_VERSION } from "./version.sol";
+import { IBaseWorld } from "./codegen/interfaces/IBaseWorld.sol";
 import { IWorldEvents } from "./IWorldEvents.sol";
 import { AccessControl } from "./AccessControl.sol";
 import { ROOT_NAMESPACE_ID } from "./constants.sol";
@@ -32,9 +31,6 @@ contract WorldProxy is Proxy {
     _setImplementation(implementation);
 
     StoreCore.initialize();
-    emit IStoreEvents.HelloStore(STORE_VERSION);
-
-    emit IWorldEvents.HelloWorld(WORLD_VERSION);
   }
 
   /**
@@ -44,6 +40,8 @@ contract WorldProxy is Proxy {
     StorageSlot.getAddressSlot(IMPLEMENTATION_SLOT).value = newImplementation;
 
     emit IERC1967.Upgraded(newImplementation);
+    emit IStoreEvents.HelloStore(IBaseWorld(newImplementation).storeVersion());
+    emit IWorldEvents.HelloWorld(IBaseWorld(newImplementation).worldVersion());
   }
 
   /**
