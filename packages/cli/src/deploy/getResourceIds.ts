@@ -32,7 +32,7 @@ export async function getResourceIds({
         const shouldRetry =
           error instanceof HttpRequestError &&
           error.status === 400 &&
-          error.message.includes('"block is out of range"');
+          error.message.includes('block is out of range');
 
         if (!shouldRetry) {
           throw error;
