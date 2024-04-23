@@ -76,7 +76,11 @@ export function FinalizingStep() {
     },
   });
 
-  const receipt = useWaitForTransactionReceipt({ chainId: chain.id, hash: registerDelegation.data });
+  const receipt = useWaitForTransactionReceipt({
+    chainId: chain.id,
+    hash: registerDelegation.data,
+    pollingInterval: 1_000,
+  });
 
   useEffect(() => {
     if (receipt.data?.status === "success") {

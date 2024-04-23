@@ -1,5 +1,7 @@
 import { Hex, formatEther } from "viem";
 import { useBalance } from "wagmi";
+import { PendingIcon } from "../../icons/PendingIcon";
+import { truncateDecimal } from "./truncateDecimal";
 
 export type Props = {
   chainId: number;
@@ -9,5 +11,5 @@ export type Props = {
 export function ChainBalance({ chainId, address }: Props) {
   const balance = useBalance({ chainId, address });
   // TODO: should this support non-ether decimals?
-  return <>{balance.data ? <>{formatEther(balance.data.value)} Ξ</> : null}</>;
+  return <>{balance.data ? <>{truncateDecimal(formatEther(balance.data.value))} Ξ</> : <PendingIcon />}</>;
 }

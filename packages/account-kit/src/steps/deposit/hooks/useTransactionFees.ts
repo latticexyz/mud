@@ -34,7 +34,7 @@ const estimateDirectFee = async ({
       functionName: "depositTo",
       args: [userAccountAddress],
     }),
-    // TODO: sue default amounts
+    // TODO: use default amounts
     value: parseEther(DEFAULT_DEPOSIT_AMOUNT.toString()),
   });
 

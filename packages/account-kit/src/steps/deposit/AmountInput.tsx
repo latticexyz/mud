@@ -7,6 +7,7 @@ export type Props = {
 };
 
 export const AmountInput = ({ initialAmount, onChange }: Props) => {
+  // TODO: add eth icon to the right of the text
   return (
     <Input
       className="w-full"
@@ -16,7 +17,7 @@ export const AmountInput = ({ initialAmount, onChange }: Props) => {
       onChange={(event) => {
         const input = event.currentTarget;
         const value = input.value.trim().replace(/\.$/, ".0");
-        if (!/^\d+(\.\d+)?$/.test(value)) {
+        if (!/^\d*(\.\d+)?$/.test(value)) {
           return input.setCustomValidity("Invalid amount.");
         }
         input.setCustomValidity("");

@@ -24,7 +24,8 @@ export function DepositContent() {
       <AccountModalSection>
         <div className="flex flex-col py-5 gap-5">
           <p className="px-5">
-            Pick the chain to fund your app account with gas to interact with this app on {chain.name}.
+            Top up your gas balance from your chain of choice. Prepaid gas lets you interact with this app without
+            wallet popups.
           </p>
           <DepositViaTransferForm
             sourceChainId={sourceChainId}

@@ -1,14 +1,14 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import { WagmiProvider, createConfig, http } from "wagmi";
+import { WagmiProvider, createConfig } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider, lightTheme, midnightTheme } from "@rainbow-me/rainbowkit";
 import { mudFoundry } from "@latticexyz/common/chains";
 import { AccountModal } from "../src/AccountModal";
 import { AccountKitConfigProvider } from "../src/AccountKitConfigProvider";
 import { App } from "./App";
-import { createClient, fallback, webSocket } from "viem";
+import { createClient, http } from "viem";
 import { chains } from "../src/exports/chains";
 
 const queryClient = new QueryClient();
@@ -18,8 +18,10 @@ const wagmiConfig = createConfig({
   client: ({ chain }) =>
     createClient({
       chain,
-      transport: fallback([webSocket(), http()]),
-      pollingInterval: 1_000,
+      // We intentionally don't use fallback+webSocket here because if a chain's RPC config
+      // doesn't include a `webSocket` entry, it doesn't seem to fallback and instead just
+      // ~never makes any requests and all queries seem to sit idle.
+      transport: http(),
     }),
 });
 
