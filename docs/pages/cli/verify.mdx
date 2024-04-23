@@ -39,13 +39,28 @@ This command verifies the deployed contracts on a blockchain.
    | `--profile`      | The foundry profile to use                                     | string  | `local`                      |
    | `--srcDir`       | Source directory                                               | string  | Foundry `src` directory      |
 
+   Note that it takes block explorers some time to process new contracts.
+   You should wait 5-10 minutes past deployment before you verify the contract on Etherscan and/or Blockscout.
+
 ## Examples
 
-To verify the world at that address on Holesky (_after_ adding the profile to `foundry.toml`) on [sourcify](https://sourcify.dev/):
+- To verify the world at that address on Holesky (_after_ adding the profile to `foundry.toml`) on [sourcify](https://sourcify.dev/):
 
-```sh copy
-pnpm mud verify --profile holesky --worldAddress 0x505ecdeb1483a5aa4209289905bcdc21611ba6df --verifier sourcify
-```
+  ```sh
+  WORLD_ADDRESS=0x816038e244ff78b86a5e7dec9bf281634fb6d2a2
+  pnpm mud verify --profile holesky --worldAddress $WORLD_ADDRESS --verifier sourcify
+  ```
+
+- To verify on Holesky on [Blockscout](https://www.blockscout.com/):
+
+  ``sh
+  WORLD_ADDRESS=0x816038e244ff78b86a5e7dec9bf281634fb6d2a2
+  export ETHERSCAN_API_KEY=<blockscout API key goes here>
+  pnpm mud verify --profile holesky --worldAddress $WORLD_ADDRESS --verifier blockscout --verifier-url 'https://eth-holesky.blockscout.com/api?'
+
+  ```
+
+  ```
 
 ## Debugging
 
