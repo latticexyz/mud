@@ -92,7 +92,7 @@ in your contracts directory to use the default anvil private key.`,
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
 
   const account = configV2.deploy.keyId
-    ? await createKmsAccount(configV2.deploy.keyId, new KMSClient({}))
+    ? await createKmsAccount(configV2.deploy.keyId, new KMSClient())
     : privateKeyToAccount(privateKey);
 
   const client = createWalletClient({
