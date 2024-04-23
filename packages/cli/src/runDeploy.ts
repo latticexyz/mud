@@ -43,6 +43,10 @@ export const deployOptions = {
     type: "string",
     desc: "The deployment salt to use. Defaults to a random salt.",
   },
+  keyId: {
+    type: "string",
+    desc: "The AWS KMS keyId. If set, the World is deployed using KMS instead of local private key.",
+  },
 } as const satisfies Record<string, Options>;
 
 export type DeployOptions = InferredOptionTypes<typeof deployOptions>;
@@ -91,9 +95,7 @@ in your contracts directory to use the default anvil private key.`,
 
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
 
-  const account = configV2.deploy.keyId
-    ? await createKmsAccount(configV2.deploy.keyId, new KMSClient())
-    : privateKeyToAccount(privateKey);
+  const account = opts.keyId ? await createKmsAccount(opts.keyId, new KMSClient()) : privateKeyToAccount(privateKey);
 
   const client = createWalletClient({
     transport: http(rpc, {
