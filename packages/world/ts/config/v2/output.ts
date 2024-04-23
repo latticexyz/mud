@@ -45,8 +45,6 @@ export type Deploy = {
   readonly useProxy: boolean;
   /** Deploy the World using KMS */
   readonly kms?: {
-    readonly endpoint: string;
-    readonly region: string;
     readonly keyId: string;
   };
 };

@@ -44,8 +44,6 @@ export type CodegenInput = {
   useProxy?: boolean;
   /** Deploy the World using KMS */
   kms?: {
-    endpoint: string;
-    region: string;
     keyId: string;
   };
 };
