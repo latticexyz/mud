@@ -279,7 +279,7 @@ importers:
   packages/common:
     dependencies:
       '@aws-sdk/client-kms':
-        specifier: ^3.556.0
+        specifier: ^3.x
         version: 3.556.0
       '@latticexyz/schema-type':
         specifier: workspace:*
@@ -288,7 +288,7 @@ importers:
         specifier: ^0.16.0
         version: 0.16.0
       asn1.js:
-        specifier: ^5.4.1
+        specifier: ^5.x
         version: 5.4.1
       debug:
         specifier: ^4.3.4
