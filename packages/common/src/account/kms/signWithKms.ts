@@ -1,26 +1,21 @@
 // @ts-expect-error types
 import asn1 from "asn1.js";
-import { Address, Hex, isAddressEqual, signatureToHex, toHex } from "viem";
-import { publicKeyToAddress, recoverAddress } from "viem/utils";
+import { Hex, isAddressEqual, signatureToHex, toHex } from "viem";
+import { recoverAddress } from "viem/utils";
 import { KMSClient, SignCommandInput } from "@aws-sdk/client-kms";
-import { signWithKMS } from "./kms";
+import { sign } from "./commands/sign";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const EcdsaSigAsnParse = asn1.define("EcdsaSig", function (this: any) {
   this.seq().obj(this.key("r").int(), this.key("s").int());
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const EcdsaPubKey = asn1.define("EcdsaPubKey", function (this: any) {
-  this.seq().obj(this.key("algo").seq().obj(this.key("a").objid(), this.key("b").objid()), this.key("pubKey").bitstr());
-});
-
-const getRS = async (signParams: {
+async function getRS(signParams: {
   hash: Hex;
   keyId: SignCommandInput["KeyId"];
   client: KMSClient;
-}): Promise<{ r: Hex; s: Hex }> => {
-  const signature = await signWithKMS(signParams);
+}): Promise<{ r: Hex; s: Hex }> {
+  const signature = await sign(signParams);
 
   if (signature.Signature === undefined) {
     throw new Error("Signature is undefined.");
@@ -42,9 +37,9 @@ const getRS = async (signParams: {
     r: toHex(r),
     s: toHex(s),
   };
-};
+}
 
-const getRecovery = async (hash: Hex, r: Hex, s: Hex, expectedAddress: Hex): Promise<number> => {
+async function getRecovery(hash: Hex, r: Hex, s: Hex, expectedAddress: Hex): Promise<number> {
   let recovery: number;
   for (recovery = 0; recovery <= 1; recovery++) {
     const signature = signatureToHex({
@@ -61,18 +56,7 @@ const getRecovery = async (hash: Hex, r: Hex, s: Hex, expectedAddress: Hex): Pro
     }
   }
   throw new Error("Failed to calculate recovery param");
-};
-
-export const getEthAddressFromPublicKey = (publicKey: Uint8Array): Address => {
-  const res = EcdsaPubKey.decode(Buffer.from(publicKey));
-
-  const publicKeyBuffer: Buffer = res.pubKey.data;
-
-  const publicKeyHex = toHex(publicKeyBuffer);
-  const address = publicKeyToAddress(publicKeyHex);
-
-  return address;
-};
+}
 
 type SignParameters = {
   hash: Hex;
@@ -90,7 +74,7 @@ type SignReturnType = Hex;
  *
  * @returns The signature.
  */
-export const sign = async ({ hash, address, keyId, client }: SignParameters): Promise<SignReturnType> => {
+export const signWithKms = async ({ hash, address, keyId, client }: SignParameters): Promise<SignReturnType> => {
   const { r, s } = await getRS({ keyId, hash, client });
   const recovery = await getRecovery(hash, r, s, address);
 
