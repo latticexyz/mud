@@ -45,7 +45,7 @@ export const deployOptions = {
   },
   awsKmsKeyId: {
     type: "string",
-    desc: "The AWS KMS keyId. If set, the World is deployed using a KMS signer instead of local private key.",
+    desc: "Optional AWS KMS key ID. If set, the World is deployed using a KMS signer instead of local private key.",
   },
 } as const satisfies Record<string, Options>;
 
