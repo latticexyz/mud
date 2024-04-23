@@ -4,7 +4,6 @@ import { storeSpliceStaticDataEvent } from "@latticexyz/store";
 import { WorldDeploy, storeTables } from "./common";
 import { debug } from "./debug";
 import pRetry from "p-retry";
-import { wait } from "@latticexyz/common/utils";
 
 export async function getResourceIds({
   client,
@@ -29,11 +28,6 @@ export async function getResourceIds({
       }),
     {
       retries: 3,
-      onFailedAttempt: async (error) => {
-        const delay = error.attemptNumber * 500;
-        debug(`failed to get logs, retrying in ${delay}ms...`);
-        await wait(delay);
-      },
     },
   );
   const resourceIds = logs.map((log) => log.args.keyTuple[0]);
