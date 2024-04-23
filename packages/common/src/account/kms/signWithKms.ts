@@ -1,9 +1,9 @@
-// @ts-expect-error types
-import asn1 from "asn1.js";
 import { Hex, isAddressEqual, signatureToHex, toHex } from "viem";
 import { recoverAddress } from "viem/utils";
 import { KMSClient, SignCommandInput } from "@aws-sdk/client-kms";
 import { sign } from "./commands/sign";
+// @ts-expect-error Could not find a declaration file for module 'asn1.js'.
+import asn1 from "asn1.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const EcdsaSigAsnParse = asn1.define("EcdsaSig", function (this: any) {

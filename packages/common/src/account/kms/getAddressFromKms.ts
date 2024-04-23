@@ -1,9 +1,9 @@
-// @ts-expect-error types
-import asn1 from "asn1.js";
 import { Address, toHex } from "viem";
 import { publicKeyToAddress } from "viem/utils";
 import { KMSClient, SignCommandInput } from "@aws-sdk/client-kms";
 import { getPublicKey } from "./commands/getPublicKey";
+// @ts-expect-error Could not find a declaration file for module 'asn1.js'.
+import asn1 from "asn1.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const EcdsaPubKey = asn1.define("EcdsaPubKey", function (this: any) {
