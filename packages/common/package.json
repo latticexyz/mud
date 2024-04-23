@@ -74,8 +74,8 @@
     "vitest": "0.34.6"
   },
   "peerDependencies": {
-    "@aws-sdk/client-kms": "^3.x",
-    "asn1.js": "^5.x"
+    "@aws-sdk/client-kms": "3.x",
+    "asn1.js": "5.x"
   },
   "peerDependenciesMeta": {
     "@aws-sdk/client-kms": {
