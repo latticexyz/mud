@@ -1,4 +1,4 @@
-import { Client, parseAbiItem, Hex } from "viem";
+import { Client, parseAbiItem, Hex, HttpRequestError } from "viem";
 import { getLogs } from "viem/actions";
 import { storeSpliceStaticDataEvent } from "@latticexyz/store";
 import { WorldDeploy, storeTables } from "./common";
@@ -28,6 +28,16 @@ export async function getResourceIds({
       }),
     {
       retries: 3,
+      onFailedAttempt: async (error) => {
+        const shouldRetry =
+          error instanceof HttpRequestError &&
+          error.status === 400 &&
+          error.message.includes('"block is out of range"');
+
+        if (!shouldRetry) {
+          throw error;
+        }
+      },
     },
   );
   const resourceIds = logs.map((log) => log.args.keyTuple[0]);
