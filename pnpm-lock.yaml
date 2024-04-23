@@ -178,9 +178,6 @@ importers:
       '@latticexyz/world-modules':
         specifier: workspace:*
         version: link:../world-modules
-      asn1.js:
-        specifier: ^5.4.1
-        version: 5.4.1
       chalk:
         specifier: ^5.0.1
         version: 5.2.0
