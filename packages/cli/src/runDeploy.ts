@@ -97,7 +97,6 @@ in your contracts directory to use the default anvil private key.`,
         new KMSClient({
           endpoint: configV2.deploy.kms.endpoint,
           region: configV2.deploy.kms.region,
-          credentials: configV2.deploy.kms.credentials,
         }),
       )
     : privateKeyToAccount(privateKey);

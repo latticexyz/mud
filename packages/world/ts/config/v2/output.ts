@@ -47,10 +47,6 @@ export type Deploy = {
   readonly kms?: {
     readonly endpoint: string;
     readonly region: string;
-    readonly credentials: {
-      readonly accessKeyId: string;
-      readonly secretAccessKey: string;
-    };
     readonly keyId: string;
   };
 };

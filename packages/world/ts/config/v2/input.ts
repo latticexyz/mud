@@ -46,10 +46,6 @@ export type CodegenInput = {
   kms?: {
     endpoint: string;
     region: string;
-    credentials: {
-      accessKeyId: string;
-      secretAccessKey: string;
-    };
     keyId: string;
   };
 };
