@@ -53,13 +53,10 @@ This command verifies the deployed contracts on a blockchain.
 
 - To verify on Holesky on [Blockscout](https://www.blockscout.com/):
 
-  ``sh
+  ```sh
   WORLD_ADDRESS=0x816038e244ff78b86a5e7dec9bf281634fb6d2a2
-  export ETHERSCAN_API_KEY=<blockscout API key goes here>
+  export ETHERSCAN_API_KEY= ** blockscout API key goes here **
   pnpm mud verify --profile holesky --worldAddress $WORLD_ADDRESS --verifier blockscout --verifier-url 'https://eth-holesky.blockscout.com/api?'
-
-  ```
-
   ```
 
 ## Debugging
