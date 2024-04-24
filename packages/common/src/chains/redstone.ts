@@ -1,24 +1,23 @@
 import { chainConfig } from "viem/op-stack";
-import { holesky } from "viem/chains";
+import { mainnet } from "viem/chains";
 import type { MUDChain } from "./types";
 
-export const garnet = {
+export const redstone = {
   ...chainConfig,
-  id: 17069,
-  sourceId: holesky.id,
-  name: "Garnet",
-  testnet: true,
+  id: 690,
+  sourceId: mainnet.id,
+  name: "Redstone",
   nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
   rpcUrls: {
     default: {
-      http: ["https://rpc.garnetchain.com"],
-      webSocket: ["wss://rpc.garnetchain.com"],
+      http: ["https://rpc.redstonechain.com"],
+      webSocket: ["wss://rpc.redstonechain.com"],
     },
   },
   blockExplorers: {
     default: {
       name: "Blockscout",
-      url: "https://explorer.garnetchain.com",
+      url: "https://explorer.redstonechain.com",
     },
   },
 } as const satisfies MUDChain;
