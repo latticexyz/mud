@@ -923,9 +923,6 @@ importers:
 
   packages/store-sync:
     dependencies:
-      '@aws-sdk/client-kms':
-        specifier: ^3.556.0
-        version: 3.556.0
       '@latticexyz/block-logs-stream':
         specifier: workspace:*
         version: link:../block-logs-stream
