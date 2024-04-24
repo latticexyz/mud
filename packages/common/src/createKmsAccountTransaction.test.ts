@@ -3,11 +3,11 @@ import { createPublicClient, createWalletClient, http, parseEther, verifyMessage
 import { foundry } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 import { CreateKeyCommand, KMSClient } from "@aws-sdk/client-kms";
-import { KMSAccount, createKmsAccount } from "@latticexyz/common";
-import { anvilRpcUrl } from "../../test/common";
+import { anvilRpcUrl } from "../test/common";
 import { waitForTransaction } from "./test/waitForTransaction";
+import { KMSAccount, createKmsAccount } from "./createKmsAccount";
 
-describe("createKmsAccount", async () => {
+describe("createKmsAccount tsransaction", async () => {
   let account: KMSAccount;
   let keyId: string;
 

@@ -59,7 +59,6 @@
     "test:ci": "vitest --run"
   },
   "dependencies": {
-    "@aws-sdk/client-kms": "^3.556.0",
     "@latticexyz/block-logs-stream": "workspace:*",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
