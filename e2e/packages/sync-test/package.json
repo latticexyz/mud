@@ -11,7 +11,6 @@
     "test:local": "DATABASE_URL=postgres://127.0.0.1/postgres_e2e pnpm run test"
   },
   "devDependencies": {
-    "@aws-sdk/client-kms": "^3.556.0",
     "@latticexyz/cli": "link:../../../packages/cli",
     "@latticexyz/common": "link:../../../packages/common",
     "@latticexyz/protocol-parser": "link:../../../packages/protocol-parser",
