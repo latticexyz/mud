@@ -16,9 +16,9 @@ services:
       - key: DEBUG
         value: mud:store-sync:createStoreSync
       - key: STORE_ADDRESS
-        value: "0xaf3b8f5877eaf44b50486d084c3fb763d2f8be22"
+        value: "0xc6b640ea79444c1bb0c6924771cc7432fb0bddd6"
       - key: START_BLOCK
-        value: 367377
+        value: 868954
 
   - type: web
     name: skystrife-indexer-api
