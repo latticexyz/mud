@@ -6,10 +6,10 @@ import { useOnboardingSteps } from "../../useOnboardingSteps";
 import { useQueryClient } from "@tanstack/react-query";
 import { twMerge } from "tailwind-merge";
 import { PendingIcon } from "../../icons/PendingIcon";
-import { formatEther, formatGwei } from "viem";
-import { truncateDecimal } from "./truncateDecimal";
 import { duration } from "itty-time";
 import { useSourceChains } from "./useSourceChains";
+import { formatBalance } from "./formatBalance";
+import { formatGas } from "./formatGas";
 
 export const DEFAULT_DEPOSIT_AMOUNT = 0.005;
 
@@ -100,20 +100,10 @@ export function DepositForm({
       >
         <dt>Available to deposit</dt>
         <dd>
-          {balance.data ? (
-            <>{truncateDecimal(formatEther(balance.data.value))} Ξ</>
-          ) : (
-            <PendingIcon className="inline-block text-xs" />
-          )}
+          {balance.data ? <>{formatBalance(balance.data.value)} Ξ</> : <PendingIcon className="inline-block text-xs" />}
         </dd>
         <dt>Estimated fee</dt>
-        <dd>
-          {estimatedFee ? (
-            <>{truncateDecimal(formatGwei(estimatedFee))} gwei</>
-          ) : (
-            <PendingIcon className="inline-block text-xs" />
-          )}
-        </dd>
+        <dd>{estimatedFee ? <>{formatGas(estimatedFee)} gwei</> : <PendingIcon className="inline-block text-xs" />}</dd>
         <dt>Time to deposit</dt>
         <dd>
           {estimatedTime == null ? (
