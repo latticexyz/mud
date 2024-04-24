@@ -17,9 +17,8 @@ type VerifyOptions = {
   worldAddress: Hex;
   /**
    * Address of determinstic deployment proxy: https://github.com/Arachnid/deterministic-deployment-proxy
-   * By default, we look for a deployment at 0x4e59b44847b379578588920ca78fbf26c0b4956c and, if not, deploy one.
-   * If the target chain does not support legacy transactions, we deploy the proxy bytecode anyway, but it will
-   * not have a deterministic address.
+   * By default, we look for a deployment at 0x4e59b44847b379578588920ca78fbf26c0b4956c.
+   * If it is not deployed or the target chain does not support legacy transactions, the user must set the deployer manually.
    */
   deployerAddress?: Hex;
   useProxy?: boolean;
