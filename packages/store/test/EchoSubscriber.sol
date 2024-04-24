@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
-import { PackedCounter } from "../src/PackedCounter.sol";
+import { EncodedLengths } from "../src/EncodedLengths.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { StoreHook } from "../src/StoreHook.sol";
 import { ResourceId } from "../src/ResourceId.sol";
@@ -13,7 +13,7 @@ contract EchoSubscriber is StoreHook {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes memory dynamicData,
     FieldLayout fieldLayout
   ) public override {
@@ -26,7 +26,7 @@ contract EchoSubscriber is StoreHook {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes memory dynamicData,
     FieldLayout fieldLayout
   ) public override {
@@ -59,7 +59,7 @@ contract EchoSubscriber is StoreHook {
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes memory data
   ) public override {
     emit HookCalled(
@@ -76,7 +76,7 @@ contract EchoSubscriber is StoreHook {
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes memory data
   ) public override {
     emit HookCalled(

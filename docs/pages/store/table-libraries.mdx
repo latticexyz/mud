@@ -11,27 +11,37 @@ The [CLI config](/cli/config) section goes into more detail on the available con
 
 To illustrate table library functionality on this page, we'll use two example tables with the following configurations:
 
-```ts
-const Position = {
-  keySchema: {
-    entity: "address",
-  },
-  valueSchema: {
-    // Two static length fields
-    x: "uint32",
-    y: "uint32",
-  },
-};
+```ts filename="Position"
+schema: {
+  entity: "address",
 
-const Inventory = {
-  keySchema: {
-    entity: "address",
-  },
-  valueSchema: {
-    // One dynamic length field
-    slots: "uint8[]",
-  },
-};
+  // Two static length fields
+  x: "uint32",
+  y: "uint32",
+},
+key: ["entity"],
+```
+
+```ts filename="Inventory"
+schema: {
+  entity: "address",
+
+  // One dynamic length field
+  slots: "uint8[]",
+},
+key: ["entity"],
+```
+
+### Singleton tables
+
+When you just need to store a single value (for example, the world map or the name of an in-game currency), you use a singleton table, a table whose key schema is empty.
+With an empty key schema there is just one record.
+
+```ts filename="Counter"
+schema: {
+  value: "uint32",
+},
+key: [],
 ```
 
 ## Usage

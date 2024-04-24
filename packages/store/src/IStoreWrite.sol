@@ -2,17 +2,21 @@
 pragma solidity >=0.8.24;
 
 import { IStoreEvents } from "./IStoreEvents.sol";
-import { PackedCounter } from "./PackedCounter.sol";
+import { EncodedLengths } from "./EncodedLengths.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { ResourceId } from "./ResourceId.sol";
 
+/**
+ * @title IStoreWrite
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ */
 interface IStoreWrite is IStoreEvents {
   // Set full record (including full dynamic data)
   function setRecord(
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes calldata dynamicData
   ) external;
 

@@ -9,7 +9,7 @@ import { RevertSubscriber } from "./RevertSubscriber.sol";
 
 import { Hook, HookLib } from "../src/Hook.sol";
 import { IStoreHook } from "../src/IStoreHook.sol";
-import { PackedCounter } from "../src/PackedCounter.sol";
+import { EncodedLengths } from "../src/EncodedLengths.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { ResourceId, ResourceIdLib } from "../src/ResourceId.sol";
 import { RESOURCE_TABLE } from "../src/storeResourceTypes.sol";
@@ -24,7 +24,7 @@ contract StoreHookTest is Test, GasReporter {
   ResourceId private tableId;
   bytes32[] private key = new bytes32[](1);
   bytes private staticData = abi.encodePacked(bytes32(0));
-  PackedCounter private encodedLengths = PackedCounter.wrap(bytes32(0));
+  EncodedLengths private encodedLengths = EncodedLengths.wrap(bytes32(0));
   bytes private dynamicData = new bytes(0);
   uint8 private fieldIndex = 1;
   FieldLayout private fieldLayout = FieldLayout.wrap(0);

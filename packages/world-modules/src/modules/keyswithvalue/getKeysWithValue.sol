@@ -2,7 +2,7 @@
 pragma solidity >=0.8.24;
 
 import { IStore } from "@latticexyz/store/src/IStore.sol";
-import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 import { MODULE_NAMESPACE } from "./constants.sol";
@@ -18,7 +18,7 @@ import { getTargetTableId } from "./getTargetTableId.sol";
 function getKeysWithValue(
   ResourceId tableId,
   bytes memory staticData,
-  PackedCounter encodedLengths,
+  EncodedLengths encodedLengths,
   bytes memory dynamicData
 ) view returns (bytes32[] memory keysWithValue) {
   // Get the corresponding reverse mapping table
@@ -41,7 +41,7 @@ function getKeysWithValue(
   IStore store,
   ResourceId tableId,
   bytes memory staticData,
-  PackedCounter encodedLengths,
+  EncodedLengths encodedLengths,
   bytes memory dynamicData
 ) view returns (bytes32[] memory keysWithValue) {
   // Get the corresponding reverse mapping table

@@ -1,5 +1,56 @@
 # Change Log
 
+## 2.0.6
+
+## 2.0.5
+
+## 2.0.4
+
+## 2.0.3
+
+## 2.0.2
+
+## 2.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- aabd30767: Bumped Solidity version to 0.8.24.
+- 92de59982: Bump Solidity version to 0.8.21
+- 9af542d3e: Renames `mud-gas-report` binary to `gas-report`, since it's no longer MUD specific.
+
+### Minor Changes
+
+- 66cc35a8c: Create gas-report package, move gas-report cli command and GasReporter contract to it
+- 4385c5a4c: Allow the `gas-report` CLI to parse logs via `stdin`, so it can be used with custom test commands (e.g. `mud test`).
+
+  Usage:
+
+  ```sh
+  # replace `forge test -vvv` with the custom test command
+  GAS_REPORTER_ENABLED=true forge test -vvv | pnpm gas-report --stdin
+  ```
+
+- 90d0d79c: Now uses `--isolate` flag in `forge test` for more accurate gas measurement.
+
+### Patch Changes
+
+- ba17bdab5: Pass through `stdin` logs in `gas-report`. Since the script piping in logs to `gas-report` can be long-running, it is useful to see its logs to know if it's stalling.
+- 48909d151: bump forge-std and ds-test dependencies
+- 590542030: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- a02da555b: Fixed gas report parsing for foundry versions released after 2024-02-15.
+
+## 2.0.0-next.18
+
+### Minor Changes
+
+- 90d0d79c: Now uses `--isolate` flag in `forge test` for more accurate gas measurement.
+
+### Patch Changes
+
+- a02da555b: Fixed gas report parsing for foundry versions released after 2024-02-15.
+
 ## 2.0.0-next.17
 
 ### Major Changes

@@ -6,6 +6,7 @@
 import { execa } from "execa";
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "path";
+import glob from "glob";
 
 //--------- CONSTANTS
 
@@ -13,7 +14,7 @@ const REPO_URL = process.env.REPO_URL ?? "https://github.com/latticexyz/mud";
 const CHANGELOG_PATH = process.env.CHANGELOG_PATH ?? "CHANGELOG.md";
 const CHANGELOG_DOCS_PATH = process.env.CHANGELOG_DOCS_PATH ?? "docs/pages/changelog.mdx";
 const VERSION_PATH = process.env.VERSION_PATH ?? path.join(process.cwd(), "packages/world/package.json");
-const INCLUDE_CHANGESETS = (process.env.INCLUDE_CHANGESETS as "diff" | "all") ?? "diff"; // "diff" to only include new changesets, "all" to use all changesets in pre.json
+const INCLUDE_CHANGESETS = (process.env.INCLUDE_CHANGESETS as "diff" | "all") ?? "diff"; // "diff" to only include new changesets, "all" to use all changesets
 
 enum ChangeType {
   PATCH,
@@ -95,28 +96,28 @@ async function getVersion() {
 }
 
 async function getChanges(include: "diff" | "all") {
-  const changesetsToInclude: string[] = [];
+  let changesetsToInclude: string[] = [];
 
   if (include === "diff") {
     // Get the diff of the current branch to main
-    const changesetDiff = (await execa("git", ["diff", "main", ".changeset/pre.json"])).stdout;
-
-    // Get the list of changesets
-    const addedLinesRegex = /\+\s+"(?!.*:)([^"]+)"/g;
-    changesetsToInclude.push(...[...changesetDiff.matchAll(addedLinesRegex)].map((match) => match[1]));
+    // --diff-filter=d excludes deleted files from diff (changesets deletes these files after release)
+    changesetsToInclude = (await execa("git", ["diff", "--name-only", "--diff-filter=d", "main", ".changeset"])).stdout
+      .trim()
+      .split(/\s+/)
+      .map((filename) => filename.trim())
+      .filter((filename) => /.md$/.test(filename));
   } else if (include === "all") {
-    // Load all current changesets from the .changeset/pre.json file
-    changesetsToInclude.push(...(await import(path.join(process.cwd(), ".changeset/pre.json"))).default.changesets);
+    // Load all current changesets from the .changeset dir
+    changesetsToInclude = glob.sync(".changeset/*.md");
   }
 
   // Load the contents of each changeset and metadata from git
   const changesetContents = await Promise.all(
-    changesetsToInclude.map(async (addedChangeset) => {
-      const changesetPath = `.changeset/${addedChangeset}.md`;
+    changesetsToInclude.map(async (changesetPath) => {
       const changeset = readFileSync(changesetPath).toString();
       const gitLog = (await execa("git", ["log", changesetPath])).stdout;
       return { ...parseChangeset(changeset), ...parseGitLog(gitLog) };
-    })
+    }),
   );
 
   // Sort the changesets into patch, minor and major updates

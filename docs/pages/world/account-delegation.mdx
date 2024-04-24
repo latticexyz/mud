@@ -1,3 +1,5 @@
+import { Callout } from "nextra/components";
+
 # Account delegation
 
 _Account delegation_ allows a _delegator_ address to permit a _delegatee_ address to call a `System` on its behalf.
@@ -16,6 +18,16 @@ This feature enables multiple use cases.
   Users can approve contracts to perform actions in a MUD world on their behalf.
   This is conceptually similar to how ERC20's [`approve`/`transferFrom`](https://eips.ethereum.org/EIPS/eip-20#transferfrom) enables atomic swaps by allowing contracts to withdraw from a user's balance and then deposit a different asset in a single transaction.
   For example, an agent could exchange two in-game assets atomically if the two sides of the trade give it the necessary permission.
+
+<details>
+
+<summary>Delegation and Account Abstraction</summary>
+
+While there are some overlaps in use cases between [ERC-4337](https://www.erc4337.io/) and MUD's account delegation, they are different things.
+In ERC-4337, a smart contract wallet becomes your main onchain identity.
+With MUD delegation, you keep your existing account, but (temporarily) approve other accounts to act on its behalf.
+
+</details>
 
 ## User delegation
 

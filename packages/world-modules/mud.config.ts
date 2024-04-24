@@ -1,11 +1,13 @@
-import { mudConfig } from "@latticexyz/world/register";
+import { defineWorld } from "@latticexyz/world";
 
-export default mudConfig({
-  worldgenDirectory: "interfaces",
-  worldInterfaceName: "IBaseWorld",
-  codegenDirectory: ".",
+export default defineWorld({
+  codegen: {
+    worldgenDirectory: "interfaces",
+    worldInterfaceName: "IBaseWorld",
+    outputDirectory: ".",
+  },
   userTypes: {
-    ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", internalType: "bytes32" },
+    ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", type: "bytes32" },
   },
   tables: {
     /************************************************************************
@@ -14,15 +16,16 @@ export default mudConfig({
      *
      ************************************************************************/
     KeysWithValue: {
-      directory: "modules/keyswithvalue/tables",
-      keySchema: {
+      schema: {
         valueHash: "bytes32",
-      },
-      valueSchema: {
         keysWithValue: "bytes32[]", // For now only supports 1 key per value
       },
-      tableIdArgument: true,
-      storeArgument: true,
+      key: ["valueHash"],
+      codegen: {
+        outputDirectory: "modules/keyswithvalue/tables",
+        tableIdArgument: true,
+        storeArgument: true,
+      },
     },
     /************************************************************************
      *
@@ -30,26 +33,33 @@ export default mudConfig({
      *
      ************************************************************************/
     KeysInTable: {
-      directory: "modules/keysintable/tables",
-      keySchema: { sourceTableId: "ResourceId" },
-      valueSchema: {
+      schema: {
+        sourceTableId: "ResourceId",
         keys0: "bytes32[]",
         keys1: "bytes32[]",
         keys2: "bytes32[]",
         keys3: "bytes32[]",
         keys4: "bytes32[]",
       },
-      storeArgument: true,
+      key: ["sourceTableId"],
+      codegen: {
+        outputDirectory: "modules/keysintable/tables",
+        storeArgument: true,
+      },
     },
     UsedKeysIndex: {
-      directory: "modules/keysintable/tables",
-      keySchema: {
+      schema: {
         sourceTableId: "ResourceId",
         keysHash: "bytes32",
+        has: "bool",
+        index: "uint40",
       },
-      valueSchema: { has: "bool", index: "uint40" },
-      dataStruct: false,
-      storeArgument: true,
+      key: ["sourceTableId", "keysHash"],
+      codegen: {
+        outputDirectory: "modules/keysintable/tables",
+        dataStruct: false,
+        storeArgument: true,
+      },
     },
     /************************************************************************
      *
@@ -57,11 +67,15 @@ export default mudConfig({
      *
      ************************************************************************/
     UniqueEntity: {
-      directory: "modules/uniqueentity/tables",
-      keySchema: {},
-      valueSchema: "uint256",
-      tableIdArgument: true,
-      storeArgument: true,
+      schema: {
+        value: "uint256",
+      },
+      key: [],
+      codegen: {
+        outputDirectory: "modules/uniqueentity/tables",
+        tableIdArgument: true,
+        storeArgument: true,
+      },
     },
     /************************************************************************
      *
@@ -69,36 +83,39 @@ export default mudConfig({
      *
      ************************************************************************/
     CallboundDelegations: {
-      directory: "modules/std-delegations/tables",
-      keySchema: {
+      schema: {
         delegator: "address",
         delegatee: "address",
         systemId: "ResourceId",
         callDataHash: "bytes32",
-      },
-      valueSchema: {
         availableCalls: "uint256",
+      },
+      key: ["delegator", "delegatee", "systemId", "callDataHash"],
+      codegen: {
+        outputDirectory: "modules/std-delegations/tables",
       },
     },
     SystemboundDelegations: {
-      directory: "modules/std-delegations/tables",
-      keySchema: {
+      schema: {
         delegator: "address",
         delegatee: "address",
         systemId: "ResourceId",
-      },
-      valueSchema: {
         availableCalls: "uint256",
+      },
+      key: ["delegator", "delegatee", "systemId"],
+      codegen: {
+        outputDirectory: "modules/std-delegations/tables",
       },
     },
     TimeboundDelegations: {
-      directory: "modules/std-delegations/tables",
-      keySchema: {
+      schema: {
         delegator: "address",
         delegatee: "address",
-      },
-      valueSchema: {
         maxTimestamp: "uint256",
+      },
+      key: ["delegator", "delegatee"],
+      codegen: {
+        outputDirectory: "modules/std-delegations/tables",
       },
     },
     /************************************************************************
@@ -107,14 +124,15 @@ export default mudConfig({
      *
      ************************************************************************/
     PuppetRegistry: {
-      directory: "modules/puppet/tables",
-      keySchema: {
+      schema: {
         systemId: "ResourceId",
-      },
-      valueSchema: {
         puppet: "address",
       },
-      tableIdArgument: true,
+      key: ["systemId"],
+      codegen: {
+        outputDirectory: "modules/puppet/tables",
+        tableIdArgument: true,
+      },
     },
     /************************************************************************
      *
@@ -122,14 +140,15 @@ export default mudConfig({
      *
      ************************************************************************/
     Balances: {
-      directory: "modules/tokens/tables",
-      keySchema: {
+      schema: {
         account: "address",
-      },
-      valueSchema: {
         value: "uint256",
       },
-      tableIdArgument: true,
+      key: ["account"],
+      codegen: {
+        outputDirectory: "modules/tokens/tables",
+        tableIdArgument: true,
+      },
     },
     /************************************************************************
      *
@@ -137,43 +156,49 @@ export default mudConfig({
      *
      ************************************************************************/
     ERC20Metadata: {
-      directory: "modules/erc20-puppet/tables",
-      keySchema: {},
-      valueSchema: {
+      schema: {
         decimals: "uint8",
         name: "string",
         symbol: "string",
       },
-      tableIdArgument: true,
+      key: [],
+      codegen: {
+        outputDirectory: "modules/erc20-puppet/tables",
+        tableIdArgument: true,
+      },
     },
     Allowances: {
-      directory: "modules/erc20-puppet/tables",
-      keySchema: {
+      schema: {
         account: "address",
         spender: "address",
-      },
-      valueSchema: {
         value: "uint256",
       },
-      tableIdArgument: true,
+      key: ["account", "spender"],
+      codegen: {
+        outputDirectory: "modules/erc20-puppet/tables",
+        tableIdArgument: true,
+      },
     },
     TotalSupply: {
-      directory: "modules/erc20-puppet/tables",
-      keySchema: {},
-      valueSchema: {
+      schema: {
         totalSupply: "uint256",
       },
-      tableIdArgument: true,
+      key: [],
+      codegen: {
+        outputDirectory: "modules/erc20-puppet/tables",
+        tableIdArgument: true,
+      },
     },
     ERC20Registry: {
-      directory: "modules/erc20-puppet/tables",
-      keySchema: {
+      schema: {
         namespaceId: "ResourceId",
-      },
-      valueSchema: {
         tokenAddress: "address",
       },
-      tableIdArgument: true,
+      key: ["namespaceId"],
+      codegen: {
+        outputDirectory: "modules/erc20-puppet/tables",
+        tableIdArgument: true,
+      },
     },
     /************************************************************************
      *
@@ -181,66 +206,91 @@ export default mudConfig({
      *
      ************************************************************************/
     ERC721Metadata: {
-      directory: "modules/erc721-puppet/tables",
-      keySchema: {},
-      valueSchema: {
+      schema: {
         name: "string",
         symbol: "string",
         baseURI: "string",
       },
-      tableIdArgument: true,
+      key: [],
+      codegen: {
+        outputDirectory: "modules/erc721-puppet/tables",
+        tableIdArgument: true,
+      },
     },
     TokenURI: {
-      directory: "modules/erc721-puppet/tables",
-      keySchema: {
+      schema: {
         tokenId: "uint256",
-      },
-      valueSchema: {
         tokenURI: "string",
       },
-      tableIdArgument: true,
+      key: ["tokenId"],
+      codegen: {
+        outputDirectory: "modules/erc721-puppet/tables",
+        tableIdArgument: true,
+      },
     },
     Owners: {
-      directory: "modules/erc721-puppet/tables",
-      keySchema: {
+      schema: {
         tokenId: "uint256",
-      },
-      valueSchema: {
         owner: "address",
       },
-      tableIdArgument: true,
+      key: ["tokenId"],
+      codegen: {
+        outputDirectory: "modules/erc721-puppet/tables",
+        tableIdArgument: true,
+      },
     },
     TokenApproval: {
-      directory: "modules/erc721-puppet/tables",
-      keySchema: {
+      schema: {
         tokenId: "uint256",
-      },
-      valueSchema: {
         account: "address",
       },
-      tableIdArgument: true,
+      key: ["tokenId"],
+      codegen: {
+        outputDirectory: "modules/erc721-puppet/tables",
+        tableIdArgument: true,
+      },
     },
     OperatorApproval: {
-      directory: "modules/erc721-puppet/tables",
-      keySchema: {
+      schema: {
         owner: "address",
         operator: "address",
-      },
-      valueSchema: {
         approved: "bool",
       },
-      tableIdArgument: true,
+      key: ["owner", "operator"],
+      codegen: {
+        outputDirectory: "modules/erc721-puppet/tables",
+        tableIdArgument: true,
+      },
     },
     ERC721Registry: {
-      directory: "modules/erc721-puppet/tables",
-      keySchema: {
+      schema: {
         namespaceId: "ResourceId",
-      },
-      valueSchema: {
         tokenAddress: "address",
       },
-      tableIdArgument: true,
+      key: ["namespaceId"],
+      codegen: {
+        outputDirectory: "modules/erc721-puppet/tables",
+        tableIdArgument: true,
+      },
+    },
+    /************************************************************************
+     *
+     *    REGISTER DELEGATION WITH SIGNATURE MODULE
+     *
+     ************************************************************************/
+    CallWithSignatureNonces: {
+      schema: { signer: "address", nonce: "uint256" },
+      key: ["signer"],
+      codegen: {
+        outputDirectory: "modules/callwithsignature/tables",
+      },
     },
   },
-  excludeSystems: ["UniqueEntitySystem", "PuppetFactorySystem", "ERC20System", "ERC721System"],
+  excludeSystems: [
+    "UniqueEntitySystem",
+    "PuppetFactorySystem",
+    "ERC20System",
+    "ERC721System",
+    "Unstable_CallWithSignatureSystem",
+  ],
 });

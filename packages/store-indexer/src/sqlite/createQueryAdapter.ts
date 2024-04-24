@@ -9,6 +9,7 @@ import { tablesWithRecordsToLogs } from "@latticexyz/store-sync";
  * @param {BaseSQLiteDatabase<"sync", any>} database SQLite database object from Drizzle
  * @returns {Promise<QueryAdapter>} A set of methods used by tRPC endpoints.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function createQueryAdapter(database: BaseSQLiteDatabase<"sync", any>): Promise<QueryAdapter> {
   const adapter: QueryAdapter = {
     async getLogs(opts) {

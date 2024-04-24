@@ -2,14 +2,14 @@ import { Browser, Page, chromium } from "@playwright/test";
 import chalk from "chalk";
 
 export async function startBrowserAndPage(
-  reportError: (error: string) => void
+  reportError: (error: string) => void,
 ): Promise<{ browser: Browser; page: Page }> {
   // open browser page
   const browser = await chromium.launch();
   const page = await browser.newPage();
 
   await page.addInitScript(() => {
-    window.localStorage.setItem("debug", "mud:*");
+    window.localStorage.setItem("debug", "mud:store-sync:createStoreSync");
   });
 
   // log uncaught errors in the browser page (browser and test consoles are separate)

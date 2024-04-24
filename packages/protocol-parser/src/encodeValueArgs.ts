@@ -5,7 +5,7 @@ import {
   isDynamicAbiType,
   StaticAbiType,
   DynamicAbiType,
-} from "@latticexyz/schema-type";
+} from "@latticexyz/schema-type/internal";
 import { concatHex } from "viem";
 import { encodeField } from "./encodeField";
 import { SchemaToPrimitives, ValueArgs, ValueSchema } from "./common";
@@ -13,7 +13,7 @@ import { encodeLengths } from "./encodeLengths";
 
 export function encodeValueArgs<TSchema extends ValueSchema>(
   valueSchema: TSchema,
-  value: SchemaToPrimitives<TSchema>
+  value: SchemaToPrimitives<TSchema>,
 ): ValueArgs {
   const valueSchemaEntries = Object.entries(valueSchema);
   const staticFields = valueSchemaEntries.filter(([, type]) => isStaticAbiType(type)) as [string, StaticAbiType][];
@@ -23,7 +23,7 @@ export function encodeValueArgs<TSchema extends ValueSchema>(
 
   const encodedStaticValues = staticFields.map(([name, type]) => encodeField(type, value[name] as StaticPrimitiveType));
   const encodedDynamicValues = dynamicFields.map(([name, type]) =>
-    encodeField(type, value[name] as DynamicPrimitiveType)
+    encodeField(type, value[name] as DynamicPrimitiveType),
   );
 
   const encodedLengths = encodeLengths(encodedDynamicValues);

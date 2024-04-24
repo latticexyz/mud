@@ -5,6 +5,7 @@ import { Create2 } from "./Create2.sol";
 
 /**
  * @title Create2Factory
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Helper Contract to facilitate create2 deployment of Contracts.
  */
 contract Create2Factory {

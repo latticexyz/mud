@@ -13,9 +13,9 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
+import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
-import { Tables, ResourceIds, TablesTableId } from "@latticexyz/store/src/codegen/index.sol";
+import { Tables, ResourceIds } from "@latticexyz/store/src/codegen/index.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { ALL, BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 import { RevertSubscriber } from "@latticexyz/store/test/RevertSubscriber.sol";
@@ -31,8 +31,9 @@ import { WorldContextProviderLib, IWorldContextConsumer } from "../src/WorldCont
 import { SystemHook } from "../src/SystemHook.sol";
 import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "../src/systemHookTypes.sol";
 import { Module, IModule } from "../src/Module.sol";
+import { IWorldEvents } from "../src/IWorldEvents.sol";
 
-import { NamespaceOwner, NamespaceOwnerTableId } from "../src/codegen/tables/NamespaceOwner.sol";
+import { NamespaceOwner } from "../src/codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/codegen/tables/ResourceAccess.sol";
 
 import { AccessManagementSystem } from "../src/modules/init/implementations/AccessManagementSystem.sol";
@@ -108,13 +109,13 @@ contract WorldTestSystem is System {
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name });
 
     if (StoreSwitch.getStoreAddress() == address(this)) {
-      StoreCore.setRecord(tableId, keyTuple, abi.encodePacked(data), PackedCounter.wrap(bytes32(0)), new bytes(0));
+      StoreCore.setRecord(tableId, keyTuple, abi.encodePacked(data), EncodedLengths.wrap(bytes32(0)), new bytes(0));
     } else {
       IBaseWorld(msg.sender).setRecord(
         tableId,
         keyTuple,
         abi.encodePacked(data),
-        PackedCounter.wrap(bytes32(0)),
+        EncodedLengths.wrap(bytes32(0)),
         new bytes(0)
       );
     }
@@ -166,7 +167,6 @@ contract RevertSystemHook is SystemHook {
 contract WorldTest is Test, GasReporter {
   using WorldResourceIdInstance for ResourceId;
 
-  event HelloWorld(bytes32 indexed worldVersion);
   event HookCalled(bytes data);
   event SystemHookCalled(bytes data);
   event WorldTestSystemLog(string log);
@@ -178,7 +178,7 @@ contract WorldTest is Test, GasReporter {
   bytes32[] keyTuple;
   bytes32[] singletonKey;
 
-  function setUp() public {
+  function setUp() public virtual {
     world = createWorld();
     StoreSwitch.setStoreAddress(address(world));
 
@@ -204,7 +204,7 @@ contract WorldTest is Test, GasReporter {
     InitModule initModule = createInitModule();
 
     vm.expectEmit(true, true, true, true);
-    emit HelloWorld(WORLD_VERSION);
+    emit IWorldEvents.HelloWorld(WORLD_VERSION);
     IBaseWorld newWorld = IBaseWorld(address(new World()));
     StoreSwitch.setStoreAddress(address(newWorld));
 
@@ -263,17 +263,17 @@ contract WorldTest is Test, GasReporter {
     }
 
     // Should have registered the table data table (fka schema table)
-    assertEq(FieldLayout.unwrap(Tables.getFieldLayout(TablesTableId)), FieldLayout.unwrap(Tables.getFieldLayout()));
-    assertEq(Tables.getAbiEncodedKeyNames(TablesTableId), abi.encode(Tables.getKeyNames()));
-    assertEq(Tables.getAbiEncodedFieldNames(TablesTableId), abi.encode(Tables.getFieldNames()));
+    assertEq(FieldLayout.unwrap(Tables.getFieldLayout(Tables._tableId)), FieldLayout.unwrap(Tables._fieldLayout));
+    assertEq(Tables.getAbiEncodedKeyNames(Tables._tableId), abi.encode(Tables.getKeyNames()));
+    assertEq(Tables.getAbiEncodedFieldNames(Tables._tableId), abi.encode(Tables.getFieldNames()));
 
     // Should have registered the namespace owner table
     assertEq(
-      FieldLayout.unwrap(Tables.getFieldLayout(NamespaceOwnerTableId)),
-      FieldLayout.unwrap(NamespaceOwner.getFieldLayout())
+      FieldLayout.unwrap(Tables.getFieldLayout(NamespaceOwner._tableId)),
+      FieldLayout.unwrap(NamespaceOwner._fieldLayout)
     );
-    assertEq(Tables.getAbiEncodedKeyNames(NamespaceOwnerTableId), abi.encode(NamespaceOwner.getKeyNames()));
-    assertEq(Tables.getAbiEncodedFieldNames(NamespaceOwnerTableId), abi.encode(NamespaceOwner.getFieldNames()));
+    assertEq(Tables.getAbiEncodedKeyNames(NamespaceOwner._tableId), abi.encode(NamespaceOwner.getKeyNames()));
+    assertEq(Tables.getAbiEncodedFieldNames(NamespaceOwner._tableId), abi.encode(NamespaceOwner.getFieldNames()));
 
     // Expect it to not be possible to initialize the World again
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AlreadyInitialized.selector));
@@ -599,9 +599,9 @@ contract WorldTest is Test, GasReporter {
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "", name: "testTable" });
     world.registerTable(
       tableId,
-      Bool.getFieldLayout(),
+      Bool._fieldLayout,
       defaultKeySchema,
-      Bool.getValueSchema(),
+      Bool._valueSchema,
       new string[](1),
       new string[](1)
     );
@@ -708,9 +708,9 @@ contract WorldTest is Test, GasReporter {
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "namespace", name: "name" });
     world.registerTable(
       tableId,
-      Bool.getFieldLayout(),
+      Bool._fieldLayout,
       defaultKeySchema,
-      Bool.getValueSchema(),
+      Bool._valueSchema,
       new string[](1),
       new string[](1)
     );
@@ -744,9 +744,9 @@ contract WorldTest is Test, GasReporter {
     );
     world.registerTable(
       systemId,
-      Bool.getFieldLayout(),
+      Bool._fieldLayout,
       defaultKeySchema,
-      Bool.getValueSchema(),
+      Bool._valueSchema,
       new string[](1),
       new string[](1)
     );
@@ -757,9 +757,9 @@ contract WorldTest is Test, GasReporter {
     );
     world.registerTable(
       tableId,
-      Bool.getFieldLayout(),
+      Bool._fieldLayout,
       defaultKeySchema,
-      Bool.getValueSchema(),
+      Bool._valueSchema,
       new string[](1),
       new string[](1)
     );
@@ -783,9 +783,9 @@ contract WorldTest is Test, GasReporter {
     // Register a new table
     world.registerTable(
       tableId,
-      TwoFields.getFieldLayout(),
-      TwoFields.getKeySchema(),
-      TwoFields.getValueSchema(),
+      TwoFields._fieldLayout,
+      TwoFields._keySchema,
+      TwoFields._valueSchema,
       new string[](0),
       new string[](2)
     );
@@ -813,8 +813,8 @@ contract WorldTest is Test, GasReporter {
     bytes14 namespace = "testSetField";
     bytes16 name = "testTable";
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name });
-    FieldLayout fieldLayout = Bool.getFieldLayout();
-    Schema valueSchema = Bool.getValueSchema();
+    FieldLayout fieldLayout = Bool._fieldLayout;
+    Schema valueSchema = Bool._valueSchema;
     world.registerNamespace(tableId.getNamespaceId());
 
     // Register a new table
@@ -843,8 +843,8 @@ contract WorldTest is Test, GasReporter {
     bytes14 namespace = "testPushField";
     bytes16 name = "testTable";
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name });
-    FieldLayout fieldLayout = AddressArray.getFieldLayout();
-    Schema valueSchema = AddressArray.getValueSchema();
+    FieldLayout fieldLayout = AddressArray._fieldLayout;
+    Schema valueSchema = AddressArray._valueSchema;
 
     // Register a new table
     world.registerNamespace(tableId.getNamespaceId());
@@ -889,15 +889,15 @@ contract WorldTest is Test, GasReporter {
     bytes14 namespace = "testDeleteReco";
     bytes16 name = "testTable";
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name });
-    FieldLayout fieldLayout = Bool.getFieldLayout();
-    Schema valueSchema = Bool.getValueSchema();
+    FieldLayout fieldLayout = Bool._fieldLayout;
+    Schema valueSchema = Bool._valueSchema;
 
     // Register a new table
     world.registerNamespace(tableId.getNamespaceId());
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
 
     // Write data to the table and expect it to be written
-    world.setRecord(tableId, singletonKey, abi.encodePacked(true), PackedCounter.wrap(bytes32(0)), new bytes(0));
+    world.setRecord(tableId, singletonKey, abi.encodePacked(true), EncodedLengths.wrap(bytes32(0)), new bytes(0));
     assertTrue(Bool.get(tableId));
 
     startGasReport("Delete record");
@@ -908,7 +908,7 @@ contract WorldTest is Test, GasReporter {
     assertFalse(Bool.get(tableId));
 
     // Write data to the table and expect it to be written
-    world.setRecord(tableId, singletonKey, abi.encodePacked(true), PackedCounter.wrap(bytes32(0)), new bytes(0));
+    world.setRecord(tableId, singletonKey, abi.encodePacked(true), EncodedLengths.wrap(bytes32(0)), new bytes(0));
     assertTrue(Bool.get(tableId));
     assertTrue(Bool.get(tableId));
 
@@ -1299,8 +1299,8 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testRegisterStoreHook() public {
-    FieldLayout fieldLayout = Bool.getFieldLayout();
-    Schema valueSchema = Bool.getValueSchema();
+    FieldLayout fieldLayout = Bool._fieldLayout;
+    Schema valueSchema = Bool._valueSchema;
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "", name: "testTable" });
 
     // Register a new table
@@ -1318,7 +1318,7 @@ contract WorldTest is Test, GasReporter {
     emit HookCalled(
       abi.encodeCall(
         IStoreHook.onBeforeSetRecord,
-        (tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+        (tableId, singletonKey, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0), fieldLayout)
       )
     );
 
@@ -1326,11 +1326,11 @@ contract WorldTest is Test, GasReporter {
     emit HookCalled(
       abi.encodeCall(
         IStoreHook.onAfterSetRecord,
-        (tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+        (tableId, singletonKey, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0), fieldLayout)
       )
     );
 
-    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
+    world.setRecord(tableId, singletonKey, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0));
 
     // Expect the hook to be notified when a static field is written (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);
@@ -1366,8 +1366,8 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testUnregisterStoreHook() public {
-    FieldLayout fieldLayout = Bool.getFieldLayout();
-    Schema valueSchema = Bool.getValueSchema();
+    FieldLayout fieldLayout = Bool._fieldLayout;
+    Schema valueSchema = Bool._valueSchema;
     ResourceId tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "", name: "testTable" });
 
     // Register a new table
@@ -1385,7 +1385,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect a revert when the RevertSubscriber's onBeforeSetRecord hook is called
     vm.expectRevert(bytes("onBeforeSetRecord"));
-    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
+    world.setRecord(tableId, singletonKey, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0));
 
     // Expect a revert when the RevertSubscriber's onBeforeSpliceStaticData hook is called
     vm.expectRevert(bytes("onBeforeSpliceStaticData"));
@@ -1403,7 +1403,7 @@ contract WorldTest is Test, GasReporter {
     emit HookCalled(
       abi.encodeCall(
         IStoreHook.onBeforeSetRecord,
-        (tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+        (tableId, singletonKey, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0), fieldLayout)
       )
     );
 
@@ -1411,11 +1411,11 @@ contract WorldTest is Test, GasReporter {
     emit HookCalled(
       abi.encodeCall(
         IStoreHook.onAfterSetRecord,
-        (tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+        (tableId, singletonKey, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0), fieldLayout)
       )
     );
 
-    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
+    world.setRecord(tableId, singletonKey, staticData, EncodedLengths.wrap(bytes32(0)), new bytes(0));
 
     // Expect the hook to be notified when a static field is written (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);
@@ -1553,9 +1553,9 @@ contract WorldTest is Test, GasReporter {
     world.registerNamespace(tableId.getNamespaceId());
     world.registerTable(
       tableId,
-      Bool.getFieldLayout(),
+      Bool._fieldLayout,
       defaultKeySchema,
-      Bool.getValueSchema(),
+      Bool._valueSchema,
       new string[](1),
       new string[](1)
     );
@@ -1582,9 +1582,9 @@ contract WorldTest is Test, GasReporter {
     world.registerNamespace(tableId.getNamespaceId());
     world.registerTable(
       tableId,
-      Bool.getFieldLayout(),
+      Bool._fieldLayout,
       defaultKeySchema,
-      Bool.getValueSchema(),
+      Bool._valueSchema,
       new string[](1),
       new string[](1)
     );
@@ -1677,7 +1677,7 @@ contract WorldTest is Test, GasReporter {
     world.registerSystem(systemId, system, true);
 
     string memory worldFunc = "testSelector()";
-    bytes4 sysFunc = WorldTestSystem.msgSender.selector;
+    string memory sysFunc = "msgSender()";
 
     // Expect an error when trying to register a root function selector from an account without access
     _expectAccessDenied(address(0x01), "", "", RESOURCE_NAMESPACE);
@@ -1706,7 +1706,7 @@ contract WorldTest is Test, GasReporter {
     assertEq(abi.decode(data, (address)), address(this), "wrong address returned");
 
     // Register a function selector to the error function
-    functionSelector = world.registerRootFunctionSelector(systemId, "err(string)", WorldTestSystem.err.selector);
+    functionSelector = world.registerRootFunctionSelector(systemId, "err(string)", "err(string)");
 
     // Expect errors to be passed through
     vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
@@ -1743,7 +1743,7 @@ contract WorldTest is Test, GasReporter {
 
     world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
-    world.registerRootFunctionSelector(systemId, "receiveEther()", WorldTestSystem.receiveEther.selector);
+    world.registerRootFunctionSelector(systemId, "receiveEther()", "receiveEther()");
 
     // create new funded address and impersonate
     address alice = makeAddr("alice");
@@ -1770,7 +1770,7 @@ contract WorldTest is Test, GasReporter {
     ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
     world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
-    world.registerRootFunctionSelector(systemId, "msgSender()", WorldTestSystem.msgSender.selector);
+    world.registerRootFunctionSelector(systemId, "msgSender()", "msgSender()");
 
     // create new funded address and impersonate
     address alice = makeAddr("alice");
@@ -1797,7 +1797,7 @@ contract WorldTest is Test, GasReporter {
     bytes16 name = "testSystem";
     ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
     world.registerSystem(systemId, system, true);
-    world.registerRootFunctionSelector(systemId, "systemFallback()", bytes4(""));
+    world.registerRootFunctionSelector(systemId, "systemFallback()", "");
 
     // create new funded address and impersonate
     address alice = makeAddr("alice");
@@ -1823,7 +1823,7 @@ contract WorldTest is Test, GasReporter {
     bytes16 name = "testSystem";
     ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
     world.registerSystem(systemId, system, true);
-    world.registerRootFunctionSelector(systemId, "systemFallback()", bytes4(""));
+    world.registerRootFunctionSelector(systemId, "systemFallback()", "");
 
     // create new funded address and impersonate
     address alice = makeAddr("alice");
@@ -1849,7 +1849,7 @@ contract WorldTest is Test, GasReporter {
     bytes16 name = "testSystem";
     ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
     world.registerSystem(systemId, system, true);
-    world.registerRootFunctionSelector(systemId, "receiveEther()", WorldTestSystem.receiveEther.selector);
+    world.registerRootFunctionSelector(systemId, "receiveEther()", "receiveEther()");
 
     // create new funded address and impersonate
     address alice = makeAddr("alice");

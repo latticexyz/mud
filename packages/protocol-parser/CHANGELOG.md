@@ -1,5 +1,269 @@
 # @latticexyz/protocol-parser
 
+## 2.0.6
+
+### Patch Changes
+
+- c18e93c5: Bumped viem to 2.9.20.
+- d95028a6: Bumped viem to 2.9.16.
+- Updated dependencies [6c8ab471]
+- Updated dependencies [c18e93c5]
+- Updated dependencies [d95028a6]
+  - @latticexyz/common@2.0.6
+  - @latticexyz/config@2.0.6
+  - @latticexyz/schema-type@2.0.6
+
+## 2.0.5
+
+### Patch Changes
+
+- Updated dependencies [a9e8a407]
+  - @latticexyz/common@2.0.5
+  - @latticexyz/config@2.0.5
+  - @latticexyz/schema-type@2.0.5
+
+## 2.0.4
+
+### Patch Changes
+
+- Updated dependencies [620e4ec1]
+  - @latticexyz/common@2.0.4
+  - @latticexyz/config@2.0.4
+  - @latticexyz/schema-type@2.0.4
+
+## 2.0.3
+
+### Patch Changes
+
+- Updated dependencies [d2e4d0fb]
+  - @latticexyz/common@2.0.3
+  - @latticexyz/config@2.0.3
+  - @latticexyz/schema-type@2.0.3
+
+## 2.0.2
+
+### Patch Changes
+
+- @latticexyz/common@2.0.2
+- @latticexyz/config@2.0.2
+- @latticexyz/schema-type@2.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- @latticexyz/common@2.0.1
+- @latticexyz/config@2.0.1
+- @latticexyz/schema-type@2.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- 07dd6f32c: Renamed all occurrences of `schema` where it is used as "value schema" to `valueSchema` to clearly distinguish it from "key schema".
+  The only breaking change for users is the change from `schema` to `valueSchema` in `mud.config.ts`.
+
+  ```diff
+  // mud.config.ts
+  export default mudConfig({
+    tables: {
+      CounterTable: {
+        keySchema: {},
+  -     schema: {
+  +     valueSchema: {
+          value: "uint32",
+        },
+      },
+    }
+  }
+  ```
+
+- 331dbfdcb: `readHex` was moved from `@latticexyz/protocol-parser` to `@latticexyz/common`
+- b38c096d: Moved all existing exports to a `/internal` import path to indicate that these are now internal-only and deprecated. We'll be replacing these types and functions with new ones that are compatible with our new, strongly-typed config.
+- 433078c54: Reverse PackedCounter encoding, to optimize gas for bitshifts.
+  Ints are right-aligned, shifting using an index is straightforward if they are indexed right-to-left.
+
+  - Previous encoding: (7 bytes | accumulator),(5 bytes | counter 1),...,(5 bytes | counter 5)
+  - New encoding: (5 bytes | counter 5),...,(5 bytes | counter 1),(7 bytes | accumulator)
+
+### Minor Changes
+
+- b98e51808: feat: add abiTypesToSchema, a util to turn a list of abi types into a Schema by separating static and dynamic types
+- de151fec0: - Add `FieldLayout`, which is a `bytes32` user-type similar to `Schema`.
+
+  Both `FieldLayout` and `Schema` have the same kind of data in the first 4 bytes.
+
+  - 2 bytes for total length of all static fields
+  - 1 byte for number of static size fields
+  - 1 byte for number of dynamic size fields
+
+  But whereas `Schema` has `SchemaType` enum in each of the other 28 bytes, `FieldLayout` has static byte lengths in each of the other 28 bytes.
+
+  - Replace `Schema valueSchema` with `FieldLayout fieldLayout` in Store and World contracts.
+
+    `FieldLayout` is more gas-efficient because it already has lengths, and `Schema` has types which need to be converted to lengths.
+
+  - Add `getFieldLayout` to `IStore` interface.
+
+    There is no `FieldLayout` for keys, only for values, because key byte lengths aren't usually relevant on-chain. You can still use `getKeySchema` if you need key types.
+
+  - Add `fieldLayoutToHex` utility to `protocol-parser` package.
+  - Add `constants.sol` for constants shared between `FieldLayout`, `Schema` and `PackedCounter`.
+
+- ca50fef81: feat: add `encodeKeyTuple`, a util to encode key tuples in Typescript (equivalent to key tuple encoding in Solidity and inverse of `decodeKeyTuple`).
+  Example:
+
+  ```ts
+  encodeKeyTuple(
+    {
+      staticFields: ["uint256", "int32", "bytes16", "address", "bool", "int8"],
+      dynamicFields: [],
+    },
+    [42n, -42, "0x12340000000000000000000000000000", "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF", true, 3],
+  );
+  // [
+  //  "0x000000000000000000000000000000000000000000000000000000000000002a",
+  //  "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd6",
+  //  "0x1234000000000000000000000000000000000000000000000000000000000000",
+  //  "0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff",
+  //  "0x0000000000000000000000000000000000000000000000000000000000000001",
+  //  "0x0000000000000000000000000000000000000000000000000000000000000003",
+  // ]
+  ```
+
+- 9ff4dd955: Adds `valueSchemaToFieldLayoutHex` helper
+- d7b1c588a: Upgraded all packages and templates to viem v2.7.12 and abitype v1.0.0.
+
+  Some viem APIs have changed and we've updated `getContract` to reflect those changes and keep it aligned with viem. It's one small code change:
+
+  ```diff
+   const worldContract = getContract({
+     address: worldAddress,
+     abi: IWorldAbi,
+  -  publicClient,
+  -  walletClient,
+  +  client: { public: publicClient, wallet: walletClient },
+   });
+  ```
+
+- 5e71e1cb5: Adds `decodeKey`, `decodeValue`, `encodeKey`, and `encodeValue` helpers to decode/encode from key/value schemas. Deprecates previous methods that use a schema object with static/dynamic field arrays, originally attempting to model our on-chain behavior but ended up not very ergonomic when working with table configs.
+
+### Patch Changes
+
+- 904fd7d4e: Add store sync package
+- 4bb7e8cbf: `decodeRecord` now properly decodes empty records
+- f99e88987: Bump viem to 1.14.0 and abitype to 0.9.8
+- f8a01a047: Export `valueSchemaToFieldLayoutHex` helper
+- 590542030: TS packages now generate their respective `.d.ts` type definition files for better compatibility when using MUD with `moduleResolution` set to `bundler` or `node16` and fixes issues around missing type declarations for dependent packages.
+- b8a6158d6: bump viem to 1.6.0
+- 535229984: - bump to viem 1.3.0 and abitype 0.9.3
+  - move `@wagmi/chains` imports to `viem/chains`
+  - refine a few types
+- 3e7d83d0: Renamed `PackedCounter` to `EncodedLengths` for consistency.
+- a2f41ade9: Allow arbitrary key order when encoding values
+- Updated dependencies [a35c05ea9]
+- Updated dependencies [16b13ea8f]
+- Updated dependencies [82693072]
+- Updated dependencies [aabd30767]
+- Updated dependencies [65c9546c4]
+- Updated dependencies [d5c0682fb]
+- Updated dependencies [01e46d99]
+- Updated dependencies [331dbfdcb]
+- Updated dependencies [44236041f]
+- Updated dependencies [066056154]
+- Updated dependencies [3fb9ce283]
+- Updated dependencies [bb6ada740]
+- Updated dependencies [35c9f33df]
+- Updated dependencies [0b8ce3f2c]
+- Updated dependencies [933b54b5f]
+- Updated dependencies [307abab3]
+- Updated dependencies [aacffcb59]
+- Updated dependencies [b38c096d]
+- Updated dependencies [f99e88987]
+- Updated dependencies [939916bcd]
+- Updated dependencies [e34d1170]
+- Updated dependencies [b8a6158d6]
+- Updated dependencies [db314a74]
+- Updated dependencies [59267655]
+- Updated dependencies [8d51a0348]
+- Updated dependencies [c162ad5a5]
+- Updated dependencies [48909d151]
+- Updated dependencies [b02f9d0e4]
+- Updated dependencies [f62c767e7]
+- Updated dependencies [bb91edaa0]
+- Updated dependencies [590542030]
+- Updated dependencies [1b5eb0d07]
+- Updated dependencies [44a5432ac]
+- Updated dependencies [f03531d97]
+- Updated dependencies [b8a6158d6]
+- Updated dependencies [5d737cf2e]
+- Updated dependencies [d075f82f3]
+- Updated dependencies [331dbfdcb]
+- Updated dependencies [92de59982]
+- Updated dependencies [bfcb293d1]
+- Updated dependencies [3e057061d]
+- Updated dependencies [535229984]
+- Updated dependencies [5e723b90e]
+- Updated dependencies [0c4f9fea9]
+- Updated dependencies [60cfd089f]
+- Updated dependencies [24a6cd536]
+- Updated dependencies [708b49c50]
+- Updated dependencies [d2f8e9400]
+- Updated dependencies [25086be5f]
+- Updated dependencies [b1d41727d]
+- Updated dependencies [4c1dcd81e]
+- Updated dependencies [6071163f7]
+- Updated dependencies [6c6733256]
+- Updated dependencies [cd5abcc3b]
+- Updated dependencies [d7b1c588a]
+- Updated dependencies [c4f49240d]
+- Updated dependencies [5df1f31bc]
+- Updated dependencies [cea754dde]
+- Updated dependencies [331f0d636]
+- Updated dependencies [cc2c8da00]
+  - @latticexyz/common@2.0.0
+  - @latticexyz/schema-type@2.0.0
+  - @latticexyz/config@2.0.0
+
+## 2.0.0-next.18
+
+### Major Changes
+
+- b38c096d: Moved all existing exports to a `/internal` import path to indicate that these are now internal-only and deprecated. We'll be replacing these types and functions with new ones that are compatible with our new, strongly-typed config.
+
+### Minor Changes
+
+- d7b1c588a: Upgraded all packages and templates to viem v2.7.12 and abitype v1.0.0.
+
+  Some viem APIs have changed and we've updated `getContract` to reflect those changes and keep it aligned with viem. It's one small code change:
+
+  ```diff
+   const worldContract = getContract({
+     address: worldAddress,
+     abi: IWorldAbi,
+  -  publicClient,
+  -  walletClient,
+  +  client: { public: publicClient, wallet: walletClient },
+   });
+  ```
+
+### Patch Changes
+
+- 3e7d83d0: Renamed `PackedCounter` to `EncodedLengths` for consistency.
+- Updated dependencies [82693072]
+- Updated dependencies [d5c0682fb]
+- Updated dependencies [01e46d99]
+- Updated dependencies [44236041]
+- Updated dependencies [307abab3]
+- Updated dependencies [b38c096d]
+- Updated dependencies [e34d1170]
+- Updated dependencies [db314a74]
+- Updated dependencies [59267655]
+- Updated dependencies [d7b1c588a]
+  - @latticexyz/common@2.0.0-next.18
+  - @latticexyz/schema-type@2.0.0-next.18
+  - @latticexyz/config@2.0.0-next.18
+
 ## 2.0.0-next.17
 
 ### Patch Changes
@@ -226,14 +490,13 @@
   Example:
 
   ```ts
-  encodeKeyTuple({ staticFields: ["uint256", "int32", "bytes16", "address", "bool", "int8"], dynamicFields: [] }, [
-    42n,
-    -42,
-    "0x12340000000000000000000000000000",
-    "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF",
-    true,
-    3,
-  ]);
+  encodeKeyTuple(
+    {
+      staticFields: ["uint256", "int32", "bytes16", "address", "bool", "int8"],
+      dynamicFields: [],
+    },
+    [42n, -42, "0x12340000000000000000000000000000", "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF", true, 3],
+  );
   // [
   //  "0x000000000000000000000000000000000000000000000000000000000000002a",
   //  "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd6",

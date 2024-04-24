@@ -301,9 +301,8 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
   }
 
   function testSafeTransferFromToERC721Recipient(uint256 id, address from, address operator) public {
-    _assumeDifferentNonZero(from, operator);
-
     ERC721Recipient recipient = new ERC721Recipient();
+    _assumeDifferentNonZero(from, operator, address(recipient));
 
     token.mint(from, id);
 

@@ -30,12 +30,12 @@ You can see MUD's features, both those available and those still in development,
 ## Quickstart
 
 ```
-pnpm create mud@next my-project
+pnpm create mud my-project
 ```
 
 Then follow the directions onscreen.
 
-For more information on how to get started, have a look at the [MUD documentation](https://mud.dev/templates/typescript/getting-started).
+For more information on how to get started, have a look at the [MUD documentation](https://mud.dev/quickstart).
 
 ## Contribute
 

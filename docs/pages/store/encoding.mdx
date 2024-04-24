@@ -7,344 +7,474 @@ It is comparable to `abi.encodePacked`, but with some notable differences:
 
 - **Array elements are tightly packed**, without any padding.
   This might cause some elements to wrap around two storage slots, but saves a lot of space.
-  For example, an `address[3]` array will only use 2 storage slots in MUD instead of 3 in Solidity,
-  leading to a 33% reduction in storage costs.
+  For example, an `address[3]` array will only use 2 storage slots in MUD instead of 3 in Solidity, leading to a 33% reduction in storage costs.
 - **Array lengths are packed into a single slot**.
-  Since table are limited to up to 5 dynamic field, and the length of each field is limited to `2**40` (~1 trillion),
-  we can pack the lengths of all dynamic length fields of a table into a single storage slot.
-  Compared to Solidity, this saves ~1 storage slot per dynamic length element.
+  Tables are limited to up to 5 dynamic fields, and the length of each field is limited to 2<sup>40</sup> (over a million millions), we can pack the lengths of all dynamic length fields of a table into a single storage slot.
+  Compared to Solidity, this saves 1 storage slot per dynamic length element except for the first one.
 
 This encoding scheme greatly reduces gas for storage operations on dynamic length fields and for emitting events.
-**For events it reduces the payload size by ~80%** compared to the Solidity default of `abi.encode` (depending on the table schema).
+**For events it reduces the payload size by over 80%** compared to the Solidity default of `abi.encode` (depending on the table schema).
 Note that since the encoding happens at runtime and does not have access to compiler internals, there is some overhead for encoding and decoding that is not present in vanilla Solidity.
 
 ## Schema
 
-Each table has a key schema and a value schema, which define the data types of each column.
+The schema defines the data type of every field in the record, whether it is part of the key used to look the record up, or the value that the table provides.
 
-Both key schema and value schema use the same data structure: a `bytes32` value that encodes the total byte length of all static length fields, the number of static length fields, the number of dynamic length fields, and up to 28 column types.
+To save gas, onchain the schema definition is divided between the key schema and the value schema.
+Both definitions use the same data structure, a `bytes32` value that encodes the total byte length of all static length fields, the number of static-length fields, the number of dynamic-length fields, and up to 28 column types.
 
-Note that key schemas can only include static length types, so the value for "number of dynamic length fields" is always set to zero in this case.
-
-For value schemas, up to five of the 28 columns can have dynamic length types. The dynamic length types must come after all static length types.
+| Byte(s) | Value                           | Type         | Constraint                                            |
+| ------: | ------------------------------- | ------------ | ----------------------------------------------------- |
+|     0-1 | Total length of static fields   | `uint16`     |
+|       2 | Number of static length fields  | `uint8`      | ≤ (28 - number of dynamic length fields)              |
+|       3 | Number of dynamic length fields | `uint8`      | For the key schema, 0 <br /> For the value schema, ≤5 |
+|       4 | Type of first column            | `SchemaType` |
+|       5 | Type of second column           | `SchemaType` |
+|       . |                                 |              |
+|       n | Type of (n-3)'th column         | `SchemaType` |
+|       . |                                 |              |
+|      31 | Type of 28th column             | `SchemaType` |
 
 Types are represented via the `SchemaType` enum and encoded as one byte per type.
+The encoding is specified in [`SchemaType.sol`](https://github.com/latticexyz/mud/blob/main/packages/schema-type/src/solidity/SchemaType.sol)
 
-<CollapseCode>
-```solidity filename="@latticexyz/schema-type/src/solidity/SchemaType.sol" {1,200} copy showLineNumbers
-enum SchemaType {
-  UINT8,
-  UINT16,
-  UINT24,
-  UINT32,
-  UINT40,
-  UINT48,
-  UINT56,
-  UINT64,
-  UINT72,
-  UINT80,
-  UINT88,
-  UINT96,
-  UINT104,
-  UINT112,
-  UINT120,
-  UINT128,
-  UINT136,
-  UINT144,
-  UINT152,
-  UINT160,
-  UINT168,
-  UINT176,
-  UINT184,
-  UINT192,
-  UINT200,
-  UINT208,
-  UINT216,
-  UINT224,
-  UINT232,
-  UINT240,
-  UINT248,
-  UINT256,
-  INT8,
-  INT16,
-  INT24,
-  INT32,
-  INT40,
-  INT48,
-  INT56,
-  INT64,
-  INT72,
-  INT80,
-  INT88,
-  INT96,
-  INT104,
-  INT112,
-  INT120,
-  INT128,
-  INT136,
-  INT144,
-  INT152,
-  INT160,
-  INT168,
-  INT176,
-  INT184,
-  INT192,
-  INT200,
-  INT208,
-  INT216,
-  INT224,
-  INT232,
-  INT240,
-  INT248,
-  INT256,
-  BYTES1,
-  BYTES2,
-  BYTES3,
-  BYTES4,
-  BYTES5,
-  BYTES6,
-  BYTES7,
-  BYTES8,
-  BYTES9,
-  BYTES10,
-  BYTES11,
-  BYTES12,
-  BYTES13,
-  BYTES14,
-  BYTES15,
-  BYTES16,
-  BYTES17,
-  BYTES18,
-  BYTES19,
-  BYTES20,
-  BYTES21,
-  BYTES22,
-  BYTES23,
-  BYTES24,
-  BYTES25,
-  BYTES26,
-  BYTES27,
-  BYTES28,
-  BYTES29,
-  BYTES30,
-  BYTES31,
-  BYTES32,
-  BOOL,
-  ADDRESS,
-  UINT8_ARRAY,
-  UINT16_ARRAY,
-  UINT24_ARRAY,
-  UINT32_ARRAY,
-  UINT40_ARRAY,
-  UINT48_ARRAY,
-  UINT56_ARRAY,
-  UINT64_ARRAY,
-  UINT72_ARRAY,
-  UINT80_ARRAY,
-  UINT88_ARRAY,
-  UINT96_ARRAY,
-  UINT104_ARRAY,
-  UINT112_ARRAY,
-  UINT120_ARRAY,
-  UINT128_ARRAY,
-  UINT136_ARRAY,
-  UINT144_ARRAY,
-  UINT152_ARRAY,
-  UINT160_ARRAY,
-  UINT168_ARRAY,
-  UINT176_ARRAY,
-  UINT184_ARRAY,
-  UINT192_ARRAY,
-  UINT200_ARRAY,
-  UINT208_ARRAY,
-  UINT216_ARRAY,
-  UINT224_ARRAY,
-  UINT232_ARRAY,
-  UINT240_ARRAY,
-  UINT248_ARRAY,
-  UINT256_ARRAY,
-  INT8_ARRAY,
-  INT16_ARRAY,
-  INT24_ARRAY,
-  INT32_ARRAY,
-  INT40_ARRAY,
-  INT48_ARRAY,
-  INT56_ARRAY,
-  INT64_ARRAY,
-  INT72_ARRAY,
-  INT80_ARRAY,
-  INT88_ARRAY,
-  INT96_ARRAY,
-  INT104_ARRAY,
-  INT112_ARRAY,
-  INT120_ARRAY,
-  INT128_ARRAY,
-  INT136_ARRAY,
-  INT144_ARRAY,
-  INT152_ARRAY,
-  INT160_ARRAY,
-  INT168_ARRAY,
-  INT176_ARRAY,
-  INT184_ARRAY,
-  INT192_ARRAY,
-  INT200_ARRAY,
-  INT208_ARRAY,
-  INT216_ARRAY,
-  INT224_ARRAY,
-  INT232_ARRAY,
-  INT240_ARRAY,
-  INT248_ARRAY,
-  INT256_ARRAY,
-  BYTES1_ARRAY,
-  BYTES2_ARRAY,
-  BYTES3_ARRAY,
-  BYTES4_ARRAY,
-  BYTES5_ARRAY,
-  BYTES6_ARRAY,
-  BYTES7_ARRAY,
-  BYTES8_ARRAY,
-  BYTES9_ARRAY,
-  BYTES10_ARRAY,
-  BYTES11_ARRAY,
-  BYTES12_ARRAY,
-  BYTES13_ARRAY,
-  BYTES14_ARRAY,
-  BYTES15_ARRAY,
-  BYTES16_ARRAY,
-  BYTES17_ARRAY,
-  BYTES18_ARRAY,
-  BYTES19_ARRAY,
-  BYTES20_ARRAY,
-  BYTES21_ARRAY,
-  BYTES22_ARRAY,
-  BYTES23_ARRAY,
-  BYTES24_ARRAY,
-  BYTES25_ARRAY,
-  BYTES26_ARRAY,
-  BYTES27_ARRAY,
-  BYTES28_ARRAY,
-  BYTES29_ARRAY,
-  BYTES30_ARRAY,
-  BYTES31_ARRAY,
-  BYTES32_ARRAY,
-  BOOL_ARRAY,
-  ADDRESS_ARRAY,
-  BYTES,
-  STRING
-}
-```
+<details>
 
-</CollapseCode>
+<summary>Schema types</summary>
 
-Example: `Schema` with 3 fields (`uint64`, `uint40`, `address[]`).
+| Value (hex) | Value (dec) | Type                |
+| ----------: | ----------: | ------------------- |
+| 0x00≤n≤0x1F |      0≤n≤31 | `uint<8(n+1)>`      |
+| 0x20≤n≤0x3F |     32≤n≤63 | `int<8(n-31)>`      |
+| 0x40≤n≤0x5F |     64≤n≤95 | `bytes<n-63>`       |
+|        0x60 |          96 | `bool`              |
+|        0x61 |          97 | `address`           |
+| 0x62≤n≤0x81 |    98≤n≤129 | `uint<8(n-97)>[]`   |
+| 0x82≤n≤0xA1 |   130≤n≤161 | `int<8(n-129)>[]`   |
+| 0xA2≤n≤0xC1 |   162≤n≤193 | `bytes<8(n-161)>[]` |
+|        0xC2 |         194 | `bool[]`            |
+|        0xC3 |         195 | `address[]`         |
+|        0xC4 |         196 | `bytes`             |
+|        0xC5 |         197 | `string`            |
+
+</details>
+
+Note that the dynamic-length types _must_ come after all the static-length types.
+
+For example, let's interpret the schema `0x001c0303180001c5c48300000000000000000000000000000000000000000000`.
+
+| Byte number | 0-1                     | 2                          | 3                           | 4                            | 5                          | 6                          | 7                           | 8                          | 9                            | 10-31           |
+| ----------- | ----------------------- | -------------------------- | --------------------------- | ---------------------------- | -------------------------- | -------------------------- | --------------------------- | -------------------------- | ---------------------------- | --------------- |
+| Schema data | `0x001c`                | `03`                       | `03`                        | `18`                         | `00`                       | `01`                       | `c5`                        | `c4`                       | `83`                         | `0...0`         |
+| Meaning     | 28 bytes of static data | three static length fields | three dynamic length fields | 1st field - `18` (`uint200`) | 2nd field - `00` (`uint8`) | 3rd field - `01` (`uin16`) | 4th field - `c5` (`string`) | 5th field - `c4` (`bytes`) | 6th field - `83` (`int16[]`) | No other fields |
+
+## Events
+
+The `Store_` events have two topics:
+
+0. The event signature
+   - [`0x8dbb3a9672eebfd3773e72dd9c102393436816d832c7ba9e1e1ac8fcadcac7a9` for `Store_SetRecord`](https://www.4byte.directory/event-signatures/?bytes_signature=0x8dbb3a9672eebfd3773e72dd9c102393436816d832c7ba9e1e1ac8fcadcac7a9)
+   - [`0x8c0b5119d4cec7b284c6b1b39252a03d1e2f2d7451a5895562524c113bb952be` for `Store_SpliceStaticData`](https://www.4byte.directory/event-signatures/?bytes_signature=0x8c0b5119d4cec7b284c6b1b39252a03d1e2f2d7451a5895562524c113bb952be)
+   - [`0xfe158a7adba34e256807c8a149028d3162918713c3838afc643ce9f96716ebfd` for `Store_SpliceDynamicData`](https://www.4byte.directory/event-signatures/?bytes_signature=0xfe158a7adba34e256807c8a149028d3162918713c3838afc643ce9f96716ebfd)
+   - [`0x0e1f72f429eb97e64878619984a91e687ae91610348b9ff4216782cc96e49d07` for `Store_DeleteRecord`](https://www.4byte.directory/event-signatures/?bytes_signature=0x0e1f72f429eb97e64878619984a91e687ae91610348b9ff4216782cc96e49d07)
+1. The ResourceId for the table being modified.
+
+### `Store_SetRecord`
+
+[This event](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreEvents.sol#L18-L32) is emitted when a new record is created with all the data fields.
+
+The fields are in the event definition.
+In Solidity, unindexed event fields are [ABI encoded](https://docs.soliditylang.org/en/latest/abi-spec.html#formal-specification-of-the-encoding).
+
+| Field                           | Encoding                                                                         |
+| ------------------------------- | -------------------------------------------------------------------------------- |
+| `bytes32[] keyTuple`            | Standard ABI encoding (32-byte fields)                                           |
+| `bytes staticData`              | Packed ABI encoding of a tuple with the value's static fields                    |
+| `EncodedLengths encodedLengths` | See below.                                                                       |
+| `bytes dynamicData`             | Modified packed ABI encoding of data, use `encodedLengths` for length delimiters |
+
+<a id="encoded-lengths" />
+
+`encodedLengths` is a 32-byte value that contains the length in bytes of all the dynamic data fields:
 
 ```
-0x 000D 02 01 0704c300000000000000000000000000000000000000000000000000
-  |----|--|--|--------------------------------------------------------|
-  |    |  |  | Up to 28 column types, one byte each                   |
-  |    |  |  | UINT64, UINT40, ADDRESS_ARRAY                          |
-  |----|--|--|--------------------------------------------------------|
-  |    |  | Number of dynamic length fields                           |
-  |    |  | 1                                                         |
-  |----|--|--|--------------------------------------------------------|
-  |    | Number of static length fields                               |
-  |    | 2                                                            |
-  |----|--|--|--------------------------------------------------------|
-  | Total byte length of all static length fields                     |
-  | 13                                                                |
+EncodedLengths = bytes[32] where:
+
+bytes[0:6]   = len of all dynamic data
+bytes[6:11]  = len of 1st dynamic field
+bytes[11:16] = len of 2nd dynamic field
+bytes[16:21] = len of 3rd dynamic field
+bytes[21:26] = len of 4th dynamic field
+bytes[26:31] = len of 5th dynamic field
 ```
 
-## Static length data
+<details>
 
-Static length data is encoded in the same way as `abi.encodePacked`, so each element only uses as little space as required by its data type.
-For example, a `bytes1` element takes 1 byte of space, instead of being padded to 32 bytes with `abi.encode`.
+<summary>Example</summary>
 
-Example: encoded static data of a table with a `uint64` and a `uint40` field.
+For example, we have a table with this definition:
 
-```
-0x 0000000000000001 0000000002
-  |----------------|----------|
-  |0x00........0x07|0x08..0x0B|
-  |----------------|----------|
-  | First          | Second   |
-  | Field          | Field    |
-  |----------------|----------|
-  | 1              | 2        |
-
-```
-
-## Dynamic length data
-
-### Encoded lengths (`PackedCounter`)
-
-Tables can have up to five dynamic length fields, each of which has a maximum size of `2**40` (~1 trillion) bytes.
-This makes it possible to pack the lengths of all dynamic length fields of a table in a single `bytes32` word, instead of prefixing each dynamic length field with 32 bytes to store its length.
-
-The data structure to store the lengths of all dynamic length fields is called `PackedCounter`.
-
-Example: `PackedCounter` with 5 fields.
-
-```
-0x 0000000000000F 0000000001 0000000002 0000000003 0000000004 0000000005
-  |--------------|----------|----------|----------|----------|----------|
-  |0x00......0x06|0x07..0x0B|0x0C..0x10|0x11..0x15|0x16..0x1A|0x1B..0x1F|
-  |--------------|----------|----------|----------|----------|----------|
-  | Total        | First    | Second   | Third    | Fourth   | Fifth    |
-  | length       | length   | length   | length   | length   | length   |
-  |--------------|----------|----------|----------|----------|----------|
-  | 15           | 1        | 2        | 3        | 4        | 5        |
+```typescript
+    Complicated: {
+       schema: {
+         key1: "uint200",
+         key2: "uint8",
+         val1: "uint200",
+         val2: "uint8",
+         val3: "uint16",
+         dyn1: "string",
+         dyn2: "bytes",
+         dyn3: "int16[]",
+       },
+       key: ["key1", "key2"],
+    },
 ```
 
-### Dynamic length data encoding
+And we want to understand this data:
 
-Elements of dynamic length fields are tightly packed in storage and events.
-This is comparable to Solidity's storage layout, except there is no guarantee for elements to be aligned with storage slots, which allows arrays to be packed more tightly and without padding.
-For example, an `address[3]` array will only use 2 storage slots in MUD instead of 3 in Solidity.
-(For context: Solidity only packs elements of arrays if each element is smaller than 16 bytes, and applies padding to guarantee alignment with storage slots.)
+| Word | Data                                                                 |
+| ---: | -------------------------------------------------------------------- |
+|    0 | `0x0000000000000000000000000000000000000000000000000000000000000080` |
+|    1 | `0x00000000000000000000000000000000000000000000000000000000000000e0` |
+|    2 | `0x0000000000000000000000000000060000000005000000000500000000000010` |
+|    3 | `0x0000000000000000000000000000000000000000000000000000000000000120` |
+|    4 | `0x0000000000000000000000000000000000000000000000000000000000000002` |
+|    5 | `0x00000000000000000000000000000000000000000000000000000000000060a7` |
+|    6 | `0x0000000000000000000000000000000000000000000000000000000000000002` |
+|    7 | `0x000000000000000000000000000000000000000000000000000000000000001c` |
+|    8 | `0x00000000000000000000000000000000000000000000000bad04600d00000000` |
+|    9 | `0x0000000000000000000000000000000000000000000000000000000000000010` |
+|   10 | `0x68656c6c6f776f726c6400010002000300000000000000000000000000000000` |
 
-Example: encoded dynamic data of a table with an `address[]` field.
+The first four 256-bit words correspond to the four unindexed event fields.
 
+| Word | Event field                     | Data                                                                 |
+| ---: | ------------------------------- | -------------------------------------------------------------------- |
+|    0 | `bytes32[] keyTuple`            | `0x0...080`                                                          |
+|    1 | `bytes staticData`              | `0x0...0e0`                                                          |
+|    2 | `EncodedLengths encodedLengths` | `0x0000000000000000000000000000060000000005000000000500000000000010` |
+|    3 | `bytes dynamicData`             | `0x0...0120`                                                         |
+
+ABI encoding starts with one 32-byte word per field.
+If the field is static, the word contains that value.
+If the field is dynamic, the word contains an offset into where the field data starts.
+
+| Event field          |       Starting byte | Words in the data |
+| -------------------- | ------------------: | ----------------: |
+| `bytes32[] keyTuple` |  0x80 = 128 = 4\*32 |               4-6 |
+| `bytes staticData`   |  0xE0 = 224 = 7\*32 |               7-8 |
+| `bytes dynamicData`  | 0x120 = 288 = 9\*32 |              9-10 |
+
+**`bytes32[] keyTuple`**
+
+| Word |          Data |
+| ---: | ------------: |
+|    4 | `0x0......02` |
+|    5 | `0x0...060a7` |
+|    6 | `0x0......02` |
+
+This is a variable-length array.
+The first word is the array length, followed by the values.
+The key fields are treated internally as 32-byte values, so every value takes 32 bytes.
+This gives us
+
+| Record field |  Value |
+| ------------ | -----: |
+| `key1`       | 0x60A7 |
+| `key2`       |      2 |
+
+**`bytes staticData`**
+
+This is the static data (the static fields that are not in the key).
+
+| Word | Data                                                                    |
+| ---: | ----------------------------------------------------------------------- |
+|    7 | `0x0...01c`                                                             |
+|    8 | `0x00000000000000000000000000000000000000000000000bad 04 600d 00000000` |
+
+Because the type is an unspecified number of bytes, the first 32-byte word is the length.
+In this case, the length is `0x1C=28`.
+This means that only the first (most significant) 28 bytes of word 8 are meaningful.
+The other four are zero.
+
+Going back to the schema, we see that there are three static data fields:
+
+```typescript
+         val1: "uint200",
+         val2: "uint8",
+         val3: "uint16",
 ```
 
-0x 1000000000000000000000000000000000000002 3000000000000000000000000000000000000004 5000000000000000000000000000000000000006
-  |----------------------------------------|----------------------------------------|----------------------------------------|
-  |0x00................................0x13|0x14................................0x27|0x28................................0x3B|
-  |----------------------------------------|----------------------------------------|----------------------------------------|
-  | address_array[0]                       | address_array[1]                       | address_array[2]                       |
-  |----------------------------------------|----------------------------------------|----------------------------------------|
-  | 0x10000000000000000000000000000000..02 | 0x30000000000000000000000000000000..04 | 0x50000000000000000000000000000000..06 |
+The first one is `200 bits = 25 bytes`, the second one is `8 bits = 1 byte`, and the third is `16 bits = 2 bytes`.
+They are written consecutively, so
+
+| Record field |  Value |
+| ------------ | -----: |
+| `val1`       |  0xBAD |
+| `val2`       |      4 |
+| `val3`       | 0x600D |
+
+**`EncodedLengths encodedLengths`**
+
+[This is the definition of the `EncodedLengths` type](https://github.com/latticexyz/mud/blob/main/packages/store/src/EncodedLengths.sol).
+
+| Bytes                | 0x1F-0x1B         | 0x1A-0x16         | 0x15-0x11         | 0x10-0x0C         | 0x0B-0x07         | 0x06-0x00                   |
+| -------------------- | ----------------- | ----------------- | ----------------- | ----------------- | ----------------- | --------------------------- |
+| Value                | 0x0...0           | 0x0...0           | 0x0...06          | 0x0...05          | 0x0...05          | 0x0...010                   |
+| Length (in bytes) of | 5th dynamic field | 4th dynamic field | 3rd dynamic field | 2nd dynamic field | 1st dynamic field | all dynamic fields together |
+
+This is the dynamic field part of the schema:
+
+```typescript
+         dyn1: "string",
+         dyn2: "bytes",
+         dyn3: "int16[]",
 ```
 
-## Field layout
+Here we see that the first five bytes of the dynamic data are going to be `dyn1`, the next five `dyn2`, and the final six `dyn3`.
+The total length is `0x10 = 16`.
 
-Similar to [`Schema`](#schema), the `FieldLayout` data structure is a `bytes32` value that encodes the total byte length of all static length fields, the number of static length fields, the number of dynamic length fields.
-However, instead of encoding the column types in the remaining 28 bytes, it encodes byte size of each static length field.
+**`bytes dynamicData`**
 
-It is used as an onchain gas optimization for storage operations on static length fields. In onchain storage operations only the byte length of the field is required, not the type, so using `FieldLayout` instead of `Schema` saves the gas for translating the static length type to its byte length.
+| Word | Data                                                                    |
+| ---: | ----------------------------------------------------------------------- |
+|    9 | `0x0000000000000000000000000000000000000000000000000000000000000010`    |
+|   10 | `0x68656c6c6f 776f726c64 000100020003 00000000000000000000000000000000` |
 
-Example: `FieldLayout` with 3 fields (`uint64`, `uint40`, `address[]`).
+This value is also `bytes`, so the first word is the length of the data, in this case `0x10=16`.
+Combining this with the encoded lengths information, we get these values:
 
+| Record field |           Value |
+| ------------ | --------------: |
+| `dyn1`       |  `0x68656c6c6f` |
+| `dyn2`       |  `0x776f726c64` |
+| `dyn3`       | `0x00100020003` |
+
+To interpret the values we need to get the types from the schema.
+
+| Record field | Field type | Value                    |
+| ------------ | ---------- | ------------------------ |
+| `dyn1`       | `string`   | hello                    |
+| `dyn2`       | `bytes`    | `0x776f726c64` (= world) |
+| `dyn3`       | `int16[]`  | [1,2,3]                  |
+
+</details>
+
+### `Store_SpliceStaticData`
+
+[This event](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreEvents.sol#L34-L43) is emitted when a record's static fields are modified.
+Note that this event is also emitted if the record did not exist previously.
+Solidity does not distinguish between a record not existing, and a record existing with all the values set to zero.
+
+| Field                | Encoding                                                      |
+| -------------------- | ------------------------------------------------------------- |
+| `bytes32[] keyTuple` | Standard ABI encoding (32-byte fields)                        |
+| `uint48 start`       | The starting byte of the segment of static data to change     |
+| `bytes data`         | Packed ABI encoding of a tuple with the value's static fields |
+
+<details>
+
+<summary>Example</summary>
+
+Using the same table definition as with `Store_SetRecord`, we want to understand this data:
+
+| Word | Data                                                                 |
+| ---: | -------------------------------------------------------------------- |
+|    0 | `0x0000000000000000000000000000000000000000000000000000000000000060` |
+|    1 | `0x0000000000000000000000000000000000000000000000000000000000000019` |
+|    2 | `0x00000000000000000000000000000000000000000000000000000000000000c0` |
+|    3 | `0x0000000000000000000000000000000000000000000000000000000000000002` |
+|    4 | `0x00000000000000000000000000000000000000000000000000000000000060a7` |
+|    5 | `0x0000000000000000000000000000000000000000000000000000000000000003` |
+|    6 | `0x0000000000000000000000000000000000000000000000000000000000000001` |
+|    7 | `0xff00000000000000000000000000000000000000000000000000000000000000` |
+
+The first three 256-bit words correspond to the three unindexed event fields.
+
+| Word | Event field          | Data        |
+| ---: | -------------------- | ----------- |
+|    0 | `bytes32[] keyTuple` | `0x00...60` |
+|    1 | `uint48 start`       | `0x00...19` |
+|    2 | `bytes data`         | `0x00...C0` |
+
+`keyTuple` is interpreted the same way it is in `Store_SetRecord`.
+
+**`uint48 start`**
+
+`start` is `0x19 = 25`.
+
+Going back to the schema, we see that there are three static data fields:
+
+```typescript
+         val1: "uint200",
+         val2: "uint8",
+         val3: "uint16",
 ```
-0x 000D 02 01 08050000000000000000000000000000000000000000000000000000
-  |----|--|--|--------------------------------------------------------|
-  |    |  |  | Up to 28 static byte lengths, one byte each            |
-  |    |  |  | 8 (uint64), 5 (uint40)                  |
-  |----|--|--|--------------------------------------------------------|
-  |    |  | Number of dynamic length fields                           |
-  |    |  | 1                                                         |
-  |----|--|-----------------------------------------------------------|
-  |    | Number of static length fields                               |
-  |    | 2                                                            |
-  |----|--------------------------------------------------------------|
-  | Total byte length of all static length fields                     |
-  | 13                                                                |
+
+Starting from zero, this means that `val1` is bytes 0-24, `val2` is byte 25, and `val3` is bytes 26-27.
+We are changing from byte 25, so `val1`'s value stays the same.
+
+**`bytes data`**
+
+This data starts at word six (byte `0xC0 = 192 = 32*6`).
+
+| Word | Data         |
+| ---: | ------------ |
+|    6 | `0x0...01`   |
+|    7 | `0xff 0...0` |
+
+The first word of this field, word 6, tells us that we are only changing one byte of the data, so we aren't changing `val3` either.
+The first byte of word 7, the only one that matters, is `0xFF`.
+This is the new value of `val2`.
+
+</details>
+
+### `Store_SpliceDynamicData`
+
+[This event](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreEvents.sol#L45-L64) is emitted when a record's dynamic fields are modified.
+Note that this event is also emitted if the record did not exist previously.
+Solidity does not distinguish between a record not existing, and a record existing with all the values set to zero.
+
+| Field                           | Encoding                                                                                                                    |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `bytes32[] keyTuple`            | Standard ABI encoding (32-byte fields)                                                                                      |
+| `uint8 dynamicFieldIndex`       | The sequential number (counting from zero) of the dynamic field to change. 0 ≤ `dynamicFieldIndex` ≤ 4                      |
+| `uint48 start`                  | The starting byte of the segment of the `dynamicFieldIndex`'th dynamic field to change                                      |
+| `uint40 deleteCount`            | The number of bytes to delete from the `dynamicFieldIndex`'th dynamic field.                                                |
+| `EncodedLengths encodedLengths` | Similar to `encodedLengths` in `Store_SetRecord`, except that only the size of the `dynamicFieldIndex`'th field is included |
+| `bytes data`                    | Bytes to add/change in the `dynamicFieldIndex`'th dynamic field.                                                            |
+
+<details>
+
+<summary>Example: Appending and modifying data</summary>
+
+Using the same table definition as with `Store_SetRecord`, we want to understand this data.
+Note that the log entry by itself does not tell us if we are appending data or modifying an existing value.
+It only tells us that we are changing the data in bytes six and seven, not whether there is already data there or not.
+
+| Word | Data                                                                 |
+| ---: | -------------------------------------------------------------------- |
+|    0 | `0x00000000000000000000000000000000000000000000000000000000000000c0` |
+|    1 | `0x0000000000000000000000000000000000000000000000000000000000000002` |
+|    2 | `0x0000000000000000000000000000000000000000000000000000000000000006` |
+|    3 | `0x0000000000000000000000000000000000000000000000000000000000000000` |
+|    4 | `0x0000000000000000000000000000080000000000000000000000000000000008` |
+|    5 | `0x0000000000000000000000000000000000000000000000000000000000000120` |
+|    6 | `0x0000000000000000000000000000000000000000000000000000000000000002` |
+|    7 | `0x00000000000000000000000000000000000000000000000000000000000060a7` |
+|    8 | `0x0000000000000000000000000000000000000000000000000000000000000005` |
+|    9 | `0x0000000000000000000000000000000000000000000000000000000000000002` |
+|   10 | `0x1234000000000000000000000000000000000000000000000000000000000000` |
+
+The first six 256-bit words correspond to the unindexed event fields.
+
+| Word | Event field                     | Data                                                                      |
+| ---: | ------------------------------- | ------------------------------------------------------------------------- |
+|    0 | `bytes32[] keyTuple`            | `0x00...c0`                                                               |
+|    1 | `uint8 dynamicFieldIndex`       | `0x00...02`                                                               |
+|    2 | `uint48 start`                  | `0x00...06`                                                               |
+|    3 | `uint40 deleteCount`            | `0x00...00`                                                               |
+|    4 | `EncodedLengths encodedLengths` | `0x0000000000 0000000000 0000000008 0000000000 0000000000 00000000000008` |
+|    5 | `bytes data`                    | `0x00...120`                                                              |
+
+`keyTuple` is interpreted the same way it is in `Store_SetRecord`.
+
+**`uint8 dynamicFieldIndex`**
+
+The index of the dynamic field we are modifying.
+The value here is two.
+Counting from zero it is the third schema field.
+
+```typescript
+         dyn3: "int16[]",
 ```
 
-## Storage layout
+**`uint48 start`**
 
-The data of each row of each table is stored in its own location in storage.
+The byte at which we start the change.
+Here is it byte six.
+The effect on the length of the data depends on what we are doing.
+If we are appending data, we would have six bytes now (three values) and add to them.
+If we are modifying data, we should have at least eight bytes now (four values), and we modify the fourth value (`dyn3[3]`).
 
-The location of the [static length data](#static-length-data) is determined by a hash of the table ID and the key tuple.
+**`uint40 deleteCount`**
+
+The number of bytes we delete.
+In this case, zero.
+
+**`EncodedLengths encodedLengths`**
+
+The encoded lengths in the data after the change (if they change).
+This value tells us that only the third field changes, and that it will be eight bytes long.
+
+**`bytes data`**
+
+This value starts at byte `0x120 = 288 = 9*32`, or word nine.
+
+| Word | Data                                                                  |
+| ---: | --------------------------------------------------------------------- |
+|    9 | `0x0000000000000000000000000000000000000000000000000000000000000002`  |
+|   10 | `0x1234 000000000000000000000000000000000000000000000000000000000000` |
+
+Again, the first word of the `bytes` value tells us how many bytes we have (two).
+The second gives us the value we are adding, in this case `0x1234`.
+
+</details>
+
+<details>
+
+<summary>Example: Deleting data</summary>
+
+Using the same table definition as with `Store_SetRecord`, we want to understand this data:
+
+| Word | Data                                                                 |
+| ---: | -------------------------------------------------------------------- |
+|    0 | `0x00000000000000000000000000000000000000000000000000000000000000c0` |
+|    1 | `0x0000000000000000000000000000000000000000000000000000000000000002` |
+|    2 | `0x0000000000000000000000000000000000000000000000000000000000000006` |
+|    3 | `0x0000000000000000000000000000000000000000000000000000000000000002` |
+|    4 | `0x0000000000000000000000000000060000000000000000000000000000000006` |
+|    5 | `0x0000000000000000000000000000000000000000000000000000000000000120` |
+|    6 | `0x0000000000000000000000000000000000000000000000000000000000000002` |
+|    7 | `0x00000000000000000000000000000000000000000000000000000000000060a7` |
+|    8 | `0x0000000000000000000000000000000000000000000000000000000000000005` |
+|    9 | `0x0000000000000000000000000000000000000000000000000000000000000000` |
+
+The first six 256-bit words correspond to the unindexed event fields.
+
+| Word | Event field                     | Data                                                                 |
+| ---: | ------------------------------- | -------------------------------------------------------------------- |
+|    0 | `bytes32[] keyTuple`            | `0x00...c0`                                                          |
+|    1 | `uint8 dynamicFieldIndex`       | `0x00...02`                                                          |
+|    2 | `uint48 start`                  | `0x00...06`                                                          |
+|    3 | `uint40 deleteCount`            | `0x00...02`                                                          |
+|    4 | `EncodedLengths encodedLengths` | `0x0000000000000000000000000000060000000000000000000000000000000006` |
+|    5 | `bytes data`                    | `0x00...120`                                                         |
+
+This is very similar to appending or modifying data, except that `deleteCount` has a value.
+This is the number of bytes we are deleting, two (a single array element).
+Combining this with the `start` value of six, we are deleting bytes six and seven.
+
+The other difference is that word 9 is zero - there is a `bytes data` value, but it is empty.
+
+</details>
+
+### `Store_DeleteRecord`
+
+[This event](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreEvents.sol#L66-L71) is emitted when a record is deleted.
+
+| Field                | Encoding                               |
+| -------------------- | -------------------------------------- |
+| `bytes32[] keyTuple` | Standard ABI encoding (32-byte fields) |
+
+The only unindexed event field is `bytes32[] keyTuple`, which contains the key.
+See the example in [`Store_SetRecord`](#store_setrecord) to interpret it.
+
+## Onchain storage layout
+
+The data of each record of each table is stored in its own location in storage.
+
+The location of the static-length data is determined by a hash of the table ID and the key tuple.
 Since data is tightly packed, fields may wrap around two storage slots.
 
 ```solidity
@@ -353,7 +483,7 @@ function _getStaticDataLocation(ResourceId tableId, bytes32[] memory keyTuple) i
 }
 ```
 
-The [encoded lengths](#encoded-lengths-packedcounter) of all dynamic length fields is stored in a single storage slot, which is determined by a hash of the table ID and the key tuple.
+[The `encodedLengths` field](#encoded-lengths) (the length of all dynamic-length fields) is stored in a single storage slot, which is determined by a hash of the table ID and the key tuple.
 
 ```solidity
 function _getDynamicDataLengthLocation(ResourceId tableId, bytes32[] memory keyTuple) internal pure returns (uint256) {
@@ -361,8 +491,8 @@ function _getDynamicDataLengthLocation(ResourceId tableId, bytes32[] memory keyT
 }
 ```
 
-The data for each [dynamic length field](#dynamic-length-data-encoding) is stored in its own location in storage, which is determined by a hash of the table ID, the key tuple, and the field index.
-This allows changing the length of a dynamic length field without having to move the data of other fields.
+The data for each dynamic-length field is stored in its own location in storage, which is determined by a hash of the table ID, the key tuple, and the field index.
+This allows MUD to change the length of a dynamic-length field without having to move the data of other fields.
 
 ```solidity
 function _getDynamicDataLocation(
@@ -373,15 +503,3 @@ function _getDynamicDataLocation(
   return uint256(DYNAMIC_DATA_SLOT ^ bytes1(dynamicFieldIndex) ^ keccak256(abi.encodePacked(tableId, keyTuple)));
 }
 ```
-
-## Events
-
-Data emitted as part of events uses the same encoding for [static length data](#static-length-data), [encoded lengths](#encoded-lengths-packedcounter) and [dynamic length data](#dynamic-length-data-encoding) as described above.
-
-Unlike the [layout in storage](#storage-layout), where each dynamic length data field is stored in its own storage location, in events all data of dynamic length fields is concatenated to a single `bytes` blob.
-The encoded lengths emitted as part of the event contain the information required to slice up this concatenated `bytes` blob into the individual fields.
-
-This encoding reduces the event payload size by ~80% compared to default Solidity events, depending on the table schema.
-(For context: Solidity uses `abi.encode` to encode the event payload, which pads each static length field to 32 bytes, and pads each item of dynamic length fields to 32 bytes.)
-
-More details on the Store event signatures can be found in the [API reference](/store/reference/store-core#events).

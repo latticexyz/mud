@@ -4,9 +4,11 @@ pragma solidity >=0.8.24;
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 import { WORD_LAST_INDEX, BYTE_TO_BITS, MAX_TOTAL_FIELDS, MAX_DYNAMIC_FIELDS, LayoutOffsets } from "./constants.sol";
+import { ISchemaErrors } from "./ISchemaErrors.sol";
 
 /**
  * @title Schema handling in Lattice
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Defines and handles the encoding/decoding of Schemas which describe the layout of data structures.
  * 2 bytes length of all the static (in size) fields in the schema
  * 1 byte for number of static size fields
@@ -18,22 +20,18 @@ type Schema is bytes32;
 using SchemaInstance for Schema global;
 
 /**
+ * @title SchemaLib
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Static utility functions for handling Schemas.
  */
 library SchemaLib {
-  /// @dev Error raised when the provided schema has an invalid length.
-  error SchemaLib_InvalidLength(uint256 length);
-
-  /// @dev Error raised when a static type is placed after a dynamic type in a schema.
-  error SchemaLib_StaticTypeAfterDynamicType();
-
   /**
    * @notice Encodes a given schema into a single bytes32.
    * @param schemas The list of SchemaTypes that constitute the schema.
    * @return The encoded Schema.
    */
   function encode(SchemaType[] memory schemas) internal pure returns (Schema) {
-    if (schemas.length > MAX_TOTAL_FIELDS) revert SchemaLib_InvalidLength(schemas.length);
+    if (schemas.length > MAX_TOTAL_FIELDS) revert ISchemaErrors.Schema_InvalidLength(schemas.length);
     uint256 schema;
     uint256 totalLength;
     uint256 dynamicFields;
@@ -51,7 +49,7 @@ library SchemaLib {
         }
       } else if (dynamicFields > 0) {
         // Revert if we have seen a dynamic field before, but now we see a static field
-        revert SchemaLib_StaticTypeAfterDynamicType();
+        revert ISchemaErrors.Schema_StaticTypeAfterDynamicType();
       }
 
       unchecked {
@@ -65,7 +63,7 @@ library SchemaLib {
     }
 
     // Require MAX_DYNAMIC_FIELDS
-    if (dynamicFields > MAX_DYNAMIC_FIELDS) revert SchemaLib_InvalidLength(dynamicFields);
+    if (dynamicFields > MAX_DYNAMIC_FIELDS) revert ISchemaErrors.Schema_InvalidLength(dynamicFields);
 
     // Get the static field count
     uint256 staticFields;
@@ -86,6 +84,8 @@ library SchemaLib {
 }
 
 /**
+ * @title SchemaInstance
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Instance utility functions for handling a Schema instance.
  */
 library SchemaInstance {
@@ -157,23 +157,23 @@ library SchemaInstance {
    */
   function validate(Schema schema, bool allowEmpty) internal pure {
     // Schema must not be empty
-    if (!allowEmpty && schema.isEmpty()) revert SchemaLib.SchemaLib_InvalidLength(0);
+    if (!allowEmpty && schema.isEmpty()) revert ISchemaErrors.Schema_InvalidLength(0);
 
     // Schema must have no more than MAX_DYNAMIC_FIELDS
     uint256 _numDynamicFields = schema.numDynamicFields();
-    if (_numDynamicFields > MAX_DYNAMIC_FIELDS) revert SchemaLib.SchemaLib_InvalidLength(_numDynamicFields);
+    if (_numDynamicFields > MAX_DYNAMIC_FIELDS) revert ISchemaErrors.Schema_InvalidLength(_numDynamicFields);
 
     uint256 _numStaticFields = schema.numStaticFields();
     // Schema must not have more than MAX_TOTAL_FIELDS in total
     uint256 _numTotalFields = _numStaticFields + _numDynamicFields;
-    if (_numTotalFields > MAX_TOTAL_FIELDS) revert SchemaLib.SchemaLib_InvalidLength(_numTotalFields);
+    if (_numTotalFields > MAX_TOTAL_FIELDS) revert ISchemaErrors.Schema_InvalidLength(_numTotalFields);
 
     // No dynamic field can be before a dynamic field
     uint256 _staticDataLength;
     for (uint256 i; i < _numStaticFields; ) {
       uint256 staticByteLength = schema.atIndex(i).getStaticByteLength();
       if (staticByteLength == 0) {
-        revert SchemaLib.SchemaLib_StaticTypeAfterDynamicType();
+        revert ISchemaErrors.Schema_StaticTypeAfterDynamicType();
       }
       _staticDataLength += staticByteLength;
       unchecked {
@@ -183,14 +183,14 @@ library SchemaInstance {
 
     // Static length sums must match
     if (_staticDataLength != schema.staticDataLength()) {
-      revert SchemaLib.SchemaLib_InvalidLength(schema.staticDataLength());
+      revert ISchemaErrors.Schema_InvalidLength(schema.staticDataLength());
     }
 
     // No static field can be after a dynamic field
     for (uint256 i = _numStaticFields; i < _numTotalFields; ) {
       uint256 staticByteLength = schema.atIndex(i).getStaticByteLength();
       if (staticByteLength > 0) {
-        revert SchemaLib.SchemaLib_StaticTypeAfterDynamicType();
+        revert ISchemaErrors.Schema_StaticTypeAfterDynamicType();
       }
       unchecked {
         i++;

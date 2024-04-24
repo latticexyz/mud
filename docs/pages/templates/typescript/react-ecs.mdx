@@ -2,6 +2,14 @@
 
 This template is for developers who use [React](https://react.dev/).
 
+You can start a new project using this template with:
+
+```sh copy
+pnpm create mud tutorial --template react-ecs
+```
+
+For more information, [see the quickstart guide](/quickstart).
+
 ## Onchain code
 
 This template uses [the standard `Counter` onchain code](./contracts).
@@ -10,9 +18,9 @@ This template uses [the standard `Counter` onchain code](./contracts).
 
 The files you are likely to need to change in the offchain code are:
 
-- [`packages/client/src/App.tsx`](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/App.tsx), which controls the information displayed to the user.
+- [`packages/client/src/App.tsx`](https://github.com/latticexyz/mud/blob/main/templates/react-ecs/packages/client/src/App.tsx), which controls the information displayed to the user.
   It is the place where you register handlers that are called when the value in a component (basically, a table) changes.
-- [`packages/client/src/mud/createSystemCalls.ts`](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/createSystemCalls.ts), which is where you write code that performs calls to an onchain system.
+- [`packages/client/src/mud/createSystemCalls.ts`](https://github.com/latticexyz/mud/blob/main/templates/react-ecs/packages/client/src/mud/createSystemCalls.ts), which is where you write code that performs calls to an onchain system.
 
 ### `App.tsx`
 
