@@ -4,7 +4,7 @@ import { loadConfig } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
 import { worldToV1 } from "@latticexyz/world/config/v2";
 import { getOutDirectory, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
-import { verify } from "./verify";
+import { verify } from "./verify/verify";
 import { defaultModuleContracts } from "./utils/defaultModuleContracts";
 import { getContractData } from "./utils/getContractData";
 import { getExistingContracts } from "./utils/getExistingContracts";

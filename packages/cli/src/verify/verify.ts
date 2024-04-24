@@ -1,10 +1,10 @@
 import { getRpcUrl } from "@latticexyz/common/foundry";
 import { Address, Chain, Client, Hex, Transport } from "viem";
-import { getWorldFactoryContracts } from "./deploy/getWorldFactoryContracts";
-import { verifyContract } from "./verifyContract";
+import { getWorldFactoryContracts } from "../deploy/getWorldFactoryContracts";
+import { verifyContract } from "../verifyContract";
 import PQueue from "p-queue";
-import { getWorldProxyFactoryContracts } from "./deploy/getWorldProxyFactoryContracts";
-import { getDeployer } from "./deploy/getDeployer";
+import { getWorldProxyFactoryContracts } from "../deploy/getWorldProxyFactoryContracts";
+import { getDeployer } from "../deploy/getDeployer";
 
 type VerifyOptions = {
   client: Client<Transport, Chain | undefined>;
