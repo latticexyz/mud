@@ -7,7 +7,7 @@ import { anvilRpcUrl } from "../test/common";
 import { waitForTransaction } from "./test/waitForTransaction";
 import { KMSAccount, createKmsAccount } from "./createKmsAccount";
 
-describe("createKmsAccount tsransaction", async () => {
+describe("createKmsAccount transaction", async () => {
   let account: KMSAccount;
   let keyId: string;
 
