@@ -12,7 +12,7 @@ import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
 import { ROOT_NAMESPACE_ID } from "./constants.sol";
 import { AccessControl } from "./AccessControl.sol";
 import { SystemCall } from "./SystemCall.sol";
-import { WorldContextProviderLib } from "./WorldContext.sol";
+import { WorldContextProviderLib, WorldContextConsumerLib } from "./WorldContext.sol";
 import { Delegation } from "./Delegation.sol";
 import { requireInterface } from "./requireInterface.sol";
 
@@ -43,6 +43,14 @@ contract World is StoreData, IWorldKernel {
     return WORLD_VERSION;
   }
 
+  function initialMsgSender() public view returns (address) {
+    bytes32 transientStorage;
+    assembly {
+      transientStorage := tload(0)
+    }
+    return address(uint160(uint256(transientStorage)));
+  }
+
   /// @dev Event emitted when the World contract is created.
   constructor() {
     creator = msg.sender;
@@ -55,6 +63,25 @@ contract World is StoreData, IWorldKernel {
   modifier prohibitDirectCallback() {
     if (msg.sender == address(this)) {
       revert World_CallbackNotAllowed(msg.sig);
+    }
+    _;
+  }
+
+  /**
+   * @dev Transaction context mutex
+   */
+  modifier transactionContext(bool isCallFrom, address from) {
+    if (initialMsgSender() == address(0)) {
+      bytes32 sender;
+      if (isCallFrom) {
+        sender = bytes32(uint256(uint160(from)));
+      } else {
+        sender = bytes32(uint256(uint160(msg.sender)));
+      }
+      assembly {
+        // Store msg.sender in transient storage
+        tstore(0, sender)
+      }
     }
     _;
   }
