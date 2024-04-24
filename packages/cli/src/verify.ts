@@ -1,4 +1,3 @@
-import { getRpcUrl } from "@latticexyz/common/foundry";
 import { Chain, Client, Hex, Transport } from "viem";
 import { getWorldFactoryContracts } from "./deploy/getWorldFactoryContracts";
 import { verifyContract } from "./verifyContract";
@@ -9,6 +8,7 @@ import { MUDError } from "@latticexyz/common/errors";
 
 type VerifyOptions = {
   client: Client<Transport, Chain | undefined>;
+  rpc: string;
   foundryProfile?: string;
   verifier?: string;
   verifierUrl?: string;
@@ -26,6 +26,7 @@ type VerifyOptions = {
 
 export async function verify({
   client,
+  rpc,
   foundryProfile = process.env.FOUNDRY_PROFILE,
   systems,
   modules,
@@ -39,8 +40,6 @@ export async function verify({
   if (!deployerAddress) {
     throw new MUDError(`No deployer`);
   }
-
-  const rpc = await getRpcUrl(foundryProfile);
 
   const verifyQueue = new PQueue({ concurrency: 1 });
 

@@ -109,6 +109,7 @@ const commandModule: CommandModule<Options, Options> = {
 
     await verify({
       client,
+      rpc,
       foundryProfile: profile,
       systems,
       modules,
