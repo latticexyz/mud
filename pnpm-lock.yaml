@@ -321,9 +321,6 @@ importers:
       '@viem/anvil':
         specifier: ^0.0.7
         version: 0.0.7(debug@4.3.4)
-      mock-game-contracts:
-        specifier: workspace:*
-        version: link:../../test/mock-game-contracts
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.4.2)
