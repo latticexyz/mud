@@ -47,13 +47,13 @@ export function getWorldProxyFactoryContracts(deployerAddress: Hex): Record<stri
   });
   const initModule = getCreate2Address({ from: deployerAddress, bytecode: initModuleBytecode, salt });
 
-  const worldFactoryDeployedBytecodeSize = size(worldProxyFactoryBuild.deployedBytecode.object as Hex);
-  const worldFactoryBytecode = encodeDeployData({
+  const worldProxyFactoryDeployedBytecodeSize = size(worldProxyFactoryBuild.deployedBytecode.object as Hex);
+  const worldProxyFactoryBytecode = encodeDeployData({
     bytecode: worldProxyFactoryBuild.bytecode.object as Hex,
     abi: worldProxyFactoryAbi,
     args: [initModule],
   });
-  const worldFactory = getCreate2Address({ from: deployerAddress, bytecode: worldFactoryBytecode, salt });
+  const worldProxyFactory = getCreate2Address({ from: deployerAddress, bytecode: worldProxyFactoryBytecode, salt });
 
   return {
     AccessManagementSystem: {
@@ -87,10 +87,10 @@ export function getWorldProxyFactoryContracts(deployerAddress: Hex): Record<stri
       address: initModule,
     },
     WorldFactory: {
-      bytecode: worldFactoryBytecode,
-      deployedBytecodeSize: worldFactoryDeployedBytecodeSize,
-      label: "world factory",
-      address: worldFactory,
+      bytecode: worldProxyFactoryBytecode,
+      deployedBytecodeSize: worldProxyFactoryDeployedBytecodeSize,
+      label: "world proxy factory",
+      address: worldProxyFactory,
     },
   };
 }
