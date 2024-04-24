@@ -17,6 +17,10 @@ jobs:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      local-kms:
+        image: nsmithuk/local-kms
+        ports:
+          - 8080:8080
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -40,6 +44,7 @@ jobs:
         if: steps.check_changes.outputs.changes_outside_docs
         env:
           DATABASE_URL: "postgres://postgres@localhost:5432/postgres"
+          KMS_ENDPOINT: "http://localhost:8080"
         run: pnpm test:ci
 
       - name: Generate gas reports

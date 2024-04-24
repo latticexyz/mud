@@ -72,5 +72,17 @@
     "@types/node": "^18.15.11",
     "tsup": "^6.7.0",
     "vitest": "0.34.6"
+  },
+  "peerDependencies": {
+    "@aws-sdk/client-kms": "3.x",
+    "asn1.js": "5.x"
+  },
+  "peerDependenciesMeta": {
+    "@aws-sdk/client-kms": {
+      "optional": true
+    },
+    "asn1.js": {
+      "optional": true
+    }
   }
 }
