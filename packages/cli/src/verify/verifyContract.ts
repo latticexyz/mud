@@ -12,7 +12,7 @@ type VerifyContractOptions = {
   rpc: string;
   verifier?: string;
   verifierUrl?: string;
-} & ({ address: Hex } | Create2Options);
+} & ({ address: Address } | Create2Options);
 
 type ForgeOptions = { profile?: string; silent?: boolean; env?: NodeJS.ProcessEnv; cwd?: string };
 
