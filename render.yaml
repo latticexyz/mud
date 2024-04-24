@@ -16,6 +16,10 @@ services:
         value: mud:store-sync:createStoreSync
       - key: RPC_HTTP_URL
         sync: false # prompt for it
+      - key: STORE_ADDRESS
+        sync: false # prompt for it
+      - key: START_BLOCK
+        sync: false # prompt for it
 
   - type: web
     name: redstone-mainnet-indexer-api
