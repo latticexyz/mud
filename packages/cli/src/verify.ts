@@ -29,75 +29,76 @@ export async function verify({
 
   const verifyQueue = new PQueue({ concurrency: 1 });
 
-  const tasks = [
-    ...systems.map(
-      ({ name, bytecode }) =>
-        () =>
-          verifyContract(
-            {
-              name,
-              rpc,
-              verifier,
-              verifierUrl,
-              from: deployer,
-              bytecode,
-            },
-            { profile: foundryProfile },
-          ).catch((error) => {
-            console.error(`Error verifying system contract ${name}:`, error);
-          }),
-    ),
-    ...Object.entries(useProxy ? getWorldProxyFactoryContracts(deployer) : getWorldFactoryContracts(deployer)).map(
-      ([name, { bytecode }]) =>
-        () =>
-          verifyContract(
-            {
-              name,
-              rpc,
-              verifier,
-              verifierUrl,
-              from: deployer,
-              bytecode,
-            },
-            {
-              profile: foundryProfile,
-              cwd: "node_modules/@latticexyz/world",
-            },
-          ).catch((error) => {
-            console.error(`Error verifying world factory contract ${name}:`, error);
-          }),
-    ),
-    ...modules.map(
-      ({ name, bytecode }) =>
-        () =>
-          verifyContract(
-            {
-              name: name,
-              rpc,
-              verifier,
-              verifierUrl,
-              from: deployer,
-              bytecode,
-            },
-            {
-              profile: foundryProfile,
-              cwd: "node_modules/@latticexyz/world-modules",
-            },
-          ).catch((error) => {
-            console.error(`Error verifying module contract ${name}:`, error);
-          }),
-    ),
-    () =>
+  systems.map(({ name, bytecode }) =>
+    verifyQueue.add(() =>
       verifyContract(
-        { name: "World", rpc, verifier, verifierUrl, address: worldAddress },
+        {
+          name,
+          rpc,
+          verifier,
+          verifierUrl,
+          from: deployer,
+          bytecode,
+        },
+        { profile: foundryProfile },
+      ).catch((error) => {
+        console.error(`Error verifying system contract ${name}:`, error);
+      }),
+    ),
+  );
+
+  Object.entries(useProxy ? getWorldProxyFactoryContracts(deployer) : getWorldFactoryContracts(deployer)).map(
+    ([name, { bytecode }]) =>
+      verifyQueue.add(() =>
+        verifyContract(
+          {
+            name,
+            rpc,
+            verifier,
+            verifierUrl,
+            from: deployer,
+            bytecode,
+          },
+          {
+            profile: foundryProfile,
+            cwd: "node_modules/@latticexyz/world",
+          },
+        ).catch((error) => {
+          console.error(`Error verifying world factory contract ${name}:`, error);
+        }),
+      ),
+  );
+
+  modules.map(({ name, bytecode }) =>
+    verifyQueue.add(() =>
+      verifyContract(
+        {
+          name: name,
+          rpc,
+          verifier,
+          verifierUrl,
+          from: deployer,
+          bytecode,
+        },
         {
           profile: foundryProfile,
-          cwd: "node_modules/@latticexyz/world",
+          cwd: "node_modules/@latticexyz/world-modules",
         },
       ).catch((error) => {
-        console.error(`Error verifying World contract:`, error);
+        console.error(`Error verifying module contract ${name}:`, error);
       }),
-  ];
+    ),
+  );
 
-  tasks.forEach((task) => verifyQueue.add(task));
+  verifyQueue.add(() =>
+    verifyContract(
+      { name: "World", rpc, verifier, verifierUrl, address: worldAddress },
+      {
+        profile: foundryProfile,
+        cwd: "node_modules/@latticexyz/world",
+      },
+    ).catch((error) => {
+      console.error(`Error verifying World contract:`, error);
+    }),
+  );
 }
