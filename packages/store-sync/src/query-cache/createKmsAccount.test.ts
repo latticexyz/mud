@@ -5,6 +5,7 @@ import { foundry } from "viem/chains";
 import { KMSAccount, createKmsAccount } from "@latticexyz/common";
 import { anvilRpcUrl } from "../../test/common";
 import { privateKeyToAccount } from "viem/accounts";
+import { waitForTransaction } from "./test/waitForTransaction";
 
 describe("createKmsAccount", async () => {
   let account: KMSAccount;
@@ -68,11 +69,16 @@ describe("createKmsAccount", async () => {
       account: privateKeyToAccount("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"),
     });
 
-    adminClient.sendTransaction({ to: account.address, value: parseEther("1") });
+    let tx = await adminClient.sendTransaction({ to: account.address, value: parseEther("1") });
+    await waitForTransaction(tx);
 
     balance = await publicClient.getBalance({ address: account.address });
-    expect(balance).toEqual(0n);
+    expect(balance).toEqual(1000000000000000000n);
 
-    kmsClient.sendTransaction({});
+    tx = await kmsClient.sendTransaction({});
+    await waitForTransaction(tx);
+
+    balance = await publicClient.getBalance({ address: account.address });
+    expect(balance).toBeLessThan(1000000000000000000n);
   });
 });
