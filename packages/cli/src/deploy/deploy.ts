@@ -28,6 +28,7 @@ type DeployOptions<configInput extends ConfigInput> = {
    * not have a deterministic address.
    */
   deployerAddress?: Hex;
+  withWorldProxy?: boolean;
 };
 
 /**
@@ -42,12 +43,13 @@ export async function deploy<configInput extends ConfigInput>({
   salt,
   worldAddress: existingWorldAddress,
   deployerAddress: initialDeployerAddress,
+  withWorldProxy,
 }: DeployOptions<configInput>): Promise<WorldDeploy> {
   const tables = Object.values(config.tables) as Table[];
 
   const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
 
-  await ensureWorldFactory(client, deployerAddress);
+  await ensureWorldFactory(client, deployerAddress, withWorldProxy);
 
   // deploy all dependent contracts, because system registration, module install, etc. all expect these contracts to be callable.
   await ensureContractsDeployed({
@@ -74,7 +76,7 @@ export async function deploy<configInput extends ConfigInput>({
 
   const worldDeploy = existingWorldAddress
     ? await getWorldDeploy(client, existingWorldAddress)
-    : await deployWorld(client, deployerAddress, salt ?? `0x${randomBytes(32).toString("hex")}`);
+    : await deployWorld(client, deployerAddress, salt ?? `0x${randomBytes(32).toString("hex")}`, withWorldProxy);
 
   if (!supportedStoreVersions.includes(worldDeploy.storeVersion)) {
     throw new Error(`Unsupported Store version: ${worldDeploy.storeVersion}`);

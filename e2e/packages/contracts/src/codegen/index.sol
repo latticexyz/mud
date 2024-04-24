@@ -8,4 +8,5 @@ import { Vector, VectorData } from "./tables/Vector.sol";
 import { NumberList } from "./tables/NumberList.sol";
 import { Multi, MultiData } from "./tables/Multi.sol";
 import { Position } from "./tables/Position.sol";
-import { StaticArray } from "./tables/StaticArray.sol";
+import { StaticArray, StaticArrayData } from "./tables/StaticArray.sol";
+import { DynamicArray, DynamicArrayData } from "./tables/DynamicArray.sol";

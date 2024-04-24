@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/common",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "Common low level logic shared between packages",
   "repository": {
     "type": "git",
@@ -65,12 +65,24 @@
     "p-retry": "^5.1.2",
     "prettier": "3.2.5",
     "prettier-plugin-solidity": "1.3.1",
-    "viem": "2.9.16"
+    "viem": "2.9.20"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
     "@types/node": "^18.15.11",
     "tsup": "^6.7.0",
     "vitest": "0.34.6"
+  },
+  "peerDependencies": {
+    "@aws-sdk/client-kms": "3.x",
+    "asn1.js": "5.x"
+  },
+  "peerDependenciesMeta": {
+    "@aws-sdk/client-kms": {
+      "optional": true
+    },
+    "asn1.js": {
+      "optional": true
+    }
   }
 }
