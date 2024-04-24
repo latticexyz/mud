@@ -1,4 +1,4 @@
-import type { CommandModule } from "yargs";
+import type { CommandModule, InferredOptionTypes } from "yargs";
 import { verify } from "../verify";
 import { loadConfig } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
@@ -11,17 +11,28 @@ import { defaultModuleContracts } from "../utils/defaultModuleContracts";
 import { Address, Hex, createPublicClient, createWalletClient, http, zeroHash } from "viem";
 import chalk from "chalk";
 
-type Options = {
-  deployerAddress?: string;
-  worldAddress: string;
-  configPath?: string;
-  profile?: string;
-  rpc?: string;
-  rpcBatch?: boolean;
-  srcDir?: string;
-  verifier?: string;
-  verifierUrl?: string;
-};
+const verifyOptions = {
+  deployerAddress: {
+    type: "string",
+    desc: "Deploy using an existing deterministic deployer (https://github.com/Arachnid/deterministic-deployment-proxy)",
+  },
+  worldAddress: { type: "string", required: true, desc: "Verify an existing World at the given address" },
+  configPath: { type: "string", desc: "Path to the MUD config file" },
+  profile: { type: "string", desc: "The foundry profile to use" },
+  rpc: { type: "string", desc: "The RPC URL to use. Defaults to the RPC url from the local foundry.toml" },
+  rpcBatch: {
+    type: "boolean",
+    desc: "Enable batch processing of RPC requests in viem client (defaults to batch size of 100 and wait of 1s)",
+  },
+  srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
+  verifier: { type: "string", desc: "The verifier to use" },
+  verifierUrl: {
+    type: "string",
+    desc: "The verification provider.",
+  },
+} as const;
+
+type Options = InferredOptionTypes<typeof verifyOptions>;
 
 const ERC1967_IMPLEMENTATION_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc";
 
@@ -31,26 +42,7 @@ const commandModule: CommandModule<Options, Options> = {
   describe: "Verify contracts",
 
   builder(yargs) {
-    return yargs.options({
-      deployerAddress: {
-        type: "string",
-        desc: "Deploy using an existing deterministic deployer (https://github.com/Arachnid/deterministic-deployment-proxy)",
-      },
-      worldAddress: { type: "string", required: true, desc: "Verify an existing World at the given address" },
-      configPath: { type: "string", desc: "Path to the MUD config file" },
-      profile: { type: "string", desc: "The foundry profile to use" },
-      rpc: { type: "string", desc: "The RPC URL to use. Defaults to the RPC url from the local foundry.toml" },
-      rpcBatch: {
-        type: "boolean",
-        desc: "Enable batch processing of RPC requests in viem client (defaults to batch size of 100 and wait of 1s)",
-      },
-      srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
-      verifier: { type: "string", desc: "The verifier to use" },
-      verifierUrl: {
-        type: "string",
-        desc: "The verification provider.",
-      },
-    });
+    return yargs.options(verifyOptions);
   },
 
   async handler(opts) {
