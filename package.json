@@ -33,8 +33,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --cache --fix",
-    "*.{ts,tsx,css,md,mdx,sol}": "prettier --write",
-    "package.json": "pnpm sort-package-json"
+    "*.{ts,tsx,css,md,mdx,sol}": "prettier --write"
   },
   "devDependencies": {
     "@arktype/attest": "0.6.4",
@@ -58,6 +57,6 @@
   },
   "engines": {
     "node": "18.x",
-    "pnpm": "8.x"
+    "pnpm": "9.x"
   }
 }
