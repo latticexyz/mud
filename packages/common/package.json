@@ -70,6 +70,7 @@
   "devDependencies": {
     "@types/debug": "^4.1.7",
     "@types/node": "^18.15.11",
+    "@viem/anvil": "^0.0.7",
     "tsup": "^6.7.0",
     "vitest": "0.34.6"
   },
