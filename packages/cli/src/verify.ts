@@ -1,6 +1,6 @@
 import { Chain, Client, Hex, Transport } from "viem";
 import { getWorldFactoryContracts } from "./deploy/getWorldFactoryContracts";
-import { verifyContract } from "./verifyContract";
+import { verifyContract } from "./verify/verifyContract";
 import PQueue from "p-queue";
 import { getWorldProxyFactoryContracts } from "./deploy/getWorldProxyFactoryContracts";
 import { getDeployer } from "./deploy/getDeployer";

@@ -1,6 +1,6 @@
 import { forge } from "@latticexyz/common/foundry";
 import { Address, ByteArray, Hex, getCreate2Address } from "viem";
-import { salt } from "./deploy/common";
+import { salt } from "../deploy/common";
 
 type Create2Options = {
   bytecode: ByteArray | Hex;
