@@ -1,0 +1,6 @@
+FROM ghcr.io/latticexyz/mud:sha-7183364
+
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
+RUN pnpm run -r build
+
+WORKDIR /app/packages/store-indexer
