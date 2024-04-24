@@ -1,10 +1,10 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { createPublicClient, createWalletClient, http, parseEther, verifyMessage } from "viem";
-import { CreateKeyCommand, KMSClient } from "@aws-sdk/client-kms";
 import { foundry } from "viem/chains";
+import { privateKeyToAccount } from "viem/accounts";
+import { CreateKeyCommand, KMSClient } from "@aws-sdk/client-kms";
 import { KMSAccount, createKmsAccount } from "@latticexyz/common";
 import { anvilRpcUrl } from "../../test/common";
-import { privateKeyToAccount } from "viem/accounts";
 import { waitForTransaction } from "./test/waitForTransaction";
 
 describe("createKmsAccount", async () => {
