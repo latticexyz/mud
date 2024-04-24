@@ -115,11 +115,12 @@ const commandModule: CommandModule<Options, Options> = {
       };
     });
 
-    const implementation = await publicClient.getStorageAt({
+    // If the proxy implementation storage slot is set on the World, the World was deployed as a proxy.
+    const proxyImplementation = await publicClient.getStorageAt({
       address: opts.worldAddress as Address,
       slot: ERC1967_IMPLEMENTATION_SLOT,
     });
-    const useProxy = implementation !== zeroHash;
+    const useProxy = proxyImplementation !== zeroHash;
 
     await verify({
       client,
