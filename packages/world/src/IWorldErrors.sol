@@ -106,4 +106,10 @@ interface IWorldErrors {
    * @param functionSelector The function selector of the disallowed callback.
    */
   error World_CallbackNotAllowed(bytes4 functionSelector);
+
+  /**
+   * @notice Raised when a System has been called directly and then makes an internal call to World, which is forbidden.
+   * @param caller the address who made a direct call to a System
+   */
+  error World_DirectCallToSystemForbidden(address caller);
 }

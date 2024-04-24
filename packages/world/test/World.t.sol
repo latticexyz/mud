@@ -82,6 +82,10 @@ contract WorldTestSystem is System {
     return WorldTestSystemReturn(_msgSender(), input);
   }
 
+  function echoInitialMsgSender() public view returns (address) {
+    return IBaseWorld(_world()).initialMsgSender();
+  }
+
   function err(string memory input) public pure {
     revert WorldTestSystemError(input);
   }
@@ -997,6 +1001,33 @@ contract WorldTest is Test, GasReporter {
 
     returnedAddress = abi.decode(abi.decode(nestedReturndata, (bytes)), (address));
     assertEq(returnedAddress, address(this), "subsystem returned wrong address");
+  }
+
+  function testInitialMsgSenderCall() public {
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "testSystem"
+    });
+    world.registerNamespace(systemId.getNamespaceId());
+    world.registerSystem(systemId, system, false);
+
+    // Call a system function without arguments via the World
+    startGasReport("call a system via the World");
+    bytes memory result = world.call(systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
+    endGasReport();
+
+    // Expect the system to have received the caller's address
+    assertEq(address(uint160(uint256(bytes32(result)))), address(this));
+
+    // Call a system function with arguments via the World
+    result = world.call(systemId, abi.encodeCall(WorldTestSystem.echoInitialMsgSender, ()));
+
+    // Expect the return data to be decodeable as a tuple
+    address returnedAddress = abi.decode(result, (address));
+    assertEq(returnedAddress, address(this));
   }
 
   function testCallFromSelf() public {
