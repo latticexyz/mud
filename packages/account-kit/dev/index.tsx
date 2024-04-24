@@ -29,7 +29,7 @@ const accountKitConfig = {
   // chainId: mudFoundry.id,
   // worldAddress: "0xd6c8022f1af8e9d7c3825557a1374ee518c65a4e",
   chainId: garnet.id,
-  worldAddress: "0x8e42f451df5e493d80f4128202300efea266b409",
+  worldAddress: "0x1937849232f62017c4ec688f48cf5c7f3eca3dfc",
   // chainId: redstone.id,
   // worldAddress: "0xc6b640ea79444c1bb0c6924771cc7432fb0bddd6",
   erc4337: false,

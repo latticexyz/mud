@@ -94,6 +94,15 @@ export function FinalizingStep() {
     registerDelegation.mutate();
   }, [registerDelegation.mutate]);
 
+  if (registerDelegation.error) {
+    // TODO: make this prettier
+    return <AccountModalSection>{String(registerDelegation.error)}</AccountModalSection>;
+  }
+  if (receipt.error) {
+    // TODO: make this prettier
+    return <AccountModalSection>{String(receipt.error)}</AccountModalSection>;
+  }
+
   if (receipt.isPending) {
     // TODO: make this prettier
     return (
@@ -103,15 +112,6 @@ export function FinalizingStep() {
         </div>
       </AccountModalSection>
     );
-  }
-
-  if (registerDelegation.error) {
-    // TODO: make this prettier
-    return <AccountModalSection>{String(registerDelegation.error)}</AccountModalSection>;
-  }
-  if (receipt.error) {
-    // TODO: make this prettier
-    return <AccountModalSection>{String(receipt.error)}</AccountModalSection>;
   }
 
   return <></>;
