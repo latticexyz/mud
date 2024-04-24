@@ -4,7 +4,7 @@ import deployment from "./create2/deployment.json";
 import { debug } from "./debug";
 import { getDeployer } from "./getDeployer";
 
-export const deployer = `0x${deployment.address}` as const;
+const deployer = `0x${deployment.address}` as const;
 
 export async function ensureDeployer(client: Client<Transport, Chain | undefined, Account>): Promise<Address> {
   const existingDeployer = await getDeployer(client);
