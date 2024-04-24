@@ -8,16 +8,27 @@ export async function ensureWorldFactory(
   deployerAddress: Hex,
   withWorldProxy?: boolean,
 ): Promise<Address> {
-  const worldFactoryContracts = withWorldProxy
-    ? getWorldProxyFactoryContracts(deployerAddress)
-    : getWorldFactoryContracts(deployerAddress);
+  if (!withWorldProxy) {
+    const contracts = getWorldFactoryContracts(deployerAddress);
 
-  // WorldFactory constructor doesn't call InitModule, only sets its address, so we can do these in parallel since the address is deterministic
-  await ensureContractsDeployed({
-    client,
-    deployerAddress,
-    contracts: Object.values(worldFactoryContracts),
-  });
+    // WorldFactory constructor doesn't call InitModule, only sets its address, so we can do these in parallel since the address is deterministic
+    await ensureContractsDeployed({
+      client,
+      deployerAddress,
+      contracts: Object.values(contracts),
+    });
 
-  return worldFactoryContracts["WorldFactory"].address;
+    return contracts.WorldFactory.address;
+  } else {
+    const contracts = getWorldProxyFactoryContracts(deployerAddress);
+
+    // WorldFactory constructor doesn't call InitModule, only sets its address, so we can do these in parallel since the address is deterministic
+    await ensureContractsDeployed({
+      client,
+      deployerAddress,
+      contracts: Object.values(contracts),
+    });
+
+    return contracts.WorldProxyFactory.address;
+  }
 }

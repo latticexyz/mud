@@ -17,7 +17,7 @@ export function getWorldProxyFactoryContracts(deployerAddress: Hex) {
 
   return {
     ...worldContracts,
-    WorldFactory: {
+    WorldProxyFactory: {
       bytecode: worldProxyFactoryBytecode,
       deployedBytecodeSize: worldProxyFactoryDeployedBytecodeSize,
       label: "world proxy factory",
