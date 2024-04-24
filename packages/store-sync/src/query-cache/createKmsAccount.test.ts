@@ -1,18 +1,16 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { createPublicClient, http, verifyMessage } from "viem";
+import { createPublicClient, createWalletClient, http, parseEther, verifyMessage } from "viem";
 import { CreateKeyCommand, KMSClient } from "@aws-sdk/client-kms";
 import { foundry } from "viem/chains";
 import { KMSAccount, createKmsAccount } from "@latticexyz/common";
-import { deployMockGame } from "../../test/mockGame";
 import { anvilRpcUrl } from "../../test/common";
+import { privateKeyToAccount } from "viem/accounts";
 
 describe("createKmsAccount", async () => {
   let account: KMSAccount;
   let keyId: string;
 
   beforeAll(async () => {
-    await deployMockGame();
-
     const client = new KMSClient({
       endpoint: process.env.KMS_ENDPOINT,
       region: "local",
@@ -55,7 +53,26 @@ describe("createKmsAccount", async () => {
       transport: http(anvilRpcUrl),
     });
 
-    const balance = await publicClient.getBalance({ address: account.address });
+    let balance = await publicClient.getBalance({ address: account.address });
     expect(balance).toEqual(0n);
+
+    const kmsClient = createWalletClient({
+      chain: foundry,
+      transport: http(anvilRpcUrl),
+      account,
+    });
+
+    const adminClient = createWalletClient({
+      chain: foundry,
+      transport: http(anvilRpcUrl),
+      account: privateKeyToAccount("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"),
+    });
+
+    adminClient.sendTransaction({ to: account.address, value: parseEther("1") });
+
+    balance = await publicClient.getBalance({ address: account.address });
+    expect(balance).toEqual(0n);
+
+    kmsClient.sendTransaction({});
   });
 });
