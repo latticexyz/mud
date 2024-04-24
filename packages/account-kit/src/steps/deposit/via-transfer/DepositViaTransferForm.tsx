@@ -1,14 +1,21 @@
 import { DepositForm, type Props as DepositFormProps } from "../DepositForm";
 import { usePrepareTransactionRequest, useSendTransaction } from "wagmi";
 import { useAppAccountClient } from "../../../useAppAccountClient";
+import { useEffect } from "react";
 
 export type Props = Pick<DepositFormProps, "sourceChainId" | "setSourceChainId" | "amount" | "setAmount">;
 
 export function DepositViaTransferForm(props: Props) {
   const { data: appAccountClient } = useAppAccountClient();
-  console.log("chainId", props.sourceChainId);
-  console.log("appAccountClient", appAccountClient?.account.address);
-  console.log("value", props.amount);
+  useEffect(() => {
+    console.log("appAccountClient", appAccountClient?.account.address);
+  }, [appAccountClient]);
+  useEffect(() => {
+    console.log("chainId", props.sourceChainId);
+  }, [props.sourceChainId]);
+  useEffect(() => {
+    console.log("value", props.amount);
+  }, [props.amount]);
 
   const prepared = usePrepareTransactionRequest(
     appAccountClient
@@ -20,7 +27,10 @@ export function DepositViaTransferForm(props: Props) {
       : {},
   );
 
-  console.log("prepared", prepared);
+  useEffect(() => {
+    console.log("prepared", prepared);
+  }, [prepared]);
+
   const sendTransaction = useSendTransaction();
 
   return (

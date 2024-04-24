@@ -9,6 +9,7 @@ import { PendingIcon } from "../../icons/PendingIcon";
 import { formatEther, formatGwei } from "viem";
 import { truncateDecimal } from "./truncateDecimal";
 import { duration } from "itty-time";
+import { useSourceChains } from "./useSourceChains";
 
 export const DEFAULT_DEPOSIT_AMOUNT = 0.005;
 
@@ -45,10 +46,18 @@ export function DepositForm({
   const queryClient = useQueryClient();
   const { resetStep } = useOnboardingSteps();
   const balance = useBalance({ chainId: sourceChainId, address: userAddress });
+  const sourceChains = useSourceChains();
+  const sourceChain = sourceChains.find((c) => c.id === sourceChainId);
+
+  // TODO: better state if a chain is selected that is not supported
+  //       maybe pending since source chains still may be loading in?
+  if (!sourceChain) {
+    return null;
+  }
 
   return (
     <form
-      className="flex flex-col px-5 gap-2"
+      className="flex flex-col px-5 gap-5"
       onSubmit={async (event) => {
         event.preventDefault();
         // TODO: return (optional) tx hash from onSubmit so we can wait for it here
@@ -61,6 +70,26 @@ export function DepositForm({
         <ChainSelect value={sourceChainId} onChange={setSourceChainId} />
         <AmountInput initialAmount={amount} onChange={setAmount} />
       </div>
+
+      {sourceChain.depositMethods.length > 1 ? (
+        <div className="grid grid-flow-col justify-stretch font-medium">
+          {sourceChain.depositMethods.map((depositMethod) => (
+            <button
+              key={depositMethod}
+              type="button"
+              className={twMerge(
+                "border border-transparent p-2 bg-neutral-200",
+                "aria-selected:bg-transparent aria-selected:border-neutral-300 aria-selected:border-b-transparent",
+                "hover:bg-neutral-300",
+              )}
+              // aria-selected
+            >
+              {/* TODO: convert to nicer label */}
+              {depositMethod}
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       <dl
         className={twMerge(
@@ -97,15 +126,6 @@ export function DepositForm({
         </dd>
       </dl>
 
-      {/* <BridgeTabs depositMethod={depositMethod} setDepositMethod={setDepositMethod} /> */}
-
-      {/* <BalancesFees amount={depositAmount} depositMethod={depositMethod} /> */}
-
-      {/* {error ? (
-        <pre className="p-5 my-2 break-all whitespace-pre-wrap bg-red-200 text-red-700 border border-red-700">
-          {String(error)}
-        </pre>
-      ) : null} */}
       {shouldSwitchChain ? (
         <Button
           type="button"
@@ -120,8 +140,6 @@ export function DepositForm({
           {submitButtonLabel}
         </Button>
       )}
-
-      {/* {txHash && <ViewTransaction hash={txHash} status={status} />} */}
     </form>
   );
 }

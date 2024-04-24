@@ -2,13 +2,13 @@ import { twMerge } from "tailwind-merge";
 import * as Select from "@radix-ui/react-select";
 import { useFrame } from "../../ui/FrameProvider";
 import { useAccount, useChains } from "wagmi";
-import { useRelayChains } from "./useRelayChains";
 import { useTheme } from "../../useTheme";
 import { ChevronUpIcon } from "../../icons/ChevronUpIcon";
 import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
 import { Input } from "../../ui/Input";
 import { ChainBalance } from "./ChainBalance";
 import { ChainIcon } from "./ChainIcon";
+import { useSourceChains } from "./useSourceChains";
 
 export type Props = {
   value: number;
@@ -19,15 +19,10 @@ export function ChainSelect({ value, onChange }: Props) {
   const theme = useTheme();
   const { frame } = useFrame();
   const chains = useChains();
-  const relayChains = useRelayChains();
   const userAccount = useAccount();
 
-  const supportedChains = chains.map((chain) => {
-    const relayChain = (relayChains.data ?? []).find((c) => c.id == chain.id);
-    return { ...chain, relayChain };
-  });
-
-  const chain = supportedChains.find((c) => c.id === value)!;
+  const sourceChains = useSourceChains();
+  const selectedChain = sourceChains.find((c) => c.id === value)!;
 
   return (
     <Select.Root
@@ -44,7 +39,13 @@ export function ChainSelect({ value, onChange }: Props) {
       <Input asChild>
         <Select.Trigger className="group inline-flex items-center justify-center">
           <Select.Value asChild>
-            <ChainIcon id={chain.id} name={chain.name} url={chain.relayChain?.icon?.[theme]} className="w-8" />
+            <ChainIcon
+              id={selectedChain.id}
+              name={selectedChain.name}
+              // TODO: define our own set of icons for each chain
+              url={selectedChain.relayChain?.icon?.[theme]}
+              className="w-8"
+            />
           </Select.Value>
           <Select.Icon asChild>
             {/* TODO: animate */}
@@ -67,7 +68,7 @@ export function ChainSelect({ value, onChange }: Props) {
                   "dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-700 dark:divide-neutral-700",
                 )}
               >
-                {supportedChains.map((chain) => (
+                {sourceChains.map((chain) => (
                   // TODO: figure out why up/down arrow jump to top/bottom rather than cycling through items
                   <Select.Item
                     key={chain.id}
