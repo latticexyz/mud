@@ -1,14 +1,14 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { createKmsAccount } from "./createKmsAccount";
+import { KMSAccount, createKmsAccount } from "./createKmsAccount";
 import { CreateKeyCommand, KMSClient } from "@aws-sdk/client-kms";
-import { LocalAccount, parseGwei, verifyMessage, verifyTypedData } from "viem";
+import { parseGwei, verifyMessage, verifyTypedData } from "viem";
 
 describe("createKmsAccount", () => {
-  let account: LocalAccount;
+  let account: KMSAccount;
   let keyId: string;
 
   beforeAll(async () => {
-    const kmsInstance = new KMSClient({
+    const client = new KMSClient({
       endpoint: process.env.KMS_ENDPOINT,
       region: "local",
       credentials: {
@@ -22,7 +22,7 @@ describe("createKmsAccount", () => {
       CustomerMasterKeySpec: "ECC_SECG_P256K1",
     });
 
-    const createResponse = await kmsInstance.send(command);
+    const createResponse = await client.send(command);
 
     if (!createResponse.KeyMetadata || !createResponse.KeyMetadata.KeyId) {
       throw new Error("key creation failed");
@@ -30,7 +30,7 @@ describe("createKmsAccount", () => {
 
     keyId = createResponse.KeyMetadata.KeyId;
 
-    account = await createKmsAccount(keyId, kmsInstance);
+    account = await createKmsAccount({ keyId, client });
   });
 
   it("signMessage", async () => {
