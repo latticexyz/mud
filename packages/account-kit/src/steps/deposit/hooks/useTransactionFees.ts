@@ -7,7 +7,7 @@ import { estimateGas, getGasPrice } from "wagmi/actions";
 import { useEffect } from "react";
 import { useConfig } from "../../../AccountKitConfigProvider";
 import { encodeFullNativeDeposit } from "./nativeDeposit";
-import { OPTIMISM_PORTAL_ADDRESS } from "../constants";
+import { OPTIMISM_PORTAL_ADDRESS } from "../common";
 import { fetchRelayLinkQuote } from "./relayLinkDeposit";
 import { usePaymaster } from "../../../usePaymaster";
 import { DEFAULT_DEPOSIT_AMOUNT } from "../DepositContent";

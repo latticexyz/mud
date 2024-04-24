@@ -15,5 +15,8 @@ export type MUDChain = Chain & {
   };
   contracts?: Chain["contracts"] & {
     gasTank?: ChainContract | undefined;
+    portal?: {
+      [sourceId: number]: ChainContract | undefined;
+    };
   };
 };

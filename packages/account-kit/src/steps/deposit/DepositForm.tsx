@@ -7,17 +7,19 @@ import { useQueryClient } from "@tanstack/react-query";
 import { twMerge } from "tailwind-merge";
 import { PendingIcon } from "../../icons/PendingIcon";
 import { duration } from "itty-time";
-import { useSourceChains } from "./useSourceChains";
 import { formatBalance } from "./formatBalance";
 import { formatGas } from "./formatGas";
+import { DepositMethod, SourceChain } from "./common";
 
 export const DEFAULT_DEPOSIT_AMOUNT = 0.005;
 
 export type Props = {
-  sourceChainId: number;
+  sourceChain: SourceChain;
   setSourceChainId: (chainId: number) => void;
   amount: bigint | undefined;
   setAmount: (amount: bigint | undefined) => void;
+  depositMethod: DepositMethod;
+  setDepositMethod: (depositMethod: DepositMethod) => void;
   estimatedFee?: bigint | undefined;
   estimatedTime?: number | undefined;
   // TODO: should we use UseWriteContractReturnType instead?
@@ -29,10 +31,12 @@ export type Props = {
 };
 
 export function DepositForm({
-  sourceChainId,
+  sourceChain,
   setSourceChainId,
   amount,
   setAmount,
+  depositMethod,
+  setDepositMethod,
   estimatedFee,
   estimatedTime,
   onSubmit,
@@ -41,19 +45,15 @@ export function DepositForm({
   submitButtonLabel = "Deposit",
 }: Props) {
   const { address: userAddress, chainId: userChainId } = useAccount();
-  const shouldSwitchChain = userChainId !== sourceChainId;
+  const shouldSwitchChain = userChainId !== sourceChain.id;
   const switchChain = useSwitchChain();
   const queryClient = useQueryClient();
   const { resetStep } = useOnboardingSteps();
-  const balance = useBalance({ chainId: sourceChainId, address: userAddress });
-  const sourceChains = useSourceChains();
-  const sourceChain = sourceChains.find((c) => c.id === sourceChainId);
+  const balance = useBalance({ chainId: sourceChain.id, address: userAddress });
 
-  // TODO: better state if a chain is selected that is not supported
-  //       maybe pending since source chains still may be loading in?
-  if (!sourceChain) {
-    return null;
-  }
+  const selectedMethod = sourceChain.depositMethods.includes(depositMethod)
+    ? depositMethod
+    : sourceChain.depositMethods[0];
 
   return (
     <form
@@ -67,25 +67,27 @@ export function DepositForm({
       }}
     >
       <div className="flex gap-2">
-        <ChainSelect value={sourceChainId} onChange={setSourceChainId} />
+        <ChainSelect value={sourceChain.id} onChange={setSourceChainId} />
         <AmountInput initialAmount={amount} onChange={setAmount} />
       </div>
 
       {sourceChain.depositMethods.length > 1 ? (
         <div className="grid grid-flow-col justify-stretch font-medium">
-          {sourceChain.depositMethods.map((depositMethod) => (
+          {sourceChain.depositMethods.map((method) => (
             <button
-              key={depositMethod}
+              key={method}
               type="button"
               className={twMerge(
                 "border border-transparent p-2 bg-neutral-200",
                 "aria-selected:bg-transparent aria-selected:border-neutral-300 aria-selected:border-b-transparent",
                 "hover:bg-neutral-300",
+                // TODO: replace with nicer label
+                "capitalize",
               )}
-              // aria-selected
+              aria-selected={method === selectedMethod}
+              onClick={() => setDepositMethod(method)}
             >
-              {/* TODO: convert to nicer label */}
-              {depositMethod}
+              {method}
             </button>
           ))}
         </div>
@@ -116,17 +118,24 @@ export function DepositForm({
         </dd>
       </dl>
 
+      {/* TODO: show message when no balance */}
+
       {shouldSwitchChain ? (
         <Button
           type="button"
           className="w-full"
           pending={switchChain.isPending}
-          onClick={() => switchChain.switchChain({ chainId: sourceChainId })}
+          onClick={() => switchChain.switchChain({ chainId: sourceChain.id })}
         >
           Switch chain
         </Button>
       ) : (
-        <Button type="submit" className="w-full" pending={pending || !onSubmit} disabled={disabled}>
+        <Button
+          type="submit"
+          className="w-full"
+          pending={pending || !onSubmit}
+          disabled={disabled || balance.data?.value === 0n}
+        >
           {submitButtonLabel}
         </Button>
       )}

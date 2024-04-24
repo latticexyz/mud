@@ -4,7 +4,7 @@ import ReactDOM from "react-dom/client";
 import { WagmiProvider, createConfig } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider, lightTheme, midnightTheme } from "@rainbow-me/rainbowkit";
-import { mudFoundry } from "@latticexyz/common/chains";
+import { garnet, mudFoundry } from "@latticexyz/common/chains";
 import { AccountModal } from "../src/AccountModal";
 import { AccountKitConfigProvider } from "../src/AccountKitConfigProvider";
 import { App } from "./App";
@@ -26,8 +26,12 @@ const wagmiConfig = createConfig({
 });
 
 const accountKitConfig = {
-  chainId: mudFoundry.id,
-  worldAddress: "0xd6c8022f1af8e9d7c3825557a1374ee518c65a4e",
+  // chainId: mudFoundry.id,
+  // worldAddress: "0xd6c8022f1af8e9d7c3825557a1374ee518c65a4e",
+  chainId: garnet.id,
+  worldAddress: "0x8e42f451df5e493d80f4128202300efea266b409",
+  // chainId: redstone.id,
+  // worldAddress: "0xc6b640ea79444c1bb0c6924771cc7432fb0bddd6",
   erc4337: false,
 } as const;
 

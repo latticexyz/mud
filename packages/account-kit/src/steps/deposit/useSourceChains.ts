@@ -3,35 +3,40 @@ import { useRelayChains } from "./useRelayChains";
 import { useAppChain } from "../../useAppChain";
 import { useMemo } from "react";
 import { isDefined } from "@latticexyz/common/utils";
-import { DepositMethod } from "./constants";
+import { SourceChain } from "./common";
 
-export function useSourceChains() {
+export function useSourceChains(): readonly SourceChain[] {
   const appChain = useAppChain();
   const chains = useChains();
   const { data: relayChains } = useRelayChains();
 
+  const portalAddress = appChain.sourceId ? appChain.contracts?.portal?.[appChain.sourceId]?.address : undefined;
+  const canRelay = relayChains?.find((c) => c.id === appChain.id);
+
   const sourceChains = useMemo(() => {
-    const canRelay = relayChains?.find((c) => c.id === appChain.id);
     return chains
-      .map((chain) => {
+      .map((chain): SourceChain => {
+        const canBridge = appChain.sourceId === chain.id;
         const relayChain = relayChains?.find((c) => c.id === chain.id);
-        const depositMethods = [
-          appChain.id === chain.id ? ("transfer" as const) : undefined,
-          appChain.sourceId === chain.id ? ("bridge" as const) : undefined,
-          canRelay && relayChain ? ("relay" as const) : undefined,
-        ].filter(isDefined) satisfies DepositMethod[];
+
+        const depositMethods = (
+          appChain.id === chain.id
+            ? ["transfer"]
+            : [
+                canBridge && portalAddress ? ("bridge" as const) : undefined,
+                canRelay && relayChain ? ("relay" as const) : undefined,
+              ].filter(isDefined)
+        ) satisfies SourceChain["depositMethods"];
+
         return {
           ...chain,
-          relayChain,
           depositMethods,
+          portalAddress: canBridge ? portalAddress : undefined,
+          relayChain,
         };
       })
       .filter((c) => c.depositMethods.length > 0);
-  }, [appChain.id, appChain.sourceId, chains, relayChains]);
+  }, [appChain.id, appChain.sourceId, canRelay, chains, portalAddress, relayChains]);
 
-  console.log(
-    "sourceChains",
-    sourceChains.map((c) => ({ id: c.id, depositMethods: c.depositMethods })),
-  );
   return sourceChains;
 }

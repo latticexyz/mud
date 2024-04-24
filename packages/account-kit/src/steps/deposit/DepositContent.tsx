@@ -1,14 +1,29 @@
 import { AccountModalTitle } from "../../AccoutModalTitle";
 import { AccountModalSection } from "../../AccountModalSection";
-import { DepositViaTransferForm } from "./via-transfer/DepositViaTransferForm";
-import { useAppChain } from "../../useAppChain";
 import { GasBalanceSection } from "./GasBalanceSection";
 import { useState } from "react";
+import { DepositMethod } from "./common";
+import { useSourceChains } from "./useSourceChains";
+import { useConfig } from "../../AccountKitConfigProvider";
+import { DepositMethodForm } from "./DepositMethodForm";
 
 export function DepositContent() {
-  const chain = useAppChain();
-  const [sourceChainId, setSourceChainId] = useState(chain.id);
+  const { chainId: appChainId } = useConfig();
+  const [sourceChainId, setSourceChainId] = useState(appChainId);
   const [amount, setAmount] = useState<bigint | undefined>();
+  const [selectedDepositMethod, setSelectedDepositMethod] = useState<DepositMethod>("transfer");
+
+  const sourceChains = useSourceChains();
+  const sourceChain = sourceChains.find((c) => c.id === sourceChainId) ?? sourceChains.find((c) => c.id === appChainId);
+
+  // TODO: do we need a better error here or can we just guarantee this data in some way?
+  if (!sourceChain) {
+    throw new Error(`Expected a source chain, but could not find one. Is Wagmi configured with chain ${appChainId}?`);
+  }
+
+  const depositMethod = sourceChain.depositMethods.includes(selectedDepositMethod)
+    ? selectedDepositMethod
+    : sourceChain.depositMethods[0];
 
   return (
     <>
@@ -22,11 +37,13 @@ export function DepositContent() {
             Top up your gas balance from your chain of choice. Prepaid gas lets you interact with this app without
             wallet popups.
           </p>
-          <DepositViaTransferForm
-            sourceChainId={sourceChainId}
+          <DepositMethodForm
+            sourceChain={sourceChain}
             setSourceChainId={setSourceChainId}
             amount={amount}
             setAmount={setAmount}
+            depositMethod={depositMethod}
+            setDepositMethod={setSelectedDepositMethod}
           />
         </div>
       </AccountModalSection>
