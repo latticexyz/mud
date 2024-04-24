@@ -1,4 +1,4 @@
-import { Hex, isAddressEqual, signatureToHex, toHex } from "viem";
+import { Hex, Signature, isAddressEqual, signatureToHex, toHex } from "viem";
 import { recoverAddress } from "viem/utils";
 import { KMSClient, SignCommandInput } from "@aws-sdk/client-kms";
 import { sign } from "./commands/sign";
@@ -65,7 +65,7 @@ type SignParameters = {
   address: Hex;
 };
 
-type SignReturnType = Hex;
+type SignReturnType = Signature;
 
 /**
  * @description Signs a hash with a given KMS key.
@@ -78,10 +78,10 @@ export async function signWithKms({ hash, address, keyId, client }: SignParamete
   const { r, s } = await getRS({ keyId, hash, client });
   const recovery = await getRecovery(hash, r, s, address);
 
-  return signatureToHex({
+  return {
     r,
     s,
     v: recovery ? 28n : 27n,
     yParity: recovery,
-  });
+  };
 }

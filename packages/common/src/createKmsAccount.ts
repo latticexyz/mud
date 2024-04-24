@@ -1,5 +1,5 @@
 import { KMSClient } from "@aws-sdk/client-kms";
-import { LocalAccount, hashMessage, hashTypedData, keccak256, serializeTransaction } from "viem";
+import { LocalAccount, hashMessage, hashTypedData, keccak256, serializeTransaction, signatureToHex } from "viem";
 import { toAccount } from "viem/accounts";
 import { signWithKms } from "./account/kms/signWithKms";
 import { getAddressFromKMS } from "./account/kms/getAddressFromKms";
@@ -25,38 +25,46 @@ export async function createKmsAccount({
   const account = toAccount({
     address,
     async signMessage({ message }) {
-      const hash = hashMessage(message);
       const signature = await signWithKms({
         client,
         keyId,
-        hash,
+        hash: hashMessage(message),
         address,
       });
 
-      return signature;
+      return signatureToHex(signature);
     },
-    async signTransaction(transaction) {
-      const unsignedTx = serializeTransaction(transaction);
-      const hash = keccak256(unsignedTx);
+    async signTransaction(transaction, { serializer = serializeTransaction } = {}) {
+      // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+      const signableTransaction = (() => {
+        // For EIP-4844 Transactions, we want to sign the transaction payload body (tx_payload_body) without the sidecars (ie. without the network wrapper).
+        // See: https://github.com/ethereum/EIPs/blob/e00f4daa66bd56e2dbd5f1d36d09fd613811a48b/EIPS/eip-4844.md#networking
+        if (transaction.type === "eip4844")
+          return {
+            ...transaction,
+            sidecars: false,
+          };
+        return transaction;
+      })();
+
       const signature = await signWithKms({
         client,
         keyId,
-        hash,
+        hash: keccak256(serializer(signableTransaction)),
         address,
       });
 
-      return signature;
+      return serializer(transaction, signature);
     },
     async signTypedData(typedData) {
-      const hash = hashTypedData(typedData);
       const signature = await signWithKms({
         client,
         keyId,
-        hash,
+        hash: hashTypedData(typedData),
         address,
       });
 
-      return signature;
+      return signatureToHex(signature);
     },
   });
 
