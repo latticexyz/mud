@@ -1,10 +1,11 @@
-import { Chain, Client, Hex, Transport } from "viem";
+import { Chain, Client, Hex, Transport, getCreate2Address } from "viem";
 import { getWorldFactoryContracts } from "./deploy/getWorldFactoryContracts";
 import { verifyContract } from "./verify/verifyContract";
 import PQueue from "p-queue";
 import { getWorldProxyFactoryContracts } from "./deploy/getWorldProxyFactoryContracts";
 import { getDeployer } from "./deploy/getDeployer";
 import { MUDError } from "@latticexyz/common/errors";
+import { salt } from "./deploy/common";
 
 type VerifyOptions = {
   client: Client<Transport, Chain | undefined>;
@@ -51,8 +52,11 @@ export async function verify({
           rpc,
           verifier,
           verifierUrl,
-          from: deployerAddress,
-          bytecode,
+          address: getCreate2Address({
+            from: deployerAddress,
+            bytecode: bytecode,
+            salt,
+          }),
         },
         { profile: foundryProfile },
       ).catch((error) => {
@@ -71,8 +75,11 @@ export async function verify({
           rpc,
           verifier,
           verifierUrl,
-          from: deployerAddress,
-          bytecode,
+          address: getCreate2Address({
+            from: deployerAddress,
+            bytecode: bytecode,
+            salt,
+          }),
         },
         {
           profile: foundryProfile,
@@ -92,8 +99,11 @@ export async function verify({
           rpc,
           verifier,
           verifierUrl,
-          from: deployerAddress,
-          bytecode,
+          address: getCreate2Address({
+            from: deployerAddress,
+            bytecode: bytecode,
+            salt,
+          }),
         },
         {
           profile: foundryProfile,
