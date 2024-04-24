@@ -16,6 +16,8 @@ type Options = {
   worldAddress: string;
   configPath?: string;
   profile?: string;
+  rpc?: string;
+  rpcBatch?: boolean;
   srcDir?: string;
   verifier?: string;
   verifierUrl?: string;
