@@ -6,9 +6,8 @@ import initModuleBuild from "@latticexyz/world/out/InitModule.sol/InitModule.jso
 import initModuleAbi from "@latticexyz/world/out/InitModule.sol/InitModule.abi.json" assert { type: "json" };
 import { Hex, getCreate2Address, encodeDeployData, size } from "viem";
 import { salt } from "./common";
-import { Contract } from "./ensureContract";
 
-export function getWorldContracts(deployerAddress: Hex): Record<string, Contract & { address: Hex }> {
+export function getWorldContracts(deployerAddress: Hex) {
   const accessManagementSystemDeployedBytecodeSize = size(accessManagementSystemBuild.deployedBytecode.object as Hex);
   const accessManagementSystemBytecode = accessManagementSystemBuild.bytecode.object as Hex;
   const accessManagementSystem = getCreate2Address({

@@ -2,10 +2,9 @@ import worldProxyFactoryBuild from "@latticexyz/world/out/WorldProxyFactory.sol/
 import worldProxyFactoryAbi from "@latticexyz/world/out/WorldProxyFactory.sol/WorldProxyFactory.abi.json" assert { type: "json" };
 import { Hex, getCreate2Address, encodeDeployData, size } from "viem";
 import { salt } from "./common";
-import { Contract } from "./ensureContract";
 import { getWorldContracts } from "./getWorldContracts";
 
-export function getWorldProxyFactoryContracts(deployerAddress: Hex): Record<string, Contract & { address: Hex }> {
+export function getWorldProxyFactoryContracts(deployerAddress: Hex) {
   const worldContracts = getWorldContracts(deployerAddress);
 
   const worldProxyFactoryDeployedBytecodeSize = size(worldProxyFactoryBuild.deployedBytecode.object as Hex);
