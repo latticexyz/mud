@@ -8,7 +8,7 @@ import { getOutDirectory, getRpcUrl, getSrcDirectory } from "@latticexyz/common/
 import { getExistingContracts } from "../utils/getExistingContracts";
 import { getContractData } from "../utils/getContractData";
 import { defaultModuleContracts } from "../utils/defaultModuleContracts";
-import { Hex, createWalletClient, http } from "viem";
+import { Address, Hex, createPublicClient, createWalletClient, http, zeroHash } from "viem";
 import chalk from "chalk";
 
 type Options = {
@@ -21,8 +21,9 @@ type Options = {
   srcDir?: string;
   verifier?: string;
   verifierUrl?: string;
-  useProxy?: boolean;
 };
+
+const ERC1967_IMPLEMENTATION_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc";
 
 const commandModule: CommandModule<Options, Options> = {
   command: "verify",
@@ -49,10 +50,6 @@ const commandModule: CommandModule<Options, Options> = {
         type: "string",
         desc: "The verification provider.",
       },
-      useProxy: {
-        type: "boolean",
-        desc: "Whether the World was deployed with a proxy.",
-      },
     });
   },
 
@@ -73,6 +70,17 @@ const commandModule: CommandModule<Options, Options> = {
     );
 
     const client = createWalletClient({
+      transport: http(rpc, {
+        batch: opts.rpcBatch
+          ? {
+              batchSize: 100,
+              wait: 1000,
+            }
+          : undefined,
+      }),
+    });
+
+    const publicClient = createPublicClient({
       transport: http(rpc, {
         batch: opts.rpcBatch
           ? {
@@ -107,6 +115,12 @@ const commandModule: CommandModule<Options, Options> = {
       };
     });
 
+    const implementation = await publicClient.getStorageAt({
+      address: opts.worldAddress as Address,
+      slot: ERC1967_IMPLEMENTATION_SLOT,
+    });
+    const useProxy = implementation !== zeroHash;
+
     await verify({
       client,
       rpc,
@@ -117,7 +131,7 @@ const commandModule: CommandModule<Options, Options> = {
       worldAddress: opts.worldAddress as Hex,
       verifier: opts.verifier,
       verifierUrl: opts.verifierUrl,
-      useProxy: opts.useProxy,
+      useProxy,
     });
   },
 };
