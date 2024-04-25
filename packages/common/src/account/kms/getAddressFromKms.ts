@@ -1,7 +1,7 @@
 import { Address, toHex } from "viem";
 import { publicKeyToAddress } from "viem/utils";
 import { KMSClient, SignCommandInput } from "@aws-sdk/client-kms";
-import { getPublicKey } from "./commands/getPublicKey";
+import { getPublicKey } from "./getPublicKey";
 // @ts-expect-error Could not find a declaration file for module 'asn1.js'.
 import asn1 from "asn1.js";
 
@@ -21,7 +21,7 @@ function publicKeyKmsToAddress(publicKey: Uint8Array): Address {
   return address;
 }
 
-export async function getAddressFromKMS({
+export async function getAddressFromKms({
   keyId,
   client,
 }: {
