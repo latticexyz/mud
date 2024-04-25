@@ -3,7 +3,7 @@ import { writeContract } from "wagmi/actions";
 import { type UseWalletClientReturnType, type UseConfigReturnType } from "wagmi";
 import GasTankAbi from "@latticexyz/gas-tank/out/IWorld.sol/IWorld.abi.json";
 import OptimismPortalAbi from "../../../abis/OptimismPortal.json";
-import { OPTIMISM_PORTAL_ADDRESS } from "../constants";
+import { OPTIMISM_PORTAL_ADDRESS } from "../common";
 
 export const encodeNativeDeposit = (userAccountAddress: Hex) => {
   return encodeFunctionData({

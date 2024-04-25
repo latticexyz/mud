@@ -6,7 +6,7 @@ import { useRecord } from "./useRecord";
 import { useAppAccountClient } from "./useAppAccountClient";
 
 export function useHasDelegation() {
-  const { chain, worldAddress } = useConfig();
+  const { chainId, worldAddress } = useConfig();
 
   const userAccount = useAccount();
   const userAccountAddress = userAccount.address;
@@ -17,7 +17,7 @@ export function useHasDelegation() {
   const result = useRecord(
     userAccountAddress && appAccountAddress
       ? {
-          chainId: chain.id,
+          chainId,
           address: worldAddress,
           table: worldConfig.tables.world__UserDelegationControl,
           key: {

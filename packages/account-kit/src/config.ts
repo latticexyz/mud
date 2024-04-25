@@ -1,4 +1,3 @@
-import { MUDChain } from "@latticexyz/common/chains";
 import { satisfy } from "@latticexyz/common/type-utils";
 import { Transport } from "viem";
 import { Address } from "viem/accounts";
@@ -37,9 +36,11 @@ export type Erc4337Config = {
 
 export type Config = {
   /**
-   * The chain the world is deployed to. This is the chain used to return an app account client once fully signed in.
+   * The chain ID where the world is deployed.
+   * There must be a matching chain entry in wagmi's configured chains.
+   * The app account client returned by Account Kit will be tied to this chain.
    */
-  readonly chain: MUDChain;
+  readonly chainId: number;
   /*
    * The world address.
    */

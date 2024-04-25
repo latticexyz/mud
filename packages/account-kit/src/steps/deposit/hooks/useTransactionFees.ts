@@ -7,7 +7,7 @@ import { estimateGas, getGasPrice } from "wagmi/actions";
 import { useEffect } from "react";
 import { useConfig } from "../../../AccountKitConfigProvider";
 import { encodeFullNativeDeposit } from "./nativeDeposit";
-import { OPTIMISM_PORTAL_ADDRESS } from "../constants";
+import { OPTIMISM_PORTAL_ADDRESS } from "../common";
 import { fetchRelayLinkQuote } from "./relayLinkDeposit";
 import { usePaymaster } from "../../../usePaymaster";
 import { DEFAULT_DEPOSIT_AMOUNT } from "../DepositContent";
@@ -34,7 +34,7 @@ const estimateDirectFee = async ({
       functionName: "depositTo",
       args: [userAccountAddress],
     }),
-    // TODO: sue default amounts
+    // TODO: use default amounts
     value: parseEther(DEFAULT_DEPOSIT_AMOUNT.toString()),
   });
 
@@ -83,7 +83,7 @@ const estimateNativeFee = async ({
 
 export const useTransactionFees = (amount: number | undefined, depositMethod: DepositMethod) => {
   const [fees, setFees] = useState<string>("");
-  const { chain } = useConfig();
+  const { chainId } = useConfig();
   const gasTank = usePaymaster("gasTank");
   const wagmiConfig = useWagmiConfig();
   const userAccount = useAccount();
@@ -121,7 +121,7 @@ export const useTransactionFees = (amount: number | undefined, depositMethod: De
         fees = await fetchRelayLinkQuote({
           config: wagmiConfig,
           chainId: userAccountChainId!,
-          toChainId: chain.id,
+          toChainId: chainId,
           amount: amount || DEFAULT_DEPOSIT_AMOUNT,
         });
 
@@ -130,7 +130,7 @@ export const useTransactionFees = (amount: number | undefined, depositMethod: De
     };
 
     fetchFees();
-  }, [amount, chain, depositMethod, gasTank, userAccountAddress, userAccountChainId, wagmiConfig]);
+  }, [amount, chainId, depositMethod, gasTank, userAccountAddress, userAccountChainId, wagmiConfig]);
 
   return {
     fees,

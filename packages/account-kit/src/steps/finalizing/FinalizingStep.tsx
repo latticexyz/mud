@@ -14,10 +14,12 @@ import { useOnboardingSteps } from "../../useOnboardingSteps";
 import { useConfig } from "../../AccountKitConfigProvider";
 import CallWithSignatureAbi from "@latticexyz/world-modules/out/IUnstable_CallWithSignatureSystem.sol/IUnstable_CallWithSignatureSystem.abi.json";
 import { getAction } from "viem/utils";
+import { useAppChain } from "../../useAppChain";
 
 export function FinalizingStep() {
   const queryClient = useQueryClient();
-  const { chain, worldAddress } = useConfig();
+  const { worldAddress } = useConfig();
+  const chain = useAppChain();
   const publicClient = usePublicClient({ chainId: chain.id });
   const { data: userAccountClient } = useWalletClient({ chainId: chain.id });
   const { data: appAccountClient } = useAppAccountClient();
@@ -74,7 +76,11 @@ export function FinalizingStep() {
     },
   });
 
-  const receipt = useWaitForTransactionReceipt({ chainId: chain.id, hash: registerDelegation.data });
+  const receipt = useWaitForTransactionReceipt({
+    chainId: chain.id,
+    hash: registerDelegation.data,
+    pollingInterval: 1_000,
+  });
 
   useEffect(() => {
     if (receipt.data?.status === "success") {
@@ -88,6 +94,15 @@ export function FinalizingStep() {
     registerDelegation.mutate();
   }, [registerDelegation.mutate]);
 
+  if (registerDelegation.error) {
+    // TODO: make this prettier
+    return <AccountModalSection>{String(registerDelegation.error)}</AccountModalSection>;
+  }
+  if (receipt.error) {
+    // TODO: make this prettier
+    return <AccountModalSection>{String(receipt.error)}</AccountModalSection>;
+  }
+
   if (receipt.isPending) {
     // TODO: make this prettier
     return (
@@ -97,15 +112,6 @@ export function FinalizingStep() {
         </div>
       </AccountModalSection>
     );
-  }
-
-  if (registerDelegation.error) {
-    // TODO: make this prettier
-    return <AccountModalSection>{String(registerDelegation.error)}</AccountModalSection>;
-  }
-  if (receipt.error) {
-    // TODO: make this prettier
-    return <AccountModalSection>{String(receipt.error)}</AccountModalSection>;
   }
 
   return <></>;

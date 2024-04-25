@@ -16,9 +16,9 @@ const store = createStore(() => ({ signature: undefined as Hex | undefined }));
 
 export function useSignRegisterDelegation() {
   const queryClient = useQueryClient();
-  const { chain, worldAddress } = useConfig();
-  const publicClient = usePublicClient({ chainId: chain.id });
-  const { data: userAccountClient } = useWalletClient({ chainId: chain.id });
+  const { chainId, worldAddress } = useConfig();
+  const publicClient = usePublicClient({ chainId });
+  const { data: userAccountClient } = useWalletClient({ chainId });
   const { data: appAccountClient } = useAppAccountClient();
   const { nonce } = useCallWithSignatureNonce();
   const registerDelegationSignature = useStore(store, (state) => state.signature);
@@ -32,7 +32,7 @@ export function useSignRegisterDelegation() {
 
       const signature = await signCall({
         userAccountClient,
-        chainId: chain.id,
+        chainId,
         worldAddress,
         systemId: resourceToHex({ type: "system", namespace: "", name: "Registration" }),
         callData: encodeFunctionData({

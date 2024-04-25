@@ -9,10 +9,14 @@ export type RpcUrls = {
 
 export type MUDChain = Chain & {
   faucetUrl?: string;
+  iconUrls?: readonly string[];
   rpcUrls?: Chain["rpcUrls"] & {
     erc4337Bundler?: RpcUrls | undefined;
   };
   contracts?: Chain["contracts"] & {
     gasTank?: ChainContract | undefined;
+    portal?: {
+      [sourceId: number]: ChainContract | undefined;
+    };
   };
 };

@@ -6,7 +6,7 @@ import { usePaymaster } from "./usePaymaster";
 import { useAppAccountClient } from "./useAppAccountClient";
 
 export function useIsGasSpender() {
-  const { chain } = useConfig();
+  const { chainId } = useConfig();
   const gasTank = usePaymaster("gasTank");
 
   const userAccount = useAccount();
@@ -18,7 +18,7 @@ export function useIsGasSpender() {
   const result = useRecord(
     appAccountClient?.type === "smartAccountClient" && appAccountAddress && gasTank
       ? {
-          chainId: chain.id,
+          chainId,
           address: gasTank.address,
           table: gasTankConfig.tables.Spender,
           key: { spender: appAccountAddress },

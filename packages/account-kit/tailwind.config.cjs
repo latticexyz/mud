@@ -1,5 +1,6 @@
 import { animate } from "./tailwindcss-plugins/animate";
 import { borderGradient } from "./tailwindcss-plugins/borderGradient";
+import { gridDivideFix } from "./tailwindcss-plugins/gridDivideFix";
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -7,6 +8,6 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [animate, borderGradient],
+  plugins: [animate, borderGradient, gridDivideFix],
   darkMode: ["selector", ['[data-theme="dark"]']],
 };

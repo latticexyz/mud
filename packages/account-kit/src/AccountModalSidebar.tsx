@@ -41,7 +41,7 @@ export function AccountModalSidebar() {
       </div>
       {steps.map((step) => {
         // TODO: make this less weird/janky
-        if (step.id === "finalizing" && !step.canComplete) {
+        if (step.id === "finalizing" && (step.isComplete || !step.canComplete)) {
           return null;
         }
         return (

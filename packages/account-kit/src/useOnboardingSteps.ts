@@ -3,7 +3,6 @@ import { AccountRequirement, useAccountRequirements } from "./useAccountRequirem
 import { useStore } from "zustand";
 import { useCallback, useMemo } from "react";
 import { keysOf } from "./utils/keysOf";
-import { useIsFree } from "./useIsFree";
 
 export const onboardingSteps = {
   wallet: {
@@ -42,7 +41,6 @@ const store = createStore<{ readonly step: OnboardingStep | null }>(() => ({ ste
 export function useOnboardingSteps() {
   const initialStep = useStore(store, (state) => state.step);
   const { requirements } = useAccountRequirements();
-  const isFree = useIsFree();
 
   const setStep = useCallback((step: OnboardingStep): void => {
     store.setState({ step });
@@ -74,5 +72,5 @@ export function useOnboardingSteps() {
       resetStep,
       steps,
     };
-  }, [initialStep, isFree, requirements, resetStep, setStep]);
+  }, [initialStep, requirements, resetStep, setStep]);
 }

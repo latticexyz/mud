@@ -1,10 +1,10 @@
-import { CSSProperties, HTMLProps, ReactNode, forwardRef, useRef, useState } from "react";
+import { CSSProperties, HTMLProps, ReactNode, forwardRef, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import css from "tailwindcss/tailwind.css?inline";
-import { useMediaQuery, useResizeObserver } from "usehooks-ts";
-import { useConfig } from "../AccountKitConfigProvider";
+import { useResizeObserver } from "usehooks-ts";
 import { mergeRefs } from "react-merge-refs";
 import { FrameProvider } from "./FrameProvider";
+import { useTheme } from "../useTheme";
 
 export type Props = {
   mode: "modal" | "child";
@@ -35,9 +35,13 @@ export const Shadow = forwardRef<HTMLIFrameElement, Props>(function Shadow({ mod
     height: undefined,
   });
 
-  const { theme: initialTheme } = useConfig();
-  const darkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  const theme = initialTheme ?? (darkMode ? "dark" : "light");
+  const frameDocument = frame?.contentDocument;
+  const theme = useTheme();
+  useEffect(() => {
+    if (frameDocument) {
+      frameDocument.body.setAttribute("data-theme", theme);
+    }
+  }, [frameDocument, theme]);
 
   const frameStyle: CSSProperties =
     mode === "modal"
@@ -75,19 +79,17 @@ export const Shadow = forwardRef<HTMLIFrameElement, Props>(function Shadow({ mod
       onLoad={() => setLoaded(true)}
       srcDoc="<!doctype html><title>…</title>"
     >
-      {frame?.contentDocument
+      {frameDocument
         ? ReactDOM.createPortal(
             <FrameProvider frame={frame}>
               {/*
                * TODO: make this the size of the outer window so that any container-based resizing in iframe
                *       is done from that rather than the potentially-small size of this iframe
                */}
-              <div data-theme={theme}>
-                {mode === "modal" ? children : <Resizer onSize={setFrameSize}>{children}</Resizer>}
-              </div>
+              <div>{mode === "modal" ? children : <Resizer onSize={setFrameSize}>{children}</Resizer>}</div>
               <style dangerouslySetInnerHTML={{ __html: css }} />
             </FrameProvider>,
-            frame.contentDocument.body,
+            frameDocument.body,
           )
         : null}
     </iframe>
