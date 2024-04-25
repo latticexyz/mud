@@ -79,6 +79,9 @@ library StoreCore {
 
     // Now we can register the rest of the core tables as regular tables.
     ResourceNames.register();
+    ResourceNames._setExists(Tables._tableId.getStoreName(), true);
+    ResourceNames._setExists(ResourceIds._tableId.getStoreName(), true);
+
     StoreHooks.register();
   }
 
