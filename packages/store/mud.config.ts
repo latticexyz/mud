@@ -36,6 +36,13 @@ export default defineStore({
       },
       key: ["resourceId"],
     },
+    ResourceNames: {
+      schema: {
+        name: "bytes30",
+        exists: "bool",
+      },
+      key: ["name"],
+    },
     // The Hooks table is a generic table used by the `filterFromList` util in `Hook.sol`
     Hooks: {
       schema: {

@@ -9,7 +9,7 @@ import { FieldLayout, FieldLayoutLib } from "./FieldLayout.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { EncodedLengths } from "./EncodedLengths.sol";
 import { Slice, SliceLib } from "./Slice.sol";
-import { Tables, ResourceIds, StoreHooks } from "./codegen/index.sol";
+import { ResourceNames, Tables, ResourceIds, StoreHooks } from "./codegen/index.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
@@ -78,6 +78,7 @@ library StoreCore {
     ResourceIds._setExists(ResourceIds._tableId, true);
 
     // Now we can register the rest of the core tables as regular tables.
+    ResourceNames.register();
     StoreHooks.register();
   }
 
@@ -213,12 +214,17 @@ library StoreCore {
     if (ResourceIds._getExists(tableId)) {
       revert IStoreErrors.Store_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
     }
+    // Verify there is no resource with this name yet
+    if (ResourceNames._getExists(tableId.getStoreName())) {
+      revert IStoreErrors.Store_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
+    }
 
     // Register the table metadata
     Tables._set(tableId, fieldLayout, keySchema, valueSchema, abi.encode(keyNames), abi.encode(fieldNames));
 
     // Register the table ID
     ResourceIds._setExists(tableId, true);
+    ResourceNames._setExists(tableId.getStoreName(), true);
   }
 
   /************************************************************************
