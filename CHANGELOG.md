@@ -1,3 +1,88 @@
+## Version 2.0.7
+
+Release date: Thu Apr 25 2024
+
+### Patch changes
+
+**[feat(store-indexer): add prometheus metrics (#2739)](https://github.com/latticexyz/mud/commit/27c4fdee6e04d6d61bef320673bed22b2872b51c)** (@latticexyz/store-indexer)
+
+Add Prometheus metrics at `/metrics` to the Postgres indexer backend and frontend, as well as the SQLite indexer.
+
+**[fix(common): use feeRef for sendTransaction calls (#2725)](https://github.com/latticexyz/mud/commit/375d902ed02541fa5add7012465e05da079d4d95)** (@latticexyz/common)
+
+Added asynchronous polling for current fees to `sendTransaction`.
+
+**[fix(block-logs-stream): handle proxyd errors (#2726)](https://github.com/latticexyz/mud/commit/bf16e729fea1830659b81a6a0ea5fccb6429ea42)** (@latticexyz/block-logs-stream)
+
+Added detection and handling for proxyd rate limit and block range errors.
+
+**[feat(cli): deploy with kms (#2704)](https://github.com/latticexyz/mud/commit/c74a66474169d16a2ed4b7fd9046984d4ceabc3f)** (@latticexyz/cli)
+
+Added a `--awsKmsKeyId` flag to `mud deploy` that deploys the world using an AWS KMS key as a transaction signer.
+
+**[fix(store-sync): await fetchAndStoreLogs (#2702)](https://github.com/latticexyz/mud/commit/16695fea8a0a8d80179c3fbe68120b34de076659)** (@latticexyz/store-sync)
+
+Partially revert [#2665](https://github.com/latticexyz/mud/pull/2665) to guarantee logs are stored in order.
+
+**[fix(cli): add retry to getLogs when getting resource ID's (#2709)](https://github.com/latticexyz/mud/commit/dbc7e066d0bd344a5d9b2586c7f2875d21cfd0ca)** (@latticexyz/cli)
+
+Deploying now retries on "block is out of range" errors, for cases where the RPC is load balanced and out of sync.
+
+**[feat(cli): manually fetch gas price from rpc before PostDeploy runs (#2638)](https://github.com/latticexyz/mud/commit/189050bd2c61ba645325d45a6a4040153d361412)** (@latticexyz/cli)
+
+Deploy will now fetch and set the gas price during execution of PostDeploy script. This should greatly reduce the fees paid for L2s.
+
+**[fix(world-modules): properly concat baseURI and tokenURI in ERC721 module (#2686)](https://github.com/latticexyz/mud/commit/78a94d715af427b77f52a7e2ff4be2cb3752e2a9)** (@latticexyz/world-modules)
+
+Fixed ERC721 module to properly encode token ID as part of token URI.
+
+**[feat(cli): verify command (#2662)](https://github.com/latticexyz/mud/commit/fce741b07dd68f4a0a553bee5d63f1d6b0546283)** (@latticexyz/cli)
+
+Added a new `mud verify` command which verifies all contracts in a project. This includes systems, modules, the WorldFactory and World.
+
+**[fix(common): kms correctly serializes transactions (#2721)](https://github.com/latticexyz/mud/commit/182d70608fce514ae1aec5366a7bbae1dc936844)** (@latticexyz/common)
+
+Added `kmsKeyToAccount`, a [viem custom account](https://viem.sh/docs/accounts/custom#custom-account) that signs transactions using AWS KMS.
+
+To use it, you must first install `@aws-sdk/client-kms@3.x` and `asn1.js@5.x` dependencies into your project. Then create a KMS account with:
+
+```ts
+import { kmsKeyToAccount } from "@latticexyz/common/kms";
+const account = kmsKeyToAccount({ keyId: ... });
+```
+
+By default, a `KMSClient` will be created, but you can also pass one in via the `client` option. The default KMS client will use [your environment's AWS SDK configuration](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/configuring-the-jssdk.html).
+
+**[fix(cli): fix deployer warning (#2683)](https://github.com/latticexyz/mud/commit/632a7525ab2f125ed01a612987ece58cb1fd9740)** (@latticexyz/cli)
+
+Fixed an issue where deploys were warning about mismatched bytecode when the bytecode was correct and what we expect.
+
+**[fix(create-mud): make worlds.json address type more specific (#2685)](https://github.com/latticexyz/mud/commit/534e7729a7e727575bb7db99c4acda55e8ceb295)** (create-mud)
+
+Made `worlds.json`'s `address` type more like viem's `Hex` type so it's easy to pass through as an argument.
+
+**[refactor(world,cli): rename `useProxy` to `upgradeableWorldImplementation` (#2732)](https://github.com/latticexyz/mud/commit/1ccd627676cb94a07e29e511db037a5f855c3096)** (@latticexyz/world, @latticexyz/cli)
+
+Added a `deploy.upgradeableWorldImplementation` option to the MUD config that deploys the World as an upgradeable proxy contract. The proxy behaves like a regular World contract, but the underlying implementation can be upgraded by calling `setImplementation`.
+
+**[fix(store): enforce unique table names across types (#2736)](https://github.com/latticexyz/mud/commit/ed404b7d840db755f7513d4a7d32b85eaa3dd058)** (@latticexyz/store)
+
+Added a check to `registerTable` that prevents registering both an offchain and onchain table with the same name, making it easier to use human-readable names in indexers.
+
+**[feat(world-modules): string systemId in `callWithSignature` typehash (#2700)](https://github.com/latticexyz/mud/commit/2c9b16c77aca12e4c23e96de83e5820c09cb3b9d)** (@latticexyz/world-modules, @latticexyz/world)
+
+Replaced the `systemId` field in the `Unstable_CallWithSignatureSystem` typehash with individual `systemNamespace` and `systemName` string fields.
+
+**[feat(cli): add user-specified PostDeploy forge options (#2703)](https://github.com/latticexyz/mud/commit/8493f88f8db972ef2a7c1caa49f8231c60ed2ba5)** (@latticexyz/cli)
+
+Added a `--forgeScriptOptions` flag to deploy and dev commands to allow passing in additional CLI flags to `forge script` command.
+
+**[fix(common): make `Resource` type props readonly (#2516)](https://github.com/latticexyz/mud/commit/f736c43dbc39edff51957a298b563576237429df)** (@latticexyz/common)
+
+`Resource` type props are now readonly.
+
+---
+
 ## Version 2.0.6
 
 Release date: Wed Apr 17 2024
