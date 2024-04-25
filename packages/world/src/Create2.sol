@@ -3,7 +3,6 @@ pragma solidity >=0.8.24;
 
 /**
  * @title Create2
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Library to deploy contracts using the CREATE2 opcode.
  */
 library Create2 {

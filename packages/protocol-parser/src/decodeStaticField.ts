@@ -5,12 +5,12 @@ import {
   StaticAbiTypeToPrimitiveType,
   staticAbiTypeToByteLength,
   staticAbiTypeToDefaultValue,
-} from "@latticexyz/schema-type/internal";
+} from "@latticexyz/schema-type";
 import { InvalidHexLengthError, InvalidHexLengthForStaticFieldError } from "./errors";
 
 export function decodeStaticField<
   TAbiType extends StaticAbiType,
-  TPrimitiveType extends StaticAbiTypeToPrimitiveType<TAbiType>,
+  TPrimitiveType extends StaticAbiTypeToPrimitiveType<TAbiType>
 >(abiType: TAbiType, data: Hex): TPrimitiveType {
   if (data.length > 3 && data.length % 2 !== 0) {
     throw new InvalidHexLengthError(data);

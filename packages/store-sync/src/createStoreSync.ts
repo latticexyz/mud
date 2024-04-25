@@ -1,4 +1,4 @@
-import { storeEventsAbi } from "@latticexyz/store";
+import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
 import { Hex, TransactionReceiptNotFoundError } from "viem";
 import {
   StorageAdapter,
@@ -8,7 +8,6 @@ import {
   SyncOptions,
   SyncResult,
   internalTableIds,
-  WaitForTransactionResult,
 } from "./common";
 import { createBlockStream } from "@latticexyz/block-logs-stream";
 import {
@@ -26,20 +25,19 @@ import {
   shareReplay,
   combineLatest,
   scan,
-  mergeMap,
+  identity,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
 import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/utils";
 import { getSnapshot } from "./getSnapshot";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
-import { Store as StoreConfig } from "@latticexyz/store";
 
 const debug = parentDebug.extend("createStoreSync");
 
 const defaultFilters: SyncFilter[] = internalTableIds.map((tableId) => ({ tableId }));
 
-type CreateStoreSyncOptions<config extends StoreConfig = StoreConfig> = SyncOptions<config> & {
+type CreateStoreSyncOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
   storageAdapter: StorageAdapter;
   onProgress?: (opts: {
     step: SyncStep;
@@ -50,20 +48,19 @@ type CreateStoreSyncOptions<config extends StoreConfig = StoreConfig> = SyncOpti
   }) => void;
 };
 
-export async function createStoreSync<config extends StoreConfig = StoreConfig>({
+export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>({
   storageAdapter,
   onProgress,
   publicClient,
   address,
   filters: initialFilters = [],
   tableIds = [],
-  followBlockTag = "latest",
   startBlock: initialStartBlock = 0n,
   maxBlockRange,
   initialState,
   initialBlockLogs,
   indexerUrl,
-}: CreateStoreSyncOptions<config>): Promise<SyncResult> {
+}: CreateStoreSyncOptions<TConfig>): Promise<SyncResult> {
   const filters: SyncFilter[] =
     initialFilters.length || tableIds.length
       ? [...initialFilters, ...tableIds.map((tableId) => ({ tableId })), ...defaultFilters]
@@ -75,7 +72,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
           (filter) =>
             filter.tableId === log.args.tableId &&
             (filter.key0 == null || filter.key0 === log.args.keyTuple[0]) &&
-            (filter.key1 == null || filter.key1 === log.args.keyTuple[1]),
+            (filter.key1 == null || filter.key1 === log.args.keyTuple[1])
         )
     : undefined;
 
@@ -122,7 +119,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
 
       return of(undefined);
     }),
-    shareReplay(1),
+    shareReplay(1)
   );
 
   const storedInitialBlockLogs$ = initialBlockLogs$.pipe(
@@ -170,22 +167,22 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
 
       return { blockNumber, logs };
     }),
-    shareReplay(1),
+    shareReplay(1)
   );
 
   const startBlock$ = initialBlockLogs$.pipe(
     map((block) => bigIntMax(block?.blockNumber ?? 0n, initialStartBlock)),
     // TODO: if start block is still 0, find via deploy event
-    tap((startBlock) => debug("starting sync from block", startBlock)),
+    tap((startBlock) => debug("starting sync from block", startBlock))
   );
 
-  const latestBlock$ = createBlockStream({ publicClient, blockTag: followBlockTag }).pipe(shareReplay(1));
+  const latestBlock$ = createBlockStream({ publicClient, blockTag: "latest" }).pipe(shareReplay(1));
   const latestBlockNumber$ = latestBlock$.pipe(
     map((block) => block.number),
     tap((blockNumber) => {
-      debug("on block number", blockNumber, "for", followBlockTag, "block tag");
+      debug("latest block number", blockNumber);
     }),
-    shareReplay(1),
+    shareReplay(1)
   );
 
   let startBlock: bigint | null = null;
@@ -240,7 +237,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
         }
       }
     }),
-    share(),
+    share()
   );
 
   const storedBlockLogs$ = concat(storedInitialBlockLogs$, storedBlock$).pipe(share());
@@ -251,48 +248,39 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
   const recentBlocks$ = storedBlockLogs$.pipe(
     scan<StorageAdapterBlock, StorageAdapterBlock[]>(
       (recentBlocks, block) => [block, ...recentBlocks].slice(0, recentBlocksWindow),
-      [],
+      []
     ),
     filter((recentBlocks) => recentBlocks.length > 0),
-    shareReplay(1),
+    shareReplay(1)
   );
 
   // TODO: move to its own file so we can test it, have its own debug instance, etc.
-  async function waitForTransaction(tx: Hex): Promise<WaitForTransactionResult> {
+  async function waitForTransaction(tx: Hex): Promise<void> {
     debug("waiting for tx", tx);
 
     // This currently blocks for async call on each block processed
     // We could potentially speed this up a tiny bit by racing to see if 1) tx exists in processed block or 2) fetch tx receipt for latest block processed
     const hasTransaction$ = recentBlocks$.pipe(
-      // We use `mergeMap` instead of `concatMap` here to send the fetch request immediately when a new block range appears,
-      // instead of sending the next request only when the previous one completed.
-      mergeMap(async (blocks) => {
-        for (const block of blocks) {
-          const txs = block.logs.map((op) => op.transactionHash);
-          // If the transaction caused a log, it must have succeeded
-          if (txs.includes(tx)) {
-            return { blockNumber: block.blockNumber, status: "success" as const, transactionHash: tx };
-          }
-        }
+      concatMap(async (blocks) => {
+        const txs = blocks.flatMap((block) => block.logs.map((op) => op.transactionHash).filter(isDefined));
+        if (txs.includes(tx)) return true;
 
         try {
           const lastBlock = blocks[0];
           debug("fetching tx receipt for block", lastBlock.blockNumber);
-          const { status, blockNumber, transactionHash } = await publicClient.getTransactionReceipt({ hash: tx });
-          if (lastBlock.blockNumber >= blockNumber) {
-            return { status, blockNumber, transactionHash };
-          }
+          const receipt = await publicClient.getTransactionReceipt({ hash: tx });
+          return lastBlock.blockNumber >= receipt.blockNumber;
         } catch (error) {
           if (error instanceof TransactionReceiptNotFoundError) {
-            return;
+            return false;
           }
           throw error;
         }
       }),
-      tap((result) => debug("has tx?", tx, result)),
+      tap((result) => debug("has tx?", tx, result))
     );
 
-    return await firstValueFrom(hasTransaction$.pipe(filter(isDefined)));
+    await firstValueFrom(hasTransaction$.pipe(filter(identity)));
   }
 
   return {

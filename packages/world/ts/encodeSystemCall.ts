@@ -1,26 +1,30 @@
-import { Abi, EncodeFunctionDataParameters, Hex, encodeFunctionData, type ContractFunctionName } from "viem";
-import type { AbiParametersToPrimitiveTypes, ExtractAbiFunction } from "abitype";
+import {
+  Abi,
+  EncodeFunctionDataParameters,
+  ContractFunctionConfig,
+  GetFunctionArgs,
+  Hex,
+  encodeFunctionData,
+} from "viem";
 import IWorldCallAbi from "../out/IWorldKernel.sol/IWorldCall.abi.json";
 
-export type SystemCall<abi extends Abi, functionName extends ContractFunctionName<abi>> = EncodeFunctionDataParameters<
-  abi,
-  functionName
+export type SystemCall<abi extends Abi, functionName extends string = string> = Pick<
+  ContractFunctionConfig<abi, functionName>,
+  "abi" | "functionName" | "args"
 > & {
   readonly systemId: Hex;
 };
 
 /** Encode a system call to be passed as arguments into `World.call` */
-export function encodeSystemCall<abi extends Abi, functionName extends ContractFunctionName<abi>>({
+export function encodeSystemCall<abi extends Abi, functionName extends string = string>({
   abi,
   systemId,
   functionName,
   args,
-}: SystemCall<abi, functionName>): AbiParametersToPrimitiveTypes<
-  ExtractAbiFunction<typeof IWorldCallAbi, "call">["inputs"]
-> {
+}: SystemCall<abi, functionName>): GetFunctionArgs<typeof IWorldCallAbi, "call">["args"] {
   return [
     systemId,
-    encodeFunctionData<abi, functionName>({
+    encodeFunctionData({
       abi,
       functionName,
       args,

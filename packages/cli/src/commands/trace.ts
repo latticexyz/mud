@@ -5,21 +5,20 @@ import { ethers } from "ethers";
 import { loadConfig } from "@latticexyz/config/node";
 import { MUDError } from "@latticexyz/common/errors";
 import { cast, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
-import { resolveWorldConfig } from "@latticexyz/world/internal";
+import { StoreConfig } from "@latticexyz/store";
+import { resolveWorldConfig, WorldConfig } from "@latticexyz/world";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import worldConfig from "@latticexyz/world/mud.config";
 import { resourceToHex } from "@latticexyz/common";
 import { getExistingContracts } from "../utils/getExistingContracts";
 import { createClient, http } from "viem";
 import { getChainId } from "viem/actions";
-import { World as WorldConfig } from "@latticexyz/world";
-import { worldToV1 } from "@latticexyz/world/config/v2";
 
 // TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
 const systemsTableId = resourceToHex({
   type: "system",
   namespace: worldConfig.namespace,
-  name: worldConfig.tables.world__Systems.name,
+  name: worldConfig.tables.Systems.name,
 });
 
 type Options = {
@@ -43,7 +42,7 @@ const commandModule: CommandModule<Options, Options> = {
         type: "string",
         description: "World contract address. Defaults to the value from worlds.json, based on rpc's chainId",
       },
-      configPath: { type: "string", description: "Path to the MUD config file" },
+      configPath: { type: "string", description: "Path to the config file" },
       profile: { type: "string", description: "The foundry profile to use" },
       srcDir: { type: "string", description: "Source directory. Defaults to foundry src directory." },
       rpc: { type: "string", description: "json rpc endpoint. Defaults to foundry's configured eth_rpc_url" },
@@ -60,12 +59,11 @@ const commandModule: CommandModule<Options, Options> = {
     const existingContracts = getExistingContracts(srcDir);
 
     // Load the config
-    const configV2 = (await loadConfig(configPath)) as WorldConfig;
-    const mudConfig = worldToV1(configV2);
+    const mudConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
 
     const resolvedConfig = resolveWorldConfig(
       mudConfig,
-      existingContracts.map(({ basename }) => basename),
+      existingContracts.map(({ basename }) => basename)
     );
 
     // Get worldAddress either from args or from worldsFile

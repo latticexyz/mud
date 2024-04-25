@@ -63,7 +63,7 @@ export function ComponentsPage() {
                   <NavButton
                     className={twMerge(
                       "px-2 py-1.5 text-left hover:bg-blue-700 hover:text-white",
-                      component === selectedComponent ? "bg-slate-600" : null,
+                      component === selectedComponent ? "bg-slate-600" : null
                     )}
                     key={component.id}
                     to={component.id}

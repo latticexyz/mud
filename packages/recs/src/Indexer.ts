@@ -18,7 +18,7 @@ import { Component, ComponentValue, Entity, EntitySymbol, Indexer, Metadata, Sch
  * @returns Indexed version of the component.
  */
 export function createIndexer<S extends Schema, M extends Metadata, T = unknown>(
-  component: Component<S, M, T>,
+  component: Component<S, M, T>
 ): Indexer<S, M, T> {
   const valueToEntities = new Map<string, Set<EntitySymbol>>();
 

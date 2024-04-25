@@ -221,16 +221,6 @@ export default withNextra({
         destination: "/guides/extending-a-world",
         permanent: false,
       },
-      {
-        source: "/templates/typescript/getting-started",
-        destination: "/quickstart",
-        permanent: false,
-      },
-      {
-        source: "/templates/typescript/three",
-        destination: "/templates/typescript/threejs",
-        permanent: false,
-      },
     ];
   },
 });

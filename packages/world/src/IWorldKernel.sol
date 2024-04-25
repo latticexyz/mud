@@ -4,12 +4,9 @@ pragma solidity >=0.8.24;
 import { IWorldErrors } from "./IWorldErrors.sol";
 import { IModule } from "./IModule.sol";
 import { ResourceId } from "./WorldResourceId.sol";
-import { IModuleErrors } from "./IModuleErrors.sol";
-import { IWorldEvents } from "./IWorldEvents.sol";
 
 /**
  * @title World Module Installation Interface
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This interface defines the contract responsible for managing root modules installation.
  */
 interface IWorldModuleInstallation {
@@ -24,7 +21,6 @@ interface IWorldModuleInstallation {
 
 /**
  * @title World Call Interface
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This interface defines the contract for executing calls on the World's systems.
  */
 interface IWorldCall {
@@ -56,17 +52,20 @@ interface IWorldCall {
 
 /**
  * @title World Kernel Interface
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice The IWorldKernel interface includes all methods that are part of the World contract's
  * internal bytecode. Consumers should use the `IBaseWorld` interface instead, which includes dynamically
  * registered functions selectors from the `InitModule`.
- * @dev The IWorldKernel interface inherits IModuleErrors because the world can be delegatecalled with module code,
- * so it's ABI should include these errors.
  */
-interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors, IWorldEvents, IModuleErrors {
+interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors {
   /**
-   * @notice Retrieve the protocol version of the World.
-   * @return The protocol version of the World.
+   * @dev Emitted upon successful World initialization.
+   * @param worldVersion The version of the World being initialized.
+   */
+  event HelloWorld(bytes32 indexed worldVersion);
+
+  /**
+   * @notice Retrieve the version of the World.
+   * @return The version identifier of the World.
    */
   function worldVersion() external view returns (bytes32);
 

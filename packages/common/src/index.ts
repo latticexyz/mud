@@ -8,7 +8,6 @@ export * from "./getNonceManager";
 export * from "./getNonceManagerId";
 export * from "./hexToResource";
 export * from "./readHex";
-export * from "./resourceToLabel";
 export * from "./resourceToHex";
 export * from "./resourceTypes";
 export * from "./result";

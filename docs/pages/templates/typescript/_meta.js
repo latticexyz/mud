@@ -1,7 +1,7 @@
 export default {
+  "getting-started": "Getting Started",
   contracts: "Contracts",
   vanilla: "Vanilla",
   "react-ecs": "React-ECS",
-  threejs: "Three.js",
-  vue: "Vue",
+  three: "Three.js",
 };

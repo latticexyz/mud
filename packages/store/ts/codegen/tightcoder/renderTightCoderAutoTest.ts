@@ -1,5 +1,5 @@
 import { renderedSolidityHeader } from "@latticexyz/common/codegen";
-import { staticAbiTypes } from "@latticexyz/schema-type/internal";
+import { staticAbiTypes } from "@latticexyz/schema-type";
 
 export function renderTightCoderAutoTestFunction({ typeId }: { typeId: string }) {
   return `

@@ -1,6 +1,6 @@
 export function groupBy<value, key>(
   values: readonly value[],
-  getKey: (value: value) => key,
+  getKey: (value: value) => key
 ): Map<key, readonly value[]> {
   const map = new Map<key, readonly value[]>();
   for (const value of values) {

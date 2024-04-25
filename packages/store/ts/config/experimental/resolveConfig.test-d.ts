@@ -29,7 +29,7 @@ describe("resolveConfig", () => {
             valueSchema: "ResourceType",
           },
         },
-      }),
+      })
     );
 
     expectTypeOf<typeof config.tables.Shorthand.namespace>().toEqualTypeOf<"the-namespace">();

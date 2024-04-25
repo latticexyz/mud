@@ -11,45 +11,38 @@ In this section, we will accomplish the following:
 ## Use a singleton table for the map config
 
 At this point we have the concept of a 2D grid but there is no official "map" and there is no terrain.
-To do so in the ECS model we will now implement the map as a [singleton table](/store/table-libraries#singleton-tables) and initialize it in the client.
+To do so in the ECS model we will now implement the map as a [singleton table](/store/advanced-features#singleton-table) and initialize it in the client.
 Singleton tables are tables with a single record.
-This kind of table is useful for storing top-level state.
+This kind of table is useful to store top-level state.
 
 Go ahead and add the `MapConfig` as a singleton table in the MUD config (`mud.config.ts`).
 
 <CollapseCode>
 
-```ts filename="packages/contracts/mud.config.ts" {6,9-19} copy showLineNumbers
-import { defineWorld } from "@latticexyz/world";
+```ts filename="packages/contracts/mud.config.ts" {5,8-16} copy showLineNumbers
+import { mudConfig } from "@latticexyz/world/register";
 
-export default defineWorld({
+export default mudConfig({
   enums: {
-    Direction: ["North", "East", "South", "West"],
     TerrainType: ["None", "TallGrass", "Boulder"],
   },
   tables: {
     MapConfig: {
-      schema: {
+      keySchema: {},
+      dataStruct: false,
+      valueSchema: {
         width: "uint32",
         height: "uint32",
         terrain: "bytes",
-      },
-      key: [],
-      codegen: {
-        dataStruct: false,
       },
     },
     Movable: "bool",
     Player: "bool",
     Position: {
-      schema: {
-        id: "bytes32",
-        x: "int32",
-        y: "int32",
-      },
-      key: ["id"],
-      codegen: {
-        dataStruct: false,
+      dataStruct: false,
+      valueSchema: {
+        x: "uint32",
+        y: "uint32",
       },
     },
   },
@@ -62,42 +55,63 @@ export default defineWorld({
 
 <summary>Explanation</summary>
 
-Similar to the included `Direction` enum, we add one for terrain types.
+```ts
+  enums: {
+    TerrainType: ["None", "TallGrass", "Boulder"],
+  },
+```
 
-We also add a singleton table (a table with only one value) to hold our map configuration by using an empty `key`. The terrain is a `bytes` blob for ease of storage, which we'll encode and store in the next step.
+This is how you define an [enumeration](https://www.tutorialspoint.com/solidity/solidity_enums.htm).
+The Solidity code for enumerations goes in `packages/contracts/src/codegen/common.sol`.
+
+```ts
+    MapConfig: {
+      keySchema: {},
+```
+
+An empty key schema is the way you define [a singleton](/store/advanced-features#singleton-table).
+
+```ts
+      dataStruct: false,
+      valueSchema: {
+        width: "uint32",
+        height: "uint32",
+        terrain: "bytes",
+      },
+    },
+```
+
+The terrain is a list of bytes.
+We couldn't declare an array of arrays, because MUD schemas are limited to five dynamic (variable length) fields.
 
 </details>
 
 ## Add terrain
 
 There are two features we have yet to implement—boulders to obstruct movement and tall grass to generate encounters.
-Before we set up the components and systems necessary to do so, we must first add the terrain itself and render it in the client.
+Before we start setting up the components and systems necessary to do so we must first add the terrain itself and render them in the client.
 
-First, we’ll use the `PostDeploy.s.sol` to initialize the terrain in the `MapConfig`.
+First, we’ll use the `PostDeploy.s.sol` to initialize the terrain in the `World`.
 
 <CollapseCode>
 
-```solidity filename="packages/contracts/script/PostDeploy.s.sol" {9-11,22-62} copy showLineNumbers
+```solidity filename="packages/contracts/script/PostDeploy.s.sol" {6-8,16-58} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.24;
+pragma solidity >=0.8.0;
 
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
-import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-
-import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { MapConfig, Position } from "../src/codegen/index.sol";
 import { TerrainType } from "../src/codegen/common.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { MapConfig } from "../src/codegen/index.sol";
 
 contract PostDeploy is Script {
   function run(address worldAddress) external {
-    // Specify a store so that you can use tables directly in PostDeploy
-    StoreSwitch.setStoreAddress(worldAddress);
+    console.log("Deployed world: ", worldAddress);
 
-    // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-
     vm.startBroadcast(deployerPrivateKey);
+    StoreSwitch.setStoreAddress(worldAddress);
 
     TerrainType O = TerrainType.None;
     TerrainType T = TerrainType.TallGrass;
@@ -148,13 +162,14 @@ contract PostDeploy is Script {
 
 </CollapseCode>
 
-Note that `PostDeploy.s.sol` will only run once per world, so you will need to restart your `pnpm run dev` script to redeploy the world.
+Note that when you modify `PostDeploy.s.sol` you need to look in the `pnpm dev` output.
+If there is an error, restart it.
 
 Now let’s render the terrain in the client via `GameBoard.tsx`.
 
 <CollapseCode>
 
-```tsx filename="packages/client/src/GameBoard.tsx" {5-7,13,31-44,48-50} copy showLineNumbers
+```tsx filename="packages/client/src/GameBoard.tsx" {5-7,13,31-44,51-52} copy showLineNumbers
 import { useComponentValue } from "@latticexyz/react";
 import { GameMap } from "./GameMap";
 import { useMUD } from "./MUDContext";
@@ -214,6 +229,12 @@ export const GameBoard = () => {
 
 </CollapseCode>
 
+You can run this command to update all the files to this point in the game's development.
+
+```sh copy
+git reset --hard 6fc5590d7b660f911b757d1fb32456dee9a97d38
+```
+
 ## Turn boulders into obstructions
 
 Although boulders are rendering on the map at this point, they do not yet prevent movement in the way we want them to.
@@ -223,38 +244,31 @@ Let's start by adding the table to the MUD config:
 
 <CollapseCode>
 
-```ts filename="packages/contracts/mud.config.ts" {21} copy showLineNumbers
-import { defineWorld } from "@latticexyz/world";
+```ts filename="packages/contracts/mud.config.ts" {18} copy showLineNumbers
+import { mudConfig } from "@latticexyz/world/register";
 
-export default defineWorld({
+export default mudConfig({
   enums: {
-    Direction: ["North", "East", "South", "West"],
     TerrainType: ["None", "TallGrass", "Boulder"],
   },
   tables: {
     MapConfig: {
-      schema: {
+      keySchema: {},
+      dataStruct: false,
+      valueSchema: {
         width: "uint32",
         height: "uint32",
         terrain: "bytes",
-      },
-      key: [],
-      codegen: {
-        dataStruct: false,
       },
     },
     Movable: "bool",
     Obstruction: "bool",
     Player: "bool",
     Position: {
-      schema: {
-        id: "bytes32",
-        x: "int32",
-        y: "int32",
-      },
-      key: ["id"],
-      codegen: {
-        dataStruct: false,
+      dataStruct: false,
+      valueSchema: {
+        x: "uint32",
+        y: "uint32",
       },
     },
   },
@@ -267,28 +281,24 @@ We'll then make sure `PostDeploy.s.sol` initializes the boulders properly (with 
 
 <CollapseCode>
 
-```solidity filename="packages/contracts/script/PostDeploy.s.sol" {9,11,61-65} copy showLineNumbers
+```solidity filename="packages/contracts/script/PostDeploy.s.sol" {8-9,57-61} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.24;
+pragma solidity >=0.8.21;
 
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
-import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-
-import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { MapConfig, Obstruction, Position } from "../src/codegen/index.sol";
 import { TerrainType } from "../src/codegen/common.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { MapConfig, Obstruction, Position } from "../src/codegen/index.sol";
 import { positionToEntityKey } from "../src/positionToEntityKey.sol";
 
 contract PostDeploy is Script {
   function run(address worldAddress) external {
-    // Specify a store so that you can use tables directly in PostDeploy
-    StoreSwitch.setStoreAddress(worldAddress);
+    console.log("Deployed world: ", worldAddress);
 
-    // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-
     vm.startBroadcast(deployerPrivateKey);
+    StoreSwitch.setStoreAddress(worldAddress);
 
     TerrainType O = TerrainType.None;
     TerrainType T = TerrainType.TallGrass;
@@ -328,9 +338,9 @@ contract PostDeploy is Script {
 
         terrain[(y * width) + x] = bytes1(uint8(terrainType));
 
-        bytes32 entity = positionToEntityKey(int32(x), int32(y));
+        bytes32 entity = positionToEntityKey(x, y);
         if (terrainType == TerrainType.Boulder) {
-          Position.set(entity, int32(x), int32(y));
+          Position.set(entity, x, y);
           Obstruction.set(entity, true);
         }
       }
@@ -366,26 +376,25 @@ import { positionToEntityKey } from "../src/positionToEntityKey.sol";
         }
 ```
 
-If the terrain is a boulder, specify the location and that it is an `Obstruction`.
+If the terrain is a boulder, specify the location and that it is an `Obstraction`.
 
 </details>
 
-Then let's use this table in the `move` and `spawn` methods in `MapSystem.sol`.
+Then let's use this table in the `moveBy` and `spawn` methods in `MapSystem.sol`.
 
 <CollapseCode>
 
-```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5,8,15-16,38-39} copy showLineNumbers
+```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5,7,14-15,33-34} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.24;
+pragma solidity >=0.8.21;
 
 import { System } from "@latticexyz/world/src/System.sol";
-import { Movable, Obstruction, Player, Position } from "../codegen/index.sol";
-import { Direction } from "../codegen/common.sol";
+import { MapConfig, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
 import { addressToEntityKey } from "../addressToEntityKey.sol";
 import { positionToEntityKey } from "../positionToEntityKey.sol";
 
 contract MapSystem is System {
-  function spawn(int32 x, int32 y) public {
+  function spawn(uint32 x, uint32 y) public {
     bytes32 player = addressToEntityKey(address(_msgSender()));
     require(!Player.get(player), "already spawned");
 
@@ -397,25 +406,25 @@ contract MapSystem is System {
     Movable.set(player, true);
   }
 
-  function move(Direction direction) public {
+  function moveBy(uint32 clientX, uint32 clientY, int32 deltaX, int32 deltaY) public {
     bytes32 player = addressToEntityKey(_msgSender());
     require(Movable.get(player), "cannot move");
 
-    (int32 x, int32 y) = Position.get(player);
-    if (direction == Direction.North) {
-      y -= 1;
-    } else if (direction == Direction.East) {
-      x += 1;
-    } else if (direction == Direction.South) {
-      y += 1;
-    } else if (direction == Direction.West) {
-      x -= 1;
-    }
+    (uint32 fromX, uint32 fromY) = Position.get(player);
+    require(distance2(deltaX, deltaY) == 1, "can only move to adjacent spaces");
+    require(clientX == fromX && clientY == fromY, "client confused about location");
+
+    uint32 x = uint32(int32(fromX) + deltaX);
+    uint32 y = uint32(int32(fromY) + deltaY);
 
     bytes32 position = positionToEntityKey(x, y);
     require(!Obstruction.get(position), "this space is obstructed");
 
     Position.set(player, x, y);
+  }
+
+  function distance2(int32 deltaX, int32 deltaY) internal pure returns (uint32) {
+    return uint32(deltaX * deltaX + deltaY * deltaY);
   }
 }
 ```
@@ -426,63 +435,40 @@ Lastly, let's ensure these interactions are optimistically rendering in the `cre
 
 <CollapseCode>
 
-```ts filename="packages/client/src/mud/createSystemCalls.ts" {12,14-16,40-43,69-72} copy showLineNumbers
+```ts filename="packages/client/src/mud/createSystemCalls.ts" {10,12-14,30,46} copy showLineNumbers
 import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
-import { singletonEntity } from "@latticexyz/store-sync/recs";
-import { uuid } from "@latticexyz/utils";
 import { ClientComponents } from "./createClientComponents";
 import { SetupNetworkResult } from "./setupNetwork";
-import { Direction } from "../direction";
+import { singletonEntity } from "@latticexyz/store-sync/recs";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
   { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
-  { Obstruction, Player, Position }: ClientComponents,
+  { MapConfig, Obstruction, Player, Position }: ClientComponents
 ) {
   const isObstructed = (x: number, y: number) => {
     return runQuery([Has(Obstruction), HasValue(Position, { x, y })]).size > 0;
   };
 
-  const move = async (direction: Direction) => {
+  const moveBy = async (deltaX: number, deltaY: number) => {
     if (!playerEntity) {
       throw new Error("no player");
     }
 
-    const position = getComponentValue(Position, playerEntity);
-    if (!position) {
-      console.warn("cannot move without a player position, not yet spawned?");
+    const playerPosition = getComponentValue(Position, playerEntity);
+    if (!playerPosition) {
+      console.warn("cannot moveBy without a player position, not yet spawned?");
       return;
     }
 
-    let { x, y } = position;
-    if (direction === Direction.North) {
-      y -= 1;
-    } else if (direction === Direction.East) {
-      x += 1;
-    } else if (direction === Direction.South) {
-      y += 1;
-    } else if (direction === Direction.West) {
-      x -= 1;
-    }
+    const newX = playerPosition.x + deltaX;
+    const newY = playerPosition.y + deltaY;
 
-    if (isObstructed(x, y)) {
-      console.warn("cannot move to obstructed space");
-      return;
-    }
+    if (isObstructed(newX, newY)) throw new Error("cannot go into an obstructed space");
 
-    const positionId = uuid();
-    Position.addOverride(positionId, {
-      entity: playerEntity,
-      value: { x, y },
-    });
-
-    try {
-      const tx = await worldContract.write.move([direction]);
-      await waitForTransaction(tx);
-    } finally {
-      Position.removeOverride(positionId);
-    }
+    const tx = await worldContract.write.moveBy([playerPosition.x, playerPosition.y, deltaX, deltaY]);
+    await waitForTransaction(tx);
   };
 
   const spawn = async (x: number, y: number) => {
@@ -495,46 +481,15 @@ export function createSystemCalls(
       throw new Error("already spawned");
     }
 
-    if (isObstructed(x, y)) {
-      console.warn("cannot spawn on obstructed space");
-      return;
-    }
+    if (isObstructed(x, y)) throw new Error("cannot go into an obstructed space");
 
-    const positionId = uuid();
-    Position.addOverride(positionId, {
-      entity: playerEntity,
-      value: { x, y },
-    });
-    const playerId = uuid();
-    Player.addOverride(playerId, {
-      entity: playerEntity,
-      value: { value: true },
-    });
-
-    try {
-      const tx = await worldContract.write.spawn([x, y]);
-      await waitForTransaction(tx);
-    } finally {
-      Position.removeOverride(positionId);
-      Player.removeOverride(playerId);
-    }
-  };
-
-  const throwBall = async () => {
-    // TODO
-    return null as any;
-  };
-
-  const fleeEncounter = async () => {
-    // TODO
-    return null as any;
+    const tx = await worldContract.write.spawn([x, y]);
+    await waitForTransaction(tx);
   };
 
   return {
-    move,
+    moveBy,
     spawn,
-    throwBall,
-    fleeEncounter,
   };
 }
 ```
@@ -551,7 +506,7 @@ const isObstructed = (x: number, y: number) => {
 };
 ```
 
-Here we run [a query](/state-query/typescript/recs#running-queries) that looks for all the entities that have `Obstruction` set to `true`, and whose entity ID is the one for the terrain at `(x,y)`.
+Here we run [a query](https://mud.dev/world/querying) that looks for all the entities that have `Obstruction` set to `true`, and whose entity ID is the one for the terrain in `(x,y)`.
 If there are any then this space is obstructed.
 
 This function is not the most efficient possibility.
@@ -568,32 +523,37 @@ The expensive resource we need to optimize for is processing on the blockchain, 
 
 Now if you try moving onto a tile with a boulder you’ll see that you can’t!
 
-## Wrap map boundary
+You can run this command to update all the files to this point in the game's development.
 
-Currently, players can move off of the bounds of the map.
-We'll address this by updating the `spawn` and `move` methods in `MapSystem.sol` to wrap the player coordinate around the map size.
+```sh copy
+git reset --hard 952cf5032af33945872a99a95eaa59379a5df536
+```
+
+## Wraparound movement
+
+Players can move off of the bounds of the map.
+We'll address this by updating the `spawn` and `moveTo` methods in `MapSystem.sol` to wrap the player coordinate around the map size.
 
 <CollapseCode>
 
-```solidity filename="packages/contracts/src/systems/MapSystem.sol" {5,15-18,43-46} copy showLineNumbers
+```solidity filename="packages/contracts/src/systems/MapSystem.sol" {14-17,35-41} copy showLineNumbers
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.24;
+pragma solidity >=0.8.21;
 
 import { System } from "@latticexyz/world/src/System.sol";
 import { MapConfig, Movable, Obstruction, Player, Position } from "../codegen/index.sol";
-import { Direction } from "../codegen/common.sol";
 import { addressToEntityKey } from "../addressToEntityKey.sol";
 import { positionToEntityKey } from "../positionToEntityKey.sol";
 
 contract MapSystem is System {
-  function spawn(int32 x, int32 y) public {
+  function spawn(uint32 x, uint32 y) public {
     bytes32 player = addressToEntityKey(address(_msgSender()));
     require(!Player.get(player), "already spawned");
 
     // Constrain position to map size, wrapping around if necessary
     (uint32 width, uint32 height, ) = MapConfig.get();
-    x = (x + int32(width)) % int32(width);
-    y = (y + int32(height)) % int32(height);
+    x = (x + width) % width;
+    y = (y + height) % height;
 
     bytes32 position = positionToEntityKey(x, y);
     require(!Obstruction.get(position), "this space is obstructed");
@@ -603,160 +563,31 @@ contract MapSystem is System {
     Movable.set(player, true);
   }
 
-  function move(Direction direction) public {
+  function moveBy(uint32 clientX, uint32 clientY, int32 deltaX, int32 deltaY) public {
     bytes32 player = addressToEntityKey(_msgSender());
     require(Movable.get(player), "cannot move");
 
-    (int32 x, int32 y) = Position.get(player);
-    if (direction == Direction.North) {
-      y -= 1;
-    } else if (direction == Direction.East) {
-      x += 1;
-    } else if (direction == Direction.South) {
-      y += 1;
-    } else if (direction == Direction.West) {
-      x -= 1;
-    }
+    (uint32 fromX, uint32 fromY) = Position.get(player);
+    require(distance2(deltaX, deltaY) == 1, "can only move to adjacent spaces");
+    require(clientX == fromX && clientY == fromY, "client confused about location");
 
     // Constrain position to map size, wrapping around if necessary
+    // Also, by adding width and height, avoid negative numbers,
+    // which uint32 does not support.
     (uint32 width, uint32 height, ) = MapConfig.get();
-    x = (x + int32(width)) % int32(width);
-    y = (y + int32(height)) % int32(height);
+
+    uint32 x = uint32(int32(fromX) + deltaX + int32(width)) % width;
+    uint32 y = uint32(int32(fromY) + deltaY + int32(height)) % height;
 
     bytes32 position = positionToEntityKey(x, y);
     require(!Obstruction.get(position), "this space is obstructed");
 
     Position.set(player, x, y);
   }
-}
-```
 
-</CollapseCode>
-
-We'll also need to update our client-side optimistic rendering.
-
-<CollapseCode>
-
-```typescript filename="packages/client/src/mud/createSystemCalls" {12,14-20,37,39,41,43,45,48,68,78} copy showLineNumbers
-import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
-import { singletonEntity } from "@latticexyz/store-sync/recs";
-import { uuid } from "@latticexyz/utils";
-import { ClientComponents } from "./createClientComponents";
-import { SetupNetworkResult } from "./setupNetwork";
-import { Direction } from "../direction";
-
-export type SystemCalls = ReturnType<typeof createSystemCalls>;
-
-export function createSystemCalls(
-  { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult,
-  { MapConfig, Obstruction, Player, Position }: ClientComponents,
-) {
-  const wrapPosition = (x: number, y: number) => {
-    const mapConfig = getComponentValue(MapConfig, singletonEntity);
-    if (!mapConfig) {
-      throw new Error("mapConfig no yet loaded or initialized");
-    }
-    return [(x + mapConfig.width) % mapConfig.width, (y + mapConfig.height) % mapConfig.height];
-  };
-
-  const isObstructed = (x: number, y: number) => {
-    return runQuery([Has(Obstruction), HasValue(Position, { x, y })]).size > 0;
-  };
-
-  const move = async (direction: Direction) => {
-    if (!playerEntity) {
-      throw new Error("no player");
-    }
-
-    const position = getComponentValue(Position, playerEntity);
-    if (!position) {
-      console.warn("cannot move without a player position, not yet spawned?");
-      return;
-    }
-
-    let { x: inputX, y: inputY } = position;
-    if (direction === Direction.North) {
-      inputY -= 1;
-    } else if (direction === Direction.East) {
-      inputX += 1;
-    } else if (direction === Direction.South) {
-      inputY += 1;
-    } else if (direction === Direction.West) {
-      inputX -= 1;
-    }
-
-    const [x, y] = wrapPosition(inputX, inputY);
-    if (isObstructed(x, y)) {
-      console.warn("cannot move to obstructed space");
-      return;
-    }
-
-    const positionId = uuid();
-    Position.addOverride(positionId, {
-      entity: playerEntity,
-      value: { x, y },
-    });
-
-    try {
-      const tx = await worldContract.write.move([direction]);
-      await waitForTransaction(tx);
-    } finally {
-      Position.removeOverride(positionId);
-    }
-  };
-
-  const spawn = async (inputX: number, inputY: number) => {
-    if (!playerEntity) {
-      throw new Error("no player");
-    }
-
-    const canSpawn = getComponentValue(Player, playerEntity)?.value !== true;
-    if (!canSpawn) {
-      throw new Error("already spawned");
-    }
-
-    const [x, y] = wrapPosition(inputX, inputY);
-    if (isObstructed(x, y)) {
-      console.warn("cannot spawn on obstructed space");
-      return;
-    }
-
-    const positionId = uuid();
-    Position.addOverride(positionId, {
-      entity: playerEntity,
-      value: { x, y },
-    });
-    const playerId = uuid();
-    Player.addOverride(playerId, {
-      entity: playerEntity,
-      value: { value: true },
-    });
-
-    try {
-      const tx = await worldContract.write.spawn([x, y]);
-      await waitForTransaction(tx);
-    } finally {
-      Position.removeOverride(positionId);
-      Player.removeOverride(playerId);
-    }
-  };
-
-  const throwBall = async () => {
-    // TODO
-    return null as any;
-  };
-
-  const fleeEncounter = async () => {
-    // TODO
-    return null as any;
-  };
-
-  return {
-    move,
-    spawn,
-    throwBall,
-    fleeEncounter,
-  };
+  function distance2(int32 deltaX, int32 deltaY) internal pure returns (uint32) {
+    return uint32(deltaX * deltaX + deltaY * deltaY);
+  }
 }
 ```
 
@@ -765,5 +596,5 @@ export function createSystemCalls(
 You can run this command to update all the files to this point in the game's development.
 
 ```sh copy
-git reset --hard step-2
+git reset --hard 11a3036da8e40ffd25d5f0098485c014d8e6c1c4
 ```

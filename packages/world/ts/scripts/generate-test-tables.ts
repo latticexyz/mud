@@ -1,40 +1,33 @@
 import path from "path";
 import { getRemappings, getSrcDirectory } from "@latticexyz/common/foundry";
 import { tablegen } from "@latticexyz/store/codegen";
-import { defineWorld } from "../config/v2/world";
+import { mudConfig } from "../register";
 
-const config = defineWorld({
-  codegen: {
-    outputDirectory: "../test/codegen",
-  },
+const config = mudConfig({
+  codegenDirectory: "../test/codegen",
   tables: {
     Bool: {
-      schema: {
+      keySchema: {},
+      valueSchema: {
         value: "bool",
       },
-      key: [],
-      codegen: { tableIdArgument: true },
+      tableIdArgument: true,
     },
     TwoFields: {
-      schema: {
+      keySchema: {},
+      valueSchema: {
         value1: "bool",
         value2: "bool",
       },
-      key: [],
-      codegen: { tableIdArgument: true },
+      tableIdArgument: true,
     },
     AddressArray: {
-      schema: {
-        key: "bytes32",
-        value: "address[]",
-      },
-      key: ["key"],
-      codegen: { tableIdArgument: true },
+      valueSchema: "address[]",
+      tableIdArgument: true,
     },
   },
 });
-
 const srcDir = await getSrcDirectory();
 const remappings = await getRemappings();
 
-await tablegen(config, path.join(srcDir, config.codegen.outputDirectory), remappings);
+await tablegen(config, path.join(srcDir, config.codegenDirectory), remappings);

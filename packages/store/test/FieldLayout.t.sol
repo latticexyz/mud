@@ -6,7 +6,6 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { FieldLayout, FieldLayoutLib } from "../src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { MAX_TOTAL_FIELDS, MAX_DYNAMIC_FIELDS } from "../src/constants.sol";
-import { IFieldLayoutErrors } from "../src/IFieldLayoutErrors.sol";
 
 // TODO add tests for all lengths
 contract FieldLayoutTest is Test, GasReporter {
@@ -37,12 +36,12 @@ contract FieldLayoutTest is Test, GasReporter {
   }
 
   function testInvalidFieldLayoutStaticTypeIsZero() public {
-    vm.expectRevert(abi.encodeWithSelector(IFieldLayoutErrors.FieldLayout_StaticLengthIsZero.selector, 1));
+    vm.expectRevert(abi.encodeWithSelector(FieldLayoutLib.FieldLayoutLib_StaticLengthIsZero.selector, 1));
     FieldLayoutEncodeHelper.encode(1, 0, 1);
   }
 
   function testInvalidFieldLayoutStaticTypeDoesNotFitInAWord() public {
-    vm.expectRevert(abi.encodeWithSelector(IFieldLayoutErrors.FieldLayout_StaticLengthDoesNotFitInAWord.selector, 1));
+    vm.expectRevert(abi.encodeWithSelector(FieldLayoutLib.FieldLayoutLib_StaticLengthDoesNotFitInAWord.selector, 1));
     FieldLayoutEncodeHelper.encode(1, 33, 1);
   }
 
@@ -98,7 +97,7 @@ contract FieldLayoutTest is Test, GasReporter {
     fieldLayout[16] = 32;
     vm.expectRevert(
       abi.encodeWithSelector(
-        IFieldLayoutErrors.FieldLayout_TooManyFields.selector,
+        FieldLayoutLib.FieldLayoutLib_TooManyFields.selector,
         fieldLayout.length + dynamicFields,
         MAX_TOTAL_FIELDS
       )
@@ -118,7 +117,7 @@ contract FieldLayoutTest is Test, GasReporter {
     uint256 dynamicFields = 6;
     vm.expectRevert(
       abi.encodeWithSelector(
-        IFieldLayoutErrors.FieldLayout_TooManyDynamicFields.selector,
+        FieldLayoutLib.FieldLayoutLib_TooManyDynamicFields.selector,
         fieldLayout.length + dynamicFields,
         MAX_DYNAMIC_FIELDS
       )
@@ -203,7 +202,7 @@ contract FieldLayoutTest is Test, GasReporter {
 
     vm.expectRevert(
       abi.encodeWithSelector(
-        IFieldLayoutErrors.FieldLayout_TooManyDynamicFields.selector,
+        FieldLayoutLib.FieldLayoutLib_TooManyDynamicFields.selector,
         encodedFieldLayout.numDynamicFields(),
         MAX_DYNAMIC_FIELDS
       )

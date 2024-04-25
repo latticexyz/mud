@@ -8,13 +8,13 @@ export type CachedValue<V, Proxied extends boolean> = Proxied extends true
   ? V extends Func<infer A, infer B>
     ? AsyncFunc<A, B>
     : V extends Record<string, any>
-      ? Cached<V> & { proxied: true }
-      : { proxied: true }
+    ? Cached<V> & { proxied: true }
+    : { proxied: true }
   : V extends Func<infer A, infer B>
-    ? Func<A, B>
-    : V extends Record<string, any>
-      ? V
-      : V & { proxied: false };
+  ? Func<A, B>
+  : V extends Record<string, any>
+  ? V
+  : V & { proxied: false };
 
 export type Cached<C> =
   | ({ proxied: false } & { [key in keyof C]: CachedValue<C[key], false> })

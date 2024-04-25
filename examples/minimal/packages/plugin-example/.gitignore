@@ -1,0 +1,5 @@
+dist/
+out/
+cache/
+node_modules/
+artifacts/

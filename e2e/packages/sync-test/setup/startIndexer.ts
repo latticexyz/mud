@@ -31,13 +31,12 @@ export async function startIndexer(opts: StartIndexerOptions) {
   });
 
   const env = {
-    DEBUG: "mud:store-sync:createStoreSync",
+    DEBUG: "mud:*",
     PORT: opts.port.toString(),
     CHAIN_ID: "31337",
     RPC_HTTP_URL: opts.rpcHttpUrl,
     SQLITE_FILENAME: opts.indexer === "sqlite" ? opts.sqliteFilename : undefined,
     DATABASE_URL: opts.indexer === "postgres" ? opts.databaseUrl : undefined,
-    FOLLOW_BLOCK_TAG: "latest",
   };
   console.log(chalk.magenta("[indexer]:"), "starting indexer", env);
 

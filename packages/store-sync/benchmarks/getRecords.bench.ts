@@ -3,9 +3,9 @@ import { getComponentEntities, getComponentValue } from "@latticexyz/recs";
 import { buildTable, getTables } from "../src/sqlite";
 import { logsToBlocks } from "../test/logsToBlocks";
 import { createRecsStorage, createSqliteStorage, createZustandStorage, tables } from "../test/utils";
-import worldRpcLogs10 from "../../../test-data/world-logs-bulk-10.json";
-import worldRpcLogs100 from "../../../test-data/world-logs-bulk-100.json";
-import worldRpcLogs1000 from "../../../test-data/world-logs-bulk-1000.json";
+import worldRpcLogs10 from "../../../test-data/world-logs-10.json";
+import worldRpcLogs100 from "../../../test-data/world-logs-100.json";
+import worldRpcLogs1000 from "../../../test-data/world-logs-1000.json";
 
 describe.each([
   { numRecords: 10, logs: worldRpcLogs10 },

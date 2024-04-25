@@ -1,14 +1,8 @@
 import worldPackageJson from "../../packages/world/package.json" assert { type: "json" };
 
 export default {
-  introduction: {
-    title: "What is MUD?",
-    theme: { breadcrumb: false },
-  },
-  quickstart: {
-    title: "Get started",
-    theme: { breadcrumb: false },
-  },
+  quickstart: "Quickstart",
+  introduction: "Introduction",
   protocol: {
     title: "Protocol",
     type: "separator",
@@ -29,13 +23,9 @@ export default {
   },
   guides: "Guides",
   templates: "Templates",
-  contribute: {
-    title: "Contribute",
-    theme: { breadcrumb: false },
-  },
+  contribute: "Contribute",
   changelog: "Changelog",
   retrospectives: "Retrospectives",
-  audits: "Audits",
   // --------------------
   version: {
     title: worldPackageJson.version,

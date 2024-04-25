@@ -60,7 +60,8 @@ export async function setupNetwork() {
   const worldContract = getContract({
     address: networkConfig.worldAddress as Hex,
     abi: IWorldAbi,
-    client: { public: publicClient, wallet: burnerWalletClient },
+    publicClient,
+    walletClient: burnerWalletClient,
     onWrite: (write) => write$.next(write),
   });
 

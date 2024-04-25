@@ -9,10 +9,6 @@ import { IWorldErrors } from "./IWorldErrors.sol";
 using WorldResourceIdInstance for ResourceId;
 
 /**
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
- */
-
-/**
  * @notice Checks if a given `resourceId` is a valid namespace.
  * @dev Reverts with `IWorldErrors.World_InvalidNamespace` if the namespace includes the reserved `__` separator string or ends with `_`.
  * @param resourceId The resource ID to validate.
@@ -24,14 +20,12 @@ function requireValidNamespace(ResourceId resourceId) pure {
   uint256 trimmedNamespaceLength = bytes(trimmedNamespace).length;
 
   if (trimmedNamespaceLength > 0) {
-    if (Bytes.getBytes1(bytes(trimmedNamespace), trimmedNamespaceLength - 1) == "_") {
+    if (Bytes.slice1(bytes(trimmedNamespace), trimmedNamespaceLength - 1) == "_") {
       revert IWorldErrors.World_InvalidNamespace(namespace);
     }
 
     for (uint256 i; i < trimmedNamespaceLength - 1; i++) {
-      if (
-        Bytes.getBytes1(bytes(trimmedNamespace), i) == "_" && Bytes.getBytes1(bytes(trimmedNamespace), i + 1) == "_"
-      ) {
+      if (Bytes.slice1(bytes(trimmedNamespace), i) == "_" && Bytes.slice1(bytes(trimmedNamespace), i + 1) == "_") {
         revert IWorldErrors.World_InvalidNamespace(namespace);
       }
     }

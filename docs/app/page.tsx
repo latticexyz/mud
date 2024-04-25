@@ -10,10 +10,8 @@ import { ContributeIcon } from "../src/icons/ContributeIcon";
 import { ChangelogIcon } from "../src/icons/ChangelogIcon";
 
 export const metadata: Metadata = {
-  title: "MUD | Framework for onchain applications",
-  description:
-    // eslint-disable-next-line max-len
-    "MUD provides you with the tools to build onchain applications and autonomous worlds, with a framework and protocol that simplifies development on Ethereum and other EVM chains.",
+  title: "MUD",
+  description: "Battle-tested onchain framework for developers.",
   icons: "/images/logos/circle/mud.svg",
 };
 
@@ -26,7 +24,7 @@ export default async function HomePage() {
             "min-h-screen flex flex-col animate-in animate-duration-500 fade-in",
             "gap-12 p-8",
             "sm:justify-between",
-            "md:gap-16 md:p-16",
+            "md:gap-16 md:p-16"
           )}
         >
           <div className="flex items-center justify-between">

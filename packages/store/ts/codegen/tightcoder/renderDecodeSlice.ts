@@ -1,5 +1,5 @@
 import { renderedSolidityHeader } from "@latticexyz/common/codegen";
-import { staticAbiTypeToByteLength, staticAbiTypes } from "@latticexyz/schema-type/internal";
+import { staticAbiTypeToByteLength, staticAbiTypes } from "@latticexyz/schema-type";
 import { renderTightCoderDecode } from "./renderFunctions";
 
 /**
@@ -14,8 +14,7 @@ export function renderDecodeSlice() {
     import { Slice } from "../Slice.sol";
 
     /**
-     * @title DecodeSlice Library 
-     * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+     * @title DecodeSlice Library
      * @notice A library for decoding slices of data into specific data types.
      * @dev This library provides functions for decoding slices into arrays of basic uint types.
      */
@@ -25,7 +24,7 @@ export function renderDecodeSlice() {
           renderTightCoderDecode({
             internalTypeId: staticAbiType,
             staticByteLength: staticAbiTypeToByteLength[staticAbiType],
-          }),
+          })
         )
         .join("\n")}
     }

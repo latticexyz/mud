@@ -1,12 +1,12 @@
-import { Tables } from "@latticexyz/store/internal";
+import { Tables } from "@latticexyz/store";
 import { StorageAdapter } from "../common";
-import { RawRecord, TableRecord } from "./common";
+import { RawRecord } from "./common";
 import { ZustandStore } from "./createStore";
-import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
+import { hexToResource, spliceHex } from "@latticexyz/common";
 import { debug } from "./debug";
 import { getId } from "./getId";
 import { size } from "viem";
-import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
+import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
 import { flattenSchema } from "../flattenSchema";
 import { isDefined } from "@latticexyz/common/utils";
 
@@ -17,9 +17,11 @@ export type CreateStorageAdapterOptions<tables extends Tables> = {
 export function createStorageAdapter<tables extends Tables>({
   store,
 }: CreateStorageAdapterOptions<tables>): StorageAdapter {
-  return async function zustandStorageAdapter({ logs }) {
-    // record id => is deleted
-    const touchedIds: Map<string, boolean> = new Map();
+  return async function zustandStorageAdapter({ blockNumber, logs }) {
+    // TODO: clean this up so that we do one store write per block
+
+    const updatedIds: string[] = [];
+    const deletedIds: string[] = [];
 
     const rawRecords = { ...store.getState().rawRecords };
 
@@ -27,11 +29,7 @@ export function createStorageAdapter<tables extends Tables>({
       const table = store.getState().tables[log.args.tableId];
       if (!table) {
         const { namespace, name } = hexToResource(log.args.tableId);
-        debug(
-          `skipping update for unknown table: ${resourceToLabel({ namespace, name })} (${log.args.tableId}) at ${
-            log.address
-          }`,
-        );
+        debug(`skipping update for unknown table: ${namespace}:${name} (${log.args.tableId}) at ${log.address}`);
         continue;
       }
 
@@ -52,7 +50,7 @@ export function createStorageAdapter<tables extends Tables>({
           encodedLengths: log.args.encodedLengths,
           dynamicData: log.args.dynamicData,
         };
-        touchedIds.set(id, false);
+        updatedIds.push(id);
       } else if (log.eventName === "Store_SpliceStaticData") {
         debug("splicing static data", {
           namespace: table.namespace,
@@ -73,7 +71,7 @@ export function createStorageAdapter<tables extends Tables>({
           ...previousRecord,
           staticData,
         };
-        touchedIds.set(id, false);
+        updatedIds.push(id);
       } else if (log.eventName === "Store_SpliceDynamicData") {
         debug("splicing dynamic data", {
           namespace: table.namespace,
@@ -96,7 +94,7 @@ export function createStorageAdapter<tables extends Tables>({
           encodedLengths,
           dynamicData,
         };
-        touchedIds.set(id, false);
+        updatedIds.push(id);
       } else if (log.eventName === "Store_DeleteRecord") {
         debug("deleting record", {
           namespace: table.namespace,
@@ -105,18 +103,14 @@ export function createStorageAdapter<tables extends Tables>({
           log,
         });
         delete rawRecords[id];
-        touchedIds.set(id, true);
+        deletedIds.push(id);
       }
     }
 
-    if (!touchedIds.size) return;
+    if (!updatedIds.length && !deletedIds.length) return;
 
-    const updatedIds = Array.from(touchedIds.keys()).filter((id) => touchedIds.get(id) === false);
-    const deletedIds = Array.from(touchedIds.keys()).filter((id) => touchedIds.get(id) === true);
-
-    const previousRecords = store.getState().records;
-    const records: typeof previousRecords = {
-      ...Object.fromEntries(Object.entries(previousRecords).filter(([id]) => !deletedIds.includes(id))),
+    const records = {
+      ...Object.fromEntries(Object.entries(store.getState().records).filter(([id]) => !deletedIds.includes(id))),
       ...Object.fromEntries(
         updatedIds
           .map((id) => {
@@ -139,10 +133,10 @@ export function createStorageAdapter<tables extends Tables>({
                 keyTuple: rawRecord.keyTuple,
                 key: decodeKey(flattenSchema(table.keySchema), rawRecord.keyTuple),
                 value: decodeValueArgs(flattenSchema(table.valueSchema), rawRecord),
-              } satisfies TableRecord,
+              },
             ];
           })
-          .filter(isDefined),
+          .filter(isDefined)
       ),
     };
 

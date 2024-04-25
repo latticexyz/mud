@@ -31,8 +31,8 @@ export function requestHandler(): Koa.Middleware {
             include: {
               user: false,
             },
-          }),
-        ),
+          })
+        )
       );
       await next();
     });

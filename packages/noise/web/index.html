@@ -1,0 +1,53 @@
+<html>
+  <head>
+    <script type="module">
+      fetch("./sol_perlin.json")
+        .then((res) => res.json())
+        .then((values) => {
+          const len = Math.floor(Math.sqrt(values.length));
+          generateTexture(len, len, "sol_perlin", values);
+        });
+
+      fetch("./wasm_perlin.json")
+        .then((res) => res.json())
+        .then((values) => {
+          const len = Math.floor(Math.sqrt(values.length));
+          generateTexture(len, len, "wasm_perlin", values);
+        });
+
+      function generateTexture(width, height, id, values) {
+        // Create the canvas for this texture
+        let div = document.createElement("div");
+        div.id = id;
+        let canvas = document.createElement("canvas");
+        canvas.style.width = "512px";
+        canvas.style.imageRendering = "pixelated";
+        canvas.width = width;
+        canvas.height = height;
+        div.appendChild(canvas);
+        document.body.appendChild(div);
+
+        let context = canvas.getContext("2d");
+        let imageDataObject = context.createImageData(width, height);
+        let imageData = imageDataObject.data;
+
+        // Fill out the image data with our values
+        let imageDataSize = width * height * 8;
+
+        const imgVals = [];
+
+        for (let di = 0, vi = 0; di < imageDataSize; di += 4, vi++) {
+          imageData[di] = values[vi] * 255;
+          imageData[di + 1] = values[vi] * 255;
+          imageData[di + 2] = values[vi] * 255;
+          imageData[di + 3] = 255;
+          imgVals.push(values[vi] * 255);
+        }
+
+        // Present the texture
+        context.putImageData(imageDataObject, 0, 0);
+      }
+    </script>
+  </head>
+  <body></body>
+</html>

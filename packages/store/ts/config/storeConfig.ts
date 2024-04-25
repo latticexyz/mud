@@ -20,10 +20,10 @@ import {
   zValueName,
   zNamespace,
   zName,
-} from "@latticexyz/config/library";
+} from "@latticexyz/config";
 import { DEFAULTS, PATH_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
 import { UserType } from "@latticexyz/common/codegen";
-import { SchemaAbiType, isSchemaAbiType, schemaAbiTypes } from "@latticexyz/schema-type/internal";
+import { SchemaAbiType, isSchemaAbiType, schemaAbiTypes } from "@latticexyz/schema-type";
 
 const zTableName = zObjectName;
 const zKeyName = zValueName;
@@ -73,7 +73,7 @@ export const zSchemaConfig = zFullSchemaConfig.or(zShorthandSchemaConfig);
 
 type ResolvedSchema<
   TSchema extends Record<string, string>,
-  TUserTypes extends Record<string, Pick<UserType, "internalType">>,
+  TUserTypes extends Record<string, Pick<UserType, "internalType">>
 > = {
   [key in keyof TSchema]: TSchema[key] extends keyof TUserTypes
     ? TUserTypes[TSchema[key]]["internalType"]
@@ -84,7 +84,7 @@ type ResolvedSchema<
 // (see https://github.com/latticexyz/mud/pull/1588)
 export function resolveUserTypes<
   TSchema extends Record<string, string>,
-  TUserTypes extends Record<string, Pick<UserType, "internalType">>,
+  TUserTypes extends Record<string, Pick<UserType, "internalType">>
 >(schema: TSchema, userTypes: TUserTypes): ResolvedSchema<TSchema, TUserTypes> {
   const resolvedSchema: Record<string, SchemaAbiType> = {};
   for (const [key, value] of Object.entries(schema)) {
@@ -109,7 +109,7 @@ export function resolveUserTypes<
 
 export interface TableConfig<
   UserTypes extends StringForUnion = StringForUnion,
-  StaticUserTypes extends StringForUnion = StringForUnion,
+  StaticUserTypes extends StringForUnion = StringForUnion
 > {
   /** Output directory path for the file. Default is "tables" */
   directory?: string;
@@ -136,7 +136,7 @@ export interface TableConfig<
 
 export type FullTableConfig<
   UserTypes extends StringForUnion = StringForUnion,
-  StaticUserTypes extends StringForUnion = StringForUnion,
+  StaticUserTypes extends StringForUnion = StringForUnion
 > = Required<TableConfig<UserTypes, StaticUserTypes>> & {
   valueSchema: FullSchemaConfig<UserTypes>;
 };
@@ -197,7 +197,7 @@ export const zTableConfig = zFullTableConfig.or(zShorthandTableConfig);
 
 export type TablesConfig<
   UserTypes extends StringForUnion = StringForUnion,
-  StaticUserTypes extends StringForUnion = StringForUnion,
+  StaticUserTypes extends StringForUnion = StringForUnion
 > = Record<string, TableConfig<UserTypes, StaticUserTypes> | FieldData<UserTypes>>;
 
 export const zTablesConfig = z.record(zTableName, zTableConfig).transform((tables) => {
@@ -213,17 +213,17 @@ export const zTablesConfig = z.record(zTableName, zTableConfig).transform((table
 
 export type FullTablesConfig<
   UserTypes extends StringForUnion = StringForUnion,
-  StaticUserTypes extends StringForUnion = StringForUnion,
+  StaticUserTypes extends StringForUnion = StringForUnion
 > = Record<string, FullTableConfig<UserTypes, StaticUserTypes>>;
 
 export type ExpandTablesConfig<T extends TablesConfig<string, string>> = {
   [TableName in keyof T]: T[TableName] extends FieldData<string>
     ? ExpandTableConfig<{ valueSchema: { value: T[TableName] } }, TableName extends string ? TableName : never>
     : T[TableName] extends TableConfig<string, string>
-      ? ExpandTableConfig<T[TableName], TableName extends string ? TableName : never>
-      : // Weakly typed values get a weakly typed expansion.
-        // This shouldn't normally happen within `mudConfig`, but can be manually triggered via `ExpandMUDUserConfig`
-        ExpandTableConfig<TableConfig<string, string>, TableName extends string ? TableName : string>;
+    ? ExpandTableConfig<T[TableName], TableName extends string ? TableName : never>
+    : // Weakly typed values get a weakly typed expansion.
+      // This shouldn't normally happen within `mudConfig`, but can be manually triggered via `ExpandMUDUserConfig`
+      ExpandTableConfig<TableConfig<string, string>, TableName extends string ? TableName : string>;
 };
 
 /************************************************************************
@@ -242,22 +242,22 @@ export type EnumsConfig<EnumNames extends StringForUnion> = never extends EnumNa
       enums?: Record<EnumNames, string[]>;
     }
   : StringForUnion extends EnumNames
-    ? {
-        /**
-         * Enum names mapped to lists of their member names
-         *
-         * (enums aren't inferred - use `mudConfig` or `storeConfig` helper, and `as const` for variables)
-         */
-        enums?: Record<EnumNames, string[]>;
-      }
-    : {
-        /**
-         * Enum names mapped to lists of their member names
-         *
-         * Enums defined here can be used as types in table schemas/keys
-         */
-        enums: Record<EnumNames, string[]>;
-      };
+  ? {
+      /**
+       * Enum names mapped to lists of their member names
+       *
+       * (enums aren't inferred - use `mudConfig` or `storeConfig` helper, and `as const` for variables)
+       */
+      enums?: Record<EnumNames, string[]>;
+    }
+  : {
+      /**
+       * Enum names mapped to lists of their member names
+       *
+       * Enums defined here can be used as types in table schemas/keys
+       */
+      enums: Record<EnumNames, string[]>;
+    };
 
 export type FullEnumsConfig<EnumNames extends StringForUnion> = {
   enums: Record<EnumNames, string[]>;
@@ -285,26 +285,26 @@ export type UserTypesConfig<UserTypeNames extends StringForUnion = StringForUnio
       userTypes?: Record<UserTypeNames, UserType>;
     }
   : StringForUnion extends UserTypeNames
-    ? {
-        /**
-         * User types mapped to file paths from which to import them.
-         * Paths are treated as relative to root.
-         * Paths that don't start with a "." have foundry remappings applied to them first.
-         *
-         * (user types aren't inferred - use `mudConfig` or `storeConfig` helper, and `as const` for variables)
-         */
-        userTypes?: Record<UserTypeNames, UserType>;
-      }
-    : {
-        /**
-         * User types mapped to file paths from which to import them.
-         * Paths are treated as relative to root.
-         * Paths that don't start with a "." have foundry remappings applied to them first.
-         *
-         * User types defined here can be used as types in table schemas/keys
-         */
-        userTypes: Record<UserTypeNames, UserType>;
-      };
+  ? {
+      /**
+       * User types mapped to file paths from which to import them.
+       * Paths are treated as relative to root.
+       * Paths that don't start with a "." have foundry remappings applied to them first.
+       *
+       * (user types aren't inferred - use `mudConfig` or `storeConfig` helper, and `as const` for variables)
+       */
+      userTypes?: Record<UserTypeNames, UserType>;
+    }
+  : {
+      /**
+       * User types mapped to file paths from which to import them.
+       * Paths are treated as relative to root.
+       * Paths that don't start with a "." have foundry remappings applied to them first.
+       *
+       * User types defined here can be used as types in table schemas/keys
+       */
+      userTypes: Record<UserTypeNames, UserType>;
+    };
 
 const zUserTypeConfig = z.object({
   filePath: z.string(),
@@ -327,7 +327,7 @@ export type MUDUserConfig<
   T extends MUDCoreUserConfig = MUDCoreUserConfig,
   EnumNames extends StringForUnion = StringForUnion,
   UserTypeNames extends StringForUnion = StringForUnion,
-  StaticUserTypes extends ExtractUserTypes<EnumNames | UserTypeNames> = ExtractUserTypes<EnumNames | UserTypeNames>,
+  StaticUserTypes extends ExtractUserTypes<EnumNames | UserTypeNames> = ExtractUserTypes<EnumNames | UserTypeNames>
 > = T &
   EnumsConfig<EnumNames> &
   UserTypesConfig<UserTypeNames> & {
@@ -404,7 +404,7 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
     ctx.addIssue({
       code: ZodIssueCode.custom,
       message: `Table library names, enum names, user type names must be globally unique: ${duplicateGlobalNames.join(
-        ", ",
+        ", "
       )}`,
     });
   }
@@ -432,7 +432,7 @@ function validateAbiOrUserType(
   userTypeNames: string[],
   staticUserTypeNames: string[],
   type: string,
-  ctx: RefinementCtx,
+  ctx: RefinementCtx
 ) {
   if (!(AbiTypes as string[]).includes(type) && !userTypeNames.includes(type)) {
     const staticArray = parseStaticArray(type);
@@ -460,7 +460,7 @@ function validateStaticArray(
   staticUserTypeNames: string[],
   elementType: string,
   staticLength: number,
-  ctx: RefinementCtx,
+  ctx: RefinementCtx
 ) {
   validateStaticAbiOrUserType(staticUserTypeNames, elementType, ctx);
 

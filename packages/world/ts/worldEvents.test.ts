@@ -19,7 +19,7 @@ function normalizeAbiEvent(event: AbiEvent) {
 describe("WorldFactory events", () => {
   it("should match the ABI", () => {
     const forgeAbiItem = IWorldFactoryAbi.find(
-      (item) => item.type === "event" && item.name === "WorldDeployed",
+      (item) => item.type === "event" && item.name === "WorldDeployed"
     ) as AbiEvent;
     expect(normalizeAbiEvent(parseAbiItem(worldDeployedEvent))).toMatchObject(normalizeAbiEvent(forgeAbiItem));
   });

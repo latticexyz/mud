@@ -1,5 +1,5 @@
 import { boolean, text } from "drizzle-orm/pg-core";
-import { SchemaAbiType } from "@latticexyz/schema-type/internal";
+import { SchemaAbiType } from "@latticexyz/schema-type";
 import { assertExhaustive } from "@latticexyz/common/utils";
 import {
   asAddress,

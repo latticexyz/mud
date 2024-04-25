@@ -45,7 +45,7 @@ const commandModule: CommandModule<Options, Options> = {
       const mutuallyExclusiveOptions = ["mudVersion", "link", "tag", "commit", "restore"];
       const numMutuallyExclusiveOptions = mutuallyExclusiveOptions.reduce(
         (acc, opt) => (options[opt] ? acc + 1 : acc),
-        0,
+        0
       );
 
       if (numMutuallyExclusiveOptions === 0) {

@@ -10,7 +10,7 @@ const cache: Record<string, Promise<Transaction>> = {};
 
 export function getTransaction(
   publicClient: PublicClient<Transport, Chain>,
-  write: ContractWrite,
+  write: ContractWrite
 ): Promise<Transaction> {
   if (!cache[write.id]) {
     cache[write.id] = write.result.then((hash) => publicClient.getTransaction({ hash }));

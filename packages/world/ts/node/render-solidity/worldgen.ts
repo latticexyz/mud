@@ -1,21 +1,20 @@
 import { readFileSync } from "fs";
 import path from "path";
 import { formatAndWriteSolidity, contractToInterface, type RelativeImportDatum } from "@latticexyz/common/codegen";
+import { StoreConfig } from "@latticexyz/store";
 import { renderSystemInterface } from "./renderSystemInterface";
 import { renderWorldInterface } from "./renderWorldInterface";
 import { resolveWorldConfig } from "../../config/resolveWorldConfig";
-import { World as WorldConfig } from "../../config/v2/output";
-import { worldToV1 } from "../../config/v2/compat";
+import { WorldConfig } from "../../config/types";
 
 export async function worldgen(
-  configV2: WorldConfig,
+  config: StoreConfig & WorldConfig,
   existingContracts: { path: string; basename: string }[],
-  outputBaseDirectory: string,
+  outputBaseDirectory: string
 ) {
-  const config = worldToV1(configV2);
   const resolvedConfig = resolveWorldConfig(
     config,
-    existingContracts.map(({ basename }) => basename),
+    existingContracts.map(({ basename }) => basename)
   );
 
   const worldgenBaseDirectory = path.join(outputBaseDirectory, config.worldgenDirectory);

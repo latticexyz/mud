@@ -1,17 +1,9 @@
 import { setup } from "./mud/setup";
 import mudConfig from "contracts/mud.config";
 
-declare global {
-  interface Window {
-    increment: () => Promise<void>;
-    willRevert: () => Promise<void>;
-    sendMessage: () => Promise<void>;
-  }
-}
-
 const {
   network,
-  network: { tables, useStore, worldContract },
+  network: { tables, useStore, worldContract, waitForTransaction },
   systemCalls,
 } = await setup();
 
@@ -33,19 +25,19 @@ useStore.subscribe((state, prevState) => {
 
 // Just for demonstration purposes: we create a global function that can be
 // called to invoke the Increment system contract via the world. (See IncrementSystem.sol.)
-window.increment = async () => {
+(window as any).increment = async () => {
   const result = await systemCalls.increment();
   console.log("increment result", result);
 };
 
-window.willRevert = async () => {
+(window as any).willRevert = async () => {
   // set gas limit so we skip estimation and can test tx revert
   const tx = await worldContract.write.willRevert({ gas: 100000n });
 
   console.log("willRevert tx", tx);
 };
 
-window.sendMessage = async () => {
+(window as any).sendMessage = async () => {
   const input = document.getElementById("chat-input") as HTMLInputElement;
   const msg = input.value;
   if (!msg || msg.length === 0) return;
@@ -59,7 +51,7 @@ window.sendMessage = async () => {
 
 document.getElementById("chat-form")?.addEventListener("submit", (e) => {
   e.preventDefault();
-  window.sendMessage();
+  (window as any).sendMessage();
 });
 
 // https://vitejs.dev/guide/env-and-mode.html

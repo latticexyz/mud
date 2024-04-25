@@ -9,7 +9,6 @@ import { System } from "./../../System.sol";
 
 /**
  * @title IWorldRegistrationSystem
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IWorldRegistrationSystem {
@@ -29,7 +28,7 @@ interface IWorldRegistrationSystem {
   function registerRootFunctionSelector(
     ResourceId systemId,
     string memory worldFunctionSignature,
-    string memory systemFunctionSignature
+    bytes4 systemFunctionSelector
   ) external returns (bytes4 worldFunctionSelector);
 
   function registerDelegation(address delegatee, ResourceId delegationControlId, bytes memory initCallData) external;

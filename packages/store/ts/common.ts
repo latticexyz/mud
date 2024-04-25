@@ -1,4 +1,4 @@
-import { SchemaAbiType, SchemaAbiTypeToPrimitiveType, StaticAbiType } from "@latticexyz/schema-type/internal";
+import { SchemaAbiType, SchemaAbiTypeToPrimitiveType, StaticAbiType } from "@latticexyz/schema-type";
 import { FieldData, FullSchemaConfig, StoreConfig } from "./config";
 import { Hex } from "viem";
 
@@ -33,14 +33,14 @@ export type SchemaToPrimitives<schema extends ValueSchema> = {
 export type ConfigFieldTypeToSchemaAbiType<T extends FieldData<string>> = T extends SchemaAbiType
   ? T
   : T extends `${string}[${string}]`
-    ? "uint8[]"
-    : "uint8";
+  ? "uint8[]"
+  : "uint8";
 
 export type ConfigFieldTypeToPrimitiveType<T extends FieldData<string>> = T extends SchemaAbiType
   ? SchemaAbiTypeToPrimitiveType<T>
   : T extends `${string}[${string}]` // field type might include enums and enum arrays, which are mapped to uint8/uint8[]
-    ? number[] // map enum arrays to `number[]`
-    : number; // map enums to `number`
+  ? number[] // map enum arrays to `number[]`
+  : number; // map enums to `number`
 
 /** Map a table schema config like `{ value: "uint256", type: "SomeEnum" }` to its primitive types like `{ value: bigint, type: number }` */
 export type SchemaConfigToPrimitives<T extends FullSchemaConfig> = {
@@ -56,12 +56,12 @@ export type ConfigToTablesPrimitives<C extends StoreConfig> = {
 
 export type ConfigToKeyPrimitives<
   C extends StoreConfig,
-  Table extends keyof ConfigToTablesPrimitives<C>,
+  Table extends keyof ConfigToTablesPrimitives<C>
 > = ConfigToTablesPrimitives<C>[Table]["key"];
 
 export type ConfigToValuePrimitives<
   C extends StoreConfig,
-  Table extends keyof ConfigToTablesPrimitives<C>,
+  Table extends keyof ConfigToTablesPrimitives<C>
 > = ConfigToTablesPrimitives<C>[Table]["value"];
 
 export type ConfigToRecordPrimitives<C extends StoreConfig, Table extends keyof ConfigToTablesPrimitives<C>> = {

@@ -5,11 +5,9 @@ import { renderTable } from "./renderTable";
 import { renderTypesFromConfig } from "./renderTypesFromConfig";
 import { renderTableIndex } from "./renderTableIndex";
 import { rm } from "fs/promises";
-import { Store as StoreConfig } from "../config/v2/output";
-import { storeToV1 } from "../config/v2/compat";
+import { StoreConfig } from "../config";
 
-export async function tablegen(configV2: StoreConfig, outputBaseDirectory: string, remappings: [string, string][]) {
-  const config = storeToV1(configV2);
+export async function tablegen(config: StoreConfig, outputBaseDirectory: string, remappings: [string, string][]) {
   const solidityUserTypes = loadAndExtractUserTypes(config.userTypes, outputBaseDirectory, remappings);
   const allTableOptions = getTableOptions(config, solidityUserTypes);
 
@@ -17,7 +15,7 @@ export async function tablegen(configV2: StoreConfig, outputBaseDirectory: strin
   await Promise.all(
     uniqueTableDirectories.map(async (tableDir) => {
       await rm(path.join(outputBaseDirectory, tableDir), { recursive: true, force: true });
-    }),
+    })
   );
 
   // write tables to files
@@ -26,7 +24,7 @@ export async function tablegen(configV2: StoreConfig, outputBaseDirectory: strin
       const fullOutputPath = path.join(outputBaseDirectory, outputPath);
       const output = renderTable(renderOptions);
       await formatAndWriteSolidity(output, fullOutputPath, "Generated table");
-    }),
+    })
   );
 
   // write table index

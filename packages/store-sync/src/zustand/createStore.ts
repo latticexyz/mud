@@ -1,8 +1,8 @@
-import { SchemaToPrimitives, Table, Tables } from "@latticexyz/store/internal";
+import { SchemaToPrimitives, Table, Tables } from "@latticexyz/store";
 import { StoreApi, UseBoundStore, create } from "zustand";
 import { RawRecord, TableRecord } from "./common";
 import { Hex } from "viem";
-import { encodeKey } from "@latticexyz/protocol-parser/internal";
+import { encodeKey } from "@latticexyz/protocol-parser";
 import { flattenSchema } from "../flattenSchema";
 import { getId } from "./getId";
 import { SyncStep } from "../SyncStep";
@@ -36,11 +36,11 @@ export type ZustandState<tables extends Tables> = {
   readonly getRecords: <table extends Table>(table: table) => TableRecords<table>;
   readonly getRecord: <table extends Table>(
     table: table,
-    key: SchemaToPrimitives<table["keySchema"]>,
+    key: SchemaToPrimitives<table["keySchema"]>
   ) => TableRecord<table> | undefined;
   readonly getValue: <table extends Table>(
     table: table,
-    key: SchemaToPrimitives<table["keySchema"]>,
+    key: SchemaToPrimitives<table["keySchema"]>
   ) => TableRecord<table>["value"] | undefined;
 };
 
@@ -65,13 +65,12 @@ export function createStore<tables extends Tables>(opts: CreateStoreOptions<tabl
     getRecords: <table extends Table>(table: table): TableRecords<table> => {
       const records = get().records;
       return Object.fromEntries(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        Object.entries(records).filter(([id, record]) => record.table.tableId === table.tableId),
+        Object.entries(records).filter(([id, record]) => record.table.tableId === table.tableId)
       ) as unknown as TableRecords<table>;
     },
     getRecord: <table extends Table>(
       table: table,
-      key: SchemaToPrimitives<table["keySchema"]>,
+      key: SchemaToPrimitives<table["keySchema"]>
     ): TableRecord<table> | undefined => {
       const keyTuple = encodeKey(flattenSchema(table.keySchema), key);
       const id = getId({ tableId: table.tableId, keyTuple });
@@ -79,7 +78,7 @@ export function createStore<tables extends Tables>(opts: CreateStoreOptions<tabl
     },
     getValue: <table extends Table>(
       table: table,
-      key: SchemaToPrimitives<table["keySchema"]>,
+      key: SchemaToPrimitives<table["keySchema"]>
     ): TableRecord<table>["value"] | undefined => {
       return get().getRecord(table, key)?.value;
     },

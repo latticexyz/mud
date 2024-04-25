@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useResizeObserver, { ResizeHandler } from "use-resize-observer";
 import { throttle } from "lodash";
 import { createPhaserLayer } from "../../layers/phaser/createPhaserLayer";
@@ -80,7 +80,7 @@ export const usePhaserLayer = ({ networkLayer }: Props) => {
         }
       }
     },
-    [container],
+    [container]
   );
 
   return useMemo(() => ({ ref, phaserLayer }), [ref, phaserLayer]);

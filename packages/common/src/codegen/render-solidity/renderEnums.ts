@@ -13,7 +13,7 @@ export function renderEnums(enums: RenderEnum[]): string {
     enum ${name} {
       ${renderArguments(memberNames)}
     }
-  `,
+  `
   );
 
   return result;

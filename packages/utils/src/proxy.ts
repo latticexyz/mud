@@ -20,7 +20,7 @@ function deepAccess(target: Record<string, unknown>, path: string[]): any {
  * @returns Cached<T>
  */
 export function cacheUntilReady<T extends Record<string, any>>(
-  target: IObservableValue<T | undefined> | IComputedValue<T | undefined>,
+  target: IObservableValue<T | undefined> | IComputedValue<T | undefined>
 ): Cached<T> {
   // The call queue contains the path and arguments of calls to the
   // proxiedTarget while the target was not available yet.
@@ -71,7 +71,7 @@ export function cacheUntilReady<T extends Record<string, any>>(
           return promise;
         }
       },
-    },
+    }
   );
 
   reaction(
@@ -94,7 +94,7 @@ export function cacheUntilReady<T extends Record<string, any>>(
           resolve(target);
         }
       }
-    },
+    }
   );
 
   return proxiedTarget as Cached<T>;

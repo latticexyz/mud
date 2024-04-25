@@ -8,7 +8,6 @@ import { SystemCall } from "./SystemCall.sol";
 
 /**
  * @title Delegation
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Library for managing and verifying delegations.
  */
 library Delegation {

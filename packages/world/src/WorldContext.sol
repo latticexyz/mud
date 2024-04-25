@@ -11,7 +11,6 @@ uint256 constant CONTEXT_BYTES = 20 + 32;
 
 /**
  * @title WorldContextConsumer - Extracting trusted context values from appended calldata.
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice This contract is designed to extract trusted context values (like msg.sender and msg.value)
  * from the appended calldata. It provides mechanisms similar to EIP-2771 (https://eips.ethereum.org/EIPS/eip-2771),
  * but allowing any contract to be the trusted forwarder.
@@ -55,11 +54,6 @@ abstract contract WorldContextConsumer is IWorldContextConsumer {
   }
 }
 
-/**
- * @title WorldContextConsumerLib
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
- * @notice Helpers for working with data in the context of calling a World
- */
 library WorldContextConsumerLib {
   /**
    * @notice Extract the `msg.sender` from the context appended to the calldata.
@@ -99,7 +93,6 @@ library WorldContextConsumerLib {
 
 /**
  * @title WorldContextProviderLib - Utility functions to call contracts with context values appended to calldata.
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice This library provides functions to make calls or delegatecalls to other contracts,
  * appending the context values (like msg.sender and msg.value) to the calldata for WorldContextConsumer to consume.
  */

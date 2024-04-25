@@ -1,4 +1,4 @@
-import { isDynamicAbiType, isStaticAbiType } from "@latticexyz/schema-type/internal";
+import { isDynamicAbiType, isStaticAbiType } from "@latticexyz/schema-type";
 import { Hex } from "viem";
 import { ValueSchema } from "./common";
 import { schemaToHex } from "./schemaToHex";

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/schema-type",
-  "version": "2.0.6",
+  "version": "2.0.0-next.17",
   "description": "SchemaType enum for various languages",
   "repository": {
     "type": "git",
@@ -10,20 +10,16 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
-    "./internal": "./dist/internal.js",
-    "./deprecated": "./dist/deprecated.js"
+    ".": "./dist/typescript/index.js",
+    "./deprecated": "./dist/typescript/deprecated/index.js"
   },
   "typesVersions": {
     "*": {
       "index": [
-        "./src/typescript/exports/index.ts"
-      ],
-      "internal": [
-        "./src/typescript/exports/internal.ts"
+        "./src/typescript/index.ts"
       ],
       "deprecated": [
-        "./src/typescript/exports/deprecated.ts"
+        "./src/typescript/deprecated/index.ts"
       ]
     }
   },
@@ -38,8 +34,8 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "abitype": "1.0.0",
-    "viem": "2.9.20"
+    "abitype": "0.9.8",
+    "viem": "1.14.0"
   },
   "devDependencies": {
     "@latticexyz/gas-report": "workspace:*",
@@ -47,5 +43,6 @@
     "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
     "tsup": "^6.7.0",
     "vitest": "0.34.6"
-  }
+  },
+  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }

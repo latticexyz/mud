@@ -31,7 +31,7 @@ export const App = () => {
 
                     checkbox.disabled = true;
                     try {
-                      await toggleTask(task.key.id);
+                      await toggleTask(task.key.key);
                     } finally {
                       checkbox.disabled = false;
                     }
@@ -51,7 +51,7 @@ export const App = () => {
                     const button = event.currentTarget;
                     button.disabled = true;
                     try {
-                      await deleteTask(task.key.id);
+                      await deleteTask(task.key.key);
                     } finally {
                       button.disabled = false;
                     }

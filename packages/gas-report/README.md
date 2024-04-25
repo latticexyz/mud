@@ -26,7 +26,7 @@ pnpm gas-report --save gas-report.json
 Or, if you have your own test command, you can pipe the output to `gas-report --stdin`:
 
 ```console
-GAS_REPORTER_ENABLED=true forge test -vvv --isolate | pnpm gas-report --stdin
+GAS_REPORTER_ENABLED=true forge test -vvv | pnpm gas-report --stdin
 ```
 
 Run `pnpm gas-report --help` for more details.

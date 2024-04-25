@@ -10,6 +10,6 @@ export function getTableEntity(table: Pick<Table, "address" | "namespace" | "nam
       address: table.address,
       namespace: stringToHex(table.namespace, { size: 16 }),
       name: stringToHex(table.name, { size: 16 }),
-    },
+    }
   );
 }

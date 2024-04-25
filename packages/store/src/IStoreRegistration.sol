@@ -7,9 +7,9 @@ import { IStoreHook } from "./IStoreHook.sol";
 import { ResourceId } from "./ResourceId.sol";
 
 /**
- * @title IStoreRegistration
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
- * @dev This interface includes methods for managing table field layouts, metadata, and hooks, which are usually called once in the setup phase of an application, making them less performance critical than the methods.
+ * The IStoreRegistration interface includes methods for managing table field layouts,
+ * metadata, and hooks, which are usually called once in the setup phase of an application,
+ * making them less performance critical than the  methods.
  */
 interface IStoreRegistration {
   function registerTable(

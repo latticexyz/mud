@@ -1,51 +1,51 @@
-import { defineStore } from "./ts/config/v2/store";
+import { mudConfig } from "./ts/register";
 
-export default defineStore({
-  codegen: {
-    storeImportPath: "../../",
-  },
+export default mudConfig({
+  storeImportPath: "../../",
   namespace: "store" as const,
   userTypes: {
-    ResourceId: { filePath: "./src/ResourceId.sol", type: "bytes32" },
-    FieldLayout: { filePath: "./src/FieldLayout.sol", type: "bytes32" },
-    Schema: { filePath: "./src/Schema.sol", type: "bytes32" },
+    ResourceId: { filePath: "./src/ResourceId.sol", internalType: "bytes32" },
+    FieldLayout: { filePath: "./src/FieldLayout.sol", internalType: "bytes32" },
+    Schema: { filePath: "./src/Schema.sol", internalType: "bytes32" },
   },
   tables: {
     StoreHooks: {
-      schema: {
+      keySchema: {
         tableId: "ResourceId",
+      },
+      valueSchema: {
         hooks: "bytes21[]",
       },
-      key: ["tableId"],
     },
     Tables: {
-      schema: {
+      keySchema: {
         tableId: "ResourceId",
+      },
+      valueSchema: {
         fieldLayout: "FieldLayout",
         keySchema: "Schema",
         valueSchema: "Schema",
         abiEncodedKeyNames: "bytes",
         abiEncodedFieldNames: "bytes",
       },
-      key: ["tableId"],
     },
     ResourceIds: {
-      schema: {
+      keySchema: {
         resourceId: "ResourceId",
+      },
+      valueSchema: {
         exists: "bool",
       },
-      key: ["resourceId"],
     },
     // The Hooks table is a generic table used by the `filterFromList` util in `Hook.sol`
     Hooks: {
-      schema: {
+      keySchema: {
         resourceId: "ResourceId",
+      },
+      valueSchema: {
         hooks: "bytes21[]",
       },
-      key: ["resourceId"],
-      codegen: {
-        tableIdArgument: true,
-      },
+      tableIdArgument: true,
     },
   },
 });

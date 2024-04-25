@@ -11,7 +11,6 @@ import { NamespaceOwner } from "./codegen/tables/NamespaceOwner.sol";
 
 /**
  * @title AccessControl
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Provides access control functions for checking permissions and ownership within a namespace.
  */
 library AccessControl {

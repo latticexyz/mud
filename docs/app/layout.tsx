@@ -22,10 +22,8 @@ const supplyMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "MUD | Framework for onchain applications",
-  description:
-    // eslint-disable-next-line max-len
-    "MUD provides you with the tools to build onchain applications and autonomous worlds, with a framework and protocol that simplifies development on Ethereum and other EVM chains.",
+  title: "MUD",
+  description: "Battle-tested onchain framework for developers.",
   icons: "/images/logos/circle/mud.svg",
   openGraph: {
     images: "/images/og-img-mud.png",

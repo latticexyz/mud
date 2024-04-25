@@ -3,6 +3,7 @@ import type { MUDChain } from "./types";
 export const latticeTestnet = {
   name: "Lattice Testnet",
   id: 4242,
+  network: "lattice-testnet",
   nativeCurrency: { decimals: 18, name: "Ether", symbol: "ETH" },
   rpcUrls: {
     default: {

@@ -1,7 +1,10 @@
 name: Prerelease 🚀
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      # Target main branch
+      - "main"
 
 # Ensure only one workflow/job is publishing to npm at a time
 concurrency: publish-to-npm
@@ -19,8 +22,8 @@ jobs:
       pull-requests: write
       id-token: write
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+        name: Checkout Repo
         with:
           submodules: recursive
 

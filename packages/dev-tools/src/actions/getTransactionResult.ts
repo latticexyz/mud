@@ -13,16 +13,13 @@ const cache: Record<string, Promise<SimulateContractReturnType>> = {};
 export function getTransactionResult(
   publicClient: PublicClient<Transport, Chain>,
   worldAbi: Abi,
-  write: ContractWrite,
+  write: ContractWrite
 ): Promise<SimulateContractReturnType> {
   if (!cache[write.id]) {
     const transaction = getTransaction(publicClient, write);
     const transactionReceipt = getTransactionReceipt(publicClient, write);
     cache[write.id] = Promise.all([transaction, transactionReceipt]).then(([tx, receipt]) => {
-      const { functionName, args } = decodeFunctionData({
-        abi: worldAbi,
-        data: tx.input,
-      });
+      const { functionName, args } = decodeFunctionData({ abi: worldAbi, data: tx.input });
       return publicClient.simulateContract({
         account: tx.from,
         address: tx.to!,

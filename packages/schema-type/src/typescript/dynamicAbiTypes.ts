@@ -1,8 +1,9 @@
 import { Hex } from "viem";
-import { DynamicAbiType, dynamicAbiTypes } from "./schemaAbiTypes";
+import { DynamicAbiType, SchemaAbiType, dynamicAbiTypes } from "./schemaAbiTypes";
 import { LiteralToBroad } from "./utils";
+import { isArrayAbiType } from "./arrayAbiTypes";
 
-// Variable-length ABI types, where their lengths are encoded by EncodedLengths within the record
+// Variable-length ABI types, where their lengths are encoded by a PackedCounter within the record
 
 export type DynamicPrimitiveType =
   | readonly number[]
@@ -123,6 +124,6 @@ export type DynamicAbiTypeToPrimitiveType<TDynamicAbiType extends DynamicAbiType
   (typeof dynamicAbiTypeToDefaultValue)[TDynamicAbiType]
 >;
 
-export function isDynamicAbiType(abiType: unknown): abiType is DynamicAbiType {
+export function isDynamicAbiType(abiType: string): abiType is DynamicAbiType {
   return dynamicAbiTypes.includes(abiType as DynamicAbiType);
 }

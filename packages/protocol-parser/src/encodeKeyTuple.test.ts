@@ -12,8 +12,8 @@ describe("encodeKeyTuple", () => {
           staticFields: ["bool"],
           dynamicFields: [],
         },
-        [true],
-      ),
+        [true]
+      )
     ).toStrictEqual(["0x0000000000000000000000000000000000000000000000000000000000000001"]);
   });
 
@@ -26,7 +26,7 @@ describe("encodeKeyTuple", () => {
         "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF",
         true,
         3,
-      ]),
+      ])
     ).toStrictEqual([
       "0x000000000000000000000000000000000000000000000000000000000000002a",
       "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd6",

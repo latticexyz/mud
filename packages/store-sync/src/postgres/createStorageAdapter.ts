@@ -1,7 +1,7 @@
 import { PublicClient, encodePacked, size } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { and, eq } from "drizzle-orm";
-import { Store as StoreConfig } from "@latticexyz/store";
+import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import { tables } from "./tables";
 import { spliceHex } from "@latticexyz/common";
@@ -17,13 +17,13 @@ export type PostgresStorageAdapter = {
   cleanUp: () => Promise<void>;
 };
 
-export async function createStorageAdapter<config extends StoreConfig = StoreConfig>({
+export async function createStorageAdapter<TConfig extends StoreConfig = StoreConfig>({
   database,
   publicClient,
 }: {
   database: PgDatabase<QueryResultHKT>;
   publicClient: PublicClient;
-  config?: config;
+  config?: TConfig;
 }): Promise<PostgresStorageAdapter> {
   const cleanUp: (() => Promise<void>)[] = [];
 
@@ -80,8 +80,8 @@ export async function createStorageAdapter<config extends StoreConfig = StoreCon
               and(
                 eq(tables.recordsTable.address, log.address),
                 eq(tables.recordsTable.tableId, log.args.tableId),
-                eq(tables.recordsTable.keyBytes, keyBytes),
-              ),
+                eq(tables.recordsTable.keyBytes, keyBytes)
+              )
             )
             .limit(1)
             .execute()
@@ -131,8 +131,8 @@ export async function createStorageAdapter<config extends StoreConfig = StoreCon
               and(
                 eq(tables.recordsTable.address, log.address),
                 eq(tables.recordsTable.tableId, log.args.tableId),
-                eq(tables.recordsTable.keyBytes, keyBytes),
-              ),
+                eq(tables.recordsTable.keyBytes, keyBytes)
+              )
             )
             .limit(1)
             .execute()
@@ -195,8 +195,8 @@ export async function createStorageAdapter<config extends StoreConfig = StoreCon
               and(
                 eq(tables.recordsTable.address, log.address),
                 eq(tables.recordsTable.tableId, log.args.tableId),
-                eq(tables.recordsTable.keyBytes, keyBytes),
-              ),
+                eq(tables.recordsTable.keyBytes, keyBytes)
+              )
             )
             .execute();
         }

@@ -9,12 +9,12 @@ import { deserialize, serialize } from "./utils";
 export async function callPageFunction(
   page: Page,
   functionName: string,
-  args: unknown[],
+  args: unknown[]
 ): Promise<Record<string, unknown> | undefined> {
   const context = [functionName, args, serialize.toString(), deserialize.toString()] as const;
-  const serializedValue = await page.evaluate(async ([functionName, args, serializeString]) => {
+  const serializedValue = await page.evaluate(async ([functionName, args, serializeString, deserializeString]) => {
     const _serialize = deserializeFunction(serializeString);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const _deserialize = deserializeFunction(deserializeString);
     const value = await (window as any)[functionName](...args);
     const serializedValue = value ? _serialize(value) : undefined;
     return serializedValue;

@@ -1,6 +1,4 @@
-import { Table, ResolvedStoreConfig, resolveConfig } from "@latticexyz/store/internal";
-import { Store as StoreConfig } from "@latticexyz/store";
-import { storeToV1 } from "@latticexyz/store/config/v2";
+import { StoreConfig, Table, ResolvedStoreConfig, resolveConfig } from "@latticexyz/store";
 import { Component as RecsComponent, World as RecsWorld, getComponentValue, setComponent } from "@latticexyz/recs";
 import { SyncOptions, SyncResult } from "../common";
 import { RecsStorageAdapter, recsStorage } from "./recsStorage";
@@ -8,10 +6,7 @@ import { createStoreSync } from "../createStoreSync";
 import { singletonEntity } from "./singletonEntity";
 import { SyncStep } from "../SyncStep";
 
-type SyncToRecsOptions<config extends StoreConfig, extraTables extends Record<string, Table>> = Omit<
-  SyncOptions<config>,
-  "config"
-> & {
+type SyncToRecsOptions<config extends StoreConfig, extraTables extends Record<string, Table>> = SyncOptions<config> & {
   world: RecsWorld;
   config: config;
   tables?: extraTables;
@@ -19,7 +14,7 @@ type SyncToRecsOptions<config extends StoreConfig, extraTables extends Record<st
 };
 
 type SyncToRecsResult<config extends StoreConfig, extraTables extends Record<string, Table>> = SyncResult & {
-  components: RecsStorageAdapter<ResolvedStoreConfig<storeToV1<config>>["tables"] & extraTables>["components"];
+  components: RecsStorageAdapter<ResolvedStoreConfig<config>["tables"] & extraTables>["components"];
   stopSync: () => void;
 };
 
@@ -31,9 +26,9 @@ export async function syncToRecs<config extends StoreConfig, extraTables extends
   ...syncOptions
 }: SyncToRecsOptions<config, extraTables>): Promise<SyncToRecsResult<config, extraTables>> {
   const tables = {
-    ...resolveConfig(storeToV1(config as StoreConfig)).tables,
+    ...resolveConfig(config).tables,
     ...extraTables,
-  } as ResolvedStoreConfig<storeToV1<config>>["tables"] & extraTables;
+  } as ResolvedStoreConfig<config>["tables"] & extraTables;
 
   const { storageAdapter, components } = recsStorage({
     world,

@@ -1,6 +1,6 @@
-import { Account, Chain, Client, Hex, Transport } from "viem";
+import { Account, Chain, Client, Hex, Log, Transport } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
-import { ensureWorldFactory } from "./ensureWorldFactory";
+import { ensureWorldFactory, worldFactory } from "./ensureWorldFactory";
 import WorldFactoryAbi from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.abi.json" assert { type: "json" };
 import { writeContract } from "@latticexyz/common";
 import { debug } from "./debug";
@@ -9,11 +9,9 @@ import { WorldDeploy } from "./common";
 
 export async function deployWorld(
   client: Client<Transport, Chain | undefined, Account>,
-  deployerAddress: Hex,
-  salt: Hex,
-  withWorldProxy?: boolean,
+  salt: Hex
 ): Promise<WorldDeploy> {
-  const worldFactory = await ensureWorldFactory(client, deployerAddress, withWorldProxy);
+  await ensureWorldFactory(client);
 
   debug("deploying world");
   const tx = await writeContract(client, {
@@ -31,7 +29,8 @@ export async function deployWorld(
     throw new Error("world deploy failed");
   }
 
-  const deploy = logsToWorldDeploy(receipt.logs);
+  // TODO: remove type casting once https://github.com/wagmi-dev/viem/pull/1330 is merged
+  const deploy = logsToWorldDeploy(receipt.logs.map((log) => log as Log<bigint, number, false>));
   debug("deployed world to", deploy.address, "at block", deploy.deployBlock);
 
   return { ...deploy, stateBlock: deploy.deployBlock };

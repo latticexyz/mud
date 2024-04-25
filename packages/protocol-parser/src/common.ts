@@ -1,9 +1,4 @@
-import {
-  DynamicAbiType,
-  SchemaAbiType,
-  SchemaAbiTypeToPrimitiveType,
-  StaticAbiType,
-} from "@latticexyz/schema-type/internal";
+import { DynamicAbiType, SchemaAbiType, SchemaAbiTypeToPrimitiveType, StaticAbiType } from "@latticexyz/schema-type";
 import { Hex } from "viem";
 
 /** @deprecated use `KeySchema` or `ValueSchema` instead */

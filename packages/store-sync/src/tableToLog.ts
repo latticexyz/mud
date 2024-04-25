@@ -4,7 +4,7 @@ import {
   keySchemaToHex,
   valueSchemaToFieldLayoutHex,
   valueSchemaToHex,
-} from "@latticexyz/protocol-parser/internal";
+} from "@latticexyz/protocol-parser";
 import { encodeAbiParameters, parseAbiParameters } from "viem";
 import { StorageAdapterLog, Table, storeTables } from "./common";
 import { flattenSchema } from "./flattenSchema";

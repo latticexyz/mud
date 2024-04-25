@@ -10,8 +10,6 @@ import {
   Transport,
   WalletClient,
   WriteContractParameters,
-  type ContractFunctionName,
-  type ContractFunctionArgs,
   getContract as viem_getContract,
 } from "viem";
 import { UnionOmit } from "./type-utils/common";
@@ -42,21 +40,13 @@ export type GetContractOptions<
   TChain extends Chain,
   TAccount extends Account,
   TPublicClient extends PublicClient<TTransport, TChain>,
-  TWalletClient extends WalletClient<TTransport, TChain, TAccount>,
-> = GetContractParameters<
-  TTransport,
-  TChain,
-  TAccount,
-  TAbi,
-  { public: TPublicClient; wallet: TWalletClient },
-  TAddress
-> & {
+  TWalletClient extends WalletClient<TTransport, TChain, TAccount>
+> = Required<GetContractParameters<TTransport, TChain, TAccount, TAbi, TPublicClient, TWalletClient, TAddress>> & {
   onWrite?: (write: ContractWrite) => void;
 };
 
 // TODO: migrate away from this approach once we can hook into viem: https://github.com/wagmi-dev/viem/discussions/1230
 
-/** @deprecated Use `walletClient.extend(transactionQueue()).extend(writeObserver({ onWrite }))` and viem's `getContract` instead. */
 export function getContract<
   TTransport extends Transport,
   TAddress extends Address,
@@ -64,11 +54,12 @@ export function getContract<
   TChain extends Chain,
   TAccount extends Account,
   TPublicClient extends PublicClient<TTransport, TChain>,
-  TWalletClient extends WalletClient<TTransport, TChain, TAccount>,
+  TWalletClient extends WalletClient<TTransport, TChain, TAccount>
 >({
   abi,
   address,
-  client: { public: publicClient, wallet: walletClient },
+  publicClient,
+  walletClient,
   onWrite,
 }: GetContractOptions<
   TTransport,
@@ -78,17 +69,13 @@ export function getContract<
   TAccount,
   TPublicClient,
   TWalletClient
->): GetContractReturnType<TAbi, { public: TPublicClient; wallet: TWalletClient }, TAddress> {
-  const contract = viem_getContract({
+>): GetContractReturnType<TAbi, TPublicClient, TWalletClient, TAddress> {
+  const contract = viem_getContract<TTransport, TAddress, TAbi, TChain, TAccount, TPublicClient, TWalletClient>({
     abi,
     address,
-    client: {
-      public: publicClient,
-      wallet: walletClient,
-    },
-  }) as unknown as GetContractReturnType<TAbi, { public: TPublicClient; wallet: TWalletClient }, TAddress> & {
-    write: unknown;
-  };
+    publicClient,
+    walletClient,
+  }) as unknown as GetContractReturnType<Abi, PublicClient, WalletClient>;
 
   if (contract.write) {
     // Replace write calls with our own. Implemented ~the same as viem, but adds better handling of nonces (via queue + retries).
@@ -100,7 +87,7 @@ export function getContract<
           return (
             ...parameters: [
               args?: readonly unknown[],
-              options?: UnionOmit<WriteContractParameters, "abi" | "address" | "functionName" | "args">,
+              options?: UnionOmit<WriteContractParameters, "abi" | "address" | "functionName" | "args">
             ]
           ) => {
             const { args, options } = getFunctionParameters(parameters);
@@ -111,28 +98,18 @@ export function getContract<
               args,
               ...options,
               onWrite,
-            } as unknown as WriteContractParameters<
-              TAbi,
-              ContractFunctionName<TAbi, "nonpayable" | "payable">,
-              ContractFunctionArgs<TAbi, "nonpayable" | "payable">,
-              TChain,
-              TAccount
-            >;
-            const result = writeContract(walletClient, request, { publicClient });
+            } as unknown as WriteContractParameters<TAbi, typeof functionName, TChain, TAccount>;
+            const result = writeContract(walletClient, request);
 
             const id = `${walletClient.chain.id}:${walletClient.account.address}:${nextWriteId++}`;
-            onWrite?.({
-              id,
-              request: request as WriteContractParameters,
-              result,
-            });
+            onWrite?.({ id, request: request as WriteContractParameters, result });
 
             return result;
           };
         },
-      },
+      }
     );
   }
 
-  return contract as unknown as GetContractReturnType<TAbi, { public: TPublicClient; wallet: TWalletClient }, TAddress>;
+  return contract as unknown as GetContractReturnType<TAbi, TPublicClient, TWalletClient, TAddress>;
 }

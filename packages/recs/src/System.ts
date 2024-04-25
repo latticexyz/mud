@@ -36,7 +36,7 @@ export function defineUpdateSystem(
   world: World,
   query: QueryFragment[],
   system: (update: ComponentUpdate) => void,
-  options: { runOnInit?: boolean } = { runOnInit: true },
+  options: { runOnInit?: boolean } = { runOnInit: true }
 ) {
   defineRxSystem(world, defineUpdateQuery(query, options), system);
 }
@@ -56,7 +56,7 @@ export function defineEnterSystem(
   world: World,
   query: QueryFragment[],
   system: (update: ComponentUpdate) => void,
-  options: { runOnInit?: boolean } = { runOnInit: true },
+  options: { runOnInit?: boolean } = { runOnInit: true }
 ) {
   defineRxSystem(world, defineEnterQuery(query, options), system);
 }
@@ -76,7 +76,7 @@ export function defineExitSystem(
   world: World,
   query: QueryFragment[],
   system: (update: ComponentUpdate) => void,
-  options: { runOnInit?: boolean } = { runOnInit: true },
+  options: { runOnInit?: boolean } = { runOnInit: true }
 ) {
   defineRxSystem(world, defineExitQuery(query, options), system);
 }
@@ -96,7 +96,7 @@ export function defineSystem(
   world: World,
   query: QueryFragment[],
   system: (update: ComponentUpdate & { type: UpdateType }) => void,
-  options: { runOnInit?: boolean } = { runOnInit: true },
+  options: { runOnInit?: boolean } = { runOnInit: true }
 ) {
   defineRxSystem(world, defineQuery(query, options).update$, system);
 }
@@ -116,7 +116,7 @@ export function defineComponentSystem<S extends Schema>(
   world: World,
   component: Component<S>,
   system: (update: ComponentUpdate<S>) => void,
-  options: { runOnInit?: boolean } = { runOnInit: true },
+  options: { runOnInit?: boolean } = { runOnInit: true }
 ) {
   const initial$ = options?.runOnInit ? from(getComponentEntities(component)).pipe(toUpdateStream(component)) : EMPTY;
   defineRxSystem(world, concat(initial$, component.update$), system);
@@ -135,7 +135,7 @@ export function defineSyncSystem<T extends Schema>(
   query: QueryFragment[],
   component: (entity: Entity) => Component<T>,
   value: (entity: Entity) => ComponentValue<T>,
-  options: { update?: boolean; runOnInit?: boolean } = { update: false, runOnInit: true },
+  options: { update?: boolean; runOnInit?: boolean } = { update: false, runOnInit: true }
 ) {
   defineSystem(
     world,
@@ -145,6 +145,6 @@ export function defineSyncSystem<T extends Schema>(
       if (type === UpdateType.Exit) removeComponent(component(entity), entity);
       if (options?.update && type === UpdateType.Update) setComponent(component(entity), entity, value(entity));
     },
-    options,
+    options
   );
 }

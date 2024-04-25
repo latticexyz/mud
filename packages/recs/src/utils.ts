@@ -12,7 +12,7 @@ import { Component, ComponentUpdate, ComponentValue, Entity, Indexer, Schema } f
  */
 export function isComponentUpdate<S extends Schema>(
   update: ComponentUpdate,
-  component: Component<S>,
+  component: Component<S>
 ): update is ComponentUpdate<S> {
   return update.component === component;
 }
@@ -62,7 +62,7 @@ export function isIndexer<S extends Schema>(c: Component<S> | Indexer<S>): c is 
  */
 export function isFullComponentValue<S extends Schema>(
   component: Component<S>,
-  value: Partial<ComponentValue<S>>,
+  value: Partial<ComponentValue<S>>
 ): value is ComponentValue<S> {
   return Object.keys(component.schema).every((key) => key in value);
 }

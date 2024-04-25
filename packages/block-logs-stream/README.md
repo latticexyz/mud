@@ -32,7 +32,7 @@ latestBlockNumber$
         "event Store_DeleteRecord(bytes32 indexed tableId, bytes32[] keyTuple)",
       ]),
     }),
-    mergeMap(({ logs }) => from(groupLogsByBlockNumber(logs))),
+    mergeMap(({ logs }) => from(groupLogsByBlockNumber(logs)))
   )
   .subscribe((block) => {
     console.log("got events for block", block);

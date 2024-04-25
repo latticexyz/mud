@@ -35,7 +35,7 @@ function setRecord<Data>(
   address: Address,
   tableId: TableId,
   key: Key,
-  data: Data,
+  data: Data
 ): void {
   state[address.toLowerCase()] ??= {};
   state[address.toLowerCase()][tableId] ??= {};
@@ -46,7 +46,7 @@ function getRecord<Data>(
   state: Record<Address, Record<TableId, Record<Key, Data>>>,
   address: Address,
   tableId: TableId,
-  key: Key,
+  key: Key
 ): Data | undefined {
   return state[address]?.[tableId]?.[key];
 }

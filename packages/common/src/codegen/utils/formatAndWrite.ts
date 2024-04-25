@@ -27,7 +27,7 @@ export async function formatAndWriteSolidity(output: string, fullOutputPath: str
 export async function formatAndWriteTypescript(
   output: string,
   fullOutputPath: string,
-  logPrefix: string,
+  logPrefix: string
 ): Promise<void> {
   const formattedOutput = await formatTypescript(output);
 

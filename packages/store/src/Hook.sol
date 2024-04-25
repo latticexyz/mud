@@ -11,7 +11,6 @@ using HookInstance for Hook global;
 
 /**
  * @title HookLib
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Library for encoding hooks and filtering hooks from a list by address.
  */
 library HookLib {
@@ -68,7 +67,6 @@ library HookLib {
 
 /**
  * @title HookInstance
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Library for interacting with Hook instances.
  **/
 library HookInstance {

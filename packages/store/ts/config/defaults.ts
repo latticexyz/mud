@@ -5,15 +5,11 @@ export const PATH_DEFAULTS = {
   codegenIndexFilename: "index.sol",
 } as const;
 
-export type PATH_DEFAULTS = typeof PATH_DEFAULTS;
-
 export const DEFAULTS = {
   namespace: "",
-  enums: {},
-  userTypes: {},
+  enums: {} as Record<string, never>,
+  userTypes: {} as Record<string, never>,
 } as const;
-
-export type DEFAULTS = typeof DEFAULTS;
 
 export const TABLE_DEFAULTS = {
   directory: "tables",
@@ -22,5 +18,3 @@ export const TABLE_DEFAULTS = {
   storeArgument: false,
   offchainOnly: false,
 } as const;
-
-export type TABLE_DEFAULTS = typeof TABLE_DEFAULTS;

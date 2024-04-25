@@ -1,6 +1,6 @@
 import { blob, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { address, asHex, json } from "./columnTypes";
-import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser/internal";
+import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
 
 export const chainState = sqliteTable("__chainState", {
   schemaVersion: integer("schema_version").notNull().primaryKey(),

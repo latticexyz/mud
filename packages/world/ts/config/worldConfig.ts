@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DynamicResolutionType, zEthereumAddress, zName, zObjectName } from "@latticexyz/config/library";
+import { DynamicResolutionType, zEthereumAddress, zName, zObjectName } from "@latticexyz/config";
 import { SYSTEM_DEFAULTS, WORLD_DEFAULTS } from "./defaults";
 
 const zSystemName = zObjectName;
@@ -20,7 +20,7 @@ const zSystemConfig = z.intersection(
       openAccess: z.literal(false),
       accessList: zSystemAccessList,
     }),
-  ]),
+  ])
 );
 
 const zValueWithType = z.object({

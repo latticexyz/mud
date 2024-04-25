@@ -12,7 +12,7 @@ export const BYTE_TO_BITS = 8;
 export const MAX_TOTAL_FIELDS = 28;
 // FieldLayout's capacity
 export const MAX_STATIC_FIELDS = 28;
-// EncodedLengths's capacity
+// PackedCounter's capacity
 export const MAX_DYNAMIC_FIELDS = 5;
 
 // FieldLayout and Schema have the same offsets for metadata

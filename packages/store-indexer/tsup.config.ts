@@ -10,7 +10,7 @@ export default defineConfig({
   ],
   target: "esnext",
   format: ["esm"],
-  dts: !process.env.TSUP_SKIP_DTS,
+  dts: false,
   sourcemap: true,
   clean: true,
   minify: true,

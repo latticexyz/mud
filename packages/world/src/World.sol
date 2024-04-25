@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
+import { StoreData } from "@latticexyz/store/src/StoreData.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
-import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
+import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { SystemRegistry } from "./codegen/tables/SystemRegistry.sol";
-import { StoreKernel } from "@latticexyz/store/src/StoreKernel.sol";
 
 import { WORLD_VERSION } from "./version.sol";
 import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
@@ -24,20 +24,16 @@ import { InitModuleAddress } from "./codegen/tables/InitModuleAddress.sol";
 
 import { IModule, IModule } from "./IModule.sol";
 import { IWorldKernel } from "./IWorldKernel.sol";
-import { IWorldEvents } from "./IWorldEvents.sol";
 
 import { FunctionSelectors } from "./codegen/tables/FunctionSelectors.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
 
 /**
  * @title World Contract
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This contract is the core "World" contract containing various methods for
  * data manipulation, system calls, and dynamic function selector handling.
- *
- * @dev World doesn't inherit `Store` because the `IStoreRegistration` methods are added via the `InitModule`.
  */
-contract World is StoreKernel, IWorldKernel {
+contract World is StoreData, IWorldKernel {
   using WorldResourceIdInstance for ResourceId;
 
   /// @notice Address of the contract's creator.
@@ -59,14 +55,11 @@ contract World is StoreKernel, IWorldKernel {
   /// @dev Event emitted when the World contract is created.
   constructor() {
     creator = msg.sender;
-    emit IWorldEvents.HelloWorld(WORLD_VERSION);
+    emit HelloWorld(WORLD_VERSION);
   }
 
   /**
    * @dev Prevents the World contract from calling itself.
-   * If the World is able to call itself via `delegatecall` from a system, the system would have root access to context like internal tables, causing a potential vulnerability.
-   * Ideally this should not happen because all operations to internal tables happen as internal library calls, and all calls to root systems happen as a `delegatecall` to the system.
-   * However, since this is an important invariant, we make it explicit by reverting if `msg.sender` is `address(this)` in all `World` methods.
    */
   modifier prohibitDirectCallback() {
     if (msg.sender == address(this)) {
@@ -169,7 +162,7 @@ contract World is StoreKernel, IWorldKernel {
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
-    EncodedLengths encodedLengths,
+    PackedCounter encodedLengths,
     bytes calldata dynamicData
   ) public virtual prohibitDirectCallback {
     // Require access to the namespace or name

@@ -9,7 +9,6 @@ import {
 } from "./types";
 import { posixPath } from "../utils";
 import { resourceToHex } from "../../resourceToHex";
-import { hexToResource } from "../../hexToResource";
 
 /**
  * Common header for all codegenerated solidity files
@@ -95,7 +94,7 @@ export function renderImports(imports: ImportDatum[]): string {
           path: solidityRelativeImportPath(importDatum.fromPath, importDatum.usedInPath),
         };
       }
-    }),
+    })
   );
 }
 
@@ -108,7 +107,7 @@ export function renderRelativeImports(imports: RelativeImportDatum[]): string {
     imports.map(({ symbol, fromPath, usedInPath }) => ({
       symbol,
       path: solidityRelativeImportPath(fromPath, usedInPath),
-    })),
+    }))
   );
 }
 
@@ -155,7 +154,7 @@ interface RenderWithStoreCallbackData {
  */
 export function renderWithStore(
   storeArgument: boolean,
-  callback: (data: RenderWithStoreCallbackData) => string,
+  callback: (data: RenderWithStoreCallbackData) => string
 ): string {
   let result = "";
   result += callback({ _typedStore: undefined, _store: "StoreSwitch", _commentSuffix: "", _methodNamePrefix: "" });
@@ -191,7 +190,7 @@ export function renderWithStore(
 export function renderWithFieldSuffix(
   withSuffixlessFieldMethods: boolean,
   fieldName: string,
-  callback: (_methodNameSuffix: string) => string,
+  callback: (_methodNameSuffix: string) => string
 ): string {
   const methodNameSuffix = `${fieldName[0].toUpperCase()}${fieldName.slice(1)}`;
   let result = "";
@@ -205,26 +204,25 @@ export function renderWithFieldSuffix(
 }
 
 /**
- * Renders `_tableId` definition of the given table.
- * @param param0 static resource data needed to construct the table ID
+ * Renders `_tableId` variable definition and initialization, and its alias which uses the provided `tableIdName`.
+ * @param param0 static resource data needed to construct the table id
  */
 export function renderTableId({
   namespace,
   name,
   offchainOnly,
-}: Pick<StaticResourceData, "namespace" | "name" | "offchainOnly">): string {
-  const tableId = resourceToHex({
-    type: offchainOnly ? "offchainTable" : "table",
-    namespace,
-    name,
-  });
-  // turn table ID back into arguments that would be valid in `WorldResourceIdLib.encode` (like truncated names)
-  const resource = hexToResource(tableId);
+  tableIdName,
+}: Pick<StaticResourceData, "namespace" | "name" | "offchainOnly" | "tableIdName">): string {
   return `
     // Hex below is the result of \`WorldResourceIdLib.encode({ namespace: ${JSON.stringify(
-      resource.namespace,
-    )}, name: ${JSON.stringify(resource.name)}, typeId: ${offchainOnly ? "RESOURCE_OFFCHAIN_TABLE" : "RESOURCE_TABLE"} });\`
-    ResourceId constant _tableId = ResourceId.wrap(${tableId});
+      namespace
+    )}, name: ${JSON.stringify(name)}, typeId: ${offchainOnly ? "RESOURCE_OFFCHAIN_TABLE" : "RESOURCE_TABLE"} });\`
+    ResourceId constant _tableId = ResourceId.wrap(${resourceToHex({
+      type: offchainOnly ? "offchainTable" : "table",
+      namespace,
+      name,
+    })});
+    ResourceId constant ${tableIdName} = _tableId;
   `;
 }
 
@@ -235,7 +233,7 @@ export function renderTableId({
  */
 export function renderValueTypeToBytes32(
   name: string,
-  { typeUnwrap, internalTypeId }: Pick<RenderType, "typeUnwrap" | "internalTypeId">,
+  { typeUnwrap, internalTypeId }: Pick<RenderType, "typeUnwrap" | "internalTypeId">
 ): string {
   const innerText = typeUnwrap.length ? `${typeUnwrap}(${name})` : name;
 
@@ -280,7 +278,7 @@ export function getLeftPaddingBits(field: Pick<RenderType, "internalTypeId" | "s
 function internalRenderList<T>(
   lineTerminator: string,
   list: T[],
-  renderItem: (item: T, index: number) => string,
+  renderItem: (item: T, index: number) => string
 ): string {
   return list
     .map((item, index) => renderItem(item, index) + (index === list.length - 1 ? "" : lineTerminator))

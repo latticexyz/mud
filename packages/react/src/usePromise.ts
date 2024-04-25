@@ -7,7 +7,7 @@ export type UsePromiseResult<T> = PromiseSettledResult<Awaited<T>> | { status: "
 export function usePromise<T>(promise: PromiseLike<T> | null | undefined) {
   const promiseRef = useRef(promise);
   const [result, setResult] = useState<UsePromiseResult<T>>(
-    promise == null ? { status: "idle" } : { status: "pending" },
+    promise == null ? { status: "idle" } : { status: "pending" }
   );
 
   useEffect(() => {

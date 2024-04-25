@@ -3,9 +3,9 @@ import { assertExhaustive } from "@latticexyz/common/utils";
 import {
   DynamicAbiType,
   DynamicAbiTypeToPrimitiveType,
-  arrayToStaticAbiType,
+  arrayAbiTypeToStaticAbiType,
   staticAbiTypeToByteLength,
-} from "@latticexyz/schema-type/internal";
+} from "@latticexyz/schema-type";
 import { decodeStaticField } from "./decodeStaticField";
 import { InvalidHexLengthError, InvalidHexLengthForArrayFieldError } from "./errors";
 
@@ -14,7 +14,7 @@ import { InvalidHexLengthError, InvalidHexLengthForArrayFieldError } from "./err
 
 export function decodeDynamicField<
   TAbiType extends DynamicAbiType,
-  TPrimitiveType extends DynamicAbiTypeToPrimitiveType<TAbiType>,
+  TPrimitiveType extends DynamicAbiTypeToPrimitiveType<TAbiType>
 >(abiType: TAbiType, data: Hex): TPrimitiveType {
   if (abiType === "bytes") {
     return data as TPrimitiveType;
@@ -128,7 +128,7 @@ export function decodeDynamicField<
     case "bytes32[]":
     case "bool[]":
     case "address[]": {
-      const staticAbiType = arrayToStaticAbiType(abiType);
+      const staticAbiType = arrayAbiTypeToStaticAbiType(abiType);
       const itemByteLength = staticAbiTypeToByteLength[staticAbiType];
       if (dataSize % itemByteLength !== 0) {
         throw new InvalidHexLengthForArrayFieldError(staticAbiType, data);

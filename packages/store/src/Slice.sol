@@ -3,7 +3,6 @@ pragma solidity >=0.8.24;
 
 import { Memory } from "./Memory.sol";
 import { DecodeSlice } from "./tightcoder/DecodeSlice.sol";
-import { ISliceErrors } from "./ISliceErrors.sol";
 
 // Acknowledgements:
 // Based on @dk1a's Slice.sol library (https://github.com/dk1a/solidity-stringutils/blob/main/src/Slice.sol)
@@ -16,9 +15,10 @@ using DecodeSlice for Slice global;
 
 /**
  * @title Static functions for Slice
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  */
 library SliceLib {
+  error Slice_OutOfBounds(bytes data, uint256 start, uint256 end);
+
   uint256 constant MASK_LEN = uint256(type(uint128).max);
 
   /**
@@ -56,7 +56,7 @@ library SliceLib {
    */
   function getSubslice(bytes memory data, uint256 start, uint256 end) internal pure returns (Slice) {
     // TODO this check helps catch bugs and can eventually be removed
-    if (start > end || end > data.length) revert ISliceErrors.Slice_OutOfBounds(data, start, end);
+    if (start > end || end > data.length) revert Slice_OutOfBounds(data, start, end);
 
     uint256 pointer;
     assembly {
@@ -73,7 +73,6 @@ library SliceLib {
 
 /**
  * @title Instance functions for Slice
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  */
 library SliceInstance {
   /**

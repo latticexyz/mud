@@ -2,16 +2,20 @@
 pragma solidity >=0.8.24;
 
 import { IERC165 } from "./IERC165.sol";
-import { IModuleErrors } from "./IModuleErrors.sol";
 
 /**
  * @title IModule
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Interface for the Module system.
  * A module can be installed within the context of a world, either as a root or non-root module.
  * This interface adheres to the ERC-165 standard for determining interface support.
  */
-interface IModule is IERC165, IModuleErrors {
+interface IModule is IERC165 {
+  /// @dev Errors to represent non-support of specific installation types.
+  error Module_RootInstallNotSupported();
+  error Module_NonRootInstallNotSupported();
+  error Module_AlreadyInstalled();
+  error Module_MissingDependency(address dependency);
+
   /**
    * @notice Installs the module as a root module.
    * @dev This function is invoked by the World contract during `installRootModule` process.

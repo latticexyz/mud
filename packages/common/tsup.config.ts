@@ -3,7 +3,6 @@ import { defineConfig } from "tsup";
 export default defineConfig({
   entry: {
     index: "src/index.ts",
-    actions: "src/actions/index.ts",
     chains: "src/chains/index.ts",
     codegen: "src/codegen/index.ts",
     errors: "src/errors/index.ts",
@@ -13,7 +12,7 @@ export default defineConfig({
   },
   target: "esnext",
   format: ["esm"],
-  dts: !process.env.TSUP_SKIP_DTS,
+  dts: true,
   sourcemap: true,
   clean: true,
   minify: true,

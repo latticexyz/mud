@@ -75,7 +75,9 @@ contract ERC20ModuleRegistrationLibrary {
   function register(IBaseWorld world, bytes14 namespace) public {
     // Register the namespace if it doesn't exist yet
     ResourceId tokenNamespace = WorldResourceIdLib.encodeNamespace(namespace);
-    world.registerNamespace(tokenNamespace);
+    if (!ResourceIds.getExists(tokenNamespace)) {
+      world.registerNamespace(tokenNamespace);
+    }
 
     // Register the tables
     Allowances.register(_allowancesTableId(namespace));

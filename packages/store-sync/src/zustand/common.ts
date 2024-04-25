@@ -1,4 +1,4 @@
-import { Table, SchemaToPrimitives } from "@latticexyz/store/internal";
+import { Table, SchemaToPrimitives } from "@latticexyz/store";
 import { Hex } from "viem";
 
 export type RawRecord = {
@@ -11,7 +11,7 @@ export type RawRecord = {
   readonly dynamicData: Hex;
 };
 
-export type TableRecord<table extends Table = Table> = {
+export type TableRecord<table extends Table> = {
   /** Internal unique ID */
   readonly id: string;
   readonly table: table;

@@ -26,7 +26,7 @@ export interface TableOptions {
  */
 export function getTableOptions(
   config: StoreConfig,
-  solidityUserTypes: Record<string, SolidityUserDefinedType>,
+  solidityUserTypes: Record<string, SolidityUserDefinedType>
 ): TableOptions[] {
   const storeImportPath = config.storeImportPath;
 
@@ -84,6 +84,7 @@ export function getTableOptions(
     const staticResourceData = tableData.tableIdArgument
       ? undefined
       : {
+          tableIdName: tableName + "TableId",
           namespace: config.namespace,
           name: tableData.name,
           offchainOnly: tableData.offchainOnly,

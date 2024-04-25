@@ -13,7 +13,7 @@ function parseEnv(): z.infer<typeof envSchema> {
     });
   } catch (error) {
     if (error instanceof ZodError) {
-      const { ...invalidEnvVars } = error.format();
+      const { _errors, ...invalidEnvVars } = error.format();
       console.error(`\nMissing or invalid environment variables:\n\n  ${Object.keys(invalidEnvVars).join("\n  ")}\n`);
       process.exit(1);
     }

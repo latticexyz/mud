@@ -4,8 +4,8 @@ pragma solidity >=0.8.24;
 import { IStore } from "../src/IStore.sol";
 import { IStoreHook } from "../src/IStoreHook.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
-import { Store } from "../src/Store.sol";
-import { EncodedLengths } from "../src/EncodedLengths.sol";
+import { StoreData } from "../src/StoreData.sol";
+import { PackedCounter } from "../src/PackedCounter.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { Schema } from "../src/Schema.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
@@ -15,7 +15,7 @@ import { ResourceId } from "../src/ResourceId.sol";
 /**
  * StoreMock is a contract wrapper around the StoreCore library for testing purposes.
  */
-contract StoreMock is Store {
+contract StoreMock is IStore, StoreData {
   constructor() {
     StoreCore.initialize();
     StoreCore.registerInternalTables();
@@ -27,7 +27,7 @@ contract StoreMock is Store {
     ResourceId tableId,
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
-    EncodedLengths encodedLengths,
+    PackedCounter encodedLengths,
     bytes calldata dynamicData
   ) public {
     StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);

@@ -6,5 +6,6 @@ type GetIdOptions = {
 };
 
 export function getId({ tableId, keyTuple }: GetIdOptions): string {
-  return `${tableId}:${concatHex(keyTuple)}`;
+  // TODO: pass in keyTuple directly once types are fixed (https://github.com/wagmi-dev/viem/pull/1417)
+  return `${tableId}:${concatHex([...keyTuple])}`;
 }

@@ -63,7 +63,7 @@ export async function getSnapshot({
       const result = await trpcIndexer.findAll.query({ chainId, address, filters });
       // warn after we fetch from old endpoint so we know that the indexer is accessible
       console.warn(
-        `The indexer at ${indexerUrl} appears to be outdated. Consider upgrading to a recent version for better performance.`,
+        `The indexer at ${indexerUrl} appears to be outdated. Consider upgrading to a recent version for better performance.`
       );
 
       // if the indexer returns no block number, it hasn't indexed this chain

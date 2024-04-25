@@ -1,108 +1,111 @@
-import { defineWorld } from "./ts/config/v2/world";
+import { mudConfig } from "./ts/register";
 
-export default defineWorld({
-  codegen: {
-    worldImportPath: "../../",
-    worldgenDirectory: "interfaces",
-    worldInterfaceName: "IBaseWorld",
-  },
+export default mudConfig({
+  worldImportPath: "../../",
+  worldgenDirectory: "interfaces",
+  worldInterfaceName: "IBaseWorld",
   namespace: "world" as const, // NOTE: this namespace is only used for tables, the core system is deployed in the root namespace.
   userTypes: {
-    ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", type: "bytes32" },
+    ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", internalType: "bytes32" },
   },
   tables: {
     NamespaceOwner: {
-      schema: {
+      keySchema: {
         namespaceId: "ResourceId",
+      },
+      valueSchema: {
         owner: "address",
       },
-      key: ["namespaceId"],
     },
     ResourceAccess: {
-      schema: {
+      keySchema: {
         resourceId: "ResourceId",
         caller: "address",
+      },
+      valueSchema: {
         access: "bool",
       },
-      key: ["resourceId", "caller"],
     },
     InstalledModules: {
-      schema: {
+      keySchema: {
         moduleAddress: "address",
         argumentsHash: "bytes32", // Hash of the params passed to the `install` function
+      },
+      valueSchema: {
         isInstalled: "bool",
       },
-      key: ["moduleAddress", "argumentsHash"],
     },
     UserDelegationControl: {
-      schema: {
+      keySchema: {
         delegator: "address",
         delegatee: "address",
+      },
+      valueSchema: {
         delegationControlId: "ResourceId",
       },
-      key: ["delegator", "delegatee"],
     },
     NamespaceDelegationControl: {
-      schema: {
+      keySchema: {
         namespaceId: "ResourceId",
+      },
+      valueSchema: {
         delegationControlId: "ResourceId",
       },
-      key: ["namespaceId"],
     },
     Balances: {
-      schema: {
+      keySchema: {
         namespaceId: "ResourceId",
+      },
+      valueSchema: {
         balance: "uint256",
       },
-      key: ["namespaceId"],
     },
     Systems: {
-      schema: {
+      keySchema: {
         systemId: "ResourceId",
+      },
+      valueSchema: {
         system: "address",
         publicAccess: "bool",
       },
-      key: ["systemId"],
-      codegen: {
-        dataStruct: false,
-      },
+      dataStruct: false,
     },
     SystemRegistry: {
-      schema: {
+      keySchema: {
         system: "address",
+      },
+      valueSchema: {
         systemId: "ResourceId",
       },
-      key: ["system"],
     },
     SystemHooks: {
-      schema: {
+      keySchema: {
         systemId: "ResourceId",
-        value: "bytes21[]",
       },
-      key: ["systemId"],
+      valueSchema: "bytes21[]",
     },
     FunctionSelectors: {
-      schema: {
-        worldFunctionSelector: "bytes4",
+      keySchema: {
+        functionSelector: "bytes4",
+      },
+      valueSchema: {
         systemId: "ResourceId",
         systemFunctionSelector: "bytes4",
       },
-      key: ["worldFunctionSelector"],
-      codegen: { dataStruct: false },
+      dataStruct: false,
     },
     FunctionSignatures: {
-      type: "offchainTable",
-      schema: {
+      keySchema: {
         functionSelector: "bytes4",
+      },
+      valueSchema: {
         functionSignature: "string",
       },
-      key: ["functionSelector"],
+      offchainOnly: true,
     },
     InitModuleAddress: {
-      schema: {
-        value: "address",
-      },
-      key: [],
+      keySchema: {},
+      valueSchema: "address",
     },
   },
   excludeSystems: [

@@ -2,7 +2,6 @@ import { AnySQLiteColumn, SQLiteTableWithColumns } from "drizzle-orm/sqlite-core
 import { ColumnDataType, DummyDriver, Kysely, SqliteAdapter, SqliteIntrospector, SqliteQueryCompiler } from "kysely";
 import { getTableColumns, getTableName } from "drizzle-orm";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = new Kysely<any>({
   dialect: {
     createAdapter: (): SqliteAdapter => new SqliteAdapter(),
@@ -12,7 +11,6 @@ const db = new Kysely<any>({
   },
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function sqliteTableToSql(table: SQLiteTableWithColumns<any>): string {
   const tableName = getTableName(table);
 
@@ -34,7 +32,6 @@ export function sqliteTableToSql(table: SQLiteTableWithColumns<any>): string {
 
   const primaryKeys = columns.filter((column) => column.primary).map((column) => column.name);
   if (primaryKeys.length) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     query = query.addPrimaryKeyConstraint(`${tableName}__primaryKey`, primaryKeys as any);
   }
 

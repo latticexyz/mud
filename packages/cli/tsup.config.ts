@@ -14,14 +14,14 @@ const mudPackages: MudPackages = Object.fromEntries(
       JSON.parse(readFileSync(filename, "utf8")),
     ])
     .filter(([, packageJson]) => !packageJson.private)
-    .map(([localPath, packageJson]) => [packageJson.name, { localPath }]),
+    .map(([localPath, packageJson]) => [packageJson.name, { localPath }])
 );
 
 export default defineConfig({
   entry: ["src/index.ts", "src/mud.ts"],
   target: "esnext",
   format: ["esm"],
-  dts: !process.env.TSUP_SKIP_DTS,
+  dts: false,
   sourcemap: true,
   clean: true,
   minify: true,

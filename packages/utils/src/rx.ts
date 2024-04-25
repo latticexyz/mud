@@ -19,7 +19,7 @@ import { awaitValue } from "./mobx";
 
 export function filterNullish<T>(): OperatorFunction<T, NonNullable<T>> {
   return pipe<Observable<T>, Observable<NonNullable<T>>>(
-    filter<T>((x: T) => x != null) as OperatorFunction<T, NonNullable<T>>,
+    filter<T>((x: T) => x != null) as OperatorFunction<T, NonNullable<T>>
   );
 }
 
@@ -50,7 +50,7 @@ export function stretch<T>(spacingDelayMs: number) {
       };
     }, null),
     filterNullish(),
-    mergeMap((i) => of(i.value).pipe(delay(i.delay)), 1),
+    mergeMap((i) => of(i.value).pipe(delay(i.delay)), 1)
   );
 }
 
@@ -65,7 +65,7 @@ export function computedToStream<T>(comp: IComputedValue<T> | IObservableValue<T
     (value) => {
       if (value != null) stream.next(value);
     },
-    { fireImmediately: true },
+    { fireImmediately: true }
   );
   return stream;
 }
@@ -77,7 +77,7 @@ export function observableToStream<T>(obs: T): Observable<T> {
     (value) => {
       if (value != null) stream.next(value);
     },
-    { fireImmediately: true },
+    { fireImmediately: true }
   );
   return stream;
 }
@@ -104,7 +104,7 @@ export async function streamToDefinedComputed<T>(stream$: Observable<T>): Promis
  */
 export async function awaitStreamValue<T>(
   stream$: Observable<T>,
-  predicate: (value: T) => boolean = (value) => value != null,
+  predicate: (value: T) => boolean = (value) => value != null
 ): Promise<T> {
   const [resolve, , promise] = deferred<T>();
   stream$.pipe(first(predicate)).subscribe(resolve);

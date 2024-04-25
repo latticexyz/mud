@@ -1,4 +1,4 @@
-import { Table } from "@latticexyz/store/internal";
+import { Table } from "@latticexyz/store";
 import { useDevToolsContext } from "../DevToolsContext";
 import { useEffect, useState } from "react";
 

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { tables } from "./tables";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
+import { DefaultLogger } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { setupTables } from "./setupTables";
@@ -10,8 +11,7 @@ describe("setupTables", async () => {
 
   beforeEach(async () => {
     db = drizzle(postgres(process.env.DATABASE_URL!), {
-      // TODO: make a debug-based logger so this can be toggled by env var
-      // logger: new DefaultLogger(),
+      logger: new DefaultLogger(),
     });
   });
 

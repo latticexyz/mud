@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { eq } from "drizzle-orm";
+import { DefaultLogger, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { Hex, RpcLog, createPublicClient, decodeEventLog, formatLog, http } from "viem";
@@ -21,14 +21,13 @@ const blocks = groupLogsByBlockNumber(
       topics: log.topics as [Hex, ...Hex[]],
       strict: true,
     });
-    return formatLog(log as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
-  }),
+    return formatLog(log as any as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
+  })
 );
 
 describe("createStorageAdapter", async () => {
   const db = drizzle(postgres(process.env.DATABASE_URL!), {
-    // TODO: make a debug-based logger so this can be toggled by env var
-    // logger: new DefaultLogger(),
+    logger: new DefaultLogger(),
   });
 
   const publicClient = createPublicClient({
@@ -51,9 +50,9 @@ describe("createStorageAdapter", async () => {
     expect(await db.select().from(storageAdapter.tables.configTable)).toMatchInlineSnapshot(`
       [
         {
-          "blockNumber": 21n,
+          "blockNumber": 20n,
           "chainId": 31337,
-          "version": "0.0.7",
+          "version": "0.0.6",
         },
       ]
     `);
@@ -65,14 +64,14 @@ describe("createStorageAdapter", async () => {
         .where(
           eq(
             storageAdapter.tables.recordsTable.tableId,
-            resourceToHex({ type: "table", namespace: "", name: "NumberList" }),
-          ),
-        ),
+            resourceToHex({ type: "table", namespace: "", name: "NumberList" })
+          )
+        )
     ).toMatchInlineSnapshot(`
       [
         {
-          "address": "0x7C78d585F136d7247f9deA68f60CE8A2D3F311E2",
-          "blockNumber": 21n,
+          "address": "0x2964aF56c8aACdE425978a28b018956D21cF50f0",
+          "blockNumber": 20n,
           "dynamicData": "0x000001a400000045",
           "encodedLengths": "0x0000000000000000000000000000000000000000000000000800000000000008",
           "isDeleted": false,
@@ -90,7 +89,7 @@ describe("createStorageAdapter", async () => {
     expect(tables).toMatchInlineSnapshot(`
       [
         {
-          "address": "0x7C78d585F136d7247f9deA68f60CE8A2D3F311E2",
+          "address": "0x2964aF56c8aACdE425978a28b018956D21cF50f0",
           "keySchema": {},
           "name": "NumberList",
           "namespace": "",
@@ -107,7 +106,7 @@ describe("createStorageAdapter", async () => {
       [
         {
           "__keyBytes": "0x",
-          "__lastUpdatedBlockNumber": 21n,
+          "__lastUpdatedBlockNumber": 20n,
           "value": [
             420,
             69,

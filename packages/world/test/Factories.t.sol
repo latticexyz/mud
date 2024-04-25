@@ -12,7 +12,6 @@ import { InitModule } from "../src/modules/init/InitModule.sol";
 import { Create2Factory } from "../src/Create2Factory.sol";
 import { WorldFactory } from "../src/WorldFactory.sol";
 import { IWorldFactory } from "../src/IWorldFactory.sol";
-import { IWorldEvents } from "../src/IWorldEvents.sol";
 import { InstalledModules } from "../src/codegen/tables/InstalledModules.sol";
 import { NamespaceOwner } from "../src/codegen/tables/NamespaceOwner.sol";
 import { ROOT_NAMESPACE_ID } from "../src/constants.sol";
@@ -20,7 +19,8 @@ import { createInitModule } from "./createInitModule.sol";
 
 contract FactoriesTest is Test, GasReporter {
   event ContractDeployed(address addr, uint256 salt);
-  event WorldDeployed(address indexed newContract, uint256 salt);
+  event WorldDeployed(address indexed newContract);
+  event HelloWorld(bytes32 indexed version);
 
   function calculateAddress(
     address deployingAddress,
@@ -71,11 +71,11 @@ contract FactoriesTest is Test, GasReporter {
 
     // Check for HelloWorld event from World
     vm.expectEmit(true, true, true, true);
-    emit IWorldEvents.HelloWorld(WORLD_VERSION);
+    emit HelloWorld(WORLD_VERSION);
 
     // Check for WorldDeployed event from Factory
     vm.expectEmit(true, false, false, false);
-    emit WorldDeployed(calculatedAddress, salt1);
+    emit WorldDeployed(calculatedAddress);
     startGasReport("deploy world via WorldFactory");
     worldFactory.deployWorld(_salt1);
     endGasReport();
@@ -104,11 +104,11 @@ contract FactoriesTest is Test, GasReporter {
 
     // Check for HelloWorld event from World
     vm.expectEmit(true, true, true, true);
-    emit IWorldEvents.HelloWorld(WORLD_VERSION);
+    emit HelloWorld(WORLD_VERSION);
 
     // Check for WorldDeployed event from Factory
     vm.expectEmit(true, false, false, false);
-    emit WorldDeployed(calculatedAddress, salt2);
+    emit WorldDeployed(calculatedAddress);
     worldFactory.deployWorld(_salt2);
 
     // Set the store address manually

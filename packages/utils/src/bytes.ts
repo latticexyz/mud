@@ -20,7 +20,7 @@ export function concatUint8Arrays(...arrays: Uint8Array[]): Uint8Array {
   return Uint8Array.from(
     arrays.reduce<number[]>((acc, curr) => {
       return [...acc, ...curr];
-    }, []),
+    }, [])
   );
 }
 

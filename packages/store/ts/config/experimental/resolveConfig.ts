@@ -3,7 +3,7 @@ import { StoreConfig, TableConfig, UserTypesConfig } from "../storeConfig";
 import { UserType } from "@latticexyz/common/codegen";
 import { mapObject } from "@latticexyz/common/utils";
 import { resourceToHex } from "@latticexyz/common";
-import { SchemaAbiType } from "@latticexyz/schema-type/internal";
+import { SchemaAbiType } from "@latticexyz/schema-type";
 
 /**
  * @internal Internal only
@@ -26,7 +26,7 @@ type ResolvedTableConfig<
   TUserTypes extends UserTypesConfig["userTypes"],
   TEnumNames extends StringForUnion,
   TNamespace extends string = string,
-  TName extends string = string,
+  TName extends string = string
 > = {
   keySchema: ResolvedKeySchema<TTableConfig["keySchema"], TUserTypes, TEnumNames>;
   valueSchema: ResolvedValueSchema<TTableConfig["valueSchema"], TUserTypes, TEnumNames>;
@@ -38,34 +38,34 @@ type ResolvedTableConfig<
 type ResolvedKeySchema<
   TKeySchema extends TableConfig["keySchema"],
   TUserTypes extends UserTypesConfig["userTypes"],
-  TEnumNames extends StringForUnion,
+  TEnumNames extends StringForUnion
 > = ResolvedSchema<TKeySchema, TUserTypes, TEnumNames>;
 
 type ResolvedValueSchema<
   TValueSchema extends TableConfig["valueSchema"],
   TUserTypes extends UserTypesConfig["userTypes"],
-  TEnumNames extends StringForUnion,
+  TEnumNames extends StringForUnion
 > = ResolvedSchema<Exclude<TValueSchema, string>, TUserTypes, TEnumNames>;
 
 type ResolvedSchema<
   TSchema extends Exclude<TableConfig["keySchema"] | TableConfig["valueSchema"], string>,
   TUserTypes extends UserTypesConfig["userTypes"],
-  TEnumNames extends StringForUnion,
+  TEnumNames extends StringForUnion
 > = {
   [key in keyof TSchema]: {
     type: TSchema[key] extends SchemaAbiType
       ? TSchema[key]
       : TSchema[key] extends keyof TUserTypes
-        ? TUserTypes[TSchema[key]] extends UserType
-          ? // Note: we mistakenly named the plain ABI type "internalType",
-            // while in Solidity ABIs the plain ABI type is called "type" and
-            // and the custom type "internalType". We're planning to
-            // change our version and align with Solidity ABIs going forward.
-            TUserTypes[TSchema[key]]["internalType"]
-          : never
-        : TSchema[key] extends TEnumNames
-          ? "uint8"
-          : never;
+      ? TUserTypes[TSchema[key]] extends UserType
+        ? // Note: we mistakenly named the plain ABI type "internalType",
+          // while in Solidity ABIs the plain ABI type is called "type" and
+          // and the custom type "internalType". We're planning to
+          // change our version and align with Solidity ABIs going forward.
+          TUserTypes[TSchema[key]]["internalType"]
+        : never
+      : TSchema[key] extends TEnumNames
+      ? "uint8"
+      : never;
     internalType: TSchema[key];
   };
 };
@@ -75,7 +75,7 @@ type ResolvedSchema<
  * @deprecated Internal only
  */
 export function resolveConfig<TStoreConfig extends StoreConfig>(
-  config: TStoreConfig,
+  config: TStoreConfig
 ): ResolvedStoreConfig<TStoreConfig> {
   const resolvedTables: Record<string, ReturnType<typeof resolveTable>> = {};
 
@@ -85,7 +85,7 @@ export function resolveConfig<TStoreConfig extends StoreConfig>(
       config.userTypes,
       Object.keys(config.enums),
       config.namespace,
-      key,
+      key
     ) as ReturnType<typeof resolveTable>;
   }
 
@@ -99,13 +99,13 @@ function resolveTable<
   TUserTypes extends UserTypesConfig["userTypes"],
   TEnums extends StringForUnion[],
   TNamespace extends string,
-  TName extends string,
+  TName extends string
 >(
   tableConfig: TTableConfig,
   userTypes: TUserTypes,
   enums: TEnums,
   namespace: TNamespace,
-  name: TName,
+  name: TName
 ): ResolvedTableConfig<typeof tableConfig, TUserTypes, TEnums[number]> {
   const { keySchema, valueSchema } = tableConfig;
 
@@ -125,11 +125,11 @@ function resolveTable<
 function resolveKeySchema<
   TKeySchema extends TableConfig["keySchema"],
   TUserTypes extends UserTypesConfig["userTypes"],
-  TEnums extends StringForUnion[],
+  TEnums extends StringForUnion[]
 >(
   keySchema: TKeySchema,
   userTypes: TUserTypes,
-  enums: TEnums,
+  enums: TEnums
 ): ResolvedKeySchema<TKeySchema extends undefined ? { key: "bytes32" } : TKeySchema, TUserTypes, TEnums[number]> {
   const schema = (
     keySchema == null ? { key: "bytes32" } : typeof keySchema === "string" ? { key: keySchema } : keySchema
@@ -140,11 +140,11 @@ function resolveKeySchema<
 function resolveValueSchema<
   TValueSchema extends TableConfig["valueSchema"],
   TUserTypes extends UserTypesConfig["userTypes"],
-  TEnums extends StringForUnion[],
+  TEnums extends StringForUnion[]
 >(
   valueSchema: TValueSchema,
   userTypes: TUserTypes,
-  enums: TEnums,
+  enums: TEnums
 ): ResolvedValueSchema<TValueSchema, TUserTypes, TEnums[number]> {
   const schema = (
     typeof valueSchema === "string" ? ({ value: valueSchema } as unknown as TValueSchema) : valueSchema
@@ -155,7 +155,7 @@ function resolveValueSchema<
 function resolveSchema<
   TSchema extends Exclude<NonNullable<TableConfig["keySchema"]> | TableConfig["valueSchema"], string>,
   TUserTypes extends UserTypesConfig["userTypes"],
-  TEnums extends StringForUnion[],
+  TEnums extends StringForUnion[]
 >(schema: TSchema, userTypes: TUserTypes, enums: TEnums): ResolvedSchema<TSchema, TUserTypes, TEnums[number]> {
   return mapObject<TSchema, ResolvedSchema<TSchema, TUserTypes, TEnums[number]>>(schema, (value, key) => {
     const isUserType = userTypes && value in userTypes;

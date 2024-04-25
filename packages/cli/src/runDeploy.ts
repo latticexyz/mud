@@ -5,31 +5,23 @@ import { deploy } from "./deploy/deploy";
 import { createWalletClient, http, Hex, isHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig } from "@latticexyz/config/node";
-import { World as WorldConfig } from "@latticexyz/world";
-import { worldToV1 } from "@latticexyz/world/config/v2";
+import { StoreConfig } from "@latticexyz/store";
+import { WorldConfig } from "@latticexyz/world";
 import { getOutDirectory, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import { MUDError } from "@latticexyz/common/errors";
 import { resolveConfig } from "./deploy/resolveConfig";
 import { getChainId } from "viem/actions";
-import { postDeploy } from "./utils/postDeploy";
+import { postDeploy } from "./utils/utils/postDeploy";
 import { WorldDeploy } from "./deploy/common";
 import { build } from "./build";
 
 export const deployOptions = {
-  configPath: { type: "string", desc: "Path to the MUD config file" },
+  configPath: { type: "string", desc: "Path to the config file" },
   printConfig: { type: "boolean", desc: "Print the resolved config" },
   profile: { type: "string", desc: "The foundry profile to use" },
   saveDeployment: { type: "boolean", desc: "Save the deployment info to a file", default: true },
   rpc: { type: "string", desc: "The RPC URL to use. Defaults to the RPC url from the local foundry.toml" },
-  rpcBatch: {
-    type: "boolean",
-    desc: "Enable batch processing of RPC requests in viem client (defaults to batch size of 100 and wait of 1s)",
-  },
-  deployerAddress: {
-    type: "string",
-    desc: "Deploy using an existing deterministic deployer (https://github.com/Arachnid/deterministic-deployment-proxy)",
-  },
   worldAddress: { type: "string", desc: "Deploy to an existing World at the given address" },
   srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
   skipBuild: { type: "boolean", desc: "Skip rebuilding the contracts before deploying" },
@@ -57,8 +49,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
 
-  const configV2 = (await loadConfig(opts.configPath)) as WorldConfig;
-  const config = worldToV1(configV2);
+  const config = (await loadConfig(opts.configPath)) as StoreConfig & WorldConfig;
   if (opts.printConfig) {
     console.log(chalk.green("\nResolved config:\n"), JSON.stringify(config, null, 2));
   }
@@ -69,13 +60,13 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   const rpc = opts.rpc ?? (await getRpcUrl(profile));
   console.log(
     chalk.bgBlue(
-      chalk.whiteBright(`\n Deploying MUD contracts${profile ? " with profile " + profile : ""} to RPC ${rpc} \n`),
-    ),
+      chalk.whiteBright(`\n Deploying MUD contracts${profile ? " with profile " + profile : ""} to RPC ${rpc} \n`)
+    )
   );
 
   // Run build
   if (!opts.skipBuild) {
-    await build({ config: configV2, srcDir, foundryProfile: profile });
+    await build({ config, srcDir, foundryProfile: profile });
   }
 
   const privateKey = process.env.PRIVATE_KEY as Hex;
@@ -83,34 +74,24 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     throw new MUDError(
       `Missing PRIVATE_KEY environment variable.
 Run 'echo "PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" > .env'
-in your contracts directory to use the default anvil private key.`,
+in your contracts directory to use the default anvil private key.`
     );
   }
 
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
 
   const client = createWalletClient({
-    transport: http(rpc, {
-      batch: opts.rpcBatch
-        ? {
-            batchSize: 100,
-            wait: 1000,
-          }
-        : undefined,
-    }),
+    transport: http(rpc),
     account: privateKeyToAccount(privateKey),
   });
-
   console.log("Deploying from", client.account.address);
 
   const startTime = Date.now();
   const worldDeploy = await deploy({
-    deployerAddress: opts.deployerAddress as Hex | undefined,
     salt,
     worldAddress: opts.worldAddress as Hex | undefined,
     client,
     config: resolvedConfig,
-    withWorldProxy: configV2.deploy.useProxy,
   });
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
     await postDeploy(config.postDeployScript, worldDeploy.address, rpc, profile);
@@ -140,7 +121,7 @@ in your contracts directory to use the default anvil private key.`,
     writeFileSync(config.worldsFile, JSON.stringify(deploys, null, 2));
 
     console.log(
-      chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${config.worldsFile} and ${deploysDir}): \n`)),
+      chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${config.worldsFile} and ${deploysDir}): \n`))
     );
   }
 

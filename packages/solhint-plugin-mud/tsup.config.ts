@@ -4,7 +4,7 @@ export default defineConfig({
   entry: ["src/index.ts"],
   target: "esnext",
   format: ["cjs"],
-  dts: !process.env.TSUP_SKIP_DTS,
+  dts: false,
   sourcemap: true,
   clean: true,
   minify: true,

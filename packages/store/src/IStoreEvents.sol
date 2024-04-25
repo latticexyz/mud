@@ -2,19 +2,9 @@
 pragma solidity >=0.8.24;
 
 import { ResourceId } from "./ResourceId.sol";
-import { EncodedLengths } from "./EncodedLengths.sol";
+import { PackedCounter } from "./PackedCounter.sol";
 
-/**
- * @title IStoreEvents
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
- */
 interface IStoreEvents {
-  /**
-   * @notice Emitted when the Store is created.
-   * @param storeVersion The protocol version of the Store.
-   */
-  event HelloStore(bytes32 indexed storeVersion);
-
   /**
    * @notice Emitted when a new record is set in the store.
    * @param tableId The ID of the table where the record is set.
@@ -27,7 +17,7 @@ interface IStoreEvents {
     ResourceId indexed tableId,
     bytes32[] keyTuple,
     bytes staticData,
-    EncodedLengths encodedLengths,
+    PackedCounter encodedLengths,
     bytes dynamicData
   );
 
@@ -46,8 +36,6 @@ interface IStoreEvents {
    * @notice Emitted when dynamic data in the store is spliced.
    * @param tableId The ID of the table where the data is spliced.
    * @param keyTuple An array representing the composite key for the record.
-   * @param dynamicFieldIndex The index of the dynamic field to splice data, relative to the start of the dynamic fields.
-   * (Dynamic field index = field index - number of static fields)
    * @param start The start position in bytes for the splice operation.
    * @param deleteCount The number of bytes to delete in the splice operation.
    * @param encodedLengths The encoded lengths of the dynamic data of the record.
@@ -56,10 +44,9 @@ interface IStoreEvents {
   event Store_SpliceDynamicData(
     ResourceId indexed tableId,
     bytes32[] keyTuple,
-    uint8 dynamicFieldIndex,
     uint48 start,
     uint40 deleteCount,
-    EncodedLengths encodedLengths,
+    PackedCounter encodedLengths,
     bytes data
   );
 

@@ -1,4 +1,4 @@
-import { StaticPrimitiveType } from "@latticexyz/schema-type/internal";
+import { StaticPrimitiveType } from "@latticexyz/schema-type";
 import { Hex, encodeAbiParameters } from "viem";
 import { Schema } from "./common";
 

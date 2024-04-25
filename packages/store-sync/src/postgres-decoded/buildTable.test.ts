@@ -14,15 +14,15 @@ describe("buildTable", () => {
       valueSchema: { name: "string", walletAddress: "address" },
     });
 
-    expect(getTableConfig(table).schema).toMatch(/0xffffffffffffffffffffffffffffffffffffffff$/);
-    expect(getTableConfig(table).name).toMatchInlineSnapshot('"test_ns__users_table"');
+    expect(getTableConfig(table).schema).toMatch(/0xffffffffffffffffffffffffffffffffffffffff__testNS$/);
+    expect(getTableConfig(table).name).toMatchInlineSnapshot('"users_table"');
     expect(
       mapObject(getTableColumns(table), (column) => ({
         name: column.name,
         dataType: column.dataType,
         sqlName: column.sqlName,
         notNull: column.notNull,
-      })),
+      }))
     ).toMatchInlineSnapshot(`
       {
         "__keyBytes": {
@@ -74,14 +74,14 @@ describe("buildTable", () => {
       valueSchema: { addrs: "address[]" },
     });
 
-    expect(getTableConfig(table).schema).toMatch(/0xffffffffffffffffffffffffffffffffffffffff$/);
-    expect(getTableConfig(table).name).toMatchInlineSnapshot('"test_ns__users_table"');
+    expect(getTableConfig(table).schema).toMatch(/0xffffffffffffffffffffffffffffffffffffffff__testNS$/);
+    expect(getTableConfig(table).name).toMatchInlineSnapshot('"users_table"');
     expect(
       mapObject(getTableColumns(table), (column) => ({
         name: column.name,
         dataType: column.dataType,
         sqlName: column.sqlName,
-      })),
+      }))
     ).toMatchInlineSnapshot(`
       {
         "__keyBytes": {

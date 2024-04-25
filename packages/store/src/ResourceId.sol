@@ -3,7 +3,6 @@ pragma solidity >=0.8.24;
 
 /**
  * @title ResourceId type definition and related utilities
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev A ResourceId is a bytes32 data structure that consists of a
  * type and a name
  */
@@ -16,7 +15,6 @@ uint256 constant TYPE_BITS = 2 * 8; // 2 bytes * 8 bits per byte
 
 /**
  * @title ResourceIdLib Library
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Provides functions to encode data into the ResourceId
  */
 library ResourceIdLib {
@@ -33,7 +31,6 @@ library ResourceIdLib {
 
 /**
  * @title ResourceIdInstance Library
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Provides functions to extract data from a ResourceId.
  */
 library ResourceIdInstance {

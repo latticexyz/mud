@@ -6,8 +6,6 @@ import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
 import { SystemRegistry } from "./codegen/tables/SystemRegistry.sol";
 
 /**
- * @title Utils
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice Various utilities
  * @dev These utilities are not used by MUD itself, they are for developers using MUD.
  */

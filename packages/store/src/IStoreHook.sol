@@ -3,13 +3,9 @@ pragma solidity >=0.8.24;
 
 import { FieldLayout } from "./FieldLayout.sol";
 import { IERC165 } from "./IERC165.sol";
-import { EncodedLengths } from "./EncodedLengths.sol";
+import { PackedCounter } from "./PackedCounter.sol";
 import { ResourceId } from "./ResourceId.sol";
 
-/**
- * @title IStoreHook
- * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
- */
 interface IStoreHook is IERC165 {
   /// @notice Error emitted when a function is not implemented.
   error StoreHook_NotImplemented();
@@ -27,7 +23,7 @@ interface IStoreHook is IERC165 {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
-    EncodedLengths encodedLengths,
+    PackedCounter encodedLengths,
     bytes memory dynamicData,
     FieldLayout fieldLayout
   ) external;
@@ -45,7 +41,7 @@ interface IStoreHook is IERC165 {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
-    EncodedLengths encodedLengths,
+    PackedCounter encodedLengths,
     bytes memory dynamicData,
     FieldLayout fieldLayout
   ) external;
@@ -100,7 +96,7 @@ interface IStoreHook is IERC165 {
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    EncodedLengths encodedLengths,
+    PackedCounter encodedLengths,
     bytes memory data
   ) external;
 
@@ -122,7 +118,7 @@ interface IStoreHook is IERC165 {
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    EncodedLengths encodedLengths,
+    PackedCounter encodedLengths,
     bytes memory data
   ) external;
 

@@ -17,11 +17,11 @@ yargs(hideBin(process.argv))
   // Enable strict mode.
   .strict()
   // Custom error handler
-  .fail((msg) => {
+  .fail((msg, err) => {
     console.error(chalk.red(msg));
     if (msg.includes("Missing required argument")) {
       console.log(
-        chalk.yellow(`Run 'pnpm abi-ts ${process.argv[2]} --help' for a list of available and required arguments.`),
+        chalk.yellow(`Run 'pnpm abi-ts ${process.argv[2]} --help' for a list of available and required arguments.`)
       );
     }
 

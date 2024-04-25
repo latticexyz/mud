@@ -22,28 +22,28 @@ describe("decodeDynamicField", () => {
 
   it("can decode uint256[]", () => {
     expect(
-      decodeDynamicField("uint256[]", "0x0000000000000000000000000000000000000000000000000000000000000000"),
+      decodeDynamicField("uint256[]", "0x0000000000000000000000000000000000000000000000000000000000000000")
     ).toStrictEqual([0n]);
     expect(
-      decodeDynamicField("uint256[]", "0x0000000000000000000000000000000000000000000000000000000000000001"),
+      decodeDynamicField("uint256[]", "0x0000000000000000000000000000000000000000000000000000000000000001")
     ).toStrictEqual([1n]);
     expect(
-      decodeDynamicField("uint256[]", "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
+      decodeDynamicField("uint256[]", "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
     ).toStrictEqual([115792089237316195423570985008687907853269984665640564039457584007913129639935n]);
     expect(
-      decodeDynamicField("uint256[]", "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe"),
+      decodeDynamicField("uint256[]", "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe")
     ).toStrictEqual([115792089237316195423570985008687907853269984665640564039457584007913129639934n]);
     expect(
       decodeDynamicField(
         "uint256[]",
-        "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001",
-      ),
+        "0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001"
+      )
     ).toStrictEqual([1n, 1n]);
     expect(
       decodeDynamicField(
         "uint256[]",
-        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-      ),
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      )
     ).toStrictEqual([
       115792089237316195423570985008687907853269984665640564039457584007913129639935n,
       115792089237316195423570985008687907853269984665640564039457584007913129639935n,
@@ -68,41 +68,41 @@ describe("decodeDynamicField", () => {
 
   it("can decode int256[]", () => {
     expect(
-      decodeDynamicField("int256[]", "0x0000000000000000000000000000000000000000000000000000000000000000"),
+      decodeDynamicField("int256[]", "0x0000000000000000000000000000000000000000000000000000000000000000")
     ).toStrictEqual([0n]);
     expect(
-      decodeDynamicField("int256[]", "0x0000000000000000000000000000000000000000000000000000000000000001"),
+      decodeDynamicField("int256[]", "0x0000000000000000000000000000000000000000000000000000000000000001")
     ).toStrictEqual([1n]);
     expect(
-      decodeDynamicField("int256[]", "0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
+      decodeDynamicField("int256[]", "0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
     ).toStrictEqual([57896044618658097711785492504343953926634992332820282019728792003956564819967n]);
     expect(
-      decodeDynamicField("int256[]", "0x8000000000000000000000000000000000000000000000000000000000000000"),
+      decodeDynamicField("int256[]", "0x8000000000000000000000000000000000000000000000000000000000000000")
     ).toStrictEqual([-57896044618658097711785492504343953926634992332820282019728792003956564819968n]);
     expect(
-      decodeDynamicField("int256[]", "0x8000000000000000000000000000000000000000000000000000000000000001"),
+      decodeDynamicField("int256[]", "0x8000000000000000000000000000000000000000000000000000000000000001")
     ).toStrictEqual([-57896044618658097711785492504343953926634992332820282019728792003956564819967n]);
     expect(
-      decodeDynamicField("int256[]", "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
+      decodeDynamicField("int256[]", "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
     ).toStrictEqual([-1n]);
 
     expect(
       decodeDynamicField(
         "int256[]",
-        "0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-      ),
+        "0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      )
     ).toStrictEqual([57896044618658097711785492504343953926634992332820282019728792003956564819967n, -1n]);
     expect(
       decodeDynamicField(
         "int256[]",
-        "0x80000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-      ),
+        "0x80000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      )
     ).toStrictEqual([-57896044618658097711785492504343953926634992332820282019728792003956564819968n, 0n]);
     expect(
       decodeDynamicField(
         "int256[]",
-        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8000000000000000000000000000000000000000000000000000000000000001",
-      ),
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8000000000000000000000000000000000000000000000000000000000000001"
+      )
     ).toStrictEqual([-1n, -57896044618658097711785492504343953926634992332820282019728792003956564819967n]);
   });
 
@@ -129,13 +129,13 @@ describe("decodeDynamicField", () => {
     ]);
     expect(decodeDynamicField("bytes4[]", "0xff00ff00ff00ff00")).toStrictEqual(["0xff00ff00", "0xff00ff00"]);
     expect(
-      decodeDynamicField("bytes32[]", "0x0000000000000000000000000000000000000000000000000000000000000001"),
+      decodeDynamicField("bytes32[]", "0x0000000000000000000000000000000000000000000000000000000000000001")
     ).toStrictEqual(["0x0000000000000000000000000000000000000000000000000000000000000001"]);
     expect(
       decodeDynamicField(
         "bytes32[]",
-        "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
-      ),
+        "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001"
+      )
     ).toStrictEqual([
       "0x0000000000000000000000000000000000000000000000000000000000000000",
       "0x0000000000000000000000000000000000000000000000000000000000000001",
@@ -151,10 +151,10 @@ describe("decodeDynamicField", () => {
     ]);
 
     expect(() => decodeDynamicField("address[]", "0x00")).toThrow(
-      'Hex value "0x00" has length of 2, but expected a multiple of 40 for address[] type.',
+      'Hex value "0x00" has length of 2, but expected a multiple of 40 for address[] type.'
     );
     expect(() => decodeDynamicField("address[]", "0xffffffffffffffffffffffffffffffffffffffffff")).toThrow(
-      'Hex value "0xffffffffffffffffffffffffffffffffffffffffff" has length of 42, but expected a multiple of 40 for address[] type.',
+      'Hex value "0xffffffffffffffffffffffffffffffffffffffffff" has length of 42, but expected a multiple of 40 for address[] type.'
     );
   });
 
@@ -164,7 +164,7 @@ describe("decodeDynamicField", () => {
     expect(decodeDynamicField("bytes", "0x0001")).toBe("0x0001");
     expect(decodeDynamicField("bytes", "0xff00ff00ff00ff00")).toBe("0xff00ff00ff00ff00");
     expect(decodeDynamicField("bytes", "0x0000000000000000000000000000000000000000000000000000000000000001")).toBe(
-      "0x0000000000000000000000000000000000000000000000000000000000000001",
+      "0x0000000000000000000000000000000000000000000000000000000000000001"
     );
   });
 

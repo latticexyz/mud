@@ -31,14 +31,15 @@ const makeWorldContract = () => {
     world: getContract({
       address: networkConfig.worldAddress as Hex,
       abi: IWorldAbi,
-      client: { public: publicClient, wallet: client },
+      publicClient: publicClient,
+      walletClient: client,
     }),
     client,
   };
 };
 
 // Create five world contracts
-const worldContracts = [1, 2, 3, 4, 5].map(() => makeWorldContract());
+const worldContracts = [1, 2, 3, 4, 5].map((x) => makeWorldContract());
 
 export const App = () => {
   const {
@@ -61,7 +62,7 @@ export const App = () => {
 
   // Call newCall() on LastCall:LastCallSystem.
   const newCall = async (worldContract) => {
-    await worldContract.write.LastCall__newCall();
+    const tx = await worldContract.write.LastCall_LastCallSystem_newCall();
   };
 
   return (

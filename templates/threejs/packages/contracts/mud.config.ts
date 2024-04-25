@@ -1,15 +1,13 @@
-import { defineWorld } from "@latticexyz/world";
+import { mudConfig } from "@latticexyz/world/register";
 
-export default defineWorld({
+export default mudConfig({
   tables: {
     Position: {
-      schema: {
-        id: "bytes32",
+      valueSchema: {
         x: "int32",
         y: "int32",
         z: "int32",
       },
-      key: ["id"],
     },
   },
 });

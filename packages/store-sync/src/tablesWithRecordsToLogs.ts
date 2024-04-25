@@ -1,5 +1,5 @@
 import { StorageAdapterLog, TableWithRecords } from "./common";
-import { encodeKey, encodeValueArgs } from "@latticexyz/protocol-parser/internal";
+import { encodeKey, encodeValueArgs } from "@latticexyz/protocol-parser";
 import { tableToLog } from "./tableToLog";
 
 /**
@@ -18,8 +18,8 @@ export function tablesWithRecordsToLogs(tables: readonly TableWithRecords[]): St
             keyTuple: encodeKey(table.keySchema, record.key),
             ...encodeValueArgs(table.valueSchema, record.value),
           },
-        }),
-      ),
+        })
+      )
     ),
   ];
 }

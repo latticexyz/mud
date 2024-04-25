@@ -3,7 +3,6 @@ import { NavButton } from "../NavButton";
 import { useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
 import { useTables } from "./useTables";
-import { resourceToLabel } from "@latticexyz/common";
 
 export function TablesPage() {
   const tables = useTables();
@@ -44,7 +43,9 @@ export function TablesPage() {
               }
             >
               {selectedTable ? (
-                <span className="font-mono">{resourceToLabel(selectedTable)}</span>
+                <span className="font-mono">
+                  {selectedTable.namespace}:{selectedTable.name}
+                </span>
               ) : (
                 <span>Pick a table…</span>
               )}
@@ -57,7 +58,7 @@ export function TablesPage() {
                 <NavButton
                   className={twMerge(
                     "px-2 py-1.5 text-left hover:bg-blue-700 hover:text-white",
-                    table === selectedTable ? "bg-slate-600" : null,
+                    table === selectedTable ? "bg-slate-600" : null
                   )}
                   key={table.tableId}
                   to={table.tableId}
@@ -67,7 +68,7 @@ export function TablesPage() {
                     }
                   }}
                 >
-                  {resourceToLabel(table)}
+                  {table.namespace}:{table.name}
                 </NavButton>
               ))}
             </div>

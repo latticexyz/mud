@@ -1,0 +1,11 @@
+*
+
+!ts/**
+!dist/**
+!build/**
+!contracts/**
+!out/**
+!assembly/**
+!package.json
+!README.md
+!CHANGELOG.md

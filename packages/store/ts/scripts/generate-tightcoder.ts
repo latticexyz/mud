@@ -6,5 +6,5 @@ await formatAndWriteSolidity(renderEncodeArray(), "src/tightcoder/EncodeArray.so
 await formatAndWriteSolidity(
   renderTightCoderAutoTest(),
   "test/tightcoder/TightCoderAuto.t.sol",
-  "Generated TightCoderAutoTest",
+  "Generated TightCoderAutoTest"
 );

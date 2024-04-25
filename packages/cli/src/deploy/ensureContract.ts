@@ -1,5 +1,6 @@
-import { Client, Transport, Chain, Account, concatHex, getCreate2Address, Hex } from "viem";
+import { Client, Transport, Chain, Account, concatHex, getCreate2Address, Hex, size } from "viem";
 import { getBytecode } from "viem/actions";
+import { deployer } from "./ensureDeployer";
 import { contractSizeLimit, salt } from "./common";
 import { sendTransaction } from "@latticexyz/common";
 import { debug } from "./debug";
@@ -14,19 +15,13 @@ export type Contract = {
 
 export async function ensureContract({
   client,
-  deployerAddress,
   bytecode,
   deployedBytecodeSize,
   label = "contract",
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
-  readonly deployerAddress: Hex;
 } & Contract): Promise<readonly Hex[]> {
-  if (bytecode.includes("__$")) {
-    throw new Error(`Found unlinked public library in ${label} bytecode`);
-  }
-
-  const address = getCreate2Address({ from: deployerAddress, salt, bytecode });
+  const address = getCreate2Address({ from: deployer, salt, bytecode });
 
   const contractCode = await getBytecode(client, { address, blockTag: "pending" });
   if (contractCode) {
@@ -36,11 +31,11 @@ export async function ensureContract({
 
   if (deployedBytecodeSize > contractSizeLimit) {
     console.warn(
-      `\nBytecode for ${label} (${deployedBytecodeSize} bytes) is over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`,
+      `\nBytecode for ${label} (${deployedBytecodeSize} bytes) is over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`
     );
   } else if (deployedBytecodeSize > contractSizeLimit * 0.95) {
     console.warn(
-      `\nBytecode for ${label} (${deployedBytecodeSize} bytes) is almost over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`,
+      `\nBytecode for ${label} (${deployedBytecodeSize} bytes) is almost over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`
     );
   }
 
@@ -50,7 +45,7 @@ export async function ensureContract({
       () =>
         sendTransaction(client, {
           chain: client.chain ?? null,
-          to: deployerAddress,
+          to: deployer,
           data: concatHex([salt, bytecode]),
         }),
       {
@@ -60,7 +55,7 @@ export async function ensureContract({
           debug(`failed to deploy ${label}, retrying in ${delay}ms...`);
           await wait(delay);
         },
-      },
+      }
     ),
   ];
 }

@@ -1,6 +1,6 @@
 {
   "name": "solhint-plugin-mud",
-  "version": "2.0.6",
+  "version": "2.0.0-next.17",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
@@ -26,5 +26,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }

@@ -15,7 +15,7 @@ export type ActionSystem = ReturnType<typeof createActionSystem>;
 export function createActionSystem<M = unknown>(
   world: World,
   txReduced$: Observable<string>,
-  waitForTransaction?: (tx: string) => Promise<void>,
+  waitForTransaction?: (tx: string) => Promise<void>
 ) {
   // Action component
   const Action = defineActionComponent<M>(world);
@@ -40,7 +40,7 @@ export function createActionSystem<M = unknown>(
    * @returns Components including pending updates
    */
   function withOptimisticUpdates<S extends Schema, M extends Metadata, T>(
-    component: Component<S, M, T>,
+    component: Component<S, M, T>
   ): OverridableComponent<S, M, T> {
     const optimisticComponent = componentsWithOptimisticUpdates[component.id] || overridableComponent(component);
 
@@ -99,7 +99,7 @@ export function createActionSystem<M = unknown>(
     // This subscriotion makes sure the action requirement is checked again every time
     // one of the referenced components changes or the pending updates map changes
     const subscription = merge(
-      ...Object.values(action.componentsWithOptimisticUpdates).map((c) => c.update$),
+      ...Object.values(action.componentsWithOptimisticUpdates).map((c) => c.update$)
     ).subscribe(() => checkRequirement(action));
     checkRequirement(action);
     disposer.set(action.id, { dispose: () => subscription?.unsubscribe() });

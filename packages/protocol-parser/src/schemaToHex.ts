@@ -1,4 +1,4 @@
-import { schemaAbiTypes } from "@latticexyz/schema-type/internal";
+import { schemaAbiTypes } from "@latticexyz/schema-type";
 import { Hex } from "viem";
 import { Schema } from "./common";
 import { staticDataLength } from "./staticDataLength";

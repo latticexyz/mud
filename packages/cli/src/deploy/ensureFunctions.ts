@@ -29,7 +29,7 @@ export async function ensureFunctions({
         "found",
         wrongSystem.length,
         "functions already registered but pointing at a different system ID:",
-        wrongSystem.map((func) => func.signature).join(", "),
+        wrongSystem.map((func) => func.signature).join(", ")
       );
     }
   }
@@ -50,7 +50,7 @@ export async function ensureFunctions({
               abi: worldAbi,
               // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
               functionName: "registerRootFunctionSelector",
-              args: [func.systemId, func.systemFunctionSignature, func.systemFunctionSignature],
+              args: [func.systemId, func.systemFunctionSignature, func.systemFunctionSelector],
             }),
           {
             retries: 3,
@@ -59,7 +59,7 @@ export async function ensureFunctions({
               debug(`failed to register function ${func.signature}, retrying in ${delay}ms...`);
               await wait(delay);
             },
-          },
+          }
         );
       }
       return pRetry(
@@ -79,8 +79,8 @@ export async function ensureFunctions({
             debug(`failed to register function ${func.signature}, retrying in ${delay}ms...`);
             await wait(delay);
           },
-        },
+        }
       );
-    }),
+    })
   );
 }

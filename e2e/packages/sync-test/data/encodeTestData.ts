@@ -1,10 +1,7 @@
 import { mapObject } from "@latticexyz/utils";
-import { encodeKey, encodeValueArgs, valueSchemaToFieldLayoutHex } from "@latticexyz/protocol-parser/internal";
+import { encodeKey, encodeValueArgs, valueSchemaToFieldLayoutHex } from "@latticexyz/protocol-parser";
 import { Data, EncodedData } from "./types";
-import configV2 from "../../contracts/mud.config";
-import { worldToV1 } from "@latticexyz/world/config/v2";
-
-const config = worldToV1(configV2);
+import config from "../../contracts/mud.config";
 
 /**
  * Turns the typed data into encoded data in the format expected by `world.setRecord`
