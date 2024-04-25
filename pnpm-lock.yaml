@@ -877,6 +877,9 @@ importers:
       postgres:
         specifier: 3.3.5
         version: 3.3.5
+      prom-client:
+        specifier: ^15.1.2
+        version: 15.1.2
       rxjs:
         specifier: 7.5.5
         version: 7.5.5
@@ -1258,7 +1261,7 @@ packages:
       '@arktype/util': 0.0.23
       '@typescript/analyze-trace': 0.10.1
       '@typescript/vfs': 1.5.0
-      arktype: 2.0.0-dev.7
+      arktype: 2.0.0-dev.8
       typescript: 5.4.2
     transitivePeerDependencies:
       - supports-color
@@ -1268,10 +1271,10 @@ packages:
     resolution: {integrity: sha512-f3p8apUMOTl6KlFNTrOX6twQJDeSdSmtYPVca7SaQjUUTAxfUlaROY1/i1C3y2llYDrrQBEbsggk8k2Oxxgrvw==}
     dev: true
 
-  /@arktype/schema@0.0.7:
-    resolution: {integrity: sha512-awo14Oi98bn6pEgN7soiXvD+mQzidLgzABVO7Tpbw6xtU7+XRWp6JucSEmWLASC+fcoK0QSJxdoC+rm3iIKarQ==}
+  /@arktype/schema@0.0.8:
+    resolution: {integrity: sha512-X4WCMpiS4EOdTjb6NFI2cYw0QAzXXitj5oMPryv0topEeC8smuMOe3rlesbE/nG2eNUE0OpzDCY+LY/o1S5ktA==}
     dependencies:
-      '@arktype/util': 0.0.33
+      '@arktype/util': 0.0.34
     dev: true
 
   /@arktype/util@0.0.23:
@@ -1282,8 +1285,8 @@ packages:
     resolution: {integrity: sha512-fDTBSVzxLj9k1ZjinkawmaQdcXFKMBVK8c+vqMPxwoa94mPMZxBo84yQcqyFVcIcWIkg6qQQmH1ozyT4nqFT/g==}
     dev: false
 
-  /@arktype/util@0.0.33:
-    resolution: {integrity: sha512-MYbrLHf0tVYjxI84m0mMRISmKKVoPzv25B1/X05nePUcyPqROoDBn+hYhHpB0GqnJZQOr8UG1CyMuxjFeVbTNg==}
+  /@arktype/util@0.0.34:
+    resolution: {integrity: sha512-P3opb4q9eDZYbKo1pzLa34Dytg+vMuq8fkY0xQ98BN3RrjHtAVRPFmK3CeAz4fSa39yhrYlLUBfuUEvi52Hb8w==}
     dev: true
 
   /@aws-crypto/ie11-detection@3.0.0:
@@ -3728,6 +3731,11 @@ packages:
       rimraf: 3.0.2
     dev: false
 
+  /@opentelemetry/api@1.8.0:
+    resolution: {integrity: sha512-I/s6F7yKUDdtMsoBWXJe8Qz40Tui5vsuKCWJEWVL+5q9sSWRzzx6v2KeNsOBEwd94j0eWkpWCH4yB6rZg9Mf0w==}
+    engines: {node: '>=8.0.0'}
+    dev: false
+
   /@oven/bun-darwin-aarch64@1.0.11:
     resolution: {integrity: sha512-6wCO37lyGNcqefEDQ7IJp4LW7ElKMH50/hlvW5agIBN/XbTwwtv3788dJ9NczEV7RQSlkOI6J3dUoQJ6Pgav6w==}
     cpu: [arm64]
@@ -5222,11 +5230,11 @@ packages:
     resolution: {integrity: sha512-glMLgVhIQRSkR3tymiS+POAcWVJH09sfrgic0jHnyFL8BlhHAJZX2BzdImU9zYr1y9NBqy+U93ZNrRTHXsKRDw==}
     dev: false
 
-  /arktype@2.0.0-dev.7:
-    resolution: {integrity: sha512-TeehK+ExNsvqNoEccNOMs73LcNwR9+gX9pQsoCIvZfuxrQ24nB5MUQGweAAuNSwVX7GUUU9Ad0BWGnsvD8ST+g==}
+  /arktype@2.0.0-dev.8:
+    resolution: {integrity: sha512-WaQ5fBos/VIhBNAKtJmBKK1GXMJuD/OCKUfY1tWpxzLG8Fz4RMCz7NEs7xRGjUw+J5ODExbvSguTdsrcE0R37w==}
     dependencies:
-      '@arktype/schema': 0.0.7
-      '@arktype/util': 0.0.33
+      '@arktype/schema': 0.0.8
+      '@arktype/util': 0.0.34
     dev: true
 
   /array-includes@3.1.6:
@@ -5475,6 +5483,10 @@ packages:
     resolution: {integrity: sha512-p2q/t/mhvuOj/UeLlV6566GD/guowlr0hHxClI0W9m7MWYkL1F0hLo+0Aexs9HSPCtR1SXQ0TD3MMKrXZajbiQ==}
     dependencies:
       file-uri-to-path: 1.0.0
+    dev: false
+
+  /bintrees@1.0.2:
+    resolution: {integrity: sha512-VOMgTMwjAaUG580SXn3LacVgjurrbMme7ZZNYGSSV7mmtY6QQRh0Eg3pwIcntQ77DErK1L0NxkbetjcoXzVwKw==}
     dev: false
 
   /bl@4.1.0:
@@ -10302,6 +10314,14 @@ packages:
     engines: {node: '>=0.4.0'}
     dev: true
 
+  /prom-client@15.1.2:
+    resolution: {integrity: sha512-on3h1iXb04QFLLThrmVYg1SChBQ9N1c+nKAjebBjokBqipddH3uxmOUcEkTnzmJ8Jh/5TSUnUqS40i2QB2dJHQ==}
+    engines: {node: ^16 || ^18 || >=20}
+    dependencies:
+      '@opentelemetry/api': 1.8.0
+      tdigest: 0.1.2
+    dev: false
+
   /promise-inflight@1.0.1:
     resolution: {integrity: sha512-6zWPyEOFaQBJYcGMHBKTKJ3u6TBsnMFOIZSa6ce1e/ZrrsOlnHRHbabMjLiBYKp+n44X9eUI6VUPaukCXHuG4g==}
     peerDependencies:
@@ -11483,6 +11503,12 @@ packages:
       minizlib: 2.1.2
       mkdirp: 1.0.4
       yallist: 4.0.0
+    dev: false
+
+  /tdigest@0.1.2:
+    resolution: {integrity: sha512-+G0LLgjjo9BZX2MfdvPfH+MKLCrxlXSYec5DaPYP1fe6Iyhf0/fSmJ0bFiZ1F8BT6cGXl2LpltQptzjXKWEkKA==}
+    dependencies:
+      bintrees: 1.0.2
     dev: false
 
   /term-size@2.2.1:

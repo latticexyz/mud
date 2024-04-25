@@ -19,6 +19,7 @@ import { healthcheck } from "../src/koa-middleware/healthcheck";
 import { helloWorld } from "../src/koa-middleware/helloWorld";
 import { apiRoutes } from "../src/sqlite/apiRoutes";
 import { sentry } from "../src/koa-middleware/sentry";
+import { metrics } from "../src/koa-middleware/metrics";
 
 const env = parseEnv(
   z.intersection(
@@ -104,6 +105,12 @@ if (env.SENTRY_DSN) {
 server.use(cors());
 server.use(
   healthcheck({
+    isReady: () => isCaughtUp,
+  }),
+);
+server.use(
+  metrics({
+    isHealthy: () => true,
     isReady: () => isCaughtUp,
   }),
 );

@@ -96,6 +96,7 @@ if (env.HEALTHCHECK_HOST != null || env.HEALTHCHECK_PORT != null) {
   const { default: Koa } = await import("koa");
   const { default: cors } = await import("@koa/cors");
   const { healthcheck } = await import("../src/koa-middleware/healthcheck");
+  const { metrics } = await import("../src/koa-middleware/metrics");
   const { helloWorld } = await import("../src/koa-middleware/helloWorld");
 
   const server = new Koa();
@@ -103,6 +104,12 @@ if (env.HEALTHCHECK_HOST != null || env.HEALTHCHECK_PORT != null) {
   server.use(cors());
   server.use(
     healthcheck({
+      isReady: () => isCaughtUp,
+    }),
+  );
+  server.use(
+    metrics({
+      isHealthy: () => true,
       isReady: () => isCaughtUp,
     }),
   );
