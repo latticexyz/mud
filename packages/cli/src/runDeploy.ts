@@ -111,7 +111,7 @@ in your contracts directory to use the default anvil private key.`,
     worldAddress: opts.worldAddress as Hex | undefined,
     client,
     config: resolvedConfig,
-    withWorldProxy: configV2.deploy.useProxy,
+    withWorldProxy: configV2.deploy.upgradeableWorldImplementation,
   });
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
     await postDeploy(config.postDeployScript, worldDeploy.address, rpc, profile, opts.forgeScriptOptions);

@@ -32,7 +32,7 @@ export type DeployInput = {
   /** JSON file to write to with chain -> latest world deploy address (Default "./worlds.json") */
   worldsFile?: string;
   /** Deploy the World as an upgradable proxy */
-  useProxy?: boolean;
+  upgradeableWorldImplementation?: boolean;
 };
 
 export type CodegenInput = {

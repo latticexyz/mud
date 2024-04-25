@@ -42,7 +42,7 @@ export type Deploy = {
   /** JSON file to write to with chain -> latest world deploy address (Default "./worlds.json") */
   readonly worldsFile: string;
   /** Deploy the World as an upgradable proxy */
-  readonly useProxy: boolean;
+  readonly upgradeableWorldImplementation: boolean;
 };
 
 export type Codegen = {
