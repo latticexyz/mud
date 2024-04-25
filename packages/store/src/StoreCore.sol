@@ -209,24 +209,11 @@ library StoreCore {
       }
     }
 
-    // Verify there is no resource with this ID yet
-    if (ResourceIds._getExists(tableId)) {
-      revert IStoreErrors.Store_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
-    }
-
     // Verify that there is no table or offchain table with the same name
-    if (tableId.getType() == RESOURCE_TABLE) {
-      ResourceId tableIdOffchain = ResourceIdLib.encode(RESOURCE_OFFCHAIN_TABLE, tableId.getNameStore());
-
-      if (ResourceIds._getExists(tableIdOffchain)) {
-        revert IStoreErrors.Store_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
-      }
-    } else if (tableId.getType() == RESOURCE_OFFCHAIN_TABLE) {
-      ResourceId tableIdOnchain = ResourceIdLib.encode(RESOURCE_TABLE, tableId.getNameStore());
-
-      if (ResourceIds._getExists(tableIdOnchain)) {
-        revert IStoreErrors.Store_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
-      }
+    ResourceId onchainTableId = ResourceIdLib.encode(RESOURCE_TABLE, tableId.getNameStore());
+    ResourceId offchainTableId = ResourceIdLib.encode(RESOURCE_OFFCHAIN_TABLE, tableId.getNameStore());
+    if (ResourceIds._getExists(onchainTableId) || ResourceIds._getExists(offchainTableId)) {
+      revert IStoreErrors.Store_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
     }
 
     // Register the table metadata
