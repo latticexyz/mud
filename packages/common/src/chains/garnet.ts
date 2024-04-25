@@ -8,7 +8,7 @@ export const garnet = {
   ...chainConfig,
   id: 17069,
   sourceId,
-  name: "Garnet",
+  name: "Garnet Holesky",
   testnet: true,
   nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
   rpcUrls: {
