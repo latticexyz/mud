@@ -1,4 +1,14 @@
-import { garnet } from "@latticexyz/common/chains";
-import { holesky, mainnet } from "viem/chains";
+import { garnet, redstone } from "@latticexyz/common/chains";
+import { base, baseSepolia, holesky, mainnet, optimism, optimismSepolia, sepolia } from "viem/chains";
 
-export const chains = [mainnet, holesky, garnet] as const;
+export const chains = [
+  mainnet,
+  redstone,
+  holesky,
+  garnet,
+  sepolia,
+  optimism,
+  optimismSepolia,
+  base,
+  baseSepolia,
+] as const;
