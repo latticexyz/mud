@@ -1,19 +1,12 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { KMSAccount, kmsKeyToAccount } from "./kmsKeyToAddress";
 import { CreateKeyCommand, KMSClient } from "@aws-sdk/client-kms";
-import {
-  createPublicClient,
-  parseGwei,
-  createWalletClient,
-  http,
-  parseEther,
-  verifyMessage,
-  verifyTypedData,
-} from "viem";
+import { parseGwei, createWalletClient, http, parseEther, verifyMessage, verifyTypedData } from "viem";
 import { foundry } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 import { anvilRpcUrl } from "../../../test/common";
 import { waitForTransaction } from "../../test/waitForTransaction";
+import { getBalance, waitForTransactionReceipt } from "viem/actions";
 
 describe("kmsKeyToAccount", () => {
   let account: KMSAccount;
@@ -116,13 +109,11 @@ describe("kmsKeyToAccount", () => {
   });
 
   it("can execute transactions", async () => {
-    const publicClient = createPublicClient({
+    const adminClient = createWalletClient({
       chain: foundry,
       transport: http(anvilRpcUrl),
+      account: privateKeyToAccount("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"),
     });
-
-    let balance = await publicClient.getBalance({ address: account.address });
-    expect(balance).toEqual(0n);
 
     const kmsClient = createWalletClient({
       chain: foundry,
@@ -130,24 +121,21 @@ describe("kmsKeyToAccount", () => {
       account,
     });
 
-    const adminClient = createWalletClient({
-      chain: foundry,
-      transport: http(anvilRpcUrl),
-      account: privateKeyToAccount("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"),
-    });
+    // Fund the KMS account from the admin
+    let balance = await getBalance(adminClient, { address: account.address });
+    expect(balance).toEqual(0n);
 
-    // Fund the KMS account
     let tx = await adminClient.sendTransaction({ to: account.address, value: parseEther("1") });
     await waitForTransaction(tx);
 
-    balance = await publicClient.getBalance({ address: account.address });
+    balance = await getBalance(adminClient, { address: account.address });
     expect(balance).toEqual(1000000000000000000n);
 
     // Check that the KMS account can execute transactions
     tx = await kmsClient.sendTransaction({});
     await waitForTransaction(tx);
 
-    const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
+    const receipt = await waitForTransactionReceipt(adminClient, { hash: tx });
     expect(receipt.status).toEqual("success");
   });
 });
