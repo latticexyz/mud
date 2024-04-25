@@ -16,6 +16,7 @@ const devOptions = {
   rpc: deployOptions.rpc,
   configPath: deployOptions.configPath,
   alwaysRunPostDeploy: deployOptions.alwaysRunPostDeploy,
+  forgeScriptOptions: deployOptions.forgeScriptOptions,
   worldAddress: deployOptions.worldAddress,
 };
 
@@ -91,6 +92,7 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
             worldAddress,
             srcDir,
             salt: "0x",
+            awsKmsKeyId: undefined,
           });
           worldAddress = deploy.address;
           // if there were changes while we were deploying, trigger it again
