@@ -2,6 +2,7 @@ import { useGasTankBalance } from "../../useGasTankBalance";
 import { PendingIcon } from "../../icons/PendingIcon";
 import { useIsGasSpender } from "../../useIsGasSpender";
 import { DepositContent } from "./DepositContent";
+// import { DepositManualContent } from "./DepositManualContent";
 
 export function DepositStep() {
   const { gasTankBalance } = useGasTankBalance();
@@ -12,5 +13,6 @@ export function DepositStep() {
     return <PendingIcon />;
   }
 
+  // return <DepositManualContent />;
   return <DepositContent />;
 }

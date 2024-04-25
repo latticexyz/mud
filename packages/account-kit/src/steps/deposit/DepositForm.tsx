@@ -10,6 +10,7 @@ import { duration } from "itty-time";
 import { formatBalance } from "./formatBalance";
 import { formatGas } from "./formatGas";
 import { DepositMethod, SourceChain } from "./common";
+import { ReactNode, useEffect } from "react";
 
 export const DEFAULT_DEPOSIT_AMOUNT = 0.005;
 
@@ -27,7 +28,9 @@ export type Props = {
   onSubmit: (() => Promise<void>) | undefined;
   disabled?: boolean;
   pending?: boolean;
+  isComplete?: boolean;
   submitButtonLabel?: string;
+  transactionStatus?: ReactNode;
 };
 
 export function DepositForm({
@@ -42,7 +45,9 @@ export function DepositForm({
   onSubmit,
   disabled,
   pending,
+  isComplete,
   submitButtonLabel = "Deposit",
+  transactionStatus,
 }: Props) {
   const { address: userAddress, chainId: userChainId } = useAccount();
   const shouldSwitchChain = userChainId !== sourceChain.id;
@@ -55,15 +60,18 @@ export function DepositForm({
     ? depositMethod
     : sourceChain.depositMethods[0];
 
+  useEffect(() => {
+    if (isComplete) {
+      queryClient.invalidateQueries().then(resetStep);
+    }
+  }, [isComplete, queryClient, resetStep]);
+
   return (
     <form
       className="flex flex-col px-5 gap-5"
-      onSubmit={async (event) => {
+      onSubmit={(event) => {
         event.preventDefault();
-        // TODO: return (optional) tx hash from onSubmit so we can wait for it here
-        await onSubmit?.();
-        await queryClient.invalidateQueries();
-        resetStep();
+        onSubmit?.();
       }}
     >
       <div className="flex gap-2">
@@ -133,12 +141,14 @@ export function DepositForm({
         <Button
           type="submit"
           className="w-full"
-          pending={pending || !onSubmit}
-          disabled={disabled || balance.data?.value === 0n}
+          pending={pending}
+          disabled={disabled || !onSubmit || balance.data?.value === 0n}
         >
           {submitButtonLabel}
         </Button>
       )}
+
+      {transactionStatus}
     </form>
   );
 }

@@ -14,6 +14,7 @@ import { LogoutIcon } from "./icons/LogoutIcon";
 import { MoreIcon } from "./icons/MoreIcon";
 import { ChevronUpIcon } from "./icons/ChevronUpIcon";
 import { AccountName } from "./AccountName";
+import { useOnboardingSteps } from "./useOnboardingSteps";
 
 const containerClassNames = twMerge(
   "w-60 inline-flex outline-none transition",
@@ -36,6 +37,7 @@ export function AccountButton() {
   const { address } = useAccount();
   const [menuOpen, setMenuOpen] = useState(false);
   const { disconnect, isPending: disconnectPending } = useDisconnect();
+  const { setStep } = useOnboardingSteps();
 
   if (requirement != null) {
     return (
@@ -121,6 +123,7 @@ export function AccountButton() {
         </Shadow>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
+        {/* TODO: do we still need this zindex now that we use iframes? */}
         <DropdownMenu.Content align="start" style={{ zIndex: "2147483646" }}>
           <Shadow mode="child">
             <div
@@ -131,18 +134,25 @@ export function AccountButton() {
                 "-mt-px flex-col animate-in fade-in slide-in-from-top-2 animate-duration-200",
               )}
             >
-              <DropdownMenu.Item className={twMerge(secondaryInteractiveClassNames, "flex gap-2.5 p-3 items-center")}>
+              <DropdownMenu.Item
+                className={twMerge(secondaryInteractiveClassNames, "flex gap-2.5 p-3 items-center")}
+                onSelect={() => {
+                  openAccountModal();
+                  // TODO: add support for opening modal to specific step?
+                  setStep("deposit");
+                }}
+              >
                 <CashIcon className="flex-shrink-0 opacity-50" />
-                <span className="flex-grow">Gas tank</span>
+                <span className="flex-grow">App balance</span>
               </DropdownMenu.Item>
-              <DropdownMenu.Item className={twMerge(secondaryInteractiveClassNames, "flex gap-2.5 p-3 items-center")}>
+              {/* <DropdownMenu.Item className={twMerge(secondaryInteractiveClassNames, "flex gap-2.5 p-3 items-center")}>
                 <CopyIcon className="flex-shrink-0 opacity-50" />
                 <span className="flex-grow">Copy address</span>
               </DropdownMenu.Item>
               <DropdownMenu.Item className={twMerge(secondaryInteractiveClassNames, "flex gap-2.5 p-3 items-center")}>
                 <GlobeIcon className="flex-shrink-0 opacity-50" />
                 <span className="flex-grow">Switch chain</span>
-              </DropdownMenu.Item>
+              </DropdownMenu.Item> */}
               <DropdownMenu.Item
                 className={twMerge(
                   secondaryInteractiveClassNames,

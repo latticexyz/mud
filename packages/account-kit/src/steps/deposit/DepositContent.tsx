@@ -27,7 +27,7 @@ export function DepositContent() {
 
   return (
     <>
-      <AccountModalTitle title="Deposit" />
+      <AccountModalTitle title="Gas balance" />
 
       <GasBalanceSection />
 

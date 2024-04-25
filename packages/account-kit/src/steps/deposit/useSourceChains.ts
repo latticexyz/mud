@@ -10,6 +10,7 @@ export function useSourceChains(): readonly SourceChain[] {
   const chains = useChains();
   const { data: relayChains } = useRelayChains();
 
+  // TODO: add helper in viem's op-stack to detect if given chain can use deposit functions instead of figuring it out here
   const portalAddress = appChain.sourceId ? appChain.contracts?.portal?.[appChain.sourceId]?.address : undefined;
   const canRelay = relayChains?.find((c) => c.id === appChain.id);
 
@@ -31,6 +32,7 @@ export function useSourceChains(): readonly SourceChain[] {
         return {
           ...chain,
           depositMethods,
+          // TODO: I think we can remove this for now since we're using viem's op-stack actions
           portalAddress: canBridge ? portalAddress : undefined,
           relayChain,
         };

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
-import { useAccountRequirements } from "./useAccountRequirements";
 import { usePrevious } from "./utils/usePrevious";
+import { useOnboardingSteps } from "./useOnboardingSteps";
 
 const store = createStore(() => ({ open: false }));
 
@@ -14,32 +14,28 @@ export type UseAccountModalResult = {
 };
 
 export function useAccountModal(): UseAccountModalResult {
-  const { requirements } = useAccountRequirements();
-  const hasRequirements = requirements.length > 0;
-  const accountModalOpen = useStore(store, (state) => state.open) && hasRequirements;
+  const accountModalOpen = useStore(store, (state) => state.open);
 
   const openAccountModal = useCallback(() => {
-    store.setState({ open: hasRequirements });
-  }, [hasRequirements]);
+    store.setState({ open: true });
+  }, []);
 
   const closeAccountModal = useCallback(() => {
     store.setState({ open: false });
   }, []);
 
-  const toggleAccountModal = useCallback(
-    (open: boolean) => {
-      store.setState({ open: open && hasRequirements });
-    },
-    [hasRequirements],
-  );
+  const toggleAccountModal = useCallback((open: boolean) => {
+    store.setState({ open: open });
+  }, []);
 
-  // Close account modal once we've completed all the requirements
-  const previousHasRequirements = usePrevious(hasRequirements);
+  // Close account modal once we've completed all the steps
+  const { step } = useOnboardingSteps();
+  const previousStep = usePrevious(step);
   useEffect(() => {
-    if (previousHasRequirements && !hasRequirements) {
+    if (previousStep && !step) {
       closeAccountModal();
     }
-  }, [closeAccountModal, hasRequirements, previousHasRequirements]);
+  }, [closeAccountModal, previousStep, step]);
 
   return useMemo(
     () => ({

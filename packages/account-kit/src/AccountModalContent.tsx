@@ -11,6 +11,8 @@ import { FinalizingStep } from "./steps/finalizing/FinalizingStep";
 export function AccountModalContent() {
   // TODO: each step should have an `onComplete` that we can use to auto-advance if you've selected a step already
   const { step } = useOnboardingSteps();
+  console.log("rendering", step);
+
   const content = useMemo(() => {
     switch (step) {
       case "wallet":
