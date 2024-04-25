@@ -9,7 +9,7 @@
     "file": "test/CallWithSignatureModule.t.sol",
     "test": "testRegisterDelegationWithSignature",
     "name": "register an unlimited delegation with signature",
-    "gasUsed": 135913
+    "gasUsed": 138532
   },
   {
     "file": "test/ERC20.t.sol",
