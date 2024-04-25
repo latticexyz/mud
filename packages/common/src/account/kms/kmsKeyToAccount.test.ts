@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { KmsAccount, kmsKeyToAccount } from "./kmsKeyToAddress";
+import { KmsAccount, kmsKeyToAccount } from "./kmsKeyToAccount";
 import { CreateKeyCommand, KMSClient } from "@aws-sdk/client-kms";
 import { parseGwei, http, verifyMessage, verifyTypedData, createClient, parseEther } from "viem";
 import { foundry } from "viem/chains";

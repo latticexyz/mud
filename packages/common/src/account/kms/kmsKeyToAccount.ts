@@ -9,13 +9,16 @@ export type KmsKeyToAccountOptions = {
   client?: KMSClient;
 };
 
-export type KmsAccount = LocalAccount<"aws-kms">;
+export type KmsAccount = LocalAccount<"aws-kms"> & {
+  getKeyId(): string;
+};
 
 /**
  * @description Creates an Account from a KMS key.
  *
  * @returns A Local Account.
  */
+
 export async function kmsKeyToAccount({
   keyId,
   client = new KMSClient(),
@@ -73,5 +76,6 @@ export async function kmsKeyToAccount({
   return {
     ...account,
     source: "aws-kms",
+    getKeyId: () => keyId,
   };
 }
