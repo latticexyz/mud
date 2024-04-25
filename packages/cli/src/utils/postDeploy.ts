@@ -11,31 +11,34 @@ export async function postDeploy(
   rpc: string,
   profile: string | undefined,
 ): Promise<void> {
-  // Execute postDeploy forge script
   const postDeployPath = path.join(await getScriptDirectory(), postDeployScript + ".s.sol");
-  if (existsSync(postDeployPath)) {
-    const gasPrice = BigInt(execSync(`cast gas-price --rpc-url ${rpc}`, { encoding: "utf-8" }).trim());
-    console.log(chalk.blue(`Executing post deploy script at ${postDeployPath}`));
-    console.log(chalk.blue(`  using gas price of ${formatGwei(gasPrice)} gwei`));
-    await forge(
-      [
-        "script",
-        postDeployScript,
-        "--broadcast",
-        "--sig",
-        "run(address)",
-        worldAddress,
-        "--with-gas-price",
-        gasPrice.toString(),
-        "--rpc-url",
-        rpc,
-        "-vvv",
-      ],
-      {
-        profile: profile,
-      },
-    );
-  } else {
+  if (!existsSync(postDeployPath)) {
     console.log(`No script at ${postDeployPath}, skipping post deploy hook`);
+    return;
   }
+
+  // TODO: replace this with a viem call instead?
+  const gasPrice = BigInt(execSync(`cast gas-price --rpc-url ${rpc}`, { encoding: "utf-8" }).trim());
+
+  console.log(chalk.blue(`Executing post deploy script at ${postDeployPath}`));
+  console.log(chalk.blue(`  using gas price of ${formatGwei(gasPrice)} gwei`));
+
+  await forge(
+    [
+      "script",
+      postDeployScript,
+      "--broadcast",
+      "--sig",
+      "run(address)",
+      worldAddress,
+      "--with-gas-price",
+      gasPrice.toString(),
+      "--rpc-url",
+      rpc,
+      "-vvv",
+    ],
+    {
+      profile: profile,
+    },
+  );
 }
