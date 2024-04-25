@@ -20,13 +20,13 @@ export async function postDeploy(
     await forge(
       [
         "script",
-        "--with-gas-price",
-        gasPrice.toString(),
         postDeployScript,
+        "--broadcast",
         "--sig",
         "run(address)",
         worldAddress,
-        "--broadcast",
+        "--with-gas-price",
+        gasPrice.toString(),
         "--rpc-url",
         rpc,
         "-vvv",
