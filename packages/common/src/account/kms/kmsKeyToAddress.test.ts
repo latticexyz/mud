@@ -1,12 +1,11 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { KmsAccount, kmsKeyToAccount } from "./kmsKeyToAddress";
 import { CreateKeyCommand, KMSClient } from "@aws-sdk/client-kms";
-import { parseGwei, http, parseEther, verifyMessage, verifyTypedData, createClient } from "viem";
+import { parseGwei, http, verifyMessage, verifyTypedData, createClient, parseEther } from "viem";
 import { foundry } from "viem/chains";
-import { privateKeyToAccount } from "viem/accounts";
-import { anvilRpcUrl } from "../../../test/common";
+import { anvilRpcUrl, testClient } from "../../../test/common";
 import { waitForTransaction } from "../../test/waitForTransaction";
-import { getBalance, sendTransaction, waitForTransactionReceipt } from "viem/actions";
+import { getTransactionReceipt, sendTransaction } from "viem/actions";
 
 describe("kmsKeyToAccount", () => {
   let account: KmsAccount;
@@ -109,11 +108,8 @@ describe("kmsKeyToAccount", () => {
   });
 
   it("can execute transactions", async () => {
-    const adminClient = createClient({
-      chain: foundry,
-      transport: http(anvilRpcUrl),
-      account: privateKeyToAccount("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"),
-    });
+    // Fund the KMS account
+    testClient.setBalance({ address: account.address, value: parseEther("1") });
 
     const kmsClient = createClient({
       chain: foundry,
@@ -121,21 +117,11 @@ describe("kmsKeyToAccount", () => {
       account,
     });
 
-    // Fund the KMS account from the admin
-    let balance = await getBalance(adminClient, { address: account.address });
-    expect(balance).toEqual(0n);
-
-    let tx = await sendTransaction(adminClient, { to: account.address, value: parseEther("1") });
-    await waitForTransaction(tx);
-
-    balance = await getBalance(adminClient, { address: account.address });
-    expect(balance).toEqual(1000000000000000000n);
-
     // Check that the KMS account can execute transactions
-    tx = await sendTransaction(kmsClient, {});
+    const tx = await sendTransaction(kmsClient, {});
     await waitForTransaction(tx);
 
-    const receipt = await waitForTransactionReceipt(adminClient, { hash: tx });
+    const receipt = await getTransactionReceipt(kmsClient, { hash: tx });
     expect(receipt.status).toEqual("success");
   });
 });
