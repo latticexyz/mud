@@ -105,8 +105,8 @@ importers:
         specifier: ^9.1.0
         version: 9.1.0(react-dom@18.2.0)(react@18.2.0)
       viem:
-        specifier: 2.9.16
-        version: 2.9.16(typescript@5.4.2)
+        specifier: 2.9.20
+        version: 2.9.20(typescript@5.4.2)
       vite:
         specifier: ^4.2.1
         version: 4.2.1
@@ -208,8 +208,8 @@ importers:
         specifier: ^1.7.0
         version: 1.7.0
       viem:
-        specifier: 2.9.16
-        version: 2.9.16(typescript@5.4.2)
+        specifier: 2.9.20
+        version: 2.9.20(typescript@5.4.2)
     devDependencies:
       '@types/react':
         specifier: 18.2.22
@@ -293,8 +293,8 @@ importers:
         specifier: ^1.7.0
         version: 1.7.0
       viem:
-        specifier: 2.9.16
-        version: 2.9.16(typescript@5.4.2)
+        specifier: 2.9.20
+        version: 2.9.20(typescript@5.4.2)
     devDependencies:
       vite:
         specifier: ^4.2.1
@@ -3263,8 +3263,8 @@ packages:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
     dev: true
 
-  /viem@2.9.16(typescript@5.4.2):
-    resolution: {integrity: sha512-FQRfN4G7uKEUs5DYvVrH/kZmTkwcSDpTBxnadpwG1EEP8nHm57WDpSaGN7PwSPVgJ6rMo5MENT5hgnqaNTlb2w==}
+  /viem@2.9.20(typescript@5.4.2):
+    resolution: {integrity: sha512-PHb1MrBHMrSZ8Ayuk3Y/6wUTcMbzlACQaM6AJBSv9kRKX3xYSZ/kehi+gvS0swQJeAlTQ4eZM7jsHQJNAOarmg==}
     peerDependencies:
       typescript: '>=5.0.4'
     peerDependenciesMeta:

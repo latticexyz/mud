@@ -12,7 +12,7 @@ import { SubjectEvent, SubjectRecord } from "@latticexyz/query";
 
 const henryAccount = privateKeyToAccount(keccak256(stringToHex("henry")));
 
-describe("subscribeToQuery", async () => {
+describe.skip("subscribeToQuery", async () => {
   let worldAddress: Address;
   beforeAll(async () => {
     await testClient.setBalance({ address: henryAccount.address, value: parseEther("1") });

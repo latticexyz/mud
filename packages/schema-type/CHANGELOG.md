@@ -1,5 +1,14 @@
 # Change Log
 
+## 2.0.7
+
+## 2.0.6
+
+### Patch Changes
+
+- c18e93c5: Bumped viem to 2.9.20.
+- d95028a6: Bumped viem to 2.9.16.
+
 ## 2.0.5
 
 ## 2.0.4

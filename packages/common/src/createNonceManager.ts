@@ -16,6 +16,7 @@ export type CreateNonceManagerOptions = {
 
 export type CreateNonceManagerResult = {
   hasNonce: () => boolean;
+  getNonce: () => number;
   nextNonce: () => number;
   resetNonce: () => Promise<void>;
   shouldResetNonce: (error: unknown) => boolean;
@@ -51,6 +52,11 @@ export function createNonceManager({
     return nonceRef.current >= 0;
   }
 
+  function getNonce(): number {
+    if (!hasNonce()) throw new Error("call resetNonce before using getNonce");
+    return nonceRef.current;
+  }
+
   function nextNonce(): number {
     if (!hasNonce()) throw new Error("call resetNonce before using nextNonce");
     const nonce = nonceRef.current++;
@@ -76,6 +82,7 @@ export function createNonceManager({
 
   return {
     hasNonce,
+    getNonce,
     nextNonce,
     resetNonce,
     shouldResetNonce,

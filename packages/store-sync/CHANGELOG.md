@@ -1,5 +1,50 @@
 # @latticexyz/store-sync
 
+## 2.0.7
+
+### Patch Changes
+
+- 16695fea: Partially revert [#2665](https://github.com/latticexyz/mud/pull/2665) to guarantee logs are stored in order.
+- Updated dependencies [375d902e]
+- Updated dependencies [bf16e729]
+- Updated dependencies [38c61158]
+- Updated dependencies [3d1d5905]
+- Updated dependencies [ed404b7d]
+- Updated dependencies [2c9b16c7]
+- Updated dependencies [f736c43d]
+  - @latticexyz/common@2.0.7
+  - @latticexyz/block-logs-stream@2.0.7
+  - @latticexyz/world@2.0.7
+  - @latticexyz/store@2.0.7
+  - @latticexyz/config@2.0.7
+  - @latticexyz/protocol-parser@2.0.7
+  - @latticexyz/query@2.0.7
+  - @latticexyz/recs@2.0.7
+  - @latticexyz/schema-type@2.0.7
+
+## 2.0.6
+
+### Patch Changes
+
+- c18e93c5: Bumped viem to 2.9.20.
+- d95028a6: Bumped viem to 2.9.16.
+- de3bc3d1: Small optimizations in `waitForTransaction` to parallelize network requests.
+- 8c3dcf77: `waitForTransaction` now returns a `Promise<{ blockNumber: bigint, status: "success" | "reverted" }>` instead of `Promise<void>`, to allow consumers to react to reverted transactions without refetching the transaction receipt.
+- Updated dependencies [6c8ab471]
+- Updated dependencies [103db6ce]
+- Updated dependencies [9720b568]
+- Updated dependencies [c18e93c5]
+- Updated dependencies [d95028a6]
+  - @latticexyz/common@2.0.6
+  - @latticexyz/store@2.0.6
+  - @latticexyz/world@2.0.6
+  - @latticexyz/block-logs-stream@2.0.6
+  - @latticexyz/config@2.0.6
+  - @latticexyz/protocol-parser@2.0.6
+  - @latticexyz/query@2.0.6
+  - @latticexyz/schema-type@2.0.6
+  - @latticexyz/recs@2.0.6
+
 ## 2.0.5
 
 ### Patch Changes

@@ -25,8 +25,8 @@ export const worldDeployEvents = [helloStoreEvent, helloWorldEvent] as const;
 export const worldAbi = [...IBaseWorldAbi, ...IModuleAbi] as const;
 
 // Ideally, this should be an append-only list. Before adding more versions here, be sure to add backwards-compatible support for old Store/World versions.
-export const supportedStoreVersions = ["2.0.0"];
-export const supportedWorldVersions = ["2.0.0"];
+export const supportedStoreVersions = ["2.0.0", "2.0.1", "2.0.2"];
+export const supportedWorldVersions = ["2.0.0", "2.0.1", "2.0.2"];
 
 // TODO: extend this to include factory+deployer address? so we can reuse the deployer for a world?
 export type WorldDeploy = {
