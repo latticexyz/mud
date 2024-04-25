@@ -210,8 +210,8 @@ library StoreCore {
     }
 
     // Verify that there is no table or offchain table with the same name
-    ResourceId onchainTableId = ResourceIdLib.encode(RESOURCE_TABLE, tableId.getNameStore());
-    ResourceId offchainTableId = ResourceIdLib.encode(RESOURCE_OFFCHAIN_TABLE, tableId.getNameStore());
+    ResourceId onchainTableId = ResourceIdLib.encode(RESOURCE_TABLE, tableId.getResourceName());
+    ResourceId offchainTableId = ResourceIdLib.encode(RESOURCE_OFFCHAIN_TABLE, tableId.getResourceName());
     if (ResourceIds._getExists(onchainTableId) || ResourceIds._getExists(offchainTableId)) {
       revert IStoreErrors.Store_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
     }
