@@ -4,12 +4,12 @@ import { toAccount } from "viem/accounts";
 import { signWithKms } from "./signWithKms";
 import { getAddressFromKms } from "./getAddressFromKms";
 
-export type kmsKeyToAccountOptions = {
+export type KmsKeyToAccountOptions = {
   keyId: string;
   client?: KMSClient;
 };
 
-export type KMSAccount = LocalAccount<"aws-kms">;
+export type KmsAccount = LocalAccount<"aws-kms">;
 
 /**
  * @description Creates an Account from a KMS key.
@@ -19,7 +19,7 @@ export type KMSAccount = LocalAccount<"aws-kms">;
 export async function kmsKeyToAccount({
   keyId,
   client = new KMSClient(),
-}: kmsKeyToAccountOptions): Promise<KMSAccount> {
+}: KmsKeyToAccountOptions): Promise<KmsAccount> {
   const address = await getAddressFromKms({ keyId, client });
 
   const account = toAccount({

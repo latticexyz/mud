@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { KMSAccount, kmsKeyToAccount } from "./kmsKeyToAddress";
+import { KmsAccount, kmsKeyToAccount } from "./kmsKeyToAddress";
 import { CreateKeyCommand, KMSClient } from "@aws-sdk/client-kms";
 import { parseGwei, createWalletClient, http, parseEther, verifyMessage, verifyTypedData } from "viem";
 import { foundry } from "viem/chains";
@@ -9,7 +9,7 @@ import { waitForTransaction } from "../../test/waitForTransaction";
 import { getBalance, waitForTransactionReceipt } from "viem/actions";
 
 describe("kmsKeyToAccount", () => {
-  let account: KMSAccount;
+  let account: KmsAccount;
   let keyId: string;
 
   beforeAll(async () => {
