@@ -2,11 +2,87 @@
 
 Release date: Wed Apr 17 2024
 
+### Patch changes
+
+**[feat(store-indexer): add cache headers (#2669)](https://github.com/latticexyz/mud/commit/36354994f702f22c569e52524ea4a3f523050c5a)** (@latticexyz/store-indexer)
+
+Added `Cache-Control` and `Content-Type` headers to the postgres indexer API.
+
+**[fix(common): latency improvements (#2641)](https://github.com/latticexyz/mud/commit/6c8ab471adfb522e841b679072c7ff53fe105034)** (@latticexyz/common)
+
+Reduced the number of RPC requests before sending a transaction in the `transactionQueue` viem decorator.
+
+**[fix(store,world): fix StoreRead.getDynamicFieldLength (#2680)](https://github.com/latticexyz/mud/commit/103db6ced9815b61e1b40348f814958f240f66fc)** (@latticexyz/store)
+
+Patched `StoreRead.getDynamicFieldLength` to properly read `StoreCore.getDynamicFieldLength`.
+
+Previously `StoreRead.getDynamicFieldLength` incorrectly read from `StoreCore.getFieldLength`, which expected a `fieldIndex` instead of a `dynamicFieldIndex`, and thereby returned an invalid result if the table had both static and dynamic fields (in which case `fieldIndex` != `dynamicFieldIndex`). `StoreRead` is used for external reads from the `Store`/`World` contract, so this bug only materialized in external table reads (ie from `Systems` outside the root namespace) of the dynamic length of a field in a table with both static and dynamic fields.
+
+**[feat(world-modules): callWithSignature chain id is salt (#2648)](https://github.com/latticexyz/mud/commit/96e82b7f11ef30a331941c202fe09591d348cb41)** (@latticexyz/world-modules)
+
+Moved the chain ID in `CallWithSignature` from the `domain.chainId` to the `domain.salt` field to allow for cross-chain signing without requiring wallets to switch networks. The value of this field should be the chain on which the world lives, rather than the chain the wallet is connected to.
+
+**[refactor(store,world): refactor types, remove redundant casts (#2555)](https://github.com/latticexyz/mud/commit/9720b568cd302c597fd0030e59eceab2bb833e39)** (@latticexyz/store, @latticexyz/world)
+
+Internal type improvements.
+
+**[chore: bump viem to 2.9.20 (#2681)](https://github.com/latticexyz/mud/commit/c18e93c5e1fb6987f31369f2e81f26ea2ac196d8)** (@latticexyz/block-logs-stream, @latticexyz/cli, @latticexyz/common, @latticexyz/config, @latticexyz/dev-tools, @latticexyz/faucet, @latticexyz/protocol-parser, @latticexyz/query, @latticexyz/schema-type, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world, create-mud)
+
+Bumped viem to 2.9.20.
+
+**[docs: add changeset for #2645 (#2647)](https://github.com/latticexyz/mud/commit/d95028a6d1233557ee605f4691f0d47ced47a681)** (create-mud, @latticexyz/block-logs-stream, @latticexyz/protocol-parser, @latticexyz/store-indexer, @latticexyz/schema-type, @latticexyz/store-sync, @latticexyz/dev-tools, @latticexyz/common, @latticexyz/config, @latticexyz/faucet, @latticexyz/query, @latticexyz/store, @latticexyz/world, @latticexyz/cli)
+
+Bumped viem to 2.9.16.
+
+**[docs: add changeset for devtools top up (#2658)](https://github.com/latticexyz/mud/commit/77d3b30942e8593b4aeb5d7921494ca0d627786b)** (@latticexyz/dev-tools)
+
+Added a "top up" button to account balance when running on anvil.
+
+**[fix(store-sync): reduce latency in waitForTransaction (#2665)](https://github.com/latticexyz/mud/commit/de3bc3d1fe78762e43b692f6f3334dee9b632c8f)** (@latticexyz/store-sync)
+
+Small optimizations in `waitForTransaction` to parallelize network requests.
+
+**[feat(store-sync): add status and block number to return type of waitForTransaction (#2668)](https://github.com/latticexyz/mud/commit/8c3dcf77c2481b11622a0603c8a09a5b1fb5f787)** (@latticexyz/store-sync)
+
+`waitForTransaction` now returns a `Promise<{ blockNumber: bigint, status: "success" | "reverted" }>` instead of `Promise<void>`, to allow consumers to react to reverted transactions without refetching the transaction receipt.
+
 ---
 
 ## Version 2.0.5
 
 Release date: Fri Apr 12 2024
+
+### Patch changes
+
+**[fix(world-modules): add missing interfaces (#2605)](https://github.com/latticexyz/mud/commit/e2e8ec8b3e7152337cb81a5d54c9bb36486c462e)** (@latticexyz/world-modules)
+
+Added missing system interfaces for ERC721, UniqueEntity, and CallWithSignature modules.
+
+**[fix(common): pass through rest of nonce manager opts (#2616)](https://github.com/latticexyz/mud/commit/a9e8a407b5d6f356d7d0a1c1f093de926ffb072f)** (@latticexyz/common)
+
+Fixed `getNonceManager` to correctly pass all options to `createNonceManager`.
+
+**[feat(world-modules): add `validateCallWithSignature` to `Unstable_CallWithSignatureModule` (#2614)](https://github.com/latticexyz/mud/commit/081c396790a0b68d85ef7735f0e7e643b99721c3)** (@latticexyz/world-modules)
+
+Added `validateCallWithSignature` function to `Unstable_CallWithSignatureModule` to validate a signature without executing the call.
+
+**[fix(world-modules): explicitly export mud config (#2598)](https://github.com/latticexyz/mud/commit/e3c3a118e60e8c4de6b16c521d2d78b0b9f670c2)** (@latticexyz/world-modules)
+
+Exported mud config as internal.
+
+**[feat(create-mud): change `anvil` to create a block every two seconds (#2635)](https://github.com/latticexyz/mud/commit/aa6ecf7b1157a61c21e0bb15c060eb2fc5936e12)** (create-mud)
+
+Updated `anvil` args with two second block time to better reflect L2s
+
+**[fix(store): return zero for uninitialised static array elements (#2613)](https://github.com/latticexyz/mud/commit/b798ccb2b19bdda2995f188912258c7563747e42)** (@latticexyz/store)
+
+Fixed the behaviour of static arrays, so that they return zero for uninitialised values, to mirror the native Solidity behavior. Previously they reverted with `Store_IndexOutOfBounds` if the index had not been set yet.
+
+**[chore: changeset for `callWithSignature` (#2601)](https://github.com/latticexyz/mud/commit/d02efd80292db1c671fca5261560fdf525871475)** (@latticexyz/cli, @latticexyz/world-modules, @latticexyz/world)
+
+Replaced the `Unstable_DelegationWithSignatureModule` preview module with a more generalized `Unstable_CallWithSignatureModule` that allows making arbitrary calls (similar to `callFrom`).
+
+This module is still marked as `Unstable`, because it will be removed and included in the default `World` deployment once it is audited.
 
 ---
 
@@ -14,11 +90,31 @@ Release date: Fri Apr 12 2024
 
 Release date: Tue Apr 02 2024
 
+### Patch changes
+
+**[feat(common): allow specifying concurrency in transactionQueue (#2589)](https://github.com/latticexyz/mud/commit/620e4ec13ca73ceecefc257ef8a8eadb2bdf6aa4)** (@latticexyz/common)
+
+`transactionQueue` now accepts a `queueConcurrency` to allow adjusting the number of concurrent calls to the mempool. This defaults to `1` to ensure transactions are ordered and nonces are handled properly. Any number greater than that is likely to see nonce errors and transactions arriving out of order, but this may be an acceptable trade-off for some applications that can safely retry.
+
 ---
 
 ## Version 2.0.3
 
 Release date: Tue Apr 02 2024
+
+### Patch changes
+
+**[feat(common,world): improvements for smart accounts (#2578)](https://github.com/latticexyz/mud/commit/d2e4d0fbbc011e64e593b0dd784cb8f2d0da7522)** (@latticexyz/common)
+
+`transactionQueue` decorator now accepts an optional `publicClient` argument, which will be used in place of the extended viem client for making public action calls (`getChainId`, `getTransactionCount`, `simulateContract`, `call`). This helps in cases where the extended viem client is a smart account client, like in [permissionless.js](https://github.com/pimlicolabs/permissionless.js), where the transport is the bundler, not an RPC.
+
+`writeObserver` decorator now accepts any `Client`, not just a `WalletClient`.
+
+`createBurnerAccount` now returns a `PrivateKeyAccount`, the more specific `Account` type.
+
+**[feat(common,world): improvements for smart accounts (#2578)](https://github.com/latticexyz/mud/commit/d2e4d0fbbc011e64e593b0dd784cb8f2d0da7522)** (@latticexyz/world)
+
+`callFrom` decorator now accepts any `Client`, not just a `WalletClient`. It also no longer attempts to wrap/redirect calls to `call`, `callFrom`, and `registerDelegationWithSignature`.
 
 ---
 
@@ -31,6 +127,16 @@ Release date: Mon Apr 01 2024
 ## Version 2.0.1
 
 Release date: Thu Mar 21 2024
+
+### Patch changes
+
+**[fix(store,world): minor config validation fixes (#2517)](https://github.com/latticexyz/mud/commit/4a6b45985c5da66145078dc92884f65403ecd697)** (@latticexyz/store, @latticexyz/world)
+
+Minor fixes to config input validations:
+
+- `systems.openAccess` incorrectly expected `true` as the only valid input. It now allows `boolean`.
+- The config complained if parts of it were defined `as const` outside the config input. This is now possible.
+- Shorthand inputs are now enabled.
 
 ---
 
