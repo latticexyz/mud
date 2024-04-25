@@ -3,6 +3,7 @@ import { signTypedData } from "viem/actions";
 import { callWithSignatureTypes } from "@latticexyz/world/internal";
 import { getRecord } from "./getRecord";
 import modulesConfig from "@latticexyz/world-modules/internal/mud.config";
+import { hexToResource } from "@latticexyz/common";
 
 // TODO: move this to world package or similar
 // TODO: nonce _or_ publicClient?
@@ -42,6 +43,8 @@ export async function signCall({
         ).nonce
       : 0n);
 
+  const { namespace: systemNamespace, name: systemName } = hexToResource(systemId);
+
   return await signTypedData(userAccountClient, {
     account: userAccountClient.account,
     domain: {
@@ -52,7 +55,8 @@ export async function signCall({
     primaryType: "Call",
     message: {
       signer: userAccountClient.account.address,
-      systemId,
+      systemNamespace,
+      systemName,
       callData,
       nonce,
     },
