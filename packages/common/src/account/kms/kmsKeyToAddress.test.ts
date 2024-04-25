@@ -136,16 +136,18 @@ describe("kmsKeyToAccount", () => {
       account: privateKeyToAccount("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"),
     });
 
+    // Fund the KMS account
     let tx = await adminClient.sendTransaction({ to: account.address, value: parseEther("1") });
     await waitForTransaction(tx);
 
     balance = await publicClient.getBalance({ address: account.address });
     expect(balance).toEqual(1000000000000000000n);
 
+    // Check that the KMS account can execute transactions
     tx = await kmsClient.sendTransaction({});
     await waitForTransaction(tx);
 
-    balance = await publicClient.getBalance({ address: account.address });
-    expect(balance).toBeLessThan(1000000000000000000n);
+    const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
+    expect(receipt.status).toEqual("success");
   });
 });
