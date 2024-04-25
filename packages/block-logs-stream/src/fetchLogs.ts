@@ -89,12 +89,12 @@ export async function* fetchLogs<TAbiEvents extends readonly AbiEvent[]>({
       }
 
       // TODO: figure out actual block range exceeded message for RPCs
-      if (error.message.includes("block range exceeded")) {
+      if (error.message.includes("block range exceeded") || error.message.includes("backend response too large")) {
         blockRange /= 2n;
         if (blockRange <= 0n) {
           throw new Error("can't reduce block range any further");
         }
-        debug("block range exceeded, trying a smaller block range", error);
+        debug("block range exceeded or too many logs in range, trying a smaller block range", error);
         // TODO: adjust maxBlockRange down if we consistently hit this for a given block range size
         continue;
       }
