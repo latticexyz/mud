@@ -104,7 +104,7 @@ contract Unstable_CallWithSignatureModuleTest is Test, GasReporter {
     vm.expectRevert(
       abi.encodeWithSelector(
         IUnstable_CallWithSignatureErrors.InvalidSignature.selector,
-        0x5266996Bb73ce3ac0E75D79Db87f4a96063cEe1F
+        0x65F0D93280688178Ec3F55bBd6f6088290639Bfb
       )
     );
     Unstable_CallWithSignatureSystem(address(world)).callWithSignature(
