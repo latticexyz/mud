@@ -96,29 +96,41 @@ async function getVersion() {
 }
 
 async function getChanges(include: "diff" | "all") {
-  let changesetsToInclude: string[] = [];
+  let changesetContents: (ChangelogItem & GitMetadata)[] = [];
 
   if (include === "diff") {
     // Get the diff of the current branch to main
-    // --diff-filter=d excludes deleted files from diff (changesets deletes these files after release)
-    changesetsToInclude = (await execa("git", ["diff", "--name-only", "--diff-filter=d", "main", ".changeset"])).stdout
+    // --diff-filter=D includes only deleted files from diff (changesets deletes these files after release)
+    const changesetsToInclude = (
+      await execa("git", ["diff", "--name-only", "--diff-filter=D", "main", ".changeset"])
+    ).stdout
       .trim()
       .split(/\s+/)
       .map((filename) => filename.trim())
       .filter((filename) => /.md$/.test(filename));
+
+    // Load the contents of each changeset and metadata from git
+    changesetContents = await Promise.all(
+      changesetsToInclude.map(async (changesetPath) => {
+        const changeset = (await execa("git", ["show", `:${changesetPath}`])).stdout;
+
+        const gitLog = (await execa("git", ["log", "--", changesetPath])).stdout;
+        return { ...parseChangeset(changeset), ...parseGitLog(gitLog) };
+      }),
+    );
   } else if (include === "all") {
     // Load all current changesets from the .changeset dir
-    changesetsToInclude = glob.sync(".changeset/*.md");
-  }
+    const changesetsToInclude = glob.sync(".changeset/*.md");
 
-  // Load the contents of each changeset and metadata from git
-  const changesetContents = await Promise.all(
-    changesetsToInclude.map(async (changesetPath) => {
-      const changeset = readFileSync(changesetPath).toString();
-      const gitLog = (await execa("git", ["log", changesetPath])).stdout;
-      return { ...parseChangeset(changeset), ...parseGitLog(gitLog) };
-    }),
-  );
+    // Load the contents of each changeset from file and metadata from git
+    changesetContents = await Promise.all(
+      changesetsToInclude.map(async (changesetPath) => {
+        const changeset = readFileSync(changesetPath).toString();
+        const gitLog = (await execa("git", ["log", changesetPath])).stdout;
+        return { ...parseChangeset(changeset), ...parseGitLog(gitLog) };
+      }),
+    );
+  }
 
   // Sort the changesets into patch, minor and major updates
   const patch = changesetContents.filter((change) => change.type === ChangeType.PATCH);
