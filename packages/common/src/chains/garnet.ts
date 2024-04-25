@@ -21,6 +21,10 @@ export const garnet = {
       name: "Blockscout",
       url: "https://explorer.garnetchain.com",
     },
+    blockscout: {
+      name: "Blockscout",
+      url: "https://garnet.blockscout.com",
+    },
   },
   contracts: {
     portal: {
