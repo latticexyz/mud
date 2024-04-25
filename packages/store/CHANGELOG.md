@@ -1,5 +1,35 @@
 # Change Log
 
+## 2.0.6
+
+### Patch Changes
+
+- 103db6ce: Patched `StoreRead.getDynamicFieldLength` to properly read `StoreCore.getDynamicFieldLength`.
+
+  Previously `StoreRead.getDynamicFieldLength` incorrectly read from `StoreCore.getFieldLength`, which expected a `fieldIndex` instead of a `dynamicFieldIndex`, and thereby returned an invalid result if the table had both static and dynamic fields (in which case `fieldIndex` != `dynamicFieldIndex`). `StoreRead` is used for external reads from the `Store`/`World` contract, so this bug only materialized in external table reads (ie from `Systems` outside the root namespace) of the dynamic length of a field in a table with both static and dynamic fields.
+
+- 9720b568: Internal type improvements.
+- c18e93c5: Bumped viem to 2.9.20.
+- d95028a6: Bumped viem to 2.9.16.
+- Updated dependencies [6c8ab471]
+- Updated dependencies [c18e93c5]
+- Updated dependencies [d95028a6]
+  - @latticexyz/common@2.0.6
+  - @latticexyz/config@2.0.6
+  - @latticexyz/protocol-parser@2.0.6
+  - @latticexyz/schema-type@2.0.6
+
+## 2.0.5
+
+### Patch Changes
+
+- b798ccb2: Fixed the behaviour of static arrays, so that they return zero for uninitialised values, to mirror the native Solidity behavior. Previously they reverted with `Store_IndexOutOfBounds` if the index had not been set yet.
+- Updated dependencies [a9e8a407]
+  - @latticexyz/common@2.0.5
+  - @latticexyz/config@2.0.5
+  - @latticexyz/protocol-parser@2.0.5
+  - @latticexyz/schema-type@2.0.5
+
 ## 2.0.4
 
 ### Patch Changes

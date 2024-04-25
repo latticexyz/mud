@@ -17,7 +17,7 @@ import { WorldDeploy } from "./deploy/common";
 import { build } from "./build";
 
 export const deployOptions = {
-  configPath: { type: "string", desc: "Path to the config file" },
+  configPath: { type: "string", desc: "Path to the MUD config file" },
   printConfig: { type: "boolean", desc: "Print the resolved config" },
   profile: { type: "string", desc: "The foundry profile to use" },
   saveDeployment: { type: "boolean", desc: "Save the deployment info to a file", default: true },
@@ -110,6 +110,7 @@ in your contracts directory to use the default anvil private key.`,
     worldAddress: opts.worldAddress as Hex | undefined,
     client,
     config: resolvedConfig,
+    withWorldProxy: configV2.deploy.useProxy,
   });
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
     await postDeploy(config.postDeployScript, worldDeploy.address, rpc, profile);

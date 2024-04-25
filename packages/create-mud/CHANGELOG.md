@@ -1,5 +1,18 @@
 # Change Log
 
+## 2.0.6
+
+### Patch Changes
+
+- c18e93c5: Bumped viem to 2.9.20.
+- d95028a6: Bumped viem to 2.9.16.
+
+## 2.0.5
+
+### Patch Changes
+
+- aa6ecf7b: Updated `anvil` args with two second block time to better reflect L2s
+
 ## 2.0.4
 
 ## 2.0.3

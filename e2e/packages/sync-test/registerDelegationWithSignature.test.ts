@@ -6,7 +6,7 @@ import { deployContracts, startViteServer, startBrowserAndPage, openClientWithRo
 import { rpcHttpUrl } from "./setup/constants";
 import { waitForInitialSync } from "./data/waitForInitialSync";
 import { createBurnerAccount, resourceToHex, transportObserver } from "@latticexyz/common";
-import { http, createWalletClient, ClientConfig, encodeFunctionData } from "viem";
+import { http, createWalletClient, ClientConfig, encodeFunctionData, toHex } from "viem";
 import { mudFoundry } from "@latticexyz/common/chains";
 import { encodeEntity } from "@latticexyz/store-sync/recs";
 import { callPageFunction } from "./data/callPageFunction";
@@ -79,14 +79,15 @@ describe("callWithSignature", async () => {
     // Sign registration call message
     const signature = await delegatorWalletClient.signTypedData({
       domain: {
-        chainId: delegatorWalletClient.chain.id,
         verifyingContract: worldContract.address,
+        salt: toHex(delegatorWalletClient.chain.id, { size: 32 }),
       },
       types: callWithSignatureTypes,
       primaryType: "Call",
       message: {
         signer: delegator.address,
-        systemId,
+        systemNamespace: "",
+        systemName: "Registration",
         callData,
         nonce,
       },

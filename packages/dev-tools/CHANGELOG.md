@@ -1,5 +1,44 @@
 # @latticexyz/dev-tools
 
+## 2.0.6
+
+### Patch Changes
+
+- c18e93c5: Bumped viem to 2.9.20.
+- d95028a6: Bumped viem to 2.9.16.
+- 77d3b309: Added a "top up" button to account balance when running on anvil.
+- Updated dependencies [6c8ab471]
+- Updated dependencies [103db6ce]
+- Updated dependencies [9720b568]
+- Updated dependencies [c18e93c5]
+- Updated dependencies [d95028a6]
+- Updated dependencies [de3bc3d1]
+- Updated dependencies [8c3dcf77]
+  - @latticexyz/common@2.0.6
+  - @latticexyz/store@2.0.6
+  - @latticexyz/world@2.0.6
+  - @latticexyz/schema-type@2.0.6
+  - @latticexyz/store-sync@2.0.6
+  - @latticexyz/react@2.0.6
+  - @latticexyz/recs@2.0.6
+  - @latticexyz/utils@2.0.6
+
+## 2.0.5
+
+### Patch Changes
+
+- Updated dependencies [a9e8a407]
+- Updated dependencies [b798ccb2]
+- Updated dependencies [d02efd80]
+  - @latticexyz/common@2.0.5
+  - @latticexyz/store@2.0.5
+  - @latticexyz/world@2.0.5
+  - @latticexyz/store-sync@2.0.5
+  - @latticexyz/react@2.0.5
+  - @latticexyz/recs@2.0.5
+  - @latticexyz/schema-type@2.0.5
+  - @latticexyz/utils@2.0.5
+
 ## 2.0.4
 
 ### Patch Changes

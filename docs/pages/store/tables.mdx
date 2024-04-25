@@ -64,7 +64,11 @@ ResourceId offchainTableId = ResourceIdLib.encode({
 });
 ```
 
-### Key schema
+### The schemas
+
+Tables have two schemas, one for the key and the other for the values.
+
+#### Key schema
 
 The key schema represents the data types of the (composite) key of the table.
 Internally the composite key is always handled as `bytes32[]`, but the key schema allows [offchain indexers](../services/indexer) to create properly typed composite key columns, and allows MUD to generate [typed table libraries](./table-libraries).
@@ -82,7 +86,7 @@ keySchemaTypes[0] = SchemaType.ADDRESS;
 Schema keySchema = SchemaLib.encode(keySchemaTypes);
 ```
 
-### Value schema
+#### Value schema
 
 The value schema represents the data types of the value fields of the table.
 Similar to key schemas, it allows [offchain indexers](../services/indexer) to create properly typed value columns, and allows MUD to generate [typed table libraries](./table-libraries).
