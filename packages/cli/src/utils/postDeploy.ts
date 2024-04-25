@@ -17,7 +17,7 @@ export async function postDeploy(
     return;
   }
 
-  // TODO: replace this with a viem call instead?
+  // TODO: replace this with a viem call
   const gasPrice = BigInt(execSync(`cast gas-price --rpc-url ${rpc}`, { encoding: "utf-8" }).trim());
 
   console.log(chalk.blue(`Executing post deploy script at ${postDeployPath}`));
@@ -31,6 +31,7 @@ export async function postDeploy(
       "--sig",
       "run(address)",
       worldAddress,
+      // TODO: also set priority fee?
       "--with-gas-price",
       gasPrice.toString(),
       "--rpc-url",
