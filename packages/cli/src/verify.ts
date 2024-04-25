@@ -1,4 +1,4 @@
-import { Chain, Client, Hex, Transport, createPublicClient, getCreate2Address, http, sliceHex, zeroHash } from "viem";
+import { Chain, Client, Hex, Transport, getCreate2Address, sliceHex, zeroHash } from "viem";
 import { getWorldFactoryContracts } from "./deploy/getWorldFactoryContracts";
 import { verifyContract } from "./verify/verifyContract";
 import PQueue from "p-queue";
@@ -6,6 +6,7 @@ import { getWorldProxyFactoryContracts } from "./deploy/getWorldProxyFactoryCont
 import { getDeployer } from "./deploy/getDeployer";
 import { MUDError } from "@latticexyz/common/errors";
 import { salt } from "./deploy/common";
+import { getStorageAt } from "viem/actions";
 
 type VerifyOptions = {
   client: Client<Transport, Chain | undefined>;
@@ -42,16 +43,12 @@ export async function verify({
     throw new MUDError(`No deployer`);
   }
 
-  const publicClient = createPublicClient({
-    transport: http(rpc),
-  });
-
   // If the proxy implementation storage slot is set on the World, the World was deployed as a proxy.
-  const implementationStorage = await publicClient.getStorageAt({
+  const implementationStorage = await getStorageAt(client, {
     address: worldAddress,
     slot: ERC1967_IMPLEMENTATION_SLOT,
   });
-  const useProxy = implementationStorage && implementationStorage !== zeroHash;
+  const usesProxy = implementationStorage && implementationStorage !== zeroHash;
 
   const verifyQueue = new PQueue({ concurrency: 1 });
 
@@ -77,7 +74,7 @@ export async function verify({
   );
 
   Object.entries(
-    useProxy ? getWorldProxyFactoryContracts(deployerAddress) : getWorldFactoryContracts(deployerAddress),
+    usesProxy ? getWorldProxyFactoryContracts(deployerAddress) : getWorldFactoryContracts(deployerAddress),
   ).map(([name, { bytecode }]) =>
     verifyQueue.add(() =>
       verifyContract(
@@ -127,7 +124,7 @@ export async function verify({
   );
 
   // If the world was deployed as a Proxy, verify the proxy and implementation.
-  if (useProxy) {
+  if (usesProxy) {
     const implementationAddress = sliceHex(implementationStorage, -20);
 
     verifyQueue.add(() =>
