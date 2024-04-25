@@ -42,11 +42,22 @@ export type FetchLogsResult<TAbiEvents extends readonly AbiEvent[]> = {
   logs: GetLogsReturnType<undefined, TAbiEvents, true, BlockNumber, BlockNumber>;
 };
 
-const RATE_LIMIT_ERRORS = ["rate limit exceeded"];
+const RATE_LIMIT_ERRORS = [
+  "rate limit exceeded",
+  // https://github.com/ethereum-optimism/optimism/blob/4fb534ab3d924ac87383e1e70ae4872340d68d9d/proxyd/backend.go#L83
+  "over rate limit",
+  // https://github.com/ethereum-optimism/optimism/blob/4fb534ab3d924ac87383e1e70ae4872340d68d9d/proxyd/backend.go#L88
+  "sender is over rate limit",
+];
+
 const BLOCK_RANGE_TOO_LARGE_ERRORS = [
   "block range exceeded",
+  // https://github.com/ethereum-optimism/optimism/blob/4fb534ab3d924ac87383e1e70ae4872340d68d9d/proxyd/backend.go#L110
   "backend response too large",
+  // https://github.com/ethereum-optimism/optimism/blob/4fb534ab3d924ac87383e1e70ae4872340d68d9d/proxyd/rewriter.go#L36
   "block range is too large",
+  // https://github.com/ethereum-optimism/optimism/blob/4fb534ab3d924ac87383e1e70ae4872340d68d9d/proxyd/backend.go#L98
+  // https://github.com/ethereum-optimism/optimism/blob/4fb534ab3d924ac87383e1e70ae4872340d68d9d/proxyd/rewriter.go#L35
   "block is out of range",
 ];
 
@@ -87,8 +98,7 @@ export async function* fetchLogs<TAbiEvents extends readonly AbiEvent[]>({
       debug("error getting logs:", String(error));
       if (!(error instanceof Error)) throw error;
 
-      // TODO: figure out actual rate limit message for RPCs
-      if (RATE_LIMIT_ERRORS.find((e) => error.message.includes(e)) && retryCount < maxRetryCount) {
+      if (retryCount < maxRetryCount && RATE_LIMIT_ERRORS.some((e) => error.message.includes(e))) {
         const seconds = 2 * retryCount;
         debug(`too many requests, retrying in ${seconds}s`, error);
         await wait(1000 * seconds);
@@ -96,8 +106,7 @@ export async function* fetchLogs<TAbiEvents extends readonly AbiEvent[]>({
         continue;
       }
 
-      // TODO: figure out actual block range exceeded message for RPCs
-      if (BLOCK_RANGE_TOO_LARGE_ERRORS.find((e) => error.message.includes(e))) {
+      if (BLOCK_RANGE_TOO_LARGE_ERRORS.some((e) => error.message.includes(e))) {
         blockRange /= 2n;
         if (blockRange <= 0n) {
           throw new Error("can't reduce block range any further");
