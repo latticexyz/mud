@@ -7,6 +7,7 @@ Added `createKmsAccount`, a [viem custom account](https://viem.sh/docs/accounts/
 To use it, you must first install `@aws-sdk/client-kms@3.x` and `asn1.js@5.x` dependencies into your project. Then create a KMS account with:
 
 ```ts
+import { createKmsAccount } from "@latticexyz/common/kms";
 const account = createKmsAccount({ keyId: ... });
 ```
 
