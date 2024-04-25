@@ -94,8 +94,8 @@ export async function sendTransaction<
           const nonce = nonceManager.nextNonce();
           debug("sending tx with nonce", nonce, "to", preparedRequest.to);
           const parameters: SendTransactionParameters<chain, account, chainOverride> = {
-            nonce,
             ...preparedRequest,
+            nonce,
             ...feeRef.fees,
           };
           return await viem_sendTransaction(client, parameters);
