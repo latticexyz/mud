@@ -1,10 +1,14 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { KMSAccount, createKmsAccount } from "./createKmsAccount";
+import { KmsAccount, kmsKeyToAccount } from "./kmsKeyToAccount";
 import { CreateKeyCommand, KMSClient } from "@aws-sdk/client-kms";
-import { parseGwei, verifyMessage, verifyTypedData } from "viem";
+import { parseGwei, http, verifyMessage, verifyTypedData, createClient, parseEther } from "viem";
+import { foundry } from "viem/chains";
+import { anvilRpcUrl, testClient } from "../../../test/common";
+import { waitForTransaction } from "../../test/waitForTransaction";
+import { getTransactionReceipt, sendTransaction } from "viem/actions";
 
-describe("createKmsAccount", () => {
-  let account: KMSAccount;
+describe("kmsKeyToAccount", () => {
+  let account: KmsAccount;
   let keyId: string;
 
   beforeAll(async () => {
@@ -30,7 +34,7 @@ describe("createKmsAccount", () => {
 
     keyId = createResponse.KeyMetadata.KeyId;
 
-    account = await createKmsAccount({ keyId, client });
+    account = await kmsKeyToAccount({ keyId, client });
   });
 
   it("signMessage", async () => {
@@ -101,5 +105,23 @@ describe("createKmsAccount", () => {
     });
 
     expect(valid).toBeTruthy();
+  });
+
+  it("can execute transactions", async () => {
+    // Fund the KMS account
+    testClient.setBalance({ address: account.address, value: parseEther("1") });
+
+    const kmsClient = createClient({
+      chain: foundry,
+      transport: http(anvilRpcUrl),
+      account,
+    });
+
+    // Check that the KMS account can execute transactions
+    const tx = await sendTransaction(kmsClient, {});
+    await waitForTransaction(tx);
+
+    const receipt = await getTransactionReceipt(kmsClient, { hash: tx });
+    expect(receipt.status).toEqual("success");
   });
 });

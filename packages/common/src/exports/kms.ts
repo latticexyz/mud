@@ -1,1 +1,1 @@
-export { createKmsAccount, type CreateKmsAccountOptions, type KMSAccount } from "../account/kms/createKmsAccount";
+export { kmsKeyToAccount, type KmsKeyToAccountOptions, type KmsAccount } from "../account/kms/kmsKeyToAccount";
