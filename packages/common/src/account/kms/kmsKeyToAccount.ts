@@ -18,7 +18,6 @@ export type KmsAccount = LocalAccount<"aws-kms"> & {
  *
  * @returns A Local Account.
  */
-
 export async function kmsKeyToAccount({
   keyId,
   client = new KMSClient(),

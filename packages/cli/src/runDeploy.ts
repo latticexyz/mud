@@ -15,7 +15,7 @@ import { getChainId } from "viem/actions";
 import { postDeploy } from "./utils/postDeploy";
 import { WorldDeploy } from "./deploy/common";
 import { build } from "./build";
-import { createKmsAccount } from "@latticexyz/common";
+import { kmsKeyToAccount } from "@latticexyz/common/kms";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the MUD config file" },
@@ -96,7 +96,7 @@ in your contracts directory to use the default anvil private key.`,
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
 
   const keyId = opts.awsKmsKeyId ?? process.env.AWS_KMS_KEY_ID;
-  const account = keyId ? await createKmsAccount({ keyId }) : privateKeyToAccount(privateKey);
+  const account = keyId ? await kmsKeyToAccount({ keyId }) : privateKeyToAccount(privateKey);
 
   const client = createWalletClient({
     transport: http(rpc, {
