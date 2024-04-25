@@ -31,7 +31,7 @@ export type DeployInput = {
   deploysDirectory?: string;
   /** JSON file to write to with chain -> latest world deploy address (Default "./worlds.json") */
   worldsFile?: string;
-  /** Deploy the World as an upgradable proxy */
+  /** Deploy the World as an upgradeable proxy */
   upgradeableWorldImplementation?: boolean;
 };
 
