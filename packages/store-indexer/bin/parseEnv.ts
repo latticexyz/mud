@@ -12,7 +12,11 @@ export const indexerEnvSchema = z.intersection(
     START_BLOCK: z.coerce.bigint().nonnegative().default(0n),
     MAX_BLOCK_RANGE: z.coerce.bigint().positive().default(1000n),
     POLLING_INTERVAL: z.coerce.number().positive().default(1000),
-    STORE_ADDRESS: z.string().refine(isHex).optional(),
+    STORE_ADDRESS: z
+      .string()
+      .transform((input) => (input === "" ? undefined : input))
+      .refine(isHex)
+      .optional(),
   }),
   z.union([
     z.object({
