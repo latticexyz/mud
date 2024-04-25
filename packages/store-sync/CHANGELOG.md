@@ -1,5 +1,27 @@
 # @latticexyz/store-sync
 
+## 2.0.7
+
+### Patch Changes
+
+- 16695fea: Partially revert [#2665](https://github.com/latticexyz/mud/pull/2665) to guarantee logs are stored in order.
+- Updated dependencies [375d902e]
+- Updated dependencies [bf16e729]
+- Updated dependencies [38c61158]
+- Updated dependencies [3d1d5905]
+- Updated dependencies [ed404b7d]
+- Updated dependencies [2c9b16c7]
+- Updated dependencies [f736c43d]
+  - @latticexyz/common@2.0.7
+  - @latticexyz/block-logs-stream@2.0.7
+  - @latticexyz/world@2.0.7
+  - @latticexyz/store@2.0.7
+  - @latticexyz/config@2.0.7
+  - @latticexyz/protocol-parser@2.0.7
+  - @latticexyz/query@2.0.7
+  - @latticexyz/recs@2.0.7
+  - @latticexyz/schema-type@2.0.7
+
 ## 2.0.6
 
 ### Patch Changes

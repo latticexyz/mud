@@ -1,5 +1,16 @@
 # @latticexyz/protocol-parser
 
+## 2.0.7
+
+### Patch Changes
+
+- Updated dependencies [375d902e]
+- Updated dependencies [38c61158]
+- Updated dependencies [f736c43d]
+  - @latticexyz/common@2.0.7
+  - @latticexyz/config@2.0.7
+  - @latticexyz/schema-type@2.0.7
+
 ## 2.0.6
 
 ### Patch Changes

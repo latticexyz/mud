@@ -19,6 +19,7 @@ import { healthcheck } from "../src/koa-middleware/healthcheck";
 import { helloWorld } from "../src/koa-middleware/helloWorld";
 import { apiRoutes } from "../src/sqlite/apiRoutes";
 import { sentry } from "../src/koa-middleware/sentry";
+import { metrics } from "../src/koa-middleware/metrics";
 
 const env = parseEnv(
   z.intersection(
@@ -47,29 +48,48 @@ const database = drizzle(new Database(env.SQLITE_FILENAME));
 
 let startBlock = env.START_BLOCK;
 
-// Resume from latest block stored in DB. This will throw if the DB doesn't exist yet, so we wrap in a try/catch and ignore the error.
-try {
-  const currentChainStates = database.select().from(chainState).where(eq(chainState.chainId, chainId)).all();
-  // TODO: replace this type workaround with `noUncheckedIndexedAccess: true` when we can fix all the issues related (https://github.com/latticexyz/mud/issues/1212)
-  const currentChainState: (typeof currentChainStates)[number] | undefined = currentChainStates[0];
-
-  if (currentChainState != null) {
-    if (currentChainState.schemaVersion != schemaVersion) {
-      console.log(
-        "schema version changed from",
-        currentChainState.schemaVersion,
-        "to",
-        schemaVersion,
-        "recreating database",
-      );
-      fs.truncateSync(env.SQLITE_FILENAME);
-    } else if (currentChainState.lastUpdatedBlockNumber != null) {
-      console.log("resuming from block number", currentChainState.lastUpdatedBlockNumber + 1n);
-      startBlock = currentChainState.lastUpdatedBlockNumber + 1n;
+async function getCurrentChainState(): Promise<
+  | {
+      schemaVersion: number;
+      chainId: number;
+      lastUpdatedBlockNumber: bigint | null;
+      lastError: string | null;
     }
+  | undefined
+> {
+  // This will throw if the DB doesn't exist yet, so we wrap in a try/catch and ignore the error.
+  try {
+    const currentChainStates = database.select().from(chainState).where(eq(chainState.chainId, chainId)).all();
+    // TODO: replace this type workaround with `noUncheckedIndexedAccess: true` when we can fix all the issues related (https://github.com/latticexyz/mud/issues/1212)
+    const currentChainState: (typeof currentChainStates)[number] | undefined = currentChainStates[0];
+    return currentChainState;
+  } catch (error) {
+    // ignore errors, this is optional
   }
-} catch (error) {
-  // ignore errors, this is optional
+}
+
+async function getLatestStoredBlockNumber(): Promise<bigint | undefined> {
+  const currentChainState = await getCurrentChainState();
+  return currentChainState?.lastUpdatedBlockNumber ?? undefined;
+}
+
+const currentChainState = await getCurrentChainState();
+if (currentChainState) {
+  // Reset the db if the version changed
+  if (currentChainState.schemaVersion != schemaVersion) {
+    console.log(
+      "schema version changed from",
+      currentChainState.schemaVersion,
+      "to",
+      schemaVersion,
+      "recreating database",
+    );
+    fs.truncateSync(env.SQLITE_FILENAME);
+  } else if (currentChainState.lastUpdatedBlockNumber != null) {
+    // Resume from latest block stored in DB. This will throw if the DB doesn't exist yet, so we wrap in a try/catch and ignore the error.
+    console.log("resuming from block number", currentChainState.lastUpdatedBlockNumber + 1n);
+    startBlock = currentChainState.lastUpdatedBlockNumber + 1n;
+  }
 }
 
 const { latestBlockNumber$, storedBlockLogs$ } = await syncToSqlite({
@@ -105,6 +125,14 @@ server.use(cors());
 server.use(
   healthcheck({
     isReady: () => isCaughtUp,
+  }),
+);
+server.use(
+  metrics({
+    isHealthy: () => true,
+    isReady: () => isCaughtUp,
+    getLatestStoredBlockNumber,
+    followBlockTag: env.FOLLOW_BLOCK_TAG,
   }),
 );
 server.use(helloWorld());

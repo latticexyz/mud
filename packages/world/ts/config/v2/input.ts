@@ -31,6 +31,8 @@ export type DeployInput = {
   deploysDirectory?: string;
   /** JSON file to write to with chain -> latest world deploy address (Default "./worlds.json") */
   worldsFile?: string;
+  /** Deploy the World as an upgradeable proxy */
+  upgradeableWorldImplementation?: boolean;
 };
 
 export type CodegenInput = {
@@ -40,8 +42,6 @@ export type CodegenInput = {
   worldgenDirectory?: string;
   /** Path for world package imports. Default is "@latticexyz/world/src/" */
   worldImportPath?: string;
-  /** Deploy the World as an upgradable proxy */
-  useProxy?: boolean;
 };
 
 export type WorldInput = evaluate<
