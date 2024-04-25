@@ -14,6 +14,7 @@ import setVersion from "./set-version";
 import test from "./test";
 import trace from "./trace";
 import devContracts from "./dev-contracts";
+import verify from "./verify";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Each command has different options
 export const commands: CommandModule<any, any>[] = [
@@ -30,4 +31,5 @@ export const commands: CommandModule<any, any>[] = [
   trace,
   devContracts,
   abiTs,
+  verify,
 ];

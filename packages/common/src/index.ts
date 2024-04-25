@@ -1,7 +1,6 @@
 export * from "./common";
 export * from "./createBenchmark";
 export * from "./createBurnerAccount";
-export * from "./createKmsAccount";
 export * from "./createNonceManager";
 export * from "./getContract";
 export * from "./getBurnerPrivateKey";

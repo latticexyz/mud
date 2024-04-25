@@ -16,6 +16,7 @@ const devOptions = {
   rpc: deployOptions.rpc,
   configPath: deployOptions.configPath,
   alwaysRunPostDeploy: deployOptions.alwaysRunPostDeploy,
+  forgeScriptOptions: deployOptions.forgeScriptOptions,
   worldAddress: deployOptions.worldAddress,
 };
 
