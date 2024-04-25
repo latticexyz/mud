@@ -116,14 +116,24 @@ export async function verify({
   );
 
   verifyQueue.add(() =>
-    verifyContract(
-      { name: "World", rpc, verifier, verifierUrl, address: worldAddress },
-      {
-        profile: foundryProfile,
-        cwd: "node_modules/@latticexyz/world",
-      },
-    ).catch((error) => {
-      console.error(`Error verifying World contract:`, error);
-    }),
+    useProxy
+      ? verifyContract(
+          { name: "WorldProxy", rpc, verifier, verifierUrl, address: worldAddress },
+          {
+            profile: foundryProfile,
+            cwd: "node_modules/@latticexyz/world",
+          },
+        ).catch((error) => {
+          console.error(`Error verifying WorldProxy contract:`, error);
+        })
+      : verifyContract(
+          { name: "World", rpc, verifier, verifierUrl, address: worldAddress },
+          {
+            profile: foundryProfile,
+            cwd: "node_modules/@latticexyz/world",
+          },
+        ).catch((error) => {
+          console.error(`Error verifying World contract:`, error);
+        }),
   );
 }
