@@ -122,6 +122,62 @@ Release date: Tue Apr 02 2024
 
 Release date: Mon Apr 01 2024
 
+### Patch changes
+
+**[feat(world-modules): register delegation with signature (#2480)](https://github.com/latticexyz/mud/commit/e86bd14db092331454a604183be5f5739563f449)** (@latticexyz/cli, @latticexyz/world-modules, @latticexyz/world)
+
+Added a new preview module, `Unstable_DelegationWithSignatureModule`, which allows registering delegations with a signature.
+
+Note: this module is marked as `Unstable`, because it will be removed and included in the default `World` deployment once it is audited.
+
+**[chore: threejs template changeset (#2529)](https://github.com/latticexyz/mud/commit/a1101f785719f6b61449db62e265bf0f90665ccb)** (create-mud)
+
+Changed the controls in the `threejs` template from arrow keys to WASD and added text to explain what the app does.
+
+**[docs: clarify `callFrom` changelog (#2579)](https://github.com/latticexyz/mud/commit/090a099bf4891dfa3cd95f88b68dcfd5ea14bdea)** (@latticexyz/world)
+
+Added a viem client decorator for account delegation. By extending viem clients with this function after delegation, the delegation is automatically applied to World contract writes. This means that these writes are made on behalf of the delegator. Internally, it transforms the write arguments to use `callFrom`.
+
+This is an internal feature and is not ready for stable consumption yet, so it's not yet exported. Its API may change.
+
+When using with a viem public client, system function selectors will be fetched from the world:
+
+```ts
+walletClient.extend(
+  callFrom({
+    worldAddress,
+    delegatorAddress,
+    publicClient,
+  }),
+);
+```
+
+Alternatively, a `worldFunctionToSystemFunction` handler can be passed in that will translate between world function selectors and system function selectors for cases where you want to provide your own behavior or use data already cached in e.g. Zustand or RECS.
+
+```ts
+walletClient.extend(
+  callFrom({
+    worldAddress,
+    delegatorAddress,
+    worldFunctionToSystemFunction: async (worldFunctionSelector) => {
+      const systemFunction = useStore.getState().getValue(tables.FunctionSelectors, { worldFunctionSelector })!;
+      return {
+        systemId: systemFunction.systemId,
+        systemFunctionSelector: systemFunction.systemFunctionSelector,
+      };
+    },
+  }),
+);
+```
+
+**[refactor(cli): remove forge cache workaround (#2576)](https://github.com/latticexyz/mud/commit/3b845d6b23b950e30310886407de11bb33fd028c)** (@latticexyz/cli)
+
+Remove workaround for generating `IWorld` interface from cached forge files as this was fixed by forge.
+
+**[fix(create-mud): run anvil in its own process (#2538)](https://github.com/latticexyz/mud/commit/9e239765e6dd253819a7aa77a87caa528be549db)** (create-mud)
+
+Templates now run anvil in its own process (via mprocs) for better visibility into anvil logs.
+
 ---
 
 ## Version 2.0.1
