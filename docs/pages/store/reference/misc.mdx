@@ -1850,6 +1850,26 @@ function getType(ResourceId resourceId) internal pure returns (bytes2);
 | -------- | -------- | ------------------------------------- |
 | `<none>` | `bytes2` | The extracted 2-byte type identifier. |
 
+#### getResourceName
+
+Get the name from a resource ID.
+
+```solidity
+function getResourceName(ResourceId resourceId) internal pure returns (bytes30);
+```
+
+**Parameters**
+
+| Name         | Type         | Description      |
+| ------------ | ------------ | ---------------- |
+| `resourceId` | `ResourceId` | The resource ID. |
+
+**Returns**
+
+| Name     | Type      | Description     |
+| -------- | --------- | --------------- |
+| `<none>` | `bytes30` | A 30-byte name. |
+
 ## ResourceIdLib
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/ResourceId.sol)
@@ -2688,5 +2708,5 @@ Contains a constant representing the version of the Store protocol.
 _Identifier for the current Store protocol version._
 
 ```solidity
-bytes32 constant STORE_VERSION = "2.0.1";
+bytes32 constant STORE_VERSION = "2.0.2";
 ```

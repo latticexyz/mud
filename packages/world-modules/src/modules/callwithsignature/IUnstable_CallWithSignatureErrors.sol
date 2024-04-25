@@ -5,5 +5,5 @@ interface IUnstable_CallWithSignatureErrors {
   /**
    * @dev Mismatched signature.
    */
-  error InvalidSignature(address signer);
+  error InvalidSignature();
 }
