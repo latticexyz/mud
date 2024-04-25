@@ -9,13 +9,13 @@ import { FieldLayout, FieldLayoutLib } from "./FieldLayout.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { EncodedLengths } from "./EncodedLengths.sol";
 import { Slice, SliceLib } from "./Slice.sol";
-import { ResourceNames, Tables, ResourceIds, StoreHooks } from "./codegen/index.sol";
+import { Tables, ResourceIds, StoreHooks } from "./codegen/index.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
 import { Hook, HookLib } from "./Hook.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "./storeHookTypes.sol";
-import { ResourceId } from "./ResourceId.sol";
+import { ResourceId, ResourceIdLib } from "./ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "./storeResourceTypes.sol";
 import { IStoreEvents } from "./IStoreEvents.sol";
 
@@ -78,10 +78,6 @@ library StoreCore {
     ResourceIds._setExists(ResourceIds._tableId, true);
 
     // Now we can register the rest of the core tables as regular tables.
-    ResourceNames.register();
-    ResourceNames._setExists(Tables._tableId.getStoreName(), true);
-    ResourceNames._setExists(ResourceIds._tableId.getStoreName(), true);
-
     StoreHooks.register();
   }
 
@@ -164,7 +160,7 @@ library StoreCore {
     string[] memory keyNames,
     string[] memory fieldNames
   ) internal {
-    // Verify the table ID is of type RESOURCE_TABLE
+    // Verify the table ID is of type RESOURCE_TABLE or RESOURCE_OFFCHAIN_TABLE
     if (tableId.getType() != RESOURCE_TABLE && tableId.getType() != RESOURCE_OFFCHAIN_TABLE) {
       revert IStoreErrors.Store_InvalidResourceType(RESOURCE_TABLE, tableId, string(abi.encodePacked(tableId)));
     }
@@ -217,9 +213,20 @@ library StoreCore {
     if (ResourceIds._getExists(tableId)) {
       revert IStoreErrors.Store_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
     }
-    // Verify there is no resource with this name yet
-    if (ResourceNames._getExists(tableId.getStoreName())) {
-      revert IStoreErrors.Store_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
+
+    // Verify that there is no table or offchain table with the same name
+    if (tableId.getType() == RESOURCE_TABLE) {
+      ResourceId tableIdOffchain = ResourceIdLib.encode(RESOURCE_OFFCHAIN_TABLE, tableId.getNameStore());
+
+      if (ResourceIds._getExists(tableIdOffchain)) {
+        revert IStoreErrors.Store_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
+      }
+    } else if (tableId.getType() == RESOURCE_OFFCHAIN_TABLE) {
+      ResourceId tableIdOnchain = ResourceIdLib.encode(RESOURCE_TABLE, tableId.getNameStore());
+
+      if (ResourceIds._getExists(tableIdOnchain)) {
+        revert IStoreErrors.Store_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
+      }
     }
 
     // Register the table metadata
@@ -227,7 +234,6 @@ library StoreCore {
 
     // Register the table ID
     ResourceIds._setExists(tableId, true);
-    ResourceNames._setExists(tableId.getStoreName(), true);
   }
 
   /************************************************************************

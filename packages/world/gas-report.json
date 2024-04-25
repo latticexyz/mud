@@ -63,7 +63,7 @@
     "file": "test/Factories.t.sol",
     "test": "testWorldFactoryGas",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 13657681
+    "gasUsed": 12847506
   },
   {
     "file": "test/World.t.sol",
@@ -129,7 +129,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 601725
+    "gasUsed": 572890
   },
   {
     "file": "test/World.t.sol",
@@ -249,7 +249,7 @@
     "file": "test/WorldProxy.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 606735
+    "gasUsed": 577900
   },
   {
     "file": "test/WorldProxy.t.sol",
@@ -285,7 +285,7 @@
     "file": "test/WorldProxyFactory.t.sol",
     "test": "testWorldProxyFactoryGas",
     "name": "deploy world via WorldProxyFactory",
-    "gasUsed": 9953221
+    "gasUsed": 9143046
   },
   {
     "file": "test/WorldProxyFactory.t.sol",

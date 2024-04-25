@@ -3,7 +3,7 @@
     "file": "test/CallWithSignatureModule.t.sol",
     "test": "testInstallRoot",
     "name": "install delegation module",
-    "gasUsed": 719957
+    "gasUsed": 691108
   },
   {
     "file": "test/CallWithSignatureModule.t.sol",
@@ -87,13 +87,13 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallComposite",
     "name": "install keys in table module",
-    "gasUsed": 1518915
+    "gasUsed": 1463243
   },
   {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallGas",
     "name": "install keys in table module",
-    "gasUsed": 1518915
+    "gasUsed": 1463243
   },
   {
     "file": "test/KeysInTableModule.t.sol",
@@ -105,13 +105,13 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallSingleton",
     "name": "install keys in table module",
-    "gasUsed": 1518915
+    "gasUsed": 1463243
   },
   {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookCompositeGas",
     "name": "install keys in table module",
-    "gasUsed": 1518915
+    "gasUsed": 1463243
   },
   {
     "file": "test/KeysInTableModule.t.sol",
@@ -129,7 +129,7 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookGas",
     "name": "install keys in table module",
-    "gasUsed": 1518915
+    "gasUsed": 1463243
   },
   {
     "file": "test/KeysInTableModule.t.sol",
@@ -147,7 +147,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testGetKeysWithValueGas",
     "name": "install keys with value module",
-    "gasUsed": 747810
+    "gasUsed": 718975
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -165,7 +165,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testInstall",
     "name": "install keys with value module",
-    "gasUsed": 747810
+    "gasUsed": 718975
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -177,7 +177,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testSetAndDeleteRecordHook",
     "name": "install keys with value module",
-    "gasUsed": 747810
+    "gasUsed": 718975
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -195,7 +195,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testSetField",
     "name": "install keys with value module",
-    "gasUsed": 747810
+    "gasUsed": 718975
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -315,7 +315,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstall",
     "name": "install unique entity module",
-    "gasUsed": 747548
+    "gasUsed": 718708
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
@@ -327,7 +327,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstallRoot",
     "name": "installRoot unique entity module",
-    "gasUsed": 718008
+    "gasUsed": 689153
   },
   {
     "file": "test/UniqueEntityModule.t.sol",

@@ -51,7 +51,7 @@ library ResourceIdInstance {
    * @param resourceId The resource ID.
    * @return A 30-byte name.
    */
-  function getStoreName(ResourceId resourceId) internal pure returns (bytes30) {
+  function getNameStore(ResourceId resourceId) internal pure returns (bytes30) {
     return bytes30(ResourceId.unwrap(resourceId) << (TYPE_BITS));
   }
 }
