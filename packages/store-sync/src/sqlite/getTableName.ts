@@ -1,5 +1,5 @@
-import { getAddress } from "viem";
+import { snakeCase } from "change-case";
 
 export function getTableName(address: string, namespace: string, tableName: string): string {
-  return `${getAddress(address)}__${namespace}__${tableName}`;
+  return `${address.toLowerCase()}__${snakeCase(namespace)}__${snakeCase(tableName)}`;
 }

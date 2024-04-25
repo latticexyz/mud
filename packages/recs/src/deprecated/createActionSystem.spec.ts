@@ -177,7 +177,7 @@ describe("ActionSystem", () => {
     expect(runQuery([HasValue(Action, { on: settlement1 })])).toEqual(new Set([entity1]));
     expect(runQuery([HasValue(Action, { on: settlement2 })])).toEqual(new Set([entity2]));
     expect(runQuery([HasValue(Action, { state: ActionState.Requested })])).toEqual(
-      new Set([entity1, entity2, entity3])
+      new Set([entity1, entity2, entity3]),
     );
   });
 

@@ -4,7 +4,7 @@ import { RpcLog, formatLog, decodeEventLog, Hex } from "viem";
 import { StoreEventsLog } from "../src/common";
 
 export function logsToBlocks(
-  rpcLogs: { data: string; topics: string[] }[]
+  rpcLogs: { data: string; topics: string[] }[],
 ): GroupLogsByBlockNumberResult<StoreEventsLog> {
   return groupLogsByBlockNumber(
     rpcLogs.map((log) => {
@@ -14,7 +14,8 @@ export function logsToBlocks(
         topics: log.topics as [Hex, ...Hex[]],
         strict: true,
       });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return formatLog(log as any as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
-    })
+    }),
   );
 }

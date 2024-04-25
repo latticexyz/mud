@@ -1,5 +1,6 @@
 import { CollapseCode } from "../../components/CollapseCode";
-import Illustration from "./world-table-illustration.mdx";
+import TableInWorld from "../../components/common-text/TableInWorld.mdx";
+import TableImmutable from "../../components/common-text/TableImmutable.mdx";
 
 # Tables
 
@@ -18,61 +19,35 @@ When a `System` reads or writes storage via [table libraries](/store/table-libra
   By default a `System` has access to its own namespace and therefore to all the tables inside it.
   Additional [access can be granted](./namespaces-access-control) by the namespace owner.
 
-<Illustration />
+<TableInWorld />
+
+<TableImmutable />
 
 ## Code samples
 
 ### Reading from a table
 
-Anybody connected to the blockchain can run the `view` functions that read table content.
+Anybody connected to the blockchain can run the `view` functions that read table content, provided they know which key to use (by default MUD does not keep a list of keys written to a table onchain, to save on storage operations).
+
+All the functions to [read from a MUD store](/store/table-libraries#reading-data) are available.
+In this example we use the `Counter` table in the [vanilla](../templates/typescript/vanilla) template, which is a singleton so there is no key to worry about.
 
 <CollapseCode>
 
-```solidity filename="ReadTableInformation.s.sol" copy showLineNumbers {6,8-14,22-24,36-42}
+```solidity filename="ReadCounter.s.sol" copy showLineNumbers {6-7,11-13}
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+pragma solidity >=0.8.24;
 
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { Counter } from "../src/codegen/index.sol";
 
-// Read and manipulate the Systems table
-import { Systems, SystemsTableId } from "@latticexyz/world/src/codegen/index.sol";
-
-// The key is a ResourceId
-import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
-import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
-
-contract ReadTableInformation is Script {
+contract ReadCounter is Script {
   function run() external {
-    // Load the world address and specify it as the Store address
-    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+    address worldAddress = 0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1;
     StoreSwitch.setStoreAddress(worldAddress);
-
-    // Table metainformation (field names)
-    string[] memory keyNames = Systems.getKeyNames();
-    string[] memory valueNames = Systems.getFieldNames();
-
-    console.log("Key fields:");
-    for (uint i = 0; i < keyNames.length; i++) {
-      console.log("\t", i, keyNames[i]);
-    }
-
-    console.log("Value fields:");
-    for (uint i = 0; i < valueNames.length; i++) {
-      console.log("\t", i, valueNames[i]);
-    }
-
-    // Read information about the :AccessManagement System
-    ResourceId accessManagementSystem = WorldResourceIdLib.encode(
-      RESOURCE_SYSTEM, // System
-      "", // Root namespace
-      "AccessManagement" // Called AccessManagement
-    );
-    (address systemAddress, bool publicAccess) = Systems.get(accessManagementSystem);
-    console.log("The address for the :AccessManagement System:", systemAddress);
-    console.log("Public access:", publicAccess);
+    console.log("Counter value:", Counter.get());
   }
 }
 ```
@@ -90,81 +65,48 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 We need [the `StoreSwitch` library](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreSwitch.sol) library to specify the address of the `World` with the data.
 
 ```solidity
-// Read and manipulate the Systems table
-import { Systems, SystemsTableId } from "@latticexyz/world/src/codegen/index.sol";
+import { Counter } from "../src/codegen/index.sol";
 ```
 
 It is easiest if we import the definitions of the table that were generated using [`mud tablegen`](./cli/tablegen).
 
 ```solidity
-// The key is a ResourceId
-import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
-import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
-```
-
-The key of the `store:Tables` table is the resource ID for the various tables.
-To read the information of a specific table later we need to create the appropriate resource ID.
-
-```solidity
-
-contract ReadTableInformation is Script {
-  function run() external {
-
-    // Load the world address and specify it as the Store address
-    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+    address worldAddress = 0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1;
     StoreSwitch.setStoreAddress(worldAddress);
 ```
 
-[`StoreSwitch.setStoreAddress`](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreSwitch.sol#L58-L65) is the function we call to specify the `World`'s address.
+Use [`StoreSwitch`](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreSwitch.sol) with the `World` address.
 
 ```solidity
-    // Table metainformation (field names)
-    string[] memory keyNames = Systems.getKeyNames();
-    string[] memory valueNames = Systems.getFieldNames();
+    console.log("Counter value:", Counter.get());
 ```
 
-These functions give us the names of the key fields and value field.
-
-```solidity
-    // Read information about the :AccessManagement System
-    ResourceId accessManagementSystem = WorldResourceIdLib.encode(
-      RESOURCE_SYSTEM,     // System
-      "",                  // Root namespace
-      "AccessManagement"   // Called AccessManagement
-    );
-```
-
-Here we create the resource ID for the table whose information we want.
-
-```solidity
-    (address systemAddress, bool publicAccess) = Systems.get(accessManagementSystem);
-```
-
-And actually read the information.
+Read the information.
+If this had been a table with a key, we'd need to provide the key as a parameter to `<table name>.get()`.
 
 </details>
+
 ### Writing to table
 
-This code is taken from [the React template](https://github.com/latticexyz/mud/tree/main/templates/react).
+All the functions to [write to a MUD store](/store/table-libraries#writing-data) are available.
+In this example we reset `Counter` to zero.
 Note that only [authorized addresses](/world/namespaces-access-control#access) are allowed to write directly to a table.
 
 <CollapseCode>
 
-```solidity filename="PostDeploy.s.sol" copy showLineNumbers {6,9,13-14,19-23,31}
+```solidity filename="ResetCounter.s.sol" copy showLineNumbers {20}
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { Counter } from "../src/codegen/index.sol";
 
-import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { Tasks, TasksData } from "../src/codegen/index.sol";
-
-contract PostDeploy is Script {
-  function run(address worldAddress) external {
-    // Specify a store so that you can use tables directly in PostDeploy
+contract ResetCounter is Script {
+  function run() external {
+    // Specify a store so that you can use tables directly
+    address worldAddress = 0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1;
     StoreSwitch.setStoreAddress(worldAddress);
 
     // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
@@ -172,17 +114,10 @@ contract PostDeploy is Script {
 
     // Start broadcasting transactions from the deployer account
     vm.startBroadcast(deployerPrivateKey);
-
-    // We can set table records directly
-    Tasks.set("1", TasksData({ description: "Walk the dog", createdAt: block.timestamp, completedAt: 0 }));
-
-    // Or we can call our own systems
-    IWorld(worldAddress).addTask("Take out the trash");
-
-    bytes32 key = IWorld(worldAddress).addTask("Do the dishes");
-    IWorld(worldAddress).completeTask(key);
-
+    Counter.set(0);
     vm.stopBroadcast();
+
+    console.log("Counter value:", Counter.get());
   }
 }
 ```
@@ -194,51 +129,9 @@ contract PostDeploy is Script {
 <summary>Explanation</summary>
 
 ```solidity
-import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+    Counter.set(0);
 ```
 
-We need [the `StoreSwitch` library](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreSwitch.sol) library to specify the address of the `World` with the data.
-
-```solidity
-import { Tasks, TasksData } from "../src/codegen/index.sol";
-```
-
-It is easiest if we import the definitions of the table that were generated using [`mud tablegen`](./cli/tablegen).
-
-```solidity
-contract PostDeploy is Script {
-  function run(address worldAddress) external {
-    // Specify a store so that you can use tables directly in PostDeploy
-    StoreSwitch.setStoreAddress(worldAddress);
-```
-
-[`StoreSwitch.setStoreAddress`](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreSwitch.sol#L58-L65) is the function we call to specify the `World`'s address.
-
-```solidity
-    // Start broadcasting transactions from the deployer account
-    vm.startBroadcast(deployerPrivateKey);
-```
-
-`.set` changes the state of the blockchain, so it requires an address.
-This address is necessary for two reasons:
-
-- To spend ETH for gas.
-- To [check permissions](./namespaces-access-control#access).
-
-```solidity
-
-    // We can set table records directly
-    Tasks.set("1", TasksData({ description: "Walk the dog", createdAt: block.timestamp, completedAt: 0 }));
-```
-
-Create a new `TasksData` and set that value with the key `"1"` (in hex the key is `0x310...0`).
-
-```solidity
-    vm.stopBroadcast();
-  }
-}
-```
-
-Stop broadcasting transactions as the authorized address.
+This is how you modify a table's value. If there was a key, it would be `<table name>.set(<key fields>,<value fields>)`.
 
 </details>

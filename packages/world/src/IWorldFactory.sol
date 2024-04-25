@@ -3,6 +3,7 @@ pragma solidity >=0.8.24;
 
 /**
  * @title World Factory Interface
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This interface defines the contract responsible for deploying and keeping track
  * of World contract instances.
  */
@@ -10,8 +11,9 @@ interface IWorldFactory {
   /**
    * @dev Emitted when a new World contract is deployed.
    * @param newContract The address of the newly deployed World contract.
+   * @param salt User defined salt for deterministic world addresses across chains.
    */
-  event WorldDeployed(address indexed newContract);
+  event WorldDeployed(address indexed newContract, uint256 salt);
 
   /**
    * @notice Deploys a new World contract.

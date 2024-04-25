@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { DefaultLogger, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { Hex, RpcLog, createPublicClient, decodeEventLog, formatLog, http } from "viem";
@@ -19,13 +19,15 @@ const blocks = groupLogsByBlockNumber(
       topics: log.topics as [Hex, ...Hex[]],
       strict: true,
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return formatLog(log as any as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
-  })
+  }),
 );
 
 describe("createStorageAdapter", async () => {
   const db = drizzle(postgres(process.env.DATABASE_URL!), {
-    logger: new DefaultLogger(),
+    // TODO: make a debug-based logger so this can be toggled by env var
+    // logger: new DefaultLogger(),
   });
 
   const publicClient = createPublicClient({
@@ -48,9 +50,9 @@ describe("createStorageAdapter", async () => {
     expect(await db.select().from(storageAdapter.tables.configTable)).toMatchInlineSnapshot(`
       [
         {
-          "blockNumber": 20n,
+          "blockNumber": 21n,
           "chainId": 31337,
-          "version": "0.0.6",
+          "version": "0.0.7",
         },
       ]
     `);
@@ -62,14 +64,14 @@ describe("createStorageAdapter", async () => {
         .where(
           eq(
             storageAdapter.tables.recordsTable.tableId,
-            resourceToHex({ type: "table", namespace: "", name: "NumberList" })
-          )
-        )
+            resourceToHex({ type: "table", namespace: "", name: "NumberList" }),
+          ),
+        ),
     ).toMatchInlineSnapshot(`
       [
         {
-          "address": "0x2964aF56c8aACdE425978a28b018956D21cF50f0",
-          "blockNumber": 20n,
+          "address": "0x7C78d585F136d7247f9deA68f60CE8A2D3F311E2",
+          "blockNumber": 21n,
           "dynamicData": "0x000001a400000045",
           "encodedLengths": "0x0000000000000000000000000000000000000000000000000800000000000008",
           "isDeleted": false,

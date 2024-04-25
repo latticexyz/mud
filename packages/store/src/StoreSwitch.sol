@@ -2,16 +2,17 @@
 pragma solidity >=0.8.24;
 
 import { IStore } from "./IStore.sol";
-import { PackedCounter } from "../src/PackedCounter.sol";
+import { EncodedLengths } from "../src/EncodedLengths.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
 import { FieldLayout } from "./FieldLayout.sol";
-import { PackedCounter } from "./PackedCounter.sol";
+import { EncodedLengths } from "./EncodedLengths.sol";
 import { ResourceId } from "./ResourceId.sol";
 
 /**
  * @title StoreSwitch Library
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @notice This library serves as an interface switch to interact with the store,
  *         either by directing calls to itself or to a designated external store.
  * @dev The primary purpose is to abstract the storage details, such that the
@@ -172,7 +173,7 @@ library StoreSwitch {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes memory dynamicData
   ) internal {
     address _storeAddress = getStoreAddress();
@@ -381,7 +382,7 @@ library StoreSwitch {
   function getRecord(
     ResourceId tableId,
     bytes32[] memory keyTuple
-  ) internal view returns (bytes memory, PackedCounter, bytes memory) {
+  ) internal view returns (bytes memory, EncodedLengths, bytes memory) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       return StoreCore.getRecord(tableId, keyTuple);
@@ -403,7 +404,7 @@ library StoreSwitch {
     ResourceId tableId,
     bytes32[] memory keyTuple,
     FieldLayout fieldLayout
-  ) internal view returns (bytes memory, PackedCounter, bytes memory) {
+  ) internal view returns (bytes memory, EncodedLengths, bytes memory) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       return StoreCore.getRecord(tableId, keyTuple, fieldLayout);

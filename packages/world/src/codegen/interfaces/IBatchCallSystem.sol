@@ -7,6 +7,7 @@ import { SystemCallData, SystemCallFromData } from "./../../modules/init/types.s
 
 /**
  * @title IBatchCallSystem
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IBatchCallSystem {

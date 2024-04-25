@@ -1,0 +1,41 @@
+name: Benchmarks
+
+on:
+  workflow_dispatch:
+
+jobs:
+  benchmarks:
+    name: Run benchmarks
+    runs-on: depot-ubuntu-22.04-16
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Build
+        uses: ./.github/actions/build
+
+      - name: Install end-to-end testing dependencies
+        working-directory: ./e2e
+        run: pnpm install
+
+      - name: Clean end-to-end project
+        working-directory: ./e2e
+        run: pnpm run clean
+
+      - name: Build end-to-end project
+        working-directory: ./e2e
+        run: pnpm run build
+
+      - name: Generate bench bulk data
+        working-directory: ./e2e
+        run: pnpm run generate-bench-data-bulk
+
+      - name: Generate bench query data
+        working-directory: ./e2e
+        run: pnpm run generate-bench-data-query
+
+      - name: Run benchmarks
+        run: pnpm run bench

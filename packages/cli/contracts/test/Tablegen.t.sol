@@ -4,12 +4,26 @@ pragma solidity >=0.8.24;
 import "forge-std/Test.sol";
 import { StoreMock } from "@latticexyz/store/test/StoreMock.sol";
 import { IStoreErrors } from "@latticexyz/store/src/IStoreErrors.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { Statics, StaticsData, Dynamics1, Dynamics1Data, Dynamics2, Dynamics2Data, Singleton, Offchain, UserTyped, UserTypedData } from "../src/codegen/index.sol";
 import { TestTypeAddress, TestTypeInt64, TestTypeLibrary } from "../src/types.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 import { Enum1, Enum2 } from "../src/codegen/common.sol";
+
+/**
+ * @title GetItemValueWrapper
+ * @dev For testing that calling getItemValue properly reverts
+ * We use a seperate contract to ensure `expectRevert` does not only check the first external call
+ */
+contract GetItemValueWrapper {
+  function getItemValue(address worldAddress, bytes32 key, uint256 _index) public {
+    StoreSwitch.setStoreAddress(worldAddress);
+
+    Dynamics1.getItemStaticU128(key, _index);
+  }
+}
 
 contract TablegenTest is Test, StoreMock {
   function testStaticsSetAndGet() public {
@@ -42,6 +56,21 @@ contract TablegenTest is Test, StoreMock {
     assertEq(abi.encode(Dynamics1.get(key)), abi.encode(emptyData1));
     assertEq(abi.encode(Dynamics2.get(key)), abi.encode(emptyData2));
 
+    assertEq(Dynamics1.getStaticU128(key)[0], 0);
+    assertEq(Dynamics1.getItemStaticU128(key, 0), 0);
+    assertEq(Dynamics1.getStaticU128(key)[1], 0);
+    assertEq(Dynamics1.getItemStaticU128(key, 1), 0);
+    assertEq(Dynamics1.getStaticU128(key)[2], 0);
+    assertEq(Dynamics1.getItemStaticU128(key, 2), 0);
+
+    // using `get` with indices beyond the static length should revert
+    GetItemValueWrapper wrapper = new GetItemValueWrapper();
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 0, 48));
+    wrapper.getItemValue(address(this), key, 3);
+
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 0, 64));
+    wrapper.getItemValue(address(this), key, 4);
+
     // initialize values
     bytes32[1] memory staticB32 = [keccak256("value")];
     int32[2] memory staticI32 = [int32(-123), 123];
@@ -67,11 +96,11 @@ contract TablegenTest is Test, StoreMock {
     assertEq(abi.encode(Dynamics2.get(key)), abi.encode(data2));
 
     // test length getters
-    assertEq(Dynamics1.lengthStaticB32(key), staticB32.length);
-    assertEq(Dynamics1.lengthStaticI32(key), staticI32.length);
-    assertEq(Dynamics1.lengthStaticU128(key), staticU128.length);
-    assertEq(Dynamics1.lengthStaticAddrs(key), staticAddrs.length);
-    assertEq(Dynamics1.lengthStaticBools(key), staticBools.length);
+    assertEq(Dynamics1.lengthStaticB32, staticB32.length);
+    assertEq(Dynamics1.lengthStaticI32, staticI32.length);
+    assertEq(Dynamics1.lengthStaticU128, staticU128.length);
+    assertEq(Dynamics1.lengthStaticAddrs, staticAddrs.length);
+    assertEq(Dynamics1.lengthStaticBools, staticBools.length);
     assertEq(Dynamics2.lengthU64(key), u64.length);
     assertEq(Dynamics2.lengthStr(key), bytes(str).length);
     assertEq(Dynamics2.lengthB(key), b.length);
@@ -131,17 +160,17 @@ contract TablegenTest is Test, StoreMock {
     assertEq(Singleton.getV1(), -10);
 
     assertEq(abi.encode(Singleton.getV2()), abi.encode([uint32(1), 2]));
-    assertEq(Singleton.lengthV2(), 2);
+    assertEq(Singleton.lengthV2, 2);
     assertEq(Singleton.getItemV2(0), 1);
     assertEq(Singleton.getItemV2(1), 2);
 
     assertEq(abi.encode(Singleton.getV3()), abi.encode([uint32(3), 4]));
-    assertEq(Singleton.lengthV3(), 2);
+    assertEq(Singleton.lengthV3, 2);
     assertEq(Singleton.getItemV3(0), 3);
     assertEq(Singleton.getItemV3(1), 4);
 
     assertEq(abi.encode(Singleton.getV4()), abi.encode([uint32(5)]));
-    assertEq(Singleton.lengthV4(), 1);
+    assertEq(Singleton.lengthV4, 1);
     assertEq(Singleton.getItemV4(0), 5);
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_IndexOutOfBounds.selector, 4, 4));
     assertEq(Singleton.getItemV4(1), 0);

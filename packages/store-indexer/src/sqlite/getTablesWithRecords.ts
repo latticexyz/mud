@@ -2,7 +2,7 @@ import { asc, eq } from "drizzle-orm";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { buildTable, chainState, getTables } from "@latticexyz/store-sync/sqlite";
 import { Hex, getAddress } from "viem";
-import { decodeDynamicField } from "@latticexyz/protocol-parser";
+import { decodeDynamicField } from "@latticexyz/protocol-parser/internal";
 import { SyncFilter, TableWithRecords } from "@latticexyz/store-sync";
 
 // TODO: refactor sqlite and replace this with getLogs to match postgres (https://github.com/latticexyz/mud/issues/1970)
@@ -11,6 +11,7 @@ import { SyncFilter, TableWithRecords } from "@latticexyz/store-sync";
  * @deprecated
  * */
 export function getTablesWithRecords(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   database: BaseSQLiteDatabase<"sync", any>,
   {
     chainId,
@@ -20,7 +21,7 @@ export function getTablesWithRecords(
     readonly chainId: number;
     readonly address?: Hex;
     readonly filters?: readonly SyncFilter[];
-  }
+  },
 ): { blockNumber: bigint | null; tables: readonly TableWithRecords[] } {
   const metadata = database
     .select()
@@ -44,7 +45,7 @@ export function getTablesWithRecords(
       .from(sqliteTable)
       .where(eq(sqliteTable.__isDeleted, false))
       .orderBy(
-        asc(sqliteTable.__lastUpdatedBlockNumber)
+        asc(sqliteTable.__lastUpdatedBlockNumber),
         // TODO: add logIndex (https://github.com/latticexyz/mud/issues/1979)
       )
       .all();
@@ -56,7 +57,7 @@ export function getTablesWithRecords(
             (filter) =>
               filter.tableId === table.tableId &&
               (filter.key0 == null || filter.key0 === keyTuple[0]) &&
-              (filter.key1 == null || filter.key1 === keyTuple[1])
+              (filter.key1 == null || filter.key1 === keyTuple[1]),
           );
         });
     return {

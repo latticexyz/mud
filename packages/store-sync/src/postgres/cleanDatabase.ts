@@ -12,9 +12,10 @@ const schemata = pgSchema("information_schema").table("schemata", {
 });
 
 function isMudSchemaName(schemaName: string): boolean {
-  // address-prefixed schemas like {address}__{namespace} used by decoded postgres tables
+  // each store address has its own schema used by decoded postgres tables
   // optional prefix for schemas created in tests
-  if (/(^|__)0x[0-9a-f]{40}__/i.test(schemaName)) {
+  // optional suffix for schemas that used to also include namespace (pre 0.0.7)
+  if (/(^|__)0x[0-9a-f]{40}($|__)/i.test(schemaName)) {
     return true;
   }
   // schema for internal tables
@@ -34,6 +35,7 @@ function isMudSchemaName(schemaName: string): boolean {
  * VERY DESTRUCTIVE! Finds and drops all MUD indexer related schemas and tables.
  * @internal
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function cleanDatabase(db: PgDatabase<any>): Promise<void> {
   const schemaNames = (await db.select({ schemaName: schemata.schemaName }).from(schemata).execute())
     .map((row) => row.schemaName)

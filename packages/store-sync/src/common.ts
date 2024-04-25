@@ -1,19 +1,22 @@
-import { Address, Block, Hex, Log, PublicClient } from "viem";
-import { StoreConfig, StoreEventsAbiItem, StoreEventsAbi, resolveConfig } from "@latticexyz/store";
+import { Address, Block, Hex, Log, PublicClient, TransactionReceipt } from "viem";
+import { StoreEventsAbiItem, StoreEventsAbi } from "@latticexyz/store";
+import { resolveConfig } from "@latticexyz/store/internal";
 import { Observable } from "rxjs";
 import { UnionPick } from "@latticexyz/common/type-utils";
-import { KeySchema, TableRecord, ValueSchema } from "@latticexyz/protocol-parser";
+import { KeySchema, TableRecord, ValueSchema } from "@latticexyz/protocol-parser/internal";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { flattenSchema } from "./flattenSchema";
+import { Store as StoreConfig } from "@latticexyz/store";
+import { storeToV1 } from "@latticexyz/store/config/v2";
 
 /** @internal Temporary workaround until we redo our config parsing and can pull this directly from the config (https://github.com/latticexyz/mud/issues/1668) */
-export const storeTables = resolveConfig(storeConfig).tables;
+export const storeTables = resolveConfig(storeToV1(storeConfig)).tables;
 /** @internal Temporary workaround until we redo our config parsing and can pull this directly from the config (https://github.com/latticexyz/mud/issues/1668) */
-export const worldTables = resolveConfig(worldConfig).tables;
+export const worldTables = resolveConfig(storeToV1(worldConfig)).tables;
 
 export const internalTableIds = [...Object.values(storeTables), ...Object.values(worldTables)].map(
-  (table) => table.tableId
+  (table) => table.tableId,
 );
 
 export type ChainId = number;
@@ -54,11 +57,11 @@ export type SyncFilter = {
   key1?: Hex;
 };
 
-export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
+export type SyncOptions<config extends StoreConfig = StoreConfig> = {
   /**
    * MUD config
    */
-  config?: TConfig;
+  config?: config;
   /**
    * [viem `PublicClient`][0] used for fetching logs from the RPC.
    *
@@ -77,6 +80,10 @@ export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
    * @deprecated Use `filters` option instead.
    * */
   tableIds?: Hex[];
+  /**
+   * Optional block tag to follow for the latest block number. Defaults to `latest`. It's recommended to use `safe` for indexers.
+   */
+  followBlockTag?: "latest" | "safe" | "finalized";
   /**
    * Optional block number to start indexing from. Useful for resuming the indexer from a particular point in time or starting after a particular contract deployment.
    */
@@ -106,11 +113,13 @@ export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
   };
 };
 
+export type WaitForTransactionResult = Pick<TransactionReceipt, "blockNumber" | "status" | "transactionHash">;
+
 export type SyncResult = {
   latestBlock$: Observable<Block>;
   latestBlockNumber$: Observable<bigint>;
   storedBlockLogs$: Observable<StorageAdapterBlock>;
-  waitForTransaction: (tx: Hex) => Promise<void>;
+  waitForTransaction: (tx: Hex) => Promise<WaitForTransactionResult>;
 };
 
 // TODO: add optional, original log to this?

@@ -15,7 +15,7 @@ const commandModule: CommandModule<typeof deployOptions, DeployOptions> = {
     // Wrap in try/catch, because yargs seems to swallow errors
     try {
       await runDeploy(opts);
-    } catch (error: any) {
+    } catch (error) {
       logError(error);
       process.exit(1);
     }

@@ -1,0 +1,10 @@
+out/
+cache/
+node_modules/
+bindings/
+artifacts/
+broadcast/
+
+# Ignore all MUD deploy artifacts
+deploys
+worlds.json*

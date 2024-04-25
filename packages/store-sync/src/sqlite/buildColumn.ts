@@ -1,5 +1,5 @@
 import { blob, integer, text } from "drizzle-orm/sqlite-core";
-import { SchemaAbiType } from "@latticexyz/schema-type";
+import { SchemaAbiType } from "@latticexyz/schema-type/internal";
 import { assertExhaustive } from "@latticexyz/common/utils";
 import { address, json } from "./columnTypes";
 

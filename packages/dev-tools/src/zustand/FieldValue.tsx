@@ -1,5 +1,5 @@
 import React from "react";
-import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
+import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type/internal";
 import { isHex } from "viem";
 import { TruncatedHex } from "../TruncatedHex";
 

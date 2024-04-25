@@ -6,6 +6,7 @@ import { ResourceId } from "./WorldResourceId.sol";
 
 /**
  * @title ISystemHook
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Interface defining system hooks for external functionality.
  * Provides pre and post hooks that can be triggered before and after a system call respectively.
  * This interface adheres to the ERC-165 standard for determining interface support.

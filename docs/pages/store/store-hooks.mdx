@@ -1,94 +1,343 @@
 import { CollapseCode } from "../../components/CollapseCode";
+import { Callout } from "nextra/components";
 
 # Store hooks
+
+<Callout type="info" emoji="ⓘ">
+  This page is about hooks before and after information is modified. You can also use [`System`
+  hooks](../world/system-hooks) that execute before or after a `System` call.
+</Callout>
 
 Store hooks allow you to react to state changes onchain.
 
 There are many ways to [interact with tables](./reference/store-core), but they all boil down to four types of state changes:
 
 1. A full record (static and dynamic length data) is set (`SetRecord`)
-2. A part of the static length data of a record is changed (`SpliceStaticData`)
-3. A part of the dynamic length data of a record is changed (`SpliceDynamicData`)
+2. A part of the static-length data of a record is changed (`SpliceStaticData`)
+3. A part of the dynamic-length data of a record is changed (`SpliceDynamicData`)
 4. A full record is deleted (`DeleteRecord`)
 
-By registering a store hook contract on a table, arbitrary logic can be triggered `before` or `after` each of these state changes.
+By registering a store hook contract on a table, arbitrary logic can be triggered either before or after each of these state changes.
 
-### Store hook contract
+## Store hook contract
 
 A store hook contract is a contract that implements the [`IStoreHook`](./reference/store-hook) interface.
 
-After the store hook contract [is registered](#register-a-hook), `Store` calls the enabled hook methods on each state change.
+After the store hook contract [is registered](#hook-registration), `Store` calls the enabled hook methods on each state change.
 
-Example: a hook that creates a lookup table of existing values in a table
+For example, here is a hook that freezes the table information to prevent modifications.
 
-```solidity copy
+<CollapseCode>
+
+```solidity filename="FreezeCounter.s.sol" copy showLineNumbers {6,10-12,16-60}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+
 import { StoreHook } from "@latticexyz/store/src/StoreHook.sol";
-import { Exists } from "./codegen/tables/Exists.sol";
+import { BEFORE_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
+import { IWorld } from "../src/codegen/world/IWorld.sol";
 
-contract CustomHook is StoreHook {
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
+import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
+
+import { Counter } from "../src/codegen/tables/Counter.sol";
+
+contract Freeze is StoreHook {
+  function frozen() internal pure {
+    revert("Value frozen for now");
+  }
+
   function onBeforeSetRecord(
     ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
-    PackedCounter encodedLengths,
+    EncodedLengths encodedLengths,
     bytes memory dynamicData,
     FieldLayout
   ) public override {
-    Exists.set(keccak256(abi.encodePacked(staticData, encodedLengths, dynamicData)), true);
+    frozen();
+  }
+
+  function onBeforeSpliceStaticData(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint48 start,
+    bytes memory data
+  ) public override {
+    frozen();
+  }
+
+  function onBeforeSpliceDynamicData(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    EncodedLengths encodedLengths,
+    bytes memory data
+  ) public override {
+    frozen();
+  }
+
+  function onBeforeDeleteRecord(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    FieldLayout fieldLayout
+  ) public override {
+    frozen();
+  }
+}
+
+contract FreezeCounter is Script {
+  function run() external {
+    address worldAddress = 0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1;
+
+    // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+
+    // Start broadcasting transactions from the deployer account
+    vm.startBroadcast(deployerPrivateKey);
+
+    // Deploy Freeze
+    Freeze freeze = new Freeze();
+
+    // Hang Freeze on the hook
+    IWorld(worldAddress).registerStoreHook(
+      Counter._tableId,
+      freeze,
+      BEFORE_SET_RECORD | BEFORE_SPLICE_STATIC_DATA | BEFORE_SPLICE_DYNAMIC_DATA | BEFORE_DELETE_RECORD
+    );
+
+    vm.stopBroadcast();
   }
 }
 ```
 
-### Hook registration
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```solidity
+import { StoreHook } from "@latticexyz/store/src/StoreHook.sol";
+```
+
+The [`StoreHook`](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreHook.sol) contract includes all the functions a store hook contract needs to implement.
+We inherit from it and override as needed.
+
+```solidity
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
+import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
+```
+
+These data types are provided to the store hook contract, so we need to be able to process them.
+
+```solidity
+contract Freeze is StoreHook {
+  function frozen() internal pure {
+    revert("Value frozen for now");
+  }
+```
+
+This function implements the freezing.
+
+```solidity
+function onBeforeSetRecord(
+  ResourceId tableId,
+  bytes32[] memory keyTuple,
+  bytes memory staticData,
+  EncodedLengths encodedLengths,
+  bytes memory dynamicData,
+  FieldLayout
+) public override {
+  frozen();
+}
+```
+
+Override the implementation in `StoreHook`.
+We get all the data we need to know about the record in the parameters.
+
+```solidity
+  function onBeforeSpliceStaticData(
+    ...
+  ) public override {
+    frozen();
+  }
+
+  function onBeforeSpliceDynamicData(
+    ...
+  ) public override {
+    frozen();
+  }
+
+  function onBeforeDeleteRecord(
+    ...
+  ) public override {
+    frozen();
+  }
+}
+```
+
+Hook functions have different parameters, as required to understand the data.
+In addition to these functions we can also override `onAfter...` if we need it (for example, to have access to the updated data instead of calculating it ourselves).
+
+</details>
+
+## Hook registration
 
 Hooks are registered via the [`StoreCore`](./reference/store-core) library or [`IStore`](./reference/store) interface.
 It is possible to select the type of state change that should trigger a hook and the time (before or after) with a bitmap passed during the registration.
 
+For example, here we register the `Freeze` contract above to freeze the value of `Counter`.
+
 <CollapseCode>
-```solidity filename="@latticexyz/store/src/storeHookTypes.sol" {2} copy showLineNumbers
-/// @dev Flag to enable the `onBeforeSetRecord` hook.
-uint8 constant BEFORE_SET_RECORD = 1 << 0;
 
-/// @dev Flag to enable the `afterSetRecord` hook.
-uint8 constant AFTER_SET_RECORD = 1 << 1;
+```solidity filename="FreezeCounter.s.sol" copy showLineNumbers {7-8,62-84}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
 
-/// @dev Flag to enable the `beforeSpliceStaticData` hook.
-uint8 constant BEFORE_SPLICE_STATIC_DATA = 1 << 2;
+import { StoreHook } from "@latticexyz/store/src/StoreHook.sol";
+import { BEFORE_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
+import { IWorld } from "../src/codegen/world/IWorld.sol";
 
-/// @dev Flag to enable the `afterSpliceStaticData` hook.
-uint8 constant AFTER_SPLICE_STATIC_DATA = 1 << 3;
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
+import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 
-/// @dev Flag to enable the `beforeSpliceDynamicData` hook.
-uint8 constant BEFORE_SPLICE_DYNAMIC_DATA = 1 << 4;
+import { Counter } from "../src/codegen/tables/Counter.sol";
 
-/// @dev Flag to enable the `afterSpliceDynamicData` hook.
-uint8 constant AFTER_SPLICE_DYNAMIC_DATA = 1 << 5;
+contract Freeze is StoreHook {
+  function frozen() internal pure {
+    revert("Value frozen for now");
+  }
 
-/// @dev Flag to enable the `beforeDeleteRecord` hook.
-uint8 constant BEFORE_DELETE_RECORD = 1 << 6;
+  function onBeforeSetRecord(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    bytes memory staticData,
+    EncodedLengths encodedLengths,
+    bytes memory dynamicData,
+    FieldLayout
+  ) public override {
+    frozen();
+  }
 
-/// @dev Flag to enable the `afterDeleteRecord` hook.
-uint8 constant AFTER_DELETE_RECORD = 1 << 7;
+  function onBeforeSpliceStaticData(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint48 start,
+    bytes memory data
+  ) public override {
+    frozen();
+  }
 
-````
+  function onBeforeSpliceDynamicData(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    EncodedLengths encodedLengths,
+    bytes memory data
+  ) public override {
+    frozen();
+  }
+
+  function onBeforeDeleteRecord(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    FieldLayout fieldLayout
+  ) public override {
+    frozen();
+  }
+}
+
+contract FreezeCounter is Script {
+  function run() external {
+    address worldAddress = 0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1;
+
+    // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+
+    // Start broadcasting transactions from the deployer account
+    vm.startBroadcast(deployerPrivateKey);
+
+    // Deploy Freeze
+    Freeze freeze = new Freeze();
+
+    // Hang Freeze on the hook
+    IWorld(worldAddress).registerStoreHook(
+      Counter._tableId,
+      freeze,
+      BEFORE_SET_RECORD | BEFORE_SPLICE_STATIC_DATA | BEFORE_SPLICE_DYNAMIC_DATA | BEFORE_DELETE_RECORD
+    );
+
+    vm.stopBroadcast();
+  }
+}
+```
+
 </CollapseCode>
 
-Example: registering a custom store hook that is triggered before a record is set and before a record is deleted
+<details>
+
+<summary>Explanation</summary>
 
 ```solidity
+import { BEFORE_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
+```
 
-import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
-import { Resourceid } from "@latticexyz/store/src/ResourceId.sol";
-import {
-  BEFORE_SET_RECORD,
-  AFTER_DELETE_RECORD
-} from "@latticexyz/store/src/storeHookTypes.sol";
+Bitmap values for the hooks we want to use.
 
-ResourceId TABLE_ID = ... // table ID to watch for state changes
+```solidity
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+```
 
-StoreCore.registerStoreHook({
-  tableId: TABLE_ID,
-  hookAddress: address(new CustomHook()),
-  enabledHooksBitmap: BEFORE_SET_RECORD | AFTER_SET_RECORD
-});
-````
+When we use a `World` we need this definition to register hooks.
+If we were using store without a `World`, we'd use `StoreSwitch` instead.
+
+```solidity
+    // Deploy Freeze
+    Freeze freeze = new Freeze();
+```
+
+Deploy the hook contract.
+If this contract is stateless (as it should be), we can use the same contract from multiple `World`s.
+
+```solidity
+    // Hang Freeze on the hook
+    IWorld(worldAddress).registerStoreHook(
+```
+
+Register the hook.
+This is the syntax to use when `Store` is part of a MUD `World`.
+When it isn't, we'd use `StoreSwitch.registerStoreHook()`.
+
+```solidity
+      Counter._tableId,
+```
+
+The table whose hooks we use.
+
+```solidity
+      freeze,
+```
+
+The contract to be called when a hook is activated.
+
+```solidity
+      BEFORE_SET_RECORD | BEFORE_SPLICE_STATIC_DATA | BEFORE_SPLICE_DYNAMIC_DATA | BEFORE_DELETE_RECORD
+    );
+```
+
+The hook functions to use.
+You can see the complete list in [`storeHookTypes.sol`](https://github.com/latticexyz/mud/blob/main/packages/store/src/storeHookTypes.sol).
+
+</details>
