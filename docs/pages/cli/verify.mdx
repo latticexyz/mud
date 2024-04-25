@@ -1,6 +1,7 @@
 # mud verify
 
-This command verifies the deployed contracts on a blockchain.
+This command uploads the source code for the deployed contracts to a public repository, such as a block explorer.
+The repository then compiles the source code and verifies that the compiled version is identical to what is deployed on-chain.
 
 ## Using the command
 
@@ -58,11 +59,3 @@ This command verifies the deployed contracts on a blockchain.
   export ETHERSCAN_API_KEY= ** blockscout API key goes here **
   pnpm mud verify --profile holesky --worldAddress $WORLD_ADDRESS --verifier blockscout --verifier-url 'https://eth-holesky.blockscout.com/api?'
   ```
-
-## Debugging
-
-To generate debug messages, use this command:
-
-```sh copy
-export DEBUG=mud:cli:verify
-```
