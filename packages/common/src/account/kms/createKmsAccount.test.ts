@@ -12,8 +12,8 @@ import {
 } from "viem";
 import { foundry } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
-import { anvilRpcUrl } from "../test/common";
-import { waitForTransaction } from "./test/waitForTransaction";
+import { anvilRpcUrl } from "../../../test/common";
+import { waitForTransaction } from "../../test/waitForTransaction";
 
 describe("createKmsAccount", () => {
   let account: KMSAccount;
