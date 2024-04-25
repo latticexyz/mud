@@ -8,7 +8,7 @@ import { getOutDirectory, getRpcUrl, getSrcDirectory } from "@latticexyz/common/
 import { getExistingContracts } from "../utils/getExistingContracts";
 import { getContractData } from "../utils/getContractData";
 import { defaultModuleContracts } from "../utils/defaultModuleContracts";
-import { Address, Hex, createPublicClient, createWalletClient, http, zeroHash } from "viem";
+import { Hex, createWalletClient, http } from "viem";
 import chalk from "chalk";
 
 const verifyOptions = {
@@ -33,8 +33,6 @@ const verifyOptions = {
 } as const;
 
 type Options = InferredOptionTypes<typeof verifyOptions>;
-
-const ERC1967_IMPLEMENTATION_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc";
 
 const commandModule: CommandModule<Options, Options> = {
   command: "verify",
@@ -72,17 +70,6 @@ const commandModule: CommandModule<Options, Options> = {
       }),
     });
 
-    const publicClient = createPublicClient({
-      transport: http(rpc, {
-        batch: opts.rpcBatch
-          ? {
-              batchSize: 100,
-              wait: 1000,
-            }
-          : undefined,
-      }),
-    });
-
     const contractNames = getExistingContracts(srcDir).map(({ basename }) => basename);
     const resolvedWorldConfig = resolveWorldConfig(config, contractNames);
 
@@ -107,13 +94,6 @@ const commandModule: CommandModule<Options, Options> = {
       };
     });
 
-    // If the proxy implementation storage slot is set on the World, the World was deployed as a proxy.
-    const proxyImplementation = await publicClient.getStorageAt({
-      address: opts.worldAddress as Address,
-      slot: ERC1967_IMPLEMENTATION_SLOT,
-    });
-    const useProxy = proxyImplementation !== zeroHash;
-
     await verify({
       client,
       rpc,
@@ -124,7 +104,6 @@ const commandModule: CommandModule<Options, Options> = {
       worldAddress: opts.worldAddress as Hex,
       verifier: opts.verifier,
       verifierUrl: opts.verifierUrl,
-      useProxy,
     });
   },
 };

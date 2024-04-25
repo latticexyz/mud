@@ -1,4 +1,4 @@
-import { Chain, Client, Hex, Transport, getCreate2Address } from "viem";
+import { Chain, Client, Hex, Transport, createPublicClient, getCreate2Address, http, sliceHex, zeroHash } from "viem";
 import { getWorldFactoryContracts } from "./deploy/getWorldFactoryContracts";
 import { verifyContract } from "./verify/verifyContract";
 import PQueue from "p-queue";
@@ -25,6 +25,8 @@ type VerifyOptions = {
   useProxy?: boolean;
 };
 
+const ERC1967_IMPLEMENTATION_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc";
+
 export async function verify({
   client,
   rpc,
@@ -35,12 +37,22 @@ export async function verify({
   deployerAddress: initialDeployerAddress,
   verifier,
   verifierUrl,
-  useProxy,
 }: VerifyOptions): Promise<void> {
   const deployerAddress = initialDeployerAddress ?? (await getDeployer(client));
   if (!deployerAddress) {
     throw new MUDError(`No deployer`);
   }
+
+  const publicClient = createPublicClient({
+    transport: http(rpc),
+  });
+
+  // If the proxy implementation storage slot is set on the World, the World was deployed as a proxy.
+  const implementationStorage = await publicClient.getStorageAt({
+    address: worldAddress,
+    slot: ERC1967_IMPLEMENTATION_SLOT,
+  });
+  const useProxy = implementationStorage && implementationStorage !== zeroHash;
 
   const verifyQueue = new PQueue({ concurrency: 1 });
 
@@ -115,25 +127,44 @@ export async function verify({
     ),
   );
 
-  verifyQueue.add(() =>
-    useProxy
-      ? verifyContract(
-          { name: "WorldProxy", rpc, verifier, verifierUrl, address: worldAddress },
-          {
-            profile: foundryProfile,
-            cwd: "node_modules/@latticexyz/world",
-          },
-        ).catch((error) => {
-          console.error(`Error verifying WorldProxy contract:`, error);
-        })
-      : verifyContract(
-          { name: "World", rpc, verifier, verifierUrl, address: worldAddress },
-          {
-            profile: foundryProfile,
-            cwd: "node_modules/@latticexyz/world",
-          },
-        ).catch((error) => {
-          console.error(`Error verifying World contract:`, error);
-        }),
-  );
+  // If the world was deployed as a Proxy, verify the proxy and implementation.
+  if (useProxy) {
+    const implementationAddress = sliceHex(implementationStorage, -20);
+
+    verifyQueue.add(() =>
+      verifyContract(
+        { name: "WorldProxy", rpc, verifier, verifierUrl, address: worldAddress },
+        {
+          profile: foundryProfile,
+          cwd: "node_modules/@latticexyz/world",
+        },
+      ).catch((error) => {
+        console.error(`Error verifying WorldProxy contract:`, error);
+      }),
+    );
+
+    verifyQueue.add(() =>
+      verifyContract(
+        { name: "World", rpc, verifier, verifierUrl, address: implementationAddress },
+        {
+          profile: foundryProfile,
+          cwd: "node_modules/@latticexyz/world",
+        },
+      ).catch((error) => {
+        console.error(`Error verifying World contract:`, error);
+      }),
+    );
+  } else {
+    verifyQueue.add(() =>
+      verifyContract(
+        { name: "World", rpc, verifier, verifierUrl, address: worldAddress },
+        {
+          profile: foundryProfile,
+          cwd: "node_modules/@latticexyz/world",
+        },
+      ).catch((error) => {
+        console.error(`Error verifying World contract:`, error);
+      }),
+    );
+  }
 }
