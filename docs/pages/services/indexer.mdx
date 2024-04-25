@@ -3,21 +3,15 @@ import { CollapseCode } from "../../components/CollapseCode";
 
 # Indexer
 
-The MUD Indexer is an offchain indexer for onchain applications built with MUD.
+There are two ways for an offchain client to get MUD information directly from an Ethereum node:
 
-## Why an offchain indexer?
+- Call `view` functions, which only works if you already know the key to search for, and requires a call to the node for every record.
+- Get the history from events, which requires running event queries going all the way back to when the `World` was first created.
 
-Reads with onchain apps can be tricky.
-What does it mean to be able to query the Ethereum network?
-Technically, given a node with a fully synced state, we can explore just about everything using the EVM, but the “exploring” would be looking at raw storage slots for accounts corresponding to smart contracts.
-A way around this exists by providing view functions on smart contracts: these effectively are just wrappers around raw storage and expose a more friendly API.
-Instead of having to figure out where the balances for an account are stored in the storage tree, we now can call a function that does the lookup via Solidity via an RPC endpoint.
+Both solutions are slow and require a lot of processing from the node.
 
-The issue with view functions is that for any sophisticated application the calls needed to get the “full picture” of the state from the chain are very complex.
-Servicing so many view function calls also creates the need to run a set of dedicated nodes instead of relying on a third-party provider's free tier.
-
-The MUD indexer solves this problem by listening to the MUD store events to automatically replicate the entire onchain state in a relational database.
-Having such a database allows clients to quickly and efficiently query the onchain data.
+Instead, you can use the MUD Indexer, an offchain server that collects all the MUD events and provides them to clients when requested.
+Then the client can calculate the current state of the MUD tables, and it just needs to listen for ongoing updates, a much cheaper process.
 
 ## Installation
 
@@ -314,7 +308,7 @@ This command starts both the indexer and the query frontend.
 If you use either SQLite or PostgreSQL with the query frontend (using PostgreSQL only as storage), you can run this command to test the indexer.
 
 ```sh copy
-curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%20%220%22%3A%20%7B%22json%22%3A%20%7B%22chainId%22%3A%2031337%2C%20%22address%22%3A%20%220xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1%22%20%7D%20%7D%20%7D' | jq
+curl 'http://localhost:3001/api/logs?batch=1&input=%7B%0A%20%20%20%20%20%20%22chainId%22%3A%2031337%2C%0A%20%20%20%20%20%20%22address%22%3A%20%220xd6c8022f1af8e9d7c3825557a1374ee518c65a4e%22%0A%7D' | jq | more
 ```
 
 The result should be nicely formatted (and long) JSON output with all the data stored in the `World`.
@@ -325,39 +319,28 @@ The result should be nicely formatted (and long) JSON output with all the data s
 
 The URL has these parameters:
 
-| Parameter | Value                 | Explanation                                    |
-| --------- | --------------------- | ---------------------------------------------- |
-| Server    | http://localhost:3001 | By default the indexer listens on port 3001    |
-| Path      | trpc/findAll          | Return all entries (based on the input filter) |
-| `batch`   | `1`                   | A required field                               |
-| `input`   | `%7B%20 ... %20%7D`   | See below                                      |
+| Parameter | Value                 | Explanation                                 |
+| --------- | --------------------- | ------------------------------------------- |
+| Server    | http://localhost:3001 | By default the indexer listens on port 3001 |
+| Path      | /api/logs             | Return all events for the requested `World` |
+| `batch`   | `1`                   | A required field                            |
+| `input`   | `%7B%0A ... %0A%7D`   | See below                                   |
 
 The input is the JSON filter that tells the server what we need.
 It is [URL encoded](https://en.wikipedia.org/wiki/Percent-encoding), you can decode it [using an online calculator](https://www.urldecoder.org/).
 
 ```json
 {
-  "0": {
-    "json": {
-      "chainId": 31337,
-      "address": "0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1"
-    }
-  }
+  "chainId": 31337,
+  "address": "0xd6c8022f1af8e9d7c3825557a1374ee518c65a4e"
 }
 ```
 
-Meaning that query 0 is for everything in the `World` at address `0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1`, on the chain with chain ID `31337`.
-
-{" "}
-
-<Callout type="info" emoji="ⓘ">
-
-The JSON here is written in multiple lines for readablility.
-However, when you encode the JSON for the URL it is necessary to place the entire string on one line.
-
-</Callout>
+Meaning that we want the events in the `World` at address `0xd6c8022f1af8e9d7c3825557a1374ee518c65a4e`, on the chain with chain ID `31337`.
 
 </details>
+
+{ /\*
 
 ## Using the indexer
 
@@ -418,39 +401,4 @@ If you restart the blockchain, you need to clear all the information stored by t
 
 ## Usage examples
 
-### SQLite to view the tasks from the React template
-
-1. Start the indexer.
-
-   ```sh copy
-   export RPC_HTTP_URL=http://127.0.0.1:8545
-   npx -y -p @latticexyz/store-indexer sqlite-indexer
-   ```
-
-1. Get the list of tables.
-   To do that, we read all the data and filter it locally.
-
-   ```sh copy
-   curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x4f4ddafbc93cf8d11a253f21ddbcf836139efdec%22%7D%7D%7D' > alldata.json
-   cat alldata.json | jq '.[0].result.data.json.tables[]' > tables.json
-   cat tables.json | jq '.namespace + "__" + .name + " " + .tableId'
-   ```
-
-1. Ask the indexer for only the information in a specific table (which requires you to know the `tableId` for it).
-
-   ```sh copy
-   INDEXER_URL=http://localhost:3001/trpc
-   WORLD_ADDRESS=0xc14fbdb7808d9e2a37c1a45b635c8c3ff64a1cc1
-   TABLE_ID=0x746200000000000000000000000000005461736b730000000000000000000000
-   CHAIN_ID=31337
-   JSON='{"0":{"json":{"chainId": '$CHAIN_ID', "address": "'$WORLD_ADDRESS'", "filters": [{"tableId": "'$TABLE_ID'"}]}}}'
-   ENCODED_JSON=`echo "console.log(encodeURI('$JSON'))" | node`
-   curl $INDEXER_URL'/findAll?batch=1&input='$ENCODED_JSON > data.json
-   cat data.json |  jq '.[0].result.data.json.tables[0].records'
-   ```
-
-   To see that the only table returned is `Tasks`, run this command:
-
-   ```sh copy
-   cat data.json | jq '.[0].result.data.json.tables[].name'
-   ```
+\*/ }
