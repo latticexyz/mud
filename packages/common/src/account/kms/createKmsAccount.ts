@@ -1,8 +1,8 @@
 import { KMSClient } from "@aws-sdk/client-kms";
 import { LocalAccount, hashMessage, hashTypedData, keccak256, serializeTransaction } from "viem";
 import { toAccount } from "viem/accounts";
-import { signWithKms } from "./account/kms/signWithKms";
-import { getAddressFromKMS } from "./account/kms/getAddressFromKms";
+import { signWithKms } from "./signWithKms";
+import { getAddressFromKms } from "./getAddressFromKms";
 
 export type CreateKmsAccountOptions = {
   keyId: string;
@@ -20,7 +20,7 @@ export async function createKmsAccount({
   keyId,
   client = new KMSClient(),
 }: CreateKmsAccountOptions): Promise<KMSAccount> {
-  const address = await getAddressFromKMS({ keyId, client });
+  const address = await getAddressFromKms({ keyId, client });
 
   const account = toAccount({
     address,
