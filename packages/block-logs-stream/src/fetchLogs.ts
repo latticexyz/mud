@@ -42,6 +42,14 @@ export type FetchLogsResult<TAbiEvents extends readonly AbiEvent[]> = {
   logs: GetLogsReturnType<undefined, TAbiEvents, true, BlockNumber, BlockNumber>;
 };
 
+const RATE_LIMIT_ERRORS = ["rate limit exceeded"];
+const BLOCK_RANGE_TOO_LARGE_ERRORS = [
+  "block range exceeded",
+  "backend response too large",
+  "block range is too large",
+  "block is out of range",
+];
+
 /**
  * An asynchronous generator function that fetches logs from the blockchain in a range of blocks.
  *
@@ -80,7 +88,7 @@ export async function* fetchLogs<TAbiEvents extends readonly AbiEvent[]>({
       if (!(error instanceof Error)) throw error;
 
       // TODO: figure out actual rate limit message for RPCs
-      if (error.message.includes("rate limit exceeded") && retryCount < maxRetryCount) {
+      if (RATE_LIMIT_ERRORS.find((e) => error.message.includes(e)) && retryCount < maxRetryCount) {
         const seconds = 2 * retryCount;
         debug(`too many requests, retrying in ${seconds}s`, error);
         await wait(1000 * seconds);
@@ -89,7 +97,7 @@ export async function* fetchLogs<TAbiEvents extends readonly AbiEvent[]>({
       }
 
       // TODO: figure out actual block range exceeded message for RPCs
-      if (error.message.includes("block range exceeded") || error.message.includes("backend response too large")) {
+      if (BLOCK_RANGE_TOO_LARGE_ERRORS.find((e) => error.message.includes(e))) {
         blockRange /= 2n;
         if (blockRange <= 0n) {
           throw new Error("can't reduce block range any further");
