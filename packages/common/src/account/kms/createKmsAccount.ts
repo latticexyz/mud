@@ -34,6 +34,8 @@ export async function createKmsAccount({
 
       return signatureToHex(signature);
     },
+    // The logic of this function should be align with viem's signTransaction
+    // https://github.com/wevm/viem/blob/main/src/accounts/utils/signTransaction.ts
     async signTransaction(transaction, { serializer = serializeTransaction } = {}) {
       // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
       const signableTransaction = (() => {
