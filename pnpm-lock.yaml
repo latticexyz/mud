@@ -130,6 +130,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@aws-sdk/client-kms':
+        specifier: ^3.556.0
+        version: 3.556.0
       '@ethersproject/abi':
         specifier: ^5.7.0
         version: 5.7.0
@@ -175,6 +178,9 @@ importers:
       '@latticexyz/world-modules':
         specifier: workspace:*
         version: link:../world-modules
+      asn1.js:
+        specifier: ^5.4.1
+        version: 5.4.1
       chalk:
         specifier: ^5.0.1
         version: 5.2.0
