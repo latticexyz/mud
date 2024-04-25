@@ -17,7 +17,8 @@
     "./errors": "./dist/errors.js",
     "./foundry": "./dist/foundry.js",
     "./type-utils": "./dist/type-utils.js",
-    "./utils": "./dist/utils.js"
+    "./utils": "./dist/utils.js",
+    "./kms": "./dist/kms.js"
   },
   "typesVersions": {
     "*": {
@@ -44,6 +45,9 @@
       ],
       "utils": [
         "./src/utils/index.ts"
+      ],
+      "kms": [
+        "./src/exports/kms.ts"
       ]
     }
   },

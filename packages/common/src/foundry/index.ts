@@ -87,12 +87,13 @@ export async function getRemappings(profile?: string): Promise<[string, string][
  */
 export async function forge(
   args: string[],
-  options?: { profile?: string; silent?: boolean; env?: NodeJS.ProcessEnv },
+  options?: { profile?: string; silent?: boolean; env?: NodeJS.ProcessEnv; cwd?: string },
 ): Promise<void> {
   const execOptions: Options<string> = {
     env: { FOUNDRY_PROFILE: options?.profile, ...options?.env },
     stdout: "inherit",
     stderr: "pipe",
+    cwd: options?.cwd,
   };
 
   await (options?.silent ? execa("forge", args, execOptions) : execLog("forge", args, execOptions));

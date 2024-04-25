@@ -1,7 +1,7 @@
 import { Hex, Signature, isAddressEqual, signatureToHex, toHex } from "viem";
 import { recoverAddress } from "viem/utils";
 import { KMSClient, SignCommandInput } from "@aws-sdk/client-kms";
-import { sign } from "./commands/sign";
+import { sign } from "./sign";
 // @ts-expect-error Could not find a declaration file for module 'asn1.js'.
 import asn1 from "asn1.js";
 
