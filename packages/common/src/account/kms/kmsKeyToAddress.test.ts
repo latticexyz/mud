@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { KMSAccount, createKmsAccount } from "./createKmsAccount";
+import { KMSAccount, kmsKeyToAccount } from "./kmsKeyToAddress";
 import { CreateKeyCommand, KMSClient } from "@aws-sdk/client-kms";
 import {
   createPublicClient,
@@ -15,7 +15,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { anvilRpcUrl } from "../../../test/common";
 import { waitForTransaction } from "../../test/waitForTransaction";
 
-describe("createKmsAccount", () => {
+describe("kmsKeyToAccount", () => {
   let account: KMSAccount;
   let keyId: string;
 
@@ -42,7 +42,7 @@ describe("createKmsAccount", () => {
 
     keyId = createResponse.KeyMetadata.KeyId;
 
-    account = await createKmsAccount({ keyId, client });
+    account = await kmsKeyToAccount({ keyId, client });
   });
 
   it("signMessage", async () => {
