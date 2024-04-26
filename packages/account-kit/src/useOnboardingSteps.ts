@@ -63,7 +63,8 @@ export function useOnboardingSteps() {
         };
       });
 
-    const lastIncompleteStep = steps.filter((step) => !step.isComplete).at(0) ?? steps.at(-1)!;
+    const lastIncompleteStep =
+      steps.filter((step) => !step.isComplete).at(0) ?? steps.filter((step) => step.id !== "finalizing").at(-1)!;
     const step = initialStep ?? lastIncompleteStep.id;
 
     return {

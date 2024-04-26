@@ -28,7 +28,23 @@ export function FinalizingStep() {
 
   // We `writeContract` in a mutation here so we can control the client.
   // If we used wagmi's `useWriteContract`, it would write with the connected account instead, which is not what we want.
+
+  const canRegisterDelegation = !!(
+    publicClient?.uid &&
+    userAccountClient?.uid &&
+    appAccountClient?.uid &&
+    registerDelegationSignature
+  );
+
   const registerDelegation = useMutation({
+    mutationKey: [
+      "registerDelegation",
+      canRegisterDelegation,
+      publicClient?.uid,
+      userAccountClient?.uid,
+      appAccountClient?.uid,
+      registerDelegationSignature,
+    ],
     mutationFn: async () => {
       if (!publicClient) throw new Error("Public client not ready. Not connected?");
       if (!userAccountClient) throw new Error("Wallet client not ready. Not connected?");
@@ -90,9 +106,11 @@ export function FinalizingStep() {
   }, [queryClient, receipt.data, resetStep]);
 
   useEffect(() => {
-    console.log("finalizing");
-    registerDelegation.mutate();
-  }, [registerDelegation.mutate]);
+    if (canRegisterDelegation) {
+      registerDelegation.mutateAsync();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canRegisterDelegation]);
 
   if (registerDelegation.error) {
     // TODO: make this prettier
@@ -108,7 +126,7 @@ export function FinalizingStep() {
     return (
       <AccountModalSection className="flew-grow">
         <div className="grid place-items-center">
-          <PendingIcon />
+          receipt: {receipt.data} <PendingIcon />
         </div>
       </AccountModalSection>
     );
