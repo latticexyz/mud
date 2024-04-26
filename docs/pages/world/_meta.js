@@ -9,6 +9,7 @@ export default {
   balance: "Balance",
   "account-delegation": "Account Delegation",
   "batch-calls": "Batch Calls",
+  "upgrade": "Upgrading",
   modules: "Modules",
   reference: "Reference",
 };
