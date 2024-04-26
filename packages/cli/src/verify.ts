@@ -74,11 +74,17 @@ export async function verify({
     ),
   );
 
-  {
-    const cwd = "node_modules/@latticexyz/world";
-
+  // If the verifier is Sourcify, attempt to verify MUD core contracts
+  if (verifier === "sourcify") {
+    // Install subdependencies so contracts can compile
     await execa("npm", ["install"], {
-      cwd,
+      cwd: "node_modules/@latticexyz/store",
+    });
+    await execa("npm", ["install"], {
+      cwd: "node_modules/@latticexyz/world",
+    });
+    await execa("npm", ["install"], {
+      cwd: "node_modules/@latticexyz/world-modules",
     });
 
     Object.entries(
@@ -99,21 +105,13 @@ export async function verify({
           },
           {
             profile: foundryProfile,
-            cwd,
+            cwd: "node_modules/@latticexyz/world",
           },
         ).catch((error) => {
           console.error(`Error verifying world factory contract ${name}:`, error);
         }),
       ),
     );
-  }
-
-  {
-    const cwd = "node_modules/@latticexyz/world-modules";
-
-    await execa("npm", ["install"], {
-      cwd,
-    });
 
     modules.map(({ name, bytecode }) =>
       verifyQueue.add(() =>
@@ -131,17 +129,13 @@ export async function verify({
           },
           {
             profile: foundryProfile,
-            cwd,
+            cwd: "node_modules/@latticexyz/world-modules",
           },
         ).catch((error) => {
           console.error(`Error verifying module contract ${name}:`, error);
         }),
       ),
     );
-  }
-
-  {
-    const cwd = "node_modules/@latticexyz/world";
 
     // If the world was deployed as a Proxy, verify the proxy and implementation.
     if (usesProxy) {
@@ -152,7 +146,7 @@ export async function verify({
           { name: "WorldProxy", rpc, verifier, verifierUrl, address: worldAddress },
           {
             profile: foundryProfile,
-            cwd,
+            cwd: "node_modules/@latticexyz/world",
           },
         ).catch((error) => {
           console.error(`Error verifying WorldProxy contract:`, error);
@@ -164,7 +158,7 @@ export async function verify({
           { name: "World", rpc, verifier, verifierUrl, address: implementationAddress },
           {
             profile: foundryProfile,
-            cwd,
+            cwd: "node_modules/@latticexyz/world",
           },
         ).catch((error) => {
           console.error(`Error verifying World contract:`, error);
