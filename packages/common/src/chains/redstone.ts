@@ -18,7 +18,7 @@ export const redstone = {
   blockExplorers: {
     default: {
       name: "Blockscout",
-      url: "https://explorer.redstonechain.com",
+      url: "https://explorer.redstone.xyz",
     },
     blockscout: {
       name: "Blockscout",
