@@ -2,6 +2,7 @@ import { DepositForm } from "./DepositForm";
 import { useSendTransaction } from "wagmi";
 import { useAppAccountClient } from "../../useAppAccountClient";
 import { type Props } from "./DepositMethodForm";
+import { SubmitButton } from "./SubmitButton";
 
 export function DepositViaRelayForm(props: Props) {
   const { data: appAccountClient } = useAppAccountClient();
@@ -15,20 +16,23 @@ export function DepositViaRelayForm(props: Props) {
       {...props}
       estimatedFee={undefined}
       estimatedTime={undefined}
-      pending={sendTransaction.isPending}
-      submitButtonLabel="Deposit via Relay"
-      onSubmit={
-        appAccountClient
-          ? async () => {
-              // TODO: I wanna pass in the prepared transaction here, but TS complains
-              await sendTransaction.sendTransactionAsync({
-                chainId: props.sourceChain.id,
-                to: appAccountClient.account.address,
-                value: props.amount,
-              });
-            }
-          : undefined
+      submitButton={
+        <SubmitButton
+          sourceChainId={props.sourceChain.id}
+          disabled={!appAccountClient}
+          pending={sendTransaction.isPending}
+        >
+          Deposit via Relay
+        </SubmitButton>
       }
+      onSubmit={async () => {
+        // TODO: I wanna pass in the prepared transaction here, but TS complains
+        await sendTransaction.sendTransactionAsync({
+          chainId: props.sourceChain.id,
+          to: appAccountClient!.account.address,
+          value: props.amount,
+        });
+      }}
     />
   );
 }

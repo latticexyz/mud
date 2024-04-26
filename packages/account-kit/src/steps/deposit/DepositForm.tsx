@@ -1,7 +1,6 @@
-import { useAccount, useBalance, useSwitchChain } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { ChainSelect } from "./ChainSelect";
 import { AmountInput } from "./AmountInput";
-import { Button } from "../../ui/Button";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
 import { useQueryClient } from "@tanstack/react-query";
 import { twMerge } from "tailwind-merge";
@@ -10,7 +9,7 @@ import { duration } from "itty-time";
 import { formatBalance } from "./formatBalance";
 import { formatGas } from "./formatGas";
 import { DepositMethod, SourceChain } from "./common";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 
 export const DEFAULT_DEPOSIT_AMOUNT = 0.005;
 
@@ -23,13 +22,9 @@ export type Props = {
   setDepositMethod: (depositMethod: DepositMethod) => void;
   estimatedFee?: bigint | undefined;
   estimatedTime?: number | undefined;
-  // TODO: should we use UseWriteContractReturnType instead?
-  // TODO: `undefined` here is meant to capture "pending requirements for onSubmit", but maybe we need a better way to express this, like `useQuery`'s `enabled`
-  onSubmit: (() => Promise<void>) | undefined;
-  disabled?: boolean;
-  pending?: boolean;
+  submitButton: ReactNode;
+  onSubmit: () => Promise<void>;
   isComplete?: boolean;
-  submitButtonLabel?: string;
   transactionStatus?: ReactNode;
 };
 
@@ -43,18 +38,16 @@ export function DepositForm({
   estimatedFee,
   estimatedTime,
   onSubmit,
-  disabled,
-  pending,
   isComplete,
-  submitButtonLabel = "Deposit",
+  submitButton,
   transactionStatus,
 }: Props) {
   const { address: userAddress, chainId: userChainId } = useAccount();
-  const shouldSwitchChain = userChainId !== sourceChain.id;
-  const switchChain = useSwitchChain();
   const queryClient = useQueryClient();
   const { resetStep } = useOnboardingSteps();
   const balance = useBalance({ chainId: sourceChain.id, address: userAddress });
+
+  const amountInputRef = useRef<HTMLInputElement | null>(null);
 
   // console.log("switchChain", switchChain.status, switchChain.error);
 
@@ -71,9 +64,28 @@ export function DepositForm({
   return (
     <form
       className="flex flex-col px-5 gap-5"
-      onSubmit={(event) => {
+      onSubmit={async (event) => {
         event.preventDefault();
-        onSubmit?.();
+        // TODO: throw? require this now that we can pass in button?
+        if (!onSubmit) return;
+
+        console.log("unsetting amount");
+        const previousAmount = amount;
+        const previousInputValue = amountInputRef.current?.value;
+        setAmount(undefined);
+        if (amountInputRef.current) {
+          amountInputRef.current.value = "";
+        }
+
+        try {
+          await onSubmit();
+        } catch (error) {
+          setAmount(previousAmount);
+          if (previousInputValue != null && amountInputRef.current && amountInputRef.current.value === "") {
+            amountInputRef.current.value = previousInputValue;
+          }
+          throw error;
+        }
       }}
     >
       <div className="flex gap-2">
@@ -82,6 +94,7 @@ export function DepositForm({
           // Using the user's chain ID as the `key` here forces this to re-render when the chain switches,
           // thus causing this input to auto focus and reduces the need to click the input again.
           key={userChainId}
+          ref={amountInputRef}
           initialAmount={amount}
           onChange={setAmount}
         />
@@ -136,25 +149,7 @@ export function DepositForm({
 
       {/* TODO: show message when no balance */}
 
-      {shouldSwitchChain ? (
-        <Button
-          type="button"
-          className="w-full"
-          pending={switchChain.isPending}
-          onClick={() => switchChain.switchChain({ chainId: sourceChain.id })}
-        >
-          Switch chain
-        </Button>
-      ) : (
-        <Button
-          type="submit"
-          className="w-full"
-          pending={pending}
-          disabled={disabled || !onSubmit || balance.data?.value === 0n}
-        >
-          {submitButtonLabel}
-        </Button>
-      )}
+      {submitButton}
 
       {transactionStatus}
     </form>

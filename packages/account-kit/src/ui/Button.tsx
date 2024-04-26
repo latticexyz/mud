@@ -40,16 +40,15 @@ const buttonClassName = ({ size = "md", variant = "primary", pending = false }: 
     pending && "cursor-wait pointer-events-none",
   );
 
-type Props = {
-  children: React.ReactNode;
+export type ButtonProps = {
   pending?: boolean;
   variant?: ButtonClassNameOptions["variant"];
   size?: ButtonClassNameOptions["size"];
 };
 
-type ButtonProps = Props & DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
+export type Props = ButtonProps & DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
 
-export const Button = ({ pending, variant, size, type, className, children, disabled, ...props }: ButtonProps) => {
+export const Button = ({ pending, variant, size, type, className, children, disabled, ...props }: Props) => {
   return (
     <button
       type={type || "button"}

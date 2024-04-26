@@ -14,6 +14,7 @@ import { useAppChain } from "../../useAppChain";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getL2TransactionHashes, publicActionsL1, publicActionsL2, walletActionsL1 } from "viem/op-stack";
 import { BridgePendingTransactions } from "./BridgePendingTransactions";
+import { SubmitButton } from "./SubmitButton";
 
 export function DepositViaBridgeForm(props: Props) {
   const appChain = useAppChain();
@@ -65,19 +66,21 @@ export function DepositViaBridgeForm(props: Props) {
       {...props}
       estimatedFee={undefined}
       estimatedTime={undefined}
-      // TODO: rework to disable when idle (can't prepare)
-      // pending={simulate.isPending}
-      submitButtonLabel="Deposit via bridge"
-      pending={deposit.isPending}
-      // TODO: check for reverts on receipts
+      // TODO: figure out some better way to bubble this up to advance to next step
       isComplete={deposit.isSuccess && receiptL1.isSuccess && receiptL2.isSuccess}
-      onSubmit={
-        prepare.isSuccess
-          ? async () => {
-              await deposit.mutateAsync();
-            }
-          : undefined
+      submitButton={
+        // TODO: disable when prepare fails
+        <SubmitButton
+          sourceChainId={props.sourceChain.id}
+          disabled={prepare.isError}
+          pending={prepare.isLoading || deposit.isPending || receiptL1.isLoading || receiptL2.isLoading}
+        >
+          Deposit via bridge
+        </SubmitButton>
       }
+      onSubmit={async () => {
+        await deposit.mutateAsync();
+      }}
       transactionStatus={<BridgePendingTransactions receiptL1={receiptL1} receiptL2={receiptL2} />}
     />
   );
