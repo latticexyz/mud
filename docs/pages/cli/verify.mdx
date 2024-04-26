@@ -5,17 +5,6 @@ The repository then compiles the source code and verifies that the compiled vers
 
 ## Using the command
 
-1. Before you run `mud verify` you need to create a [Foundry profile](https://book.getfoundry.sh/reference/config/overview).
-   Change to the `packages/contract` directory and edit `foundry.toml` to add a profile with the `eth_rpc_url` for your network (if needed).
-   For example, add these lines to add Holesky.
-
-   ```toml copy
-   [profile.holesky]
-   eth_rpc_url = "https://ethereum-holesky.publicnode.com"
-   ```
-
-   Note that this blockchain has to be supported by the verifier.
-
 1. If using Blockscout, you need to specify the API key:
 
    ```sh copy
@@ -25,20 +14,20 @@ The repository then compiles the source code and verifies that the compiled vers
 1. Run the command.
 
    ```sh copy
-   pnpm mud verify --worldAddress <address here> --verifier <verifier> --profle <profile>
+   pnpm mud verify --worldAddress <address here> --verifier <verifier> --rpc <RPC to the blockchain>
    ```
 
    These are the command line options you can specify on `mud verify`:
 
-   | Option           | Meaning                                                  | Type    | Default value                |
-   | ---------------- | -------------------------------------------------------- | ------- | ---------------------------- |
+   | Option           | Meaning                                                | Type    | Default value                |
+   | ---------------- | ------------------------------------------------------ | ------- | ---------------------------- |
    | `--worldAddress` | Verify the contracts of the World at the given address | string  | none, error if unspecified   |
-   | `--version`      | Show version number                                      | boolean | `false`                      |
-   | `--configPath`   | Path to the config file                                  | string  | `mud.config.ts`              |
-   | `--verifier`     | The verifier to use (`sourcify`, or `blockscout`)        | string  |                              |
-   | `--verifierUrl`  | URL to use to access the verifier's API                  | string  | depends on the verifier used |
-   | `--profile`      | The foundry profile to use                               | string  | `local`                      |
-   | `--srcDir`       | Source directory                                         | string  | Foundry `src` directory      |
+   | `--configPath`   | Path to the config file                                | string  | `mud.config.ts`              |
+   | `--verifier`     | The verifier to use (`sourcify`, or `blockscout`)      | string  |                              |
+   | `--verifierUrl`  | URL to use to access the verifier's API                | string  | depends on the verifier used |
+   | `--profile`      | The foundry profile to use                             | string  | `local`                      |
+   | `--srcDir`       | Source directory                                       | string  | Foundry `src` directory      |
+   | `--version`      | Show version number                                    | boolean | `false`                      |
 
    Note that it takes block explorers some time to process new contracts.
    You should wait 5-10 minutes past deployment before you verify the contract on Etherscan and/or Blockscout.
@@ -49,7 +38,7 @@ The repository then compiles the source code and verifies that the compiled vers
 
   ```sh
   WORLD_ADDRESS=0x816038e244ff78b86a5e7dec9bf281634fb6d2a2
-  pnpm mud verify --profile holesky --worldAddress $WORLD_ADDRESS --verifier sourcify
+  pnpm mud verify --rpc https://ethereum-holesky.publicnode.com --worldAddress $WORLD_ADDRESS --verifier sourcify
   ```
 
 - To verify on Holesky on [Blockscout](https://www.blockscout.com/):
@@ -57,5 +46,5 @@ The repository then compiles the source code and verifies that the compiled vers
   ```sh
   WORLD_ADDRESS=0x816038e244ff78b86a5e7dec9bf281634fb6d2a2
   export ETHERSCAN_API_KEY= ** blockscout API key goes here **
-  pnpm mud verify --profile holesky --worldAddress $WORLD_ADDRESS --verifier blockscout --verifier-url 'https://eth-holesky.blockscout.com/api?'
+  pnpm mud verify --rpc https://ethereum-holesky.publicnode.com --worldAddress $WORLD_ADDRESS --verifier blockscout --verifier-url 'https://eth-holesky.blockscout.com/api?'
   ```
