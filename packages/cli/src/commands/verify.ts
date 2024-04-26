@@ -97,7 +97,6 @@ const commandModule: CommandModule<Options, Options> = {
     await verify({
       client,
       rpc,
-      foundryProfile: profile,
       systems,
       modules,
       deployerAddress: opts.deployerAddress as Hex | undefined,
