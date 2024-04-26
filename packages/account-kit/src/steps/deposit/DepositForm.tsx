@@ -49,8 +49,6 @@ export function DepositForm({
 
   const amountInputRef = useRef<HTMLInputElement | null>(null);
 
-  // console.log("switchChain", switchChain.status, switchChain.error);
-
   const selectedMethod = sourceChain.depositMethods.includes(depositMethod)
     ? depositMethod
     : sourceChain.depositMethods[0];
@@ -66,10 +64,7 @@ export function DepositForm({
       className="flex flex-col px-5 gap-5"
       onSubmit={async (event) => {
         event.preventDefault();
-        // TODO: throw? require this now that we can pass in button?
-        if (!onSubmit) return;
 
-        console.log("unsetting amount");
         const previousAmount = amount;
         const previousInputValue = amountInputRef.current?.value;
         setAmount(undefined);
@@ -138,8 +133,6 @@ export function DepositForm({
         <dt>Time to deposit</dt>
         <dd>{estimatedTime}</dd>
       </dl>
-
-      {/* TODO: show message when no balance */}
 
       {balance.data != null && amount != null && balance.data.value < amount + (estimatedFee ?? 0n) ? (
         <SubmitButton disabled>Not enough funds</SubmitButton>
