@@ -20,10 +20,6 @@ export const redstone = {
       name: "Blockscout",
       url: "https://explorer.redstone.xyz",
     },
-    blockscout: {
-      name: "Blockscout",
-      url: "https://redstone.blockscout.com",
-    },
   },
   contracts: {
     multicall3: {
