@@ -3,10 +3,10 @@
 !out/**/*.json
 !out/**/*.abi.json
 !out/**/*.abi.json.d.ts
+!cache/solidity-files-cache.json
 !src/**
 !ts/**
 !mud.config.ts
 !package.json
 !README.md
 !dist/**
-!cache/solidity-files-cache.json
