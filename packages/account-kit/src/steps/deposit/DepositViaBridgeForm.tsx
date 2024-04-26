@@ -44,7 +44,7 @@ export function DepositViaBridgeForm(props: Props) {
     },
   });
 
-  console.log("prepare", prepare);
+  // console.log("prepare", prepare);
 
   // TODO: estimate
 
@@ -58,7 +58,7 @@ export function DepositViaBridgeForm(props: Props) {
     hash: receiptL1.data ? getL2TransactionHashes(receiptL1.data)[0] : undefined,
   });
 
-  console.log("deposit", deposit.isPending, deposit.isPaused, deposit.isIdle);
+  // console.log("deposit", deposit.isPending, deposit.isPaused, deposit.isIdle);
 
   return (
     <DepositForm

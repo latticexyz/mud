@@ -1,8 +1,7 @@
+import { Chain } from "viem";
 import { chainConfig } from "viem/op-stack";
-import { holesky } from "viem/chains";
-import type { MUDChain } from "./types";
 
-const sourceId = holesky.id;
+const sourceId = 17000;
 
 export const garnet = {
   ...chainConfig,
@@ -30,4 +29,4 @@ export const garnet = {
       },
     },
   },
-} as const satisfies MUDChain;
+} as const satisfies Chain;

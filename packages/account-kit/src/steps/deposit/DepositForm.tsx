@@ -56,6 +56,8 @@ export function DepositForm({
   const { resetStep } = useOnboardingSteps();
   const balance = useBalance({ chainId: sourceChain.id, address: userAddress });
 
+  // console.log("switchChain", switchChain.status, switchChain.error);
+
   const selectedMethod = sourceChain.depositMethods.includes(depositMethod)
     ? depositMethod
     : sourceChain.depositMethods[0];
