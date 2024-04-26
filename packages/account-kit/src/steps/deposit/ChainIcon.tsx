@@ -1,5 +1,6 @@
 import { twMerge } from "tailwind-merge";
 import { PreloadedImage } from "./PreloadedImage";
+import { forwardRef } from "react";
 
 export type Props = {
   id: number;
@@ -8,9 +9,12 @@ export type Props = {
   className?: string;
 };
 
-export function ChainIcon({ name, url, className }: Props) {
+export const ChainIcon = forwardRef<HTMLSpanElement, Props>(function ChainIcon({ name, url, className }, forwardedRef) {
   return (
-    <span className={twMerge("flex-shrink-0 inline-flex w-6 aspect-square rounded-full overflow-clip", className)}>
+    <span
+      ref={forwardedRef}
+      className={twMerge("flex-shrink-0 inline-flex w-6 aspect-square rounded-full overflow-clip", className)}
+    >
       {url ? (
         <PreloadedImage url={url} />
       ) : (
@@ -26,4 +30,4 @@ export function ChainIcon({ name, url, className }: Props) {
       )}
     </span>
   );
-}
+});

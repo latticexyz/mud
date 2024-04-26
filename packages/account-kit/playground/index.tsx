@@ -10,7 +10,6 @@ import { AccountKitConfigProvider } from "../src/AccountKitConfigProvider";
 import { App } from "./App";
 import { createClient, http } from "viem";
 import { chains } from "../src/exports/chains";
-import { baseSepolia } from "viem/chains";
 
 const queryClient = new QueryClient();
 
