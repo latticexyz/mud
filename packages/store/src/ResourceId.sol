@@ -45,4 +45,13 @@ library ResourceIdInstance {
   function getType(ResourceId resourceId) internal pure returns (bytes2) {
     return bytes2(ResourceId.unwrap(resourceId));
   }
+
+  /**
+   * @notice Get the name from a resource ID.
+   * @param resourceId The resource ID.
+   * @return A 30-byte name.
+   */
+  function getResourceName(ResourceId resourceId) internal pure returns (bytes30) {
+    return bytes30(ResourceId.unwrap(resourceId) << (TYPE_BITS));
+  }
 }

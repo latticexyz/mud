@@ -3,7 +3,6 @@ import { debug as parentDebug } from "./debug";
 import { getNonceManagerId } from "./getNonceManagerId";
 import { getTransactionCount } from "viem/actions";
 import PQueue from "p-queue";
-import { getAction } from "viem/utils";
 
 const debug = parentDebug.extend("createNonceManager");
 
@@ -66,8 +65,7 @@ export function createNonceManager({
   }
 
   async function resetNonce(): Promise<void> {
-    const nonce = await getAction(client, getTransactionCount, "getTransactionCount")({ address, blockTag });
-
+    const nonce = await getTransactionCount(client, { address, blockTag });
     nonceRef.current = nonce;
     channel?.postMessage(JSON.stringify(nonceRef.current));
     debug("reset nonce to", nonceRef.current);

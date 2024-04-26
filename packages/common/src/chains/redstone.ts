@@ -1,8 +1,7 @@
 import { chainConfig } from "viem/op-stack";
-import { mainnet } from "viem/chains";
 import type { MUDChain } from "./types";
 
-const sourceId = mainnet.id;
+const sourceId = 1; // Ethereum mainnet
 
 export const redstone = {
   ...chainConfig,
@@ -19,15 +18,12 @@ export const redstone = {
   blockExplorers: {
     default: {
       name: "Blockscout",
-      url: "https://explorer.redstonechain.com",
+      url: "https://explorer.redstone.xyz",
     },
   },
   contracts: {
-    portal: {
-      [sourceId]: {
-        // TODO
-        address: "0x",
-      },
+    multicall3: {
+      address: "0xca11bde05977b3631167028862be2a173976ca11",
     },
   },
 } as const satisfies MUDChain;

@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.0.7
+
+### Patch Changes
+
+- 534e7729: Made `worlds.json`'s `address` type more like viem's `Hex` type so it's easy to pass through as an argument.
+
 ## 2.0.6
 
 ### Patch Changes
