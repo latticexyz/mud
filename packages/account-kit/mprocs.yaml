@@ -1,7 +1,7 @@
 procs:
   client:
-    shell: pnpm vite dev dev
+    shell: pnpm vite dev playground
   anvil:
     # To hydrate `anvil-state.json`, run the anvil command below and then deploy a MUD world to it.
-    #   anvil --dump-state dev/anvil-state.json
-    shell: anvil --block-time 2 --load-state dev/anvil-state.json
+    #   anvil --dump-state playground/anvil-state.json
+    shell: anvil --block-time 2 --load-state playground/anvil-state.json

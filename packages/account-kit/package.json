@@ -36,7 +36,7 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch & vite build --watch",
-    "dev:server": "mprocs",
+    "playground": "mprocs",
     "local-bundler": "pnpx tsx cli/local-bundler.ts",
     "test": "tsc --noEmit && vitest",
     "test:ci": "tsc --noEmit && vitest --run"
