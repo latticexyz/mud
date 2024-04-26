@@ -3,13 +3,13 @@ import { Callout } from "nextra/components";
 
 # Upgrading worlds
 
-The [tables](./tables) and [`System`s](./systems) can be upgraded without changing the underlying `World` code.
+The [`System`s](./systems) can be upgraded without changing the underlying `World` code.
 However, if the `World` was deployed [behind a proxy](/config#upgradeableWorldImplementation) it is also possible to upgrade the `World` itself.
-This will be useful in the future as we further develop MUD, adding features and fixing bugs.
+This allows you to upgrade to a future version if MUD, but adds some gas overhead for all calls (due to one more level of indirection).
 
 ## Are upgrades possible?
 
-As per [ERC-1967](https://eips.ethereum.org/EIPS/eip-1967#logic-contract-address), the storage slot `0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc` stores the address of the actual `World` contract in a proxy.
+As per [ERC-1967](https://eips.ethereum.org/EIPS/eip-1967#logic-contract-address), the storage slot `0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc` stores the address of the `World` implementation in a proxy.
 So to identify if a `World` is deployed behind a proxy run these commands:
 
 ```sh copy
@@ -19,7 +19,7 @@ cast implementation $WORLD_ADDRESS
 
 If the answer is anything other than zero, the `World` is behind a proxy and can be upgraded.
 
-## The actual upgrade
+## Performing an upgrade
 
 To upgrade the `World` use these steps in a `package/contracts` directory:
 
