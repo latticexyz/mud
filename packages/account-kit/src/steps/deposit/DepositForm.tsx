@@ -78,7 +78,13 @@ export function DepositForm({
     >
       <div className="flex gap-2">
         <ChainSelect value={sourceChain.id} onChange={setSourceChainId} />
-        <AmountInput initialAmount={amount} onChange={setAmount} />
+        <AmountInput
+          // Using the user's chain ID as the `key` here forces this to re-render when the chain switches,
+          // thus causing this input to auto focus and reduces the need to click the input again.
+          key={userChainId}
+          initialAmount={amount}
+          onChange={setAmount}
+        />
       </div>
 
       {sourceChain.depositMethods.length > 1 ? (
