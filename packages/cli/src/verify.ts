@@ -49,7 +49,7 @@ export async function verify({
   });
   const usesProxy = implementationStorage && implementationStorage !== zeroHash;
 
-  const verifyQueue = new PQueue({ concurrency: 1 });
+  const verifyQueue = new PQueue({ concurrency: 4 });
 
   systems.map(({ name, bytecode }) =>
     verifyQueue.add(() =>
