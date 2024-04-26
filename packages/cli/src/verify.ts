@@ -104,7 +104,6 @@ export async function verify({
             }),
           },
           {
-            profile: foundryProfile,
             cwd: "node_modules/@latticexyz/world",
           },
         ).catch((error) => {
@@ -128,7 +127,6 @@ export async function verify({
             }),
           },
           {
-            profile: foundryProfile,
             cwd: "node_modules/@latticexyz/world-modules",
           },
         ).catch((error) => {
@@ -145,7 +143,6 @@ export async function verify({
         verifyContract(
           { name: "WorldProxy", rpc, verifier, verifierUrl, address: worldAddress },
           {
-            profile: foundryProfile,
             cwd: "node_modules/@latticexyz/world",
           },
         ).catch((error) => {
@@ -157,7 +154,6 @@ export async function verify({
         verifyContract(
           { name: "World", rpc, verifier, verifierUrl, address: implementationAddress },
           {
-            profile: foundryProfile,
             cwd: "node_modules/@latticexyz/world",
           },
         ).catch((error) => {
@@ -169,7 +165,6 @@ export async function verify({
         verifyContract(
           { name: "World", rpc, verifier, verifierUrl, address: worldAddress },
           {
-            profile: foundryProfile,
             cwd: "node_modules/@latticexyz/world",
           },
         ).catch((error) => {
