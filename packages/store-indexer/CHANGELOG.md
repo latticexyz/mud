@@ -1,5 +1,22 @@
 # @latticexyz/store-indexer
 
+## 2.0.7
+
+### Patch Changes
+
+- 27c4fdee: Add Prometheus metrics at `/metrics` to the Postgres indexer backend and frontend, as well as the SQLite indexer.
+- Updated dependencies [375d902e]
+- Updated dependencies [bf16e729]
+- Updated dependencies [16695fea]
+- Updated dependencies [38c61158]
+- Updated dependencies [ed404b7d]
+- Updated dependencies [f736c43d]
+  - @latticexyz/common@2.0.7
+  - @latticexyz/block-logs-stream@2.0.7
+  - @latticexyz/store-sync@2.0.7
+  - @latticexyz/store@2.0.7
+  - @latticexyz/protocol-parser@2.0.7
+
 ## 2.0.6
 
 ### Patch Changes

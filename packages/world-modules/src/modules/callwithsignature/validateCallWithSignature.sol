@@ -6,6 +6,7 @@ import { CallWithSignatureNonces } from "./tables/CallWithSignatureNonces.sol";
 import { getSignedMessageHash } from "./getSignedMessageHash.sol";
 import { ECDSA } from "./ECDSA.sol";
 import { IUnstable_CallWithSignatureErrors } from "./IUnstable_CallWithSignatureErrors.sol";
+import { SignatureChecker } from "./SignatureChecker.sol";
 
 /**
  * @notice Verifies the given system call corresponds to the given signature.
@@ -24,9 +25,7 @@ function validateCallWithSignature(
   uint256 nonce = CallWithSignatureNonces._get(signer);
   bytes32 hash = getSignedMessageHash(signer, systemId, callData, nonce, WorldContextConsumerLib._world());
 
-  // If the message was not signed by the delegator or is invalid, revert
-  address recoveredSigner = ECDSA.recover(hash, signature);
-  if (recoveredSigner != signer) {
-    revert IUnstable_CallWithSignatureErrors.InvalidSignature(recoveredSigner);
+  if (!SignatureChecker.isValidSignatureNow(signer, hash, signature)) {
+    revert IUnstable_CallWithSignatureErrors.InvalidSignature();
   }
 }

@@ -15,6 +15,7 @@ import { getChainId } from "viem/actions";
 import { postDeploy } from "./utils/postDeploy";
 import { WorldDeploy } from "./deploy/common";
 import { build } from "./build";
+import { kmsKeyToAccount } from "@latticexyz/common/kms";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the MUD config file" },
@@ -37,9 +38,14 @@ export const deployOptions = {
     type: "boolean",
     desc: "Always run PostDeploy.s.sol after each deploy (including during upgrades). By default, PostDeploy.s.sol is only run once after a new world is deployed.",
   },
+  forgeScriptOptions: { type: "string", description: "Options to pass to forge script PostDeploy.s.sol" },
   salt: {
     type: "string",
     desc: "The deployment salt to use. Defaults to a random salt.",
+  },
+  awsKmsKeyId: {
+    type: "string",
+    desc: "Optional AWS KMS key ID. If set, the World is deployed using a KMS signer instead of local private key.",
   },
 } as const satisfies Record<string, Options>;
 
@@ -89,6 +95,9 @@ in your contracts directory to use the default anvil private key.`,
 
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
 
+  const keyId = opts.awsKmsKeyId ?? process.env.AWS_KMS_KEY_ID;
+  const account = keyId ? await kmsKeyToAccount({ keyId }) : privateKeyToAccount(privateKey);
+
   const client = createWalletClient({
     transport: http(rpc, {
       batch: opts.rpcBatch
@@ -98,7 +107,7 @@ in your contracts directory to use the default anvil private key.`,
           }
         : undefined,
     }),
-    account: privateKeyToAccount(privateKey),
+    account,
   });
 
   console.log("Deploying from", client.account.address);
@@ -110,10 +119,10 @@ in your contracts directory to use the default anvil private key.`,
     worldAddress: opts.worldAddress as Hex | undefined,
     client,
     config: resolvedConfig,
-    withWorldProxy: configV2.deploy.useProxy,
+    withWorldProxy: configV2.deploy.upgradeableWorldImplementation,
   });
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
-    await postDeploy(config.postDeployScript, worldDeploy.address, rpc, profile);
+    await postDeploy(config.postDeployScript, worldDeploy.address, rpc, profile, opts.forgeScriptOptions);
   }
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
 

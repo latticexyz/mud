@@ -41,8 +41,8 @@ export type Deploy = {
   readonly deploysDirectory: string;
   /** JSON file to write to with chain -> latest world deploy address (Default "./worlds.json") */
   readonly worldsFile: string;
-  /** Deploy the World as an upgradable proxy */
-  readonly useProxy: boolean;
+  /** Deploy the World as an upgradeable proxy */
+  readonly upgradeableWorldImplementation: boolean;
 };
 
 export type Codegen = {

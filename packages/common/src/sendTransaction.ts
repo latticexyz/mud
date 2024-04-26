@@ -13,6 +13,7 @@ import pRetry from "p-retry";
 import { debug as parentDebug } from "./debug";
 import { getNonceManager } from "./getNonceManager";
 import { parseAccount } from "viem/accounts";
+import { getFeeRef } from "./getFeeRef";
 
 const debug = parentDebug.extend("sendTransaction");
 
@@ -49,12 +50,19 @@ export async function sendTransaction<
     throw new Error("No account provided");
   }
   const account = parseAccount(rawAccount);
+  const chain = client.chain;
 
   const nonceManager = await getNonceManager({
     client: opts.publicClient ?? client,
     address: account.address,
     blockTag: "pending",
     queueConcurrency: opts.queueConcurrency,
+  });
+
+  const feeRef = await getFeeRef({
+    client: opts.publicClient ?? client,
+    refreshInterval: 10000,
+    args: { chain },
   });
 
   async function prepare(): Promise<SendTransactionParameters<chain, account, chainOverride>> {
@@ -85,7 +93,11 @@ export async function sendTransaction<
 
           const nonce = nonceManager.nextNonce();
           debug("sending tx with nonce", nonce, "to", preparedRequest.to);
-          const parameters: SendTransactionParameters<chain, account, chainOverride> = { nonce, ...preparedRequest };
+          const parameters: SendTransactionParameters<chain, account, chainOverride> = {
+            ...preparedRequest,
+            nonce,
+            ...feeRef.fees,
+          };
           return await viem_sendTransaction(client, parameters);
         },
         {

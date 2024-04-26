@@ -46,25 +46,30 @@ const { storageAdapter, tables } = await createStorageAdapter({ database, public
 
 let startBlock = env.START_BLOCK;
 
-// Resume from latest block stored in DB. This will throw if the DB doesn't exist yet, so we wrap in a try/catch and ignore the error.
-// TODO: query if the DB exists instead of try/catch
-try {
-  const chainState = await database
-    .select()
-    .from(tables.configTable)
-    .where(eq(tables.configTable.chainId, chainId))
-    .limit(1)
-    .execute()
-    // Get the first record in a way that returns a possible `undefined`
-    // TODO: move this to `.findFirst` after upgrading drizzle or `rows[0]` after enabling `noUncheckedIndexedAccess: true`
-    .then((rows) => rows.find(() => true));
+async function getLatestStoredBlockNumber(): Promise<bigint | undefined> {
+  // Fetch latest block stored in DB. This will throw if the DB doesn't exist yet, so we wrap in a try/catch and ignore the error.
+  // TODO: query if the DB exists instead of try/catch
+  try {
+    const chainState = await database
+      .select()
+      .from(tables.configTable)
+      .where(eq(tables.configTable.chainId, chainId))
+      .limit(1)
+      .execute()
+      // Get the first record in a way that returns a possible `undefined`
+      // TODO: move this to `.findFirst` after upgrading drizzle or `rows[0]` after enabling `noUncheckedIndexedAccess: true`
+      .then((rows) => rows.find(() => true));
 
-  if (chainState?.blockNumber != null) {
-    startBlock = chainState.blockNumber + 1n;
-    console.log("resuming from block number", startBlock);
+    return chainState?.blockNumber;
+  } catch (error) {
+    // ignore errors for now
   }
-} catch (error) {
-  // ignore errors for now
+}
+
+const latestStoredBlockNumber = await getLatestStoredBlockNumber();
+if (latestStoredBlockNumber != null) {
+  startBlock = latestStoredBlockNumber + 1n;
+  console.log("resuming from block number", startBlock);
 }
 
 const { latestBlockNumber$, storedBlockLogs$ } = await createStoreSync({
@@ -96,6 +101,7 @@ if (env.HEALTHCHECK_HOST != null || env.HEALTHCHECK_PORT != null) {
   const { default: Koa } = await import("koa");
   const { default: cors } = await import("@koa/cors");
   const { healthcheck } = await import("../src/koa-middleware/healthcheck");
+  const { metrics } = await import("../src/koa-middleware/metrics");
   const { helloWorld } = await import("../src/koa-middleware/helloWorld");
 
   const server = new Koa();
@@ -104,6 +110,14 @@ if (env.HEALTHCHECK_HOST != null || env.HEALTHCHECK_PORT != null) {
   server.use(
     healthcheck({
       isReady: () => isCaughtUp,
+    }),
+  );
+  server.use(
+    metrics({
+      isHealthy: () => true,
+      isReady: () => isCaughtUp,
+      getLatestStoredBlockNumber,
+      followBlockTag: env.FOLLOW_BLOCK_TAG,
     }),
   );
   server.use(helloWorld());
