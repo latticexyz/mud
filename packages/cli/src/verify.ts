@@ -168,7 +168,9 @@ export async function verify({
     }
   } else {
     console.log("");
-    console.log(`MUD is unable to verify dependent contracts for ${verifier}`);
+    console.log(
+      `Note: MUD is currently unable to verify store, world, and world-modules contracts with ${verifier}. We are planning to expand support in a future version.`,
+    );
     console.log("");
   }
 }
