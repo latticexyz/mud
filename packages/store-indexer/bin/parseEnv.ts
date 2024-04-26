@@ -14,8 +14,7 @@ export const indexerEnvSchema = z.intersection(
     POLLING_INTERVAL: z.coerce.number().positive().default(1000),
     STORE_ADDRESS: z
       .string()
-      .transform((input) => (input === "" ? undefined : input))
-      .refine(isHex)
+      .refine((value) => value === "" || isHex(value))
       .optional(),
   }),
   z.union([
