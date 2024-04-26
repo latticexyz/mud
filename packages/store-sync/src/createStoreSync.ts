@@ -26,7 +26,6 @@ import {
   shareReplay,
   combineLatest,
   scan,
-  identity,
   mergeMap,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
@@ -199,9 +198,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
       startBlock = range.startBlock;
       endBlock = range.endBlock;
     }),
-    // We use `map` instead of `concatMap` here to send the fetch request immediately when a new block range appears,
-    // instead of sending the next request only when the previous one completed.
-    map((range) => {
+    concatMap((range) => {
       const storedBlocks = fetchAndStoreLogs({
         publicClient,
         address,
@@ -217,8 +214,6 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
 
       return from(storedBlocks);
     }),
-    // `concatMap` turns the stream of promises into their awaited values
-    concatMap(identity),
     tap(({ blockNumber, logs }) => {
       debug("stored", logs.length, "logs for block", blockNumber);
       lastBlockNumberProcessed = blockNumber;

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store-indexer",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "Minimal Typescript indexer for Store",
   "repository": {
     "type": "git",
@@ -59,6 +59,7 @@
     "koa": "^2.14.2",
     "koa-compose": "^4.1.0",
     "postgres": "3.3.5",
+    "prom-client": "^15.1.2",
     "rxjs": "7.5.5",
     "superjson": "^1.12.4",
     "trpc-koa-adapter": "^1.1.3",
