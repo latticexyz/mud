@@ -12,7 +12,7 @@ import { execa } from "execa";
 type VerifyOptions = {
   client: Client<Transport, Chain | undefined>;
   rpc: string;
-  verifier?: string;
+  verifier: string;
   verifierUrl?: string;
   systems: { name: string; bytecode: Hex }[];
   modules: { name: string; bytecode: Hex }[];
@@ -166,5 +166,9 @@ export async function verify({
         }),
       );
     }
+  } else {
+    console.log("");
+    console.log(`MUD is unable to verify dependent contracts for ${verifier}`);
+    console.log("");
   }
 }
