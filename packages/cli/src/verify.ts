@@ -107,12 +107,14 @@ export async function verify({
       ),
     );
   }
+
   {
     const cwd = "node_modules/@latticexyz/world-modules";
 
     await execa("npm", ["install"], {
       cwd,
     });
+
     modules.map(({ name, bytecode }) =>
       verifyQueue.add(() =>
         verifyContract(
@@ -140,10 +142,6 @@ export async function verify({
 
   {
     const cwd = "node_modules/@latticexyz/world";
-
-    await execa("npm", ["install"], {
-      cwd,
-    });
 
     // If the world was deployed as a Proxy, verify the proxy and implementation.
     if (usesProxy) {
