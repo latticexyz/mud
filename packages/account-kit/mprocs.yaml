@@ -5,3 +5,6 @@ procs:
     # To hydrate `anvil-state.json`, run the anvil command below and then deploy a MUD world to it.
     #   anvil --dump-state playground/anvil-state.json
     shell: anvil --block-time 2 --load-state playground/anvil-state.json
+  mud:
+    cwd: ../..
+    shell: pnpm run dev --filter=!@latticexyz/account-kit
