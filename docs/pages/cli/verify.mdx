@@ -1,7 +1,7 @@
 # mud verify
 
 This command uploads the source code for the deployed contracts to a public repository, such as a block explorer.
-The repository then compiles the source code and verifies that the compiled version is identical to what is deployed on-chain.
+The repository then compiles the source code and verifies that the compiled version is identical to what is deployed onchain.
 
 ## Using the command
 
@@ -32,11 +32,11 @@ The repository then compiles the source code and verifies that the compiled vers
 
    | Option           | Meaning                                                  | Type    | Default value                |
    | ---------------- | -------------------------------------------------------- | ------- | ---------------------------- |
-   | `--worldAddress` | Verify the contracts of the `World` at the given address | string  | none, error if unspecified   |
+   | `--worldAddress` | Verify the contracts of the World at the given address | string  | none, error if unspecified   |
    | `--version`      | Show version number                                      | boolean | `false`                      |
    | `--configPath`   | Path to the config file                                  | string  | `mud.config.ts`              |
    | `--verifier`     | The verifier to use (`sourcify`, or `blockscout`)        | string  |                              |
-   | `--verifierURL`  | URL to use to access the verifier's API                  | string  | depends on the verifier used |
+   | `--verifierUrl`  | URL to use to access the verifier's API                  | string  | depends on the verifier used |
    | `--profile`      | The foundry profile to use                               | string  | `local`                      |
    | `--srcDir`       | Source directory                                         | string  | Foundry `src` directory      |
 
