@@ -59,7 +59,6 @@
     "abitype": "1.0.0",
     "debug": "^4.3.4",
     "execa": "^7.0.0",
-    "itty-time": "^1.0.6",
     "p-retry": "^5.1.2",
     "permissionless": "^0.1.17",
     "react": "^18.2.0",

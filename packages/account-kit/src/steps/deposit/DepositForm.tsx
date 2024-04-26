@@ -5,11 +5,11 @@ import { useOnboardingSteps } from "../../useOnboardingSteps";
 import { useQueryClient } from "@tanstack/react-query";
 import { twMerge } from "tailwind-merge";
 import { PendingIcon } from "../../icons/PendingIcon";
-import { duration } from "itty-time";
 import { formatBalance } from "./formatBalance";
 import { formatGas } from "./formatGas";
 import { DepositMethod, SourceChain } from "./common";
 import { ReactNode, useEffect, useRef } from "react";
+import { SubmitButton } from "./SubmitButton";
 
 export const DEFAULT_DEPOSIT_AMOUNT = 0.005;
 
@@ -21,7 +21,7 @@ export type Props = {
   depositMethod: DepositMethod;
   setDepositMethod: (depositMethod: DepositMethod) => void;
   estimatedFee?: bigint | undefined;
-  estimatedTime?: number | undefined;
+  estimatedTime: string;
   submitButton: ReactNode;
   onSubmit: () => Promise<void>;
   isComplete?: boolean;
@@ -136,20 +136,16 @@ export function DepositForm({
         <dt>Estimated fee</dt>
         <dd>{estimatedFee ? <>{formatGas(estimatedFee)} gwei</> : <PendingIcon className="inline-block text-xs" />}</dd>
         <dt>Time to deposit</dt>
-        <dd>
-          {estimatedTime == null ? (
-            <PendingIcon className="inline-block text-xs" />
-          ) : estimatedTime === 0 ? (
-            <>Instant</>
-          ) : (
-            <>{duration(estimatedTime * 1000, { parts: 1 })}</>
-          )}
-        </dd>
+        <dd>{estimatedTime}</dd>
       </dl>
 
       {/* TODO: show message when no balance */}
 
-      {submitButton}
+      {balance.data != null && amount != null && balance.data.value < amount + (estimatedFee ?? 0n) ? (
+        <SubmitButton disabled>Not enough funds</SubmitButton>
+      ) : (
+        submitButton
+      )}
 
       {transactionStatus}
     </form>

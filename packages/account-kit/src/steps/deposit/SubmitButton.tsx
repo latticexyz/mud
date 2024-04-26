@@ -3,12 +3,12 @@ import { Button, type Props as ButtonProps } from "../../ui/Button";
 import { twMerge } from "tailwind-merge";
 
 export type Props = Omit<ButtonProps, "type"> & {
-  sourceChainId: number;
+  chainId?: number | undefined;
 };
 
-export function SubmitButton({ sourceChainId, className, ...buttonProps }: Props) {
+export function SubmitButton({ chainId, className, ...buttonProps }: Props) {
   const { chainId: userChainId } = useAccount();
-  const shouldSwitchChain = userChainId !== sourceChainId;
+  const shouldSwitchChain = chainId != null && chainId !== userChainId;
   const switchChain = useSwitchChain();
 
   if (shouldSwitchChain) {
@@ -17,7 +17,7 @@ export function SubmitButton({ sourceChainId, className, ...buttonProps }: Props
         type="button"
         className={twMerge("w-full", className)}
         pending={switchChain.isPending}
-        onClick={() => switchChain.switchChain({ chainId: sourceChainId })}
+        onClick={() => switchChain.switchChain({ chainId })}
       >
         Switch chain
       </Button>

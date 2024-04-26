@@ -5,6 +5,8 @@ import { useMemo } from "react";
 import { isDefined } from "@latticexyz/common/utils";
 import { SourceChain } from "./common";
 
+// TODO: define list of chains we support for bridging? our bridge logic is very OP specific
+
 export function useSourceChains(): readonly SourceChain[] {
   const appChain = useAppChain();
   const chains = useChains();
@@ -16,21 +18,22 @@ export function useSourceChains(): readonly SourceChain[] {
 
   const sourceChains = useMemo(() => {
     return chains
-      .map((chain): SourceChain => {
-        const canBridge = appChain.sourceId === chain.id;
-        const relayChain = relayChains?.find((c) => c.id === chain.id);
+      .map((sourceChain): SourceChain => {
+        const canBridge = appChain.sourceId === sourceChain.id;
+        const relayChain = relayChains?.find((c) => c.id === sourceChain.id);
 
         const depositMethods = (
-          appChain.id === chain.id
+          appChain.id === sourceChain.id
             ? ["transfer"]
             : [
                 canBridge && portalAddress ? ("bridge" as const) : undefined,
-                canRelay && relayChain ? ("relay" as const) : undefined,
+                // TODO: enable relay once working
+                // canRelay && relayChain ? ("relay" as const) : undefined,
               ].filter(isDefined)
         ) satisfies SourceChain["depositMethods"];
 
         return {
-          ...chain,
+          ...sourceChain,
           depositMethods,
           // TODO: I think we can remove this for now since we're using viem's op-stack actions
           portalAddress: canBridge ? portalAddress : undefined,

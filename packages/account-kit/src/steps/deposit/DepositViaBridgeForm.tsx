@@ -60,12 +60,12 @@ export function DepositViaBridgeForm(props: Props) {
     <DepositForm
       {...props}
       estimatedFee={estimateFee.data && estimateGas.data ? estimateGas.data * estimateFee.data.maxFeePerGas : undefined}
-      estimatedTime={undefined}
+      estimatedTime="A few minutes"
       // TODO: figure out some better way to bubble this up to advance to next step
       isComplete={deposit.isSuccess && receiptL1.isSuccess && receiptL2.isSuccess}
       submitButton={
         <SubmitButton
-          sourceChainId={props.sourceChain.id}
+          chainId={props.sourceChain.id}
           disabled={prepare.isError}
           pending={prepare.isLoading || deposit.isPending || receiptL1.isLoading || receiptL2.isLoading}
         >

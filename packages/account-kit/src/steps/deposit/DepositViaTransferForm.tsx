@@ -29,10 +29,10 @@ export function DepositViaTransferForm(props: Props) {
     <DepositForm
       {...props}
       estimatedFee={prepared.data ? prepared.data.gas * prepared.data.maxFeePerGas : undefined}
-      estimatedTime={0}
+      estimatedTime="Instant"
       submitButton={
         <SubmitButton
-          sourceChainId={props.sourceChain.id}
+          chainId={props.sourceChain.id}
           disabled={!appAccountClient}
           pending={sendTransaction.isPending || receipt.isLoading}
         >

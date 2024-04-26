@@ -15,13 +15,9 @@ export function DepositViaRelayForm(props: Props) {
     <DepositForm
       {...props}
       estimatedFee={undefined}
-      estimatedTime={undefined}
+      estimatedTime="A few minutes"
       submitButton={
-        <SubmitButton
-          sourceChainId={props.sourceChain.id}
-          disabled={!appAccountClient}
-          pending={sendTransaction.isPending}
-        >
+        <SubmitButton chainId={props.sourceChain.id} disabled={!appAccountClient} pending={sendTransaction.isPending}>
           Deposit via Relay
         </SubmitButton>
       }

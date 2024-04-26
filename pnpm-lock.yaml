@@ -153,9 +153,6 @@ importers:
       execa:
         specifier: ^7.0.0
         version: 7.2.0
-      itty-time:
-        specifier: ^1.0.6
-        version: 1.0.6
       p-retry:
         specifier: ^5.1.2
         version: 5.1.2
@@ -12761,10 +12758,6 @@ packages:
       html-escaper: 2.0.2
       istanbul-lib-report: 3.0.0
     dev: true
-
-  /itty-time@1.0.6:
-    resolution: {integrity: sha512-+P8IZaLLBtFv8hCkIjcymZOp4UJ+xW6bSlQsXGqrkmJh7vSiMFSlNne0mCYagEE0N7HDNR5jJBRxwN0oYv61Rw==}
-    dev: false
 
   /jake@10.8.5:
     resolution: {integrity: sha512-sVpxYeuAhWt0OTWITwT98oyV0GsXyMlXCF+3L1SuafBVUIr/uILGRB+NqwkzhgXKvoJpDIpQvqkUALgdmQsQxw==}
