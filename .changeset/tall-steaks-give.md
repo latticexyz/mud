@@ -2,8 +2,8 @@
 "@latticexyz/common": patch
 ---
 
-Added Garnet chain config and deprecated Lattice Testnet.
+Added Garnet testnet and Redstone mainnet chain configs and deprecated Lattice Testnet.
 
 ```ts
-import { garnet } from "@latticexyz/common/chains";
+import { garnet, redstone } from "@latticexyz/common/chains";
 ```
