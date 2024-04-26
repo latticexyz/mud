@@ -1,10 +1,14 @@
-import { isHex } from "viem";
+import { Hex, isHex } from "viem";
 import { z, ZodError, ZodTypeAny } from "zod";
 
 export const frontendEnvSchema = z.object({
   HOST: z.string().default("0.0.0.0"),
   PORT: z.coerce.number().positive().default(3001),
 });
+
+function isHexOrUndefined(input: unknown): input is Hex | undefined {
+  return input === undefined || isHex(input);
+}
 
 export const indexerEnvSchema = z.intersection(
   z.object({
@@ -14,8 +18,9 @@ export const indexerEnvSchema = z.intersection(
     POLLING_INTERVAL: z.coerce.number().positive().default(1000),
     STORE_ADDRESS: z
       .string()
-      .refine((value) => value === "" || isHex(value))
-      .optional(),
+      .optional()
+      .transform((input) => (input === "" ? undefined : input))
+      .refine(isHexOrUndefined),
   }),
   z.union([
     z.object({
