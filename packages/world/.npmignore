@@ -10,3 +10,4 @@
 !package.json
 !README.md
 !dist/**
+!cache/solidity-files-cache.json
