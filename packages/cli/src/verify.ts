@@ -7,6 +7,7 @@ import { getDeployer } from "./deploy/getDeployer";
 import { MUDError } from "@latticexyz/common/errors";
 import { salt } from "./deploy/common";
 import { getStorageAt } from "viem/actions";
+import { execa } from "execa";
 
 type VerifyOptions = {
   client: Client<Transport, Chain | undefined>;
@@ -73,94 +74,116 @@ export async function verify({
     ),
   );
 
-  Object.entries(
-    usesProxy ? getWorldProxyFactoryContracts(deployerAddress) : getWorldFactoryContracts(deployerAddress),
-  ).map(([name, { bytecode }]) =>
-    verifyQueue.add(() =>
-      verifyContract(
-        {
-          name,
-          rpc,
-          verifier,
-          verifierUrl,
-          address: getCreate2Address({
-            from: deployerAddress,
-            bytecode: bytecode,
-            salt,
-          }),
-        },
-        {
-          profile: foundryProfile,
-          cwd: "node_modules/@latticexyz/world",
-        },
-      ).catch((error) => {
-        console.error(`Error verifying world factory contract ${name}:`, error);
-      }),
-    ),
-  );
+  {
+    const cwd = "node_modules/@latticexyz/world";
 
-  modules.map(({ name, bytecode }) =>
-    verifyQueue.add(() =>
-      verifyContract(
-        {
-          name: name,
-          rpc,
-          verifier,
-          verifierUrl,
-          address: getCreate2Address({
-            from: deployerAddress,
-            bytecode: bytecode,
-            salt,
-          }),
-        },
-        {
-          profile: foundryProfile,
-          cwd: "node_modules/@latticexyz/world-modules",
-        },
-      ).catch((error) => {
-        console.error(`Error verifying module contract ${name}:`, error);
-      }),
-    ),
-  );
+    await execa("npm", ["install"], {
+      cwd,
+    });
 
-  // If the world was deployed as a Proxy, verify the proxy and implementation.
-  if (usesProxy) {
-    const implementationAddress = sliceHex(implementationStorage, -20);
-
-    verifyQueue.add(() =>
-      verifyContract(
-        { name: "WorldProxy", rpc, verifier, verifierUrl, address: worldAddress },
-        {
-          profile: foundryProfile,
-          cwd: "node_modules/@latticexyz/world",
-        },
-      ).catch((error) => {
-        console.error(`Error verifying WorldProxy contract:`, error);
-      }),
+    Object.entries(
+      usesProxy ? getWorldProxyFactoryContracts(deployerAddress) : getWorldFactoryContracts(deployerAddress),
+    ).map(([name, { bytecode }]) =>
+      verifyQueue.add(() =>
+        verifyContract(
+          {
+            name,
+            rpc,
+            verifier,
+            verifierUrl,
+            address: getCreate2Address({
+              from: deployerAddress,
+              bytecode: bytecode,
+              salt,
+            }),
+          },
+          {
+            profile: foundryProfile,
+            cwd,
+          },
+        ).catch((error) => {
+          console.error(`Error verifying world factory contract ${name}:`, error);
+        }),
+      ),
     );
+  }
+  {
+    const cwd = "node_modules/@latticexyz/world-modules";
 
-    verifyQueue.add(() =>
-      verifyContract(
-        { name: "World", rpc, verifier, verifierUrl, address: implementationAddress },
-        {
-          profile: foundryProfile,
-          cwd: "node_modules/@latticexyz/world",
-        },
-      ).catch((error) => {
-        console.error(`Error verifying World contract:`, error);
-      }),
+    await execa("npm", ["install"], {
+      cwd,
+    });
+    modules.map(({ name, bytecode }) =>
+      verifyQueue.add(() =>
+        verifyContract(
+          {
+            name: name,
+            rpc,
+            verifier,
+            verifierUrl,
+            address: getCreate2Address({
+              from: deployerAddress,
+              bytecode: bytecode,
+              salt,
+            }),
+          },
+          {
+            profile: foundryProfile,
+            cwd,
+          },
+        ).catch((error) => {
+          console.error(`Error verifying module contract ${name}:`, error);
+        }),
+      ),
     );
-  } else {
-    verifyQueue.add(() =>
-      verifyContract(
-        { name: "World", rpc, verifier, verifierUrl, address: worldAddress },
-        {
-          profile: foundryProfile,
-          cwd: "node_modules/@latticexyz/world",
-        },
-      ).catch((error) => {
-        console.error(`Error verifying World contract:`, error);
-      }),
-    );
+  }
+
+  {
+    const cwd = "node_modules/@latticexyz/world";
+
+    await execa("npm", ["install"], {
+      cwd,
+    });
+
+    // If the world was deployed as a Proxy, verify the proxy and implementation.
+    if (usesProxy) {
+      const implementationAddress = sliceHex(implementationStorage, -20);
+
+      verifyQueue.add(() =>
+        verifyContract(
+          { name: "WorldProxy", rpc, verifier, verifierUrl, address: worldAddress },
+          {
+            profile: foundryProfile,
+            cwd,
+          },
+        ).catch((error) => {
+          console.error(`Error verifying WorldProxy contract:`, error);
+        }),
+      );
+
+      verifyQueue.add(() =>
+        verifyContract(
+          { name: "World", rpc, verifier, verifierUrl, address: implementationAddress },
+          {
+            profile: foundryProfile,
+            cwd,
+          },
+        ).catch((error) => {
+          console.error(`Error verifying World contract:`, error);
+        }),
+      );
+    } else {
+      verifyQueue.add(() =>
+        verifyContract(
+          { name: "World", rpc, verifier, verifierUrl, address: worldAddress },
+          {
+            profile: foundryProfile,
+            cwd: "node_modules/@latticexyz/world",
+          },
+        ).catch((error) => {
+          console.error(`Error verifying World contract:`, error);
+        }),
+      );
+    }
   }
 }
