@@ -3,13 +3,39 @@ import { Callout } from "nextra/components";
 
 # Upgrading worlds
 
-The [`System`s](./systems) can be upgraded without changing the underlying `World` code.
-However, if the `World` was deployed [behind a proxy](/config#upgradeableWorldImplementation) it is also possible to upgrade the `World` itself.
+The [`System`s](./systems) can be upgraded without changing the underlying `World` code, using [`mud deploy --worldAddress`](http://localhost:3000/cli/deploy#upgrading-a-world).
+However, you can also upgrade the `World` contract itself if the `World` was deployed [behind a proxy](/config#upgradeableWorldImplementation).
 This allows you to upgrade to a future version of MUD, but adds some gas overhead for all calls (due to one more level of indirection).
 
-## Are upgrades possible?
+## Making an upgradeable `World`
 
-As per [ERC-1967](https://eips.ethereum.org/EIPS/eip-1967#logic-contract-address), the storage slot `0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc` stores the address of the `World` implementation in a proxy.
+To make a `World` upgradeable, edit the [`mud.config.ts`](/config) file and set `deploy.upgradeableWorldImplementation` to `true`.
+
+<CollapseCode>
+
+```typescript filename="mud.config.ts" copy showLineNumbers {12-14}
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
+  tables: {
+    Counter: {
+      schema: {
+        value: "uint32",
+      },
+      key: [],
+    },
+  },
+  deploy: {
+    upgradeableWorldImplementation: true,
+  },
+});
+```
+
+</CollapseCode>
+
+## Testing if upgrades are possible
+
+As per [ERC-1967](https://eips.ethereum.org/EIPS/eip-1967#logic-contract-address), the storage slot `0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc` stores the address of the contract implementation in a proxy.
 So to identify if a `World` is deployed behind a proxy run these commands:
 
 ```sh copy
