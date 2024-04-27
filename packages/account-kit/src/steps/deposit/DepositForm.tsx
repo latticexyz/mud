@@ -134,7 +134,9 @@ export function DepositForm({
         <dd>{estimatedTime}</dd>
       </dl>
 
-      {balance.data != null && amount != null && balance.data.value < amount + (estimatedFee ?? 0n) ? (
+      {balance.data != null &&
+      amount != null &&
+      (balance.data.value === 0n || balance.data.value < amount + (estimatedFee ?? 0n)) ? (
         <SubmitButton disabled>Not enough funds</SubmitButton>
       ) : (
         submitButton

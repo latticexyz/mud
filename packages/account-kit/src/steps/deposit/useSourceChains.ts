@@ -27,8 +27,7 @@ export function useSourceChains(): readonly SourceChain[] {
             ? ["transfer"]
             : [
                 canBridge && portalAddress ? ("bridge" as const) : undefined,
-                // TODO: enable relay once working
-                // canRelay && relayChain ? ("relay" as const) : undefined,
+                canRelay && relayChain ? ("relay" as const) : undefined,
               ].filter(isDefined)
         ) satisfies SourceChain["depositMethods"];
 

@@ -2,7 +2,7 @@ import { useAccount, useDisconnect } from "wagmi";
 import { AccountModalSection } from "../../AccountModalSection";
 import { AccountModalTitle } from "../../AccoutModalTitle";
 import { useENS } from "../../useENS";
-import { TruncatedHex } from "../../ui/TruncateHex";
+import { TruncatedHex } from "../../ui/TruncatedHex";
 import { PendingIcon } from "../../icons/PendingIcon";
 import { Button } from "../../ui/Button";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
@@ -37,26 +37,28 @@ export function WalletStep() {
   return (
     <>
       <AccountModalTitle title="Your wallet" />
-      <AccountModalSection className="flex-grow">
-        <div className="flex-grow flex flex-col gap-5 p-5">
-          <p>
-            Hello,{" "}
-            {ens.name ? (
-              <span className="font-medium">{ens.name}</span>
-            ) : (
+      <AccountModalSection>
+        <div className="flex flex-col gap-5 p-5">
+          <div className="space-y-4">
+            <p>
+              Hello,{" "}
+              {ens.name ? (
+                <span className="font-medium">{ens.name}</span>
+              ) : (
+                <span className="text-sm font-mono font-medium">
+                  <TruncatedHex hex={userAddress} />
+                </span>
+              )}
+              !
+            </p>
+            <p>
+              Once signed in, your wallet address (
               <span className="text-sm font-mono font-medium">
                 <TruncatedHex hex={userAddress} />
               </span>
-            )}
-            !
-          </p>
-          <p>
-            Once signed in, your wallet address (
-            <span className="text-sm font-mono font-medium">
-              <TruncatedHex hex={userAddress} />
-            </span>
-            ) will be associated with all onchain actions for this app.
-          </p>
+              ) will be associated with all onchain actions for this app.
+            </p>
+          </div>
           <Button
             variant="secondary"
             className="self-start"

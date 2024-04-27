@@ -1,7 +1,7 @@
 import { Hex } from "viem";
 import { useENS } from "./useENS";
 import { Logo } from "./icons/Logo";
-import { TruncatedHex } from "./ui/TruncateHex";
+import { TruncatedHex } from "./ui/TruncatedHex";
 import { usePreloadImage } from "./usePreloadImage";
 import { twMerge } from "tailwind-merge";
 

@@ -59,9 +59,9 @@ export function useAccountRequirements(): UseAccountRequirementsResult {
     userAccount.status,
   ]);
 
-  useEffect(() => {
-    debug("useAccountRequirements requirements", requirements.requirements);
-  }, [requirements.requirements]);
+  // useEffect(() => {
+  //   debug("useAccountRequirements requirements", requirements.requirements);
+  // }, [requirements.requirements]);
 
   return requirements;
 }
