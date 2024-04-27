@@ -7,12 +7,12 @@ import { getDeployer } from "./deploy/getDeployer";
 import { MUDError } from "@latticexyz/common/errors";
 import { salt } from "./deploy/common";
 import { getStorageAt } from "viem/actions";
+import { execa } from "execa";
 
 type VerifyOptions = {
   client: Client<Transport, Chain | undefined>;
   rpc: string;
-  foundryProfile?: string;
-  verifier?: string;
+  verifier: string;
   verifierUrl?: string;
   systems: { name: string; bytecode: Hex }[];
   modules: { name: string; bytecode: Hex }[];
@@ -30,7 +30,6 @@ const ERC1967_IMPLEMENTATION_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076c
 export async function verify({
   client,
   rpc,
-  foundryProfile = process.env.FOUNDRY_PROFILE,
   systems,
   modules,
   worldAddress,
@@ -50,35 +49,46 @@ export async function verify({
   });
   const usesProxy = implementationStorage && implementationStorage !== zeroHash;
 
-  const verifyQueue = new PQueue({ concurrency: 1 });
+  const verifyQueue = new PQueue({ concurrency: 4 });
 
   systems.map(({ name, bytecode }) =>
     verifyQueue.add(() =>
-      verifyContract(
-        {
-          name,
-          rpc,
-          verifier,
-          verifierUrl,
-          address: getCreate2Address({
-            from: deployerAddress,
-            bytecode: bytecode,
-            salt,
-          }),
-        },
-        { profile: foundryProfile },
-      ).catch((error) => {
+      verifyContract({
+        name,
+        rpc,
+        verifier,
+        verifierUrl,
+        address: getCreate2Address({
+          from: deployerAddress,
+          bytecode: bytecode,
+          salt,
+        }),
+      }).catch((error) => {
         console.error(`Error verifying system contract ${name}:`, error);
       }),
     ),
   );
 
-  Object.entries(
-    usesProxy ? getWorldProxyFactoryContracts(deployerAddress) : getWorldFactoryContracts(deployerAddress),
-  ).map(([name, { bytecode }]) =>
-    verifyQueue.add(() =>
-      verifyContract(
-        {
+  // If the verifier is Sourcify, attempt to verify MUD core contracts
+  // There are path issues with verifying Blockscout and Etherscan
+  if (verifier === "sourcify") {
+    // Install subdependencies so contracts can compile
+    await execa("npm", ["install"], {
+      cwd: "node_modules/@latticexyz/store",
+    });
+    await execa("npm", ["install"], {
+      cwd: "node_modules/@latticexyz/world",
+    });
+    await execa("npm", ["install"], {
+      cwd: "node_modules/@latticexyz/world-modules",
+    });
+
+    Object.entries(
+      usesProxy ? getWorldProxyFactoryContracts(deployerAddress) : getWorldFactoryContracts(deployerAddress),
+    ).map(([name, { bytecode }]) =>
+      verifyQueue.add(() =>
+        verifyContract({
+          cwd: "node_modules/@latticexyz/world",
           name,
           rpc,
           verifier,
@@ -88,21 +98,16 @@ export async function verify({
             bytecode: bytecode,
             salt,
           }),
-        },
-        {
-          profile: foundryProfile,
-          cwd: "node_modules/@latticexyz/world",
-        },
-      ).catch((error) => {
-        console.error(`Error verifying world factory contract ${name}:`, error);
-      }),
-    ),
-  );
+        }).catch((error) => {
+          console.error(`Error verifying world factory contract ${name}:`, error);
+        }),
+      ),
+    );
 
-  modules.map(({ name, bytecode }) =>
-    verifyQueue.add(() =>
-      verifyContract(
-        {
+    modules.map(({ name, bytecode }) =>
+      verifyQueue.add(() =>
+        verifyContract({
+          cwd: "node_modules/@latticexyz/world-modules",
           name: name,
           rpc,
           verifier,
@@ -112,55 +117,60 @@ export async function verify({
             bytecode: bytecode,
             salt,
           }),
-        },
-        {
-          profile: foundryProfile,
-          cwd: "node_modules/@latticexyz/world-modules",
-        },
-      ).catch((error) => {
-        console.error(`Error verifying module contract ${name}:`, error);
-      }),
-    ),
-  );
-
-  // If the world was deployed as a Proxy, verify the proxy and implementation.
-  if (usesProxy) {
-    const implementationAddress = sliceHex(implementationStorage, -20);
-
-    verifyQueue.add(() =>
-      verifyContract(
-        { name: "WorldProxy", rpc, verifier, verifierUrl, address: worldAddress },
-        {
-          profile: foundryProfile,
-          cwd: "node_modules/@latticexyz/world",
-        },
-      ).catch((error) => {
-        console.error(`Error verifying WorldProxy contract:`, error);
-      }),
+        }).catch((error) => {
+          console.error(`Error verifying module contract ${name}:`, error);
+        }),
+      ),
     );
 
-    verifyQueue.add(() =>
-      verifyContract(
-        { name: "World", rpc, verifier, verifierUrl, address: implementationAddress },
-        {
-          profile: foundryProfile,
+    // If the world was deployed as a Proxy, verify the proxy and implementation.
+    if (usesProxy) {
+      const implementationAddress = sliceHex(implementationStorage, -20);
+
+      verifyQueue.add(() =>
+        verifyContract({
           cwd: "node_modules/@latticexyz/world",
-        },
-      ).catch((error) => {
-        console.error(`Error verifying World contract:`, error);
-      }),
-    );
+          name: "WorldProxy",
+          rpc,
+          verifier,
+          verifierUrl,
+          address: worldAddress,
+        }).catch((error) => {
+          console.error(`Error verifying WorldProxy contract:`, error);
+        }),
+      );
+
+      verifyQueue.add(() =>
+        verifyContract({
+          cwd: "node_modules/@latticexyz/world",
+          name: "World",
+          rpc,
+          verifier,
+          verifierUrl,
+          address: implementationAddress,
+        }).catch((error) => {
+          console.error(`Error verifying World contract:`, error);
+        }),
+      );
+    } else {
+      verifyQueue.add(() =>
+        verifyContract({
+          cwd: "node_modules/@latticexyz/world",
+          name: "World",
+          rpc,
+          verifier,
+          verifierUrl,
+          address: worldAddress,
+        }).catch((error) => {
+          console.error(`Error verifying World contract:`, error);
+        }),
+      );
+    }
   } else {
-    verifyQueue.add(() =>
-      verifyContract(
-        { name: "World", rpc, verifier, verifierUrl, address: worldAddress },
-        {
-          profile: foundryProfile,
-          cwd: "node_modules/@latticexyz/world",
-        },
-      ).catch((error) => {
-        console.error(`Error verifying World contract:`, error);
-      }),
+    console.log("");
+    console.log(
+      `Note: MUD is currently unable to verify store, world, and world-modules contracts with ${verifier}. We are planning to expand support in a future version.`,
     );
+    console.log("");
   }
 }
