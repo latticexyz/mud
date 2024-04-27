@@ -3,7 +3,7 @@ import { Callout } from "nextra/components";
 
 # Upgrading worlds
 
-The [`System`s](./systems) can be upgraded without changing the underlying `World` code, using [`mud deploy --worldAddress`](http://localhost:3000/cli/deploy#upgrading-a-world).
+The [`System`s](./systems) can be upgraded without changing the underlying `World` code, using [`mud deploy --worldAddress`](/cli/deploy#upgrading-a-world).
 However, you can also upgrade the `World` contract itself if the `World` was deployed [behind a proxy](/config#upgradeableWorldImplementation).
 This allows you to upgrade to a future version of MUD, but adds some gas overhead for all calls (due to one more level of indirection).
 
