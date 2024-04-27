@@ -1,5 +1,18 @@
 # @latticexyz/store-indexer
 
+## 2.0.8
+
+### Patch Changes
+
+- 65aa32c2: Added support for an empty `STORE_ADDRESS=` environment variable.
+  This previously would fail the input validation, now it behaves the same way as not setting the `STORE_ADDRESS` variable at all.
+- Updated dependencies [df4781ac]
+  - @latticexyz/common@2.0.8
+  - @latticexyz/block-logs-stream@2.0.8
+  - @latticexyz/protocol-parser@2.0.8
+  - @latticexyz/store@2.0.8
+  - @latticexyz/store-sync@2.0.8
+
 ## 2.0.7
 
 ### Patch Changes
