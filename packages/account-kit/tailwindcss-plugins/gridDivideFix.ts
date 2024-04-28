@@ -4,7 +4,7 @@ import plugin from "tailwindcss/plugin";
 
 export const gridDivideFix = plugin(function ({ addComponents }) {
   addComponents({
-    // TODO: more column/divide sizes
+    // TODO: more column/divide sizes (https://tailwindcss.com/docs/plugins#dynamic-variants)
     ".grid-cols-2.divide-y": {
       // this selector is to achieve higher specificity than the divide one, but is gross
       // TODO: make this better

@@ -68,7 +68,7 @@
     "tailwind-merge": "^1.12.0",
     "usehooks-ts": "^3.0.2",
     "viem": "2.9.20",
-    "wagmi": "^2.5.22",
+    "wagmi": "^2.6.0",
     "zustand": "^4.5.2"
   },
   "devDependencies": {

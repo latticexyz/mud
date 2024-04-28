@@ -55,6 +55,7 @@ export const Button = ({ pending, variant, size, type, className, children, disa
       className={twMerge(buttonClassName({ variant, pending, size }), className)}
       aria-busy={pending}
       aria-disabled={disabled}
+      disabled={disabled || pending}
       {...props}
     >
       <span className={twMerge("flex", pending ? "justify-between" : "justify-center")}>

@@ -1,12 +1,11 @@
 import { useAccount } from "wagmi";
 import { useAppSigner } from "./useAppSigner";
 import { useHasDelegation } from "./useHasDelegation";
-import { useMemo, useEffect } from "react";
+import { useMemo } from "react";
 import { useGasTankBalance } from "./useGasTankBalance";
 import { useIsGasSpender } from "./useIsGasSpender";
 import { useSignRegisterDelegation } from "./steps/app-account/useSignRegisterDelegation";
 import { useIsFree } from "./useIsFree";
-import { debug } from "./debug";
 
 export const accountRequirements = [
   "connectedWallet",
@@ -58,10 +57,6 @@ export function useAccountRequirements(): UseAccountRequirementsResult {
     registerDelegationSignature,
     userAccount.status,
   ]);
-
-  // useEffect(() => {
-  //   debug("useAccountRequirements requirements", requirements.requirements);
-  // }, [requirements.requirements]);
 
   return requirements;
 }

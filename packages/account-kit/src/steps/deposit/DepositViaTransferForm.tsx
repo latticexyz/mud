@@ -1,5 +1,12 @@
 import { DepositForm } from "./DepositForm";
-import { usePrepareTransactionRequest, useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
+import {
+  useAccount,
+  useBalance,
+  useEstimateFeesPerGas,
+  usePrepareTransactionRequest,
+  useSendTransaction,
+  useWaitForTransactionReceipt,
+} from "wagmi";
 import { useAppAccountClient } from "../../useAppAccountClient";
 import { type Props } from "./DepositMethodForm";
 import { SubmitButton } from "./SubmitButton";
@@ -7,12 +14,20 @@ import { SubmitButton } from "./SubmitButton";
 export function DepositViaTransferForm(props: Props) {
   const { data: appAccountClient } = useAppAccountClient();
 
+  const { address: userAddress } = useAccount();
+  const balance = useBalance({ chainId: props.sourceChain.id, address: userAddress });
+  // We also separately get fees here, otherwise MetaMask complains with
+  //   The method `eth_maxPriorityFeePerGas` does not exist / is not available
+  // See https://github.com/wevm/wagmi/issues/3865 for details
+  const fees = useEstimateFeesPerGas({ chainId: props.sourceChain.id });
+
   const prepared = usePrepareTransactionRequest(
-    appAccountClient
+    appAccountClient && balance.data && balance.data.value > (props.amount ?? 0n) && fees.data
       ? {
           chainId: props.sourceChain.id,
           to: appAccountClient.account.address,
           value: props.amount,
+          maxPriorityFeePerGas: fees.data?.maxPriorityFeePerGas,
         }
       : {},
   );
@@ -28,23 +43,28 @@ export function DepositViaTransferForm(props: Props) {
   return (
     <DepositForm
       {...props}
-      estimatedFee={prepared.data ? prepared.data.gas * prepared.data.maxFeePerGas : undefined}
+      estimatedFee={{
+        fee: prepared.data ? prepared.data.gas * prepared.data.maxFeePerGas : undefined,
+        isLoading: prepared.isLoading,
+      }}
       estimatedTime="Instant"
       submitButton={
         <SubmitButton
           chainId={props.sourceChain.id}
           disabled={!appAccountClient}
-          pending={sendTransaction.isPending || receipt.isLoading}
+          pending={!prepared.data || sendTransaction.isPending || receipt.isLoading}
         >
           Deposit via transfer
         </SubmitButton>
       }
       onSubmit={async () => {
-        // TODO: I wanna pass in the prepared transaction here, but TS complains
+        // This shouldn't happen because the submit button is marked pending while this is missing.
+        if (!prepared.data) throw new Error("Deposit transaction was not prepared.");
+
         await sendTransaction.sendTransactionAsync({
-          chainId: props.sourceChain.id,
-          to: appAccountClient!.account.address,
-          value: props.amount,
+          ...prepared.data,
+          // TS complains about the `to` type, even though it ran through `usePrepareTransactionRequest`
+          to: prepared.data.to!,
         });
       }}
     />

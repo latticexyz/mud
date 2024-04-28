@@ -10,6 +10,7 @@ import { formatGas } from "./formatGas";
 import { DepositMethod, SourceChain } from "./common";
 import { ReactNode, useEffect, useRef } from "react";
 import { SubmitButton } from "./SubmitButton";
+import { useIsMounted } from "usehooks-ts";
 
 export const DEFAULT_DEPOSIT_AMOUNT = 0.005;
 
@@ -20,7 +21,8 @@ export type Props = {
   setAmount: (amount: bigint | undefined) => void;
   depositMethod: DepositMethod;
   setDepositMethod: (depositMethod: DepositMethod) => void;
-  estimatedFee?: bigint | undefined;
+  // TODO: add errors
+  estimatedFee: { fee?: bigint | undefined; isLoading?: boolean | undefined };
   estimatedTime: string;
   submitButton: ReactNode;
   onSubmit: () => Promise<void>;
@@ -42,16 +44,25 @@ export function DepositForm({
   submitButton,
   transactionStatus,
 }: Props) {
-  const { address: userAddress, chainId: userChainId } = useAccount();
+  const amountInputRef = useRef<HTMLInputElement | null>(null);
+  const isMounted = useIsMounted();
   const queryClient = useQueryClient();
   const { resetStep } = useOnboardingSteps();
+
+  const { address: userAddress, chainId: userChainId } = useAccount();
   const balance = useBalance({ chainId: sourceChain.id, address: userAddress });
 
-  const amountInputRef = useRef<HTMLInputElement | null>(null);
+  const minimumBalance = amount != null ? amount + (estimatedFee?.fee ?? 0n) : undefined;
+  const hasMinimumBalance = balance.data != null ? balance.data.value > (minimumBalance ?? 0n) : undefined;
 
   const selectedMethod = sourceChain.depositMethods.includes(depositMethod)
     ? depositMethod
     : sourceChain.depositMethods[0];
+
+  // Re-focus input if chain ID changes (otherwise the chain select is still in focus)
+  useEffect(() => {
+    amountInputRef.current?.focus();
+  }, [userChainId]);
 
   useEffect(() => {
     if (isComplete) {
@@ -65,31 +76,29 @@ export function DepositForm({
       onSubmit={async (event) => {
         event.preventDefault();
 
-        const previousAmount = amount;
-        const previousInputValue = amountInputRef.current?.value;
-        setAmount(undefined);
-        if (amountInputRef.current) {
-          amountInputRef.current.value = "";
-        }
-
         try {
           await onSubmit();
-        } catch (error) {
-          setAmount(previousAmount);
-          if (previousInputValue != null && amountInputRef.current && amountInputRef.current.value === "") {
-            amountInputRef.current.value = previousInputValue;
+          if (isMounted()) {
+            setAmount(undefined);
+            if (amountInputRef.current) {
+              amountInputRef.current.value = "";
+            }
           }
-          throw error;
+        } catch (error) {
+          // Let's hope each deposit form's wrapper is rendering its own errors
+          console.error("Error during deposit", error);
+        } finally {
+          // Re-focus input after submit (otherwise the submit button is still in focus)
+          amountInputRef.current?.focus();
         }
       }}
     >
       <div className="flex gap-2">
         <ChainSelect value={sourceChain.id} onChange={setSourceChainId} />
         <AmountInput
-          // Using the user's chain ID as the `key` here forces this to re-render when the chain switches,
-          // thus causing this input to auto focus and reduces the need to click the input again.
-          key={userChainId}
           ref={amountInputRef}
+          // TODO: fix issue where this causes `.4` to re-render as `0.4` (because `initialAmount` is bigint)
+          //       might need to move up amount state and separate string state from parsed amount
           initialAmount={amount}
           onChange={setAmount}
         />
@@ -126,21 +135,25 @@ export function DepositForm({
       >
         <dt>Available to deposit</dt>
         <dd>
-          {balance.data ? <>{formatBalance(balance.data.value)} Ξ</> : <PendingIcon className="inline-block text-xs" />}
+          {balance.data ? (
+            <>{formatBalance(balance.data.value)} Ξ</>
+          ) : balance.isLoading ? (
+            <PendingIcon className="inline-block text-xs" />
+          ) : null}
         </dd>
         <dt>Estimated fee</dt>
-        <dd>{estimatedFee ? <>{formatGas(estimatedFee)} gwei</> : <PendingIcon className="inline-block text-xs" />}</dd>
+        <dd>
+          {estimatedFee?.fee ? (
+            <>{formatGas(estimatedFee.fee)} gwei</>
+          ) : estimatedFee?.isLoading ? (
+            <PendingIcon className="inline-block text-xs" />
+          ) : null}
+        </dd>
         <dt>Time to deposit</dt>
         <dd>{estimatedTime}</dd>
       </dl>
 
-      {balance.data != null &&
-      amount != null &&
-      (balance.data.value === 0n || balance.data.value < amount + (estimatedFee ?? 0n)) ? (
-        <SubmitButton disabled>Not enough funds</SubmitButton>
-      ) : (
-        submitButton
-      )}
+      {hasMinimumBalance ? submitButton : <SubmitButton disabled>Not enough funds</SubmitButton>}
 
       {transactionStatus}
     </form>

@@ -14,8 +14,9 @@ import { useErc4337Config } from "./useErc4337Config";
 import { usePaymaster } from "./usePaymaster";
 import { SendTransactionWithPaymasterParameters, sendTransaction } from "./actions/sendTransaction";
 import { SmartAccount, signerToSimpleSmartAccount } from "permissionless/accounts";
-import { UseQueryResult, useQuery } from "@tanstack/react-query";
+import { UseQueryOptions, UseQueryResult, useQuery } from "@tanstack/react-query";
 import { useAppChain } from "./useAppChain";
+import { debug } from "./debug";
 
 type Middleware = SmartAccountClientConfig<ENTRYPOINT_ADDRESS_V07_TYPE>["middleware"];
 
@@ -32,19 +33,22 @@ export function useAppAccountClient(): UseQueryResult<AppAccountClient> {
     "mud:appAccountClient",
     chain.id,
     worldAddress,
-    appSignerAccount,
+    appSignerAccount?.address,
     userAddress,
+    // this currently assumes a statically defined ERC-4337 config
+    // TODO: add a `key` config option or similar to allow for dynamic usages?
     !!erc4337Config,
     gasTank?.address,
   ];
 
   return useQuery(
     appSignerAccount && userAddress && publicClient
-      ? {
+      ? ({
           queryKey,
+          staleTime: Infinity,
           queryFn: async () => {
             if (!erc4337Config) {
-              console.log("no ERC-4337 config, using app signer as app account");
+              debug("no ERC-4337 config, using app signer as app account");
 
               // We create our own client here so we can provide a custom client `type` that we'll use
               // later in the app to determine how deposits should work.
@@ -172,7 +176,7 @@ export function useAppAccountClient(): UseQueryResult<AppAccountClient> {
 
             return appAccountClient;
           },
-        }
+        } satisfies UseQueryOptions)
       : {
           queryKey,
           enabled: false,
