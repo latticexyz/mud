@@ -11,6 +11,7 @@ import { useCallWithSignatureNonce } from "../../useCallWithSignatureNonce";
 import { createStore } from "zustand/vanilla";
 import { useMemo } from "react";
 import { useStore } from "zustand";
+// import { useOnboardingSteps } from "../../useOnboardingSteps";
 
 const store = createStore(() => ({ signature: undefined as Hex | undefined }));
 
@@ -22,6 +23,8 @@ export function useSignRegisterDelegation() {
   const { data: appAccountClient } = useAppAccountClient();
   const { nonce } = useCallWithSignatureNonce();
   const registerDelegationSignature = useStore(store, (state) => state.signature);
+  // TODO: this causes an infinite loop
+  // const { resetStep } = useOnboardingSteps();
 
   const result = useMutation({
     mutationFn: async () => {
@@ -43,9 +46,9 @@ export function useSignRegisterDelegation() {
         nonce,
       });
 
-      await queryClient.invalidateQueries();
+      queryClient.invalidateQueries();
       store.setState({ signature });
-      // TODO: reset step?
+      // resetStep();
 
       return signature;
     },
@@ -57,6 +60,7 @@ export function useSignRegisterDelegation() {
       signRegisterDelegation: result.mutate,
       signRegisterDelegationAsync: result.mutateAsync,
       registerDelegationSignature,
+      clearSignature: () => store.setState({ signature: undefined }),
     }),
     [registerDelegationSignature, result],
   );

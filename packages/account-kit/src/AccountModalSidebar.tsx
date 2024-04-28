@@ -40,8 +40,7 @@ export function AccountModalSidebar() {
         <Logo className="bg-neutral-100 dark:bg-transparent" />
       </div>
       {steps.map((step) => {
-        // TODO: make this less weird/janky
-        if (step.id === "finalizing" && (step.isComplete || !step.canComplete)) {
+        if (step.id === "finalizing") {
           return null;
         }
         return (

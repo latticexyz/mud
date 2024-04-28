@@ -61,6 +61,7 @@ export function DepositViaTransferForm(props: Props) {
         // This shouldn't happen because the submit button is marked pending while this is missing.
         if (!prepared.data) throw new Error("Deposit transaction was not prepared.");
 
+        console.log("sending deposit", prepared.data);
         await sendTransaction.sendTransactionAsync({
           ...prepared.data,
           // TS complains about the `to` type, even though it ran through `usePrepareTransactionRequest`

@@ -10,7 +10,7 @@ export function useENS(address: Hex | undefined) {
     avatar: string | undefined;
   }>({
     enabled: !!normalizedAddress,
-    queryKey: [normalizedAddress],
+    queryKey: ["ens", normalizedAddress],
     initialData: {
       address: undefined,
       name: undefined,
