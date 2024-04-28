@@ -26,10 +26,10 @@ const wagmiConfig = createConfig({
 });
 
 const accountKitConfig = {
-  // chainId: mudFoundry.id,
-  // worldAddress: "0xd6c8022f1af8e9d7c3825557a1374ee518c65a4e",
-  chainId: garnet.id,
-  worldAddress: "0xb757a4838d6ed3328f43af22bbd153e221ef0997",
+  chainId: mudFoundry.id,
+  worldAddress: "0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b",
+  // chainId: garnet.id,
+  // worldAddress: "0xb757a4838d6ed3328f43af22bbd153e221ef0997",
   // chainId: redstone.id,
   // worldAddress: "0xc6b640ea79444c1bb0c6924771cc7432fb0bddd6",
   erc4337: false,
