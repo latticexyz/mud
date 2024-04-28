@@ -35,16 +35,16 @@ export function FinalizingStep() {
     appAccountClient?.uid &&
     registerDelegationSignature
   );
-
+  const mutationKey = [
+    "registerDelegation",
+    publicClient?.uid,
+    userAccountClient?.uid,
+    appAccountClient?.uid,
+    registerDelegationSignature,
+  ];
+  console.log("mutation key", mutationKey);
   const registerDelegation = useMutation({
-    mutationKey: [
-      "registerDelegation",
-      canRegisterDelegation,
-      publicClient?.uid,
-      userAccountClient?.uid,
-      appAccountClient?.uid,
-      registerDelegationSignature,
-    ],
+    mutationKey,
     mutationFn: async () => {
       if (!publicClient) throw new Error("Public client not ready. Not connected?");
       if (!userAccountClient) throw new Error("Wallet client not ready. Not connected?");
@@ -106,11 +106,11 @@ export function FinalizingStep() {
   }, [queryClient, receipt.data, resetStep]);
 
   useEffect(() => {
-    if (canRegisterDelegation) {
+    if (canRegisterDelegation && registerDelegation.isIdle) {
       registerDelegation.mutateAsync();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canRegisterDelegation]);
+  }, [canRegisterDelegation, registerDelegation.isIdle]);
 
   if (registerDelegation.error) {
     // TODO: make this prettier

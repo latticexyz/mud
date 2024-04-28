@@ -5,6 +5,7 @@ import { AppSignerContent } from "./AppSignerContent";
 import { useSignRegisterDelegation } from "./useSignRegisterDelegation";
 import { AccountModalSection } from "../../AccountModalSection";
 import { AccountModalTitle } from "../../AccoutModalTitle";
+import { RevokeButton } from "./RevokeButton";
 
 export function AppAccountStep() {
   const [appSigner] = useAppSigner();
@@ -40,6 +41,13 @@ export function AppAccountStep() {
           </div>
         </div>
       </AccountModalSection>
+      {process.env.NODE_ENV !== "production" ? (
+        <AccountModalSection>
+          <div className="p-5">
+            <RevokeButton />
+          </div>
+        </AccountModalSection>
+      ) : null}
     </>
   );
 }
