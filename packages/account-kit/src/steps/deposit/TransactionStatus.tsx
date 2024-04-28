@@ -20,7 +20,7 @@ export function TransactionStatus({ status, progress, children }: Props) {
   }, []);
 
   return (
-    <div className="bg-white flex flex-col">
+    <div className="bg-white dark:bg-neutral-900 flex flex-col">
       <div className="p-2 text-sm flex items-center gap-2">
         <div className="flex-grow">{children}</div>
         {status === "success" ? (
@@ -28,7 +28,7 @@ export function TransactionStatus({ status, progress, children }: Props) {
         ) : status === "error" ? (
           <CloseIcon className="flex-shrink-0 text-red-600" />
         ) : (
-          <PendingIcon className="flex-shrink-0 text-neutral-400 transition" />
+          <PendingIcon className="flex-shrink-0 text-neutral-400 dark:text-neutral-500 transition" />
         )}
       </div>
 
@@ -36,7 +36,11 @@ export function TransactionStatus({ status, progress, children }: Props) {
         <div
           className={twMerge(
             "w-full h-full transition ease-linear",
-            status === "success" ? "bg-green-500" : status === "error" ? "bg-red-500" : "bg-blue-500",
+            status === "success"
+              ? "bg-green-500 dark:bg-green-600"
+              : status === "error"
+                ? "bg-red-500 dark:bg-red-600"
+                : "bg-blue-500 dark:bg-blue-600",
             status === "pending" ? "opacity-100" : "opacity-0",
           )}
           style={

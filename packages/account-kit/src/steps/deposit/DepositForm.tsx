@@ -111,9 +111,12 @@ export function DepositForm({
               key={method}
               type="button"
               className={twMerge(
-                "border border-transparent p-2 bg-neutral-200",
-                "aria-selected:bg-transparent aria-selected:border-neutral-300 aria-selected:border-b-transparent",
-                "hover:bg-neutral-300",
+                "border border-transparent p-2",
+                "bg-neutral-200 dark:bg-neutral-700",
+                "aria-selected:bg-transparent dark:aria-selected:bg-transparent",
+                "aria-selected:border-neutral-300 dark:aria-selected:border-neutral-600",
+                "aria-selected:border-b-transparent dark:aria-selected:border-b-transparent",
+                "hover:bg-neutral-300 dark:hover:bg-neutral-600",
                 // TODO: replace with nicer label
                 "capitalize",
               )}

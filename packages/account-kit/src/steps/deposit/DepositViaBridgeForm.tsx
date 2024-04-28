@@ -159,7 +159,7 @@ export function DepositViaBridgeForm(props: Props) {
       // TODO: wrap these to control spacing between?
       transactionStatus={
         bridgeTransactions.length > 0 ? (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
             {bridgeTransactions.map((bridgeTransaction) => (
               <BridgeTransactionStatus key={bridgeTransaction.hashL1} {...bridgeTransaction} />
             ))}

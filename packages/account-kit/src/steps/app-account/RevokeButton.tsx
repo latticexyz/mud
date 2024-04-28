@@ -1,12 +1,13 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppAccountClient } from "../../useAppAccountClient";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
-import { writeContract } from "viem/actions";
+import { waitForTransactionReceipt, writeContract } from "viem/actions";
 import { getAction } from "viem/utils";
 import { useConfig } from "../../AccountKitConfigProvider";
 import { Button } from "../../ui/Button";
 
 export function RevokeButton() {
+  const queryClient = useQueryClient();
   const { worldAddress } = useConfig();
   const { data: appAccountClient } = useAppAccountClient();
 
@@ -16,7 +17,7 @@ export function RevokeButton() {
       if (!appAccountClient) throw new Error("App account client not ready.");
 
       console.log("calling unregisterDelegation");
-      return await getAction(
+      const hash = await getAction(
         appAccountClient,
         writeContract,
         "writeContract",
@@ -28,6 +29,16 @@ export function RevokeButton() {
         chain: appAccountClient.chain,
         args: [appAccountClient.account.address],
       });
+
+      const receipt = await getAction(
+        appAccountClient,
+        waitForTransactionReceipt,
+        "waitForTransactionReceipt",
+      )({ hash });
+
+      if (receipt.status === "success") {
+        await queryClient.invalidateQueries();
+      }
     },
   });
 
