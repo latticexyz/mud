@@ -4,11 +4,11 @@ import ReactDOM from "react-dom/client";
 import { WagmiProvider, createConfig } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider, lightTheme, midnightTheme } from "@rainbow-me/rainbowkit";
-import { garnet, mudFoundry } from "@latticexyz/common/chains";
+import { garnet, mudFoundry, redstone } from "@latticexyz/common/chains";
 import { AccountModal } from "../src/AccountModal";
 import { AccountKitConfigProvider } from "../src/AccountKitConfigProvider";
 import { App } from "./App";
-import { createClient, http } from "viem";
+import { Hex, createClient, http } from "viem";
 import { chains } from "../src/exports/chains";
 
 const queryClient = new QueryClient();
@@ -25,13 +25,22 @@ const wagmiConfig = createConfig({
     }),
 });
 
+const testWorlds = {
+  [mudFoundry.id]: "0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b",
+  [garnet.id]: "0xb757a4838d6ed3328f43af22bbd153e221ef0997",
+  [redstone.id]: "0xc6b640ea79444c1bb0c6924771cc7432fb0bddd6",
+} as Partial<Record<string, Hex>>;
+
+const searchParams = new URLSearchParams(window.location.search);
+const chainId = parseInt(searchParams.get("chainId") ?? "") || mudFoundry.id;
+const worldAddress = testWorlds[chainId];
+if (!worldAddress) {
+  throw new Error(`Account Kit playground is not configured with a test world address for chain ID ${chainId}`);
+}
+
 const accountKitConfig = {
-  chainId: mudFoundry.id,
-  worldAddress: "0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b",
-  // chainId: garnet.id,
-  // worldAddress: "0xb757a4838d6ed3328f43af22bbd153e221ef0997",
-  // chainId: redstone.id,
-  // worldAddress: "0xc6b640ea79444c1bb0c6924771cc7432fb0bddd6",
+  chainId,
+  worldAddress,
   erc4337: false,
 } as const;
 
