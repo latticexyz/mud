@@ -27,8 +27,8 @@ const wagmiConfig = createConfig({
 
 const testWorlds = {
   [mudFoundry.id]: "0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b",
-  [garnet.id]: "0xb757a4838d6ed3328f43af22bbd153e221ef0997",
-  [redstone.id]: "0xc6b640ea79444c1bb0c6924771cc7432fb0bddd6",
+  [garnet.id]: "0x352bd50fc7cbb8a1b3e5f84cf6f4e7d84792acd1",
+  [redstone.id]: "0x51778368cd250e4e3800a8fb20c32474c5f1c8cd",
 } as Partial<Record<string, Hex>>;
 
 const searchParams = new URLSearchParams(window.location.search);
