@@ -1,5 +1,23 @@
 # Change Log
 
+## 2.0.8
+
+### Patch Changes
+
+- b4eb795e: Patched `mud verify` to properly verify store, world, and world-modules contracts. Currently only `sourcify` is fully supported and is the default verifier.
+- Updated dependencies [df4781ac]
+  - @latticexyz/common@2.0.8
+  - @latticexyz/config@2.0.8
+  - @latticexyz/protocol-parser@2.0.8
+  - @latticexyz/store@2.0.8
+  - @latticexyz/world@2.0.8
+  - @latticexyz/world-modules@2.0.8
+  - @latticexyz/abi-ts@2.0.8
+  - @latticexyz/gas-report@2.0.8
+  - @latticexyz/schema-type@2.0.8
+  - @latticexyz/services@2.0.8
+  - @latticexyz/utils@2.0.8
+
 ## 2.0.7
 
 ### Patch Changes

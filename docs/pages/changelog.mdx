@@ -1,3 +1,28 @@
+## Version 2.0.8
+
+Release date: Sat Apr 27 2024
+
+### Patch changes
+
+**[fix(store-indexer): allow empty env variable (#2746)](https://github.com/latticexyz/mud/commit/9c599b87bb02db5ae9a9389085b61bde48af9e4a)** (@latticexyz/store-indexer)
+
+Added support for an empty `STORE_ADDRESS=` environment variable.
+This previously would fail the input validation, now it behaves the same way as not setting the `STORE_ADDRESS` variable at all.
+
+**[fix(cli): fix verify with sourcify for dependencies (#2750)](https://github.com/latticexyz/mud/commit/b4eb795ee5a6f8d250d3b3513fe72c5530f69c43)** (@latticexyz/cli)
+
+Patched `mud verify` to properly verify store, world, and world-modules contracts. Currently only `sourcify` is fully supported and is the default verifier.
+
+**[feat(common): add redstone chain config (#2749)](https://github.com/latticexyz/mud/commit/f23318ede18d0b10cf1f4c51dd24a373a5e5f740)** (@latticexyz/common)
+
+Added Garnet testnet and Redstone mainnet chain configs and deprecated Lattice Testnet.
+
+```ts
+import { garnet, redstone } from "@latticexyz/common/chains";
+```
+
+---
+
 ## Version 2.0.7
 
 Release date: Thu Apr 25 2024

@@ -7,11 +7,10 @@ type VerifyContractOptions = {
   verifier?: string;
   verifierUrl?: string;
   address: Address;
+  cwd?: string;
 };
 
-type ForgeOptions = { profile?: string; silent?: boolean; env?: NodeJS.ProcessEnv; cwd?: string };
-
-export async function verifyContract(options: VerifyContractOptions, forgeOptions?: ForgeOptions) {
+export async function verifyContract(options: VerifyContractOptions) {
   const args = ["verify-contract", options.address, options.name, "--rpc-url", options.rpc];
 
   if (options.verifier) {
@@ -20,5 +19,5 @@ export async function verifyContract(options: VerifyContractOptions, forgeOption
   if (options.verifierUrl) {
     args.push("--verifier-url", options.verifierUrl);
   }
-  await forge(args, forgeOptions);
+  await forge(args, { cwd: options.cwd });
 }

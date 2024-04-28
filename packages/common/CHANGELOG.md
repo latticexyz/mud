@@ -1,5 +1,17 @@
 # Change Log
 
+## 2.0.8
+
+### Patch Changes
+
+- df4781ac: Added Garnet testnet and Redstone mainnet chain configs and deprecated Lattice Testnet.
+
+  ```ts
+  import { garnet, redstone } from "@latticexyz/common/chains";
+  ```
+
+  - @latticexyz/schema-type@2.0.8
+
 ## 2.0.7
 
 ### Patch Changes
