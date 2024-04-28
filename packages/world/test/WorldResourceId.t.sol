@@ -110,4 +110,11 @@ contract WorldResourceIdTest is Test, GasReporter {
     assertEq(resourceId.getName(), name);
     assertEq(resourceId.getType(), resourceType);
   }
+
+  function testToTrimmedString() public {
+    assertEq(keccak256(bytes(WorldResourceIdLib.toTrimmedString(bytes14("namespace")))), keccak256("namespace"));
+    assertEq(keccak256(bytes(WorldResourceIdLib.toTrimmedString(bytes16("name")))), keccak256("name"));
+    assertEq(keccak256(bytes(WorldResourceIdLib.toTrimmedString(bytes14("")))), keccak256(""));
+    assertEq(keccak256(bytes(WorldResourceIdLib.toTrimmedString(bytes16("Registration")))), keccak256("Registration"));
+  }
 }
