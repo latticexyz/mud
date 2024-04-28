@@ -39,7 +39,6 @@ These are the command line options you can specify on `mud deploy`:
 
 | Option                  | Meaning                                          | Type    | Default value                                              |
 | ----------------------- | ------------------------------------------------ | ------- | ---------------------------------------------------------- |
-| `--version`             | Show version number                              | boolean | `false`                                                    |
 | `--configPath`          | Path to the config file                          | string  | `mud.config.ts`                                            |
 | `--printConfig`         | Print the resolved config                        | boolean | `false`                                                    |
 | `--saveDeployment`      | Save the deployment info to a file               | boolean | `true`                                                     |
@@ -51,6 +50,7 @@ These are the command line options you can specify on `mud deploy`:
 | `--skipBuild`           | Skip rebuilding the contracts before deploying   | boolean | `false`                                                    |
 | `--alwaysRunPostDeploy` | Run `PostDeploy.s.sol` after each deploy         | boolean | `false` (run the script only when deploying a new `World`) |
 | `--help`                | Show help                                        | boolean | `false`                                                    |
+| `--version`             | Show version number                              | boolean | `false`                                                    |
 
 (1) The hostname `localhost` may not work. If that is the case, use `127.0.0.1` instead.
 
@@ -80,7 +80,7 @@ To upgrade a `World`'s `System`s and tables, you can use this command line:
 pnpm mud deploy --rpc <url> --worldAddress <address>
 ```
 
-If properly configured, [there is also a way to upgrade the core MUD contracts](/world/upgrade)
+If properly configured, [there is also a way to upgrade the core MUD contracts](/world/upgrades).
 
 ## Debugging
 
