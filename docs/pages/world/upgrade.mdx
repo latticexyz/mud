@@ -13,10 +13,13 @@ To make a `World` upgradeable, edit the [`mud.config.ts`](/config) file and set 
 
 <CollapseCode>
 
-```typescript filename="mud.config.ts" copy showLineNumbers {12-14}
+```typescript filename="mud.config.ts" copy showLineNumbers {4-6}
 import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
+  deploy: {
+    upgradeableWorldImplementation: true,
+  },
   tables: {
     Counter: {
       schema: {
@@ -25,11 +28,7 @@ export default defineWorld({
       key: [],
     },
   },
-  deploy: {
-    upgradeableWorldImplementation: true,
-  },
 });
-```
 
 </CollapseCode>
 
