@@ -48,7 +48,10 @@ export function FinalizingStep() {
             const receipt = await waitForTransactionReceipt(appAccountClient, { hash });
             console.log("got delegation receipt", receipt);
             console.log("clearing query cache");
-            queryClient.invalidateQueries();
+            await queryClient.invalidateQueries({
+              // TODO: replace `useReadContract` in `useRecord` with our own `useQuery` so we can customize the query key
+              queryKey: ["readContract"],
+            });
             clearSignature();
             resetStep();
             closeAccountModal();

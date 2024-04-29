@@ -51,7 +51,10 @@ export function GasSpenderContent() {
         throw new Error("Failed to register spender.");
       }
 
-      await queryClient.invalidateQueries();
+      await queryClient.invalidateQueries({
+        // TODO: replace `useReadContract` in `useRecord` with our own `useQuery` so we can customize the query key
+        queryKey: ["readContract"],
+      });
       resetStep();
     },
   });

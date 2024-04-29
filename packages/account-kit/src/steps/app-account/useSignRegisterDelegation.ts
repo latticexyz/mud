@@ -1,6 +1,6 @@
 import { resourceToHex } from "@latticexyz/common";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Hex, encodeFunctionData } from "viem";
 import { usePublicClient, useWalletClient } from "wagmi";
 import { unlimitedDelegationControlId } from "../../common";
@@ -16,7 +16,6 @@ import { useStore } from "zustand";
 const store = createStore(() => ({ signature: undefined as Hex | undefined }));
 
 export function useSignRegisterDelegation() {
-  const queryClient = useQueryClient();
   const { chainId, worldAddress } = useConfig();
   const publicClient = usePublicClient({ chainId });
   const { data: userAccountClient } = useWalletClient({ chainId });
@@ -46,7 +45,6 @@ export function useSignRegisterDelegation() {
         nonce,
       });
 
-      queryClient.invalidateQueries();
       store.setState({ signature });
       // resetStep();
 

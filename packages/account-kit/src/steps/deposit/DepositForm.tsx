@@ -66,7 +66,12 @@ export function DepositForm({
 
   useEffect(() => {
     if (isComplete) {
-      queryClient.invalidateQueries().then(resetStep);
+      queryClient
+        .invalidateQueries({
+          // TODO: replace `useBalance` with our own `useQuery` so we can customize the query key
+          queryKey: ["balance"],
+        })
+        .then(resetStep);
     }
   }, [isComplete, queryClient, resetStep]);
 
