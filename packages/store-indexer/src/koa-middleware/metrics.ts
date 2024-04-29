@@ -5,6 +5,7 @@ type MetricsOptions = {
   isHealthy?: () => boolean;
   isReady?: () => boolean;
   getLatestStoredBlockNumber?: () => Promise<bigint | undefined>;
+  getDistanceFromFollowBlock?: () => Promise<bigint>;
   followBlockTag?: "latest" | "safe" | "finalized";
 };
 
@@ -15,6 +16,7 @@ export function metrics({
   isHealthy,
   isReady,
   getLatestStoredBlockNumber,
+  getDistanceFromFollowBlock,
   followBlockTag,
 }: MetricsOptions = {}): Middleware {
   promClient.collectDefaultMetrics();
@@ -59,6 +61,16 @@ export function metrics({
       latest: 2,
     };
     blockTagGauge.set(blockTagToValue[followBlockTag]);
+  }
+
+  if (getDistanceFromFollowBlock != null) {
+    new promClient.Gauge({
+      name: "distance_from_follow_block",
+      help: "Block distance from the block tag this the indexer is following",
+      async collect(): Promise<void> {
+        this.set(Number(await getDistanceFromFollowBlock()));
+      },
+    });
   }
 
   return async function metricsMiddleware(ctx, next): Promise<void> {
