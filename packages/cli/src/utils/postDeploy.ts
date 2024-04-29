@@ -34,8 +34,7 @@ export async function postDeploy(
       "--rpc-url",
       rpc,
       "-vvv",
-      ...(privateKey ? ["--private-key", privateKey] : []),
-      ...(kms ? ["--aws"] : []),
+      ...(kms ? ["--aws"] : ["--private-key", privateKey]),
       ...userOptions,
     ],
     {
