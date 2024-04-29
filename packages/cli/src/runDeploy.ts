@@ -43,9 +43,9 @@ export const deployOptions = {
     type: "string",
     desc: "The deployment salt to use. Defaults to a random salt.",
   },
-  awsKmsKeyId: {
-    type: "string",
-    desc: "Optional AWS KMS key ID. If set, the World is deployed using a KMS signer instead of local private key.",
+  kms: {
+    type: "boolean",
+    desc: "Deploy the World with an AWS KMS key instead of local private key.",
   },
 } as const satisfies Record<string, Options>;
 
@@ -87,8 +87,14 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
 
   const account = await (async () => {
-    if (opts.awsKmsKeyId) {
-      const keyId = opts.awsKmsKeyId ?? process.env.AWS_KMS_KEY_ID;
+    if (opts.kms) {
+      const keyId = process.env.AWS_KMS_KEY_ID;
+      if (!keyId) {
+        throw new MUDError(
+          "Missing `AWS_KMS_KEY_ID` environment variable. This is required when using with `--kms` option.",
+        );
+      }
+
       return await kmsKeyToAccount({ keyId });
     } else {
       const privateKey = process.env.PRIVATE_KEY;
