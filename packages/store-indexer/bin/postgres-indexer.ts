@@ -71,7 +71,7 @@ async function getDistanceFromFollowBlock(): Promise<bigint> {
     getLatestStoredBlockNumber(),
     publicClient.getBlock({ blockTag: env.FOLLOW_BLOCK_TAG }),
   ]);
-  return (latestFollowBlockNumber ?? -1n) - latestStoredBlock.number;
+  return (latestStoredBlockNumber ?? -1n) - latestFollowBlock.number;
 }
 
 const latestStoredBlockNumber = await getLatestStoredBlockNumber();
