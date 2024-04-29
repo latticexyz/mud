@@ -90,7 +90,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     if (opts.kms) {
       const keyId = process.env.AWS_KMS_KEY_ID;
       if (!keyId) {
-        throw new MUDError("Missing AWS KMS Key ID");
+        throw new MUDError("Missing `AWS_KMS_KEY_ID` environment variable. This is required when using with `--kms` option.");
       }
 
       return await kmsKeyToAccount({ keyId });
