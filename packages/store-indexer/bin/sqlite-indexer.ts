@@ -73,6 +73,12 @@ async function getLatestStoredBlockNumber(): Promise<bigint | undefined> {
   return currentChainState?.lastUpdatedBlockNumber ?? undefined;
 }
 
+async function getDistanceFromFollowBlock(): Promise<bigint | undefined> {
+  const latestStoredBlockNumber = (await getLatestStoredBlockNumber()) ?? -1n;
+  const latestFollowBlockNumber = (await publicClient.getBlock({ blockTag: env.FOLLOW_BLOCK_TAG })).number;
+  return latestFollowBlockNumber - latestStoredBlockNumber;
+}
+
 const currentChainState = await getCurrentChainState();
 if (currentChainState) {
   // Reset the db if the version changed
@@ -132,6 +138,7 @@ server.use(
     isHealthy: () => true,
     isReady: () => isCaughtUp,
     getLatestStoredBlockNumber,
+    getDistanceFromFollowBlock,
     followBlockTag: env.FOLLOW_BLOCK_TAG,
   }),
 );
