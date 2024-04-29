@@ -87,8 +87,8 @@ export function DepositViaRelayForm(props: Props) {
       relayClient.actions.bridge({
         ...params,
         // TODO: translate this to something useful
-        onProgress(...args) {
-          console.log("onProgress", ...args);
+        onProgress(progress) {
+          console.log("onProgress", progress);
         },
       }),
   });

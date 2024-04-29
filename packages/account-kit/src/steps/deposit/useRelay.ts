@@ -5,6 +5,7 @@ import {
   fetchChainConfigs,
   RelayClient,
   createClient,
+  LogLevel,
 } from "@reservoir0x/relay-sdk";
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { debug } from "../../debug";
@@ -21,7 +22,12 @@ export function useRelay(): UseQueryResult<{ client: RelayClient; chains: RelayC
       debug("fetching relay chains from", baseApiUrl);
       const chains = await fetchChainConfigs(baseApiUrl);
       debug("got relay chains", chains);
-      const client = createClient({ baseApiUrl, source: appInfo.appOrigin, chains });
+      const client = createClient({
+        baseApiUrl,
+        source: appInfo.appOrigin,
+        chains,
+        logLevel: LogLevel.Verbose,
+      });
       return { client, chains };
     },
     refetchOnMount: false,
