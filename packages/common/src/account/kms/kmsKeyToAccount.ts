@@ -1,11 +1,11 @@
-import { KMSClient, SignCommandInput } from "@aws-sdk/client-kms";
+import { KMSClient } from "@aws-sdk/client-kms";
 import { LocalAccount, hashMessage, hashTypedData, keccak256, serializeTransaction, signatureToHex } from "viem";
 import { toAccount } from "viem/accounts";
 import { signWithKms } from "./signWithKms";
 import { getAddressFromKms } from "./getAddressFromKms";
 
 export type KmsKeyToAccountOptions = {
-  keyId?: SignCommandInput["KeyId"];
+  keyId?: string;
   client?: KMSClient;
 };
 
@@ -19,9 +19,9 @@ export type KmsAccount = LocalAccount<"aws-kms"> & {
  * @returns A Local Account.
  */
 export async function kmsKeyToAccount({
-  keyId,
+  keyId = process.env.AWS_KMS_KEY_ID,
   client = new KMSClient(),
-}: KmsKeyToAccountOptions): Promise<KmsAccount> {
+}: KmsKeyToAccountOptions = {}): Promise<KmsAccount> {
   const address = await getAddressFromKms({ keyId, client });
 
   const account = toAccount({
