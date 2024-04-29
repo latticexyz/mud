@@ -1,5 +1,4 @@
 ---
-"@latticexyz/common": patch
 "@latticexyz/cli": patch
 ---
 
