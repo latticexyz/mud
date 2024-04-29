@@ -19,7 +19,7 @@ export type KmsAccount = LocalAccount<"aws-kms"> & {
  * @returns A Local Account.
  */
 export async function kmsKeyToAccount({
-  keyId = process.env.AWS_KMS_KEY_ID as string,
+  keyId = process.env.AWS_KMS_KEY_ID || "",
   client = new KMSClient(),
 }: KmsKeyToAccountOptions = {}): Promise<KmsAccount> {
   const address = await getAddressFromKms({ keyId, client });
