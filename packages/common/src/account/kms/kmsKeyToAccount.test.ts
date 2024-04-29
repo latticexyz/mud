@@ -13,7 +13,6 @@ describe("kmsKeyToAccount", () => {
 
   beforeAll(async () => {
     const client = new KMSClient({
-      endpoint: process.env.KMS_ENDPOINT,
       region: "local",
       credentials: {
         accessKeyId: "AKIAXTTRUF7NU7KDMIED",
