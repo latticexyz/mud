@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { useGasTankBalance } from "./useGasTankBalance";
 import { useIsGasSpender } from "./useIsGasSpender";
 import { useSignRegisterDelegation } from "./steps/app-account/useSignRegisterDelegation";
-import { useIsFree } from "./useIsFree";
+import { useIsGasFree } from "./useIsGasFree";
 
 export const accountRequirements = [
   "connectedWallet",
@@ -30,13 +30,15 @@ export function useAccountRequirements(): UseAccountRequirementsResult {
   const { isGasSpender } = useIsGasSpender();
   const { hasDelegation } = useHasDelegation();
   const { registerDelegationSignature } = useSignRegisterDelegation();
-  const isFree = useIsFree();
+  const isGasFree = useIsGasFree();
+
+  // TODO: move to useQuery for caching + pending states
 
   const requirements = useMemo(() => {
     const satisfiesRequirement = {
       connectedWallet: () => userAccount.status === "connected",
       appSigner: () => appSignerAccount != null,
-      gasAllowance: () => isFree || (gasTankBalance != null && gasTankBalance > 0n),
+      gasAllowance: () => isGasFree || (gasTankBalance != null && gasTankBalance > 0n),
       gasSpender: () => isGasSpender === true,
       accountDelegation: () => hasDelegation === true || registerDelegationSignature != null,
       accountDelegationConfirmed: () => hasDelegation === true,
@@ -52,7 +54,7 @@ export function useAccountRequirements(): UseAccountRequirementsResult {
     appSignerAccount,
     gasTankBalance,
     hasDelegation,
-    isFree,
+    isGasFree,
     isGasSpender,
     registerDelegationSignature,
     userAccount.status,

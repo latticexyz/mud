@@ -3,6 +3,7 @@ import { AccountRequirement, useAccountRequirements } from "./useAccountRequirem
 import { useStore } from "zustand";
 import { useCallback, useMemo } from "react";
 import { keysOf } from "./utils/keysOf";
+import { useAccountModal } from "./useAccountModal";
 
 export const onboardingSteps = {
   wallet: {
@@ -40,7 +41,29 @@ const store = createStore<{ readonly step: OnboardingStep | null }>(() => ({ ste
 
 export function useOnboardingSteps() {
   const initialStep = useStore(store, (state) => state.step);
+  const { closeAccountModal } = useAccountModal();
   const { requirements } = useAccountRequirements();
+
+  const { step, nextStep, steps } = useMemo(() => {
+    const steps = keysOf(onboardingSteps).map((id) => {
+      const step = onboardingSteps[id];
+      return {
+        id,
+        ...step,
+        canComplete: step.requires.every((req) => !requirements.includes(req)),
+        isComplete: step.satisfies.every((req) => !requirements.includes(req)),
+      };
+    });
+
+    const nextStep = steps.filter((step) => !step.isComplete).at(0);
+    const step = initialStep ?? nextStep?.id ?? steps.filter((step) => step.id !== "finalizing").at(-1)!.id;
+
+    return {
+      step,
+      nextStep,
+      steps,
+    };
+  }, [initialStep, requirements]);
 
   const setStep = useCallback((step: OnboardingStep): void => {
     store.setState({ step });
@@ -48,30 +71,18 @@ export function useOnboardingSteps() {
 
   const resetStep = useCallback((): void => {
     store.setState({ step: null });
-  }, []);
+    if (!nextStep) {
+      closeAccountModal();
+    }
+  }, [closeAccountModal, nextStep]);
 
-  return useMemo(() => {
-    const steps = keysOf(onboardingSteps)
-      // .filter((id) => (isFree ? id !== "deposit" : id))
-      .map((id) => {
-        const step = onboardingSteps[id];
-        return {
-          id,
-          ...step,
-          canComplete: step.requires.every((req) => !requirements.includes(req)),
-          isComplete: step.satisfies.every((req) => !requirements.includes(req)),
-        };
-      });
-
-    const lastIncompleteStep =
-      steps.filter((step) => !step.isComplete).at(0) ?? steps.filter((step) => step.id !== "finalizing").at(-1)!;
-    const step = initialStep ?? lastIncompleteStep.id;
-
-    return {
+  return useMemo(
+    () => ({
       step,
+      steps,
       setStep,
       resetStep,
-      steps,
-    };
-  }, [initialStep, requirements, resetStep, setStep]);
+    }),
+    [resetStep, setStep, step, steps],
+  );
 }

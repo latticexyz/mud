@@ -1,8 +1,6 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
-import { usePrevious } from "./utils/usePrevious";
-import { useOnboardingSteps } from "./useOnboardingSteps";
 
 const store = createStore(() => ({ open: false }));
 
@@ -27,15 +25,6 @@ export function useAccountModal(): UseAccountModalResult {
   const toggleAccountModal = useCallback((open: boolean) => {
     store.setState({ open: open });
   }, []);
-
-  // Close account modal once we've completed all the steps
-  const { step } = useOnboardingSteps();
-  const previousStep = usePrevious(step);
-  useEffect(() => {
-    if (previousStep && !step) {
-      closeAccountModal();
-    }
-  }, [closeAccountModal, previousStep, step]);
 
   return useMemo(
     () => ({
