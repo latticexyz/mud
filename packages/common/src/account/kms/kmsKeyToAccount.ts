@@ -1,11 +1,11 @@
-import { KMSClient } from "@aws-sdk/client-kms";
+import { KMSClient, SignCommandInput } from "@aws-sdk/client-kms";
 import { LocalAccount, hashMessage, hashTypedData, keccak256, serializeTransaction, signatureToHex } from "viem";
 import { toAccount } from "viem/accounts";
 import { signWithKms } from "./signWithKms";
 import { getAddressFromKms } from "./getAddressFromKms";
 
 export type KmsKeyToAccountOptions = {
-  keyId: string;
+  keyId?: SignCommandInput["KeyId"];
   client?: KMSClient;
 };
 
