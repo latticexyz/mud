@@ -2,6 +2,7 @@ import { existsSync } from "fs";
 import path from "path";
 import chalk from "chalk";
 import { getScriptDirectory, forge } from "@latticexyz/common/foundry";
+import { Hex } from "viem";
 
 export async function postDeploy(
   postDeployScript: string,
@@ -9,6 +10,7 @@ export async function postDeploy(
   rpc: string,
   profile: string | undefined,
   forgeOptions: string | undefined,
+  privateKey: Hex,
 ): Promise<void> {
   // TODO: make this more robust as it is likely to fail for any args that have a space in them
   const userOptions = forgeOptions?.replaceAll("\\", "").split(" ") ?? [];
@@ -32,6 +34,8 @@ export async function postDeploy(
       rpc,
       "-vvv",
       ...userOptions,
+      "--private-key",
+      privateKey,
     ],
     {
       profile: profile,

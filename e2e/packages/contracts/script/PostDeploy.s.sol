@@ -12,8 +12,7 @@ contract PostDeploy is Script {
   function run(address worldAddress) external {
     StoreSwitch.setStoreAddress(worldAddress);
 
-    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-    vm.startBroadcast(deployerPrivateKey);
+    vm.startBroadcast();
 
     // Set up a bunch of position data so we can demonstrate filtering
     Position.set({ zone: "map1", x: 1, y: 1, player: msg.sender });
