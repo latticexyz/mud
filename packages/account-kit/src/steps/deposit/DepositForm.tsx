@@ -22,7 +22,11 @@ export type Props = {
   depositMethod: DepositMethod;
   setDepositMethod: (depositMethod: DepositMethod) => void;
   // TODO: add errors
-  estimatedFee: { fee?: bigint | undefined; isLoading?: boolean | undefined };
+  estimatedFee: {
+    fee?: bigint | undefined;
+    isLoading?: boolean | undefined;
+    error: Error | undefined;
+  };
   estimatedTime: string;
   submitButton: ReactNode;
   onSubmit: () => Promise<void>;
@@ -71,6 +75,7 @@ export function DepositForm({
           // TODO: replace `useBalance` with our own `useQuery` so we can customize the query key
           queryKey: ["balance"],
         })
+        // TODO: only reset step if previously had no gas balance
         .then(resetStep);
     }
   }, [isComplete, queryClient, resetStep]);

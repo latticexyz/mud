@@ -1,5 +1,5 @@
 import { useChains } from "wagmi";
-import { useRelayChains } from "./useRelayChains";
+import { useRelay } from "./useRelay";
 import { useAppChain } from "../../useAppChain";
 import { useMemo } from "react";
 import { isDefined } from "@latticexyz/common/utils";
@@ -10,10 +10,12 @@ import { SourceChain } from "./common";
 export function useSourceChains(): readonly SourceChain[] {
   const appChain = useAppChain();
   const chains = useChains();
-  const { data: relayChains } = useRelayChains();
+  const relay = useRelay();
 
   // TODO: add helper in viem's op-stack to detect if given chain can use deposit functions instead of figuring it out here
   const portalAddress = appChain.sourceId ? appChain.contracts?.portal?.[appChain.sourceId]?.address : undefined;
+
+  const relayChains = relay.data?.chains;
   const canRelay = relayChains?.find((c) => c.id === appChain.id);
 
   const sourceChains = useMemo(() => {
@@ -27,7 +29,7 @@ export function useSourceChains(): readonly SourceChain[] {
             ? ["transfer"]
             : [
                 canBridge && portalAddress ? ("bridge" as const) : undefined,
-                // canRelay && relayChain ? ("relay" as const) : undefined,
+                canRelay && relayChain ? ("relay" as const) : undefined,
               ].filter(isDefined)
         ) satisfies SourceChain["depositMethods"];
 

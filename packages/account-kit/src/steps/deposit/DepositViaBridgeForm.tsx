@@ -140,6 +140,7 @@ export function DepositViaBridgeForm(props: Props) {
       estimatedFee={{
         fee: estimateGas.data && estimateFee.data ? estimateGas.data * estimateFee.data.maxFeePerGas : undefined,
         isLoading: estimateGas.isLoading || estimateFee.isLoading,
+        error: estimateGas.error ?? estimateFee.error ?? undefined,
       }}
       estimatedTime="A few minutes"
       // TODO: figure out some better way to bubble this up to advance to next step

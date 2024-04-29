@@ -28,6 +28,7 @@ export function DepositViaTransferForm(props: Props) {
           to: appAccountClient.account.address,
           value: props.amount,
           maxPriorityFeePerGas: fees.data?.maxPriorityFeePerGas,
+          query: {},
         }
       : {},
   );
