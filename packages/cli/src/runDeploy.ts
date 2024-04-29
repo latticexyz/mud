@@ -45,7 +45,7 @@ export const deployOptions = {
   },
   aws: {
     type: "boolean",
-    desc: "Deploy the World wtih a KMS signer instead of local private key.",
+    desc: "Deploy the World with a KMS signer instead of local private key.",
   },
 } as const satisfies Record<string, Options>;
 
