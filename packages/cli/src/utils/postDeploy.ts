@@ -33,9 +33,9 @@ export async function postDeploy(
       "--rpc-url",
       rpc,
       "-vvv",
-      ...userOptions,
       "--private-key",
       privateKey,
+      ...userOptions,
     ],
     {
       profile: profile,
