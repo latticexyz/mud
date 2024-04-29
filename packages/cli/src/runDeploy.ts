@@ -134,7 +134,14 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     withWorldProxy: configV2.deploy.upgradeableWorldImplementation,
   });
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
-    await postDeploy(config.postDeployScript, worldDeploy.address, rpc, profile, opts.forgeScriptOptions);
+    await postDeploy(
+      config.postDeployScript,
+      worldDeploy.address,
+      rpc,
+      profile,
+      opts.forgeScriptOptions,
+      opts.awsKmsKeyId !== undefined,
+    );
   }
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
 
