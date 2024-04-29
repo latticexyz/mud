@@ -18,8 +18,7 @@ contract PostDeploy is Script {
     address mary = makeAddr("mary");
     address joe = makeAddr("joe");
 
-    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-    vm.startBroadcast(deployerPrivateKey);
+    vm.startBroadcast();
 
     Position.set({ player: bob, x: 1, y: -1 });
     Health.set({ player: bob, health: 5 });
