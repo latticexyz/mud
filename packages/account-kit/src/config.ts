@@ -61,18 +61,33 @@ export type Config = {
      */
     readonly name?: string;
     /**
-     * The app icon used throughout the onboarding process. It will be used as a fallback if no `image` is provided. Icon should be 1:1 aspect ratio, at least 200x200.
+     * The URL of the app icon used throughout the onboarding process. It will be used as a fallback if no `image` is provided. Icon should be 1:1 aspect ratio, at least 200x200.
      *
      * If not set, defaults to the page's `<link rel="icon">` or the origin's `/favicon.ico`.
      */
     readonly icon?: string;
     /**
-     * The splash image displayed during the first step of onboarding. Ideally around 600x250.
+     * The URL of the splash image displayed during the first step of onboarding. Ideally around 600x250.
      *
      * If not set, defaults to displaying the name, icon, and origin.
      */
     readonly image?: string;
+    /**
+     * Optional URL to your app's Terms of Use. If set, the step before asking users to sign in to your app will link to this page.
+     */
+    readonly termsOfUse?: string;
+    /**
+     * Optional URL to your app's Privacy Policy. If set, the step before asking users to sign in to your app will link to this page.
+     */
+    readonly privacyPolicy?: string;
   };
 
+  /**
+   * Configuration for ERC-4337 compatible smart accounts.
+   *
+   * If not set, defaults to chain's `rpcUrls.erc4337Bundler` and `contracts.gasTank`.
+   *
+   * Set to `false` to opt out of smart accounts. The app signer will be used in its place and its balance treated as the gas tank.
+   */
   readonly erc4337?: Erc4337Config | false;
 };

@@ -42,6 +42,10 @@ const accountKitConfig = {
   chainId,
   worldAddress,
   erc4337: false,
+  appInfo: {
+    termsOfUse: "#terms",
+    privacyPolicy: "#privacy",
+  },
 } as const;
 
 const root = ReactDOM.createRoot(document.querySelector("#react-root")!);
