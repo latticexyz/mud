@@ -3,6 +3,7 @@ import { LocalAccount, hashMessage, hashTypedData, keccak256, serializeTransacti
 import { toAccount } from "viem/accounts";
 import { signWithKms } from "./signWithKms";
 import { getAddressFromKms } from "./getAddressFromKms";
+import { MUDError } from "../../errors";
 
 export type KmsKeyToAccountOptions = {
   keyId?: string;
@@ -19,10 +20,14 @@ export type KmsAccount = LocalAccount<"aws-kms"> & {
  * @returns A Local Account.
  */
 export async function kmsKeyToAccount({
-  keyId = process.env.AWS_KMS_KEY_ID || "",
+  keyId = process.env.AWS_KMS_KEY_ID,
   client = new KMSClient(),
 }: KmsKeyToAccountOptions = {}): Promise<KmsAccount> {
   const address = await getAddressFromKms({ keyId, client });
+
+  if (!keyId) {
+    throw new MUDError("Missing AWS KMS Key ID");
+  }
 
   const account = toAccount({
     address,
