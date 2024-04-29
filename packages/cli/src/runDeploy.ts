@@ -84,18 +84,25 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     await build({ config: configV2, srcDir, foundryProfile: profile });
   }
 
-  const privateKey = process.env.PRIVATE_KEY as Hex;
-  if (!privateKey) {
-    throw new MUDError(
-      `Missing PRIVATE_KEY environment variable.
-Run 'echo "PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" > .env'
-in your contracts directory to use the default anvil private key.`,
-    );
-  }
-
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
 
-  const account = opts.kms ? await kmsKeyToAccount() : privateKeyToAccount(privateKey);
+  const account = await (async () => {
+    if (opts.kms) {
+      const keyId = process.env.AWS_KMS_KEY_ID;
+      return await kmsKeyToAccount({ keyId });
+    } else {
+      const privateKey = process.env.PRIVATE_KEY;
+      if (!privateKey) {
+        throw new MUDError(
+          `Missing PRIVATE_KEY environment variable.
+  Run 'echo "PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" > .env'
+  in your contracts directory to use the default anvil private key.`,
+        );
+      }
+
+      return privateKeyToAccount(privateKey as Hex);
+    }
+  })();
 
   const client = createWalletClient({
     transport: http(rpc, {

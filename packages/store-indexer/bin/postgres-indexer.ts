@@ -66,6 +66,14 @@ async function getLatestStoredBlockNumber(): Promise<bigint | undefined> {
   }
 }
 
+async function getDistanceFromFollowBlock(): Promise<bigint> {
+  const [latestStoredBlockNumber, latestFollowBlock] = await Promise.all([
+    getLatestStoredBlockNumber(),
+    publicClient.getBlock({ blockTag: env.FOLLOW_BLOCK_TAG }),
+  ]);
+  return (latestStoredBlockNumber ?? -1n) - latestFollowBlock.number;
+}
+
 const latestStoredBlockNumber = await getLatestStoredBlockNumber();
 if (latestStoredBlockNumber != null) {
   startBlock = latestStoredBlockNumber + 1n;
@@ -117,6 +125,7 @@ if (env.HEALTHCHECK_HOST != null || env.HEALTHCHECK_PORT != null) {
       isHealthy: () => true,
       isReady: () => isCaughtUp,
       getLatestStoredBlockNumber,
+      getDistanceFromFollowBlock,
       followBlockTag: env.FOLLOW_BLOCK_TAG,
     }),
   );
