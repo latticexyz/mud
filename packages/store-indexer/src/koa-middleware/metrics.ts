@@ -5,7 +5,7 @@ type MetricsOptions = {
   isHealthy?: () => boolean;
   isReady?: () => boolean;
   getLatestStoredBlockNumber?: () => Promise<bigint | undefined>;
-  getDistanceFromFollowBlock?: () => Promise<bigint | undefined>;
+  getDistanceFromFollowBlock?: () => Promise<bigint>;
   followBlockTag?: "latest" | "safe" | "finalized";
 };
 

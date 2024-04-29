@@ -73,9 +73,11 @@ async function getLatestStoredBlockNumber(): Promise<bigint | undefined> {
   return currentChainState?.lastUpdatedBlockNumber ?? undefined;
 }
 
-async function getDistanceFromFollowBlock(): Promise<bigint | undefined> {
-  const latestStoredBlockNumber = (await getLatestStoredBlockNumber()) ?? -1n;
-  const latestFollowBlockNumber = (await publicClient.getBlock({ blockTag: env.FOLLOW_BLOCK_TAG })).number;
+async function getDistanceFromFollowBlock(): Promise<bigint> {
+  const [latestStoredBlockNumber, latestFollowBlockNumber] = await Promise.all([
+    (await getLatestStoredBlockNumber()) ?? -1n,
+    (await publicClient.getBlock({ blockTag: env.FOLLOW_BLOCK_TAG })).number,
+  ]);
   return latestFollowBlockNumber - latestStoredBlockNumber;
 }
 
