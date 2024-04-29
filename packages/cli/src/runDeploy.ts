@@ -95,7 +95,7 @@ in your contracts directory to use the default anvil private key.`,
 
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
 
-  const account = opts.aws ? await kmsKeyToAccount() : privateKeyToAccount(privateKey);
+  const account = opts.aws ? await kmsKeyToAccount({}) : privateKeyToAccount(privateKey);
 
   const client = createWalletClient({
     transport: http(rpc, {
