@@ -122,7 +122,15 @@ in your contracts directory to use the default anvil private key.`,
     withWorldProxy: configV2.deploy.upgradeableWorldImplementation,
   });
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
-    await postDeploy(config.postDeployScript, worldDeploy.address, rpc, profile, opts.forgeScriptOptions, privateKey);
+    await postDeploy(
+      config.postDeployScript,
+      worldDeploy.address,
+      rpc,
+      profile,
+      opts.forgeScriptOptions,
+      privateKey,
+      opts.awsKmsKeyId !== undefined,
+    );
   }
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
 
