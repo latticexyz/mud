@@ -21,7 +21,7 @@ export function useRelay(): UseQueryResult<{ client: RelayClient; chains: RelayC
       debug("fetching relay chains from", baseApiUrl);
       const chains = await fetchChainConfigs(baseApiUrl);
       debug("got relay chains", chains);
-      const client = createClient({ baseApiUrl, source: `${appInfo.appOrigin} (via MUD Account Kit)`, chains });
+      const client = createClient({ baseApiUrl, source: appInfo.appOrigin, chains });
       return { client, chains };
     },
     refetchOnMount: false,

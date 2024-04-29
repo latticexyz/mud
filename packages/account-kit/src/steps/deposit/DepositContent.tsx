@@ -6,6 +6,9 @@ import { DepositMethod } from "./common";
 import { useSourceChains } from "./useSourceChains";
 import { useConfig } from "../../AccountKitConfigProvider";
 import { DepositMethodForm } from "./DepositMethodForm";
+import { useDepositTransactions } from "./useDepoitTransactions";
+import { BridgeTransactionStatus } from "./BridgeTransactionStatus";
+import { assertExhaustive } from "@latticexyz/common/utils";
 
 export function DepositContent() {
   const { chainId: appChainId } = useConfig();
@@ -24,6 +27,8 @@ export function DepositContent() {
   const depositMethod = sourceChain.depositMethods.includes(selectedDepositMethod)
     ? selectedDepositMethod
     : sourceChain.depositMethods[0];
+
+  const { transactions } = useDepositTransactions();
 
   return (
     <>
@@ -45,6 +50,19 @@ export function DepositContent() {
             depositMethod={depositMethod}
             setDepositMethod={setSelectedDepositMethod}
           />
+          {/* TODO: make transactions dismissable */}
+          {transactions.length > 0 ? (
+            <div className="flex flex-col gap-1 px-5">
+              {transactions.map((transaction) => {
+                switch (transaction.type) {
+                  case "bridge":
+                    return <BridgeTransactionStatus key={transaction.uid} {...transaction} />;
+                  default:
+                    assertExhaustive(transaction.type);
+                }
+              })}
+            </div>
+          ) : null}
         </div>
       </AccountModalSection>
     </>

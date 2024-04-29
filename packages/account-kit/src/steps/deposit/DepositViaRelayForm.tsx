@@ -109,6 +109,7 @@ export function DepositViaRelayForm(props: Props) {
         </SubmitButton>
       }
       onSubmit={async () => {
+        console.log("sending bridge request", bridgeParams);
         await bridge.mutateAsync(bridgeParams!);
       }}
     />

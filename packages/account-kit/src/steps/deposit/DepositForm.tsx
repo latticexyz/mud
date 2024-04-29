@@ -31,7 +31,6 @@ export type Props = {
   submitButton: ReactNode;
   onSubmit: () => Promise<void>;
   isComplete?: boolean;
-  transactionStatus?: ReactNode;
 };
 
 export function DepositForm({
@@ -46,7 +45,6 @@ export function DepositForm({
   onSubmit,
   isComplete,
   submitButton,
-  transactionStatus,
 }: Props) {
   const amountInputRef = useRef<HTMLInputElement | null>(null);
   const isMounted = useIsMounted();
@@ -167,8 +165,6 @@ export function DepositForm({
       </dl>
 
       {hasMinimumBalance ? submitButton : <SubmitButton disabled>Not enough funds</SubmitButton>}
-
-      {transactionStatus}
     </form>
   );
 }

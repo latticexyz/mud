@@ -5,35 +5,15 @@ import { type Props } from "./DepositMethodForm";
 import { useAppChain } from "../../useAppChain";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getL2TransactionHashes, publicActionsL1, publicActionsL2, walletActionsL1 } from "viem/op-stack";
-import { BridgeTransactionStatus } from "./BridgeTransactionStatus";
 import { SubmitButton } from "./SubmitButton";
 import { Account, Chain } from "viem";
-import { createStore } from "zustand/vanilla";
-import { BridgeTransaction } from "./common";
-import { useStore } from "zustand";
 import { debug } from "../../debug";
-
-// TODO: lift this into a generic deposit txs
-const store = createStore<{
-  readonly bridgeTransactions: readonly BridgeTransaction[];
-}>(() => ({
-  bridgeTransactions: [
-    // TODO: remove this test tx
-    // {
-    //   amount: parseEther("0.01"),
-    //   chainL1: holesky,
-    //   chainL2: garnet,
-    //   hashL1: "0x8f0987b82756f2e7df50fcbb302693e21aea823e0afac312c91fff052ce259d8",
-    //   receiptL1: wait(5_000).then(() => ({}) as never),
-    //   receiptL2: wait(15_000).then(() => ({}) as never),
-    //   start: new Date(),
-    //   estimatedTime: 1000 * 60 * 3,
-    // },
-  ],
-}));
+import { BridgeTransaction, useDepositTransactions } from "./useDepoitTransactions";
 
 export function DepositViaBridgeForm(props: Props) {
   const appChain = useAppChain();
+  const { addTransaction } = useDepositTransactions();
+
   const { data: appAccountClient } = useAppAccountClient();
   const appAccountAddress = appAccountClient?.account.address;
 
@@ -112,6 +92,8 @@ export function DepositViaBridgeForm(props: Props) {
       });
 
       const bridgeTransaction = {
+        type: "bridge",
+        uid: `${props.sourceChain.id}:${hashL1}`,
         amount: prepare.data.request.mint!,
         chainL1: props.sourceChain,
         chainL2: appChain,
@@ -123,16 +105,9 @@ export function DepositViaBridgeForm(props: Props) {
       } satisfies BridgeTransaction;
 
       debug("bridge transaction submitted", bridgeTransaction);
-
-      store.setState((state) => ({
-        bridgeTransactions: [...state.bridgeTransactions, bridgeTransaction],
-      }));
-
-      // TODO: remove bridge transaction from state?
+      addTransaction(bridgeTransaction);
     },
   });
-
-  const bridgeTransactions = useStore(store, (state) => state.bridgeTransactions);
 
   return (
     <DepositForm
@@ -157,16 +132,6 @@ export function DepositViaBridgeForm(props: Props) {
       onSubmit={async () => {
         await deposit.mutateAsync();
       }}
-      // TODO: wrap these to control spacing between?
-      transactionStatus={
-        bridgeTransactions.length > 0 ? (
-          <div className="flex flex-col gap-1">
-            {bridgeTransactions.map((bridgeTransaction) => (
-              <BridgeTransactionStatus key={bridgeTransaction.hashL1} {...bridgeTransaction} />
-            ))}
-          </div>
-        ) : undefined
-      }
     />
   );
 }

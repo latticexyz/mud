@@ -47,6 +47,7 @@ export function DepositViaTransferForm(props: Props) {
       estimatedFee={{
         fee: prepared.data ? prepared.data.gas * prepared.data.maxFeePerGas : undefined,
         isLoading: prepared.isLoading,
+        error: prepared.error ?? undefined,
       }}
       estimatedTime="Instant"
       submitButton={
