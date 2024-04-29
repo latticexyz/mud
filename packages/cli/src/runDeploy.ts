@@ -88,8 +88,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   const account = await (async () => {
     if (opts.kms) {
-      const keyId = process.env.AWS_KMS_KEY_ID;
-      return await kmsKeyToAccount({ keyId });
+      return await kmsKeyToAccount();
     } else {
       const privateKey = process.env.PRIVATE_KEY;
       if (!privateKey) {
