@@ -6,6 +6,9 @@ name: Build
 on:
   pull_request:
 
+env:
+  NODE_OPTIONS: "--max-old-space-size=4096"
+
 jobs:
   build:
     name: Build and validate artifacts
