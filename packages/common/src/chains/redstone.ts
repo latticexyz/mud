@@ -21,6 +21,7 @@ export const redstone = {
       url: "https://explorer.redstone.xyz",
     },
   },
+  indexerUrl: "indexer.mud.garnetchain.com",
   contracts: {
     multicall3: {
       address: "0xca11bde05977b3631167028862be2a173976ca11",
