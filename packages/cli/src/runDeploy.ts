@@ -140,7 +140,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
       rpc,
       profile,
       opts.forgeScriptOptions,
-      opts.awsKmsKeyId !== undefined,
+      opts.kms ? true : false,
     );
   }
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
