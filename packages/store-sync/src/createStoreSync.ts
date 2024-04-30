@@ -34,7 +34,6 @@ import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/uti
 import { getSnapshot } from "./getSnapshot";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 import { Store as StoreConfig } from "@latticexyz/store";
-import { MUDChain } from "@latticexyz/common/chains";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -97,7 +96,11 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
       filters,
       initialState,
       initialBlockLogs,
-      indexerUrl: indexerUrl ?? (publicClient.chain as MUDChain).indexerUrl,
+      indexerUrl:
+        indexerUrl ??
+        (publicClient.chain && "indexerUrl" in publicClient.chain && typeof publicClient.chain.indexerUrl === "string"
+          ? publicClient.chain.indexerUrl
+          : undefined),
     });
 
     onProgress?.({
