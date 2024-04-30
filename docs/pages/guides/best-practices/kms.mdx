@@ -104,13 +104,13 @@ You can read additional details about this process [in the AWS documentation](ht
 
 1. Set the AWS environment variables.
 
-   | Variable              | Value                                                                                         |
-   | --------------------- | --------------------------------------------------------------------------------------------- |
-   | AWS_ACCESS_KEY_ID     | The access key you created                                                                    |
-   | AWS_SECRET_ACCESS_KEY | The secret access key                                                                         |
-   | AWS_REGION            | AWS region (the first component of the console's domain name, such as `us-east-2`)            |
-   | AWS_ENDPOINT_URL      | [See the AWS console](https://docs.aws.amazon.com/general/latest/gr/kms.html) for your region |
-   | AWS_KMS_KEY_ID        | The key ID for the world owner address, such as `6e8dcfb6-24fe-4fb0-a9ce-afb560f8ce7b`        |
+   | Variable              | Value                                                                                                                              |
+   | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+   | AWS_ACCESS_KEY_ID     | The access key you created                                                                                                         |
+   | AWS_SECRET_ACCESS_KEY | The secret access key                                                                                                              |
+   | AWS_REGION            | AWS region (the first component of the console's domain name, such as `us-east-2`)                                                 |
+   | AWS_ENDPOINT_URL      | `https://` followed by [the hostname from the AWS console](https://docs.aws.amazon.com/general/latest/gr/kms.html) for your region |
+   | AWS_KMS_KEY_ID        | The key ID for the world owner address, such as `6e8dcfb6-24fe-4fb0-a9ce-afb560f8ce7b`                                             |
 
 ## Use the new key
 
@@ -130,7 +130,7 @@ You can read additional details about this process [in the AWS documentation](ht
 1. To deploy a new `World`, run this command.
 
    ```sh copy
-   pnpm mud deploy --aws
+   pnpm mud deploy --kms
    ```
 
 1. If you need to run forge scripts, use this command.
