@@ -29,11 +29,6 @@ We recommend as best practice to use [AWS Key Management Service](https://aws.am
    For the description tag value write `Appname_world_owner_access`.
 
 1. Click **Show** to see the access key and keep the access key and secret access key in a safe place.
-   They will look like this:
-
-   | Access key           | Secret access key                        |
-   | -------------------- | ---------------------------------------- |
-   | A..................M | 5......................................3 |
 
 ## Create an Ethereum public/private key pair
 
@@ -101,6 +96,8 @@ You can read additional details about this process [in the AWS documentation](ht
 
    </details>
 
+1. Write down the key ID.
+
 ## Install and configure the AWS CLI
 
 1. Install the AWS CLI [from the website](https://aws.amazon.com/cli/).
@@ -126,7 +123,9 @@ You can read additional details about this process [in the AWS documentation](ht
    cast send $AWS_ADDRESS --private-key $PRIVATE_KEY --value 1ether
    ```
 
-1. Update `PostDeploy.s.sol` script. These scripts are usually incompatible with the KMS deployer as they rely on reading a private key from the local development environment. To ensure `forge` uses the KMS signer, the script should use `vm.startBroadcast()` with no arguments.
+1. Update scripts as needed.
+   Scripts cannot rely on reading the deployment key from the local environment when you use KMS.
+   Instead, use `vm.startBroadcast()` without any parameters to get the signature using whatever mechanism is used with `forge`, such as KMS.
 
 1. To deploy a new `World`, run this command.
 
