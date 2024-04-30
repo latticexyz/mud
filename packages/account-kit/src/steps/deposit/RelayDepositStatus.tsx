@@ -4,9 +4,17 @@ import { formatBalance } from "./formatBalance";
 import { useChains } from "wagmi";
 import { RelayDeposit } from "./useDeposits";
 
-export type Props = RelayDeposit;
+export type Props = RelayDeposit & { onDismiss: () => void };
 
-export function RelayDepositStatus({ amount, chainL1Id, chainL2Id, start, estimatedTime, depositPromise }: Props) {
+export function RelayDepositStatus({
+  amount,
+  chainL1Id,
+  chainL2Id,
+  start,
+  estimatedTime,
+  depositPromise,
+  onDismiss,
+}: Props) {
   const chains = useChains();
   const chainL1 = chains.find((chain) => chain.id === chainL1Id)!;
   const chainL2 = chains.find((chain) => chain.id === chainL2Id)!;
@@ -23,6 +31,7 @@ export function RelayDepositStatus({ amount, chainL1Id, chainL2Id, start, estima
         duration: estimatedTime,
         elapsed: Math.min(estimatedTime, Date.now() - start.getTime()),
       }}
+      onDismiss={onDismiss}
     >
       {(() => {
         // const blockExplorerL1 = chainL1.blockExplorers?.default.url;

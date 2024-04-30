@@ -67,11 +67,18 @@ export function useDeposits() {
     }));
   }, []);
 
+  const removeDeposit = useCallback((uid: string) => {
+    store.setState((state) => ({
+      deposits: state.deposits.filter((deposit) => deposit.uid !== uid),
+    }));
+  }, []);
+
   return useMemo(
     () => ({
       deposits,
       addDeposit,
+      removeDeposit,
     }),
-    [addDeposit, deposits],
+    [addDeposit, deposits, removeDeposit],
   );
 }

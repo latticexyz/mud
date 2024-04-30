@@ -1,7 +1,7 @@
 import { twMerge } from "tailwind-merge";
 import * as Select from "@radix-ui/react-select";
 import { useFrame } from "../../ui/FrameProvider";
-import { useAccount, useChains } from "wagmi";
+import { useAccount } from "wagmi";
 import { useTheme } from "../../useTheme";
 import { ChevronUpIcon } from "../../icons/ChevronUpIcon";
 import { ChevronDownIcon } from "../../icons/ChevronDownIcon";
@@ -18,7 +18,6 @@ export type Props = {
 export function ChainSelect({ value, onChange }: Props) {
   const theme = useTheme();
   const { frame } = useFrame();
-  const chains = useChains();
   const userAccount = useAccount();
 
   const sourceChains = useSourceChains();
@@ -30,7 +29,7 @@ export function ChainSelect({ value, onChange }: Props) {
       onValueChange={(value) => {
         // TODO: figure out why onValueChange triggers twice, once with value and once without
         if (value) {
-          const chain = chains.find((chain) => chain.id.toString() === value);
+          const chain = sourceChains.find((chain) => chain.id.toString() === value);
           if (!chain) throw new Error(`Unknown chain selected: ${value}`);
           onChange(chain.id);
         }
@@ -59,7 +58,7 @@ export function ChainSelect({ value, onChange }: Props) {
 
       {frame.contentDocument ? (
         <Select.Portal container={frame.contentDocument.body}>
-          <Select.Content position="popper" className="w-80 mt-1">
+          <Select.Content position="popper" className="w-80 mt-1 animate-in fade-in slide-in-from-top-2">
             <Select.Viewport>
               <Select.Group
                 className={twMerge(

@@ -4,7 +4,7 @@ import { formatBalance } from "./formatBalance";
 import { useChains } from "wagmi";
 import { BridgeDeposit } from "./useDeposits";
 
-export type Props = BridgeDeposit;
+export type Props = BridgeDeposit & { onDismiss: () => void };
 
 export function BridgeDepositStatus({
   amount,
@@ -15,6 +15,7 @@ export function BridgeDepositStatus({
   receiptL2: receiptL2Promise,
   start,
   estimatedTime,
+  onDismiss,
 }: Props) {
   const chains = useChains();
   const chainL1 = chains.find((chain) => chain.id === chainL1Id)!;
@@ -37,6 +38,7 @@ export function BridgeDepositStatus({
         duration: estimatedTime,
         elapsed: Math.min(estimatedTime, Date.now() - start.getTime()),
       }}
+      onDismiss={onDismiss}
     >
       {(() => {
         const blockExplorerL1 = chainL1.blockExplorers?.default.url;

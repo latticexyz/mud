@@ -29,7 +29,7 @@ export function DepositContent() {
     ? selectedDepositMethod
     : sourceChain.depositMethods[0];
 
-  const { deposits } = useDeposits();
+  const { deposits, removeDeposit } = useDeposits();
 
   return (
     <>
@@ -57,9 +57,17 @@ export function DepositContent() {
               {deposits.map((deposit) => {
                 switch (deposit.type) {
                   case "bridge":
-                    return <BridgeDepositStatus key={deposit.uid} {...deposit} />;
+                    return (
+                      <BridgeDepositStatus
+                        key={deposit.uid}
+                        {...deposit}
+                        onDismiss={() => removeDeposit(deposit.uid)}
+                      />
+                    );
                   case "relay":
-                    return <RelayDepositStatus key={deposit.uid} {...deposit} />;
+                    return (
+                      <RelayDepositStatus key={deposit.uid} {...deposit} onDismiss={() => removeDeposit(deposit.uid)} />
+                    );
                   default:
                     // TODO: wtf TS y u no narrow
                     assertExhaustive(deposit.type);
