@@ -143,7 +143,7 @@ export function AccountButton() {
                 }}
               >
                 <CashIcon className="flex-shrink-0 opacity-50" />
-                <span className="flex-grow">App balance</span>
+                <span className="flex-grow">Gas balance</span>
               </DropdownMenu.Item>
               {/* <DropdownMenu.Item className={twMerge(secondaryInteractiveClassNames, "flex gap-2.5 p-3 items-center")}>
                 <CopyIcon className="flex-shrink-0 opacity-50" />
