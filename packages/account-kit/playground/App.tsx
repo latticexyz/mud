@@ -5,7 +5,7 @@ import { useLocalStorage } from "usehooks-ts";
 export function App() {
   const { openAccountModal } = useAccountModal();
 
-  const [openModal, setOpenModal] = useLocalStorage<boolean>("mud:accountKitPlayground:openModalOnMount", true);
+  const [openModal, setOpenModal] = useLocalStorage<boolean>("mud:accountKitPlayground:openModalOnMount", false);
 
   useEffect(() => {
     if (openModal) {

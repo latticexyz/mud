@@ -2,7 +2,7 @@ import { PendingIcon } from "../../icons/PendingIcon";
 import { ReactNode, useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { CheckIcon } from "../../icons/CheckIcon";
-import { CloseIcon } from "../../icons/CloseIcon";
+import { WarningIcon } from "../../icons/WarningIcon";
 
 export type Props = {
   status: "pending" | "success" | "error";
@@ -13,7 +13,7 @@ export type Props = {
   children: ReactNode;
 };
 
-export function TransactionStatus({ status, progress, children }: Props) {
+export function DepositStatus({ status, progress, children }: Props) {
   const [appear, setAppear] = useState(false);
   useEffect(() => {
     setAppear(true);
@@ -26,7 +26,7 @@ export function TransactionStatus({ status, progress, children }: Props) {
         {status === "success" ? (
           <CheckIcon className="flex-shrink-0 text-green-600" />
         ) : status === "error" ? (
-          <CloseIcon className="flex-shrink-0 text-red-600" />
+          <WarningIcon className="flex-shrink-0 text-amber-500" />
         ) : (
           <PendingIcon className="flex-shrink-0 text-neutral-400 dark:text-neutral-500 transition" />
         )}

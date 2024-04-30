@@ -1,32 +1,37 @@
 import { useQuery } from "@tanstack/react-query";
-import { BridgeTransaction } from "./common";
-import { TransactionStatus } from "./TransactionStatus";
+import { DepositStatus } from "./DepositStatus";
 import { formatBalance } from "./formatBalance";
+import { useChains } from "wagmi";
+import { BridgeDeposit } from "./useDeposits";
 
-export type Props = BridgeTransaction;
+export type Props = BridgeDeposit;
 
-export function BridgeTransactionStatus({
+export function BridgeDepositStatus({
   amount,
-  chainL1,
-  chainL2,
+  chainL1Id,
+  chainL2Id,
   hashL1,
   receiptL1: receiptL1Promise,
   receiptL2: receiptL2Promise,
   start,
   estimatedTime,
 }: Props) {
+  const chains = useChains();
+  const chainL1 = chains.find((chain) => chain.id === chainL1Id)!;
+  const chainL2 = chains.find((chain) => chain.id === chainL2Id)!;
+
   const receiptL1 = useQuery({
-    queryKey: ["bridgeTransactionStatus", "L1", hashL1],
+    queryKey: ["bridgeDepositStatus", "L1", hashL1],
     queryFn: () => receiptL1Promise,
   });
 
   const receiptL2 = useQuery({
-    queryKey: ["bridgeTransactionStatus", "L2", hashL1],
+    queryKey: ["bridgeDepositStatus", "L2", hashL1],
     queryFn: () => receiptL2Promise,
   });
 
   return (
-    <TransactionStatus
+    <DepositStatus
       status={receiptL1.status === "success" ? receiptL2.status : receiptL1.status}
       progress={{
         duration: estimatedTime,
@@ -126,6 +131,6 @@ export function BridgeTransactionStatus({
           </>
         );
       })()}
-    </TransactionStatus>
+    </DepositStatus>
   );
 }

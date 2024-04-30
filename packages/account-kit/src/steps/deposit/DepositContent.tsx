@@ -6,9 +6,10 @@ import { DepositMethod } from "./common";
 import { useSourceChains } from "./useSourceChains";
 import { useConfig } from "../../AccountKitConfigProvider";
 import { DepositMethodForm } from "./DepositMethodForm";
-import { useDepositTransactions } from "./useDepoitTransactions";
-import { BridgeTransactionStatus } from "./BridgeTransactionStatus";
+import { useDeposits } from "./useDeposits";
+import { BridgeDepositStatus } from "./BridgeDepositStatus";
 import { assertExhaustive } from "@latticexyz/common/utils";
+import { RelayDepositStatus } from "./RelayDepositStatus";
 
 export function DepositContent() {
   const { chainId: appChainId } = useConfig();
@@ -28,7 +29,7 @@ export function DepositContent() {
     ? selectedDepositMethod
     : sourceChain.depositMethods[0];
 
-  const { transactions } = useDepositTransactions();
+  const { deposits } = useDeposits();
 
   return (
     <>
@@ -50,15 +51,18 @@ export function DepositContent() {
             depositMethod={depositMethod}
             setDepositMethod={setSelectedDepositMethod}
           />
-          {/* TODO: make transactions dismissable */}
-          {transactions.length > 0 ? (
+          {/* TODO: make deposits dismissable */}
+          {deposits.length > 0 ? (
             <div className="flex flex-col gap-1 px-5">
-              {transactions.map((transaction) => {
-                switch (transaction.type) {
+              {deposits.map((deposit) => {
+                switch (deposit.type) {
                   case "bridge":
-                    return <BridgeTransactionStatus key={transaction.uid} {...transaction} />;
+                    return <BridgeDepositStatus key={deposit.uid} {...deposit} />;
+                  case "relay":
+                    return <RelayDepositStatus key={deposit.uid} {...deposit} />;
                   default:
-                    assertExhaustive(transaction.type);
+                    // TODO: wtf TS y u no narrow
+                    assertExhaustive(deposit.type);
                 }
               })}
             </div>

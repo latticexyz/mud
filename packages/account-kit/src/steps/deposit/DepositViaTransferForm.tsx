@@ -33,7 +33,13 @@ export function DepositViaTransferForm(props: Props) {
       : {},
   );
 
-  const sendTransaction = useSendTransaction();
+  const sendTransaction = useSendTransaction({
+    mutation: {
+      onError: (error) => {
+        console.log("Error when depositing via transfer", error);
+      },
+    },
+  });
   const receipt = useWaitForTransactionReceipt({
     chainId: props.sourceChain.id,
     hash: sendTransaction.data,

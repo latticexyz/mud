@@ -7,6 +7,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAppChain } from "../../useAppChain";
 import { BridgeActionParameters, GetBridgeQuoteParameters } from "@reservoir0x/relay-sdk";
 import { useRelay } from "./useRelay";
+import { useDeposits } from "./useDeposits";
 
 export function DepositViaRelayForm(props: Props) {
   const appChain = useAppChain();
@@ -14,6 +15,7 @@ export function DepositViaRelayForm(props: Props) {
   const { data: walletClient } = useWalletClient();
   const { data: relay } = useRelay();
   const relayClient = relay?.client;
+  const { addDeposit } = useDeposits();
 
   if (appAccountClient?.type === "smartAccountClient") {
     // TODO: wire this up differently to make a `depositTo` call on gas tank
@@ -39,7 +41,7 @@ export function DepositViaRelayForm(props: Props) {
   ];
 
   const bridgeParams =
-    walletClient && appAccountClient && props.amount != null
+    walletClient && appAccountClient && props.amount != null && props.amount > 0n
       ? ({
           wallet: walletClient,
           chainId: props.sourceChain.id,
@@ -83,14 +85,37 @@ export function DepositViaRelayForm(props: Props) {
 
   const bridge = useMutation({
     mutationKey: ["relayBridge"],
-    mutationFn: (params: BridgeActionParameters) =>
-      relayClient.actions.bridge({
-        ...params,
-        // TODO: translate this to something useful
-        onProgress(progress) {
-          console.log("onProgress", progress);
-        },
-      }),
+    mutationFn: async (params: BridgeActionParameters) => {
+      try {
+        // This start time isn't very accurate because the `bridge` call below doesn't resolve until everything is complete.
+        // Ideally `start` is initialized after the transaction is signed by the user wallet.
+        const start = new Date();
+
+        const pendingDeposit = relayClient.actions.bridge({
+          ...params,
+          // TODO: translate this to something useful
+          onProgress(progress) {
+            console.log("onProgress", progress);
+          },
+        });
+
+        // TODO: move this into `onProgress` once we can determine that the tx has been signed and sent to mempool
+        addDeposit({
+          type: "relay",
+          amount: BigInt(params.amount), // ugh
+          chainL1Id: params.chainId,
+          chainL2Id: params.toChainId,
+          start,
+          estimatedTime: 1000 * 30,
+          depositPromise: pendingDeposit,
+        });
+
+        return await pendingDeposit;
+      } catch (error) {
+        console.error("Error while depositing via Relay", error);
+        throw error;
+      }
+    },
   });
 
   const fee = quote.data?.quote.fees?.gas;

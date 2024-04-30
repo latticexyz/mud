@@ -8,11 +8,11 @@ import { getL2TransactionHashes, publicActionsL1, publicActionsL2, walletActions
 import { SubmitButton } from "./SubmitButton";
 import { Account, Chain } from "viem";
 import { debug } from "../../debug";
-import { BridgeTransaction, useDepositTransactions } from "./useDepoitTransactions";
+import { BridgeDeposit, useDeposits } from "./useDeposits";
 
 export function DepositViaBridgeForm(props: Props) {
   const appChain = useAppChain();
-  const { addTransaction } = useDepositTransactions();
+  const { addDeposit } = useDeposits();
 
   const { data: appAccountClient } = useAppAccountClient();
   const appAccountAddress = appAccountClient?.account.address;
@@ -60,52 +60,56 @@ export function DepositViaBridgeForm(props: Props) {
       publicClientL2?.uid,
     ],
     mutationFn: async () => {
-      // TODO: take these in as args instead?
-      if (!walletClientL1) throw new Error("Could not deposit. L1 wallet client not ready.");
-      if (!publicClientL1) throw new Error("Could not deposit. L1 public client not ready.");
-      if (!publicClientL2) throw new Error("Could not deposit. L2 public client not ready.");
-      if (!prepare.data) throw new Error("Could not deposit. Transaction not prepared.");
-      const hashL1 = await walletClientL1.depositTransaction(prepare.data);
+      try {
+        // TODO: take these in as args instead?
+        if (!walletClientL1) throw new Error("Could not deposit. L1 wallet client not ready.");
+        if (!publicClientL1) throw new Error("Could not deposit. L1 public client not ready.");
+        if (!publicClientL2) throw new Error("Could not deposit. L2 public client not ready.");
+        if (!prepare.data) throw new Error("Could not deposit. Transaction not prepared.");
+        const hashL1 = await walletClientL1.depositTransaction(prepare.data);
 
-      const receiptL1 = publicClientL1.waitForTransactionReceipt({ hash: hashL1 }).then((receipt) => {
-        if (receipt.status === "reverted") {
-          throw new Error("L1 deposit transaction reverted.");
-        }
-        const hashL2 = getL2TransactionHashes(receipt).at(0);
-        if (!hashL2) {
-          console.error("Could not find L2 hash in L1 deposit transaction receipt.", receipt);
-          throw new Error("Could not find L2 hash in L1 deposit transaction receipt.");
-        }
-        return {
-          receiptL1: receipt,
-          hashL2,
-        };
-      });
+        const receiptL1 = publicClientL1.waitForTransactionReceipt({ hash: hashL1 }).then((receipt) => {
+          if (receipt.status === "reverted") {
+            throw new Error("L1 deposit transaction reverted.");
+          }
+          const hashL2 = getL2TransactionHashes(receipt).at(0);
+          if (!hashL2) {
+            console.error("Could not find L2 hash in L1 deposit transaction receipt.", receipt);
+            throw new Error("Could not find L2 hash in L1 deposit transaction receipt.");
+          }
+          return {
+            receiptL1: receipt,
+            hashL2,
+          };
+        });
 
-      const receiptL2 = receiptL1.then(async ({ hashL2 }) => {
-        const receipt = await publicClientL2.waitForTransactionReceipt({ hash: hashL2 });
-        if (receipt.status === "reverted") {
-          // I really really hope this never happens.
-          throw new Error("L2 bridge deposit transaction reverted.");
-        }
-        return receipt;
-      });
+        const receiptL2 = receiptL1.then(async ({ hashL2 }) => {
+          const receipt = await publicClientL2.waitForTransactionReceipt({ hash: hashL2 });
+          if (receipt.status === "reverted") {
+            // I really really hope this never happens.
+            throw new Error("L2 bridge deposit transaction reverted.");
+          }
+          return receipt;
+        });
 
-      const bridgeTransaction = {
-        type: "bridge",
-        uid: `${props.sourceChain.id}:${hashL1}`,
-        amount: prepare.data.request.mint!,
-        chainL1: props.sourceChain,
-        chainL2: appChain,
-        hashL1,
-        receiptL1,
-        receiptL2,
-        start: new Date(),
-        estimatedTime: 1000 * 60 * 3,
-      } satisfies BridgeTransaction;
+        const pendingDeposit = {
+          type: "bridge",
+          amount: prepare.data.request.mint!,
+          chainL1Id: props.sourceChain.id,
+          chainL2Id: appChain.id,
+          hashL1,
+          receiptL1,
+          receiptL2,
+          start: new Date(),
+          estimatedTime: 1000 * 60 * 3,
+        } satisfies BridgeDeposit;
 
-      debug("bridge transaction submitted", bridgeTransaction);
-      addTransaction(bridgeTransaction);
+        debug("bridge transaction submitted", pendingDeposit);
+        addDeposit(pendingDeposit);
+      } catch (error) {
+        console.error("Error while depositing via bridge", error);
+        throw error;
+      }
     },
   });
 

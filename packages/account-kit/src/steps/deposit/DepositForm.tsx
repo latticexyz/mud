@@ -11,6 +11,7 @@ import { DepositMethod, SourceChain } from "./common";
 import { ReactNode, useEffect, useRef } from "react";
 import { SubmitButton } from "./SubmitButton";
 import { useIsMounted } from "usehooks-ts";
+import { WarningIcon } from "../../icons/WarningIcon";
 
 export const DEFAULT_DEPOSIT_AMOUNT = 0.005;
 
@@ -77,6 +78,18 @@ export function DepositForm({
         .then(resetStep);
     }
   }, [isComplete, queryClient, resetStep]);
+
+  useEffect(() => {
+    if (balance.error) {
+      console.error("Failed to get balance for", userAddress, "on", sourceChain.id, balance.error);
+    }
+  }, [balance.error, sourceChain.id, userAddress]);
+
+  useEffect(() => {
+    if (estimatedFee.error) {
+      console.error("Failed to estimate fee for", selectedMethod, "deposit from", sourceChain.id, estimatedFee.error);
+    }
+  }, [estimatedFee.error, selectedMethod, sourceChain.id, userAddress]);
 
   return (
     <form
@@ -146,17 +159,25 @@ export function DepositForm({
       >
         <dt>Available to deposit</dt>
         <dd>
-          {balance.data ? (
+          {balance.isSuccess ? (
             <>{formatBalance(balance.data.value)} Ξ</>
+          ) : balance.isError ? (
+            <span title={String(balance.error)}>
+              <WarningIcon className="inline-block text-amber-500" />
+            </span>
           ) : balance.isLoading ? (
             <PendingIcon className="inline-block text-xs" />
           ) : null}
         </dd>
         <dt>Estimated fee</dt>
         <dd>
-          {estimatedFee?.fee ? (
+          {estimatedFee.fee ? (
             <>{formatGas(estimatedFee.fee)} gwei</>
-          ) : estimatedFee?.isLoading ? (
+          ) : estimatedFee.error ? (
+            <span title={String(estimatedFee.error)}>
+              <WarningIcon className="inline-block text-amber-500" />
+            </span>
+          ) : estimatedFee.isLoading ? (
             <PendingIcon className="inline-block text-xs" />
           ) : null}
         </dd>
