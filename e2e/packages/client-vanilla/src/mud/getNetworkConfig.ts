@@ -28,7 +28,7 @@ export async function getNetworkConfig() {
     faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
     worldAddress,
     initialBlockNumber,
-    indexerUrl: params.get("indexerUrl"),
+    indexerUrl: params.get("indexerUrl") ?? chain.indexerUrl,
     rpcHttpUrl: params.get("rpcHttpUrl"),
   };
 }

@@ -38,7 +38,7 @@ export async function setupNetwork() {
     address: networkConfig.worldAddress as Hex,
     publicClient,
     startBlock: BigInt(networkConfig.initialBlockNumber),
-    indexerUrl: networkConfig.indexerUrl ?? undefined,
+    indexerUrl: networkConfig.indexerUrl,
     filters: Object.entries(mudConfig.tables).map(([, table]) => {
       const tableId = table.tableId;
       if (table.name === mudConfig.tables.Position.name) {
