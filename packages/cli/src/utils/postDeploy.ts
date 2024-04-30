@@ -9,6 +9,7 @@ export async function postDeploy(
   rpc: string,
   profile: string | undefined,
   forgeOptions: string | undefined,
+  kms: boolean,
 ): Promise<void> {
   // TODO: make this more robust as it is likely to fail for any args that have a space in them
   const userOptions = forgeOptions?.replaceAll("\\", "").split(" ") ?? [];
@@ -31,6 +32,7 @@ export async function postDeploy(
       "--rpc-url",
       rpc,
       "-vvv",
+      kms ? "--aws" : "",
       ...userOptions,
     ],
     {
