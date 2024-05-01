@@ -10,6 +10,7 @@ import { getContractData } from "../utils/getContractData";
 import { defaultModuleContracts } from "../utils/defaultModuleContracts";
 import { Hex, createWalletClient, http } from "viem";
 import chalk from "chalk";
+import { resolveConfig } from "../deploy/resolveConfig";
 
 const verifyOptions = {
   deployerAddress: {
@@ -72,6 +73,19 @@ const commandModule: CommandModule<Options, Options> = {
 
     const contractNames = getExistingContracts(srcDir).map(({ basename }) => basename);
     const resolvedWorldConfig = resolveWorldConfig(config, contractNames);
+
+    const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
+
+    const libraries = resolvedConfig.libraries.map(({ name }) => {
+      const contractData = getContractData(`${name}.sol`, name, outDir);
+
+      return {
+        name,
+        bytecode: contractData.bytecode,
+      };
+    });
+
+    console.log(libraries);
 
     const systems = Object.keys(resolvedWorldConfig.systems).map((name) => {
       const contractData = getContractData(`${name}.sol`, name, outDir);

@@ -3,6 +3,7 @@ pragma solidity >=0.8.24;
 import { console } from "forge-std/console.sol";
 import { System } from "@latticexyz/world/src/System.sol";
 import { CounterTable } from "../codegen/index.sol";
+import { LibNothing } from "../LibNothing.sol";
 
 contract IncrementSystem is System {
   error MyCustomError();
@@ -11,6 +12,7 @@ contract IncrementSystem is System {
     uint32 counter = CounterTable.get();
     uint32 newValue = counter + 1;
     CounterTable.set(newValue);
+
     return newValue;
   }
 
@@ -18,5 +20,9 @@ contract IncrementSystem is System {
     // revert("I told you it would revert");
     CounterTable.register();
     // revert MyCustomError();
+  }
+
+  function doNothing() public {
+    LibNothing.doNothing();
   }
 }
