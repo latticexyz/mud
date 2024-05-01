@@ -95,7 +95,7 @@ export type SyncOptions<config extends StoreConfig = StoreConfig> = {
   /**
    * Optional MUD tRPC indexer URL to fetch initial state from.
    */
-  indexerUrl?: string;
+  indexerUrl?: string | false;
   /**
    * Optional initial state to hydrate from. Useful if you're hydrating from an indexer or cache.
    * @deprecated Use `initialLogs` option instead.

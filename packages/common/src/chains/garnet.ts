@@ -45,4 +45,6 @@ export const garnet = {
       },
     },
   },
+  iconUrls: ["https://redstone.xyz/chain-icons/garnet.png"],
+  indexerUrl: "https://indexer.mud.garnetchain.com",
 } as const satisfies MUDChain;

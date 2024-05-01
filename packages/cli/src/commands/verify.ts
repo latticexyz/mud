@@ -25,7 +25,7 @@ const verifyOptions = {
     desc: "Enable batch processing of RPC requests in viem client (defaults to batch size of 100 and wait of 1s)",
   },
   srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
-  verifier: { type: "string", desc: "The verifier to use. Default to sourcify", default: "sourcify" },
+  verifier: { type: "string", desc: "The verifier to use. Defaults to blockscout", default: "blockscout" },
   verifierUrl: {
     type: "string",
     desc: "The verification provider.",

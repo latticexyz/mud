@@ -1,3 +1,67 @@
+## Version 2.0.9
+
+Release date: Wed May 01 2024
+
+### Patch changes
+
+**[fix(cli): do not require `PRIVATE_KEY` if using KMS (#2765)](https://github.com/latticexyz/mud/commit/30318687f35a57217e932f9f2b4c80a9d6617ee5)** (@latticexyz/cli)
+
+Fixed `mud deploy` to not require the `PRIVATE_KEY` environment variable when using a KMS signer.
+
+**[feat(create-mud): redstone and garnet chains (#2776)](https://github.com/latticexyz/mud/commit/6b247fb9d1902a5138ad4a05b634b4d0921af433)** (create-mud)
+
+Updated templates with Redstone and Garnet chains and removed the deprecated Lattice testnet chain.
+
+**[feat(store-indexer): add metric for distance from block tag to follow (#2763)](https://github.com/latticexyz/mud/commit/93690fdb1d51f8ef470fd4f1d84490c14bf1f442)** (@latticexyz/store-indexer)
+
+Added a `distance_from_follow_block` metric to compare the latest stored block number with the block number corresponding to the block tag the indexer follows.
+
+**[feat(cli): blockscout is default verifier (#2775)](https://github.com/latticexyz/mud/commit/0b6b70ffd2f8e7eaa9732d2aa5b158fd0927d10b)** (@latticexyz/cli)
+
+`mud verify` now defaults to blockscout if no `--verifier` is provided.
+
+**[fix(cli): run postdeploy with aws flag when kms is enabled (#2766)](https://github.com/latticexyz/mud/commit/428ff972198425cb19d363c92eb49002accdc6a0)** (@latticexyz/cli)
+
+Fixed `mud deploy` to use the `forge script --aws` flag when executing `PostDeploy` with a KMS signer.
+
+Note that you may need to update your `PostDeploy.s.sol` script, with `vm.startBroadcast` receiving no arguments instead of reading a private key from the environment:
+
+```diff
+-uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+-vm.startBroadcast(deployerPrivateKey);
+
++vm.startBroadcast();
+```
+
+**[feat(common): add indexer URL to chain configs (#2771)](https://github.com/latticexyz/mud/commit/764ca0a0c390ddce5d8a618fd4e801e9fc542a0b)** (@latticexyz/store-sync)
+
+Updated `createStoreSync` to default to the chain's indexer URL when no `indexerUrl` is passed in. To intentionally unset the value and not use the indexer at all, `indexerUrl` can now also be `false`.
+
+**[fix(cli): remove postdeploy gas setting in favor of script options (#2756)](https://github.com/latticexyz/mud/commit/074ed66eb64df377e37684c47d7ff15ced16885b)** (@latticexyz/cli)
+
+Removed manual gas setting in PostDeploy step of `mud deploy` in favor of `forge script` fetching it from the RPC.
+
+If you still want to manually set gas, you can use `mud deploy --forgeScriptOptions="--with-gas-price 1000000"`.
+
+**[refactor(common,cli): kms deployer gets keyId from environment (#2760)](https://github.com/latticexyz/mud/commit/e03830ebe3ee3ea6fb1384be53fc26b668fbe607)** (@latticexyz/cli)
+
+The key ID for deploying via KMS signer is now set via an `AWS_KMS_KEY_ID` environment variable to better align with Foundry tooling. To enable KMS signing with this environment variable, use the `--kms` flag.
+
+```diff
+-mud deploy --awsKmsKeyId [key ID]
++AWS_KMS_KEY_ID=[key ID] mud deploy --kms
+```
+
+**[feat(common): add indexer URL to chain configs (#2771)](https://github.com/latticexyz/mud/commit/764ca0a0c390ddce5d8a618fd4e801e9fc542a0b)** (@latticexyz/common)
+
+Added an optional `indexerUrl` property to `MUDChain`, and populated it in the Redstone and Garnet chain configs.
+
+**[feat(common): add chain icons (#2778)](https://github.com/latticexyz/mud/commit/bad3ad1bd9bb86bc7eb83cfb299df92d14c64c46)** (@latticexyz/common)
+
+Added chain icons to Redstone and Garnet chain configs via `chain.iconUrls`.
+
+---
+
 ## Version 2.0.8
 
 Release date: Sat Apr 27 2024

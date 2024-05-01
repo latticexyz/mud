@@ -44,7 +44,7 @@ jobs:
         if: steps.check_changes.outputs.changes_outside_docs
         env:
           DATABASE_URL: "postgres://postgres@localhost:5432/postgres"
-          KMS_ENDPOINT: "http://localhost:8080"
+          AWS_ENDPOINT_URL: "http://localhost:8080"
         run: pnpm test:ci
 
       - name: Generate gas reports
