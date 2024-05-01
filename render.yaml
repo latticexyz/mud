@@ -23,7 +23,7 @@ services:
     region: ohio
     runtime: docker
     domains:
-      - indexer.mud.redstone.offchain.dev
+      - redstone.mudindexer.offchain.dev
     dockerfilePath: ./Dockerfile.render
     dockerContext: ./
     dockerCommand: pnpm tsx bin/postgres-frontend
