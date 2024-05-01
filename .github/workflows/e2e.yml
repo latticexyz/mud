@@ -53,6 +53,7 @@ jobs:
         uses: ./.github/actions/require-empty-diff
 
       - name: Run tests
+        timeout-minutes: 15
         env:
           DATABASE_URL: "postgres://postgres@localhost:5432/postgres"
         working-directory: ./e2e
