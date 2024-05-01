@@ -1,5 +1,22 @@
 # @latticexyz/store-sync
 
+## 2.0.9
+
+### Patch Changes
+
+- 764ca0a0: Updated `createStoreSync` to default to the chain's indexer URL when no `indexerUrl` is passed in. To intentionally unset the value and not use the indexer at all, `indexerUrl` can now also be `false`.
+- Updated dependencies [764ca0a0]
+- Updated dependencies [bad3ad1b]
+  - @latticexyz/common@2.0.9
+  - @latticexyz/block-logs-stream@2.0.9
+  - @latticexyz/config@2.0.9
+  - @latticexyz/protocol-parser@2.0.9
+  - @latticexyz/query@2.0.9
+  - @latticexyz/store@2.0.9
+  - @latticexyz/world@2.0.9
+  - @latticexyz/recs@2.0.9
+  - @latticexyz/schema-type@2.0.9
+
 ## 2.0.8
 
 ### Patch Changes

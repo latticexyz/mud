@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.0.9
+
+### Patch Changes
+
+- 6b247fb9: Updated templates with Redstone and Garnet chains and removed the deprecated Lattice testnet chain.
+
 ## 2.0.8
 
 ## 2.0.7
