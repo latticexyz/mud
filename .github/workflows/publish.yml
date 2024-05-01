@@ -1,0 +1,32 @@
+name: Publish to npm
+
+on:
+  push:
+    branches:
+      - "main"
+    paths-ignore:
+      - "docs/**"
+
+# Ensure only one workflow/job is publishing to npm at a time
+concurrency: publish-to-npm
+
+jobs:
+  release:
+    uses: "./.github/workflows/release.yml"
+    secrets: inherit
+
+  snapshot:
+    needs: [release]
+    uses: "./.github/workflows/snapshot.yml"
+    secrets: inherit
+
+  docker:
+    needs: [release, snapshot]
+    uses: "./.github/workflows/docker.yml"
+    secrets: inherit
+
+  test-snapshot:
+    uses: ./.github/workflows/test-published-packages.yml
+    needs: [release, snapshot]
+    with:
+      tag-or-version: ${{ github.ref_name }}

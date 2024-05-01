@@ -1,14 +1,8 @@
 name: Snapshot release
 
-# Releases a snapshot release when new commits merge to main
-# This ensures the release process is working as expected
 on:
+  workflow_call:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - "docs/**"
 
 # Ensure only one workflow/job is publishing to npm at a time
 concurrency: publish-to-npm
@@ -64,13 +58,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  docker:
-    uses: ./.github/workflows/docker.yml
-    needs: release-snapshot
-
-  test-snapshot:
-    uses: ./.github/workflows/test-published-packages.yml
-    needs: release-snapshot
-    with:
-      tag-or-version: ${{ github.ref_name }}

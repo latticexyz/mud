@@ -1,11 +1,7 @@
 name: Release 🔖
 
 on:
-  push:
-    branches:
-      - "main"
-    paths-ignore:
-      - "docs/**"
+  workflow_call:
 
 # Ensure only one workflow/job is publishing to npm at a time
 concurrency: publish-to-npm
@@ -16,7 +12,6 @@ env:
 jobs:
   release:
     name: Release
-    if: github.repository == 'latticexyz/mud'
     runs-on: ubuntu-latest
     # Permissions necessary for Changesets to push a new branch and open PRs
     # (for automated Version Packages PRs), and request the JWT for provenance.
@@ -31,19 +26,21 @@ jobs:
         with:
           submodules: recursive
 
-      - name: "Setup"
-        uses: ./.github/actions/setup
-
-      - name: Set deployment token
-        run: npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       - name: Check for pre.json file existence
         id: check_files
         uses: andstor/file-existence-action@v2.0.0
         with:
           files: ".changeset/pre.json"
+
+      - name: "Setup"
+        if: steps.check_files.outputs.files_exists == 'false'
+        uses: ./.github/actions/setup
+
+      - name: Set deployment token
+        if: steps.check_files.outputs.files_exists == 'false'
+        run: npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create version PR or publish 🚀
         if: steps.check_files.outputs.files_exists == 'false'
@@ -53,7 +50,3 @@ jobs:
           version: pnpm release:version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  docker:
-    uses: ./.github/workflows/docker.yml
-    needs: release
