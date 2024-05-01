@@ -21,10 +21,11 @@ export const redstone = {
       url: "https://explorer.redstone.xyz",
     },
   },
-  indexerUrl: "https://indexer.mud.redstonechain.com",
   contracts: {
     multicall3: {
       address: "0xca11bde05977b3631167028862be2a173976ca11",
     },
   },
+  iconUrls: ["https://redstone.xyz/chain-icons/garnet.png"],
+  indexerUrl: "https://indexer.mud.redstonechain.com",
 } as const satisfies MUDChain;
