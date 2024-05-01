@@ -8,11 +8,6 @@ export type RpcUrls = {
 };
 
 export type MUDChain = Chain & {
-  iconUrls?: readonly string[];
-  indexerUrl?: string;
-  /** @deprecated */
-  faucetUrl?: string;
-  iconUrls?: readonly string[];
   rpcUrls?: Chain["rpcUrls"] & {
     erc4337Bundler?: RpcUrls | undefined;
   };
@@ -22,4 +17,8 @@ export type MUDChain = Chain & {
       [sourceId: number]: ChainContract | undefined;
     };
   };
+  iconUrls?: readonly string[];
+  indexerUrl?: string;
+  /** @deprecated */
+  faucetUrl?: string;
 };
