@@ -11,6 +11,7 @@ on:
       tag-or-version:
         required: true
         type: string
+        description: npm tag or version of MUD
 
 jobs:
   test-create-mud-project:
