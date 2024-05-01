@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.0.9
+
+### Patch Changes
+
+- 764ca0a0: Added an optional `indexerUrl` property to `MUDChain`, and populated it in the Redstone and Garnet chain configs.
+- bad3ad1b: Added chain icons to Redstone and Garnet chain configs via `chain.iconUrls`.
+  - @latticexyz/schema-type@2.0.9
+
 ## 2.0.8
 
 ### Patch Changes

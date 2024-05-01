@@ -1,5 +1,47 @@
 # Change Log
 
+## 2.0.9
+
+### Patch Changes
+
+- 30318687: Fixed `mud deploy` to not require the `PRIVATE_KEY` environment variable when using a KMS signer.
+- 0b6b70ff: `mud verify` now defaults to blockscout if no `--verifier` is provided.
+- 428ff972: Fixed `mud deploy` to use the `forge script --aws` flag when executing `PostDeploy` with a KMS signer.
+
+  Note that you may need to update your `PostDeploy.s.sol` script, with `vm.startBroadcast` receiving no arguments instead of reading a private key from the environment:
+
+  ```diff
+  -uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+  -vm.startBroadcast(deployerPrivateKey);
+
+  +vm.startBroadcast();
+  ```
+
+- 074ed66e: Removed manual gas setting in PostDeploy step of `mud deploy` in favor of `forge script` fetching it from the RPC.
+
+  If you still want to manually set gas, you can use `mud deploy --forgeScriptOptions="--with-gas-price 1000000"`.
+
+- e03830eb: The key ID for deploying via KMS signer is now set via an `AWS_KMS_KEY_ID` environment variable to better align with Foundry tooling. To enable KMS signing with this environment variable, use the `--kms` flag.
+
+  ```diff
+  -mud deploy --awsKmsKeyId [key ID]
+  +AWS_KMS_KEY_ID=[key ID] mud deploy --kms
+  ```
+
+- Updated dependencies [764ca0a0]
+- Updated dependencies [bad3ad1b]
+  - @latticexyz/common@2.0.9
+  - @latticexyz/config@2.0.9
+  - @latticexyz/protocol-parser@2.0.9
+  - @latticexyz/store@2.0.9
+  - @latticexyz/world@2.0.9
+  - @latticexyz/world-modules@2.0.9
+  - @latticexyz/abi-ts@2.0.9
+  - @latticexyz/gas-report@2.0.9
+  - @latticexyz/schema-type@2.0.9
+  - @latticexyz/services@2.0.9
+  - @latticexyz/utils@2.0.9
+
 ## 2.0.8
 
 ### Patch Changes

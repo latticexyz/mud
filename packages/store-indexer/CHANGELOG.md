@@ -1,5 +1,19 @@
 # @latticexyz/store-indexer
 
+## 2.0.9
+
+### Patch Changes
+
+- 93690fdb: Added a `distance_from_follow_block` metric to compare the latest stored block number with the block number corresponding to the block tag the indexer follows.
+- Updated dependencies [764ca0a0]
+- Updated dependencies [764ca0a0]
+- Updated dependencies [bad3ad1b]
+  - @latticexyz/store-sync@2.0.9
+  - @latticexyz/common@2.0.9
+  - @latticexyz/block-logs-stream@2.0.9
+  - @latticexyz/protocol-parser@2.0.9
+  - @latticexyz/store@2.0.9
+
 ## 2.0.8
 
 ### Patch Changes
