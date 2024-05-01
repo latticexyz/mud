@@ -14,6 +14,7 @@ type VerifyOptions = {
   rpc: string;
   verifier: string;
   verifierUrl?: string;
+  libraries: { name: string; bytecode: Hex }[];
   systems: { name: string; bytecode: Hex }[];
   modules: { name: string; bytecode: Hex }[];
   worldAddress: Hex;
@@ -30,6 +31,7 @@ const ERC1967_IMPLEMENTATION_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076c
 export async function verify({
   client,
   rpc,
+  libraries,
   systems,
   modules,
   worldAddress,
@@ -50,6 +52,24 @@ export async function verify({
   const usesProxy = implementationStorage && implementationStorage !== zeroHash;
 
   const verifyQueue = new PQueue({ concurrency: 4 });
+
+  libraries.map(({ name, bytecode }) =>
+    verifyQueue.add(() =>
+      verifyContract({
+        name,
+        rpc,
+        verifier,
+        verifierUrl,
+        address: getCreate2Address({
+          from: deployerAddress,
+          bytecode: bytecode,
+          salt,
+        }),
+      }).catch((error) => {
+        console.error(`Error verifying system contract ${name}:`, error);
+      }),
+    ),
+  );
 
   systems.map(({ name, bytecode }) =>
     verifyQueue.add(() =>

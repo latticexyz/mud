@@ -6,6 +6,7 @@
   "scripts": {
     "build": "mud build",
     "clean": "forge clean && rimraf src/codegen",
+    "deploy:garnet": "pnpm run build && mud deploy --profile=garnet",
     "deploy:local": "pnpm run build && mud deploy",
     "deploy:testnet": "pnpm run build && mud deploy --profile=lattice-testnet",
     "dev": "pnpm mud dev-contracts",
@@ -13,7 +14,8 @@
     "lint": "pnpm run prettier && pnpm run solhint",
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
-    "test": "mud test"
+    "test": "mud test",
+    "verify": "mud verify --worldAddress 0x941d794452a37b731eb70a4dac549c632b3bff44 --rpc https://rpc.garnetchain.com --verifier blockscout --verifier-url https://garnet.blockscout.com/api"
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../../../packages/cli",

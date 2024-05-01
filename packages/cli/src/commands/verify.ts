@@ -85,8 +85,6 @@ const commandModule: CommandModule<Options, Options> = {
       };
     });
 
-    console.log(libraries);
-
     const systems = Object.keys(resolvedWorldConfig.systems).map((name) => {
       const contractData = getContractData(`${name}.sol`, name, outDir);
 
@@ -111,6 +109,7 @@ const commandModule: CommandModule<Options, Options> = {
     await verify({
       client,
       rpc,
+      libraries,
       systems,
       modules,
       deployerAddress: opts.deployerAddress as Hex | undefined,
