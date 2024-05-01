@@ -21,13 +21,13 @@
     "file": "test/ERC20.t.sol",
     "test": "testBurn",
     "name": "burn",
-    "gasUsed": 141096
+    "gasUsed": 141409
   },
   {
     "file": "test/ERC20.t.sol",
     "test": "testMint",
     "name": "mint",
-    "gasUsed": 179835
+    "gasUsed": 180148
   },
   {
     "file": "test/ERC20.t.sol",
@@ -57,19 +57,19 @@
     "file": "test/ERC721.t.sol",
     "test": "testBurnGas",
     "name": "burn",
-    "gasUsed": 156244
+    "gasUsed": 156557
   },
   {
     "file": "test/ERC721.t.sol",
     "test": "testMintGas",
     "name": "mint",
-    "gasUsed": 187144
+    "gasUsed": 187457
   },
   {
     "file": "test/ERC721.t.sol",
     "test": "testSafeMintToEOAGas",
     "name": "safeMint",
-    "gasUsed": 189855
+    "gasUsed": 190169
   },
   {
     "file": "test/ERC721.t.sol",
