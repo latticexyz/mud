@@ -4,15 +4,15 @@ import { twMerge } from "tailwind-merge";
 import { PendingIcon } from "../icons/PendingIcon";
 
 type ButtonClassNameOptions = {
-  size?: "sm" | "md";
   variant?: "primary" | "secondary" | "tertiary";
   pending?: boolean;
 };
 
-const buttonClassName = ({ size = "md", variant = "primary", pending = false }: ButtonClassNameOptions = {}) =>
+const buttonClassName = ({ variant = "primary", pending = false }: ButtonClassNameOptions = {}) =>
   twMerge(
-    // eslint-disable-next-line max-len
-    "group self-center leading-none outline-none border border-transparent ring-2 ring-transparent focus:ring-orange-500 focus:border-transparent transition aria-disabled:pointer-events-none aria-busy:pointer-events-none",
+    "group self-center leading-none outline-none border border-transparent ring-2 ring-transparent focus:ring-orange-500 focus:border-transparent transition",
+    "aria-disabled:pointer-events-none aria-busy:pointer-events-none",
+    "p-4 font-semibold",
     {
       primary: twMerge(
         "bg-neutral-900 text-white hover:bg-neutral-700 active:bg-neutral-600 aria-disabled:bg-neutral-200 aria-disabled:text-neutral-400",
@@ -33,37 +33,32 @@ const buttonClassName = ({ size = "md", variant = "primary", pending = false }: 
         "dark:text-neutral-400 dark:border-neutral-400 dark:hover:bg-neutral-500 dark:hover:border-neutral-300 dark:active:bg-neutral-600 dark:active:border-neutral-200 dark:aria-disabled:text-neutral-500 dark:aria-disabled:border-neutral-600",
       ),
     }[variant],
-    {
-      sm: twMerge("p-3 font-medium text-[14px]"),
-      md: twMerge("p-4 font-semibold text-[16px]"),
-    }[size],
-    pending && "cursor-wait pointer-events-none",
   );
 
 export type ButtonProps = {
   pending?: boolean;
   variant?: ButtonClassNameOptions["variant"];
-  size?: ButtonClassNameOptions["size"];
 };
 
 export type Props = ButtonProps & DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
 
-export const Button = ({ pending, variant, size, type, className, children, disabled, ...props }: Props) => {
+export const Button = ({ pending, variant, type, className, children, disabled, ...props }: Props) => {
   return (
     <button
       type={type || "button"}
-      className={twMerge(buttonClassName({ variant, pending, size }), className)}
+      className={twMerge(buttonClassName({ variant, pending }), className)}
       aria-busy={pending}
       aria-disabled={disabled}
       disabled={disabled || pending}
       {...props}
     >
-      <span className={twMerge("flex", pending ? "justify-between" : "justify-center")}>
-        <span aria-hidden className={twMerge("col-start-1 row-start-1 hidden", "group-aria-busy:inline-block")}>
-          <PendingIcon />
+      <span className="grid grid-cols-[1fr_auto_1fr] gap-2">
+        <span className="flex items-center justify-end text-sm">
+          <span className="transition opacity-0 translate-x-2 group-aria-busy:opacity-100 group-aria-busy:translate-x-0 duration-100 group-aria-busy:duration-300">
+            <PendingIcon />
+          </span>
         </span>
-
-        <span className={twMerge("col-start-1 row-start-1 leading-none")}>{children}</span>
+        <span>{children}</span>
       </span>
     </button>
   );

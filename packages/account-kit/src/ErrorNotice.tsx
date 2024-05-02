@@ -30,7 +30,7 @@ export function ErrorNotice({ title: initialTitle, error }: Props) {
         "dark:bg-red-100 dark:border-red-500 dark:text-red-900",
       )}
     >
-      <div className="font-bold">{title}</div>
+      <div className="font-semibold">{title}</div>
       <div className="-mb-3 pb-3 whitespace-break-spaces break-all max-h-32 overflow-y-scroll">{message}</div>
     </div>
   );
