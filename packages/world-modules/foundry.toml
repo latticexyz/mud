@@ -1,5 +1,6 @@
 [profile.default]
 solc = "0.8.24"
+evm_version = "cancun"
 ffi = false
 fuzz_runs = 256
 optimizer = true

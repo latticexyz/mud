@@ -81,4 +81,9 @@ interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors {
    * @param initModule The InitModule to be installed during initialization.
    */
   function initialize(IModule initModule) external;
+
+  /**
+   * @notice tracks the initial person who called the World
+   */
+  function initialMsgSender() external view returns (address);
 }
