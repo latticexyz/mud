@@ -9,6 +9,7 @@ import { useConfig } from "../../AccountKitConfigProvider";
 import { registerDelegationWithSignature } from "../app-account/registerDelegationWithSignature";
 import { waitForTransactionReceipt } from "viem/actions";
 import { useAccountModal } from "../../useAccountModal";
+import { ErrorNotice } from "../../ErrorNotice";
 
 export function FinalizingStep() {
   const queryClient = useQueryClient();
@@ -68,12 +69,13 @@ export function FinalizingStep() {
         },
   );
 
+  // TODO: rework with nicer pending + error states
+
   if (registerDelegation.isError) {
     console.error("register delegation error", registerDelegation.error);
     return (
       <AccountModalSection>
-        {/* TODO nicer error */}
-        <div className="p-5 whitespace-break-spaces">{String(registerDelegation.error)}</div>
+        <ErrorNotice error={registerDelegation.error} />
       </AccountModalSection>
     );
   }

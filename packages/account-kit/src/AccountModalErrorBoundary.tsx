@@ -1,0 +1,47 @@
+import { ReactNode, useState } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { ErrorNotice } from "./ErrorNotice";
+import { wait } from "@latticexyz/common/utils";
+import { twMerge } from "tailwind-merge";
+import { useIsMounted } from "usehooks-ts";
+import { PendingIcon } from "./icons/PendingIcon";
+
+export type Props = {
+  children: ReactNode;
+};
+
+export function AccountModalErrorBoundary({ children }: Props) {
+  const isMounted = useIsMounted();
+  const [retries, setRetries] = useState(1);
+
+  return (
+    <ErrorBoundary
+      fallbackRender={({ error, resetErrorBoundary }) => (
+        <div className={twMerge("flex-grow flex flex-col justify-center p-5 gap-2")}>
+          <ErrorNotice error={error instanceof Error ? error.stack ?? error.message : error} />
+          {retries > 0 ? (
+            <button
+              type="button"
+              onClick={async (event) => {
+                // fake pending state while we retry so that if the same error occurs,
+                event.currentTarget.ariaBusy = "true";
+                await wait(1000);
+                resetErrorBoundary();
+                if (isMounted()) {
+                  setRetries((value) => value - 1);
+                  event.currentTarget.ariaBusy = null;
+                }
+              }}
+              className="group aria-busy:pointer-events-none self-end flex items-center gap-1"
+            >
+              <PendingIcon className="transition opacity-0 group-aria-busy:opacity-100 text-xs text-neutral-500" />
+              <span className="text-sm text-neutral-500 group-hover:text-black">Retry?</span>
+            </button>
+          ) : null}
+        </div>
+      )}
+    >
+      {children}
+    </ErrorBoundary>
+  );
+}

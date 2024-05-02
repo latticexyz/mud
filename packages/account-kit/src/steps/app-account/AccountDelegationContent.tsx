@@ -8,6 +8,7 @@ import { useConfig } from "../../AccountKitConfigProvider";
 import { Join } from "../../ui/Join";
 import { TruncatedHex } from "../../ui/TruncatedHex";
 import { useAccount } from "wagmi";
+import { ErrorNotice } from "../../ErrorNotice";
 
 export function AccountDelegationContent() {
   const config = useConfig();
@@ -27,14 +28,13 @@ export function AccountDelegationContent() {
       </AccountModalSection>
       <AccountModalSection>
         <div className="flex flex-col gap-6 px-5 py-6">
-          {/* TODO: better error display */}
-          {error ? <p className="whitespace-break-spaces break-all">Error: {String(error)}</p> : null}
+          {error ? <ErrorNotice error={error} /> : null}
 
           {/* TODO: rework copy */}
           <p>
             A signing key will be registered to act on behalf of your wallet address (
             <span className="text-sm font-mono font-medium">
-              <TruncatedHex hex={userAddress} />
+              <TruncatedHex hex={userAddress!} />
             </span>
             ) for a frictionless experience.
           </p>

@@ -9,11 +9,12 @@ import { usePreloadImage } from "../../usePreloadImage";
 import { AppInfo } from "./AppInfo";
 import { useAppInfo } from "../../useAppInfo";
 import { getAppSignerMessage } from "./getAppSignerMessage";
+import { ErrorNotice } from "../../ErrorNotice";
 
 export function AppSignerContent() {
   const { appName, appImage } = useAppInfo();
   const [, setAppSigner] = useAppSigner();
-  const { signMessageAsync, isPending } = useSignMessage();
+  const { signMessageAsync, isPending, error } = useSignMessage();
   const { resetStep } = useOnboardingSteps();
 
   const { data: hasAppImage } = usePreloadImage(appImage);
@@ -28,6 +29,8 @@ export function AppSignerContent() {
       </AccountModalSection>
       <AccountModalSection>
         <div className="flex flex-col gap-6 px-5 py-6">
+          {error ? <ErrorNotice error={error} /> : null}
+
           {/* TODO: rework this copy */}
           <p>
             Get started with <span className="font-medium">{appName}</span> by proving your identity. You will be asked

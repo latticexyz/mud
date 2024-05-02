@@ -7,12 +7,13 @@ import { PendingIcon } from "../../icons/PendingIcon";
 import { Button } from "../../ui/Button";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
 import { useAccountModal } from "../../useAccountModal";
+import { ErrorNotice } from "../../ErrorNotice";
 
 export function WalletStep() {
   const userAccount = useAccount();
   const userAddress = userAccount.address;
   const { data: ens } = useENS(userAddress);
-  const { disconnect, isPending: disconnectIsPending } = useDisconnect();
+  const { disconnect, isPending: disconnectIsPending, error: disconnectError } = useDisconnect();
   const { resetStep } = useOnboardingSteps();
   const { closeAccountModal } = useAccountModal();
 
@@ -59,6 +60,9 @@ export function WalletStep() {
               ) will be associated with all onchain actions for this app.
             </p>
           </div>
+
+          {disconnectError ? <ErrorNotice error={disconnectError} /> : null}
+
           <Button
             variant="secondary"
             className="self-start"
