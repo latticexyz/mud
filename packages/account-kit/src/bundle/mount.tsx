@@ -12,7 +12,6 @@ export type MountOptions = {
   accountKitConfig: AccountKitConfig;
   // TODO: can we do sane defaults here based on e.g. chain?
   wagmiConfig: WagmiConfig;
-  // TODO: add walletConnectProjectId
 };
 
 if (typeof window === "undefined" || typeof document === "undefined") {
