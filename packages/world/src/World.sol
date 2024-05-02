@@ -73,9 +73,10 @@ contract World is StoreData, IWorldKernel {
    */
   modifier transactionContext(bool isCallFrom, address from) {
     if (initialMsgSender() == address(0)) {
-      if (ResourceId.unwrap(SystemRegistry.get(msg.sender)) != bytes32(0)) {
-        revert World_DirectCallToSystemForbidden(msg.sender);
-      }
+      // turns out this would clash with how Puppet modules work
+      // if (ResourceId.unwrap(SystemRegistry.get(msg.sender)) != bytes32(0)) {
+      //   revert World_DirectCallToSystemForbidden(msg.sender);
+      // }
       bytes32 sender;
       if (isCallFrom) {
         sender = bytes32(uint256(uint160(from)));
