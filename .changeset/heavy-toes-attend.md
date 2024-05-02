@@ -2,4 +2,4 @@
 "@latticexyz/world": patch
 ---
 
-Upgraded the `ejs` package to 3.1.10.
+Upgraded the `ejs` dependency to 3.1.10.

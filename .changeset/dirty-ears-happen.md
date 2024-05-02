@@ -4,4 +4,4 @@
 "@latticexyz/cli": patch
 ---
 
-Removed the `ejs` package from `store`, `world-modules`, and `cli`.
+Removed the unused `ejs` dependency.
