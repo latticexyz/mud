@@ -6,13 +6,14 @@ import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
+import { SystemRegistry } from "./codegen/tables/SystemRegistry.sol";
 
 import { WORLD_VERSION } from "./version.sol";
 import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
 import { ROOT_NAMESPACE_ID } from "./constants.sol";
 import { AccessControl } from "./AccessControl.sol";
 import { SystemCall } from "./SystemCall.sol";
-import { WorldContextProviderLib } from "./WorldContext.sol";
+import { WorldContextProviderLib, WorldContextConsumerLib } from "./WorldContext.sol";
 import { Delegation } from "./Delegation.sol";
 import { requireInterface } from "./requireInterface.sol";
 
@@ -43,6 +44,14 @@ contract World is StoreData, IWorldKernel {
     return WORLD_VERSION;
   }
 
+  function initialMsgSender() public view returns (address) {
+    bytes32 transientStorage;
+    assembly {
+      transientStorage := tload(0)
+    }
+    return address(uint160(uint256(transientStorage)));
+  }
+
   /// @dev Event emitted when the World contract is created.
   constructor() {
     creator = msg.sender;
@@ -55,6 +64,29 @@ contract World is StoreData, IWorldKernel {
   modifier prohibitDirectCallback() {
     if (msg.sender == address(this)) {
       revert World_CallbackNotAllowed(msg.sig);
+    }
+    _;
+  }
+
+  /**
+   * @dev Transaction context mutex
+   */
+  modifier transactionContext(bool isCallFrom, address from) {
+    if (initialMsgSender() == address(0)) {
+      // turns out this would clash with how Puppet modules work
+      // if (ResourceId.unwrap(SystemRegistry.get(msg.sender)) != bytes32(0)) {
+      //   revert World_DirectCallToSystemForbidden(msg.sender);
+      // }
+      bytes32 sender;
+      if (isCallFrom) {
+        sender = bytes32(uint256(uint160(from)));
+      } else {
+        sender = bytes32(uint256(uint160(msg.sender)));
+      }
+      assembly {
+        // Store msg.sender in transient storage
+        tstore(0, sender)
+      }
     }
     _;
   }
@@ -340,7 +372,7 @@ contract World is StoreData, IWorldKernel {
   function call(
     ResourceId systemId,
     bytes memory callData
-  ) external payable virtual prohibitDirectCallback returns (bytes memory) {
+  ) external payable virtual prohibitDirectCallback transactionContext(false, msg.sender) returns (bytes memory) {
     return SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
   }
 
@@ -356,7 +388,7 @@ contract World is StoreData, IWorldKernel {
     address delegator,
     ResourceId systemId,
     bytes memory callData
-  ) external payable virtual prohibitDirectCallback returns (bytes memory) {
+  ) external payable virtual prohibitDirectCallback transactionContext(true, delegator) returns (bytes memory) {
     // If the delegator is the caller, call the system directly
     if (delegator == msg.sender) {
       return SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
@@ -404,7 +436,7 @@ contract World is StoreData, IWorldKernel {
   /**
    * @dev Fallback function to call registered function selectors.
    */
-  fallback() external payable prohibitDirectCallback {
+  fallback() external payable prohibitDirectCallback transactionContext(false, msg.sender) {
     (ResourceId systemId, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
 
     if (ResourceId.unwrap(systemId) == 0) revert World_FunctionSelectorNotFound(msg.sig);
