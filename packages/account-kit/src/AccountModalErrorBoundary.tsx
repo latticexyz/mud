@@ -34,8 +34,10 @@ export function AccountModalErrorBoundary({ children }: Props) {
               }}
               className="group aria-busy:pointer-events-none self-end flex items-center gap-1"
             >
-              <PendingIcon className="transition opacity-0 group-aria-busy:opacity-100 text-xs text-neutral-500" />
-              <span className="text-sm text-neutral-500 group-hover:text-black">Retry?</span>
+              <PendingIcon className="transition opacity-0 group-aria-busy:opacity-100 text-xs text-neutral-500 dark:text-neutral-400" />
+              <span className="text-sm text-neutral-500 dark:text-neutral-400 group-hover:text-black dark:group-hover:text-white">
+                Retry?
+              </span>
             </button>
           ) : null}
         </div>

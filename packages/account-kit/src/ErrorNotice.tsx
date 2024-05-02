@@ -25,13 +25,13 @@ export function ErrorNotice({ title: initialTitle, error }: Props) {
   return (
     <div
       className={twMerge(
-        "text-sm p-3 border-l-4",
-        "bg-red-100 border-red-500 text-red-900",
-        "dark:bg-red-100 dark:border-red-500 dark:text-red-900",
+        "text-sm border-l-4 border-red-500",
+        "bg-red-100 text-red-900",
+        "dark:bg-red-900 dark:text-red-50",
       )}
     >
-      <div className="font-semibold">{title}</div>
-      <div className="-mb-3 pb-3 whitespace-break-spaces break-all max-h-32 overflow-y-scroll">{message}</div>
+      <div className="p-3 font-semibold">{title}</div>
+      <div className="px-3 whitespace-break-spaces break-all max-h-32 overflow-y-scroll">{message}</div>
     </div>
   );
 }

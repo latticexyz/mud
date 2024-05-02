@@ -1,16 +1,82 @@
-import { useGasTankBalance } from "../../useGasTankBalance";
-import { PendingIcon } from "../../icons/PendingIcon";
-import { useIsGasSpender } from "../../useIsGasSpender";
-import { DepositContent } from "./DepositContent";
+import { AccountModalTitle } from "../../AccoutModalTitle";
+import { AccountModalSection } from "../../AccountModalSection";
+import { GasBalanceSection } from "./GasBalanceSection";
+import { useState } from "react";
+import { DepositMethod } from "./common";
+import { useSourceChains } from "./useSourceChains";
+import { useConfig } from "../../AccountKitConfigProvider";
+import { DepositMethodForm } from "./DepositMethodForm";
+import { useDeposits } from "./useDeposits";
+import { BridgeDepositStatus } from "./BridgeDepositStatus";
+import { assertExhaustive } from "@latticexyz/common/utils";
+import { RelayDepositStatus } from "./RelayDepositStatus";
 
 export function DepositStep() {
-  const { gasTankBalance } = useGasTankBalance();
-  const { isGasSpender } = useIsGasSpender();
+  const { chainId: appChainId } = useConfig();
+  const [sourceChainId, setSourceChainId] = useState(appChainId);
+  const [amount, setAmount] = useState<bigint | undefined>();
+  const [selectedDepositMethod, setSelectedDepositMethod] = useState<DepositMethod>("transfer");
 
-  if (gasTankBalance == null || isGasSpender == null) {
-    // TODO: better load state
-    return <PendingIcon />;
+  const sourceChains = useSourceChains();
+  const sourceChain = sourceChains.find((c) => c.id === sourceChainId) ?? sourceChains.find((c) => c.id === appChainId);
+
+  // TODO: do we need a better error here or can we just guarantee this data in some way?
+  if (!sourceChain) {
+    throw new Error(`Expected a source chain, but could not find one. Is Wagmi configured with chain ${appChainId}?`);
   }
 
-  return <DepositContent />;
+  const depositMethod = sourceChain.depositMethods.includes(selectedDepositMethod)
+    ? selectedDepositMethod
+    : sourceChain.depositMethods[0];
+
+  const { deposits, removeDeposit } = useDeposits();
+
+  return (
+    <>
+      <AccountModalTitle title="Gas balance" />
+
+      <GasBalanceSection />
+
+      <AccountModalSection>
+        <div className="flex flex-col py-5 gap-5">
+          <p className="px-5">
+            Top up your gas balance from your chain of choice. Prepaid gas lets you interact with this app without
+            wallet popups.
+          </p>
+          <DepositMethodForm
+            sourceChain={sourceChain}
+            setSourceChainId={setSourceChainId}
+            amount={amount}
+            setAmount={setAmount}
+            depositMethod={depositMethod}
+            setDepositMethod={setSelectedDepositMethod}
+          />
+          {/* TODO: make deposits dismissable */}
+          {deposits.length > 0 ? (
+            <div className="flex flex-col gap-1 px-5">
+              {deposits.map((deposit) => {
+                switch (deposit.type) {
+                  case "bridge":
+                    return (
+                      <BridgeDepositStatus
+                        key={deposit.uid}
+                        {...deposit}
+                        onDismiss={() => removeDeposit(deposit.uid)}
+                      />
+                    );
+                  case "relay":
+                    return (
+                      <RelayDepositStatus key={deposit.uid} {...deposit} onDismiss={() => removeDeposit(deposit.uid)} />
+                    );
+                  default:
+                    // TODO: wtf TS y u no narrow
+                    assertExhaustive(deposit.type);
+                }
+              })}
+            </div>
+          ) : null}
+        </div>
+      </AccountModalSection>
+    </>
+  );
 }

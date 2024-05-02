@@ -5,20 +5,25 @@ import { CheckIcon } from "./icons/CheckIcon";
 
 type StepNavItemProps = {
   isActive: boolean;
+  canComplete: boolean;
   isComplete: boolean;
   onClick: () => void;
   label: string;
 };
 
-function StepNavItem({ isActive, isComplete, onClick, label }: StepNavItemProps) {
+function StepNavItem({ isActive, canComplete, isComplete, onClick, label }: StepNavItemProps) {
   return (
     <button
       type="button"
       // TODO: use radix menu or use aria menu item tags?
+      aria-disabled={!canComplete}
       className={twMerge(
         "p-5 font-medium outline-none text-left transition flex gap-4",
-        isActive ? "bg-neutral-100 text-black" : "text-neutral-600 hover:bg-neutral-100",
-        isActive ? "dark:bg-neutral-800 dark:text-white" : "dark:text-neutral-400 dark:hover:bg-neutral-800",
+        "aria-disabled:pointer-events-none",
+        isActive ? "bg-neutral-100 text-black" : "text-neutral-600 aria-disabled:text-neutral-400 hover:bg-neutral-100",
+        isActive
+          ? "dark:bg-neutral-800 dark:text-white"
+          : "dark:text-neutral-400 dark:aria-disabled:text-neutral-600 dark:hover:bg-neutral-800",
       )}
       onClick={onClick}
     >
@@ -47,6 +52,7 @@ export function AccountModalSidebar() {
           <StepNavItem
             key={step.id}
             isActive={step.id === activeStep}
+            canComplete={step.canComplete}
             isComplete={step.isComplete}
             onClick={() => setStep(step.id)}
             label={step.label}
