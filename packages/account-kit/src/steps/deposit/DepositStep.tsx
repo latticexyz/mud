@@ -10,11 +10,12 @@ import { useDeposits } from "./useDeposits";
 import { BridgeDepositStatus } from "./BridgeDepositStatus";
 import { assertExhaustive } from "@latticexyz/common/utils";
 import { RelayDepositStatus } from "./RelayDepositStatus";
+import { useDebounceValue } from "usehooks-ts";
 
 export function DepositStep() {
   const { chainId: appChainId } = useConfig();
   const [sourceChainId, setSourceChainId] = useState(appChainId);
-  const [amount, setAmount] = useState<bigint | undefined>();
+  const [amount, setAmount] = useDebounceValue<bigint | undefined>(undefined, 200);
   const [selectedDepositMethod, setSelectedDepositMethod] = useState<DepositMethod>("transfer");
 
   const sourceChains = useSourceChains();
