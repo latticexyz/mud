@@ -42,7 +42,7 @@ export function DepositStatus({ status, progress, children, onDismiss }: Props) 
               "opacity-0 pointer-events-none",
               "group-hover:opacity-100 group-hover:pointer-events-auto",
               "text-neutral-400 hover:text-black",
-              "dark:text-neutral-500 hover:text-white",
+              "dark:text-neutral-500 dark:hover:text-white",
             )}
             title="Dismiss"
             onClick={onDismiss}
