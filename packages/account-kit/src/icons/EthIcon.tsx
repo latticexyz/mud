@@ -9,7 +9,7 @@ export function EthIcon({ className, ...props }: Props) {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 263 428"
       fill="currentColor"
-      className={twMerge("h-[1em]", className)}
+      className={twMerge("w-[0.6em] h-[1em]", className)}
       {...props}
     >
       <path d="M132 321V428L263 243L132 321Z" />
