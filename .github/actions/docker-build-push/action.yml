@@ -1,0 +1,32 @@
+name: Docker build and push
+description: Common setup steps used by our workflows
+inputs:
+  image:
+    description: Docker image to publish
+    required: true
+  stage:
+    description: Dockerfile build stage
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v4.6.0
+      with:
+        context: git
+        images: ${{ inputs.image }}
+        tags: |
+          type=raw,value=latest,enable={{is_default_branch}}
+          type=match,pattern=@(.*),group=1
+          type=match,pattern=@.*-(next),group=1
+          type=ref,event=branch
+          type=sha
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4.2.1
+      with:
+        context: .
+        push: true
+        target: ${{ inputs.stage }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
