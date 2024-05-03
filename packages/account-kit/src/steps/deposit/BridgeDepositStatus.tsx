@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { DepositStatus } from "./DepositStatus";
-import { formatBalance } from "./formatBalance";
 import { useChains } from "wagmi";
 import { BridgeDeposit } from "./useDeposits";
+import { Balance } from "./Balance";
 
 export type Props = BridgeDeposit & { onDismiss: () => void };
 
@@ -121,7 +121,7 @@ export function BridgeDepositStatus({
         }
         return (
           <>
-            Successfully bridged {formatBalance(amount)} Ξ to{" "}
+            Successfully bridged <Balance amount={amount} /> to{" "}
             <a
               href={blockExplorerL2 ? `${blockExplorerL2}/tx/${receiptL1.data.hashL2}` : undefined}
               target="_blank"

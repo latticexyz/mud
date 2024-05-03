@@ -2,6 +2,7 @@ import { formatEther, parseEther } from "viem";
 import { Input } from "../../ui/Input";
 import { twMerge } from "tailwind-merge";
 import { forwardRef } from "react";
+import { EthIcon } from "../../icons/EthIcon";
 
 export type Props = {
   initialAmount: bigint | undefined;
@@ -45,12 +46,12 @@ export const AmountInput = forwardRef<HTMLInputElement, Props>(function AmountIn
         />
         <span
           className={twMerge(
-            "flex-shrink-0",
+            "flex-shrink-0 text-2xl",
             "peer-placeholder-shown:text-neutral-400",
             "dark:peer-placeholder-shown:text-neutral-500",
           )}
         >
-          Ξ
+          <EthIcon />
         </span>
       </label>
     </Input>

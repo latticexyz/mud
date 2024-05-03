@@ -5,13 +5,13 @@ import { useOnboardingSteps } from "../../useOnboardingSteps";
 import { useQueryClient } from "@tanstack/react-query";
 import { twMerge } from "tailwind-merge";
 import { PendingIcon } from "../../icons/PendingIcon";
-import { formatBalance } from "./formatBalance";
 import { formatGas } from "./formatGas";
 import { DepositMethod, SourceChain } from "./common";
 import { ReactNode, useEffect, useRef } from "react";
 import { SubmitButton } from "./SubmitButton";
 import { useIsMounted } from "usehooks-ts";
 import { WarningIcon } from "../../icons/WarningIcon";
+import { Balance } from "./Balance";
 
 export const DEFAULT_DEPOSIT_AMOUNT = 0.005;
 
@@ -160,7 +160,7 @@ export function DepositForm({
         <dt>Available to deposit</dt>
         <dd>
           {balance.isSuccess ? (
-            <>{formatBalance(balance.data.value)} Ξ</>
+            <Balance amount={balance.data.value} />
           ) : balance.isError ? (
             <span title={String(balance.error)}>
               <WarningIcon className="inline-block text-amber-500" />
