@@ -2,7 +2,6 @@ import { DepositForm } from "./DepositForm";
 import {
   useAccount,
   useBalance,
-  useEstimateFeesPerGas,
   usePrepareTransactionRequest,
   useSendTransaction,
   useWaitForTransactionReceipt,
@@ -16,18 +15,13 @@ export function DepositViaTransferForm(props: Props) {
 
   const { address: userAddress } = useAccount();
   const balance = useBalance({ chainId: props.sourceChain.id, address: userAddress });
-  // We also separately get fees here, otherwise MetaMask complains with
-  //   The method `eth_maxPriorityFeePerGas` does not exist / is not available
-  // See https://github.com/wevm/wagmi/issues/3865 for details
-  const fees = useEstimateFeesPerGas({ chainId: props.sourceChain.id });
 
   const prepared = usePrepareTransactionRequest(
-    appAccountClient && balance.data && balance.data.value > (props.amount ?? 0n) && fees.data
+    appAccountClient && balance.data && balance.data.value > (props.amount ?? 0n)
       ? {
           chainId: props.sourceChain.id,
           to: appAccountClient.account.address,
           value: props.amount,
-          maxPriorityFeePerGas: fees.data?.maxPriorityFeePerGas,
           query: {},
         }
       : {},
