@@ -5,7 +5,7 @@ import { useStore } from "zustand";
 import { useCallback, useMemo } from "react";
 
 // TODO: fill in other types
-export type DepositType = "bridge" | "relay";
+export type DepositType = "transfer" | "bridge" | "relay";
 export type DepositBase = {
   readonly type: DepositType;
   readonly amount: bigint;
@@ -13,6 +13,12 @@ export type DepositBase = {
   readonly chainL2Id: number;
   readonly start: Date;
   readonly estimatedTime: number;
+};
+
+export type TransferDeposit = Omit<DepositBase, "type"> & {
+  readonly type: "transfer";
+  readonly hash: Hex;
+  readonly receipt: Promise<TransactionReceipt>;
 };
 
 export type BridgeDeposit = Omit<DepositBase, "type"> & {
@@ -27,7 +33,7 @@ export type RelayDeposit = Omit<DepositBase, "type"> & {
   readonly depositPromise: Promise<unknown>;
 };
 
-export type Deposit = satisfy<DepositBase, BridgeDeposit | RelayDeposit>;
+export type Deposit = satisfy<DepositBase, TransferDeposit | BridgeDeposit | RelayDeposit>;
 
 const store = createStore<{
   readonly count: number;
