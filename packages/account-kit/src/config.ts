@@ -90,4 +90,11 @@ export type Config = {
    * Set to `false` to opt out of smart accounts. The app signer will be used in its place and its balance treated as the gas tank.
    */
   readonly erc4337?: Erc4337Config | false;
+
+  /**
+   * Estimated gas per action in wei, used to abstract away ETH balance into number of "actions".
+   *
+   * Defaults to 500,000 wei.
+   */
+  readonly gasPerAction?: bigint;
 };

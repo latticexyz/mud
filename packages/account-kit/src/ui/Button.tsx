@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge";
 import { PendingIcon } from "../icons/PendingIcon";
 
 type ButtonClassNameOptions = {
-  variant?: "primary" | "secondary" | "tertiary";
+  variant?: "primary" | "secondary";
   pending?: boolean;
 };
 
@@ -25,12 +25,6 @@ const buttonClassName = ({ variant = "primary", pending = false }: ButtonClassNa
         "text-black border-neutral-400 hover:bg-neutral-200 hover:border-neutral-500 active:bg-neutral-300 active:border-neutral-600 aria-disabled:text-neutral-400 aria-disabled:border-neutral-300",
         // eslint-disable-next-line max-len
         "dark:text-white dark:border-neutral-400 dark:hover:bg-neutral-700 dark:hover:border-neutral-300 dark:active:bg-neutral-600 dark:active:border-neutral-200 dark:aria-disabled:text-neutral-500 dark:aria-disabled:border-neutral-600",
-      ),
-      tertiary: twMerge(
-        // eslint-disable-next-line max-len
-        "text-neutral-400 border-neutral-400 hover:bg-neutral-200 hover:border-neutral-500 active:bg-neutral-300 active:border-neutral-600 aria-disabled:text-neutral-400 aria-disabled:border-neutral-300",
-        // eslint-disable-next-line max-len
-        "dark:text-neutral-400 dark:border-neutral-400 dark:hover:bg-neutral-500 dark:hover:border-neutral-300 dark:active:bg-neutral-600 dark:active:border-neutral-200 dark:aria-disabled:text-neutral-500 dark:aria-disabled:border-neutral-600",
       ),
     }[variant],
   );
@@ -53,7 +47,7 @@ export const Button = ({ pending, variant, type, className, children, disabled, 
       {...props}
     >
       <span className="grid grid-cols-[1fr_auto_1fr] gap-2">
-        <span className="flex items-center justify-end text-sm">
+        <span className="flex items-center justify-end text-[.75em]">
           <span className="transition opacity-0 translate-x-2 group-aria-busy:opacity-100 group-aria-busy:translate-x-0 duration-100 group-aria-busy:duration-300">
             <PendingIcon />
           </span>
