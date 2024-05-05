@@ -35,16 +35,13 @@ export function DepositStep() {
 
   return (
     <>
-      <AccountModalTitle title="Gas balance" />
+      <AccountModalTitle title="Top up" />
 
       <GasBalanceSection />
 
       <AccountModalSection>
         <div className="flex flex-col py-5 gap-5">
-          <p className="px-5">
-            Top up your gas balance from your chain of choice. Prepaid gas lets you interact with this app without
-            wallet popups.
-          </p>
+          <p className="px-5">Every onchain interaction uses gas. Top up your gas balance with funds from any chain.</p>
           <DepositMethodForm
             sourceChain={sourceChain}
             setSourceChainId={setSourceChainId}

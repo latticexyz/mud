@@ -92,9 +92,15 @@ export type Config = {
   readonly erc4337?: Erc4337Config | false;
 
   /**
-   * Estimated gas per action in wei, used to abstract away ETH balance into number of "actions".
+   * Estimated gas per action in wei, used to calculate fees to abstract away ETH balance into number of "actions".
    *
    * Defaults to 500,000 wei.
    */
   readonly gasPerAction?: bigint;
+  /**
+   * Estimated calldata byte length per action, used to calculate fees to abstract away ETH balance into number of "actions".
+   *
+   * Defaults to 512 bytes.
+   */
+  readonly calldataPerAction?: number;
 };

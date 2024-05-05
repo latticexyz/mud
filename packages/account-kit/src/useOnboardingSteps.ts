@@ -7,17 +7,17 @@ import { useAccountModal } from "./useAccountModal";
 
 export const onboardingSteps = {
   wallet: {
-    label: "Connect wallet",
+    label: "Connect",
     requires: [],
     satisfies: ["connectedWallet"],
   },
   "app-account": {
-    label: "Sign in to app",
+    label: "Sign in",
     requires: ["connectedWallet"],
     satisfies: ["appSigner", "accountDelegation"],
   },
   deposit: {
-    label: "Deposit funds",
+    label: "Top up",
     requires: ["connectedWallet", "appSigner", "accountDelegation"],
     satisfies: ["gasAllowance", "gasSpender"],
   },
