@@ -1,8 +1,6 @@
 import { useAccount, useBalance } from "wagmi";
 import { ChainSelect } from "./ChainSelect";
 import { AmountInput } from "./AmountInput";
-import { useOnboardingSteps } from "../../useOnboardingSteps";
-import { useQueryClient } from "@tanstack/react-query";
 import { twMerge } from "tailwind-merge";
 import { PendingIcon } from "../../icons/PendingIcon";
 import { formatGas } from "./formatGas";
@@ -31,7 +29,6 @@ export type Props = {
   estimatedTime: string;
   submitButton: ReactNode;
   onSubmit: () => Promise<void>;
-  isComplete?: boolean;
 };
 
 export function DepositForm({
@@ -44,13 +41,10 @@ export function DepositForm({
   estimatedFee,
   estimatedTime,
   onSubmit,
-  isComplete,
   submitButton,
 }: Props) {
   const amountInputRef = useRef<HTMLInputElement | null>(null);
   const isMounted = useIsMounted();
-  const queryClient = useQueryClient();
-  const { resetStep } = useOnboardingSteps();
 
   const { address: userAddress, chainId: userChainId } = useAccount();
   const balance = useBalance({ chainId: sourceChain.id, address: userAddress });
@@ -66,18 +60,6 @@ export function DepositForm({
   useEffect(() => {
     amountInputRef.current?.focus();
   }, [userChainId]);
-
-  useEffect(() => {
-    if (isComplete) {
-      queryClient
-        .invalidateQueries({
-          // TODO: replace `useBalance` with our own `useQuery` so we can customize the query key
-          queryKey: ["balance"],
-        })
-        // TODO: only reset step if previously had no gas balance
-        .then(resetStep);
-    }
-  }, [isComplete, queryClient, resetStep]);
 
   useEffect(() => {
     if (balance.error) {

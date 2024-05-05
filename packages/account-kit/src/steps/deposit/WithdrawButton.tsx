@@ -1,5 +1,4 @@
-import React from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useAppAccountClient } from "../../useAppAccountClient";
 import { sendTransaction, waitForTransactionReceipt } from "viem/actions";
 import { getAction } from "viem/utils";
@@ -7,9 +6,10 @@ import { Button } from "../../ui/Button";
 import { AppAccountClient } from "../../common";
 import { useAccount, useBalance } from "wagmi";
 import { Hex } from "viem";
+import { useInvalidateBalance } from "./useInvalidateBalance";
 
 export function WithdrawButton() {
-  const queryClient = useQueryClient();
+  const invalidateBalance = useInvalidateBalance();
   const { address: userAddress } = useAccount();
   const { data: appAccountClient } = useAppAccountClient();
   const { data: balance } = useBalance({
@@ -52,9 +52,7 @@ export function WithdrawButton() {
       )({ hash });
 
       if (receipt.status === "success") {
-        await queryClient.invalidateQueries({
-          queryKey: ["balance"],
-        });
+        await invalidateBalance();
       }
     },
   });

@@ -108,6 +108,7 @@ export function DepositViaRelayForm(props: Props) {
           start,
           estimatedTime: 1000 * 30,
           depositPromise: pendingDeposit,
+          isComplete: pendingDeposit.then(() => undefined),
         });
 
         return await pendingDeposit;

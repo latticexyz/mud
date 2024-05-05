@@ -13,6 +13,7 @@ export type DepositBase = {
   readonly chainL2Id: number;
   readonly start: Date;
   readonly estimatedTime: number;
+  readonly isComplete: Promise<void>;
 };
 
 export type TransferDeposit = Omit<DepositBase, "type"> & {

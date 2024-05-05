@@ -102,6 +102,7 @@ export function DepositViaBridgeForm(props: Props) {
           receiptL2,
           start: new Date(),
           estimatedTime: 1000 * 60 * 3,
+          isComplete: receiptL2.then(() => undefined),
         } satisfies BridgeDeposit;
 
         debug("bridge transaction submitted", pendingDeposit);
@@ -122,8 +123,6 @@ export function DepositViaBridgeForm(props: Props) {
         error: estimateGas.error ?? estimateFee.error ?? undefined,
       }}
       estimatedTime="A few minutes"
-      // TODO: figure out some better way to bubble this up to advance to next step
-      isComplete={deposit.isSuccess}
       submitButton={
         <SubmitButton
           chainId={props.sourceChain.id}

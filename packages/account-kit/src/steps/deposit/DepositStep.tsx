@@ -6,12 +6,8 @@ import { DepositMethod } from "./common";
 import { useSourceChains } from "./useSourceChains";
 import { useConfig } from "../../AccountKitConfigProvider";
 import { DepositMethodForm } from "./DepositMethodForm";
-import { useDeposits } from "./useDeposits";
-import { BridgeDepositStatus } from "./BridgeDepositStatus";
-import { assertExhaustive } from "@latticexyz/common/utils";
-import { RelayDepositStatus } from "./RelayDepositStatus";
 import { useDebounceValue } from "usehooks-ts";
-import { TransferDepositStatus } from "./TransferDepositStatus";
+import { Deposits } from "./Deposits";
 
 export function DepositStep() {
   const { chainId: appChainId } = useConfig();
@@ -31,8 +27,6 @@ export function DepositStep() {
     ? selectedDepositMethod
     : sourceChain.depositMethods[0];
 
-  const { deposits, removeDeposit } = useDeposits();
-
   return (
     <>
       <AccountModalTitle title="Top up" />
@@ -50,38 +44,7 @@ export function DepositStep() {
             depositMethod={depositMethod}
             setDepositMethod={setSelectedDepositMethod}
           />
-          {/* TODO: make deposits dismissable */}
-          {deposits.length > 0 ? (
-            <div className="flex flex-col gap-1 px-5">
-              {deposits.map((deposit) => {
-                switch (deposit.type) {
-                  case "transfer":
-                    return (
-                      <TransferDepositStatus
-                        key={deposit.uid}
-                        {...deposit}
-                        onDismiss={() => removeDeposit(deposit.uid)}
-                      />
-                    );
-                  case "bridge":
-                    return (
-                      <BridgeDepositStatus
-                        key={deposit.uid}
-                        {...deposit}
-                        onDismiss={() => removeDeposit(deposit.uid)}
-                      />
-                    );
-                  case "relay":
-                    return (
-                      <RelayDepositStatus key={deposit.uid} {...deposit} onDismiss={() => removeDeposit(deposit.uid)} />
-                    );
-                  default:
-                    // TODO: wtf TS y u no narrow
-                    assertExhaustive(deposit.type);
-                }
-              })}
-            </div>
-          ) : null}
+          <Deposits />
         </div>
       </AccountModalSection>
     </>

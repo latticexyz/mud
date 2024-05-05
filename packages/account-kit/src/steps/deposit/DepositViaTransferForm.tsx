@@ -62,6 +62,7 @@ export function DepositViaTransferForm(props: Props) {
           receipt,
           start: new Date(),
           estimatedTime: 1000 * 12,
+          isComplete: receipt.then(() => undefined),
         } satisfies TransferDeposit;
 
         debug("bridge transaction submitted", pendingDeposit);
