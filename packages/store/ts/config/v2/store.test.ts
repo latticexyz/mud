@@ -516,4 +516,13 @@ describe("defineStore", () => {
 
     defineStore(config);
   });
+
+  it("should throw if config has unexpected key", () => {
+    attest(() =>
+      defineStore({
+        // @ts-expect-error Invalid config option
+        invalidOption: "nope",
+      }),
+    ).type.errors("`invalidOption` is not a valid Store config option.");
+  });
 });
