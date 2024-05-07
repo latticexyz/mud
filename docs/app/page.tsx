@@ -242,7 +242,7 @@ export default async function HomePage() {
               Newsletter
             </a>
             <a
-              href="https://discord.lattice.xyz/"
+              href="https://discord.com/invite/latticexyz"
               target="_blank"
               rel="noopener noreferrer"
               // eslint-disable-next-line max-len
