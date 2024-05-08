@@ -9,7 +9,7 @@ type modulesToV1<modules extends readonly Module[]> = mutable<{
 
 function modulesToV1<modules extends readonly Module[]>(modules: modules): modulesToV1<modules> {
   return modules.map((module) => ({
-    name: module.name,
+    ...module,
     root: module.root ?? false,
     args: module.args ?? [],
   })) as never;

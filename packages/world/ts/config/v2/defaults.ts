@@ -1,7 +1,7 @@
 export const SYSTEM_DEFAULTS = {
   registerFunctionSelectors: true,
   openAccess: true,
-  accessList: [] as string[],
+  accessList: [],
 } as const;
 
 export type SYSTEM_DEFAULTS = typeof SYSTEM_DEFAULTS;
@@ -27,7 +27,7 @@ export type DEPLOY_DEFAULTS = typeof DEPLOY_DEFAULTS;
 export const CONFIG_DEFAULTS = {
   systems: {},
   tables: {},
-  excludeSystems: [] as string[],
+  excludeSystems: [],
   modules: [],
   codegen: CODEGEN_DEFAULTS,
   deploy: DEPLOY_DEFAULTS,
