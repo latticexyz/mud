@@ -39,6 +39,7 @@ export async function ensureModules({
           async () => {
             try {
               const moduleAddress = mod.prepareDeploy(deployerAddress, libraries).address;
+              // TODO: include module ABI so errors can be parsed
               return mod.installAsRoot
                 ? await writeContract(client, {
                     chain: client.chain ?? null,

@@ -52,4 +52,10 @@ export default defineWorld({
       key: ["x", "y"],
     },
   },
+  modules: [
+    {
+      name: "Unstable_CallWithSignatureModule",
+      root: true,
+    },
+  ],
 });

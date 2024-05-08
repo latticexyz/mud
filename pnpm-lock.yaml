@@ -1194,6 +1194,9 @@ importers:
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../../packages/world
+      '@latticexyz/world-modules':
+        specifier: workspace:*
+        version: link:../../packages/world-modules
       dotenv:
         specifier: ^16.0.3
         version: 16.0.3

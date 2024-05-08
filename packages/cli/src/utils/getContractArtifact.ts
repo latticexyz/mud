@@ -44,8 +44,24 @@ const artifactSchema = z.object({
 export async function getContractArtifact({
   artifactPath,
 }: GetContractArtifactOptions): Promise<GetContractArtifactResult> {
+  let importedArtifact;
+  try {
+    importedArtifact = (
+      await import(artifactPath, {
+        with: { type: "json" },
+        // `with` is the new approach, but `assert` is kept for backwards-compatibility with Node 18
+        assert: { type: "json" },
+      })
+    ).default;
+  } catch (error) {
+    console.error();
+    console.error("Could not import contract artifact at", artifactPath);
+    console.error();
+    throw error;
+  }
+
   // TODO: improve errors or replace with arktype?
-  const artifact = artifactSchema.parse(await import(artifactPath));
+  const artifact = artifactSchema.parse(importedArtifact);
   const placeholders = findPlaceholders(artifact.bytecode.linkReferences);
 
   return {
