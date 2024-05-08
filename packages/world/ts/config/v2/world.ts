@@ -33,7 +33,7 @@ export type validateWorld<world> = {
             ErrorMessage<`Namespaces config will be enabled soon.`>
           : key extends keyof WorldInput
             ? conform<world[key], WorldInput[key]>
-            : world[key];
+            : ErrorMessage<`\`${key & string}\` is not a valid World config option.`>;
 };
 
 export function validateWorld(world: unknown): asserts world is WorldInput {
