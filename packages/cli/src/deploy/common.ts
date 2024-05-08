@@ -111,7 +111,6 @@ export type Module = DeterministicContract & {
   readonly name: string;
   readonly installAsRoot: boolean;
   readonly installData: Hex; // TODO: figure out better naming for this
-  readonly abi: Abi;
 };
 
 export type ConfigInput = StoreConfig & WorldConfig;

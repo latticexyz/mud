@@ -13,7 +13,7 @@ export async function configToModules<config extends World>(
   config: config,
   forgeOutDir: string,
 ): Promise<readonly Module[]> {
-  // TODO: this now expects namespaced tables when used with `resolveTableId`, ideally we replace args with something more strongly typed
+  // this expects a namespaced table name when used with `resolveTableId`
   const resolveContext = {
     tableIds: Object.fromEntries(
       Object.entries(config.tables).map(([tableName, table]) => [tableName, hexToBytes(table.tableId)]),
@@ -54,6 +54,7 @@ export async function configToModules<config extends World>(
       const name = path.basename(artifactPath, ".json");
       const artifact = await getContractArtifact({ artifactPath });
 
+      // TODO: replace args with something more strongly typed
       const installArgs = mod.args
         .map((arg) => resolveWithContext(arg, resolveContext))
         .map((arg) => {
