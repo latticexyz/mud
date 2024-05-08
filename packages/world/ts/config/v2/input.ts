@@ -1,6 +1,6 @@
 import { evaluate } from "@arktype/util";
 import { StoreInput, StoreWithShorthandsInput } from "@latticexyz/store/config/v2";
-import { Module } from "./output";
+import { DynamicResolution, ValueWithType } from "./dynamicResolution";
 
 export type SystemInput = {
   /** The full resource selector consists of namespace and name */
@@ -16,10 +16,20 @@ export type SystemInput = {
   /** If openAccess is true, any address can call the system */
   openAccess?: boolean;
   /** An array of addresses or system names that can access the system */
-  accessList?: string[];
+  accessList?: readonly string[];
 };
 
 export type SystemsInput = { [key: string]: SystemInput };
+
+export type ModuleInput = {
+  /** The name of the module */
+  readonly name: string;
+  /** Should this module be installed as a root module? */
+  readonly root?: boolean;
+  /** Arguments to be passed to the module's install method */
+  // TODO: make more strongly typed by taking in tables input
+  readonly args?: readonly (ValueWithType | DynamicResolution)[];
+};
 
 export type DeployInput = {
   /**
@@ -56,9 +66,9 @@ export type WorldInput = evaluate<
      */
     systems?: SystemsInput;
     /** System names to exclude from automatic deployment */
-    excludeSystems?: string[];
+    excludeSystems?: readonly string[];
     /** Modules to in the World */
-    modules?: Module[];
+    modules?: readonly ModuleInput[];
     /** Deploy config */
     deploy?: DeployInput;
     /** Codegen config */
