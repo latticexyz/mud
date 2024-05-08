@@ -9,7 +9,7 @@ export type SYSTEM_DEFAULTS = typeof SYSTEM_DEFAULTS;
 export const WORLD_DEFAULTS = {
   worldContractName: undefined,
   worldInterfaceName: "IWorld",
-  systems: {} as Record<string, never>,
+  systems: {},
   excludeSystems: [],
   postDeployScript: "PostDeploy",
   deploysDirectory: "./deploys",
