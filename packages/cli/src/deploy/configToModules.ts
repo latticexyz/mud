@@ -1,52 +1,52 @@
-import { ConfigInput, Module } from "./common";
-import { resourceToHex } from "@latticexyz/common";
+import path from "node:path";
+import { Module } from "./common";
 import { resolveWithContext } from "@latticexyz/config/library";
 import { encodeField } from "@latticexyz/protocol-parser/internal";
 import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type/internal";
-import { hexToBytes, bytesToHex } from "viem";
-import { defaultModuleContracts } from "../utils/defaultModuleContracts";
-import { getContractData } from "../utils/getContractData";
+import { bytesToHex, hexToBytes } from "viem";
 import { createPrepareDeploy } from "./createPrepareDeploy";
+import { World } from "@latticexyz/world";
+import { getContractArtifact } from "../utils/getContractArtifact";
 
-export function configToModules<config extends ConfigInput>(config: config, forgeOutDir: string): readonly Module[] {
-  // ugh (https://github.com/latticexyz/mud/issues/1668)
+export async function configToModules<config extends World>(
+  config: config,
+  forgeOutDir: string,
+): Promise<readonly Module[]> {
+  // TODO: this now expects namespaced tables when used with `resolveTableId`, ideally we replace args with something more strongly typed
   const resolveContext = {
     tableIds: Object.fromEntries(
-      Object.entries(config.tables).map(([tableName, table]) => [
-        tableName,
-        hexToBytes(
-          resourceToHex({
-            type: table.offchainOnly ? "offchainTable" : "table",
-            namespace: config.namespace,
-            name: table.name,
-          }),
-        ),
-      ]),
+      Object.entries(config.tables).map(([tableName, table]) => [tableName, hexToBytes(table.tableId)]),
     ),
   };
 
-  const modules = config.modules.map((mod): Module => {
-    const contractData =
-      defaultModuleContracts.find((defaultMod) => defaultMod.name === mod.name) ??
-      getContractData(`${mod.name}.sol`, mod.name, forgeOutDir);
-    const installArgs = mod.args
-      .map((arg) => resolveWithContext(arg, resolveContext))
-      .map((arg) => {
-        const value = arg.value instanceof Uint8Array ? bytesToHex(arg.value) : arg.value;
-        return encodeField(arg.type as SchemaAbiType, value as SchemaAbiTypeToPrimitiveType<SchemaAbiType>);
-      });
-    if (installArgs.length > 1) {
-      throw new Error(`${mod.name} module should only have 0-1 args, but had ${installArgs.length} args.`);
-    }
-    return {
-      name: mod.name,
-      installAsRoot: mod.root,
-      installData: installArgs.length === 0 ? "0x" : installArgs[0],
-      prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
-      deployedBytecodeSize: contractData.deployedBytecodeSize,
-      abi: contractData.abi,
-    };
-  });
+  const modules = await Promise.all(
+    config.modules.map(async (mod): Promise<Module> => {
+      // TODO: add back in support for default module contracts?
+      const artifact = mod.artifactPath
+        ? await getContractArtifact({ artifactPath: mod.artifactPath })
+        : await getContractArtifact({ artifactPath: path.join(forgeOutDir, `${mod.name}.sol`, `${mod.name}.json`) });
+
+      const installArgs = mod.args
+        .map((arg) => resolveWithContext(arg, resolveContext))
+        .map((arg) => {
+          const value = arg.value instanceof Uint8Array ? bytesToHex(arg.value) : arg.value;
+          return encodeField(arg.type as SchemaAbiType, value as SchemaAbiTypeToPrimitiveType<SchemaAbiType>);
+        });
+
+      if (installArgs.length > 1) {
+        throw new Error(`${mod.name} module should only have 0-1 args, but had ${installArgs.length} args.`);
+      }
+
+      return {
+        name: mod.name,
+        installAsRoot: mod.root,
+        installData: installArgs.length === 0 ? "0x" : installArgs[0],
+        prepareDeploy: createPrepareDeploy(artifact.bytecode, artifact.placeholders),
+        deployedBytecodeSize: artifact.deployedBytecodeSize,
+        abi: artifact.abi,
+      };
+    }),
+  );
 
   return modules;
 }

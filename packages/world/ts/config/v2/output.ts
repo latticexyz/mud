@@ -5,9 +5,9 @@ export type Module = {
   /** The name of the module */
   readonly name: string;
   /** Should this module be installed as a root module? */
-  readonly root?: boolean;
+  readonly root: boolean;
   /** Arguments to be passed to the module's install method */
-  readonly args?: readonly (ValueWithType | DynamicResolution)[];
+  readonly args: readonly (ValueWithType | DynamicResolution)[];
   /**
    * Import path to module's forge/solc JSON artifact with the module's compiled bytecode. This is used to create consistent, deterministic deploys for already-built modules
    * like those installed and imported from npm.
@@ -17,7 +17,7 @@ export type Module = {
    *
    * If not provided, it's assumed that this is a local module as part of the project's source and the artifact will be looked up in forge's output directory.
    */
-  readonly artifactPath?: string;
+  readonly artifactPath: string | undefined;
 };
 
 export type System = {
