@@ -5,9 +5,9 @@ export type Module = {
   /** The name of the module */
   readonly name: string;
   /** Should this module be installed as a root module? */
-  readonly root?: boolean;
+  readonly root: boolean;
   /** Arguments to be passed to the module's install method */
-  readonly args?: (ValueWithType | DynamicResolution)[];
+  readonly args: readonly (ValueWithType | DynamicResolution)[];
 };
 
 export type System = {
@@ -24,7 +24,7 @@ export type System = {
   /** If openAccess is true, any address can call the system */
   readonly openAccess: boolean;
   /** An array of addresses or system names that can access the system */
-  readonly accessList: string[];
+  readonly accessList: readonly string[];
 };
 
 export type Systems = { readonly [key: string]: System };
