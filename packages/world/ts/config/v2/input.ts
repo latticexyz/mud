@@ -1,6 +1,5 @@
 import { evaluate } from "@arktype/util";
 import { StoreInput, StoreWithShorthandsInput } from "@latticexyz/store/config/v2";
-import { Module } from "./output";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
 
 export type SystemInput = {
@@ -79,7 +78,7 @@ export type WorldInput = evaluate<
     /** System names to exclude from automatic deployment */
     excludeSystems?: readonly string[];
     /** Modules to in the World */
-    modules?: readonly Module[];
+    modules?: readonly ModuleInput[];
     /** Deploy config */
     deploy?: DeployInput;
     /** Codegen config */
