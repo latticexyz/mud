@@ -1,11 +1,9 @@
-import { Client, toFunctionSelector, parseAbiItem } from "viem";
+import { Client, parseAbiItem } from "viem";
 import { WorldDeploy, WorldFunction, worldTables } from "./common";
 import { debug } from "./debug";
 import { storeSetRecordEvent } from "@latticexyz/store";
 import { getLogs } from "viem/actions";
-import { decodeValueArgs } from "@latticexyz/protocol-parser/internal";
-import { getTableValue } from "./getTableValue";
-import { hexToResource } from "@latticexyz/common";
+import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
 
 export async function getFunctions({
   client,
@@ -15,8 +13,27 @@ export async function getFunctions({
   readonly worldDeploy: WorldDeploy;
 }): Promise<readonly WorldFunction[]> {
   // This assumes we only use `FunctionSelectors._set(...)`, which is true as of this writing.
+  debug("looking up function selectors for", worldDeploy.address);
+  const selectorLogs = await getLogs(client, {
+    strict: true,
+    fromBlock: worldDeploy.deployBlock,
+    toBlock: worldDeploy.stateBlock,
+    address: worldDeploy.address,
+    event: parseAbiItem(storeSetRecordEvent),
+    args: { tableId: worldTables.world_FunctionSelectors.tableId },
+  });
+
+  const selectors = selectorLogs.map((log) => {
+    return {
+      ...decodeValueArgs(worldTables.world_FunctionSelectors.valueSchema, log.args),
+      ...decodeKey(worldTables.world_FunctionSelectors.keySchema, log.args.keyTuple),
+    };
+  });
+  debug("found", selectors.length, "function selectors for", worldDeploy.address);
+
+  // This assumes we only use `FunctionSignatures._set(...)`, which is true as of this writing.
   debug("looking up function signatures for", worldDeploy.address);
-  const logs = await getLogs(client, {
+  const signatureLogs = await getLogs(client, {
     strict: true,
     fromBlock: worldDeploy.deployBlock,
     toBlock: worldDeploy.stateBlock,
@@ -25,34 +42,23 @@ export async function getFunctions({
     args: { tableId: worldTables.world_FunctionSignatures.tableId },
   });
 
-  const signatures = logs.map((log) => {
-    const value = decodeValueArgs(worldTables.world_FunctionSignatures.valueSchema, log.args);
-    return value.functionSignature;
-  });
-  debug("found", signatures.length, "function signatures for", worldDeploy.address);
-
-  // TODO: parallelize with a bulk getRecords
-  const functions = await Promise.all(
-    signatures.map(async (signature) => {
-      const selector = toFunctionSelector(signature);
-      const { systemId, systemFunctionSelector } = await getTableValue({
-        client,
-        worldDeploy,
-        table: worldTables.world_FunctionSelectors,
-        key: { worldFunctionSelector: selector },
-      });
-      const { namespace, name } = hexToResource(systemId);
-      // TODO: find away around undoing contract logic (https://github.com/latticexyz/mud/issues/1708)
-      const systemFunctionSignature = namespace === "" ? signature : signature.replace(`${namespace}_${name}_`, "");
-      return {
-        signature,
-        selector,
-        systemId,
-        systemFunctionSignature,
-        systemFunctionSelector,
-      };
+  const selectorToSignature = Object.fromEntries(
+    signatureLogs.map((log) => {
+      return [
+        decodeKey(worldTables.world_FunctionSignatures.keySchema, log.args.keyTuple).functionSelector,
+        decodeValueArgs(worldTables.world_FunctionSignatures.valueSchema, log.args).functionSignature,
+      ];
     }),
   );
+  debug("found", signatureLogs.length, "function signatures for", worldDeploy.address);
+
+  const functions = selectors.map(({ worldFunctionSelector, systemFunctionSelector, systemId }) => ({
+    selector: worldFunctionSelector,
+    signature: selectorToSignature[worldFunctionSelector],
+    systemFunctionSelector,
+    systemFunctionSignature: selectorToSignature[systemFunctionSelector],
+    systemId,
+  }));
 
   return functions;
 }
