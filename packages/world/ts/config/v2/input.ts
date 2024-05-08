@@ -16,7 +16,7 @@ export type SystemInput = {
   /** If openAccess is true, any address can call the system */
   openAccess?: boolean;
   /** An array of addresses or system names that can access the system */
-  accessList?: string[];
+  accessList?: readonly string[];
 };
 
 export type SystemsInput = { [key: string]: SystemInput };
@@ -56,9 +56,9 @@ export type WorldInput = evaluate<
      */
     systems?: SystemsInput;
     /** System names to exclude from automatic deployment */
-    excludeSystems?: string[];
+    excludeSystems?: readonly string[];
     /** Modules to in the World */
-    modules?: Module[];
+    modules?: readonly Module[];
     /** Deploy config */
     deploy?: DeployInput;
     /** Codegen config */
