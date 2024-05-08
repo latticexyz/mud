@@ -21,6 +21,19 @@ export function createPlayersSystem(layer: PhaserLayer) {
     },
   } = layer;
 
+  // add visual hint
+  const hintX = -phaserScene.cameras.main.width / 2 + 10;
+  const hintY = -phaserScene.cameras.main.height / 2 + 10;
+
+  phaserScene.add.text(
+    hintX,
+    hintY,
+    "click anywhere on the map to spawn your player and use WASD or arrow keys to move.",
+    {
+      font: "bold 20px Arial",
+    },
+  );
+
   // spawn handling
   input.click$.subscribe((pointer) => {
     const clickedPosition = pixelToWorldCoord(Main, {
@@ -73,7 +86,7 @@ export function createPlayersSystem(layer: PhaserLayer) {
     const pixelCoord = worldCoordToPixel(Main, position);
 
     let container = containers.get(entity);
-
+    console.log(container);
     if (!container) {
       container = phaserScene.add.container(0, 0);
 
@@ -83,6 +96,7 @@ export function createPlayersSystem(layer: PhaserLayer) {
       if (playerEntity === entity) {
         label = `${label} (you)`;
       }
+      console.log(label);
       const text = phaserScene.add.text(-45, -20, label);
 
       container.add(sprite);
