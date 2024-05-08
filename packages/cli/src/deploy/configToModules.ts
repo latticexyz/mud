@@ -7,6 +7,7 @@ import { bytesToHex, hexToBytes } from "viem";
 import { createPrepareDeploy } from "./createPrepareDeploy";
 import { World } from "@latticexyz/world";
 import { getContractArtifact } from "../utils/getContractArtifact";
+import { knownModuleArtifacts } from "../utils/knownModuleArtifacts";
 
 export async function configToModules<config extends World>(
   config: config,
@@ -21,10 +22,13 @@ export async function configToModules<config extends World>(
 
   const modules = await Promise.all(
     config.modules.map(async (mod): Promise<Module> => {
-      // TODO: add back in support for default module contracts?
       const artifact = mod.artifactPath
         ? await getContractArtifact({ artifactPath: mod.artifactPath })
-        : await getContractArtifact({ artifactPath: path.join(forgeOutDir, `${mod.name}.sol`, `${mod.name}.json`) });
+        : await getContractArtifact({
+            artifactPath:
+              knownModuleArtifacts[mod.name as keyof typeof knownModuleArtifacts] ??
+              path.join(forgeOutDir, `${mod.name}.sol`, `${mod.name}.json`),
+          });
 
       const installArgs = mod.args
         .map((arg) => resolveWithContext(arg, resolveContext))
