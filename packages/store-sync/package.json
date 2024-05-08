@@ -80,7 +80,7 @@
     "sql.js": "^1.8.0",
     "superjson": "^1.12.4",
     "viem": "2.9.20",
-    "zod": "^3.21.4",
+    "zod": "^3.22.2",
     "zustand": "^4.3.7"
   },
   "devDependencies": {
