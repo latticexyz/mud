@@ -117,6 +117,5 @@ export type ConfigInput = StoreConfig & WorldConfig;
 export type Config<config extends ConfigInput> = {
   readonly tables: Tables<config>;
   readonly systems: readonly System[];
-  readonly modules: readonly Module[];
   readonly libraries: readonly Library[];
 };
