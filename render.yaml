@@ -1,6 +1,6 @@
 services:
   - type: worker
-    name: redstone-mainnet-fallback-indexer
+    name: base-sepolia-sbg-indexer
     plan: standard
     region: ohio
     runtime: docker
@@ -10,32 +10,34 @@ services:
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: redstone-mainnet-fallback-indexer-db
+          name: base-sepolia-sbg-db
           property: connectionString
       - key: DEBUG
         value: mud:store-sync:createStoreSync
       - key: RPC_HTTP_URL
-        value: https://rpc.redstonechain.com
+        sync: false # prompt for it
+      - key: START_BLOCK
+        sync: false # prompt for it
 
   - type: web
-    name: redstone-mainnet-fallback-indexer-api
+    name: base-sepolia-sbg-indexer-api
     plan: pro
     region: ohio
     runtime: docker
     domains:
-      - redstone.mudindexer.offchain.dev
+      - base-sepolia-sbg.mudindexer.offchain.dev
     dockerfilePath: ./Dockerfile.render
     dockerContext: ./
     dockerCommand: pnpm tsx bin/postgres-frontend
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: redstone-mainnet-fallback-indexer-db
+          name: base-sepolia-sbg-db
           property: connectionString
       - key: DEBUG
         value: mud:*
 
 databases:
-  - name: redstone-mainnet-fallback-indexer-db
+  - name: base-sepolia-sbg-db
     plan: pro
     region: ohio
