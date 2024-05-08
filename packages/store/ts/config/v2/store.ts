@@ -1,4 +1,4 @@
-import { flatMorph, narrow } from "@arktype/util";
+import { ErrorMessage, flatMorph, narrow } from "@arktype/util";
 import { get, hasOwnKey, mergeIfUndefined } from "./generics";
 import { UserTypes } from "./output";
 import { CONFIG_DEFAULTS } from "./defaults";
@@ -23,7 +23,7 @@ export type validateStore<store> = {
         ? narrow<store[key]>
         : key extends keyof StoreInput
           ? StoreInput[key]
-          : never;
+          : ErrorMessage<`\`${key & string}\` is not a valid Store config option.`>;
 };
 
 export function validateStore(store: unknown): asserts store is StoreInput {
