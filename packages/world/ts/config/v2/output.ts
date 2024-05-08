@@ -2,7 +2,10 @@ import { Store } from "@latticexyz/store";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
 
 export type Module = {
-  /** The name of the module */
+  /**
+   * The name of the module
+   * @deprecated
+   */
   readonly name: string;
   /** Should this module be installed as a root module? */
   readonly root: boolean;

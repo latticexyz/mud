@@ -39,7 +39,6 @@ export default defineWorld({
   },
   modules: [
     {
-      name: "KeysWithValueModule",
       artifactPath: "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json",
       root: true,
       args: [resolveTableId("Inventory")],
