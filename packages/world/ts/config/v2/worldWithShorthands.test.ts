@@ -58,7 +58,10 @@ describe("defineWorldWithShorthands", () => {
         Dynamic: { type: "string", filePath: "path/to/file" as string },
       },
       enums: {
-        MyEnum: ["First", "Second"],
+        MyEnum: {
+          First: 0,
+          Second: 1,
+        },
       },
       namespace: "",
     } as const;
@@ -121,7 +124,10 @@ describe("defineWorldWithShorthands", () => {
         Dynamic: { type: "string", filePath: "path/to/file" as string },
       },
       enums: {
-        MyEnum: ["First", "Second"],
+        MyEnum: {
+          First: 0,
+          Second: 1,
+        },
       },
       namespace: "",
     } as const;

@@ -126,7 +126,10 @@ describe("defineWorld", () => {
         Dynamic: { type: "string", filePath: "path/to/file" },
       },
       enums: {
-        MyEnum: ["First", "Second"],
+        MyEnum: {
+          First: 0,
+          Second: 1,
+        },
       },
       namespace: "",
     } as const;
@@ -587,7 +590,10 @@ describe("defineWorld", () => {
           dynamic: { type: "string", filePath: "path/to/file" },
         },
         enums: {
-          ValidNames: ["first", "second"],
+          ValidNames: {
+            first: 0,
+            second: 1,
+          },
         },
         namespace: "",
       } as const;
