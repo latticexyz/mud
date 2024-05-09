@@ -1,4 +1,4 @@
-import { conform } from "@arktype/util";
+import { conform, flatMorph } from "@arktype/util";
 import { Schema, Store, Table } from "./output";
 import { mapObject } from "@latticexyz/common/utils";
 import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
@@ -63,7 +63,7 @@ export function storeToV1<store>(store: conform<store, Store>): storeToV1<store>
 
   return {
     namespace: store.namespace,
-    enums: store.enums,
+    enums: flatMorph(store.enums, (enumName, enumElements) => [enumName, Object.keys(enumElements)]),
     userTypes: resolvedUserTypes,
     storeImportPath: store.codegen.storeImportPath,
     userTypesFilename: store.codegen.userTypesFilename,
