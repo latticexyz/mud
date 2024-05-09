@@ -8,14 +8,14 @@
 ```ts
 const config = defineStore({
   enums: {
-    TerrainType: ['Water', 'Grass', 'Sand'],
-  }
+    TerrainType: ["Water", "Grass", "Sand"],
+  },
 });
 
-config.enums.TerrainType.Water
+config.enums.TerrainType.Water;
 //                         ^? (property) Water: 0
 
-config.enums.TerrainType.Grass
+config.enums.TerrainType.Grass;
 //                         ^? (property) Grass: 1
 ```
 
@@ -24,7 +24,7 @@ This should allow for easier referencing of enum elements in contract calls.
 ```ts
 writeContract({
   // …
-  functionName: 'setTerrainType',
+  functionName: "setTerrainType",
   args: [config.enums.TerrainType.Grass],
 });
 ```
