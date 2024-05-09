@@ -401,7 +401,10 @@ describe("defineStore", () => {
         dynamic: { type: "string", filePath: "path/to/file" },
       },
       enums: {
-        ValidNames: ["first", "second"],
+        ValidNames: {
+          first: 0,
+          second: 1,
+        },
       },
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
@@ -501,7 +504,12 @@ describe("defineStore", () => {
       Example: ["First", "Second"],
     } as const;
 
-    attest(defineStore({ enums }).enums).equals(enums);
+    attest(defineStore({ enums }).enums).equals({
+      Example: {
+        First: 0,
+        Second: 1,
+      },
+    });
   });
 
   it("should allow a const config as input", () => {
