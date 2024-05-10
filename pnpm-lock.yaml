@@ -139,12 +139,6 @@ importers:
       '@ethersproject/providers':
         specifier: ^5.7.2
         version: 5.7.2
-      '@improbable-eng/grpc-web':
-        specifier: ^0.15.0
-        version: 0.15.0(google-protobuf@3.21.2)
-      '@improbable-eng/grpc-web-node-http-transport':
-        specifier: ^0.15.0
-        version: 0.15.0(@improbable-eng/grpc-web@0.15.0)
       '@latticexyz/abi-ts':
         specifier: workspace:*
         version: link:../abi-ts
@@ -205,9 +199,6 @@ importers:
       glob:
         specifier: ^8.0.3
         version: 8.0.3
-      nice-grpc-web:
-        specifier: ^2.0.1
-        version: 2.0.1(google-protobuf@3.21.2)
       openurl:
         specifier: ^1.1.1
         version: 1.1.1
@@ -3335,14 +3326,6 @@ packages:
   /@humanwhocodes/object-schema@2.0.2:
     resolution: {integrity: sha512-6EwiSjwWYP7pTckG6I5eyFANjPhmPjUX9JRLUSfNPC7FX7zK9gyZAfUEaECL6ALTpGX5AjnBq3C9XmVWPitNpw==}
     dev: true
-
-  /@improbable-eng/grpc-web-node-http-transport@0.15.0(@improbable-eng/grpc-web@0.15.0):
-    resolution: {integrity: sha512-HLgJfVolGGpjc9DWPhmMmXJx8YGzkek7jcCFO1YYkSOoO81MWRZentPOd/JiKiZuU08wtc4BG+WNuGzsQB5jZA==}
-    peerDependencies:
-      '@improbable-eng/grpc-web': '>=0.13.0'
-    dependencies:
-      '@improbable-eng/grpc-web': 0.15.0(google-protobuf@3.21.2)
-    dev: false
 
   /@improbable-eng/grpc-web@0.15.0(google-protobuf@3.21.2):
     resolution: {integrity: sha512-ERft9/0/8CmYalqOVnJnpdDry28q+j+nAlFFARdjyxXDJ+Mhgv9+F600QC8BR9ygOfrXRlAk6CvST2j+JCpQPg==}
