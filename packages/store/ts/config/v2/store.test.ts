@@ -44,7 +44,7 @@ describe("defineStore", () => {
       },
       userTypes: {},
       enums: {},
-      mappedEnums: {},
+      enumValues: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -97,7 +97,7 @@ describe("defineStore", () => {
         dynamic: { type: "string", filePath: "path/to/file" },
       },
       enums: {},
-      mappedEnums: {},
+      enumValues: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -143,7 +143,7 @@ describe("defineStore", () => {
       },
       userTypes: {},
       enums: {},
-      mappedEnums: {},
+      enumValues: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -216,7 +216,7 @@ describe("defineStore", () => {
       },
       userTypes: {},
       enums: {},
-      mappedEnums: {},
+      enumValues: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -296,7 +296,7 @@ describe("defineStore", () => {
         Dynamic: { type: "string", filePath: "path/to/file" },
       },
       enums: {},
-      mappedEnums: {},
+      enumValues: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -408,7 +408,7 @@ describe("defineStore", () => {
       enums: {
         ValidNames: ["first", "second"],
       },
-      mappedEnums: {
+      enumValues: {
         ValidNames: {
           first: 0,
           second: 1,
@@ -516,7 +516,7 @@ describe("defineStore", () => {
       Example: ["First", "Second"],
     });
 
-    attest(defineStore({ enums }).mappedEnums).equals({
+    attest(defineStore({ enums }).enumValues).equals({
       Example: {
         First: 0,
         Second: 1,

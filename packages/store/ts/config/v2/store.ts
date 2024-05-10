@@ -57,7 +57,7 @@ export type resolveStore<store> = {
     : {};
   readonly userTypes: "userTypes" extends keyof store ? store["userTypes"] : {};
   readonly enums: "enums" extends keyof store ? evaluate<resolveEnums<store["enums"]>> : {};
-  readonly mappedEnums: "enums" extends keyof store ? evaluate<mapEnums<store["enums"]>> : {};
+  readonly enumValues: "enums" extends keyof store ? evaluate<mapEnums<store["enums"]>> : {};
   readonly namespace: "namespace" extends keyof store ? store["namespace"] : CONFIG_DEFAULTS["namespace"];
   readonly codegen: "codegen" extends keyof store ? resolveCodegen<store["codegen"]> : resolveCodegen<{}>;
 };
@@ -73,7 +73,7 @@ export function resolveStore<const store extends StoreInput>(store: store): reso
     ),
     userTypes: store.userTypes ?? {},
     enums: resolveEnums(store.enums ?? {}),
-    mappedEnums: mapEnums(store.enums ?? {}),
+    enumValues: mapEnums(store.enums ?? {}),
     namespace: store.namespace ?? CONFIG_DEFAULTS["namespace"],
     codegen: resolveCodegen(store.codegen),
   } as never;

@@ -11,7 +11,7 @@ export type UserTypes = {
   };
 };
 
-export type MappedEnums = {
+export type EnumValues = {
   readonly [enumName: string]: {
     readonly [enumElement: string]: number;
   };
@@ -48,7 +48,7 @@ export type Store = {
   };
   readonly userTypes: UserTypes;
   readonly enums: EnumsInput;
-  readonly mappedEnums: MappedEnums;
+  readonly enumValues: EnumValues;
   readonly namespace: string;
   readonly codegen: Codegen;
 };

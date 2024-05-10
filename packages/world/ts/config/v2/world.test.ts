@@ -61,7 +61,7 @@ describe("defineWorld", () => {
       },
       userTypes: {},
       enums: {},
-      mappedEnums: {},
+      enumValues: {},
       namespace: "",
     } as const;
 
@@ -129,7 +129,7 @@ describe("defineWorld", () => {
       enums: {
         MyEnum: ["First", "Second"],
       },
-      mappedEnums: {
+      enumValues: {
         MyEnum: {
           First: 0,
           Second: 1,
@@ -234,7 +234,7 @@ describe("defineWorld", () => {
         },
         userTypes: {},
         enums: {},
-        mappedEnums: {},
+        enumValues: {},
         namespace: "",
       } as const;
 
@@ -287,7 +287,7 @@ describe("defineWorld", () => {
           dynamic: { type: "string", filePath: "path/to/file" },
         },
         enums: {},
-        mappedEnums: {},
+        enumValues: {},
         namespace: "",
       } as const;
 
@@ -333,7 +333,7 @@ describe("defineWorld", () => {
         },
         userTypes: {},
         enums: {},
-        mappedEnums: {},
+        enumValues: {},
         namespace: "",
         deploy: DEPLOY_DEFAULTS,
       } as const;
@@ -407,7 +407,7 @@ describe("defineWorld", () => {
         },
         userTypes: {},
         enums: {},
-        mappedEnums: {},
+        enumValues: {},
         namespace: "",
       } as const;
 
@@ -488,7 +488,7 @@ describe("defineWorld", () => {
           Dynamic: { type: "string", filePath: "path/to/file" },
         },
         enums: {},
-        mappedEnums: {},
+        enumValues: {},
         namespace: "",
       } as const;
 
@@ -601,7 +601,7 @@ describe("defineWorld", () => {
         enums: {
           ValidNames: ["first", "second"],
         },
-        mappedEnums: {
+        enumValues: {
           ValidNames: {
             first: 0,
             second: 1,
