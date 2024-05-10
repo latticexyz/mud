@@ -32,6 +32,7 @@ describe("defineStoreWithShorthands", () => {
       },
       userTypes: {},
       enums: {},
+      mappedEnums: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -68,6 +69,7 @@ describe("defineStoreWithShorthands", () => {
       },
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
       enums: {},
+      mappedEnums: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -108,6 +110,7 @@ describe("defineStoreWithShorthands", () => {
       },
       userTypes: {},
       enums: {},
+      mappedEnums: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -148,6 +151,7 @@ describe("defineStoreWithShorthands", () => {
       },
       userTypes: {},
       enums: {},
+      mappedEnums: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;

@@ -1,5 +1,6 @@
 import { evaluate } from "@arktype/util";
 import { AbiType, Schema, Table as BaseTable } from "@latticexyz/config";
+import { EnumsInput } from "./input";
 
 export type { AbiType, Schema };
 
@@ -10,7 +11,7 @@ export type UserTypes = {
   };
 };
 
-export type Enums = {
+export type MappedEnums = {
   readonly [enumName: string]: {
     readonly [enumElement: string]: number;
   };
@@ -46,7 +47,8 @@ export type Store = {
     readonly [namespacedTableName: string]: Table;
   };
   readonly userTypes: UserTypes;
-  readonly enums: Enums;
+  readonly enums: EnumsInput;
+  readonly mappedEnums: MappedEnums;
   readonly namespace: string;
   readonly codegen: Codegen;
 };

@@ -58,6 +58,9 @@ describe("defineWorldWithShorthands", () => {
         Dynamic: { type: "string", filePath: "path/to/file" as string },
       },
       enums: {
+        MyEnum: ["First", "Second"],
+      },
+      mappedEnums: {
         MyEnum: {
           First: 0,
           Second: 1,
@@ -124,6 +127,9 @@ describe("defineWorldWithShorthands", () => {
         Dynamic: { type: "string", filePath: "path/to/file" as string },
       },
       enums: {
+        MyEnum: ["First", "Second"],
+      },
+      mappedEnums: {
         MyEnum: {
           First: 0,
           Second: 1,
@@ -164,6 +170,7 @@ describe("defineWorldWithShorthands", () => {
       },
       userTypes: {},
       enums: {},
+      mappedEnums: {},
       namespace: "",
     } as const;
 
@@ -202,6 +209,7 @@ describe("defineWorldWithShorthands", () => {
       },
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" as string } },
       enums: {},
+      mappedEnums: {},
       namespace: "",
     } as const;
 
@@ -242,6 +250,7 @@ describe("defineWorldWithShorthands", () => {
       },
       userTypes: {},
       enums: {},
+      mappedEnums: {},
       namespace: "",
     } as const;
 
@@ -282,6 +291,7 @@ describe("defineWorldWithShorthands", () => {
       },
       userTypes: {},
       enums: {},
+      mappedEnums: {},
       namespace: "",
     } as const;
 

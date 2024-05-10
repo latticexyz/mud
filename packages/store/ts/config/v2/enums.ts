@@ -1,7 +1,7 @@
 import { flatMorph } from "@arktype/util";
 import { EnumsInput } from "./input";
 import { AbiTypeScope, extendScope } from "./scope";
-import { parseInt } from "./generics";
+import { parseNumber } from "./generics";
 
 function isEnums(enums: unknown): enums is EnumsInput {
   return (
@@ -29,12 +29,20 @@ export function scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope>
 }
 
 export type resolveEnums<enums> = {
-  readonly [key in keyof enums]: {
-    readonly [element in keyof enums[key] as enums[key][element] & string]: parseInt<element>;
-  };
+  readonly [key in keyof enums]: Readonly<enums[key]>;
 };
 
 export function resolveEnums<enums extends EnumsInput>(enums: enums): resolveEnums<enums> {
+  return enums;
+}
+
+export type mapEnums<enums> = {
+  readonly [key in keyof enums]: {
+    readonly [element in keyof enums[key] as enums[key][element] & string]: parseNumber<element>;
+  };
+};
+
+export function mapEnums<enums extends EnumsInput>(enums: enums): resolveEnums<enums> {
   return flatMorph(enums as never, (enumName, enumElements) => [
     enumName,
     flatMorph(enumElements, (enumIndex, enumElement) => [enumElement, enumIndex]),

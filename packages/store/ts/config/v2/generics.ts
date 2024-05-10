@@ -52,4 +52,4 @@ export function mergeIfUndefined<base extends object, merged extends object>(
   ) as never;
 }
 
-export type parseInt<T> = T extends `${infer N extends number}` ? N : never;
+export type parseNumber<T> = T extends `${infer N extends number}` ? N : never;
