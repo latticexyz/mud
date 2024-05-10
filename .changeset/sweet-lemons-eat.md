@@ -3,7 +3,7 @@
 "@latticexyz/world": patch
 ---
 
-`defineStore` and `defineWorld` now convert `enums` to usable, strongly-typed enums in TS.
+`defineStore` and `defineWorld` now maps your `enums` to usable, strongly-typed enums on `mappedEnums`.
 
 ```ts
 const config = defineStore({
@@ -12,11 +12,11 @@ const config = defineStore({
   },
 });
 
-config.enums.TerrainType.Water;
-//                         ^? (property) Water: 0
+config.mappedEnums.TerrainType.Water;
+//                              ^? (property) Water: 0
 
-config.enums.TerrainType.Grass;
-//                         ^? (property) Grass: 1
+config.mappedEnums.TerrainType.Grass;
+//                              ^? (property) Grass: 1
 ```
 
 This should allow for easier referencing of enum elements in contract calls.
@@ -25,6 +25,6 @@ This should allow for easier referencing of enum elements in contract calls.
 writeContract({
   // …
   functionName: "setTerrainType",
-  args: [config.enums.TerrainType.Grass],
+  args: [config.mappedEnums.TerrainType.Grass],
 });
 ```
