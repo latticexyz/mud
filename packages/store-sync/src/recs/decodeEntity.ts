@@ -15,7 +15,7 @@ function getCache<keySchema extends KeySchema>(keySchema: keySchema): LruMap<Ent
   return map;
 }
 
-function _decodeEntity<keySchema extends KeySchema>(
+export function _decodeEntity<keySchema extends KeySchema>(
   keySchema: keySchema,
   entity: Entity,
 ): SchemaToPrimitives<keySchema> {
@@ -45,6 +45,12 @@ export function decodeEntity<keySchema extends KeySchema>(
     return cached as never;
   }
 
+  const hexKeyTuple = entityToHexKeyTuple(entity);
+  if (hexKeyTuple.length !== Object.keys(keySchema).length) {
+    throw new Error(
+      `entity key tuple length ${hexKeyTuple.length} does not match key schema length ${Object.keys(keySchema).length}`,
+    );
+  }
   const decoded = _decodeEntity(keySchema, entity);
   cache.set(entity, decoded);
   return decoded;
