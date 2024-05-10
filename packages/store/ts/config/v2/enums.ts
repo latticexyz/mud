@@ -43,7 +43,7 @@ export type mapEnums<enums> = {
 };
 
 export function mapEnums<enums extends EnumsInput>(enums: enums): resolveEnums<enums> {
-  return flatMorph(enums as never, (enumName, enumElements) => [
+  return flatMorph(enums as EnumsInput, (enumName, enumElements) => [
     enumName,
     flatMorph(enumElements, (enumIndex, enumElement) => [enumElement, enumIndex]),
   ]) as never;
