@@ -4,7 +4,7 @@ import { Store } from "@latticexyz/store";
 import { storeToV1 } from "@latticexyz/store/config/v2";
 
 type modulesToV1<modules extends readonly Module[]> = {
-  [key in keyof modules]: modules[key];
+  [key in keyof modules]: Omit<modules[key], "artifactPath">;
 };
 
 function modulesToV1<modules extends readonly Module[]>(modules: modules): modulesToV1<modules> {

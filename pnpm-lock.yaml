@@ -178,6 +178,9 @@ importers:
       '@latticexyz/world-modules':
         specifier: workspace:*
         version: link:../world-modules
+      abitype:
+        specifier: 1.0.0
+        version: 1.0.0(typescript@5.4.2)(zod@3.23.7)
       asn1.js:
         specifier: ^5.4.1
         version: 5.4.1
@@ -1191,6 +1194,9 @@ importers:
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../../packages/world
+      '@latticexyz/world-modules':
+        specifier: workspace:*
+        version: link:../../packages/world-modules
       dotenv:
         specifier: ^16.0.3
         version: 16.0.3

@@ -2,12 +2,25 @@ import { Store } from "@latticexyz/store";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
 
 export type Module = {
-  /** The name of the module */
+  /**
+   * The name of the module
+   * @deprecated
+   */
   readonly name: string;
   /** Should this module be installed as a root module? */
   readonly root: boolean;
   /** Arguments to be passed to the module's install method */
   readonly args: readonly (ValueWithType | DynamicResolution)[];
+  /**
+   * Import path to module's forge/solc JSON artifact with the module's compiled bytecode. This is used to create consistent, deterministic deploys for already-built modules
+   * like those installed and imported from npm.
+   *
+   * This path is resolved using node's module resolution, so this supports both relative file paths (`../path/to/MyModule.json`) as well as JS import paths
+   * (`@latticexyz/world-modules/out/CallWithSignatureModule.sol/CallWithSignatureModule.json`).
+   *
+   * If not provided, it's assumed that this is a local module as part of the project's source and the artifact will be looked up in forge's output directory.
+   */
+  readonly artifactPath: string | undefined;
 };
 
 export type System = {

@@ -9,6 +9,7 @@ export type SYSTEM_DEFAULTS = typeof SYSTEM_DEFAULTS;
 export const MODULE_DEFAULTS = {
   root: false,
   args: [],
+  artifactPath: undefined,
 } as const;
 
 export type MODULE_DEFAULTS = typeof MODULE_DEFAULTS;
