@@ -1,7 +1,7 @@
 import { Hex } from "viem";
 import { Codegen, Enums, TableCodegen, TableDeploy, UserTypes } from "./output";
 import { Scope } from "./scope";
-import { evaluate } from "@arktype/util";
+import { show } from "@arktype/util";
 
 export type SchemaInput = {
   readonly [key: string]: string;
@@ -42,4 +42,4 @@ export type TablesWithShorthandsInput = {
   readonly [key: string]: TableInput | TableShorthandInput;
 };
 
-export type StoreWithShorthandsInput = evaluate<Omit<StoreInput, "tables"> & { tables: TablesWithShorthandsInput }>;
+export type StoreWithShorthandsInput = show<Omit<StoreInput, "tables"> & { tables: TablesWithShorthandsInput }>;

@@ -1,4 +1,4 @@
-lockfileVersion: '6.0'
+lockfileVersion: '6.1'
 
 settings:
   autoInstallPeers: true
@@ -339,6 +339,9 @@ importers:
 
   packages/config:
     dependencies:
+      '@arktype/util':
+        specifier: 0.0.39
+        version: 0.0.39
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -751,8 +754,8 @@ importers:
   packages/store:
     dependencies:
       '@arktype/util':
-        specifier: 0.0.29
-        version: 0.0.29
+        specifier: 0.0.39
+        version: 0.0.39
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -1046,8 +1049,8 @@ importers:
   packages/world:
     dependencies:
       '@arktype/util':
-        specifier: 0.0.29
-        version: 0.0.29
+        specifier: 0.0.39
+        version: 0.0.39
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -1278,13 +1281,13 @@ packages:
     resolution: {integrity: sha512-MwtDGjbgfXWxlExjIL78HvPlWOma1XFEcDd3VWuCPMt/f+3TR7fXyiGFNlIYZGOYdOIU7qgjaE8dmbd6jdJa3Q==}
     dev: true
 
-  /@arktype/util@0.0.29:
-    resolution: {integrity: sha512-fDTBSVzxLj9k1ZjinkawmaQdcXFKMBVK8c+vqMPxwoa94mPMZxBo84yQcqyFVcIcWIkg6qQQmH1ozyT4nqFT/g==}
-    dev: false
-
   /@arktype/util@0.0.38:
     resolution: {integrity: sha512-IvYMGnkUASJllRk3mdBVgckomKx2LNsDTrWCxz04EBK1OuU+4fJ/smSjxgZVWfopNXZds9sHNxZgTJOIw7GvJw==}
     dev: true
+
+  /@arktype/util@0.0.39:
+    resolution: {integrity: sha512-wd8czBqQz3scri2T5GM6kH9cdFHpzmDjGf0ER6NxyvZH4dnx/AqC57kBFOWIAj5+idvUgHusWAS1xocaDbtyuA==}
+    dev: false
 
   /@aws-crypto/ie11-detection@3.0.0:
     resolution: {integrity: sha512-341lBBkiY1DfDNKai/wXM3aujNBkXR7tq1URPQDL9wi3AUbI80NR74uF1TXHMm7po1AcnFk8iu2S2IeU/+/A+Q==}
