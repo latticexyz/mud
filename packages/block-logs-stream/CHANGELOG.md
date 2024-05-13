@@ -1,5 +1,48 @@
 # @latticexyz/block-logs-stream
 
+## 2.0.9
+
+### Patch Changes
+
+- Updated dependencies [764ca0a0]
+- Updated dependencies [bad3ad1b]
+  - @latticexyz/common@2.0.9
+
+## 2.0.8
+
+### Patch Changes
+
+- Updated dependencies [df4781ac]
+  - @latticexyz/common@2.0.8
+
+## 2.0.7
+
+### Patch Changes
+
+- bf16e729: Added detection and handling for proxyd rate limit and block range errors.
+- Updated dependencies [375d902e]
+- Updated dependencies [38c61158]
+- Updated dependencies [f736c43d]
+  - @latticexyz/common@2.0.7
+
+## 2.0.6
+
+### Patch Changes
+
+- c18e93c5: Bumped viem to 2.9.20.
+- d95028a6: Bumped viem to 2.9.16.
+- Updated dependencies [6c8ab471]
+- Updated dependencies [c18e93c5]
+- Updated dependencies [d95028a6]
+  - @latticexyz/common@2.0.6
+
+## 2.0.5
+
+### Patch Changes
+
+- Updated dependencies [a9e8a407]
+  - @latticexyz/common@2.0.5
+
 ## 2.0.4
 
 ### Patch Changes

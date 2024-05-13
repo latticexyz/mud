@@ -1,5 +1,94 @@
 # @latticexyz/dev-tools
 
+## 2.0.9
+
+### Patch Changes
+
+- Updated dependencies [764ca0a0]
+- Updated dependencies [764ca0a0]
+- Updated dependencies [bad3ad1b]
+  - @latticexyz/store-sync@2.0.9
+  - @latticexyz/common@2.0.9
+  - @latticexyz/store@2.0.9
+  - @latticexyz/world@2.0.9
+  - @latticexyz/react@2.0.9
+  - @latticexyz/recs@2.0.9
+  - @latticexyz/schema-type@2.0.9
+  - @latticexyz/utils@2.0.9
+
+## 2.0.8
+
+### Patch Changes
+
+- Updated dependencies [df4781ac]
+  - @latticexyz/common@2.0.8
+  - @latticexyz/store@2.0.8
+  - @latticexyz/store-sync@2.0.8
+  - @latticexyz/world@2.0.8
+  - @latticexyz/react@2.0.8
+  - @latticexyz/recs@2.0.8
+  - @latticexyz/schema-type@2.0.8
+  - @latticexyz/utils@2.0.8
+
+## 2.0.7
+
+### Patch Changes
+
+- Updated dependencies [375d902e]
+- Updated dependencies [16695fea]
+- Updated dependencies [38c61158]
+- Updated dependencies [3d1d5905]
+- Updated dependencies [ed404b7d]
+- Updated dependencies [2c9b16c7]
+- Updated dependencies [f736c43d]
+  - @latticexyz/common@2.0.7
+  - @latticexyz/store-sync@2.0.7
+  - @latticexyz/world@2.0.7
+  - @latticexyz/store@2.0.7
+  - @latticexyz/react@2.0.7
+  - @latticexyz/recs@2.0.7
+  - @latticexyz/schema-type@2.0.7
+  - @latticexyz/utils@2.0.7
+
+## 2.0.6
+
+### Patch Changes
+
+- c18e93c5: Bumped viem to 2.9.20.
+- d95028a6: Bumped viem to 2.9.16.
+- 77d3b309: Added a "top up" button to account balance when running on anvil.
+- Updated dependencies [6c8ab471]
+- Updated dependencies [103db6ce]
+- Updated dependencies [9720b568]
+- Updated dependencies [c18e93c5]
+- Updated dependencies [d95028a6]
+- Updated dependencies [de3bc3d1]
+- Updated dependencies [8c3dcf77]
+  - @latticexyz/common@2.0.6
+  - @latticexyz/store@2.0.6
+  - @latticexyz/world@2.0.6
+  - @latticexyz/schema-type@2.0.6
+  - @latticexyz/store-sync@2.0.6
+  - @latticexyz/react@2.0.6
+  - @latticexyz/recs@2.0.6
+  - @latticexyz/utils@2.0.6
+
+## 2.0.5
+
+### Patch Changes
+
+- Updated dependencies [a9e8a407]
+- Updated dependencies [b798ccb2]
+- Updated dependencies [d02efd80]
+  - @latticexyz/common@2.0.5
+  - @latticexyz/store@2.0.5
+  - @latticexyz/world@2.0.5
+  - @latticexyz/store-sync@2.0.5
+  - @latticexyz/react@2.0.5
+  - @latticexyz/recs@2.0.5
+  - @latticexyz/schema-type@2.0.5
+  - @latticexyz/utils@2.0.5
+
 ## 2.0.4
 
 ### Patch Changes

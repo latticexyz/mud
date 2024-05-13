@@ -1,5 +1,32 @@
 # Change Log
 
+## 2.0.9
+
+### Patch Changes
+
+- 6b247fb9: Updated templates with Redstone and Garnet chains and removed the deprecated Lattice testnet chain.
+
+## 2.0.8
+
+## 2.0.7
+
+### Patch Changes
+
+- 534e7729: Made `worlds.json`'s `address` type more like viem's `Hex` type so it's easy to pass through as an argument.
+
+## 2.0.6
+
+### Patch Changes
+
+- c18e93c5: Bumped viem to 2.9.20.
+- d95028a6: Bumped viem to 2.9.16.
+
+## 2.0.5
+
+### Patch Changes
+
+- aa6ecf7b: Updated `anvil` args with two second block time to better reflect L2s
+
 ## 2.0.4
 
 ## 2.0.3

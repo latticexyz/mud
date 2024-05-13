@@ -29,7 +29,7 @@ import { KeysWithValueModule } from "@latticexyz/world-modules/src/modules/keysw
 contract DeployKeyWithValueModule is Script {
   function run() external {
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-    address worldAddress = 0x4F4DDaFBc93Cf8d11a253f21dDbcF836139efdeC;
+    address worldAddress = 0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1;
 
     vm.startBroadcast(deployerPrivateKey);
     IWorld world = IWorld(worldAddress);
@@ -87,7 +87,7 @@ To get the keys you use [`getKeysWithValue`](https://github.com/latticexyz/mud/b
 - The encoded lengths of the dynamic fields (the result of `<table name>.encodeLengths`)
 - The encoded dynamic fields themselves (the result of `<table name>.encodeDynamic`)
 
-For example, here is the forge script to add a task to `Tasks` in [the React template](/templates/typescript/react) and then find the key from the data.
+For example, here is the forge script to add a task to `Tasks` in [the React template](https://github.com/latticexyz/mud/tree/main/templates/react) and then find the key from the data.
 
 <CollapseCode>
 
@@ -108,7 +108,7 @@ import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/Encoded
 contract UseKeysWithValues is Script {
   function run() external {
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-    address worldAddress = 0x4F4DDaFBc93Cf8d11a253f21dDbcF836139efdeC;
+    address worldAddress = 0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1;
 
     uint createdAt = block.timestamp;
     uint completedAt = 0;
@@ -142,7 +142,7 @@ contract UseKeysWithValues is Script {
 <summary>Explanation</summary>
 
 ```solidity
-import { Tasks, TasksTableId } from "../src/codegen/index.sol";
+import { Tasks } from "../src/codegen/index.sol";
 ```
 
 It is easiest to use `getKeysWithValue` when you have the definition of the source table.

@@ -3,6 +3,8 @@
 !out/**/*.json
 !out/**/*.abi.json
 !out/**/*.abi.json.d.ts
+!cache/solidity-files-cache.json
+!foundry.toml
 !src/**
 !ts/**
 !package.json

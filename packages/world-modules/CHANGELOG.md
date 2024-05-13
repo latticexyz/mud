@@ -1,5 +1,82 @@
 # Change Log
 
+## 2.0.9
+
+### Patch Changes
+
+- Updated dependencies [764ca0a0]
+- Updated dependencies [bad3ad1b]
+  - @latticexyz/common@2.0.9
+  - @latticexyz/config@2.0.9
+  - @latticexyz/store@2.0.9
+  - @latticexyz/world@2.0.9
+  - @latticexyz/schema-type@2.0.9
+
+## 2.0.8
+
+### Patch Changes
+
+- Updated dependencies [df4781ac]
+  - @latticexyz/common@2.0.8
+  - @latticexyz/config@2.0.8
+  - @latticexyz/store@2.0.8
+  - @latticexyz/world@2.0.8
+  - @latticexyz/schema-type@2.0.8
+
+## 2.0.7
+
+### Patch Changes
+
+- 78a94d71: Fixed ERC721 module to properly encode token ID as part of token URI.
+- 2c9b16c7: Replaced the `systemId` field in the `Unstable_CallWithSignatureSystem` typehash with individual `systemNamespace` and `systemName` string fields.
+- Updated dependencies [375d902e]
+- Updated dependencies [38c61158]
+- Updated dependencies [3d1d5905]
+- Updated dependencies [ed404b7d]
+- Updated dependencies [2c9b16c7]
+- Updated dependencies [f736c43d]
+  - @latticexyz/common@2.0.7
+  - @latticexyz/world@2.0.7
+  - @latticexyz/store@2.0.7
+  - @latticexyz/config@2.0.7
+  - @latticexyz/schema-type@2.0.7
+
+## 2.0.6
+
+### Patch Changes
+
+- 96e82b7f: Moved the chain ID in `CallWithSignature` from the `domain.chainId` to the `domain.salt` field to allow for cross-chain signing without requiring wallets to switch networks. The value of this field should be the chain on which the world lives, rather than the chain the wallet is connected to.
+- Updated dependencies [6c8ab471]
+- Updated dependencies [103db6ce]
+- Updated dependencies [9720b568]
+- Updated dependencies [c18e93c5]
+- Updated dependencies [d95028a6]
+  - @latticexyz/common@2.0.6
+  - @latticexyz/store@2.0.6
+  - @latticexyz/world@2.0.6
+  - @latticexyz/config@2.0.6
+  - @latticexyz/schema-type@2.0.6
+
+## 2.0.5
+
+### Patch Changes
+
+- e2e8ec8b: Added missing system interfaces for ERC721, UniqueEntity, and CallWithSignature modules.
+- 081c3967: Added `validateCallWithSignature` function to `Unstable_CallWithSignatureModule` to validate a signature without executing the call.
+- e3c3a118: Exported mud config as internal.
+- d02efd80: Replaced the `Unstable_DelegationWithSignatureModule` preview module with a more generalized `Unstable_CallWithSignatureModule` that allows making arbitrary calls (similar to `callFrom`).
+
+  This module is still marked as `Unstable`, because it will be removed and included in the default `World` deployment once it is audited.
+
+- Updated dependencies [a9e8a407]
+- Updated dependencies [b798ccb2]
+- Updated dependencies [d02efd80]
+  - @latticexyz/common@2.0.5
+  - @latticexyz/store@2.0.5
+  - @latticexyz/world@2.0.5
+  - @latticexyz/config@2.0.5
+  - @latticexyz/schema-type@2.0.5
+
 ## 2.0.4
 
 ### Patch Changes

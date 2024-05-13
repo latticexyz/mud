@@ -15,9 +15,11 @@ import { getChainId } from "viem/actions";
 import { postDeploy } from "./utils/postDeploy";
 import { WorldDeploy } from "./deploy/common";
 import { build } from "./build";
+import { kmsKeyToAccount } from "@latticexyz/common/kms";
+import { configToModules } from "./deploy/configToModules";
 
 export const deployOptions = {
-  configPath: { type: "string", desc: "Path to the config file" },
+  configPath: { type: "string", desc: "Path to the MUD config file" },
   printConfig: { type: "boolean", desc: "Print the resolved config" },
   profile: { type: "string", desc: "The foundry profile to use" },
   saveDeployment: { type: "boolean", desc: "Save the deployment info to a file", default: true },
@@ -37,9 +39,14 @@ export const deployOptions = {
     type: "boolean",
     desc: "Always run PostDeploy.s.sol after each deploy (including during upgrades). By default, PostDeploy.s.sol is only run once after a new world is deployed.",
   },
+  forgeScriptOptions: { type: "string", description: "Options to pass to forge script PostDeploy.s.sol" },
   salt: {
     type: "string",
     desc: "The deployment salt to use. Defaults to a random salt.",
+  },
+  kms: {
+    type: "boolean",
+    desc: "Deploy the World with an AWS KMS key instead of local private key.",
   },
 } as const satisfies Record<string, Options>;
 
@@ -78,16 +85,32 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     await build({ config: configV2, srcDir, foundryProfile: profile });
   }
 
-  const privateKey = process.env.PRIVATE_KEY as Hex;
-  if (!privateKey) {
-    throw new MUDError(
-      `Missing PRIVATE_KEY environment variable.
-Run 'echo "PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" > .env'
-in your contracts directory to use the default anvil private key.`,
-    );
-  }
-
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
+  const modules = await configToModules(configV2, outDir);
+
+  const account = await (async () => {
+    if (opts.kms) {
+      const keyId = process.env.AWS_KMS_KEY_ID;
+      if (!keyId) {
+        throw new MUDError(
+          "Missing `AWS_KMS_KEY_ID` environment variable. This is required when using with `--kms` option.",
+        );
+      }
+
+      return await kmsKeyToAccount({ keyId });
+    } else {
+      const privateKey = process.env.PRIVATE_KEY;
+      if (!privateKey) {
+        throw new MUDError(
+          `Missing PRIVATE_KEY environment variable.
+  Run 'echo "PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" > .env'
+  in your contracts directory to use the default anvil private key.`,
+        );
+      }
+
+      return privateKeyToAccount(privateKey as Hex);
+    }
+  })();
 
   const client = createWalletClient({
     transport: http(rpc, {
@@ -98,7 +121,7 @@ in your contracts directory to use the default anvil private key.`,
           }
         : undefined,
     }),
-    account: privateKeyToAccount(privateKey),
+    account,
   });
 
   console.log("Deploying from", client.account.address);
@@ -110,9 +133,18 @@ in your contracts directory to use the default anvil private key.`,
     worldAddress: opts.worldAddress as Hex | undefined,
     client,
     config: resolvedConfig,
+    modules,
+    withWorldProxy: configV2.deploy.upgradeableWorldImplementation,
   });
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
-    await postDeploy(config.postDeployScript, worldDeploy.address, rpc, profile);
+    await postDeploy(
+      config.postDeployScript,
+      worldDeploy.address,
+      rpc,
+      profile,
+      opts.forgeScriptOptions,
+      opts.kms ? true : false,
+    );
   }
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
 

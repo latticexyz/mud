@@ -19,10 +19,11 @@ import { REGISTRATION_SYSTEM_ID } from "@latticexyz/world/src/modules/init/const
 import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { WorldTestSystem } from "@latticexyz/world/test/World.t.sol";
 
-import { Unstable_CallWithSignatureModule } from "../src/modules/delegation/Unstable_CallWithSignatureModule.sol";
-import { Unstable_CallWithSignatureSystem } from "../src/modules/delegation/Unstable_CallWithSignatureSystem.sol";
-import { getSignedMessageHash } from "../src/modules/delegation/getSignedMessageHash.sol";
-import { ECDSA } from "../src/modules/delegation/ECDSA.sol";
+import { Unstable_CallWithSignatureModule } from "../src/modules/callwithsignature/Unstable_CallWithSignatureModule.sol";
+import { Unstable_CallWithSignatureSystem } from "../src/modules/callwithsignature/Unstable_CallWithSignatureSystem.sol";
+import { IUnstable_CallWithSignatureErrors } from "../src/modules/callwithsignature/IUnstable_CallWithSignatureErrors.sol";
+import { getSignedMessageHash } from "../src/modules/callwithsignature/getSignedMessageHash.sol";
+import { ECDSA } from "../src/modules/callwithsignature/ECDSA.sol";
 
 contract Unstable_CallWithSignatureModuleTest is Test, GasReporter {
   using WorldResourceIdInstance for ResourceId;
@@ -65,7 +66,7 @@ contract Unstable_CallWithSignatureModuleTest is Test, GasReporter {
     bytes memory signature = abi.encodePacked(r, s, v);
 
     // Attempt to register a limited delegation using an empty signature
-    vm.expectRevert(abi.encodeWithSelector(ECDSA.ECDSAInvalidSignatureLength.selector, 0));
+    vm.expectRevert(abi.encodeWithSelector(IUnstable_CallWithSignatureErrors.InvalidSignature.selector));
     Unstable_CallWithSignatureSystem(address(world)).callWithSignature(
       delegator,
       REGISTRATION_SYSTEM_ID,
@@ -100,12 +101,7 @@ contract Unstable_CallWithSignatureModuleTest is Test, GasReporter {
     world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Attempt to register a limited delegation using an old signature
-    vm.expectRevert(
-      abi.encodeWithSelector(
-        Unstable_CallWithSignatureSystem.InvalidSignature.selector,
-        0x824E5E0aF3eA693b906527Dc41E4a29F037d515b
-      )
-    );
+    vm.expectRevert(abi.encodeWithSelector(IUnstable_CallWithSignatureErrors.InvalidSignature.selector));
     Unstable_CallWithSignatureSystem(address(world)).callWithSignature(
       delegator,
       REGISTRATION_SYSTEM_ID,

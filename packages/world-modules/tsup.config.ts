@@ -1,10 +1,12 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["mud.config.ts"],
+  entry: {
+    "mud.config": "mud.config.ts",
+  },
   target: "esnext",
   format: ["esm"],
-  dts: true,
+  dts: !process.env.TSUP_SKIP_DTS,
   sourcemap: true,
   clean: true,
   minify: true,

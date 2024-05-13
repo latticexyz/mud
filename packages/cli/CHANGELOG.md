@@ -1,5 +1,145 @@
 # Change Log
 
+## 2.0.9
+
+### Patch Changes
+
+- 30318687: Fixed `mud deploy` to not require the `PRIVATE_KEY` environment variable when using a KMS signer.
+- 0b6b70ff: `mud verify` now defaults to blockscout if no `--verifier` is provided.
+- 428ff972: Fixed `mud deploy` to use the `forge script --aws` flag when executing `PostDeploy` with a KMS signer.
+
+  Note that you may need to update your `PostDeploy.s.sol` script, with `vm.startBroadcast` receiving no arguments instead of reading a private key from the environment:
+
+  ```diff
+  -uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+  -vm.startBroadcast(deployerPrivateKey);
+
+  +vm.startBroadcast();
+  ```
+
+- 074ed66e: Removed manual gas setting in PostDeploy step of `mud deploy` in favor of `forge script` fetching it from the RPC.
+
+  If you still want to manually set gas, you can use `mud deploy --forgeScriptOptions="--with-gas-price 1000000"`.
+
+- e03830eb: The key ID for deploying via KMS signer is now set via an `AWS_KMS_KEY_ID` environment variable to better align with Foundry tooling. To enable KMS signing with this environment variable, use the `--kms` flag.
+
+  ```diff
+  -mud deploy --awsKmsKeyId [key ID]
+  +AWS_KMS_KEY_ID=[key ID] mud deploy --kms
+  ```
+
+- Updated dependencies [764ca0a0]
+- Updated dependencies [bad3ad1b]
+  - @latticexyz/common@2.0.9
+  - @latticexyz/config@2.0.9
+  - @latticexyz/protocol-parser@2.0.9
+  - @latticexyz/store@2.0.9
+  - @latticexyz/world@2.0.9
+  - @latticexyz/world-modules@2.0.9
+  - @latticexyz/abi-ts@2.0.9
+  - @latticexyz/gas-report@2.0.9
+  - @latticexyz/schema-type@2.0.9
+  - @latticexyz/services@2.0.9
+  - @latticexyz/utils@2.0.9
+
+## 2.0.8
+
+### Patch Changes
+
+- b4eb795e: Patched `mud verify` to properly verify store, world, and world-modules contracts. Currently only `sourcify` is fully supported and is the default verifier.
+- Updated dependencies [df4781ac]
+  - @latticexyz/common@2.0.8
+  - @latticexyz/config@2.0.8
+  - @latticexyz/protocol-parser@2.0.8
+  - @latticexyz/store@2.0.8
+  - @latticexyz/world@2.0.8
+  - @latticexyz/world-modules@2.0.8
+  - @latticexyz/abi-ts@2.0.8
+  - @latticexyz/gas-report@2.0.8
+  - @latticexyz/schema-type@2.0.8
+  - @latticexyz/services@2.0.8
+  - @latticexyz/utils@2.0.8
+
+## 2.0.7
+
+### Patch Changes
+
+- c74a6647: Added a `--awsKmsKeyId` flag to `mud deploy` that deploys the world using an AWS KMS key as a transaction signer.
+- dbc7e066: Deploying now retries on "block is out of range" errors, for cases where the RPC is load balanced and out of sync.
+- 189050bd: Deploy will now fetch and set the gas price during execution of PostDeploy script. This should greatly reduce the fees paid for L2s.
+- fce741b0: Added a new `mud verify` command which verifies all contracts in a project. This includes systems, modules, the WorldFactory and World.
+- 632a7525: Fixed an issue where deploys were warning about mismatched bytecode when the bytecode was correct and what we expect.
+- 3d1d5905: Added a `deploy.upgradeableWorldImplementation` option to the MUD config that deploys the World as an upgradeable proxy contract. The proxy behaves like a regular World contract, but the underlying implementation can be upgraded by calling `setImplementation`.
+- 8493f88f: Added a `--forgeScriptOptions` flag to deploy and dev commands to allow passing in additional CLI flags to `forge script` command.
+- Updated dependencies [375d902e]
+- Updated dependencies [78a94d71]
+- Updated dependencies [38c61158]
+- Updated dependencies [3d1d5905]
+- Updated dependencies [ed404b7d]
+- Updated dependencies [2c9b16c7]
+- Updated dependencies [f736c43d]
+  - @latticexyz/common@2.0.7
+  - @latticexyz/world-modules@2.0.7
+  - @latticexyz/world@2.0.7
+  - @latticexyz/store@2.0.7
+  - @latticexyz/config@2.0.7
+  - @latticexyz/protocol-parser@2.0.7
+  - @latticexyz/abi-ts@2.0.7
+  - @latticexyz/gas-report@2.0.7
+  - @latticexyz/schema-type@2.0.7
+  - @latticexyz/services@2.0.7
+  - @latticexyz/utils@2.0.7
+
+## 2.0.6
+
+### Patch Changes
+
+- c18e93c5: Bumped viem to 2.9.20.
+- d95028a6: Bumped viem to 2.9.16.
+- Updated dependencies [6c8ab471]
+- Updated dependencies [103db6ce]
+- Updated dependencies [96e82b7f]
+- Updated dependencies [9720b568]
+- Updated dependencies [c18e93c5]
+- Updated dependencies [d95028a6]
+  - @latticexyz/common@2.0.6
+  - @latticexyz/store@2.0.6
+  - @latticexyz/world-modules@2.0.6
+  - @latticexyz/world@2.0.6
+  - @latticexyz/config@2.0.6
+  - @latticexyz/protocol-parser@2.0.6
+  - @latticexyz/schema-type@2.0.6
+  - @latticexyz/abi-ts@2.0.6
+  - @latticexyz/gas-report@2.0.6
+  - @latticexyz/services@2.0.6
+  - @latticexyz/utils@2.0.6
+
+## 2.0.5
+
+### Patch Changes
+
+- d02efd80: Replaced the `Unstable_DelegationWithSignatureModule` preview module with a more generalized `Unstable_CallWithSignatureModule` that allows making arbitrary calls (similar to `callFrom`).
+
+  This module is still marked as `Unstable`, because it will be removed and included in the default `World` deployment once it is audited.
+
+- Updated dependencies [e2e8ec8b]
+- Updated dependencies [a9e8a407]
+- Updated dependencies [081c3967]
+- Updated dependencies [e3c3a118]
+- Updated dependencies [b798ccb2]
+- Updated dependencies [d02efd80]
+  - @latticexyz/world-modules@2.0.5
+  - @latticexyz/common@2.0.5
+  - @latticexyz/store@2.0.5
+  - @latticexyz/world@2.0.5
+  - @latticexyz/config@2.0.5
+  - @latticexyz/protocol-parser@2.0.5
+  - @latticexyz/abi-ts@2.0.5
+  - @latticexyz/gas-report@2.0.5
+  - @latticexyz/schema-type@2.0.5
+  - @latticexyz/services@2.0.5
+  - @latticexyz/utils@2.0.5
+
 ## 2.0.4
 
 ### Patch Changes

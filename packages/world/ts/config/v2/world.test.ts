@@ -752,4 +752,13 @@ describe("defineWorld", () => {
 
     defineWorld(config);
   });
+
+  it("should throw if config has unexpected key", () => {
+    attest(() =>
+      defineWorld({
+        // @ts-expect-error Invalid config option
+        invalidOption: "nope",
+      }),
+    ).type.errors("`invalidOption` is not a valid World config option.");
+  });
 });

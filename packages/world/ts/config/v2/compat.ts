@@ -1,18 +1,18 @@
-import { conform, mutable } from "@arktype/util";
+import { conform } from "@arktype/util";
 import { Module, World, Systems } from "./output";
 import { Store } from "@latticexyz/store";
 import { storeToV1 } from "@latticexyz/store/config/v2";
 
-type modulesToV1<modules extends readonly Module[]> = mutable<{
-  [key in keyof modules]: Required<modules[key]>;
-}>;
+type modulesToV1<modules extends readonly Module[]> = {
+  [key in keyof modules]: Omit<modules[key], "artifactPath">;
+};
 
 function modulesToV1<modules extends readonly Module[]>(modules: modules): modulesToV1<modules> {
   return modules.map((module) => ({
-    name: module.name,
+    ...module,
     root: module.root ?? false,
     args: module.args ?? [],
-  })) as modulesToV1<modules>;
+  })) as never;
 }
 
 type systemsToV1<systems extends Systems> = {
@@ -29,7 +29,7 @@ function systemsToV1<systems extends Systems>(systems: systems): systemsToV1<sys
 export type worldToV1<world> = world extends World
   ? Omit<storeToV1<world>, "v2"> & {
       systems: systemsToV1<world["systems"]>;
-      excludeSystems: mutable<world["excludeSystems"]>;
+      excludeSystems: world["excludeSystems"];
       modules: modulesToV1<world["modules"]>;
       worldContractName: world["deploy"]["customWorldContract"];
       postDeployScript: world["deploy"]["postDeployScript"];
@@ -56,5 +56,5 @@ export function worldToV1<world>(world: conform<world, World>): worldToV1<world>
     worldImportPath: world.codegen.worldImportPath,
   };
 
-  return { ...storeToV1(world as Store), ...v1WorldConfig, v2: world } as worldToV1<world>;
+  return { ...storeToV1(world as Store), ...v1WorldConfig, v2: world } as never;
 }
