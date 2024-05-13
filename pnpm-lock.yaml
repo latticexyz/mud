@@ -576,6 +576,9 @@ importers:
 
   packages/query:
     dependencies:
+      '@arktype/util':
+        specifier: 0.0.40
+        version: 0.0.40
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
