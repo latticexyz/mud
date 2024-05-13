@@ -23,10 +23,10 @@ contract PostDeploy is Script {
     Tasks.set("1", TasksData({ description: "Walk the dog", createdAt: block.timestamp, completedAt: 0 }));
 
     // Or we can call our own systems
-    IWorld(worldAddress).addTask("Take out the trash");
+    IWorld(worldAddress).task_app__addTask("Take out the trash");
 
-    bytes32 key = IWorld(worldAddress).addTask("Do the dishes");
-    IWorld(worldAddress).completeTask(key);
+    bytes32 key = IWorld(worldAddress).task_app__addTask("Do the dishes");
+    IWorld(worldAddress).task_app__completeTask(key);
 
     vm.stopBroadcast();
   }
