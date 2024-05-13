@@ -42,8 +42,7 @@ WORKDIR /app
 # this resolves some chicken-and-egg problems with using workspace bins before they're created (install -> build -> install)
 RUN pnpm recursive run prepare
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-ENV NODE_OPTIONS=--max-old-space-size=4096
-RUN pnpm run -r build
+RUN NODE_OPTIONS=--max-old-space-size=4096 pnpm run -r build
 
 FROM mud AS store-indexer
 WORKDIR /app/packages/store-indexer
