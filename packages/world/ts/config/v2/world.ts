@@ -1,4 +1,4 @@
-import { ErrorMessage, conform, narrow, type withExactJsDoc } from "@arktype/util";
+import { ErrorMessage, conform, narrow, type withJsDoc } from "@arktype/util";
 import {
   UserTypes,
   extendedScope,
@@ -53,7 +53,7 @@ export function validateWorld(world: unknown): asserts world is WorldInput {
   }
 }
 
-export type resolveWorld<world> = withExactJsDoc<
+export type resolveWorld<world> = withJsDoc<
   resolveStore<world> &
     mergeIfUndefined<
       { tables: resolveNamespacedTables<world> } & Omit<

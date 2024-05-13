@@ -340,8 +340,8 @@ importers:
   packages/config:
     dependencies:
       '@arktype/util':
-        specifier: 0.0.39
-        version: 0.0.39
+        specifier: 0.0.40
+        version: 0.0.40
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -754,8 +754,8 @@ importers:
   packages/store:
     dependencies:
       '@arktype/util':
-        specifier: 0.0.39
-        version: 0.0.39
+        specifier: 0.0.40
+        version: 0.0.40
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -1049,8 +1049,8 @@ importers:
   packages/world:
     dependencies:
       '@arktype/util':
-        specifier: 0.0.39
-        version: 0.0.39
+        specifier: 0.0.40
+        version: 0.0.40
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -1285,8 +1285,8 @@ packages:
     resolution: {integrity: sha512-IvYMGnkUASJllRk3mdBVgckomKx2LNsDTrWCxz04EBK1OuU+4fJ/smSjxgZVWfopNXZds9sHNxZgTJOIw7GvJw==}
     dev: true
 
-  /@arktype/util@0.0.39:
-    resolution: {integrity: sha512-wd8czBqQz3scri2T5GM6kH9cdFHpzmDjGf0ER6NxyvZH4dnx/AqC57kBFOWIAj5+idvUgHusWAS1xocaDbtyuA==}
+  /@arktype/util@0.0.40:
+    resolution: {integrity: sha512-dwC3xZh9Bz6LWSJq71AUoh06zB0qM65N4zS/NNogbumhbO55yot7yqDlv0qeBMNOWXj/gX7l7l58v0EqEaXN2w==}
     dev: false
 
   /@aws-crypto/ie11-detection@3.0.0:
