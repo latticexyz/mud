@@ -1,6 +1,7 @@
 import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
+  namespace: "task_app",
   tables: {
     Tasks: {
       schema: {
