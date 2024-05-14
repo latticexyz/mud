@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.0.10
+
+### Patch Changes
+
+- 18360244: Templates now use an `app` namespace by default, instead of the root namespace. This helps keep the root namespace clear for intentionally root-level things and avoids pitfalls with root systems calling other root systems.
+- 4a61a128: Removed usages of old testnet faucet in templates. The previous testnet faucet is broken, deprecated, and going offline soon. We'll be replacing the burner account pattern with something better very soon!
+
 ## 2.0.9
 
 ### Patch Changes

@@ -1,5 +1,29 @@
 # @latticexyz/store-sync
 
+## 2.0.10
+
+### Patch Changes
+
+- 36e1f766: Both `encodeEntity` and `decodeEntity` now use an LRU cache to avoid repeating work during iterations of thousands of entities.
+- 4caca05e: Bumped zod dependency to comply with abitype peer dependencies.
+- Updated dependencies [a1b1ebf6]
+- Updated dependencies [4e4e9104]
+- Updated dependencies [4e4e9104]
+- Updated dependencies [51b137d3]
+- Updated dependencies [3dbf3bf3]
+- Updated dependencies [32c1cda6]
+- Updated dependencies [4caca05e]
+- Updated dependencies [27f888c7]
+  - @latticexyz/world@2.0.10
+  - @latticexyz/store@2.0.10
+  - @latticexyz/common@2.0.10
+  - @latticexyz/config@2.0.10
+  - @latticexyz/query@2.0.10
+  - @latticexyz/block-logs-stream@2.0.10
+  - @latticexyz/protocol-parser@2.0.10
+  - @latticexyz/recs@2.0.10
+  - @latticexyz/schema-type@2.0.10
+
 ## 2.0.9
 
 ### Patch Changes

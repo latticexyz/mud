@@ -1,5 +1,25 @@
 # Change Log
 
+## 2.0.10
+
+### Patch Changes
+
+- 4e4e9104: Removed the unused `ejs` dependency.
+- 4caca05e: Bumped zod dependency to comply with abitype peer dependencies.
+- Updated dependencies [a1b1ebf6]
+- Updated dependencies [4e4e9104]
+- Updated dependencies [4e4e9104]
+- Updated dependencies [51b137d3]
+- Updated dependencies [3dbf3bf3]
+- Updated dependencies [32c1cda6]
+- Updated dependencies [4caca05e]
+- Updated dependencies [27f888c7]
+  - @latticexyz/world@2.0.10
+  - @latticexyz/store@2.0.10
+  - @latticexyz/common@2.0.10
+  - @latticexyz/config@2.0.10
+  - @latticexyz/schema-type@2.0.10
+
 ## 2.0.9
 
 ### Patch Changes
