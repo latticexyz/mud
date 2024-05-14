@@ -19,7 +19,7 @@ config.enumValues.TerrainType.Grass;
 //                              ^? (property) Grass: 1
 ```
 
-This should allow for easier referencing of enum values (i.e. `uint8` equivalent) in contract calls.
+This allows for easier referencing of enum values (i.e. `uint8` equivalent) in contract calls.
 
 ```ts
 writeContract({
