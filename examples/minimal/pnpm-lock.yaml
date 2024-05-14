@@ -50,9 +50,6 @@ importers:
       '@latticexyz/schema-type':
         specifier: link:../../../../packages/schema-type
         version: link:../../../../packages/schema-type
-      '@latticexyz/services':
-        specifier: link:../../../../packages/services
-        version: link:../../../../packages/services
       '@latticexyz/store-sync':
         specifier: link:../../../../packages/store-sync
         version: link:../../../../packages/store-sync
@@ -162,9 +159,6 @@ importers:
       '@latticexyz/schema-type':
         specifier: link:../../../../packages/schema-type
         version: link:../../../../packages/schema-type
-      '@latticexyz/services':
-        specifier: link:../../../../packages/services
-        version: link:../../../../packages/services
       '@latticexyz/store-sync':
         specifier: link:../../../../packages/store-sync
         version: link:../../../../packages/store-sync
@@ -250,9 +244,6 @@ importers:
       '@latticexyz/schema-type':
         specifier: link:../../../../packages/schema-type
         version: link:../../../../packages/schema-type
-      '@latticexyz/services':
-        specifier: link:../../../../packages/services
-        version: link:../../../../packages/services
       '@latticexyz/store-sync':
         specifier: link:../../../../packages/store-sync
         version: link:../../../../packages/store-sync

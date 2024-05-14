@@ -6,8 +6,7 @@
 
 /*
  * By default the template just creates a temporary wallet
- * (called a burner wallet) and uses a faucet (on our test net)
- * to get ETH for it.
+ * (called a burner wallet).
  *
  * See https://mud.dev/tutorials/minimal/deploy#wallet-managed-address
  * for how to use the user's own address instead.
@@ -85,7 +84,6 @@ export async function getNetworkConfig() {
     privateKey: getBurnerPrivateKey(),
     chainId,
     chain,
-    faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
     worldAddress,
     initialBlockNumber,
   };

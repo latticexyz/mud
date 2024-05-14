@@ -1,14 +1,20 @@
 import { evaluate } from "@arktype/util";
 import { AbiType, Schema, Table as BaseTable } from "@latticexyz/config";
+import { EnumsInput } from "./input";
 
 export type { AbiType, Schema };
 
 export type UserTypes = {
-  readonly [userTypeName: string]: { type: AbiType; filePath: string };
+  readonly [userTypeName: string]: {
+    readonly type: AbiType;
+    readonly filePath: string;
+  };
 };
 
-export type Enums = {
-  readonly [enumName: string]: readonly [string, ...string[]];
+export type EnumValues = {
+  readonly [enumName: string]: {
+    readonly [enumElement: string]: number;
+  };
 };
 
 export type TableCodegen = {
@@ -41,7 +47,8 @@ export type Store = {
     readonly [namespacedTableName: string]: Table;
   };
   readonly userTypes: UserTypes;
-  readonly enums: Enums;
+  readonly enums: EnumsInput;
+  readonly enumValues: EnumValues;
   readonly namespace: string;
   readonly codegen: Codegen;
 };

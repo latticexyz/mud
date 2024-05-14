@@ -15,7 +15,6 @@
     "@latticexyz/dev-tools": "latest",
     "@latticexyz/react": "latest",
     "@latticexyz/schema-type": "latest",
-    "@latticexyz/services": "latest",
     "@latticexyz/store-sync": "latest",
     "@latticexyz/utils": "latest",
     "@latticexyz/world": "latest",

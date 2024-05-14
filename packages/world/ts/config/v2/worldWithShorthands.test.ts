@@ -60,6 +60,12 @@ describe("defineWorldWithShorthands", () => {
       enums: {
         MyEnum: ["First", "Second"],
       },
+      enumValues: {
+        MyEnum: {
+          First: 0,
+          Second: 1,
+        },
+      },
       namespace: "",
     } as const;
 
@@ -123,6 +129,12 @@ describe("defineWorldWithShorthands", () => {
       enums: {
         MyEnum: ["First", "Second"],
       },
+      enumValues: {
+        MyEnum: {
+          First: 0,
+          Second: 1,
+        },
+      },
       namespace: "",
     } as const;
 
@@ -158,6 +170,7 @@ describe("defineWorldWithShorthands", () => {
       },
       userTypes: {},
       enums: {},
+      enumValues: {},
       namespace: "",
     } as const;
 
@@ -196,6 +209,7 @@ describe("defineWorldWithShorthands", () => {
       },
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" as string } },
       enums: {},
+      enumValues: {},
       namespace: "",
     } as const;
 
@@ -236,6 +250,7 @@ describe("defineWorldWithShorthands", () => {
       },
       userTypes: {},
       enums: {},
+      enumValues: {},
       namespace: "",
     } as const;
 
@@ -276,6 +291,7 @@ describe("defineWorldWithShorthands", () => {
       },
       userTypes: {},
       enums: {},
+      enumValues: {},
       namespace: "",
     } as const;
 
