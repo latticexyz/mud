@@ -1,7 +1,7 @@
 import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
-  namespace: "counter",
+  namespace: "app",
   tables: {
     Counter: {
       schema: {

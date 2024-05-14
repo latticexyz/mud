@@ -1,7 +1,7 @@
 import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
-  namespace: "virtual_world",
+  namespace: "app",
   tables: {
     Position: {
       schema: {
