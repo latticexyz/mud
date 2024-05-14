@@ -1,5 +1,23 @@
 # @latticexyz/store-indexer
 
+## 2.0.10
+
+### Patch Changes
+
+- 0d4e302f: Fixed the `distance_from_follow_block` gauge to be a positive number if the latest processed block is lagging behind the latest remote block.
+- 4caca05e: Bumped zod dependency to comply with abitype peer dependencies.
+- Updated dependencies [4e4e9104]
+- Updated dependencies [51b137d3]
+- Updated dependencies [36e1f766]
+- Updated dependencies [32c1cda6]
+- Updated dependencies [4caca05e]
+- Updated dependencies [27f888c7]
+  - @latticexyz/store@2.0.10
+  - @latticexyz/common@2.0.10
+  - @latticexyz/store-sync@2.0.10
+  - @latticexyz/block-logs-stream@2.0.10
+  - @latticexyz/protocol-parser@2.0.10
+
 ## 2.0.9
 
 ### Patch Changes

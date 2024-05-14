@@ -1,5 +1,16 @@
 # Change Log
 
+## 2.0.10
+
+### Patch Changes
+
+- Updated dependencies [4e4e9104]
+- Updated dependencies [32c1cda6]
+- Updated dependencies [4caca05e]
+- Updated dependencies [27f888c7]
+  - @latticexyz/store@2.0.10
+  - @latticexyz/recs@2.0.10
+
 ## 2.0.9
 
 ### Patch Changes
