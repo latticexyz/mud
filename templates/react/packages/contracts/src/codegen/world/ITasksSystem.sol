@@ -9,11 +9,11 @@ pragma solidity >=0.8.24;
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface ITasksSystem {
-  function addTask(string memory description) external returns (bytes32 id);
+  function task_app__addTask(string memory description) external returns (bytes32 id);
 
-  function completeTask(bytes32 id) external;
+  function task_app__completeTask(bytes32 id) external;
 
-  function resetTask(bytes32 id) external;
+  function task_app__resetTask(bytes32 id) external;
 
-  function deleteTask(bytes32 id) external;
+  function task_app__deleteTask(bytes32 id) external;
 }

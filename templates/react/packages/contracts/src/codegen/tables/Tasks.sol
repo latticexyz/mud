@@ -23,8 +23,8 @@ struct TasksData {
 }
 
 library Tasks {
-  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Tasks", typeId: RESOURCE_TABLE });`
-  ResourceId constant _tableId = ResourceId.wrap(0x746200000000000000000000000000005461736b730000000000000000000000);
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "task_app", name: "Tasks", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x74627461736b5f6170700000000000005461736b730000000000000000000000);
 
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0040020120200000000000000000000000000000000000000000000000000000);
