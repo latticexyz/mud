@@ -14,7 +14,7 @@
     "@playwright/test": "1.35.1"
   },
   "engines": {
-    "node": "18.x",
-    "pnpm": "8.x"
+    "node": "^18.20.1",
+    "pnpm": "9.x"
   }
 }
