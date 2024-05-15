@@ -11,7 +11,9 @@ import { knownModuleArtifacts } from "../utils/knownModuleArtifacts";
 
 export async function configToModules<config extends World>(
   config: config,
+  // TODO: remove `forgeOutDir`
   forgeOutDir: string,
+  configPath: string,
 ): Promise<readonly Module[]> {
   // this expects a namespaced table name when used with `resolveTableId`
   const resolveContext = {
@@ -52,7 +54,7 @@ export async function configToModules<config extends World>(
       }
 
       const name = path.basename(artifactPath, ".json");
-      const artifact = await getContractArtifact({ artifactPath });
+      const artifact = await getContractArtifact({ artifactPath, configPath });
 
       // TODO: replace args with something more strongly typed
       const installArgs = mod.args

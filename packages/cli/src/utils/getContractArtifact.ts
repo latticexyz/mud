@@ -5,14 +5,16 @@ import { z } from "zod";
 import { Abi as abiSchema } from "abitype/zod";
 import { createRequire } from "node:module";
 
-const require = createRequire(process.cwd());
-
 export type GetContractArtifactOptions = {
+  /**
+   * Absolute path to mud.config.ts, where importing artifacts will resolve relative to.
+   */
+  configPath: string;
   /**
    * Import path to contract's forge/solc JSON artifact with the contract's compiled bytecode.
    *
-   * This path is resolved using node's contract resolution, so this supports both relative file paths (`../path/to/MyModule.json`) as well as JS import paths
-   * (`@latticexyz/world-contracts/out/CallWithSignatureModule.sol/CallWithSignatureModule.json`).
+   * This path is resolved using node's module resolution relative to `configPath`, so this supports both
+   * relative file paths (`../path/to/MyModule.json`) as well as JS import paths (`@latticexyz/world-contracts/out/CallWithSignatureModule.sol/CallWithSignatureModule.json`).
    */
   artifactPath: string;
 };
@@ -46,9 +48,11 @@ const artifactSchema = z.object({
 
 export async function getContractArtifact({
   artifactPath,
+  configPath,
 }: GetContractArtifactOptions): Promise<GetContractArtifactResult> {
   let importedArtifact;
   try {
+    const require = createRequire(configPath);
     importedArtifact = require(artifactPath);
   } catch (error) {
     console.error();
