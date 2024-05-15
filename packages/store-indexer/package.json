@@ -12,13 +12,15 @@
   "exports": {
     ".": "./dist/index.js"
   },
-  "types": "src/index.ts",
   "bin": {
     "postgres-decoded-indexer": "./dist/bin/postgres-decoded-indexer.js",
     "postgres-frontend": "./dist/bin/postgres-frontend.js",
     "postgres-indexer": "./dist/bin/postgres-indexer.js",
     "sqlite-indexer": "./dist/bin/sqlite-indexer.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",

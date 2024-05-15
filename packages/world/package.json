@@ -18,25 +18,10 @@
     "./node": "./dist/node.js",
     "./out/*": "./out/*"
   },
-  "typesVersions": {
-    "*": {
-      "index": [
-        "./ts/exports/index.ts"
-      ],
-      "internal": [
-        "./ts/exports/internal.ts"
-      ],
-      "config/v2": [
-        "./ts/config/v2/index.ts"
-      ],
-      "register": [
-        "./ts/register/index.ts"
-      ],
-      "node": [
-        "./ts/node/index.ts"
-      ]
-    }
-  },
+  "files": [
+    "dist",
+    "out"
+  ],
   "scripts": {
     "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts && pnpm run build:js",
     "build:abi": "forge build",

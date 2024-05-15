@@ -19,34 +19,9 @@
     "./trpc-indexer": "./dist/trpc-indexer/index.js",
     "./zustand": "./dist/zustand/index.js"
   },
-  "typesVersions": {
-    "*": {
-      "index": [
-        "./src/index.ts"
-      ],
-      "indexer-client": [
-        "./src/indexer-client/index.ts"
-      ],
-      "postgres": [
-        "./src/postgres/index.ts"
-      ],
-      "postgres-decoded": [
-        "./src/postgres-decoded/index.ts"
-      ],
-      "recs": [
-        "./src/recs/index.ts"
-      ],
-      "sqlite": [
-        "./src/sqlite/index.ts"
-      ],
-      "trpc-indexer": [
-        "./src/trpc-indexer/index.ts"
-      ],
-      "zustand": [
-        "./src/zustand/index.ts"
-      ]
-    }
-  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "bench": "vitest bench",
     "build": "pnpm run build:js",

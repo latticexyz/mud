@@ -12,10 +12,12 @@
   "exports": {
     ".": "./dist/index.js"
   },
-  "types": "src/index.ts",
   "bin": {
     "mud": "./dist/mud.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "pnpm run build:js && pnpm run build:test-tables",
     "build:js": "tsup && chmod +x ./dist/mud.js",

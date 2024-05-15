@@ -12,7 +12,9 @@
   "exports": {
     ".": "./dist/index.js"
   },
-  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",

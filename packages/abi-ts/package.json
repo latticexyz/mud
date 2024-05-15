@@ -12,16 +12,12 @@
   "exports": {
     ".": "./dist/index.js"
   },
-  "typesVersions": {
-    "*": {
-      "index": [
-        "./src/index.ts"
-      ]
-    }
-  },
   "bin": {
     "abi-ts": "./dist/abi-ts.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "clean": "rimraf dist",

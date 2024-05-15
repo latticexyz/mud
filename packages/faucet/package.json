@@ -12,10 +12,12 @@
   "exports": {
     ".": "./dist/src/index.js"
   },
-  "types": "src/index.ts",
   "bin": {
     "faucet-server": "./dist/bin/faucet-server.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",

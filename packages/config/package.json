@@ -16,25 +16,9 @@
     "./register": "./dist/deprecated/register.js",
     "./node": "./dist/deprecated/node.js"
   },
-  "typesVersions": {
-    "*": {
-      "index": [
-        "./src/exports/index.ts"
-      ],
-      "internal": [
-        "./src/exports/internal.ts"
-      ],
-      "library": [
-        "./src/deprecated/library/index.ts"
-      ],
-      "register": [
-        "./src/deprecated/register/index.ts"
-      ],
-      "node": [
-        "./src/deprecated/node/index.ts"
-      ]
-    }
-  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",
