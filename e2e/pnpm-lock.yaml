@@ -99,6 +99,9 @@ importers:
       '@latticexyz/world':
         specifier: link:../../../packages/world
         version: link:../../../packages/world
+      '@latticexyz/world-modules':
+        specifier: link:../../../packages/world-modules
+        version: link:../../../packages/world-modules
       dotenv:
         specifier: ^16.0.3
         version: 16.0.3
@@ -792,7 +795,6 @@ packages:
 
   ds-test@https://codeload.github.com/dapphub/ds-test/tar.gz/e282159d5170298eb2455a6c05280ab5a73a4ef0:
     resolution: {tarball: https://codeload.github.com/dapphub/ds-test/tar.gz/e282159d5170298eb2455a6c05280ab5a73a4ef0}
-    name: ds-test
     version: 1.0.0
 
   emoji-regex@8.0.0:
@@ -838,7 +840,6 @@ packages:
 
   forge-std@https://codeload.github.com/foundry-rs/forge-std/tar.gz/74cfb77e308dd188d2f58864aaf44963ae6b88b1:
     resolution: {tarball: https://codeload.github.com/foundry-rs/forge-std/tar.gz/74cfb77e308dd188d2f58864aaf44963ae6b88b1}
-    name: forge-std
     version: 1.6.0
 
   fs.realpath@1.0.0:
@@ -1587,7 +1588,7 @@ snapshots:
       pretty-format: 29.7.0
 
   abitype@1.0.0(typescript@5.4.2)(zod@3.22.2):
-    dependencies:
+    optionalDependencies:
       typescript: 5.4.2
       zod: 3.22.2
 
@@ -1679,7 +1680,7 @@ snapshots:
   dotenv@16.0.3: {}
 
   drizzle-orm@0.28.5(postgres@3.3.5):
-    dependencies:
+    optionalDependencies:
       postgres: 3.3.5
 
   ds-test@https://codeload.github.com/dapphub/ds-test/tar.gz/e282159d5170298eb2455a6c05280ab5a73a4ef0: {}
@@ -2097,8 +2098,9 @@ snapshots:
       '@scure/bip39': 1.2.1
       abitype: 1.0.0(typescript@5.4.2)(zod@3.22.2)
       isows: 1.0.3(ws@8.13.0)
-      typescript: 5.4.2
       ws: 8.13.0
+    optionalDependencies:
+      typescript: 5.4.2
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -2123,11 +2125,11 @@ snapshots:
 
   vite@4.3.5(@types/node@20.1.3):
     dependencies:
-      '@types/node': 20.1.3
       esbuild: 0.17.18
       postcss: 8.4.23
       rollup: 3.21.6
     optionalDependencies:
+      '@types/node': 20.1.3
       fsevents: 2.3.2
 
   vitest@0.34.6(happy-dom@12.10.3):
@@ -2145,7 +2147,6 @@ snapshots:
       cac: 6.7.14
       chai: 4.4.1
       debug: 4.3.4
-      happy-dom: 12.10.3
       local-pkg: 0.4.3
       magic-string: 0.30.5
       pathe: 1.1.2
@@ -2157,6 +2158,8 @@ snapshots:
       vite: 4.3.5(@types/node@20.1.3)
       vite-node: 0.34.6(@types/node@20.1.3)
       why-is-node-running: 2.2.2
+    optionalDependencies:
+      happy-dom: 12.10.3
     transitivePeerDependencies:
       - less
       - sass

@@ -38,6 +38,7 @@ export async function ensureModules({
         pRetry(
           async () => {
             try {
+              // append module's ABI so that we can decode any custom errors
               const abi = [...worldAbi, ...mod.abi];
               const moduleAddress = mod.prepareDeploy(deployerAddress, libraries).address;
               return mod.installAsRoot
