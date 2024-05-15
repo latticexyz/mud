@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.0.11
+
+### Patch Changes
+
+- 63e5d2d5: Added pnpm 9 to project's `engines`.
+
 ## 2.0.10
 
 ### Patch Changes

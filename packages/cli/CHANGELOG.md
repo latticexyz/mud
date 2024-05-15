@@ -1,5 +1,20 @@
 # Change Log
 
+## 2.0.11
+
+### Patch Changes
+
+- fe9d7263: Fixed imports of module artifacts via `artifactPath` and removed unused `@latticexyz/world-modules` dependency.
+  - @latticexyz/abi-ts@2.0.11
+  - @latticexyz/common@2.0.11
+  - @latticexyz/config@2.0.11
+  - @latticexyz/gas-report@2.0.11
+  - @latticexyz/protocol-parser@2.0.11
+  - @latticexyz/schema-type@2.0.11
+  - @latticexyz/store@2.0.11
+  - @latticexyz/utils@2.0.11
+  - @latticexyz/world@2.0.11
+
 ## 2.0.10
 
 ### Patch Changes
