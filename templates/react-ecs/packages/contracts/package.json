@@ -6,8 +6,9 @@
   "scripts": {
     "build": "mud build",
     "clean": "forge clean && rimraf src/codegen",
+    "deploy:garnet": "mud deploy --profile=garnet",
     "deploy:local": "mud deploy",
-    "deploy:testnet": "mud deploy --profile=lattice-testnet",
+    "deploy:redstone": "mud deploy --profile=redstone",
     "dev": "mud dev-contracts",
     "lint": "pnpm run prettier && pnpm run solhint",
     "prettier": "prettier --write 'src/**/*.sol'",
