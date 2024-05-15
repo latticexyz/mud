@@ -21,9 +21,8 @@
     "mprocs": "^0.6.4",
     "typescript": "5.4.2"
   },
-  "packageManager": "pnpm@9.1.1",
   "engines": {
-    "node": "^18.20.1",
-    "pnpm": "^9.1.1"
+    "node": "^18",
+    "pnpm": "^8 || ^9"
   }
 }
