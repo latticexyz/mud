@@ -3,6 +3,9 @@ import { LibraryPlaceholder } from "../deploy/common";
 import { findPlaceholders } from "./findPlaceholders";
 import { z } from "zod";
 import { Abi as abiSchema } from "abitype/zod";
+import { createRequire } from "node:module";
+
+const require = createRequire(process.cwd());
 
 export type GetContractArtifactOptions = {
   /**
@@ -46,13 +49,7 @@ export async function getContractArtifact({
 }: GetContractArtifactOptions): Promise<GetContractArtifactResult> {
   let importedArtifact;
   try {
-    importedArtifact = (
-      await import(artifactPath, {
-        with: { type: "json" },
-        // `with` is the new approach, but `assert` is kept for backwards-compatibility with Node 18
-        assert: { type: "json" },
-      })
-    ).default;
+    importedArtifact = require(artifactPath);
   } catch (error) {
     console.error();
     console.error("Could not import contract artifact at", artifactPath);

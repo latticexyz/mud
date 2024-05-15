@@ -6,7 +6,7 @@
   "scripts": {
     "build": "mud build",
     "clean": "forge clean && rimraf src/codegen",
-    "deploy:local": "mud deploy"
+    "deploy:local": "DEBUG=mud:* mud deploy"
   },
   "devDependencies": {
     "@latticexyz/cli": "workspace:*",
