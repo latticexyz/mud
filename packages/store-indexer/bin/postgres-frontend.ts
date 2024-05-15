@@ -13,6 +13,7 @@ import { apiRoutes } from "../src/postgres/apiRoutes";
 import { sentry } from "../src/koa-middleware/sentry";
 import { healthcheck } from "../src/koa-middleware/healthcheck";
 import { helloWorld } from "../src/koa-middleware/helloWorld";
+import { metrics } from "../src/koa-middleware/metrics";
 
 const env = parseEnv(
   z.intersection(
@@ -34,6 +35,12 @@ if (env.SENTRY_DSN) {
 
 server.use(cors());
 server.use(healthcheck());
+server.use(
+  metrics({
+    isHealthy: () => true,
+    isReady: () => true,
+  }),
+);
 server.use(helloWorld());
 server.use(apiRoutes(database));
 

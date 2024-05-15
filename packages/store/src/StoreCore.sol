@@ -15,7 +15,7 @@ import { IStoreHook } from "./IStoreHook.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
 import { Hook, HookLib } from "./Hook.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "./storeHookTypes.sol";
-import { ResourceId } from "./ResourceId.sol";
+import { ResourceId, ResourceIdLib } from "./ResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "./storeResourceTypes.sol";
 import { IStoreEvents } from "./IStoreEvents.sol";
 
@@ -160,7 +160,7 @@ library StoreCore {
     string[] memory keyNames,
     string[] memory fieldNames
   ) internal {
-    // Verify the table ID is of type RESOURCE_TABLE
+    // Verify the table ID is of type RESOURCE_TABLE or RESOURCE_OFFCHAIN_TABLE
     if (tableId.getType() != RESOURCE_TABLE && tableId.getType() != RESOURCE_OFFCHAIN_TABLE) {
       revert IStoreErrors.Store_InvalidResourceType(RESOURCE_TABLE, tableId, string(abi.encodePacked(tableId)));
     }
@@ -209,8 +209,10 @@ library StoreCore {
       }
     }
 
-    // Verify there is no resource with this ID yet
-    if (ResourceIds._getExists(tableId)) {
+    // Verify that there is no table or offchain table with the same name
+    ResourceId onchainTableId = ResourceIdLib.encode(RESOURCE_TABLE, tableId.getResourceName());
+    ResourceId offchainTableId = ResourceIdLib.encode(RESOURCE_OFFCHAIN_TABLE, tableId.getResourceName());
+    if (ResourceIds._getExists(onchainTableId) || ResourceIds._getExists(offchainTableId)) {
       revert IStoreErrors.Store_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
     }
 

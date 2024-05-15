@@ -4,3 +4,9 @@
 !src/**
 !package.json
 !README.md
+
+!out/**/*.json
+!out/**/*.abi.json
+!out/**/*.abi.json.d.ts
+!cache/solidity-files-cache.json
+!foundry.toml

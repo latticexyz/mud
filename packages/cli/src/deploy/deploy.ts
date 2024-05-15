@@ -2,7 +2,7 @@ import { Account, Address, Chain, Client, Hex, Transport } from "viem";
 import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
-import { Config, ConfigInput, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
+import { Config, ConfigInput, Module, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
 import { ensureSystems } from "./ensureSystems";
 import { waitForTransactionReceipt } from "viem/actions";
 import { getWorldDeploy } from "./getWorldDeploy";
@@ -19,6 +19,7 @@ import { ensureWorldFactory } from "./ensureWorldFactory";
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
   config: Config<configInput>;
+  modules?: readonly Module[];
   salt?: Hex;
   worldAddress?: Address;
   /**
@@ -28,6 +29,7 @@ type DeployOptions<configInput extends ConfigInput> = {
    * not have a deterministic address.
    */
   deployerAddress?: Hex;
+  withWorldProxy?: boolean;
 };
 
 /**
@@ -39,15 +41,17 @@ type DeployOptions<configInput extends ConfigInput> = {
 export async function deploy<configInput extends ConfigInput>({
   client,
   config,
+  modules = [],
   salt,
   worldAddress: existingWorldAddress,
   deployerAddress: initialDeployerAddress,
+  withWorldProxy,
 }: DeployOptions<configInput>): Promise<WorldDeploy> {
   const tables = Object.values(config.tables) as Table[];
 
   const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
 
-  await ensureWorldFactory(client, deployerAddress);
+  await ensureWorldFactory(client, deployerAddress, withWorldProxy);
 
   // deploy all dependent contracts, because system registration, module install, etc. all expect these contracts to be callable.
   await ensureContractsDeployed({
@@ -64,7 +68,7 @@ export async function deploy<configInput extends ConfigInput>({
         deployedBytecodeSize: system.deployedBytecodeSize,
         label: `${resourceToLabel(system)} system`,
       })),
-      ...config.modules.map((mod) => ({
+      ...modules.map((mod) => ({
         bytecode: mod.prepareDeploy(deployerAddress, config.libraries).bytecode,
         deployedBytecodeSize: mod.deployedBytecodeSize,
         label: `${mod.name} module`,
@@ -74,7 +78,7 @@ export async function deploy<configInput extends ConfigInput>({
 
   const worldDeploy = existingWorldAddress
     ? await getWorldDeploy(client, existingWorldAddress)
-    : await deployWorld(client, deployerAddress, salt ?? `0x${randomBytes(32).toString("hex")}`);
+    : await deployWorld(client, deployerAddress, salt ?? `0x${randomBytes(32).toString("hex")}`, withWorldProxy);
 
   if (!supportedStoreVersions.includes(worldDeploy.storeVersion)) {
     throw new Error(`Unsupported Store version: ${worldDeploy.storeVersion}`);
@@ -116,7 +120,7 @@ export async function deploy<configInput extends ConfigInput>({
     deployerAddress,
     libraries: config.libraries,
     worldDeploy,
-    modules: config.modules,
+    modules,
   });
 
   const txs = [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs];

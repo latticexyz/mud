@@ -15,7 +15,6 @@
     "@latticexyz/dev-tools": "link:../../../../packages/dev-tools",
     "@latticexyz/recs": "link:../../../../packages/recs",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
-    "@latticexyz/services": "link:../../../../packages/services",
     "@latticexyz/store-sync": "link:../../../../packages/store-sync",
     "@latticexyz/utils": "link:../../../../packages/utils",
     "@latticexyz/world": "link:../../../../packages/world",
@@ -29,7 +28,7 @@
     "react": "^18.2.0",
     "rxjs": "7.5.5",
     "threads": "^1.7.0",
-    "viem": "2.9.16"
+    "viem": "2.9.20"
   },
   "devDependencies": {
     "vite": "^4.2.1",

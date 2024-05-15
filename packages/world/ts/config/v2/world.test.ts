@@ -61,6 +61,7 @@ describe("defineWorld", () => {
       },
       userTypes: {},
       enums: {},
+      enumValues: {},
       namespace: "",
     } as const;
 
@@ -127,6 +128,12 @@ describe("defineWorld", () => {
       },
       enums: {
         MyEnum: ["First", "Second"],
+      },
+      enumValues: {
+        MyEnum: {
+          First: 0,
+          Second: 1,
+        },
       },
       namespace: "",
     } as const;
@@ -227,6 +234,7 @@ describe("defineWorld", () => {
         },
         userTypes: {},
         enums: {},
+        enumValues: {},
         namespace: "",
       } as const;
 
@@ -279,6 +287,7 @@ describe("defineWorld", () => {
           dynamic: { type: "string", filePath: "path/to/file" },
         },
         enums: {},
+        enumValues: {},
         namespace: "",
       } as const;
 
@@ -324,6 +333,7 @@ describe("defineWorld", () => {
         },
         userTypes: {},
         enums: {},
+        enumValues: {},
         namespace: "",
         deploy: DEPLOY_DEFAULTS,
       } as const;
@@ -397,6 +407,7 @@ describe("defineWorld", () => {
         },
         userTypes: {},
         enums: {},
+        enumValues: {},
         namespace: "",
       } as const;
 
@@ -477,6 +488,7 @@ describe("defineWorld", () => {
           Dynamic: { type: "string", filePath: "path/to/file" },
         },
         enums: {},
+        enumValues: {},
         namespace: "",
       } as const;
 
@@ -588,6 +600,12 @@ describe("defineWorld", () => {
         },
         enums: {
           ValidNames: ["first", "second"],
+        },
+        enumValues: {
+          ValidNames: {
+            first: 0,
+            second: 1,
+          },
         },
         namespace: "",
       } as const;
@@ -751,5 +769,14 @@ describe("defineWorld", () => {
     } as const;
 
     defineWorld(config);
+  });
+
+  it("should throw if config has unexpected key", () => {
+    attest(() =>
+      defineWorld({
+        // @ts-expect-error Invalid config option
+        invalidOption: "nope",
+      }),
+    ).type.errors("`invalidOption` is not a valid World config option.");
   });
 });

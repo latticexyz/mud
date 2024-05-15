@@ -1,0 +1,36 @@
+name: Publish to npm
+
+on:
+  push:
+    branches:
+      - "main"
+    paths-ignore:
+      - "docs/**"
+
+# Ensure only one workflow/job is publishing to npm at a time
+concurrency: publish-to-npm
+
+jobs:
+  release:
+    if: github.repository == 'latticexyz/mud'
+    uses: "./.github/workflows/release.yml"
+    secrets: inherit
+
+  snapshot:
+    if: github.repository == 'latticexyz/mud'
+    needs: [release]
+    uses: "./.github/workflows/snapshot.yml"
+    secrets: inherit
+
+  docker:
+    if: github.repository == 'latticexyz/mud'
+    needs: [release, snapshot]
+    uses: "./.github/workflows/docker.yml"
+    secrets: inherit
+
+  test-snapshot:
+    if: github.repository == 'latticexyz/mud'
+    uses: ./.github/workflows/test-published-packages.yml
+    needs: [release, snapshot]
+    with:
+      tag-or-version: ${{ github.ref_name }}

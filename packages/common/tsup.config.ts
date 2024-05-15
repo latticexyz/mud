@@ -10,6 +10,7 @@ export default defineConfig({
     foundry: "src/foundry/index.ts",
     "type-utils": "src/type-utils/index.ts",
     utils: "src/utils/index.ts",
+    kms: "src/exports/kms.ts",
   },
   target: "esnext",
   format: ["esm"],
