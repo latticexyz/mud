@@ -1,6 +1,6 @@
 import type { CommandModule, InferredOptionTypes } from "yargs";
 import { verify } from "../verify";
-import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
+import { loadConfig } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
 import { resolveWorldConfig } from "@latticexyz/world/internal";
 import { worldToV1 } from "@latticexyz/world/config/v2";
@@ -46,8 +46,7 @@ const commandModule: CommandModule<Options, Options> = {
   async handler(opts) {
     const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
 
-    const configPath = await resolveConfigPath(opts.configPath);
-    const configV2 = (await loadConfig(configPath)) as WorldConfig;
+    const configV2 = (await loadConfig(opts.configPath)) as WorldConfig;
     const config = worldToV1(configV2);
 
     const srcDir = opts.srcDir ?? (await getSrcDirectory(profile));
