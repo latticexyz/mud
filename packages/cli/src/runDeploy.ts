@@ -87,7 +87,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   }
 
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
-  const modules = await configToModules(configV2, outDir, configPath);
+  const modules = await configToModules(configV2, outDir);
 
   const account = await (async () => {
     if (opts.kms) {

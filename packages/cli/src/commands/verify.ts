@@ -83,7 +83,7 @@ const commandModule: CommandModule<Options, Options> = {
       };
     });
 
-    const modules = await configToModules(configV2, outDir, configPath);
+    const modules = await configToModules(configV2, outDir);
 
     await verify({
       client,

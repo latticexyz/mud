@@ -4,12 +4,15 @@ import { findPlaceholders } from "./findPlaceholders";
 import { z } from "zod";
 import { Abi as abiSchema } from "abitype/zod";
 import { createRequire } from "node:module";
+import { findUp } from "find-up";
 
 export type GetContractArtifactOptions = {
   /**
-   * Absolute path to mud.config.ts, where importing artifacts will resolve relative to.
+   * Path to `package.json` where `artifactPath`s are resolved relative to.
+   *
+   * Defaults to nearest `package.json` relative to `process.cwd()`.
    */
-  configPath: string;
+  packageJsonPath?: string;
   /**
    * Import path to contract's forge/solc JSON artifact with the contract's compiled bytecode.
    *
@@ -47,12 +50,15 @@ const artifactSchema = z.object({
 });
 
 export async function getContractArtifact({
+  packageJsonPath,
   artifactPath,
-  configPath,
 }: GetContractArtifactOptions): Promise<GetContractArtifactResult> {
   let importedArtifact;
   try {
-    const require = createRequire(configPath);
+    const requirePath = packageJsonPath ?? (await findUp("package.json", { cwd: process.cwd() }));
+    if (!requirePath) throw new Error("Could not find package.json to import relative to.");
+
+    const require = createRequire(requirePath);
     importedArtifact = require(artifactPath);
   } catch (error) {
     console.error();
