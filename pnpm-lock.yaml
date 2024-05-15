@@ -166,9 +166,6 @@ importers:
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../world
-      '@latticexyz/world-modules':
-        specifier: workspace:*
-        version: link:../world-modules
       abitype:
         specifier: 1.0.0
         version: 1.0.0(typescript@5.4.2)(zod@3.23.7)
@@ -1224,7 +1221,7 @@ packages:
       '@arktype/util': 0.0.23
       '@typescript/analyze-trace': 0.10.1
       '@typescript/vfs': 1.5.0
-      arktype: 2.0.0-dev.11
+      arktype: 2.0.0-dev.12
       typescript: 5.4.2
     transitivePeerDependencies:
       - supports-color
@@ -1234,10 +1231,10 @@ packages:
     resolution: {integrity: sha512-f3p8apUMOTl6KlFNTrOX6twQJDeSdSmtYPVca7SaQjUUTAxfUlaROY1/i1C3y2llYDrrQBEbsggk8k2Oxxgrvw==}
     dev: true
 
-  /@arktype/schema@0.1.2:
-    resolution: {integrity: sha512-ggvxs5P0toqd/4/XK76URQrtyOYpbYcLhirEZeTso6FxkloPa0lT+whPg7DNQj5qi2OQXLUHBYKMx9DOb13ViQ==}
+  /@arktype/schema@0.1.4:
+    resolution: {integrity: sha512-pqgpjL9vFwjgBW+gJKbKTHwVutWwa0h3sziK7Hx9lb4xzk8DXbpypTpmM/voaVtSVTQWtPaPLQ/45rwBQZwB5A==}
     dependencies:
-      '@arktype/util': 0.0.38
+      '@arktype/util': 0.0.41
     dev: true
 
   /@arktype/util@0.0.23:
@@ -1248,8 +1245,8 @@ packages:
     resolution: {integrity: sha512-fDTBSVzxLj9k1ZjinkawmaQdcXFKMBVK8c+vqMPxwoa94mPMZxBo84yQcqyFVcIcWIkg6qQQmH1ozyT4nqFT/g==}
     dev: false
 
-  /@arktype/util@0.0.38:
-    resolution: {integrity: sha512-IvYMGnkUASJllRk3mdBVgckomKx2LNsDTrWCxz04EBK1OuU+4fJ/smSjxgZVWfopNXZds9sHNxZgTJOIw7GvJw==}
+  /@arktype/util@0.0.41:
+    resolution: {integrity: sha512-0YURzJ42v+lhlP1t5Dj90YezETRTCdFU0oM4xMVpYsmPx/DHJzr9n7AX1QPAlYWH4wY7hYY3gwai3O+8VntPgw==}
     dev: true
 
   /@aws-crypto/ie11-detection@3.0.0:
@@ -5131,11 +5128,11 @@ packages:
     resolution: {integrity: sha512-glMLgVhIQRSkR3tymiS+POAcWVJH09sfrgic0jHnyFL8BlhHAJZX2BzdImU9zYr1y9NBqy+U93ZNrRTHXsKRDw==}
     dev: false
 
-  /arktype@2.0.0-dev.11:
-    resolution: {integrity: sha512-k+WVQoHsHsTyTiVQkO201mxLQxyXHmy3buJW8TXLOkr4X2yOUCp0K1SBscuG9OEJoc8MjpvoIharjPHEkFI7kg==}
+  /arktype@2.0.0-dev.12:
+    resolution: {integrity: sha512-NrmlARlXdrx9E6yA+ao0QxYoGgldwHv9zm/ll8erQs3K//NHla20Jmkjk4dQFQrr5rWAwr4NT8d+oUhWvKO32g==}
     dependencies:
-      '@arktype/schema': 0.1.2
-      '@arktype/util': 0.0.38
+      '@arktype/schema': 0.1.4
+      '@arktype/util': 0.0.41
     dev: true
 
   /array-includes@3.1.6:
