@@ -43,7 +43,7 @@ jobs:
         working-directory: ./templates/${{ matrix.template }}
         run: pnpm run build
 
-      - name: Outdated files, run `pnpm gas-report` and commit them
+      - name: Out of date files, run `pnpm build` in `pacakges/contracts`
         uses: ./.github/actions/require-empty-diff
 
       - name: Run tests
