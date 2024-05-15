@@ -2,7 +2,7 @@
   "exclude": ["dist"],
   "compilerOptions": {
     "target": "es2020",
-    "module": "commonjs",
+    "module": "Preserve",
     "declaration": true,
     "inlineSourceMap": true,
     "outDir": "./dist",

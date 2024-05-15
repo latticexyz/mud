@@ -3,7 +3,7 @@
     "target": "es2021",
     "types": ["node"],
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "declaration": true,
     "sourceMap": true,
     "outDir": "dist",

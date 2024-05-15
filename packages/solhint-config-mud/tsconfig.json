@@ -2,8 +2,8 @@
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig.json to read more about this file */
     "target": "es2021",
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
     "sourceMap": true,
     "outDir": "dist",
     "isolatedModules": true,
