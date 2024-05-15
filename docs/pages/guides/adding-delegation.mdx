@@ -430,7 +430,7 @@ const publicClient = createPublicClient({
 //   client - a wallet client that uses a random account
 //   world - a world contract object that lets us issue newCall
 const makeWorldContract = () => {
-  const wallet = createWalletClient({
+  const walletClient = createWalletClient({
     ...clientOptions,
     account: createBurnerAccount(getBurnerPrivateKey(Math.random().toString())),
   });
@@ -441,7 +441,7 @@ const makeWorldContract = () => {
       abi: IWorldAbi,
       client: {
         public: publicClient,
-        wallet: wallet,
+        wallet: walletClient,
       }
     }),
   };
