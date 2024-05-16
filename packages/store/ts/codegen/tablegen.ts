@@ -8,9 +8,9 @@ import { rm } from "fs/promises";
 import { Store as StoreConfig } from "../config/v2/output";
 import { storeToV1 } from "../config/v2/compat";
 
-export async function tablegen(configV2: StoreConfig, outputBaseDirectory: string, remappings: [string, string][]) {
-  const config = storeToV1(configV2);
-  const solidityUserTypes = loadAndExtractUserTypes(config.userTypes, outputBaseDirectory, remappings);
+export async function tablegen(config: StoreConfig, outputBaseDirectory: string, remappings: [string, string][]) {
+  const configV1 = storeToV1(config);
+  const solidityUserTypes = loadAndExtractUserTypes(configV1.userTypes, outputBaseDirectory, remappings);
   const allTableOptions = getTableOptions(config, solidityUserTypes);
 
   const uniqueTableDirectories = Array.from(new Set(allTableOptions.map(({ outputPath }) => path.dirname(outputPath))));
@@ -31,15 +31,15 @@ export async function tablegen(configV2: StoreConfig, outputBaseDirectory: strin
 
   // write table index
   if (allTableOptions.length > 0) {
-    const fullOutputPath = path.join(outputBaseDirectory, config.codegenIndexFilename);
+    const fullOutputPath = path.join(outputBaseDirectory, configV1.codegenIndexFilename);
     const output = renderTableIndex(allTableOptions);
     await formatAndWriteSolidity(output, fullOutputPath, "Generated table index");
   }
 
   // write types to file
-  if (Object.keys(config.enums).length > 0) {
-    const fullOutputPath = path.join(outputBaseDirectory, config.userTypesFilename);
-    const output = renderTypesFromConfig(config);
+  if (Object.keys(configV1.enums).length > 0) {
+    const fullOutputPath = path.join(outputBaseDirectory, configV1.userTypesFilename);
+    const output = renderTypesFromConfig(configV1);
     await formatAndWriteSolidity(output, fullOutputPath, "Generated types file");
   }
 }
