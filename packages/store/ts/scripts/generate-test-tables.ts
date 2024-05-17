@@ -6,11 +6,10 @@ import { fileURLToPath } from "node:url";
 const configPath = fileURLToPath(import.meta.url);
 
 const config = defineStore({
-  contractsSourceDirectory: "../../test",
+  sourceDirectory: "../../test",
   codegen: {
     storeImportPath: "../../../src/",
   },
-  namespace: "store",
   enums: {
     ExampleEnum: ["None", "First", "Second", "Third"],
   },

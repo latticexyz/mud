@@ -21,7 +21,7 @@ export type TableCodegen = {
   /**
    * Directory to output codegenerated files relative to config's `codegen.outputDirectory`.
    *
-   * Defaults to `codegen`.
+   * If unset, defaults to `tables`.
    */
   readonly outputDirectory: string;
   readonly tableIdArgument: boolean;
@@ -45,11 +45,20 @@ export type Codegen = {
   readonly storeImportPath: string;
   readonly userTypesFilename: string;
   /**
-   * Directory to output codegenerated files relative to config's `contractsSourceDirectory`.
+   * Directory to output codegenerated files relative to config's `sourceDirectory`.
    *
-   * Defaults to `tables`.
+   * Defaults to `codegen`.
    */
   readonly outputDirectory: string;
+  /**
+   * Whether or not to organize codegen output (table libraries, etc.) into directories by namespace.
+   *
+   * For example, a `Counter` table in the `app` namespace will have codegen at `codegen/app/tables/Counter.sol`.
+   *
+   * If not set, defaults to `true` when using top-level `namespaces` key, `false` otherwise.
+   */
+  // TODO: move `namespaces` key handling into store so we can conditionally turn this on/off
+  readonly namespaceDirectories: boolean;
   readonly indexFilename: string;
 };
 
@@ -61,7 +70,7 @@ export type Store = {
    *
    * Defaults to `src` to match `foundry.toml`'s default. If you change this from the default, you may also need to configure foundry with the same source directory.
    */
-  readonly contractsSourceDirectory: string;
+  readonly sourceDirectory: string;
   readonly tables: {
     readonly [namespacedTableName: string]: Table;
   };

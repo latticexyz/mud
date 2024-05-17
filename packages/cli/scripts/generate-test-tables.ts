@@ -9,7 +9,7 @@ const configPath = fileURLToPath(import.meta.url);
 // Aside from avoiding `mud.config.ts` in cli package (could cause issues),
 // this also tests that mudConfig and tablegen can work as standalone functions
 const config = defineStore({
-  contractsSourceDirectory: "../contracts/src",
+  sourceDirectory: "../contracts/src",
   enums: {
     Enum1: ["E1", "E2", "E3"],
     Enum2: ["E1"],

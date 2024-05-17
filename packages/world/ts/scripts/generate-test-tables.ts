@@ -6,14 +6,16 @@ import { fileURLToPath } from "node:url";
 const configPath = fileURLToPath(import.meta.url);
 
 const config = defineWorld({
-  contractsSourceDirectory: "../../test",
+  sourceDirectory: "../../test",
   tables: {
     Bool: {
       schema: {
         value: "bool",
       },
       key: [],
-      codegen: { tableIdArgument: true },
+      codegen: {
+        tableIdArgument: true,
+      },
     },
     TwoFields: {
       schema: {
@@ -21,7 +23,9 @@ const config = defineWorld({
         value2: "bool",
       },
       key: [],
-      codegen: { tableIdArgument: true },
+      codegen: {
+        tableIdArgument: true,
+      },
     },
     AddressArray: {
       schema: {
@@ -29,7 +33,9 @@ const config = defineWorld({
         value: "address[]",
       },
       key: ["key"],
-      codegen: { tableIdArgument: true },
+      codegen: {
+        tableIdArgument: true,
+      },
     },
   },
 });

@@ -17,7 +17,7 @@ describe("defineStore", () => {
     });
 
     const expected = {
-      contractsSourceDirectory: "src",
+      sourceDirectory: "src",
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -72,7 +72,7 @@ describe("defineStore", () => {
     });
 
     const expected = {
-      contractsSourceDirectory: "src",
+      sourceDirectory: "src",
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -126,7 +126,7 @@ describe("defineStore", () => {
     });
 
     const expected = {
-      contractsSourceDirectory: "src",
+      sourceDirectory: "src",
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -181,7 +181,7 @@ describe("defineStore", () => {
     });
 
     const expected = {
-      contractsSourceDirectory: "src",
+      sourceDirectory: "src",
       tables: {
         First: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
@@ -267,7 +267,7 @@ describe("defineStore", () => {
     });
 
     const expected = {
-      contractsSourceDirectory: "src",
+      sourceDirectory: "src",
       tables: {
         First: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
@@ -409,7 +409,7 @@ describe("defineStore", () => {
       },
     });
     const expected = {
-      contractsSourceDirectory: "src",
+      sourceDirectory: "src",
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),

@@ -122,13 +122,9 @@ export type resolveTableCodegen<input extends TableInput> = evaluate<{
           : never;
 }>;
 
-export function resolveTableCodegen<input extends TableInput>(
-  input: input,
-  namespace: string,
-): resolveTableCodegen<input> {
+export function resolveTableCodegen<input extends TableInput>(input: input): resolveTableCodegen<input> {
   const options = input.codegen;
   return {
-    // outputDirectory: get(options, "outputDirectory") ?? (namespace.length ? `${namespace}/tables` : "tables"),
     outputDirectory: get(options, "outputDirectory") ?? "tables",
     tableIdArgument: get(options, "tableIdArgument") ?? TABLE_CODEGEN_DEFAULTS.tableIdArgument,
     storeArgument: get(options, "storeArgument") ?? TABLE_CODEGEN_DEFAULTS.storeArgument,
@@ -169,7 +165,7 @@ export function resolveTable<input extends TableInput, scope extends Scope = Abi
     type,
     key: input.key,
     schema: resolveSchema(input.schema, scope),
-    codegen: resolveTableCodegen(input, namespace),
+    codegen: resolveTableCodegen(input),
     deploy: mergeIfUndefined(input.deploy ?? {}, TABLE_DEPLOY_DEFAULTS),
   } as never;
 }

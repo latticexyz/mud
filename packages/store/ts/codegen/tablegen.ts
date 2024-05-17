@@ -15,11 +15,7 @@ export type TablegenOptions = {
 };
 
 export async function tablegen({ configPath, config, remappings }: TablegenOptions) {
-  const outputDirectory = path.join(
-    path.dirname(configPath),
-    config.contractsSourceDirectory,
-    config.codegen.outputDirectory,
-  );
+  const outputDirectory = path.join(path.dirname(configPath), config.sourceDirectory, config.codegen.outputDirectory);
   const configV1 = storeToV1(config);
   const solidityUserTypes = loadAndExtractUserTypes(configV1.userTypes, outputDirectory, remappings);
   const allTableOptions = getTableOptions(config, solidityUserTypes);

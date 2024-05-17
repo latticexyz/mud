@@ -63,7 +63,10 @@ export type Codegen = {
   readonly worldInterfaceName: string;
   /** Directory to output system and world interfaces of `worldgen` (Default "world") */
   readonly worldgenDirectory: string;
-  /** Path for world package imports. Default is "@latticexyz/world/src/" */
+  /**
+   * Path for world package imports. Default is "@latticexyz/world/src/"
+   * @internal
+   */
   readonly worldImportPath: string;
 };
 
