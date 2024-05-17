@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/cli",
-  "version": "2.0.10",
+  "version": "2.0.11",
   "description": "Command line interface for mud",
   "repository": {
     "type": "git",
@@ -44,7 +44,6 @@
     "@latticexyz/store": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
-    "@latticexyz/world-modules": "workspace:*",
     "abitype": "1.0.0",
     "asn1.js": "^5.4.1",
     "chalk": "^5.0.1",
@@ -53,6 +52,7 @@
     "dotenv": "^16.0.3",
     "ethers": "^5.7.2",
     "execa": "^7.0.0",
+    "find-up": "^6.3.0",
     "glob": "^8.0.3",
     "openurl": "^1.1.1",
     "p-queue": "^7.4.1",

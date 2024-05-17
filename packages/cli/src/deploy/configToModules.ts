@@ -11,6 +11,7 @@ import { knownModuleArtifacts } from "../utils/knownModuleArtifacts";
 
 export async function configToModules<config extends World>(
   config: config,
+  // TODO: remove/replace `forgeOutDir`
   forgeOutDir: string,
 ): Promise<readonly Module[]> {
   // this expects a namespaced table name when used with `resolveTableId`

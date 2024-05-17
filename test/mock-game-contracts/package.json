@@ -1,12 +1,12 @@
 {
   "name": "mock-game-contracts",
-  "version": "2.0.10",
+  "version": "2.0.11",
   "private": true,
   "license": "MIT",
   "scripts": {
     "build": "mud build",
     "clean": "forge clean && rimraf src/codegen",
-    "deploy:local": "mud deploy"
+    "deploy:local": "DEBUG=mud:* mud deploy"
   },
   "devDependencies": {
     "@latticexyz/cli": "workspace:*",

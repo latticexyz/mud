@@ -26,7 +26,7 @@ To extend the `World` with the message functionality requires adding several res
 To have a `World` with the `Counter` example to modify, go to a separate command line window and create a blockchain with a `World` using [the TypeScript template](/quickstart) and start the execution.
 
 ```sh copy
-pnpm create mud extendMe --template vanilla
+pnpm create mud@latest extendMe --template vanilla
 cd extendMe
 pnpm dev
 ```
@@ -38,7 +38,7 @@ The easiest way to create the Solidity code is to use the MUD template:
 1. Create a new MUD application.
 
    ```sh copy
-   pnpm create mud extension --template vanilla
+   pnpm create mud@latest extension --template vanilla
    cd extension/packages/contracts
    ```
 
@@ -698,7 +698,7 @@ We will now fix this.
 
    <CollapseCode>
 
-   ```ts filename="setupNetwork.ts" copy showLineNumbers {26-27,40,97}
+   ```ts filename="setupNetwork.ts" copy showLineNumbers {25-26,39,96}
    /*
     * The MUD client code is built on top of viem
     * (https://viem.sh/docs/getting-started.html).
@@ -715,7 +715,6 @@ We will now fix this.
      ClientConfig,
      getContract,
    } from "viem";
-   import { createFaucetService } from "@latticexyz/services/faucet";
    import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 
    import { getNetworkConfig } from "./getNetworkConfig";
@@ -798,34 +797,6 @@ We will now fix this.
        tables: resolveConfig(storeToV1(counterConfig)).tables,
        startBlock: BigInt(networkConfig.initialBlockNumber),
      });
-
-     /*
-      * If there is a faucet, request (test) ETH if you have
-      * less than 1 ETH. Repeat every 20 seconds to ensure you don't
-      * run out.
-      */
-     if (networkConfig.faucetServiceUrl) {
-       const address = burnerAccount.address;
-       console.info("[Dev Faucet]: Player address -> ", address);
-
-       const faucet = createFaucetService(networkConfig.faucetServiceUrl);
-
-       const requestDrip = async () => {
-         const balance = await publicClient.getBalance({ address });
-         console.info(`[Dev Faucet]: Player balance -> ${balance}`);
-         const lowBalance = balance < parseEther("1");
-         if (lowBalance) {
-           console.info("[Dev Faucet]: Balance is low, dripping funds to player");
-           // Double drip
-           await faucet.dripDev({ address });
-           await faucet.dripDev({ address });
-         }
-       };
-
-       requestDrip();
-       // Request a drip every 20 seconds
-       setInterval(requestDrip, 20000);
-     }
 
      return {
        world,

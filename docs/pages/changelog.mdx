@@ -1,3 +1,19 @@
+## Version 2.0.11
+
+Release date: Wed May 15 2024
+
+### Patch changes
+
+**[build: bump to node 18.20.2, pnpm 9.1.1 (#2831)](https://github.com/latticexyz/mud/commit/63e5d2d51192adc0a1f977a269097a03d7bf119d)** (create-mud)
+
+Added pnpm 9 to project's `engines`.
+
+**[fix(cli): fixed module artifactPath imports (#2832)](https://github.com/latticexyz/mud/commit/fe9d726371ddfd99f0b4ffa4b1e64b817417cfd3)** (@latticexyz/cli)
+
+Fixed imports of module artifacts via `artifactPath` and removed unused `@latticexyz/world-modules` dependency.
+
+---
+
 ## Version 2.0.10
 
 Release date: Tue May 14 2024
