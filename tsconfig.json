@@ -1,0 +1,25 @@
+{
+  "extends": "@arktype/util/tsconfig.base.json",
+  "compilerOptions": {
+    // should be off by default, but here as a convenience to toggle
+    // "noErrorTruncation": true,
+    "paths": {
+      "@latticexyz/abi-ts": ["./packages/abi-ts/src/index.ts"],
+      "@latticexyz/block-logs-stream": ["./packages/block-logs-stream/src/index.ts"],
+      "@latticexyz/cli": ["./packages/cli/src/index.ts"],
+      "@latticexyz/common": ["./packages/common/src/index.ts"],
+      "@latticexyz/config": ["./packages/config/src/index.ts"],
+      "@latticexyz/gas-report": ["./packages/gas-report/src/index.ts"],
+      "@latticexyz/protocol-parser": ["./packages/protocol-parser/src/index.ts"],
+      "@latticexyz/react": ["./packages/react/src/index.ts"],
+      "@latticexyz/recs": ["./packages/recs/src/index.ts"],
+      "@latticexyz/schema-type": ["./packages/schema-type/src/index.ts"],
+      "@latticexyz/store": ["./packages/store/src/index.ts"],
+      "@latticexyz/store-sync": ["./packages/store-sync/src/index.ts"],
+      "@latticexyz/utils": ["./packages/utils/src/index.ts"],
+      "@latticexyz/world": ["./packages/world/src/index.ts"],
+      "@latticexyz/world-modules": ["./packages/world-modules/src/index.ts"]
+    }
+  },
+  "exclude": ["**/dist", "**/node_modules"]
+}

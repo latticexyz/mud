@@ -9,8 +9,11 @@ importers:
   .:
     devDependencies:
       '@arktype/attest':
-        specifier: 0.6.4
-        version: 0.6.4(typescript@5.4.2)
+        specifier: 0.7.5
+        version: 0.7.5(typescript@5.4.2)
+      '@arktype/util':
+        specifier: 0.0.43
+        version: 0.0.43
       '@changesets/cli':
         specifier: ^2.26.1
         version: 2.26.1
@@ -1199,26 +1202,29 @@ packages:
     resolution: {integrity: sha512-lFMjJTrFL3j7L9yBxwYfCq2k6qqwHyzuUl/XBnif78PWTJYyL/dfowQHWE3sp6U6ZzqWiiIZnpTMO96zhkjwtg==}
     engines: {node: '>=6.0.0'}
 
-  '@arktype/attest@0.6.4':
-    resolution: {integrity: sha512-e0ZIITIany0UIpw2p1wiYKrqcK+iRvh9FLabVkWh/mhppm8n4jWPHyIut8OrURPWfB7Obd/cQ1Vu3DuchSfL7A==}
+  '@arktype/attest@0.7.5':
+    resolution: {integrity: sha512-ZOF9uqLbvoVO6RHhlByJEBBj5qhWLpaCK/wWa5guD1OQR1/a7JZ9jCrDAcaASt6tYBA3dGhDerXhc7FcDWlRQw==}
     hasBin: true
     peerDependencies:
       typescript: '*'
 
-  '@arktype/fs@0.0.11':
-    resolution: {integrity: sha512-f3p8apUMOTl6KlFNTrOX6twQJDeSdSmtYPVca7SaQjUUTAxfUlaROY1/i1C3y2llYDrrQBEbsggk8k2Oxxgrvw==}
+  '@arktype/fs@0.0.19':
+    resolution: {integrity: sha512-ZEiSc6DgJANSgMTee9lueumCH/3gIikJWT8wlN8CyVk/IDFKFbJb3/BHj906Aw+APvCc8oyvu+2Hanshkgh4Bg==}
 
-  '@arktype/schema@0.1.4':
-    resolution: {integrity: sha512-pqgpjL9vFwjgBW+gJKbKTHwVutWwa0h3sziK7Hx9lb4xzk8DXbpypTpmM/voaVtSVTQWtPaPLQ/45rwBQZwB5A==}
-
-  '@arktype/util@0.0.23':
-    resolution: {integrity: sha512-MwtDGjbgfXWxlExjIL78HvPlWOma1XFEcDd3VWuCPMt/f+3TR7fXyiGFNlIYZGOYdOIU7qgjaE8dmbd6jdJa3Q==}
+  '@arktype/schema@0.1.2':
+    resolution: {integrity: sha512-ggvxs5P0toqd/4/XK76URQrtyOYpbYcLhirEZeTso6FxkloPa0lT+whPg7DNQj5qi2OQXLUHBYKMx9DOb13ViQ==}
 
   '@arktype/util@0.0.29':
     resolution: {integrity: sha512-fDTBSVzxLj9k1ZjinkawmaQdcXFKMBVK8c+vqMPxwoa94mPMZxBo84yQcqyFVcIcWIkg6qQQmH1ozyT4nqFT/g==}
 
+  '@arktype/util@0.0.38':
+    resolution: {integrity: sha512-IvYMGnkUASJllRk3mdBVgckomKx2LNsDTrWCxz04EBK1OuU+4fJ/smSjxgZVWfopNXZds9sHNxZgTJOIw7GvJw==}
+
   '@arktype/util@0.0.41':
     resolution: {integrity: sha512-0YURzJ42v+lhlP1t5Dj90YezETRTCdFU0oM4xMVpYsmPx/DHJzr9n7AX1QPAlYWH4wY7hYY3gwai3O+8VntPgw==}
+
+  '@arktype/util@0.0.43':
+    resolution: {integrity: sha512-tVrvIoghAI/OY6Oc8wo8dpgiZc/a+C8M7NnpSDvfkagAasW9CzLtEbybP1xAALf3A6y5cuJOV6cCcIi9NKQRzA==}
 
   '@aws-crypto/ie11-detection@3.0.0':
     resolution: {integrity: sha512-341lBBkiY1DfDNKai/wXM3aujNBkXR7tq1URPQDL9wi3AUbI80NR74uF1TXHMm7po1AcnFk8iu2S2IeU/+/A+Q==}
@@ -2886,8 +2892,8 @@ packages:
   arktype@1.0.29-alpha:
     resolution: {integrity: sha512-glMLgVhIQRSkR3tymiS+POAcWVJH09sfrgic0jHnyFL8BlhHAJZX2BzdImU9zYr1y9NBqy+U93ZNrRTHXsKRDw==}
 
-  arktype@2.0.0-dev.12:
-    resolution: {integrity: sha512-NrmlARlXdrx9E6yA+ao0QxYoGgldwHv9zm/ll8erQs3K//NHla20Jmkjk4dQFQrr5rWAwr4NT8d+oUhWvKO32g==}
+  arktype@2.0.0-dev.11:
+    resolution: {integrity: sha512-k+WVQoHsHsTyTiVQkO201mxLQxyXHmy3buJW8TXLOkr4X2yOUCp0K1SBscuG9OEJoc8MjpvoIharjPHEkFI7kg==}
 
   array-includes@3.1.6:
     resolution: {integrity: sha512-sgTbLvL6cNnw24FnbaDyjmvddQ2ML8arZsgaJhoABMoplz/4QRhtrYS+alr1BUM1Bwp6dhx8vVCBSLG+StwOFw==}
@@ -6835,28 +6841,30 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.3
       '@jridgewell/trace-mapping': 0.3.18
 
-  '@arktype/attest@0.6.4(typescript@5.4.2)':
+  '@arktype/attest@0.7.5(typescript@5.4.2)':
     dependencies:
-      '@arktype/fs': 0.0.11
-      '@arktype/util': 0.0.23
+      '@arktype/fs': 0.0.19
+      '@arktype/util': 0.0.41
       '@typescript/analyze-trace': 0.10.1
       '@typescript/vfs': 1.5.0
-      arktype: 2.0.0-dev.12
+      arktype: 2.0.0-dev.11
       typescript: 5.4.2
     transitivePeerDependencies:
       - supports-color
 
-  '@arktype/fs@0.0.11': {}
+  '@arktype/fs@0.0.19': {}
 
-  '@arktype/schema@0.1.4':
+  '@arktype/schema@0.1.2':
     dependencies:
-      '@arktype/util': 0.0.41
-
-  '@arktype/util@0.0.23': {}
+      '@arktype/util': 0.0.38
 
   '@arktype/util@0.0.29': {}
 
+  '@arktype/util@0.0.38': {}
+
   '@arktype/util@0.0.41': {}
+
+  '@arktype/util@0.0.43': {}
 
   '@aws-crypto/ie11-detection@3.0.0':
     dependencies:
@@ -9233,10 +9241,10 @@ snapshots:
 
   arktype@1.0.29-alpha: {}
 
-  arktype@2.0.0-dev.12:
+  arktype@2.0.0-dev.11:
     dependencies:
-      '@arktype/schema': 0.1.4
-      '@arktype/util': 0.0.41
+      '@arktype/schema': 0.1.2
+      '@arktype/util': 0.0.38
 
   array-includes@3.1.6:
     dependencies:
@@ -13630,7 +13638,7 @@ snapshots:
   yargs@16.2.0:
     dependencies:
       cliui: 7.0.4
-      escalade: 3.1.1
+      escalade: 3.1.2
       get-caller-file: 2.0.5
       require-directory: 2.1.1
       string-width: 4.2.3
