@@ -1,13 +1,15 @@
-import path from "node:path";
 import { tablegen } from "@latticexyz/store/codegen";
 import { defineStore } from "@latticexyz/store";
-import { getRemappings, getSrcDirectory } from "@latticexyz/common/foundry";
+import { getRemappings } from "@latticexyz/common/foundry";
 import { fileURLToPath } from "node:url";
+
+const configPath = fileURLToPath(import.meta.url);
 
 // This config is used only for tests.
 // Aside from avoiding `mud.config.ts` in cli package (could cause issues),
 // this also tests that mudConfig and tablegen can work as standalone functions
 const config = defineStore({
+  contractsSourceDirectory: "../contracts/src",
   enums: {
     Enum1: ["E1", "E2", "E3"],
     Enum2: ["E1"],
@@ -93,12 +95,6 @@ const config = defineStore({
   },
 });
 
-const srcDirectory = await getSrcDirectory();
 const remappings = await getRemappings();
 
-await tablegen({
-  configPath: fileURLToPath(import.meta.url),
-  config,
-  outputBaseDirectory: path.join(srcDirectory, config.codegen.outputDirectory),
-  remappings,
-});
+await tablegen({ configPath, config, remappings });

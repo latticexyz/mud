@@ -28,6 +28,7 @@ export const TABLE_DEFAULTS = {
 export type TABLE_DEFAULTS = typeof TABLE_DEFAULTS;
 
 export const CONFIG_DEFAULTS = {
+  contractsSourceDirectory: "src",
   namespace: "",
 } as const;
 

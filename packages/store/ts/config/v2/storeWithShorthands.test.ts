@@ -9,6 +9,7 @@ describe("defineStoreWithShorthands", () => {
   it("should accept a shorthand store config as input and expand it", () => {
     const config = defineStoreWithShorthands({ tables: { Name: "address" } });
     const expected = {
+      contractsSourceDirectory: "src",
       tables: {
         Name: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
@@ -50,6 +51,7 @@ describe("defineStoreWithShorthands", () => {
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
     });
     const expected = {
+      contractsSourceDirectory: "src",
       tables: {
         Name: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
@@ -91,6 +93,7 @@ describe("defineStoreWithShorthands", () => {
       tables: { Example: { id: "address", name: "string", age: "uint256" } },
     });
     const expected = {
+      contractsSourceDirectory: "src",
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -136,6 +139,7 @@ describe("defineStoreWithShorthands", () => {
     });
 
     const expected = {
+      contractsSourceDirectory: "src",
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),

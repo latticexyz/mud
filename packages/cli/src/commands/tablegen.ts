@@ -1,9 +1,8 @@
-import path from "path";
 import type { CommandModule } from "yargs";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { Store as StoreConfig } from "@latticexyz/store";
 import { tablegen } from "@latticexyz/store/codegen";
-import { getRemappings, getSrcDirectory } from "@latticexyz/common/foundry";
+import { getRemappings } from "@latticexyz/common/foundry";
 
 type Options = {
   configPath?: string;
@@ -23,15 +22,9 @@ const commandModule: CommandModule<Options, Options> = {
   async handler(opts) {
     const configPath = await resolveConfigPath(opts.configPath);
     const config = (await loadConfig(configPath)) as StoreConfig;
-    const srcDir = await getSrcDirectory();
     const remappings = await getRemappings();
 
-    await tablegen({
-      configPath,
-      config,
-      outputBaseDirectory: path.join(srcDir, config.codegen.outputDirectory),
-      remappings,
-    });
+    await tablegen({ configPath, config, remappings });
 
     process.exit(0);
   },

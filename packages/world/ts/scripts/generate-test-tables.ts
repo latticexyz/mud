@@ -1,13 +1,12 @@
-import path from "node:path";
-import { getRemappings, getSrcDirectory } from "@latticexyz/common/foundry";
+import { getRemappings } from "@latticexyz/common/foundry";
 import { tablegen } from "@latticexyz/store/codegen";
 import { defineWorld } from "../config/v2/world";
 import { fileURLToPath } from "node:url";
 
+const configPath = fileURLToPath(import.meta.url);
+
 const config = defineWorld({
-  codegen: {
-    outputDirectory: "../test/codegen",
-  },
+  contractsSourceDirectory: "../../test",
   tables: {
     Bool: {
       schema: {
@@ -35,12 +34,6 @@ const config = defineWorld({
   },
 });
 
-const srcDir = await getSrcDirectory();
 const remappings = await getRemappings();
 
-await tablegen({
-  configPath: fileURLToPath(import.meta.url),
-  config,
-  outputBaseDirectory: path.join(srcDir, config.codegen.outputDirectory),
-  remappings,
-});
+await tablegen({ configPath, config, remappings });

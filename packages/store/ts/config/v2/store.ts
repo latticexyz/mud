@@ -44,6 +44,9 @@ type keyPrefix<store> = store extends { namespace: infer namespace extends strin
   : "";
 
 export type resolveStore<store> = {
+  readonly contractsSourceDirectory: "contractsSourceDirectory" extends keyof store
+    ? store["contractsSourceDirectory"]
+    : CONFIG_DEFAULTS["contractsSourceDirectory"];
   readonly tables: "tables" extends keyof store
     ? resolveTables<
         {
@@ -64,6 +67,7 @@ export type resolveStore<store> = {
 
 export function resolveStore<const store extends StoreInput>(store: store): resolveStore<store> {
   return {
+    contractsSourceDirectory: store.contractsSourceDirectory ?? CONFIG_DEFAULTS["contractsSourceDirectory"],
     tables: resolveTables(
       flatMorph(store.tables ?? {}, (tableKey, table) => {
         const key = store.namespace ? `${store.namespace}__${tableKey}` : tableKey;

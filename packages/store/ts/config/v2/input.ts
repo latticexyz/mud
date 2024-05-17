@@ -31,6 +31,14 @@ export type TablesInput = {
 };
 
 export type StoreInput = {
+  /**
+   * Directory of contracts source (i.e. Solidity) relative to the MUD config.
+   * This is used to resolve other paths in the config, like codegen and user types.
+   *
+   *
+   * Defaults to `src` to match `foundry.toml`'s default. If you change this from the default, you may also need to configure foundry with the same source directory.
+   */
+  readonly contractsSourceDirectory?: string;
   readonly namespace?: string;
   readonly tables?: TablesInput;
   readonly userTypes?: UserTypes;

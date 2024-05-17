@@ -10,7 +10,7 @@ type BuildOptions = {
   foundryProfile?: string;
   srcDir: string;
   /**
-   * Path to `mud.config.ts`. All relative paths within the MUD config are resolved relative to this path.
+   * Path to `mud.config.ts`. We use this as the "project root" to resolve other relative paths.
    *
    * Defaults to finding the nearest `mud.config.ts`, looking in `process.cwd()` and moving up the directory tree.
    */
@@ -28,7 +28,7 @@ export async function build({
   const remappings = await getRemappings(foundryProfile);
 
   await Promise.all([
-    tablegen({ configPath, config, outputBaseDirectory: outPath, remappings }),
+    tablegen({ configPath, config, remappings }),
     worldgen(config, getExistingContracts(srcDir), outPath),
   ]);
 
