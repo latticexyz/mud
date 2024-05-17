@@ -63,11 +63,7 @@ describe("resolveTable", () => {
       key: ["age"],
       name: "",
       namespace: "",
-      codegen: {
-        ...TABLE_CODEGEN_DEFAULTS,
-        outputDirectory: "tables" as string,
-        dataStruct: true as boolean,
-      },
+      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
       type: "table",
       deploy: TABLE_DEPLOY_DEFAULTS,
     } as const;
@@ -91,11 +87,7 @@ describe("resolveTable", () => {
       key: ["age", "id"],
       name: "",
       namespace: "",
-      codegen: {
-        ...TABLE_CODEGEN_DEFAULTS,
-        outputDirectory: "tables" as string,
-        dataStruct: false as boolean,
-      },
+      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
       type: "table",
       deploy: TABLE_DEPLOY_DEFAULTS,
     } as const;
@@ -125,11 +117,7 @@ describe("resolveTable", () => {
       key: ["age"],
       name: "",
       namespace: "",
-      codegen: {
-        ...TABLE_CODEGEN_DEFAULTS,
-        outputDirectory: "tables" as string,
-        dataStruct: true as boolean,
-      },
+      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
       type: "table",
       deploy: TABLE_DEPLOY_DEFAULTS,
     } as const;

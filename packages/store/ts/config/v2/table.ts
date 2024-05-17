@@ -106,26 +106,22 @@ export type resolveTableCodegen<input extends TableInput> = evaluate<{
     ? undefined extends input["codegen"][key]
       ? key extends "dataStruct"
         ? boolean
-        : key extends "outputDirectory"
-          ? string
-          : key extends keyof TABLE_CODEGEN_DEFAULTS
-            ? TABLE_CODEGEN_DEFAULTS[key]
-            : never
+        : key extends keyof TABLE_CODEGEN_DEFAULTS
+          ? TABLE_CODEGEN_DEFAULTS[key]
+          : never
       : input["codegen"][key]
     : // dataStruct isn't narrowed, because its value is conditional on the number of value schema fields
       key extends "dataStruct"
       ? boolean
-      : key extends "outputDirectory"
-        ? string
-        : key extends keyof TABLE_CODEGEN_DEFAULTS
-          ? TABLE_CODEGEN_DEFAULTS[key]
-          : never;
+      : key extends keyof TABLE_CODEGEN_DEFAULTS
+        ? TABLE_CODEGEN_DEFAULTS[key]
+        : never;
 }>;
 
 export function resolveTableCodegen<input extends TableInput>(input: input): resolveTableCodegen<input> {
   const options = input.codegen;
   return {
-    outputDirectory: get(options, "outputDirectory") ?? "tables",
+    outputDirectory: get(options, "outputDirectory") ?? TABLE_CODEGEN_DEFAULTS.outputDirectory,
     tableIdArgument: get(options, "tableIdArgument") ?? TABLE_CODEGEN_DEFAULTS.tableIdArgument,
     storeArgument: get(options, "storeArgument") ?? TABLE_CODEGEN_DEFAULTS.storeArgument,
     // dataStruct is true if there are at least 2 value fields
