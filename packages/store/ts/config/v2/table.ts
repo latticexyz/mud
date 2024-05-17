@@ -106,16 +106,20 @@ export type resolveTableCodegen<input extends TableInput> = evaluate<{
     ? undefined extends input["codegen"][key]
       ? key extends "dataStruct"
         ? boolean
-        : key extends keyof TABLE_CODEGEN_DEFAULTS
-          ? TABLE_CODEGEN_DEFAULTS[key]
-          : never
+        : key extends "outputDirectory"
+          ? string
+          : key extends keyof TABLE_CODEGEN_DEFAULTS
+            ? TABLE_CODEGEN_DEFAULTS[key]
+            : never
       : input["codegen"][key]
     : // dataStruct isn't narrowed, because its value is conditional on the number of value schema fields
       key extends "dataStruct"
       ? boolean
-      : key extends keyof TABLE_CODEGEN_DEFAULTS
-        ? TABLE_CODEGEN_DEFAULTS[key]
-        : never;
+      : key extends "outputDirectory"
+        ? string
+        : key extends keyof TABLE_CODEGEN_DEFAULTS
+          ? TABLE_CODEGEN_DEFAULTS[key]
+          : never;
 }>;
 
 export function resolveTableCodegen<input extends TableInput>(
