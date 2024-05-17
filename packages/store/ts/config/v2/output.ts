@@ -36,6 +36,7 @@ export type Table = evaluate<
 >;
 
 export type Codegen = {
+  /** @internal */
   readonly storeImportPath: string;
   readonly userTypesFilename: string;
   readonly outputDirectory: string;

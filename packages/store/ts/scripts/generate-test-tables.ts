@@ -1,7 +1,8 @@
-import path from "path";
+import path from "node:path";
 import { getRemappings, getSrcDirectory } from "@latticexyz/common/foundry";
 import { tablegen } from "../codegen";
 import { defineStore } from "../config/v2/store";
+import { fileURLToPath } from "node:url";
 
 const config = defineStore({
   codegen: {
@@ -53,4 +54,9 @@ const config = defineStore({
 const srcDir = await getSrcDirectory();
 const remappings = await getRemappings();
 
-await tablegen(config, path.join(srcDir, config.codegen.outputDirectory), remappings);
+await tablegen({
+  configPath: fileURLToPath(import.meta.url),
+  config,
+  outputBaseDirectory: path.join(srcDir, config.codegen.outputDirectory),
+  remappings,
+});

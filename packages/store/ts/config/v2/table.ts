@@ -118,10 +118,14 @@ export type resolveTableCodegen<input extends TableInput> = evaluate<{
         : never;
 }>;
 
-export function resolveTableCodegen<input extends TableInput>(input: input): resolveTableCodegen<input> {
+export function resolveTableCodegen<input extends TableInput>(
+  input: input,
+  namespace: string,
+): resolveTableCodegen<input> {
   const options = input.codegen;
   return {
-    outputDirectory: get(options, "outputDirectory") ?? TABLE_CODEGEN_DEFAULTS.outputDirectory,
+    // outputDirectory: get(options, "outputDirectory") ?? (namespace.length ? `${namespace}/tables` : "tables"),
+    outputDirectory: get(options, "outputDirectory") ?? "tables",
     tableIdArgument: get(options, "tableIdArgument") ?? TABLE_CODEGEN_DEFAULTS.tableIdArgument,
     storeArgument: get(options, "storeArgument") ?? TABLE_CODEGEN_DEFAULTS.storeArgument,
     // dataStruct is true if there are at least 2 value fields
@@ -161,7 +165,7 @@ export function resolveTable<input extends TableInput, scope extends Scope = Abi
     type,
     key: input.key,
     schema: resolveSchema(input.schema, scope),
-    codegen: resolveTableCodegen(input),
+    codegen: resolveTableCodegen(input, namespace),
     deploy: mergeIfUndefined(input.deploy ?? {}, TABLE_DEPLOY_DEFAULTS),
   } as never;
 }

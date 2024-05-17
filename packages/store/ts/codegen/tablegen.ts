@@ -8,7 +8,14 @@ import { rm } from "fs/promises";
 import { Store as StoreConfig } from "../config/v2/output";
 import { storeToV1 } from "../config/v2/compat";
 
-export async function tablegen(config: StoreConfig, outputBaseDirectory: string, remappings: [string, string][]) {
+export type TablegenOptions = {
+  configPath: string;
+  config: StoreConfig;
+  outputBaseDirectory: string;
+  remappings: [string, string][];
+};
+
+export async function tablegen({ config, outputBaseDirectory, remappings }: TablegenOptions) {
   const configV1 = storeToV1(config);
   const solidityUserTypes = loadAndExtractUserTypes(configV1.userTypes, outputBaseDirectory, remappings);
   const allTableOptions = getTableOptions(config, solidityUserTypes);

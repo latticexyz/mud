@@ -8,7 +8,6 @@ export const CODEGEN_DEFAULTS = {
 export type CODEGEN_DEFAULTS = typeof CODEGEN_DEFAULTS;
 
 export const TABLE_CODEGEN_DEFAULTS = {
-  outputDirectory: "tables",
   tableIdArgument: false,
   storeArgument: false,
 } as const;

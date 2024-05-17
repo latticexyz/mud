@@ -1,7 +1,8 @@
-import path from "path";
+import path from "node:path";
 import { tablegen } from "@latticexyz/store/codegen";
 import { defineStore } from "@latticexyz/store";
 import { getRemappings, getSrcDirectory } from "@latticexyz/common/foundry";
+import { fileURLToPath } from "node:url";
 
 // This config is used only for tests.
 // Aside from avoiding `mud.config.ts` in cli package (could cause issues),
@@ -95,4 +96,9 @@ const config = defineStore({
 const srcDirectory = await getSrcDirectory();
 const remappings = await getRemappings();
 
-await tablegen(config, path.join(srcDirectory, config.codegen.outputDirectory), remappings);
+await tablegen({
+  configPath: fileURLToPath(import.meta.url),
+  config,
+  outputBaseDirectory: path.join(srcDirectory, config.codegen.outputDirectory),
+  remappings,
+});

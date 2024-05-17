@@ -1,6 +1,6 @@
 import path from "path";
 import type { CommandModule } from "yargs";
-import { loadConfig } from "@latticexyz/config/node";
+import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { Store as StoreConfig } from "@latticexyz/store";
 import { tablegen } from "@latticexyz/store/codegen";
 import { getRemappings, getSrcDirectory } from "@latticexyz/common/foundry";
@@ -20,12 +20,18 @@ const commandModule: CommandModule<Options, Options> = {
     });
   },
 
-  async handler({ configPath }) {
+  async handler(opts) {
+    const configPath = await resolveConfigPath(opts.configPath);
     const config = (await loadConfig(configPath)) as StoreConfig;
     const srcDir = await getSrcDirectory();
     const remappings = await getRemappings();
 
-    await tablegen(config, path.join(srcDir, config.codegen.outputDirectory), remappings);
+    await tablegen({
+      configPath,
+      config,
+      outputBaseDirectory: path.join(srcDir, config.codegen.outputDirectory),
+      remappings,
+    });
 
     process.exit(0);
   },

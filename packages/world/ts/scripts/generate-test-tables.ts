@@ -1,7 +1,8 @@
-import path from "path";
+import path from "node:path";
 import { getRemappings, getSrcDirectory } from "@latticexyz/common/foundry";
 import { tablegen } from "@latticexyz/store/codegen";
 import { defineWorld } from "../config/v2/world";
+import { fileURLToPath } from "node:url";
 
 const config = defineWorld({
   codegen: {
@@ -37,4 +38,9 @@ const config = defineWorld({
 const srcDir = await getSrcDirectory();
 const remappings = await getRemappings();
 
-await tablegen(config, path.join(srcDir, config.codegen.outputDirectory), remappings);
+await tablegen({
+  configPath: fileURLToPath(import.meta.url),
+  config,
+  outputBaseDirectory: path.join(srcDir, config.codegen.outputDirectory),
+  remappings,
+});
