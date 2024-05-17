@@ -16,7 +16,8 @@
     "gas-report": "./dist/gas-report.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "out"
   ],
   "scripts": {
     "build": "tsup",

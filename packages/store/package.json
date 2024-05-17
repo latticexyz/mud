@@ -21,7 +21,9 @@
   },
   "files": [
     "dist",
-    "out"
+    "out",
+    "foundry.toml",
+    "cache"
   ],
   "scripts": {
     "build": "pnpm run build:tightcoder && pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts && pnpm run build:js",

@@ -20,7 +20,10 @@
   },
   "files": [
     "dist",
-    "out"
+    "out",
+    "foundry.toml",
+    "cache",
+    "test/MudTest.t.sol"
   ],
   "scripts": {
     "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts && pnpm run build:js",

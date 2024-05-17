@@ -15,7 +15,10 @@
     "./deprecated": "./dist/deprecated.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "out",
+    "foundry.toml",
+    "cache"
   ],
   "scripts": {
     "build": "pnpm run build:js",
