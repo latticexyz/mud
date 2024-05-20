@@ -30,3 +30,8 @@ struct SystemCallFromData {
   /// @dev The call data to pass to the system function.
   bytes callData;
 }
+
+struct SystemFunctionArgument {
+  string name;
+  string dataType;
+}

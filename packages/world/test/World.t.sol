@@ -43,6 +43,7 @@ import { BatchCallSystem } from "../src/modules/init/implementations/BatchCallSy
 import { InitModule } from "../src/modules/init/InitModule.sol";
 import { RegistrationSystem } from "../src/modules/init/RegistrationSystem.sol";
 import { REGISTRATION_SYSTEM_ID } from "../src/modules/init/constants.sol";
+import { SystemFunctionArgument } from "../src/modules/init/types.sol";
 import { Systems } from "../src/codegen/tables/Systems.sol";
 import { SystemRegistry } from "../src/codegen/tables/SystemRegistry.sol";
 import { FunctionSelectors } from "../src/codegen/tables/FunctionSelectors.sol";
@@ -1614,7 +1615,7 @@ contract WorldTest is Test, GasReporter {
     world.registerSystem(systemId, system, true);
 
     startGasReport("Register a function selector");
-    bytes4 functionSelector = world.registerFunctionSelector(systemId, "msgSender", new string[](0));
+    bytes4 functionSelector = world.registerFunctionSelector(systemId, "msgSender", new SystemFunctionArgument[](0));
     endGasReport();
 
     string memory expectedWorldFunctionSignature = "testNamespace__msgSender()";
@@ -1628,8 +1629,8 @@ contract WorldTest is Test, GasReporter {
     assertEq(abi.decode(data, (address)), address(this), "wrong address returned");
 
     // Register a function selector to the error function
-    string[] memory systemFunctionArguments = new string[](1);
-    systemFunctionArguments[0] = "string";
+    SystemFunctionArgument[] memory systemFunctionArguments = new SystemFunctionArgument[](1);
+    systemFunctionArguments[0] = SystemFunctionArgument("", "string");
     functionSelector = world.registerFunctionSelector(systemId, "err", systemFunctionArguments);
 
     // Expect errors to be passed through

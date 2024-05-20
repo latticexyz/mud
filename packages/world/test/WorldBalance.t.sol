@@ -13,6 +13,7 @@ import { Balances } from "../src/codegen/tables/Balances.sol";
 import { IWorldErrors } from "../src/IWorldErrors.sol";
 import { RESOURCE_SYSTEM, RESOURCE_NAMESPACE } from "../src/worldResourceTypes.sol";
 import { createWorld } from "./createWorld.sol";
+import { SystemFunctionArgument } from "../src/modules/init/types.sol";
 
 using WorldResourceIdInstance for ResourceId;
 
@@ -44,7 +45,7 @@ contract WorldBalanceTest is Test, GasReporter {
     world.registerSystem(nonRootSystemId, nonRootSystem, true);
 
     world.registerRootFunctionSelector(rootSystemId, "echoValue()", "echoValue()");
-    world.registerFunctionSelector(nonRootSystemId, "echoValue", new string[](0));
+    world.registerFunctionSelector(nonRootSystemId, "echoValue", new SystemFunctionArgument[](0));
   }
 
   function testCallWithValue() public {

@@ -63,7 +63,7 @@
     "file": "test/Factories.t.sol",
     "test": "testWorldFactoryGas",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 12849311
+    "gasUsed": 12849314
   },
   {
     "file": "test/World.t.sol",
@@ -105,13 +105,13 @@
     "file": "test/World.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 118389
+    "gasUsed": 118377
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 144117
+    "gasUsed": 144073
   },
   {
     "file": "test/World.t.sol",
@@ -129,7 +129,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 573031
+    "gasUsed": 572997
   },
   {
     "file": "test/World.t.sol",
@@ -153,13 +153,13 @@
     "file": "test/World.t.sol",
     "test": "testUnregisterNamespaceDelegation",
     "name": "unregister a namespace delegation",
-    "gasUsed": 60306
+    "gasUsed": 60328
   },
   {
     "file": "test/World.t.sol",
     "test": "testUnregisterUnlimitedDelegation",
     "name": "unregister an unlimited delegation",
-    "gasUsed": 54549
+    "gasUsed": 54526
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
@@ -225,13 +225,13 @@
     "file": "test/WorldProxy.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 123318
+    "gasUsed": 123306
   },
   {
     "file": "test/WorldProxy.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 149016
+    "gasUsed": 148972
   },
   {
     "file": "test/WorldProxy.t.sol",
@@ -249,7 +249,7 @@
     "file": "test/WorldProxy.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 578041
+    "gasUsed": 578007
   },
   {
     "file": "test/WorldProxy.t.sol",
@@ -273,19 +273,19 @@
     "file": "test/WorldProxy.t.sol",
     "test": "testUnregisterNamespaceDelegation",
     "name": "unregister a namespace delegation",
-    "gasUsed": 65205
+    "gasUsed": 65227
   },
   {
     "file": "test/WorldProxy.t.sol",
     "test": "testUnregisterUnlimitedDelegation",
     "name": "unregister an unlimited delegation",
-    "gasUsed": 59448
+    "gasUsed": 59425
   },
   {
     "file": "test/WorldProxyFactory.t.sol",
     "test": "testWorldProxyFactoryGas",
     "name": "deploy world via WorldProxyFactory",
-    "gasUsed": 9144851
+    "gasUsed": 9144854
   },
   {
     "file": "test/WorldProxyFactory.t.sol",

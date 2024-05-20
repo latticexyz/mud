@@ -7,6 +7,7 @@ import { InstalledModules } from "@latticexyz/world/src/codegen/index.sol";
 import { Module } from "@latticexyz/world/src/Module.sol";
 import { WorldContextConsumer } from "@latticexyz/world/src/WorldContext.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
+import { SystemFunctionArgument } from "@latticexyz/world/src/modules/init/types.sol";
 
 import { UniqueEntity } from "./tables/UniqueEntity.sol";
 import { UniqueEntitySystem } from "./UniqueEntitySystem.sol";
@@ -46,7 +47,7 @@ contract UniqueEntityModule is Module {
 
     // Register system's functions
     (success, data) = address(world).delegatecall(
-      abi.encodeCall(world.registerFunctionSelector, (SYSTEM_ID, "getUniqueEntity", new string[](0)))
+      abi.encodeCall(world.registerFunctionSelector, (SYSTEM_ID, "getUniqueEntity", new SystemFunctionArgument[](0)))
     );
     if (!success) revertWithBytes(data);
   }
@@ -68,6 +69,6 @@ contract UniqueEntityModule is Module {
     world.registerSystem(SYSTEM_ID, uniqueEntitySystem, true);
 
     // Register system's functions
-    world.registerFunctionSelector(SYSTEM_ID, "getUniqueEntity", new string[](0));
+    world.registerFunctionSelector(SYSTEM_ID, "getUniqueEntity", new SystemFunctionArgument[](0));
   }
 }

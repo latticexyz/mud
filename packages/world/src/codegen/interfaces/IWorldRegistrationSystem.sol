@@ -6,6 +6,7 @@ pragma solidity >=0.8.24;
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { ISystemHook } from "./../../ISystemHook.sol";
 import { System } from "./../../System.sol";
+import { SystemFunctionArgument } from "./../../modules/init/types.sol";
 
 /**
  * @title IWorldRegistrationSystem
@@ -24,7 +25,7 @@ interface IWorldRegistrationSystem {
   function registerFunctionSelector(
     ResourceId systemId,
     string memory systemFunctionName,
-    string[] memory systemFunctionArguments
+    SystemFunctionArgument[] memory systemFunctionArguments
   ) external returns (bytes4 worldFunctionSelector);
 
   function registerRootFunctionSelector(

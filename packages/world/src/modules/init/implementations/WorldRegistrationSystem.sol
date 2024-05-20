@@ -31,6 +31,7 @@ import { requireNamespace } from "../../../requireNamespace.sol";
 import { requireValidNamespace } from "../../../requireValidNamespace.sol";
 
 import { LimitedCallContext } from "../LimitedCallContext.sol";
+import { SystemFunctionArgument } from "../types.sol";
 import { createDelegation } from "./createDelegation.sol";
 
 /**
@@ -188,12 +189,12 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
   function registerFunctionSelector(
     ResourceId systemId,
     string memory systemFunctionName,
-    string[] memory systemFunctionArguments
+    SystemFunctionArgument[] memory systemFunctionArguments
   ) public onlyDelegatecall returns (bytes4 worldFunctionSelector) {
     // Build the system function signature
     string memory systemFunctionSignature = string.concat(systemFunctionName, "(");
     for (uint256 i; i < systemFunctionArguments.length; i++) {
-      systemFunctionSignature = string.concat(systemFunctionSignature, systemFunctionArguments[i]);
+      systemFunctionSignature = string.concat(systemFunctionSignature, systemFunctionArguments[i].dataType);
     }
     systemFunctionSignature = string.concat(systemFunctionSignature, ")");
 
