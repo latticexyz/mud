@@ -6,6 +6,7 @@ import { console } from "forge-std/console.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+import { SystemFunctionArgument } from "@latticexyz/world/src/modules/init/types.sol";
 
 import { MessageTable } from "../src/codegen/index.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
@@ -33,7 +34,15 @@ contract PostDeploy is Script {
     });
     IWorld(worldAddress).registerNamespace(systemId.getNamespaceId());
     IWorld(worldAddress).registerSystem(systemId, chatNamespacedSystem, true);
-    IWorld(worldAddress).registerFunctionSelector(systemId, "sendMessage(string)");
+
+    SystemFunctionArgument[] memory systemFunctionArguments = new SystemFunctionArgument[](1);
+    systemFunctionArguments[0] = SystemFunctionArgument("", "string");
+    IWorld(worldAddress).registerFunctionSelector(
+      systemId,
+      "sendMessage",
+      systemFunctionArguments,
+      new SystemFunctionArgument[](0)
+    );
 
     // Grant this system access to MessageTable
     IWorld(worldAddress).grantAccess(MessageTable._tableId, address(chatNamespacedSystem));
