@@ -188,9 +188,14 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
   function registerFunctionSelector(
     ResourceId systemId,
     string memory systemFunctionName,
-    string memory systemFunctionArguments
+    string[] memory systemFunctionArguments
   ) public onlyDelegatecall returns (bytes4 worldFunctionSelector) {
-    string memory systemFunctionSignature = string.concat(systemFunctionName, "(", systemFunctionArguments, ")");
+    // Build the system function signature
+    string memory systemFunctionSignature = string.concat(systemFunctionName, "(");
+    for (uint256 i; i < systemFunctionArguments.length; i++) {
+      systemFunctionSignature = string.concat(systemFunctionSignature, systemFunctionArguments[i]);
+    }
+    systemFunctionSignature = string.concat(systemFunctionSignature, ")");
 
     // Require the provided system ID to have type RESOURCE_SYSTEM
     if (systemId.getType() != RESOURCE_SYSTEM) {
