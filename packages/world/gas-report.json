@@ -63,7 +63,7 @@
     "file": "test/Factories.t.sol",
     "test": "testWorldFactoryGas",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 12847807
+    "gasUsed": 12847859
   },
   {
     "file": "test/World.t.sol",
@@ -105,13 +105,13 @@
     "file": "test/World.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 116605
+    "gasUsed": 118288
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 144062
+    "gasUsed": 144073
   },
   {
     "file": "test/World.t.sol",
@@ -123,7 +123,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterSystem",
     "name": "register a system",
-    "gasUsed": 185337
+    "gasUsed": 185349
   },
   {
     "file": "test/World.t.sol",
@@ -225,13 +225,13 @@
     "file": "test/WorldProxy.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 121522
+    "gasUsed": 123223
   },
   {
     "file": "test/WorldProxy.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 148961
+    "gasUsed": 148972
   },
   {
     "file": "test/WorldProxy.t.sol",
@@ -243,7 +243,7 @@
     "file": "test/WorldProxy.t.sol",
     "test": "testRegisterSystem",
     "name": "register a system",
-    "gasUsed": 190257
+    "gasUsed": 190269
   },
   {
     "file": "test/WorldProxy.t.sol",
@@ -285,7 +285,7 @@
     "file": "test/WorldProxyFactory.t.sol",
     "test": "testWorldProxyFactoryGas",
     "name": "deploy world via WorldProxyFactory",
-    "gasUsed": 9143347
+    "gasUsed": 9143399
   },
   {
     "file": "test/WorldProxyFactory.t.sol",
