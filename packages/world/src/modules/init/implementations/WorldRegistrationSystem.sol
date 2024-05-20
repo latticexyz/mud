@@ -225,8 +225,18 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     FunctionSelectors._set(worldFunctionSelector, systemId, systemFunctionSelector);
 
     // Register the function signatures for offchain use
-    FunctionSignatures._set(systemFunctionSelector, systemFunctionSignature);
-    FunctionSignatures._set(worldFunctionSelector, worldFunctionSignature);
+    FunctionSignatures._set(
+      systemFunctionSelector,
+      systemFunctionSignature,
+      abi.encode(systemFunctionArguments),
+      abi.encode(systemFunctionReturns)
+    );
+    FunctionSignatures._set(
+      worldFunctionSelector,
+      worldFunctionSignature,
+      abi.encode(systemFunctionArguments),
+      abi.encode(systemFunctionReturns)
+    );
   }
 
   /**
@@ -258,8 +268,8 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     FunctionSelectors._set(worldFunctionSelector, systemId, systemFunctionSelector);
 
     // Register the function signatures for offchain use
-    FunctionSignatures._set(systemFunctionSelector, systemFunctionSignature);
-    FunctionSignatures._set(worldFunctionSelector, worldFunctionSignature);
+    FunctionSignatures._set(systemFunctionSelector, systemFunctionSignature, new bytes(0), new bytes(0));
+    FunctionSignatures._set(worldFunctionSelector, worldFunctionSignature, new bytes(0), new bytes(0));
   }
 
   /**

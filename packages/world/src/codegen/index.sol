@@ -13,5 +13,5 @@ import { Systems } from "./tables/Systems.sol";
 import { SystemRegistry } from "./tables/SystemRegistry.sol";
 import { SystemHooks } from "./tables/SystemHooks.sol";
 import { FunctionSelectors } from "./tables/FunctionSelectors.sol";
-import { FunctionSignatures } from "./tables/FunctionSignatures.sol";
+import { FunctionSignatures, FunctionSignaturesData } from "./tables/FunctionSignatures.sol";
 import { InitModuleAddress } from "./tables/InitModuleAddress.sol";

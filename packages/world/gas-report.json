@@ -63,7 +63,7 @@
     "file": "test/Factories.t.sol",
     "test": "testWorldFactoryGas",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 12850588
+    "gasUsed": 13006892
   },
   {
     "file": "test/World.t.sol",
@@ -105,7 +105,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 123062
+    "gasUsed": 133775
   },
   {
     "file": "test/World.t.sol",
@@ -117,7 +117,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterRootFunctionSelector",
     "name": "Register a root function selector",
-    "gasUsed": 113759
+    "gasUsed": 114619
   },
   {
     "file": "test/World.t.sol",
@@ -129,7 +129,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 572997
+    "gasUsed": 573020
   },
   {
     "file": "test/World.t.sol",
@@ -225,7 +225,7 @@
     "file": "test/WorldProxy.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 128039
+    "gasUsed": 138752
   },
   {
     "file": "test/WorldProxy.t.sol",
@@ -237,7 +237,7 @@
     "file": "test/WorldProxy.t.sol",
     "test": "testRegisterRootFunctionSelector",
     "name": "Register a root function selector",
-    "gasUsed": 118694
+    "gasUsed": 119554
   },
   {
     "file": "test/WorldProxy.t.sol",
@@ -249,7 +249,7 @@
     "file": "test/WorldProxy.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 578007
+    "gasUsed": 578030
   },
   {
     "file": "test/WorldProxy.t.sol",
@@ -285,7 +285,7 @@
     "file": "test/WorldProxyFactory.t.sol",
     "test": "testWorldProxyFactoryGas",
     "name": "deploy world via WorldProxyFactory",
-    "gasUsed": 9146128
+    "gasUsed": 9302432
   },
   {
     "file": "test/WorldProxyFactory.t.sol",

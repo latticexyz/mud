@@ -95,6 +95,8 @@ export default defineWorld({
       schema: {
         functionSelector: "bytes4",
         functionSignature: "string",
+        functionArguments: "bytes",
+        functionReturns: "bytes",
       },
       key: ["functionSelector"],
     },

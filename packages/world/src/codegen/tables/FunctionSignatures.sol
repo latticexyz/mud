@@ -16,17 +16,23 @@ import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
+struct FunctionSignaturesData {
+  string functionSignature;
+  bytes functionArguments;
+  bytes functionReturns;
+}
+
 library FunctionSignatures {
   // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "world", name: "FunctionSignatur", typeId: RESOURCE_OFFCHAIN_TABLE });`
   ResourceId constant _tableId = ResourceId.wrap(0x6f74776f726c6400000000000000000046756e6374696f6e5369676e61747572);
 
   FieldLayout constant _fieldLayout =
-    FieldLayout.wrap(0x0000000100000000000000000000000000000000000000000000000000000000);
+    FieldLayout.wrap(0x0000000300000000000000000000000000000000000000000000000000000000);
 
   // Hex-encoded key schema of (bytes4)
   Schema constant _keySchema = Schema.wrap(0x0004010043000000000000000000000000000000000000000000000000000000);
-  // Hex-encoded value schema of (string)
-  Schema constant _valueSchema = Schema.wrap(0x00000001c5000000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (string, bytes, bytes)
+  Schema constant _valueSchema = Schema.wrap(0x00000003c5c4c400000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
@@ -42,8 +48,10 @@ library FunctionSignatures {
    * @return fieldNames An array of strings with the names of value fields.
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
-    fieldNames = new string[](1);
+    fieldNames = new string[](3);
     fieldNames[0] = "functionSignature";
+    fieldNames[1] = "functionArguments";
+    fieldNames[2] = "functionReturns";
   }
 
   /**
@@ -63,10 +71,15 @@ library FunctionSignatures {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(bytes4 functionSelector, string memory functionSignature) internal {
+  function set(
+    bytes4 functionSelector,
+    string memory functionSignature,
+    bytes memory functionArguments,
+    bytes memory functionReturns
+  ) internal {
     bytes memory _staticData;
-    EncodedLengths _encodedLengths = encodeLengths(functionSignature);
-    bytes memory _dynamicData = encodeDynamic(functionSignature);
+    EncodedLengths _encodedLengths = encodeLengths(functionSignature, functionArguments, functionReturns);
+    bytes memory _dynamicData = encodeDynamic(functionSignature, functionArguments, functionReturns);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
@@ -77,10 +90,59 @@ library FunctionSignatures {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(bytes4 functionSelector, string memory functionSignature) internal {
+  function _set(
+    bytes4 functionSelector,
+    string memory functionSignature,
+    bytes memory functionArguments,
+    bytes memory functionReturns
+  ) internal {
     bytes memory _staticData;
-    EncodedLengths _encodedLengths = encodeLengths(functionSignature);
-    bytes memory _dynamicData = encodeDynamic(functionSignature);
+    EncodedLengths _encodedLengths = encodeLengths(functionSignature, functionArguments, functionReturns);
+    bytes memory _dynamicData = encodeDynamic(functionSignature, functionArguments, functionReturns);
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(functionSelector);
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /**
+   * @notice Set the full data using the data struct.
+   */
+  function set(bytes4 functionSelector, FunctionSignaturesData memory _table) internal {
+    bytes memory _staticData;
+    EncodedLengths _encodedLengths = encodeLengths(
+      _table.functionSignature,
+      _table.functionArguments,
+      _table.functionReturns
+    );
+    bytes memory _dynamicData = encodeDynamic(
+      _table.functionSignature,
+      _table.functionArguments,
+      _table.functionReturns
+    );
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(functionSelector);
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
+  }
+
+  /**
+   * @notice Set the full data using the data struct.
+   */
+  function _set(bytes4 functionSelector, FunctionSignaturesData memory _table) internal {
+    bytes memory _staticData;
+    EncodedLengths _encodedLengths = encodeLengths(
+      _table.functionSignature,
+      _table.functionArguments,
+      _table.functionReturns
+    );
+    bytes memory _dynamicData = encodeDynamic(
+      _table.functionSignature,
+      _table.functionArguments,
+      _table.functionReturns
+    );
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
@@ -94,13 +156,29 @@ library FunctionSignatures {
   function decodeDynamic(
     EncodedLengths _encodedLengths,
     bytes memory _blob
-  ) internal pure returns (string memory functionSignature) {
+  )
+    internal
+    pure
+    returns (string memory functionSignature, bytes memory functionArguments, bytes memory functionReturns)
+  {
     uint256 _start;
     uint256 _end;
     unchecked {
       _end = _encodedLengths.atIndex(0);
     }
     functionSignature = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+
+    _start = _end;
+    unchecked {
+      _end += _encodedLengths.atIndex(1);
+    }
+    functionArguments = (bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+
+    _start = _end;
+    unchecked {
+      _end += _encodedLengths.atIndex(2);
+    }
+    functionReturns = (bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
   }
 
   /**
@@ -113,8 +191,11 @@ library FunctionSignatures {
     bytes memory,
     EncodedLengths _encodedLengths,
     bytes memory _dynamicData
-  ) internal pure returns (string memory functionSignature) {
-    (functionSignature) = decodeDynamic(_encodedLengths, _dynamicData);
+  ) internal pure returns (FunctionSignaturesData memory _table) {
+    (_table.functionSignature, _table.functionArguments, _table.functionReturns) = decodeDynamic(
+      _encodedLengths,
+      _dynamicData
+    );
   }
 
   /**
@@ -141,10 +222,18 @@ library FunctionSignatures {
    * @notice Tightly pack dynamic data lengths using this table's schema.
    * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
    */
-  function encodeLengths(string memory functionSignature) internal pure returns (EncodedLengths _encodedLengths) {
+  function encodeLengths(
+    string memory functionSignature,
+    bytes memory functionArguments,
+    bytes memory functionReturns
+  ) internal pure returns (EncodedLengths _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
-      _encodedLengths = EncodedLengthsLib.pack(bytes(functionSignature).length);
+      _encodedLengths = EncodedLengthsLib.pack(
+        bytes(functionSignature).length,
+        bytes(functionArguments).length,
+        bytes(functionReturns).length
+      );
     }
   }
 
@@ -152,8 +241,12 @@ library FunctionSignatures {
    * @notice Tightly pack dynamic (variable length) data using this table's schema.
    * @return The dynamic data, encoded into a sequence of bytes.
    */
-  function encodeDynamic(string memory functionSignature) internal pure returns (bytes memory) {
-    return abi.encodePacked(bytes((functionSignature)));
+  function encodeDynamic(
+    string memory functionSignature,
+    bytes memory functionArguments,
+    bytes memory functionReturns
+  ) internal pure returns (bytes memory) {
+    return abi.encodePacked(bytes((functionSignature)), bytes((functionArguments)), bytes((functionReturns)));
   }
 
   /**
@@ -162,10 +255,14 @@ library FunctionSignatures {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(string memory functionSignature) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
+  function encode(
+    string memory functionSignature,
+    bytes memory functionArguments,
+    bytes memory functionReturns
+  ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData;
-    EncodedLengths _encodedLengths = encodeLengths(functionSignature);
-    bytes memory _dynamicData = encodeDynamic(functionSignature);
+    EncodedLengths _encodedLengths = encodeLengths(functionSignature, functionArguments, functionReturns);
+    bytes memory _dynamicData = encodeDynamic(functionSignature, functionArguments, functionReturns);
 
     return (_staticData, _encodedLengths, _dynamicData);
   }
