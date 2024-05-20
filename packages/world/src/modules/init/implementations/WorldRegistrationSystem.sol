@@ -190,7 +190,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     string memory systemFunctionName,
     string memory systemFunctionArguments
   ) public onlyDelegatecall returns (bytes4 worldFunctionSelector) {
-    string memory systemFunctionSignature = string.concat(systemFunctionName, systemFunctionArguments);
+    string memory systemFunctionSignature = string.concat(systemFunctionName, "(", systemFunctionArguments, ")");
 
     // Require the provided system ID to have type RESOURCE_SYSTEM
     if (systemId.getType() != RESOURCE_SYSTEM) {

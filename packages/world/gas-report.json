@@ -105,7 +105,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 118288
+    "gasUsed": 117940
   },
   {
     "file": "test/World.t.sol",
@@ -225,7 +225,7 @@
     "file": "test/WorldProxy.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 123223
+    "gasUsed": 122869
   },
   {
     "file": "test/WorldProxy.t.sol",
