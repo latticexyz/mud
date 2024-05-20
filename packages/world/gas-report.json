@@ -63,7 +63,7 @@
     "file": "test/Factories.t.sol",
     "test": "testWorldFactoryGas",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 12849314
+    "gasUsed": 12850588
   },
   {
     "file": "test/World.t.sol",
@@ -105,13 +105,13 @@
     "file": "test/World.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 118377
+    "gasUsed": 123062
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 144073
+    "gasUsed": 144117
   },
   {
     "file": "test/World.t.sol",
@@ -153,13 +153,13 @@
     "file": "test/World.t.sol",
     "test": "testUnregisterNamespaceDelegation",
     "name": "unregister a namespace delegation",
-    "gasUsed": 60328
+    "gasUsed": 60306
   },
   {
     "file": "test/World.t.sol",
     "test": "testUnregisterUnlimitedDelegation",
     "name": "unregister an unlimited delegation",
-    "gasUsed": 54526
+    "gasUsed": 54549
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
@@ -225,13 +225,13 @@
     "file": "test/WorldProxy.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 123306
+    "gasUsed": 128039
   },
   {
     "file": "test/WorldProxy.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 148972
+    "gasUsed": 149016
   },
   {
     "file": "test/WorldProxy.t.sol",
@@ -273,19 +273,19 @@
     "file": "test/WorldProxy.t.sol",
     "test": "testUnregisterNamespaceDelegation",
     "name": "unregister a namespace delegation",
-    "gasUsed": 65227
+    "gasUsed": 65205
   },
   {
     "file": "test/WorldProxy.t.sol",
     "test": "testUnregisterUnlimitedDelegation",
     "name": "unregister an unlimited delegation",
-    "gasUsed": 59425
+    "gasUsed": 59448
   },
   {
     "file": "test/WorldProxyFactory.t.sol",
     "test": "testWorldProxyFactoryGas",
     "name": "deploy world via WorldProxyFactory",
-    "gasUsed": 9144854
+    "gasUsed": 9146128
   },
   {
     "file": "test/WorldProxyFactory.t.sol",

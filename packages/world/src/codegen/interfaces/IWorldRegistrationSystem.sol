@@ -25,7 +25,8 @@ interface IWorldRegistrationSystem {
   function registerFunctionSelector(
     ResourceId systemId,
     string memory systemFunctionName,
-    SystemFunctionArgument[] memory systemFunctionArguments
+    SystemFunctionArgument[] memory systemFunctionArguments,
+    SystemFunctionArgument[] memory systemFunctionReturns
   ) external returns (bytes4 worldFunctionSelector);
 
   function registerRootFunctionSelector(

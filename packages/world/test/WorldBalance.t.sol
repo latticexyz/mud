@@ -45,7 +45,15 @@ contract WorldBalanceTest is Test, GasReporter {
     world.registerSystem(nonRootSystemId, nonRootSystem, true);
 
     world.registerRootFunctionSelector(rootSystemId, "echoValue()", "echoValue()");
-    world.registerFunctionSelector(nonRootSystemId, "echoValue", new SystemFunctionArgument[](0));
+
+    SystemFunctionArgument[] memory systemFunctionReturns = new SystemFunctionArgument[](1);
+    systemFunctionReturns[0] = SystemFunctionArgument("", "uint256");
+    world.registerFunctionSelector(
+      nonRootSystemId,
+      "echoValue",
+      new SystemFunctionArgument[](0),
+      new SystemFunctionArgument[](0)
+    );
   }
 
   function testCallWithValue() public {

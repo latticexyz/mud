@@ -1614,8 +1614,18 @@ contract WorldTest is Test, GasReporter {
     world.registerNamespace(systemId.getNamespaceId());
     world.registerSystem(systemId, system, true);
 
+    // Register a function selector to the msgSender function
+    SystemFunctionArgument[] memory systemFunctionArguments = new SystemFunctionArgument[](0);
+    SystemFunctionArgument[] memory systemFunctionReturns = new SystemFunctionArgument[](1);
+    systemFunctionReturns[0] = SystemFunctionArgument("", "address");
+
     startGasReport("Register a function selector");
-    bytes4 functionSelector = world.registerFunctionSelector(systemId, "msgSender", new SystemFunctionArgument[](0));
+    bytes4 functionSelector = world.registerFunctionSelector(
+      systemId,
+      "msgSender",
+      systemFunctionArguments,
+      systemFunctionReturns
+    );
     endGasReport();
 
     string memory expectedWorldFunctionSignature = "testNamespace__msgSender()";
@@ -1629,9 +1639,16 @@ contract WorldTest is Test, GasReporter {
     assertEq(abi.decode(data, (address)), address(this), "wrong address returned");
 
     // Register a function selector to the error function
-    SystemFunctionArgument[] memory systemFunctionArguments = new SystemFunctionArgument[](1);
+    systemFunctionArguments = new SystemFunctionArgument[](1);
     systemFunctionArguments[0] = SystemFunctionArgument("", "string");
-    functionSelector = world.registerFunctionSelector(systemId, "err", systemFunctionArguments);
+    systemFunctionReturns = new SystemFunctionArgument[](0);
+
+    functionSelector = world.registerFunctionSelector(
+      systemId,
+      "err",
+      systemFunctionArguments,
+      new SystemFunctionArgument[](0)
+    );
 
     // Expect errors to be passed through
     vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
