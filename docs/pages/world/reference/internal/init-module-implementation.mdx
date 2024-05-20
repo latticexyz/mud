@@ -406,16 +406,20 @@ _Creates a mapping between a World function and its associated system function_
 ```solidity
 function registerFunctionSelector(
   ResourceId systemId,
-  string memory systemFunctionSignature
+  string memory systemFunctionName,
+  SystemFunctionArgument[] memory systemFunctionArguments,
+  SystemFunctionArgument[] memory systemFunctionReturns
 ) public onlyDelegatecall returns (bytes4 worldFunctionSelector);
 ```
 
 **Parameters**
 
-| Name                      | Type         | Description                          |
-| ------------------------- | ------------ | ------------------------------------ |
-| `systemId`                | `ResourceId` | The system ID                        |
-| `systemFunctionSignature` | `string`     | The signature of the system function |
+| Name                      | Type                       | Description   |
+| ------------------------- | -------------------------- | ------------- |
+| `systemId`                | `ResourceId`               | The system ID |
+| `systemFunctionName`      | `string`                   |               |
+| `systemFunctionArguments` | `SystemFunctionArgument[]` |               |
+| `systemFunctionReturns`   | `SystemFunctionArgument[]` |               |
 
 **Returns**
 
