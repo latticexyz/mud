@@ -183,13 +183,15 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    * @notice Registers a new World function selector
    * @dev Creates a mapping between a World function and its associated system function
    * @param systemId The system ID
-   * @param systemFunctionSignature The signature of the system function
    * @return worldFunctionSelector The selector of the World function
    */
   function registerFunctionSelector(
     ResourceId systemId,
-    string memory systemFunctionSignature
+    string memory systemFunctionName,
+    string memory systemFunctionArguments
   ) public onlyDelegatecall returns (bytes4 worldFunctionSelector) {
+    string memory systemFunctionSignature = string.concat(systemFunctionName, systemFunctionArguments);
+
     // Require the provided system ID to have type RESOURCE_SYSTEM
     if (systemId.getType() != RESOURCE_SYSTEM) {
       revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
