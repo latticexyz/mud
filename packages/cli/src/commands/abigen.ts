@@ -44,7 +44,7 @@ export async function abigenHandler(opts: Options) {
 
   const systems = await getSystems({ client, worldDeploy });
 
-  systems.map(abigen);
+  systems.map((system) => abigen(system.functions.map((func) => func.systemFunctionSignature)));
 }
 
 export default commandModule;
