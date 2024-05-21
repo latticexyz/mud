@@ -1,5 +1,5 @@
 import { defineWorld } from "@latticexyz/world";
-import { resolveTableId } from "@latticexyz/config/library";
+import { resolveTableId } from "@latticexyz/world/internal";
 
 export default defineWorld({
   systems: {

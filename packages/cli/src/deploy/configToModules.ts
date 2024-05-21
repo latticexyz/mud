@@ -1,26 +1,19 @@
 import path from "node:path";
 import { Module } from "./common";
-import { resolveWithContext } from "@latticexyz/config/library";
 import { encodeField } from "@latticexyz/protocol-parser/internal";
 import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type/internal";
-import { bytesToHex, hexToBytes } from "viem";
+import { bytesToHex } from "viem";
 import { createPrepareDeploy } from "./createPrepareDeploy";
 import { World } from "@latticexyz/world";
 import { getContractArtifact } from "../utils/getContractArtifact";
 import { knownModuleArtifacts } from "../utils/knownModuleArtifacts";
+import { resolveWithContext } from "@latticexyz/world/internal";
 
 export async function configToModules<config extends World>(
   config: config,
   // TODO: remove/replace `forgeOutDir`
   forgeOutDir: string,
 ): Promise<readonly Module[]> {
-  // this expects a namespaced table name when used with `resolveTableId`
-  const resolveContext = {
-    tableIds: Object.fromEntries(
-      Object.entries(config.tables).map(([tableName, table]) => [tableName, hexToBytes(table.tableId)]),
-    ),
-  };
-
   const modules = await Promise.all(
     config.modules.map(async (mod): Promise<Module> => {
       let artifactPath = mod.artifactPath;
@@ -57,7 +50,7 @@ export async function configToModules<config extends World>(
 
       // TODO: replace args with something more strongly typed
       const installArgs = mod.args
-        .map((arg) => resolveWithContext(arg, resolveContext))
+        .map((arg) => resolveWithContext(arg, { config }))
         .map((arg) => {
           const value = arg.value instanceof Uint8Array ? bytesToHex(arg.value) : arg.value;
           return encodeField(arg.type as SchemaAbiType, value as SchemaAbiTypeToPrimitiveType<SchemaAbiType>);

@@ -1,4 +1,5 @@
 import { defineWorld } from "@latticexyz/world";
+import { resolveTableId } from "@latticexyz/world/internal";
 
 export default defineWorld({
   namespace: "app",
@@ -13,4 +14,11 @@ export default defineWorld({
       key: ["id"],
     },
   },
+  modules: [
+    {
+      artifactPath: "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json",
+      root: true,
+      args: [resolveTableId("Tasks")],
+    },
+  ],
 });
