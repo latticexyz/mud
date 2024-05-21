@@ -1,0 +1,850 @@
+import { CollapseCode } from "../../components/CollapseCode";
+
+# Adding Tokens
+
+On this page you learn how to use the token modules, [`ERC20`](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/erc20-puppet) and [`ERC721`](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/erc721-puppet), to add a token to your `World`.
+
+## Why do this?
+
+With the token as part of a MUD `World` you get automatic synchronization on the client.
+
+## The sample program
+
+We modify the React template to pay accounts that complete to-do items.
+
+### Move the dapp to a namespace
+
+We will modify the template program to run out of a different namespace than the root one.
+The root namespace has [some security restrictions](/retrospectives/2023-09-12-register-system-vulnerability) that make it difficult to run some modules, so it's best not to use it when avoidable.
+
+1. Create and run the application.
+   Do not run it yet.
+
+   ```sh copy
+   pnpm create mud@next erc20-tutorial --template react
+   cd erc20-tutorial/packages/contracts
+   rm -rf test
+   ```
+
+1. Modify `mud.config.ts` to specify a namespace.
+
+   <CollapseCode>
+
+   ```typescript filename="mud.config.ts" copy showLineNumbers {4}
+   import { defineWorld } from "@latticexyz/world";
+
+   export default defineWorld({
+     namespace: "TaskApp",
+     tables: {
+       Tasks: {
+         schema: {
+           id: "bytes32",
+           createdAt: "uint256",
+           completedAt: "uint256",
+           description: "string",
+         },
+         key: ["id"],
+       },
+     },
+   });
+   ```
+
+   </CollapseCode>
+
+1. Remove the `script/PostDeploy.s.sol` script.
+
+   ```sh
+   rm script/PostDeploy.s.sol
+   ```
+
+1. Update `../client/src/mud/createSystemCalls.ts`.
+
+   <CollapseCode>
+
+   ```typescript filename="createSystemCalls.ts" copy showLineNumbers {34,39-40,45}
+   /*
+    * Create the system calls that the client can use to ask
+    * for changes in the World state (using the System contracts).
+    */
+
+   import { Hex } from "viem";
+   import { SetupNetworkResult } from "./setupNetwork";
+
+   export type SystemCalls = ReturnType<typeof createSystemCalls>;
+
+   export function createSystemCalls(
+     /*
+      * The parameter list informs TypeScript that:
+      *
+      * - The first parameter is expected to be a
+      *   SetupNetworkResult, as defined in setupNetwork.ts
+      *
+      *   Out of this parameter, we only care about two fields:
+      *   - worldContract (which comes from getContract, see
+      *     https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/setupNetwork.ts#L63-L69).
+      *
+      *   - waitForTransaction (which comes from syncToRecs, see
+      *     https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/setupNetwork.ts#L77-L83).
+      *
+      * - From the second parameter, which is a ClientComponent,
+      *   we only care about Counter. This parameter comes to use
+      *   through createClientComponents.ts, but it originates in
+      *   syncToRecs
+      *   (https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/setupNetwork.ts#L77-L83).
+      */
+     { tables, useStore, worldContract, waitForTransaction }: SetupNetworkResult,
+   ) {
+     const addTask = async (label: string) => {
+       const tx = await worldContract.write.TaskApp__addTask([label]);
+       await waitForTransaction(tx);
+     };
+
+     const toggleTask = async (id: Hex) => {
+       const isComplete = (useStore.getState().getValue(tables.Tasks, { id })?.completedAt ?? 0n) > 0n;
+       const tx = isComplete
+         ? await worldContract.write.TaskApp__resetTask([id])
+         : await worldContract.write.TaskApp__completeTask([id]);
+       await waitForTransaction(tx);
+     };
+
+     const deleteTask = async (id: Hex) => {
+       const tx = await worldContract.write.TaskApp__deleteTask([id]);
+       await waitForTransaction(tx);
+     };
+
+     return {
+       addTask,
+       toggleTask,
+       deleteTask,
+     };
+   }
+   ```
+
+   </CollapseCode>
+
+1. Now you can start the application.
+
+   ```sh copy
+   cd ../..
+   pnpm dev
+   ```
+
+## Install an ERC20 token
+
+1. Create a `packages/contract/.env` file with these variables:
+
+   - `MY_ADDRESS`, an address that has sufficient ETH to pay for transactions (1 ETH is more than enough).
+   - `PRIVATE_KEY`, the private key corresponding to the `MY_ADDRESS`
+   - `WORLD_ADDRESS`, the address of the `World` to modify.
+
+   Assuming the default parameters on `anvil`, you can use this file.
+   Note that the `World` address might change in different versions of MUD.
+
+   ```sh copy filename=".env"
+   # This .env file is for demonstration purposes only.
+   #
+   # This should usually be excluded via .gitignore and the env vars attached to
+   # your deployment enviromment, but we're including this here for ease of local
+   # development. Please do not commit changes to this file!
+   #
+   #
+   # Anvil default private key:
+   PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+
+   # And the address that corresponds to it
+   MY_ADDRESS=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+
+   # Address of the world we are manipulating
+   WORLD_ADDRESS=0x4F4DDaFBc93Cf8d11a253f21dDbcF836139efdeC
+   ```
+
+1. Create a file `packages/contracts/script/Deploy-ERC20.s.sol`.
+
+   ```solidity filename="Deploy-ERC20.s.sol" copy
+   // SPDX-License-Identifier: MIT
+   pragma solidity >=0.8.21;
+
+   import { Script } from "forge-std/Script.sol";
+   import { console } from "forge-std/console.sol";
+   import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+   import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+   import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+
+   import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+   import { PuppetModule } from "@latticexyz/world-modules/src/modules/puppet/PuppetModule.sol";
+
+   import { registerERC20 } from "@latticexyz/world-modules/src/modules/erc20-puppet/registerERC20.sol";
+   import { IERC20Mintable } from "@latticexyz/world-modules/src/modules/erc20-puppet/IERC20Mintable.sol";
+   import { ERC20MetadataData } from "@latticexyz/world-modules/src/modules/erc20-puppet/tables/ERC20Metadata.sol";
+
+   contract DeployERC20 is Script {
+     function run() external {
+       // Load the environment
+       uint256 privateKey = vm.envUint("PRIVATE_KEY");
+       address myAddress = vm.envAddress("MY_ADDRESS");
+       address worldAddress = vm.envAddress("WORLD_ADDRESS");
+
+       // Specify a store so that you can use tables directly
+       StoreSwitch.setStoreAddress(worldAddress);
+
+       // Start broadcasting transactions from the deployer account
+       vm.startBroadcast(privateKey);
+
+       IWorld world = IWorld(worldAddress);
+
+       PuppetModule puppetModule = new PuppetModule();
+       world.installModule(puppetModule, new bytes(0));
+
+       IERC20Mintable token = registerERC20(
+         world,
+         "DDDD", // Namespace (one ERC-20 per namespace)
+         ERC20MetadataData({ decimals: 18, name: "Got it done", symbol: "GID" })
+       );
+       console.log("Token address:", address(token));
+       test(token, myAddress);
+       vm.stopBroadcast();
+     }
+
+     function report(IERC20Mintable token, address myAddress, address goatAddress) internal view {
+       console.log("\tMy balance:  ", token.balanceOf(myAddress));
+       console.log("\tGoat balance:", token.balanceOf(goatAddress));
+       console.log("\tTotal supply:", token.totalSupply());
+       console.log("-------------------------------");
+     }
+
+     function test(IERC20Mintable token, address myAddress) internal {
+       address goatAddress = address(0x60A7);
+       console.log("Initial state");
+       report(token, myAddress, goatAddress);
+
+       token.mint(myAddress, 1000);
+       token.transfer(goatAddress, 500);
+       console.log("After mint and transfer");
+       report(token, myAddress, goatAddress);
+
+       token.burn(myAddress, 500);
+       token.burn(goatAddress, 500);
+       console.log("After burning the tokens");
+       report(token, myAddress, goatAddress);
+     }
+   }
+   ```
+
+   <details>
+
+   <summary>Explanation</summary>
+
+   ```solidity
+     function run() external {
+       // Load the environment
+       uint256 privateKey = vm.envUint("PRIVATE_KEY");
+       address myAddress = vm.envAddress("MY_ADDRESS");
+       address worldAddress = vm.envAddress("WORLD_ADDRESS");
+   ```
+
+   Read the configuration from the environment, which ultimately comes from `.env`.
+
+   ```solidity
+       // Specify a store so that you can use tables directly
+       StoreSwitch.setStoreAddress(worldAddress);
+
+       // Start broadcasting transactions from the deployer account
+       vm.startBroadcast(privateKey);
+
+       IWorld world = IWorld(worldAddress);
+   ```
+
+   Standard in MUD scripts.
+
+   ```solidity
+       PuppetModule puppetModule = new PuppetModule();
+       world.installModule(puppetModule, new bytes(0));
+   ```
+
+   This is the way you register [modules](/world/modules).
+   First you deploy the contract, and then you install it to the `World`.
+
+   ```solidity
+       IERC20Mintable token = registerERC20(world,
+           "DDDD",   // Namespace (one ERC-20 per namespace)
+           ERC20MetadataData({ decimals: 18, name: "Got it done", symbol: "GID" }));
+       console.log("Token address:", address(token));
+   ```
+
+   Create the token and its namespace.
+   Note that the ERC-20 module _has_ to register a previously unused namespace.
+
+   I chose the namespace `DDDD` because the hexadecimal ascii representation of the letter `D` is 44.
+   This means that it is easy to identify entities in the namespace because the hexadecimal `ResourceId` contains `44444444`.
+
+   ```solidity
+       test(token, myAddress);
+       vm.stopBroadcast();
+     }
+   ```
+
+   Run a simple test to verify the ERC-20 token works.
+
+   ```solidity
+   function report(IERC20Mintable token, address myAddress, address goatAddress) internal view {
+     console.log("\tMy balance:  ", token.balanceOf(myAddress));
+     console.log("\tGoat balance:", token.balanceOf(goatAddress));
+     console.log("\tTotal supply:", token.totalSupply());
+     console.log("-------------------------------");
+   }
+   ```
+
+   Report the balances of `myAddress`, `goatAddress`, and the total token supply.
+
+   ```solidity
+     function test(IERC20Mintable token, address myAddress) internal {
+       address goatAddress = address(0x60A7);
+       console.log("Initial state");
+       report(token, myAddress, goatAddress);
+   ```
+
+   At this point all balances should be zero.
+
+   ```solidity
+       token.mint(myAddress, 1000);
+       token.transfer(goatAddress, 500);
+       console.log("After mint and transfer");
+       report(token, myAddress, goatAddress);
+   ```
+
+   Check `mint` and `transfer`.
+
+   ```solidity
+       token.burn(myAddress, 500);
+       token.burn(goatAddress, 500);
+       console.log("After burning the tokens");
+       report(token, myAddress, goatAddress);
+     }
+   }
+   ```
+
+   Check `burn` and return the token to the initial state (nobody has any tokens).
+
+   </details>
+
+1. Run the script.
+
+   ```sh copy
+   cd packages/contracts
+   forge script script/Deploy-ERC20.s.sol --rpc-url http://localhost:8545 --broadcast
+   ```
+
+1. Scroll up to see the token address and add it to .env as `TOKEN_ADDRESS`.
+
+   <CollapseCode>
+
+   ```sh filename=".env" showLineNumbers copy {17-18}
+   # This .env file is for demonstration purposes only.
+   #
+   # This should usually be excluded via .gitignore and the env vars attached to
+   # your deployment enviromment, but we're including this here for ease of local
+   # development. Please do not commit changes to this file!
+   #
+   #
+   # Anvil default private key:
+   PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+
+   # And the address that corresponds to it
+   MY_ADDRESS=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+
+   # Address of the world we are manipulating
+   WORLD_ADDRESS=0x4F4DDaFBc93Cf8d11a253f21dDbcF836139efdeC
+
+   # Address of the token
+   TOKEN_ADDRESS=0x65093117a463E57BfB36A03346AB6f9bbA8177D2
+   ```
+
+   </CollapseCode>
+
+## Control the token from a `System`
+
+The next step is to create a `System` to distribute the reward.
+It is easiest to do this as a separate MUD project.
+The steps are explained in [the _Extending World_ guide](./extending-world).
+
+1. Go to a separate directory.
+
+1. Create a new MUD project.
+
+   ```sh copy
+   pnpm create mud@next rewards --template vanilla
+   ```
+
+1. Remove the definitions that are not needed for our purpose.
+
+   ```sh copy
+   cd rewards/packages
+   rm -rf client
+   cd contracts
+   rm test/CounterTest.t.sol script/PostDeploy.s.sol src/systems/IncrementSystem.sol
+   ```
+
+1. Replace `mud.config.ts` with this file, which includes the singletons we need.
+
+   ```ts mud.config.ts copy
+   import { defineWorld } from "@latticexyz/world";
+
+   export default defineWorld({
+     namespace: "DDDD",
+     tables: {
+       Token: {
+         schema: {
+           value: "address",
+         },
+         key: [],
+       },
+       RewardSize: {
+         schema: {
+           value: "uint256",
+         },
+         key: [],
+       },
+     },
+   });
+   ```
+
+   `Systems` are stateless, so singleton tables (tables with a single row) perform the function that normally would be handled by state variables that aren't arrays or mappings.
+   In this case, `RewardSystem` needs to know the address of the reward token and how much reward to provide at task completion.
+
+1. Create `src/systems/RewardSystem.sol`.
+
+   ```solidity filename="RewardSystem.sol" copy
+   // SPDX-License-Identifier: MIT
+   pragma solidity >=0.8.21;
+
+   import { System } from "@latticexyz/world/src/System.sol";
+   import { IWorld } from "../codegen/world/IWorld.sol";
+   import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+   import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+   import { Token, RewardSize } from "../codegen/index.sol";
+   import { IERC20Mintable } from "@latticexyz/world-modules/src/modules/erc20-puppet/IERC20Mintable.sol";
+
+   contract RewardSystem is System {
+     function giveReward(address recipient) public {
+       IERC20Mintable token = IERC20Mintable(Token.get());
+       token.transfer(recipient, RewardSize.get());
+     }
+   }
+   ```
+
+1. Copy `.env` from the main project, the one that has the `TaskApp` namespace.
+   If you used `anvil` with the defaults, this should be similar to the file below.
+   Note that `WORLD_ADDRESS` and `TOKEN_ADDRESS` might change with different versions of MUD.
+
+   ```sh copy filename=".env"
+   # This .env file is for demonstration purposes only.
+   #
+   # This should usually be excluded via .gitignore and the env vars attached to
+   # your deployment environment, but we're including this here for ease of local
+   # development. Please do not commit changes to this file!
+   #
+   #
+   # Anvil default private key:
+   PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+
+   # And the address that corresponds to it
+   MY_ADDRESS=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+
+   # Address of the world we are manipulating
+   WORLD_ADDRESS=0x4F4DDaFBc93Cf8d11a253f21dDbcF836139efdeC
+
+   # Address of the token
+   TOKEN_ADDRESS=0xA0719Ec6AcCbAC2301F88bc71e2f5ddC8c29149B
+   ```
+
+1. Create `script/Deploy-RewardSystem.s.sol`.
+
+   ```solidity copy filename="Deploy-RewardSystem.s.sol"
+   // SPDX-License-Identifier: MIT
+   pragma solidity >=0.8.21;
+
+   import { Script } from "forge-std/Script.sol";
+   import { console } from "forge-std/console.sol";
+
+   import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+   import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+   import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+   import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+   import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+   import { IERC20Mintable } from "@latticexyz/world-modules/src/modules/erc20-puppet/IERC20Mintable.sol";
+
+   import { Systems } from "@latticexyz/world/src/codegen/index.sol";
+
+   import { Token, RewardSize } from "../src/codegen/index.sol";
+   import { RewardSystem } from "../src/systems/RewardSystem.sol";
+
+   contract DeployRewardSystem is Script {
+     function run() external {
+       // Load the environment
+       uint256 privateKey = vm.envUint("PRIVATE_KEY");
+       address worldAddress = vm.envAddress("WORLD_ADDRESS");
+       address tokenAddress = vm.envAddress("TOKEN_ADDRESS");
+
+       // Specify a store so that you can use tables directly
+       StoreSwitch.setStoreAddress(worldAddress);
+
+       // Start broadcasting transactions from the deployer account
+       vm.startBroadcast(privateKey);
+
+       // Register the singleton tables
+       Token.register();
+       RewardSize.register();
+
+       // Set the singleton values so they'll be available to RewardSystem
+       Token.set(tokenAddress);
+       RewardSize.set(10 ** 18);
+
+       IWorld world = IWorld(worldAddress);
+       ResourceId systemResource = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "DDDD", "RewardSystem");
+
+       RewardSystem rewardSystem = new RewardSystem();
+       console.log("RewardSystem address: ", address(rewardSystem));
+
+       world.registerSystem(systemResource, rewardSystem, false);
+       world.registerFunctionSelector(systemResource, "giveReward(address)");
+
+       // Mint a million tokens for rewardSystem.
+       IERC20Mintable token = IERC20Mintable(tokenAddress);
+       token.mint(address(rewardSystem), 10 ** 6 * RewardSize.get());
+
+       vm.stopBroadcast();
+     }
+   }
+   ```
+
+   <details>
+
+   <summary>Explanation</summary>
+
+   ```solidity
+   // SPDX-License-Identifier: MIT
+   pragma solidity >=0.8.21;
+
+   import { Script } from "forge-std/Script.sol";
+   import { console } from "forge-std/console.sol";
+
+   import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+   import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+   import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+   ```
+
+   To register `RewardSystem` we need to create the resource for it.
+
+   ```solidity
+   import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+   ```
+
+   We need `StoreSwitch` to be able to access our singletons directly to configure `RewardSystem`.
+
+   ```solidity
+   import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+   import { IERC20Mintable } from "@latticexyz/world-modules/src/modules/erc20-puppet/IERC20Mintable.sol";
+
+   import { Token, RewardSize } from "../src/codegen/index.sol";
+   import { RewardSystem } from "../src/systems/RewardSystem.sol";
+
+   contract DeployRewardSystem is Script {
+     function run() external {
+       // Load the environment
+       uint256 privateKey = vm.envUint("PRIVATE_KEY");
+       address myAddress = vm.envAddress("MY_ADDRESS");
+       address worldAddress = vm.envAddress("WORLD_ADDRESS");
+       address tokenAddress = vm.envAddress("TOKEN_ADDRESS");
+   ```
+
+   Read our configuration from `.env`.
+
+   ```solidity
+       // Specify a store so that you can use tables directly
+       StoreSwitch.setStoreAddress(worldAddress);
+
+       // Start broadcasting transactions from the deployer account
+       vm.startBroadcast(privateKey);
+
+       // Register the singleton tables
+       Token.register();
+       RewardSize.register();
+   ```
+
+   Create the two singleton tables for our state variables.
+
+   ```solidity
+       // Set the singleton values so they'll be available to RewardSystem
+       Token.set(tokenAddress);
+       RewardSize.set(10 ** 18);
+   ```
+
+   Specify the value.
+   `10**18` is 10<sup>18</sup>, so one token (we use the same 18 digits standard as ETH).
+
+   ```solidity
+       IWorld world = IWorld(worldAddress);
+       ResourceId systemResource = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "DDDD", "RewardSystem");
+
+       RewardSystem rewardSystem = new RewardSystem();
+       console.log("RewardSystem address: ", address(rewardSystem));
+   ```
+
+   Deploy the `RewardSystem` contract.
+
+   ```solidity
+       world.registerSystem(systemResource, rewardSystem, false);
+   ```
+
+   Register the namespace `DDDD`.
+
+   ```solidity
+       world.registerSystem(systemResource, rewardSystem, false);
+   ```
+
+   Register `RewardSystem`.
+   Note that the third parameter is `false`.
+   We do not allow unauthorized entities to call `giveReward` because otherwise anybody could reward themselves, rendering the token meaningless.
+
+   ```solidity
+       world.registerFunctionSelector(systemResource, "giveReward(address)");
+   ```
+
+   Register the function selector.
+   Because this function is in a non-root namespace, it gets a fully qualified name, `DDDD__giveReward`, when called through the `World`.
+
+   ```solidity
+       // Mint a million tokens for rewardSystem.
+       IERC20Mintable token = IERC20Mintable(tokenAddress);
+       token.mint(address(rewardSystem), 10 ** 6 * RewardSize.get());
+   ```
+
+   Normally the only entity allowed to mint ERC-20 tokens is the namespace owner.
+   The easiest way to make sure `RewardSystem` has enough tokens to give is simply to give it enough tokens, and refill as needed.
+
+   ```solidity
+       vm.stopBroadcast();
+     }
+   }
+   ```
+
+   </details>
+
+1. Compile and then run the script to deploy the singletons and `RewardSystem`.
+
+   ```sh copy
+   pnpm build
+   forge script script/Deploy-RewardSystem.s.sol --rpc-url http://localhost:8545 --broadcast
+   ```
+
+### Verify the reward system works
+
+1. Source `.env` to set environment variables.
+
+   ```sh copy
+   source .env
+   ```
+
+1. Check the balance of `$MY_ADDRESS` (for example).
+
+   ```sh copy
+   cast call $TOKEN_ADDRESS "balanceOf(address)" $MY_ADDRESS | cast --from-wei
+   ```
+
+1. Give `$MY_ADDRESS` a reward.
+
+   ```sh copy
+   cast send --private-key $PRIVATE_KEY $WORLD_ADDRESS "DDDD__giveReward(address)" $MY_ADDRESS
+   ```
+
+1. Check the balance for `$MY_ADDRESS`.
+   See that one token has been transferred.
+
+   ```sh copy
+   cast call $TOKEN_ADDRESS "balanceOf(address)" $MY_ADDRESS | cast --from-wei
+   ```
+
+1. We were allowed to call `giveReward` because the default `anvil` account, which we use, is the namespace owner.
+   However, if we try to use a different account it fails.
+
+   ```sh copy
+   cast send --private-key 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d $WORLD_ADDRESS "DDDD__giveReward(address)" $MY_ADDRESS
+   ```
+
+### Tie `RewardSystem` to finished tasks
+
+Finally, we need to give rewards to users when they earn them by finishing a task.
+There are two ways we can do this:
+
+- Modify the application to call `RewardSystem`.
+- Use [a hook](/store/store-hooks) that is called when the relevant table, `TaskApp:Tasks`, is modified.
+
+For the sake of simplicity here we will modify the application.
+
+1. Back in the original application, `erc20-tutorial`, edit `packages/contracts/src/systems/TasksSystem.sol`.
+
+   <CollapseCode>
+
+   ```solidity filename="TasksSystem.sol" showLineNumbers copy {7-9,19}
+   // SPDX-License-Identifier: MIT
+   pragma solidity >=0.8.21;
+
+   import { System } from "@latticexyz/world/src/System.sol";
+   import { Tasks, TasksData } from "../codegen/index.sol";
+
+   interface WorldWithRewards {
+     function DDDD__giveReward(address) external;
+   }
+
+   contract TasksSystem is System {
+     function addTask(string memory description) public returns (bytes32 key) {
+       key = keccak256(abi.encode(block.prevrandao, _msgSender(), description));
+       Tasks.set(key, TasksData({ description: description, createdAt: block.timestamp, completedAt: 0 }));
+     }
+
+     function completeTask(bytes32 key) public {
+       Tasks.setCompletedAt(key, block.timestamp);
+       WorldWithRewards(_world()).DDDD__giveReward(_msgSender());
+     }
+
+     function resetTask(bytes32 key) public {
+       Tasks.setCompletedAt(key, 0);
+     }
+
+     function deleteTask(bytes32 key) public {
+       Tasks.deleteRecord(key);
+     }
+   }
+   ```
+
+   </CollapseCode>
+
+   <details>
+
+   <summary>Explanation</summary>
+
+   ```solidity
+   interface WorldWithRewards {
+     function DDDD__giveReward(address) external;
+   }
+   ```
+
+   If you define your own interface for `World` you can add whatever function signatures are supported.
+   Note that in Ethereum [a function signature](https://docs.soliditylang.org/en/latest/abi-spec.html#function-selector) is the function name and its parameter types, it does not include the return type.
+
+   ```solidity
+     WorldWithRewards(_world()).DDDD__giveReward(_msgSender());
+   ```
+
+   This is how we use the `WorldWithRewards` interface we created.
+   The [`_world()`](https://github.com/latticexyz/mud/blob/main/packages/world/src/WorldContext.sol#L38-L44) call gives us the address of the `World` that called us.
+   When we specify `WorldWithRewards(<address>)`, we are telling Solidity that there is already a `WorldWithRewards` at that address, and therefore we can use functions that are supported by `WorldWithRewards`, such as `DDDD__giveReward`.
+
+   </details>
+
+1. We changed the system's code, so `TasksSystem` gets redeployed at a new address.
+   Therefore, this is the earliest point we can grant access to the new `TasksSystem`.
+
+   1. Change to `packages/contracts`
+
+      ```sh copy
+      cd packages/contracts
+      ```
+
+   1. Create a file `script/GrantAccess.s.sol`
+
+      <CollapseCode>
+
+      ```solidity filename="GrantAccess.s.sol" copy showLineNumbers {29-34}
+      // SPDX-License-Identifier: MIT
+      pragma solidity >=0.8.21;
+
+      import { Script } from "forge-std/Script.sol";
+      import { console } from "forge-std/console.sol";
+
+      import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+      import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+      import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+      import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+      import { IWorld } from "../src/codegen/world/IWorld.sol";
+      import { Systems } from "@latticexyz/world/src/codegen/index.sol";
+
+      contract GrantAccess is Script {
+        function run() external {
+          // Load the environment
+          uint256 privateKey = vm.envUint("PRIVATE_KEY");
+          address worldAddress = vm.envAddress("WORLD_ADDRESS");
+
+          // Specify a store so that you can use tables directly
+          StoreSwitch.setStoreAddress(worldAddress);
+
+          // Start broadcasting transactions from the deployer account
+          vm.startBroadcast(privateKey);
+
+          IWorld world = IWorld(worldAddress);
+
+          ResourceId rewardSystemResource = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "DDDD", "RewardSystem");
+          ResourceId tasksSystem = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "TaskApp", "TasksSystem");
+          address tasksSystemAddress = Systems.getSystem(tasksSystem);
+          world.grantAccess(rewardSystemResource, tasksSystemAddress);
+
+          vm.stopBroadcast();
+        }
+      }
+      ```
+
+      </CollapseCode>
+
+      <details>
+
+      <summary>Explanation</summary>
+
+      ```solidity
+      ResourceId rewardSystemResource =
+        WorldResourceIdLib.encode(RESOURCE_SYSTEM, "DDDD", "RewardSystem");
+      ```
+
+      The `ResourceId` for `RewardSystem`, [the object](https://en.wikipedia.org/wiki/Access_control_matrix) of the new access, the entity on which we provide permissions.
+
+      ```solidity
+      ResourceId tasksSystem =
+        WorldResourceIdLib.encode(RESOURCE_SYSTEM, "TaskApp", "TasksSystem");
+      address tasksSystemAddress = Systems.getSystem(tasksSystem);
+      ```
+
+      Use the `world:Systems` table to get the address for [the subject](https://en.wikipedia.org/wiki/Access_control_matrix), the entity that gets permissions.
+
+      ```solidity
+      world.grantAccess(rewardSystemResource, tasksSystemAddress);
+      ```
+
+      Actually grant the subject access to the object.
+
+      </details>
+
+   1. Run the script.
+
+      ```sh copy
+      forge script script/GrantAccess.s.sol --rpc-url http://127.0.0.1:8545 --broadcast
+      ```
+
+1. On the web interface, mark some tasks as completed.
+
+1. Get the account address from the **MUD Dev Tools**, and see that you get tokens for finishing tasks.
+
+   ```sh copy
+   cast call $TOKEN_ADDRESS "balanceOf(address)" 0x735B2F2c662eBEDFFA94027A7196F0559f7f18a4 | cast --from-wei
+   ```
+
+1. Because of our changes it is impossible to complete a task before the ERC-20 token and `RewardSystem` are installed.
+   This means that `scripts/PostDeploy.s.sol`, as written, will fail.
+   We don't need it, so we just delete it (under `erc20-tutorial/packages/contracts`).
+
+   ```sh copy
+   rm scripts/PostDeploy.s.sol
+   ```

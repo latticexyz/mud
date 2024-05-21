@@ -17,6 +17,14 @@ The is an example of a `World` config:
 ```tsx
 import { defineWorld } from "@latticexyz/world";
 
+// Used for the module parameters, not required otherwise.
+// If you use this, make sure to run:
+//
+// pnpm install @latticexyz/common
+//
+// In the packages/contracts directory.
+import { resourceToHex } from "@latticexyz/common";
+
 export default defineWorld({
   enums: {
     TerrainType: ["None", "TallGrass", "Boulder"],
@@ -48,6 +56,23 @@ export default defineWorld({
     },
   },
   deploysDirectory: "./mud-deploys",
+  modules: [
+    {
+      name: "KeysWithValueModule",
+      artifactPath: "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json",
+      root: true,
+      args: [
+        {
+          type: "bytes32",
+          value: resourceToHex({
+            type: "table",
+            namespace: "app",
+            name: "Tasks",
+          }),
+        },
+      ],
+    },
+  ],
 });
 ```
 
@@ -125,3 +150,43 @@ The global configuration keys are all optional.
   - <a id="upgradeableWorldImplementation" />
     **`upgradeableWorldImplementation`** a `bool`: Whether the `World` is to be deployed behind a proxy to [enable upgrades
     of the core World implementation](/world/upgrades). The default is `false`.
+
+- **`modules`**: a list of modules to be installed into the `World`.
+  Each entry in this list is a a record with these fields:
+
+  - **`name`** a `string`: The name of the module.
+  - **`artifactPath`** a `string`: The path to the compiled version of the contract with the module.
+    In our case, [the module](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/keyswithvalue/KeysWithValueModule.sol) is part of MUD's [`@latticexyz/world-modules`](https://github.com/latticexyz/mud/tree/main/packages/world-modules) package.
+  - **`root`** a `bool`: Whether the module is to run with the same permissions as [a `System` in the root namespace](/world/systems#root-systems) or not.
+    Only set to `true` when necessary (for example, to add hooks to a table in a different namspace).
+  - **`args`** a list of arguments to the module, each of which is a record with two keys:
+
+    - **`type`** a string: the Solidity type for the variable.
+    - **`value`** the value of the argument.
+      If the argument needs to be a [`ResourceId`](/world/resource-ids), you can create it using `resourceToHex` (if you install the `@latticexyz/common` package and import that function).
+
+      <details>
+
+      <summary>You can also use `resolveTableId` to refer to a table defined in the same configuration file.</summary>
+
+      1. Install the `config` package.
+
+         ```sh
+         cd packages/contracts
+         pnpm install @latticexyz/config
+         ```
+
+      1. In `mud.config.ts`, import `resolveTableId`.
+
+         ```typescript
+         import { resolveTableId } from "@latticexyz/config/register";
+         ```
+
+      1. Use this syntax for the argument.
+         The return value is the entire record required for the argument, `type` and `value`.
+
+         ```typescript
+         args: [resolveTableId("app__Tasks")];
+         ```
+
+      </details>
