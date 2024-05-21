@@ -49,8 +49,8 @@ type DeployedSystem = Omit<System, "abi" | "prepareDeploy" | "deployedBytecodeSi
 
 export async function interfacegen(systems: readonly DeployedSystem[]) {
   for (const system of systems) {
-    const functions = system.functions.map((f) => {
-      const abiItem = parseAbiItem("function " + f.signature);
+    const functions = system.functions.map((func) => {
+      const abiItem = parseAbiItem("function " + func.signature);
       if (abiItem.type !== "function") {
         throw new Error();
       }
