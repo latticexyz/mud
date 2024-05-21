@@ -1,6 +1,6 @@
 import { Abi } from "viem";
 
-export function abigen(systemFunctionSignatures: readonly string[]): Abi {
+export function systemFunctionSignaturesToAbi(systemFunctionSignatures: readonly string[]): Abi {
   const abi = systemFunctionSignatures.map((systemFunctionSignature) => {
     const match = systemFunctionSignature.match(/^([a-zA-Z_]\w*)\((.*)\)$/);
     if (!match) {

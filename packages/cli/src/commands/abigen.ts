@@ -2,7 +2,7 @@ import type { CommandModule, InferredOptionTypes } from "yargs";
 import { Hex, createWalletClient, http } from "viem";
 import { getSystems } from "../deploy/getSystems";
 import { getWorldDeploy } from "../deploy/getWorldDeploy";
-import { abigen } from "@latticexyz/world/node";
+import { systemFunctionSignaturesToAbi } from "@latticexyz/world/node";
 import { getRpcUrl } from "@latticexyz/common/foundry";
 
 const abigenOptions = {
@@ -44,7 +44,7 @@ export async function abigenHandler(opts: Options) {
 
   const systems = await getSystems({ client, worldDeploy });
 
-  systems.map((system) => abigen(system.functions.map((func) => func.systemFunctionSignature)));
+  systems.map((system) => systemFunctionSignaturesToAbi(system.functions.map((func) => func.systemFunctionSignature)));
 }
 
 export default commandModule;

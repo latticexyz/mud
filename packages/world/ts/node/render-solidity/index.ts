@@ -2,4 +2,4 @@ export * from "./renderSystemInterface";
 export * from "./renderWorldInterface";
 export * from "./types";
 export * from "./worldgen";
-export * from "./abigen";
+export * from "./systemFunctionSignaturesToAbi";
