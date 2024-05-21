@@ -11,7 +11,10 @@ export type ResolvedWorldConfig = ReturnType<typeof resolveWorldConfig>;
  * filtering out excluded systems, validate system names refer to existing contracts, and
  * splitting the access list into addresses and system names.
  */
-export function resolveWorldConfig(config: StoreConfig & WorldConfig, existingContracts?: string[]) {
+export function resolveWorldConfig(
+  config: Pick<StoreConfig & WorldConfig, "systems" | "excludeSystems">,
+  existingContracts?: string[],
+) {
   // Include contract names ending in "System", but not the base "System" contract, and not Interfaces
   const defaultSystemNames =
     existingContracts?.filter((name) => name.endsWith("System") && name !== "System" && !name.match(/^I[A-Z]/)) ?? [];
