@@ -10,11 +10,33 @@ There are two APIs to read data and react to changes with `recs`:
 For the examples below, let's assume this MUD config. Notice that each of these tables has an (implicit) `bytes32` key.
 
 ```typescript
-const config = mudConfig({
+import { defineWorld } from "@latticexyz/world";
+
+const config = defineWorld({
+  namespace: "app",
   tables: {
-    NameComponent: "string",
-    PlayerComponent: "bool",
-    PositionComponent: { valueSchema: { x: "int32", y: "int32" } },
+    NameComponent: {
+      schema: {
+        value: "string",
+        entity: "bytes32",
+      },
+      key: ["entity"],
+    },
+    PlayerComponent: {
+      schema: {
+        value: "bool",
+        entity: "bytes32",
+      },
+      key: ["entity"],
+    },
+    PositionComponent: {
+      schema: {
+        x: "int32",
+        y: "int32",
+        entity: "bytes32",
+      },
+      key: ["entity"],
+    },
   },
 });
 ```
