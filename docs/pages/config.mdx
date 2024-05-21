@@ -115,9 +115,6 @@ The global configuration keys are all optional.
   The keys are the names of the enumerations.
   The values are arrays of the strings for the values the enumeration can take.
 
-- **`tables`**: a record of tables. The keys in the record are table names.
-  The value is a record of [table properties](https://github.com/latticexyz/mud/blob/main/packages/store/ts/config/storeConfig.ts#L110-L135).
-
 - **`excludeSystems`**: an array of `string`: which systems to not deploy, even if their name ends with “System”.
 
 - **`codegen`**: a record of code generation options.
@@ -144,7 +141,7 @@ The global configuration keys are all optional.
     of the core World implementation](/world/upgrades). The default is `false`.
 
 - **`modules`**: a list of modules to be installed into the `World`.
-  Each entry in this list is a a record with these fields:
+  Each entry in this list is a record with these fields:
 
   - **`name`** a `string`: The name of the module.
   - **`artifactPath`** a `string`: The path to the compiled version of the contract with the module.
