@@ -1,4 +1,4 @@
-import { renderSystemInterface } from "./renderSystemInterface";
+import { abigenInner } from "./abigenInner";
 import { Abi, Address, Hex } from "viem";
 
 type DeterministicContract = {
@@ -47,39 +47,6 @@ type DeployedSystem = Omit<System, "abi" | "prepareDeploy" | "deployedBytecodeSi
   address: Address;
 };
 
-export async function interfacegen(systems: readonly DeployedSystem[]) {
-  for (const system of systems) {
-    const functions = system.functions.map((func) => {
-      const match = func.systemFunctionSignature.match(/^([a-zA-Z_]\w*)\((.*)\)$/);
-      if (!match) {
-        throw new Error("Invalid signature");
-      }
-
-      const name = match[1];
-      const argsString = match[2];
-
-      const parameters = argsString
-        .split(",")
-        .filter((arg) => arg.trim().length > 0)
-        .map((parameter, i) => (parameter[0] === "(" ? `${name}${i}Struct` : parameter));
-
-      return {
-        name,
-        parameters,
-        stateMutability: "",
-        returnParameters: [],
-      };
-    });
-
-    const systemInterfaceName = `I${system.name}`;
-    const output = renderSystemInterface({
-      name: systemInterfaceName,
-      functionPrefix: "",
-      functions,
-      errors: [],
-      imports: [],
-    });
-
-    console.log(output);
-  }
+export function abigen(systems: readonly DeployedSystem[]) {
+  return systems.map((system) => abigenInner(system));
 }
