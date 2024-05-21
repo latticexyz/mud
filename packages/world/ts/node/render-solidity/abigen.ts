@@ -1,4 +1,3 @@
-import { abigenInner } from "./abigenInner";
 import { Abi, Address, Hex } from "viem";
 
 type DeterministicContract = {
@@ -47,6 +46,54 @@ type DeployedSystem = Omit<System, "abi" | "prepareDeploy" | "deployedBytecodeSi
   address: Address;
 };
 
-export function abigen(systems: readonly DeployedSystem[]) {
-  return systems.map((system) => abigenInner(system));
+export function abigen(system: DeployedSystem): Abi {
+  const abi = system.functions.map((func) => {
+    const match = func.systemFunctionSignature.match(/^([a-zA-Z_]\w*)\((.*)\)$/);
+    if (!match) {
+      throw new Error("Invalid signature");
+    }
+
+    const name = match[1];
+    const argsString = match[2];
+
+    const args = argsString.split(",");
+
+    const item = {
+      type: "function" as const,
+      name,
+      inputs: args.map((type, i) => {
+        const isTuple = type[0] === "(";
+        if (!isTuple) {
+          return {
+            name: "",
+            type,
+            internalType: type,
+          };
+        } else {
+          return {
+            name: "",
+            type: "tuple[]",
+            internalType: `${name}${i}Struct[]`,
+            components: type
+              .replace("(", "")
+              .replace(")", "")
+              .split(",")
+              .map((member, j) => ({
+                name: `value${j}`,
+                type: member,
+                internalType: member,
+              })),
+          };
+        }
+      }),
+      outputs: [],
+      stateMutability: "nonpayable" as const,
+    };
+
+    console.log(argsString, item);
+
+    return item;
+  });
+
+  return abi;
 }

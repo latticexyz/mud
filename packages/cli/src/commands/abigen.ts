@@ -44,8 +44,7 @@ export async function abigenHandler(opts: Options) {
 
   const systems = await getSystems({ client, worldDeploy });
 
-  // generate new interfaces
-  await abigen(systems);
+  systems.map(abigen);
 }
 
 export default commandModule;
