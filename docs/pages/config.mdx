@@ -120,14 +120,6 @@ The global configuration keys are all optional.
 
 - **`excludeSystems`**: an array of `string`: which systems to not deploy, even if their name ends with “System”.
 
-- **`modules`** an array of module definitions: each module definition has a `name`, `root` (optional), and `args` key.
-
-  - `name`: Name of the module to install. The same module can be installed multiple times. This should be the name of the contract file without `.sol` (eg: if the file is named `DopeModule.sol`, the name of the module is `DopeModule`)
-
-  - `root`: whether to create a `root` module or not. `root` modules have access to all tables and are not bound to namespace restrictions.
-
-  - `args`: a list of arguments to be sent to the `install` function of the module. In this array, you can use the function `resolveTableId`. This function will turn a table name from your config into its low-level ID in the World. It is useful to pass references of a table to a module.
-
 - **`codegen`**: a record of code generation options.
 
   - **`worldInterfaceName`** a `string`: The name of the interface for the `World`.
@@ -163,30 +155,65 @@ The global configuration keys are all optional.
 
     - **`type`** a string: the Solidity type for the variable.
     - **`value`** the value of the argument.
-      If the argument needs to be a [`ResourceId`](/world/resource-ids), you can create it using `resourceToHex` (if you install the `@latticexyz/common` package and import that function).
 
-      <details>
+    If the argument needs to be a [`ResourceId`](/world/resource-ids), you can create it using either `resourceToHex` or `resolveTableId`.
 
-      <summary>You can also use `resolveTableId` to refer to a table defined in the same configuration file.</summary>
+    <details>
 
-      1. Install the `config` package.
+    <summary>Use `resolveTableId` to refer to a table defined in the same configuration file.</summary>
 
-         ```sh
-         cd packages/contracts
-         pnpm install @latticexyz/config
-         ```
+    1. Install the `@latticexyz/config` package.
 
-      1. In `mud.config.ts`, import `resolveTableId`.
+       ```sh
+       cd packages/contracts
+       pnpm install @latticexyz/config
+       ```
 
-         ```typescript
-         import { resolveTableId } from "@latticexyz/config/register";
-         ```
+    1. In `mud.config.ts`, import `resolveTableId`.
 
-      1. Use this syntax for the argument.
-         The return value is the entire record required for the argument, `type` and `value`.
+       ```typescript
+       import { resolveTableId } from "@latticexyz/config/register";
+       ```
 
-         ```typescript
-         args: [resolveTableId("app__Tasks")];
-         ```
+    1. Use this syntax for `args`.
+       The return value is the entire record required for the argument, `type` and `value`.
 
-      </details>
+       ```typescript
+       args: [resolveTableId("app__Tasks")];
+       ```
+
+    </details>
+
+    <details>
+
+    <summary>Use `resourceToHex` to specify the full resource information.</summary>
+
+    1. Install the `@latticexyz/common` package.
+
+       ```sh
+       cd packages/contracts
+       pnpm install @latticexyz/common
+       ```
+
+    1. In `mud.config.ts`, import `resourceToHex`.
+
+       ```typescript
+       import { resourceToHex } from "@latticexyz/common";
+       ```
+
+    1. Use this syntax for `args`:
+
+       ```typescript
+             args: [
+                     {
+                       type: "bytes32",
+                       value: resourceToHex({
+                         type: "table",
+                         namespace: "app",
+                         name: "Tasks",
+                       }),
+                     },
+                   ],
+       ```
+
+    </details>
