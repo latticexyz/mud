@@ -2,13 +2,7 @@ import { z } from "zod";
 import { zEthereumAddress, zName, zObjectName } from "@latticexyz/config/library";
 import { SYSTEM_DEFAULTS, WORLD_DEFAULTS } from "./defaults";
 
-enum DynamicResolutionType {
-  TABLE_ID,
-  SYSTEM_ADDRESS,
-}
-
 const zSystemName = zObjectName;
-const zModuleName = zObjectName;
 const zSystemAccessList = z.array(zSystemName.or(zEthereumAddress)).readonly().default(SYSTEM_DEFAULTS.accessList);
 
 // The system config is a combination of a name config and access config
@@ -28,21 +22,6 @@ const zSystemConfig = z.intersection(
   ]),
 );
 
-const zValueWithType = z.object({
-  value: z.union([z.string(), z.number(), z.instanceof(Uint8Array)]),
-  type: z.string(),
-});
-const zDynamicResolution = z.object({ type: z.nativeEnum(DynamicResolutionType), input: z.string() });
-
-const zModuleConfig = z.object({
-  name: zModuleName,
-  root: z.boolean().default(false),
-  args: z
-    .array(z.union([zValueWithType, zDynamicResolution]))
-    .readonly()
-    .default([]),
-});
-
 // The parsed world config is the result of parsing the user config
 export const zWorldConfig = z.object({
   worldContractName: z.string().optional(),
@@ -54,7 +33,6 @@ export const zWorldConfig = z.object({
   worldsFile: z.string().default(WORLD_DEFAULTS.worldsFile),
   worldgenDirectory: z.string().default(WORLD_DEFAULTS.worldgenDirectory),
   worldImportPath: z.string().default(WORLD_DEFAULTS.worldImportPath),
-  modules: z.array(zModuleConfig).readonly().default(WORLD_DEFAULTS.modules),
 });
 
 // Catchall preserves other plugins' options

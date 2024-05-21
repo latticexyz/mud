@@ -85,8 +85,6 @@ export interface WorldUserConfig {
   worldgenDirectory?: string;
   /** Path for world package imports. Default is "@latticexyz/world/src/" */
   worldImportPath?: string;
-  /** Modules to in the World */
-  modules?: readonly ModuleConfig[];
 }
 
 export type WorldConfig = z.output<typeof zWorldConfig>;
