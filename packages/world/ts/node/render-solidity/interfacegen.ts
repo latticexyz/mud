@@ -58,7 +58,10 @@ export async function interfacegen(systems: readonly DeployedSystem[]) {
       const name = match[1];
       const argsString = match[2];
 
-      const parameters = argsString.split(",").filter((arg) => arg.trim().length > 0);
+      const parameters = argsString
+        .split(",")
+        .filter((arg) => arg.trim().length > 0)
+        .map((parameter, i) => (parameter[0] === "(" ? `${name}${i}Struct` : parameter));
 
       return {
         name,
