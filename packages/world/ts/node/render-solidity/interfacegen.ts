@@ -1,5 +1,5 @@
 import { renderSystemInterface } from "./renderSystemInterface";
-import { Abi, Address, Hex, parseAbiItem } from "viem";
+import { Abi, Address, Hex } from "viem";
 
 type DeterministicContract = {
   readonly prepareDeploy: (
@@ -50,16 +50,21 @@ type DeployedSystem = Omit<System, "abi" | "prepareDeploy" | "deployedBytecodeSi
 export async function interfacegen(systems: readonly DeployedSystem[]) {
   for (const system of systems) {
     const functions = system.functions.map((func) => {
-      const abiItem = parseAbiItem("function " + func.systemFunctionSignature);
-      if (abiItem.type !== "function") {
-        throw new Error();
+      const match = func.systemFunctionSignature.match(/^([a-zA-Z_]\w*)\((.*)\)$/);
+      if (!match) {
+        throw new Error("Invalid signature");
       }
 
+      const name = match[1];
+      const argsString = match[2];
+
+      const parameters = argsString.split(",").filter((arg) => arg.trim().length > 0);
+
       return {
-        name: abiItem.name,
-        parameters: abiItem.inputs.map((input) => input.type),
+        name,
+        parameters,
         stateMutability: "",
-        returnParameters: abiItem.outputs.map((input) => input.type),
+        returnParameters: [],
       };
     });
 
