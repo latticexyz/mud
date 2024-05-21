@@ -1,6 +1,11 @@
 import { z } from "zod";
-import { DynamicResolutionType, zEthereumAddress, zName, zObjectName } from "@latticexyz/config/library";
+import { zEthereumAddress, zName, zObjectName } from "@latticexyz/config/library";
 import { SYSTEM_DEFAULTS, WORLD_DEFAULTS } from "./defaults";
+
+enum DynamicResolutionType {
+  TABLE_ID,
+  SYSTEM_ADDRESS,
+}
 
 const zSystemName = zObjectName;
 const zModuleName = zObjectName;
