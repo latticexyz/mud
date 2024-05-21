@@ -1,22 +1,9 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    /* Visit https://aka.ms/tsconfig.json to read more about this file */
-    "target": "es2021",
     "types": ["node"],
-    "module": "esnext",
-    "moduleResolution": "Bundler",
-    "declaration": true,
-    "sourceMap": true,
     "rootDir": ".",
-    "outDir": "dist",
-    "isolatedModules": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "noErrorTruncation": true
+    "outDir": "dist"
   },
   "include": ["mud.config.ts", "ts"]
 }

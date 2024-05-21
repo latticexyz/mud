@@ -2,10 +2,15 @@
   "extends": "@arktype/util/tsconfig.base.json",
   "compilerOptions": {
     "moduleResolution": "Bundler",
+    "noErrorTruncation": true,
+    "resolveJsonModule": false,
+    "exactOptionalPropertyTypes": false,
+    "forceConsistentCasingInFileNames": true,
+    "target": "es2021",
+    "module": "esnext",
+    "sourceMap": true,
     // this should ideally be enabled in a future commit
     "verbatimModuleSyntax": false,
-    // should be off by default, but here as a convenience to toggle
-    // "noErrorTruncation": true,
     "paths": {
       "@latticexyz/abi-ts": ["./packages/abi-ts/src/index.ts"],
       "@latticexyz/block-logs-stream": ["./packages/block-logs-stream/src/index.ts"],
