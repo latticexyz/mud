@@ -551,4 +551,89 @@ describe("defineStore", () => {
       }),
     ).type.errors("`invalidOption` is not a valid Store config option.");
   });
+
+  it("should namespace output directories for tables", () => {
+    const config = defineStore({
+      namespace: "app",
+      codegen: {
+        namespaceDirectories: true,
+      },
+      tables: {
+        NamespaceDir: {
+          schema: { name: "string" },
+          key: [],
+        },
+        NotNamespaceDir: {
+          schema: { name: "string" },
+          key: [],
+          codegen: {
+            outputDirectory: "tables",
+          },
+        },
+      },
+    });
+
+    const expected = {
+      sourceDirectory: "src",
+      tables: {
+        app__NamespaceDir: {
+          tableId: resourceToHex({ type: "table", namespace: "app", name: "NamespaceDir" }),
+          schema: {
+            name: {
+              type: "string",
+              internalType: "string",
+            },
+          },
+          key: [],
+          name: "NamespaceDir",
+          namespace: "app",
+          codegen: {
+            ...TABLE_CODEGEN_DEFAULTS,
+            dataStruct: false as boolean,
+            outputDirectory: "app/tables" as string,
+          },
+          type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
+        },
+        app__NotNamespaceDir: {
+          tableId: resourceToHex({ type: "table", namespace: "app", name: "NotNamespaceDir" }),
+          schema: {
+            name: {
+              type: "string",
+              internalType: "string",
+            },
+          },
+          key: [],
+          name: "NotNamespaceDir",
+          namespace: "app",
+          codegen: {
+            ...TABLE_CODEGEN_DEFAULTS,
+            dataStruct: false as boolean,
+            outputDirectory: "tables",
+          },
+          type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
+        },
+      },
+      userTypes: {},
+      enums: {},
+      enumValues: {},
+      namespace: "app",
+      codegen: {
+        ...CODEGEN_DEFAULTS,
+        namespaceDirectories: true,
+      },
+    } as const;
+
+    // Running attest on the whole object is hard to parse when it fails, so test the inner objects first
+    attest<typeof expected.codegen>(config.codegen).equals(expected.codegen);
+    attest<typeof expected.tables.app__NamespaceDir.codegen>(config.tables.app__NamespaceDir.codegen).equals(
+      expected.tables.app__NamespaceDir.codegen,
+    );
+    attest<typeof expected.tables.app__NotNamespaceDir.codegen>(config.tables.app__NotNamespaceDir.codegen).equals(
+      expected.tables.app__NotNamespaceDir.codegen,
+    );
+
+    attest<typeof expected>(config).equals(expected);
+  });
 });
