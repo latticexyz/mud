@@ -6,6 +6,10 @@ import { getRpcUrl } from "@latticexyz/common/foundry";
 import fs from "node:fs/promises";
 import { resourceToLabel } from "@latticexyz/common";
 import { functionSignatureToAbiItem } from "../utils/functionSignatureToAbiItem";
+import path from "node:path";
+import { mkdirSync } from "node:fs";
+
+const DIRECTORY = "abis";
 
 const generateAbiOptions = {
   worldAddress: { type: "string", required: true, desc: "Verify an existing World at the given address" },
@@ -44,11 +48,13 @@ export async function generateAbiHandler(opts: Options) {
 
   const worldDeploy = await getWorldDeploy(client, worldAddress);
 
+  mkdirSync(DIRECTORY);
+
   const systems = await getSystems({ client, worldDeploy });
 
   // render system ABI's
   for (const system of systems) {
-    const fullOutputPath = `${resourceToLabel(system)}.abi.json`;
+    const fullOutputPath = path.join(DIRECTORY, `${resourceToLabel(system)}.abi.json`);
     const abi = system.functions.map((func) => functionSignatureToAbiItem(func.systemFunctionSignature));
     await fs.writeFile(fullOutputPath, JSON.stringify(abi));
   }
@@ -58,7 +64,7 @@ export async function generateAbiHandler(opts: Options) {
     system.functions.map((func) => functionSignatureToAbiItem(func.signature)),
   );
 
-  const fullOutputPath = "worldRegisteredFunctions.abi.json";
+  const fullOutputPath = path.join(DIRECTORY, "worldRegisteredFunctions.abi.json");
   await fs.writeFile(fullOutputPath, JSON.stringify(worldAbi));
 }
 
