@@ -18,6 +18,8 @@ import { build } from "./build";
 import { kmsKeyToAccount } from "@latticexyz/common/kms";
 import { configToModules } from "./deploy/configToModules";
 
+export const localChains = [1337, 31337];
+
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the MUD config file" },
   printConfig: { type: "boolean", desc: "Print the resolved config" },
@@ -160,7 +162,6 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     writeFileSync(path.join(deploysDir, "latest.json"), JSON.stringify(deploymentInfo, null, 2));
     writeFileSync(path.join(deploysDir, Date.now() + ".json"), JSON.stringify(deploymentInfo, null, 2));
 
-    const localChains = [1337, 31337];
     const deploys = existsSync(config.worldsFile) ? JSON.parse(readFileSync(config.worldsFile, "utf-8")) : {};
     deploys[chainId] = {
       address: deploymentInfo.worldAddress,
