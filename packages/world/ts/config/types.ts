@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { DynamicResolution, ValueWithType } from "@latticexyz/config/library";
 import { OrDefaults } from "@latticexyz/common/type-utils";
 import { zWorldConfig } from "./worldConfig";
 import { SYSTEM_DEFAULTS } from "./defaults";
+import { DynamicResolution, ValueWithType } from "./v2/dynamicResolution";
 
 // zod doesn't preserve doc comments
 export type SystemUserConfig = {
@@ -85,8 +85,6 @@ export interface WorldUserConfig {
   worldgenDirectory?: string;
   /** Path for world package imports. Default is "@latticexyz/world/src/" */
   worldImportPath?: string;
-  /** Modules to in the World */
-  modules?: readonly ModuleConfig[];
 }
 
 export type WorldConfig = z.output<typeof zWorldConfig>;
