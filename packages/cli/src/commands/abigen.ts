@@ -21,7 +21,7 @@ type Options = InferredOptionTypes<typeof abigenOptions>;
 const commandModule: CommandModule<Options, Options> = {
   command: "abigen",
 
-  describe: "Autogenerate interfaces for Systems and World based on RPC",
+  describe: "Autogenerate interfaces for Systems and World based on World address",
 
   builder(yargs) {
     return yargs.options(abigenOptions);
