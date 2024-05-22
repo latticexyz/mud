@@ -1,7 +1,8 @@
 import { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
 import { twMerge } from "tailwind-merge";
-
 import { PendingIcon } from "../icons/PendingIcon";
+
+// TODO: add support for async onClick, where pending is enabled automatically
 
 type ButtonClassNameOptions = {
   variant?: "primary" | "secondary";
