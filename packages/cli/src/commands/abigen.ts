@@ -59,7 +59,7 @@ export async function abigenHandler(opts: Options) {
   }
 
   // render World ABI
-  const fullOutputPath = "IWorld.json";
+  const fullOutputPath = "worldRegisteredFunctions.abi.json";
   await fs.writeFile(fullOutputPath, JSON.stringify(worldAbi));
 }
 
