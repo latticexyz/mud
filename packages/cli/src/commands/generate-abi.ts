@@ -7,6 +7,7 @@ import fs from "node:fs/promises";
 import { functionSignatureToAbiItem } from "../utils/functionSignatureToAbiItem";
 import path from "node:path";
 import { mkdirSync } from "node:fs";
+import { generateSolidity } from "abi-to-sol";
 
 const DIRECTORY = "abis";
 
@@ -58,6 +59,11 @@ export async function generateAbiHandler(opts: Options) {
 
   const fullOutputPath = path.join(DIRECTORY, "worldRegisteredFunctions.abi.json");
   await fs.writeFile(fullOutputPath, JSON.stringify(worldAbi));
+
+  // render World interface
+  const worldInterface = generateSolidity({ abi: worldAbi });
+
+  console.log(worldInterface);
 }
 
 export default commandModule;

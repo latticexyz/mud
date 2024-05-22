@@ -42,6 +42,7 @@
     "@latticexyz/store": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
+    "abi-to-sol": "^0.8.0",
     "abitype": "1.0.0",
     "asn1.js": "^5.4.1",
     "chalk": "^5.0.1",
