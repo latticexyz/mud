@@ -22,7 +22,7 @@ Edit `packages/client/src/mud/setupNetwork.ts`.
 
 <CollapseCode>
 
-```ts filename="setupNetwork.ts" copy showLineNumbers {24-25,95-107}
+```ts filename="setupNetwork.ts" copy showLineNumbers {23-24,94-106}
 /*
  * The MUD client code is built on top of viem
  * (https://viem.sh/docs/getting-started.html).
@@ -35,7 +35,6 @@ import {
   http,
   createWalletClient,
   Hex,
-  parseEther,
   ClientConfig,
   getContract,
 } from "viem";
@@ -119,14 +118,14 @@ export async function setupNetwork() {
     startBlock: BigInt(networkConfig.initialBlockNumber),
     filters: [
       {
-        tableId: resourceToHex({ type: "table", namespace: "", name: "Counter" }),
+        tableId: resourceToHex({ type: "table", namespace: "app", name: "Counter" }),
       },
       {
-        tableId: resourceToHex({ type: "table", namespace: "", name: "History" }),
+        tableId: resourceToHex({ type: "table", namespace: "app", name: "History" }),
         key0: pad("0x01"),
       },
       {
-        tableId: resourceToHex({ type: "table", namespace: "", name: "History" }),
+        tableId: resourceToHex({ type: "table", namespace: "app", name: "History" }),
         key0: pad("0x05"),
       },
     ],
@@ -170,21 +169,21 @@ Each filter is a structure that can have up to three fields, and all the fields 
 ```ts
     filters: [
       {
-         tableId: resourceToHex({ type: "table", namespace: "", name: "Counter"}),
+         tableId: resourceToHex({ type: "table", namespace: "app", name: "Counter"}),
       },
 ```
 
-The first filter is for the `:Counter` table (`Counter` in the root namespace).
+The first filter is for the `app__Counter` table (`Counter` in the `app` namespace).
 We don't specify any keys, because we want all the rows of the table.
 It's a singleton so there is only one row anyway.
 
 ```ts
       {
-         tableId: resourceToHex({ type: "table", namespace: "", name: "History"}),
+         tableId: resourceToHex({ type: "table", namespace: "app", name: "History"}),
          key0: pad("0x01"),
       },
       {
-         tableId: resourceToHex({ type: "table", namespace: "", name: "History"}),
+         tableId: resourceToHex({ type: "table", namespace: "app", name: "History"}),
          key0: pad("0x05"),
       },
     ],
