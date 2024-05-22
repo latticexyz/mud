@@ -4,6 +4,7 @@ import { getSystems } from "../deploy/getSystems";
 import { getWorldDeploy } from "../deploy/getWorldDeploy";
 import { systemFunctionSignaturesToAbi } from "@latticexyz/world/node";
 import { getRpcUrl } from "@latticexyz/common/foundry";
+import fs from "node:fs/promises";
 
 const abigenOptions = {
   worldAddress: { type: "string", required: true, desc: "Verify an existing World at the given address" },
@@ -44,7 +45,11 @@ export async function abigenHandler(opts: Options) {
 
   const systems = await getSystems({ client, worldDeploy });
 
-  systems.map((system) => systemFunctionSignaturesToAbi(system.functions.map((func) => func.systemFunctionSignature)));
+  for (const system of systems) {
+    const fullOutputPath = `${system.systemId}.json`;
+    const abi = systemFunctionSignaturesToAbi(system.functions.map((func) => func.systemFunctionSignature));
+    await fs.writeFile(fullOutputPath, JSON.stringify(abi));
+  }
 }
 
 export default commandModule;
