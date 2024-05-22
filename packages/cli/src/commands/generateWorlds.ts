@@ -6,9 +6,8 @@ import { getRpcUrl } from "@latticexyz/common/foundry";
 import { Hex, createWalletClient, http } from "viem";
 import chalk from "chalk";
 import { getWorldDeploy } from "../deploy/getWorldDeploy";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, readFileSync, writeFileSync } from "fs";
 import { getChainId } from "viem/actions";
-import path from "path";
 import { localChains } from "../runDeploy";
 
 const verifyOptions = {
@@ -52,10 +51,6 @@ const commandModule: CommandModule<Options, Options> = {
     };
 
     const chainId = await getChainId(client);
-    const deploysDir = path.join(config.deploysDirectory, chainId.toString());
-    mkdirSync(deploysDir, { recursive: true });
-    writeFileSync(path.join(deploysDir, "latest.json"), JSON.stringify(deploymentInfo, null, 2));
-    writeFileSync(path.join(deploysDir, Date.now() + ".json"), JSON.stringify(deploymentInfo, null, 2));
 
     const deploys = existsSync(config.worldsFile) ? JSON.parse(readFileSync(config.worldsFile, "utf-8")) : {};
     deploys[chainId] = {
