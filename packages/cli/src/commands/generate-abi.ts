@@ -5,7 +5,7 @@ import { getWorldDeploy } from "../deploy/getWorldDeploy";
 import { getRpcUrl } from "@latticexyz/common/foundry";
 import fs from "node:fs/promises";
 import { resourceToLabel } from "@latticexyz/common";
-import { systemToAbi } from "../utils/systemToAbi";
+import { functionSignatureToAbiItem } from "../utils/functionSignatureToAbiItem";
 
 const generateAbiOptions = {
   worldAddress: { type: "string", required: true, desc: "Verify an existing World at the given address" },
@@ -46,19 +46,18 @@ export async function generateAbiHandler(opts: Options) {
 
   const systems = await getSystems({ client, worldDeploy });
 
-  const worldAbi = [];
-
   // render system ABI's
   for (const system of systems) {
     const fullOutputPath = `${resourceToLabel(system)}.json`;
-    const abi = systemToAbi(system);
+    const abi = system.functions.map((func) => functionSignatureToAbiItem(func.systemFunctionSignature));
     await fs.writeFile(fullOutputPath, JSON.stringify(abi));
-
-    // prepare IWorld ABI
-    worldAbi.push(...abi);
   }
 
   // render World ABI
+  const worldAbi = systems.flatMap((system) =>
+    system.functions.map((func) => functionSignatureToAbiItem(func.signature)),
+  );
+
   const fullOutputPath = "worldRegisteredFunctions.abi.json";
   await fs.writeFile(fullOutputPath, JSON.stringify(worldAbi));
 }
