@@ -299,9 +299,6 @@ importers:
       '@latticexyz/cli':
         specifier: link:../../../../packages/cli
         version: link:../../../../packages/cli
-      '@latticexyz/config':
-        specifier: link:../../../../packages/config
-        version: link:../../../../packages/config
       '@latticexyz/faucet':
         specifier: link:../../../../packages/faucet
         version: link:../../../../packages/faucet

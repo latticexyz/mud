@@ -4,7 +4,7 @@
 
 // For convenience register and reexport config, to reduce the number of needed imports for users
 import "@latticexyz/config/register";
-export { mudCoreConfig, resolveTableId } from "@latticexyz/config/register";
+export { mudCoreConfig } from "@latticexyz/config/register";
 // Extend core config and types
 import "./configExtensions";
 import "./typeExtensions";
