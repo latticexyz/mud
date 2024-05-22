@@ -48,7 +48,7 @@ export async function generateAbiHandler(opts: Options) {
 
   // render system ABI's
   for (const system of systems) {
-    const fullOutputPath = `${resourceToLabel(system)}.json`;
+    const fullOutputPath = `${resourceToLabel(system)}.abi.json`;
     const abi = system.functions.map((func) => functionSignatureToAbiItem(func.systemFunctionSignature));
     await fs.writeFile(fullOutputPath, JSON.stringify(abi));
   }
