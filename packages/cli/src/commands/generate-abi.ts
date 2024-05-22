@@ -4,7 +4,6 @@ import { getSystems } from "../deploy/getSystems";
 import { getWorldDeploy } from "../deploy/getWorldDeploy";
 import { getRpcUrl } from "@latticexyz/common/foundry";
 import fs from "node:fs/promises";
-import { resourceToLabel } from "@latticexyz/common";
 import { functionSignatureToAbiItem } from "../utils/functionSignatureToAbiItem";
 import path from "node:path";
 import { mkdirSync } from "node:fs";
@@ -50,16 +49,9 @@ export async function generateAbiHandler(opts: Options) {
 
   mkdirSync(DIRECTORY);
 
+  // render World ABI
   const systems = await getSystems({ client, worldDeploy });
 
-  // render system ABI's
-  for (const system of systems) {
-    const fullOutputPath = path.join(DIRECTORY, `${resourceToLabel(system)}.abi.json`);
-    const abi = system.functions.map((func) => functionSignatureToAbiItem(func.systemFunctionSignature));
-    await fs.writeFile(fullOutputPath, JSON.stringify(abi));
-  }
-
-  // render World ABI
   const worldAbi = systems.flatMap((system) =>
     system.functions.map((func) => functionSignatureToAbiItem(func.signature)),
   );
