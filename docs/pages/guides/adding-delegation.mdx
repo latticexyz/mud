@@ -70,7 +70,7 @@ To deploy the delegation system:
     # Anvil default private key:
     PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
-    WORLD_ADDRESS=0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1
+    WORLD_ADDRESS=0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b
     ```
 
     </CollapseCode>
@@ -176,7 +176,7 @@ Before moving over to the client, we will verify things work as expected using a
    USER_ADDRESS=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
    USER_ADDRESS_2=0x70997970C51812dc3A010C7d01b50e0d17dc79C8
 
-   WORLD_ADDRESS=0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1
+   WORLD_ADDRESS=0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b
    ```
 
    </CollapseCode>
@@ -329,8 +329,9 @@ Before moving over to the client, we will verify things work as expected using a
    forge script script/TestDelegation.s.sol --broadcast --rpc-url http://127.0.0.1:8545
    ```
 
-1. See that the call from `USER_ADDRESS` is now at the bottom, it is the latest call.
-   Also, the transaction sender is different from the caller.
+1. Return to the [user interface](http://localhost:3000/).
+   Look at the bottom call, that one is the latest.
+   See that the caller (`USER_ADDRESS`, `0xf39F...2266`) is different from the transaction sender (`USER_ADDRESS_2`, `0x7099...c79C8`).
 
 ### Using TypeScript
 
@@ -350,7 +351,7 @@ Here is the modified `packages/client/src/App.tsx`:
 
 <CollapseCode>
 
-```typescript filename="App.tsx" copy showLineNumbers {1,3,8-53,116-135,159-199}
+```typescript filename="App.tsx" copy showLineNumbers {1,3,8-53,118-142,166-209}
 import { encodeFunctionData } from "viem";
 import { useMUD } from "./MUDContext";
 import {
@@ -429,7 +430,7 @@ const publicClient = createPublicClient({
 //   client - a wallet client that uses a random account
 //   world - a world contract object that lets us issue newCall
 const makeWorldContract = () => {
-  const client = createWalletClient({
+  const walletClient = createWalletClient({
     ...clientOptions,
     account: createBurnerAccount(getBurnerPrivateKey(Math.random().toString())),
   });
@@ -438,10 +439,12 @@ const makeWorldContract = () => {
     world: getContract({
       address: networkConfig.worldAddress as Hex,
       abi: IWorldAbi,
-      publicClient: publicClient,
-      walletClient: client,
+      client: {
+        public: publicClient,
+        wallet: walletClient,
+      }
     }),
-    client,
+    client: walletClient,
   };
 };
 

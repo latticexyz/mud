@@ -16,7 +16,6 @@ export const WORLD_DEFAULTS = {
   worldsFile: "./worlds.json",
   worldgenDirectory: "world",
   worldImportPath: "@latticexyz/world/src/",
-  modules: [],
 } as const;
 
 export type WORLD_DEFAULTS = typeof WORLD_DEFAULTS;
