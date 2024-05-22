@@ -5,7 +5,6 @@ export default defineConfig({
   entry: {
     index: "src/exports/index.ts",
     internal: "src/exports/internal.ts",
-    "bin/local-bundler": "cli/local-bundler.ts",
   },
   target: "esnext",
   format: ["esm"],

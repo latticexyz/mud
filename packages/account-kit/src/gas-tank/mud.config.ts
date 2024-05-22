@@ -1,6 +1,8 @@
-import { defineWorld } from "@latticexyz/world";
+import { defineStore } from "@latticexyz/store";
 
-export default defineWorld({
+// Copied from gas-tank repo until we can use it as a dependency:
+// https://github.com/latticexyz/gas-tank/blob/main/packages/contracts/mud.config.ts
+export default defineStore({
   tables: {
     EntryPoint: {
       schema: {
@@ -23,5 +25,4 @@ export default defineWorld({
       key: ["spender"],
     },
   },
-  modules: [{ name: "Unstable_CallWithSignatureModule", root: true }],
 });

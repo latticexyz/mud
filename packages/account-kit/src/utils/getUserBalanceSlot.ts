@@ -1,5 +1,5 @@
 import { Address } from "viem";
-import gasTankConfig from "@latticexyz/gas-tank/mud.config";
+import gasTankConfig from "../gas-tank/mud.config";
 import { getStaticDataLocation } from "./getStaticDataLocation";
 import { encodeKeyTuple } from "./encodeKeyTuple";
 import { getKeySchema } from "@latticexyz/protocol-parser/internal";

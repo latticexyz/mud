@@ -27,22 +27,17 @@
       ]
     }
   },
-  "bin": {
-    "local-bundler": "./dist/tsup/bin/local-bundler.js"
-  },
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup & vite build",
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch & vite build --watch",
-    "local-bundler": "pnpx tsx cli/local-bundler.ts",
     "playground": "mprocs",
     "test": "tsc --noEmit && vitest",
     "test:ci": "tsc --noEmit && vitest --run"
   },
   "dependencies": {
-    "@account-abstraction/contracts": "0.7.0",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
@@ -73,8 +68,6 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
-    "@latticexyz/gas-tank": "workspace:*",
-    "@pimlicolabs/alto": "git+https://github.com/latticexyz/alto.git#3192a9a",
     "@types/debug": "^4.1.7",
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
@@ -90,18 +83,6 @@
     "vite": "^4.3.6",
     "vite-plugin-dts": "^3.8.3",
     "vitest": "0.34.6"
-  },
-  "peerDependencies": {
-    "@latticexyz/gas-tank": "*",
-    "@pimlicolabs/alto": "git+https://github.com/latticexyz/alto.git#3192a9a"
-  },
-  "peerDependenciesMeta": {
-    "@latticexyz/gas-tank": {
-      "optional": true
-    },
-    "@pimlicolabs/alto": {
-      "optional": true
-    }
   },
   "publishConfig": {
     "access": "public"
