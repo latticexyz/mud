@@ -7,7 +7,7 @@ import fs from "node:fs/promises";
 import { resourceToLabel } from "@latticexyz/common";
 import { systemToAbi } from "../utils/systemToAbi";
 
-const abigenOptions = {
+const generateAbiOptions = {
   worldAddress: { type: "string", required: true, desc: "Verify an existing World at the given address" },
   profile: { type: "string", desc: "The foundry profile to use" },
   rpc: {
@@ -16,24 +16,24 @@ const abigenOptions = {
   },
 } as const;
 
-type Options = InferredOptionTypes<typeof abigenOptions>;
+type Options = InferredOptionTypes<typeof generateAbiOptions>;
 
 const commandModule: CommandModule<Options, Options> = {
-  command: "abigen",
+  command: "generate-abi",
 
-  describe: "Autogenerate interfaces for Systems and World based on World address",
+  describe: "Generate ABI's for Systems and World based on World address",
 
   builder(yargs) {
-    return yargs.options(abigenOptions);
+    return yargs.options(generateAbiOptions);
   },
 
   async handler(args) {
-    await abigenHandler(args);
+    await generateAbiHandler(args);
     process.exit(0);
   },
 };
 
-export async function abigenHandler(opts: Options) {
+export async function generateAbiHandler(opts: Options) {
   const worldAddress = opts.worldAddress as Hex;
   const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
   const rpc = opts.rpc ?? (await getRpcUrl(profile));
