@@ -60,6 +60,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
+    "@types/node": "20.12.12",
     "@types/sql.js": "^1.4.4",
     "@viem/anvil": "^0.0.7",
     "mock-game-contracts": "workspace:*",

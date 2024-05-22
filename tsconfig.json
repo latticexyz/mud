@@ -1,16 +1,18 @@
 {
-  "extends": "@arktype/util/tsconfig.base.json",
   "compilerOptions": {
+    "module": "esnext",
     "moduleResolution": "Bundler",
+    "target": "es2021",
+    "lib": ["ESNext"],
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "declaration": true,
+    "esModuleInterop": true,
     "noErrorTruncation": true,
     "resolveJsonModule": false,
-    "exactOptionalPropertyTypes": false,
     "forceConsistentCasingInFileNames": true,
-    "target": "es2021",
-    "module": "esnext",
     "sourceMap": true,
-    // this should ideally be enabled in a future commit
-    "verbatimModuleSyntax": false,
     "paths": {
       "@latticexyz/abi-ts": ["./packages/abi-ts/src/index.ts"],
       "@latticexyz/block-logs-stream": ["./packages/block-logs-stream/src/index.ts"],
@@ -24,7 +26,7 @@
       "@latticexyz/common/utils": ["./packages/common/src/utils/index.ts"],
       "@latticexyz/common/kms": ["./packages/common/src/kms/index.ts"],
       "@latticexyz/config": ["./packages/config/src/index.ts"],
-      "@latticexyz/config/*": ["./packages/config/src/exports/*"],
+      "@latticexyz/config/*": ["./packages/config/src/exports/*.ts"],
       "@latticexyz/config/deprecated/*": ["./packages/config/src/deprecated/*"],
       "@latticexyz/gas-report": ["./packages/gas-report/src/index.ts"],
       "@latticexyz/protocol-parser": ["./packages/protocol-parser/src/index.ts"],
@@ -40,7 +42,7 @@
       "@latticexyz/store/config": ["./packages/store/ts/config/index.ts"],
       "@latticexyz/store/config/v2": ["./packages/store/ts/config/v2/index.ts"],
       "@latticexyz/store/register": ["./packages/store/ts/register/index.ts"],
-      "@latticexyz/store/*": ["./packages/store/ts/exports/*"],
+      "@latticexyz/store/*": ["./packages/store/ts/exports/*.ts"],
       "@latticexyz/store-sync/*": ["./packages/store-sync/src/*"],
       "@latticexyz/utils": ["./packages/utils/src/index.ts"],
       "@latticexyz/world": ["./packages/world/src/index.ts"],
@@ -49,7 +51,7 @@
       "@latticexyz/world/config/v2": ["./packages/world/ts/config/v2/index.ts"],
       "@latticexyz/world/register": ["./packages/world/ts/register/index.ts"],
       "@latticexyz/world/node": ["./packages/world/ts/node/index.ts"],
-      "@latticexyz/world/*": ["./packages/world/ts/exports/*"]
+      "@latticexyz/world/*": ["./packages/world/ts/exports/*.ts"]
     }
   },
   "exclude": ["**/dist", "**/node_modules", "**/docs", "**/e2e"]

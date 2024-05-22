@@ -1,8 +1,6 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "types": ["node"],
-    "rootDir": ".",
     "outDir": "dist"
   },
   "include": ["mud.config.ts", "ts"]
