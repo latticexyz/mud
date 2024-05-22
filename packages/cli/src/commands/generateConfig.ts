@@ -50,11 +50,11 @@ const commandModule: CommandModule<Options, Options> = {
       import { defineWorld } from "@latticexyz/world";
       
       export default defineWorld({
-  tables: ${JSON.stringify(tables)}
-});
-`,
+        tables: ${JSON.stringify(tables)}
+      });
+      `,
       "world.config.ts",
-      "generating new MUD config",
+      "generating MUD config from world",
     );
   },
 };
