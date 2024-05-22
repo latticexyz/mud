@@ -2,10 +2,10 @@ import type { CommandModule, InferredOptionTypes } from "yargs";
 import { Hex, createWalletClient, http } from "viem";
 import { getSystems } from "../deploy/getSystems";
 import { getWorldDeploy } from "../deploy/getWorldDeploy";
-import { systemFunctionSignaturesToAbi } from "@latticexyz/world/node";
 import { getRpcUrl } from "@latticexyz/common/foundry";
 import fs from "node:fs/promises";
 import { resourceToLabel } from "@latticexyz/common";
+import { systemFunctionSignaturesToAbi } from "../utils/systemFunctionSignaturesToAbi";
 
 const abigenOptions = {
   worldAddress: { type: "string", required: true, desc: "Verify an existing World at the given address" },
