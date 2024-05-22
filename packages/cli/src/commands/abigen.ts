@@ -46,11 +46,21 @@ export async function abigenHandler(opts: Options) {
 
   const systems = await getSystems({ client, worldDeploy });
 
+  const worldAbi = [];
+
+  // render system ABI's
   for (const system of systems) {
     const fullOutputPath = `${resourceToLabel(system)}.json`;
     const abi = systemFunctionSignaturesToAbi(system.functions.map((func) => func.systemFunctionSignature));
     await fs.writeFile(fullOutputPath, JSON.stringify(abi));
+
+    // prepare IWorld ABI
+    worldAbi.push(...abi);
   }
+
+  // render World ABI
+  const fullOutputPath = "IWorld.json";
+  await fs.writeFile(fullOutputPath, JSON.stringify(worldAbi));
 }
 
 export default commandModule;
