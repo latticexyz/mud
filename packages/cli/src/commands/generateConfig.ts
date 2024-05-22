@@ -1,5 +1,17 @@
 import { formatAndWriteTypescript } from "@latticexyz/common/codegen";
+import { getRpcUrl } from "@latticexyz/common/foundry";
+import { Hex, createWalletClient, http } from "viem";
 import type { CommandModule, InferredOptionTypes } from "yargs";
+import { getTables } from "../deploy/getTables";
+import { getWorldDeploy } from "../deploy/getWorldDeploy";
+import { Table } from "../deploy/configToTables";
+
+function tableToV2({ keySchema, valueSchema }: Table) {
+  return {
+    schema: { ...keySchema, ...valueSchema },
+    key: Object.keys(keySchema),
+  };
+}
 
 const generateConfigOptions = {
   worldAddress: { type: "string", required: true, desc: "Verify an existing World at the given address" },
@@ -18,32 +30,22 @@ const commandModule: CommandModule<Options, Options> = {
     return yargs.options(generateConfigOptions);
   },
 
-  async handler() {
-    const tables = {
-      CounterTable: {
-        schema: {
-          value: "uint32",
-        },
-        key: [],
-        codegen: { storeArgument: true },
-      },
-      MessageTable: {
-        type: "offchainTable",
-        schema: {
-          value: "string",
-        },
-        key: [],
-      },
-      Inventory: {
-        schema: {
-          owner: "address",
-          item: "uint32",
-          itemVariant: "uint32",
-          amount: "uint32",
-        },
-        key: ["owner", "item", "itemVariant"],
-      },
-    };
+  async handler(opts) {
+    const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
+
+    const rpc = opts.rpc ?? (await getRpcUrl(profile));
+
+    const client = createWalletClient({
+      transport: http(rpc),
+    });
+
+    const worldDeploy = await getWorldDeploy(client, opts.worldAddress as Hex);
+
+    const worldTables = await getTables({ client, worldDeploy });
+
+    const tables: Record<string, unknown> = {};
+
+    worldTables.forEach((table) => (tables[table.name] = tableToV2(table)));
 
     formatAndWriteTypescript(
       `
