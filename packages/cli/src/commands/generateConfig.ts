@@ -5,6 +5,7 @@ import type { CommandModule, InferredOptionTypes } from "yargs";
 import { getTables } from "../deploy/getTables";
 import { getWorldDeploy } from "../deploy/getWorldDeploy";
 import { Table } from "../deploy/configToTables";
+import { getSystems } from "../deploy/getSystems";
 
 function tableToV2({ keySchema, valueSchema }: Table) {
   return {
@@ -42,16 +43,19 @@ const commandModule: CommandModule<Options, Options> = {
     const worldDeploy = await getWorldDeploy(client, opts.worldAddress as Hex);
 
     const worldTables = await getTables({ client, worldDeploy });
-
     const tables: Record<string, unknown> = {};
-
     worldTables.forEach((table) => (tables[table.name] = tableToV2(table)));
+
+    const systems: Record<string, unknown> = {};
+    const worldSystems = await getSystems({ client, worldDeploy });
+    worldSystems.forEach((system) => (systems[system.name] = { name: system.name, openAccess: system.allowAll }));
 
     formatAndWriteTypescript(
       `
       import { defineWorld } from "@latticexyz/world";
       
       export default defineWorld({
+        systems: ${JSON.stringify(systems)},
         tables: ${JSON.stringify(tables)}
       });
       `,
