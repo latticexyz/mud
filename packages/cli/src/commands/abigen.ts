@@ -5,7 +5,7 @@ import { getWorldDeploy } from "../deploy/getWorldDeploy";
 import { getRpcUrl } from "@latticexyz/common/foundry";
 import fs from "node:fs/promises";
 import { resourceToLabel } from "@latticexyz/common";
-import { systemFunctionSignaturesToAbi } from "../utils/systemFunctionSignaturesToAbi";
+import { systemToAbi } from "../utils/systemToAbi";
 
 const abigenOptions = {
   worldAddress: { type: "string", required: true, desc: "Verify an existing World at the given address" },
@@ -51,7 +51,7 @@ export async function abigenHandler(opts: Options) {
   // render system ABI's
   for (const system of systems) {
     const fullOutputPath = `${resourceToLabel(system)}.json`;
-    const abi = systemFunctionSignaturesToAbi(system.functions.map((func) => func.systemFunctionSignature));
+    const abi = systemToAbi(system);
     await fs.writeFile(fullOutputPath, JSON.stringify(abi));
 
     // prepare IWorld ABI
