@@ -1,3 +1,126 @@
+## Version 2.0.11
+
+Release date: Wed May 15 2024
+
+### Patch changes
+
+**[build: bump to node 18.20.2, pnpm 9.1.1 (#2831)](https://github.com/latticexyz/mud/commit/63e5d2d51192adc0a1f977a269097a03d7bf119d)** (create-mud)
+
+Added pnpm 9 to project's `engines`.
+
+**[fix(cli): fixed module artifactPath imports (#2832)](https://github.com/latticexyz/mud/commit/fe9d726371ddfd99f0b4ffa4b1e64b817417cfd3)** (@latticexyz/cli)
+
+Fixed imports of module artifacts via `artifactPath` and removed unused `@latticexyz/world-modules` dependency.
+
+---
+
+## Version 2.0.10
+
+Release date: Tue May 14 2024
+
+### Patch changes
+
+**[fix(cli): function selector lookup during deploy (#2800)](https://github.com/latticexyz/mud/commit/0ae9189ca60e86f7b12994bcc89bc196871d0e7c)** (@latticexyz/cli)
+
+The deploy CLI now uses logs to find registered function selectors and their corresponding function signatures.
+Previously only function signatures were fetched via logs and then mapped to function selectors via `getRecord` calls,
+but this approach failed for namespaced function selectors of non-root system,
+because the function signature table includes both the namespaced and non-namespaced signature but the function selector table only includes the namespaced selector that is registered on the world.
+
+**[feat(cli): deploy with external modules (#2803)](https://github.com/latticexyz/mud/commit/a1b1ebf67367f91cea4000c073bc6b8da4601e3e)** (@latticexyz/cli, @latticexyz/world)
+
+Worlds can now be deployed with external modules, defined by a module's `artifactPath` in your MUD config, resolved with Node's module resolution. This allows for modules to be published to and imported from npm.
+
+```diff
+ defineWorld({
+   // …
+   modules: [
+     {
+-      name: "KeysWithValueModule",
++      artifactPath: "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json",
+       root: true,
+       args: [resolveTableId("Inventory")],
+     },
+   ],
+ });
+```
+
+Note that the above assumes `@latticexyz/world-modules` is included as a dependency of your project.
+
+**[chore: upgrade to ejs 3.1.10 (#2786)](https://github.com/latticexyz/mud/commit/4e4e9104e84a7cb7d041d2401f0a937e06251985)** (@latticexyz/world-modules, @latticexyz/store, @latticexyz/cli)
+
+Removed the unused `ejs` dependency.
+
+**[docs: fix create-mud package name in changeset (#2825)](https://github.com/latticexyz/mud/commit/de03e2a78e209c7eb509f986aa0ed0d1c2ae068d)** (create-mud)
+
+Templates now use an `app` namespace by default, instead of the root namespace. This helps keep the root namespace clear for intentionally root-level things and avoids pitfalls with root systems calling other root systems.
+
+**[chore: upgrade to ejs 3.1.10 (#2786)](https://github.com/latticexyz/mud/commit/4e4e9104e84a7cb7d041d2401f0a937e06251985)** (@latticexyz/world)
+
+Upgraded the `ejs` dependency to 3.1.10.
+
+**[fix(store-indexer): fix distance from follow block metric (#2791)](https://github.com/latticexyz/mud/commit/0d4e302f44c2ee52e9e14d24552499b7fb04306e)** (@latticexyz/store-indexer)
+
+Fixed the `distance_from_follow_block` gauge to be a positive number if the latest processed block is lagging behind the latest remote block.
+
+**[fix(common): extend OP contracts, add redstone ones (#2792)](https://github.com/latticexyz/mud/commit/51b137d3498a5d6235938cb93dc06ed0131fd7be)** (@latticexyz/common)
+
+Added OP predeploy contracts for Redstone and Garnet chain configs and added chain-specific contracts for Redstone chain config.
+
+**[chore: remove cli faucet command and services package (#2811)](https://github.com/latticexyz/mud/commit/4a61a128ca752aac5d86578573211304fbaf3c27)** (@latticexyz/cli)
+
+Removed broken `mud faucet` command.
+
+**[fix(world): config uses readonly arrays (#2805)](https://github.com/latticexyz/mud/commit/3dbf3bf3a3295ad63264044e315dec075de528fd)** (@latticexyz/world)
+
+Updated World config types to use readonly arrays.
+
+**[docs(store-sync): add changeset for #2808 (#2809)](https://github.com/latticexyz/mud/commit/36e1f7664f9234bf454e6d1f9c3806dfc695f219)** (@latticexyz/store-sync)
+
+Both `encodeEntity` and `decodeEntity` now use an LRU cache to avoid repeating work during iterations of thousands of entities.
+
+**[fix(store,world): throw on unexpected config keys (#2797)](https://github.com/latticexyz/mud/commit/32c1cda666bc8ccd6e083d8d94d96a42e65c3983)** (@latticexyz/store, @latticexyz/world)
+
+`defineStore` and `defineWorld` will now throw a type error if an unexpected config option is used.
+
+**[chore: remove cli faucet command and services package (#2811)](https://github.com/latticexyz/mud/commit/4a61a128ca752aac5d86578573211304fbaf3c27)** (create-mud)
+
+Removed usages of old testnet faucet in templates. The previous testnet faucet is broken, deprecated, and going offline soon. We'll be replacing the burner account pattern with something better very soon!
+
+**[chore: bump zod (#2804)](https://github.com/latticexyz/mud/commit/4caca05e34fd3647122bf2864f2c736e646614b6)** (@latticexyz/cli, @latticexyz/config, @latticexyz/faucet, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world-modules, @latticexyz/world)
+
+Bumped zod dependency to comply with abitype peer dependencies.
+
+**[feat(store,world): usable enum values from config (#2807)](https://github.com/latticexyz/mud/commit/27f888c70a712cea7f9a157cc82892a884ecc1df)** (@latticexyz/store, @latticexyz/world)
+
+`defineStore` and `defineWorld` now maps your `enums` to usable, strongly-typed enums on `enumValues`.
+
+```ts
+const config = defineStore({
+  enums: {
+    TerrainType: ["Water", "Grass", "Sand"],
+  },
+});
+
+config.enumValues.TerrainType.Water;
+//                              ^? (property) Water: 0
+
+config.enumValues.TerrainType.Grass;
+//                              ^? (property) Grass: 1
+```
+
+This allows for easier referencing of enum values (i.e. `uint8` equivalent) in contract calls.
+
+```ts
+writeContract({
+  // …
+  functionName: "setTerrainType",
+  args: [config.enumValues.TerrainType.Grass],
+});
+```
+
+---
+
 ## Version 2.0.9
 
 Release date: Wed May 01 2024

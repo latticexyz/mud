@@ -1,7 +1,11 @@
 import { Hex } from "viem";
-import { Codegen, Enums, TableCodegen, TableDeploy, UserTypes } from "./output";
+import { Codegen, TableCodegen, TableDeploy, UserTypes } from "./output";
 import { Scope } from "./scope";
 import { evaluate } from "@arktype/util";
+
+export type EnumsInput = {
+  readonly [enumName: string]: readonly [string, ...string[]];
+};
 
 export type SchemaInput = {
   readonly [key: string]: string;
@@ -30,7 +34,7 @@ export type StoreInput = {
   readonly namespace?: string;
   readonly tables?: TablesInput;
   readonly userTypes?: UserTypes;
-  readonly enums?: Enums;
+  readonly enums?: EnumsInput;
   readonly codegen?: Partial<Codegen>;
 };
 

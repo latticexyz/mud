@@ -1,5 +1,5 @@
 import { defineWorld } from "@latticexyz/world";
-import { resolveTableId } from "@latticexyz/config/library";
+import { resolveTableId } from "@latticexyz/world/internal";
 
 export default defineWorld({
   systems: {
@@ -39,7 +39,7 @@ export default defineWorld({
   },
   modules: [
     {
-      name: "KeysWithValueModule",
+      artifactPath: "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json",
       root: true,
       args: [resolveTableId("Inventory")],
     },

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/world-modules",
-  "version": "2.0.9",
+  "version": "2.0.11",
   "description": "World modules",
   "repository": {
     "type": "git",
@@ -42,7 +42,7 @@
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/world": "workspace:*",
-    "zod": "^3.21.4"
+    "zod": "^3.22.2"
   },
   "devDependencies": {
     "@latticexyz/abi-ts": "workspace:*",

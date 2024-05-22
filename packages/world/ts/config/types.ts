@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { DynamicResolution, ValueWithType } from "@latticexyz/config/library";
 import { OrDefaults } from "@latticexyz/common/type-utils";
 import { zWorldConfig } from "./worldConfig";
 import { SYSTEM_DEFAULTS } from "./defaults";
+import { DynamicResolution, ValueWithType } from "./v2/dynamicResolution";
 
 // zod doesn't preserve doc comments
 export type SystemUserConfig = {
@@ -25,7 +25,7 @@ export type SystemUserConfig = {
       /** If openAccess is false, only the addresses or systems in `access` can call the system */
       openAccess: false;
       /** An array of addresses or system names that can access the system */
-      accessList: string[];
+      accessList: readonly string[];
     }
 );
 
@@ -38,7 +38,7 @@ export interface ExpandSystemConfig<T extends SystemUserConfig, SystemName exten
       openAccess: SYSTEM_DEFAULTS["openAccess"];
     }
   > {
-  accessList: T extends { accessList: string[] } ? T["accessList"] : SYSTEM_DEFAULTS["accessList"];
+  accessList: T extends { accessList: readonly string[] } ? T["accessList"] : SYSTEM_DEFAULTS["accessList"];
 }
 
 export type SystemsUserConfig = Record<string, SystemUserConfig>;
@@ -53,7 +53,7 @@ export type ModuleConfig = {
   /** Should this module be installed as a root module? */
   root?: boolean;
   /** Arguments to be passed to the module's install method */
-  args?: (ValueWithType | DynamicResolution)[];
+  args?: readonly (ValueWithType | DynamicResolution)[];
 };
 
 // zod doesn't preserve doc comments
@@ -71,7 +71,7 @@ export interface WorldUserConfig {
    */
   systems?: SystemsUserConfig;
   /** Systems to exclude from automatic deployment */
-  excludeSystems?: string[];
+  excludeSystems?: readonly string[];
   /**
    * Script to execute after the deployment is complete (Default "PostDeploy").
    * Script must be placed in the forge scripts directory (see foundry.toml) and have a ".s.sol" extension.
@@ -85,8 +85,6 @@ export interface WorldUserConfig {
   worldgenDirectory?: string;
   /** Path for world package imports. Default is "@latticexyz/world/src/" */
   worldImportPath?: string;
-  /** Modules to in the World */
-  modules?: ModuleConfig[];
 }
 
 export type WorldConfig = z.output<typeof zWorldConfig>;

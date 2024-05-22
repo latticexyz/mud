@@ -1,5 +1,68 @@
 # Change Log
 
+## 2.0.11
+
+### Patch Changes
+
+- fe9d7263: Fixed imports of module artifacts via `artifactPath` and removed unused `@latticexyz/world-modules` dependency.
+  - @latticexyz/abi-ts@2.0.11
+  - @latticexyz/common@2.0.11
+  - @latticexyz/config@2.0.11
+  - @latticexyz/gas-report@2.0.11
+  - @latticexyz/protocol-parser@2.0.11
+  - @latticexyz/schema-type@2.0.11
+  - @latticexyz/store@2.0.11
+  - @latticexyz/utils@2.0.11
+  - @latticexyz/world@2.0.11
+
+## 2.0.10
+
+### Patch Changes
+
+- 0ae9189c: The deploy CLI now uses logs to find registered function selectors and their corresponding function signatures.
+  Previously only function signatures were fetched via logs and then mapped to function selectors via `getRecord` calls,
+  but this approach failed for namespaced function selectors of non-root system,
+  because the function signature table includes both the namespaced and non-namespaced signature but the function selector table only includes the namespaced selector that is registered on the world.
+- a1b1ebf6: Worlds can now be deployed with external modules, defined by a module's `artifactPath` in your MUD config, resolved with Node's module resolution. This allows for modules to be published to and imported from npm.
+
+  ```diff
+   defineWorld({
+     // …
+     modules: [
+       {
+  -      name: "KeysWithValueModule",
+  +      artifactPath: "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json",
+         root: true,
+         args: [resolveTableId("Inventory")],
+       },
+     ],
+   });
+  ```
+
+  Note that the above assumes `@latticexyz/world-modules` is included as a dependency of your project.
+
+- 4e4e9104: Removed the unused `ejs` dependency.
+- 4a61a128: Removed broken `mud faucet` command.
+- 4caca05e: Bumped zod dependency to comply with abitype peer dependencies.
+- Updated dependencies [a1b1ebf6]
+- Updated dependencies [4e4e9104]
+- Updated dependencies [4e4e9104]
+- Updated dependencies [51b137d3]
+- Updated dependencies [3dbf3bf3]
+- Updated dependencies [32c1cda6]
+- Updated dependencies [4caca05e]
+- Updated dependencies [27f888c7]
+  - @latticexyz/world@2.0.10
+  - @latticexyz/world-modules@2.0.10
+  - @latticexyz/store@2.0.10
+  - @latticexyz/common@2.0.10
+  - @latticexyz/config@2.0.10
+  - @latticexyz/protocol-parser@2.0.10
+  - @latticexyz/abi-ts@2.0.10
+  - @latticexyz/gas-report@2.0.10
+  - @latticexyz/schema-type@2.0.10
+  - @latticexyz/utils@2.0.10
+
 ## 2.0.9
 
 ### Patch Changes

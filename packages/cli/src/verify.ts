@@ -5,7 +5,7 @@ import PQueue from "p-queue";
 import { getWorldProxyFactoryContracts } from "./deploy/getWorldProxyFactoryContracts";
 import { getDeployer } from "./deploy/getDeployer";
 import { MUDError } from "@latticexyz/common/errors";
-import { salt } from "./deploy/common";
+import { Module, salt } from "./deploy/common";
 import { getStorageAt } from "viem/actions";
 import { execa } from "execa";
 
@@ -15,7 +15,7 @@ type VerifyOptions = {
   verifier: string;
   verifierUrl?: string;
   systems: { name: string; bytecode: Hex }[];
-  modules: { name: string; bytecode: Hex }[];
+  modules: readonly Module[];
   worldAddress: Hex;
   /**
    * Address of determinstic deployment proxy: https://github.com/Arachnid/deterministic-deployment-proxy
@@ -39,7 +39,7 @@ export async function verify({
 }: VerifyOptions): Promise<void> {
   const deployerAddress = initialDeployerAddress ?? (await getDeployer(client));
   if (!deployerAddress) {
-    throw new MUDError(`No deployer`);
+    throw new MUDError("No deployer address provided or found.");
   }
 
   // If the proxy implementation storage slot is set on the World, the World was deployed as a proxy.
@@ -104,24 +104,22 @@ export async function verify({
       ),
     );
 
-    modules.map(({ name, bytecode }) =>
-      verifyQueue.add(() =>
+    modules.map(({ name, prepareDeploy }) => {
+      const { address } = prepareDeploy(deployerAddress, []);
+      return verifyQueue.add(() =>
         verifyContract({
+          // TODO: figure out dir from artifactPath via import.meta.resolve?
           cwd: "node_modules/@latticexyz/world-modules",
-          name: name,
+          name,
           rpc,
           verifier,
           verifierUrl,
-          address: getCreate2Address({
-            from: deployerAddress,
-            bytecode: bytecode,
-            salt,
-          }),
+          address,
         }).catch((error) => {
           console.error(`Error verifying module contract ${name}:`, error);
         }),
-      ),
-    );
+      );
+    });
 
     // If the world was deployed as a Proxy, verify the proxy and implementation.
     if (usesProxy) {

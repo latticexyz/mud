@@ -16,6 +16,7 @@ import { postDeploy } from "./utils/postDeploy";
 import { WorldDeploy } from "./deploy/common";
 import { build } from "./build";
 import { kmsKeyToAccount } from "@latticexyz/common/kms";
+import { configToModules } from "./deploy/configToModules";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the MUD config file" },
@@ -85,6 +86,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   }
 
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
+  const modules = await configToModules(configV2, outDir);
 
   const account = await (async () => {
     if (opts.kms) {
@@ -131,6 +133,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     worldAddress: opts.worldAddress as Hex | undefined,
     client,
     config: resolvedConfig,
+    modules,
     withWorldProxy: configV2.deploy.upgradeableWorldImplementation,
   });
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {

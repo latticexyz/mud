@@ -1,5 +1,19 @@
 # @latticexyz/faucet
 
+## 2.0.11
+
+### Patch Changes
+
+- @latticexyz/common@2.0.11
+
+## 2.0.10
+
+### Patch Changes
+
+- 4caca05e: Bumped zod dependency to comply with abitype peer dependencies.
+- Updated dependencies [51b137d3]
+  - @latticexyz/common@2.0.10
+
 ## 2.0.9
 
 ### Patch Changes

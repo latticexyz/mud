@@ -1,5 +1,40 @@
 # @latticexyz/dev-tools
 
+## 2.0.11
+
+### Patch Changes
+
+- @latticexyz/common@2.0.11
+- @latticexyz/react@2.0.11
+- @latticexyz/recs@2.0.11
+- @latticexyz/schema-type@2.0.11
+- @latticexyz/store@2.0.11
+- @latticexyz/store-sync@2.0.11
+- @latticexyz/utils@2.0.11
+- @latticexyz/world@2.0.11
+
+## 2.0.10
+
+### Patch Changes
+
+- Updated dependencies [a1b1ebf6]
+- Updated dependencies [4e4e9104]
+- Updated dependencies [4e4e9104]
+- Updated dependencies [51b137d3]
+- Updated dependencies [3dbf3bf3]
+- Updated dependencies [36e1f766]
+- Updated dependencies [32c1cda6]
+- Updated dependencies [4caca05e]
+- Updated dependencies [27f888c7]
+  - @latticexyz/world@2.0.10
+  - @latticexyz/store@2.0.10
+  - @latticexyz/common@2.0.10
+  - @latticexyz/store-sync@2.0.10
+  - @latticexyz/react@2.0.10
+  - @latticexyz/recs@2.0.10
+  - @latticexyz/schema-type@2.0.10
+  - @latticexyz/utils@2.0.10
+
 ## 2.0.9
 
 ### Patch Changes
