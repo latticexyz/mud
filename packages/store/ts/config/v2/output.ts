@@ -21,7 +21,7 @@ export type TableCodegen = {
   /**
    * Directory to output codegenerated files relative to config's `codegen.outputDirectory`.
    *
-   * If unset, defaults to `tables`.
+   * Defaults to `tables`.
    */
   readonly outputDirectory: string;
   readonly tableIdArgument: boolean;
@@ -55,7 +55,7 @@ export type Codegen = {
    *
    * For example, a `Counter` table in the `app` namespace will have codegen at `codegen/app/tables/Counter.sol`.
    *
-   * If not set, defaults to `true` when using top-level `namespaces` key, `false` otherwise.
+   * Defaults to `true` when using top-level `namespaces` key, `false` otherwise.
    */
   // TODO: move `namespaces` key handling into store so we can conditionally turn this on/off
   readonly namespaceDirectories: boolean;
@@ -66,7 +66,6 @@ export type Store = {
   /**
    * Directory of contracts source (i.e. Solidity) relative to the MUD config.
    * This is used to resolve other paths in the config, like codegen and user types.
-   *
    *
    * Defaults to `src` to match `foundry.toml`'s default. If you change this from the default, you may also need to configure foundry with the same source directory.
    */
