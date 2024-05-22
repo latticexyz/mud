@@ -1,3 +1,4 @@
+import "./polyfills";
 import "@rainbow-me/rainbowkit/styles.css";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
