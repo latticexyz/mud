@@ -120,7 +120,7 @@ In this case, the vanilla getting started front end.
           };
 
           const decrement = async () => {
-            const tx = await worldContract.write.decrement();
+            const tx = await worldContract.write.app__decrement();
             await waitForTransaction(tx);
             return getComponentValue(Counter, singletonEntity);
           };
