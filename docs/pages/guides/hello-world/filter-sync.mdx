@@ -116,14 +116,14 @@ export async function setupNetwork() {
     startBlock: BigInt(networkConfig.initialBlockNumber),
     filters: [
       {
-        tableId: config.tables.app__Counter.tableId,
+        tableId: mudConfig.tables.app__Counter.tableId,
       },
       {
-        tableId: config.tables.app__History.tableId,
+        tableId: mudConfig.tables.app__History.tableId,
         key0: pad("0x01"),
       },
       {
-        tableId: config.tables.app__History.tableId,
+        tableId: mudConfig.tables.app__History.tableId,
         key0: pad("0x05"),
       },
     ],
@@ -156,7 +156,7 @@ Only rows that match at least one line are synchronized.
 Each filter is a structure that can have up to three fields, and all the fields that are specified must match a row for the filter to match.
 
 - `tableId`, the table ID to synchronize.
-  You can read this value from `config.tables`.
+  You can read this value from `mudConfig.tables`.
 - `key0`, the first key value (as a 32 byte hexadecimal string).
 - `key1`, the second key value (as a 32 byte hexadecimal string).
 
@@ -167,7 +167,7 @@ Each filter is a structure that can have up to three fields, and all the fields 
 ```ts
     filters: [
       {
-         tableId: config.tables.app__Counter.tableId,
+         tableId: mudConfig.tables.app__Counter.tableId,
       },
 ```
 
@@ -177,11 +177,11 @@ It's a singleton so there is only one row anyway.
 
 ```ts
       {
-         tableId: config.tables.app__History.tableId,
+         tableId: mudConfig.tables.app__History.tableId,
          key0: pad("0x01"),
       },
       {
-         tableId: config.tables.app__History.tableId,
+         tableId: mudConfig.tables.app__History.tableId,
          key0: pad("0x05"),
       },
     ],
