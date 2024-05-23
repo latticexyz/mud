@@ -8,7 +8,8 @@ import { functionSignatureToAbiItem } from "../utils/functionSignatureToAbiItem"
 import path from "node:path";
 import { mkdirSync } from "node:fs";
 
-const DIRECTORY = "abis";
+const ABI_DIRECTORY = "abis";
+const ABI_FILE = "worldRegisteredFunctions.abi.json";
 
 const generateAbiOptions = {
   worldAddress: { type: "string", required: true, desc: "Verify an existing World at the given address" },
@@ -47,7 +48,7 @@ export async function generateAbiHandler(opts: Options) {
 
   const worldDeploy = await getWorldDeploy(client, worldAddress);
 
-  mkdirSync(DIRECTORY);
+  mkdirSync(ABI_DIRECTORY);
 
   // render World ABI
   const systems = await getSystems({ client, worldDeploy });
@@ -56,7 +57,7 @@ export async function generateAbiHandler(opts: Options) {
     system.functions.map((func) => functionSignatureToAbiItem(func.signature)),
   );
 
-  const fullOutputPath = path.join(DIRECTORY, "worldRegisteredFunctions.abi.json");
+  const fullOutputPath = path.join(ABI_DIRECTORY, ABI_FILE);
   await fs.writeFile(fullOutputPath, JSON.stringify(worldAbi));
 }
 
