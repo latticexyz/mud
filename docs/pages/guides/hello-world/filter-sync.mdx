@@ -17,12 +17,11 @@ To see the effects of filtering we need a table with entries to filter. To get s
 Edit `packages/client/src/mud/setupNetwork.ts`.
 
 - Import [`pad`](https://viem.sh/docs/utilities/pad.html) from viem.
-- Import [`resourceToHex`](https://github.com/latticexyz/mud/blob/main/packages/common/src/resourceToHex.ts) to create resource identifiers.
 - Add a `filters` field to the `syncToRecs` call.
 
 <CollapseCode>
 
-```ts filename="setupNetwork.ts" copy showLineNumbers {23-24,94-106}
+```ts filename="setupNetwork.ts" copy showLineNumbers {23,93-105}
 /*
  * The MUD client code is built on top of viem
  * (https://viem.sh/docs/getting-started.html).
@@ -45,7 +44,6 @@ import { world } from "./world";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 import { createBurnerAccount, transportObserver, ContractWrite } from "@latticexyz/common";
 import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
-import { resourceToHex } from "@latticexyz/common";
 import { pad } from "viem";
 
 import { Subject, share } from "rxjs";
@@ -118,14 +116,14 @@ export async function setupNetwork() {
     startBlock: BigInt(networkConfig.initialBlockNumber),
     filters: [
       {
-        tableId: config.tables.app__Counter.tableId
+        tableId: config.tables.app__Counter.tableId,
       },
       {
-        tableId: resourceToHex({ type: "table", namespace: "app", name: "History" }),
+        tableId: config.tables.app__History.tableId,
         key0: pad("0x01"),
       },
       {
-        tableId: resourceToHex({ type: "table", namespace: "app", name: "History" }),
+        tableId: config.tables.app__History.tableId,
         key0: pad("0x05"),
       },
     ],
@@ -158,7 +156,7 @@ Only rows that match at least one line are synchronized.
 Each filter is a structure that can have up to three fields, and all the fields that are specified must match a row for the filter to match.
 
 - `tableId`, the table ID to synchronize.
-  You create this value using [`resourceToHex`](https://github.com/latticexyz/mud/blob/main/packages/common/src/resourceToHex.ts), the type can be either `table`, or `offchainTable`.
+  You can read this value from `config.tables`.
 - `key0`, the first key value (as a 32 byte hexadecimal string).
 - `key1`, the second key value (as a 32 byte hexadecimal string).
 
@@ -169,7 +167,7 @@ Each filter is a structure that can have up to three fields, and all the fields 
 ```ts
     filters: [
       {
-         tableId: resourceToHex({ type: "table", namespace: "app", name: "Counter"}),
+         tableId: config.tables.app__Counter.tableId,
       },
 ```
 
@@ -179,11 +177,11 @@ It's a singleton so there is only one row anyway.
 
 ```ts
       {
-         tableId: resourceToHex({ type: "table", namespace: "app", name: "History"}),
+         tableId: config.tables.app__History.tableId,
          key0: pad("0x01"),
       },
       {
-         tableId: resourceToHex({ type: "table", namespace: "app", name: "History"}),
+         tableId: config.tables.app__History.tableId,
          key0: pad("0x05"),
       },
     ],
