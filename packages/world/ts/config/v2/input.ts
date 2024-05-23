@@ -54,6 +54,9 @@ export type ModuleInput = ModuleInputArtifactPath & {
 };
 
 export type DeployInput = {
+  /** The name of a custom World contract to deploy. If no name is provided, a default MUD World is deployed. */
+  // TODO: implement
+  customWorldContract?: never;
   /**
    * Script to execute after the deployment is complete (Default "PostDeploy").
    * Script must be placed in the forge scripts directory (see foundry.toml) and have a ".s.sol" extension.
