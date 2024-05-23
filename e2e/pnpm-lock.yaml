@@ -44,9 +44,6 @@ importers:
       contracts:
         specifier: workspace:*
         version: link:../contracts
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
       mobx:
         specifier: ^6.7.0
         version: 6.9.0
@@ -933,9 +930,6 @@ packages:
 
   lodash.camelcase@4.3.0:
     resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
-
-  lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
 
   long@4.0.0:
     resolution: {integrity: sha512-XsP+KhQif4bjX1kbuSiySJFNAehNxgLb6hPRGJ9QsUr8ajHkuXGdrHmFUTUUXhDwVX2R5bY4JNZEwbUiMhV+MA==}
@@ -1843,8 +1837,6 @@ snapshots:
   local-pkg@0.4.3: {}
 
   lodash.camelcase@4.3.0: {}
-
-  lodash@4.17.21: {}
 
   long@4.0.0: {}
 

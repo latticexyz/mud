@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "Bundler",
+    "target": "es2021",
+    "lib": ["ESNext"],
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "noErrorTruncation": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": true
+  },
+  "exclude": ["**/dist", "**/node_modules", "**/docs", "**/e2e"]
+}

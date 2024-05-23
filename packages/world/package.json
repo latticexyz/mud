@@ -22,7 +22,7 @@
     "dist",
     "out",
     "foundry.toml",
-    "cache",
+    "src",
     "test/MudTest.t.sol"
   ],
   "scripts": {

@@ -18,7 +18,7 @@
     "dist",
     "out",
     "foundry.toml",
-    "cache"
+    "src"
   ],
   "scripts": {
     "build": "pnpm run build:js",

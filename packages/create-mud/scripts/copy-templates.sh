@@ -2,7 +2,7 @@
 
 # Find git-aware template files (ignores things like node_modules, etc.)
 # and copy them to dist/templates
-git ls-files ../../templates | rsync --files-from=- ../../ dist
+git ls-files ../../templates | rsync --files-from=- --copy-links ../../ dist
 
 # Replace all MUD package links with mustache placeholder used by create-create-app
 # that will be replaced with the latest MUD version number when the template is used

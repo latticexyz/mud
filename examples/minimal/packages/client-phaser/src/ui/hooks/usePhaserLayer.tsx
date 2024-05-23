@@ -1,3 +1,4 @@
+import Phaser from "phaser";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useResizeObserver, { ResizeHandler } from "use-resize-observer";
 import { throttle } from "lodash";
