@@ -17,8 +17,9 @@
   },
   "files": [
     "dist",
+    "out",
     "src",
-    "out"
+    "foundry.toml"
   ],
   "scripts": {
     "build": "tsup",
