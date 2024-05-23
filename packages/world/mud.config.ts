@@ -6,7 +6,7 @@ export default defineWorld({
     worldgenDirectory: "interfaces",
     worldInterfaceName: "IBaseWorld",
   },
-  namespace: "world" as const, // NOTE: this namespace is only used for tables, the core system is deployed in the root namespace.
+  namespace: "world", // NOTE: this namespace is only used for tables, the core system is deployed in the root namespace.
   userTypes: {
     ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", type: "bytes32" },
   },
@@ -88,7 +88,9 @@ export default defineWorld({
         systemFunctionSelector: "bytes4",
       },
       key: ["worldFunctionSelector"],
-      codegen: { dataStruct: false },
+      codegen: {
+        dataStruct: false,
+      },
     },
     FunctionSignatures: {
       type: "offchainTable",

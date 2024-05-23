@@ -27,7 +27,7 @@ export type storeToV1<store> = store extends Store
 type schemaToV1<schema extends Schema> = { [key in keyof schema]: schema[key]["internalType"] };
 
 export type tableToV1<table extends Table> = {
-  directory: table["codegen"]["outputDirectory"];
+  directory: string;
   dataStruct: table["codegen"]["dataStruct"];
   tableIdArgument: table["codegen"]["tableIdArgument"];
   storeArgument: table["codegen"]["storeArgument"];

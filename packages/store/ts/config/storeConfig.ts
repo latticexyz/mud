@@ -145,7 +145,7 @@ export interface ExpandTableConfig<T extends TableConfig<string, string>, TableN
   extends OrDefaults<
     T,
     {
-      directory: typeof TABLE_DEFAULTS.directory;
+      directory: string;
       name: TableName;
       tableIdArgument: typeof TABLE_DEFAULTS.tableIdArgument;
       storeArgument: typeof TABLE_DEFAULTS.storeArgument;

@@ -44,6 +44,9 @@ type keyPrefix<store> = store extends { namespace: infer namespace extends strin
   : "";
 
 export type resolveStore<store> = {
+  readonly sourceDirectory: "sourceDirectory" extends keyof store
+    ? store["sourceDirectory"]
+    : CONFIG_DEFAULTS["sourceDirectory"];
   readonly tables: "tables" extends keyof store
     ? resolveTables<
         {
@@ -63,11 +66,24 @@ export type resolveStore<store> = {
 };
 
 export function resolveStore<const store extends StoreInput>(store: store): resolveStore<store> {
+  // TODO: default `namespaceDirectories` to true if using top-level `namespaces` key (once its migrated to store)
+  const codegen = resolveCodegen(store.codegen);
   return {
+    sourceDirectory: store.sourceDirectory ?? CONFIG_DEFAULTS["sourceDirectory"],
     tables: resolveTables(
-      flatMorph(store.tables ?? {}, (tableKey, table) => {
-        const key = store.namespace ? `${store.namespace}__${tableKey}` : tableKey;
-        return [key, mergeIfUndefined(table, { namespace: store.namespace, name: tableKey })];
+      flatMorph(store.tables ?? {}, (name, table) => {
+        const namespace = store.namespace;
+        const key = namespace ? `${namespace}__${name}` : name;
+        return [
+          key,
+          mergeIfUndefined(table, {
+            namespace: namespace,
+            name,
+            codegen: mergeIfUndefined(table.codegen ?? {}, {
+              outputDirectory: codegen.namespaceDirectories && namespace?.length ? `${namespace}/tables` : "tables",
+            }),
+          }),
+        ];
       }),
       extendedScope(store),
     ),
@@ -75,7 +91,7 @@ export function resolveStore<const store extends StoreInput>(store: store): reso
     enums: resolveEnums(store.enums ?? {}),
     enumValues: mapEnums(store.enums ?? {}),
     namespace: store.namespace ?? CONFIG_DEFAULTS["namespace"],
-    codegen: resolveCodegen(store.codegen),
+    codegen,
   } as never;
 }
 

@@ -17,8 +17,8 @@ import { EncodedLengths, EncodedLengthsLib } from "../../../src/EncodedLengths.s
 import { ResourceId } from "../../../src/ResourceId.sol";
 
 library Callbacks {
-  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "store", name: "Callbacks", typeId: RESOURCE_TABLE });`
-  ResourceId constant _tableId = ResourceId.wrap(0x746273746f726500000000000000000043616c6c6261636b7300000000000000);
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Callbacks", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000043616c6c6261636b7300000000000000);
 
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0000000100000000000000000000000000000000000000000000000000000000);

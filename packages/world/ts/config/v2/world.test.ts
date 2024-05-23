@@ -3,12 +3,19 @@ import { defineWorld } from "./world";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
 import {
+  CONFIG_DEFAULTS as STORE_CONFIG_DEFAULTS,
   TABLE_CODEGEN_DEFAULTS,
   CODEGEN_DEFAULTS as STORE_CODEGEN_DEFAULTS,
   TABLE_DEPLOY_DEFAULTS,
 } from "@latticexyz/store/config/v2";
-import { CODEGEN_DEFAULTS as WORLD_CODEGEN_DEFAULTS, DEPLOY_DEFAULTS, CONFIG_DEFAULTS } from "./defaults";
+import {
+  CODEGEN_DEFAULTS as WORLD_CODEGEN_DEFAULTS,
+  DEPLOY_DEFAULTS,
+  CONFIG_DEFAULTS as WORLD_CONFIG_DEFAULTS,
+} from "./defaults";
 import { World } from "./output";
+
+const CONFIG_DEFAULTS = { ...STORE_CONFIG_DEFAULTS, ...WORLD_CONFIG_DEFAULTS };
 const CODEGEN_DEFAULTS = { ...STORE_CODEGEN_DEFAULTS, ...WORLD_CODEGEN_DEFAULTS };
 
 describe("defineWorld", () => {
