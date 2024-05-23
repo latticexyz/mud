@@ -12,16 +12,13 @@
   "exports": {
     ".": "./dist/index.js"
   },
-  "typesVersions": {
-    "*": {
-      "index": [
-        "./ts/index.ts"
-      ]
-    }
-  },
   "bin": {
     "gas-report": "./dist/gas-report.js"
   },
+  "files": [
+    "dist",
+    "out"
+  ],
   "scripts": {
     "build": "tsup",
     "clean": "rimraf dist",

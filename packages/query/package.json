@@ -13,16 +13,9 @@
     ".": "./dist/index.js",
     "./internal": "./dist/internal.js"
   },
-  "typesVersions": {
-    "*": {
-      "index": [
-        "./src/exports/index.ts"
-      ],
-      "internal": [
-        "./src/exports/internal.ts"
-      ]
-    }
-  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "clean": "rimraf dist",
