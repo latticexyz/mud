@@ -1,0 +1,5 @@
+// For local development, we extend the monorepo's `tsconfig.json`, which includes paths to resolve TS source.
+// When building templates, this file will get replaced by monorepo's `tsconfig.base.json`.
+{
+  "extends": "../../tsconfig.json"
+}

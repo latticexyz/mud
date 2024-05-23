@@ -2,7 +2,7 @@
 
 # Find git-aware template files (ignores things like node_modules, etc.)
 # and copy them to dist/templates
-git ls-files ../../templates | rsync --files-from=- ../../ dist
+git ls-files ../../templates | rsync --files-from=- --copy-links ../../ dist
 
 # Replace all MUD package links with mustache placeholder used by create-create-app
 # that will be replaced with the latest MUD version number when the template is used
@@ -30,4 +30,12 @@ find ./dist/templates/* -name ".gitignore" -type f | while read -r file; do
   newfile="$(dirname "$file")/gitignore"
   echo "Renaming $file to $newfile"
   mv "$file" "$newfile"
+done
+
+# For local development, each template workspace extends the monorepo's `tsconfig.json`, which includes `paths` to resolve TS source.
+# To strip out the `paths`, we replace the template workspace root `tsconfig.json` with the monorepo's `tsconfig.base.json`.
+tsconfig=$(realpath "$(dirname $0)/../../../tsconfig.base.json")
+find ./dist/templates/*/tsconfig.json -type f | while read -r file; do
+  echo "Replacing $file with $tsconfig"
+  cp "$tsconfig" "$file"
 done

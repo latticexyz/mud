@@ -22,6 +22,7 @@
     "@latticexyz/world": "link:../../../../packages/world",
     "contracts": "workspace:*",
     "lodash": "^4.17.21",
+    "phaser": "3.60.0-beta.14",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rxjs": "7.5.5",
@@ -32,7 +33,7 @@
     "zustand": "^4.3.8"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.194",
+    "@types/lodash": "^4.17.4",
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
     "@types/styled-components": "^5.1.26",
