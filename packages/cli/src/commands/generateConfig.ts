@@ -6,8 +6,10 @@ import { getTables } from "../deploy/getTables";
 import { getWorldDeploy } from "../deploy/getWorldDeploy";
 import { Table } from "../deploy/configToTables";
 import { getSystems } from "../deploy/getSystems";
+import { SystemsInput } from "@latticexyz/world/ts/config/v2/input";
+import { TableInput } from "@latticexyz/store/config/v2";
 
-function tableToV2({ keySchema, valueSchema }: Table) {
+function tableToV2({ keySchema, valueSchema }: Table): Omit<TableInput, "namespace" | "name"> {
   return {
     schema: { ...keySchema, ...valueSchema },
     key: Object.keys(keySchema),
@@ -42,11 +44,13 @@ const commandModule: CommandModule<Options, Options> = {
 
     const worldDeploy = await getWorldDeploy(client, opts.worldAddress as Hex);
 
+    const tables: {
+      [key: string]: Omit<TableInput, "namespace" | "name">;
+    } = {};
     const worldTables = await getTables({ client, worldDeploy });
-    const tables: Record<string, unknown> = {};
     worldTables.forEach((table) => (tables[table.name] = tableToV2(table)));
 
-    const systems: Record<string, unknown> = {};
+    const systems: SystemsInput = {};
     const worldSystems = await getSystems({ client, worldDeploy });
     worldSystems.forEach((system) => (systems[system.name] = { name: system.name, openAccess: system.allowAll }));
 
