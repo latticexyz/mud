@@ -3,7 +3,9 @@
   "compilerOptions": {
     "types": ["vite/client"],
     "target": "ESNext",
-    "lib": ["ESNext", "DOM"]
+    "lib": ["ESNext", "DOM"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
   },
   "include": ["src"]
 }
