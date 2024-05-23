@@ -1,11 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  SendTransactionParameters,
-  estimateFeesPerGas,
-  getBalance,
-  prepareTransactionRequest,
-  readContract,
-} from "viem/actions";
+import { SendTransactionParameters, estimateFeesPerGas, getBalance, readContract } from "viem/actions";
 import { getChainContractAddress, serializeTransaction } from "viem/utils";
 import { AppAccountClient } from "../../common";
 import { Hex } from "viem";
@@ -24,6 +18,7 @@ export function usePrepareWithdraw({ appAccountClient, userAddress }: UsePrepare
       ? {
           queryKey,
           queryFn: async (): Promise<SendTransactionParameters> => {
+            console.log("getting balance and fees");
             const [balance, fees] = await Promise.all([
               getBalance(appAccountClient, { address: appAccountClient.account.address }),
               estimateFeesPerGas(appAccountClient),
@@ -36,8 +31,9 @@ export function usePrepareWithdraw({ appAccountClient, userAddress }: UsePrepare
               contract: "gasPriceOracle",
             });
             if (gasPriceOracleAddress) {
-              const request = await prepareTransactionRequest(appAccountClient, {
-                chain: appAccountClient.chain,
+              const transaction = serializeTransaction({
+                type: "eip1559",
+                chainId: appAccountClient.chain.id,
                 account: appAccountClient.account,
                 to: userAddress,
                 value: balance,
@@ -45,11 +41,7 @@ export function usePrepareWithdraw({ appAccountClient, userAddress }: UsePrepare
                 ...fees,
               });
 
-              const transaction = serializeTransaction({
-                ...request,
-                type: "eip1559",
-              });
-
+              console.log("getting L1 gas fee");
               fee += await readContract(appAccountClient, {
                 address: gasPriceOracleAddress,
                 abi: [
@@ -68,6 +60,7 @@ export function usePrepareWithdraw({ appAccountClient, userAddress }: UsePrepare
 
             const withdrawAmount = balance - fee;
             if (withdrawAmount <= 0n) {
+              console.log("balance < withdraw fee");
               throw new Error(`Account balance (${balance}) not enough to cover estimated transfer fee (${fee}).`);
             }
 
@@ -81,7 +74,14 @@ export function usePrepareWithdraw({ appAccountClient, userAddress }: UsePrepare
             };
           },
           // TODO: figure out a good refresh rate (L1 block time? L2 commit time?)
-          refetchInterval: 4_000,
+          refetchInterval: 12_000,
+          retry: (failureCount, error) => {
+            // No need to retry if we know our balance is too low.
+            if (/not enough to cover estimated transfer fee/.test(String(error))) {
+              return false;
+            }
+            return failureCount < 3;
+          },
         }
       : { queryKey, enabled: false },
   );

@@ -27,6 +27,7 @@ export function WithdrawButton() {
     }) => {
       console.log("withdrawing funds");
       const hash = await getAction(appAccountClient, sendTransaction, "sendTransaction")(params);
+      console.log("waiting for withdraw", hash);
 
       const receipt = await getAction(
         appAccountClient,
@@ -44,7 +45,7 @@ export function WithdrawButton() {
     <Button
       variant="secondary"
       className="p-2 text-sm"
-      pending={appAccountClient == null || prepared.isPending || withdraw.isPending}
+      pending={appAccountClient == null || prepared.isLoading || withdraw.isPending}
       disabled={prepared.isError}
       onClick={() =>
         withdraw.mutateAsync({
