@@ -6,7 +6,6 @@
 /*
  * By default the template just creates a temporary wallet
  * (called a burner wallet).
- *
  */
 import { getBurnerPrivateKey } from "@latticexyz/common";
 
