@@ -2,19 +2,8 @@ import { formatAndWriteTypescript } from "@latticexyz/common/codegen";
 import { getRpcUrl } from "@latticexyz/common/foundry";
 import { Hex, createWalletClient, http } from "viem";
 import type { CommandModule, InferredOptionTypes } from "yargs";
-import { getTables } from "../deploy/getTables";
 import { getWorldDeploy } from "../deploy/getWorldDeploy";
-import { Table } from "../deploy/configToTables";
-import { getSystems } from "../deploy/getSystems";
-import { SystemsInput } from "@latticexyz/world/ts/config/v2/input";
-import { TableInput } from "@latticexyz/store/config/v2";
-
-function tableToV2({ keySchema, valueSchema }: Table): Omit<TableInput, "namespace" | "name"> {
-  return {
-    schema: { ...keySchema, ...valueSchema },
-    key: Object.keys(keySchema),
-  };
-}
+import { getWorldInput } from "../utils/getWorldInput";
 
 const generateConfigOptions = {
   worldAddress: { type: "string", required: true, desc: "Verify an existing World at the given address" },
@@ -44,24 +33,15 @@ const commandModule: CommandModule<Options, Options> = {
 
     const worldDeploy = await getWorldDeploy(client, opts.worldAddress as Hex);
 
-    const tables: {
-      [key: string]: Omit<TableInput, "namespace" | "name">;
-    } = {};
-    const worldTables = await getTables({ client, worldDeploy });
-    worldTables.forEach((table) => (tables[table.name] = tableToV2(table)));
-
-    const systems: SystemsInput = {};
-    const worldSystems = await getSystems({ client, worldDeploy });
-    worldSystems.forEach((system) => (systems[system.name] = { name: system.name, openAccess: system.allowAll }));
+    const config = await getWorldInput({ client, worldDeploy });
 
     formatAndWriteTypescript(
       `
       import { defineWorld } from "@latticexyz/world";
       
-      export default defineWorld({
-        systems: ${JSON.stringify(systems)},
-        tables: ${JSON.stringify(tables)}
-      });
+      export default defineWorld(
+        ${JSON.stringify(config)}
+      );
       `,
       "world.config.ts",
       "generating MUD config from world",
