@@ -629,8 +629,7 @@ We will fix these problems now.
    } = await setup();
 
    // Components expose a stream that triggers when the component is updated.
-   components.Counter &&
-     components.Counter.update$.subscribe((update) => {
+   components.Counter?.update$.subscribe((update) => {
        const [nextValue, prevValue] = update.value;
        console.log("Counter updated", update, { nextValue, prevValue });
        document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
