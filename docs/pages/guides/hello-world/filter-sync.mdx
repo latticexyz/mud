@@ -118,7 +118,7 @@ export async function setupNetwork() {
     startBlock: BigInt(networkConfig.initialBlockNumber),
     filters: [
       {
-        tableId: resourceToHex({ type: "table", namespace: "app", name: "Counter" }),
+        tableId: config.tables.app__Counter.tableId
       },
       {
         tableId: resourceToHex({ type: "table", namespace: "app", name: "History" }),
