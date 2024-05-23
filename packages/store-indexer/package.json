@@ -37,7 +37,7 @@
     "start:sqlite": "tsx bin/sqlite-indexer",
     "start:sqlite:local": "SQLITE_FILENAME=anvil.db RPC_HTTP_URL=http://127.0.0.1:8545 pnpm start:sqlite",
     "start:sqlite:testnet": "SQLITE_FILENAME=testnet.db RPC_HTTP_URL=https://rpc.holesky.redstone.xyz pnpm start:sqlite",
-    "test": "tsc --noEmit --skipLibCheck",
+    "test": "tsc --noEmit",
     "test:ci": "pnpm run test"
   },
   "dependencies": {
