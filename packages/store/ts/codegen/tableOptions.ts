@@ -9,8 +9,10 @@ import {
   SolidityUserDefinedType,
 } from "@latticexyz/common/codegen";
 import { RenderTableOptions } from "./types";
-import { StoreConfig } from "../config";
 import { getSchemaTypeInfo, importForAbiOrUserType, resolveAbiOrUserType } from "./userType";
+import { Store as StoreConfig } from "../config/v2/output";
+import { storeToV1 } from "../config/v2/compat";
+import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
 
 export interface TableOptions {
   /** Path where the file is expected to be written (relative to project root) */
@@ -28,52 +30,58 @@ export function getTableOptions(
   config: StoreConfig,
   solidityUserTypes: Record<string, SolidityUserDefinedType>,
 ): TableOptions[] {
-  const storeImportPath = config.storeImportPath;
+  const configV1 = storeToV1(config);
 
-  const options = [];
-  for (const tableName of Object.keys(config.tables)) {
-    const tableData = config.tables[tableName];
+  const options = Object.values(config.tables).map((table): TableOptions => {
+    const keySchema = getKeySchema(table);
+    const valueSchema = getValueSchema(table);
 
     // struct adds methods to get/set all values at once
-    const withStruct = tableData.dataStruct;
+    const withStruct = table.codegen.dataStruct;
     // operate on all fields at once; always render for offchain tables; for only 1 field keep them if struct is also kept
-    const withRecordMethods = withStruct || tableData.offchainOnly || Object.keys(tableData.valueSchema).length > 1;
+    const withRecordMethods = withStruct || table.type === "offchainTable" || Object.keys(valueSchema).length > 1;
     // field methods can include simply get/set if there's only 1 field and no record methods
-    const withSuffixlessFieldMethods = !withRecordMethods && Object.keys(tableData.valueSchema).length === 1;
+    const withSuffixlessFieldMethods = !withRecordMethods && Object.keys(valueSchema).length === 1;
     // list of any symbols that need to be imported
     const imports: ImportDatum[] = [];
 
-    const keyTuple = Object.keys(tableData.keySchema).map((name) => {
-      const abiOrUserType = tableData.keySchema[name];
-      const { renderType } = resolveAbiOrUserType(abiOrUserType, config, solidityUserTypes);
+    const keyTuple = Object.entries(keySchema).map(([name, field]): RenderKeyTuple => {
+      const abiOrUserType = field.internalType;
+      const { renderType } = resolveAbiOrUserType(abiOrUserType, configV1, solidityUserTypes);
 
-      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config, solidityUserTypes);
+      const importDatum = importForAbiOrUserType(
+        abiOrUserType,
+        table.codegen.outputDirectory,
+        configV1,
+        solidityUserTypes,
+      );
       if (importDatum) imports.push(importDatum);
 
-      if (renderType.isDynamic) throw new Error(`Parsing error: found dynamic key ${name} in table ${tableName}`);
-
-      const keyTuple: RenderKeyTuple = {
+      return {
         ...renderType,
         name,
         isDynamic: false,
       };
-      return keyTuple;
     });
 
-    const fields = Object.keys(tableData.valueSchema).map((name) => {
-      const abiOrUserType = tableData.valueSchema[name];
-      const { renderType, schemaType } = resolveAbiOrUserType(abiOrUserType, config, solidityUserTypes);
+    const fields = Object.entries(valueSchema).map(([name, field]): RenderField => {
+      const abiOrUserType = field.internalType;
+      const { renderType, schemaType } = resolveAbiOrUserType(abiOrUserType, configV1, solidityUserTypes);
 
-      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config, solidityUserTypes);
+      const importDatum = importForAbiOrUserType(
+        abiOrUserType,
+        table.codegen.outputDirectory,
+        configV1,
+        solidityUserTypes,
+      );
       if (importDatum) imports.push(importDatum);
 
       const elementType = SchemaTypeArrayToElement[schemaType];
-      const field: RenderField = {
+      return {
         ...renderType,
         arrayElement: elementType !== undefined ? getSchemaTypeInfo(elementType) : undefined,
         name,
       };
-      return field;
     });
 
     const staticFields = fields.filter(({ isDynamic }) => !isDynamic) as RenderStaticField[];
@@ -81,34 +89,35 @@ export function getTableOptions(
 
     // With tableIdArgument: tableId is a dynamic argument for each method
     // Without tableIdArgument: tableId is a file-level constant generated from `staticResourceData`
-    const staticResourceData = tableData.tableIdArgument
+    const staticResourceData = table.codegen.tableIdArgument
       ? undefined
       : {
-          namespace: config.namespace,
-          name: tableData.name,
-          offchainOnly: tableData.offchainOnly,
+          namespace: table.namespace,
+          name: table.name,
+          offchainOnly: table.type === "offchainTable",
         };
 
-    options.push({
-      outputPath: path.join(tableData.directory, `${tableName}.sol`),
-      tableName,
+    return {
+      outputPath: path.join(table.codegen.outputDirectory, `${table.name}.sol`),
+      tableName: table.name,
       renderOptions: {
         imports,
-        libraryName: tableName,
-        structName: withStruct ? tableName + "Data" : undefined,
+        libraryName: table.name,
+        structName: withStruct ? table.name + "Data" : undefined,
         staticResourceData,
-        storeImportPath,
+        storeImportPath: config.codegen.storeImportPath,
         keyTuple,
         fields,
         staticFields,
         dynamicFields,
-        withGetters: !tableData.offchainOnly,
+        withGetters: table.type === "table",
         withRecordMethods,
-        withDynamicFieldMethods: !tableData.offchainOnly,
+        withDynamicFieldMethods: table.type === "table",
         withSuffixlessFieldMethods,
-        storeArgument: tableData.storeArgument,
+        storeArgument: table.codegen.storeArgument,
       },
-    });
-  }
+    };
+  });
+
   return options;
 }

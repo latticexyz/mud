@@ -37,7 +37,8 @@
     "package.json": "pnpm sort-package-json"
   },
   "devDependencies": {
-    "@arktype/attest": "0.6.4",
+    "@arktype/attest": "0.7.5",
+    "@arktype/util": "0.0.43",
     "@changesets/cli": "^2.26.1",
     "@types/glob": "^7.2.0",
     "@types/node": "^18.15.11",

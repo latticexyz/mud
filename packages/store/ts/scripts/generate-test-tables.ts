@@ -1,14 +1,15 @@
-import path from "path";
-import { getRemappings, getSrcDirectory } from "@latticexyz/common/foundry";
+import { getRemappings } from "@latticexyz/common/foundry";
 import { tablegen } from "../codegen";
 import { defineStore } from "../config/v2/store";
+import { fileURLToPath } from "node:url";
+
+const configPath = fileURLToPath(import.meta.url);
 
 const config = defineStore({
+  sourceDirectory: "../../test",
   codegen: {
     storeImportPath: "../../../src/",
-    outputDirectory: "../test/codegen",
   },
-  namespace: "store",
   enums: {
     ExampleEnum: ["None", "First", "Second", "Third"],
   },
@@ -50,7 +51,6 @@ const config = defineStore({
   },
 });
 
-const srcDir = await getSrcDirectory();
 const remappings = await getRemappings();
 
-await tablegen(config, path.join(srcDir, config.codegen.outputDirectory), remappings);
+await tablegen({ configPath, config, remappings });

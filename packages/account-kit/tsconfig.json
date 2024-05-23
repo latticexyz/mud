@@ -1,15 +1,8 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "lib": ["ESNext", "DOM"],
-    "moduleResolution": "Node",
-    "strict": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
+    "outDir": "dist",
     "jsx": "react-jsx",
-    "skipLibCheck": true,
     "jsxImportSource": "react"
   },
   "include": ["src", "inline-import.d.ts"]

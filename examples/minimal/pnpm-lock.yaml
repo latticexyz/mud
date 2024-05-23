@@ -77,6 +77,9 @@ importers:
       nice-grpc-web:
         specifier: ^2.0.1
         version: 2.0.1(google-protobuf@3.21.2)
+      phaser:
+        specifier: 3.60.0-beta.14
+        version: 3.60.0-beta.14
       proxy-deep:
         specifier: ^3.1.1
         version: 3.1.1
@@ -111,6 +114,9 @@ importers:
         specifier: ^4.3.8
         version: 4.3.8(react@18.2.0)
     devDependencies:
+      '@types/lodash':
+        specifier: ^4.17.4
+        version: 4.17.4
       '@types/react':
         specifier: 18.2.22
         version: 18.2.22
@@ -174,9 +180,6 @@ importers:
       contracts:
         specifier: workspace:*
         version: link:../contracts
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
       mobx:
         specifier: ^6.7.0
         version: 6.7.0
@@ -259,9 +262,6 @@ importers:
       contracts:
         specifier: workspace:*
         version: link:../contracts
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
       mobx:
         specifier: ^6.7.0
         version: 6.7.0
@@ -783,6 +783,9 @@ packages:
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
+
+  '@types/lodash@4.17.4':
+    resolution: {integrity: sha512-wYCP26ZLxaT3R39kiN2+HcJ4kTd3U1waI/cY7ivWYqFP6pW3ZNpvi6Wd6PHZx7T/t8z0vlkXMg3QYLa7DZ/IJQ==}
 
   '@types/long@4.0.2':
     resolution: {integrity: sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==}
@@ -2499,6 +2502,8 @@ snapshots:
       hoist-non-react-statics: 3.3.2
 
   '@types/json-schema@7.0.15': {}
+
+  '@types/lodash@4.17.4': {}
 
   '@types/long@4.0.2': {}
 

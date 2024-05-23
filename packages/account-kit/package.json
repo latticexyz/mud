@@ -14,19 +14,9 @@
     "./internal": "./dist/tsup/internal.js",
     "./bundle": "./dist/vite/bundle.js"
   },
-  "typesVersions": {
-    "*": {
-      "index": [
-        "./src/exports/index.ts"
-      ],
-      "internal": [
-        "./src/exports/internal.ts"
-      ],
-      "bundle": [
-        "./src/exports/bundle.ts"
-      ]
-    }
-  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup & vite build",

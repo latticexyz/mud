@@ -20,7 +20,6 @@
     "@latticexyz/world": "link:../../../../packages/world",
     "async-mutex": "^0.4.0",
     "contracts": "workspace:*",
-    "lodash": "^4.17.21",
     "mobx": "^6.7.0",
     "nice-grpc": "^2.0.1",
     "nice-grpc-web": "^2.0.1",
