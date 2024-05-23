@@ -246,8 +246,8 @@ importers:
         specifier: ^7.2.0
         version: 7.2.0
       '@types/node':
-        specifier: ^18.15.11
-        version: 18.15.11
+        specifier: ' 20.12.12'
+        version: 20.12.12
       '@types/openurl':
         specifier: ^1.0.0
         version: 1.0.0

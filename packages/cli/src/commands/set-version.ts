@@ -79,7 +79,10 @@ async function resolveVersion(options: Options) {
   // Backwards compatibility to previous behavior of this script where passing "canary" as the version resolved to the latest commit on main
   if (options.mudVersion === "canary") options.tag = "main";
 
-  let npmResult;
+  // TODO: it seems like this was already being treated as any due to fetch not
+  // resolving here. See comment at https://github.com/latticexyz/mud/pull/2828
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let npmResult: any;
   try {
     console.log(chalk.blue(`Fetching available versions`));
     npmResult = await (await fetch(`https://registry.npmjs.org/${localPackageJson.name}`)).json();

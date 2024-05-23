@@ -20,6 +20,7 @@
     "./utils": "./dist/utils.js",
     "./kms": "./dist/kms.js"
   },
+  "main": "./dist/index.js",
   "files": [
     "dist"
   ],
