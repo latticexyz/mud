@@ -1,3 +1,7 @@
 {
-  "extends": ["./tsconfig.build.json", "./tsconfig.paths.json"]
+  "extends": [
+    // Note that the base config gets copied over to each template workspace too
+    "./tsconfig.base.json",
+    "./tsconfig.paths.json"
+  ]
 }
