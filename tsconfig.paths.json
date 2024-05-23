@@ -44,7 +44,7 @@
       "@latticexyz/world/node": ["./packages/world/ts/node/index.ts"],
       "@latticexyz/world/out/*": ["./packages/world/out/*"],
       "@latticexyz/world/*": ["./packages/world/ts/exports/*.ts"],
-      "@latticexyz/world-modules/mud.config": ["./packages/world-modules/mud.config.ts"],
+      "@latticexyz/world-modules/internal/mud.config": ["./packages/world-modules/mud.config.ts"],
       "@latticexyz/world-modules/out/*": ["./packages/world-modules/out/*"]
     }
   }
