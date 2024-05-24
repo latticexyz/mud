@@ -124,8 +124,7 @@ export function renderAbsoluteImports(imports: AbsoluteImportDatum[]): string {
     if (!aggregatedImports.has(path)) {
       aggregatedImports.set(path, new Set());
     }
-    console.log(alias);
-    aggregatedImports.get(path)?.add(alias ? `${symbol} as ${alias}` : symbol);
+    aggregatedImports.get(path)?.add(alias ? `${alias} as ${symbol}` : symbol);
   }
   // Render imports
   const renderedImports = [];

@@ -42,24 +42,54 @@ export async function worldgen(
         };
       }
     });
-    const systemInterfaceName = `I${system.basename}`;
-    const output = renderSystemInterface({
-      name: systemInterfaceName,
-      functionPrefix: config.namespace === "" ? "" : `${config.namespace}__`,
-      functions,
-      errors,
-      imports,
-    });
-    // write to file
-    const fullOutputPath = path.join(worldgenBaseDirectory, systemInterfaceName + ".sol");
-    await formatAndWriteSolidity(output, fullOutputPath, "Generated system interface");
 
-    // prepare imports for IWorld
-    systemInterfaceImports.push({
-      symbol: systemInterfaceName,
-      fromPath: `${systemInterfaceName}.sol`,
-      usedInPath: "./",
-    });
+    const systemInterfaceName = `I${system.basename}`;
+    const fileName = `${systemInterfaceName}.sol`;
+
+    const parsedPath = path.parse(system.path);
+    if (parsedPath.dir === "src/systems") {
+      const output = renderSystemInterface({
+        name: systemInterfaceName,
+        functionPrefix: "",
+        functions,
+        errors,
+        imports,
+      });
+
+      // write to file
+      const fullOutputPath = path.join(worldgenBaseDirectory, fileName);
+      await formatAndWriteSolidity(output, fullOutputPath, "Generated system interface");
+
+      // prepare imports for IWorld
+      systemInterfaceImports.push({
+        symbol: systemInterfaceName,
+        fromPath: `${systemInterfaceName}.sol`,
+        usedInPath: "./",
+      });
+    } else {
+      const namespace = path.parse(parsedPath.dir).base;
+      const directory = path.join(worldgenBaseDirectory, namespace);
+
+      const output = renderSystemInterface({
+        name: systemInterfaceName,
+        functionPrefix: `${namespace}__`,
+        functions,
+        errors,
+        imports,
+      });
+
+      // write to file
+      const fullOutputPath = path.join(directory, fileName);
+      await formatAndWriteSolidity(output, fullOutputPath, "Generated system interface");
+
+      // prepare imports for IWorld
+      systemInterfaceImports.push({
+        symbol: `${namespace}__${systemInterfaceName}`,
+        alias: systemInterfaceName,
+        fromPath: path.join(namespace, fileName),
+        usedInPath: "./",
+      });
+    }
   }
 
   // render IWorld
