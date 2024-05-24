@@ -47,7 +47,9 @@ export async function worldgen(
     const fileName = `${systemInterfaceName}.sol`;
 
     const parsedPath = path.parse(system.path);
-    if (parsedPath.dir === "src/systems") {
+
+    console.log(parsedPath.dir);
+    if (parsedPath.dir === "src/systems" || !parsedPath.dir.includes("src/systems")) {
       const output = renderSystemInterface({
         name: systemInterfaceName,
         functionPrefix: "",
