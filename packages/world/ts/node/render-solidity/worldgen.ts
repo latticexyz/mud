@@ -6,6 +6,7 @@ import { renderWorldInterface } from "./renderWorldInterface";
 import { resolveWorldConfig } from "../../config/resolveWorldConfig";
 import { World as WorldConfig } from "../../config/v2/output";
 import { worldToV1 } from "../../config/v2/compat";
+import { labelToResource } from "@latticexyz/common";
 
 export async function worldgen(
   configV2: WorldConfig,
@@ -23,6 +24,8 @@ export async function worldgen(
 
   const systemInterfaceImports: RelativeImportDatum[] = [];
   for (const system of systems) {
+    const resource = labelToResource(system.basename);
+
     const data = readFileSync(system.path, "utf8");
     // get external funcions from a contract
     const { functions, errors, symbolImports } = contractToInterface(data, system.basename);
@@ -43,9 +46,10 @@ export async function worldgen(
       }
     });
     const systemInterfaceName = `I${system.basename}`;
+
     const output = renderSystemInterface({
       name: systemInterfaceName,
-      functionPrefix: config.namespace === "" ? "" : `${config.namespace}__`,
+      functionPrefix: `${resource.namespace}__`,
       functions,
       errors,
       imports,
