@@ -1,6 +1,6 @@
 [profile.default]
 # check all "WARNING:" comments before changing major solidity versions
-solc = "0.8.24"
+solc = "0.8.26"
 ffi = false
 fuzz_runs = 256
 optimizer = true
