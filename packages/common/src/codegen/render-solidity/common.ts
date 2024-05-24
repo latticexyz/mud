@@ -105,8 +105,9 @@ export function renderImports(imports: ImportDatum[]): string {
  */
 export function renderRelativeImports(imports: RelativeImportDatum[]): string {
   return renderAbsoluteImports(
-    imports.map(({ symbol, fromPath, usedInPath }) => ({
+    imports.map(({ symbol, alias, fromPath, usedInPath }) => ({
       symbol,
+      alias,
       path: solidityRelativeImportPath(fromPath, usedInPath),
     })),
   );
@@ -119,11 +120,12 @@ export function renderRelativeImports(imports: RelativeImportDatum[]): string {
 export function renderAbsoluteImports(imports: AbsoluteImportDatum[]): string {
   // Aggregate symbols by import path, also deduplicating them
   const aggregatedImports = new Map<string, Set<string>>();
-  for (const { symbol, path } of imports) {
+  for (const { symbol, path, alias } of imports) {
     if (!aggregatedImports.has(path)) {
       aggregatedImports.set(path, new Set());
     }
-    aggregatedImports.get(path)?.add(symbol);
+    console.log(alias);
+    aggregatedImports.get(path)?.add(alias ? `${symbol} as ${alias}` : symbol);
   }
   // Render imports
   const renderedImports = [];

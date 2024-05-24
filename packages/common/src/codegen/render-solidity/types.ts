@@ -1,10 +1,12 @@
 export interface AbsoluteImportDatum {
   symbol: string;
+  alias?: string;
   path: string;
 }
 
 export interface RelativeImportDatum {
   symbol: string;
+  alias?: string;
   fromPath: string;
   usedInPath: string;
 }
