@@ -2,10 +2,10 @@ import type { CommandModule } from "yargs";
 import { loadConfig } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
 import { worldgen } from "@latticexyz/world/node";
-import { getSrcDirectory } from "@latticexyz/common/foundry";
+import { getOutDirectory, getSrcDirectory } from "@latticexyz/common/foundry";
 import path from "path";
 import { rmSync } from "fs";
-import { getExistingContracts } from "../utils/getExistingContracts";
+import { getExistingDatas } from "../utils/getExistingDatas";
 
 type Options = {
   configPath?: string;
@@ -38,8 +38,9 @@ const commandModule: CommandModule<Options, Options> = {
 
 export async function worldgenHandler(args: Options) {
   const srcDir = args.srcDir ?? (await getSrcDirectory());
+  const outDir = await getOutDirectory();
 
-  const existingContracts = getExistingContracts(srcDir);
+  const existingContracts = getExistingDatas(outDir);
 
   // Load the config
   const mudConfig = args.config ?? ((await loadConfig(args.configPath)) as WorldConfig);
