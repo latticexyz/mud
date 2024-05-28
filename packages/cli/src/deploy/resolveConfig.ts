@@ -3,12 +3,12 @@ import { resolveWorldConfig } from "@latticexyz/world/internal";
 import { Config, ConfigInput, Library, System, WorldFunction } from "./common";
 import { resourceToHex } from "@latticexyz/common";
 import { Hex, toFunctionSelector, toFunctionSignature } from "viem";
+import { getExistingDatas } from "../utils/getExistingDatas";
 import { getContractData } from "../utils/getContractData";
 import { configToTables } from "./configToTables";
 import { groupBy } from "@latticexyz/common/utils";
 import { findLibraries } from "./findLibraries";
 import { createPrepareDeploy } from "./createPrepareDeploy";
-import { getExistingDatas } from "../utils/getExistingDatas";
 
 // TODO: this should be replaced by https://github.com/latticexyz/mud/issues/1668
 
