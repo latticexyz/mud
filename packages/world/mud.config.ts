@@ -116,5 +116,10 @@ export default defineWorld({
     // TODO: add support for inheritance to worldgen
     // (see: https://github.com/latticexyz/mud/issues/631)
     "StoreRegistrationSystem",
+    "PayableFallbackSystem",
+    "TestSystem",
+    "UtilsTestSystem",
+    "WorldBalanceTestSystem",
+    "WorldTestSystem",
   ],
 });
