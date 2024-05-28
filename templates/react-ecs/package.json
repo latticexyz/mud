@@ -6,6 +6,7 @@
     "dev": "mprocs",
     "dev:client": "pnpm --filter 'client' run dev",
     "dev:contracts": "pnpm --filter 'contracts' dev",
+    "dev:indexer": "pnpm exec node_modules/@latticexyz/store-indexer/dist/bin/sqlite-indexer.js",
     "foundry:up": "curl -L https://foundry.paradigm.xyz | bash && bash $HOME/.foundry/bin/foundryup",
     "mud:up": "pnpm mud set-version --tag main && pnpm install",
     "prepare": "(forge --version || pnpm foundry:up)",
@@ -13,6 +14,7 @@
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../packages/cli",
+    "@latticexyz/store-indexer": "link:../../packages/store-indexer",
     "@latticexyz/worlds-explorer-next": "link:../../packages/worlds-explorer-next",
     "@types/debug": "4.1.7",
     "@typescript-eslint/eslint-plugin": "7.1.1",
