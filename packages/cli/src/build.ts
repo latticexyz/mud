@@ -3,12 +3,13 @@ import { tablegen } from "@latticexyz/store/codegen";
 import { worldgen } from "@latticexyz/world/node";
 import { World as WorldConfig } from "@latticexyz/world";
 import { forge, getRemappings } from "@latticexyz/common/foundry";
-import { getExistingContracts } from "./utils/getExistingContracts";
 import { execa } from "execa";
+import { getExistingDatas } from "./utils/getExistingDatas";
 
 type BuildOptions = {
   foundryProfile?: string;
   srcDir: string;
+  outDir: string;
   /**
    * Path to `mud.config.ts`. We use this as the "project root" to resolve other relative paths.
    *
@@ -22,6 +23,7 @@ export async function build({
   configPath,
   config,
   srcDir,
+  outDir,
   foundryProfile = process.env.FOUNDRY_PROFILE,
 }: BuildOptions): Promise<void> {
   const outPath = path.join(srcDir, config.codegen.outputDirectory);
@@ -29,7 +31,7 @@ export async function build({
 
   await Promise.all([
     tablegen({ configPath, config, remappings }),
-    worldgen(config, getExistingContracts(srcDir), outPath),
+    worldgen(config, getExistingDatas(outDir), outPath),
   ]);
 
   await forge(["build"], { profile: foundryProfile });

@@ -2,7 +2,7 @@ import type { CommandModule } from "yargs";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
 
-import { getSrcDirectory } from "@latticexyz/common/foundry";
+import { getOutDirectory, getSrcDirectory } from "@latticexyz/common/foundry";
 import { build } from "../build";
 
 type Options = {
@@ -26,8 +26,9 @@ const commandModule: CommandModule<Options, Options> = {
     const configPath = await resolveConfigPath(opts.configPath);
     const config = (await loadConfig(configPath)) as WorldConfig;
     const srcDir = await getSrcDirectory();
+    const outDir = await getOutDirectory();
 
-    await build({ configPath, config, srcDir, foundryProfile: opts.profile });
+    await build({ configPath, config, srcDir, outDir, foundryProfile: opts.profile });
 
     process.exit(0);
   },
