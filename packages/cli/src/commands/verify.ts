@@ -4,12 +4,12 @@ import { loadConfig } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
 import { resolveWorldConfig } from "@latticexyz/world/internal";
 import { worldToV1 } from "@latticexyz/world/config/v2";
-import { getOutDirectory, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
-import { getExistingContracts } from "../utils/getExistingContracts";
+import { getOutDirectory, getRpcUrl } from "@latticexyz/common/foundry";
 import { getContractData } from "../utils/getContractData";
 import { Hex, createWalletClient, http } from "viem";
 import chalk from "chalk";
 import { configToModules } from "../deploy/configToModules";
+import { getExistingDatas } from "../utils/getExistingDatas";
 
 const verifyOptions = {
   deployerAddress: {
@@ -24,7 +24,6 @@ const verifyOptions = {
     type: "boolean",
     desc: "Enable batch processing of RPC requests in viem client (defaults to batch size of 100 and wait of 1s)",
   },
-  srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
   verifier: { type: "string", desc: "The verifier to use. Defaults to blockscout", default: "blockscout" },
   verifierUrl: {
     type: "string",
@@ -49,7 +48,6 @@ const commandModule: CommandModule<Options, Options> = {
     const configV2 = (await loadConfig(opts.configPath)) as WorldConfig;
     const config = worldToV1(configV2);
 
-    const srcDir = opts.srcDir ?? (await getSrcDirectory(profile));
     const outDir = await getOutDirectory(profile);
 
     const rpc = opts.rpc ?? (await getRpcUrl(profile));
@@ -70,7 +68,7 @@ const commandModule: CommandModule<Options, Options> = {
       }),
     });
 
-    const contractNames = getExistingContracts(srcDir).map(({ basename }) => basename);
+    const contractNames = getExistingDatas(outDir).map(({ basename }) => basename);
     const resolvedWorldConfig = resolveWorldConfig(config, contractNames);
 
     const systems = Object.keys(resolvedWorldConfig.systems).map((name) => {
