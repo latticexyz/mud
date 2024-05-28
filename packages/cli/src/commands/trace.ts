@@ -4,16 +4,16 @@ import { ethers } from "ethers";
 
 import { loadConfig } from "@latticexyz/config/node";
 import { MUDError } from "@latticexyz/common/errors";
-import { cast, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
+import { cast, getOutDirectory, getRpcUrl } from "@latticexyz/common/foundry";
 import { resolveWorldConfig } from "@latticexyz/world/internal";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import worldConfig from "@latticexyz/world/mud.config";
 import { resourceToHex } from "@latticexyz/common";
-import { getExistingContracts } from "../utils/getExistingContracts";
 import { createClient, http } from "viem";
 import { getChainId } from "viem/actions";
 import { World as WorldConfig } from "@latticexyz/world";
 import { worldToV1 } from "@latticexyz/world/config/v2";
+import { getExistingDatas } from "../utils/getExistingDatas";
 
 // TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
 const systemsTableId = resourceToHex({
@@ -53,11 +53,11 @@ const commandModule: CommandModule<Options, Options> = {
   async handler(args) {
     args.profile ??= process.env.FOUNDRY_PROFILE;
     const { profile } = args;
-    args.srcDir ??= await getSrcDirectory(profile);
     args.rpc ??= await getRpcUrl(profile);
-    const { tx, configPath, srcDir, rpc } = args;
+    const { tx, configPath, rpc } = args;
+    const outDir = await getOutDirectory(profile);
 
-    const existingContracts = getExistingContracts(srcDir);
+    const existingContracts = getExistingDatas(outDir);
 
     // Load the config
     const configV2 = (await loadConfig(configPath)) as WorldConfig;
