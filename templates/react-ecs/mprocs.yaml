@@ -14,5 +14,4 @@ procs:
     env:
       RPC_HTTP_URL: "http://127.0.0.1:8545"
   explorer:
-    cwd: ../../packages/worlds-explorer/
-    shell: pnpm run dev
+    shell: cd node_modules/@latticexyz/worlds-explorer-next && pnpm run start -p 3690
