@@ -3,8 +3,8 @@ import { tablegen } from "@latticexyz/store/codegen";
 import { worldgen } from "@latticexyz/world/node";
 import { World as WorldConfig } from "@latticexyz/world";
 import { forge, getRemappings } from "@latticexyz/common/foundry";
-import { execa } from "execa";
 import { getExistingDatas } from "./utils/getExistingDatas";
+import { execa } from "execa";
 
 type BuildOptions = {
   foundryProfile?: string;

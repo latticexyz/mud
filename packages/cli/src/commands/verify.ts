@@ -5,11 +5,11 @@ import { World as WorldConfig } from "@latticexyz/world";
 import { resolveWorldConfig } from "@latticexyz/world/internal";
 import { worldToV1 } from "@latticexyz/world/config/v2";
 import { getOutDirectory, getRpcUrl } from "@latticexyz/common/foundry";
+import { getExistingDatas } from "../utils/getExistingDatas";
 import { getContractData } from "../utils/getContractData";
 import { Hex, createWalletClient, http } from "viem";
 import chalk from "chalk";
 import { configToModules } from "../deploy/configToModules";
-import { getExistingDatas } from "../utils/getExistingDatas";
 
 const verifyOptions = {
   deployerAddress: {

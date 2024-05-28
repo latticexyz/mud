@@ -9,11 +9,11 @@ import { resolveWorldConfig } from "@latticexyz/world/internal";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import worldConfig from "@latticexyz/world/mud.config";
 import { resourceToHex } from "@latticexyz/common";
+import { getExistingDatas } from "../utils/getExistingDatas";
 import { createClient, http } from "viem";
 import { getChainId } from "viem/actions";
 import { World as WorldConfig } from "@latticexyz/world";
 import { worldToV1 } from "@latticexyz/world/config/v2";
-import { getExistingDatas } from "../utils/getExistingDatas";
 
 // TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
 const systemsTableId = resourceToHex({
