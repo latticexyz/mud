@@ -11,6 +11,6 @@
     "dev:indexer": "pnpm clean && pnpm exec node_modules/@latticexyz/store-indexer/dist/bin/sqlite-indexer.js"
   },
   "dependencies": {
-    "@latticexyz/store-indexer": "^2.0.11"
+    "@latticexyz/store-indexer": "link:../../packages/store-indexer"
   }
 }
