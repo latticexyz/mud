@@ -23,7 +23,10 @@ export async function worldgen(
 
   const systemInterfaceImports: RelativeImportDatum[] = [];
   for (const system of systems) {
-    const data = readFileSync(system.path, "utf8");
+    const abi = JSON.parse(readFileSync(system.path, "utf8"));
+    const systemPath = Object.keys(abi.metadata.settings.compilationTarget)[0];
+
+    const data = readFileSync(systemPath, "utf8");
     // get external funcions from a contract
     const { functions, errors, symbolImports } = contractToInterface(data, system.basename);
     const imports = symbolImports.map((symbolImport) => {
@@ -31,7 +34,7 @@ export async function worldgen(
         // relative import
         return {
           symbol: symbolImport.symbol,
-          fromPath: path.join(path.dirname(system.path), symbolImport.path),
+          fromPath: path.join(path.dirname(systemPath), symbolImport.path),
           usedInPath: worldgenBaseDirectory,
         };
       } else {
