@@ -86,7 +86,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     await build({ configPath, config: configV2, srcDir, foundryProfile: profile });
   }
 
-  const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
+  const resolvedConfig = resolveConfig({ config, forgeOutDir: outDir });
   const modules = await configToModules(configV2, outDir);
 
   const account = await (async () => {

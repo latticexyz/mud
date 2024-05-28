@@ -3,22 +3,20 @@ import { resolveWorldConfig } from "@latticexyz/world/internal";
 import { Config, ConfigInput, Library, System, WorldFunction } from "./common";
 import { resourceToHex } from "@latticexyz/common";
 import { Hex, toFunctionSelector, toFunctionSignature } from "viem";
-import { getExistingContracts } from "../utils/getExistingContracts";
 import { getContractData } from "../utils/getContractData";
 import { configToTables } from "./configToTables";
 import { groupBy } from "@latticexyz/common/utils";
 import { findLibraries } from "./findLibraries";
 import { createPrepareDeploy } from "./createPrepareDeploy";
+import { getExistingDatas } from "../utils/getExistingDatas";
 
 // TODO: this should be replaced by https://github.com/latticexyz/mud/issues/1668
 
 export function resolveConfig<config extends ConfigInput>({
   config,
-  forgeSourceDir,
   forgeOutDir,
 }: {
   config: config;
-  forgeSourceDir: string;
   forgeOutDir: string;
 }): Config<config> {
   const libraries = findLibraries(forgeOutDir).map((library): Library => {
@@ -36,7 +34,7 @@ export function resolveConfig<config extends ConfigInput>({
   const tables = configToTables(config);
 
   // TODO: should the config parser/loader help with resolving systems?
-  const contractNames = getExistingContracts(forgeSourceDir).map(({ basename }) => basename);
+  const contractNames = getExistingDatas(forgeOutDir).map(({ basename }) => basename);
   const resolvedConfig = resolveWorldConfig(config, contractNames);
   const baseSystemContractData = getContractData("System.sol", "System", forgeOutDir);
   const baseSystemFunctions = baseSystemContractData.abi
