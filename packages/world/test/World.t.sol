@@ -57,14 +57,10 @@ import { AddressArray } from "./codegen/tables/AddressArray.sol";
 import { DelegationControlMock } from "./DelegationControlMock.sol";
 import { createWorld } from "./createWorld.sol";
 import { createInitModule } from "./createInitModule.sol";
+import { WorldTestSystemReturn } from "./WorldTestSystemReturn.sol";
 
 interface IWorldTestSystem {
   function testNamespace__err(string memory input) external pure;
-}
-
-struct WorldTestSystemReturn {
-  address sender;
-  bytes32 input;
 }
 
 contract WorldTestSystem is System {

@@ -8,10 +8,15 @@ import { IWorldKernel } from "../../IWorldKernel.sol";
 
 import { IAccessManagementSystem } from "./IAccessManagementSystem.sol";
 import { IBalanceTransferSystem } from "./IBalanceTransferSystem.sol";
+import { ITestSystem } from "./ITestSystem.sol";
 import { IBatchCallSystem } from "./IBatchCallSystem.sol";
 import { IModuleInstallationSystem } from "./IModuleInstallationSystem.sol";
 import { IWorldRegistrationSystem } from "./IWorldRegistrationSystem.sol";
 import { IRegistrationSystem } from "./IRegistrationSystem.sol";
+import { IUtilsTestSystem } from "./IUtilsTestSystem.sol";
+import { IPayableFallbackSystem } from "./IPayableFallbackSystem.sol";
+import { IWorldTestSystem } from "./IWorldTestSystem.sol";
+import { IWorldBalanceTestSystem } from "./IWorldBalanceTestSystem.sol";
 
 /**
  * @title IBaseWorld
@@ -25,8 +30,26 @@ interface IBaseWorld is
   IWorldKernel,
   IAccessManagementSystem,
   IBalanceTransferSystem,
+  ITestSystem,
+  IBatchCallSystem,
+  IAccessManagementSystem,
+  IBalanceTransferSystem,
   IBatchCallSystem,
   IModuleInstallationSystem,
   IWorldRegistrationSystem,
-  IRegistrationSystem
+  IRegistrationSystem,
+  IModuleInstallationSystem,
+  IRegistrationSystem,
+  ITestSystem,
+  ITestSystem,
+  ITestSystem,
+  IUtilsTestSystem,
+  IPayableFallbackSystem,
+  IWorldTestSystem,
+  IWorldBalanceTestSystem,
+  IUtilsTestSystem,
+  IPayableFallbackSystem,
+  IWorldTestSystem,
+  IWorldBalanceTestSystem,
+  IWorldRegistrationSystem
 {}

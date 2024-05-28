@@ -2,7 +2,7 @@ import glob from "glob";
 import path, { basename } from "path";
 import { rmSync } from "fs";
 import { loadConfig } from "@latticexyz/config/node";
-import { getSrcDirectory } from "@latticexyz/common/foundry";
+import { getOutDirectory, getSrcDirectory } from "@latticexyz/common/foundry";
 import { World as WorldConfig } from "@latticexyz/world";
 import { worldgen } from "@latticexyz/world/node";
 
@@ -10,11 +10,12 @@ import { worldgen } from "@latticexyz/world/node";
 const configPath = undefined;
 const clean = false;
 const srcDir = await getSrcDirectory();
+const outDir = await getOutDirectory();
 
 // Get a list of all contract names
-const existingContracts = glob.sync(`${srcDir}/**/*.sol`).map((path) => ({
+const existingContracts = glob.sync(`${outDir}/**/*.json`).map((path) => ({
   path,
-  basename: basename(path, ".sol"),
+  basename: basename(path, ".json"),
 }));
 
 // Load and resolve the config
