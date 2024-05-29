@@ -1,4 +1,4 @@
-import { db } from "../tables/route";
+import { db } from "../db";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
