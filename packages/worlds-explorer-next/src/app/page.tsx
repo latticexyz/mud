@@ -1,6 +1,6 @@
 "use client";
 
-import { Select, Flex, Button, Table, TextArea, Container } from "@radix-ui/themes";
+import { Select, Flex, Button, Table, TextField, Container } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
@@ -37,10 +37,13 @@ export function TableSelector({
 
 export function SQLEditor() {
   return (
-    <>
-      <TextArea placeholder="SQL query…" />
+    <Flex direction="row" gap="2">
+      <TextField.Root style={{ flex: "1" }} placeholder="SQL query…">
+        <TextField.Slot></TextField.Slot>
+      </TextField.Root>
+
       <Button>Execute query</Button>
-    </>
+    </Flex>
   );
 }
 
