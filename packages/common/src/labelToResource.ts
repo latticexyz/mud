@@ -1,4 +1,4 @@
-import { ROOT_NAMESPACE } from "./resourceToLabel";
+import { ROOT_NAMESPACE } from "./common";
 
 export function labelToResource(label: string): {
   readonly namespace: string;

@@ -1,4 +1,4 @@
-export const ROOT_NAMESPACE = "";
+import { ROOT_NAMESPACE } from "./common";
 
 export type ResourceLabel<
   namespace extends string = string,
