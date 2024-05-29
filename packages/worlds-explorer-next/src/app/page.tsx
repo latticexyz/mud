@@ -38,7 +38,20 @@ export function SQLEditor() {
   );
 }
 
-export function TablesViewer() {
+export function TablesViewer({ table }: { table: string | undefined }) {
+  const rows = useQuery({
+    queryKey: ["rows", { table }],
+    queryFn: async () => {
+      const response = await fetch(`/api/rows?table=${table}`);
+      return response.json();
+    },
+    select: (data) => data.rows,
+    enabled: Boolean(table),
+    refetchInterval: 15000,
+  });
+
+  console.log("rows", rows);
+
   return (
     <Table.Root>
       <Table.Header>
@@ -74,7 +87,6 @@ export function TablesViewer() {
 
 export default function Home() {
   const [table, setTable] = useState<string | undefined>();
-
   const { data: tables } = useQuery({
     queryKey: ["tables"],
     queryFn: async () => {
@@ -84,14 +96,6 @@ export default function Home() {
     select: (data) => data.map((table: { name: string }) => table.name),
     refetchInterval: 15000,
   });
-
-  console.log(tables);
-
-  const processCwd = process.cwd().split("node_modules")[0];
-  console.log(processCwd);
-
-  // const rows = db.prepare("SELECT * FROM '0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b__app__counter';").all();
-  // console.log(rows);
 
   useEffect(() => {
     if (!table && tables) {
@@ -103,7 +107,7 @@ export default function Home() {
     <Flex direction="column" gap="2">
       <SQLEditor />
       <TableSelector value={table} onChange={setTable} options={tables} />
-      <TablesViewer />
+      <TablesViewer table={table} />
     </Flex>
   );
 }
