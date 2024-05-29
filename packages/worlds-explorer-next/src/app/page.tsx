@@ -39,7 +39,7 @@ export function SQLEditor() {
 }
 
 export function TablesViewer({ table }: { table: string | undefined }) {
-  const rows = useQuery({
+  const { data: rows } = useQuery({
     queryKey: ["rows", { table }],
     queryFn: async () => {
       const response = await fetch(`/api/rows?table=${table}`);
@@ -50,7 +50,16 @@ export function TablesViewer({ table }: { table: string | undefined }) {
     refetchInterval: 15000,
   });
 
-  console.log("rows", rows);
+  const { data: schema } = useQuery({
+    queryKey: ["schema", { table }],
+    queryFn: async () => {
+      const response = await fetch(`/api/schema?table=${table}`);
+      return response.json();
+    },
+    select: (data) => data.schema,
+  });
+
+  console.log("rows", rows, schema);
 
   return (
     <Table.Root>
@@ -93,7 +102,7 @@ export default function Home() {
       const response = await fetch("/api/tables");
       return response.json();
     },
-    select: (data) => data.map((table: { name: string }) => table.name),
+    select: (data) => data.tables.map((table: { name: string }) => table.name),
     refetchInterval: 15000,
   });
 
