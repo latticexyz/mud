@@ -1,7 +1,4 @@
-import Database from "better-sqlite3";
 import { Select, Flex, Button, Table, TextArea } from "@radix-ui/themes";
-
-const db = new Database("/Users/karolis/Code/Lattice.xyz/mud/templates/react-ecs/packages/explorer/indexer.db");
 
 export function TableSelector() {
   return (
@@ -72,9 +69,6 @@ export function TablesViewer() {
 }
 
 export default async function Home() {
-  const tables = db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all();
-  console.log(tables);
-
   const processCwd = process.cwd().split("node_modules")[0];
   console.log(processCwd);
 
