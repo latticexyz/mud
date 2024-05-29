@@ -47,7 +47,7 @@ export function resolveConfig<config extends ConfigInput>({
     const resource = labelToResource(systemName);
 
     const namespace = resource.namespace;
-    const name = system.name;
+    const name = resource.name;
     const systemId = resourceToHex({ type: "system", namespace, name });
     const contractData = getContractData(`${systemName}.sol`, systemName, forgeOutDir);
 
