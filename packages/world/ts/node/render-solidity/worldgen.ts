@@ -24,8 +24,6 @@ export async function worldgen(
 
   const systemInterfaceImports: RelativeImportDatum[] = [];
   for (const system of systems) {
-    const resource = labelToResource(system.basename);
-
     const data = readFileSync(system.path, "utf8");
     // get external funcions from a contract
     const { functions, errors, symbolImports } = contractToInterface(data, system.basename);
@@ -46,7 +44,7 @@ export async function worldgen(
       }
     });
     const systemInterfaceName = `I${system.basename}`;
-
+    const resource = labelToResource(system.basename);
     const output = renderSystemInterface({
       name: systemInterfaceName,
       functionPrefix: resource.namespace === "" ? "" : `${resource.namespace}__`,
