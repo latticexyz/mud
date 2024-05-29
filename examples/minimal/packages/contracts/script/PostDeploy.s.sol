@@ -6,9 +6,11 @@ import { console } from "forge-std/console.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+import { Systems } from "@latticexyz/world/src/codegen/tables/Systems.sol";
 
 import { MessageTable } from "../src/codegen/index.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { namespace__ChatNamespacedSystem } from "../src/systems/namespace__ChatNamespacedSystem.sol";
 
 contract PostDeploy is Script {
   using WorldResourceIdInstance for ResourceId;
@@ -22,6 +24,16 @@ contract PostDeploy is Script {
 
     // Start broadcasting transactions from the deployer account
     vm.startBroadcast(deployerPrivateKey);
+
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "ChatNamespacedSy"
+    });
+    address chatNamespacedSystem = Systems.getSystem(systemId);
+
+    // Grant this system access to MessageTable
+    IWorld(worldAddress).grantAccess(MessageTable._tableId, chatNamespacedSystem);
 
     // ------------------ EXAMPLES ------------------
 
