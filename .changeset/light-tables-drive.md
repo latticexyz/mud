@@ -4,7 +4,7 @@
 
 Fixed `ERC20Module` to register the `TotalSupply` table when creating a new token.
 
-You can use register the table on existing Worlds with a Forge script:
+You can register the table on existing Worlds with a Forge script:
 
 ```solidity
 // SPDX-License-Identifier: MIT
