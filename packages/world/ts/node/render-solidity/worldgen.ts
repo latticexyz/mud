@@ -49,7 +49,7 @@ export async function worldgen(
 
     const output = renderSystemInterface({
       name: systemInterfaceName,
-      functionPrefix: `${resource.namespace}__`,
+      functionPrefix: resource.namespace === "" ? "" : `${resource.namespace}__`,
       functions,
       errors,
       imports,
