@@ -4,6 +4,12 @@ import { Select, Flex, Button, Table, TextArea, Container } from "@radix-ui/them
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
+function bufferToBigInt(bufferData: number[]) {
+  const hexString = bufferData.map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  const bigIntValue = BigInt("0x" + hexString);
+  return bigIntValue;
+}
+
 export function TableSelector({
   value,
   onChange,
@@ -14,9 +20,9 @@ export function TableSelector({
   options: string[];
 }) {
   return (
-    <Container>
+    <div>
       <Select.Root value={value} onValueChange={onChange}>
-        <Select.Trigger />
+        <Select.Trigger style={{ width: "100%" }} placeholder="Select a table" />
         <Select.Content>
           {options?.map((option) => (
             <Select.Item key={option} value={option}>
@@ -25,7 +31,7 @@ export function TableSelector({
           ))}
         </Select.Content>
       </Select.Root>
-    </Container>
+    </div>
   );
 }
 
@@ -39,17 +45,6 @@ export function SQLEditor() {
 }
 
 export function TablesViewer({ table }: { table: string | undefined }) {
-  const { data: rows } = useQuery({
-    queryKey: ["rows", { table }],
-    queryFn: async () => {
-      const response = await fetch(`/api/rows?table=${table}`);
-      return response.json();
-    },
-    select: (data) => data.rows,
-    enabled: Boolean(table),
-    refetchInterval: 15000,
-  });
-
   const { data: schema } = useQuery({
     queryKey: ["schema", { table }],
     queryFn: async () => {
@@ -59,36 +54,48 @@ export function TablesViewer({ table }: { table: string | undefined }) {
     select: (data) => data.schema,
   });
 
-  console.log("rows", rows, schema);
+  const { data: rows } = useQuery({
+    queryKey: ["rows", { table }],
+    queryFn: async () => {
+      const response = await fetch(`/api/rows?table=${table}`);
+      return response.json();
+    },
+    select: (data) => {
+      return data.rows.map((row: object) => {
+        return Object.fromEntries(
+          Object.entries(row).map(([key, value]) => {
+            if (value?.type === "Buffer") {
+              return [key, bufferToBigInt(value?.data).toString()];
+            }
+            return [key, value];
+          }),
+        );
+      });
+    },
+    enabled: Boolean(table),
+    refetchInterval: 15000,
+  });
 
   return (
     <Table.Root>
       <Table.Header>
         <Table.Row>
-          <Table.ColumnHeaderCell>Full name</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Group</Table.ColumnHeaderCell>
+          {schema?.map((column: { name: string }) => (
+            <Table.ColumnHeaderCell key={column.name}>{column.name}</Table.ColumnHeaderCell>
+          ))}
         </Table.Row>
       </Table.Header>
 
       <Table.Body>
-        <Table.Row>
-          <Table.RowHeaderCell>Danilo Sousa</Table.RowHeaderCell>
-          <Table.Cell>danilo@example.com</Table.Cell>
-          <Table.Cell>Developer</Table.Cell>
-        </Table.Row>
-
-        <Table.Row>
-          <Table.RowHeaderCell>Zahra Ambessa</Table.RowHeaderCell>
-          <Table.Cell>zahra@example.com</Table.Cell>
-          <Table.Cell>Admin</Table.Cell>
-        </Table.Row>
-
-        <Table.Row>
-          <Table.RowHeaderCell>Jasper Eriksson</Table.RowHeaderCell>
-          <Table.Cell>jasper@example.com</Table.Cell>
-          <Table.Cell>Developer</Table.Cell>
-        </Table.Row>
+        {rows?.map((row: Record<string, string>, idx: number) => {
+          return (
+            <Table.Row key={idx}>
+              {schema?.map((column: { name: string }) => {
+                return <Table.Cell key={column.name}>{row[column.name]}</Table.Cell>;
+              })}
+            </Table.Row>
+          );
+        })}
       </Table.Body>
     </Table.Root>
   );
@@ -113,10 +120,12 @@ export default function Home() {
   }, [table, tables]);
 
   return (
-    <Flex direction="column" gap="2">
-      <SQLEditor />
-      <TableSelector value={table} onChange={setTable} options={tables} />
-      <TablesViewer table={table} />
-    </Flex>
+    <Container>
+      <Flex direction="column" gap="2">
+        <TableSelector value={table} onChange={setTable} options={tables} />
+        <SQLEditor />
+        <TablesViewer table={table} />
+      </Flex>
+    </Container>
   );
 }
