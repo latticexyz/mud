@@ -2,7 +2,7 @@
 
 import { Select, Flex, Button, Table, TextField, Container } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 function bufferToBigInt(bufferData: number[]) {
   const hexString = bufferData.map((byte) => byte.toString(16).padStart(2, "0")).join("");
@@ -34,28 +34,49 @@ export function TableSelector({
 }
 
 export function SQLEditor({
-  value,
-  onChange,
+  table,
+  setQuery,
+  tablesLoading,
 }: {
-  value: string | undefined;
-  onChange: React.Dispatch<React.SetStateAction<string | undefined>>;
+  table: string | undefined;
+  setQuery: React.Dispatch<React.SetStateAction<string | undefined>>;
+  tablesLoading: boolean;
 }) {
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(event.target.value);
+  const [deferredQuery, setDeferredQuery] = useState<string | undefined>("");
+
+  const submitQuery = (evt: FormEvent) => {
+    evt.preventDefault();
+    setQuery(deferredQuery);
   };
 
-  return (
-    <Flex direction="row" gap="2">
-      <TextField.Root style={{ flex: "1" }} placeholder="SQL query…" value={value} onChange={handleChange}>
-        <TextField.Slot></TextField.Slot>
-      </TextField.Root>
+  useEffect(() => {
+    if (table) {
+      const initialQuery = `SELECT * FROM '${table}' LIMIT 30`;
+      setQuery(initialQuery);
+      setDeferredQuery(initialQuery);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [table, tablesLoading]);
 
-      <Button>Execute query</Button>
-    </Flex>
+  return (
+    <form onSubmit={submitQuery}>
+      <Flex direction="row" gap="2">
+        <TextField.Root
+          style={{ flex: "1" }}
+          placeholder="SQL query…"
+          value={deferredQuery}
+          onChange={(evt) => setDeferredQuery(evt.target.value)}
+        >
+          <TextField.Slot></TextField.Slot>
+        </TextField.Root>
+
+        <Button type="submit">Execute query</Button>
+      </Flex>
+    </form>
   );
 }
 
-export function TablesViewer({ table }: { table: string | undefined }) {
+export function TablesViewer({ table, query }: { table: string | undefined; query: string | undefined }) {
   const { data: schema } = useQuery({
     queryKey: ["schema", { table }],
     queryFn: async () => {
@@ -66,9 +87,9 @@ export function TablesViewer({ table }: { table: string | undefined }) {
   });
 
   const { data: rows } = useQuery({
-    queryKey: ["rows", { table }],
+    queryKey: ["rows", { query }],
     queryFn: async () => {
-      const response = await fetch(`/api/rows?table=${table}`);
+      const response = await fetch(`/api/rows?query=${query}`);
       return response.json();
     },
     select: (data) => {
@@ -83,7 +104,7 @@ export function TablesViewer({ table }: { table: string | undefined }) {
         );
       });
     },
-    enabled: Boolean(table),
+    enabled: Boolean(table) && Boolean(query),
     refetchInterval: 15000,
   });
 
@@ -92,7 +113,9 @@ export function TablesViewer({ table }: { table: string | undefined }) {
       <Table.Header>
         <Table.Row>
           {schema?.map((column: { name: string }) => (
-            <Table.ColumnHeaderCell key={column.name}>{column.name}</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell key={column.name}>
+              {column.name} ({column.type})
+            </Table.ColumnHeaderCell>
           ))}
         </Table.Row>
       </Table.Header>
@@ -116,7 +139,7 @@ export default function Home() {
   const [table, setTable] = useState<string | undefined>();
   const [query, setQuery] = useState<string | undefined>();
 
-  const { data: tables } = useQuery({
+  const { data: tables, isLoading: tablesLoading } = useQuery({
     queryKey: ["tables"],
     queryFn: async () => {
       const response = await fetch("/api/tables");
@@ -129,7 +152,6 @@ export default function Home() {
   useEffect(() => {
     if (!table && tables) {
       setTable(tables[0]);
-      setQuery(`SELECT * FROM ${tables[0]}`);
     }
   }, [table, tables]);
 
@@ -137,8 +159,8 @@ export default function Home() {
     <Container>
       <Flex direction="column" gap="2">
         <TableSelector value={table} onChange={setTable} options={tables} />
-        <SQLEditor value={query} onChange={setQuery} />
-        <TablesViewer table={table} />
+        <SQLEditor table={table} tablesLoading={tablesLoading} query={query} setQuery={setQuery} />
+        <TablesViewer table={table} query={query} />
       </Flex>
     </Container>
   );
