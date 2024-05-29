@@ -20,25 +20,33 @@ export function TableSelector({
   options: string[];
 }) {
   return (
-    <div>
-      <Select.Root value={value} onValueChange={onChange}>
-        <Select.Trigger style={{ width: "100%" }} placeholder="Select a table" />
-        <Select.Content>
-          {options?.map((option) => (
-            <Select.Item key={option} value={option}>
-              {option}
-            </Select.Item>
-          ))}
-        </Select.Content>
-      </Select.Root>
-    </div>
+    <Select.Root value={value} onValueChange={onChange}>
+      <Select.Trigger style={{ width: "100%" }} placeholder="Select a table" />
+      <Select.Content>
+        {options?.map((option) => (
+          <Select.Item key={option} value={option}>
+            {option}
+          </Select.Item>
+        ))}
+      </Select.Content>
+    </Select.Root>
   );
 }
 
-export function SQLEditor() {
+export function SQLEditor({
+  value,
+  onChange,
+}: {
+  value: string | undefined;
+  onChange: React.Dispatch<React.SetStateAction<string | undefined>>;
+}) {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(event.target.value);
+  };
+
   return (
     <Flex direction="row" gap="2">
-      <TextField.Root style={{ flex: "1" }} placeholder="SQL query…">
+      <TextField.Root style={{ flex: "1" }} placeholder="SQL query…" value={value} onChange={handleChange}>
         <TextField.Slot></TextField.Slot>
       </TextField.Root>
 
@@ -106,6 +114,8 @@ export function TablesViewer({ table }: { table: string | undefined }) {
 
 export default function Home() {
   const [table, setTable] = useState<string | undefined>();
+  const [query, setQuery] = useState<string | undefined>();
+
   const { data: tables } = useQuery({
     queryKey: ["tables"],
     queryFn: async () => {
@@ -119,6 +129,7 @@ export default function Home() {
   useEffect(() => {
     if (!table && tables) {
       setTable(tables[0]);
+      setQuery(`SELECT * FROM ${tables[0]}`);
     }
   }, [table, tables]);
 
@@ -126,7 +137,7 @@ export default function Home() {
     <Container>
       <Flex direction="column" gap="2">
         <TableSelector value={table} onChange={setTable} options={tables} />
-        <SQLEditor />
+        <SQLEditor value={query} onChange={setQuery} />
         <TablesViewer table={table} />
       </Flex>
     </Container>
