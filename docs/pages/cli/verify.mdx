@@ -84,14 +84,14 @@ These contracts are not deployed the first time any MUD `World` is deployed on t
 (1) These are the addresses for MUD version 2.0.11.
 Future versions may have different addresses.
 
-Because the source code of these contracts comes in a package in `node-modules` rather than as part of the `World` itself, by default `mud verify` does not verify them.
+Because the source code of these contracts comes in a package in `node-modules` rather than as part of the forge project, by default `mud verify` does not verify them.
 
 Here are the steps to verify these contracts if you deploy on a blockchain where they are not verified yet.
 
 1. Go to [the releases page](https://github.com/latticexyz/mud/releases) and get the commit for the last release.
    At writing the release is 2.0.11, and the commit is `69b5c15c14fe3fe1db26cdcc19152fb044824a68`.
 
-1. Ensure you have [all the prerequisited](/contribute#local-development-setup) installed.
+1. Ensure you have [all the prerequisites](/contribute#local-development-setup) installed.
 
 1. Clone and build the MUD repository at that release
 
@@ -104,4 +104,40 @@ Here are the steps to verify these contracts if you deploy on a blockchain where
    pnpm build
    ```
 
-1.
+1. Specify the private key for an address that has enough ETH to deploy a `World` on the blockchain, and the URL to access that blockchain.
+
+   ```sh copy
+   export PRIVATE_KEY=0x ** key goes here **
+   BLOCKCHAIN_URL=https://rpc.garnetchain.com
+   ```
+
+1. Go to one of the template directories and deploy a `World`.
+
+   ```sh copy
+   cd templates/vanilla/packages/contracts
+   pnpm install
+   pnpm mud deploy --rpc $BLOCKCHAIN_URL
+   ```
+
+1. Verify the `World`.
+   For example, for Blockscout you might use:
+
+   ```sh copy
+   WORLD_ADDRESS=0x9c05e54b7e20eb8e7cc8f470df06f0e8fb02a21c
+   export ETHERSCAN_API_KEY= ** key goes here **
+   forge verify-contract $WORLD_ADDRESS IWorld --rpc-url $BLOCKCHAIN_URL --verifier blockscout --verifier-url https://explorer.garnetchain.com/api
+   ```
+
+1. Verify the core contracts. Again, for Blockscout use something like:
+
+   ```sh copy
+   VERIFIER_URL=https://explorer.garnetchain.com/api
+   forge verify-contract --rpc-url $BLOCKCHAIN_URL --verifier blockscout --verifier-url $VERIFIER_URL 0x17ffDEfF94ed0b80c493A179d4B3b09D6d71f627 IAccessManagementSystem
+   forge verify-contract --rpc-url $BLOCKCHAIN_URL --verifier blockscout --verifier-url $VERIFIER_URL 0x53E5c08d82A377167069Ade46d087Ab753538608 IBatchCallSystem
+   forge verify-contract --rpc-url $BLOCKCHAIN_URL --verifier blockscout --verifier-url $VERIFIER_URL 0xA274B9a7E743cd8dF3c6Fd0aBD47eD55Fc943BC3 IBalanceTransferSystem
+   forge verify-contract --rpc-url $BLOCKCHAIN_URL --verifier blockscout --verifier-url $VERIFIER_URL 0xd416f26aafcaaECa50b0dC35bd023e7286BE2961
+   forge verify-contract --rpc-url $BLOCKCHAIN_URL --verifier blockscout --verifier-url $VERIFIER_URL 0xDa4E062e8C69D39d9472945232a53F579904AC45
+   forge verify-contract --rpc-url $BLOCKCHAIN_URL --verifier blockscout --verifier-url $VERIFIER_URL 0x573802f86c51B61d7Cf620952217eC6Ce0537d2E
+   ```
+
+   Note that on Blockscout it doesn't matter which contract name you use, because when you tell it you wish to verify it looks in its database, sees that it verified this bytecode already, and uses that - but you still need to issue a `forge verify-contract` for the lookup to happen.
