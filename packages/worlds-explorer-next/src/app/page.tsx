@@ -9,8 +9,7 @@ function bufferToBigInt(bufferData: number[]) {
   const bigIntValue = BigInt("0x" + hexString);
   return bigIntValue;
 }
-
-export function TableSelector({
+function TableSelector({
   value,
   onChange,
   options,
@@ -32,8 +31,7 @@ export function TableSelector({
     </Select.Root>
   );
 }
-
-export function SQLEditor({
+function SQLEditor({
   table,
   setQuery,
   tablesLoading,
@@ -75,8 +73,7 @@ export function SQLEditor({
     </form>
   );
 }
-
-export function TablesViewer({ table, query }: { table: string | undefined; query: string | undefined }) {
+function TablesViewer({ table, query }: { table: string | undefined; query: string | undefined }) {
   const { data: schema } = useQuery({
     queryKey: ["schema", { table }],
     queryFn: async () => {
@@ -112,7 +109,7 @@ export function TablesViewer({ table, query }: { table: string | undefined; quer
     <Table.Root>
       <Table.Header>
         <Table.Row>
-          {schema?.map((column: { name: string }) => (
+          {schema?.map((column: { name: string; type: string }) => (
             <Table.ColumnHeaderCell key={column.name}>
               {column.name} ({column.type})
             </Table.ColumnHeaderCell>
@@ -159,7 +156,7 @@ export default function Home() {
     <Container>
       <Flex direction="column" gap="2">
         <TableSelector value={table} onChange={setTable} options={tables} />
-        <SQLEditor table={table} tablesLoading={tablesLoading} query={query} setQuery={setQuery} />
+        <SQLEditor table={table} tablesLoading={tablesLoading} setQuery={setQuery} />
         <TablesViewer table={table} query={query} />
       </Flex>
     </Container>
