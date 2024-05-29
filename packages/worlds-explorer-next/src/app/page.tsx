@@ -1,27 +1,31 @@
-import { Select, Flex, Button, Table, TextArea } from "@radix-ui/themes";
+"use client";
 
-export function TableSelector() {
+import { Select, Flex, Button, Table, TextArea, Container } from "@radix-ui/themes";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+
+export function TableSelector({
+  value,
+  onChange,
+  options,
+}: {
+  value: string | undefined;
+  onChange: (value: string) => void;
+  options: string[];
+}) {
   return (
-    <Select.Root defaultValue="apple">
-      <Select.Trigger>Select table</Select.Trigger>
-
-      <Select.Content>
-        <Select.Group>
-          <Select.Label>Fruits</Select.Label>
-          <Select.Item value="orange">Orange</Select.Item>
-          <Select.Item value="apple">Apple</Select.Item>
-          <Select.Item value="grape" disabled>
-            Grape
-          </Select.Item>
-        </Select.Group>
-        <Select.Separator />
-        <Select.Group>
-          <Select.Label>Vegetables</Select.Label>
-          <Select.Item value="carrot">Carrot</Select.Item>
-          <Select.Item value="potato">Potato</Select.Item>
-        </Select.Group>
-      </Select.Content>
-    </Select.Root>
+    <Container>
+      <Select.Root value={value} onValueChange={onChange}>
+        <Select.Trigger />
+        <Select.Content>
+          {options?.map((option) => (
+            <Select.Item key={option} value={option}>
+              {option}
+            </Select.Item>
+          ))}
+        </Select.Content>
+      </Select.Root>
+    </Container>
   );
 }
 
@@ -29,7 +33,7 @@ export function SQLEditor() {
   return (
     <>
       <TextArea placeholder="SQL query…" />
-      <Button>Let&apos;s go</Button>
+      <Button>Execute query</Button>
     </>
   );
 }
@@ -68,18 +72,37 @@ export function TablesViewer() {
   );
 }
 
-export default async function Home() {
+export default function Home() {
+  const [table, setTable] = useState<string | undefined>();
+
+  const { data: tables } = useQuery({
+    queryKey: ["tables"],
+    queryFn: async () => {
+      const response = await fetch("/api/tables");
+      return response.json();
+    },
+    select: (data) => data.map((table: { name: string }) => table.name),
+    refetchInterval: 15000,
+  });
+
+  console.log(tables);
+
   const processCwd = process.cwd().split("node_modules")[0];
   console.log(processCwd);
 
   // const rows = db.prepare("SELECT * FROM '0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b__app__counter';").all();
   // console.log(rows);
 
+  useEffect(() => {
+    if (!table && tables) {
+      setTable(tables[0]);
+    }
+  }, [table, tables]);
+
   return (
     <Flex direction="column" gap="2">
       <SQLEditor />
-
-      <TableSelector />
+      <TableSelector value={table} onChange={setTable} options={tables} />
       <TablesViewer />
     </Flex>
   );
