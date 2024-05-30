@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "bin": {
-    "worlds-explorer": ".next/standalone/server.js"
+    "worlds-explorer": ".next/standalone/packages/worlds-explorer/server.js"
   },
   "scripts": {
-    "build": "next build && cp -r .next/static .next/standalone/.next && pnpm link .",
+    "build": "next build && cp -r .next/static .next/standalone/packages/worlds-explorer/.next && pnpm link .",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "node .next/standalone/packages/worlds-explorer/server.js"
   },
   "dependencies": {
     "@radix-ui/themes": "^3.0.5",
