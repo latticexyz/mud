@@ -17,7 +17,7 @@ import { SystemsInput, WorldInput } from "./input";
 import { CONFIG_DEFAULTS, MODULE_DEFAULTS } from "./defaults";
 import { Tables } from "@latticexyz/store/internal";
 import { resolveSystems } from "./systems";
-import { resolveNamespacedTables } from "./namespaces";
+import { resolveNamespacedTables, validateNamespaces } from "./namespaces";
 import { resolveCodegen } from "./codegen";
 import { resolveDeploy } from "./deploy";
 
@@ -29,8 +29,7 @@ export type validateWorld<world> = {
       : key extends "enums"
         ? narrow<world[key]>
         : key extends "namespaces"
-          ? // ? validateNamespaces<world[key], extendedScope<world>>
-            ErrorMessage<`Namespaces config will be enabled soon.`>
+          ? validateNamespaces<world[key], extendedScope<world>>
           : key extends keyof WorldInput
             ? conform<world[key], WorldInput[key]>
             : ErrorMessage<`\`${key & string}\` is not a valid World config option.`>;
