@@ -13,10 +13,16 @@
     "./internal/mud.config": "./dist/mud.config.js",
     "./out/*": "./out/*"
   },
+  "typesVersions": {
+    "*": {
+      "internal/mud.config": [
+        "./dist/mud.config.d.ts"
+      ]
+    }
+  },
   "files": [
     "dist",
     "out",
-    "foundry.toml",
     "src"
   ],
   "scripts": {

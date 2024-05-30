@@ -12,6 +12,13 @@
   "exports": {
     ".": "./dist/src/index.js"
   },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/src/index.d.ts"
+      ]
+    }
+  },
   "bin": {
     "faucet-server": "./dist/bin/faucet-server.js"
   },

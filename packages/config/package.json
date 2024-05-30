@@ -16,6 +16,25 @@
     "./register": "./dist/deprecated/register.js",
     "./node": "./dist/deprecated/node.js"
   },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ],
+      "internal": [
+        "./dist/internal.d.ts"
+      ],
+      "library": [
+        "./dist/deprecated/library.d.ts"
+      ],
+      "register": [
+        "./dist/deprecated/register.d.ts"
+      ],
+      "node": [
+        "./dist/deprecated/node.d.ts"
+      ]
+    }
+  },
   "files": [
     "dist"
   ],
