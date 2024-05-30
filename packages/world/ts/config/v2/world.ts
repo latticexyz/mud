@@ -74,7 +74,7 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
   const scope = extendedScope(world);
   const namespaces = world.namespaces ?? {};
 
-  if (namespaces) {
+  if (world.namespaces) {
     if (!world.codegen) {
       world.codegen = { namespaceDirectories: true };
     } else if (world.codegen.namespaceDirectories === undefined) {
