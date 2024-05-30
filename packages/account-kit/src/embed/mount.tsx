@@ -1,8 +1,15 @@
 import rainbowKitCss from "@rainbow-me/rainbowkit/styles.css?inline";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { WagmiProvider } from "wagmi";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { RainbowKitProvider, lightTheme, midnightTheme } from "@rainbow-me/rainbowkit";
 import type { Config as WagmiConfig } from "wagmi";
 import type { Config as AccountKitConfig } from "../config";
+import { AccountKitProvider } from "../AccountKitProvider";
 import { store } from "./store";
 import { internalStore } from "./internalStore";
+import { SyncStore } from "./SyncStore";
 import { Buttons } from "./Buttons";
 
 export type MountOptions = {
@@ -13,11 +20,6 @@ export type MountOptions = {
   // TODO: can we do sane defaults here based on e.g. chain?
   wagmiConfig: WagmiConfig;
 };
-
-if (typeof window === "undefined" || typeof document === "undefined") {
-  // TODO: should we throw inside `mount()` instead of at import time?
-  throw new Error("MUD Account Kit should only be used in browser bundles.");
-}
 
 export function mount({
   rootContainer: initialRootContainer,
@@ -32,15 +34,6 @@ export function mount({
   internalStore.setState({ rootContainer });
 
   async function setup() {
-    // TODO: do async imports like this help us at all with bundle sizes/code splitting?
-    const React = await import("react");
-    const ReactDOM = await import("react-dom/client");
-    const { WagmiProvider } = await import("wagmi");
-    const { QueryClientProvider, QueryClient } = await import("@tanstack/react-query");
-    const { RainbowKitProvider, lightTheme, midnightTheme } = await import("@rainbow-me/rainbowkit");
-    const { AccountKitProvider } = await import("../AccountKitProvider");
-    const { SyncStore } = await import("./SyncStore");
-
     const queryClient = new QueryClient();
 
     const root = ReactDOM.createRoot(rootContainer);

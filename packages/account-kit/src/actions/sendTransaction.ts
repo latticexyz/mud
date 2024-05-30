@@ -1,6 +1,6 @@
 import { AccountOrClientNotFoundError, UserOperation } from "permissionless";
 import { Middleware, prepareUserOperationRequest } from "permissionless/actions/smartAccount";
-import { EntryPoint, GetEntryPointVersion } from "permissionless/types/entrypoint";
+import { EntryPoint, GetEntryPointVersion } from "permissionless/types";
 import { SmartAccount } from "permissionless/accounts";
 import type {
   Chain,
@@ -41,7 +41,7 @@ export async function sendTransaction<
 >(
   client: Client<Transport, TChain, TAccount>,
   args: Prettify<SendTransactionWithPaymasterParameters<entryPoint, TChain, TAccount, TChainOverride>>,
-  opts: WriteContractExtraOptions = {},
+  // opts: WriteContractExtraOptions = {},
 ): Promise<Hash> {
   const {
     account: account_ = client.account,
@@ -73,7 +73,7 @@ export async function sendTransaction<
     client,
     refreshInterval: 10000,
     args: { chain: client.chain },
-    estimateFeesPerGas: opts.estimateFeesPerGas,
+    // estimateFeesPerGas: opts.estimateFeesPerGas,
   });
 
   const callData = await account.encodeCallData({

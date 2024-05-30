@@ -11,8 +11,7 @@
   "type": "module",
   "exports": {
     ".": "./dist/tsup/index.js",
-    "./internal": "./dist/tsup/internal.js",
-    "./bundle": "./dist/vite/bundle.js"
+    "./internal": "./dist/tsup/internal.js"
   },
   "files": [
     "dist"

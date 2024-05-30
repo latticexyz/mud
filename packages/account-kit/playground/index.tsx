@@ -11,6 +11,10 @@ import { AccountKitConfigProvider } from "../src/AccountKitConfigProvider";
 import { App } from "./App";
 import { Hex, createClient, http } from "viem";
 import { chains } from "../src/exports/chains";
+import { createWagmiConfig } from "../src/exports/embed";
+
+console.log("index.tsx");
+console.log("createWagmiConfig", createWagmiConfig({}));
 
 const queryClient = new QueryClient();
 

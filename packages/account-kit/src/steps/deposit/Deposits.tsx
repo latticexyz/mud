@@ -34,7 +34,8 @@ export function Deposits() {
   return (
     <div className="flex flex-col gap-1 px-5">
       {deposits.map((deposit) => {
-        switch (deposit.type) {
+        const depositType = deposit.type;
+        switch (depositType) {
           case "transfer":
             return (
               <TransferDepositStatus key={deposit.uid} {...deposit} onDismiss={() => removeDeposit(deposit.uid)} />
@@ -44,8 +45,7 @@ export function Deposits() {
           case "relay":
             return <RelayDepositStatus key={deposit.uid} {...deposit} onDismiss={() => removeDeposit(deposit.uid)} />;
           default:
-            // TODO: wtf TS y u no narrow
-            assertExhaustive(deposit.type);
+            assertExhaustive(depositType);
         }
       })}
     </div>

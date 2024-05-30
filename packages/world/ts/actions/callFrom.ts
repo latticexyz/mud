@@ -22,7 +22,7 @@ import {
   encodeKey,
 } from "@latticexyz/protocol-parser/internal";
 import worldConfig from "../../mud.config";
-import IStoreReadAbi from "../../out/IStoreRead.sol/IStoreRead.abi.json";
+import { abi as IStoreReadAbi } from "../abi/IStoreRead";
 
 type CallFromParameters = {
   worldAddress: Hex;

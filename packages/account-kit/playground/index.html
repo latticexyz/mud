@@ -7,6 +7,13 @@
   </head>
   <body>
     <div id="react-root"></div>
+
+    <script>
+      const el = document.createElement("script");
+      el.src = `http://127.0.0.1:8080/embed.iife.js?${Date.now()}`;
+      document.currentScript.parentNode.insertBefore(el, document.currentScript);
+    </script>
+
     <script type="module" src="./index.tsx"></script>
   </body>
 </html>

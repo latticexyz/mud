@@ -1,5 +1,5 @@
 import { Abi, type ContractFunctionName } from "viem";
-import IWorldCallAbi from "../out/IWorldKernel.sol/IWorldCall.abi.json";
+import { abi as IWorldCallAbi } from "./abi/IWorldCall";
 import { SystemCall, encodeSystemCall } from "./encodeSystemCall";
 import type { AbiParametersToPrimitiveTypes, ExtractAbiFunction } from "abitype";
 
