@@ -13,8 +13,6 @@ export function App() {
     defaultValue: true,
   });
 
-  console.log("hiii from dev tools");
-
   useEffect(() => {
     const listener = (event: KeyboardEvent) => {
       if (event.key === "`") {
