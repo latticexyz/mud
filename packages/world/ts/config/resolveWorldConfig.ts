@@ -16,8 +16,7 @@ export function resolveWorldConfig(
   existingContracts?: string[],
 ) {
   // Include contract names ending in "System", but not the base "System" contract, and not Interfaces
-  const defaultSystemNames =
-    existingContracts?.filter((name) => name.endsWith("System") && name !== "System" && !name.match(/^I./)) ?? [];
+  const defaultSystemNames = existingContracts?.filter((name) => name.match(/^(?!I[A-Z]).+System$/)) ?? [];
   const overriddenSystemNames = Object.keys(config.systems);
 
   // Validate every key in systems refers to an existing system contract (and is not called "World")
