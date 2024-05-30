@@ -1,21 +1,21 @@
 import { useAccountModal } from "../useAccountModal";
 import { usePreparedAppAccountClient } from "../usePreparedAppAccountClient";
 import { useEffect } from "react";
-import { Store } from "./store";
 import { useAccount, useConnectorClient } from "wagmi";
+import { ExternalStore } from "./createExternalStore";
 
 export type Props = {
-  store: Store;
+  externalStore: ExternalStore;
 };
 
-export function SyncStore({ store }: Props) {
+export function SyncStore({ externalStore }: Props) {
   const { accountModalOpen, openAccountModal, closeAccountModal, toggleAccountModal } = useAccountModal();
   const appAccountClient = usePreparedAppAccountClient();
   const { data: userAccountClient } = useConnectorClient();
   const { address: userAddress, chainId: userChainId } = useAccount();
 
   useEffect(() => {
-    store.setState({
+    externalStore.setState({
       accountModalOpen,
       openAccountModal,
       closeAccountModal,
@@ -26,7 +26,7 @@ export function SyncStore({ store }: Props) {
       userChainId,
     });
   }, [
-    store,
+    externalStore,
     accountModalOpen,
     appAccountClient,
     closeAccountModal,

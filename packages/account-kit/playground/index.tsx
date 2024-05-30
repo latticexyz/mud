@@ -1,34 +1,15 @@
 import "./polyfills";
-import "@rainbow-me/rainbowkit/styles.css";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { WagmiProvider, createConfig } from "wagmi";
+import { Hex } from "viem";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RainbowKitProvider, lightTheme, midnightTheme } from "@rainbow-me/rainbowkit";
 import { garnet, mudFoundry, redstone } from "@latticexyz/common/chains";
-import { AccountModal } from "../src/AccountModal";
-import { AccountKitConfigProvider } from "../src/AccountKitConfigProvider";
 import { App } from "./App";
-import { Hex, createClient, http } from "viem";
-import { chains } from "../src/exports/chains";
-import { createWagmiConfig } from "../src/exports/embed";
+import { AccountKit } from "../src/exports/embed";
+import { AccountKitProvider } from "../src/embed/AccountKitProvider";
 
-console.log("index.tsx");
-console.log("createWagmiConfig", createWagmiConfig({}));
-
-const queryClient = new QueryClient();
-
-const wagmiConfig = createConfig({
-  chains: [mudFoundry, ...chains],
-  client: ({ chain }) =>
-    createClient({
-      chain,
-      // We intentionally don't use fallback+webSocket here because if a chain's RPC config
-      // doesn't include a `webSocket` entry, it doesn't seem to fallback and instead just
-      // ~never makes any requests and all queries seem to sit idle.
-      transport: http(),
-    }),
-});
+console.log("AccountKit.getVersion", AccountKit.getVersion());
 
 const testWorlds = {
   [mudFoundry.id]: "0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b",
@@ -43,7 +24,10 @@ if (!worldAddress) {
   throw new Error(`Account Kit playground is not configured with a test world address for chain ID ${chainId}`);
 }
 
-const accountKitConfig = {
+// TODO: refactor so that this is a config, not an instance
+// then pass this into `AccountKitGlobal.getWagmiConfig` instead of instance
+
+const accountKit = AccountKit.init({
   chainId,
   worldAddress,
   erc4337: false,
@@ -51,25 +35,22 @@ const accountKitConfig = {
     termsOfUse: "#terms",
     privacyPolicy: "#privacy",
   },
-} as const;
+  wagmi: {
+    chains: [mudFoundry, ...AccountKit.getDefaultChains()],
+  },
+});
+
+const queryClient = new QueryClient();
 
 const root = ReactDOM.createRoot(document.querySelector("#react-root")!);
 root.render(
   <StrictMode>
-    <WagmiProvider config={wagmiConfig}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider
-          theme={{
-            lightMode: lightTheme({ borderRadius: "none" }),
-            darkMode: midnightTheme({ borderRadius: "none" }),
-          }}
-        >
-          <AccountKitConfigProvider config={accountKitConfig}>
-            <App />
-            <AccountModal />
-          </AccountKitConfigProvider>
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <AccountKitProvider instance={accountKit}>
+      <WagmiProvider config={createConfig(accountKit.getWagmiConfig())}>
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      </WagmiProvider>
+    </AccountKitProvider>
   </StrictMode>,
 );

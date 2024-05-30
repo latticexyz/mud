@@ -1,11 +1,18 @@
-import { createWagmiConfig } from "../createWagmiConfig";
-import { mount } from "./mount";
-import { mountButton } from "./mountButton";
+import { Chain } from "wagmi/chains";
+import { init } from "./init";
+import { GetWagmiConfigOptions } from "../getWagmiConfig";
+import { MountOptions } from "./mount";
+import { MountButtonOptions } from "./mountButton";
+import { CreateConfigParameters } from "wagmi";
 
-export type AccountKit = {
-  // TODO: move this to be `getVersion()` so its easier to override/compute version?
-  version: string;
-  createWagmiConfig: typeof createWagmiConfig;
-  mount: typeof mount;
-  mountButton: typeof mountButton;
+export type AccountKitGlobal = {
+  readonly getVersion: () => string;
+  readonly getDefaultChains: () => readonly [Chain, ...Chain[]];
+  readonly init: init;
+};
+
+export type AccountKitInstance = {
+  getWagmiConfig(opts: GetWagmiConfigOptions): CreateConfigParameters;
+  mount(opts?: Omit<MountOptions, "wagmiConfig" | "accountKitConfig" | "externalStore" | "internalStore">): () => void;
+  mountButton(opts: Omit<MountButtonOptions, "internalStore">): () => void;
 };

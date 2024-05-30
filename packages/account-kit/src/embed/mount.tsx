@@ -1,3 +1,4 @@
+// TODO: move rainbowkit inside iframe
 import rainbowKitCss from "@rainbow-me/rainbowkit/styles.css?inline";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -7,24 +8,26 @@ import { RainbowKitProvider, lightTheme, midnightTheme } from "@rainbow-me/rainb
 import type { Config as WagmiConfig } from "wagmi";
 import type { Config as AccountKitConfig } from "../config";
 import { AccountKitProvider } from "../AccountKitProvider";
-import { store } from "./store";
-import { internalStore } from "./internalStore";
 import { SyncStore } from "./SyncStore";
 import { Buttons } from "./Buttons";
+import { ExternalStore } from "./createExternalStore";
+import { InternalStore } from "./createInternalStore";
 
 export type MountOptions = {
   // TODO: accept a CSS selector?
   rootContainer?: Element | undefined;
-  // TODO: make this a top-level config
   accountKitConfig: AccountKitConfig;
-  // TODO: can we do sane defaults here based on e.g. chain?
   wagmiConfig: WagmiConfig;
+  externalStore: ExternalStore;
+  internalStore: InternalStore;
 };
 
 export function mount({
   rootContainer: initialRootContainer,
   wagmiConfig,
   accountKitConfig,
+  externalStore,
+  internalStore,
 }: MountOptions): () => void {
   if (internalStore.getState().rootContainer) {
     throw new Error("MUD Account Kit is already mounted and only one instance is allowed on the page at a time.");
@@ -58,8 +61,8 @@ export function mount({
               }
             >
               <AccountKitProvider config={accountKitConfig}>
-                <SyncStore store={store} />
-                <Buttons />
+                <SyncStore externalStore={externalStore} />
+                <Buttons internalStore={internalStore} />
                 <style dangerouslySetInnerHTML={{ __html: rainbowKitCss }} />
               </AccountKitProvider>
             </RainbowKitProvider>

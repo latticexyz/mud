@@ -2,7 +2,7 @@ import { StoreApi, createStore } from "zustand/vanilla";
 import { AppAccountClient } from "../common";
 import { Account, Chain, Client, Hex, Transport } from "viem";
 
-export type State = {
+export type ExteralState = {
   accountModalOpen: undefined | boolean;
   openAccountModal: undefined | (() => void);
   closeAccountModal: undefined | (() => void);
@@ -34,15 +34,17 @@ export type State = {
   userChainId: undefined | number;
 };
 
-export type Store = StoreApi<State>;
+export type ExternalStore = StoreApi<ExteralState>;
 
-export const store = createStore<State>(() => ({
-  accountModalOpen: undefined,
-  openAccountModal: undefined,
-  closeAccountModal: undefined,
-  toggleAccountModal: undefined,
-  appAccountClient: undefined,
-  userAccountClient: undefined,
-  userAddress: undefined,
-  userChainId: undefined,
-}));
+export function createExternalStore() {
+  return createStore<ExteralState>(() => ({
+    accountModalOpen: undefined,
+    openAccountModal: undefined,
+    closeAccountModal: undefined,
+    toggleAccountModal: undefined,
+    appAccountClient: undefined,
+    userAccountClient: undefined,
+    userAddress: undefined,
+    userChainId: undefined,
+  }));
+}

@@ -5,7 +5,7 @@ export default defineConfig({
     outDir: "dist/embed",
     sourcemap: true,
     lib: {
-      entry: "src/embed/embed.ts",
+      entry: "src/embed/global.ts",
       name: "__AccountKit",
       fileName: "embed",
       formats: ["iife"],
