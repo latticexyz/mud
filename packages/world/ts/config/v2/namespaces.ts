@@ -10,6 +10,7 @@ import {
   getPath,
 } from "@latticexyz/store/config/v2";
 import { NamespacesInput } from "./input";
+import { ErrorMessage } from "@arktype/util";
 
 export type namespacedTableKeys<world> = world extends { namespaces: infer namespaces }
   ? {
@@ -23,7 +24,7 @@ export type validateNamespaces<namespaces, scope extends Scope = AbiTypeScope> =
   [namespace in keyof namespaces]: {
     [key in keyof namespaces[namespace]]: key extends "tables"
       ? validateTables<namespaces[namespace][key], scope>
-      : namespaces[namespace][key];
+      : ErrorMessage<`Expected full tables config.`>;
   };
 };
 
