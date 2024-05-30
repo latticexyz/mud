@@ -102,7 +102,7 @@ function TablesViewer({ table, query }: { table: string | undefined; query: stri
       });
     },
     enabled: Boolean(table) && Boolean(query),
-    refetchInterval: 15000,
+    refetchInterval: 1000,
   });
 
   return (

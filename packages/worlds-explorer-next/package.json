@@ -14,7 +14,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "next build",
+    "build": "next build && cp -r .next/static .next/standalone/packages/worlds-explorer-next/.next",
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start"

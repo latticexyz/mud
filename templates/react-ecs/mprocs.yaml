@@ -14,7 +14,7 @@ procs:
       RPC_HTTP_URL: "http://127.0.0.1:8545"
       FOLLOW_BLOCK_TAG: "latest"
   explorer:
-    cwd: node_modules/@latticexyz/worlds-explorer-next 
-    shell: pnpm run dev -p 13690
+    shell: pnpm worlds-explorer
     env:
-      INDEXER_DB_PATH: "/Users/karolis/Code/Lattice.xyz/mud/templates/react-ecs/indexer.db"
+      PORT: "13690"
+      INDEXER_DB_PATH: "indexer.db"
