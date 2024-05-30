@@ -21,7 +21,6 @@ const CODEGEN_DEFAULTS = { ...STORE_CODEGEN_DEFAULTS, ...WORLD_CODEGEN_DEFAULTS 
 describe("defineWorld", () => {
   it("should resolve namespaced tables", () => {
     const config = defineWorld({
-      // @ts-expect-error TODO: remove once namespaces support ships
       namespaces: {
         ExampleNamespace: {
           tables: {
@@ -77,7 +76,6 @@ describe("defineWorld", () => {
 
   it("should resolve namespaced table config with user types and enums", () => {
     const config = defineWorld({
-      // @ts-expect-error TODO: remove once namespaces support ships
       namespaces: {
         ExampleNamespace: {
           tables: {
@@ -150,7 +148,6 @@ describe("defineWorld", () => {
 
   it("should extend the output World type", () => {
     const config = defineWorld({
-      // @ts-expect-error TODO: remove once namespaces support ships
       namespaces: {
         ExampleNamespace: {
           tables: {
@@ -180,7 +177,6 @@ describe("defineWorld", () => {
   it("should not use the global namespace for namespaced tables", () => {
     const config = defineWorld({
       namespace: "namespace",
-      // @ts-expect-error TODO: remove once namespaces support ships
       namespaces: {
         AnotherOne: {
           tables: {
@@ -709,13 +705,13 @@ describe("defineWorld", () => {
   it.skip("should throw if name is overridden in namespaced tables", () => {
     attest(() =>
       defineWorld({
-        // @ts-expect-error TODO: remove once namespaces support ships
         namespaces: {
           MyNamespace: {
             tables: {
               Example: {
                 schema: { id: "address" },
                 key: ["id"],
+                // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
                 name: "NotAllowed",
               },
             },
@@ -728,13 +724,13 @@ describe("defineWorld", () => {
   it.skip("should throw if namespace is overridden in namespaced tables", () => {
     attest(() =>
       defineWorld({
-        // @ts-expect-error TODO: remove once namespaces support ships
         namespaces: {
           MyNamespace: {
             tables: {
               Example: {
                 schema: { id: "address" },
                 key: ["id"],
+                // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
                 namespace: "NotAllowed",
               },
             },
@@ -747,7 +743,6 @@ describe("defineWorld", () => {
   it("should throw if namespaces are defined (TODO: remove once namespaces support ships)", () => {
     attest(() =>
       defineWorld({
-        // @ts-expect-error TODO: remove once namespaces support ships
         namespaces: {},
       }),
     ).type.errors("Namespaces config will be enabled soon.");
