@@ -6,3 +6,4 @@ pragma solidity >=0.8.24;
 import { CounterTable } from "./tables/CounterTable.sol";
 import { MessageTable } from "./tables/MessageTable.sol";
 import { Inventory } from "./tables/Inventory.sol";
+import { Health } from "./royale/tables/Health.sol";

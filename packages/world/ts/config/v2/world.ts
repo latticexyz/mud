@@ -82,6 +82,8 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
     }
   }
 
+  const resolvedStore = resolveStore(world);
+
   const resolvedNamespacedTables = Object.fromEntries(
     Object.entries(namespaces)
       .map(([namespaceKey, namespace]) =>
@@ -89,14 +91,21 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
           validateTable(table, scope);
           return [
             `${namespaceKey}__${tableKey}`,
-            resolveTable(mergeIfUndefined(table, { namespace: namespaceKey, name: tableKey }), scope),
+            resolveTable(
+              mergeIfUndefined(table, {
+                namespace: namespaceKey,
+                name: tableKey,
+                codegen: mergeIfUndefined(table.codegen ?? {}, {
+                  outputDirectory: resolvedStore.codegen.namespaceDirectories ? `${namespaceKey}/tables` : "tables",
+                }),
+              }),
+              scope,
+            ),
           ];
         }),
       )
       .flat(),
   ) as Tables;
-
-  const resolvedStore = resolveStore(world);
 
   const modules = (world.modules ?? CONFIG_DEFAULTS.modules).map((mod) => mergeIfUndefined(mod, MODULE_DEFAULTS));
 
