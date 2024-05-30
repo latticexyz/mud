@@ -33,8 +33,9 @@ find ./dist/templates/* -name ".gitignore" -type f | while read -r file; do
 done
 
 # For local development, each template workspace extends the monorepo's `tsconfig.json`, which includes `paths` to resolve TS source.
-# To strip out the `paths`, we replace the template workspace root `tsconfig.json` with the monorepo's `tsconfig.base.json`.
-tsconfig=$(realpath "$(dirname $0)/../../../tsconfig.base.json")
+# To strip out the `paths`, we replace the template workspace root `tsconfig.json` with a new base tsconfig that extends only
+# @latticexyz/common/tsconfig.base.json
+tsconfig=$(realpath "$(dirname $0)/tsconfig.base.json")
 find ./dist/templates/*/tsconfig.json -type f | while read -r file; do
   echo "Replacing $file with $tsconfig"
   cp "$tsconfig" "$file"
