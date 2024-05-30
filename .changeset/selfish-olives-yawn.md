@@ -59,3 +59,10 @@ And your TS config in `packages/client/tsconfig.json` might look like:
 ```
 
 You may need to adjust the above configs to include any additional TS options you've set. This config pattern may also reveal new TS errors that need to be fixed or rules disabled.
+
+If you want to keep your existing TS configs, we recommend at least updating your `moduleResolution` setting.
+
+```diff
+-"moduleResolution": "node"
++"moduleResolution": "Bundler"
+```
