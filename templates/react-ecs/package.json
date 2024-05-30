@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../packages/cli",
+    "@latticexyz/common": "link:../../packages/common",
     "@latticexyz/store-indexer": "link:../../packages/store-indexer",
     "@latticexyz/worlds-explorer": "link:../../packages/worlds-explorer",
     "@types/debug": "4.1.7",
