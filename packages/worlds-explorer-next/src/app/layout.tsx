@@ -21,6 +21,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
+          <h2>{process.cwd()}</h2>
+
           <Theme>{children}</Theme>
         </Providers>
       </body>
