@@ -1,7 +1,7 @@
 import path from "path";
 import { resolveWorldConfig } from "@latticexyz/world/internal";
 import { Config, ConfigInput, Library, System, WorldFunction } from "./common";
-import { labelToResource, resourceToHex } from "@latticexyz/common";
+import { resourceToHex } from "@latticexyz/common";
 import { Hex, toFunctionSelector, toFunctionSignature } from "viem";
 import { getExistingContracts } from "../utils/getExistingContracts";
 import { getContractData } from "../utils/getContractData";
@@ -44,10 +44,8 @@ export function resolveConfig<config extends ConfigInput>({
     .map(toFunctionSignature);
 
   const systems = Object.entries(resolvedConfig.systems).map(([systemName, system]): System => {
-    const resource = labelToResource(systemName);
-
-    const namespace = resource.namespace;
-    const name = resource.name;
+    const namespace = system.namespace;
+    const name = system.name;
     const systemId = resourceToHex({ type: "system", namespace, name });
     const contractData = getContractData(`${systemName}.sol`, systemName, forgeOutDir);
 

@@ -7,7 +7,6 @@ export * from "./getBurnerPrivateKey";
 export * from "./getNonceManager";
 export * from "./getNonceManagerId";
 export * from "./hexToResource";
-export * from "./labelToResource";
 export * from "./LruMap";
 export * from "./readHex";
 export * from "./resourceToLabel";

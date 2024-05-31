@@ -6,7 +6,7 @@ import { renderWorldInterface } from "./renderWorldInterface";
 import { resolveWorldConfig } from "../../config/resolveWorldConfig";
 import { World as WorldConfig } from "../../config/v2/output";
 import { worldToV1 } from "../../config/v2/compat";
-import { labelToResource } from "@latticexyz/common";
+import { labelToResource } from "../../config/labelToResource";
 
 export async function worldgen(
   configV2: WorldConfig,

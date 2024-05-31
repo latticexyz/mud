@@ -1,6 +1,7 @@
 import { UnrecognizedSystemErrorFactory } from "@latticexyz/config/library";
 import { StoreConfig } from "@latticexyz/store/internal";
 import { SystemConfig, WorldConfig } from "./types";
+import { labelToResource } from "./labelToResource";
 
 export type ResolvedSystemConfig = ReturnType<typeof resolveSystemConfig>;
 
@@ -61,6 +62,8 @@ export function resolveWorldConfig(
  */
 export function resolveSystemConfig(systemName: string, config?: SystemConfig, existingContracts?: string[]) {
   const name = config?.name ?? systemName;
+  const resource = labelToResource(name);
+
   const registerFunctionSelectors = config?.registerFunctionSelectors ?? true;
   const openAccess = config?.openAccess ?? true;
   const accessListAddresses: string[] = [];
@@ -80,5 +83,12 @@ export function resolveSystemConfig(systemName: string, config?: SystemConfig, e
     }
   }
 
-  return { name, registerFunctionSelectors, openAccess, accessListAddresses, accessListSystems };
+  return {
+    name: resource.name,
+    namespace: resource.namespace,
+    registerFunctionSelectors,
+    openAccess,
+    accessListAddresses,
+    accessListSystems,
+  };
 }
