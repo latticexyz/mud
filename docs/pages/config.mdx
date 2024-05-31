@@ -137,7 +137,7 @@ The global configuration keys are all optional.
     - **`type`** a string: the Solidity type for the variable.
     - **`value`** the value of the argument.
 
-    If the argument needs to be a [`ResourceId`](/world/resource-ids), you can create it using either `resourceToHex` or `resolveTableId`.
+    If the argument needs to be a [`ResourceId`](/world/resource-ids), you can create it using `resolveTableId`.
 
     <details>
 
@@ -154,33 +154,6 @@ The global configuration keys are all optional.
 
        ```typescript
        args: [resolveTableId("app__Tasks")];
-       ```
-
-    </details>
-
-    <details>
-
-    <summary>Use `resourceToHex` to specify the full resource information.</summary>
-
-    1. In `mud.config.ts`, import `resourceToHex`.
-
-       ```typescript
-       import { resourceToHex } from "@latticexyz/world/internal";
-       ```
-
-    1. Use this syntax for `args`:
-
-       ```typescript
-             args: [
-                     {
-                       type: "bytes32",
-                       value: resourceToHex({
-                         type: "table",
-                         namespace: "app",
-                         name: "Tasks",
-                       }),
-                     },
-                   ],
        ```
 
     </details>
