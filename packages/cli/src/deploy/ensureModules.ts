@@ -38,12 +38,14 @@ export async function ensureModules({
         pRetry(
           async () => {
             try {
+              // append module's ABI so that we can decode any custom errors
+              const abi = [...worldAbi, ...mod.abi];
               const moduleAddress = mod.prepareDeploy(deployerAddress, libraries).address;
               return mod.installAsRoot
                 ? await writeContract(client, {
                     chain: client.chain ?? null,
                     address: worldDeploy.address,
-                    abi: worldAbi,
+                    abi,
                     // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
                     functionName: "installRootModule",
                     args: [moduleAddress, mod.installData],
@@ -51,7 +53,7 @@ export async function ensureModules({
                 : await writeContract(client, {
                     chain: client.chain ?? null,
                     address: worldDeploy.address,
-                    abi: worldAbi,
+                    abi,
                     // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
                     functionName: "installModule",
                     args: [moduleAddress, mod.installData],

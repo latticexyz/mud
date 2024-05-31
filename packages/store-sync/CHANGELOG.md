@@ -1,5 +1,60 @@
 # @latticexyz/store-sync
 
+## 2.0.11
+
+### Patch Changes
+
+- @latticexyz/block-logs-stream@2.0.11
+- @latticexyz/common@2.0.11
+- @latticexyz/config@2.0.11
+- @latticexyz/protocol-parser@2.0.11
+- @latticexyz/query@2.0.11
+- @latticexyz/recs@2.0.11
+- @latticexyz/schema-type@2.0.11
+- @latticexyz/store@2.0.11
+- @latticexyz/world@2.0.11
+
+## 2.0.10
+
+### Patch Changes
+
+- 36e1f766: Both `encodeEntity` and `decodeEntity` now use an LRU cache to avoid repeating work during iterations of thousands of entities.
+- 4caca05e: Bumped zod dependency to comply with abitype peer dependencies.
+- Updated dependencies [a1b1ebf6]
+- Updated dependencies [4e4e9104]
+- Updated dependencies [4e4e9104]
+- Updated dependencies [51b137d3]
+- Updated dependencies [3dbf3bf3]
+- Updated dependencies [32c1cda6]
+- Updated dependencies [4caca05e]
+- Updated dependencies [27f888c7]
+  - @latticexyz/world@2.0.10
+  - @latticexyz/store@2.0.10
+  - @latticexyz/common@2.0.10
+  - @latticexyz/config@2.0.10
+  - @latticexyz/query@2.0.10
+  - @latticexyz/block-logs-stream@2.0.10
+  - @latticexyz/protocol-parser@2.0.10
+  - @latticexyz/recs@2.0.10
+  - @latticexyz/schema-type@2.0.10
+
+## 2.0.9
+
+### Patch Changes
+
+- 764ca0a0: Updated `createStoreSync` to default to the chain's indexer URL when no `indexerUrl` is passed in. To intentionally unset the value and not use the indexer at all, `indexerUrl` can now also be `false`.
+- Updated dependencies [764ca0a0]
+- Updated dependencies [bad3ad1b]
+  - @latticexyz/common@2.0.9
+  - @latticexyz/block-logs-stream@2.0.9
+  - @latticexyz/config@2.0.9
+  - @latticexyz/protocol-parser@2.0.9
+  - @latticexyz/query@2.0.9
+  - @latticexyz/store@2.0.9
+  - @latticexyz/world@2.0.9
+  - @latticexyz/recs@2.0.9
+  - @latticexyz/schema-type@2.0.9
+
 ## 2.0.8
 
 ### Patch Changes

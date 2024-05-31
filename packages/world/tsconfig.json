@@ -1,20 +1,11 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    /* Visit https://aka.ms/tsconfig.json to read more about this file */
-    "target": "es2021",
-    "types": ["node"],
-    "module": "esnext",
-    "moduleResolution": "node",
-    "declaration": true,
-    "sourceMap": true,
-    "outDir": "dist",
-    "isolatedModules": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "noErrorTruncation": true
+    // needed to ensure tests like those in packages/world/ts/encodeSystemCall.test.ts
+    // resolve narrowed types from .d.ts as opposed to widened ones from abi.json
+    "resolveJsonModule": false,
+    "lib": ["ESNext", "DOM"],
+    "outDir": "dist"
   },
   "include": ["mud.config.ts", "ts"]
 }

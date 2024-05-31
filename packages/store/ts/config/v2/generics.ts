@@ -51,3 +51,5 @@ export function mergeIfUndefined<base extends object, merged extends object>(
     allKeys.map((key) => [key, base[key as keyof base] ?? merged[key as keyof merged]]),
   ) as never;
 }
+
+export type parseNumber<T> = T extends `${infer N extends number}` ? N : never;

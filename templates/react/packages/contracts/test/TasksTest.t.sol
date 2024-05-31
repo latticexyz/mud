@@ -24,7 +24,7 @@ contract TasksTest is MudTest {
     assertEq(task.completedAt, 0);
 
     // Expect the task to be completed after calling completeTask from our TasksSystem
-    IWorld(worldAddress).completeTask("1");
+    IWorld(worldAddress).app__completeTask("1");
     assertEq(Tasks.getCompletedAt("1"), block.timestamp);
   }
 }

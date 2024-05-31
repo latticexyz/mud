@@ -96,7 +96,15 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
       filters,
       initialState,
       initialBlockLogs,
-      indexerUrl,
+      indexerUrl:
+        indexerUrl !== false
+          ? indexerUrl ??
+            (publicClient.chain &&
+            "indexerUrl" in publicClient.chain &&
+            typeof publicClient.chain.indexerUrl === "string"
+              ? publicClient.chain.indexerUrl
+              : undefined)
+          : undefined,
     });
 
     onProgress?.({

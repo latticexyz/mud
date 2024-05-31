@@ -42,6 +42,7 @@ jobs:
 
       - name: Run tests
         if: steps.check_changes.outputs.changes_outside_docs
+        timeout-minutes: 15
         env:
           DATABASE_URL: "postgres://postgres@localhost:5432/postgres"
           AWS_ENDPOINT_URL: "http://localhost:8080"
