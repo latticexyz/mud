@@ -74,11 +74,16 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
   const scope = extendedScope(world);
   const namespaces = world.namespaces ?? {};
 
-  const resolvedStore = resolveStore(world);
-
-  const codegen = mergeIfUndefined(resolvedStore.codegen, resolveCodegen(world.codegen));
-  codegen.namespaceDirectories = world.namespaces !== undefined;
-  codegen.indexFilename = world.namespaces === undefined ? codegen.indexFilename : false;
+  const resolvedStore = resolveStore({
+    ...world,
+    codegen: mergeIfUndefined(world.codegen ?? {}, {
+      // put codegen into namespaced directories if we're using `namespaces` key
+      namespaceDirectories: world.namespaces != null,
+      // don't generate `index.sol` if we're using `namespaces` key, to avoid naming conflicts for table names across namespaces
+      // this is a deprecated option anyway, so this default guides folks towards not using it
+      indexFilename: world.namespaces != null ? false : undefined,
+    }),
+  });
 
   const resolvedNamespacedTables = Object.fromEntries(
     Object.entries(namespaces)
@@ -92,7 +97,7 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
                 namespace: namespaceKey,
                 name: tableKey,
                 codegen: mergeIfUndefined(table.codegen ?? {}, {
-                  outputDirectory: codegen.namespaceDirectories ? `${namespaceKey}/tables` : "tables",
+                  outputDirectory: resolvedStore.codegen.namespaceDirectories ? `${namespaceKey}/tables` : "tables",
                 }),
               }),
               scope,
@@ -109,7 +114,7 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
     {
       ...resolvedStore,
       tables: { ...resolvedStore.tables, ...resolvedNamespacedTables },
-      codegen,
+      codegen: mergeIfUndefined(resolvedStore.codegen, resolveCodegen(world.codegen)),
       deploy: resolveDeploy(world.deploy),
       systems: resolveSystems(world.systems ?? CONFIG_DEFAULTS.systems),
       excludeSystems: get(world, "excludeSystems"),
