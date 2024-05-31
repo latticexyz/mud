@@ -46,6 +46,13 @@ export default defineWorld({
           },
           key: [],
         },
+        MessageTable: {
+          type: "offchainTable",
+          schema: {
+            value: "string",
+          },
+          key: [],
+        },
         Health: {
           schema: {
             player: "address",
