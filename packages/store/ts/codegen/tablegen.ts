@@ -37,10 +37,13 @@ export async function tablegen({ configPath, config, remappings }: TablegenOptio
   );
 
   // write table index
-  if (allTableOptions.length > 0) {
-    const fullOutputPath = path.join(outputDirectory, configV1.codegenIndexFilename);
-    const output = renderTableIndex(allTableOptions);
-    await formatAndWriteSolidity(output, fullOutputPath, "Generated table index");
+  // do not generate index if using multiple namespaces
+  if (!config.codegen.namespaceDirectories) {
+    if (allTableOptions.length > 0) {
+      const fullOutputPath = path.join(outputDirectory, configV1.codegenIndexFilename);
+      const output = renderTableIndex(allTableOptions);
+      await formatAndWriteSolidity(output, fullOutputPath, "Generated table index");
+    }
   }
 
   // write types to file

@@ -76,6 +76,9 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
 
   const resolvedStore = resolveStore(world);
 
+  const codegen = mergeIfUndefined(resolvedStore.codegen, resolveCodegen(world.codegen));
+  codegen.namespaceDirectories = world.namespaces !== undefined;
+
   const resolvedNamespacedTables = Object.fromEntries(
     Object.entries(namespaces)
       .map(([namespaceKey, namespace]) =>
@@ -88,10 +91,7 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
                 namespace: namespaceKey,
                 name: tableKey,
                 codegen: mergeIfUndefined(table.codegen ?? {}, {
-                  outputDirectory:
-                    resolvedStore.codegen.namespaceDirectories || world.namespaces
-                      ? `${namespaceKey}/tables`
-                      : "tables",
+                  outputDirectory: codegen.namespaceDirectories ? `${namespaceKey}/tables` : "tables",
                 }),
               }),
               scope,
@@ -108,7 +108,7 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
     {
       ...resolvedStore,
       tables: { ...resolvedStore.tables, ...resolvedNamespacedTables },
-      codegen: mergeIfUndefined(resolvedStore.codegen, resolveCodegen(world.codegen)),
+      codegen,
       deploy: resolveDeploy(world.deploy),
       systems: resolveSystems(world.systems ?? CONFIG_DEFAULTS.systems),
       excludeSystems: get(world, "excludeSystems"),

@@ -40,6 +40,12 @@ export default defineWorld({
   namespaces: {
     royale: {
       tables: {
+        CounterTable: {
+          schema: {
+            value: "uint32",
+          },
+          key: [],
+        },
         Health: {
           schema: {
             player: "address",
