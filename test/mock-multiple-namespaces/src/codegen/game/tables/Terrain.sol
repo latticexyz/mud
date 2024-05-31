@@ -20,8 +20,8 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { TerrainType } from "./../../common.sol";
 
 library Terrain {
-  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "royale", name: "Terrain", typeId: RESOURCE_TABLE });`
-  ResourceId constant _tableId = ResourceId.wrap(0x7462726f79616c6500000000000000005465727261696e000000000000000000);
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "game", name: "Terrain", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x746267616d65000000000000000000005465727261696e000000000000000000);
 
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0001010001000000000000000000000000000000000000000000000000000000);

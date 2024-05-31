@@ -17,11 +17,11 @@ import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/Encoded
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 // Import user types
-import { TerrainType } from "./../common.sol";
+import { TerrainType } from "./../../common.sol";
 
 library Terrain {
-  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Terrain", typeId: RESOURCE_TABLE });`
-  ResourceId constant _tableId = ResourceId.wrap(0x746200000000000000000000000000005465727261696e000000000000000000);
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "gameFork", name: "Terrain", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x746267616d65466f726b0000000000005465727261696e000000000000000000);
 
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0001010001000000000000000000000000000000000000000000000000000000);

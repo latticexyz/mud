@@ -1,6 +1,7 @@
 import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
+  namespace: "game",
   enums: {
     TerrainType: ["None", "Ocean", "Grassland", "Desert"],
   },
@@ -53,7 +54,7 @@ export default defineWorld({
     },
   },
   namespaces: {
-    royale: {
+    gameFork: {
       tables: {
         Position: {
           schema: {

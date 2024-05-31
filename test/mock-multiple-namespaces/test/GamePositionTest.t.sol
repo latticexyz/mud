@@ -5,9 +5,9 @@ import "forge-std/Test.sol";
 import { MudTest } from "@latticexyz/world/test/MudTest.t.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { Position, PositionData } from "../src/codegen/tables/Position.sol";
+import { Position, PositionData } from "../src/codegen/game/tables/Position.sol";
 
-contract PositionTest is MudTest {
+contract GamePositionTest is MudTest {
   function testCounter(address player) public {
     PositionData memory position = Position.get(player);
     assertEq(position.x, 0);

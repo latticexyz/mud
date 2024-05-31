@@ -17,8 +17,8 @@ import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/Encoded
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 library Winner {
-  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "royale", name: "Winner", typeId: RESOURCE_TABLE });`
-  ResourceId constant _tableId = ResourceId.wrap(0x7462726f79616c65000000000000000057696e6e657200000000000000000000);
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "game", name: "Winner", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x746267616d650000000000000000000057696e6e657200000000000000000000);
 
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0014010014000000000000000000000000000000000000000000000000000000);
