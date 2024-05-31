@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/schema-type",
-  "version": "2.0.8",
+  "version": "2.0.11",
   "description": "SchemaType enum for various languages",
   "repository": {
     "type": "git",
@@ -14,19 +14,12 @@
     "./internal": "./dist/internal.js",
     "./deprecated": "./dist/deprecated.js"
   },
-  "typesVersions": {
-    "*": {
-      "index": [
-        "./src/typescript/exports/index.ts"
-      ],
-      "internal": [
-        "./src/typescript/exports/internal.ts"
-      ],
-      "deprecated": [
-        "./src/typescript/exports/deprecated.ts"
-      ]
-    }
-  },
+  "files": [
+    "dist",
+    "out",
+    "foundry.toml",
+    "src"
+  ],
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",

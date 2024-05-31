@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "Bundler",
+    "target": "es2021",
+    "lib": [
+      "ESNext",
+      // This is temporarily added until we can unbundle JS files and only include this when we import things that use DOM APIs
+      // TODO: fix me
+      "DOM"
+    ],
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "noErrorTruncation": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": true
+  }
+}

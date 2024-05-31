@@ -1,5 +1,110 @@
 # Change Log
 
+## 2.0.11
+
+### Patch Changes
+
+- fe9d7263: Fixed imports of module artifacts via `artifactPath` and removed unused `@latticexyz/world-modules` dependency.
+  - @latticexyz/abi-ts@2.0.11
+  - @latticexyz/common@2.0.11
+  - @latticexyz/config@2.0.11
+  - @latticexyz/gas-report@2.0.11
+  - @latticexyz/protocol-parser@2.0.11
+  - @latticexyz/schema-type@2.0.11
+  - @latticexyz/store@2.0.11
+  - @latticexyz/utils@2.0.11
+  - @latticexyz/world@2.0.11
+
+## 2.0.10
+
+### Patch Changes
+
+- 0ae9189c: The deploy CLI now uses logs to find registered function selectors and their corresponding function signatures.
+  Previously only function signatures were fetched via logs and then mapped to function selectors via `getRecord` calls,
+  but this approach failed for namespaced function selectors of non-root system,
+  because the function signature table includes both the namespaced and non-namespaced signature but the function selector table only includes the namespaced selector that is registered on the world.
+- a1b1ebf6: Worlds can now be deployed with external modules, defined by a module's `artifactPath` in your MUD config, resolved with Node's module resolution. This allows for modules to be published to and imported from npm.
+
+  ```diff
+   defineWorld({
+     // …
+     modules: [
+       {
+  -      name: "KeysWithValueModule",
+  +      artifactPath: "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json",
+         root: true,
+         args: [resolveTableId("Inventory")],
+       },
+     ],
+   });
+  ```
+
+  Note that the above assumes `@latticexyz/world-modules` is included as a dependency of your project.
+
+- 4e4e9104: Removed the unused `ejs` dependency.
+- 4a61a128: Removed broken `mud faucet` command.
+- 4caca05e: Bumped zod dependency to comply with abitype peer dependencies.
+- Updated dependencies [a1b1ebf6]
+- Updated dependencies [4e4e9104]
+- Updated dependencies [4e4e9104]
+- Updated dependencies [51b137d3]
+- Updated dependencies [3dbf3bf3]
+- Updated dependencies [32c1cda6]
+- Updated dependencies [4caca05e]
+- Updated dependencies [27f888c7]
+  - @latticexyz/world@2.0.10
+  - @latticexyz/world-modules@2.0.10
+  - @latticexyz/store@2.0.10
+  - @latticexyz/common@2.0.10
+  - @latticexyz/config@2.0.10
+  - @latticexyz/protocol-parser@2.0.10
+  - @latticexyz/abi-ts@2.0.10
+  - @latticexyz/gas-report@2.0.10
+  - @latticexyz/schema-type@2.0.10
+  - @latticexyz/utils@2.0.10
+
+## 2.0.9
+
+### Patch Changes
+
+- 30318687: Fixed `mud deploy` to not require the `PRIVATE_KEY` environment variable when using a KMS signer.
+- 0b6b70ff: `mud verify` now defaults to blockscout if no `--verifier` is provided.
+- 428ff972: Fixed `mud deploy` to use the `forge script --aws` flag when executing `PostDeploy` with a KMS signer.
+
+  Note that you may need to update your `PostDeploy.s.sol` script, with `vm.startBroadcast` receiving no arguments instead of reading a private key from the environment:
+
+  ```diff
+  -uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+  -vm.startBroadcast(deployerPrivateKey);
+
+  +vm.startBroadcast();
+  ```
+
+- 074ed66e: Removed manual gas setting in PostDeploy step of `mud deploy` in favor of `forge script` fetching it from the RPC.
+
+  If you still want to manually set gas, you can use `mud deploy --forgeScriptOptions="--with-gas-price 1000000"`.
+
+- e03830eb: The key ID for deploying via KMS signer is now set via an `AWS_KMS_KEY_ID` environment variable to better align with Foundry tooling. To enable KMS signing with this environment variable, use the `--kms` flag.
+
+  ```diff
+  -mud deploy --awsKmsKeyId [key ID]
+  +AWS_KMS_KEY_ID=[key ID] mud deploy --kms
+  ```
+
+- Updated dependencies [764ca0a0]
+- Updated dependencies [bad3ad1b]
+  - @latticexyz/common@2.0.9
+  - @latticexyz/config@2.0.9
+  - @latticexyz/protocol-parser@2.0.9
+  - @latticexyz/store@2.0.9
+  - @latticexyz/world@2.0.9
+  - @latticexyz/world-modules@2.0.9
+  - @latticexyz/abi-ts@2.0.9
+  - @latticexyz/gas-report@2.0.9
+  - @latticexyz/schema-type@2.0.9
+  - @latticexyz/services@2.0.9
+  - @latticexyz/utils@2.0.9
+
 ## 2.0.8
 
 ### Patch Changes

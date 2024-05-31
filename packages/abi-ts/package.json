@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/abi-ts",
-  "version": "2.0.8",
+  "version": "2.0.11",
   "description": "Create TypeScript type declaration files (`.d.ts`) for your ABI JSON files.",
   "repository": {
     "type": "git",
@@ -12,16 +12,12 @@
   "exports": {
     ".": "./dist/index.js"
   },
-  "typesVersions": {
-    "*": {
-      "index": [
-        "./src/index.ts"
-      ]
-    }
-  },
   "bin": {
     "abi-ts": "./dist/abi-ts.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "clean": "rimraf dist",

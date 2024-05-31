@@ -31,7 +31,7 @@ RUN curl -L https://foundry.paradigm.xyz/ | bash && \
 # pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="${PATH}:${PNPM_HOME}"
-RUN npm install pnpm@8 --global && pnpm --version
+RUN npm install pnpm@9.1.1 --global && pnpm --version
 
 FROM base AS mud
 COPY . /app
@@ -42,7 +42,7 @@ WORKDIR /app
 # this resolves some chicken-and-egg problems with using workspace bins before they're created (install -> build -> install)
 RUN pnpm recursive run prepare
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN pnpm run -r build
+RUN NODE_OPTIONS=--max-old-space-size=4096 pnpm run -r build
 
 FROM mud AS store-indexer
 WORKDIR /app/packages/store-indexer

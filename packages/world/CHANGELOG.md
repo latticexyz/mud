@@ -1,5 +1,90 @@
 # Change Log
 
+## 2.0.11
+
+### Patch Changes
+
+- @latticexyz/common@2.0.11
+- @latticexyz/config@2.0.11
+- @latticexyz/protocol-parser@2.0.11
+- @latticexyz/schema-type@2.0.11
+- @latticexyz/store@2.0.11
+
+## 2.0.10
+
+### Patch Changes
+
+- a1b1ebf6: Worlds can now be deployed with external modules, defined by a module's `artifactPath` in your MUD config, resolved with Node's module resolution. This allows for modules to be published to and imported from npm.
+
+  ```diff
+   defineWorld({
+     // …
+     modules: [
+       {
+  -      name: "KeysWithValueModule",
+  +      artifactPath: "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json",
+         root: true,
+         args: [resolveTableId("Inventory")],
+       },
+     ],
+   });
+  ```
+
+  Note that the above assumes `@latticexyz/world-modules` is included as a dependency of your project.
+
+- 4e4e9104: Upgraded the `ejs` dependency to 3.1.10.
+- 3dbf3bf3: Updated World config types to use readonly arrays.
+- 32c1cda6: `defineStore` and `defineWorld` will now throw a type error if an unexpected config option is used.
+- 4caca05e: Bumped zod dependency to comply with abitype peer dependencies.
+- 27f888c7: `defineStore` and `defineWorld` now maps your `enums` to usable, strongly-typed enums on `enumValues`.
+
+  ```ts
+  const config = defineStore({
+    enums: {
+      TerrainType: ["Water", "Grass", "Sand"],
+    },
+  });
+
+  config.enumValues.TerrainType.Water;
+  //                              ^? (property) Water: 0
+
+  config.enumValues.TerrainType.Grass;
+  //                              ^? (property) Grass: 1
+  ```
+
+  This allows for easier referencing of enum values (i.e. `uint8` equivalent) in contract calls.
+
+  ```ts
+  writeContract({
+    // …
+    functionName: "setTerrainType",
+    args: [config.enumValues.TerrainType.Grass],
+  });
+  ```
+
+- Updated dependencies [4e4e9104]
+- Updated dependencies [51b137d3]
+- Updated dependencies [32c1cda6]
+- Updated dependencies [4caca05e]
+- Updated dependencies [27f888c7]
+  - @latticexyz/store@2.0.10
+  - @latticexyz/common@2.0.10
+  - @latticexyz/config@2.0.10
+  - @latticexyz/protocol-parser@2.0.10
+  - @latticexyz/schema-type@2.0.10
+
+## 2.0.9
+
+### Patch Changes
+
+- Updated dependencies [764ca0a0]
+- Updated dependencies [bad3ad1b]
+  - @latticexyz/common@2.0.9
+  - @latticexyz/config@2.0.9
+  - @latticexyz/protocol-parser@2.0.9
+  - @latticexyz/store@2.0.9
+  - @latticexyz/schema-type@2.0.9
+
 ## 2.0.8
 
 ### Patch Changes

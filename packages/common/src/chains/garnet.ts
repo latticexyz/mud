@@ -23,6 +23,7 @@ export const garnet = {
     },
   },
   contracts: {
+    ...chainConfig.contracts,
     multicall3: {
       address: "0xca11bde05977b3631167028862be2a173976ca11",
     },
@@ -45,4 +46,6 @@ export const garnet = {
       },
     },
   },
+  iconUrls: ["https://redstone.xyz/chain-icons/garnet.png"],
+  indexerUrl: "https://indexer.mud.garnetchain.com",
 } as const satisfies MUDChain;

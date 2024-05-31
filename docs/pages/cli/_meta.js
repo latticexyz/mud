@@ -6,6 +6,5 @@ export default {
   verify: "mud verify",
   "dev-contracts": "mud dev-contracts",
   "abi-ts": "mud abi-ts",
-  faucet: "mud faucet",
   "set-version": "mud set-version",
 };
