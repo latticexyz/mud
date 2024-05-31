@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, type ReactNode } from "react";
 import { propwiseXor, show } from "@arktype/util";
-import { InitOptions } from "./init";
-import { AccountKitInstance } from "./common";
-import { AccountKit } from "./proxy";
+import { InitOptions } from "../global/init";
+import { AccountKitInstance } from "../common";
+import { AccountKit } from "../proxy";
 
 /** @internal */
 const Context = createContext<AccountKitInstance | null>(null);

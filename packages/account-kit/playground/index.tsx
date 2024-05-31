@@ -1,13 +1,13 @@
 import "./polyfills";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import { WagmiProvider, createConfig } from "wagmi";
+import { WagmiProvider } from "wagmi";
 import { Hex } from "viem";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { garnet, mudFoundry, redstone } from "@latticexyz/common/chains";
 import { App } from "./App";
-import { AccountKit } from "../src/exports/embed";
-import { AccountKitProvider } from "../src/embed/AccountKitProvider";
+import { AccountKit } from "../src/exports";
+import { AccountKitProvider } from "../src/react/AccountKitProvider";
 
 console.log("AccountKit.getVersion", AccountKit.getVersion());
 
@@ -23,9 +23,6 @@ const worldAddress = testWorlds[chainId];
 if (!worldAddress) {
   throw new Error(`Account Kit playground is not configured with a test world address for chain ID ${chainId}`);
 }
-
-// TODO: refactor so that this is a config, not an instance
-// then pass this into `AccountKitGlobal.getWagmiConfig` instead of instance
 
 const accountKit = AccountKit.init({
   chainId,
@@ -46,7 +43,7 @@ const root = ReactDOM.createRoot(document.querySelector("#react-root")!);
 root.render(
   <StrictMode>
     <AccountKitProvider instance={accountKit}>
-      <WagmiProvider config={createConfig(accountKit.getWagmiConfig())}>
+      <WagmiProvider config={accountKit.getWagmiConfig()}>
         <QueryClientProvider client={queryClient}>
           <App />
         </QueryClientProvider>

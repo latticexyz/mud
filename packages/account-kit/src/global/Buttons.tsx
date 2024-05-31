@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
 import { useStore } from "zustand";
-import { AccountButton } from "../AccountButton";
+import { AccountButton } from "../core/AccountButton";
 import { InternalStore } from "./createInternalStore";
 
 export type Props = {

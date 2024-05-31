@@ -1,5 +1,5 @@
 import { StoreApi, createStore } from "zustand/vanilla";
-import { AppAccountClient } from "../common";
+import { AppAccountClient } from "../core/common";
 import { Account, Chain, Client, Hex, Transport } from "viem";
 
 export type ExteralState = {

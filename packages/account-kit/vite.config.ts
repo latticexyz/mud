@@ -2,12 +2,12 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   build: {
-    outDir: "dist/embed",
+    outDir: "dist/global",
     sourcemap: true,
     lib: {
-      entry: "src/embed/global.ts",
+      entry: "src/global/global.ts",
       name: "__AccountKit",
-      fileName: "embed",
+      fileName: "global",
       formats: ["iife"],
     },
   },

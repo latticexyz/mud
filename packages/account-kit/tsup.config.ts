@@ -5,6 +5,8 @@ export default defineConfig([
     outDir: "dist/tsup",
     entry: {
       index: "src/exports/index.ts",
+      core: "src/exports/core.ts",
+      chains: "src/exports/chains.ts",
       internal: "src/exports/internal.ts",
     },
     target: "esnext",
@@ -21,9 +23,9 @@ export default defineConfig([
     },
   },
   // {
-  //   outDir: "dist/embed",
+  //   outDir: "dist/global",
   //   entry: {
-  //     embed: "src/embed/embed.ts",
+  //     global: "src/global/global.ts",
   //   },
   //   target: "esnext",
   //   format: ["iife"],

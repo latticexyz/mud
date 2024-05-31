@@ -1,6 +1,6 @@
 // import { useEffect } from "react";
 import { useAccount } from "wagmi";
-import { AccountKitButton } from "../src/exports/embed";
+import { AccountKitButton } from "../src/exports";
 import { useLocalStorage } from "usehooks-ts";
 
 export function App() {

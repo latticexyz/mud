@@ -1,1 +1,1 @@
-export { defaultChains as chains } from "../defaultChains";
+export { defaultChains as chains } from "../core/defaultChains";

@@ -8,5 +8,5 @@ procs:
   # mud:
   #   cwd: ../..
   #   shell: pnpm run dev --filter=!@latticexyz/account-kit
-  embed:
-    shell: npx -y http-server dist/embed -c-1
+  cdn:
+    shell: npx -y http-server dist/global -c-1

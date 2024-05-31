@@ -1,7 +1,7 @@
-import { AccountKitGlobal } from "./common";
+import { AccountKitGlobal } from "../common";
 import { version } from "../../package.json";
+import { defaultChains } from "../core/defaultChains";
 import { init } from "./init";
-import { defaultChains } from "../defaultChains";
 
 console.log(`MUD Account Kit version ${version}`);
 
@@ -20,8 +20,14 @@ if (window.AccountKit) {
   }
 } else {
   window.AccountKit = Object.freeze({
-    getVersion: () => version,
-    getDefaultChains: () => defaultChains,
+    getVersion() {
+      return version;
+    },
+    getDefaultChains({ proxyVersion } = {}) {
+      // TODO: transform chains as-needed based on wagmiVersion or proxyVersion
+      proxyVersion;
+      return defaultChains;
+    },
     init,
   });
 }

@@ -1,5 +1,5 @@
-import { useAccountModal } from "../useAccountModal";
-import { usePreparedAppAccountClient } from "../usePreparedAppAccountClient";
+import { useAccountModal } from "../core/useAccountModal";
+import { usePreparedAppAccountClient } from "../core/usePreparedAppAccountClient";
 import { useEffect } from "react";
 import { useAccount, useConnectorClient } from "wagmi";
 import { ExternalStore } from "./createExternalStore";
