@@ -8,7 +8,7 @@ import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.
 import { IChatSystem } from "./IChatSystem.sol";
 import { IIncrementSystem } from "./IIncrementSystem.sol";
 import { IInventorySystem } from "./IInventorySystem.sol";
-import { Inamespace__ChatNamespacedSystem } from "./Inamespace__ChatNamespacedSystem.sol";
+import { namespace__IChatNamespacedSystem } from "./namespace__IChatNamespacedSystem.sol";
 import { IStructSystem } from "./IStructSystem.sol";
 
 /**
@@ -23,6 +23,6 @@ interface IWorld is
   IChatSystem,
   IIncrementSystem,
   IInventorySystem,
-  Inamespace__ChatNamespacedSystem,
+  namespace__IChatNamespacedSystem,
   IStructSystem
 {}

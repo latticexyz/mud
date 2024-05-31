@@ -43,8 +43,9 @@ export async function worldgen(
         };
       }
     });
-    const systemInterfaceName = `I${system.basename}`;
     const resource = labelToResource(system.basename);
+    const systemInterfaceName =
+      resource.namespace === "" ? `I${system.basename}` : `${resource.namespace}__I${resource.name}`;
     const output = renderSystemInterface({
       name: systemInterfaceName,
       functionPrefix: resource.namespace === "" ? "" : `${resource.namespace}__`,
