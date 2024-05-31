@@ -61,16 +61,7 @@ export default defineWorld({
       name: "KeysWithValueModule",
       artifactPath: "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json",
       root: true,
-      args: [
-        {
-          type: "bytes32",
-          value: resourceToHex({
-            type: "table",
-            namespace: "app",
-            name: "Tasks",
-          }),
-        },
-      ],
+      args: [resolveTableId("Tasks")],
     },
   ],
 });
