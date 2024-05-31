@@ -6,7 +6,9 @@ import { console } from "forge-std/console.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 
-import { Position, Health, Terrain } from "../src/codegen/index.sol";
+import { Position } from "../src/codegen/tables/Position.sol";
+import { Health } from "../src/codegen/tables/Health.sol";
+import { Terrain } from "../src/codegen/tables/Terrain.sol";
 import { TerrainType } from "../src/codegen/common.sol";
 
 contract PostDeploy is Script {
