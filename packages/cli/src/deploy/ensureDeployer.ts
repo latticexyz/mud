@@ -1,21 +1,15 @@
 import { Account, Address, Chain, Client, Transport } from "viem";
-import { getBalance, getBytecode, sendRawTransaction, sendTransaction, waitForTransactionReceipt } from "viem/actions";
+import { getBalance, sendRawTransaction, sendTransaction, waitForTransactionReceipt } from "viem/actions";
 import deployment from "./create2/deployment.json";
 import { debug } from "./debug";
+import { getDeployer } from "./getDeployer";
 
 const deployer = `0x${deployment.address}` as const;
-const deployerBytecode = `0x${deployment.bytecode}` as const;
 
 export async function ensureDeployer(client: Client<Transport, Chain | undefined, Account>): Promise<Address> {
-  const bytecode = await getBytecode(client, { address: deployer });
-  if (bytecode) {
-    debug("found CREATE2 deployer at", deployer);
-    if (bytecode !== deployerBytecode) {
-      console.warn(
-        `\n  ⚠️ Bytecode for deployer at ${deployer} did not match the expected CREATE2 bytecode. You may have unexpected results.\n`,
-      );
-    }
-    return deployer;
+  const existingDeployer = await getDeployer(client);
+  if (existingDeployer !== undefined) {
+    return existingDeployer;
   }
 
   // There's not really a way to simulate a pre-EIP-155 (no chain ID) transaction,
@@ -53,7 +47,7 @@ export async function ensureDeployer(client: Client<Transport, Chain | undefined
         debug("deploying CREATE2 deployer");
         return sendTransaction(client, {
           chain: client.chain ?? null,
-          data: deployerBytecode,
+          data: `0x${deployment.creationCode}`,
         });
       }
       throw error;

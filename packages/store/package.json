@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store",
-  "version": "2.0.5",
+  "version": "2.0.11",
   "description": "Store",
   "repository": {
     "type": "git",
@@ -19,28 +19,12 @@
     "./register": "./dist/register.js",
     "./out/*": "./out/*"
   },
-  "typesVersions": {
-    "*": {
-      "index": [
-        "./ts/exports/index.ts"
-      ],
-      "internal": [
-        "./ts/exports/internal.ts"
-      ],
-      "codegen": [
-        "./ts/codegen/index.ts"
-      ],
-      "config": [
-        "./ts/config/index.ts"
-      ],
-      "config/v2": [
-        "./ts/config/v2/index.ts"
-      ],
-      "register": [
-        "./ts/register/index.ts"
-      ]
-    }
-  },
+  "files": [
+    "dist",
+    "out",
+    "foundry.toml",
+    "src"
+  ],
   "scripts": {
     "build": "pnpm run build:tightcoder && pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts && pnpm run build:js",
     "build:abi": "forge build",
@@ -59,15 +43,15 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@arktype/util": "0.0.27",
+    "@arktype/util": "0.0.29",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "abitype": "1.0.0",
     "arktype": "1.0.29-alpha",
-    "viem": "2.9.16",
-    "zod": "^3.21.4"
+    "viem": "2.9.20",
+    "zod": "^3.22.2"
   },
   "devDependencies": {
     "@latticexyz/abi-ts": "workspace:*",
@@ -76,7 +60,6 @@
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.15.11",
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
-    "ejs": "^3.1.8",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
     "solhint": "^3.3.7",
     "tsup": "^6.7.0",

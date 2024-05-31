@@ -11,6 +11,7 @@ on:
       tag-or-version:
         required: true
         type: string
+        description: npm tag or version of MUD
 
 jobs:
   test-create-mud-project:
@@ -18,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest-16-cores, windows-latest]
+        os: [depot-ubuntu-22.04-16, windows-latest]
         template: [vanilla, react, react-ecs, phaser, threejs]
 
     runs-on: ${{ matrix.os }}

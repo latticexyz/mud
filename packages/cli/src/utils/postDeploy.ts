@@ -8,18 +8,35 @@ export async function postDeploy(
   worldAddress: string,
   rpc: string,
   profile: string | undefined,
+  forgeOptions: string | undefined,
+  kms: boolean,
 ): Promise<void> {
-  // Execute postDeploy forge script
+  // TODO: make this more robust as it is likely to fail for any args that have a space in them
+  const userOptions = forgeOptions?.replaceAll("\\", "").split(" ") ?? [];
   const postDeployPath = path.join(await getScriptDirectory(), postDeployScript + ".s.sol");
-  if (existsSync(postDeployPath)) {
-    console.log(chalk.blue(`Executing post deploy script at ${postDeployPath}`));
-    await forge(
-      ["script", postDeployScript, "--sig", "run(address)", worldAddress, "--broadcast", "--rpc-url", rpc, "-vvv"],
-      {
-        profile: profile,
-      },
-    );
-  } else {
+  if (!existsSync(postDeployPath)) {
     console.log(`No script at ${postDeployPath}, skipping post deploy hook`);
+    return;
   }
+
+  console.log(chalk.blue(`Executing post deploy script at ${postDeployPath}`));
+
+  await forge(
+    [
+      "script",
+      postDeployScript,
+      "--broadcast",
+      "--sig",
+      "run(address)",
+      worldAddress,
+      "--rpc-url",
+      rpc,
+      "-vvv",
+      kms ? "--aws" : "",
+      ...userOptions,
+    ],
+    {
+      profile: profile,
+    },
+  );
 }

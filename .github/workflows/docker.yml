@@ -7,19 +7,10 @@ on:
 jobs:
   docker:
     name: Build and push image
-    runs-on: ubuntu-latest-16-cores
+    runs-on: depot-ubuntu-22.04-16
     permissions:
       contents: read
       packages: write
-    strategy:
-      matrix:
-        include:
-          - image: ghcr.io/latticexyz/mud
-            target: mud
-          - image: ghcr.io/latticexyz/store-indexer
-            target: store-indexer
-          - image: ghcr.io/latticexyz/faucet
-            target: faucet
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -29,23 +20,19 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4.6.0
+      # Build and push each stage of the Dockerfile in order
+      - name: "Build and push: mud"
+        uses: ./.github/actions/docker-build-push
         with:
-          context: git
-          images: ${{ matrix.image }}
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=match,pattern=@(.*),group=1
-            type=match,pattern=@.*-(next),group=1
-            type=ref,event=branch
-            type=sha
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4.2.1
+          image: ghcr.io/latticexyz/mud
+          stage: mud
+      - name: "Build and push: store-indexer"
+        uses: ./.github/actions/docker-build-push
         with:
-          context: .
-          push: true
-          target: ${{ matrix.target }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          image: ghcr.io/latticexyz/store-indexer
+          stage: store-indexer
+      - name: "Build and push: faucet"
+        uses: ./.github/actions/docker-build-push
+        with:
+          image: ghcr.io/latticexyz/faucet
+          stage: faucet

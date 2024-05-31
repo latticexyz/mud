@@ -66,7 +66,7 @@ contract Unstable_CallWithSignatureModuleTest is Test, GasReporter {
     bytes memory signature = abi.encodePacked(r, s, v);
 
     // Attempt to register a limited delegation using an empty signature
-    vm.expectRevert(abi.encodeWithSelector(ECDSA.ECDSAInvalidSignatureLength.selector, 0));
+    vm.expectRevert(abi.encodeWithSelector(IUnstable_CallWithSignatureErrors.InvalidSignature.selector));
     Unstable_CallWithSignatureSystem(address(world)).callWithSignature(
       delegator,
       REGISTRATION_SYSTEM_ID,
@@ -101,12 +101,7 @@ contract Unstable_CallWithSignatureModuleTest is Test, GasReporter {
     world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Attempt to register a limited delegation using an old signature
-    vm.expectRevert(
-      abi.encodeWithSelector(
-        IUnstable_CallWithSignatureErrors.InvalidSignature.selector,
-        0x5266996Bb73ce3ac0E75D79Db87f4a96063cEe1F
-      )
-    );
+    vm.expectRevert(abi.encodeWithSelector(IUnstable_CallWithSignatureErrors.InvalidSignature.selector));
     Unstable_CallWithSignatureSystem(address(world)).callWithSignature(
       delegator,
       REGISTRATION_SYSTEM_ID,

@@ -2,12 +2,25 @@ import { Store } from "@latticexyz/store";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
 
 export type Module = {
-  /** The name of the module */
+  /**
+   * The name of the module
+   * @deprecated
+   */
   readonly name: string;
   /** Should this module be installed as a root module? */
-  readonly root?: boolean;
+  readonly root: boolean;
   /** Arguments to be passed to the module's install method */
-  readonly args?: (ValueWithType | DynamicResolution)[];
+  readonly args: readonly (ValueWithType | DynamicResolution)[];
+  /**
+   * Import path to module's forge/solc JSON artifact with the module's compiled bytecode. This is used to create consistent, deterministic deploys for already-built modules
+   * like those installed and imported from npm.
+   *
+   * This path is resolved using node's module resolution, so this supports both relative file paths (`../path/to/MyModule.json`) as well as JS import paths
+   * (`@latticexyz/world-modules/out/CallWithSignatureModule.sol/CallWithSignatureModule.json`).
+   *
+   * If not provided, it's assumed that this is a local module as part of the project's source and the artifact will be looked up in forge's output directory.
+   */
+  readonly artifactPath: string | undefined;
 };
 
 export type System = {
@@ -24,7 +37,7 @@ export type System = {
   /** If openAccess is true, any address can call the system */
   readonly openAccess: boolean;
   /** An array of addresses or system names that can access the system */
-  readonly accessList: string[];
+  readonly accessList: readonly string[];
 };
 
 export type Systems = { readonly [key: string]: System };
@@ -41,6 +54,8 @@ export type Deploy = {
   readonly deploysDirectory: string;
   /** JSON file to write to with chain -> latest world deploy address (Default "./worlds.json") */
   readonly worldsFile: string;
+  /** Deploy the World as an upgradeable proxy */
+  readonly upgradeableWorldImplementation: boolean;
 };
 
 export type Codegen = {
@@ -48,7 +63,10 @@ export type Codegen = {
   readonly worldInterfaceName: string;
   /** Directory to output system and world interfaces of `worldgen` (Default "world") */
   readonly worldgenDirectory: string;
-  /** Path for world package imports. Default is "@latticexyz/world/src/" */
+  /**
+   * Path for world package imports. Default is "@latticexyz/world/src/"
+   * @internal
+   */
   readonly worldImportPath: string;
 };
 

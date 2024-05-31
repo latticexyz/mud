@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/gas-report",
-  "version": "2.0.5",
+  "version": "2.0.11",
   "description": "Gas reporter for specific lines within forge tests",
   "repository": {
     "type": "git",
@@ -12,16 +12,15 @@
   "exports": {
     ".": "./dist/index.js"
   },
-  "typesVersions": {
-    "*": {
-      "index": [
-        "./ts/index.ts"
-      ]
-    }
-  },
   "bin": {
     "gas-report": "./dist/gas-report.js"
   },
+  "files": [
+    "dist",
+    "out",
+    "src",
+    "foundry.toml"
+  ],
   "scripts": {
     "build": "tsup",
     "clean": "rimraf dist",

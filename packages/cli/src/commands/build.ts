@@ -1,5 +1,5 @@
 import type { CommandModule } from "yargs";
-import { loadConfig } from "@latticexyz/config/node";
+import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
 
 import { getSrcDirectory } from "@latticexyz/common/foundry";
@@ -17,16 +17,17 @@ const commandModule: CommandModule<Options, Options> = {
 
   builder(yargs) {
     return yargs.options({
-      configPath: { type: "string", desc: "Path to the config file" },
+      configPath: { type: "string", desc: "Path to the MUD config file" },
       profile: { type: "string", desc: "The foundry profile to use" },
     });
   },
 
-  async handler({ configPath, profile }) {
+  async handler(opts) {
+    const configPath = await resolveConfigPath(opts.configPath);
     const config = (await loadConfig(configPath)) as WorldConfig;
     const srcDir = await getSrcDirectory();
 
-    await build({ config, srcDir, foundryProfile: profile });
+    await build({ configPath, config, srcDir, foundryProfile: opts.profile });
 
     process.exit(0);
   },

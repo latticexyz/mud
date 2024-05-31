@@ -4,7 +4,7 @@ export default defineStore({
   codegen: {
     storeImportPath: "../../",
   },
-  namespace: "store" as const,
+  namespace: "store",
   userTypes: {
     ResourceId: { filePath: "./src/ResourceId.sol", type: "bytes32" },
     FieldLayout: { filePath: "./src/FieldLayout.sol", type: "bytes32" },
