@@ -37,32 +37,7 @@ export default defineWorld({
       key: ["owner", "item", "itemVariant"],
     },
   },
-  namespaces: {
-    royale: {
-      tables: {
-        CounterTable: {
-          schema: {
-            value: "uint32",
-          },
-          key: [],
-        },
-        MessageTable: {
-          type: "offchainTable",
-          schema: {
-            value: "string",
-          },
-          key: [],
-        },
-        Health: {
-          schema: {
-            player: "address",
-            value: "uint256",
-          },
-          key: ["player"],
-        },
-      },
-    },
-  },
+
   modules: [
     {
       artifactPath: "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json",

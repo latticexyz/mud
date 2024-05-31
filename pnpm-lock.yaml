@@ -982,7 +982,7 @@ importers:
         version: 0.0.7(debug@4.3.4)
       mock-game-contracts:
         specifier: workspace:*
-        version: link:../../test/mock-game-contracts
+        version: link:../../test/mock-multiple-namespaces
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.4.2)
@@ -1153,6 +1153,42 @@ importers:
         version: 0.34.6(jsdom@22.1.0)
 
   test/mock-game-contracts:
+    devDependencies:
+      '@latticexyz/cli':
+        specifier: workspace:*
+        version: link:../../packages/cli
+      '@latticexyz/schema-type':
+        specifier: workspace:*
+        version: link:../../packages/schema-type
+      '@latticexyz/store':
+        specifier: workspace:*
+        version: link:../../packages/store
+      '@latticexyz/world':
+        specifier: workspace:*
+        version: link:../../packages/world
+      '@latticexyz/world-modules':
+        specifier: workspace:*
+        version: link:../../packages/world-modules
+      dotenv:
+        specifier: ^16.0.3
+        version: 16.0.3
+      ds-test:
+        specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
+        version: https://codeload.github.com/dapphub/ds-test/tar.gz/e282159d5170298eb2455a6c05280ab5a73a4ef0
+      forge-std:
+        specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
+        version: https://codeload.github.com/foundry-rs/forge-std/tar.gz/74cfb77e308dd188d2f58864aaf44963ae6b88b1
+      prettier:
+        specifier: ^2.6.2
+        version: 2.8.4
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      typescript:
+        specifier: 5.4.2
+        version: 5.4.2
+
+  test/mock-multiple-namespaces:
     devDependencies:
       '@latticexyz/cli':
         specifier: workspace:*
@@ -4091,6 +4127,7 @@ packages:
 
   glob@7.1.6:
     resolution: {integrity: sha512-LwaxwyZ72Lk7vZINtNNrywX0ZuLyStrdDtabefZKAY5ZGJhVtgdznluResxNmPitE0SAO+O26sWTHeKSI2wMBA==}
+    deprecated: Glob versions prior to v9 are no longer supported
 
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
@@ -5778,6 +5815,7 @@ packages:
 
   rimraf@2.6.3:
     resolution: {integrity: sha512-mwqeW5XsA2qAejG46gYdENaxXjx9onRNCfn7L0duuP4hCuTIi/QO7PDK07KJfp1d+izWPrzEJDcSqBa0OZQriA==}
+    deprecated: Rimraf versions prior to v4 are no longer supported
     hasBin: true
 
   rimraf@3.0.2:
