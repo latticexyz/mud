@@ -59,7 +59,7 @@ export type Codegen = {
    */
   // TODO: move `namespaces` key handling into store so we can conditionally turn this on/off
   readonly namespaceDirectories: boolean;
-  readonly indexFilename: string;
+  readonly indexFilename: string | false;
 };
 
 export type Store = {

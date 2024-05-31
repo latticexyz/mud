@@ -78,6 +78,7 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
 
   const codegen = mergeIfUndefined(resolvedStore.codegen, resolveCodegen(world.codegen));
   codegen.namespaceDirectories = world.namespaces !== undefined;
+  codegen.indexFilename = world.namespaces === undefined ? codegen.indexFilename : false;
 
   const resolvedNamespacedTables = Object.fromEntries(
     Object.entries(namespaces)
