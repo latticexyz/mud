@@ -10,6 +10,13 @@
   "exports": {
     ".": "./dist/index.js"
   },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./index.d.ts"
+      ]
+    }
+  },
   "files": [
     "dist"
   ],

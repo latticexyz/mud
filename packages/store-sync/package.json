@@ -19,6 +19,34 @@
     "./trpc-indexer": "./dist/trpc-indexer/index.js",
     "./zustand": "./dist/zustand/index.js"
   },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ],
+      "indexer-client": [
+        "./dist/indexer-client/index.d.ts"
+      ],
+      "postgres": [
+        "./dist/postgres/index.d.ts"
+      ],
+      "postgres-decoded": [
+        "./dist/postgres-decoded/index.d.ts"
+      ],
+      "recs": [
+        "./dist/recs/index.d.ts"
+      ],
+      "sqlite": [
+        "./dist/sqlite/index.d.ts"
+      ],
+      "trpc-indexer": [
+        "./dist/trpc-indexer/index.d.ts"
+      ],
+      "zustand": [
+        "./dist/zustand/index.d.ts"
+      ]
+    }
+  },
   "files": [
     "dist"
   ],

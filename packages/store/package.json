@@ -19,10 +19,34 @@
     "./register": "./dist/register.js",
     "./out/*": "./out/*"
   },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ],
+      "internal": [
+        "./dist/internal.d.ts"
+      ],
+      "mud.config": [
+        "./dist/mud.config.d.ts"
+      ],
+      "codegen": [
+        "./dist/codegen.d.ts"
+      ],
+      "config": [
+        "./dist/config.d.ts"
+      ],
+      "config/v2": [
+        "./dist/config/v2.d.ts"
+      ],
+      "register": [
+        "./dist/register.d.ts"
+      ]
+    }
+  },
   "files": [
     "dist",
     "out",
-    "foundry.toml",
     "src"
   ],
   "scripts": {

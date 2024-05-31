@@ -12,6 +12,16 @@
     ".": "./dist/index.js",
     "./deprecated": "./dist/deprecated/index.js"
   },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ],
+      "deprecated": [
+        "./dist/deprecated/index.d.ts"
+      ]
+    }
+  },
   "files": [
     "dist"
   ],

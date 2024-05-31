@@ -13,6 +13,16 @@
     ".": "./dist/index.js",
     "./internal": "./dist/internal.js"
   },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ],
+      "internal": [
+        "./dist/internal.d.ts"
+      ]
+    }
+  },
   "files": [
     "dist"
   ],

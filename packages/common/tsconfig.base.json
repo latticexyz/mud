@@ -1,3 +1,4 @@
+// Please take care editing this! All of our packages and templates extend this base config.
 {
   "compilerOptions": {
     "module": "esnext",

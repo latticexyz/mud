@@ -12,6 +12,13 @@
   "exports": {
     ".": "./dist/index.js"
   },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ]
+    }
+  },
   "bin": {
     "mud": "./dist/mud.js"
   },

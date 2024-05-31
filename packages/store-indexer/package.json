@@ -12,6 +12,13 @@
   "exports": {
     ".": "./dist/index.js"
   },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/src/index.d.ts"
+      ]
+    }
+  },
   "bin": {
     "postgres-decoded-indexer": "./dist/bin/postgres-decoded-indexer.js",
     "postgres-frontend": "./dist/bin/postgres-frontend.js",
