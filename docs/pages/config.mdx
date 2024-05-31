@@ -12,7 +12,7 @@ The config is used to define:
   If you want greater control over your systems (to change their public access or their name), you can use the `systems` object in the config.
 - The [modules](/world/modules) that will be installed in the `World`.
 
-The is an example of a `World` config:
+This is an example of a `World` config:
 
 ```tsx
 import { defineWorld } from "@latticexyz/world";
@@ -24,7 +24,7 @@ export default defineWorld({
   },
   excludeSystems: ["System3", "System2"],
   worldContractName: "CustomWorld",
-  namespace: "mud",
+  namespace: "app",
   systems: {
     IncrementSystem: {
       name: "increment",
