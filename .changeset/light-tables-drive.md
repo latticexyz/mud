@@ -12,12 +12,13 @@ pragma solidity >=0.8.24;
 
 import { Script } from "forge-std/Script.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-
 import { TotalSupply } from "@latticexyz/world-modules/src/modules/erc20-puppet/tables/TotalSupply.sol";
 import { _totalSupplyTableId } from "@latticexyz/world-modules/src/modules/erc20-puppet/utils.sol";
 
 contract RegisterTotalSupply is Script {
-  function run(address worldAddress, bytes14 namespace) external {
+  function run(address worldAddress, string memory namespaceString) external {
+    bytes14 namespace = bytes14(bytes(namespaceString));
+
     StoreSwitch.setStoreAddress(worldAddress);
 
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -33,5 +34,5 @@ contract RegisterTotalSupply is Script {
 Then execute the transactions by running the following [`forge script`](https://book.getfoundry.sh/reference/forge/forge-script?highlight=script#forge-script) command:
 
 ```shell
-forge script ./script/RegisterTotalSupply.s.sol --sig "run(address,bytes14)" $WORLD_ADDRESS $NAMESPACE
+forge script ./script/RegisterTotalSupply.s.sol --sig "run(address,bytes14)" $WORLD_ADDRESS $NAMESPACE_STRING
 ```
