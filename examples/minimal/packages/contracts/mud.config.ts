@@ -37,7 +37,6 @@ export default defineWorld({
       key: ["owner", "item", "itemVariant"],
     },
   },
-
   modules: [
     {
       artifactPath: "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json",

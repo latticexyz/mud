@@ -2,7 +2,7 @@
 pragma solidity >=0.8.24;
 import { console } from "forge-std/console.sol";
 import { System } from "@latticexyz/world/src/System.sol";
-import { CounterTable } from "../codegen/tables/CounterTable.sol";
+import { CounterTable } from "../codegen/index.sol";
 
 contract IncrementSystem is System {
   error MyCustomError();

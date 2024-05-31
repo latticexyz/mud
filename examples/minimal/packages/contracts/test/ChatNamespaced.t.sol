@@ -7,7 +7,7 @@ import { getKeysWithValue } from "@latticexyz/world-modules/src/modules/keyswith
 import { IStoreEvents } from "@latticexyz/store/src/IStoreEvents.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { MessageTable } from "../src/codegen/tables/MessageTable.sol";
+import { MessageTable } from "../src/codegen/index.sol";
 import { IChatNamespacedSystem } from "../src/interfaces/IChatNamespacedSystem.sol";
 
 contract ChatNamespacedTest is MudTest {

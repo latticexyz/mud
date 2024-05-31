@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 import { System } from "@latticexyz/world/src/System.sol";
-import { Inventory } from "../codegen/tables/Inventory.sol";
+import { Inventory } from "../codegen/index.sol";
 
 contract InventorySystem is System {
   function pickUp(uint32 item, uint32 itemVariant) public {
