@@ -29,3 +29,9 @@ contract RegisterTotalSupply is Script {
   }
 }
 ```
+
+Then execute the transactions by running the following [`forge script`](https://book.getfoundry.sh/reference/forge/forge-script?highlight=script#forge-script) command:
+
+```shell
+forge script ./script/RegisterTotalSupply.s.sol --sig "run(address,bytes14)" $WORLD_ADDRESS $NAMESPACE
+```
