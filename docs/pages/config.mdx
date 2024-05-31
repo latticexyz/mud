@@ -16,14 +16,7 @@ The is an example of a `World` config:
 
 ```tsx
 import { defineWorld } from "@latticexyz/world";
-
-// Used for the module parameters, not required otherwise.
-// If you use this, make sure to run:
-//
-// pnpm install @latticexyz/common
-//
-// In the packages/contracts directory.
-import { resolveTableId } from "@latticexyz/config/register";
+import { resolveTableId } from "@latticexyz/world/internal";
 
 export default defineWorld({
   enums: {
@@ -150,13 +143,6 @@ The global configuration keys are all optional.
 
     <summary>Use `resolveTableId` to refer to a table defined in the same configuration file.</summary>
 
-    1. Install the `@latticexyz/config` package.
-
-       ```sh
-       cd packages/contracts
-       pnpm install @latticexyz/config
-       ```
-
     1. In `mud.config.ts`, import `resolveTableId`.
 
        ```typescript
@@ -176,17 +162,10 @@ The global configuration keys are all optional.
 
     <summary>Use `resourceToHex` to specify the full resource information.</summary>
 
-    1. Install the `@latticexyz/common` package.
-
-       ```sh
-       cd packages/contracts
-       pnpm install @latticexyz/common
-       ```
-
     1. In `mud.config.ts`, import `resourceToHex`.
 
        ```typescript
-       import { resourceToHex } from "@latticexyz/common";
+       import { resourceToHex } from "@latticexyz/world/internal";
        ```
 
     1. Use this syntax for `args`:
