@@ -6,7 +6,7 @@ import { MudTest } from "@latticexyz/world/test/MudTest.t.sol";
 import { getKeysWithValue } from "@latticexyz/world-modules/src/modules/keyswithvalue/getKeysWithValue.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { CounterTable } from "../src/codegen/index.sol";
+import { CounterTable } from "../src/codegen/tables/CounterTable.sol";
 
 contract CounterTest is MudTest {
   function testWorldExists() public {

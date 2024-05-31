@@ -7,7 +7,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 
-import { MessageTable } from "../src/codegen/index.sol";
+import { MessageTable } from "../src/codegen/tables/MessageTable.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { ChatNamespacedSystem } from "../src/systems/ChatNamespacedSystem.sol";
 
