@@ -24,7 +24,7 @@ export type validateNamespaces<namespaces, scope extends Scope = AbiTypeScope> =
   [namespace in keyof namespaces]: {
     [key in keyof namespaces[namespace]]: key extends "tables"
       ? validateTables<namespaces[namespace][key], scope>
-      : ErrorMessage<`Expected full tables config.`>;
+      : ErrorMessage<`\`${key & string}\` is not a valid namespace config option.`>;
   };
 };
 
