@@ -1,3 +1,5 @@
+import { CollapseCode } from "../../../components/CollapseCode";
+
 # Three.js
 
 This template is for developers who use [Three.js](https://threejs.org/).
@@ -5,7 +7,7 @@ This template is for developers who use [Three.js](https://threejs.org/).
 You can start a new project using this template with:
 
 ```sh copy
-pnpm create mud tutorial --template threejs
+pnpm create mud@latest tutorial --template threejs
 ```
 
 For more information, [see the quickstart guide](/quickstart).
@@ -17,24 +19,26 @@ For more information, [see the quickstart guide](/quickstart).
 [This file](https://github.com/latticexyz/mud/blob/main/templates/threejs/packages/contracts/mud.config.ts) contains the table definition.
 
 ```ts
-import { mudConfig } from "@latticexyz/world/register";
+import { defineWorld } from "@latticexyz/world";
 
-export default mudConfig({
+export default defineWorld({
   tables: {
     Position: {
-      valueSchema: {
+      schema: {
+        id: "bytes32",
         x: "int32",
         y: "int32",
         z: "int32",
       },
+      key: ["id"],
     },
   },
 });
 ```
 
 The table schema has one table, `Position`.
-This table has no specified key schema, so MUD uses the default, a single `bytes32` field.
-This allows us to tie table records to entities, which in MUD have a `bytes32` identifier.
+This table has a single key field, `id`, which is a `bytes32` field.
+It has three value fields, `x`, `y`, and `z`, for a 3d position.
 
 ### `MoveSystem.sol`
 
@@ -110,7 +114,7 @@ The files you are likely to need to change in the offchain code are:
 
 ### `App.tsx`
 
-The relevant definitions are in the [`Scene` React component](https://github.com/latticexyz/mud/blob/main/templates/threejs/packages/client/src/App.tsx#L28-L71):
+The relevant definitions are in the [`Scene` React component](https://github.com/latticexyz/mud/blob/main/templates/threejs/packages/client/src/App.tsx#L85-L128):
 
 ```ts
 const Scene = () => {
@@ -147,16 +151,26 @@ const players = useEntityQuery([Has(Position)]).map((entity) => {
 Get the list of players (with the entityId and position).
 Both `useComponentValue` and `useEntityQuery` cause the React component in which they are registered (in this case, `Scene`) to be rendered again when the information changes.
 
-```ts {10-16}
-.
-.
-.
+<CollapseCode>
+
+```tsx {18-24}
+  useThree(({ camera }) => {
+    if (playerPosition) {
+      camera.position.set(playerPosition.x - 5, playerPosition.y + 5, playerPosition.z + 5);
+    } else {
+      camera.position.set(-5, 5, 5);
+    }
+    camera.rotation.order = "YXZ";
+    camera.rotation.y = -Math.PI / 4;
+    camera.rotation.x = Math.atan(-1 / Math.sqrt(2));
+  });
+
   return (
     <group>
       <ambientLight />
       {/* eslint-disable-next-line react/no-unknown-property */}
       <pointLight position={[10, 10, 10]} />
-      <Plane position={[0, -5, 0]} />
+      <Plane />
       {players.map((p, i) => (
         <Player
           key={i}
@@ -166,7 +180,10 @@ Both `useComponentValue` and `useEntityQuery` cause the React component in which
       ))}
     </group>
   );
+};
 ```
+
+</CollapseCode>
 
 Return the React component, including the players.
 
@@ -186,19 +203,34 @@ export const useKeyboardMovement = () => {
 
 `useMUD()` gives us the `moveBy` system call, which lets us move.
 
-```ts
-  useEffect(() => {
-    const listener = (e: KeyboardEvent) => {
-      if (e.key === "ArrowUp") {
-        moveBy(1, 0, 0);
-      }
-      if (e.key === "ArrowDown") {
-        moveBy(-1, 0, 0);
-      }      .
-      .
-      .
-      .
+<CollapseCode>
+
+```ts {1-5}
+useEffect(() => {
+  const listener = (e: KeyboardEvent) => {
+    if (e.key === "w") {
+      moveBy(1, 0, 0);
+    }
+    if (e.key === "s") {
+      moveBy(-1, 0, 0);
+    }
+    if (e.key === "a") {
+      moveBy(0, 0, -1);
+    }
+    if (e.key === "d") {
+      moveBy(0, 0, 1);
+    }
+    if (e.key === "t") {
+      moveBy(0, 1, 0);
+    }
+    if (e.key === "g") {
+      moveBy(0, -1, 0);
+    }
+  };
+});
 ```
+
+</CollapseCode>
 
 Call `moveBy` with different parameters depending on the key pressed.
 
@@ -233,7 +265,7 @@ You can use `moveTo` to move to specific coordinates.
   };
 ```
 
-Create a transaction and wait for it to be included.
+Create a transaction and wait for it to be included in the blockchain.
 
 ```ts
   const moveBy = async (deltaX: number, deltaY: number, deltaZ: number) => {

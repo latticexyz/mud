@@ -14,7 +14,7 @@ import {
   isObject,
 } from "@latticexyz/store/config/v2";
 import { SystemsInput, WorldInput } from "./input";
-import { CONFIG_DEFAULTS } from "./defaults";
+import { CONFIG_DEFAULTS, MODULE_DEFAULTS } from "./defaults";
 import { Tables } from "@latticexyz/store/internal";
 import { resolveSystems } from "./systems";
 import { resolveNamespacedTables } from "./namespaces";
@@ -33,7 +33,7 @@ export type validateWorld<world> = {
             ErrorMessage<`Namespaces config will be enabled soon.`>
           : key extends keyof WorldInput
             ? conform<world[key], WorldInput[key]>
-            : world[key];
+            : ErrorMessage<`\`${key & string}\` is not a valid World config option.`>;
 };
 
 export function validateWorld(world: unknown): asserts world is WorldInput {
@@ -67,7 +67,7 @@ export type resolveWorld<world> = evaluate<
         },
         "namespaces" | keyof Store
       >,
-      typeof CONFIG_DEFAULTS
+      CONFIG_DEFAULTS
     >
 >;
 
@@ -91,6 +91,8 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
 
   const resolvedStore = resolveStore(world);
 
+  const modules = (world.modules ?? CONFIG_DEFAULTS.modules).map((mod) => mergeIfUndefined(mod, MODULE_DEFAULTS));
+
   return mergeIfUndefined(
     {
       ...resolvedStore,
@@ -99,13 +101,13 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
       deploy: resolveDeploy(world.deploy),
       systems: resolveSystems(world.systems ?? CONFIG_DEFAULTS.systems),
       excludeSystems: get(world, "excludeSystems"),
-      modules: world.modules,
+      modules,
     },
     CONFIG_DEFAULTS,
-  ) as unknown as resolveWorld<world>;
+  ) as never;
 }
 
 export function defineWorld<const world>(world: validateWorld<world>): resolveWorld<world> {
   validateWorld(world);
-  return resolveWorld(world) as unknown as resolveWorld<world>;
+  return resolveWorld(world) as never;
 }

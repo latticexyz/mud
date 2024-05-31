@@ -1,5 +1,75 @@
 # Change Log
 
+## 2.0.11
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.0.11
+
+## 2.0.10
+
+### Patch Changes
+
+- 51b137d3: Added OP predeploy contracts for Redstone and Garnet chain configs and added chain-specific contracts for Redstone chain config.
+  - @latticexyz/schema-type@2.0.10
+
+## 2.0.9
+
+### Patch Changes
+
+- 764ca0a0: Added an optional `indexerUrl` property to `MUDChain`, and populated it in the Redstone and Garnet chain configs.
+- bad3ad1b: Added chain icons to Redstone and Garnet chain configs via `chain.iconUrls`.
+  - @latticexyz/schema-type@2.0.9
+
+## 2.0.8
+
+### Patch Changes
+
+- df4781ac: Added Garnet testnet and Redstone mainnet chain configs and deprecated Lattice Testnet.
+
+  ```ts
+  import { garnet, redstone } from "@latticexyz/common/chains";
+  ```
+
+  - @latticexyz/schema-type@2.0.8
+
+## 2.0.7
+
+### Patch Changes
+
+- 375d902e: Added asynchronous polling for current fees to `sendTransaction`.
+- 38c61158: Added `kmsKeyToAccount`, a [viem custom account](https://viem.sh/docs/accounts/custom#custom-account) that signs transactions using AWS KMS.
+
+  To use it, you must first install `@aws-sdk/client-kms@3.x` and `asn1.js@5.x` dependencies into your project. Then create a KMS account with:
+
+  ```ts
+  import { kmsKeyToAccount } from "@latticexyz/common/kms";
+  const account = kmsKeyToAccount({ keyId: ... });
+  ```
+
+  By default, a `KMSClient` will be created, but you can also pass one in via the `client` option. The default KMS client will use [your environment's AWS SDK configuration](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/configuring-the-jssdk.html).
+
+- f736c43d: `Resource` type props are now readonly.
+  - @latticexyz/schema-type@2.0.7
+
+## 2.0.6
+
+### Patch Changes
+
+- 6c8ab471: Reduced the number of RPC requests before sending a transaction in the `transactionQueue` viem decorator.
+- c18e93c5: Bumped viem to 2.9.20.
+- d95028a6: Bumped viem to 2.9.16.
+- Updated dependencies [c18e93c5]
+- Updated dependencies [d95028a6]
+  - @latticexyz/schema-type@2.0.6
+
+## 2.0.5
+
+### Patch Changes
+
+- a9e8a407: Fixed `getNonceManager` to correctly pass all options to `createNonceManager`.
+  - @latticexyz/schema-type@2.0.5
+
 ## 2.0.4
 
 ### Patch Changes

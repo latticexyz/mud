@@ -1,5 +1,109 @@
 # @latticexyz/store-indexer
 
+## 2.0.11
+
+### Patch Changes
+
+- @latticexyz/block-logs-stream@2.0.11
+- @latticexyz/common@2.0.11
+- @latticexyz/protocol-parser@2.0.11
+- @latticexyz/store@2.0.11
+- @latticexyz/store-sync@2.0.11
+
+## 2.0.10
+
+### Patch Changes
+
+- 0d4e302f: Fixed the `distance_from_follow_block` gauge to be a positive number if the latest processed block is lagging behind the latest remote block.
+- 4caca05e: Bumped zod dependency to comply with abitype peer dependencies.
+- Updated dependencies [4e4e9104]
+- Updated dependencies [51b137d3]
+- Updated dependencies [36e1f766]
+- Updated dependencies [32c1cda6]
+- Updated dependencies [4caca05e]
+- Updated dependencies [27f888c7]
+  - @latticexyz/store@2.0.10
+  - @latticexyz/common@2.0.10
+  - @latticexyz/store-sync@2.0.10
+  - @latticexyz/block-logs-stream@2.0.10
+  - @latticexyz/protocol-parser@2.0.10
+
+## 2.0.9
+
+### Patch Changes
+
+- 93690fdb: Added a `distance_from_follow_block` metric to compare the latest stored block number with the block number corresponding to the block tag the indexer follows.
+- Updated dependencies [764ca0a0]
+- Updated dependencies [764ca0a0]
+- Updated dependencies [bad3ad1b]
+  - @latticexyz/store-sync@2.0.9
+  - @latticexyz/common@2.0.9
+  - @latticexyz/block-logs-stream@2.0.9
+  - @latticexyz/protocol-parser@2.0.9
+  - @latticexyz/store@2.0.9
+
+## 2.0.8
+
+### Patch Changes
+
+- 65aa32c2: Added support for an empty `STORE_ADDRESS=` environment variable.
+  This previously would fail the input validation, now it behaves the same way as not setting the `STORE_ADDRESS` variable at all.
+- Updated dependencies [df4781ac]
+  - @latticexyz/common@2.0.8
+  - @latticexyz/block-logs-stream@2.0.8
+  - @latticexyz/protocol-parser@2.0.8
+  - @latticexyz/store@2.0.8
+  - @latticexyz/store-sync@2.0.8
+
+## 2.0.7
+
+### Patch Changes
+
+- 27c4fdee: Add Prometheus metrics at `/metrics` to the Postgres indexer backend and frontend, as well as the SQLite indexer.
+- Updated dependencies [375d902e]
+- Updated dependencies [bf16e729]
+- Updated dependencies [16695fea]
+- Updated dependencies [38c61158]
+- Updated dependencies [ed404b7d]
+- Updated dependencies [f736c43d]
+  - @latticexyz/common@2.0.7
+  - @latticexyz/block-logs-stream@2.0.7
+  - @latticexyz/store-sync@2.0.7
+  - @latticexyz/store@2.0.7
+  - @latticexyz/protocol-parser@2.0.7
+
+## 2.0.6
+
+### Patch Changes
+
+- 36354994: Added `Cache-Control` and `Content-Type` headers to the postgres indexer API.
+- c18e93c5: Bumped viem to 2.9.20.
+- d95028a6: Bumped viem to 2.9.16.
+- Updated dependencies [6c8ab471]
+- Updated dependencies [103db6ce]
+- Updated dependencies [9720b568]
+- Updated dependencies [c18e93c5]
+- Updated dependencies [d95028a6]
+- Updated dependencies [de3bc3d1]
+- Updated dependencies [8c3dcf77]
+  - @latticexyz/common@2.0.6
+  - @latticexyz/store@2.0.6
+  - @latticexyz/block-logs-stream@2.0.6
+  - @latticexyz/protocol-parser@2.0.6
+  - @latticexyz/store-sync@2.0.6
+
+## 2.0.5
+
+### Patch Changes
+
+- Updated dependencies [a9e8a407]
+- Updated dependencies [b798ccb2]
+  - @latticexyz/common@2.0.5
+  - @latticexyz/store@2.0.5
+  - @latticexyz/block-logs-stream@2.0.5
+  - @latticexyz/protocol-parser@2.0.5
+  - @latticexyz/store-sync@2.0.5
+
 ## 2.0.4
 
 ### Patch Changes

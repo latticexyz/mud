@@ -1,5 +1,6 @@
 import type { MUDChain } from "./types";
 
+/** @deprecated This chain is deprecated and will be going offline soon. Please switch to Garnet! */
 export const latticeTestnet = {
   name: "Lattice Testnet",
   id: 4242,

@@ -1,5 +1,45 @@
 # Change Log
 
+## 2.0.11
+
+### Patch Changes
+
+- 63e5d2d5: Added pnpm 9 to project's `engines`.
+
+## 2.0.10
+
+### Patch Changes
+
+- 18360244: Templates now use an `app` namespace by default, instead of the root namespace. This helps keep the root namespace clear for intentionally root-level things and avoids pitfalls with root systems calling other root systems.
+- 4a61a128: Removed usages of old testnet faucet in templates. The previous testnet faucet is broken, deprecated, and going offline soon. We'll be replacing the burner account pattern with something better very soon!
+
+## 2.0.9
+
+### Patch Changes
+
+- 6b247fb9: Updated templates with Redstone and Garnet chains and removed the deprecated Lattice testnet chain.
+
+## 2.0.8
+
+## 2.0.7
+
+### Patch Changes
+
+- 534e7729: Made `worlds.json`'s `address` type more like viem's `Hex` type so it's easy to pass through as an argument.
+
+## 2.0.6
+
+### Patch Changes
+
+- c18e93c5: Bumped viem to 2.9.20.
+- d95028a6: Bumped viem to 2.9.16.
+
+## 2.0.5
+
+### Patch Changes
+
+- aa6ecf7b: Updated `anvil` args with two second block time to better reflect L2s
+
 ## 2.0.4
 
 ## 2.0.3

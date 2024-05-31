@@ -30,11 +30,10 @@ Both definitions use the same data structure, a `bytes32` value that encodes the
 |       3 | Number of dynamic length fields | `uint8`      | For the key schema, 0 <br /> For the value schema, ≤5 |
 |       4 | Type of first column            | `SchemaType` |
 |       5 | Type of second column           | `SchemaType` |
-
-| .
-| n | Type of (n-3)'th column | `SchemaType`
-| ,
-| 31 | Type of 28th column | `SchemaType`
+|       . |                                 |              |
+|       n | Type of (n-3)'th column         | `SchemaType` |
+|       . |                                 |              |
+|      31 | Type of 28th column             | `SchemaType` |
 
 Types are represented via the `SchemaType` enum and encoded as one byte per type.
 The encoding is specified in [`SchemaType.sol`](https://github.com/latticexyz/mud/blob/main/packages/schema-type/src/solidity/SchemaType.sol)

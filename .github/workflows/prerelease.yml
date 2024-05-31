@@ -6,6 +6,9 @@ on:
 # Ensure only one workflow/job is publishing to npm at a time
 concurrency: publish-to-npm
 
+env:
+  NODE_OPTIONS: "--max-old-space-size=4096"
+
 jobs:
   prerelease:
     name: Changesets Prerelease
@@ -52,6 +55,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # docker:
-  #   uses: ./.github/workflows/docker.yml
-  #   needs: prerelease
+  docker:
+    uses: ./.github/workflows/docker.yml
+    needs: prerelease

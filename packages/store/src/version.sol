@@ -8,4 +8,4 @@ pragma solidity >=0.8.24;
  */
 
 /// @dev Identifier for the current Store protocol version.
-bytes32 constant STORE_VERSION = "2.0.0";
+bytes32 constant STORE_VERSION = "2.0.2";

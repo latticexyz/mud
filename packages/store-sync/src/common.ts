@@ -1,4 +1,4 @@
-import { Address, Block, Hex, Log, PublicClient } from "viem";
+import { Address, Block, Hex, Log, PublicClient, TransactionReceipt } from "viem";
 import { StoreEventsAbiItem, StoreEventsAbi } from "@latticexyz/store";
 import { resolveConfig } from "@latticexyz/store/internal";
 import { Observable } from "rxjs";
@@ -95,7 +95,7 @@ export type SyncOptions<config extends StoreConfig = StoreConfig> = {
   /**
    * Optional MUD tRPC indexer URL to fetch initial state from.
    */
-  indexerUrl?: string;
+  indexerUrl?: string | false;
   /**
    * Optional initial state to hydrate from. Useful if you're hydrating from an indexer or cache.
    * @deprecated Use `initialLogs` option instead.
@@ -113,11 +113,13 @@ export type SyncOptions<config extends StoreConfig = StoreConfig> = {
   };
 };
 
+export type WaitForTransactionResult = Pick<TransactionReceipt, "blockNumber" | "status" | "transactionHash">;
+
 export type SyncResult = {
   latestBlock$: Observable<Block>;
   latestBlockNumber$: Observable<bigint>;
   storedBlockLogs$: Observable<StorageAdapterBlock>;
-  waitForTransaction: (tx: Hex) => Promise<void>;
+  waitForTransaction: (tx: Hex) => Promise<WaitForTransactionResult>;
 };
 
 // TODO: add optional, original log to this?

@@ -18,6 +18,7 @@ import { PuppetModule } from "../src/modules/puppet/PuppetModule.sol";
 import { ERC721Module } from "../src/modules/erc721-puppet/ERC721Module.sol";
 import { ERC721MetadataData } from "../src/modules/erc721-puppet/tables/ERC721Metadata.sol";
 import { IERC721Mintable } from "../src/modules/erc721-puppet/IERC721Mintable.sol";
+import { IERC721Metadata } from "../src/modules/erc721-puppet/IERC721Metadata.sol";
 import { registerERC721 } from "../src/modules/erc721-puppet/registerERC721.sol";
 import { IERC721Errors } from "../src/modules/erc721-puppet/IERC721Errors.sol";
 import { IERC721Events } from "../src/modules/erc721-puppet/IERC721Events.sol";
@@ -77,7 +78,11 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
     StoreSwitch.setStoreAddress(address(world));
 
     // Register a new ERC721 token
-    token = registerERC721(world, "myERC721", ERC721MetadataData({ name: "Token", symbol: "TKN", baseURI: "" }));
+    token = registerERC721(
+      world,
+      "myERC721",
+      ERC721MetadataData({ name: "Token", symbol: "TKN", baseURI: "base-uri/" })
+    );
   }
 
   function _expectAccessDenied(address caller) internal {
@@ -162,6 +167,15 @@ contract ERC721Test is Test, GasReporter, IERC721Events, IERC721Errors {
 
     assertEq(token.balanceOf(owner), 1);
     assertEq(token.ownerOf(id), owner);
+  }
+
+  function testTokenURI(address owner) public {
+    vm.assume(owner != address(0));
+
+    token.mint(owner, 1);
+
+    IERC721Metadata tokenMetadata = IERC721Metadata(address(token));
+    assertEq(tokenMetadata.tokenURI(1), "base-uri/1");
   }
 
   function testMintRevertAccessDenied(uint256 id, address owner, address operator) public {

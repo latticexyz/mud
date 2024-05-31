@@ -7,7 +7,7 @@ git checkout b3bb19c
 npm install
 npm run build
 cd output
-jq --arg bc "$(cat bytecode.txt)" '. + {bytecode: $bc}' deployment.json > deployment-with-bytecode.json
-mv deployment-with-bytecode.json deployment.json
+jq --arg bc "$(cat bytecode.txt)" '. + {creationCode: $bc}' deployment.json > deployment-with-creationCode.json
+mv deployment-with-creationCode.json deployment.json
 cp deployment.json ../path/to/this/dir
 ```
