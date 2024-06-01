@@ -1,14 +1,13 @@
-import { Account, Chain, Client, Hex, Transport } from "viem";
+import { Hex } from "viem";
 import { writeContract } from "viem/actions";
 import { SetupNetworkResult } from "./setupNetwork";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
+import { AppAccountClient } from "@latticexyz/account-kit";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls({ tables, useStore, waitForTransaction, worldAddress }: SetupNetworkResult) {
-  const addTask = async (client: Client<Transport, Chain, Account> | undefined, label: string) => {
-    if (!client) throw new Error("Not connected");
-
+  const addTask = async (client: AppAccountClient, label: string) => {
     const tx = await writeContract(client, {
       address: worldAddress,
       abi: IWorldAbi,
@@ -18,9 +17,7 @@ export function createSystemCalls({ tables, useStore, waitForTransaction, worldA
     await waitForTransaction(tx);
   };
 
-  const toggleTask = async (client: Client<Transport, Chain, Account> | undefined, id: Hex) => {
-    if (!client) throw new Error("Not connected");
-
+  const toggleTask = async (client: AppAccountClient, id: Hex) => {
     const isComplete = (useStore.getState().getValue(tables.Tasks, { id })?.completedAt ?? 0n) > 0n;
     const tx = isComplete
       ? await writeContract(client, {
@@ -38,9 +35,7 @@ export function createSystemCalls({ tables, useStore, waitForTransaction, worldA
     await waitForTransaction(tx);
   };
 
-  const deleteTask = async (client: Client<Transport, Chain, Account> | undefined, id: Hex) => {
-    if (!client) throw new Error("Not connected");
-
+  const deleteTask = async (client: AppAccountClient, id: Hex) => {
     const tx = await writeContract(client, {
       address: worldAddress,
       abi: IWorldAbi,
