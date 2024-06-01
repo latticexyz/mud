@@ -137,11 +137,7 @@ The global configuration keys are all optional.
     - **`type`** a string: the Solidity type for the variable.
     - **`value`** the value of the argument.
 
-    If the argument needs to be a [`ResourceId`](/world/resource-ids), you can create it using `resolveTableId`.
-
-    <details>
-
-    <summary>Use `resolveTableId` to refer to a table defined in the same configuration file.</summary>
+    If the argument needs to be [the `ResourceId` of a table](/world/resource-ids), you can create it using `resolveTableId`.
 
     1. In `mud.config.ts`, import `resolveTableId`.
 
@@ -155,5 +151,3 @@ The global configuration keys are all optional.
        ```typescript
        args: [resolveTableId("app__Tasks")];
        ```
-
-    </details>
