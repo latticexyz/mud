@@ -27,6 +27,11 @@ const wagmiConfig = createConfig({
     }),
 });
 
+const rainbowKitTheme = {
+  lightMode: lightTheme({ borderRadius: "none" }),
+  darkMode: midnightTheme({ borderRadius: "none" }),
+};
+
 const networkConfig = getNetworkConfig();
 
 const rootElement = document.getElementById("react-root");
@@ -38,12 +43,7 @@ setup().then(async (result) => {
   root.render(
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider
-          theme={{
-            lightMode: lightTheme({ borderRadius: "none" }),
-            darkMode: midnightTheme({ borderRadius: "none" }),
-          }}
-        >
+        <RainbowKitProvider theme={rainbowKitTheme}>
           <AccountKitProvider
             config={{
               chainId: networkConfig.chain.id,
