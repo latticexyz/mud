@@ -30,9 +30,14 @@ const wagmiConfig = createConfig({
 const rainbowKitTheme = {
   lightMode: lightTheme({ borderRadius: "none" }),
   darkMode: midnightTheme({ borderRadius: "none" }),
-};
+} as const;
 
 const networkConfig = getNetworkConfig();
+const accountKitConfig = {
+  chainId: networkConfig.chain.id,
+  worldAddress: networkConfig.worldAddress,
+  erc4337: false,
+} as const;
 
 const rootElement = document.getElementById("react-root");
 if (!rootElement) throw new Error("React root not found");
@@ -44,13 +49,7 @@ setup().then(async (result) => {
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider theme={rainbowKitTheme}>
-          <AccountKitProvider
-            config={{
-              chainId: networkConfig.chain.id,
-              worldAddress: networkConfig.worldAddress,
-              erc4337: false,
-            }}
-          >
+          <AccountKitProvider config={accountKitConfig}>
             <MUDProvider value={result}>
               <App />
             </MUDProvider>
