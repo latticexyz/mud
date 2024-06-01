@@ -21,8 +21,9 @@ import worlds from "contracts/worlds.json";
  * The supported chains.
  */
 import { supportedChains } from "./supportedChains";
+import { Hex } from "viem";
 
-export async function getNetworkConfig() {
+export function getNetworkConfig() {
   const params = new URLSearchParams(window.location.search);
 
   /*
@@ -70,7 +71,7 @@ export async function getNetworkConfig() {
     privateKey: getBurnerPrivateKey(),
     chainId,
     chain,
-    worldAddress,
+    worldAddress: worldAddress as Hex,
     initialBlockNumber,
   };
 }

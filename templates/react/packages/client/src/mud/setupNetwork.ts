@@ -3,21 +3,10 @@
  * (https://viem.sh/docs/getting-started.html).
  * This line imports the functions we need from it.
  */
-import {
-  createPublicClient,
-  fallback,
-  webSocket,
-  http,
-  createWalletClient,
-  Hex,
-  ClientConfig,
-  getContract,
-} from "viem";
+import { createPublicClient, fallback, webSocket, http, Hex, ClientConfig } from "viem";
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import { getNetworkConfig } from "./getNetworkConfig";
-import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
-import { createBurnerAccount, transportObserver, ContractWrite } from "@latticexyz/common";
-import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
+import { transportObserver, ContractWrite } from "@latticexyz/common";
 import { Subject, share } from "rxjs";
 
 /*
@@ -33,7 +22,7 @@ import mudConfig from "contracts/mud.config";
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
 export async function setupNetwork() {
-  const networkConfig = await getNetworkConfig();
+  const networkConfig = getNetworkConfig();
 
   /*
    * Create a viem public (read only) client
@@ -54,27 +43,6 @@ export async function setupNetwork() {
   const write$ = new Subject<ContractWrite>();
 
   /*
-   * Create a temporary wallet and a viem client for it
-   * (see https://viem.sh/docs/clients/wallet.html).
-   */
-  const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
-  const burnerWalletClient = createWalletClient({
-    ...clientOptions,
-    account: burnerAccount,
-  })
-    .extend(transactionQueue())
-    .extend(writeObserver({ onWrite: (write) => write$.next(write) }));
-
-  /*
-   * Create an object for communicating with the deployed World.
-   */
-  const worldContract = getContract({
-    address: networkConfig.worldAddress as Hex,
-    abi: IWorldAbi,
-    client: { public: publicClient, wallet: burnerWalletClient },
-  });
-
-  /*
    * Sync on-chain state into RECS and keeps our client in sync.
    * Uses the MUD indexer if available, otherwise falls back
    * to the viem publicClient to make RPC calls to fetch MUD
@@ -88,14 +56,13 @@ export async function setupNetwork() {
   });
 
   return {
+    ...networkConfig,
     tables,
     useStore,
     publicClient,
-    walletClient: burnerWalletClient,
     latestBlock$,
     storedBlockLogs$,
     waitForTransaction,
-    worldContract,
     write$: write$.asObservable().pipe(share()),
   };
 }
