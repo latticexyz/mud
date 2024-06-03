@@ -50,7 +50,7 @@ export async function generateAbiHandler(opts: Options) {
   mkdirSync(ABI_DIRECTORY);
 
   // render World ABI
-  const worldAbi = getWorldAbi({ client, worldDeploy });
+  const worldAbi = await getWorldAbi({ client, worldDeploy });
 
   const fullOutputPath = path.join(ABI_DIRECTORY, ABI_FILE);
   await fs.writeFile(fullOutputPath, JSON.stringify(worldAbi));
