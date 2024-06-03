@@ -44,6 +44,7 @@ export function resolveConfig<config extends ConfigInput>({
     .map(toFunctionSignature);
 
   const systems = Object.entries(resolvedConfig.systems).map(([systemName, system]): System => {
+    // If the namespace is not set in the system name, default to the config namespace
     const parts = systemName.split("__");
     const namespaceIsSet = parts.length === 2;
     const namespace = namespaceIsSet ? parts[0] : config.namespace;
