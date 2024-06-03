@@ -65,6 +65,7 @@ export function resolveSystemConfig(
   config?: SystemConfig,
   existingContracts?: string[],
 ) {
+  // If the namespace is not set in the system name, default to the config namespace
   const parts = systemName.split("__");
   const namespaceIsSet = parts.length === 2;
   const namespace = namespaceIsSet ? parts[0] : configNamespace;
