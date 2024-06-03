@@ -44,8 +44,7 @@ export async function worldgen(
       }
     });
 
-    const parts = system.basename.split("__");
-    const namespaceIsSet = parts.length === 2;
+    const namespaceIsSet = system.basename.includes("__");
     const { namespace, name } = resolvedConfig.systems[system.basename];
 
     const systemInterfaceName = namespaceIsSet ? `${namespace}__I${name}` : `I${name}`;
