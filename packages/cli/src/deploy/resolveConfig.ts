@@ -37,7 +37,7 @@ export function resolveConfig<config extends ConfigInput>({
 
   // TODO: should the config parser/loader help with resolving systems?
   const contractNames = getExistingContracts(forgeSourceDir).map(({ basename }) => basename);
-  const resolvedConfig = resolveWorldConfig(config.namespace, config, contractNames);
+  const resolvedConfig = resolveWorldConfig(config, contractNames);
   const baseSystemContractData = getContractData("System.sol", "System", forgeOutDir);
   const baseSystemFunctions = baseSystemContractData.abi
     .filter((item): item is typeof item & { type: "function" } => item.type === "function")

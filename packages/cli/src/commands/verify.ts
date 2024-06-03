@@ -71,7 +71,7 @@ const commandModule: CommandModule<Options, Options> = {
     });
 
     const contractNames = getExistingContracts(srcDir).map(({ basename }) => basename);
-    const resolvedWorldConfig = resolveWorldConfig(config.namespace, config, contractNames);
+    const resolvedWorldConfig = resolveWorldConfig(config, contractNames);
 
     const systems = Object.keys(resolvedWorldConfig.systems).map((name) => {
       const contractData = getContractData(`${name}.sol`, name, outDir);

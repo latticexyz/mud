@@ -12,7 +12,6 @@ export type ResolvedWorldConfig = ReturnType<typeof resolveWorldConfig>;
  * splitting the access list into addresses and system names.
  */
 export function resolveWorldConfig(
-  configNamespace: string,
   config: Pick<StoreConfig & WorldConfig, "namespace" | "systems" | "excludeSystems">,
   existingContracts?: string[],
 ) {
@@ -41,7 +40,7 @@ export function resolveWorldConfig(
   const resolvedSystems: Record<string, ResolvedSystemConfig> = systemNames.reduce((acc, systemName) => {
     return {
       ...acc,
-      [systemName]: resolveSystemConfig(systemName, configNamespace, config.systems[systemName], existingContracts),
+      [systemName]: resolveSystemConfig(systemName, config.namespace, config.systems[systemName], existingContracts),
     };
   }, {});
 
