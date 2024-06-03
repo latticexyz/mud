@@ -46,7 +46,6 @@ export function resolveConfig<config extends ConfigInput>({
   const systems = Object.entries(resolvedConfig.systems).map(([systemName, system]): System => {
     const namespace = system.namespace;
     const name = system.name;
-
     const systemId = resourceToHex({ type: "system", namespace, name });
     const contractData = getContractData(`${systemName}.sol`, systemName, forgeOutDir);
 
