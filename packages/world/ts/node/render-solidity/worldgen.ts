@@ -44,11 +44,9 @@ export async function worldgen(
       }
     });
 
-    // If the namespace is not set in the system name, default to the config namespace
     const parts = system.basename.split("__");
     const namespaceIsSet = parts.length === 2;
-    const namespace = namespaceIsSet ? parts[0] : config.namespace;
-    const name = namespaceIsSet ? parts[1] : system.basename;
+    const { namespace, name } = resolvedConfig.systems[system.basename];
 
     const systemInterfaceName = namespaceIsSet ? `${namespace}__I${name}` : `I${name}`;
     const output = renderSystemInterface({
