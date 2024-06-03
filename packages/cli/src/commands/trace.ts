@@ -64,6 +64,7 @@ const commandModule: CommandModule<Options, Options> = {
     const mudConfig = worldToV1(configV2);
 
     const resolvedConfig = resolveWorldConfig(
+      mudConfig.namespace,
       mudConfig,
       existingContracts.map(({ basename }) => basename),
     );

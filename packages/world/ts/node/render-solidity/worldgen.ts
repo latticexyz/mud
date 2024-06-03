@@ -15,6 +15,7 @@ export async function worldgen(
 ) {
   const config = worldToV1(configV2);
   const resolvedConfig = resolveWorldConfig(
+    config.namespace,
     config,
     existingContracts.map(({ basename }) => basename),
   );

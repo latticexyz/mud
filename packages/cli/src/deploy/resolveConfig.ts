@@ -37,18 +37,15 @@ export function resolveConfig<config extends ConfigInput>({
 
   // TODO: should the config parser/loader help with resolving systems?
   const contractNames = getExistingContracts(forgeSourceDir).map(({ basename }) => basename);
-  const resolvedConfig = resolveWorldConfig(config, contractNames);
+  const resolvedConfig = resolveWorldConfig(config.namespace, config, contractNames);
   const baseSystemContractData = getContractData("System.sol", "System", forgeOutDir);
   const baseSystemFunctions = baseSystemContractData.abi
     .filter((item): item is typeof item & { type: "function" } => item.type === "function")
     .map(toFunctionSignature);
 
   const systems = Object.entries(resolvedConfig.systems).map(([systemName, system]): System => {
-    // If the namespace is not set in the system name, default to the config namespace
-    const parts = systemName.split("__");
-    const namespaceIsSet = parts.length === 2;
-    const namespace = namespaceIsSet ? parts[0] : config.namespace;
-    const name = namespaceIsSet ? parts[1] : systemName;
+    const namespace = system.namespace;
+    const name = system.name;
 
     const systemId = resourceToHex({ type: "system", namespace, name });
     const contractData = getContractData(`${systemName}.sol`, systemName, forgeOutDir);
