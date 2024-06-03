@@ -7,6 +7,7 @@ import { resolveWorldConfig } from "../../config/resolveWorldConfig";
 import { World as WorldConfig } from "../../config/v2/output";
 import { worldToV1 } from "../../config/v2/compat";
 import { labelToResource } from "../../config/labelToResource";
+import { ROOT_NAMESPACE } from "@latticexyz/common";
 
 export async function worldgen(
   configV2: WorldConfig,
@@ -44,11 +45,16 @@ export async function worldgen(
       }
     });
     const resource = labelToResource(system.basename);
+    const namespace =
+      config.namespace !== ROOT_NAMESPACE && resource.namespace === ROOT_NAMESPACE
+        ? config.namespace
+        : resource.namespace;
+
     const systemInterfaceName =
-      resource.namespace === "" ? `I${system.basename}` : `${resource.namespace}__I${resource.name}`;
+      resource.namespace === ROOT_NAMESPACE ? `I${system.basename}` : `${namespace}__I${resource.name}`;
     const output = renderSystemInterface({
       name: systemInterfaceName,
-      functionPrefix: resource.namespace === "" ? "" : `${resource.namespace}__`,
+      functionPrefix: namespace === ROOT_NAMESPACE ? "" : `${namespace}__`,
       functions,
       errors,
       imports,
