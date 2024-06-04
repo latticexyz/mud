@@ -1,18 +1,19 @@
-// import { useEffect } from "react";
+import { useEffect } from "react";
 import { useAccount } from "wagmi";
-import { AccountKitButton } from "../src/exports";
+import { AccountKitButton, useAccountModal, useAppAccountClient } from "../src/exports";
 import { useLocalStorage } from "usehooks-ts";
 
 export function App() {
   const { address } = useAccount();
   const [openModal, setOpenModal] = useLocalStorage<boolean>("mud:accountKitPlayground:openModalOnMount", false);
-  // const { openAccountModal } = useAccountModal();
+  const { openAccountModal } = useAccountModal();
+  const appAccountClient = useAppAccountClient();
 
-  // useEffect(() => {
-  //   if (openModal) {
-  //     openAccountModal();
-  //   }
-  // }, [openAccountModal, openModal]);
+  useEffect(() => {
+    if (openModal && openAccountModal) {
+      openAccountModal();
+    }
+  }, [openAccountModal, openModal]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "0.5em" }}>
@@ -28,6 +29,8 @@ export function App() {
       <dl>
         <dt>Connected account</dt>
         <dd>{address}</dd>
+        <dt>App account</dt>
+        <dd>{appAccountClient?.account.address}</dd>
       </dl>
     </div>
   );

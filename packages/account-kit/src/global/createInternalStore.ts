@@ -6,6 +6,7 @@ export type InternalState = {
 };
 
 export type InternalStore = StoreApi<InternalState>;
+export type ReadonlyInternalStore = Pick<InternalStore, "getState" | "subscribe">;
 
 export function createInternalStore() {
   return createStore<InternalState>(() => ({

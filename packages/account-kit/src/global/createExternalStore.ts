@@ -1,8 +1,10 @@
-import { StoreApi, createStore } from "zustand/vanilla";
+import { StoreApi, createStore } from "zustand";
 import { AppAccountClient } from "../core/common";
 import { Account, Chain, Client, Hex, Transport } from "viem";
 
-export type ExteralState = {
+// TODO: instead of each of these being possibly undefined, replace this with some ready state and a big object that is either set or not?
+
+export type ExternalState = {
   accountModalOpen: undefined | boolean;
   openAccountModal: undefined | (() => void);
   closeAccountModal: undefined | (() => void);
@@ -34,10 +36,11 @@ export type ExteralState = {
   userChainId: undefined | number;
 };
 
-export type ExternalStore = StoreApi<ExteralState>;
+export type ExternalStore = StoreApi<ExternalState>;
+export type ReadonlyExternalStore = Pick<ExternalStore, "getState" | "subscribe">;
 
 export function createExternalStore() {
-  return createStore<ExteralState>(() => ({
+  return createStore<ExternalState>(() => ({
     accountModalOpen: undefined,
     openAccountModal: undefined,
     closeAccountModal: undefined,

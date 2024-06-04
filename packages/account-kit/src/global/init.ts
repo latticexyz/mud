@@ -8,6 +8,7 @@ import { satisfy } from "@arktype/util";
 import { AccountKitConfig, AccountKitGlobal, AccountKitInstance, AccountKitInternalOptions } from "../common";
 import { version } from "../version";
 import { debug } from "../debug";
+import { freezeStore } from "./freezeStore";
 
 export function init(
   { chains, ...accountKitConfig }: AccountKitConfig,
@@ -38,6 +39,7 @@ export function init(
         internalStore,
       });
     },
+    store: freezeStore(externalStore),
   });
 }
 

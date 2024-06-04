@@ -3,6 +3,7 @@ import { MountOptions } from "./global/mount";
 import { MountButtonOptions } from "./global/mountButton";
 import { CreateConfigParameters } from "wagmi";
 import { Config } from "./core/config";
+import { ExternalStore } from "./global/createExternalStore";
 
 // TODO: add some way to define wallets (abstraction over connectors)
 export type AccountKitConfig = Config & {
@@ -59,4 +60,6 @@ export type AccountKitInstance = {
     opts?: Omit<MountOptions, "wagmiConfig" | "accountKitConfig" | "externalStore" | "internalStore">,
   ) => () => void;
   readonly mountButton: (opts: Omit<MountButtonOptions, "internalStore">) => () => void;
+  // TODO: use `ReadonlyExternalStore` once supported by `useStore` (https://github.com/pmndrs/zustand/discussions/2581)
+  readonly store: ExternalStore;
 };
