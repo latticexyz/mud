@@ -6,15 +6,26 @@ export default defineWorld({
     Health: {
       schema: {
         player: "address",
-        value: "uint256",
+        value: "int32",
       },
       key: ["player"],
     },
   },
   namespaces: {
-    gameFork: {
+    "game-fork": {
       tables: {
         Health: {
+          schema: {
+            player: "address",
+            value: "int32",
+          },
+          key: ["player"],
+        },
+      },
+    },
+    "some-plugin": {
+      tables: {
+        Score: {
           schema: {
             player: "address",
             value: "uint256",

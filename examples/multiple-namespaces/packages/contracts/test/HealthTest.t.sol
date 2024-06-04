@@ -10,7 +10,7 @@ import { Health } from "../src/codegen/game/tables/Health.sol";
 contract HealthTest is MudTest {
   function testHealth(address player) public {
     // Expect health to be 0 initially.
-    uint256 health = Health.get(player);
+    int32 health = Health.get(player);
     assertEq(health, 0);
 
     // Expect the counter to be 1 after healing.
