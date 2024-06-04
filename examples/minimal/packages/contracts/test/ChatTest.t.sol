@@ -8,9 +8,9 @@ import { IStoreEvents } from "@latticexyz/store/src/IStoreEvents.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { MessageTable } from "../src/codegen/index.sol";
-import { namespace__IChatNamespacedSystem } from "../src/codegen/world/namespace__IChatNamespacedSystem.sol";
+import { namespace__IChatSystem } from "../src/codegen/world/namespace__IChatSystem.sol";
 
-contract ChatNamespacedTest is MudTest {
+contract ChatTest is MudTest {
   function testOffchain() public {
     bytes32[] memory keyTuple;
     string memory value = "test";
@@ -22,6 +22,6 @@ contract ChatNamespacedTest is MudTest {
       MessageTable.encodeLengths(value),
       MessageTable.encodeDynamic(value)
     );
-    namespace__IChatNamespacedSystem(worldAddress).namespace__sendMessage(value);
+    namespace__IChatSystem(worldAddress).namespace__sendMessage(value);
   }
 }

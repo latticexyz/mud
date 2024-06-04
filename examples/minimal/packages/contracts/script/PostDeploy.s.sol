@@ -10,7 +10,7 @@ import { Systems } from "@latticexyz/world/src/codegen/tables/Systems.sol";
 
 import { MessageTable } from "../src/codegen/index.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { namespace__ChatNamespacedSystem } from "../src/systems/namespace__ChatNamespacedSystem.sol";
+import { namespace__ChatSystem } from "../src/systems/namespace__ChatSystem.sol";
 
 contract PostDeploy is Script {
   using WorldResourceIdInstance for ResourceId;
@@ -28,12 +28,12 @@ contract PostDeploy is Script {
     ResourceId systemId = WorldResourceIdLib.encode({
       typeId: RESOURCE_SYSTEM,
       namespace: "namespace",
-      name: "ChatNamespacedSy"
+      name: "ChatSystem"
     });
-    address chatNamespacedSystem = Systems.getSystem(systemId);
+    address chatSystem = Systems.getSystem(systemId);
 
     // Grant this system access to MessageTable
-    IWorld(worldAddress).grantAccess(MessageTable._tableId, chatNamespacedSystem);
+    IWorld(worldAddress).grantAccess(MessageTable._tableId, chatSystem);
 
     // ------------------ EXAMPLES ------------------
 
