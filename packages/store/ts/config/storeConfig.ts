@@ -349,8 +349,6 @@ export type MUDUserConfig<
     userTypesFilename?: string;
     /** Path to the directory where generated files will be placed. (Default is "codegen") */
     codegenDirectory?: string;
-    /** Filename where codegen index will be generated. Default is "index.sol" */
-    codegenIndexFilename?: string;
   };
 
 const StoreConfigUnrefined = z
@@ -360,7 +358,6 @@ const StoreConfigUnrefined = z
     tables: zTablesConfig,
     userTypesFilename: z.string().default(PATH_DEFAULTS.userTypesFilename),
     codegenDirectory: z.string().default(PATH_DEFAULTS.codegenDirectory),
-    codegenIndexFilename: z.string().default(PATH_DEFAULTS.codegenIndexFilename),
   })
   .merge(zEnumsConfig)
   .merge(zUserTypesConfig);
