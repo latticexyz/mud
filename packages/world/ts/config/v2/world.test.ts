@@ -1,5 +1,5 @@
 import { describe, it } from "vitest";
-import { defineWorld } from "./world";
+import { defineWorld, resolveWorld } from "./world";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
 import {
@@ -37,9 +37,28 @@ describe("defineWorld", () => {
       },
     });
 
+    const test = resolveWorld({
+      namespaces: {
+        ExampleNamespace: {
+          tables: {
+            ExampleTable: {
+              schema: {
+                id: "address",
+                value: "uint256",
+                dynamic: "string",
+              },
+              key: ["id"],
+            },
+          },
+        },
+      },
+    });
+
+    test.codegen.indexFilename;
+
     const expected = {
       ...CONFIG_DEFAULTS,
-      codegen: { ...CODEGEN_DEFAULTS, indexFilename: false, namespaceDirectories: true },
+      codegen: { ...CODEGEN_DEFAULTS, indexFilename: false as string | false, namespaceDirectories: true as boolean },
       tables: {
         ExampleNamespace__ExampleTable: {
           tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
@@ -101,7 +120,7 @@ describe("defineWorld", () => {
 
     const expected = {
       ...CONFIG_DEFAULTS,
-      codegen: { ...CODEGEN_DEFAULTS, indexFilename: false, namespaceDirectories: true },
+      codegen: { ...CODEGEN_DEFAULTS, indexFilename: false as string | false, namespaceDirectories: true as boolean },
       tables: {
         ExampleNamespace__ExampleTable: {
           tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
