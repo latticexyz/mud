@@ -1,5 +1,5 @@
 import { AccountKitConfig, AccountKitGlobal, AccountKitGlobalProxy } from "./common";
-import { version } from "../package.json";
+import { version } from "./version";
 
 declare global {
   interface Window {

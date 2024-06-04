@@ -2,6 +2,7 @@ import { InternalStore } from "./createInternalStore";
 
 export type MountButtonOptions = {
   container: Element;
+  /** @internal */
   internalStore: InternalStore;
   /** @internal */
   ignoreMountWarning?: boolean;

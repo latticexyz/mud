@@ -6,13 +6,15 @@ import { createInternalStore } from "./createInternalStore";
 import { createExternalStore } from "./createExternalStore";
 import { satisfy } from "@arktype/util";
 import { AccountKitConfig, AccountKitGlobal, AccountKitInstance, AccountKitInternalOptions } from "../common";
+import { version } from "../version";
+import { debug } from "../debug";
 
 export function init(
-  { chains, ...config }: AccountKitConfig,
+  { chains, ...accountKitConfig }: AccountKitConfig,
   { proxyVersion }: AccountKitInternalOptions = {},
 ): AccountKitInstance {
   // TODO: transform config as-needed based on proxyVersion
-  proxyVersion;
+  debug("Creating Account Kit instance", { version, proxyVersion });
 
   const externalStore = createExternalStore();
   const internalStore = createInternalStore();
@@ -25,7 +27,7 @@ export function init(
       return mount({
         ...opts,
         wagmiConfig: createConfig(wagmiConfig),
-        accountKitConfig: config,
+        accountKitConfig,
         externalStore,
         internalStore,
       });

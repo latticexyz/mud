@@ -28,56 +28,50 @@ export function mount({
   externalStore,
   internalStore,
 }: MountOptions): () => void {
+  // We could allow for re-mounting to a different container here, but it feels like a foot-gun that is more often unintentional than intentional.
+  // Instead, we'll just enforce that this instance can only be mounted once and has to be unmounted to change its root container.
   if (internalStore.getState().rootContainer) {
-    throw new Error("MUD Account Kit is already mounted and only one instance is allowed on the page at a time.");
+    throw new Error(
+      "MUD Account Kit instance is only allowed to be mounted once and is already mounted. Try unmounting first to change the root container.",
+    );
   }
 
   const rootContainer = initialRootContainer ?? document.body.appendChild(document.createElement("div"));
   internalStore.setState({ rootContainer });
 
-  async function setup() {
-    const queryClient = new QueryClient();
+  const queryClient = new QueryClient();
 
-    const root = ReactDOM.createRoot(rootContainer);
-    root.render(
-      <React.StrictMode>
-        <WagmiProvider config={wagmiConfig}>
-          <QueryClientProvider client={queryClient}>
-            <RainbowKitProvider
-              appInfo={{
-                appName: accountKitConfig.appInfo?.name,
-                // TODO: learn more and disclaimer
-              }}
-              theme={
-                accountKitConfig.theme === "light"
-                  ? lightTheme({ borderRadius: "none" })
-                  : accountKitConfig.theme === "dark"
-                    ? midnightTheme({ borderRadius: "none" })
-                    : {
-                        lightMode: lightTheme({ borderRadius: "none" }),
-                        darkMode: midnightTheme({ borderRadius: "none" }),
-                      }
-              }
-            >
-              <AccountKitProvider config={accountKitConfig}>
-                <SyncStore externalStore={externalStore} />
-                <Buttons internalStore={internalStore} />
-                <style dangerouslySetInnerHTML={{ __html: rainbowKitCss }} />
-              </AccountKitProvider>
-            </RainbowKitProvider>
-          </QueryClientProvider>
-        </WagmiProvider>
-      </React.StrictMode>,
-    );
-
-    return () => {
-      root.unmount();
-    };
-  }
-
-  const setupPromise = setup().catch((error) => {
-    console.error("Failed to mount MUD Account Kit.", error);
-  });
+  const reactRoot = ReactDOM.createRoot(rootContainer);
+  reactRoot.render(
+    <React.StrictMode>
+      <WagmiProvider config={wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitProvider
+            appInfo={{
+              appName: accountKitConfig.appInfo?.name,
+              // TODO: learn more and disclaimer
+            }}
+            theme={
+              accountKitConfig.theme === "light"
+                ? lightTheme({ borderRadius: "none" })
+                : accountKitConfig.theme === "dark"
+                  ? midnightTheme({ borderRadius: "none" })
+                  : {
+                      lightMode: lightTheme({ borderRadius: "none" }),
+                      darkMode: midnightTheme({ borderRadius: "none" }),
+                    }
+            }
+          >
+            <AccountKitProvider config={accountKitConfig}>
+              <SyncStore externalStore={externalStore} />
+              <Buttons internalStore={internalStore} />
+              <style dangerouslySetInnerHTML={{ __html: rainbowKitCss }} />
+            </AccountKitProvider>
+          </RainbowKitProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </React.StrictMode>,
+  );
 
   return () => {
     // TODO: do this via a mutation observer instead?
@@ -86,6 +80,6 @@ export function mount({
     if (rootContainer !== initialRootContainer) {
       rootContainer.remove();
     }
-    setupPromise.then((unmount) => unmount?.());
+    reactRoot.unmount();
   };
 }

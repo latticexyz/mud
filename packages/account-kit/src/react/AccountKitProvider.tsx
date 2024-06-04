@@ -9,9 +9,9 @@ const Context = createContext<AccountKitInstance | null>(null);
 type InstanceOrConfig = propwiseXor<{ config: AccountKitConfig }, { instance: AccountKitInstance }>;
 
 export type Props = show<
-  {
+  InstanceOrConfig & {
     children: ReactNode;
-  } & InstanceOrConfig
+  }
 >;
 
 export function AccountKitProvider({ config, instance, children }: Props) {
