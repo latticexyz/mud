@@ -34,7 +34,7 @@ describe("defineWorldWithShorthands", () => {
 
     const expected = {
       ...CONFIG_DEFAULTS,
-      codegen: CODEGEN_DEFAULTS,
+      codegen: { ...CODEGEN_DEFAULTS, indexFilename: false, namespaceDirectories: true },
       tables: {
         ExampleNamespace__ExampleTable: {
           tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
@@ -99,7 +99,7 @@ describe("defineWorldWithShorthands", () => {
 
     const expected = {
       ...CONFIG_DEFAULTS,
-      codegen: CODEGEN_DEFAULTS,
+      codegen: { ...CODEGEN_DEFAULTS, indexFilename: false, namespaceDirectories: true },
       tables: {
         ExampleNamespace__ExampleTable: {
           tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
