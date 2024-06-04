@@ -40,12 +40,11 @@ export function validateWorld(world: unknown): asserts world is WorldInput {
   validateStore(world);
 
   if (hasOwnKey(world, "namespaces")) {
-    if (!isObject(world.namespaces)) {
-      throw new Error(`Expected namespaces, received ${JSON.stringify(world.namespaces)}`);
-    }
-    for (const namespace of Object.values(world.namespaces)) {
-      if (hasOwnKey(namespace, "tables")) {
-        validateTables(namespace.tables, scope);
+    if (isObject(world.namespaces)) {
+      for (const namespace of Object.values(world.namespaces)) {
+        if (hasOwnKey(namespace, "tables")) {
+          validateTables(namespace.tables, scope);
+        }
       }
     }
   }
