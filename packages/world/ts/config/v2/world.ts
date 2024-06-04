@@ -39,12 +39,10 @@ export function validateWorld(world: unknown): asserts world is WorldInput {
   const scope = extendedScope(world);
   validateStore(world);
 
-  if (hasOwnKey(world, "namespaces")) {
-    if (isObject(world.namespaces)) {
-      for (const namespace of Object.values(world.namespaces)) {
-        if (hasOwnKey(namespace, "tables")) {
-          validateTables(namespace.tables, scope);
-        }
+  if (hasOwnKey(world, "namespaces") && isObject(world.namespaces)) {
+    for (const namespace of Object.values(world.namespaces)) {
+      if (hasOwnKey(namespace, "tables")) {
+        validateTables(namespace.tables, scope);
       }
     }
   }
