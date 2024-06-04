@@ -6,7 +6,7 @@ export function AccountKitButton() {
   const ref = useRef<HTMLSpanElement | null>(null);
   useEffect(() => {
     if (ref.current) {
-      return accountKit.mountButton({ container: ref.current });
+      return accountKit.mountButton({ container: ref.current, ignoreMountWarning: true });
     }
   }, [accountKit]);
   return <span ref={ref} />;

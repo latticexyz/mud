@@ -3,10 +3,12 @@ import { InternalStore } from "./createInternalStore";
 export type MountButtonOptions = {
   container: Element;
   internalStore: InternalStore;
+  /** @internal */
+  ignoreMountWarning?: boolean;
 };
 
-export function mountButton({ container, internalStore }: MountButtonOptions): () => void {
-  if (!internalStore.getState().rootContainer) {
+export function mountButton({ container, internalStore, ignoreMountWarning }: MountButtonOptions): () => void {
+  if (!ignoreMountWarning && !internalStore.getState().rootContainer) {
     console.warn(
       "MUD Account Kit `mountButton` was called before `mount`. You will not see buttons rendered until `mount` is called.",
     );
