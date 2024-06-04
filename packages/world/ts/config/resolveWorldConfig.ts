@@ -40,7 +40,12 @@ export function resolveWorldConfig(
   const resolvedSystems: Record<string, ResolvedSystemConfig> = systemNames.reduce((acc, systemName) => {
     return {
       ...acc,
-      [systemName]: resolveSystemConfig(systemName, config.namespace, config.systems[systemName], existingContracts),
+      [systemName]: resolveSystemConfig({
+        systemName,
+        configNamespace: config.namespace,
+        config: config.systems[systemName],
+        existingContracts,
+      }),
     };
   }, {});
 
@@ -59,12 +64,17 @@ export function resolveWorldConfig(
  * Default value for accessListAddresses is []
  * Default value for accessListSystems is []
  */
-export function resolveSystemConfig(
-  systemName: string,
-  configNamespace: string,
-  config?: SystemConfig,
-  existingContracts?: string[],
-) {
+export function resolveSystemConfig({
+  systemName,
+  configNamespace,
+  config,
+  existingContracts,
+}: {
+  systemName: string;
+  configNamespace: string;
+  config?: SystemConfig;
+  existingContracts?: string[];
+}) {
   // If the namespace is not set in the system name, default to the config namespace
   const parts = systemName.split("__");
   const namespaceIsSet = parts.length === 2;
