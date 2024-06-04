@@ -11,4 +11,17 @@ export default defineWorld({
       key: ["player"],
     },
   },
+  namespaces: {
+    gameFork: {
+      tables: {
+        Health: {
+          schema: {
+            player: "address",
+            value: "uint256",
+          },
+          key: ["player"],
+        },
+      },
+    },
+  },
 });

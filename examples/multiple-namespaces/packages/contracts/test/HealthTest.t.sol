@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 import { MudTest } from "@latticexyz/world/test/MudTest.t.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { Health } from "../src/codegen/index.sol";
+import { Health } from "../src/codegen/game/tables/Health.sol";
 
 contract HealthTest is MudTest {
   function testHealth(address player) public {
