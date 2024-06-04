@@ -37,5 +37,5 @@ export function SyncStore({ externalStore }: Props) {
     userChainId,
   ]);
 
-  return <></>;
+  return null;
 }

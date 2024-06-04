@@ -1,20 +1,21 @@
-import { createContext, useContext, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, type ReactNode } from "react";
 import { propwiseXor, show } from "@arktype/util";
-import { InitOptions } from "../global/init";
-import { AccountKitInstance } from "../common";
+import { AccountKitConfig, AccountKitInstance } from "../common";
 import { AccountKit } from "../proxy";
 
 /** @internal */
 const Context = createContext<AccountKitInstance | null>(null);
 
+type InstanceOrConfig = propwiseXor<{ config: AccountKitConfig }, { instance: AccountKitInstance }>;
+
 export type Props = show<
   {
     children: ReactNode;
-  } & propwiseXor<{ config: InitOptions }, { instance: AccountKitInstance }>
+  } & InstanceOrConfig
 >;
 
 export function AccountKitProvider({ config, instance, children }: Props) {
-  const accountKit = instance ?? AccountKit.init(config);
+  const accountKit = useMemo(() => instance ?? AccountKit.init(config), [config, instance]);
   useEffect(() => {
     return accountKit.mount();
   }, [accountKit]);

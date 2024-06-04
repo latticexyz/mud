@@ -8,27 +8,29 @@ import { satisfy } from "@arktype/util";
 import { AccountKitConfig, AccountKitGlobal, AccountKitInstance, AccountKitInternalOptions } from "../common";
 
 export function init(
-  { wagmi: { version: wagmiVersion, ...wagmiConfig } = {}, ...accountKitConfig }: AccountKitConfig,
+  { chains, ...config }: AccountKitConfig,
   { proxyVersion }: AccountKitInternalOptions = {},
 ): AccountKitInstance {
-  // TODO: transform config as-needed based on wagmiVersion or proxyVersion
-  wagmiVersion;
+  // TODO: transform config as-needed based on proxyVersion
   proxyVersion;
 
   const externalStore = createExternalStore();
   const internalStore = createInternalStore();
 
+  const wagmiConfig = Object.freeze(getWagmiConfig({ chains }));
+
   return Object.freeze({
-    mount(opts: Omit<MountOptions, "wagmiConfig" | "accountKitConfig" | "externalStore" | "internalStore"> = {}) {
+    getWagmiConfig: () => wagmiConfig,
+    mount: (opts: Omit<MountOptions, "wagmiConfig" | "accountKitConfig" | "externalStore" | "internalStore"> = {}) => {
       return mount({
         ...opts,
-        wagmiConfig: createConfig(getWagmiConfig(wagmiConfig)),
-        accountKitConfig,
+        wagmiConfig: createConfig(wagmiConfig),
+        accountKitConfig: config,
         externalStore,
         internalStore,
       });
     },
-    mountButton(opts: Omit<MountButtonOptions, "internalStore">) {
+    mountButton: (opts: Omit<MountButtonOptions, "internalStore">) => {
       return mountButton({
         ...opts,
         internalStore,

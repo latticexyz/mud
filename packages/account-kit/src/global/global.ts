@@ -23,9 +23,7 @@ if (window.AccountKit) {
     getVersion() {
       return version;
     },
-    getDefaultChains({ proxyVersion } = {}) {
-      // TODO: transform chains as-needed based on wagmiVersion or proxyVersion
-      proxyVersion;
+    getDefaultChains() {
       return defaultChains;
     },
     init,

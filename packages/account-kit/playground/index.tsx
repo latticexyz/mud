@@ -1,7 +1,7 @@
 import "./polyfills";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import { WagmiProvider } from "wagmi";
+import { WagmiProvider, createConfig } from "wagmi";
 import { Hex } from "viem";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { garnet, mudFoundry, redstone } from "@latticexyz/common/chains";
@@ -32,18 +32,17 @@ const accountKit = AccountKit.init({
     termsOfUse: "#terms",
     privacyPolicy: "#privacy",
   },
-  wagmi: {
-    chains: [mudFoundry, ...AccountKit.getDefaultChains()],
-  },
+  chains: [mudFoundry, ...AccountKit.getDefaultChains()],
 });
 
 const queryClient = new QueryClient();
+const wagmiConfig = createConfig(accountKit.getWagmiConfig());
 
 const root = ReactDOM.createRoot(document.querySelector("#react-root")!);
 root.render(
   <StrictMode>
     <AccountKitProvider instance={accountKit}>
-      <WagmiProvider config={accountKit.getWagmiConfig()}>
+      <WagmiProvider config={wagmiConfig}>
         <QueryClientProvider client={queryClient}>
           <App />
         </QueryClientProvider>

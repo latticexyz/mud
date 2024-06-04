@@ -17,8 +17,6 @@ export const AccountKit = new Proxy<AccountKitGlobalProxy>({} as AccountKitGloba
       );
     }
     switch (key) {
-      case "getWagmiConfig":
-        return (config: AccountKitConfig) => AccountKit.getWagmiConfig(config, { proxyVersion: version });
       case "init":
         return (config: AccountKitConfig) => AccountKit.init(config, { proxyVersion: version });
       default:

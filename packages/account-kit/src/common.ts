@@ -4,21 +4,21 @@ import { MountButtonOptions } from "./global/mountButton";
 import { CreateConfigParameters } from "wagmi";
 import { Config } from "./core/config";
 
+// TODO: add some way to define wallets (abstraction over connectors)
 export type AccountKitConfig = Config & {
-  readonly wagmi?: {
-    /**
-     * Wagmi version used by the app/page where Account Kit is used.
-     * You can get this via `import { version } from "wagmi"`.
-     *
-     * This is used to ensure that functions like `getWagmiConfig` return
-     * backwards-compatible versions of the config to avoid potential runtime errors
-     * as the Wagmi version that Account Kit's embedded script uses may differ from
-     * the app/page using Account Kit.
-     *
-     * If not specified, no backwards compatibility check will be done.
-     */
-    readonly version?: string;
-  } & Readonly<Partial<Pick<CreateConfigParameters, "chains" | "connectors" | "transports">>>;
+  /**
+   * List of chains used for things like depositing funds. Must include the chain corresponding to the app's `chainId` and any chains you expect to bridge from.
+   *
+   * Defaults to the list returned by `getDefaultChains()`. You can use this helper to add or remove chains.
+   * This is helpful in development if you run your local node on a different port or with a different chain ID.
+   *
+   * ```
+   * const chains = [foundry, ...AccountKit.getDefaultChains()];
+   * const accountKit = AccountKit.init({ chains });
+   * ```
+   */
+  // TODO: use own chain object/shape so we can get things like icon URL, bundler URL
+  chains?: CreateConfigParameters["chains"];
 };
 
 /**
@@ -30,32 +30,31 @@ export type AccountKitInternalOptions = {
    *
    * We expect that the embedded global will be upgraded over time and its API may deviate slightly from the version that imports the global proxy.
    * By passing in the package version, we can ensure the embedded global can compensate for API changes by transforming its options, calls, etc. for backwards compatibility.
+   *
+   * @internal This is set automatically by the Account Kit SDK and is for internal use only.
    */
   proxyVersion?: string;
 };
 
 export type AccountKitGlobal = {
-  /** Get the version of this embedded Account Kit SDK, which may differ from your Account Kit SDK dependency. */
+  /**
+   * Get the version of this embedded Account Kit SDK, which may differ from your Account Kit SDK dependency.
+   */
   readonly getVersion: () => string;
   /**
-   * Get the default chains used by Account Kit. Useful if you want to extend these with your own.
-   *
-   * If you are passing these chains directly into Wagmi, provide the `wagmiVersion` imported from Wagmi.
-   *
-   * ```
-   * import { version as wagmiVersion } from "wagmi";
-   *
-   * AccountKit.getDefaultChains({ wagmiVersion });
-   * ```
+   * Get the default chains used by Account Kit. Useful if you want to extend these with your own before calling `AccountKit.init`.
    */
-  readonly getDefaultChains: (opts?: { wagmiVersion?: string }) => readonly [Chain, ...Chain[]];
-  readonly init: (config: AccountKitConfig) => AccountKitInstance;
+  readonly getDefaultChains: () => readonly [Chain, ...Chain[]];
+  /**
+   * Create a new Account Kit instance.
+   */
+  readonly init: (config: AccountKitConfig, internal?: AccountKitInternalOptions) => AccountKitInstance;
 };
 
 export type AccountKitGlobalProxy = AccountKitGlobal;
 
 export type AccountKitInstance = {
-  readonly getWagmiConfig: (opts?: { wagmiVersion?: string }) => CreateConfigParameters;
+  readonly getWagmiConfig: () => CreateConfigParameters;
   readonly mount: (
     opts?: Omit<MountOptions, "wagmiConfig" | "accountKitConfig" | "externalStore" | "internalStore">,
   ) => () => void;

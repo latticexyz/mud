@@ -14,7 +14,6 @@ import { ExternalStore } from "./createExternalStore";
 import { InternalStore } from "./createInternalStore";
 
 export type MountOptions = {
-  // TODO: accept a CSS selector?
   rootContainer?: Element | undefined;
   accountKitConfig: AccountKitConfig;
   wagmiConfig: WagmiConfig;
