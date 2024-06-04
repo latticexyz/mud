@@ -25,8 +25,8 @@ library Health {
 
   // Hex-encoded key schema of (address)
   Schema constant _keySchema = Schema.wrap(0x0014010061000000000000000000000000000000000000000000000000000000);
-  // Hex-encoded value schema of (int32)
-  Schema constant _valueSchema = Schema.wrap(0x0004010023000000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint32)
+  Schema constant _valueSchema = Schema.wrap(0x0004010003000000000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
@@ -63,51 +63,51 @@ library Health {
   /**
    * @notice Get value.
    */
-  function getValue(address player) internal view returns (int32 value) {
+  function getValue(address player) internal view returns (uint32 value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (int32(uint32(bytes4(_blob))));
+    return (uint32(bytes4(_blob)));
   }
 
   /**
    * @notice Get value.
    */
-  function _getValue(address player) internal view returns (int32 value) {
+  function _getValue(address player) internal view returns (uint32 value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (int32(uint32(bytes4(_blob))));
+    return (uint32(bytes4(_blob)));
   }
 
   /**
    * @notice Get value.
    */
-  function get(address player) internal view returns (int32 value) {
+  function get(address player) internal view returns (uint32 value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (int32(uint32(bytes4(_blob))));
+    return (uint32(bytes4(_blob)));
   }
 
   /**
    * @notice Get value.
    */
-  function _get(address player) internal view returns (int32 value) {
+  function _get(address player) internal view returns (uint32 value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (int32(uint32(bytes4(_blob))));
+    return (uint32(bytes4(_blob)));
   }
 
   /**
    * @notice Set value.
    */
-  function setValue(address player, int32 value) internal {
+  function setValue(address player, uint32 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(player)));
 
@@ -117,7 +117,7 @@ library Health {
   /**
    * @notice Set value.
    */
-  function _setValue(address player, int32 value) internal {
+  function _setValue(address player, uint32 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(player)));
 
@@ -127,7 +127,7 @@ library Health {
   /**
    * @notice Set value.
    */
-  function set(address player, int32 value) internal {
+  function set(address player, uint32 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(player)));
 
@@ -137,7 +137,7 @@ library Health {
   /**
    * @notice Set value.
    */
-  function _set(address player, int32 value) internal {
+  function _set(address player, uint32 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(player)));
 
@@ -168,7 +168,7 @@ library Health {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(int32 value) internal pure returns (bytes memory) {
+  function encodeStatic(uint32 value) internal pure returns (bytes memory) {
     return abi.encodePacked(value);
   }
 
@@ -178,7 +178,7 @@ library Health {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(int32 value) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
+  function encode(uint32 value) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData = encodeStatic(value);
 
     EncodedLengths _encodedLengths;
