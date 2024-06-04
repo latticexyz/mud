@@ -8,3 +8,4 @@ export { AccountButton } from "../core/AccountButton";
 export { useAccountModal } from "../core/useAccountModal";
 export { AccountKitProvider } from "../core/AccountKitProvider";
 export { usePreparedAppAccountClient as useAppAccountClient } from "../core/usePreparedAppAccountClient";
+export type { AppAccountClient } from "../core/common";
