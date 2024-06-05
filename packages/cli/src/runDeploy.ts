@@ -137,7 +137,13 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     modules,
     withWorldProxy: configV2.deploy.upgradeableWorldImplementation,
   });
+  const chainId = await getChainId(client);
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
+    // Manual workaround for Garnet/Redstone which currently always require a
+    // non-zero priority fee. See: https://github.com/foundry-rs/foundry/issues/7806
+    if (chainId == 17069 || chainId == 690) {
+      opts.forgeScriptOptions = (opts.forgeScriptOptions ?? "") + " --legacy";
+    }
     await postDeploy(
       config.postDeployScript,
       worldDeploy.address,
@@ -155,7 +161,6 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   };
 
   if (opts.saveDeployment) {
-    const chainId = await getChainId(client);
     const deploysDir = path.join(config.deploysDirectory, chainId.toString());
     mkdirSync(deploysDir, { recursive: true });
     writeFileSync(path.join(deploysDir, "latest.json"), JSON.stringify(deploymentInfo, null, 2));
