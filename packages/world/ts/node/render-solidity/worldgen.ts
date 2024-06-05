@@ -6,6 +6,7 @@ import { renderWorldInterface } from "./renderWorldInterface";
 import { resolveWorldConfig } from "../../config/resolveWorldConfig";
 import { World as WorldConfig } from "../../config/v2/output";
 import { worldToV1 } from "../../config/v2/compat";
+import { ROOT_NAMESPACE } from "@latticexyz/common";
 
 export async function worldgen(
   configV2: WorldConfig,
@@ -42,10 +43,13 @@ export async function worldgen(
         };
       }
     });
-    const systemInterfaceName = `I${system.basename}`;
+
+    const { namespace, name } = resolvedConfig.systems[system.basename];
+
+    const systemInterfaceName = namespace === ROOT_NAMESPACE ? `I${name}` : `${namespace}__I${name}`;
     const output = renderSystemInterface({
       name: systemInterfaceName,
-      functionPrefix: config.namespace === "" ? "" : `${config.namespace}__`,
+      functionPrefix: namespace === ROOT_NAMESPACE ? "" : `${namespace}__`,
       functions,
       errors,
       imports,
@@ -66,7 +70,7 @@ export async function worldgen(
   const output = renderWorldInterface({
     interfaceName: config.worldInterfaceName,
     imports: systemInterfaceImports,
-    storeImportPath: config.storeImportPath,
+    storeImportPath: configV2.codegen.storeImportPath,
     worldImportPath: config.worldImportPath,
   });
   // write to file
