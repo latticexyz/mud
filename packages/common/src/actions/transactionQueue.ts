@@ -23,8 +23,9 @@ export function transactionQueue<chain extends Chain, account extends Account>(
   opts: TransactionQueueOptions<chain> = {},
 ): (
   client: Client<Transport, chain, account>,
-) => Pick<WalletActions<chain, account>, "writeContract" | "sendTransaction"> {
+) => Pick<WalletActions<chain, account>, "getChainId" | "writeContract" | "sendTransaction"> {
   return (client) => ({
+    getChainId: async () => client.chain.id,
     // Applies to: `client.writeContract`, `getContract(client, ...).write`
     writeContract: (args) => mud_writeContract(client, args, opts),
     // Applies to: `client.sendTransaction`
