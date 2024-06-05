@@ -53,6 +53,5 @@ describe("mudConfig", () => {
     storeImportPath: "@latticexyz/store/src/";
     userTypesFilename: "common.sol";
     codegenDirectory: "codegen";
-    codegenIndexFilename: "index.sol";
   }>();
 });
