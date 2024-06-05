@@ -1,5 +1,4 @@
 import { Hex } from "viem";
-import { writeContract } from "viem/actions";
 import { SetupNetworkResult } from "./setupNetwork";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 import { AppAccountClient } from "@latticexyz/account-kit";
@@ -8,7 +7,7 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls({ tables, useStore, waitForTransaction, worldAddress }: SetupNetworkResult) {
   const addTask = async (client: AppAccountClient, label: string) => {
-    const tx = await writeContract(client, {
+    const tx = await client.writeContract({
       address: worldAddress,
       abi: IWorldAbi,
       functionName: "app__addTask",
@@ -20,13 +19,13 @@ export function createSystemCalls({ tables, useStore, waitForTransaction, worldA
   const toggleTask = async (client: AppAccountClient, id: Hex) => {
     const isComplete = (useStore.getState().getValue(tables.Tasks, { id })?.completedAt ?? 0n) > 0n;
     const tx = isComplete
-      ? await writeContract(client, {
+      ? await client.writeContract({
           address: worldAddress,
           abi: IWorldAbi,
           functionName: "app__resetTask",
           args: [id],
         })
-      : await writeContract(client, {
+      : await client.writeContract({
           address: worldAddress,
           abi: IWorldAbi,
           functionName: "app__completeTask",
@@ -36,7 +35,7 @@ export function createSystemCalls({ tables, useStore, waitForTransaction, worldA
   };
 
   const deleteTask = async (client: AppAccountClient, id: Hex) => {
-    const tx = await writeContract(client, {
+    const tx = await client.writeContract({
       address: worldAddress,
       abi: IWorldAbi,
       functionName: "app__deleteTask",
