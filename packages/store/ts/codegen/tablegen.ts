@@ -45,7 +45,7 @@ export async function tablegen({ configPath, config, remappings }: TablegenOptio
 
   // write types to file
   if (Object.keys(configV1.enums).length > 0) {
-    const fullOutputPath = path.join(outputDirectory, configV1.userTypesFilename);
+    const fullOutputPath = path.join(outputDirectory, config.codegen.userTypesFilename);
     const output = renderTypesFromConfig(configV1);
     await formatAndWriteSolidity(output, fullOutputPath, "Generated types file");
   }
