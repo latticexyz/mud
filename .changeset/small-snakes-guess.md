@@ -1,5 +1,4 @@
 ---
-"@latticexyz/common": patch
 "@latticexyz/world": patch
 "@latticexyz/cli": patch
 ---
