@@ -40,6 +40,9 @@ export function validateWorld(world: unknown): asserts world is WorldInput {
   validateStore(world);
 
   if (hasOwnKey(world, "namespaces") && isObject(world.namespaces)) {
+    if (hasOwnKey(world, "namespace")) {
+      throw new Error(`Cannot use both the namespace and namespaces keys`);
+    }
     for (const namespace of Object.values(world.namespaces)) {
       if (hasOwnKey(namespace, "tables")) {
         validateTables(namespace.tables, scope);
