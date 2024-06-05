@@ -66,14 +66,13 @@ export function useAppAccountClient(): UseQueryResult<AppAccountClient> {
                 // TODO: provide way to override this transport?
                 transport: transportObserver("app account (signer) client", http()),
               })
-                .extend(() => publicActions(publicClient))
+                .extend(publicActions)
                 .extend(walletActions)
-                .extend(transactionQueue({ publicClient }))
+                .extend(transactionQueue())
                 .extend(
                   callFrom({
                     worldAddress,
                     delegatorAddress: userAddress,
-                    publicClient,
                   }),
                 );
               return appAccountClient;

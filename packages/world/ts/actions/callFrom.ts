@@ -8,11 +8,11 @@ import {
   type WalletActions,
   type WriteContractReturnType,
   type EncodeFunctionDataParameters,
-  type PublicClient,
   Client,
+  PublicActions,
 } from "viem";
 import { getAction, encodeFunctionData } from "viem/utils";
-import { writeContract } from "viem/actions";
+import { readContract, writeContract } from "viem/actions";
 import { readHex } from "@latticexyz/common";
 import {
   getKeySchema,
@@ -24,19 +24,11 @@ import {
 import worldConfig from "../../mud.config";
 import IStoreReadAbi from "../../out/IStoreRead.sol/IStoreRead.abi.json";
 
-// Accepts either `worldFunctionToSystemFunction` or `publicClient`, but not both.
-type CallFromParameters = CallFromFunctionParameters | CallFromClientParameters;
-type CallFromBaseParameters = {
+type CallFromParameters = {
   worldAddress: Hex;
   delegatorAddress: Hex;
-};
-type CallFromFunctionParameters = CallFromBaseParameters & {
-  worldFunctionToSystemFunction: (worldFunctionSelector: Hex) => Promise<SystemFunction>;
-  publicClient?: never;
-};
-type CallFromClientParameters = CallFromBaseParameters & {
-  worldFunctionToSystemFunction?: never;
-  publicClient: PublicClient;
+  worldFunctionToSystemFunction?: (worldFunctionSelector: Hex) => Promise<SystemFunction>;
+  publicClient?: Client;
 };
 
 type SystemFunction = { systemId: Hex; systemFunctionSelector: Hex };
@@ -79,7 +71,11 @@ export function callFrom<TChain extends Chain, TAccount extends Account>(
       const worldFunctionSelector = slice(worldCalldata, 0, 4);
 
       // Get the systemId and System's function selector.
-      const { systemId, systemFunctionSelector } = await worldFunctionToSystemFunction(params, worldFunctionSelector);
+      const { systemId, systemFunctionSelector } = await worldFunctionToSystemFunction({
+        ...params,
+        publicClient: params.publicClient ?? client,
+        worldFunctionSelector,
+      });
 
       // Construct the System's calldata by replacing the World's function selector with the System's.
       // Use `readHex` instead of `slice` to prevent out-of-bounds errors with calldata that has no args.
@@ -100,11 +96,14 @@ export function callFrom<TChain extends Chain, TAccount extends Account>(
 
 const systemFunctionCache = new Map<Hex, SystemFunction>();
 
-async function worldFunctionToSystemFunction(
-  params: CallFromParameters,
-  worldFunctionSelector: Hex,
-): Promise<SystemFunction> {
-  const cacheKey = concat([params.worldAddress, worldFunctionSelector]);
+async function worldFunctionToSystemFunction(params: {
+  worldAddress: Hex;
+  delegatorAddress: Hex;
+  worldFunctionSelector: Hex;
+  worldFunctionToSystemFunction?: (worldFunctionSelector: Hex) => Promise<SystemFunction>;
+  publicClient: Client;
+}): Promise<SystemFunction> {
+  const cacheKey = concat([params.worldAddress, params.worldFunctionSelector]);
 
   // Use cache if the function has been called previously.
   const cached = systemFunctionCache.get(cacheKey);
@@ -112,8 +111,8 @@ async function worldFunctionToSystemFunction(
 
   // If a mapping function is provided, use it. Otherwise, call the World contract.
   const systemFunction = params.worldFunctionToSystemFunction
-    ? await params.worldFunctionToSystemFunction(worldFunctionSelector)
-    : await retrieveSystemFunctionFromContract(params.publicClient, params.worldAddress, worldFunctionSelector);
+    ? await params.worldFunctionToSystemFunction(params.worldFunctionSelector)
+    : await retrieveSystemFunctionFromContract(params.publicClient, params.worldAddress, params.worldFunctionSelector);
 
   systemFunctionCache.set(cacheKey, systemFunction);
 
@@ -121,7 +120,7 @@ async function worldFunctionToSystemFunction(
 }
 
 async function retrieveSystemFunctionFromContract(
-  publicClient: PublicClient,
+  publicClient: Client,
   worldAddress: Hex,
   worldFunctionSelector: Hex,
 ): Promise<SystemFunction> {
@@ -130,7 +129,9 @@ async function retrieveSystemFunctionFromContract(
   const keySchema = getSchemaTypes(getKeySchema(table));
   const valueSchema = getSchemaTypes(getValueSchema(table));
 
-  const [staticData, encodedLengths, dynamicData] = await publicClient.readContract({
+  const _readContract = getAction(publicClient, readContract as never, "readContract") as PublicActions["readContract"];
+
+  const [staticData, encodedLengths, dynamicData] = await _readContract({
     address: worldAddress,
     abi: IStoreReadAbi,
     functionName: "getRecord",
