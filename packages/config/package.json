@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/config",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "description": "Config for Store and World",
   "repository": {
     "type": "git",
@@ -15,6 +15,25 @@
     "./library": "./dist/deprecated/library.js",
     "./register": "./dist/deprecated/register.js",
     "./node": "./dist/deprecated/node.js"
+  },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ],
+      "internal": [
+        "./dist/internal.d.ts"
+      ],
+      "library": [
+        "./dist/deprecated/library.d.ts"
+      ],
+      "register": [
+        "./dist/deprecated/register.d.ts"
+      ],
+      "node": [
+        "./dist/deprecated/node.d.ts"
+      ]
+    }
   },
   "files": [
     "dist"

@@ -1,3 +1,119 @@
+## Version 2.0.12
+
+Release date: Fri May 31 2024
+
+### Patch changes
+
+**[feat(store,world): add option to codegen tables into namespace dirs (#2840)](https://github.com/latticexyz/mud/commit/c10c9fb2dacc93bc58d013e74509180f90ac5b5a)** (@latticexyz/store)
+
+Internal `tablegen` function (exported from `@latticexyz/store/codegen`) now expects an object of options with a `configPath` to use as a base path to resolve other relative paths from.
+
+**[feat(store,world): add option to codegen tables into namespace dirs (#2840)](https://github.com/latticexyz/mud/commit/c10c9fb2dacc93bc58d013e74509180f90ac5b5a)** (@latticexyz/store, @latticexyz/world)
+
+Added `sourceDirectory` as a top-level config option for specifying contracts source (i.e. Solidity) directory relative to the MUD config. This is used to resolve other paths in the config, like codegen and user types. Like `foundry.toml`, this defaults to `src` and should be kept in sync with `foundry.toml`.
+
+Also added a `codegen.namespaceDirectories` option to organize codegen output (table libraries, etc.) into directories by namespace. For example, a `Counter` table in the `app` namespace will have codegen at `codegen/app/tables/Counter.sol`. If not set, defaults to `true` when using top-level `namespaces` key, `false` otherwise.
+
+**[fix(cli,world): resolve table by just name (#2850)](https://github.com/latticexyz/mud/commit/9be2bb863194e2beee03b3d783f925c79b3c8562)** (@latticexyz/cli, @latticexyz/world)
+
+Fixed `resolveTableId` usage within config's module `args` to allow referencing both namespaced tables (e.g. `resolveTableId("app_Tasks")`) as well as tables by just their name (e.g. `resolveTableId("Tasks")`). Note that using just the table name requires it to be unique among all tables within the config.
+
+This helper is now exported from `@latticexyz/world` package as intended. The previous, deprecated export has been removed.
+
+```diff
+-import { resolveTableId } from "@latticexyz/config/library";
++import { resolveTableId } from "@latticexyz/world/internal";
+```
+
+**[fix(world-modules): register total supply table in erc20 module (#2877)](https://github.com/latticexyz/mud/commit/36c8b5b2476281ef9f66347c798aa93454648572)** (@latticexyz/world-modules)
+
+Fixed `ERC20Module` to register the `TotalSupply` table when creating a new token.
+
+If you've deployed a world with the `ERC20Module`, we recommend patching your world to register this table so that indexers can properly decode its record. You can do so with a simple Forge script:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+
+import { Script } from "forge-std/Script.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { TotalSupply } from "@latticexyz/world-modules/src/modules/erc20-puppet/tables/TotalSupply.sol";
+import { _totalSupplyTableId } from "@latticexyz/world-modules/src/modules/erc20-puppet/utils.sol";
+
+contract RegisterTotalSupply is Script {
+  function run(address worldAddress, string memory namespaceString) external {
+    bytes14 namespace = bytes14(bytes(namespaceString));
+
+    StoreSwitch.setStoreAddress(worldAddress);
+
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    vm.startBroadcast(deployerPrivateKey);
+
+    TotalSupply.register(_totalSupplyTableId(namespace));
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+Then execute the transactions by running the following [`forge script`](https://book.getfoundry.sh/reference/forge/forge-script?highlight=script#forge-script) command:
+
+```shell
+forge script ./script/RegisterTotalSupply.s.sol --sig "run(address,string)" $WORLD_ADDRESS $NAMESPACE_STRING
+```
+
+**[feat(common): export base tsconfig (#2873)](https://github.com/latticexyz/mud/commit/f3180fe8437224d7a568f79ff60c9e70e9b48792)** (@latticexyz/abi-ts, @latticexyz/block-logs-stream, @latticexyz/cli, @latticexyz/common, @latticexyz/config, @latticexyz/dev-tools, @latticexyz/faucet, @latticexyz/gas-report, @latticexyz/protocol-parser, @latticexyz/query, @latticexyz/react, @latticexyz/recs, @latticexyz/schema-type, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store, @latticexyz/utils, @latticexyz/world-modules, @latticexyz/world, create-mud, solhint-config-mud, solhint-plugin-mud)
+
+TS source has been removed from published packages in favor of DTS in an effort to improve TS performance. All packages now inherit from a base TS config in `@latticexyz/common` to allow us to continue iterating on TS performance without requiring changes in your project code.
+
+If you have a MUD project that you're upgrading, we suggest adding a `tsconfig.json` file to your project workspace that extends this base config.
+
+```sh
+pnpm add -D @latticexyz/common
+echo "{\n  \"extends\": \"@latticexyz/common/tsconfig.base.json\"\n}" > tsconfig.json
+```
+
+Then in each package of your project, inherit from your workspace root's config.
+
+For example, your TS config in `packages/contracts/tsconfig.json` might look like:
+
+```json
+{
+  "extends": "../../tsconfig.json"
+}
+```
+
+And your TS config in `packages/client/tsconfig.json` might look like:
+
+```json
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "types": ["vite/client"],
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "include": ["src"]
+}
+```
+
+You may need to adjust the above configs to include any additional TS options you've set. This config pattern may also reveal new TS errors that need to be fixed or rules disabled.
+
+If you want to keep your existing TS configs, we recommend at least updating your `moduleResolution` setting.
+
+```diff
+-"moduleResolution": "node"
++"moduleResolution": "Bundler"
+```
+
+**[feat(create-mud): clean up template scripts, add garnet/redstone (#2839)](https://github.com/latticexyz/mud/commit/d75266073e9fa1c5ede61636a60557deead6ff8e)** (create-mud)
+
+Removed unnecessary build step in scripts and added deploy scripts for Redstone and Garnet chains.
+
+---
+
 ## Version 2.0.11
 
 Release date: Wed May 15 2024

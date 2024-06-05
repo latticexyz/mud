@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/schema-type",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "description": "SchemaType enum for various languages",
   "repository": {
     "type": "git",
@@ -14,10 +14,22 @@
     "./internal": "./dist/internal.js",
     "./deprecated": "./dist/deprecated.js"
   },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ],
+      "internal": [
+        "./dist/internal.d.ts"
+      ],
+      "deprecated": [
+        "./dist/deprecated.d.ts"
+      ]
+    }
+  },
   "files": [
     "dist",
     "out",
-    "foundry.toml",
     "src"
   ],
   "scripts": {
