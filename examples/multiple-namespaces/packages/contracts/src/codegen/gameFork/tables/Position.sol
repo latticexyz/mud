@@ -22,8 +22,8 @@ struct PositionData {
 }
 
 library Position {
-  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "game-fork", name: "Position", typeId: RESOURCE_TABLE });`
-  ResourceId constant _tableId = ResourceId.wrap(0x746267616d652d666f726b0000000000506f736974696f6e0000000000000000);
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "gameFork", name: "Position", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x746267616d65466f726b000000000000506f736974696f6e0000000000000000);
 
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0008020004040000000000000000000000000000000000000000000000000000);
