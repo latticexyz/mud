@@ -50,6 +50,5 @@ describe("mudConfig", () => {
       };
     };
     namespace: "";
-    storeImportPath: "@latticexyz/store/src/";
   }>();
 });

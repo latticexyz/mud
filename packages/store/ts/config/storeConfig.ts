@@ -21,7 +21,7 @@ import {
   zNamespace,
   zName,
 } from "@latticexyz/config/library";
-import { DEFAULTS, PATH_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
+import { DEFAULTS, TABLE_DEFAULTS } from "./defaults";
 import { UserType } from "@latticexyz/common/codegen";
 import { SchemaAbiType, isSchemaAbiType, schemaAbiTypes } from "@latticexyz/schema-type/internal";
 
@@ -343,14 +343,11 @@ export type MUDUserConfig<
     tables: TablesConfig<AsDependent<StaticUserTypes>, AsDependent<StaticUserTypes>>;
     /** The namespace for table ids. Default is "" (ROOT) */
     namespace?: string;
-    /** Path for store package imports. Default is "@latticexyz/store/src/" */
-    storeImportPath?: string;
   };
 
 const StoreConfigUnrefined = z
   .object({
     namespace: zNamespace.default(DEFAULTS.namespace),
-    storeImportPath: z.string().default(PATH_DEFAULTS.storeImportPath),
     tables: zTablesConfig,
   })
   .merge(zEnumsConfig)
