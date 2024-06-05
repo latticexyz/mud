@@ -9,7 +9,7 @@ import { AppAccountClient, defaultPollingInterval, entryPointAddress, smartAccou
 import { getUserBalanceSlot } from "./utils/getUserBalanceSlot";
 import { getEntryPointDepositSlot } from "./utils/getEntryPointDepositSlot";
 import { transportObserver } from "./transportObserver";
-import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types/entrypoint";
+import { ENTRYPOINT_ADDRESS_V07_TYPE } from "permissionless/types";
 import { useErc4337Config } from "./useErc4337Config";
 import { usePaymaster } from "./usePaymaster";
 import { SendTransactionWithPaymasterParameters, sendTransaction } from "./actions/sendTransaction";
@@ -17,6 +17,7 @@ import { SmartAccount, signerToSimpleSmartAccount } from "permissionless/account
 import { UseQueryOptions, UseQueryResult, useQuery } from "@tanstack/react-query";
 import { useAppChain } from "./useAppChain";
 import { debug } from "./debug";
+import { transactionQueue } from "@latticexyz/common/actions";
 
 type Middleware = SmartAccountClientConfig<ENTRYPOINT_ADDRESS_V07_TYPE>["middleware"];
 
@@ -65,16 +66,16 @@ export function useAppAccountClient(): UseQueryResult<AppAccountClient> {
                 // TODO: provide way to override this transport?
                 transport: transportObserver("app account (signer) client", http()),
               })
+                .extend(() => publicActions(publicClient))
                 .extend(walletActions)
-                // .extend(transactionQueue({ publicClient }))
+                .extend(transactionQueue({ publicClient }))
                 .extend(
                   callFrom({
                     worldAddress,
                     delegatorAddress: userAddress,
                     publicClient,
                   }),
-                )
-                .extend(() => publicActions(publicClient));
+                );
               return appAccountClient;
             }
 
