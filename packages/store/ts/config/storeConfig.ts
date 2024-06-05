@@ -345,8 +345,6 @@ export type MUDUserConfig<
     namespace?: string;
     /** Path for store package imports. Default is "@latticexyz/store/src/" */
     storeImportPath?: string;
-    /** Filename where common user types will be generated and imported from. Default is "common.sol" */
-    userTypesFilename?: string;
   };
 
 const StoreConfigUnrefined = z
@@ -354,7 +352,6 @@ const StoreConfigUnrefined = z
     namespace: zNamespace.default(DEFAULTS.namespace),
     storeImportPath: z.string().default(PATH_DEFAULTS.storeImportPath),
     tables: zTablesConfig,
-    userTypesFilename: z.string().default(PATH_DEFAULTS.userTypesFilename),
   })
   .merge(zEnumsConfig)
   .merge(zUserTypesConfig);

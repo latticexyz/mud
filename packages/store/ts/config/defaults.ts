@@ -1,6 +1,5 @@
 export const PATH_DEFAULTS = {
   storeImportPath: "@latticexyz/store/src/",
-  userTypesFilename: "common.sol",
 } as const;
 
 export type PATH_DEFAULTS = typeof PATH_DEFAULTS;
