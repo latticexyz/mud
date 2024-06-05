@@ -14,6 +14,7 @@ import {
 import { WorldWithShorthandsInput } from "./input";
 import { validateNamespaces } from "./namespaces";
 import { resolveWorld, validateWorld } from "./world";
+import { ErrorMessage } from "@arktype/util";
 
 export type resolveWorldWithShorthands<world> = resolveWorld<{
   [key in keyof world]: key extends "tables"
@@ -33,7 +34,9 @@ export type validateWorldWithShorthands<world> = {
   [key in keyof world]: key extends "tables"
     ? validateTablesWithShorthands<world[key], extendedScope<world>>
     : key extends "namespaces"
-      ? validateNamespacesWithShorthands<world[key], extendedScope<world>>
+      ? world extends { namespace?: unknown; tables?: unknown; systems?: unknown }
+        ? ErrorMessage<`\`Can only use \`namespaces\` with \`namespace\`, \`tables\`, or \`systems\` keys.`>
+        : validateNamespacesWithShorthands<world[key], extendedScope<world>>
       : validateWorld<world>[key];
 };
 
@@ -54,7 +57,8 @@ export type validateNamespacesWithShorthands<namespaces, scope extends Scope = A
   [namespace in keyof namespaces]: {
     [key in keyof namespaces[namespace]]: key extends "tables"
       ? validateTablesWithShorthands<namespaces[namespace][key], scope>
-      : validateNamespaces<namespaces[namespace], scope>[key];
+      : // TODO: this seems wrong? calling validateNamespaces with a specific namespace input?
+        validateNamespaces<namespaces[namespace], scope>[key];
   };
 };
 

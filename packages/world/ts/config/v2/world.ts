@@ -29,7 +29,9 @@ export type validateWorld<world> = {
       : key extends "enums"
         ? narrow<world[key]>
         : key extends "namespaces"
-          ? validateNamespaces<world[key], extendedScope<world>>
+          ? world extends { namespace?: unknown; tables?: unknown; systems?: unknown }
+            ? ErrorMessage<`\`Can only use \`namespaces\` with \`namespace\`, \`tables\`, or \`systems\` keys.`>
+            : validateNamespaces<world[key], extendedScope<world>>
           : key extends keyof WorldInput
             ? conform<world[key], WorldInput[key]>
             : ErrorMessage<`\`${key & string}\` is not a valid World config option.`>;
