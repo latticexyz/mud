@@ -1,28 +1,35 @@
 {
-  "name": "mud-example-minimal",
+  "name": "mud-example-multiple-namespaces",
   "private": true,
   "scripts": {
-    "build": "pnpm recursive run build",
-    "clean": "pnpm recursive run clean",
-    "dev": "mprocs 'pnpm run dev:contracts' 'pnpm run dev:client-react'",
-    "dev-with-phaser": "mprocs 'pnpm run dev:contracts' 'pnpm run dev:client-phaser'",
-    "dev-with-vanilla": "mprocs 'pnpm run dev:contracts' 'pnpm run dev:client-vanilla'",
-    "dev:client-phaser": "pnpm --filter 'client-phaser' run dev",
-    "dev:client-react": "pnpm --filter 'client-react' run dev",
-    "dev:client-vanilla": "pnpm --filter 'client-vanilla' run dev",
-    "dev:contracts": "pnpm --filter 'contracts' run dev",
-    "test": "pnpm recursive run test"
+    "build": "mud build",
+    "clean": "forge clean && rimraf src/codegen",
+    "deploy:local": "mud deploy",
+    "dev": "mud dev-contracts",
+    "faucet": "DEBUG=mud:faucet faucet-server",
+    "lint": "pnpm run prettier && pnpm run solhint",
+    "prettier": "prettier --write 'src/**/*.sol'",
+    "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
+    "test": "mud test"
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../packages/cli",
-    "@typescript-eslint/eslint-plugin": "7.1.1",
-    "@typescript-eslint/parser": "7.1.1",
-    "eslint": "8.57.0",
-    "mprocs": "^0.6.4",
+    "@latticexyz/faucet": "link:../../packages/faucet",
+    "@latticexyz/schema-type": "link:../../packages/schema-type",
+    "@latticexyz/store": "link:../../packages/store",
+    "@latticexyz/world": "link:../../packages/world",
+    "@latticexyz/world-modules": "link:../../packages/world-modules",
+    "@solidstate/contracts": "^0.0.52",
+    "@types/node": "^18.15.11",
+    "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
+    "prettier": "3.2.5",
+    "prettier-plugin-solidity": "1.3.1",
+    "rimraf": "^3.0.2",
+    "solhint": "^3.4.1",
+    "solhint-config-mud": "file:../../packages/solhint-config-mud",
+    "solhint-plugin-mud": "file:../../packages/solhint-plugin-mud",
+    "ts-node": "^10.9.1",
     "typescript": "5.4.2"
-  },
-  "engines": {
-    "node": "^18",
-    "pnpm": "^8 || ^9"
   }
 }
