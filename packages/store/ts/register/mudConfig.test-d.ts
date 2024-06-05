@@ -52,6 +52,5 @@ describe("mudConfig", () => {
     namespace: "";
     storeImportPath: "@latticexyz/store/src/";
     userTypesFilename: "common.sol";
-    codegenDirectory: "codegen";
   }>();
 });

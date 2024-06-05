@@ -347,8 +347,6 @@ export type MUDUserConfig<
     storeImportPath?: string;
     /** Filename where common user types will be generated and imported from. Default is "common.sol" */
     userTypesFilename?: string;
-    /** Path to the directory where generated files will be placed. (Default is "codegen") */
-    codegenDirectory?: string;
   };
 
 const StoreConfigUnrefined = z
@@ -357,7 +355,6 @@ const StoreConfigUnrefined = z
     storeImportPath: z.string().default(PATH_DEFAULTS.storeImportPath),
     tables: zTablesConfig,
     userTypesFilename: z.string().default(PATH_DEFAULTS.userTypesFilename),
-    codegenDirectory: z.string().default(PATH_DEFAULTS.codegenDirectory),
   })
   .merge(zEnumsConfig)
   .merge(zUserTypesConfig);
