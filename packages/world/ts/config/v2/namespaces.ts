@@ -25,11 +25,11 @@ export type validateNamespace<namespace, scope extends Scope = AbiTypeScope> = {
     ? validateTables<namespace[key], scope>
     : key extends keyof NamespaceInput
       ? conform<namespace[key], NamespaceInput[key]>
-      : ErrorMessage<`\`${key & string}\` is not a valid Namespace config option.`>;
+      : ErrorMessage<`\`${key & string}\` is not a valid namespace config option.`>;
 };
 
 export type validateNamespaces<namespaces, scope extends Scope = AbiTypeScope> = {
-  [namespace in keyof namespaces]: validateNamespace<namespace, scope>;
+  [namespace in keyof namespaces]: validateNamespace<namespaces[namespace], scope>;
 };
 
 export function validateNamespaces<scope extends Scope = AbiTypeScope>(
