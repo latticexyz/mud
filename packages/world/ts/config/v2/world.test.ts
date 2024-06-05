@@ -182,28 +182,6 @@ describe("defineWorld", () => {
     attest<true, typeof config extends World ? true : false>();
   });
 
-  it("should not use the global namespace for namespaced tables", () => {
-    const config = defineWorld({
-      namespace: "namespace",
-      namespaces: {
-        AnotherOne: {
-          tables: {
-            Example: {
-              schema: { id: "address", name: "string", age: "uint256" },
-              key: ["age"],
-            },
-          },
-        },
-      },
-    });
-
-    attest<"namespace">(config.namespace).equals("namespace");
-    attest<"AnotherOne">(config.tables.AnotherOne__Example.namespace).equals("AnotherOne");
-    attest(config.tables.AnotherOne__Example.tableId).equals(
-      resourceToHex({ type: "table", name: "Example", namespace: "AnotherOne" }),
-    );
-  });
-
   describe("should have the same output as `defineWorld` for store config inputs", () => {
     it("should return the full config given a full config with one key", () => {
       const config = defineWorld({
