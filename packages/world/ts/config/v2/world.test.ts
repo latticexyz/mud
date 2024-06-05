@@ -1,5 +1,5 @@
 import { describe, it } from "vitest";
-import { defineWorld, resolveWorld } from "./world";
+import { defineWorld } from "./world";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
 import {
@@ -36,25 +36,6 @@ describe("defineWorld", () => {
         },
       },
     });
-
-    const test = resolveWorld({
-      namespaces: {
-        ExampleNamespace: {
-          tables: {
-            ExampleTable: {
-              schema: {
-                id: "address",
-                value: "uint256",
-                dynamic: "string",
-              },
-              key: ["id"],
-            },
-          },
-        },
-      },
-    });
-
-    test.codegen.indexFilename;
 
     const expected = {
       ...CONFIG_DEFAULTS,
