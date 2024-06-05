@@ -48,7 +48,7 @@ export function callFrom<TChain extends Chain, TAccount extends Account>(
   return (client) => ({
     // Applies to: `client.writeContract`, `getContract(client, ...).write`
     writeContract: async (writeArgs): Promise<WriteContractReturnType> => {
-      console.log("writeArgs", writeArgs);
+      const _writeContract = getAction(client, writeContract, "writeContract");
 
       // Skip if the contract isn't the World or the function called should not be redirected through `callFrom`.
       if (
@@ -57,7 +57,7 @@ export function callFrom<TChain extends Chain, TAccount extends Account>(
         writeArgs.functionName === "callFrom" ||
         writeArgs.functionName === "callWithSignature"
       ) {
-        return getAction(client, writeContract, "writeContract")(writeArgs);
+        return _writeContract(writeArgs);
       }
 
       // Encode the World's calldata (which includes the World's function selector).
@@ -89,7 +89,7 @@ export function callFrom<TChain extends Chain, TAccount extends Account>(
       };
 
       // Call `writeContract` with the new args.
-      return getAction(client, writeContract, "writeContract")(callFromArgs);
+      return _writeContract(callFromArgs);
     },
   });
 }

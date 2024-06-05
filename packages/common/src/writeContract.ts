@@ -136,7 +136,7 @@ export async function writeContract<
 
           const fullRequest = { ...preparedRequest, nonce, ...feeRef.fees };
           debug("calling", fullRequest.functionName, "with nonce", nonce, "at", fullRequest.address);
-          return await viem_writeContract(client, fullRequest as never);
+          return await getAction(client, viem_writeContract, "writeContract")(fullRequest as never);
         },
         {
           retries: 3,

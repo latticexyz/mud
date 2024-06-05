@@ -64,7 +64,7 @@ export function useAppAccountClient(): UseQueryResult<AppAccountClient> {
                 pollingInterval: defaultPollingInterval,
                 // TODO: add websocket + fallback?
                 // TODO: provide way to override this transport?
-                transport: transportObserver("app account (signer) client", http()),
+                transport: transportObserver("app signer account client", http()),
               })
                 .extend(publicActions)
                 .extend(walletActions)
