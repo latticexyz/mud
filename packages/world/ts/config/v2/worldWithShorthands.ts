@@ -12,7 +12,7 @@ import {
   validateTablesWithShorthands,
 } from "@latticexyz/store/config/v2";
 import { WorldWithShorthandsInput } from "./input";
-import { validateNamespace, validateNamespaces } from "./namespaces";
+import { validateNamespace } from "./namespaces";
 import { resolveWorld, validateWorld } from "./world";
 
 export type resolveWorldWithShorthands<world> = resolveWorld<{
