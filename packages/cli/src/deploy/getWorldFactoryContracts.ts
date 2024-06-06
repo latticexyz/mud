@@ -1,5 +1,5 @@
-import worldFactoryBuild from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.json";
-import worldFactoryAbi from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.abi.json";
+import worldFactoryBuild from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.json" assert { type: "json" };
+import worldFactoryAbi from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.abi.json" assert { type: "json" };
 import { Hex, getCreate2Address, encodeDeployData, size } from "viem";
 import { salt } from "./common";
 import { getWorldContracts } from "./getWorldContracts";
