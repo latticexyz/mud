@@ -32,6 +32,7 @@ export type System = {
   readonly namespace: string;
   readonly name: string;
   readonly systemId: Hex;
+  readonly filename: string;
   /**
    * Register function selectors for the system in the World.
    * Defaults to true.
