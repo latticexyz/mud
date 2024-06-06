@@ -199,7 +199,7 @@ describe("defineWorld", () => {
         },
       });
     })
-      .throws("Error: Cannot use both the namespace and namespaces keys")
+      .throws("Can only use `namespaces` with `namespace`, `tables`, or `systems` keys.")
       .type.errors(
         // eslint-disable-next-line max-len
         `Type '{ AnotherOne: { tables: { Example: { schema: { id: string; name: string; age: string; }; key: string[]; }; }; }; }' is not assignable to type '"\`Can only use \`namespaces\` with \`namespace\`, \`tables\`, or \`systems\` keys.`,
