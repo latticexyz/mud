@@ -33,7 +33,6 @@
       "@latticexyz/store/config": ["./packages/store/ts/config/index.ts"],
       "@latticexyz/store/config/v2": ["./packages/store/ts/config/v2/index.ts"],
       "@latticexyz/store/register": ["./packages/store/ts/register/index.ts"],
-      "@latticexyz/store/out/*.json": ["./packages/store/out/*.json.d.ts"],
       "@latticexyz/store/*": ["./packages/store/ts/exports/*"],
       "@latticexyz/store-sync/*": ["./packages/store-sync/src/*"],
       "@latticexyz/utils": ["./packages/utils/src/index.ts"],
@@ -42,10 +41,8 @@
       "@latticexyz/world/config/v2": ["./packages/world/ts/config/v2/index.ts"],
       "@latticexyz/world/register": ["./packages/world/ts/register/index.ts"],
       "@latticexyz/world/node": ["./packages/world/ts/node/index.ts"],
-      "@latticexyz/world/out/*.json": ["./packages/world/out/*.json.d.ts"],
       "@latticexyz/world/*": ["./packages/world/ts/exports/*"],
-      "@latticexyz/world-modules/internal/mud.config": ["./packages/world-modules/mud.config.ts"],
-      "@latticexyz/world-modules/out/*.json": ["./packages/world-modules/out/*.json.d.ts"]
+      "@latticexyz/world-modules/internal/mud.config": ["./packages/world-modules/mud.config.ts"]
     }
   }
 }
