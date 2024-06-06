@@ -182,6 +182,30 @@ describe("defineWorld", () => {
     attest<true, typeof config extends World ? true : false>();
   });
 
+  it("should throw an error if using the global namespace key with the namespaces key", () => {
+    attest(() => {
+      defineWorld({
+        namespace: "namespace",
+        // @ts-expect-error TODO: remove once namespaces support ships
+        namespaces: {
+          AnotherOne: {
+            tables: {
+              Example: {
+                schema: { id: "address", name: "string", age: "uint256" },
+                key: ["age"],
+              },
+            },
+          },
+        },
+      });
+    })
+      .throws("Error: Cannot use both the namespace and namespaces keys")
+      .type.errors(
+        // eslint-disable-next-line max-len
+        `Type '{ AnotherOne: { tables: { Example: { schema: { id: string; name: string; age: string; }; key: string[]; }; }; }; }' is not assignable to type '"\`Can only use \`namespaces\` with \`namespace\`, \`tables\`, or \`systems\` keys.`,
+      );
+  });
+
   describe("should have the same output as `defineWorld` for store config inputs", () => {
     it("should return the full config given a full config with one key", () => {
       const config = defineWorld({
