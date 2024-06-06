@@ -423,7 +423,7 @@ There is no reason for this access to be managed through the module code.
    | WORLD_ADDRESS  | Address of the `World` from the first step                          |
    | MODULE_ADDRESS | Address of the module you just deployed (the `deployed to` address) |
 
-1. Register the module in the `World`:
+1. [Install the module](/world/modules#module-installation) in the `World`:
 
    ```sh copy
    cast send $WORLD_ADDRESS "installModule(address,bytes)" $MODULE_ADDRESS 0x --private-key $PRIVATE_KEY --rpc-url http://127.0.0.1:8545
