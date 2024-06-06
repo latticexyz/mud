@@ -6,7 +6,6 @@ export const CODEGEN_DEFAULTS = {
   outputDirectory: "codegen",
   // TODO: default to true if using top-level `namespaces` key (once its migrated to store)
   namespaceDirectories: false as boolean,
-  // @deprecated import table libraries from their individual files instead */
   indexFilename: "index.sol" as string | false,
 } as const satisfies CodegenInput;
 
