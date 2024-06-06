@@ -87,7 +87,7 @@ export type WorldInput = evaluate<
      * as public systems at `namespace/ContractName`, unless overridden
      *
      * The key is the system name (capitalized).
-     * The value is a SystemConfig object.
+     * The value is a SystemInput object.
      */
     systems?: SystemsInput;
     /**
@@ -113,7 +113,7 @@ export type NamespaceInput = Pick<StoreInput, "tables"> & {
    * as public systems at `namespace/ContractName`, unless overridden
    *
    * The key is the system name (capitalized).
-   * The value is a SystemConfig object.
+   * The value is a SystemInput object.
    */
   systems?: SystemsInput;
 };
