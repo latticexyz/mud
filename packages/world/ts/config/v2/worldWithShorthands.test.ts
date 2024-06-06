@@ -374,11 +374,11 @@ describe("defineWorldWithShorthands", () => {
       defineWorldWithShorthands({
         namespaces: {
           ExampleNamespace: {
-            // @ts-expect-error Type 'true' is not assignable to type '"`blah` is not a valid namespace config option.
-            blah: true,
+            // @ts-expect-error Type 'true' is not assignable to type '"`invalidProperty` is not a valid namespace config option.
+            invalidProperty: true,
           },
         },
       }),
-    ).type.errors("`blah` is not a valid namespace config option.");
+    ).type.errors("`invalidProperty` is not a valid namespace config option.");
   });
 });
