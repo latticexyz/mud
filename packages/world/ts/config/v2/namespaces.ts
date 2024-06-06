@@ -31,16 +31,14 @@ export function validateNamespaces<scope extends Scope = AbiTypeScope>(
   namespaces: unknown,
   scope: scope,
 ): asserts namespaces is NamespacesInput {
-  if (isObject(namespaces)) {
-    for (const namespace of Object.values(namespaces)) {
-      if (!hasOwnKey(namespace, "tables")) {
-        throw new Error(`Expected namespace config, received ${JSON.stringify(namespace)}`);
-      }
+  if (!isObject(namespaces)) {
+    throw new Error(`Expected namespaces, received ${JSON.stringify(namespaces)}`);
+  }
+  for (const namespace of Object.values(namespaces)) {
+    if (hasOwnKey(namespace, "tables")) {
       validateTables(namespace.tables, scope);
     }
-    return;
   }
-  throw new Error(`Expected namespaces config, received ${JSON.stringify(namespaces)}`);
 }
 
 export type resolveNamespacedTables<world> = "namespaces" extends keyof world
