@@ -1,3 +1,4 @@
+// Please take care editing this! All of our packages and templates extend this base config.
 {
   "compilerOptions": {
     "module": "esnext",
@@ -18,6 +19,5 @@
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true
-  },
-  "exclude": ["**/dist", "**/node_modules", "**/docs", "**/e2e"]
+  }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/dev-tools",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "description": "MUD developer tools",
   "repository": {
     "type": "git",
@@ -11,6 +11,13 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js"
+  },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ]
+    }
   },
   "files": [
     "dist"
@@ -53,12 +60,12 @@
     "vitest": "0.34.6"
   },
   "peerDependencies": {
-    "@latticexyz/common": "2.0.11",
-    "@latticexyz/recs": "2.0.11",
-    "@latticexyz/store": "2.0.11",
-    "@latticexyz/store-sync": "2.0.11",
-    "@latticexyz/utils": "2.0.11",
-    "@latticexyz/world": "2.0.11"
+    "@latticexyz/common": "2.0.12",
+    "@latticexyz/recs": "2.0.12",
+    "@latticexyz/store": "2.0.12",
+    "@latticexyz/store-sync": "2.0.12",
+    "@latticexyz/utils": "2.0.12",
+    "@latticexyz/world": "2.0.12"
   },
   "publishConfig": {
     "access": "public"

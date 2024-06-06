@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/common",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "description": "Common low level logic shared between packages",
   "repository": {
     "type": "git",
@@ -18,10 +18,43 @@
     "./foundry": "./dist/foundry.js",
     "./type-utils": "./dist/type-utils.js",
     "./utils": "./dist/utils.js",
-    "./kms": "./dist/kms.js"
+    "./kms": "./dist/kms.js",
+    "./tsconfig.base.json": "./tsconfig.base.json"
+  },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ],
+      "actions": [
+        "./dist/actions.d.ts"
+      ],
+      "chains": [
+        "./dist/chains.d.ts"
+      ],
+      "codegen": [
+        "./dist/codegen.d.ts"
+      ],
+      "errors": [
+        "./dist/errors.d.ts"
+      ],
+      "foundry": [
+        "./dist/foundry.d.ts"
+      ],
+      "type-utils": [
+        "./dist/type-utils.d.ts"
+      ],
+      "utils": [
+        "./dist/utils.d.ts"
+      ],
+      "kms": [
+        "./dist/kms.d.ts"
+      ]
+    }
   },
   "files": [
-    "dist"
+    "dist",
+    "tsconfig.base.json"
   ],
   "scripts": {
     "build": "pnpm run build:js",

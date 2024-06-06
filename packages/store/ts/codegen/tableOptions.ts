@@ -11,7 +11,6 @@ import {
 import { RenderTableOptions } from "./types";
 import { getSchemaTypeInfo, importForAbiOrUserType, resolveAbiOrUserType } from "./userType";
 import { Store as StoreConfig } from "../config/v2/output";
-import { storeToV1 } from "../config/v2/compat";
 import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
 
 export interface TableOptions {
@@ -30,8 +29,6 @@ export function getTableOptions(
   config: StoreConfig,
   solidityUserTypes: Record<string, SolidityUserDefinedType>,
 ): TableOptions[] {
-  const configV1 = storeToV1(config);
-
   const options = Object.values(config.tables).map((table): TableOptions => {
     const keySchema = getKeySchema(table);
     const valueSchema = getValueSchema(table);
@@ -47,12 +44,12 @@ export function getTableOptions(
 
     const keyTuple = Object.entries(keySchema).map(([name, field]): RenderKeyTuple => {
       const abiOrUserType = field.internalType;
-      const { renderType } = resolveAbiOrUserType(abiOrUserType, configV1, solidityUserTypes);
+      const { renderType } = resolveAbiOrUserType(abiOrUserType, config, solidityUserTypes);
 
       const importDatum = importForAbiOrUserType(
         abiOrUserType,
         table.codegen.outputDirectory,
-        configV1,
+        config,
         solidityUserTypes,
       );
       if (importDatum) imports.push(importDatum);
@@ -66,12 +63,12 @@ export function getTableOptions(
 
     const fields = Object.entries(valueSchema).map(([name, field]): RenderField => {
       const abiOrUserType = field.internalType;
-      const { renderType, schemaType } = resolveAbiOrUserType(abiOrUserType, configV1, solidityUserTypes);
+      const { renderType, schemaType } = resolveAbiOrUserType(abiOrUserType, config, solidityUserTypes);
 
       const importDatum = importForAbiOrUserType(
         abiOrUserType,
         table.codegen.outputDirectory,
-        configV1,
+        config,
         solidityUserTypes,
       );
       if (importDatum) imports.push(importDatum);
