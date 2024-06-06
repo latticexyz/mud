@@ -1,3 +1,4 @@
+import Phaser from "phaser";
 import { defineComponentSystem } from "@latticexyz/recs";
 import { PhaserLayer } from "../createPhaserLayer";
 import { Animations, Sprites } from "../constants";

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/cli",
-  "version": "2.0.7",
+  "version": "2.0.12",
   "description": "Command line interface for mud",
   "repository": {
     "type": "git",
@@ -12,10 +12,19 @@
   "exports": {
     ".": "./dist/index.js"
   },
-  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ]
+    }
+  },
   "bin": {
     "mud": "./dist/mud.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "pnpm run build:js && pnpm run build:test-tables",
     "build:js": "tsup && chmod +x ./dist/mud.js",
@@ -33,29 +42,25 @@
     "@aws-sdk/client-kms": "^3.556.0",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
-    "@improbable-eng/grpc-web": "^0.15.0",
-    "@improbable-eng/grpc-web-node-http-transport": "^0.15.0",
     "@latticexyz/abi-ts": "workspace:*",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "@latticexyz/services": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
-    "@latticexyz/world-modules": "workspace:*",
+    "abitype": "1.0.0",
     "asn1.js": "^5.4.1",
     "chalk": "^5.0.1",
     "chokidar": "^3.5.3",
     "debug": "^4.3.4",
     "dotenv": "^16.0.3",
-    "ejs": "^3.1.8",
     "ethers": "^5.7.2",
     "execa": "^7.0.0",
+    "find-up": "^6.3.0",
     "glob": "^8.0.3",
-    "nice-grpc-web": "^2.0.1",
     "openurl": "^1.1.1",
     "p-queue": "^7.4.1",
     "p-retry": "^5.1.2",
@@ -66,7 +71,7 @@
     "typescript": "5.4.2",
     "viem": "2.9.20",
     "yargs": "^17.7.1",
-    "zod": "^3.21.4",
+    "zod": "^3.22.2",
     "zod-validation-error": "^1.3.0"
   },
   "devDependencies": {

@@ -4,7 +4,7 @@ import { InferredOptionTypes, Options } from "yargs";
 import { deploy } from "./deploy/deploy";
 import { createWalletClient, http, Hex, isHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { loadConfig } from "@latticexyz/config/node";
+import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
 import { worldToV1 } from "@latticexyz/world/config/v2";
 import { getOutDirectory, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
@@ -16,6 +16,7 @@ import { postDeploy } from "./utils/postDeploy";
 import { WorldDeploy } from "./deploy/common";
 import { build } from "./build";
 import { kmsKeyToAccount } from "@latticexyz/common/kms";
+import { configToModules } from "./deploy/configToModules";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the MUD config file" },
@@ -43,9 +44,9 @@ export const deployOptions = {
     type: "string",
     desc: "The deployment salt to use. Defaults to a random salt.",
   },
-  awsKmsKeyId: {
-    type: "string",
-    desc: "Optional AWS KMS key ID. If set, the World is deployed using a KMS signer instead of local private key.",
+  kms: {
+    type: "boolean",
+    desc: "Deploy the World with an AWS KMS key instead of local private key.",
   },
 } as const satisfies Record<string, Options>;
 
@@ -63,7 +64,8 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
 
-  const configV2 = (await loadConfig(opts.configPath)) as WorldConfig;
+  const configPath = await resolveConfigPath(opts.configPath);
+  const configV2 = (await loadConfig(configPath)) as WorldConfig;
   const config = worldToV1(configV2);
   if (opts.printConfig) {
     console.log(chalk.green("\nResolved config:\n"), JSON.stringify(config, null, 2));
@@ -81,22 +83,35 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   // Run build
   if (!opts.skipBuild) {
-    await build({ config: configV2, srcDir, foundryProfile: profile });
-  }
-
-  const privateKey = process.env.PRIVATE_KEY as Hex;
-  if (!privateKey) {
-    throw new MUDError(
-      `Missing PRIVATE_KEY environment variable.
-Run 'echo "PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" > .env'
-in your contracts directory to use the default anvil private key.`,
-    );
+    await build({ configPath, config: configV2, srcDir, foundryProfile: profile });
   }
 
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
+  const modules = await configToModules(configV2, outDir);
 
-  const keyId = opts.awsKmsKeyId ?? process.env.AWS_KMS_KEY_ID;
-  const account = keyId ? await kmsKeyToAccount({ keyId }) : privateKeyToAccount(privateKey);
+  const account = await (async () => {
+    if (opts.kms) {
+      const keyId = process.env.AWS_KMS_KEY_ID;
+      if (!keyId) {
+        throw new MUDError(
+          "Missing `AWS_KMS_KEY_ID` environment variable. This is required when using with `--kms` option.",
+        );
+      }
+
+      return await kmsKeyToAccount({ keyId });
+    } else {
+      const privateKey = process.env.PRIVATE_KEY;
+      if (!privateKey) {
+        throw new MUDError(
+          `Missing PRIVATE_KEY environment variable.
+  Run 'echo "PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" > .env'
+  in your contracts directory to use the default anvil private key.`,
+        );
+      }
+
+      return privateKeyToAccount(privateKey as Hex);
+    }
+  })();
 
   const client = createWalletClient({
     transport: http(rpc, {
@@ -119,10 +134,18 @@ in your contracts directory to use the default anvil private key.`,
     worldAddress: opts.worldAddress as Hex | undefined,
     client,
     config: resolvedConfig,
+    modules,
     withWorldProxy: configV2.deploy.upgradeableWorldImplementation,
   });
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
-    await postDeploy(config.postDeployScript, worldDeploy.address, rpc, profile, opts.forgeScriptOptions);
+    await postDeploy(
+      config.postDeployScript,
+      worldDeploy.address,
+      rpc,
+      profile,
+      opts.forgeScriptOptions,
+      opts.kms ? true : false,
+    );
   }
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
 

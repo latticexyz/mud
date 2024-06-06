@@ -5,7 +5,6 @@ import abiTs from "@latticexyz/abi-ts";
 
 import build from "./build";
 import devnode from "./devnode";
-import faucet from "./faucet";
 import hello from "./hello";
 import tablegen from "./tablegen";
 import deploy from "./deploy";
@@ -21,7 +20,6 @@ export const commands: CommandModule<any, any>[] = [
   build,
   deploy,
   devnode,
-  faucet,
   gasReport as CommandModule,
   hello,
   tablegen,

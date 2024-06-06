@@ -1,12 +1,3 @@
-export const PATH_DEFAULTS = {
-  storeImportPath: "@latticexyz/store/src/",
-  userTypesFilename: "common.sol",
-  codegenDirectory: "codegen",
-  codegenIndexFilename: "index.sol",
-} as const;
-
-export type PATH_DEFAULTS = typeof PATH_DEFAULTS;
-
 export const DEFAULTS = {
   namespace: "",
   enums: {},

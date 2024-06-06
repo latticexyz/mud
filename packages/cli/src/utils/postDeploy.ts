@@ -2,8 +2,6 @@ import { existsSync } from "fs";
 import path from "path";
 import chalk from "chalk";
 import { getScriptDirectory, forge } from "@latticexyz/common/foundry";
-import { execSync } from "child_process";
-import { formatGwei } from "viem";
 
 export async function postDeploy(
   postDeployScript: string,
@@ -11,6 +9,7 @@ export async function postDeploy(
   rpc: string,
   profile: string | undefined,
   forgeOptions: string | undefined,
+  kms: boolean,
 ): Promise<void> {
   // TODO: make this more robust as it is likely to fail for any args that have a space in them
   const userOptions = forgeOptions?.replaceAll("\\", "").split(" ") ?? [];
@@ -20,11 +19,7 @@ export async function postDeploy(
     return;
   }
 
-  // TODO: replace this with a viem call
-  const gasPrice = BigInt(execSync(`cast gas-price --rpc-url ${rpc}`, { encoding: "utf-8" }).trim());
-
   console.log(chalk.blue(`Executing post deploy script at ${postDeployPath}`));
-  console.log(chalk.blue(`  using gas price of ${formatGwei(gasPrice)} gwei`));
 
   await forge(
     [
@@ -34,12 +29,10 @@ export async function postDeploy(
       "--sig",
       "run(address)",
       worldAddress,
-      // TODO: also set priority fee?
-      "--with-gas-price",
-      gasPrice.toString(),
       "--rpc-url",
       rpc,
       "-vvv",
+      kms ? "--aws" : "",
       ...userOptions,
     ],
     {

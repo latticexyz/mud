@@ -1,5 +1,5 @@
 import { defineWorld } from "@latticexyz/world";
-import { resolveTableId } from "@latticexyz/config/library";
+import { resolveTableId } from "@latticexyz/world/internal";
 
 export default defineWorld({
   systems: {
@@ -8,10 +8,6 @@ export default defineWorld({
       openAccess: true,
     },
   },
-  excludeSystems: [
-    // Until namespace overrides, this system must be manually deployed in PostDeploy
-    "ChatNamespacedSystem",
-  ],
   tables: {
     CounterTable: {
       schema: {
@@ -39,7 +35,7 @@ export default defineWorld({
   },
   modules: [
     {
-      name: "KeysWithValueModule",
+      artifactPath: "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json",
       root: true,
       args: [resolveTableId("Inventory")],
     },

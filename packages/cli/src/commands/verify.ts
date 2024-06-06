@@ -7,9 +7,9 @@ import { worldToV1 } from "@latticexyz/world/config/v2";
 import { getOutDirectory, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import { getExistingContracts } from "../utils/getExistingContracts";
 import { getContractData } from "../utils/getContractData";
-import { defaultModuleContracts } from "../utils/defaultModuleContracts";
 import { Hex, createWalletClient, http } from "viem";
 import chalk from "chalk";
+import { configToModules } from "../deploy/configToModules";
 
 const verifyOptions = {
   deployerAddress: {
@@ -25,7 +25,7 @@ const verifyOptions = {
     desc: "Enable batch processing of RPC requests in viem client (defaults to batch size of 100 and wait of 1s)",
   },
   srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
-  verifier: { type: "string", desc: "The verifier to use" },
+  verifier: { type: "string", desc: "The verifier to use. Defaults to blockscout", default: "blockscout" },
   verifierUrl: {
     type: "string",
     desc: "The verification provider.",
@@ -82,22 +82,11 @@ const commandModule: CommandModule<Options, Options> = {
       };
     });
 
-    // Get modules
-    const modules = config.modules.map((mod) => {
-      const contractData =
-        defaultModuleContracts.find((defaultMod) => defaultMod.name === mod.name) ??
-        getContractData(`${mod.name}.sol`, mod.name, outDir);
-
-      return {
-        name: mod.name,
-        bytecode: contractData.bytecode,
-      };
-    });
+    const modules = await configToModules(configV2, outDir);
 
     await verify({
       client,
       rpc,
-      foundryProfile: profile,
       systems,
       modules,
       deployerAddress: opts.deployerAddress as Hex | undefined,

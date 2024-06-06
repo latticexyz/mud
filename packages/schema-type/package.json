@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/schema-type",
-  "version": "2.0.7",
+  "version": "2.0.12",
   "description": "SchemaType enum for various languages",
   "repository": {
     "type": "git",
@@ -17,16 +17,21 @@
   "typesVersions": {
     "*": {
       "index": [
-        "./src/typescript/exports/index.ts"
+        "./dist/index.d.ts"
       ],
       "internal": [
-        "./src/typescript/exports/internal.ts"
+        "./dist/internal.d.ts"
       ],
       "deprecated": [
-        "./src/typescript/exports/deprecated.ts"
+        "./dist/deprecated.d.ts"
       ]
     }
   },
+  "files": [
+    "dist",
+    "out",
+    "src"
+  ],
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",

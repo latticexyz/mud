@@ -92,7 +92,7 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
             worldAddress,
             srcDir,
             salt: "0x",
-            awsKmsKeyId: undefined,
+            kms: undefined,
           });
           worldAddress = deploy.address;
           // if there were changes while we were deploying, trigger it again

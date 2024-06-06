@@ -3,12 +3,19 @@ import { defineWorld } from "./world";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
 import {
+  CONFIG_DEFAULTS as STORE_CONFIG_DEFAULTS,
   TABLE_CODEGEN_DEFAULTS,
   CODEGEN_DEFAULTS as STORE_CODEGEN_DEFAULTS,
   TABLE_DEPLOY_DEFAULTS,
 } from "@latticexyz/store/config/v2";
-import { CODEGEN_DEFAULTS as WORLD_CODEGEN_DEFAULTS, DEPLOY_DEFAULTS, CONFIG_DEFAULTS } from "./defaults";
+import {
+  CODEGEN_DEFAULTS as WORLD_CODEGEN_DEFAULTS,
+  DEPLOY_DEFAULTS,
+  CONFIG_DEFAULTS as WORLD_CONFIG_DEFAULTS,
+} from "./defaults";
 import { World } from "./output";
+
+const CONFIG_DEFAULTS = { ...STORE_CONFIG_DEFAULTS, ...WORLD_CONFIG_DEFAULTS };
 const CODEGEN_DEFAULTS = { ...STORE_CODEGEN_DEFAULTS, ...WORLD_CODEGEN_DEFAULTS };
 
 describe("defineWorld", () => {
@@ -61,6 +68,7 @@ describe("defineWorld", () => {
       },
       userTypes: {},
       enums: {},
+      enumValues: {},
       namespace: "",
     } as const;
 
@@ -127,6 +135,12 @@ describe("defineWorld", () => {
       },
       enums: {
         MyEnum: ["First", "Second"],
+      },
+      enumValues: {
+        MyEnum: {
+          First: 0,
+          Second: 1,
+        },
       },
       namespace: "",
     } as const;
@@ -227,6 +241,7 @@ describe("defineWorld", () => {
         },
         userTypes: {},
         enums: {},
+        enumValues: {},
         namespace: "",
       } as const;
 
@@ -279,6 +294,7 @@ describe("defineWorld", () => {
           dynamic: { type: "string", filePath: "path/to/file" },
         },
         enums: {},
+        enumValues: {},
         namespace: "",
       } as const;
 
@@ -324,6 +340,7 @@ describe("defineWorld", () => {
         },
         userTypes: {},
         enums: {},
+        enumValues: {},
         namespace: "",
         deploy: DEPLOY_DEFAULTS,
       } as const;
@@ -397,6 +414,7 @@ describe("defineWorld", () => {
         },
         userTypes: {},
         enums: {},
+        enumValues: {},
         namespace: "",
       } as const;
 
@@ -477,6 +495,7 @@ describe("defineWorld", () => {
           Dynamic: { type: "string", filePath: "path/to/file" },
         },
         enums: {},
+        enumValues: {},
         namespace: "",
       } as const;
 
@@ -588,6 +607,12 @@ describe("defineWorld", () => {
         },
         enums: {
           ValidNames: ["first", "second"],
+        },
+        enumValues: {
+          ValidNames: {
+            first: 0,
+            second: 1,
+          },
         },
         namespace: "",
       } as const;
@@ -751,5 +776,14 @@ describe("defineWorld", () => {
     } as const;
 
     defineWorld(config);
+  });
+
+  it("should throw if config has unexpected key", () => {
+    attest(() =>
+      defineWorld({
+        // @ts-expect-error Invalid config option
+        invalidOption: "nope",
+      }),
+    ).type.errors("`invalidOption` is not a valid World config option.");
   });
 });

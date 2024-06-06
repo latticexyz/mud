@@ -7,3 +7,5 @@ export type Resource = {
   readonly namespace: string;
   readonly name: string;
 };
+
+export const ROOT_NAMESPACE = "";

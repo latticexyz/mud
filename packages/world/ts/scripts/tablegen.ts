@@ -1,11 +1,14 @@
-import path from "path";
-import { loadConfig } from "@latticexyz/config/node";
-import { getRemappings, getSrcDirectory } from "@latticexyz/common/foundry";
+import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
+import { getRemappings } from "@latticexyz/common/foundry";
 import { Store as StoreConfig } from "@latticexyz/store";
 import { tablegen } from "@latticexyz/store/codegen";
 
-const config = (await loadConfig()) as StoreConfig;
-const srcDir = await getSrcDirectory();
+const configPath = await resolveConfigPath(undefined);
+const config = (await loadConfig(configPath)) as StoreConfig;
 const remappings = await getRemappings();
 
-await tablegen(config, path.join(srcDir, config.codegen.outputDirectory), remappings);
+await tablegen({
+  configPath,
+  config,
+  remappings,
+});

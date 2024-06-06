@@ -2,7 +2,7 @@ import { Account, Address, Chain, Client, Hex, Transport } from "viem";
 import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
-import { Config, ConfigInput, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
+import { Config, ConfigInput, Module, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
 import { ensureSystems } from "./ensureSystems";
 import { waitForTransactionReceipt } from "viem/actions";
 import { getWorldDeploy } from "./getWorldDeploy";
@@ -19,6 +19,7 @@ import { ensureWorldFactory } from "./ensureWorldFactory";
 type DeployOptions<configInput extends ConfigInput> = {
   client: Client<Transport, Chain | undefined, Account>;
   config: Config<configInput>;
+  modules?: readonly Module[];
   salt?: Hex;
   worldAddress?: Address;
   /**
@@ -40,6 +41,7 @@ type DeployOptions<configInput extends ConfigInput> = {
 export async function deploy<configInput extends ConfigInput>({
   client,
   config,
+  modules = [],
   salt,
   worldAddress: existingWorldAddress,
   deployerAddress: initialDeployerAddress,
@@ -66,7 +68,7 @@ export async function deploy<configInput extends ConfigInput>({
         deployedBytecodeSize: system.deployedBytecodeSize,
         label: `${resourceToLabel(system)} system`,
       })),
-      ...config.modules.map((mod) => ({
+      ...modules.map((mod) => ({
         bytecode: mod.prepareDeploy(deployerAddress, config.libraries).bytecode,
         deployedBytecodeSize: mod.deployedBytecodeSize,
         label: `${mod.name} module`,
@@ -118,7 +120,7 @@ export async function deploy<configInput extends ConfigInput>({
     deployerAddress,
     libraries: config.libraries,
     worldDeploy,
-    modules: config.modules,
+    modules,
   });
 
   const txs = [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs];

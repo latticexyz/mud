@@ -231,6 +231,31 @@ export default withNextra({
         destination: "/templates/typescript/threejs",
         permanent: false,
       },
+      {
+        source: "/hello-world",
+        destination: "/guides/hello-world",
+        permanent: false,
+      },   
+      {
+        source: "/references/store",
+        destination: "/store/reference/store",
+        permanent: false,
+      },
+      {
+        source: "/references/store-core",
+        destination: "/store/reference/store-core",
+        permanent: false,
+      },
+      {
+        source: "/store/how-mud-models-data",
+        destination: "/store/data-model",
+        permanent: false,
+      },
+      {
+        source: "/store/table-hooks",
+        destination: "/store/store-hooks",
+        permanent: false,
+      },      
     ];
   },
 });

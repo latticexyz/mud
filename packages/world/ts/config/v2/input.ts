@@ -1,6 +1,6 @@
 import { evaluate } from "@arktype/util";
 import { StoreInput, StoreWithShorthandsInput } from "@latticexyz/store/config/v2";
-import { Module } from "./output";
+import { DynamicResolution, ValueWithType } from "./dynamicResolution";
 
 export type SystemInput = {
   /** The full resource selector consists of namespace and name */
@@ -16,12 +16,47 @@ export type SystemInput = {
   /** If openAccess is true, any address can call the system */
   openAccess?: boolean;
   /** An array of addresses or system names that can access the system */
-  accessList?: string[];
+  accessList?: readonly string[];
 };
 
 export type SystemsInput = { [key: string]: SystemInput };
 
+type ModuleInputArtifactPath =
+  | {
+      /**
+       * Import path to module's forge/solc JSON artifact with the module's compiled bytecode. This is used to create consistent, deterministic deploys for already-built modules
+       * like those installed and imported from npm.
+       *
+       * This path is resolved using node's module resolution, so this supports both relative file paths (`../path/to/MyModule.json`) as well as JS import paths
+       * (`@latticexyz/world-modules/out/CallWithSignatureModule.sol/CallWithSignatureModule.json`).
+       */
+      readonly artifactPath: string;
+      readonly name?: never;
+    }
+  | {
+      /**
+       * The name of the module, used to construct the import path relative to the project directory.
+       * @deprecated Use `artifactPath` instead.
+       */
+      readonly name: string;
+      readonly artifactPath?: never;
+    };
+
+export type ModuleInput = ModuleInputArtifactPath & {
+  /**
+   * Should this module be installed as a root module?
+   * @default false
+   * */
+  readonly root?: boolean;
+  /** Arguments to be passed to the module's install method */
+  // TODO: make more strongly typed by taking in tables input
+  readonly args?: readonly (ValueWithType | DynamicResolution)[];
+};
+
 export type DeployInput = {
+  /** The name of a custom World contract to deploy. If no name is provided, a default MUD World is deployed. */
+  // TODO: implement
+  customWorldContract?: never;
   /**
    * Script to execute after the deployment is complete (Default "PostDeploy").
    * Script must be placed in the forge scripts directory (see foundry.toml) and have a ".s.sol" extension.
@@ -56,9 +91,9 @@ export type WorldInput = evaluate<
      */
     systems?: SystemsInput;
     /** System names to exclude from automatic deployment */
-    excludeSystems?: string[];
+    excludeSystems?: readonly string[];
     /** Modules to in the World */
-    modules?: Module[];
+    modules?: readonly ModuleInput[];
     /** Deploy config */
     deploy?: DeployInput;
     /** Codegen config */

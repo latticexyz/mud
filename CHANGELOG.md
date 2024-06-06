@@ -1,3 +1,331 @@
+## Version 2.0.12
+
+Release date: Fri May 31 2024
+
+### Patch changes
+
+**[feat(store,world): add option to codegen tables into namespace dirs (#2840)](https://github.com/latticexyz/mud/commit/c10c9fb2dacc93bc58d013e74509180f90ac5b5a)** (@latticexyz/store)
+
+Internal `tablegen` function (exported from `@latticexyz/store/codegen`) now expects an object of options with a `configPath` to use as a base path to resolve other relative paths from.
+
+**[feat(store,world): add option to codegen tables into namespace dirs (#2840)](https://github.com/latticexyz/mud/commit/c10c9fb2dacc93bc58d013e74509180f90ac5b5a)** (@latticexyz/store, @latticexyz/world)
+
+Added `sourceDirectory` as a top-level config option for specifying contracts source (i.e. Solidity) directory relative to the MUD config. This is used to resolve other paths in the config, like codegen and user types. Like `foundry.toml`, this defaults to `src` and should be kept in sync with `foundry.toml`.
+
+Also added a `codegen.namespaceDirectories` option to organize codegen output (table libraries, etc.) into directories by namespace. For example, a `Counter` table in the `app` namespace will have codegen at `codegen/app/tables/Counter.sol`. If not set, defaults to `true` when using top-level `namespaces` key, `false` otherwise.
+
+**[fix(cli,world): resolve table by just name (#2850)](https://github.com/latticexyz/mud/commit/9be2bb863194e2beee03b3d783f925c79b3c8562)** (@latticexyz/cli, @latticexyz/world)
+
+Fixed `resolveTableId` usage within config's module `args` to allow referencing both namespaced tables (e.g. `resolveTableId("app_Tasks")`) as well as tables by just their name (e.g. `resolveTableId("Tasks")`). Note that using just the table name requires it to be unique among all tables within the config.
+
+This helper is now exported from `@latticexyz/world` package as intended. The previous, deprecated export has been removed.
+
+```diff
+-import { resolveTableId } from "@latticexyz/config/library";
++import { resolveTableId } from "@latticexyz/world/internal";
+```
+
+**[fix(world-modules): register total supply table in erc20 module (#2877)](https://github.com/latticexyz/mud/commit/36c8b5b2476281ef9f66347c798aa93454648572)** (@latticexyz/world-modules)
+
+Fixed `ERC20Module` to register the `TotalSupply` table when creating a new token.
+
+If you've deployed a world with the `ERC20Module`, we recommend patching your world to register this table so that indexers can properly decode its record. You can do so with a simple Forge script:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+
+import { Script } from "forge-std/Script.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { TotalSupply } from "@latticexyz/world-modules/src/modules/erc20-puppet/tables/TotalSupply.sol";
+import { _totalSupplyTableId } from "@latticexyz/world-modules/src/modules/erc20-puppet/utils.sol";
+
+contract RegisterTotalSupply is Script {
+  function run(address worldAddress, string memory namespaceString) external {
+    bytes14 namespace = bytes14(bytes(namespaceString));
+
+    StoreSwitch.setStoreAddress(worldAddress);
+
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    vm.startBroadcast(deployerPrivateKey);
+
+    TotalSupply.register(_totalSupplyTableId(namespace));
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+Then execute the transactions by running the following [`forge script`](https://book.getfoundry.sh/reference/forge/forge-script?highlight=script#forge-script) command:
+
+```shell
+forge script ./script/RegisterTotalSupply.s.sol --sig "run(address,string)" $WORLD_ADDRESS $NAMESPACE_STRING
+```
+
+**[feat(common): export base tsconfig (#2873)](https://github.com/latticexyz/mud/commit/f3180fe8437224d7a568f79ff60c9e70e9b48792)** (@latticexyz/abi-ts, @latticexyz/block-logs-stream, @latticexyz/cli, @latticexyz/common, @latticexyz/config, @latticexyz/dev-tools, @latticexyz/faucet, @latticexyz/gas-report, @latticexyz/protocol-parser, @latticexyz/query, @latticexyz/react, @latticexyz/recs, @latticexyz/schema-type, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store, @latticexyz/utils, @latticexyz/world-modules, @latticexyz/world, create-mud, solhint-config-mud, solhint-plugin-mud)
+
+TS source has been removed from published packages in favor of DTS in an effort to improve TS performance. All packages now inherit from a base TS config in `@latticexyz/common` to allow us to continue iterating on TS performance without requiring changes in your project code.
+
+If you have a MUD project that you're upgrading, we suggest adding a `tsconfig.json` file to your project workspace that extends this base config.
+
+```sh
+pnpm add -D @latticexyz/common
+echo "{\n  \"extends\": \"@latticexyz/common/tsconfig.base.json\"\n}" > tsconfig.json
+```
+
+Then in each package of your project, inherit from your workspace root's config.
+
+For example, your TS config in `packages/contracts/tsconfig.json` might look like:
+
+```json
+{
+  "extends": "../../tsconfig.json"
+}
+```
+
+And your TS config in `packages/client/tsconfig.json` might look like:
+
+```json
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "types": ["vite/client"],
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "include": ["src"]
+}
+```
+
+You may need to adjust the above configs to include any additional TS options you've set. This config pattern may also reveal new TS errors that need to be fixed or rules disabled.
+
+If you want to keep your existing TS configs, we recommend at least updating your `moduleResolution` setting.
+
+```diff
+-"moduleResolution": "node"
++"moduleResolution": "Bundler"
+```
+
+**[feat(create-mud): clean up template scripts, add garnet/redstone (#2839)](https://github.com/latticexyz/mud/commit/d75266073e9fa1c5ede61636a60557deead6ff8e)** (create-mud)
+
+Removed unnecessary build step in scripts and added deploy scripts for Redstone and Garnet chains.
+
+---
+
+## Version 2.0.11
+
+Release date: Wed May 15 2024
+
+### Patch changes
+
+**[build: bump to node 18.20.2, pnpm 9.1.1 (#2831)](https://github.com/latticexyz/mud/commit/63e5d2d51192adc0a1f977a269097a03d7bf119d)** (create-mud)
+
+Added pnpm 9 to project's `engines`.
+
+**[fix(cli): fixed module artifactPath imports (#2832)](https://github.com/latticexyz/mud/commit/fe9d726371ddfd99f0b4ffa4b1e64b817417cfd3)** (@latticexyz/cli)
+
+Fixed imports of module artifacts via `artifactPath` and removed unused `@latticexyz/world-modules` dependency.
+
+---
+
+## Version 2.0.10
+
+Release date: Tue May 14 2024
+
+### Patch changes
+
+**[fix(cli): function selector lookup during deploy (#2800)](https://github.com/latticexyz/mud/commit/0ae9189ca60e86f7b12994bcc89bc196871d0e7c)** (@latticexyz/cli)
+
+The deploy CLI now uses logs to find registered function selectors and their corresponding function signatures.
+Previously only function signatures were fetched via logs and then mapped to function selectors via `getRecord` calls,
+but this approach failed for namespaced function selectors of non-root system,
+because the function signature table includes both the namespaced and non-namespaced signature but the function selector table only includes the namespaced selector that is registered on the world.
+
+**[feat(cli): deploy with external modules (#2803)](https://github.com/latticexyz/mud/commit/a1b1ebf67367f91cea4000c073bc6b8da4601e3e)** (@latticexyz/cli, @latticexyz/world)
+
+Worlds can now be deployed with external modules, defined by a module's `artifactPath` in your MUD config, resolved with Node's module resolution. This allows for modules to be published to and imported from npm.
+
+```diff
+ defineWorld({
+   // …
+   modules: [
+     {
+-      name: "KeysWithValueModule",
++      artifactPath: "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json",
+       root: true,
+       args: [resolveTableId("Inventory")],
+     },
+   ],
+ });
+```
+
+Note that the above assumes `@latticexyz/world-modules` is included as a dependency of your project.
+
+**[chore: upgrade to ejs 3.1.10 (#2786)](https://github.com/latticexyz/mud/commit/4e4e9104e84a7cb7d041d2401f0a937e06251985)** (@latticexyz/world-modules, @latticexyz/store, @latticexyz/cli)
+
+Removed the unused `ejs` dependency.
+
+**[docs: fix create-mud package name in changeset (#2825)](https://github.com/latticexyz/mud/commit/de03e2a78e209c7eb509f986aa0ed0d1c2ae068d)** (create-mud)
+
+Templates now use an `app` namespace by default, instead of the root namespace. This helps keep the root namespace clear for intentionally root-level things and avoids pitfalls with root systems calling other root systems.
+
+**[chore: upgrade to ejs 3.1.10 (#2786)](https://github.com/latticexyz/mud/commit/4e4e9104e84a7cb7d041d2401f0a937e06251985)** (@latticexyz/world)
+
+Upgraded the `ejs` dependency to 3.1.10.
+
+**[fix(store-indexer): fix distance from follow block metric (#2791)](https://github.com/latticexyz/mud/commit/0d4e302f44c2ee52e9e14d24552499b7fb04306e)** (@latticexyz/store-indexer)
+
+Fixed the `distance_from_follow_block` gauge to be a positive number if the latest processed block is lagging behind the latest remote block.
+
+**[fix(common): extend OP contracts, add redstone ones (#2792)](https://github.com/latticexyz/mud/commit/51b137d3498a5d6235938cb93dc06ed0131fd7be)** (@latticexyz/common)
+
+Added OP predeploy contracts for Redstone and Garnet chain configs and added chain-specific contracts for Redstone chain config.
+
+**[chore: remove cli faucet command and services package (#2811)](https://github.com/latticexyz/mud/commit/4a61a128ca752aac5d86578573211304fbaf3c27)** (@latticexyz/cli)
+
+Removed broken `mud faucet` command.
+
+**[fix(world): config uses readonly arrays (#2805)](https://github.com/latticexyz/mud/commit/3dbf3bf3a3295ad63264044e315dec075de528fd)** (@latticexyz/world)
+
+Updated World config types to use readonly arrays.
+
+**[docs(store-sync): add changeset for #2808 (#2809)](https://github.com/latticexyz/mud/commit/36e1f7664f9234bf454e6d1f9c3806dfc695f219)** (@latticexyz/store-sync)
+
+Both `encodeEntity` and `decodeEntity` now use an LRU cache to avoid repeating work during iterations of thousands of entities.
+
+**[fix(store,world): throw on unexpected config keys (#2797)](https://github.com/latticexyz/mud/commit/32c1cda666bc8ccd6e083d8d94d96a42e65c3983)** (@latticexyz/store, @latticexyz/world)
+
+`defineStore` and `defineWorld` will now throw a type error if an unexpected config option is used.
+
+**[chore: remove cli faucet command and services package (#2811)](https://github.com/latticexyz/mud/commit/4a61a128ca752aac5d86578573211304fbaf3c27)** (create-mud)
+
+Removed usages of old testnet faucet in templates. The previous testnet faucet is broken, deprecated, and going offline soon. We'll be replacing the burner account pattern with something better very soon!
+
+**[chore: bump zod (#2804)](https://github.com/latticexyz/mud/commit/4caca05e34fd3647122bf2864f2c736e646614b6)** (@latticexyz/cli, @latticexyz/config, @latticexyz/faucet, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world-modules, @latticexyz/world)
+
+Bumped zod dependency to comply with abitype peer dependencies.
+
+**[feat(store,world): usable enum values from config (#2807)](https://github.com/latticexyz/mud/commit/27f888c70a712cea7f9a157cc82892a884ecc1df)** (@latticexyz/store, @latticexyz/world)
+
+`defineStore` and `defineWorld` now maps your `enums` to usable, strongly-typed enums on `enumValues`.
+
+```ts
+const config = defineStore({
+  enums: {
+    TerrainType: ["Water", "Grass", "Sand"],
+  },
+});
+
+config.enumValues.TerrainType.Water;
+//                              ^? (property) Water: 0
+
+config.enumValues.TerrainType.Grass;
+//                              ^? (property) Grass: 1
+```
+
+This allows for easier referencing of enum values (i.e. `uint8` equivalent) in contract calls.
+
+```ts
+writeContract({
+  // …
+  functionName: "setTerrainType",
+  args: [config.enumValues.TerrainType.Grass],
+});
+```
+
+---
+
+## Version 2.0.9
+
+Release date: Wed May 01 2024
+
+### Patch changes
+
+**[fix(cli): do not require `PRIVATE_KEY` if using KMS (#2765)](https://github.com/latticexyz/mud/commit/30318687f35a57217e932f9f2b4c80a9d6617ee5)** (@latticexyz/cli)
+
+Fixed `mud deploy` to not require the `PRIVATE_KEY` environment variable when using a KMS signer.
+
+**[feat(create-mud): redstone and garnet chains (#2776)](https://github.com/latticexyz/mud/commit/6b247fb9d1902a5138ad4a05b634b4d0921af433)** (create-mud)
+
+Updated templates with Redstone and Garnet chains and removed the deprecated Lattice testnet chain.
+
+**[feat(store-indexer): add metric for distance from block tag to follow (#2763)](https://github.com/latticexyz/mud/commit/93690fdb1d51f8ef470fd4f1d84490c14bf1f442)** (@latticexyz/store-indexer)
+
+Added a `distance_from_follow_block` metric to compare the latest stored block number with the block number corresponding to the block tag the indexer follows.
+
+**[feat(cli): blockscout is default verifier (#2775)](https://github.com/latticexyz/mud/commit/0b6b70ffd2f8e7eaa9732d2aa5b158fd0927d10b)** (@latticexyz/cli)
+
+`mud verify` now defaults to blockscout if no `--verifier` is provided.
+
+**[fix(cli): run postdeploy with aws flag when kms is enabled (#2766)](https://github.com/latticexyz/mud/commit/428ff972198425cb19d363c92eb49002accdc6a0)** (@latticexyz/cli)
+
+Fixed `mud deploy` to use the `forge script --aws` flag when executing `PostDeploy` with a KMS signer.
+
+Note that you may need to update your `PostDeploy.s.sol` script, with `vm.startBroadcast` receiving no arguments instead of reading a private key from the environment:
+
+```diff
+-uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+-vm.startBroadcast(deployerPrivateKey);
+
++vm.startBroadcast();
+```
+
+**[feat(common): add indexer URL to chain configs (#2771)](https://github.com/latticexyz/mud/commit/764ca0a0c390ddce5d8a618fd4e801e9fc542a0b)** (@latticexyz/store-sync)
+
+Updated `createStoreSync` to default to the chain's indexer URL when no `indexerUrl` is passed in. To intentionally unset the value and not use the indexer at all, `indexerUrl` can now also be `false`.
+
+**[fix(cli): remove postdeploy gas setting in favor of script options (#2756)](https://github.com/latticexyz/mud/commit/074ed66eb64df377e37684c47d7ff15ced16885b)** (@latticexyz/cli)
+
+Removed manual gas setting in PostDeploy step of `mud deploy` in favor of `forge script` fetching it from the RPC.
+
+If you still want to manually set gas, you can use `mud deploy --forgeScriptOptions="--with-gas-price 1000000"`.
+
+**[refactor(common,cli): kms deployer gets keyId from environment (#2760)](https://github.com/latticexyz/mud/commit/e03830ebe3ee3ea6fb1384be53fc26b668fbe607)** (@latticexyz/cli)
+
+The key ID for deploying via KMS signer is now set via an `AWS_KMS_KEY_ID` environment variable to better align with Foundry tooling. To enable KMS signing with this environment variable, use the `--kms` flag.
+
+```diff
+-mud deploy --awsKmsKeyId [key ID]
++AWS_KMS_KEY_ID=[key ID] mud deploy --kms
+```
+
+**[feat(common): add indexer URL to chain configs (#2771)](https://github.com/latticexyz/mud/commit/764ca0a0c390ddce5d8a618fd4e801e9fc542a0b)** (@latticexyz/common)
+
+Added an optional `indexerUrl` property to `MUDChain`, and populated it in the Redstone and Garnet chain configs.
+
+**[feat(common): add chain icons (#2778)](https://github.com/latticexyz/mud/commit/bad3ad1bd9bb86bc7eb83cfb299df92d14c64c46)** (@latticexyz/common)
+
+Added chain icons to Redstone and Garnet chain configs via `chain.iconUrls`.
+
+---
+
+## Version 2.0.8
+
+Release date: Sat Apr 27 2024
+
+### Patch changes
+
+**[fix(store-indexer): allow empty env variable (#2746)](https://github.com/latticexyz/mud/commit/9c599b87bb02db5ae9a9389085b61bde48af9e4a)** (@latticexyz/store-indexer)
+
+Added support for an empty `STORE_ADDRESS=` environment variable.
+This previously would fail the input validation, now it behaves the same way as not setting the `STORE_ADDRESS` variable at all.
+
+**[fix(cli): fix verify with sourcify for dependencies (#2750)](https://github.com/latticexyz/mud/commit/b4eb795ee5a6f8d250d3b3513fe72c5530f69c43)** (@latticexyz/cli)
+
+Patched `mud verify` to properly verify store, world, and world-modules contracts. Currently only `sourcify` is fully supported and is the default verifier.
+
+**[feat(common): add redstone chain config (#2749)](https://github.com/latticexyz/mud/commit/f23318ede18d0b10cf1f4c51dd24a373a5e5f740)** (@latticexyz/common)
+
+Added Garnet testnet and Redstone mainnet chain configs and deprecated Lattice Testnet.
+
+```ts
+import { garnet, redstone } from "@latticexyz/common/chains";
+```
+
+---
+
 ## Version 2.0.7
 
 Release date: Thu Apr 25 2024
