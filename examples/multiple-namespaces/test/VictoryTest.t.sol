@@ -24,7 +24,7 @@ contract VictoryTest is MudTest {
       abi.encodeWithSelector(
         IWorldErrors.World_AccessDenied.selector,
         Victory._tableId.toString(),
-        0x266c3370ad8C238819899f47Eaee7289e4C51AC8
+        0x1340cfBD28006FD095920f106B31f1Ee6F9d6bfE
       )
     );
     IWorld(worldAddress).hacker__win();
