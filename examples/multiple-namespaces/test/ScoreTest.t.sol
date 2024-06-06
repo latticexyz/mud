@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 import { MudTest } from "@latticexyz/world/test/MudTest.t.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { Score } from "../src/codegen/somePlugin/tables/Score.sol";
+import { Score } from "../src/codegen/scoreboard/tables/Score.sol";
 
 address constant alice = address(1);
 
@@ -18,7 +18,7 @@ contract ScoreTest is MudTest {
     IWorld(worldAddress).game__move(3, 2);
     vm.prank(alice);
     vm.expectRevert("must be at goal");
-    IWorld(worldAddress).somePlugin__increaseScore();
+    IWorld(worldAddress).scoreboard__increaseScore();
 
     score = Score.get(alice);
     assertEq(score, 0);
@@ -26,7 +26,7 @@ contract ScoreTest is MudTest {
     vm.prank(alice);
     IWorld(worldAddress).game__move(4, 2);
     vm.prank(alice);
-    IWorld(worldAddress).somePlugin__increaseScore();
+    IWorld(worldAddress).scoreboard__increaseScore();
 
     score = Score.get(alice);
     assertEq(score, 1);

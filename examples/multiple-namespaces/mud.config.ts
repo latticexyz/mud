@@ -20,7 +20,7 @@ export default defineWorld({
         },
       },
     },
-    somePlugin: {
+    scoreboard: {
       tables: {
         Score: {
           schema: {

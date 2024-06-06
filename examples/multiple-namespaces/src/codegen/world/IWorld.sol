@@ -8,7 +8,7 @@ import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.
 import { game__IMoveSystem } from "./game__IMoveSystem.sol";
 import { game__IVictorySystem } from "./game__IVictorySystem.sol";
 import { hacker__IVictorySystem } from "./hacker__IVictorySystem.sol";
-import { somePlugin__IScoreSystem } from "./somePlugin__IScoreSystem.sol";
+import { scoreboard__IScoreSystem } from "./scoreboard__IScoreSystem.sol";
 
 /**
  * @title IWorld
@@ -22,5 +22,5 @@ interface IWorld is
   game__IMoveSystem,
   game__IVictorySystem,
   hacker__IVictorySystem,
-  somePlugin__IScoreSystem
+  scoreboard__IScoreSystem
 {}

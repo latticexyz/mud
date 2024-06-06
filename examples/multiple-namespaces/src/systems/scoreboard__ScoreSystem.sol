@@ -3,12 +3,12 @@ pragma solidity >=0.8.24;
 import { System } from "@latticexyz/world/src/System.sol";
 
 import { Position, PositionData } from "../codegen/game/tables/Position.sol";
-import { Score } from "../codegen/somePlugin/tables/Score.sol";
+import { Score } from "../codegen/scoreboard/tables/Score.sol";
 
 int32 constant goalX = 4;
 int32 constant goalY = 2;
 
-contract somePlugin__ScoreSystem is System {
+contract scoreboard__ScoreSystem is System {
   function increaseScore() public {
     address player = _msgSender();
 
