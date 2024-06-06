@@ -43,7 +43,7 @@ export function validateWorld(world: unknown): asserts world is WorldInput {
 
   if (hasOwnKey(world, "namespaces") && isObject(world.namespaces)) {
     if (hasOwnKey(world, "namespace")) {
-      throw new Error(`Cannot use both the namespace and namespaces keys`);
+      throw new Error(`\`Can only use \`namespaces\` with \`namespace\`, \`tables\`, or \`systems\` keys.`);
     }
     for (const namespace of Object.values(world.namespaces)) {
       if (hasOwnKey(namespace, "tables")) {
