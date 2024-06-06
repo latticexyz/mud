@@ -19,19 +19,7 @@ export type SystemInput = {
   systemId?: Hex;
   /** Filename of the system. Defaults to `{namespace}__{name}System.sol`. */
   filename?: string;
-  /**
-   * Register function selectors for the system in the World.
-   * Defaults to true.
-   * Note:
-   * - For root systems all World function selectors will correspond to the system's function selectors.
-   * - For non-root systems, the World function selectors will be <namespace>__<function>.
-   */
-  registerFunctionSelectors?: boolean;
-  /** If openAccess is true, any address can call the system */
-  openAccess?: boolean;
-  /** An array of addresses or system names that can access the system */
-  accessList?: readonly string[];
-  deploy: SystemDeployInput;
+  deploy?: SystemDeployInput;
 };
 
 export type SystemsInput = {

@@ -26,13 +26,6 @@ export type Module = {
 
 export type SystemDeploy = {
   readonly disabled: boolean;
-};
-
-export type System = {
-  readonly namespace: string;
-  readonly name: string;
-  readonly systemId: Hex;
-  readonly filename: string;
   /**
    * Register function selectors for the system in the World.
    * Defaults to true.
@@ -45,6 +38,13 @@ export type System = {
   readonly openAccess: boolean;
   /** An array of addresses or system names that can access the system */
   readonly accessList: readonly string[];
+};
+
+export type System = {
+  readonly namespace: string;
+  readonly name: string;
+  readonly systemId: Hex;
+  readonly filename: string;
   readonly deploy: SystemDeploy;
 };
 
