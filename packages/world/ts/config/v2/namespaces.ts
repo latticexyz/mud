@@ -28,6 +28,16 @@ export type validateNamespace<namespace, scope extends Scope = AbiTypeScope> = {
       : ErrorMessage<`\`${key & string}\` is not a valid namespace config option.`>;
 };
 
+export function validateNamespace<scope extends Scope = AbiTypeScope>(
+  namespace: unknown,
+  scope: scope,
+): asserts namespace is NamespaceInput {
+  if (!hasOwnKey(namespace, "tables")) {
+    throw new Error(`Expected namespace config, received ${JSON.stringify(namespace)}`);
+  }
+  validateTables(namespace.tables, scope);
+}
+
 export type validateNamespaces<namespaces, scope extends Scope = AbiTypeScope> = {
   [namespace in keyof namespaces]: validateNamespace<namespaces[namespace], scope>;
 };
@@ -38,10 +48,7 @@ export function validateNamespaces<scope extends Scope = AbiTypeScope>(
 ): asserts namespaces is NamespacesInput {
   if (isObject(namespaces)) {
     for (const namespace of Object.values(namespaces)) {
-      if (!hasOwnKey(namespace, "tables")) {
-        throw new Error(`Expected namespace config, received ${JSON.stringify(namespace)}`);
-      }
-      validateTables(namespace.tables, scope);
+      validateNamespace(namespace, scope);
     }
     return;
   }
