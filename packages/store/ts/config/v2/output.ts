@@ -59,6 +59,7 @@ export type Codegen = {
    */
   // TODO: move `namespaces` key handling into store so we can conditionally turn this on/off
   readonly namespaceDirectories: boolean;
+  // @deprecated import table libraries from their individual files instead */
   readonly indexFilename: string | false;
 };
 
