@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import fs from "node:fs";
-import WorldAbi from "../out/IBaseWorld.sol/IBaseWorld.abi.json";
+import WorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { formatAbi } from "abitype";
 import { protocolVersions } from "./protocolVersions";
 

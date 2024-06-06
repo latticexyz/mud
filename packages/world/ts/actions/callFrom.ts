@@ -22,7 +22,7 @@ import {
   encodeKey,
 } from "@latticexyz/protocol-parser/internal";
 import worldConfig from "../../mud.config";
-import IStoreReadAbi from "../../out/IStoreRead.sol/IStoreRead.abi.json";
+import IStoreReadAbi from "@latticexyz/world/out/IStoreRead.sol/IStoreRead.abi.json";
 
 // Accepts either `worldFunctionToSystemFunction` or `publicClient`, but not both.
 type CallFromParameters = CallFromFunctionParameters | CallFromClientParameters;

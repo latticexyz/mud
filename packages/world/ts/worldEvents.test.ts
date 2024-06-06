@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import IWorldFactoryAbi from "../out/IWorldFactory.sol/IWorldFactory.abi.json";
-import IBaseWorldAbi from "../out/IBaseWorld.sol/IBaseWorld.abi.json";
+import IWorldFactoryAbi from "@latticexyz/world/out/IWorldFactory.sol/IWorldFactory.abi.json";
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { helloWorldEvent, worldDeployedEvent } from "./worldEvents";
 import { parseAbiItem, AbiEvent } from "abitype";
 
