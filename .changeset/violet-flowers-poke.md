@@ -1,5 +1,4 @@
 ---
-"@latticexyz/store": patch
 "@latticexyz/world": patch
 ---
 
