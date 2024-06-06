@@ -353,4 +353,32 @@ describe("defineWorldWithShorthands", () => {
 
     defineWorldWithShorthands(config);
   });
+
+  it("should throw with an invalid namespace config option", () => {
+    attest(() =>
+      defineWorldWithShorthands({
+        namespaces: {
+          ExampleNamespace: {
+            tables: {
+              // @ts-expect-error Type '"number"' is not assignable to type 'AbiType'.
+              ExampleTable: "number",
+            },
+          },
+        },
+      }),
+    ).type.errors(`Type '"number"' is not assignable to type 'AbiType'.`);
+  });
+
+  it("should throw with a non-existent namespace config option", () => {
+    attest(() =>
+      defineWorldWithShorthands({
+        namespaces: {
+          ExampleNamespace: {
+            // @ts-expect-error Type 'true' is not assignable to type '"`blah` is not a valid namespace config option.
+            blah: true,
+          },
+        },
+      }),
+    ).type.errors("`blah` is not a valid namespace config option.");
+  });
 });
