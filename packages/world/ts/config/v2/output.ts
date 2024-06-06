@@ -1,5 +1,6 @@
 import { Store } from "@latticexyz/store";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
+import { Hex } from "viem";
 
 export type Module = {
   /**
@@ -23,9 +24,14 @@ export type Module = {
   readonly artifactPath: string | undefined;
 };
 
+export type SystemDeploy = {
+  readonly disabled: boolean;
+};
+
 export type System = {
-  /** The name of the system contract. Becomes part of the `systemId`. */
+  readonly namespace: string;
   readonly name: string;
+  readonly systemId: Hex;
   /**
    * Register function selectors for the system in the World.
    * Defaults to true.
@@ -38,6 +44,7 @@ export type System = {
   readonly openAccess: boolean;
   /** An array of addresses or system names that can access the system */
   readonly accessList: readonly string[];
+  readonly deploy: SystemDeploy;
 };
 
 export type Systems = { readonly [key: string]: System };

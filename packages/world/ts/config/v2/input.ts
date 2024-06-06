@@ -1,10 +1,22 @@
 import { evaluate } from "@arktype/util";
-import { StoreInput, StoreWithShorthandsInput } from "@latticexyz/store/config/v2";
+import {
+  NamespaceInput as StoreNamespaceInput,
+  StoreInput,
+  StoreWithShorthandsInput,
+} from "@latticexyz/store/config/v2";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
+import { SystemDeploy } from "./output";
+import { Hex } from "viem";
+
+export type SystemDeployInput = Partial<SystemDeploy>;
 
 export type SystemInput = {
-  /** The full resource selector consists of namespace and name */
+  /** Override the system namespace if different from the config key or filename. */
+  namespace?: string;
+  /** Override the system name if different from the config key or filename. */
   name?: string;
+  /** Override the system ID. Defaults to resource ID from system namespace and name. */
+  systemId?: Hex;
   /**
    * Register function selectors for the system in the World.
    * Defaults to true.
@@ -17,6 +29,7 @@ export type SystemInput = {
   openAccess?: boolean;
   /** An array of addresses or system names that can access the system */
   accessList?: readonly string[];
+  deploy: SystemDeployInput;
 };
 
 export type SystemsInput = { [key: string]: SystemInput };
@@ -79,31 +92,38 @@ export type CodegenInput = {
   worldImportPath?: string;
 };
 
-export type WorldInput = evaluate<
-  StoreInput & {
-    namespaces?: NamespacesInput;
-    /**
-     * Contracts named *System will be deployed by default
-     * as public systems at `namespace/ContractName`, unless overridden
-     *
-     * The key is the system name (capitalized).
-     * The value is a SystemConfig object.
-     */
-    systems?: SystemsInput;
-    /** System names to exclude from automatic deployment */
-    excludeSystems?: readonly string[];
-    /** Modules to in the World */
-    modules?: readonly ModuleInput[];
-    /** Deploy config */
-    deploy?: DeployInput;
-    /** Codegen config */
-    codegen?: CodegenInput;
-  }
->;
+export type NamespaceInput = StoreNamespaceInput & {
+  /**
+   * Contracts named *System will be deployed by default
+   * as public systems at `namespace/ContractName`, unless overridden
+   *
+   * The key is the system name (capitalized).
+   * The value is a SystemConfig object.
+   */
+  systems?: SystemsInput;
+};
+
+export type SingleNamespaceInput = { namespace?: string } & NamespaceInput;
 
 export type NamespacesInput = { [key: string]: NamespaceInput };
 
-export type NamespaceInput = Pick<StoreInput, "tables">;
+export type WorldInput = evaluate<
+  StoreInput &
+    SingleNamespaceInput & {
+      namespaces?: NamespacesInput;
+      /**
+       * System names to exclude from automatic deployment.
+       * @deprecated Use `deploy: { disabled: true }` within your system config instead.
+       */
+      excludeSystems?: readonly string[];
+      /** Modules to in the World */
+      modules?: readonly ModuleInput[];
+      /** Deploy config */
+      deploy?: DeployInput;
+      /** Codegen config */
+      codegen?: CodegenInput;
+    }
+>;
 
 /******** Variations with shorthands ********/
 
