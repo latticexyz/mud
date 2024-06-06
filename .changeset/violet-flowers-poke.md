@@ -3,9 +3,9 @@
 "@latticexyz/world": patch
 ---
 
-Enabled the `namespaces` key in the config. This enables declaring resources in different namespaces in a single MUD config.
+You can now configure resources (tables, systems, etc.) across multiple namespaces in a single MUD config using the `namespaces` option.
 
-For example:
+Note that once you start using `namespaces` config option, you will need to move your existing tables, systems, etc. under the corresponding namespace within `namespaces`.
 
 ```ts
 export default defineWorld({
