@@ -57,8 +57,7 @@ export type validateNamespacesWithShorthands<namespaces, scope extends Scope = A
   [namespace in keyof namespaces]: {
     [key in keyof namespaces[namespace]]: key extends "tables"
       ? validateTablesWithShorthands<namespaces[namespace][key], scope>
-      : // TODO: this seems wrong? calling validateNamespaces with a specific namespace input?
-        validateNamespaces<namespaces[namespace], scope>[key];
+      : validateNamespaces<namespaces[namespace], scope>[key];
   };
 };
 
