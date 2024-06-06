@@ -7,9 +7,13 @@ import { MudTest } from "@latticexyz/world/test/MudTest.t.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { Position, PositionData } from "../src/codegen/game/tables/Position.sol";
 
+address constant player = 0x44bDf8F1ada1D72c2CA157563b8deee97c0C8847;
+
 contract PositionTest is MudTest {
-  function testPosition(address player, int32 x, int32 y) public {
-    IWorld(worldAddress).game__move(player, x, y);
+  function testPosition(int32 x, int32 y) public {
+    vm.prank(player);
+    IWorld(worldAddress).game__move(x, y);
+
     PositionData memory position = Position.get(player);
     assertEq(position.x, x);
     assertEq(position.y, y);

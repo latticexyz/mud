@@ -7,20 +7,27 @@ import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
 import { ResourceId, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { Score } from "../src/codegen/somePlugin/tables/Score.sol";
+import { Score } from "../src/codegen/game/tables/Score.sol";
 
-contract ScoreGameTest is MudTest {
+contract ScoreTest is MudTest {
   using WorldResourceIdInstance for ResourceId;
 
-  function testScore(address player) public {
+  function testScoreGame(address player) public {
+    IWorld(worldAddress).game__score(player);
+
+    uint256 score = Score.get(player);
+    assertEq(score, 1);
+  }
+
+  function testScoreHacker(address player) public {
     // The system call fails because it attempts to modify a table in a different namespace
     vm.expectRevert(
       abi.encodeWithSelector(
         IWorldErrors.World_AccessDenied.selector,
         Score._tableId.toString(),
-        0x06a818A2c007BA5E3F26d00Fc2FCB9d4ff03f18B
+        0x737Df845247EDb7934702753c329bcB5984B8950
       )
     );
-    IWorld(worldAddress).game__score(player);
+    IWorld(worldAddress).hacker__score(player);
   }
 }

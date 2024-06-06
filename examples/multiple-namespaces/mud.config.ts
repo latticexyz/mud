@@ -4,13 +4,6 @@ export default defineWorld({
   namespaces: {
     game: {
       tables: {
-        Health: {
-          schema: {
-            player: "address",
-            value: "uint32",
-          },
-          key: ["player"],
-        },
         Position: {
           schema: {
             player: "address",
@@ -19,22 +12,10 @@ export default defineWorld({
           },
           key: ["player"],
         },
-      },
-    },
-    gameFork: {
-      tables: {
-        Health: {
+        Score: {
           schema: {
             player: "address",
-            value: "uint32",
-          },
-          key: ["player"],
-        },
-        Position: {
-          schema: {
-            player: "address",
-            x: "int32",
-            y: "int32",
+            score: "uint256",
           },
           key: ["player"],
         },
@@ -42,10 +23,28 @@ export default defineWorld({
     },
     somePlugin: {
       tables: {
+        Victory: {
+          schema: {
+            value: "bool",
+          },
+          key: [],
+        },
+      },
+    },
+    gameFork: {
+      tables: {
+        Position: {
+          schema: {
+            player: "address",
+            x: "int32",
+            y: "int32",
+          },
+          key: ["player"],
+        },
         Score: {
           schema: {
             player: "address",
-            value: "uint256",
+            score: "uint256",
           },
           key: ["player"],
         },
