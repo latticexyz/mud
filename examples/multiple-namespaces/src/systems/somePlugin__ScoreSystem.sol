@@ -3,18 +3,18 @@ pragma solidity >=0.8.24;
 import { System } from "@latticexyz/world/src/System.sol";
 
 import { Position, PositionData } from "../codegen/game/tables/Position.sol";
-import { Victory } from "../codegen/somePlugin/tables/Victory.sol";
+import { Score } from "../codegen/somePlugin/tables/Score.sol";
 
 int32 constant goalX = 4;
 int32 constant goalY = 2;
 
-contract somePlugin__VictorySystem is System {
-  function increaseVictory() public {
+contract somePlugin__ScoreSystem is System {
+  function increaseScore() public {
     address player = _msgSender();
 
     PositionData memory position = Position.get(player);
     require(position.x == goalX && position.y == goalY, "must be at goal");
 
-    Victory.set(true);
+    Score.set(player, Score.get(player) + 1);
   }
 }

@@ -12,22 +12,22 @@ export default defineWorld({
           },
           key: ["player"],
         },
+        Victory: {
+          schema: {
+            value: "bool",
+          },
+          key: [],
+        },
+      },
+    },
+    somePlugin: {
+      tables: {
         Score: {
           schema: {
             player: "address",
             score: "uint256",
           },
           key: ["player"],
-        },
-      },
-    },
-    somePlugin: {
-      tables: {
-        Victory: {
-          schema: {
-            value: "bool",
-          },
-          key: [],
         },
       },
     },
@@ -41,12 +41,11 @@ export default defineWorld({
           },
           key: ["player"],
         },
-        Score: {
+        Victory: {
           schema: {
-            player: "address",
-            score: "uint256",
+            value: "bool",
           },
-          key: ["player"],
+          key: [],
         },
       },
     },

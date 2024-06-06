@@ -6,9 +6,9 @@ pragma solidity >=0.8.24;
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 
 import { game__IMoveSystem } from "./game__IMoveSystem.sol";
-import { game__IScoreSystem } from "./game__IScoreSystem.sol";
-import { hacker__IScoreSystem } from "./hacker__IScoreSystem.sol";
-import { somePlugin__IVictorySystem } from "./somePlugin__IVictorySystem.sol";
+import { game__IVictorySystem } from "./game__IVictorySystem.sol";
+import { hacker__IVictorySystem } from "./hacker__IVictorySystem.sol";
+import { somePlugin__IScoreSystem } from "./somePlugin__IScoreSystem.sol";
 
 /**
  * @title IWorld
@@ -20,7 +20,7 @@ import { somePlugin__IVictorySystem } from "./somePlugin__IVictorySystem.sol";
 interface IWorld is
   IBaseWorld,
   game__IMoveSystem,
-  game__IScoreSystem,
-  hacker__IScoreSystem,
-  somePlugin__IVictorySystem
+  game__IVictorySystem,
+  hacker__IVictorySystem,
+  somePlugin__IScoreSystem
 {}
