@@ -11,12 +11,14 @@ import { Hex } from "viem";
 export type SystemDeployInput = Partial<SystemDeploy>;
 
 export type SystemInput = {
-  /** Override the system namespace if different from the config key or filename. */
+  /** System namespace. Defaults to root namespace. */
   namespace?: string;
-  /** Override the system name if different from the config key or filename. */
-  name?: string;
+  /** System name. */
+  name: string;
   /** Override the system ID. Defaults to resource ID from system namespace and name. */
   systemId?: Hex;
+  /** Filename of the system. Defaults to `{namespace}__{name}System.sol`. */
+  filename?: string;
   /**
    * Register function selectors for the system in the World.
    * Defaults to true.
@@ -32,7 +34,12 @@ export type SystemInput = {
   deploy: SystemDeployInput;
 };
 
-export type SystemsInput = { [key: string]: SystemInput };
+export type SystemsInput = {
+  /**
+   * `key` corresponds to the system name being registered.
+   */
+  readonly [key: string]: Omit<SystemInput, "namespace" | "name">;
+};
 
 type ModuleInputArtifactPath =
   | {
