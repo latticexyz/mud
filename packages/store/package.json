@@ -44,6 +44,9 @@
       ],
       "register": [
         "./dist/register.d.ts"
+      ],
+      "*.json": [
+        "./*.json.d.ts"
       ]
     }
   },

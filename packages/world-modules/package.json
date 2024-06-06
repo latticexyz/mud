@@ -20,6 +20,9 @@
     "*": {
       "internal/mud.config": [
         "./dist/mud.config.d.ts"
+      ],
+      "*.json": [
+        "./*.json.d.ts"
       ]
     }
   },

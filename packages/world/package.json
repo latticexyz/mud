@@ -40,6 +40,9 @@
       ],
       "node": [
         "./dist/node.d.ts"
+      ],
+      "*.json": [
+        "./*.json.d.ts"
       ]
     }
   },
