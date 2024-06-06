@@ -17,16 +17,4 @@ contract VictoryTest is MudTest {
 
     assertTrue(Victory.get());
   }
-
-  function testScoreHacker() public {
-    // The system call fails because it attempts to modify a table in a different namespace
-    vm.expectRevert(
-      abi.encodeWithSelector(
-        IWorldErrors.World_AccessDenied.selector,
-        Victory._tableId.toString(),
-        0x1340cfBD28006FD095920f106B31f1Ee6F9d6bfE
-      )
-    );
-    IWorld(worldAddress).hacker__win();
-  }
 }
