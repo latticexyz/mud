@@ -3,7 +3,7 @@
   "compilerOptions": {
     // needed to ensure tests like those in packages/world/ts/encodeSystemCall.test.ts
     // resolve narrowed types from .d.ts as opposed to widened ones from abi.json
-    "resolveJsonModule": false,
+    // "resolveJsonModule": false,
     "lib": ["ESNext", "DOM"],
     "outDir": "dist"
   },

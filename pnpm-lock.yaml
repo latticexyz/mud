@@ -190,6 +190,9 @@ importers:
         specifier: ^4.5.2
         version: 4.5.2(@types/react@18.2.22)(react@18.2.0)
     devDependencies:
+      '@arktype/util':
+        specifier: 0.0.43
+        version: 0.0.43
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.7
@@ -14950,7 +14953,7 @@ snapshots:
   are-we-there-yet@3.0.1:
     dependencies:
       delegates: 1.0.0
-      readable-stream: 3.6.0
+      readable-stream: 3.6.2
 
   arg@5.0.2: {}
 
@@ -20208,7 +20211,7 @@ snapshots:
       end-of-stream: 1.4.4
       fs-constants: 1.0.0
       inherits: 2.0.4
-      readable-stream: 3.6.0
+      readable-stream: 3.6.2
 
   tar@6.2.0:
     dependencies:

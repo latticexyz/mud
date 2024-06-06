@@ -30,16 +30,19 @@ export function useRecord<table extends Table>({
       : {},
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const data = result.data as any;
+
   return {
     ...result,
     record:
-      table && key && result.data != null
+      table && key && data != null
         ? {
             ...key,
             ...decodeValueArgs(getSchemaTypes(getValueSchema(table)), {
-              staticData: result.data[0],
-              encodedLengths: result.data[1],
-              dynamicData: result.data[2],
+              staticData: data[0],
+              encodedLengths: data[1],
+              dynamicData: data[2],
             }),
           }
         : undefined,
