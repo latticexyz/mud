@@ -2,6 +2,7 @@ import { AccountKitGlobal } from "../common";
 import { version } from "../../package.json";
 import { defaultChains } from "../core/defaultChains";
 import { init } from "./init";
+import { createPostMessageAccount } from "../isolated-signer/postMessageAccount";
 
 console.log(`MUD Account Kit version ${version}`);
 
@@ -29,3 +30,8 @@ if (window.AccountKit) {
     init,
   });
 }
+
+createPostMessageAccount().then(async (account) => {
+  console.log("got account", account);
+  console.log("signed", await account.signMessage({ message: "hello" }));
+});

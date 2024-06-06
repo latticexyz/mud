@@ -7,3 +7,5 @@ procs:
     shell: anvil --block-time 2 --load-state playground/anvil-state.json
   mock-cdn:
     shell: npx -y http-server dist/global -c-1
+  sandbox:
+    shell: pnpm vite dev sandbox
