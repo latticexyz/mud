@@ -43,7 +43,7 @@ export function validateWorld(world: unknown): asserts world is WorldInput {
   validateStore(world);
 
   if (hasOwnKey(world, "namespaces") && isObject(world.namespaces)) {
-    if (hasOwnKey(world, "namespace")) {
+    if (hasOwnKey(world, "namespace") || hasOwnKey(world, "tables") || hasOwnKey(world, "systems")) {
       throw new Error("Cannot use `namespaces` with `namespace`, `tables`, or `systems` keys.");
     }
     validateNamespaces(world.namespaces, scope);
