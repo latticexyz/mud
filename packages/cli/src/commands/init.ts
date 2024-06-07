@@ -1,10 +1,8 @@
 import type { CommandModule, InferredOptionTypes } from "yargs";
 import { loadConfig } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
-import { worldToV1 } from "@latticexyz/world/config/v2";
 import { getRpcUrl } from "@latticexyz/common/foundry";
 import { Hex, createWalletClient, http } from "viem";
-import chalk from "chalk";
 import { getWorldDeploy } from "../deploy/getWorldDeploy";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { getChainId } from "viem/actions";
@@ -20,9 +18,9 @@ const verifyOptions = {
 type Options = InferredOptionTypes<typeof verifyOptions>;
 
 const commandModule: CommandModule<Options, Options> = {
-  command: "generate-worlds",
+  command: "init",
 
-  describe: "Generate worlds.json from a given World address",
+  describe: "Populates the local project with the MUD artefacts for a given World.",
 
   builder(yargs) {
     return yargs.options(verifyOptions);
@@ -31,11 +29,7 @@ const commandModule: CommandModule<Options, Options> = {
   async handler(opts) {
     const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
 
-    const configV2 = (await loadConfig(opts.configPath)) as WorldConfig;
-    const config = worldToV1(configV2);
-    if (opts.printConfig) {
-      console.log(chalk.green("\nResolved config:\n"), JSON.stringify(config, null, 2));
-    }
+    const config = (await loadConfig(opts.configPath)) as WorldConfig;
 
     const rpc = opts.rpc ?? (await getRpcUrl(profile));
 
@@ -52,14 +46,16 @@ const commandModule: CommandModule<Options, Options> = {
 
     const chainId = await getChainId(client);
 
-    const deploys = existsSync(config.worldsFile) ? JSON.parse(readFileSync(config.worldsFile, "utf-8")) : {};
+    const deploys = existsSync(config.deploy.worldsFile)
+      ? JSON.parse(readFileSync(config.deploy.worldsFile, "utf-8"))
+      : {};
     deploys[chainId] = {
       address: deploymentInfo.worldAddress,
       // We expect the worlds file to be committed and since local deployments are often
       // a consistent address but different block number, we'll ignore the block number.
       blockNumber: localChains.includes(chainId) ? undefined : deploymentInfo.blockNumber,
     };
-    writeFileSync(config.worldsFile, JSON.stringify(deploys, null, 2));
+    writeFileSync(config.deploy.worldsFile, JSON.stringify(deploys, null, 2));
   },
 };
 
