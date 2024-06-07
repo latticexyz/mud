@@ -31,7 +31,7 @@ export type validateWorld<world> = {
         : key extends "namespaces"
           // TODO: revisit this pattern (https://github.com/latticexyz/mud/pull/2898)
           ? world extends { namespace?: unknown; tables?: unknown; systems?: unknown }
-            ? ErrorMessage<`\`Can only use \`namespaces\` with \`namespace\`, \`tables\`, or \`systems\` keys.`>
+            ? ErrorMessage<"Cannot use `namespaces` with `namespace`, `tables`, or `systems` keys.">
             : validateNamespaces<world[key], extendedScope<world>>
           : key extends keyof WorldInput
             ? conform<world[key], WorldInput[key]>
@@ -44,7 +44,7 @@ export function validateWorld(world: unknown): asserts world is WorldInput {
 
   if (hasOwnKey(world, "namespaces") && isObject(world.namespaces)) {
     if (hasOwnKey(world, "namespace")) {
-      throw new Error(`\`Can only use \`namespaces\` with \`namespace\`, \`tables\`, or \`systems\` keys.`);
+      throw new Error("Cannot use `namespaces` with `namespace`, `tables`, or `systems` keys.");
     }
     validateNamespaces(world.namespaces, scope);
   }

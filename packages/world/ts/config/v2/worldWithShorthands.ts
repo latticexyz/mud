@@ -35,7 +35,7 @@ export type validateWorldWithShorthands<world> = {
     ? validateTablesWithShorthands<world[key], extendedScope<world>>
     : key extends "namespaces"
       ? world extends { namespace?: unknown; tables?: unknown; systems?: unknown }
-        ? ErrorMessage<`\`Can only use \`namespaces\` with \`namespace\`, \`tables\`, or \`systems\` keys.`>
+        ? ErrorMessage<`Cannot use \`namespaces\` with \`namespace\`, \`tables\`, or \`systems\` keys.`>
         : validateNamespacesWithShorthands<world[key], extendedScope<world>>
       : validateWorld<world>[key];
 };
