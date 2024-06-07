@@ -6,7 +6,7 @@ import {
 } from "@latticexyz/schema-type/deprecated";
 import { parseStaticArray } from "@latticexyz/config/library";
 import { ImportDatum, RenderType, SolidityUserDefinedType } from "@latticexyz/common/codegen";
-import { StoreConfig } from "../config";
+import { Store as StoreConfig } from "../config/v2/output";
 
 /**
  * Resolve an abi or user type into a SchemaType and RenderType
@@ -79,7 +79,7 @@ export function importForAbiOrUserType(
   // other user types
   return {
     symbol: abiOrUserType,
-    fromPath: config.userTypesFilename,
+    fromPath: config.codegen.userTypesFilename,
     usedInPath: usedInDirectory,
   };
 }

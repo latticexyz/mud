@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/world-modules",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "description": "World modules",
   "repository": {
     "type": "git",
@@ -13,10 +13,16 @@
     "./internal/mud.config": "./dist/mud.config.js",
     "./out/*": "./out/*"
   },
+  "typesVersions": {
+    "*": {
+      "internal/mud.config": [
+        "./dist/mud.config.d.ts"
+      ]
+    }
+  },
   "files": [
     "dist",
     "out",
-    "foundry.toml",
     "src"
   ],
   "scripts": {

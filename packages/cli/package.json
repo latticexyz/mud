@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/cli",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "description": "Command line interface for mud",
   "repository": {
     "type": "git",
@@ -11,6 +11,13 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js"
+  },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ]
+    }
   },
   "bin": {
     "mud": "./dist/mud.js"
