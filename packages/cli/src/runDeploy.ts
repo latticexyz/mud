@@ -1,5 +1,3 @@
-import path from "node:path";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { InferredOptionTypes, Options } from "yargs";
 import { deploy } from "./deploy/deploy";
 import { createWalletClient, http, Hex, isHex } from "viem";
@@ -11,14 +9,12 @@ import { getOutDirectory, getRpcUrl, getSrcDirectory } from "@latticexyz/common/
 import chalk from "chalk";
 import { MUDError } from "@latticexyz/common/errors";
 import { resolveConfig } from "./deploy/resolveConfig";
-import { getChainId } from "viem/actions";
 import { postDeploy } from "./utils/postDeploy";
 import { WorldDeploy } from "./deploy/common";
 import { build } from "./build";
 import { kmsKeyToAccount } from "@latticexyz/common/kms";
 import { configToModules } from "./deploy/configToModules";
-
-export const localChains = [1337, 31337];
+import { writeDeploymentResult } from "./utils/writeDeploymentResult";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the MUD config file" },
@@ -156,24 +152,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   };
 
   if (opts.saveDeployment) {
-    const chainId = await getChainId(client);
-    const deploysDir = path.join(config.deploysDirectory, chainId.toString());
-    mkdirSync(deploysDir, { recursive: true });
-    writeFileSync(path.join(deploysDir, "latest.json"), JSON.stringify(deploymentInfo, null, 2));
-    writeFileSync(path.join(deploysDir, Date.now() + ".json"), JSON.stringify(deploymentInfo, null, 2));
-
-    const deploys = existsSync(config.worldsFile) ? JSON.parse(readFileSync(config.worldsFile, "utf-8")) : {};
-    deploys[chainId] = {
-      address: deploymentInfo.worldAddress,
-      // We expect the worlds file to be committed and since local deployments are often
-      // a consistent address but different block number, we'll ignore the block number.
-      blockNumber: localChains.includes(chainId) ? undefined : deploymentInfo.blockNumber,
-    };
-    writeFileSync(config.worldsFile, JSON.stringify(deploys, null, 2));
-
-    console.log(
-      chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${config.worldsFile} and ${deploysDir}): \n`)),
-    );
+    writeDeploymentResult({ client, config: configV2, deploymentInfo });
   }
 
   console.log(deploymentInfo);

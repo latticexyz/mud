@@ -4,9 +4,7 @@ import { World as WorldConfig } from "@latticexyz/world";
 import { getRpcUrl } from "@latticexyz/common/foundry";
 import { Hex, createWalletClient, http } from "viem";
 import { getWorldDeploy } from "../deploy/getWorldDeploy";
-import { existsSync, readFileSync, writeFileSync } from "fs";
-import { getChainId } from "viem/actions";
-import { localChains } from "../runDeploy";
+import { writeDeploymentResult } from "../utils/writeDeploymentResult";
 
 const verifyOptions = {
   configPath: { type: "string", desc: "Path to the MUD config file" },
@@ -44,18 +42,7 @@ const commandModule: CommandModule<Options, Options> = {
       blockNumber: Number(worldDeploy.deployBlock),
     };
 
-    const chainId = await getChainId(client);
-
-    const deploys = existsSync(config.deploy.worldsFile)
-      ? JSON.parse(readFileSync(config.deploy.worldsFile, "utf-8"))
-      : {};
-    deploys[chainId] = {
-      address: deploymentInfo.worldAddress,
-      // We expect the worlds file to be committed and since local deployments are often
-      // a consistent address but different block number, we'll ignore the block number.
-      blockNumber: localChains.includes(chainId) ? undefined : deploymentInfo.blockNumber,
-    };
-    writeFileSync(config.deploy.worldsFile, JSON.stringify(deploys, null, 2));
+    writeDeploymentResult({ client, config, deploymentInfo });
   },
 };
 
