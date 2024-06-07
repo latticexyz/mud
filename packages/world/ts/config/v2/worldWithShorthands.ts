@@ -48,6 +48,9 @@ function validateWorldWithShorthands(world: unknown): asserts world is WorldWith
   }
 
   if (hasOwnKey(world, "namespaces") && isObject(world.namespaces)) {
+    if (hasOwnKey(world, "namespace") || hasOwnKey(world, "tables") || hasOwnKey(world, "systems")) {
+      throw new Error("Cannot use `namespaces` with `namespace`, `tables`, or `systems` keys.");
+    }
     for (const namespaceKey of Object.keys(world.namespaces)) {
       validateTablesWithShorthands(getPath(world.namespaces, [namespaceKey, "tables"]) ?? {}, scope);
     }

@@ -11,7 +11,6 @@ import {
   Store,
   hasOwnKey,
   validateStore,
-  isObject,
 } from "@latticexyz/store/config/v2";
 import { SystemsInput, WorldInput } from "./input";
 import { CONFIG_DEFAULTS, MODULE_DEFAULTS } from "./defaults";
@@ -42,7 +41,7 @@ export function validateWorld(world: unknown): asserts world is WorldInput {
   const scope = extendedScope(world);
   validateStore(world);
 
-  if (hasOwnKey(world, "namespaces") && isObject(world.namespaces)) {
+  if (hasOwnKey(world, "namespaces")) {
     if (hasOwnKey(world, "namespace") || hasOwnKey(world, "tables") || hasOwnKey(world, "systems")) {
       throw new Error("Cannot use `namespaces` with `namespace`, `tables`, or `systems` keys.");
     }
