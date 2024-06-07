@@ -93,7 +93,6 @@ export type WorldInput = evaluate<
     /**
      * System names to exclude from automatic deployment
      */
-    // TODO: move this to systems.System.deploy.disabled
     excludeSystems?: readonly string[];
     /** Modules to install in the World */
     modules?: readonly ModuleInput[];
