@@ -34,8 +34,8 @@ export type validateWorldWithShorthands<world> = {
   [key in keyof world]: key extends "tables"
     ? validateTablesWithShorthands<world[key], extendedScope<world>>
     : key extends "namespaces"
-      // TODO: revisit this pattern (https://github.com/latticexyz/mud/pull/2898)
-      ? world extends { namespace?: unknown; tables?: unknown; systems?: unknown }
+      ? // TODO: revisit this pattern (https://github.com/latticexyz/mud/pull/2898)
+        world extends { namespace?: unknown; tables?: unknown; systems?: unknown }
         ? ErrorMessage<`Cannot use \`namespaces\` with \`namespace\`, \`tables\`, or \`systems\` keys.`>
         : validateNamespacesWithShorthands<world[key], extendedScope<world>>
       : validateWorld<world>[key];
