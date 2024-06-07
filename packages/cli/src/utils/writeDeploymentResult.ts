@@ -3,8 +3,9 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import path from "path";
 import { WalletClient } from "viem";
 import { getChainId } from "viem/actions";
-import { localChains } from "../common";
 import chalk from "chalk";
+
+const localChains = [1337, 31337];
 
 export async function writeDeploymentResult({
   client,
