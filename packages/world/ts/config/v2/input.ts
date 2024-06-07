@@ -92,7 +92,6 @@ export type WorldInput = evaluate<
     systems?: SystemsInput;
     /**
      * System names to exclude from automatic deployment
-     * @deprecated
      */
     // TODO: move this to systems.System.deploy.disabled
     excludeSystems?: readonly string[];
