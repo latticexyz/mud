@@ -29,6 +29,7 @@ export type validateWorld<world> = {
       : key extends "enums"
         ? narrow<world[key]>
         : key extends "namespaces"
+          // TODO: revisit this pattern (https://github.com/latticexyz/mud/pull/2898)
           ? world extends { namespace?: unknown; tables?: unknown; systems?: unknown }
             ? ErrorMessage<`\`Can only use \`namespaces\` with \`namespace\`, \`tables\`, or \`systems\` keys.`>
             : validateNamespaces<world[key], extendedScope<world>>
