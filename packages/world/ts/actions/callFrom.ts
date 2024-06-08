@@ -55,9 +55,30 @@ export function callFrom<TChain extends Chain, TAccount extends Account>(
         writeArgs.address !== params.worldAddress ||
         writeArgs.functionName === "call" ||
         writeArgs.functionName === "callFrom" ||
+        writeArgs.functionName === "batchCallFrom" ||
         writeArgs.functionName === "callWithSignature"
       ) {
         return _writeContract(writeArgs);
+      }
+
+      if (writeArgs.functionName === "batchCall") {
+        if (!writeArgs.args || !Array.isArray(writeArgs.args) || writeArgs.args.length === 0) {
+          throw new Error("batchCall args should be an array with at least one element");
+        }
+
+        const systemCallFromData = writeArgs.args[0].map((systemCallData: Hex[]) => {
+          return [params.delegatorAddress, ...systemCallData];
+        });
+
+        // Construct args for `batchCallFrom`.
+        const batchCallFromArgs: typeof writeArgs = {
+          ...writeArgs,
+          functionName: "batchCallFrom",
+          args: [systemCallFromData],
+        };
+
+        // Call `writeContract` with the new args.
+        return getAction(client, writeContract, "writeContract")(batchCallFromArgs);
       }
 
       // Encode the World's calldata (which includes the World's function selector).
