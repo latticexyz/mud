@@ -55,7 +55,7 @@ export function apiRoutes(database: Sql): Middleware {
       // meaning it would take ~the same about of time to get an uncached response from the origin as it would to catch up from the currently cached response
       // if an uncached response takes ~10 seconds, we have ~10s to catch up, so let's say we can do enough RPC calls to fetch 4000 blocks
       // with a block per 2 seconds, that means we can serve a stale/cached response for 8000 seconds before we should require the response be returned by the origin
-      const staleWhileRevalidateSeconds = 4000 * 2;
+      const staleWhileRevalidateSeconds = 500 * 2;
 
       ctx.set(
         "CDN-Cache-Control",
