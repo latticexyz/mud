@@ -31,7 +31,8 @@ export function getTransactionResult(
         args,
         // simulation happens at the end of the block, so we need to use the previous block number
         blockNumber: receipt.blockNumber - 1n,
-        // TODO: do we need to include value, nonce, gas price, etc. to properly simulate?
+        value: tx.value,
+        // TODO: do we need to include nonce, gas price, etc. to properly simulate?
       });
     });
   }
