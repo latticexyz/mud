@@ -10,10 +10,7 @@
 /coverage
 
 # next.js
-
-# Ignore everything in the .next directory except for the standalone directory
-.next/*
-!.next/standalone/
+/.next/
 /out/
 
 # production
