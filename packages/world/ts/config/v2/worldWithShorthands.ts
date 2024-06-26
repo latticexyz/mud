@@ -62,17 +62,33 @@ export function resolveWorldWithShorthands<world extends WorldWithShorthandsInpu
   world: world,
 ): resolveWorldWithShorthands<world> {
   const scope = extendedScope(world);
-  const tables = mapObject(world.tables ?? {}, (table) => {
-    return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
-  });
-  const namespaces = mapObject(world.namespaces ?? {}, (namespace) => ({
-    ...namespace,
-    tables: mapObject(namespace.tables ?? {}, (table) => {
-      return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
-    }),
-  }));
 
-  const fullConfig = { ...world, tables, namespaces };
+  const tables =
+    world.tables != null
+      ? mapObject(world.tables, (table) => {
+          return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
+        })
+      : undefined;
+
+  const namespaces =
+    world.namespaces != null
+      ? mapObject(world.namespaces, (namespace) => ({
+          ...namespace,
+          ...(namespace.tables != null
+            ? {
+                tables: mapObject(namespace.tables, (table) => {
+                  return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
+                }),
+              }
+            : undefined),
+        }))
+      : undefined;
+
+  const fullConfig = {
+    ...world,
+    ...(tables != null ? { tables } : undefined),
+    ...(namespaces != null ? { namespaces } : undefined),
+  };
   validateWorld(fullConfig);
 
   return resolveWorld(fullConfig) as never;

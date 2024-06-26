@@ -35,6 +35,14 @@ export type TablesInput = {
 
 export type CodegenInput = Partial<Codegen>;
 
+export type NamespaceInput = {
+  tables?: TablesInput;
+};
+
+export type SingleNamespaceInput = {
+  namespace?: string;
+} & NamespaceInput;
+
 export type StoreInput = {
   /**
    * Directory of Solidity source relative to the MUD config.
@@ -43,12 +51,10 @@ export type StoreInput = {
    * Defaults to `src` to match `foundry.toml`'s default. If you change this from the default, you may also need to configure foundry with the same source directory.
    */
   readonly sourceDirectory?: string;
-  readonly namespace?: string;
-  readonly tables?: TablesInput;
   readonly userTypes?: UserTypes;
   readonly enums?: EnumsInput;
   readonly codegen?: CodegenInput;
-};
+} & SingleNamespaceInput;
 
 /******** Variations with shorthands ********/
 
@@ -58,4 +64,4 @@ export type TablesWithShorthandsInput = {
   readonly [key: string]: TableInput | TableShorthandInput;
 };
 
-export type StoreWithShorthandsInput = evaluate<Omit<StoreInput, "tables"> & { tables: TablesWithShorthandsInput }>;
+export type StoreWithShorthandsInput = evaluate<Omit<StoreInput, "tables"> & { tables?: TablesWithShorthandsInput }>;

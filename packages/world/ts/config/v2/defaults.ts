@@ -1,10 +1,17 @@
-import { CodegenInput, DeployInput, ModuleInput, SystemInput, WorldInput } from "./input";
+import { CodegenInput, DeployInput, ModuleInput, SystemDeployInput, SystemInput, WorldInput } from "./input";
 
-export const SYSTEM_DEFAULTS = {
+export const SYSTEM_DEPLOY_DEFAULTS = {
+  disabled: false,
   registerFunctionSelectors: true,
   openAccess: true,
   accessList: [],
-} as const satisfies SystemInput;
+} as const satisfies SystemDeployInput;
+
+export type SYSTEM_DEPLOY_DEFAULTS = typeof SYSTEM_DEPLOY_DEFAULTS;
+
+export const SYSTEM_DEFAULTS = {
+  deploy: SYSTEM_DEPLOY_DEFAULTS,
+} as const satisfies Pick<SystemInput, "deploy">;
 
 export type SYSTEM_DEFAULTS = typeof SYSTEM_DEFAULTS;
 
