@@ -1,0 +1,263 @@
+import { CollapseCode } from "../../../components/CollapseCode";
+
+# Use a browser wallet and other chains
+
+In this tutorial you modify a template application to use a public blockchain instead of [`anvil`](https://book.getfoundry.sh/anvil/) and use a browser wallet instead of a burner wallet managed by the application.
+The two topics are combined in a single tutorial because with public blockchains it is often easier to use a browser wallet since of funding a burner wallet, especially if you have to get the funds back.
+Approving every transaction may or may not be a problem, in many cases it isn't, and it might even ease debugging.
+
+## Setup
+
+[Create a new MUD application from the template](../../templates/typescript/getting-started).
+Use the vanilla template.
+
+```sh copy
+pnpm create mud@latest tutorial --template vanilla
+cd tutorial
+```
+
+You can also use the `react-ecs` or `threejs` templates without any changes to the tutorial.
+If you wish to use the `react` template you'll need to modify a bit to account for the use of Zustand instead of RECs.
+
+## Using a browser wallet
+
+Edit the file `packages/client/src/mud/setupNetwork.ts`.
+
+<CollapseCode>
+
+```ts filename="setupNetwork.ts" showLineNumbers {15,75-87,95,115,117} copy
+/*
+ * The MUD client code is built on top of viem
+ * (https://viem.sh/docs/getting-started.html).
+ * This line imports the functions we need from it.
+ */
+import {
+  createPublicClient,
+  fallback,
+  webSocket,
+  http,
+  createWalletClient,
+  Hex,
+  ClientConfig,
+  getContract,
+  custom,
+} from "viem";
+import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
+
+import { getNetworkConfig } from "./getNetworkConfig";
+import { world } from "./world";
+import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
+import { createBurnerAccount, transportObserver, ContractWrite } from "@latticexyz/common";
+import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
+
+import { Subject, share } from "rxjs";
+
+/*
+ * Import our MUD config, which includes strong types for
+ * our tables and other config options. We use this to generate
+ * things like RECS components and get back strong types for them.
+ *
+ * See https://mud.dev/templates/typescript/contracts#mudconfigts
+ * for the source of this information.
+ */
+import mudConfig from "contracts/mud.config";
+
+export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
+
+export async function setupNetwork() {
+  const networkConfig = await getNetworkConfig();
+
+  /*
+   * Create a viem public (read only) client
+   * (https://viem.sh/docs/clients/public.html)
+   */
+  const clientOptions = {
+    chain: networkConfig.chain,
+    transport: transportObserver(fallback([webSocket(), http()])),
+    pollingInterval: 1000,
+  } as const satisfies ClientConfig;
+
+  const publicClient = createPublicClient(clientOptions);
+
+  /*
+   * Create an observable for contract writes that we can
+   * pass into MUD dev tools for transaction observability.
+   */
+  const write$ = new Subject<ContractWrite>();
+
+  /*
+   * Create a temporary wallet and a viem client for it
+   * (see https://viem.sh/docs/clients/wallet.html).
+   */
+  /*
+  const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
+  
+  const burnerWalletClient = createWalletClient({
+    ...clientOptions,
+    account: burnerAccount,
+  })
+    .extend(transactionQueue())
+    .extend(writeObserver({ onWrite: (write) => write$.next(write) }));
+  */
+
+  const [address] = await window.ethereum.request({
+    method: "eth_requestAccounts",
+  });
+
+  const extensionWalletClient = createWalletClient({
+    ...clientOptions,
+    transport: custom(window.ethereum!),
+    account: address,
+  });
+
+  const chainId = await extensionWalletClient.getChainId();
+  if (chainId != networkConfig.chain.id) await extensionWalletClient.addChain({ chain: networkConfig.chain });
+
+  /*
+   * Create an object for communicating with the deployed World.
+   */
+  const worldContract = getContract({
+    address: networkConfig.worldAddress as Hex,
+    abi: IWorldAbi,
+    client: { public: publicClient, wallet: extensionWalletClient /* burnerWalletClient */ },
+  });
+
+  /*
+   * Sync on-chain state into RECS and keeps our client in sync.
+   * Uses the MUD indexer if available, otherwise falls back
+   * to the viem publicClient to make RPC calls to fetch MUD
+   * events from the chain.
+   */
+  const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToRecs({
+    world,
+    config: mudConfig,
+    address: networkConfig.worldAddress as Hex,
+    publicClient,
+    startBlock: BigInt(networkConfig.initialBlockNumber),
+  });
+
+  return {
+    world,
+    components,
+    playerEntity: encodeEntity({ address: "address" }, { address: extensionWalletClient.account.address }),
+    publicClient,
+    walletClient: extensionWalletClient /* burnerWalletClient, */,
+    latestBlock$,
+    storedBlockLogs$,
+    waitForTransaction,
+    worldContract,
+    write$: write$.asObservable().pipe(share()),
+  };
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```ts
+import {
+    .
+    .
+    .
+  custom,
+} from "viem";
+
+```
+
+To use a browser wallet, you need to use a [`custom`](https://viem.sh/docs/clients/transports/custom) transport.
+
+```ts
+const [address] = await window.ethereum.request({
+  method: "eth_requestAccounts",
+});
+```
+
+Request the [address list](https://viem.sh/docs/accounts/jsonRpc) from the browser extension (confusingly, also called "wallet").
+
+```ts
+const extensionWalletClient = createWalletClient({
+  ...clientOptions,
+  transport: custom(window.ethereum!),
+  account: address,
+});
+```
+
+Use [`createWalletClient`](https://viem.sh/docs/accounts/jsonRpc) to create the wallet client that uses the browser extension.
+
+```ts
+const chainId = await extensionWalletClient.getChainId();
+if (chainId != networkConfig.chain.id) await extensionWalletClient.addChain({ chain: networkConfig.chain });
+```
+
+Switch to the correct chain, add it if necessary.
+
+```ts
+  /*
+   * Create an object for communicating with the deployed World.
+   */
+  const worldContract = getContract({
+    address: networkConfig.worldAddress as Hex,
+    abi: IWorldAbi,
+    client: { public: publicClient, wallet: extensionWalletClient /* burnerWalletClient */ },
+  });
+     .
+     .
+     .
+  return {
+    world,
+    components,
+    playerEntity: encodeEntity({ address: "address" }, { address: extensionWalletClient.account.address }),
+    publicClient,
+    walletClient: extensionWalletClient, /* burnerWalletClient, */
+     latestBlock$,
+    storedBlockLogs$,
+    waitForTransaction,
+    worldContract,
+    write$: write$.asObservable().pipe(share()),
+  };
+}
+```
+
+Use our new `extensionWalletClient` instead of `burnerWalletClient`.
+
+</details>
+
+## Adding a chain
+
+Several changes are required to add a new supported chain.
+
+1. Edit the file `packages/client/src/mud/supportedChains.ts` to add the chain definition from Viem.
+   You can see [the list of chains supported by Viem](https://github.com/wevm/viem/blob/main/src/chains/index.ts).
+   If you need a different chain you can use [`defineChain`](https://viem.sh/docs/chains/introduction#custom-chains).
+
+   ```ts filename="supportedChains.ts" copy showLineNumbers {1,4}
+   import { MUDChain, mudFoundry, redstone, garnet } from "@latticexyz/common/chains";
+   import { holesky } from "viem/chains";
+
+   export const supportedChains: MUDChain[] = [mudFoundry, redstone, garnet, holesky];
+   ```
+
+1. Very often chains in Viem don't have a webSocket endpoint, only an HTTP one.
+   Edit `packages/client/src/mud/setupNetwork.ts` not to require a webSocket endpoint when there isn't one defined.
+
+   ```ts showLineNumbers {3-4}
+   const clientOptions = {
+     chain: networkConfig.chain,
+     transport: transportObserver(
+       fallback(networkConfig.chain.rpcUrls.default.webSocket ? [webSocket(), http()] : [http()]),
+     ),
+     pollingInterval: 1000,
+   } as const satisfies ClientConfig;
+   ```
+
+1. When you run the client, use both `chainId` to set the chainId and `initialBlockNumber` to set the block number where the `World` contract is deployed.
+   The initial block number is important because otherwise the client will try to synchronize from the beginning of the blockchain, which could take a long time.
+
+   For example, use the URL below to connect to the Holesky `World` at address `0x32b4156e9b073706608e3b522e3372c94efe7640`.
+
+   ```
+   http://localhost:3000/?chainid=17000&initialBlockNumber=1782097
+   ```
