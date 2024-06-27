@@ -49,6 +49,7 @@ These are the command line options you can specify on `mud deploy`:
 | `--srcDir`              | Source directory                                 | string  | Foundry `src` directory                                    |
 | `--skipBuild`           | Skip rebuilding the contracts before deploying   | boolean | `false`                                                    |
 | `--alwaysRunPostDeploy` | Run `PostDeploy.s.sol` after each deploy         | boolean | `false` (run the script only when deploying a new `World`) |
+| `--forgeScriptOptions`  | Options to provide the post-deploy forge script  | string  | Empty string                                               |
 | `--help`                | Show help                                        | boolean | `false`                                                    |
 | `--version`             | Show version number                              | boolean | `false`                                                    |
 
@@ -62,7 +63,7 @@ These are the command line options you can specify on `mud deploy`:
 
 ## Examples
 
-### New `World`
+### Deploy a new `World`
 
 To create a new `World` you can use this command line:
 
@@ -72,7 +73,13 @@ pnpm mud deploy --rpc <url>
 
 This command also writes the `World`'s address to `worlds.json`.
 
-### Upgrading a World
+#### Allow more gas for the post-deploy script
+
+```sh copy
+pnpm mud deploy --rpc <url> --forgeScriptOptions '\-\-gas-estimate-multiplier 200'
+```
+
+### Upgrade a World
 
 To upgrade a `World`'s `System`s and tables, you can use this command line:
 
