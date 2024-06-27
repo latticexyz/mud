@@ -26,7 +26,7 @@ You need to edit both `supportedChains.ts` and `setupNetwork.ts`.
   You can see [the list of chains supported by Viem](https://github.com/wevm/viem/blob/main/src/chains/index.ts).
   If you need a different chain you can use [`defineChain`](https://viem.sh/docs/chains/introduction#custom-chains).
 
-  ```ts filename="supportedChains.ts" copy showLineNumbers {1,4}
+  ```ts filename="supportedChains.ts" copy showLineNumbers {2,4}
   import { MUDChain, mudFoundry, redstone, garnet } from "@latticexyz/common/chains";
   import { holesky } from "viem/chains";
 
@@ -34,7 +34,7 @@ You need to edit both `supportedChains.ts` and `setupNetwork.ts`.
   ```
 
 - Very often chain objects in Viem don't have a webSocket endpoint, only an HTTP one.
-  Edit `packages/client/src/mud/setupNetwork.ts` not only use a webSocket endpoint when one is defined.
+  Edit `packages/client/src/mud/setupNetwork.ts` to only use a webSocket endpoint when one is defined.
 
   ```ts showLineNumbers {3-4}
   const clientOptions = {
@@ -46,7 +46,7 @@ You need to edit both `supportedChains.ts` and `setupNetwork.ts`.
   } as const satisfies ClientConfig;
   ```
 
-## Using the application
+## Use the application
 
 When you run the client, set two parameters:
 

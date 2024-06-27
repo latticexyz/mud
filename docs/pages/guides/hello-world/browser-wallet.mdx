@@ -7,19 +7,18 @@ In this tutorial you modify a template application to use a browser wallet inste
 ## Setup
 
 [Create a new MUD application from the template](/templates/typescript/getting-started).
-Use the vanilla template.
 
 ```sh copy
 pnpm create mud@latest tutorial --template vanilla
 cd tutorial
 ```
 
-You can also use the `react-ecs` or `threejs` templates without any changes to the tutorial.
+You can use the `vanilla`, `react-ecs`, or `threejs` templates without any changes to the tutorial.
 If you wish to use the `react` template you'll need to modify a bit to account for the use of Zustand instead of RECs.
 
 ## Editing `setupNetwork.ts`
 
-The browser definition is in `packages/client/src/mud/setupNetwork.ts`.
+The wallet definitions are in `packages/client/src/mud/setupNetwork.ts`.
 
 <CollapseCode>
 
@@ -174,6 +173,7 @@ const [address] = await window.ethereum.request({
 ```
 
 Request the [address list](https://viem.sh/docs/accounts/jsonRpc) from the browser extension (confusingly, also called "wallet").
+This request prompts the extension to ask for user permission to connect to the application.
 
 ```ts
 const extensionWalletClient = createWalletClient({
@@ -192,7 +192,7 @@ if (chainId != networkConfig.chain.id) await extensionWalletClient.addChain({ ch
 
 Switch to the correct chain, add it if necessary.
 
-```ts
+```ts {7,15,17}
   /*
    * Create an object for communicating with the deployed World.
    */
