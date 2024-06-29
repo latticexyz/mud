@@ -3,11 +3,13 @@ import { debug as parentDebug } from "./debug";
 import { getNonceManagerId } from "./getNonceManagerId";
 import { getTransactionCount } from "viem/actions";
 import PQueue from "p-queue";
+import { getAction } from "viem/utils";
 
 const debug = parentDebug.extend("createNonceManager");
 
 export type CreateNonceManagerOptions = {
   client: Client;
+  chainId?: number;
   address: Hex;
   blockTag?: BlockTag;
   broadcastChannelName?: string;
@@ -25,6 +27,7 @@ export type CreateNonceManagerResult = {
 
 export function createNonceManager({
   client,
+  chainId,
   address, // TODO: rename to account?
   blockTag = "pending",
   broadcastChannelName,
@@ -36,7 +39,7 @@ export function createNonceManager({
   if (typeof BroadcastChannel !== "undefined") {
     const channelName = broadcastChannelName
       ? Promise.resolve(broadcastChannelName)
-      : getNonceManagerId({ client, address, blockTag });
+      : getNonceManagerId({ client, chainId, address, blockTag });
     channelName.then((name) => {
       channel = new BroadcastChannel(name);
       // TODO: emit some sort of "connected" event so other channels can broadcast current nonce
@@ -65,7 +68,7 @@ export function createNonceManager({
   }
 
   async function resetNonce(): Promise<void> {
-    const nonce = await getTransactionCount(client, { address, blockTag });
+    const nonce = await getAction(client, getTransactionCount, "getTransactionCount")({ address, blockTag });
     nonceRef.current = nonce;
     channel?.postMessage(JSON.stringify(nonceRef.current));
     debug("reset nonce to", nonceRef.current);
