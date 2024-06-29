@@ -62,7 +62,7 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
-    "test": "vitest typecheck --run --passWithNoTests && vitest --run",
+    "test": "vitest --typecheck --run --passWithNoTests",
     "test:ci": "pnpm run test"
   },
   "dependencies": {
@@ -81,7 +81,7 @@
     "@types/node": "^18.15.11",
     "@viem/anvil": "^0.0.7",
     "tsup": "^6.7.0",
-    "vitest": "0.34.6"
+    "vitest": "1.6.0"
   },
   "peerDependencies": {
     "@aws-sdk/client-kms": "3.x",
