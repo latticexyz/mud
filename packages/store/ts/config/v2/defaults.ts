@@ -5,8 +5,8 @@ export const CODEGEN_DEFAULTS = {
   userTypesFilename: "common.sol",
   outputDirectory: "codegen",
   // TODO: default to true if using top-level `namespaces` key (once its migrated to store)
-  namespaceDirectories: false,
-  indexFilename: "index.sol",
+  namespaceDirectories: false as boolean,
+  indexFilename: "index.sol" as string | false,
 } as const satisfies CodegenInput;
 
 export type CODEGEN_DEFAULTS = typeof CODEGEN_DEFAULTS;

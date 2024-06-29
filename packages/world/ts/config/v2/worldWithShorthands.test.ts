@@ -34,7 +34,7 @@ describe("defineWorldWithShorthands", () => {
 
     const expected = {
       ...CONFIG_DEFAULTS,
-      codegen: CODEGEN_DEFAULTS,
+      codegen: { ...CODEGEN_DEFAULTS, indexFilename: false as string | false, namespaceDirectories: true as boolean },
       tables: {
         ExampleNamespace__ExampleTable: {
           tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
@@ -51,7 +51,11 @@ describe("defineWorldWithShorthands", () => {
           key: ["id"],
           name: "ExampleTable",
           namespace: "ExampleNamespace",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+          codegen: {
+            ...TABLE_CODEGEN_DEFAULTS,
+            dataStruct: false as boolean,
+            outputDirectory: "ExampleNamespace/tables" as string,
+          },
           type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
@@ -99,7 +103,7 @@ describe("defineWorldWithShorthands", () => {
 
     const expected = {
       ...CONFIG_DEFAULTS,
-      codegen: CODEGEN_DEFAULTS,
+      codegen: { ...CODEGEN_DEFAULTS, indexFilename: false as string | false, namespaceDirectories: true as boolean },
       tables: {
         ExampleNamespace__ExampleTable: {
           tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
@@ -120,7 +124,11 @@ describe("defineWorldWithShorthands", () => {
           key: ["id"],
           name: "ExampleTable",
           namespace: "ExampleNamespace",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+          codegen: {
+            ...TABLE_CODEGEN_DEFAULTS,
+            dataStruct: true as boolean,
+            outputDirectory: "ExampleNamespace/tables" as string,
+          },
           type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
@@ -166,7 +174,10 @@ describe("defineWorldWithShorthands", () => {
           key: ["id"],
           name: "Name",
           namespace: "",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+          codegen: {
+            ...TABLE_CODEGEN_DEFAULTS,
+            dataStruct: false as boolean,
+          },
           type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
         },

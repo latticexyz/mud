@@ -87,12 +87,14 @@ export type WorldInput = evaluate<
      * as public systems at `namespace/ContractName`, unless overridden
      *
      * The key is the system name (capitalized).
-     * The value is a SystemConfig object.
+     * The value is a SystemInput object.
      */
     systems?: SystemsInput;
-    /** System names to exclude from automatic deployment */
+    /**
+     * System names to exclude from automatic deployment
+     */
     excludeSystems?: readonly string[];
-    /** Modules to in the World */
+    /** Modules to install in the World */
     modules?: readonly ModuleInput[];
     /** Deploy config */
     deploy?: DeployInput;
@@ -103,7 +105,16 @@ export type WorldInput = evaluate<
 
 export type NamespacesInput = { [key: string]: NamespaceInput };
 
-export type NamespaceInput = Pick<StoreInput, "tables">;
+export type NamespaceInput = Pick<StoreInput, "tables"> & {
+  /**
+   * Contracts named *System will be deployed by default
+   * as public systems at `namespace/ContractName`, unless overridden
+   *
+   * The key is the system name (capitalized).
+   * The value is a SystemInput object.
+   */
+  systems?: SystemsInput;
+};
 
 /******** Variations with shorthands ********/
 

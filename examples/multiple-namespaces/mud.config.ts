@@ -1,23 +1,53 @@
 import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
-  namespace: "game",
-  codegen: { namespaceDirectories: true },
-  tables: {
-    Health: {
-      schema: {
-        player: "address",
-        value: "uint32",
+  namespaces: {
+    game: {
+      tables: {
+        Position: {
+          schema: {
+            player: "address",
+            x: "int32",
+            y: "int32",
+          },
+          key: ["player"],
+        },
+        Victory: {
+          schema: {
+            value: "bool",
+          },
+          key: [],
+        },
       },
-      key: ["player"],
     },
-    Position: {
-      schema: {
-        player: "address",
-        x: "int32",
-        y: "int32",
+    scoreboard: {
+      tables: {
+        Score: {
+          schema: {
+            player: "address",
+            score: "uint256",
+          },
+          key: ["player"],
+        },
       },
-      key: ["player"],
+    },
+    gameFork: {
+      tables: {
+        Position: {
+          schema: {
+            player: "address",
+            x: "int32",
+            y: "int32",
+          },
+          key: ["player"],
+        },
+        Victory: {
+          schema: {
+            value: "bool",
+          },
+          key: [],
+        },
+      },
     },
   },
 });

@@ -14,6 +14,7 @@ import {
 import { WorldWithShorthandsInput } from "./input";
 import { validateNamespace } from "./namespaces";
 import { resolveWorld, validateWorld } from "./world";
+import { ErrorMessage } from "@arktype/util";
 
 export type resolveWorldWithShorthands<world> = resolveWorld<{
   [key in keyof world]: key extends "tables"
@@ -33,7 +34,10 @@ export type validateWorldWithShorthands<world> = {
   [key in keyof world]: key extends "tables"
     ? validateTablesWithShorthands<world[key], extendedScope<world>>
     : key extends "namespaces"
-      ? validateNamespacesWithShorthands<world[key], extendedScope<world>>
+      ? // TODO: revisit this pattern (https://github.com/latticexyz/mud/pull/2898)
+        world extends { namespace?: unknown; tables?: unknown; systems?: unknown }
+        ? ErrorMessage<`Cannot use \`namespaces\` with \`namespace\`, \`tables\`, or \`systems\` keys.`>
+        : validateNamespacesWithShorthands<world[key], extendedScope<world>>
       : validateWorld<world>[key];
 };
 
@@ -44,6 +48,9 @@ function validateWorldWithShorthands(world: unknown): asserts world is WorldWith
   }
 
   if (hasOwnKey(world, "namespaces") && isObject(world.namespaces)) {
+    if (hasOwnKey(world, "namespace") || hasOwnKey(world, "tables") || hasOwnKey(world, "systems")) {
+      throw new Error("Cannot use `namespaces` with `namespace`, `tables`, or `systems` keys.");
+    }
     for (const namespaceKey of Object.keys(world.namespaces)) {
       validateTablesWithShorthands(getPath(world.namespaces, [namespaceKey, "tables"]) ?? {}, scope);
     }
@@ -62,17 +69,32 @@ export function resolveWorldWithShorthands<world extends WorldWithShorthandsInpu
   world: world,
 ): resolveWorldWithShorthands<world> {
   const scope = extendedScope(world);
-  const tables = mapObject(world.tables ?? {}, (table) => {
-    return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
-  });
-  const namespaces = mapObject(world.namespaces ?? {}, (namespace) => ({
-    ...namespace,
-    tables: mapObject(namespace.tables ?? {}, (table) => {
-      return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
-    }),
-  }));
+  const tables =
+    world.tables != null
+      ? mapObject(world.tables, (table) => {
+          return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
+        })
+      : undefined;
 
-  const fullConfig = { ...world, tables, namespaces };
+  const namespaces =
+    world.namespaces != null
+      ? mapObject(world.namespaces, (namespace) => ({
+          ...namespace,
+          ...(namespace.tables != null
+            ? {
+                tables: mapObject(namespace.tables, (table) => {
+                  return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
+                }),
+              }
+            : undefined),
+        }))
+      : undefined;
+
+  const fullConfig = {
+    ...world,
+    ...(tables != null ? { tables } : undefined),
+    ...(namespaces != null ? { namespaces } : undefined),
+  };
   validateWorld(fullConfig);
 
   return resolveWorld(fullConfig) as never;

@@ -21,7 +21,6 @@ const CODEGEN_DEFAULTS = { ...STORE_CODEGEN_DEFAULTS, ...WORLD_CODEGEN_DEFAULTS 
 describe("defineWorld", () => {
   it("should resolve namespaced tables", () => {
     const config = defineWorld({
-      // @ts-expect-error TODO: remove once namespaces support ships
       namespaces: {
         ExampleNamespace: {
           tables: {
@@ -40,7 +39,7 @@ describe("defineWorld", () => {
 
     const expected = {
       ...CONFIG_DEFAULTS,
-      codegen: CODEGEN_DEFAULTS,
+      codegen: { ...CODEGEN_DEFAULTS, indexFilename: false as string | false, namespaceDirectories: true as boolean },
       tables: {
         ExampleNamespace__ExampleTable: {
           tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
@@ -61,7 +60,11 @@ describe("defineWorld", () => {
           key: ["id"],
           name: "ExampleTable",
           namespace: "ExampleNamespace",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+          codegen: {
+            ...TABLE_CODEGEN_DEFAULTS,
+            dataStruct: true as boolean,
+            outputDirectory: "ExampleNamespace/tables" as string,
+          },
           type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
@@ -77,7 +80,6 @@ describe("defineWorld", () => {
 
   it("should resolve namespaced table config with user types and enums", () => {
     const config = defineWorld({
-      // @ts-expect-error TODO: remove once namespaces support ships
       namespaces: {
         ExampleNamespace: {
           tables: {
@@ -103,7 +105,7 @@ describe("defineWorld", () => {
 
     const expected = {
       ...CONFIG_DEFAULTS,
-      codegen: CODEGEN_DEFAULTS,
+      codegen: { ...CODEGEN_DEFAULTS, indexFilename: false as string | false, namespaceDirectories: true as boolean },
       tables: {
         ExampleNamespace__ExampleTable: {
           tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
@@ -124,7 +126,11 @@ describe("defineWorld", () => {
           key: ["id"],
           name: "ExampleTable",
           namespace: "ExampleNamespace",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+          codegen: {
+            ...TABLE_CODEGEN_DEFAULTS,
+            dataStruct: true as boolean,
+            outputDirectory: "ExampleNamespace/tables" as string,
+          },
           type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
@@ -150,7 +156,6 @@ describe("defineWorld", () => {
 
   it("should extend the output World type", () => {
     const config = defineWorld({
-      // @ts-expect-error TODO: remove once namespaces support ships
       namespaces: {
         ExampleNamespace: {
           tables: {
@@ -177,27 +182,28 @@ describe("defineWorld", () => {
     attest<true, typeof config extends World ? true : false>();
   });
 
-  it("should not use the global namespace for namespaced tables", () => {
-    const config = defineWorld({
-      namespace: "namespace",
-      // @ts-expect-error TODO: remove once namespaces support ships
-      namespaces: {
-        AnotherOne: {
-          tables: {
-            Example: {
-              schema: { id: "address", name: "string", age: "uint256" },
-              key: ["age"],
+  it("should throw an error if using the global namespace key with the namespaces key", () => {
+    attest(() => {
+      defineWorld({
+        namespace: "namespace",
+        // @ts-expect-error TODO: remove once namespaces support ships
+        namespaces: {
+          AnotherOne: {
+            tables: {
+              Example: {
+                schema: { id: "address", name: "string", age: "uint256" },
+                key: ["age"],
+              },
             },
           },
         },
-      },
-    });
-
-    attest<"namespace">(config.namespace).equals("namespace");
-    attest<"AnotherOne">(config.tables.AnotherOne__Example.namespace).equals("AnotherOne");
-    attest(config.tables.AnotherOne__Example.tableId).equals(
-      resourceToHex({ type: "table", name: "Example", namespace: "AnotherOne" }),
-    );
+      });
+    })
+      .throws("Cannot use `namespaces` with `namespace`, `tables`, or `systems` keys.")
+      .type.errors(
+        // eslint-disable-next-line max-len
+        `Type '{ AnotherOne: { tables: { Example: { schema: { id: string; name: string; age: string; }; key: string[]; }; }; }; }' is not assignable to type '"Cannot use \`namespaces\` with \`namespace\`, \`tables\`, or \`systems\` keys.`,
+      );
   });
 
   describe("should have the same output as `defineWorld` for store config inputs", () => {
@@ -709,13 +715,13 @@ describe("defineWorld", () => {
   it.skip("should throw if name is overridden in namespaced tables", () => {
     attest(() =>
       defineWorld({
-        // @ts-expect-error TODO: remove once namespaces support ships
         namespaces: {
           MyNamespace: {
             tables: {
               Example: {
                 schema: { id: "address" },
                 key: ["id"],
+                // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
                 name: "NotAllowed",
               },
             },
@@ -728,13 +734,13 @@ describe("defineWorld", () => {
   it.skip("should throw if namespace is overridden in namespaced tables", () => {
     attest(() =>
       defineWorld({
-        // @ts-expect-error TODO: remove once namespaces support ships
         namespaces: {
           MyNamespace: {
             tables: {
               Example: {
                 schema: { id: "address" },
                 key: ["id"],
+                // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
                 namespace: "NotAllowed",
               },
             },
@@ -742,15 +748,6 @@ describe("defineWorld", () => {
         },
       }),
     ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
-  });
-
-  it("should throw if namespaces are defined (TODO: remove once namespaces support ships)", () => {
-    attest(() =>
-      defineWorld({
-        // @ts-expect-error TODO: remove once namespaces support ships
-        namespaces: {},
-      }),
-    ).type.errors("Namespaces config will be enabled soon.");
   });
 
   it("should allow setting openAccess of a system to false", () => {

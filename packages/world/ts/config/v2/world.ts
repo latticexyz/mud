@@ -28,8 +28,10 @@ export type validateWorld<world> = {
       : key extends "enums"
         ? narrow<world[key]>
         : key extends "namespaces"
-          ? // ? validateNamespaces<world[key], extendedScope<world>>
-            ErrorMessage<`Namespaces config will be enabled soon.`>
+          ? // TODO: revisit this pattern (https://github.com/latticexyz/mud/pull/2898)
+            world extends { namespace?: unknown; tables?: unknown; systems?: unknown }
+            ? ErrorMessage<"Cannot use `namespaces` with `namespace`, `tables`, or `systems` keys.">
+            : validateNamespaces<world[key], extendedScope<world>>
           : key extends keyof WorldInput
             ? conform<world[key], WorldInput[key]>
             : ErrorMessage<`\`${key & string}\` is not a valid World config option.`>;
@@ -40,6 +42,9 @@ export function validateWorld(world: unknown): asserts world is WorldInput {
   validateStore(world);
 
   if (hasOwnKey(world, "namespaces")) {
+    if (hasOwnKey(world, "namespace") || hasOwnKey(world, "tables") || hasOwnKey(world, "systems")) {
+      throw new Error("Cannot use `namespaces` with `namespace`, `tables`, or `systems` keys.");
+    }
     validateNamespaces(world.namespaces, scope);
   }
 }
@@ -67,6 +72,17 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
   const scope = extendedScope(world);
   const namespaces = world.namespaces ?? {};
 
+  const resolvedStore = resolveStore({
+    ...world,
+    codegen: mergeIfUndefined(world.codegen ?? {}, {
+      // put codegen into namespaced directories if we're using `namespaces` key
+      namespaceDirectories: world.namespaces != null,
+      // don't generate `index.sol` if we're using `namespaces` key, to avoid naming conflicts for table names across namespaces
+      // this is a deprecated option anyway, so this default guides folks towards not using it
+      indexFilename: world.namespaces != null ? false : undefined,
+    }),
+  });
+
   const resolvedNamespacedTables = Object.fromEntries(
     Object.entries(namespaces)
       .map(([namespaceKey, namespace]) =>
@@ -74,14 +90,21 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
           validateTable(table, scope);
           return [
             `${namespaceKey}__${tableKey}`,
-            resolveTable(mergeIfUndefined(table, { namespace: namespaceKey, name: tableKey }), scope),
+            resolveTable(
+              mergeIfUndefined(table, {
+                namespace: namespaceKey,
+                name: tableKey,
+                codegen: mergeIfUndefined(table.codegen ?? {}, {
+                  outputDirectory: resolvedStore.codegen.namespaceDirectories ? `${namespaceKey}/tables` : "tables",
+                }),
+              }),
+              scope,
+            ),
           ];
         }),
       )
       .flat(),
   ) as Tables;
-
-  const resolvedStore = resolveStore(world);
 
   const modules = (world.modules ?? CONFIG_DEFAULTS.modules).map((mod) => mergeIfUndefined(mod, MODULE_DEFAULTS));
 
