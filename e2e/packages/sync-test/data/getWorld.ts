@@ -1,10 +1,10 @@
 import { Page } from "@playwright/test";
 import IWorldAbi from "../../contracts/out/IWorld.sol/IWorld.abi.json";
-import { GetContractReturnType, PublicClient, WalletClient } from "viem";
+import { GetContractReturnType, PublicClient } from "viem";
 
 type WorldAbi = typeof IWorldAbi;
 
-type WorldContract = GetContractReturnType<WorldAbi, PublicClient, WalletClient>;
+type WorldContract = GetContractReturnType<WorldAbi, PublicClient>;
 
 export function getWorld(page: Page) {
   return page.evaluate(() => {
