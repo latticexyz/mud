@@ -114,7 +114,7 @@ defineSystem(world, [Has(PlayerComponent), Has(Name), HasValue(PositionComponent
 import { useEntityQuery } from "@latticexyz/react";
 import { Has, HasValue, getComponentValueStrict } from "@latticexyz/recs";
 function ExampleComponent() {
-  const { components, world } = useMUD;
+  const { components, world } = useMUD();
   const { NameComponent, PlayerComponent, PositionCompoennt } = components
   // get a list of all entities that are named, players, and at the center of the universe
   // it is reactive and will trigger a re-render when the set of matching queries update
