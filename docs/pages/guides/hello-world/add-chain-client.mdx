@@ -36,7 +36,7 @@ You need to edit both `supportedChains.ts` and `setupNetwork.ts`.
 - Very often chain objects in Viem don't have a webSocket endpoint, only an HTTP one.
   Edit `packages/client/src/mud/setupNetwork.ts` to only use a webSocket endpoint when one is defined.
 
-  ```ts showLineNumbers {1-17,21}
+  ```ts showLineNumbers {1-18,22}
   const urlTypes =
     (networkConfig.chain.rpcUrls.default.webSocket ? "w" : "-") +
     (networkConfig.chain.rpcUrls.default.http ? "h" : "-");
