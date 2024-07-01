@@ -35,7 +35,7 @@ This contract gets the `World` address from the `$WORLD_ADDRESS` environment var
 
 <details>
 
-<summary>Line by line explanation of a test</summary>
+<summary>Line by line explanation of a simple test</summary>
 
 This is an explanation of [the test](https://github.com/latticexyz/mud/blob/main/templates/react/packages/contracts/test/TasksTest.t.sol) for the [React template](https://github.com/latticexyz/mud/tree/main/templates/react) contracts.
 
@@ -111,5 +111,121 @@ Call a `System` to modify the table data.
 ```
 
 Verify that the call changed the data correctly.
+
+</details>
+
+<details>
+
+<summary>A more complicated example</summary>
+
+Here is an explanation for [the test](https://github.com/latticexyz/skystrife-public/blob/main/packages/contracts/test/MoveSystem.t.sol) for [`MoveSystem`](https://github.com/latticexyz/skystrife-public/blob/main/packages/contracts/src/systems/MoveSystem.sol) in [SkyStrife](https://skystrife.xyz/).
+
+There are three externally available functions in this `System`:
+
+- [`move`](https://github.com/latticexyz/skystrife-public/blob/main/packages/contracts/src/systems/MoveSystem.sol#L57-L61), used when the entity just moves.
+- [`fight`](https://github.com/latticexyz/skystrife-public/blob/main/packages/contracts/src/systems/MoveSystem.sol#L63-L67), used when the entity just attacks an enemy.
+- [`moveAndAttack`](https://github.com/latticexyz/skystrife-public/blob/main/packages/contracts/src/systems/MoveSystem.sol#L69-L76), used when the entity moves and then attacks an enemy.
+
+The first test is [`testMoveOneTile`](https://github.com/latticexyz/skystrife-public/blob/main/packages/contracts/test/MoveSystem.t.sol#L67-L81):
+
+```solidity
+  function testMoveOneTile() public {
+    setupMove();
+```
+
+First we use [`setupMove`](https://github.com/latticexyz/skystrife-public/blob/main/packages/contracts/test/MoveSystem.t.sol#L19-L61).
+This function sets up the test by creating the player entity, the environment in which a unit could move (a 4x4 grid of grassland), the match, and a player unit that could move (whose original position is `(0,0)`).
+
+```solidity
+    PositionData[] memory path = new PositionData[](1);
+    path[0] = PositionData(0, 1);
+```
+
+Create a path for the movement.
+
+```solidity
+    vm.startPrank(alice);
+```
+
+Act as `alice`, the player.
+
+```solidity
+    startGasReport("Move unit 1 tile");
+    world.move(testMatch, unit, path);
+    endGasReport();
+```
+
+Perform the move and generate a gas report.
+
+```solidity
+    PositionData memory position = Position.get(testMatch, unit);
+    assertEq(position.x, 0, "x should be 0");
+    assertEq(position.y, 1, "y should be 1");
+  }
+```
+
+Verify the unit is in the correct position.
+
+```solidity
+
+  function testMoveTwoTiles() public {
+    setupMove();
+
+    PositionData[] memory path = new PositionData[](2);
+    path[0] = PositionData(0, 1);
+    path[1] = PositionData(0, 2);
+    .
+    .
+    .
+  }
+
+  function testMoveThreeTiles() public {
+    setupMove();
+
+    PositionData[] memory path = new PositionData[](3);
+    path[0] = PositionData(0, 1);
+    path[1] = PositionData(0, 2);
+    path[2] = PositionData(0, 3);
+    .
+    .
+    .
+  }
+```
+
+These tests are very similar to `testMoveOneTile`, except the unit moves multiple tiles (which is allowed by SkyStrife).
+
+```solidity
+function testMovementSetsLastAction() public {
+  setupMove();
+
+  PositionData[] memory path = new PositionData[](2);
+  path[0] = PositionData(0, 1);
+  path[1] = PositionData(0, 2);
+
+  runSystem(path);
+
+  uint256 lastAction = LastAction.get(testMatch, unit);
+  assertEq(lastAction, block.timestamp, "last action should be the block timestamp");
+}
+```
+
+This test checks that the time of the last action is updated correctly.
+
+```solidity
+function testMoveInvalidPath() public {
+  setupMove();
+
+  PositionData[] memory path = new PositionData[](2);
+  path[0] = PositionData(0, 1);
+  path[1] = PositionData(0, 3);
+
+  vm.expectRevert("invalid path");
+  runSystem(path);
+}
+```
+
+The player may be using our client, which only sends valid paths.
+However, in blockchain programming there is no such guarantee.
+We _have_ to assume hostile input, so we have to test not just that actions that should be successful succeed, but also that actions that should fail fail.
 
 </details>
