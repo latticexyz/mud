@@ -36,12 +36,29 @@ You need to edit both `supportedChains.ts` and `setupNetwork.ts`.
 - Very often chain objects in Viem don't have a webSocket endpoint, only an HTTP one.
   Edit `packages/client/src/mud/setupNetwork.ts` to only use a webSocket endpoint when one is defined.
 
-  ```ts showLineNumbers {3-4}
+  ```ts showLineNumbers {1-17,21}
+  const urlTypes =
+    (networkConfig.chain.rpcUrls.default.webSocket ? "w" : "-") +
+    (networkConfig.chain.rpcUrls.default.http ? "h" : "-");
+  let fallbacks = [];
+  switch (urlTypes) {
+    case "wh":
+      fallbacks = [webSocket(), http()];
+      break;
+    case "w-":
+      fallbacks = [webSocket()];
+      break;
+    case "-h":
+      fallbacks = [http()];
+      break;
+    case "--":
+    default:
+      console.log("No URL type I can use for the chain");
+  }
+
   const clientOptions = {
     chain: networkConfig.chain,
-    transport: transportObserver(
-      fallback(networkConfig.chain.rpcUrls.default.webSocket ? [webSocket(), http()] : [http()]),
-    ),
+    transport: transportObserver(fallback(fallbacks)),
     pollingInterval: 1000,
   } as const satisfies ClientConfig;
   ```
@@ -55,13 +72,13 @@ When you run the client, set two parameters:
   Without this value, the client will try to synchronize from the beginning of the blockchain, which could take a long time.
   You can set this value either in the URL, or the `worlds.json` file (as `blockNumber`).
 
-For example, to connect to the Holesky `World` at address [`0x32b4156e9b073706608e3b522e3372c94efe7640`](https://eth-holesky.blockscout.com/address/0x32b4156e9b073706608e3b522e3372c94efe7640?tab=contract_code), which contains [the standard contract code](/templates/typescript/contracts), you use this URL:
+For example, to connect to the Holesky `World` at address [`0x78900cc99939b24a95b2892961ad0c701df97993`](https://eth-holesky.blockscout.com/address/0x78900cc99939b24a95b2892961ad0c701df97993?tab=contract_code), which contains [the standard contract code](/templates/typescript/contracts), you use this URL:
 
 ```url
 http://localhost:3000/?chainid=17000
 ```
 
-And this file in `worlds.json`:
+And this file in `packages/contracts/worlds.json`:
 
 ```json
 {
@@ -69,8 +86,8 @@ And this file in `worlds.json`:
     "address": "0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b"
   },
   "17000": {
-    "address": "0x32b4156e9b073706608e3b522e3372c94efe7640",
-    "blockNumber": 1782097
+    "address": "0x78900cc99939b24a95b2892961ad0c701df97993",
+    "blockNumber": 1844083
   }
 }
 ```
