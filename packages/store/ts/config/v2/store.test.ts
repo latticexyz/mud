@@ -484,7 +484,7 @@ describe("defineStore", () => {
   it("should throw if name is overridden in the store context", () => {
     attest(() =>
       defineStore({
-        namespace: "CustomNamespace",
+        namespace: "CustomNS",
         tables: {
           Example: {
             schema: { id: "address" },
@@ -500,7 +500,7 @@ describe("defineStore", () => {
   it("should throw if namespace is overridden in the store context", () => {
     attest(() =>
       defineStore({
-        namespace: "CustomNamespace",
+        namespace: "CustomNS",
         tables: {
           Example: {
             schema: { id: "address" },
