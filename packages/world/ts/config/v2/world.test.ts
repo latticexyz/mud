@@ -23,7 +23,7 @@ describe("defineWorld", () => {
     const config = defineWorld({
       // @ts-expect-error TODO: remove once namespaces support ships
       namespaces: {
-        ExampleNamespace: {
+        ExampleNS: {
           tables: {
             ExampleTable: {
               schema: {
@@ -42,8 +42,8 @@ describe("defineWorld", () => {
       ...CONFIG_DEFAULTS,
       codegen: CODEGEN_DEFAULTS,
       tables: {
-        ExampleNamespace__ExampleTable: {
-          tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
+        ExampleNS__ExampleTable: {
+          tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
           schema: {
             id: {
               type: "address",
@@ -60,7 +60,7 @@ describe("defineWorld", () => {
           },
           key: ["id"],
           name: "ExampleTable",
-          namespace: "ExampleNamespace",
+          namespace: "ExampleNS",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
           type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
@@ -79,7 +79,7 @@ describe("defineWorld", () => {
     const config = defineWorld({
       // @ts-expect-error TODO: remove once namespaces support ships
       namespaces: {
-        ExampleNamespace: {
+        ExampleNS: {
           tables: {
             ExampleTable: {
               schema: {
@@ -105,8 +105,8 @@ describe("defineWorld", () => {
       ...CONFIG_DEFAULTS,
       codegen: CODEGEN_DEFAULTS,
       tables: {
-        ExampleNamespace__ExampleTable: {
-          tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
+        ExampleNS__ExampleTable: {
+          tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
           schema: {
             id: {
               type: "address",
@@ -123,7 +123,7 @@ describe("defineWorld", () => {
           },
           key: ["id"],
           name: "ExampleTable",
-          namespace: "ExampleNamespace",
+          namespace: "ExampleNS",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
           type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
@@ -152,7 +152,7 @@ describe("defineWorld", () => {
     const config = defineWorld({
       // @ts-expect-error TODO: remove once namespaces support ships
       namespaces: {
-        ExampleNamespace: {
+        ExampleNS: {
           tables: {
             ExampleTable: {
               schema: {
@@ -663,7 +663,7 @@ describe("defineWorld", () => {
 
   it("should use the custom name and namespace as table index", () => {
     const config = defineWorld({
-      namespace: "CustomNamespace",
+      namespace: "CustomNS",
       tables: {
         Example: {
           schema: { id: "address" },
@@ -672,13 +672,13 @@ describe("defineWorld", () => {
       },
     });
 
-    attest<"CustomNamespace__Example", keyof typeof config.tables>();
+    attest<"CustomNS__Example", keyof typeof config.tables>();
   });
 
   it("should throw if namespace is overridden in top level tables", () => {
     attest(() =>
       defineWorld({
-        namespace: "CustomNamespace",
+        namespace: "CustomNS",
         tables: {
           Example: {
             schema: { id: "address" },
