@@ -51,6 +51,7 @@ These are the command line options you can specify on `mud deploy`:
 | `--alwaysRunPostDeploy` | Run `PostDeploy.s.sol` after each deploy         | boolean | `false` (run the script only when deploying a new `World`) |
 | `--help`                | Show help                                        | boolean | `false`                                                    |
 | `--version`             | Show version number                              | boolean | `false`                                                    |
+| `--forgeScriptOptions`  | Command line options for forge                   | string  | empty                                                      |
 
 (1) The hostname `localhost` may not work. If that is the case, use `127.0.0.1` instead.
 
@@ -72,7 +73,7 @@ pnpm mud deploy --rpc <url>
 
 This command also writes the `World`'s address to `worlds.json`.
 
-### Upgrading a World
+### Upgrading a `World`
 
 To upgrade a `World`'s `System`s and tables, you can use this command line:
 
@@ -88,4 +89,27 @@ To generate debug messages, use this command:
 
 ```sh copy
 export DEBUG=mud:cli:deploy
+```
+
+## Known issues
+
+### Out of gas
+
+When deploying to a blockchain, you might get an error due to the post-deploy script being out of gas:
+
+```
+Error: Error:
+Transaction Failure: <transaction hash>
+Error running "forge script PostDeploy --broadcast --sig run(address) <world address> --rpc-url <conduit URL> -vvv --legacy --no-gas-limit"
+    at o (file:/// < directory > /tutorial3/node_modules/.pnpm/@latticexyz+common@2.0.12_@aws-sdk+client-kms@3.598.0_asn1.js@5.4.1_typescript@5.4.2_zod@3.23.8/node_modules/@latticexyz/common/dist/foundry.js:2:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    (...)
+```
+
+For some reason, the default gas estimates coming from the blockchain are too low, so the transaction runs out of gas.
+
+To get around this issue, use the `--forgeScriptOptions` command line parameter to specify [the gas estimate multiplier](https://book.getfoundry.sh/reference/forge/forge-script?highlight=gas-estimate-multiplier#options) `forge script` will use.
+
+```
+pnpm mud deploy --rpc $RPC_URL --forgeScriptOptions '\-\-gas-estimate-multiplier 200'
 ```
