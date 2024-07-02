@@ -1,9 +1,9 @@
-import { ROOT_NAMESPACE } from "./common";
+const rootNamespace = "";
 
 export type ResourceLabel<
   namespace extends string = string,
   name extends string = string,
-> = namespace extends typeof ROOT_NAMESPACE ? name : `${namespace}__${name}`;
+> = namespace extends typeof rootNamespace ? name : `${namespace}__${name}`;
 
 export function resourceToLabel<namespace extends string, name extends string>({
   namespace,
@@ -12,5 +12,5 @@ export function resourceToLabel<namespace extends string, name extends string>({
   readonly namespace: namespace;
   readonly name: name;
 }): ResourceLabel<namespace, name> {
-  return (namespace === ROOT_NAMESPACE ? name : `${namespace}__${name}`) as ResourceLabel<namespace, name>;
+  return (namespace === rootNamespace ? name : `${namespace}__${name}`) as ResourceLabel<namespace, name>;
 }
