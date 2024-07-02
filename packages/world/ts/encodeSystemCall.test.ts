@@ -2,8 +2,8 @@
 import { describe, expect, it } from "vitest";
 import { encodeSystemCall } from "./encodeSystemCall";
 import { resourceToHex } from "@latticexyz/common";
-import AccessManagementSystemAbi from "../out/AccessManagementSystem.sol/AccessManagementSystem.abi.json";
-import StoreRegistrationSystem from "../out/StoreRegistrationSystem.sol/StoreRegistrationSystem.abi.json";
+import AccessManagementSystemAbi from "@latticexyz/world/out/AccessManagementSystem.sol/AccessManagementSystem.abi.json";
+import StoreRegistrationSystem from "@latticexyz/world/out/StoreRegistrationSystem.sol/StoreRegistrationSystem.abi.json";
 
 describe("SystemCall", () => {
   it("encodes grantAccess properly", async () => {

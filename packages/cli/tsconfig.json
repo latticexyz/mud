@@ -1,8 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "moduleResolution": "Node",
-    "lib": ["DOM", "ESNext"],
+    "rootDir": ".",
     "outDir": "dist"
   },
   "include": ["src"]

@@ -17,7 +17,10 @@
     "./config": "./dist/config.js",
     "./config/v2": "./dist/config/v2.js",
     "./register": "./dist/register.js",
-    "./out/*": "./out/*"
+    "./*.json": {
+      "types": "./*.json.d.ts",
+      "default": "./*.json"
+    }
   },
   "typesVersions": {
     "*": {
@@ -41,6 +44,9 @@
       ],
       "register": [
         "./dist/register.d.ts"
+      ],
+      "*.json": [
+        "./*.json.d.ts"
       ]
     }
   },
