@@ -1,3 +1,15 @@
+## Version 2.0.13
+
+Release date: Tue Jul 02 2024
+
+### Patch changes
+
+**[feat(common): throw instead of truncating namespace (#2917)](https://github.com/latticexyz/mud/commit/8d0453e7b52e23da4ebe4eef30db734dd33c06b9)** (@latticexyz/common)
+
+`resourceToHex` will now throw if provided namespace is >14 characters. Since namespaces are used to determine access control, it's not safe to automatically truncate to fit into `bytes14` as that may change the indended namespace for resource access.
+
+---
+
 ## Version 2.0.12
 
 Release date: Fri May 31 2024
