@@ -6,11 +6,10 @@ import { console } from "forge-std/console.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
-import { Systems } from "@latticexyz/world/src/codegen/tables/Systems.sol";
 
 import { MessageTable } from "../src/codegen/index.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { namespace__ChatSystem } from "../src/systems/namespace__ChatSystem.sol";
+import { ChatNamespacedSystem } from "../src/systems/ChatNamespacedSystem.sol";
 
 contract PostDeploy is Script {
   using WorldResourceIdInstance for ResourceId;
@@ -25,15 +24,19 @@ contract PostDeploy is Script {
     // Start broadcasting transactions from the deployer account
     vm.startBroadcast(deployerPrivateKey);
 
+    // Manually deploy a system with another namespace
+    ChatNamespacedSystem chatNamespacedSystem = new ChatNamespacedSystem();
     ResourceId systemId = WorldResourceIdLib.encode({
       typeId: RESOURCE_SYSTEM,
       namespace: "namespace",
-      name: "ChatSystem"
+      name: "ChatNamespaced"
     });
-    address chatSystem = Systems.getSystem(systemId);
+    IWorld(worldAddress).registerNamespace(systemId.getNamespaceId());
+    IWorld(worldAddress).registerSystem(systemId, chatNamespacedSystem, true);
+    IWorld(worldAddress).registerFunctionSelector(systemId, "sendMessage(string)");
 
     // Grant this system access to MessageTable
-    IWorld(worldAddress).grantAccess(MessageTable._tableId, chatSystem);
+    IWorld(worldAddress).grantAccess(MessageTable._tableId, address(chatNamespacedSystem));
 
     // ------------------ EXAMPLES ------------------
 

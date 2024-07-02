@@ -12,13 +12,12 @@ export type ResolvedWorldConfig = ReturnType<typeof resolveWorldConfig>;
  * splitting the access list into addresses and system names.
  */
 export function resolveWorldConfig(
-  config: Pick<StoreConfig & WorldConfig, "namespace" | "systems" | "excludeSystems">,
+  config: Pick<StoreConfig & WorldConfig, "systems" | "excludeSystems">,
   existingContracts?: string[],
 ) {
   // Include contract names ending in "System", but not the base "System" contract, and not Interfaces
   const defaultSystemNames =
-    existingContracts?.filter((name) => name.endsWith("System") && name !== "System" && !/(^|__)I[A-Z]/.test(name)) ??
-    [];
+    existingContracts?.filter((name) => name.endsWith("System") && name !== "System" && !name.match(/^I[A-Z]/)) ?? [];
   const overriddenSystemNames = Object.keys(config.systems);
 
   // Validate every key in systems refers to an existing system contract (and is not called "World")
@@ -39,12 +38,7 @@ export function resolveWorldConfig(
   const resolvedSystems: Record<string, ResolvedSystemConfig> = systemNames.reduce((acc, systemName) => {
     return {
       ...acc,
-      [systemName]: resolveSystemConfig({
-        systemName,
-        configNamespace: config.namespace,
-        config: config.systems[systemName],
-        existingContracts,
-      }),
+      [systemName]: resolveSystemConfig(systemName, config.systems[systemName], existingContracts),
     };
   }, {});
 
@@ -63,23 +57,8 @@ export function resolveWorldConfig(
  * Default value for accessListAddresses is []
  * Default value for accessListSystems is []
  */
-export function resolveSystemConfig({
-  systemName,
-  configNamespace,
-  config,
-  existingContracts,
-}: {
-  systemName: string;
-  configNamespace: string;
-  config?: SystemConfig;
-  existingContracts?: string[];
-}) {
-  // If the namespace is not set in the system name, default to the config namespace
-  const parts = systemName.split("__");
-  const namespaceIsSet = parts.length === 2;
-  const namespace = namespaceIsSet ? parts[0] : configNamespace;
-  const name = namespaceIsSet ? parts[1] : systemName;
-
+export function resolveSystemConfig(systemName: string, config?: SystemConfig, existingContracts?: string[]) {
+  const name = config?.name ?? systemName;
   const registerFunctionSelectors = config?.registerFunctionSelectors ?? true;
   const openAccess = config?.openAccess ?? true;
   const accessListAddresses: string[] = [];
@@ -99,5 +78,5 @@ export function resolveSystemConfig({
     }
   }
 
-  return { name, namespace, registerFunctionSelectors, openAccess, accessListAddresses, accessListSystems };
+  return { name, registerFunctionSelectors, openAccess, accessListAddresses, accessListSystems };
 }
