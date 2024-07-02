@@ -36,6 +36,16 @@ export default defineStore({
       },
       key: ["resourceId"],
     },
+    // We allow defining resource names with >16 chars, but truncate to 16 chars when generating resource IDs to fit it into the resource ID's bytes16 name slot.
+    // When hydrating a project from an existing MUD world, we'd like to restore the original resource name (instead of the truncated variant) for better UX.
+    ResourceNames: {
+      type: "offchainTable",
+      schema: {
+        resourceId: "ResourceId",
+        name: "string",
+      },
+      key: ["resourceId"],
+    },
     // The Hooks table is a generic table used by the `filterFromList` util in `Hook.sol`
     Hooks: {
       schema: {
