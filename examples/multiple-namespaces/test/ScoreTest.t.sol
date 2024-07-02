@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 import { MudTest } from "@latticexyz/world/test/MudTest.t.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { Score } from "../src/codegen/scoreboard/tables/Score.sol";
+import { Score } from "../src/namespaces/scoreboard/codegen/tables/Score.sol";
 
 address constant alice = address(1);
 

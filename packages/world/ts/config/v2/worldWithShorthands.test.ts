@@ -17,7 +17,7 @@ describe("defineWorldWithShorthands", () => {
   it("should resolve namespaced shorthand table config with user types and enums", () => {
     const config = defineWorldWithShorthands({
       namespaces: {
-        ExampleNamespace: {
+        ExampleNS: {
           tables: {
             ExampleTable: "Static",
           },
@@ -36,8 +36,8 @@ describe("defineWorldWithShorthands", () => {
       ...CONFIG_DEFAULTS,
       codegen: { ...CODEGEN_DEFAULTS, indexFilename: false as string | false, namespaceDirectories: true as boolean },
       tables: {
-        ExampleNamespace__ExampleTable: {
-          tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
+        ExampleNS__ExampleTable: {
+          tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
           schema: {
             id: {
               type: "bytes32",
@@ -50,11 +50,11 @@ describe("defineWorldWithShorthands", () => {
           },
           key: ["id"],
           name: "ExampleTable",
-          namespace: "ExampleNamespace",
+          namespace: "ExampleNS",
           codegen: {
             ...TABLE_CODEGEN_DEFAULTS,
             dataStruct: false as boolean,
-            outputDirectory: "ExampleNamespace/tables" as string,
+            outputDirectory: "ExampleNS/tables" as string,
           },
           type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
@@ -82,7 +82,7 @@ describe("defineWorldWithShorthands", () => {
   it("should resolve namespaced shorthand schema table config with user types and enums", () => {
     const config = defineWorldWithShorthands({
       namespaces: {
-        ExampleNamespace: {
+        ExampleNS: {
           tables: {
             ExampleTable: {
               id: "Static",
@@ -105,8 +105,8 @@ describe("defineWorldWithShorthands", () => {
       ...CONFIG_DEFAULTS,
       codegen: { ...CODEGEN_DEFAULTS, indexFilename: false as string | false, namespaceDirectories: true as boolean },
       tables: {
-        ExampleNamespace__ExampleTable: {
-          tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
+        ExampleNS__ExampleTable: {
+          tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
           schema: {
             id: {
               type: "address",
@@ -123,11 +123,11 @@ describe("defineWorldWithShorthands", () => {
           },
           key: ["id"],
           name: "ExampleTable",
-          namespace: "ExampleNamespace",
+          namespace: "ExampleNS",
           codegen: {
             ...TABLE_CODEGEN_DEFAULTS,
             dataStruct: true as boolean,
-            outputDirectory: "ExampleNamespace/tables" as string,
+            outputDirectory: "ExampleNS/tables" as string,
           },
           type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
@@ -369,7 +369,7 @@ describe("defineWorldWithShorthands", () => {
     attest(() =>
       defineWorldWithShorthands({
         namespaces: {
-          ExampleNamespace: {
+          ExampleNS: {
             tables: {
               // @ts-expect-error Type '"number"' is not assignable to type 'AbiType'.
               ExampleTable: "number",
@@ -384,7 +384,7 @@ describe("defineWorldWithShorthands", () => {
     attest(() =>
       defineWorldWithShorthands({
         namespaces: {
-          ExampleNamespace: {
+          ExampleNS: {
             // @ts-expect-error Type 'true' is not assignable to type '"`invalidProperty` is not a valid namespace config option.
             invalidProperty: true,
           },

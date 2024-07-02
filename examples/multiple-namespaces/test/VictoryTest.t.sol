@@ -7,7 +7,7 @@ import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
 import { ResourceId, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { Victory } from "../src/codegen/game/tables/Victory.sol";
+import { Victory } from "../src/namespaces/game/codegen/tables/Victory.sol";
 
 contract VictoryTest is MudTest {
   using WorldResourceIdInstance for ResourceId;
