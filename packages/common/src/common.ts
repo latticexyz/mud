@@ -9,3 +9,6 @@ export type Resource = {
 };
 
 export const ROOT_NAMESPACE = "";
+
+export const NAME_MAX_LENGTH = 16;
+export const NAMESPACE_MAX_LENGTH = 14;

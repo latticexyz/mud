@@ -1,6 +1,7 @@
 import { UnrecognizedSystemErrorFactory } from "@latticexyz/config/library";
 import { StoreConfig } from "@latticexyz/store/internal";
 import { SystemConfig, WorldConfig } from "./types";
+import { NAMESPACE_MAX_LENGTH, NAME_MAX_LENGTH } from "@latticexyz/common";
 
 export type ResolvedSystemConfig = ReturnType<typeof resolveSystemConfig>;
 
@@ -77,8 +78,8 @@ export function resolveSystemConfig({
   // If the namespace is not set in the system name, default to the config namespace
   const parts = systemName.split("__");
   const namespaceIsSet = parts.length === 2;
-  const namespace = namespaceIsSet ? parts[0] : configNamespace;
-  const name = namespaceIsSet ? parts[1] : systemName;
+  const namespace = (namespaceIsSet ? parts[0] : configNamespace).slice(0, NAMESPACE_MAX_LENGTH);
+  const name = (namespaceIsSet ? parts[1] : parts[0]).slice(0, NAME_MAX_LENGTH);
 
   const registerFunctionSelectors = config?.registerFunctionSelectors ?? true;
   const openAccess = config?.openAccess ?? true;

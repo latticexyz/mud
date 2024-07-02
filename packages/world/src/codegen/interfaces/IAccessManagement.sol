@@ -6,11 +6,11 @@ pragma solidity >=0.8.24;
 import { ResourceId } from "./../../WorldResourceId.sol";
 
 /**
- * @title IAccessManagementSystem
+ * @title IAccessManagement
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
-interface IAccessManagementSystem {
+interface IAccessManagement {
   function grantAccess(ResourceId resourceId, address grantee) external;
 
   function revokeAccess(ResourceId resourceId, address grantee) external;

@@ -8,11 +8,11 @@ import { ISystemHook } from "./../../ISystemHook.sol";
 import { System } from "./../../System.sol";
 
 /**
- * @title IWorldRegistrationSystem
+ * @title IWorldRegistratio
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
-interface IWorldRegistrationSystem {
+interface IWorldRegistratio {
   function registerNamespace(ResourceId namespaceId) external;
 
   function registerSystemHook(ResourceId systemId, ISystemHook hookAddress, uint8 enabledHooksBitmap) external;

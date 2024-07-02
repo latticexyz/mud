@@ -1,5 +1,5 @@
 import { Hex, stringToHex, concatHex } from "viem";
-import { Resource } from "./common";
+import { NAMESPACE_MAX_LENGTH, NAME_MAX_LENGTH, Resource } from "./common";
 import { ResourceType } from "./resourceTypes";
 
 /** @internal */
@@ -17,7 +17,7 @@ export function resourceToHex(resource: Omit<Resource, "resourceId">): Hex {
   const typeId = resourceTypeIds[resource.type];
   return concatHex([
     stringToHex(typeId, { size: 2 }),
-    stringToHex(resource.namespace.slice(0, 14), { size: 14 }),
-    stringToHex(resource.name.slice(0, 16), { size: 16 }),
+    stringToHex(resource.namespace.slice(0, NAMESPACE_MAX_LENGTH), { size: NAMESPACE_MAX_LENGTH }),
+    stringToHex(resource.name.slice(0, NAME_MAX_LENGTH), { size: NAME_MAX_LENGTH }),
   ]);
 }
