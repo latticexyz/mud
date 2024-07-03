@@ -6,9 +6,9 @@ import { basename } from "path";
  */
 export function getExistingContracts(srcDir: string) {
   return globSync(`${srcDir}/**/*.sol`)
-    .sort()
     .map((path) => ({
       path,
       basename: basename(path, ".sol"),
-    }));
+    }))
+    .sort((a, b) => a.basename.localeCompare(b.basename));
 }
