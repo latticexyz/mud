@@ -1,48 +1,56 @@
 import { resourceToHex } from "@latticexyz/common";
 import { World } from "../config/v2/output";
-import { getContracts } from "./getContracts";
+import { findSolidityFiles } from "./findSolidityFiles";
 
 const namespacePattern = /\/namespaces\/(?<namespace>[^/]+)\//;
 
 export async function getSystemContracts({ configPath, config }: { configPath: string; config: World }) {
-  const contracts = await getContracts({ configPath, config });
+  const solidityFiles = await findSolidityFiles({ configPath, config });
 
   // TODO: validate alignment between config systems (namespaces, system names)
 
-  return contracts
+  return solidityFiles
+    .map((file) => ({
+      sourcePath: file.filename,
+      name: file.basename,
+    }))
     .filter(
-      (contract) =>
-        contract.name.endsWith("System") &&
+      (file) =>
+        file.name.endsWith("System") &&
         // exclude the base System contract
-        contract.name !== "System" &&
+        file.name !== "System" &&
         // exclude interfaces
-        !/^I[A-Z]/.test(contract.name),
+        !/^I[A-Z]/.test(file.name),
     )
-    .map((contract) => {
+    .map((system) => {
       if (config.internal.multipleNamespaces) {
-        const match = contract.source.match(namespacePattern);
+        const match = system.sourcePath.match(namespacePattern);
         const namespace = match?.groups?.namespace;
         if (namespace == null) {
           throw new Error(
-            `This MUD app is configured to use multiple namespaces, but system contract at \`${contract.source}\` was not in a namespace directory.`,
+            `This MUD app is configured to use multiple namespaces, but system contract at \`${system.sourcePath}\` was not in a namespace directory.`,
           );
         }
-        return { namespace, name: contract.name, source: contract.source };
+        // TODO: look up namespace in config in case this is a label
+        return { source: system.sourcePath, namespace, name: system.name };
       }
 
-      if (namespacePattern.test(contract.source)) {
+      if (namespacePattern.test(system.sourcePath)) {
         throw new Error(
-          `This MUD app is configured to use a single namespace, but system contract at \`${contract.source}\` was in a namespace directory.`,
+          `This MUD app is configured to use a single namespace, but system contract at \`${system.sourcePath}\` was in a namespace directory.`,
         );
       }
-      return { namespace: config.namespace, name: contract.name, source: contract.source };
+      return { source: system.sourcePath, namespace: config.namespace, name: system.name };
     })
-    .map((system) => ({
-      ...system,
-      systemId: resourceToHex({
-        type: "system",
-        namespace: system.namespace,
-        name: system.namespace,
-      }),
-    }));
+    .map((system) => {
+      console.log("system", system);
+      return {
+        ...system,
+        systemId: resourceToHex({
+          type: "system",
+          namespace: system.namespace,
+          name: system.name,
+        }),
+      };
+    });
 }

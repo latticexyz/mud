@@ -2,7 +2,7 @@ import path from "node:path";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { getRemappings } from "@latticexyz/common/foundry";
 import { tablegen } from "@latticexyz/store/codegen";
-import { getContracts } from "../node/getContracts";
+import { findSolidityFiles } from "../node/findSolidityFiles";
 import { World } from "../config/v2";
 import { generateSystemManifest, worldgen } from "../node";
 
@@ -18,9 +18,9 @@ const config = (await loadConfig(configPath)) as World;
 const remappings = await getRemappings();
 
 // TODO: move this into worldgen
-const existingContracts = (await getContracts({ configPath, config })).map((contract) => ({
-  path: contract.source,
-  basename: contract.name,
+const existingContracts = (await findSolidityFiles({ configPath, config })).map((file) => ({
+  path: file.filename,
+  basename: file.basename,
 }));
 const codegenDirectory = path.join(config.sourceDirectory, config.codegen.outputDirectory);
 

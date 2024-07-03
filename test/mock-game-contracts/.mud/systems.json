@@ -1,8 +1,8 @@
 [
   {
+    "source": "src/systems/MoveSystem.sol",
     "namespace": "",
     "name": "MoveSystem",
-    "source": "src/systems/MoveSystem.sol",
-    "systemId": "0x7379000000000000000000000000000000000000000000000000000000000000"
+    "systemId": "0x737900000000000000000000000000004d6f766553797374656d000000000000"
   }
 ]
