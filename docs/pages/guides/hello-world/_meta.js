@@ -5,5 +5,6 @@ export default {
   "deploy": {
     "title": "Deploy to a blockchain",
     "href": "/cli/deploy"
-  }
+  },
+  "browser-wallet": "Use a browser wallet"
 };
