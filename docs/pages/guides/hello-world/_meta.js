@@ -7,5 +7,4 @@ export default {
     "href": "/cli/deploy"
   },
   "add-chain-client": "Add chains to the client",
-  "browser-wallet": "Use a browser wallet",
 };
