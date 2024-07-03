@@ -8,6 +8,10 @@ export default defineWorld({
       openAccess: true,
     },
   },
+  excludeSystems: [
+    // Until namespace overrides, this system must be manually deployed in PostDeploy
+    "ChatNamespacedSystem",
+  ],
   tables: {
     CounterTable: {
       schema: {

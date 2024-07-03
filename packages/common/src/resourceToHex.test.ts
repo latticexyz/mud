@@ -37,21 +37,16 @@ describe("resourceToHex", () => {
     `);
   });
 
-  it("truncates namespaces >14 bytes", () => {
-    const hex = resourceToHex({
-      type: "table",
-      namespace: "AVeryLongNamespace",
-      name: "name",
-    });
-    expect(hex).toMatchInlineSnapshot('"0x746241566572794c6f6e674e616d65736e616d65000000000000000000000000"');
-    expect(hexToResource(hex)).toMatchInlineSnapshot(`
-      {
-        "name": "name",
-        "namespace": "AVeryLongNames",
-        "resourceId": "0x746241566572794c6f6e674e616d65736e616d65000000000000000000000000",
-        "type": "table",
-      }
-    `);
+  it("throws for namespaces >14 bytes", () => {
+    expect(() =>
+      resourceToHex({
+        type: "table",
+        namespace: "AVeryLongNamespace",
+        name: "name",
+      }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      '"Namespaces must fit into `bytes14`, but \\"AVeryLongNamespace\\" is too long."',
+    );
   });
 
   it("truncates names >16 bytes", () => {
