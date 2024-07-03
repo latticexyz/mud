@@ -1,0 +1,22 @@
+[
+  {
+    "filename": "src/systems/ChatNamespacedSystem.sol",
+    "name": "ChatNamespacedSystem"
+  },
+  {
+    "filename": "src/systems/ChatSystem.sol",
+    "name": "ChatSystem"
+  },
+  {
+    "filename": "src/systems/IncrementSystem.sol",
+    "name": "IncrementSystem"
+  },
+  {
+    "filename": "src/systems/InventorySystem.sol",
+    "name": "InventorySystem"
+  },
+  {
+    "filename": "src/systems/StructSystem.sol",
+    "name": "StructSystem"
+  }
+]

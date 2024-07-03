@@ -1,0 +1,30 @@
+[
+  {
+    "filename": "src/modules/init/RegistrationSystem.sol",
+    "name": "RegistrationSystem"
+  },
+  {
+    "filename": "src/modules/init/implementations/AccessManagementSystem.sol",
+    "name": "AccessManagementSystem"
+  },
+  {
+    "filename": "src/modules/init/implementations/BalanceTransferSystem.sol",
+    "name": "BalanceTransferSystem"
+  },
+  {
+    "filename": "src/modules/init/implementations/BatchCallSystem.sol",
+    "name": "BatchCallSystem"
+  },
+  {
+    "filename": "src/modules/init/implementations/ModuleInstallationSystem.sol",
+    "name": "ModuleInstallationSystem"
+  },
+  {
+    "filename": "src/modules/init/implementations/StoreRegistrationSystem.sol",
+    "name": "StoreRegistrationSystem"
+  },
+  {
+    "filename": "src/modules/init/implementations/WorldRegistrationSystem.sol",
+    "name": "WorldRegistrationSystem"
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "filename": "src/systems/CustomErrorsSystem.sol",
+    "name": "CustomErrorsSystem"
+  },
+  {
+    "filename": "src/systems/LibWrapperSystem.sol",
+    "name": "LibWrapperSystem"
+  },
+  {
+    "filename": "src/systems/NumberListSystem.sol",
+    "name": "NumberListSystem"
+  },
+  {
+    "filename": "src/systems/NumberSystem.sol",
+    "name": "NumberSystem"
+  },
+  {
+    "filename": "src/systems/VectorSystem.sol",
+    "name": "VectorSystem"
+  }
+]
