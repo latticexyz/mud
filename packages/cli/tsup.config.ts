@@ -8,6 +8,7 @@ const mudWorkspace = path.normalize(`${__dirname}/../..`);
 
 const mudPackages: MudPackages = Object.fromEntries(
   globSync(path.join(mudWorkspace, `packages/*/package.json`))
+    .sort()
     .map((filename) => [
       path.relative(mudWorkspace, path.dirname(filename)),
       JSON.parse(readFileSync(filename, "utf8")),

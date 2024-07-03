@@ -7,9 +7,9 @@ export function findLibraries(forgeOutDir: string): readonly {
   readonly path: string;
   readonly name: string;
 }[] {
-  const artifacts = globSync(`${forgeOutDir}/**/*.json`, { ignore: "**/*.abi.json" }).map((path) =>
-    JSON.parse(readFileSync(path, "utf8")),
-  );
+  const artifacts = globSync(`${forgeOutDir}/**/*.json`, { ignore: "**/*.abi.json" })
+    .sort()
+    .map((path) => JSON.parse(readFileSync(path, "utf8")));
 
   const libraries = artifacts.flatMap((artifact) => {
     if (!artifact.metadata) return [];

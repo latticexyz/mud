@@ -63,7 +63,10 @@ const commandModule: CommandModule<Options, Options> = {
       }
 
       // Update all package.json below the current working directory (except in node_modules)
-      const packageJsons = globSync("**/package.json").filter((p) => !p.includes("node_modules"));
+      const packageJsons = globSync("**/package.json")
+        .sort()
+        .filter((p) => !p.includes("node_modules"));
+
       for (const packageJson of packageJsons) {
         updatePackageJson(packageJson, options);
       }

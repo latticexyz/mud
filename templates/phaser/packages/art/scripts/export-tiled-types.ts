@@ -4,7 +4,7 @@ import { globSync } from "glob";
 import ejs from "ejs";
 import path from "path";
 
-const tilemaps = globSync("./tilesets/*.tsx");
+const tilemaps = globSync("./tilesets/*.tsx").sort();
 
 enum PropertyName {
   Name = "name",

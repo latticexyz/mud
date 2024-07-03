@@ -120,7 +120,7 @@ async function getChanges(include: "diff" | "all") {
     );
   } else if (include === "all") {
     // Load all current changesets from the .changeset dir
-    const changesetsToInclude = globSync(".changeset/*.md");
+    const changesetsToInclude = globSync(".changeset/*.md").sort();
 
     // Load the contents of each changeset from file and metadata from git
     changesetContents = await Promise.all(
