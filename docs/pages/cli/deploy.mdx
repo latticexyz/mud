@@ -100,7 +100,7 @@ The [TypeScript templates](/quickstart#using-the-templates) provided by Lattice 
 When you develop locally, you run `pnpm dev` from the root of the template and that runs both packages.
 However, when you deploy to a different blockchain you don't need `anvil` running anymore, so instead you:
 
-1. Use `pnpm mud deploy` to deploy to the appropriate blockchain.
+1. Use `pnpm mud deploy` in the `packages/contracts` directory to deploy to the appropriate blockchain.
 1. Specify the chain on which you installed the contracts in the `VITE_CHAIN_ID` environment variable.
    For example, if you installed on [Garnet](https://garnetchain.com/docs/network-info), run this command.
 
@@ -109,5 +109,5 @@ However, when you deploy to a different blockchain you don't need `anvil` runnin
    ```
 
 1. Run `pnpm vite` in the `packages/clients` directory to start the user interface.
-   If you want to use a different chain ID than the one specified for vite, use the `chainId` parameter.
+   If you want to use a different chain ID than the one specified for vite, use the `chainId` URL parameter.
    For example, if you deployed both to Garnet and a local `anvil` instance, you can use [`http://localhost:3000/?chainId=31337`](http://localhost:3000/?chainId=31337) to get to the local instance regardless of the `VITE_CHAIN_ID` value.
