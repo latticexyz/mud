@@ -106,9 +106,9 @@ Error running "forge script PostDeploy --broadcast --sig run(address) <world add
     (...)
 ```
 
-For some reason, the default gas estimates coming from the blockchain are too low, so the transaction runs out of gas.
+In some cases, `forge`'s default gas estimates are too low, so the transaction runs out of gas.
 
-To get around this issue, use the `--forgeScriptOptions` command line parameter to specify [the gas estimate multiplier](https://book.getfoundry.sh/reference/forge/forge-script?highlight=gas-estimate-multiplier#options) `forge script` will use.
+Until [the issue is fixed upstream](https://github.com/latticexyz/mud/issues/2907), you can get around it by using the `--forgeScriptOptions` command line parameter to specify [the gas estimate multiplier](https://book.getfoundry.sh/reference/forge/forge-script?highlight=gas-estimate-multiplier#options) `forge script` will use.
 
 ```
 pnpm mud deploy --rpc $RPC_URL --forgeScriptOptions '\-\-gas-estimate-multiplier 200'
