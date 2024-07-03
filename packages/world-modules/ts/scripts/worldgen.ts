@@ -13,11 +13,11 @@ const srcDir = await getSrcDirectory();
 
 // Get a list of all contract names
 const existingContracts = globSync(`${srcDir}/**/*.sol`)
+  .sort()
   .map((path) => ({
     path,
     basename: basename(path, ".sol"),
-  }))
-  .sort((a, b) => a.basename.localeCompare(b.basename));
+  }));
 
 // Load and resolve the config
 const mudConfig = (await loadConfig(configPath)) as WorldConfig;
