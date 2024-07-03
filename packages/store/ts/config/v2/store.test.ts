@@ -18,6 +18,7 @@ describe("defineStore", () => {
 
     const expected = {
       sourceDirectory: "src",
+      metadataDirectory: ".mud",
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -69,6 +70,7 @@ describe("defineStore", () => {
 
     const expected = {
       sourceDirectory: "src",
+      metadataDirectory: ".mud",
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -119,6 +121,7 @@ describe("defineStore", () => {
 
     const expected = {
       sourceDirectory: "src",
+      metadataDirectory: ".mud",
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -170,6 +173,7 @@ describe("defineStore", () => {
 
     const expected = {
       sourceDirectory: "src",
+      metadataDirectory: ".mud",
       tables: {
         First: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
@@ -248,6 +252,7 @@ describe("defineStore", () => {
 
     const expected = {
       sourceDirectory: "src",
+      metadataDirectory: ".mud",
       tables: {
         First: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
@@ -382,6 +387,7 @@ describe("defineStore", () => {
     });
     const expected = {
       sourceDirectory: "src",
+      metadataDirectory: ".mud",
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -575,6 +581,7 @@ describe("defineStore", () => {
 
     const expected = {
       sourceDirectory: "src",
+      metadataDirectory: ".mud",
       tables: {
         app__NamespaceDir: {
           tableId: resourceToHex({ type: "table", namespace: "app", name: "NamespaceDir" }),

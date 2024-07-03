@@ -10,6 +10,7 @@ describe("defineStoreWithShorthands", () => {
     const config = defineStoreWithShorthands({ tables: { Name: "address" } });
     const expected = {
       sourceDirectory: "src",
+      metadataDirectory: ".mud",
       tables: {
         Name: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
@@ -48,6 +49,7 @@ describe("defineStoreWithShorthands", () => {
     });
     const expected = {
       sourceDirectory: "src",
+      metadataDirectory: ".mud",
       tables: {
         Name: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
@@ -86,6 +88,7 @@ describe("defineStoreWithShorthands", () => {
     });
     const expected = {
       sourceDirectory: "src",
+      metadataDirectory: ".mud",
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -128,6 +131,7 @@ describe("defineStoreWithShorthands", () => {
 
     const expected = {
       sourceDirectory: "src",
+      metadataDirectory: ".mud",
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
