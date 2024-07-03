@@ -1,3 +1,4 @@
+import { CollapseCode } from "../../components/CollapseCode";
 import { Callout } from "nextra/components";
 
 # System hooks
@@ -20,3 +21,142 @@ This interface requires the implementation of two functions.
 - `supportsInterface`, which is part of [IEP-165](https://eips.ethereum.org/EIPS/eip-165) used to specify which interfaces are supported by a contract.
 
 To have the correct `supportsInterface` you can inherit from [`SystemHook`](https://github.com/latticexyz/mud/blob/main/packages/world/src/SystemHook.sol).
+
+## Sample code
+
+<CollapseCode>
+
+```solidity copy showLineNumbers {9-13, 15-24, 36-47}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+import { SystemHook } from "@latticexyz/world/src/SystemHook.sol";
+
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "@latticexyz/world/src/systemHookTypes.sol";
+
+contract JustSayNo is SystemHook {
+  function onBeforeCallSystem(address msgSender, ResourceId systemId, bytes memory callData) external {
+    return;
+  }
+
+  function onAfterCallSystem(address msgSender, ResourceId systemId, bytes memory callData) external {
+    revert("Just say no");
+  }
+}
+
+contract SystemHookDeploy is Script {
+  function run() external {
+    address worldAddress = 0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1;
+
+    // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+
+    // Start broadcasting transactions from the deployer account
+    vm.startBroadcast(deployerPrivateKey);
+
+    // Deploy JustSayNo
+    JustSayNo justSayNo = new JustSayNo();
+    console.log(address(justSayNo));
+
+    ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "", name: "TasksSystem" });
+
+    IWorld(worldAddress).registerSystemHook(systemId, justSayNo, AFTER_CALL_SYSTEM);
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```solidity
+import { SystemHook } from "@latticexyz/world/src/SystemHook.sol";
+```
+
+The system hook contract inherits from `SystemHook`.
+
+```solidity
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+```
+
+We need to create the resource of the `System` for which we register a hook.
+
+```solidity
+import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "@latticexyz/world/src/systemHookTypes.sol";
+```
+
+We need these constants to specify when the hook applies.
+
+```solidity
+contract JustSayNo is SystemHook {
+
+  function onBeforeCallSystem(address msgSender, ResourceId systemId, bytes memory callData) external {
+    return ;
+  }
+
+  function onAfterCallSystem(address msgSender, ResourceId systemId, bytes memory callData) external {
+```
+
+This is the system hook contract.
+It has two functions:
+
+- `onBeforeCallSystem`, which is executed before the call
+- `onAfterCallSystem`, which is executed after the call
+
+Both functions get the sender, the system being called, and the call data it receives.
+
+```solidity
+    revert("Just say no");
+  }
+}
+```
+
+This hook disables the `System` by causing all calls to revert.
+
+```solidity
+contract SystemHookDeploy is Script {
+  function run() external {
+   ...
+```
+
+This is the function that the script executes.
+
+```solidity
+    // Deploy JustSayNo
+    JustSayNo justSayNo = new JustSayNo();
+```
+
+Deploy the system hook contract.
+
+```solidity
+    ResourceId systemId = WorldResourceIdLib.encode(
+      { typeId: RESOURCE_SYSTEM,
+        namespace: "",
+        name: "TasksSystem"
+      });
+```
+
+Create the resource ID for the `System` we are disabling.
+
+```solidity
+    IWorld(worldAddress)
+        .registerSystemHook(systemId, justSayNo, AFTER_CALL_SYSTEM);
+  }
+}
+```
+
+Register the system hook.
+
+</details>
