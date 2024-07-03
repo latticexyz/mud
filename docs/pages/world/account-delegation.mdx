@@ -38,7 +38,7 @@ The most common type of delegation is when a delegator address allows a specific
 
 Delegation can either be unlimited or limited by various factors (time, calldata, etc.).
 To create a limited delegation you need a contract that implements the [`DelegationControl`](https://github.com/latticexyz/mud/blob/main/packages/world/src/DelegationControl.sol) interface to decide whether or not to approve a specific call.
-The owner of the root namespace (and therefore the `World`) needs to deploy the [`StandardDelegationModule`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/StandardDelegationsModule.sol), which includes three delegation control contracts:
+The [`StandardDelegationModule`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/StandardDelegationsModule.sol) includes three limited delegation control contracts. To use them, the owner of the root namespace needs to install this module.
 
 - [`CallboundDelegationControl`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/CallboundDelegationControl.sol)
 - [`SystemboundDelegationControl`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/SystemboundDelegationControl.sol)
