@@ -20,7 +20,7 @@ If you wish to use the `react` template you'll need to modify a bit to account f
 
 ## File changes
 
-You need to edit both `supportedChains.ts` and `setupNetwork.ts`.
+You need to edit `supportedChains.ts`, and possibly also `setupNetwork.ts`.
 
 - Edit the file `packages/client/src/mud/supportedChains.ts` to add the chain definition from Viem.
   You can see [the list of chains supported by Viem](https://github.com/wevm/viem/blob/main/src/chains/index.ts).
@@ -33,35 +33,8 @@ You need to edit both `supportedChains.ts` and `setupNetwork.ts`.
   export const supportedChains: MUDChain[] = [mudFoundry, redstone, garnet, holesky];
   ```
 
-- Very often chain objects in Viem don't have a webSocket endpoint, only an HTTP one.
-  Edit `packages/client/src/mud/setupNetwork.ts` to only use a webSocket endpoint when one is defined.
-
-  ```ts showLineNumbers {1-18,22}
-  const urlTypes =
-    (networkConfig.chain.rpcUrls.default.webSocket ? "w" : "-") +
-    (networkConfig.chain.rpcUrls.default.http ? "h" : "-");
-  let fallbacks = [];
-  switch (urlTypes) {
-    case "wh":
-      fallbacks = [webSocket(), http()];
-      break;
-    case "w-":
-      fallbacks = [webSocket()];
-      break;
-    case "-h":
-      fallbacks = [http()];
-      break;
-    case "--":
-    default:
-      console.log("No URL type I can use for the chain");
-  }
-
-  const clientOptions = {
-    chain: networkConfig.chain,
-    transport: transportObserver(fallback(fallbacks)),
-    pollingInterval: 1000,
-  } as const satisfies ClientConfig;
-  ```
+- If the chain object in Viem doesn't have a webSocket endpoint, only an HTTP one, you need to edit [`packages/client/src/mud/setupNetwork.ts`](https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/client/src/mud/setupNetwork.ts#L47) to only use a webSocket endpoint when one is defined.
+  You might also wish to deal with the possibility you only have a webSocket endpoint defined, depending on the chains you support.
 
 ## Use the application
 
