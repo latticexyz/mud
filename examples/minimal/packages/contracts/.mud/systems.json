@@ -1,22 +1,32 @@
 [
   {
-    "filename": "src/systems/ChatNamespacedSystem.sol",
-    "name": "ChatNamespacedSystem"
+    "namespace": "",
+    "name": "ChatNamespacedSystem",
+    "source": "src/systems/ChatNamespacedSystem.sol",
+    "systemId": "0x7379000000000000000000000000000000000000000000000000000000000000"
   },
   {
-    "filename": "src/systems/ChatSystem.sol",
-    "name": "ChatSystem"
+    "namespace": "",
+    "name": "ChatSystem",
+    "source": "src/systems/ChatSystem.sol",
+    "systemId": "0x7379000000000000000000000000000000000000000000000000000000000000"
   },
   {
-    "filename": "src/systems/IncrementSystem.sol",
-    "name": "IncrementSystem"
+    "namespace": "",
+    "name": "IncrementSystem",
+    "source": "src/systems/IncrementSystem.sol",
+    "systemId": "0x7379000000000000000000000000000000000000000000000000000000000000"
   },
   {
-    "filename": "src/systems/InventorySystem.sol",
-    "name": "InventorySystem"
+    "namespace": "",
+    "name": "InventorySystem",
+    "source": "src/systems/InventorySystem.sol",
+    "systemId": "0x7379000000000000000000000000000000000000000000000000000000000000"
   },
   {
-    "filename": "src/systems/StructSystem.sol",
-    "name": "StructSystem"
+    "namespace": "",
+    "name": "StructSystem",
+    "source": "src/systems/StructSystem.sol",
+    "systemId": "0x7379000000000000000000000000000000000000000000000000000000000000"
   }
 ]

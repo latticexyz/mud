@@ -1,22 +1,32 @@
 [
   {
-    "filename": "src/systems/CustomErrorsSystem.sol",
-    "name": "CustomErrorsSystem"
+    "namespace": "",
+    "name": "CustomErrorsSystem",
+    "source": "src/systems/CustomErrorsSystem.sol",
+    "systemId": "0x7379000000000000000000000000000000000000000000000000000000000000"
   },
   {
-    "filename": "src/systems/LibWrapperSystem.sol",
-    "name": "LibWrapperSystem"
+    "namespace": "",
+    "name": "LibWrapperSystem",
+    "source": "src/systems/LibWrapperSystem.sol",
+    "systemId": "0x7379000000000000000000000000000000000000000000000000000000000000"
   },
   {
-    "filename": "src/systems/NumberListSystem.sol",
-    "name": "NumberListSystem"
+    "namespace": "",
+    "name": "NumberListSystem",
+    "source": "src/systems/NumberListSystem.sol",
+    "systemId": "0x7379000000000000000000000000000000000000000000000000000000000000"
   },
   {
-    "filename": "src/systems/NumberSystem.sol",
-    "name": "NumberSystem"
+    "namespace": "",
+    "name": "NumberSystem",
+    "source": "src/systems/NumberSystem.sol",
+    "systemId": "0x7379000000000000000000000000000000000000000000000000000000000000"
   },
   {
-    "filename": "src/systems/VectorSystem.sol",
-    "name": "VectorSystem"
+    "namespace": "",
+    "name": "VectorSystem",
+    "source": "src/systems/VectorSystem.sol",
+    "systemId": "0x7379000000000000000000000000000000000000000000000000000000000000"
   }
 ]

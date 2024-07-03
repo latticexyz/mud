@@ -7,8 +7,8 @@ export async function getContracts({ configPath, config }: { configPath: string;
     cwd: path.dirname(configPath),
   });
 
-  return files.sort().map((filename) => ({
-    filename,
-    name: path.basename(filename, ".sol"),
+  return files.sort().map((source) => ({
+    source,
+    name: path.basename(source, ".sol"),
   }));
 }

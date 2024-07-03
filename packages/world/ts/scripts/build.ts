@@ -19,7 +19,7 @@ const remappings = await getRemappings();
 
 // TODO: move this into worldgen
 const existingContracts = (await getContracts({ configPath, config })).map((contract) => ({
-  path: contract.filename,
+  path: contract.source,
   basename: contract.name,
 }));
 const codegenDirectory = path.join(config.sourceDirectory, config.codegen.outputDirectory);

@@ -1,30 +1,44 @@
 [
   {
-    "filename": "src/modules/init/RegistrationSystem.sol",
-    "name": "RegistrationSystem"
+    "namespace": "world",
+    "name": "RegistrationSystem",
+    "source": "src/modules/init/RegistrationSystem.sol",
+    "systemId": "0x7379776f726c64000000000000000000776f726c640000000000000000000000"
   },
   {
-    "filename": "src/modules/init/implementations/AccessManagementSystem.sol",
-    "name": "AccessManagementSystem"
+    "namespace": "world",
+    "name": "AccessManagementSystem",
+    "source": "src/modules/init/implementations/AccessManagementSystem.sol",
+    "systemId": "0x7379776f726c64000000000000000000776f726c640000000000000000000000"
   },
   {
-    "filename": "src/modules/init/implementations/BalanceTransferSystem.sol",
-    "name": "BalanceTransferSystem"
+    "namespace": "world",
+    "name": "BalanceTransferSystem",
+    "source": "src/modules/init/implementations/BalanceTransferSystem.sol",
+    "systemId": "0x7379776f726c64000000000000000000776f726c640000000000000000000000"
   },
   {
-    "filename": "src/modules/init/implementations/BatchCallSystem.sol",
-    "name": "BatchCallSystem"
+    "namespace": "world",
+    "name": "BatchCallSystem",
+    "source": "src/modules/init/implementations/BatchCallSystem.sol",
+    "systemId": "0x7379776f726c64000000000000000000776f726c640000000000000000000000"
   },
   {
-    "filename": "src/modules/init/implementations/ModuleInstallationSystem.sol",
-    "name": "ModuleInstallationSystem"
+    "namespace": "world",
+    "name": "ModuleInstallationSystem",
+    "source": "src/modules/init/implementations/ModuleInstallationSystem.sol",
+    "systemId": "0x7379776f726c64000000000000000000776f726c640000000000000000000000"
   },
   {
-    "filename": "src/modules/init/implementations/StoreRegistrationSystem.sol",
-    "name": "StoreRegistrationSystem"
+    "namespace": "world",
+    "name": "StoreRegistrationSystem",
+    "source": "src/modules/init/implementations/StoreRegistrationSystem.sol",
+    "systemId": "0x7379776f726c64000000000000000000776f726c640000000000000000000000"
   },
   {
-    "filename": "src/modules/init/implementations/WorldRegistrationSystem.sol",
-    "name": "WorldRegistrationSystem"
+    "namespace": "world",
+    "name": "WorldRegistrationSystem",
+    "source": "src/modules/init/implementations/WorldRegistrationSystem.sol",
+    "systemId": "0x7379776f726c64000000000000000000776f726c640000000000000000000000"
   }
 ]

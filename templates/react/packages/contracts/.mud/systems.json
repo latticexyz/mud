@@ -1,6 +1,8 @@
 [
   {
-    "filename": "src/systems/TasksSystem.sol",
-    "name": "TasksSystem"
+    "namespace": "app",
+    "name": "TasksSystem",
+    "source": "src/systems/TasksSystem.sol",
+    "systemId": "0x7379617070000000000000000000000061707000000000000000000000000000"
   }
 ]

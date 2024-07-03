@@ -1,7 +1,7 @@
 import path from "node:path";
 import fs from "node:fs/promises";
 import { World } from "../config/v2";
-import { getSystems } from "./getSystems";
+import { getSystemContracts } from "./getSystemContracts";
 
 export type GenerateSystemManifestOptions = {
   configPath: string;
@@ -9,7 +9,7 @@ export type GenerateSystemManifestOptions = {
 };
 
 export async function generateSystemManifest({ configPath, config }: GenerateSystemManifestOptions): Promise<string> {
-  const systems = await getSystems({ configPath, config });
+  const systems = await getSystemContracts({ configPath, config });
 
   // TODO: iterate through config systems and adjust output accordingly
   // TODO: throw if any systems in config are missing from filesystem
@@ -23,7 +23,7 @@ export async function generateSystemManifest({ configPath, config }: GenerateSys
   // TODO: move to debug?
   console.log(`Writing system manifest to ${outputPath}`);
   await fs.mkdir(path.dirname(outputPath), { recursive: true });
-  await fs.writeFile(outputPath, JSON.stringify(systems, null, 2));
+  await fs.writeFile(outputPath, JSON.stringify(systems, null, 2) + "\n");
 
   return outputPath;
 }
