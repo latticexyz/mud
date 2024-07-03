@@ -1,4 +1,4 @@
-import glob from "glob";
+import { globSync } from "glob";
 import path, { basename } from "path";
 import { rmSync } from "fs";
 import { loadConfig } from "@latticexyz/config/node";
@@ -12,7 +12,7 @@ const clean = false;
 const srcDir = await getSrcDirectory();
 
 // Get a list of all contract names
-const existingContracts = glob.sync(`${srcDir}/**/*.sol`).map((path) => ({
+const existingContracts = globSync(`${srcDir}/**/*.sol`).map((path) => ({
   path,
   basename: basename(path, ".sol"),
 }));

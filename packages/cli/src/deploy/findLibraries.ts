@@ -1,5 +1,5 @@
 import { readFileSync } from "fs";
-import glob from "glob";
+import { globSync } from "glob";
 import { orderByDependencies } from "./orderByDependencies";
 import { LinkReferences } from "../utils/findPlaceholders";
 
@@ -7,9 +7,9 @@ export function findLibraries(forgeOutDir: string): readonly {
   readonly path: string;
   readonly name: string;
 }[] {
-  const artifacts = glob
-    .sync(`${forgeOutDir}/**/*.json`, { ignore: "**/*.abi.json" })
-    .map((path) => JSON.parse(readFileSync(path, "utf8")));
+  const artifacts = globSync(`${forgeOutDir}/**/*.json`, { ignore: "**/*.abi.json" }).map((path) =>
+    JSON.parse(readFileSync(path, "utf8")),
+  );
 
   const libraries = artifacts.flatMap((artifact) => {
     if (!artifact.metadata) return [];
