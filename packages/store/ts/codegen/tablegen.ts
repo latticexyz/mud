@@ -15,37 +15,37 @@ export type TablegenOptions = {
 };
 
 export async function tablegen({ configPath, config, remappings }: TablegenOptions) {
-  const outputDirectory = path.join(path.dirname(configPath), config.sourceDirectory, config.codegen.outputDirectory);
+  const sourceDirectory = path.join(path.dirname(configPath), config.sourceDirectory);
   const configV1 = storeToV1(config);
-  const solidityUserTypes = loadAndExtractUserTypes(configV1.userTypes, outputDirectory, remappings);
-  const allTableOptions = getTableOptions(config, solidityUserTypes);
-
-  const uniqueTableDirectories = Array.from(new Set(allTableOptions.map(({ outputPath }) => path.dirname(outputPath))));
-  await Promise.all(
-    uniqueTableDirectories.map(async (tableDir) => {
-      await rm(path.join(outputDirectory, tableDir), { recursive: true, force: true });
-    }),
+  const solidityUserTypes = loadAndExtractUserTypes(
+    configV1.userTypes,
+    path.join(sourceDirectory, config.codegen.outputDirectory),
+    remappings,
   );
+  const tableOptions = getTableOptions({ configPath, config, solidityUserTypes });
+
+  const tableDirs = Array.from(new Set(tableOptions.map(({ outputPath }) => path.dirname(outputPath))));
+  await Promise.all(tableDirs.map((dir) => rm(dir, { recursive: true, force: true })));
 
   // write tables to files
   await Promise.all(
-    allTableOptions.map(async ({ outputPath, renderOptions }) => {
-      const fullOutputPath = path.join(outputDirectory, outputPath);
+    tableOptions.map(async ({ outputPath, renderOptions }) => {
+      const fullOutputPath = path.join(sourceDirectory, outputPath);
       const output = renderTable(renderOptions);
       await formatAndWriteSolidity(output, fullOutputPath, "Generated table");
     }),
   );
 
   // write table index
-  if (allTableOptions.length > 0 && config.codegen.indexFilename) {
-    const fullOutputPath = path.join(outputDirectory, config.codegen.indexFilename);
-    const output = renderTableIndex(allTableOptions);
+  if (tableOptions.length > 0 && config.codegen.indexFilename) {
+    const fullOutputPath = path.join(sourceDirectory, config.codegen.outputDirectory, config.codegen.indexFilename);
+    const output = renderTableIndex(tableOptions, path.relative(path.dirname(fullOutputPath), sourceDirectory));
     await formatAndWriteSolidity(output, fullOutputPath, "Generated table index");
   }
 
   // write types to file
   if (Object.keys(configV1.enums).length > 0) {
-    const fullOutputPath = path.join(outputDirectory, config.codegen.userTypesFilename);
+    const fullOutputPath = path.join(sourceDirectory, config.codegen.outputDirectory, config.codegen.userTypesFilename);
     const output = renderTypesFromConfig(configV1);
     await formatAndWriteSolidity(output, fullOutputPath, "Generated types file");
   }

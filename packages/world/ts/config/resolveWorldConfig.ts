@@ -12,7 +12,7 @@ export type ResolvedWorldConfig = ReturnType<typeof resolveWorldConfig>;
  * splitting the access list into addresses and system names.
  */
 export function resolveWorldConfig(
-  config: Pick<StoreConfig & WorldConfig, "systems" | "excludeSystems">,
+  config: Pick<StoreConfig & WorldConfig, "namespace" | "systems" | "excludeSystems">,
   existingContracts?: string[],
 ) {
   // Include contract names ending in "System", but not the base "System" contract, and not Interfaces
@@ -38,7 +38,12 @@ export function resolveWorldConfig(
   const resolvedSystems: Record<string, ResolvedSystemConfig> = systemNames.reduce((acc, systemName) => {
     return {
       ...acc,
-      [systemName]: resolveSystemConfig(systemName, config.systems[systemName], existingContracts),
+      [systemName]: resolveSystemConfig({
+        systemName,
+        configNamespace: config.namespace,
+        config: config.systems[systemName],
+        existingContracts,
+      }),
     };
   }, {});
 
@@ -57,7 +62,18 @@ export function resolveWorldConfig(
  * Default value for accessListAddresses is []
  * Default value for accessListSystems is []
  */
-export function resolveSystemConfig(systemName: string, config?: SystemConfig, existingContracts?: string[]) {
+export function resolveSystemConfig({
+  systemName,
+  configNamespace,
+  config,
+  existingContracts,
+}: {
+  systemName: string;
+  configNamespace: string;
+  config?: SystemConfig;
+  existingContracts?: string[];
+}) {
+  const namespace = configNamespace;
   const name = config?.name ?? systemName;
   const registerFunctionSelectors = config?.registerFunctionSelectors ?? true;
   const openAccess = config?.openAccess ?? true;

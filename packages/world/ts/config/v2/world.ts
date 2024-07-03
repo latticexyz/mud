@@ -70,12 +70,12 @@ export type resolveWorld<world> = evaluate<
 
 export function resolveWorld<const world extends WorldInput>(world: world): resolveWorld<world> {
   const scope = extendedScope(world);
-  const namespaces = world.namespaces ?? {};
 
   const resolvedStore = resolveStore({
     ...world,
     codegen: mergeIfUndefined(world.codegen ?? {}, {
-      // put codegen into namespaced directories if we're using `namespaces` key
+      // TODO: move this into `resolveStore` once it supports `namespaces` key?
+      // TODO: deprecate this option or make it not configurable? we're just using it for now to determine if a config is in single or multi namespace mode
       namespaceDirectories: world.namespaces != null,
       // don't generate `index.sol` if we're using `namespaces` key, to avoid naming conflicts for table names across namespaces
       // this is a deprecated option anyway, so this default guides folks towards not using it
@@ -84,7 +84,7 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
   });
 
   const resolvedNamespacedTables = Object.fromEntries(
-    Object.entries(namespaces)
+    Object.entries(world.namespaces ?? {})
       .map(([namespaceKey, namespace]) =>
         Object.entries(namespace.tables ?? {}).map(([tableKey, table]) => {
           validateTable(table, scope);
@@ -92,11 +92,9 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
             `${namespaceKey}__${tableKey}`,
             resolveTable(
               mergeIfUndefined(table, {
+                // TODO: decide if these should be overridable at the table level
                 namespace: namespaceKey,
                 name: tableKey,
-                codegen: mergeIfUndefined(table.codegen ?? {}, {
-                  outputDirectory: resolvedStore.codegen.namespaceDirectories ? `${namespaceKey}/tables` : "tables",
-                }),
               }),
               scope,
             ),
@@ -107,6 +105,8 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
   ) as Tables;
 
   const modules = (world.modules ?? CONFIG_DEFAULTS.modules).map((mod) => mergeIfUndefined(mod, MODULE_DEFAULTS));
+
+  // TODO: add resolved namespaces
 
   return mergeIfUndefined(
     {

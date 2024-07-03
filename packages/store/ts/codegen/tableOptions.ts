@@ -13,23 +13,26 @@ import { getSchemaTypeInfo, importForAbiOrUserType, resolveAbiOrUserType } from 
 import { Store as StoreConfig } from "../config/v2/output";
 import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
 
-export interface TableOptions {
+export type TableOptions = {
   /** Path where the file is expected to be written (relative to project root) */
   outputPath: string;
   /** Name of the table, as used in filename and library name */
   tableName: string;
   /** Options for `renderTable` function */
   renderOptions: RenderTableOptions;
-}
+};
+
+export type GetTablegenOptionsParams = {
+  configPath: string;
+  config: StoreConfig;
+  solidityUserTypes: Record<string, SolidityUserDefinedType>;
+};
 
 /**
  * Transforms store config and available solidity user types into useful options for `tablegen` and `renderTable`
  */
-export function getTableOptions(
-  config: StoreConfig,
-  solidityUserTypes: Record<string, SolidityUserDefinedType>,
-): TableOptions[] {
-  const options = Object.values(config.tables).map((table): TableOptions => {
+export function getTableOptions({ configPath, config, solidityUserTypes }: GetTablegenOptionsParams): TableOptions[] {
+  return Object.values(config.tables).map((table): TableOptions => {
     const keySchema = getKeySchema(table);
     const valueSchema = getValueSchema(table);
 
@@ -94,8 +97,19 @@ export function getTableOptions(
           offchainOnly: table.type === "offchainTable",
         };
 
+    // TODO: should this be constructed inside config as defaults? and only join the config path here to get the path relative to config
+    const outputPath = config.codegen.namespaceDirectories
+      ? path.join(
+          "namespaces",
+          table.namespace,
+          config.codegen.outputDirectory,
+          table.codegen.outputDirectory,
+          `${table.name}.sol`,
+        )
+      : path.join(config.codegen.outputDirectory, table.codegen.outputDirectory, `${table.name}.sol`);
+
     return {
-      outputPath: path.join(table.codegen.outputDirectory, `${table.name}.sol`),
+      outputPath,
       tableName: table.name,
       renderOptions: {
         imports,
@@ -115,6 +129,4 @@ export function getTableOptions(
       },
     };
   });
-
-  return options;
 }

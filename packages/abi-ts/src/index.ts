@@ -1,6 +1,6 @@
 import type { CommandModule } from "yargs";
 import { readFileSync, writeFileSync } from "fs";
-import glob from "glob";
+import { globSync } from "glob";
 import { debug } from "./debug";
 
 type Options = {
@@ -24,7 +24,7 @@ const commandModule: CommandModule<Options, Options> = {
   },
 
   handler({ input }) {
-    const files = glob.sync(input);
+    const files = globSync(input);
 
     if (!files.length) {
       console.error(`No files found for glob: ${input}`);

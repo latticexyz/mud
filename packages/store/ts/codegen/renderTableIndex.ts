@@ -1,3 +1,4 @@
+import path from "node:path";
 import { posixPath, renderList, renderedSolidityHeader } from "@latticexyz/common/codegen";
 import { TableOptions } from "./tableOptions";
 
@@ -6,7 +7,7 @@ import { TableOptions } from "./tableOptions";
  * @param options table definitions
  * @returns string of Solidity code
  */
-export function renderTableIndex(options: TableOptions[]) {
+export function renderTableIndex(options: TableOptions[], importPathPrefix: string) {
   return `
     ${renderedSolidityHeader}
 
@@ -14,7 +15,7 @@ export function renderTableIndex(options: TableOptions[]) {
       const imports = [tableName];
       if (structName) imports.push(structName);
 
-      return `import { ${imports.join(", ")} } from "./${posixPath(outputPath)}";`;
+      return `import { ${imports.join(", ")} } from "./${posixPath(path.join(importPathPrefix, outputPath))}";`;
     })}
   `;
 }

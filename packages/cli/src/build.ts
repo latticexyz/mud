@@ -29,7 +29,7 @@ export async function build({
 
   await Promise.all([
     tablegen({ configPath, config, remappings }),
-    worldgen(config, getExistingContracts(srcDir), outPath),
+    worldgen({ configPath, config, existingContracts: getExistingContracts(srcDir), outputBaseDirectory: outPath }),
   ]);
 
   await forge(["build"], { profile: foundryProfile });

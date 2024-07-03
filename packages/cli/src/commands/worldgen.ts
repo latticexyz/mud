@@ -1,5 +1,5 @@
 import type { CommandModule } from "yargs";
-import { loadConfig } from "@latticexyz/config/node";
+import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
 import { worldgen } from "@latticexyz/world/node";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
@@ -42,17 +42,20 @@ export async function worldgenHandler(args: Options) {
   const existingContracts = getExistingContracts(srcDir);
 
   // Load the config
-  const mudConfig = args.config ?? ((await loadConfig(args.configPath)) as WorldConfig);
+  const configPath = await resolveConfigPath(args.configPath);
+  const config = args.config ?? ((await loadConfig(configPath)) as WorldConfig);
 
-  const outputBaseDirectory = path.join(srcDir, mudConfig.codegen.outputDirectory);
+  const outputBaseDirectory = path.join(srcDir, config.codegen.outputDirectory);
 
   // clear the worldgen directory
+  // TODO: clean up namespaces
+  // TODO: generate codegen manifest so we can more easily clean this up
   if (args.clean) {
-    rmSync(path.join(outputBaseDirectory, mudConfig.codegen.worldgenDirectory), { recursive: true, force: true });
+    rmSync(path.join(outputBaseDirectory, config.codegen.worldgenDirectory), { recursive: true, force: true });
   }
 
   // generate new interfaces
-  await worldgen(mudConfig, existingContracts, outputBaseDirectory);
+  await worldgen({ config, configPath, existingContracts, outputBaseDirectory });
 }
 
 export default commandModule;

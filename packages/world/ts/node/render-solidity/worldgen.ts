@@ -6,12 +6,23 @@ import { renderWorldInterface } from "./renderWorldInterface";
 import { resolveWorldConfig } from "../../config/resolveWorldConfig";
 import { World as WorldConfig } from "../../config/v2/output";
 import { worldToV1 } from "../../config/v2/compat";
+import { getSystems } from "../getSystems";
 
-export async function worldgen(
-  configV2: WorldConfig,
-  existingContracts: { path: string; basename: string }[],
-  outputBaseDirectory: string,
-) {
+export type WorldgenOptions = {
+  config: WorldConfig;
+  configPath: string;
+  existingContracts: { path: string; basename: string }[];
+  outputBaseDirectory: string;
+};
+
+export async function worldgen({
+  config: configV2,
+  configPath,
+  existingContracts,
+  outputBaseDirectory,
+}: WorldgenOptions) {
+  console.log("got systems", getSystems({ config: configV2, configPath }));
+
   const config = worldToV1(configV2);
   const resolvedConfig = resolveWorldConfig(
     config,

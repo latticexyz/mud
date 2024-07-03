@@ -5,7 +5,7 @@ import type { CommandModule } from "yargs";
 import { MUDError } from "@latticexyz/common/errors";
 import { logError } from "../utils/errors";
 import localPackageJson from "../../package.json" assert { type: "json" };
-import glob from "glob";
+import { globSync } from "glob";
 import { mudPackages } from "../mudPackages";
 
 type Options = {
@@ -63,7 +63,7 @@ const commandModule: CommandModule<Options, Options> = {
       }
 
       // Update all package.json below the current working directory (except in node_modules)
-      const packageJsons = glob.sync("**/package.json").filter((p) => !p.includes("node_modules"));
+      const packageJsons = globSync("**/package.json").filter((p) => !p.includes("node_modules"));
       for (const packageJson of packageJsons) {
         updatePackageJson(packageJson, options);
       }
