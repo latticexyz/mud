@@ -13,10 +13,7 @@ export async function generateSystemManifest({ rootDir, config }: GenerateSystem
   const systemContracts = await getSystemContracts({ rootDir, config });
   const systemManifest = getSystemManifest({ config, systemContracts });
 
-  // TODO: generate corresponding .json.d.ts?
   const outputPath = path.join(rootDir, config.metadataDirectory, "systems.json");
-
-  // TODO: transform system source paths to be relative to manifest output path?
 
   // TODO: move to debug?
   console.log(`Writing system manifest to ${outputPath}`);
