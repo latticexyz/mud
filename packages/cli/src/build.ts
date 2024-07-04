@@ -1,6 +1,6 @@
 import path from "node:path";
 import { tablegen } from "@latticexyz/store/codegen";
-import { generateSystemManifest, worldgen } from "@latticexyz/world/node";
+import { worldgen } from "@latticexyz/world/node";
 import { World as WorldConfig } from "@latticexyz/world";
 import { forge, getRemappings } from "@latticexyz/common/foundry";
 import { getExistingContracts } from "./utils/getExistingContracts";
@@ -30,7 +30,6 @@ export async function build({
   await Promise.all([
     tablegen({ rootDir, config, remappings }),
     worldgen(config, getExistingContracts(srcDir), outPath),
-    generateSystemManifest({ rootDir, config }),
   ]);
 
   await forge(["build"], { profile: foundryProfile });

@@ -4,7 +4,7 @@ import { getRemappings } from "@latticexyz/common/foundry";
 import { tablegen } from "@latticexyz/store/codegen";
 import { findSolidityFiles } from "../node/findSolidityFiles";
 import { World } from "../config/v2";
-import { generateSystemManifest, worldgen } from "../node";
+import { worldgen } from "../node";
 
 /**
  * To avoid circular dependencies, we run a very similar `build` step as `cli` package here.
@@ -38,5 +38,4 @@ await Promise.all([
     existingContracts,
     codegenDirectory,
   ),
-  generateSystemManifest({ rootDir, config }),
 ]);
