@@ -1,8 +1,10 @@
-[
-  {
-    "source": "src/systems/IncrementSystem.sol",
-    "namespace": "app",
-    "name": "IncrementSystem",
-    "systemId": "0x73796170700000000000000000000000496e6372656d656e7453797374656d00"
-  }
-]
+{
+  "systems": [
+    {
+      "sourcePath": "src/systems/IncrementSystem.sol",
+      "namespace": "app",
+      "name": "IncrementSystem",
+      "systemId": "0x73796170700000000000000000000000496e6372656d656e7453797374656d00"
+    }
+  ]
+}

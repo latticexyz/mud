@@ -1,8 +1,10 @@
-[
-  {
-    "source": "src/systems/MoveSystem.sol",
-    "namespace": "app",
-    "name": "MoveSystem",
-    "systemId": "0x737961707000000000000000000000004d6f766553797374656d000000000000"
-  }
-]
+{
+  "systems": [
+    {
+      "sourcePath": "src/systems/MoveSystem.sol",
+      "namespace": "app",
+      "name": "MoveSystem",
+      "systemId": "0x737961707000000000000000000000004d6f766553797374656d000000000000"
+    }
+  ]
+}

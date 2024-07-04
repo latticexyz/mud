@@ -1,32 +1,28 @@
-[
-  {
-    "source": "src/systems/ChatNamespacedSystem.sol",
-    "namespace": "",
-    "name": "ChatNamespacedSystem",
-    "systemId": "0x73790000000000000000000000000000436861744e616d657370616365645379"
-  },
-  {
-    "source": "src/systems/ChatSystem.sol",
-    "namespace": "",
-    "name": "ChatSystem",
-    "systemId": "0x737900000000000000000000000000004368617453797374656d000000000000"
-  },
-  {
-    "source": "src/systems/IncrementSystem.sol",
-    "namespace": "",
-    "name": "IncrementSystem",
-    "systemId": "0x73790000000000000000000000000000496e6372656d656e7453797374656d00"
-  },
-  {
-    "source": "src/systems/InventorySystem.sol",
-    "namespace": "",
-    "name": "InventorySystem",
-    "systemId": "0x73790000000000000000000000000000496e76656e746f727953797374656d00"
-  },
-  {
-    "source": "src/systems/StructSystem.sol",
-    "namespace": "",
-    "name": "StructSystem",
-    "systemId": "0x7379000000000000000000000000000053747275637453797374656d00000000"
-  }
-]
+{
+  "systems": [
+    {
+      "sourcePath": "src/systems/ChatSystem.sol",
+      "namespace": "",
+      "name": "ChatSystem",
+      "systemId": "0x737900000000000000000000000000004368617453797374656d000000000000"
+    },
+    {
+      "sourcePath": "src/systems/IncrementSystem.sol",
+      "namespace": "",
+      "name": "IncrementSystem",
+      "systemId": "0x73790000000000000000000000000000696e6372656d656e7400000000000000"
+    },
+    {
+      "sourcePath": "src/systems/InventorySystem.sol",
+      "namespace": "",
+      "name": "InventorySystem",
+      "systemId": "0x73790000000000000000000000000000496e76656e746f727953797374656d00"
+    },
+    {
+      "sourcePath": "src/systems/StructSystem.sol",
+      "namespace": "",
+      "name": "StructSystem",
+      "systemId": "0x7379000000000000000000000000000053747275637453797374656d00000000"
+    }
+  ]
+}

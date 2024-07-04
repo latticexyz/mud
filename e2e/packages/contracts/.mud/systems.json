@@ -1,32 +1,34 @@
-[
-  {
-    "source": "src/systems/CustomErrorsSystem.sol",
-    "namespace": "",
-    "name": "CustomErrorsSystem",
-    "systemId": "0x73790000000000000000000000000000437573746f6d4572726f727353797374"
-  },
-  {
-    "source": "src/systems/LibWrapperSystem.sol",
-    "namespace": "",
-    "name": "LibWrapperSystem",
-    "systemId": "0x737900000000000000000000000000004c69625772617070657253797374656d"
-  },
-  {
-    "source": "src/systems/NumberListSystem.sol",
-    "namespace": "",
-    "name": "NumberListSystem",
-    "systemId": "0x737900000000000000000000000000004e756d6265724c69737453797374656d"
-  },
-  {
-    "source": "src/systems/NumberSystem.sol",
-    "namespace": "",
-    "name": "NumberSystem",
-    "systemId": "0x737900000000000000000000000000004e756d62657253797374656d00000000"
-  },
-  {
-    "source": "src/systems/VectorSystem.sol",
-    "namespace": "",
-    "name": "VectorSystem",
-    "systemId": "0x73790000000000000000000000000000566563746f7253797374656d00000000"
-  }
-]
+{
+  "systems": [
+    {
+      "sourcePath": "src/systems/CustomErrorsSystem.sol",
+      "namespace": "",
+      "name": "CustomErrorsSystem",
+      "systemId": "0x73790000000000000000000000000000437573746f6d4572726f727353797374"
+    },
+    {
+      "sourcePath": "src/systems/LibWrapperSystem.sol",
+      "namespace": "",
+      "name": "LibWrapperSystem",
+      "systemId": "0x737900000000000000000000000000004c69625772617070657253797374656d"
+    },
+    {
+      "sourcePath": "src/systems/NumberListSystem.sol",
+      "namespace": "",
+      "name": "NumberListSystem",
+      "systemId": "0x737900000000000000000000000000004e756d6265724c69737453797374656d"
+    },
+    {
+      "sourcePath": "src/systems/NumberSystem.sol",
+      "namespace": "",
+      "name": "NumberSystem",
+      "systemId": "0x737900000000000000000000000000004e756d62657253797374656d00000000"
+    },
+    {
+      "sourcePath": "src/systems/VectorSystem.sol",
+      "namespace": "",
+      "name": "VectorSystem",
+      "systemId": "0x73790000000000000000000000000000566563746f7253797374656d00000000"
+    }
+  ]
+}
