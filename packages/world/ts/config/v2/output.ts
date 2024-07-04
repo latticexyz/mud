@@ -80,15 +80,4 @@ export type World = Store & {
   readonly deploy: Deploy;
   /** Codegen config */
   readonly codegen: Codegen;
-
-  /** @internal */
-  readonly internal: {
-    /**
-     * Whether or not the MUD project is using multiple namespaces.
-     * This is used to determine where to generate table libraries, find system contracts, etc.
-     * We use a separate boolean here because we may also populate a `namespaces` output key for single-namespace projects.
-     * @internal
-     */
-    readonly multipleNamespaces: boolean;
-  };
 };

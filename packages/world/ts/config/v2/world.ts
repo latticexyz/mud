@@ -65,10 +65,10 @@ export type resolveWorld<world> = evaluate<
 
 export function resolveWorld<const world extends WorldInput>(world: world): resolveWorld<world> {
   const scope = extendedScope(world);
-  const multipleNamespaces = world.namespaces != null;
+  const namespaces = world.namespaces ?? {};
 
   const resolvedNamespacedTables = Object.fromEntries(
-    Object.entries(world.namespaces ?? {})
+    Object.entries(namespaces)
       .map(([namespaceKey, namespace]) =>
         Object.entries(namespace.tables ?? {}).map(([tableKey, table]) => {
           validateTable(table, scope);
@@ -94,9 +94,6 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
       systems: resolveSystems(world.systems ?? CONFIG_DEFAULTS.systems),
       excludeSystems: get(world, "excludeSystems"),
       modules,
-      internal: {
-        multipleNamespaces,
-      },
     },
     CONFIG_DEFAULTS,
   ) as never;
