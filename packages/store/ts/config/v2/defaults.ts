@@ -34,7 +34,6 @@ export type TABLE_DEFAULTS = typeof TABLE_DEFAULTS;
 
 export const CONFIG_DEFAULTS = {
   sourceDirectory: "src",
-  metadataDirectory: ".mud",
   namespace: "",
 } as const satisfies StoreInput;
 

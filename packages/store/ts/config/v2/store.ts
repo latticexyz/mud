@@ -47,9 +47,6 @@ export type resolveStore<store> = {
   readonly sourceDirectory: "sourceDirectory" extends keyof store
     ? store["sourceDirectory"]
     : CONFIG_DEFAULTS["sourceDirectory"];
-  readonly metadataDirectory: "metadataDirectory" extends keyof store
-    ? store["metadataDirectory"]
-    : CONFIG_DEFAULTS["metadataDirectory"];
   readonly tables: "tables" extends keyof store
     ? resolveTables<
         {
@@ -73,7 +70,6 @@ export function resolveStore<const store extends StoreInput>(store: store): reso
   const codegen = resolveCodegen(store.codegen);
   return {
     sourceDirectory: store.sourceDirectory ?? CONFIG_DEFAULTS["sourceDirectory"],
-    metadataDirectory: store.metadataDirectory ?? CONFIG_DEFAULTS["metadataDirectory"],
     tables: resolveTables(
       flatMorph(store.tables ?? {}, (name, table) => {
         const namespace = store.namespace;

@@ -70,12 +70,6 @@ export type Store = {
    * Defaults to `src` to match `foundry.toml`'s default. If you change this from the default, you may also need to configure foundry with the same source directory.
    */
   readonly sourceDirectory: string;
-  /**
-   * Directory of MUD metadata generated during build (e.g. systems manifest) and deploy steps (e.g. system and module addresses). This directory is relative to the MUD config.
-   *
-   * Defaults to `.mud`.
-   */
-  readonly metadataDirectory: string;
   readonly tables: {
     readonly [namespacedTableName: string]: Table;
   };
