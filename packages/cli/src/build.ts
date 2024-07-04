@@ -30,7 +30,7 @@ export async function build({
   await Promise.all([
     tablegen({ configPath, config, remappings }),
     worldgen(config, getExistingContracts(srcDir), outPath),
-    generateSystemManifest({ configPath, config }),
+    generateSystemManifest({ rootDir: path.dirname(configPath), config }),
   ]);
 
   await forge(["build"], { profile: foundryProfile });

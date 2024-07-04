@@ -14,11 +14,12 @@ import { generateSystemManifest, worldgen } from "../node";
 // TODO: do the same for store build too
 
 const configPath = await resolveConfigPath();
+const rootDir = path.dirname(configPath);
 const config = (await loadConfig(configPath)) as World;
 const remappings = await getRemappings();
 
 // TODO: move this into worldgen
-const existingContracts = (await findSolidityFiles({ configPath, config })).map((file) => ({
+const existingContracts = (await findSolidityFiles({ rootDir, config })).map((file) => ({
   path: file.filename,
   basename: file.basename,
 }));
@@ -37,5 +38,5 @@ await Promise.all([
     existingContracts,
     codegenDirectory,
   ),
-  generateSystemManifest({ configPath, config }),
+  generateSystemManifest({ rootDir, config }),
 ]);

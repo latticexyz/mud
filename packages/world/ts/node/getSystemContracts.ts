@@ -7,15 +7,15 @@ export type SolidityContract = {
 };
 
 export type GetSystemContractsOptions = {
-  readonly configPath: string;
+  readonly rootDir: string;
   readonly config: World;
 };
 
 export async function getSystemContracts({
-  configPath,
+  rootDir,
   config,
 }: GetSystemContractsOptions): Promise<readonly SolidityContract[]> {
-  const solidityFiles = await findSolidityFiles({ configPath, config });
+  const solidityFiles = await findSolidityFiles({ rootDir, config });
 
   return solidityFiles
     .map((file) => ({

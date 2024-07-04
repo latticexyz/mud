@@ -5,16 +5,16 @@ import { getSystemContracts } from "./getSystemContracts";
 import { getSystemManifest } from "./getSystemManifest";
 
 export type GenerateSystemManifestOptions = {
-  readonly configPath: string;
+  readonly rootDir: string;
   readonly config: World;
 };
 
-export async function generateSystemManifest({ configPath, config }: GenerateSystemManifestOptions): Promise<string> {
-  const systemContracts = await getSystemContracts({ configPath, config });
+export async function generateSystemManifest({ rootDir, config }: GenerateSystemManifestOptions): Promise<string> {
+  const systemContracts = await getSystemContracts({ rootDir, config });
   const systemManifest = getSystemManifest({ config, systemContracts });
 
   // TODO: generate corresponding .json.d.ts?
-  const outputPath = path.join(path.dirname(configPath), config.metadataDirectory, "systems.json");
+  const outputPath = path.join(rootDir, config.metadataDirectory, "systems.json");
 
   // TODO: transform system source paths to be relative to manifest output path?
 
