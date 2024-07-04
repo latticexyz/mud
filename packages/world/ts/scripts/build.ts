@@ -28,7 +28,7 @@ const codegenDirectory = path.join(config.sourceDirectory, config.codegen.output
 // TODO: clean
 
 await Promise.all([
-  tablegen({ configPath, config, remappings }),
+  tablegen({ rootDir, config, remappings }),
   worldgen(
     {
       ...config,
