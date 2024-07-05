@@ -103,7 +103,7 @@ export type WorldInput = evaluate<
 
 export type NamespacesInput = { [label: string]: NamespaceInput };
 
-export type NamespaceInput = Pick<StoreInput, "namespace" | "tables">;
+export type NamespaceInput = Pick<StoreInput, "tables">;
 
 /******** Variations with shorthands ********/
 
