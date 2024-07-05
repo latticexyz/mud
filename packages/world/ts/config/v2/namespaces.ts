@@ -38,7 +38,7 @@ export function validateNamespace<scope extends Scope = AbiTypeScope>(
 }
 
 export type validateNamespaces<namespaces, scope extends Scope = AbiTypeScope> = {
-  [namespace in keyof namespaces]: validateNamespace<namespaces[namespace], scope>;
+  [label in keyof namespaces]: validateNamespace<namespaces[label], scope>;
 };
 
 export function validateNamespaces<scope extends Scope = AbiTypeScope>(

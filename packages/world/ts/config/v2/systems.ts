@@ -4,7 +4,7 @@ import { SystemsInput } from "./input";
 import { mergeIfUndefined } from "@latticexyz/store/config/v2";
 
 export type resolveSystems<systems extends SystemsInput> = {
-  [system in keyof systems]: mergeIfUndefined<systems[system], typeof SYSTEM_DEFAULTS>;
+  [label in keyof systems]: mergeIfUndefined<systems[label], typeof SYSTEM_DEFAULTS>;
 };
 
 export function resolveSystems<systems extends SystemsInput>(systems: systems): resolveSystems<systems> {

@@ -71,7 +71,7 @@ export type Store = {
    */
   readonly sourceDirectory: string;
   readonly tables: {
-    readonly [namespacedTableName: string]: Table;
+    readonly [label: string]: Table;
   };
   readonly userTypes: UserTypes;
   readonly enums: EnumsInput;
