@@ -13,7 +13,7 @@ We also need a single table whose key is a game ID, and whose schema includes a 
 ## Create the table
 
 You could hand-craft the table, but that is a lot of unnecessary (and error-prone) work.
-The easiest way to create the tables is to create a `mud.config.ts` file and use [`mud tablegen`](/cli/tablegen) to create the Solidity code.
+The easiest way to create tables is to create a `mud.config.ts` file and use [`mud tablegen`](/cli/tablegen) to create the Solidity code.
 
 1. Create an application from a template, and delete the parts that are not needed.
 
@@ -119,7 +119,7 @@ import { IWorld } from "./codegen/world/IWorld.sol";
 // The System
 import { TimerSystem } from "./systems/TimerSystem.sol";
 
-// The tables
+// The table
 import { Timer } from "./codegen/index.sol";
 
 contract TimerModule is Module {
@@ -182,7 +182,7 @@ import { IWorld } from "./codegen/world/IWorld.sol";
 // The System
 import { TimerSystem } from "./systems/TimerSystem.sol";
 
-// The tables
+// The table
 import { Timer } from "./codegen/index.sol";
 ```
 
