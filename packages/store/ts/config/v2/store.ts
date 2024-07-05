@@ -37,12 +37,6 @@ export function validateStore(store: unknown): asserts store is StoreInput {
   }
 }
 
-type keyPrefix<store> = store extends { namespace: infer namespace extends string }
-  ? namespace extends ""
-    ? ""
-    : `${namespace}__`
-  : "";
-
 export type resolveStore<store> = {
   readonly sourceDirectory: "sourceDirectory" extends keyof store
     ? store["sourceDirectory"]
@@ -50,9 +44,9 @@ export type resolveStore<store> = {
   readonly tables: "tables" extends keyof store
     ? resolveTables<
         {
-          [tableKey in keyof store["tables"] & string as `${keyPrefix<store>}${tableKey}`]: mergeIfUndefined<
-            store["tables"][tableKey],
-            { namespace: get<store, "namespace">; name: tableKey }
+          [label in keyof store["tables"]]: mergeIfUndefined<
+            store["tables"][label],
+            { label: label; namespace: get<store, "namespace"> }
           >;
         },
         extendedScope<store>
@@ -71,14 +65,13 @@ export function resolveStore<const store extends StoreInput>(store: store): reso
   return {
     sourceDirectory: store.sourceDirectory ?? CONFIG_DEFAULTS["sourceDirectory"],
     tables: resolveTables(
-      flatMorph(store.tables ?? {}, (name, table) => {
+      flatMorph(store.tables ?? {}, (label, table) => {
         const namespace = store.namespace;
-        const key = namespace ? `${namespace}__${name}` : name;
         return [
-          key,
+          label,
           mergeIfUndefined(table, {
             namespace: namespace,
-            name,
+            label,
             codegen: mergeIfUndefined(table.codegen ?? {}, {
               outputDirectory: codegen.namespaceDirectories && namespace?.length ? `${namespace}/tables` : "tables",
             }),

@@ -1,4 +1,3 @@
-import { Hex } from "viem";
 import { Codegen, TableCodegen, TableDeploy, UserTypes } from "./output";
 import { Scope } from "./scope";
 import { evaluate } from "@arktype/util";
@@ -19,10 +18,23 @@ export type TableCodegenInput = Partial<TableCodegen>;
 export type TableDeployInput = Partial<TableDeploy>;
 
 export type TableInput = {
+  /**
+   * Human-readable table label. Used as config keys, table library names, and filenames.
+   * Labels are not length constrained like table names, but special characters should be avoided to be compatible with the filesystem, Solidity compiler, etc.
+   */
+  readonly label: string;
+  /**
+   * Defaults to `table` if not set.
+   */
   readonly type?: "table" | "offchainTable";
+  /**
+   * Defaults to the root namespace if not set.
+   */
   readonly namespace?: string;
-  readonly name: string;
-  readonly tableId?: Hex;
+  /**
+   * Defaults to the first 16 characters of `label` if not set.
+   */
+  readonly name?: string;
   readonly schema: SchemaInput;
   readonly key: readonly string[];
   readonly codegen?: TableCodegenInput;
@@ -30,12 +42,16 @@ export type TableInput = {
 };
 
 export type TablesInput = {
-  readonly [label: string]: Omit<TableInput, "namespace" | "tableId">;
+  // remove label and namespace as these are set contextually
+  readonly [label: string]: Omit<TableInput, "label" | "namespace">;
 };
 
 export type CodegenInput = Partial<Codegen>;
 
 export type NamespaceInput = {
+  /**
+   * Defaults to the root namespace if not set.
+   */
   readonly namespace?: string;
   readonly tables?: TablesInput;
 };
@@ -58,7 +74,7 @@ export type StoreInput = NamespaceInput & {
 export type TableShorthandInput = SchemaInput | string;
 
 export type TablesWithShorthandsInput = {
-  readonly [label: string]: TableInput | TableShorthandInput;
+  readonly [label: string]: TablesInput[string] | TableShorthandInput;
 };
 
 export type StoreWithShorthandsInput = evaluate<
