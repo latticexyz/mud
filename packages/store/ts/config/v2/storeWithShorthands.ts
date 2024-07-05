@@ -32,11 +32,17 @@ export function resolveStoreWithShorthands<const store extends StoreWithShorthan
   store: store,
 ): resolveStoreWithShorthands<store> {
   const scope = extendedScope(store);
+
+  const tables =
+    store.tables != null
+      ? mapObject(store.tables, (table) => {
+          return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
+        })
+      : null;
+
   const fullConfig = {
     ...store,
-    tables: mapObject(store.tables, (table) => {
-      return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
-    }),
+    ...(tables != null ? { tables } : null),
   };
 
   validateStore(fullConfig);

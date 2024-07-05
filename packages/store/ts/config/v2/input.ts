@@ -19,23 +19,28 @@ export type TableCodegenInput = Partial<TableCodegen>;
 export type TableDeployInput = Partial<TableDeploy>;
 
 export type TableInput = {
+  readonly type?: "table" | "offchainTable";
+  readonly namespace?: string;
+  readonly name: string;
+  readonly tableId?: Hex;
   readonly schema: SchemaInput;
   readonly key: readonly string[];
-  readonly tableId?: Hex;
-  readonly name: string;
-  readonly namespace?: string;
-  readonly type?: "table" | "offchainTable";
   readonly codegen?: TableCodegenInput;
   readonly deploy?: TableDeployInput;
 };
 
 export type TablesInput = {
-  readonly [label: string]: Omit<TableInput, "namespace" | "name">;
+  readonly [label: string]: Omit<TableInput, "namespace" | "tableId">;
 };
 
 export type CodegenInput = Partial<Codegen>;
 
-export type StoreInput = {
+export type NamespaceInput = {
+  readonly namespace?: string;
+  readonly tables?: TablesInput;
+};
+
+export type StoreInput = NamespaceInput & {
   /**
    * Directory of Solidity source relative to the MUD config.
    * This is used to resolve other paths in the config, like codegen and user types.
@@ -43,8 +48,6 @@ export type StoreInput = {
    * Defaults to `src` to match `foundry.toml`'s default. If you change this from the default, you may also need to configure foundry with the same source directory.
    */
   readonly sourceDirectory?: string;
-  readonly namespace?: string;
-  readonly tables?: TablesInput;
   readonly userTypes?: UserTypes;
   readonly enums?: EnumsInput;
   readonly codegen?: CodegenInput;
@@ -58,4 +61,6 @@ export type TablesWithShorthandsInput = {
   readonly [label: string]: TableInput | TableShorthandInput;
 };
 
-export type StoreWithShorthandsInput = evaluate<Omit<StoreInput, "tables"> & { tables: TablesWithShorthandsInput }>;
+export type StoreWithShorthandsInput = evaluate<
+  Omit<StoreInput, "tables"> & { readonly tables?: TablesWithShorthandsInput }
+>;
