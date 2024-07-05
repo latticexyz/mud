@@ -6,24 +6,13 @@ The main difference between writing modules and writing MUD tables and `System`s
 
 ## The sample module
 
-The sample module is a chat that allows users who are in a specific game to post messages.
-To provide this functionality we need two `System`s:
+The sample module lets games specify when a specific match began, and how long it is supposed to take.
+This is implemented in a single `System`.
+We also need a single table whose key is a game ID, and whose schema includes a start time and a length.
 
-- A private `System` that lets games add and remove channels and determine which users are allowed on each channel.
+## Create the table
 
-- A public `System` that lets users post (only when they have been added to a specific channel) and read messages.
-
-To implement these `System`s we need these tables:
-
-- A `Channel` table
-- A `NextChannel` singleton
-- A `User` table, with the user address and nickname
-- A `ChannelUser` table to see if a user is allowed to use a channel
-- A `Messages` table
-
-## Create the tables
-
-You could hand-craft the tables, but that is a lot of unnecessary (and error-prone) work.
+You could hand-craft the table, but that is a lot of unnecessary (and error-prone) work.
 The easiest way to create the tables is to create a `mud.config.ts` file and use [`mud tablegen`](/cli/tablegen) to create the Solidity code.
 
 1. Create an application from a template, and delete the parts that are not needed.
@@ -42,49 +31,15 @@ The easiest way to create the tables is to create a `mud.config.ts` file and use
    import { defineWorld } from "@latticexyz/world";
 
    export default defineWorld({
-     namespace: "messaging",
+     namespace: "timer",
      tables: {
-       Channel: {
+       Timer: {
          schema: {
            id: "uint256",
-           creator: "address",
-           active: "bool",
-           lastMessageNumber: "uint256",
-           name: "string",
+           startTime: "uint256",
+           lengthSeconds: "uint256",
          },
          key: ["id"],
-       },
-       NextChannel: {
-         schema: {
-           next: "uint256",
-         },
-         key: [],
-       },
-       User: {
-         schema: {
-           userAddress: "address",
-           nickname: "string",
-         },
-         key: ["userAddress"],
-       },
-       ChannelUser: {
-         schema: {
-           channel: "uint256",
-           user: "address",
-           subscribed: "bool",
-         },
-         key: ["channel", "user"],
-       },
-       Message: {
-         schema: {
-           channel: "uint256",
-           messageNumber: "uint256",
-           timestamp: "uint256",
-           sender: "address",
-           text: "string",
-         },
-         key: ["channel", "messageNumber"],
-         type: "offchainTable",
        },
      },
    });
@@ -96,100 +51,43 @@ The easiest way to create the tables is to create a `mud.config.ts` file and use
    pnpm mud tablegen
    ```
 
-You can now see the tables' Solidity code under `src/codegen/tables`.
+You can now see the table's Solidity code under `src/codegen/tables`.
 
-## Create the `System`s
+## Create the `System`
 
-### Create the private `System`
+We need to provide this functionality:
 
-This `System` is used by privileged addresses to:
+- `createTimer` is the function that creates a timer, with an id, a start time (the present) and a time length.
+  If a timer already exists with that ID, don't modify it (that would enable some abuses).
+- `timePassed` is a view function that tells the caller how much time passed since the timer was created.
+- `timeLeft` is a view function that tells the caller how much time is left.
+  It reverts if it has already been `lengthSeconds` since `startTime`.
 
-- Create a channel
-- Disable a channel
-- Add a user to a channel
-- Remove a user from a channel
+Create this file in `src/systems/TimerSystem.sol`:
 
-Create this file in `src/systems/PrivateSystem.sol`:
-
-```solidity filename="PrivateSystem.sol" copy
+```solidity filename="TimeSystem.sol" copy
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
 import { System } from "@latticexyz/world/src/System.sol";
-import { Channel, ChannelData, NextChannel, ChannelUser } from "../codegen/index.sol";
+import { Timer } from "../codegen/index.sol";
 
-contract PrivateSystem is System {
-  function createChannel(string calldata channelName) external returns (uint) {
-    uint channelId = NextChannel.get();
-    NextChannel.set(channelId + 1);
-
-    ChannelData memory newChannel = ChannelData({
-      creator: _msgSender(),
-      active: true,
-      lastMessageNumber: 0,
-      name: channelName
-    });
-
-    Channel.set(channelId, newChannel);
-
-    return channelId;
+contract TimerSystem is System {
+  function createTimer(uint256 id, uint256 lengthSeconds) external {
+    // First, verify there isn't already a value here
+    require(Timer.getStartTime(id) == 0, "Can't modify an existing timer");
+    Timer.set(id, block.timestamp, lengthSeconds);
   }
 
-  function disableChannel(uint channelId) public {
-    Channel.setActive(channelId, false);
+  function timePassed(uint256 id) external view returns (uint256) {
+    uint256 startTime = Timer.getStartTime(id);
+    return block.timestamp - startTime;
   }
 
-  function addUserToChannel(uint channelId, address user) public {
-    require(Channel.getActive(channelId), "Can only add users to active channels");
-    ChannelUser.set(channelId, user, true);
-  }
-
-  function removeUserFromChannel(uint channelId, address user) public {
-    ChannelUser.set(channelId, user, false);
-  }
-}
-```
-
-### Create the public `System`
-
-This `System` is used by all users to:
-
-- Set the user's nickname
-- Post a message to a channel.
-  This should only be possible if:
-  - The channel is active (uninitialized channels are inactive by default).
-  - The user is subscribed to the channel.
-
-Create this file in `src/systems/PublicSystem.sol`:
-
-```solidity filename="PublicSystem.sol" copy
-// SPDX-License-Identifier: MIT
-pragma solidity >=0.8.24;
-
-import { System } from "@latticexyz/world/src/System.sol";
-import { User, Channel, ChannelData, ChannelUser, Message, MessageData } from "../codegen/index.sol";
-
-contract PublicSystem is System {
-  function setNickname(string calldata nickname) external {
-    User.setNickname(_msgSender(), nickname);
-  }
-
-  function postMessage(uint channelId, string calldata message) external {
-    require(ChannelUser.getSubscribed(channelId, _msgSender()), "Can only post to a channel where you are subscribed");
-
-    ChannelData memory channelData = Channel.get(channelId);
-    require(channelData.active, "Can only post to active channels");
-
-    // Update the last message number
-    channelData.lastMessageNumber = channelData.lastMessageNumber + 1;
-    Channel.set(channelId, channelData);
-
-    // Post the message
-    Message.set(
-      channelId,
-      channelData.lastMessageNumber,
-      MessageData({ timestamp: block.timestamp, sender: _msgSender(), text: message })
-    );
+  function timeLeft(uint256 id) external view returns (uint256) {
+    uint256 endTime = Timer.getStartTime(id) + Timer.getLengthSeconds(id);
+    require(endTime >= block.timestamp, "Timer already done");
+    return endTime - block.timestamp;
   }
 }
 ```
@@ -197,20 +95,18 @@ contract PublicSystem is System {
 ## Create the module itself
 
 The module has two parts, a constructor and a registration function.
-The constructor deploys the two `System`s and stores their addresses for future registrations.
+The constructor deploys the `System` and stores its address for future registrations.
 
 The registration function has these jobs:
 
-- Create the `messaging` namespace
-- Register the tables
-- Register the `System`s with the correct permissions
-- Transfer ownership of the `messaging` namespace to whoever called the module registration function.
-  This is necessary because only [the namespace owner](/world/namespaces-access-control#ownership) can confer access to `PrivateSystem`.
-  Without that access, there is no way to create channels or add users to them, so nobody can post messages.
+- Create the `timer` namespace
+- Register the table
+- Register the `System`
+- Transfer ownership of the `timer` namespace to whoever called the module registration function.
 
-Create this file in `src/MessagingModule.sol`
+Create this file in `src/TimerModule.sol`
 
-```solidity filename="MessagingModule.sol" copy
+```solidity filename="TimerModule.sol" copy
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
@@ -220,26 +116,21 @@ import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 
 import { IWorld } from "./codegen/world/IWorld.sol";
 
-// The Systems
-import { PublicSystem } from "./systems/PublicSystem.sol";
-import { PrivateSystem } from "./systems/PrivateSystem.sol";
+// The System
+import { TimerSystem } from "./systems/TimerSystem.sol";
 
 // The tables
-import { Channel, NextChannel, User, ChannelUser, Message } from "./codegen/index.sol";
+import { Timer } from "./codegen/index.sol";
 
-contract MessagingModule is Module {
+contract TimerModule is Module {
   using WorldResourceIdInstance for ResourceId;
 
-  // The two Systems are deployed once when the module itself is deployed.
-  PublicSystem private immutable publicSystem = new PublicSystem();
-  PrivateSystem private immutable privateSystem = new PrivateSystem();
+  // The System that is deployed once when the module itself is deployed.
+  TimerSystem private immutable timerSystem = new TimerSystem();
 
   // The resource IDs
-  ResourceId private immutable namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("messaging"));
-  ResourceId private immutable publicSystemResource =
-    WorldResourceIdLib.encode(RESOURCE_SYSTEM, "messaging", "PublicSystem");
-  ResourceId private immutable privateSystemResource =
-    WorldResourceIdLib.encode(RESOURCE_SYSTEM, "messaging", "PrivateSystem");
+  ResourceId private immutable namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("timer"));
+  ResourceId private immutable timerSystemResource = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "timer", "TimerSystem");
 
   function installRoot(bytes memory) public pure override {
     revert Module_RootInstallNotSupported();
@@ -253,24 +144,16 @@ contract MessagingModule is Module {
     // reverts, so we cannot be installed twice.
     world.registerNamespace(namespaceResource);
 
-    // Register the tables
-    Channel.register();
-    NextChannel.register();
-    User.register();
-    ChannelUser.register();
-    Message.register();
+    // Register the table
+    Timer.register();
 
-    // Register the Systems
-    world.registerSystem(publicSystemResource, publicSystem, true);
-    world.registerSystem(privateSystemResource, privateSystem, false);
+    // Register the System
+    world.registerSystem(timerSystemResource, timerSystem, true);
 
     // Register the functions that can be called
-    world.registerFunctionSelector(publicSystemResource, "postMessage(uint256,string)");
-    world.registerFunctionSelector(publicSystemResource, "setNickname(string)");
-    world.registerFunctionSelector(privateSystemResource, "createChannel(string)");
-    world.registerFunctionSelector(privateSystemResource, "disableChannel(uint256)");
-    world.registerFunctionSelector(privateSystemResource, "addUserToChannel(uint256,address)");
-    world.registerFunctionSelector(privateSystemResource, "removeUserFromChannel(uint256,address)");
+    world.registerFunctionSelector(timerSystemResource, "createTimer(uint256,uint256)");
+    world.registerFunctionSelector(timerSystemResource, "timePassed(uint256)");
+    world.registerFunctionSelector(timerSystemResource, "timeLeft(uint256)");
 
     // Transfer namespace ownership
     world.transferOwnership(namespaceResource, _msgSender());
@@ -296,23 +179,21 @@ We need to know how to be a `Module` and how to generate resource IDs for regist
 ```solidity
 import { IWorld } from "./codegen/world/IWorld.sol";
 
-// The Systems
-import { PublicSystem } from "./systems/PublicSystem.sol";
-import { PrivateSystem } from "./systems/PrivateSystem.sol";
+// The System
+import { TimerSystem } from "./systems/TimerSystem.sol";
 
 // The tables
-import { Channel, NextChannel, User, ChannelUser, Message } from "./codegen/index.sol";
+import { Timer } from "./codegen/index.sol";
 ```
 
 Import previously created definitions.
 
 ```solidity
-contract MessagingModule is Module {
+contract TimerModule is Module {
   using WorldResourceIdInstance for ResourceId;
 
-  // The two Systems are deployed once when the module itself is deployed.
-  PublicSystem private immutable publicSystem = new PublicSystem();
-  PrivateSystem private immutable privateSystem = new PrivateSystem();
+  // The System that is deployed once when the module itself is deployed.
+  TimerSystem private immutable timerSystem = new TimerSystem();
 ```
 
 In Solidity [`immutable`](https://docs.soliditylang.org/en/latest/contracts.html#constant-and-immutable-state-variables) variables are values set when the contract is first deployed.
@@ -320,11 +201,9 @@ As `System`s are stateless, it is best to deploy them only once, and just regist
 
 ```solidity
   // The resource IDs
-  ResourceId private immutable namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("messaging"));
-  ResourceId private immutable publicSystemResource =
-    WorldResourceIdLib.encode(RESOURCE_SYSTEM, "messaging", "PublicSystem");
-  ResourceId private immutable privateSystemResource =
-    WorldResourceIdLib.encode(RESOURCE_SYSTEM, "messaging", "PrivateSystem");
+  ResourceId private immutable namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("timer"));
+  ResourceId private immutable timerSystemResource =
+    WorldResourceIdLib.encode(RESOURCE_SYSTEM, "timer", "TimerSystem");
 ```
 
 We need these identifiers to register the namespace and `System`s.
@@ -339,7 +218,7 @@ function installRoot(bytes memory) public pure override {
 We do _not_ need root privileges, so it's best if we [don't have them](https://en.wikipedia.org/wiki/Principle_of_least_privilege).
 
 ```solidity
-  function install(bytes memory) public  {
+  function install(bytes memory) public {
     IWorld world = IWorld(_world());
 
     // Register the namespace.
@@ -351,21 +230,17 @@ We do _not_ need root privileges, so it's best if we [don't have them](https://e
 Register the namespace.
 
 ```solidity
-    // Register the tables
-    Channel.register();
-    NextChannel.register();
-    User.register();
-    ChannelUser.register();
-    Message.register();
+     // Register the table
+    Timer.register();
+
 ```
 
-The tables generated from `mud.config.ts` come with their own `register()` method to register them to the current `World`.
+The table generated from `mud.config.ts` comes with its own `register()` method to register it to the current `World`.
 Note that if the namespace was not a constant the way it is here we wouldn't be able to use `.register()` because it uses a resource ID that includes the namespace.
 
 ```solidity
-    // Register the Systems
-    world.registerSystem(publicSystemResource, publicSystem, true);
-    world.registerSystem(privateSystemResource, privateSystem, false);
+    // Register the System
+    world.registerSystem(timerSystemResource, timerSystem, true);
 ```
 
 For `System`s, which are written directly in Solidity by the developer, we call [`registerSystem`](/world/systems#registering-systems).
@@ -373,18 +248,16 @@ The third parameter is whether [public access](/world/systems#access-control) is
 
 ```solidity
     // Register the functions that can be called
-    world.registerFunctionSelector(publicSystemResource, "postMessage(uint256,string)");
-    world.registerFunctionSelector(publicSystemResource, "setNickname(string)");
-    world.registerFunctionSelector(privateSystemResource, "createChannel(string)");
-    world.registerFunctionSelector(privateSystemResource, "disableChannel(uint256)");
-    world.registerFunctionSelector(privateSystemResource, "addUserToChannel(uint256,address)");
-    world.registerFunctionSelector(privateSystemResource, "removeUserFromChannel(uint256,address)");
+    world.registerFunctionSelector(timerSystemResource, "createTimer(uint256,uint256)");
+    world.registerFunctionSelector(timerSystemResource, "timePassed(uint256)");
+    world.registerFunctionSelector(timerSystemResource, "timeLeft(uint256)");
 ```
 
 We should also [register](/world/function-selectors) every function that needs to be accessible through the `World`.
-In theory this is not necessary, you can use [`call`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L333-L345), but the registration makes it a lot easier to use our `System`s.
+This is not necessary, you can use [`call`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L333-L345), but the registration makes it a lot easier to use our `System`s.
 
 ```solidity
+
     // Transfer namespace ownership
     world.transferOwnership(namespaceResource, _msgSender());
   }
@@ -392,8 +265,7 @@ In theory this is not necessary, you can use [`call`](https://github.com/lattice
 ```
 
 Finally, transfer [ownership of the namespace](/world/namespaces-access-control#ownership) to whoever called us.
-For games to register channels and add users to them, they have to have [access](/world/namespaces-access-control#access) to `PrivateSystem`.
-There is no reason for this access to be managed through the module code.
+Otherwise, the namespace cannot be modified, because it will be owned by the module contract.
 
 </details>
 
@@ -413,7 +285,7 @@ There is no reason for this access to be managed through the module code.
 
    ```sh copy
    source .env
-   forge create MessagingModule --private-key $PRIVATE_KEY --rpc-url http://127.0.0.1:8545
+   forge create TimerModule --private-key $PRIVATE_KEY --rpc-url http://127.0.0.1:8545
    ```
 
 1. Set these environment variables:
@@ -429,54 +301,22 @@ There is no reason for this access to be managed through the module code.
    cast send $WORLD_ADDRESS "installModule(address,bytes)" $MODULE_ADDRESS 0x --private-key $PRIVATE_KEY --rpc-url http://127.0.0.1:8545
    ```
 
-1. You can use this forge script to test the module works correctly:
+1. Create a ten-minute timer.
 
-   ```solidity copy
-   // SPDX-License-Identifier: MIT
-   pragma solidity >=0.8.24;
+   ```sh copy
+   cast send --private-key $PRIVATE_KEY --rpc-url http://127.0.0.1:8545 $WORLD_ADDRESS "timer__createTimer(uint,uint)" 0x1234 600
+   ```
 
-   import { Script } from "forge-std/Script.sol";
-   import { console } from "forge-std/console.sol";
-   import { StdCheats } from "forge-std/StdCheats.sol";
+1. Try to run the same command again, see that you can't modify an existing timer.
 
-   import { IWorld } from "../src/codegen/world/IWorld.sol";
+1. See how much time passed.
 
-   interface WorldWithMessaging {
-     function messaging__postMessage(uint256, string calldata) external;
-     function messaging__setNickname(string calldata) external;
-     function messaging__createChannel(string calldata) external returns (uint);
-     function messaging__disableChannel(uint256) external;
-     function messaging__addUserToChannel(uint256, address) external;
-     function messaging__removeUserFromChannel(uint256, address) external;
-   }
+   ```sh copy
+   cast call --rpc-url http://127.0.0.1:8545 $WORLD_ADDRESS "timer__timePassed(uint256)" 0x1234 | cast to-dec
+   ```
 
-   // The first two anvil accounts
-   uint constant PRIVATE_KEY_1 = 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
-   uint constant PRIVATE_KEY_2 = 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d;
+1. See how much time is left.
 
-   contract UseMessaging is Script {
-     function run() external {
-       address worldAddress = vm.envAddress("WORLD_ADDRESS");
-       WorldWithMessaging world = WorldWithMessaging(worldAddress);
-
-       // Start broadcasting transactions from the deployer account
-       vm.startBroadcast(PRIVATE_KEY_1);
-
-       uint channel = world.messaging__createChannel("test channel");
-       console.log("Created channel", channel);
-
-       world.messaging__addUserToChannel(channel, vm.rememberKey(PRIVATE_KEY_2));
-       console.log("Added", vm.rememberKey(PRIVATE_KEY_2), "to the channel.");
-
-       vm.stopBroadcast();
-
-       // Use a different address to actually post
-       vm.startBroadcast(PRIVATE_KEY_2);
-       console.log("Trying to message as", vm.rememberKey(PRIVATE_KEY_2));
-       world.messaging__postMessage(channel, "Hello");
-       vm.stopBroadcast();
-
-       return;
-     }
-   }
+   ```sh copy
+   cast call --rpc-url http://127.0.0.1:8545 $WORLD_ADDRESS "timer__timeLeft(uint256)" 0x1234 | cast to-dec
    ```
