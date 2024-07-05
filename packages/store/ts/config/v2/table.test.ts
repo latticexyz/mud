@@ -141,6 +141,32 @@ describe("resolveTable", () => {
     attest<typeof expected>(table.deploy).equals(expected);
   });
 
+  it("should truncate label to form name", () => {
+    const table = defineTable({
+      schema: { id: "address", name: "string", age: "uint256" },
+      key: ["age"],
+      label: "ThisIsALongTableName",
+    });
+
+    const expected = {
+      tableId: resourceToHex({ type: "table", namespace: "", name: "ThisIsALongTable" }),
+      schema: {
+        id: { type: "address", internalType: "address" },
+        name: { type: "string", internalType: "string" },
+        age: { type: "uint256", internalType: "uint256" },
+      },
+      key: ["age"],
+      label: "ThisIsALongTableName",
+      name: "ThisIsALongTable",
+      namespace: "",
+      codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+      type: "table",
+      deploy: TABLE_DEPLOY_DEFAULTS,
+    } as const;
+
+    attest<typeof expected>(table).equals(expected);
+  });
+
   it("should throw if the provided key is a dynamic ABI type", () => {
     attest(() =>
       defineTable({
@@ -252,7 +278,29 @@ describe("resolveTable", () => {
         // @ts-expect-error Key `keySchema` does not exist in TableInput
         keySchema: { id: "address" },
       }),
-    ).type.errors("Key `keySchema` does not exist in TableInput ");
+    ).type.errors("Key `keySchema` does not exist in TableInput");
+  });
+
+  it("should throw if an invalid namespace is provided", () => {
+    attest(() =>
+      defineTable({
+        schema: { id: "address" },
+        key: ["id"],
+        label: "",
+        namespace: "ThisNamespaceIsTooLong",
+      }),
+    ).throws('Table `namespace` must fit into a `bytes14`, but "ThisNamespaceIsTooLong" is too long.');
+  });
+
+  it("should throw if an invalid name is provided", () => {
+    attest(() =>
+      defineTable({
+        schema: { id: "address" },
+        key: ["id"],
+        label: "",
+        name: "ThisNameIsTooLong",
+      }),
+    ).throws('Table `name` must fit into a `bytes16`, but "ThisNameIsTooLong" is too long.');
   });
 });
 

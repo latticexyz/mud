@@ -136,12 +136,20 @@ export function resolveTableCodegen<input extends TableInput>(input: input): res
   } satisfies TableCodegen as never;
 }
 
+// TODO: is this helper worth it for the strongly typed substring?
+// https://stackoverflow.com/a/66218917
+type truncate<
+  T extends string,
+  N extends number,
+  L extends unknown[] = [],
+  A extends string = "",
+> = N extends L["length"] ? A : T extends `${infer F}${infer R}` ? truncate<R, N, [0, ...L], `${A}${F}`> : A;
+
 export type resolveTable<input, scope extends Scope = Scope> = input extends TableInput
   ? {
       readonly tableId: Hex;
       readonly label: input["label"];
-      // TODO: return `string` instead of label, since we can't truncate label in TS
-      readonly name: undefined extends input["name"] ? input["label"] : input["name"];
+      readonly name: undefined extends input["name"] ? truncate<input["label"], 16> : input["name"];
       readonly namespace: undefined extends input["namespace"] ? typeof TABLE_DEFAULTS.namespace : input["namespace"];
       readonly type: undefined extends input["type"] ? typeof TABLE_DEFAULTS.type : input["type"];
       readonly key: Readonly<input["key"]>;
