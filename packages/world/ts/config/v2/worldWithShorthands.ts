@@ -20,10 +20,10 @@ export type resolveWorldWithShorthands<world> = resolveWorld<{
     ? resolveTablesWithShorthands<world[key], extendedScope<world>>
     : key extends "namespaces"
       ? {
-          [namespaceKey in keyof world[key]]: {
-            [namespaceProp in keyof world[key][namespaceKey]]: namespaceProp extends "tables"
-              ? resolveTablesWithShorthands<world[key][namespaceKey][namespaceProp], extendedScope<world>>
-              : world[key][namespaceKey][namespaceProp];
+          [namespaceLabel in keyof world[key]]: {
+            [namespaceOption in keyof world[key][namespaceLabel]]: namespaceOption extends "tables"
+              ? resolveTablesWithShorthands<world[key][namespaceLabel][namespaceOption], extendedScope<world>>
+              : world[key][namespaceLabel][namespaceOption];
           };
         }
       : world[key];
@@ -39,22 +39,23 @@ export type validateWorldWithShorthands<world> = {
 
 function validateWorldWithShorthands(world: unknown): asserts world is WorldWithShorthandsInput {
   const scope = extendedScope(world);
+
   if (hasOwnKey(world, "tables")) {
     validateTablesWithShorthands(world.tables, scope);
   }
 
   if (hasOwnKey(world, "namespaces") && isObject(world.namespaces)) {
-    for (const namespaceKey of Object.keys(world.namespaces)) {
-      validateTablesWithShorthands(getPath(world.namespaces, [namespaceKey, "tables"]) ?? {}, scope);
+    for (const label of Object.keys(world.namespaces)) {
+      validateTablesWithShorthands(getPath(world.namespaces, [label, "tables"]) ?? {}, scope);
     }
   }
 }
 
 export type validateNamespacesWithShorthands<namespaces, scope extends Scope = AbiTypeScope> = {
-  [namespace in keyof namespaces]: {
-    [key in keyof namespaces[namespace]]: key extends "tables"
-      ? validateTablesWithShorthands<namespaces[namespace][key], scope>
-      : validateNamespace<namespaces[namespace], scope>[key];
+  [label in keyof namespaces]: {
+    [key in keyof namespaces[label]]: key extends "tables"
+      ? validateTablesWithShorthands<namespaces[label][key], scope>
+      : validateNamespace<namespaces[label], scope>[key];
   };
 };
 
@@ -62,17 +63,36 @@ export function resolveWorldWithShorthands<world extends WorldWithShorthandsInpu
   world: world,
 ): resolveWorldWithShorthands<world> {
   const scope = extendedScope(world);
-  const tables = mapObject(world.tables ?? {}, (table) => {
-    return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
-  });
-  const namespaces = mapObject(world.namespaces ?? {}, (namespace) => ({
-    ...namespace,
-    tables: mapObject(namespace.tables ?? {}, (table) => {
-      return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
-    }),
-  }));
 
-  const fullConfig = { ...world, tables, namespaces };
+  const tables =
+    world.tables != null
+      ? mapObject(world.tables, (table) => {
+          return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
+        })
+      : null;
+
+  const namespaces =
+    world.namespaces != null
+      ? mapObject(world.namespaces, (namespace) => {
+          const tables =
+            namespace.tables != null
+              ? mapObject(namespace.tables, (table) => {
+                  return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
+                })
+              : null;
+          return {
+            ...namespace,
+            ...(tables != null ? { tables } : null),
+          };
+        })
+      : null;
+
+  const fullConfig = {
+    ...world,
+    ...(tables != null ? { tables } : null),
+    ...(namespaces != null ? { namespaces } : null),
+  };
+
   validateWorld(fullConfig);
 
   return resolveWorld(fullConfig) as never;

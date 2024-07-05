@@ -164,6 +164,7 @@ describe("defineWorldWithShorthands", () => {
             },
           },
           key: ["id"],
+          label: "Name",
           name: "Name",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },

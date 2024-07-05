@@ -123,7 +123,7 @@ async function retrieveSystemFunctionFromContract(
   worldAddress: Hex,
   worldFunctionSelector: Hex,
 ): Promise<SystemFunction> {
-  const table = worldConfig.tables.world__FunctionSelectors;
+  const table = worldConfig.tables.FunctionSelectors;
 
   const keySchema = getSchemaTypes(getKeySchema(table));
   const valueSchema = getSchemaTypes(getValueSchema(table));

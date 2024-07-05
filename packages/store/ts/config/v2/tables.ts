@@ -29,7 +29,7 @@ export type resolveTables<tables, scope extends Scope = AbiTypeScope> = evaluate
 
 export function resolveTables<tables extends TablesInput, scope extends Scope = AbiTypeScope>(
   tables: tables,
-  scope: scope = AbiTypeScope as unknown as scope,
+  scope: scope,
 ): resolveTables<tables, scope> {
   if (!isObject(tables)) {
     throw new Error(`Expected tables config, received ${JSON.stringify(tables)}`);

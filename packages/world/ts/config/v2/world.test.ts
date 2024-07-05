@@ -59,6 +59,7 @@ describe("defineWorld", () => {
             },
           },
           key: ["id"],
+          label: "ExampleTable",
           name: "ExampleTable",
           namespace: "ExampleNS",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -122,6 +123,7 @@ describe("defineWorld", () => {
             },
           },
           key: ["id"],
+          label: "ExampleTable",
           name: "ExampleTable",
           namespace: "ExampleNS",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -194,8 +196,8 @@ describe("defineWorld", () => {
     });
 
     attest<"namespace">(config.namespace).equals("namespace");
-    attest<"AnotherOne">(config.tables.AnotherOne__Example.namespace).equals("AnotherOne");
-    attest(config.tables.AnotherOne__Example.tableId).equals(
+    attest<"AnotherOne">(config.namespaces.AnotherOne.tables.Example.namespace).equals("AnotherOne");
+    attest(config.namespaces.AnotherOne.tables.Example.tableId).equals(
       resourceToHex({ type: "table", name: "Example", namespace: "AnotherOne" }),
     );
   });
@@ -232,6 +234,7 @@ describe("defineWorld", () => {
               },
             },
             key: ["age"],
+            label: "Example",
             name: "Example",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -282,6 +285,7 @@ describe("defineWorld", () => {
               },
             },
             key: ["age"],
+            label: "Example",
             name: "Example",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -331,6 +335,7 @@ describe("defineWorld", () => {
               },
             },
             key: ["age", "id"],
+            label: "Example",
             name: "Example",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -382,6 +387,7 @@ describe("defineWorld", () => {
               },
             },
             key: ["firstKey", "firstAge"],
+            label: "First",
             name: "First",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -405,6 +411,7 @@ describe("defineWorld", () => {
               },
             },
             key: ["secondKey", "secondAge"],
+            label: "Second",
             name: "Second",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -460,6 +467,7 @@ describe("defineWorld", () => {
               },
             },
             key: ["firstKey", "firstAge"],
+            label: "First",
             name: "First",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -483,6 +491,7 @@ describe("defineWorld", () => {
               },
             },
             key: ["secondKey", "secondAge"],
+            label: "Second",
             name: "Second",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -594,6 +603,7 @@ describe("defineWorld", () => {
               },
             },
             key: ["name"],
+            label: "Example",
             name: "Example",
             namespace: "",
             codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -654,8 +664,8 @@ describe("defineWorld", () => {
       });
 
       attest<"namespace">(config.namespace).equals("namespace");
-      attest<"namespace">(config.tables.namespace__Example.namespace).equals("namespace");
-      attest(config.tables.namespace__Example.tableId).equals(
+      attest<"namespace">(config.tables.Example.namespace).equals("namespace");
+      attest(config.tables.Example.tableId).equals(
         resourceToHex({ type: "table", name: "Example", namespace: "namespace" }),
       );
     });
@@ -672,7 +682,7 @@ describe("defineWorld", () => {
       },
     });
 
-    attest<"CustomNS__Example", keyof typeof config.tables>();
+    attest<"Example", keyof typeof config.tables>();
   });
 
   it("should throw if namespace is overridden in top level tables", () => {
@@ -691,22 +701,22 @@ describe("defineWorld", () => {
     ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
   });
 
-  it("should throw if name is overridden in top level tables", () => {
+  it("should throw if label is overridden in top level tables", () => {
     attest(() =>
       defineWorld({
         tables: {
           Example: {
             schema: { id: "address" },
             key: ["id"],
-            // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
-            name: "NotAllowed",
+            // @ts-expect-error "Overrides of `label` and `namespace` are not allowed for tables in a store config"
+            label: "NotAllowed",
           },
         },
       }),
     ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
   });
 
-  it.skip("should throw if name is overridden in namespaced tables", () => {
+  it.skip("should throw if label is overridden in namespaced tables", () => {
     attest(() =>
       defineWorld({
         // @ts-expect-error TODO: remove once namespaces support ships
@@ -716,13 +726,13 @@ describe("defineWorld", () => {
               Example: {
                 schema: { id: "address" },
                 key: ["id"],
-                name: "NotAllowed",
+                label: "NotAllowed",
               },
             },
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
+    ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in a store config");
   });
 
   it.skip("should throw if namespace is overridden in namespaced tables", () => {
@@ -741,7 +751,7 @@ describe("defineWorld", () => {
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
+    ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in a store config");
   });
 
   it("should throw if namespaces are defined (TODO: remove once namespaces support ships)", () => {
