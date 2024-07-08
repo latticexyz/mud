@@ -152,7 +152,7 @@ There are a few cases that require `System` functions to be called from the root
 
 - The called `System` needs to know the value sent with the transaction.
 - You cannot use `callFrom` because users won't sign `registerDelegation`.
-- The code that the calling `System` has to implement needs to be in the root namespace for some other reason (for example, to modify system tables).
+- The code that the calling `System` has to implement needs to be in the root namespace for some other reason (for example, to modify root tables).
 
 In those cases, you can use [`SystemCall`](/world/systems#calling-from-a-root-system) if the message sender is authorized to call the `System` directly.
 If the message sender is not normally authorized you can use [`WorldContextProviderLib.callWithContext`](https://github.com/latticexyz/mud/blob/main/packages/world/src/WorldContext.sol#L122-L140), a low level function that bypasses access controls.
