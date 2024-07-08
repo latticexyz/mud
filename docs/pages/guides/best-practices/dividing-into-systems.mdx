@@ -2,12 +2,17 @@ import { Callout } from "nextra/components";
 
 # Dividing Code into `System`s
 
-It is usually simplest to keep all the code that needs the same permissions and lives in the same namespace in a single `System`.
 This page discusses situations in which either you need to divide your code into multiple `System`s, or it seems like that would be a good solution.
 
 ## Good reasons
 
 There are several reasons to divide the code in a namespace into multiple `System`s.
+
+### Modularity
+
+It is easier to write and maintain code that is [modular](https://en.wikipedia.org/wiki/Modularity).
+If two parts are logically distinct, with a limited interface between them, it might make sense to create them as two different `System`s.
+Such a division can simplify QA and upgrades.
 
 ### Access Control
 
@@ -25,12 +30,6 @@ If access to a function (or multiple functions), needs to be restricted to speci
   namespace](/world/namespaces-access-control#modifying-access-control). If you need to disallow access from a separate
   `System`, put the private `System` in a different namespace.
 </Callout>
-
-### Modularity
-
-It is easier to write and maintain code that is [modular](https://en.wikipedia.org/wiki/Modularity).
-If two parts are logically distinct, with a limited interface between them, it might make sense to create them as two different `System`s.
-Such a division can simplify QA and upgrades.
 
 ### Different privileges
 
