@@ -95,12 +95,12 @@ export function getTableOptions(
         };
 
     return {
-      outputPath: path.join(table.codegen.outputDirectory, `${table.name}.sol`),
-      tableName: table.name,
+      outputPath: path.join(table.codegen.outputDirectory, `${table.label}.sol`),
+      tableName: table.label,
       renderOptions: {
         imports,
-        libraryName: table.name,
-        structName: withStruct ? table.name + "Data" : undefined,
+        libraryName: table.label,
+        structName: withStruct ? table.label + "Data" : undefined,
         staticResourceData,
         storeImportPath: config.codegen.storeImportPath,
         keyTuple,
