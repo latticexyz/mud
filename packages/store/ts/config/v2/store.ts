@@ -40,7 +40,7 @@ export function validateStore(input: unknown): asserts input is StoreInput {
 }
 
 export type resolveStore<input> = resolveNamespace<
-  mergeIfUndefined<input, { label: CONFIG_DEFAULTS["namespace"] }>,
+  mergeIfUndefined<input, { label: CONFIG_DEFAULTS["label"] }>,
   extendedScope<input>
 > & {
   readonly sourceDirectory: "sourceDirectory" extends keyof input
@@ -54,7 +54,7 @@ export type resolveStore<input> = resolveNamespace<
 
 export function resolveStore<const input extends StoreInput>(input: input): resolveStore<input> {
   const scope = extendedScope(input);
-  const namespace = resolveNamespace(mergeIfUndefined(input, { label: CONFIG_DEFAULTS.namespace }), scope);
+  const namespace = resolveNamespace(mergeIfUndefined(input, { label: CONFIG_DEFAULTS.label }), scope);
   return {
     ...namespace,
     sourceDirectory: input.sourceDirectory ?? CONFIG_DEFAULTS["sourceDirectory"],

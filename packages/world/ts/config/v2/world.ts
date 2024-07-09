@@ -10,6 +10,7 @@ import {
   validateStore,
   resolveNamespaces,
   validateNamespaces,
+  validateTables,
 } from "@latticexyz/store/config/v2";
 import { SystemsInput, WorldInput } from "./input";
 import { CONFIG_DEFAULTS, MODULE_DEFAULTS } from "./defaults";
@@ -17,16 +18,22 @@ import { resolveSystems } from "./systems";
 import { resolveCodegen } from "./codegen";
 import { resolveDeploy } from "./deploy";
 
-export type validateWorld<world> = validateStore<world> & {
-  readonly [key in keyof world]: key extends "userTypes"
-    ? UserTypes
-    : key extends "enums"
-      ? narrow<world[key]>
-      : key extends "namespaces"
-        ? validateNamespaces<world[key], extendedScope<world>>
-        : key extends keyof WorldInput
-          ? conform<world[key], WorldInput[key]>
-          : ErrorMessage<`\`${key & string}\` is not a valid World config option.`>;
+// Ideally we'd be able to use an intersection of `validateNamespace<input> & { key in keyof input]: ... }`
+// to avoid duplicating logic, but TS doesn't work well when mapping over types like that.
+// TODO: fill in more reasons why
+export type validateWorld<input> = {
+  readonly [key in keyof input]: key extends "tables"
+    ? validateTables<input[key], extendedScope<input>>
+    : key extends "userTypes"
+      ? UserTypes
+      : key extends "enums"
+        ? narrow<input[key]>
+        : key extends "namespaces"
+          ? validateNamespaces<input[key], extendedScope<input>>
+          : key extends keyof WorldInput
+            ? // TODO: why do we use conform here and not in the same line as validateStore?
+              conform<input[key], WorldInput[key]>
+            : ErrorMessage<`\`${key & string}\` is not a valid World config option.`>;
 };
 
 export function validateWorld(world: unknown): asserts world is WorldInput {

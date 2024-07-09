@@ -21,7 +21,6 @@ const CODEGEN_DEFAULTS = { ...STORE_CODEGEN_DEFAULTS, ...WORLD_CODEGEN_DEFAULTS 
 describe("defineWorld", () => {
   it("should resolve namespaced tables", () => {
     const config = defineWorld({
-      // @ts-expect-error TODO: remove once namespaces support ships
       namespaces: {
         ExampleNS: {
           tables: {
@@ -41,35 +40,40 @@ describe("defineWorld", () => {
     const expected = {
       ...CONFIG_DEFAULTS,
       codegen: CODEGEN_DEFAULTS,
-      tables: {
-        ExampleNS__ExampleTable: {
-          tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
-          schema: {
-            id: {
-              type: "address",
-              internalType: "address",
-            },
-            value: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-            dynamic: {
-              type: "string",
-              internalType: "string",
+      namespaces: {
+        ExampleNS: {
+          tables: {
+            ExampleTable: {
+              tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
+              schema: {
+                id: {
+                  type: "address",
+                  internalType: "address",
+                },
+                value: {
+                  type: "uint256",
+                  internalType: "uint256",
+                },
+                dynamic: {
+                  type: "string",
+                  internalType: "string",
+                },
+              },
+              key: ["id"],
+              label: "ExampleTable",
+              name: "ExampleTable",
+              namespace: "ExampleNS",
+              codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+              type: "table",
+              deploy: TABLE_DEPLOY_DEFAULTS,
             },
           },
-          key: ["id"],
-          label: "ExampleTable",
-          name: "ExampleTable",
-          namespace: "ExampleNS",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
-          type: "table",
-          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: {},
       enums: {},
       enumValues: {},
+      label: "",
       namespace: "",
     } as const;
 
@@ -78,7 +82,6 @@ describe("defineWorld", () => {
 
   it("should resolve namespaced table config with user types and enums", () => {
     const config = defineWorld({
-      // @ts-expect-error TODO: remove once namespaces support ships
       namespaces: {
         ExampleNS: {
           tables: {
@@ -105,30 +108,34 @@ describe("defineWorld", () => {
     const expected = {
       ...CONFIG_DEFAULTS,
       codegen: CODEGEN_DEFAULTS,
-      tables: {
-        ExampleNS__ExampleTable: {
-          tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
-          schema: {
-            id: {
-              type: "address",
-              internalType: "Static",
-            },
-            value: {
-              type: "uint8",
-              internalType: "MyEnum",
-            },
-            dynamic: {
-              type: "string",
-              internalType: "Dynamic",
+      namespaces: {
+        ExampleNS: {
+          tables: {
+            ExampleTable: {
+              tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
+              schema: {
+                id: {
+                  type: "address",
+                  internalType: "Static",
+                },
+                value: {
+                  type: "uint8",
+                  internalType: "MyEnum",
+                },
+                dynamic: {
+                  type: "string",
+                  internalType: "Dynamic",
+                },
+              },
+              key: ["id"],
+              label: "ExampleTable",
+              name: "ExampleTable",
+              namespace: "ExampleNS",
+              codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+              type: "table",
+              deploy: TABLE_DEPLOY_DEFAULTS,
             },
           },
-          key: ["id"],
-          label: "ExampleTable",
-          name: "ExampleTable",
-          namespace: "ExampleNS",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
-          type: "table",
-          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: {
@@ -144,6 +151,7 @@ describe("defineWorld", () => {
           Second: 1,
         },
       },
+      label: "",
       namespace: "",
     } as const;
 
@@ -180,8 +188,8 @@ describe("defineWorld", () => {
 
   it("should not use the global namespace for namespaced tables", () => {
     const config = defineWorld({
+      // TODO: test that only one or the other can be used
       namespace: "namespace",
-      // @ts-expect-error TODO: remove once namespaces support ships
       namespaces: {
         AnotherOne: {
           tables: {
@@ -244,6 +252,7 @@ describe("defineWorld", () => {
         userTypes: {},
         enums: {},
         enumValues: {},
+        label: "",
         namespace: "",
       } as const;
 
@@ -298,6 +307,7 @@ describe("defineWorld", () => {
         },
         enums: {},
         enumValues: {},
+        label: "",
         namespace: "",
       } as const;
 
@@ -345,6 +355,7 @@ describe("defineWorld", () => {
         userTypes: {},
         enums: {},
         enumValues: {},
+        label: "",
         namespace: "",
         deploy: DEPLOY_DEFAULTS,
       } as const;
@@ -421,6 +432,7 @@ describe("defineWorld", () => {
         userTypes: {},
         enums: {},
         enumValues: {},
+        label: "",
         namespace: "",
       } as const;
 
@@ -504,6 +516,7 @@ describe("defineWorld", () => {
         },
         enums: {},
         enumValues: {},
+        label: "",
         namespace: "",
       } as const;
 
@@ -623,6 +636,7 @@ describe("defineWorld", () => {
             second: 1,
           },
         },
+        label: "",
         namespace: "",
       } as const;
 

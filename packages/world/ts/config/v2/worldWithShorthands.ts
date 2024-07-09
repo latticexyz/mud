@@ -9,10 +9,10 @@ import {
   isTableShorthandInput,
   resolveTableShorthand,
   resolveTablesWithShorthands,
+  validateNamespace,
   validateTablesWithShorthands,
 } from "@latticexyz/store/config/v2";
 import { WorldWithShorthandsInput } from "./input";
-import { validateNamespace } from "./namespaces";
 import { resolveWorld, validateWorld } from "./world";
 
 export type resolveWorldWithShorthands<world> = resolveWorld<{

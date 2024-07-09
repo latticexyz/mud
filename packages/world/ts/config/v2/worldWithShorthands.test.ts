@@ -35,25 +35,29 @@ describe("defineWorldWithShorthands", () => {
     const expected = {
       ...CONFIG_DEFAULTS,
       codegen: CODEGEN_DEFAULTS,
-      tables: {
-        ExampleNS__ExampleTable: {
-          tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
-          schema: {
-            id: {
-              type: "bytes32",
-              internalType: "bytes32",
-            },
-            value: {
-              type: "address",
-              internalType: "Static",
+      namespaces: {
+        ExampleNS: {
+          tables: {
+            ExampleTable: {
+              tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
+              schema: {
+                id: {
+                  type: "bytes32",
+                  internalType: "bytes32",
+                },
+                value: {
+                  type: "address",
+                  internalType: "Static",
+                },
+              },
+              key: ["id"],
+              name: "ExampleTable",
+              namespace: "ExampleNS",
+              codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+              type: "table",
+              deploy: TABLE_DEPLOY_DEFAULTS,
             },
           },
-          key: ["id"],
-          name: "ExampleTable",
-          namespace: "ExampleNS",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-          type: "table",
-          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: {
@@ -69,6 +73,7 @@ describe("defineWorldWithShorthands", () => {
           Second: 1,
         },
       },
+      label: "",
       namespace: "",
     } as const;
 
@@ -100,29 +105,33 @@ describe("defineWorldWithShorthands", () => {
     const expected = {
       ...CONFIG_DEFAULTS,
       codegen: CODEGEN_DEFAULTS,
-      tables: {
-        ExampleNS__ExampleTable: {
-          tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
-          schema: {
-            id: {
-              type: "address",
-              internalType: "Static",
-            },
-            value: {
-              type: "uint8",
-              internalType: "MyEnum",
-            },
-            dynamic: {
-              type: "string",
-              internalType: "Dynamic",
+      namespaces: {
+        ExampleNS: {
+          tables: {
+            ExampleTable: {
+              tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
+              schema: {
+                id: {
+                  type: "address",
+                  internalType: "Static",
+                },
+                value: {
+                  type: "uint8",
+                  internalType: "MyEnum",
+                },
+                dynamic: {
+                  type: "string",
+                  internalType: "Dynamic",
+                },
+              },
+              key: ["id"],
+              name: "ExampleTable",
+              namespace: "ExampleNS",
+              codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+              type: "table",
+              deploy: TABLE_DEPLOY_DEFAULTS,
             },
           },
-          key: ["id"],
-          name: "ExampleTable",
-          namespace: "ExampleNS",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
-          type: "table",
-          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
       userTypes: {
@@ -138,6 +147,7 @@ describe("defineWorldWithShorthands", () => {
           Second: 1,
         },
       },
+      label: "",
       namespace: "",
     } as const;
 
@@ -175,6 +185,7 @@ describe("defineWorldWithShorthands", () => {
       userTypes: {},
       enums: {},
       enumValues: {},
+      label: "",
       namespace: "",
     } as const;
 
@@ -214,6 +225,7 @@ describe("defineWorldWithShorthands", () => {
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" as string } },
       enums: {},
       enumValues: {},
+      label: "",
       namespace: "",
     } as const;
 
@@ -255,6 +267,7 @@ describe("defineWorldWithShorthands", () => {
       userTypes: {},
       enums: {},
       enumValues: {},
+      label: "",
       namespace: "",
     } as const;
 
@@ -296,6 +309,7 @@ describe("defineWorldWithShorthands", () => {
       userTypes: {},
       enums: {},
       enumValues: {},
+      label: "",
       namespace: "",
     } as const;
 
