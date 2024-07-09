@@ -1,9 +1,8 @@
 import { ErrorMessage, evaluate, narrow } from "@arktype/util";
-import { get, hasOwnKey } from "./generics";
+import { get, hasOwnKey, mergeIfUndefined } from "./generics";
 import { UserTypes } from "./output";
 import { CONFIG_DEFAULTS } from "./defaults";
-import { StoreInput } from "./input";
-import { validateTables } from "./tables";
+import { NamespaceInput, StoreInput } from "./input";
 import { scopeWithUserTypes, validateUserTypes } from "./userTypes";
 import { mapEnums, resolveEnums, scopeWithEnums } from "./enums";
 import { resolveCodegen } from "./codegen";
@@ -15,17 +14,17 @@ export function extendedScope<input>(input: input): extendedScope<input> {
   return scopeWithEnums(get(input, "enums"), scopeWithUserTypes(get(input, "userTypes")));
 }
 
-export type validateStore<input> = {
-  [key in keyof input]: key extends "tables"
-    ? validateTables<input[key], extendedScope<input>>
-    : key extends "userTypes"
-      ? UserTypes
-      : key extends "enums"
-        ? narrow<input[key]>
-        : key extends keyof StoreInput
-          ? StoreInput[key]
-          : ErrorMessage<`\`${key & string}\` is not a valid Store config option.`>;
-};
+export type validateStore<input> = input extends NamespaceInput
+  ? validateNamespace<Pick<input, keyof NamespaceInput>, extendedScope<input>> & {
+      [key in keyof input]: key extends "userTypes"
+        ? UserTypes
+        : key extends "enums"
+          ? narrow<input[key]>
+          : key extends keyof StoreInput
+            ? StoreInput[key]
+            : ErrorMessage<`\`${key & string}\` is not a valid Store config option.`>;
+    }
+  : never;
 
 export function validateStore(input: unknown): asserts input is StoreInput {
   const scope = extendedScope(input);
@@ -36,7 +35,10 @@ export function validateStore(input: unknown): asserts input is StoreInput {
   }
 }
 
-export type resolveStore<input> = resolveNamespace<input, extendedScope<input>> & {
+export type resolveStore<input> = resolveNamespace<
+  mergeIfUndefined<input, { label: CONFIG_DEFAULTS["namespace"] }>,
+  extendedScope<input>
+> & {
   readonly sourceDirectory: "sourceDirectory" extends keyof input
     ? input["sourceDirectory"]
     : CONFIG_DEFAULTS["sourceDirectory"];
@@ -48,7 +50,7 @@ export type resolveStore<input> = resolveNamespace<input, extendedScope<input>> 
 
 export function resolveStore<const input extends StoreInput>(input: input): resolveStore<input> {
   const scope = extendedScope(input);
-  const namespace = resolveNamespace(input, scope);
+  const namespace = resolveNamespace(mergeIfUndefined(input, { label: CONFIG_DEFAULTS.namespace }), scope);
   return {
     ...namespace,
     sourceDirectory: input.sourceDirectory ?? CONFIG_DEFAULTS["sourceDirectory"],

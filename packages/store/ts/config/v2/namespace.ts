@@ -40,7 +40,7 @@ export type resolveNamespace<input, scope extends Scope = AbiTypeScope> = input 
             scope
           >;
     }
-  : ErrorMessage<"Invalid namespace">;
+  : never;
 
 export function resolveNamespace<const input extends NamespaceInput, scope extends Scope = AbiTypeScope>(
   input: input,
