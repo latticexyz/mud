@@ -2,7 +2,8 @@ import { ErrorMessage, evaluate, narrow } from "@arktype/util";
 import { get, hasOwnKey, mergeIfUndefined } from "./generics";
 import { UserTypes } from "./output";
 import { CONFIG_DEFAULTS } from "./defaults";
-import { NamespaceInput, StoreInput } from "./input";
+import { StoreInput } from "./input";
+import { validateTables } from "./tables";
 import { scopeWithUserTypes, validateUserTypes } from "./userTypes";
 import { mapEnums, resolveEnums, scopeWithEnums } from "./enums";
 import { resolveCodegen } from "./codegen";
@@ -14,16 +15,19 @@ export function extendedScope<input>(input: input): extendedScope<input> {
   return scopeWithEnums(get(input, "enums"), scopeWithUserTypes(get(input, "userTypes")));
 }
 
-export type validateStore<input> = (input extends NamespaceInput
-  ? validateNamespace<Pick<input, keyof NamespaceInput>, extendedScope<input>>
-  : {}) & {
-  [key in keyof input]: key extends "userTypes"
-    ? UserTypes
-    : key extends "enums"
-      ? narrow<input[key]>
-      : key extends keyof StoreInput
-        ? StoreInput[key]
-        : ErrorMessage<`\`${key & string}\` is not a valid Store config option.`>;
+// Ideally we'd be able to use an intersection of `validateNamespace<input> & { key in keyof input]: ... }`
+// to avoid duplicating logic, but TS doesn't work well when mapping over types like that.
+// TODO: fill in more reasons why
+export type validateStore<input> = {
+  [key in keyof input]: key extends "tables"
+    ? validateTables<input[key], extendedScope<input>>
+    : key extends "userTypes"
+      ? UserTypes
+      : key extends "enums"
+        ? narrow<input[key]>
+        : key extends keyof StoreInput
+          ? StoreInput[key]
+          : ErrorMessage<`\`${key & string}\` is not a valid Store config option.`>;
 };
 
 export function validateStore(input: unknown): asserts input is StoreInput {
