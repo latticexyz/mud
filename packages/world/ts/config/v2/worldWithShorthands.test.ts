@@ -37,6 +37,8 @@ describe("defineWorldWithShorthands", () => {
       codegen: CODEGEN_DEFAULTS,
       namespaces: {
         ExampleNS: {
+          label: "ExampleNS",
+          namespace: "ExampleNS",
           tables: {
             ExampleTable: {
               tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
@@ -51,6 +53,7 @@ describe("defineWorldWithShorthands", () => {
                 },
               },
               key: ["id"],
+              label: "ExampleTable",
               name: "ExampleTable",
               namespace: "ExampleNS",
               codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -107,6 +110,8 @@ describe("defineWorldWithShorthands", () => {
       codegen: CODEGEN_DEFAULTS,
       namespaces: {
         ExampleNS: {
+          label: "ExampleNS",
+          namespace: "ExampleNS",
           tables: {
             ExampleTable: {
               tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
@@ -114,6 +119,7 @@ describe("defineWorldWithShorthands", () => {
                 id: {
                   type: "address",
                   internalType: "Static",
+                  // TODO: this should probably include `filePath` too, as `userTypeFilePath`
                 },
                 value: {
                   type: "uint8",
@@ -125,6 +131,7 @@ describe("defineWorldWithShorthands", () => {
                 },
               },
               key: ["id"],
+              label: "ExampleTable",
               name: "ExampleTable",
               namespace: "ExampleNS",
               codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -215,6 +222,7 @@ describe("defineWorldWithShorthands", () => {
             },
           },
           key: ["id"],
+          label: "Name",
           name: "Name",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
@@ -257,6 +265,7 @@ describe("defineWorldWithShorthands", () => {
             },
           },
           key: ["id"],
+          label: "Example",
           name: "Example",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
@@ -299,6 +308,7 @@ describe("defineWorldWithShorthands", () => {
             },
           },
           key: ["id"],
+          label: "Example",
           name: "Example",
           namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },

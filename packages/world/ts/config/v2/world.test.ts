@@ -42,6 +42,8 @@ describe("defineWorld", () => {
       codegen: CODEGEN_DEFAULTS,
       namespaces: {
         ExampleNS: {
+          label: "ExampleNS",
+          namespace: "ExampleNS",
           tables: {
             ExampleTable: {
               tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
@@ -110,6 +112,8 @@ describe("defineWorld", () => {
       codegen: CODEGEN_DEFAULTS,
       namespaces: {
         ExampleNS: {
+          label: "ExampleNS",
+          namespace: "ExampleNS",
           tables: {
             ExampleTable: {
               tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
@@ -706,12 +710,12 @@ describe("defineWorld", () => {
           Example: {
             schema: { id: "address" },
             key: ["id"],
-            // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
+            // @ts-expect-error "Overrides of `label` and `namespace` are not allowed for tables in a store config"
             namespace: "NotAllowed",
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
+    ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in a store config");
   });
 
   it("should throw if label is overridden in top level tables", () => {
@@ -726,7 +730,7 @@ describe("defineWorld", () => {
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
+    ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in a store config");
   });
 
   it("should throw if label is overridden in namespaced tables", () => {

@@ -103,4 +103,4 @@ export type WorldInput = evaluate<
 
 /******** Variations with shorthands ********/
 
-export type WorldWithShorthandsInput = Omit<WorldInput, "tables"> & Pick<StoreWithShorthandsInput, "tables">;
+export type WorldWithShorthandsInput = evaluate<Omit<WorldInput, "tables"> & Pick<StoreWithShorthandsInput, "tables">>;

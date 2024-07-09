@@ -52,7 +52,8 @@ export type resolveWorld<world> = evaluate<
         [key in Exclude<keyof world, keyof Store>]: key extends "namespaces"
           ? resolveNamespaces<world[key], extendedScope<world>>
           : key extends "systems"
-            ? resolveSystems<world[key] & SystemsInput>
+            ? // TODO: rework resolveSystems to not need this intersection type
+              resolveSystems<world[key] & SystemsInput>
             : key extends "deploy"
               ? resolveDeploy<world[key]>
               : key extends "codegen"
@@ -66,14 +67,18 @@ export type resolveWorld<world> = evaluate<
 export function resolveWorld<const world extends WorldInput>(world: world): resolveWorld<world> {
   const resolvedStore = resolveStore(world);
 
-  const namespaces = resolveNamespaces(world.namespaces ?? {}, extendedScope(world));
+  // TODO: move namespace resolving into store
+  const namespaces = resolveNamespaces(world.namespaces ?? CONFIG_DEFAULTS.namespaces, extendedScope(world));
   const modules = (world.modules ?? CONFIG_DEFAULTS.modules).map((mod) => mergeIfUndefined(mod, MODULE_DEFAULTS));
 
   return mergeIfUndefined(
     {
       ...resolvedStore,
       namespaces,
-      codegen: mergeIfUndefined(resolvedStore.codegen, resolveCodegen(world.codegen)),
+      codegen: {
+        ...resolvedStore.codegen,
+        ...resolveCodegen(world.codegen),
+      },
       deploy: resolveDeploy(world.deploy),
       systems: resolveSystems(world.systems ?? CONFIG_DEFAULTS.systems),
       excludeSystems: get(world, "excludeSystems"),

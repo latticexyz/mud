@@ -37,6 +37,7 @@ export type DEPLOY_DEFAULTS = typeof DEPLOY_DEFAULTS;
 
 export const CONFIG_DEFAULTS = {
   ...STORE_CONFIG_DEFAULTS,
+  namespaces: {},
   systems: {},
   tables: {},
   excludeSystems: [],
