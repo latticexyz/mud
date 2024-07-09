@@ -53,3 +53,12 @@ export function mergeIfUndefined<base extends object, merged extends object>(
 }
 
 export type parseNumber<T> = T extends `${infer N extends number}` ? N : never;
+
+// TODO: is this helper worth it for the strongly typed substring?
+// https://stackoverflow.com/a/66218917
+export type truncate<
+  T extends string,
+  N extends number,
+  L extends unknown[] = [],
+  A extends string = "",
+> = N extends L["length"] ? A : T extends `${infer F}${infer R}` ? truncate<R, N, [0, ...L], `${A}${F}`> : A;

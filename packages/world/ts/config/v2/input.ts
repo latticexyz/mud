@@ -1,5 +1,5 @@
 import { evaluate } from "@arktype/util";
-import { StoreInput, StoreWithShorthandsInput } from "@latticexyz/store/config/v2";
+import { NamespacesInput, StoreInput, StoreWithShorthandsInput } from "@latticexyz/store/config/v2";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
 
 export type SystemInput = {
@@ -100,10 +100,6 @@ export type WorldInput = evaluate<
     codegen?: CodegenInput;
   }
 >;
-
-export type NamespacesInput = { [label: string]: NamespaceInput };
-
-export type NamespaceInput = Pick<StoreInput, "tables">;
 
 /******** Variations with shorthands ********/
 

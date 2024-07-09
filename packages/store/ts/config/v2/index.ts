@@ -13,3 +13,5 @@ export * from "./compat";
 export * from "./codegen";
 export * from "./enums";
 export * from "./userTypes";
+export * from "./namespace";
+export * from "./namespaces";

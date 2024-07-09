@@ -152,7 +152,6 @@ describe("defineWorld", () => {
 
   it("should extend the output World type", () => {
     const config = defineWorld({
-      // @ts-expect-error TODO: remove once namespaces support ships
       namespaces: {
         ExampleNS: {
           tables: {
@@ -716,16 +715,16 @@ describe("defineWorld", () => {
     ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
   });
 
-  it.skip("should throw if label is overridden in namespaced tables", () => {
+  it("should throw if label is overridden in namespaced tables", () => {
     attest(() =>
       defineWorld({
-        // @ts-expect-error TODO: remove once namespaces support ships
         namespaces: {
           MyNamespace: {
             tables: {
               Example: {
                 schema: { id: "address" },
                 key: ["id"],
+                // @ts-expect-error Can't override table `label` within `tables`
                 label: "NotAllowed",
               },
             },
@@ -735,16 +734,16 @@ describe("defineWorld", () => {
     ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in a store config");
   });
 
-  it.skip("should throw if namespace is overridden in namespaced tables", () => {
+  it("should throw if namespace is overridden in namespaced tables", () => {
     attest(() =>
       defineWorld({
-        // @ts-expect-error TODO: remove once namespaces support ships
         namespaces: {
           MyNamespace: {
             tables: {
               Example: {
                 schema: { id: "address" },
                 key: ["id"],
+                // @ts-expect-error Can't override `namespace` within `namespaces`
                 namespace: "NotAllowed",
               },
             },
@@ -752,15 +751,6 @@ describe("defineWorld", () => {
         },
       }),
     ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in a store config");
-  });
-
-  it("should throw if namespaces are defined (TODO: remove once namespaces support ships)", () => {
-    attest(() =>
-      defineWorld({
-        // @ts-expect-error TODO: remove once namespaces support ships
-        namespaces: {},
-      }),
-    ).type.errors("Namespaces config will be enabled soon.");
   });
 
   it("should allow setting openAccess of a system to false", () => {

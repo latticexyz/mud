@@ -1,6 +1,5 @@
 import { ErrorMessage, flatMorph } from "@arktype/util";
-import { get, hasOwnKey, mergeIfUndefined } from "./generics";
-import { CONFIG_DEFAULTS } from "./defaults";
+import { hasOwnKey, mergeIfUndefined, truncate } from "./generics";
 import { NamespaceInput } from "./input";
 import { resolveTables, validateTables } from "./tables";
 import { AbiTypeScope, Scope } from "./scope";
@@ -25,30 +24,35 @@ export function validateNamespace<scope extends Scope = AbiTypeScope>(
   }
 }
 
-export type resolveNamespace<input, scope extends Scope = AbiTypeScope> = {
-  readonly namespace: "namespace" extends keyof input ? input["namespace"] : CONFIG_DEFAULTS["namespace"];
-  readonly tables: "tables" extends keyof input
-    ? resolveTables<
-        {
-          [label in keyof input["tables"]]: mergeIfUndefined<
-            input["tables"][label],
-            { label: label; namespace: get<input, "namespace"> }
+export type resolveNamespace<input, scope extends Scope = AbiTypeScope> = input extends NamespaceInput
+  ? {
+      readonly label: input["label"];
+      readonly namespace: undefined extends input["namespace"] ? truncate<input["label"], 14> : input["namespace"];
+      readonly tables: undefined extends input["tables"]
+        ? {}
+        : resolveTables<
+            {
+              [label in keyof input["tables"]]: mergeIfUndefined<
+                input["tables"][label],
+                { label: label; namespace: input["namespace"] }
+              >;
+            },
+            scope
           >;
-        },
-        scope
-      >
-    : {};
-};
+    }
+  : ErrorMessage<"Invalid namespace">;
 
 export function resolveNamespace<const input extends NamespaceInput, scope extends Scope = AbiTypeScope>(
   input: input,
   scope: scope,
 ): resolveNamespace<input, scope> {
+  const label = input.label;
+  const namespace = input.namespace ?? label.slice(0, 14);
   return {
-    namespace: input.namespace ?? CONFIG_DEFAULTS["namespace"],
+    label,
+    namespace,
     tables: resolveTables(
       flatMorph(input.tables ?? {}, (label, table) => {
-        const namespace = input.namespace;
         return [label, mergeIfUndefined(table, { label, namespace })];
       }),
       scope,

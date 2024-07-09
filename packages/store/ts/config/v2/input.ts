@@ -50,10 +50,20 @@ export type CodegenInput = Partial<Codegen>;
 
 export type NamespaceInput = {
   /**
+   * Human-readable namespace label. Used as config keys and directory names.
+   * Labels are not length constrained like namespaces, but special characters should be avoided to be compatible with the filesystem, Solidity compiler, etc.
+   */
+  readonly label: string;
+  /**
    * Defaults to the root namespace if not set.
    */
   readonly namespace?: string;
   readonly tables?: TablesInput;
+};
+
+export type NamespacesInput = {
+  // remove label as this is set contextually
+  readonly [label: string]: Omit<NamespaceInput, "label">;
 };
 
 export type StoreInput = NamespaceInput & {

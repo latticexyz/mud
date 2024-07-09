@@ -1,7 +1,7 @@
 import { ErrorMessage, conform, evaluate, narrow, requiredKeyOf } from "@arktype/util";
 import { isStaticAbiType } from "@latticexyz/schema-type/internal";
 import { Hex } from "viem";
-import { get, hasOwnKey, mergeIfUndefined } from "./generics";
+import { get, hasOwnKey, mergeIfUndefined, truncate } from "./generics";
 import { resolveSchema, validateSchema } from "./schema";
 import { AbiTypeScope, Scope, getStaticAbiTypeKeys } from "./scope";
 import { TableCodegen } from "./output";
@@ -136,15 +136,6 @@ export function resolveTableCodegen<input extends TableInput>(input: input): res
   } satisfies TableCodegen as never;
 }
 
-// TODO: is this helper worth it for the strongly typed substring?
-// https://stackoverflow.com/a/66218917
-type truncate<
-  T extends string,
-  N extends number,
-  L extends unknown[] = [],
-  A extends string = "",
-> = N extends L["length"] ? A : T extends `${infer F}${infer R}` ? truncate<R, N, [0, ...L], `${A}${F}`> : A;
-
 export type resolveTable<input, scope extends Scope = Scope> = input extends TableInput
   ? {
       readonly tableId: Hex;
@@ -169,7 +160,7 @@ export function resolveTable<input extends TableInput, scope extends Scope = Abi
   const label = input.label;
   const type = input.type ?? TABLE_DEFAULTS.type;
   const namespace = input.namespace ?? TABLE_DEFAULTS.namespace;
-  const name = input.name ?? input.label.slice(0, 16);
+  const name = input.name ?? label.slice(0, 16);
   const tableId = resourceToHex({ type, namespace, name });
 
   return {
