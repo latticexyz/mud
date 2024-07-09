@@ -15,13 +15,6 @@ import { getChainId } from "viem/actions";
 import { World as WorldConfig } from "@latticexyz/world";
 import { worldToV1 } from "@latticexyz/world/config/v2";
 
-// TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
-const systemsTableId = resourceToHex({
-  type: "system",
-  namespace: worldConfig.namespace,
-  name: worldConfig.tables.world__Systems.name,
-});
-
 type Options = {
   tx: string;
   worldAddress?: string;
@@ -80,12 +73,17 @@ const commandModule: CommandModule<Options, Options> = {
     const names = Object.values(resolvedConfig.systems).map(({ name }) => name);
 
     // Fetch system table field layout from chain
-    const systemTableFieldLayout = await WorldContract.getFieldLayout(systemsTableId);
+    const systemTableFieldLayout = await WorldContract.getFieldLayout(worldConfig.tables.Systems.tableId);
     const labels: { name: string; address: string }[] = [];
     for (const name of names) {
       const systemSelector = resourceToHex({ type: "system", namespace, name });
       // Get the first field of `Systems` table (the table maps system name to its address and other data)
-      const address = await WorldContract.getField(systemsTableId, [systemSelector], 0, systemTableFieldLayout);
+      const address = await WorldContract.getField(
+        worldConfig.tables.Systems.tableId,
+        [systemSelector],
+        0,
+        systemTableFieldLayout,
+      );
       labels.push({ name, address });
     }
 
