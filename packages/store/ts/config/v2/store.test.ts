@@ -47,6 +47,7 @@ describe("defineStore", () => {
       userTypes: {},
       enums: {},
       enumValues: {},
+      label: "",
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -102,6 +103,7 @@ describe("defineStore", () => {
       },
       enums: {},
       enumValues: {},
+      label: "",
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -150,6 +152,7 @@ describe("defineStore", () => {
       userTypes: {},
       enums: {},
       enumValues: {},
+      label: "",
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -226,6 +229,7 @@ describe("defineStore", () => {
       userTypes: {},
       enums: {},
       enumValues: {},
+      label: "",
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -309,6 +313,7 @@ describe("defineStore", () => {
       },
       enums: {},
       enumValues: {},
+      label: "",
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -428,6 +433,7 @@ describe("defineStore", () => {
           second: 1,
         },
       },
+      label: "",
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;

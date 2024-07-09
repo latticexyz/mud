@@ -14,17 +14,17 @@ export function extendedScope<input>(input: input): extendedScope<input> {
   return scopeWithEnums(get(input, "enums"), scopeWithUserTypes(get(input, "userTypes")));
 }
 
-export type validateStore<input> = input extends NamespaceInput
-  ? validateNamespace<Pick<input, keyof NamespaceInput>, extendedScope<input>> & {
-      [key in keyof input]: key extends "userTypes"
-        ? UserTypes
-        : key extends "enums"
-          ? narrow<input[key]>
-          : key extends keyof StoreInput
-            ? StoreInput[key]
-            : ErrorMessage<`\`${key & string}\` is not a valid Store config option.`>;
-    }
-  : never;
+export type validateStore<input> = (input extends NamespaceInput
+  ? validateNamespace<Pick<input, keyof NamespaceInput>, extendedScope<input>>
+  : {}) & {
+  [key in keyof input]: key extends "userTypes"
+    ? UserTypes
+    : key extends "enums"
+      ? narrow<input[key]>
+      : key extends keyof StoreInput
+        ? StoreInput[key]
+        : ErrorMessage<`\`${key & string}\` is not a valid Store config option.`>;
+};
 
 export function validateStore(input: unknown): asserts input is StoreInput {
   const scope = extendedScope(input);

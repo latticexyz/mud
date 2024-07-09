@@ -34,7 +34,11 @@ export type resolveNamespace<input, scope extends Scope = AbiTypeScope> = input 
             {
               [label in keyof input["tables"]]: mergeIfUndefined<
                 input["tables"][label],
-                { label: label; namespace: input["namespace"] }
+                {
+                  label: label;
+                  // TODO: figure out how to dedupe with above `namespace` value?
+                  namespace: undefined extends input["namespace"] ? truncate<input["label"], 14> : input["namespace"];
+                }
               >;
             },
             scope
