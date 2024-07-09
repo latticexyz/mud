@@ -14,16 +14,17 @@ It is easier to write and maintain code that is [modular](https://en.wikipedia.o
 If two parts are logically distinct, with a limited interface between them, it might make sense to create them as two different `System`s.
 Such a division can simplify QA and upgrades.
 
-### Access Control
+### Access control considerations
 
 Each `System` is either publicly accessible (can be called by anybody) or accessible only from authorized addresses.
-These addresses are can be:
+These addresses can be:
 
 - [Externally owned accounts](https://ethereum.org/en/developers/docs/accounts/#types-of-account)
 - Contracts outside of the `World`
-- `System`s that are _not_ in the root namespace
+- `System`s that are _not_ in the root namespace.
+  [Root namespace `System`s](/world/systems#root-systems) _can_ [call other `System`s](/world/systems#calling-from-a-root-system), but they can also bypass access control.
 
-If access to a function (or multiple functions), needs to be restricted to specific addresses, they belong in a separate `System` than the rest of the namespace.
+If access to a function (or multiple functions) needs to be restricted to specific addresses, they belong in a separate `System` than the rest of the namespace.
 
 <Callout type="warning" emoji="⚠️">
   Access to a private `System` in a namespace is [granted to the namespace owner, as well as all `System`s within that
@@ -31,12 +32,9 @@ If access to a function (or multiple functions), needs to be restricted to speci
   `System`, put the private `System` in a different namespace.
 </Callout>
 
-### Different privileges
-
-In general, code should be given only those permissions necessary to perform its tasks ([the Principle of Least Privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege)).
-In MUD [access is granted by ethereum address](/world/namespaces-access-control#modifying-access-control).
-`System`s outside of the root namespace each have their own addresses, so you can give them different permissions.
-So if you need a specific function to have higher privileges, it might make sense to put just that function in a separate `System`.
+Another consideration is that code should be given only those permissions necessary to perform its tasks ([the Principle of Least Privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege)).
+In MUD access is granted by Ethereum address, every non-root `System` has a different one.
+So if only some of the functions of a `System` need to have certain privileges, it might make sense to put just those functions in a separate `System`.
 
 #### Access to the root namespace
 
@@ -150,7 +148,7 @@ Note that this works for `_msgSender()` (the MUD version of `msg.sender`), not f
 
 There are a few cases that require `System` functions to be called from the root namespace.
 
-- The called `System` needs to know the value sent with the transaction.
+- The called `System` needs to know the value sent with the transaction to the caller `System`.
 - You cannot use `callFrom` because users won't sign `registerDelegation`.
 - The code that the calling `System` has to implement needs to be in the root namespace for some other reason (for example, to modify root tables).
 
