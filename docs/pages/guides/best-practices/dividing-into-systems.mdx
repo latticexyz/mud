@@ -24,7 +24,7 @@ These addresses can be:
 - `System`s that are _not_ in the root namespace.
   [Root namespace `System`s](/world/systems#root-systems) _can_ [call other `System`s](/world/systems#calling-from-a-root-system), but they can also bypass access control.
 
-If access to a function (or multiple functions) needs to be restricted to specific addresses, they belong in a separate `System` than the rest of the namespace.
+If access to some functions needs to be restricted to specific addresses, those functions belong in a separate `System` from the rest of the namespace.
 
 <Callout type="warning" emoji="⚠️">
   Access to a private `System` in a namespace is [granted to the namespace owner, as well as all `System`s within that
@@ -33,8 +33,7 @@ If access to a function (or multiple functions) needs to be restricted to specif
 </Callout>
 
 Another consideration is that code should be given only those permissions necessary to perform its tasks ([the Principle of Least Privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege)).
-In MUD access is granted by Ethereum address, every non-root `System` has a different one.
-So if only some of the functions of a `System` need to have certain privileges, it might make sense to put just those functions in a separate `System`.
+If only some of the functions of a `System` need to have certain privileges, it might make sense to put just those functions in a separate `System`.
 
 #### Access to the root namespace
 
@@ -105,7 +104,7 @@ These libraries can then be called from `LocationSystem`, `EnergySystem`, and `C
 
 The above solutions are preferable, but sometimes they don't work.
 For example, if you need to ensure some code runs between `eat` and `move`, you can't have the client use `batchCall`.
-If you are writing an extension to a game written by somebody else, you don't have control of the namespaces of the `System`s, so you can just move code into public libraries.
+If you are writing an extension to a game written by somebody else, you don't have control of the namespaces of the `System`s, so you can't just move code into public libraries.
 
 #### No trusted context
 
