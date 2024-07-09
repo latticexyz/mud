@@ -66,7 +66,7 @@ export async function worldgen(
   const output = renderWorldInterface({
     interfaceName: config.worldInterfaceName,
     imports: systemInterfaceImports,
-    storeImportPath: config.storeImportPath,
+    storeImportPath: configV2.codegen.storeImportPath,
     worldImportPath: config.worldImportPath,
   });
   // write to file

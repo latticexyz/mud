@@ -12,7 +12,7 @@ import {
   validateTablesWithShorthands,
 } from "@latticexyz/store/config/v2";
 import { WorldWithShorthandsInput } from "./input";
-import { validateNamespaces } from "./namespaces";
+import { validateNamespace } from "./namespaces";
 import { resolveWorld, validateWorld } from "./world";
 
 export type resolveWorldWithShorthands<world> = resolveWorld<{
@@ -54,7 +54,7 @@ export type validateNamespacesWithShorthands<namespaces, scope extends Scope = A
   [namespace in keyof namespaces]: {
     [key in keyof namespaces[namespace]]: key extends "tables"
       ? validateTablesWithShorthands<namespaces[namespace][key], scope>
-      : validateNamespaces<namespaces[namespace], scope>[key];
+      : validateNamespace<namespaces[namespace], scope>[key];
   };
 };
 

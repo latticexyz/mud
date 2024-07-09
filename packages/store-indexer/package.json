@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store-indexer",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "description": "Minimal Typescript indexer for Store",
   "repository": {
     "type": "git",
@@ -11,6 +11,13 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js"
+  },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/src/index.d.ts"
+      ]
+    }
   },
   "bin": {
     "postgres-decoded-indexer": "./dist/bin/postgres-decoded-indexer.js",
