@@ -1,5 +1,6 @@
 import { Store } from "@latticexyz/store";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
+import { Namespace, Namespaces } from "@latticexyz/store/config/v2";
 
 export type Module = {
   /**
@@ -70,14 +71,24 @@ export type Codegen = {
   readonly worldImportPath: string;
 };
 
-export type World = Store & {
-  readonly systems: Systems;
-  /** Systems to exclude from automatic deployment */
-  readonly excludeSystems: readonly string[];
-  /** Modules to in the World */
-  readonly modules: readonly Module[];
-  /** Deploy config */
-  readonly deploy: Deploy;
-  /** Codegen config */
-  readonly codegen: Codegen;
+export type SingleNamespaceMode = { readonly multipleNamespaces: false } & Omit<Namespace, "label">;
+
+export type MultipleNamespaceMode = { readonly multipleNamespaces: true } & {
+  readonly [key in keyof Omit<Namespace, "label">]: undefined;
 };
+
+export type NamespaceMode = SingleNamespaceMode | MultipleNamespaceMode;
+
+export type World = Omit<Store, keyof NamespaceMode> &
+  NamespaceMode & {
+    readonly namespaces: Namespaces;
+    readonly systems: Systems;
+    /** Systems to exclude from automatic deployment */
+    readonly excludeSystems: readonly string[];
+    /** Modules to in the World */
+    readonly modules: readonly Module[];
+    /** Deploy config */
+    readonly deploy: Deploy;
+    /** Codegen config */
+    readonly codegen: Codegen;
+  };

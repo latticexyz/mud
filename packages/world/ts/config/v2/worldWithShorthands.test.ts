@@ -35,6 +35,7 @@ describe("defineWorldWithShorthands", () => {
     const expected = {
       ...CONFIG_DEFAULTS,
       codegen: CODEGEN_DEFAULTS,
+      multipleNamespaces: true,
       namespaces: {
         ExampleNS: {
           label: "ExampleNS",
@@ -76,7 +77,6 @@ describe("defineWorldWithShorthands", () => {
           Second: 1,
         },
       },
-      label: "",
       namespace: "",
     } as const;
 
@@ -108,6 +108,7 @@ describe("defineWorldWithShorthands", () => {
     const expected = {
       ...CONFIG_DEFAULTS,
       codegen: CODEGEN_DEFAULTS,
+      multipleNamespaces: true,
       namespaces: {
         ExampleNS: {
           label: "ExampleNS",
@@ -154,7 +155,6 @@ describe("defineWorldWithShorthands", () => {
           Second: 1,
         },
       },
-      label: "",
       namespace: "",
     } as const;
 
@@ -167,6 +167,7 @@ describe("defineWorldWithShorthands", () => {
     const expected = {
       ...CONFIG_DEFAULTS,
       codegen: CODEGEN_DEFAULTS,
+      multipleNamespaces: false,
       tables: {
         Name: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
@@ -192,8 +193,8 @@ describe("defineWorldWithShorthands", () => {
       userTypes: {},
       enums: {},
       enumValues: {},
-      label: "",
       namespace: "",
+      namespaces: {},
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -208,6 +209,7 @@ describe("defineWorldWithShorthands", () => {
     const expected = {
       ...CONFIG_DEFAULTS,
       codegen: CODEGEN_DEFAULTS,
+      multipleNamespaces: false,
       tables: {
         Name: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
@@ -233,8 +235,8 @@ describe("defineWorldWithShorthands", () => {
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" as string } },
       enums: {},
       enumValues: {},
-      label: "",
       namespace: "",
+      namespaces: {},
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -247,6 +249,7 @@ describe("defineWorldWithShorthands", () => {
     const expected = {
       ...CONFIG_DEFAULTS,
       codegen: CODEGEN_DEFAULTS,
+      multipleNamespaces: false,
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -276,8 +279,8 @@ describe("defineWorldWithShorthands", () => {
       userTypes: {},
       enums: {},
       enumValues: {},
-      label: "",
       namespace: "",
+      namespaces: {},
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -290,6 +293,7 @@ describe("defineWorldWithShorthands", () => {
     const expected = {
       ...CONFIG_DEFAULTS,
       codegen: CODEGEN_DEFAULTS,
+      multipleNamespaces: false,
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -319,8 +323,8 @@ describe("defineWorldWithShorthands", () => {
       userTypes: {},
       enums: {},
       enumValues: {},
-      label: "",
       namespace: "",
+      namespaces: {},
     } as const;
 
     attest<typeof expected>(config).equals(expected);

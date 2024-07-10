@@ -40,6 +40,7 @@ describe("defineWorld", () => {
     const expected = {
       ...CONFIG_DEFAULTS,
       codegen: CODEGEN_DEFAULTS,
+      multipleNamespaces: true,
       namespaces: {
         ExampleNS: {
           label: "ExampleNS",
@@ -75,7 +76,6 @@ describe("defineWorld", () => {
       userTypes: {},
       enums: {},
       enumValues: {},
-      label: "",
       namespace: "",
     } as const;
 
@@ -110,6 +110,7 @@ describe("defineWorld", () => {
     const expected = {
       ...CONFIG_DEFAULTS,
       codegen: CODEGEN_DEFAULTS,
+      multipleNamespaces: true,
       namespaces: {
         ExampleNS: {
           label: "ExampleNS",
@@ -155,7 +156,6 @@ describe("defineWorld", () => {
           Second: 1,
         },
       },
-      label: "",
       namespace: "",
     } as const;
 
@@ -190,27 +190,26 @@ describe("defineWorld", () => {
     attest<true, typeof config extends World ? true : false>();
   });
 
-  it("should not use the global namespace for namespaced tables", () => {
-    const config = defineWorld({
-      // TODO: test that only one or the other can be used
-      namespace: "namespace",
-      namespaces: {
-        AnotherOne: {
-          tables: {
-            Example: {
-              schema: { id: "address", name: "string", age: "uint256" },
-              key: ["age"],
-            },
-          },
-        },
-      },
-    });
+  it("should allow keys in single namespace mode or multiple namespace mode, not both", () => {
+    attest(() =>
+      defineWorld({
+        namespace: "custom",
+        // @ts-expect-error Cannot use `namespaces` key with `namespace`, `tables` keys.
+        namespaces: {},
+      }),
+    )
+      .throws("Cannot use `namespaces` key with `namespace`, `tables` keys.")
+      .type.errors("Cannot use `namespaces` key with `namespace`, `tables` keys.");
 
-    attest<"namespace">(config.namespace).equals("namespace");
-    attest<"AnotherOne">(config.namespaces.AnotherOne.tables.Example.namespace).equals("AnotherOne");
-    attest(config.namespaces.AnotherOne.tables.Example.tableId).equals(
-      resourceToHex({ type: "table", name: "Example", namespace: "AnotherOne" }),
-    );
+    attest(() =>
+      defineWorld({
+        tables: {},
+        // @ts-expect-error Cannot use `namespaces` key with `namespace`, `tables` keys.
+        namespaces: {},
+      }),
+    )
+      .throws("Cannot use `namespaces` key with `namespace`, `tables` keys.")
+      .type.errors("Cannot use `namespaces` key with `namespace`, `tables` keys.");
   });
 
   describe("should have the same output as `defineWorld` for store config inputs", () => {
@@ -227,6 +226,7 @@ describe("defineWorld", () => {
       const expected = {
         ...CONFIG_DEFAULTS,
         codegen: CODEGEN_DEFAULTS,
+        multipleNamespaces: false,
         tables: {
           Example: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -256,8 +256,8 @@ describe("defineWorld", () => {
         userTypes: {},
         enums: {},
         enumValues: {},
-        label: "",
         namespace: "",
+        namespaces: {},
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -279,6 +279,7 @@ describe("defineWorld", () => {
       const expected = {
         ...CONFIG_DEFAULTS,
         codegen: CODEGEN_DEFAULTS,
+        multipleNamespaces: false,
         tables: {
           Example: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -311,8 +312,8 @@ describe("defineWorld", () => {
         },
         enums: {},
         enumValues: {},
-        label: "",
         namespace: "",
+        namespaces: {},
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -330,6 +331,7 @@ describe("defineWorld", () => {
       const expected = {
         ...CONFIG_DEFAULTS,
         codegen: CODEGEN_DEFAULTS,
+        multipleNamespaces: false,
         tables: {
           Example: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -359,8 +361,8 @@ describe("defineWorld", () => {
         userTypes: {},
         enums: {},
         enumValues: {},
-        label: "",
         namespace: "",
+        namespaces: {},
         deploy: DEPLOY_DEFAULTS,
       } as const;
 
@@ -383,6 +385,7 @@ describe("defineWorld", () => {
       const expected = {
         ...CONFIG_DEFAULTS,
         codegen: CODEGEN_DEFAULTS,
+        multipleNamespaces: false,
         tables: {
           First: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
@@ -436,8 +439,8 @@ describe("defineWorld", () => {
         userTypes: {},
         enums: {},
         enumValues: {},
-        label: "",
         namespace: "",
+        namespaces: {},
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -464,6 +467,7 @@ describe("defineWorld", () => {
       const expected = {
         ...CONFIG_DEFAULTS,
         codegen: CODEGEN_DEFAULTS,
+        multipleNamespaces: false,
         tables: {
           First: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
@@ -520,8 +524,8 @@ describe("defineWorld", () => {
         },
         enums: {},
         enumValues: {},
-        label: "",
         namespace: "",
+        namespaces: {},
       } as const;
 
       attest<typeof expected>(config).equals(expected);
@@ -601,6 +605,7 @@ describe("defineWorld", () => {
       const expected = {
         ...CONFIG_DEFAULTS,
         codegen: CODEGEN_DEFAULTS,
+        multipleNamespaces: false,
         tables: {
           Example: {
             tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -640,8 +645,8 @@ describe("defineWorld", () => {
             second: 1,
           },
         },
-        label: "",
         namespace: "",
+        namespaces: {},
       } as const;
 
       attest<typeof expected>(config).equals(expected);

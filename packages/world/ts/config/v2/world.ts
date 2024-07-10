@@ -11,6 +11,7 @@ import {
   resolveNamespaces,
   validateNamespaces,
   validateTables,
+  NamespaceInput,
 } from "@latticexyz/store/config/v2";
 import { SystemsInput, WorldInput } from "./input";
 import { CONFIG_DEFAULTS, MODULE_DEFAULTS } from "./defaults";
@@ -29,7 +30,9 @@ export type validateWorld<input> = {
       : key extends "enums"
         ? narrow<input[key]>
         : key extends "namespaces"
-          ? validateNamespaces<input[key], extendedScope<input>>
+          ? input extends { [k in keyof NamespaceInput]?: unknown }
+            ? ErrorMessage<"Cannot use `namespaces` key with `namespace`, `tables` keys.">
+            : validateNamespaces<input[key], extendedScope<input>>
           : key extends keyof WorldInput
             ? // TODO: why do we use conform here and not in the same line as validateStore?
               conform<input[key], WorldInput[key]>
@@ -41,13 +44,15 @@ export function validateWorld(world: unknown): asserts world is WorldInput {
   validateStore(world);
 
   if (hasOwnKey(world, "namespaces")) {
+    if (hasOwnKey(world, "namespace") || hasOwnKey(world, "tables")) {
+      throw new Error("Cannot use `namespaces` key with `namespace`, `tables` keys.");
+    }
     validateNamespaces(world.namespaces, scope);
   }
 }
 
 export type resolveWorld<world> = evaluate<
-  resolveStore<world> &
-    mergeIfUndefined<
+  resolveStore<world> & { multipleNamespaces: "namespaces" extends keyof world ? true : false } & mergeIfUndefined<
       {
         [key in Exclude<keyof world, keyof Store>]: key extends "namespaces"
           ? resolveNamespaces<world[key], extendedScope<world>>
@@ -68,12 +73,14 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
   const resolvedStore = resolveStore(world);
 
   // TODO: move namespace resolving into store
+  const multipleNamespaces = world.namespaces != null;
   const namespaces = resolveNamespaces(world.namespaces ?? CONFIG_DEFAULTS.namespaces, extendedScope(world));
   const modules = (world.modules ?? CONFIG_DEFAULTS.modules).map((mod) => mergeIfUndefined(mod, MODULE_DEFAULTS));
 
   return mergeIfUndefined(
     {
       ...resolvedStore,
+      multipleNamespaces,
       namespaces,
       codegen: {
         ...resolvedStore.codegen,
