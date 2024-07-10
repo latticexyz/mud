@@ -42,7 +42,9 @@ export type System = {
   readonly accessList: readonly string[];
 };
 
-export type Systems = { readonly [label: string]: System };
+export type Systems = {
+  readonly [label: string]: System;
+};
 
 export type Deploy = {
   /** The name of a custom World contract to deploy. If no name is provided, a default MUD World is deployed */
