@@ -45,7 +45,6 @@ export function resolveStoreWithShorthands<const store extends StoreWithShorthan
     ...(tables != null ? { tables } : null),
   };
 
-  console.log("tables from shorthand", tables);
   validateStore(fullConfig);
   return resolveStore(fullConfig) as never;
 }
