@@ -2,6 +2,11 @@ name: Remove npm tag
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag name in npm"
+        type: string
+        required: true
 
 jobs:
   remove-npm-tag:
@@ -21,4 +26,4 @@ jobs:
 
       - name: Remove npm dist tag
         run: pnpm dist-tag-rm
-        env: TAG=${{ github.ref_name }}
+        env: TAG=${{ github.event.inputs.tag }}
