@@ -19,6 +19,9 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      - name: Setup
+        uses: ./.github/actions/setup
+
       - name: Set deployment token
         run: npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
         env:
