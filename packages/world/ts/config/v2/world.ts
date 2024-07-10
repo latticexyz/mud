@@ -51,22 +51,6 @@ export function validateWorld(world: unknown): asserts world is WorldInput {
   }
 }
 
-// export type resolveWorld<world> = mergeIfUndefined<
-//   {
-//     [key in Exclude<keyof world, keyof Store>]: key extends "namespaces"
-//       ? resolveNamespaces<world[key], extendedScope<world>>
-//       : key extends "systems"
-//         ? // TODO: rework resolveSystems to not need this intersection type
-//           resolveSystems<world[key] & SystemsInput>
-//         : key extends "deploy"
-//           ? resolveDeploy<world[key]>
-//           : key extends "codegen"
-//             ? resolveCodegen<world[key]>
-//             : world[key];
-//   },
-//   CONFIG_DEFAULTS
-// >;
-
 type resolveWorldSingleNamespaceMode<world> = resolveStore<world> & {
   readonly multipleNamespaces: false;
 } & mergeIfUndefined<
@@ -83,35 +67,15 @@ type resolveWorldSingleNamespaceMode<world> = resolveStore<world> & {
     CONFIG_DEFAULTS
   >;
 
-// export type resolveWorldMultipleNamespaceMode<world> = Omit<resolveStore<world>, "namespace" | "tables"> & {
-//   readonly multipleNamespaces: true;
-//   readonly namespace: undefined;
-//   readonly tables: undefined;
-// } & mergeIfUndefined<
-//     {
-//       [key in Exclude<keyof world, keyof Store>]: key extends "namespaces"
-//         ? resolveNamespaces<world[key], extendedScope<world>>
-//         : key extends "systems"
-//           ? // TODO: rework resolveSystems to not need this intersection type
-//             resolveSystems<world[key] & SystemsInput>
-//           : key extends "deploy"
-//             ? resolveDeploy<world[key]>
-//             : key extends "codegen"
-//               ? resolveCodegen<world[key]>
-//               : world[key];
-//     },
-//     CONFIG_DEFAULTS
-//   >;
-
 export type resolveWorldMultipleNamespaceMode<world> = world extends WorldInput
   ? Omit<resolveStore<world>, "namespace" | "tables"> & {
       readonly multipleNamespaces: true;
       readonly namespace: undefined;
       readonly tables: undefined;
       readonly namespaces: resolveNamespaces<world["namespaces"], extendedScope<world>>;
-      // TODO: rework resolveSystems to not need this intersection type
       readonly systems: "systems" extends keyof world
-        ? resolveSystems<world["systems"] & SystemsInput>
+        ? // TODO: rework resolveSystems to not need this intersection type
+          resolveSystems<world["systems"] & SystemsInput>
         : CONFIG_DEFAULTS["systems"];
       readonly deploy: "deploy" extends keyof world ? resolveDeploy<world["deploy"]> : CONFIG_DEFAULTS["deploy"];
       readonly codegen: "codegen" extends keyof world ? resolveCodegen<world["codegen"]> : CONFIG_DEFAULTS["codegen"];
@@ -121,22 +85,6 @@ export type resolveWorldMultipleNamespaceMode<world> = world extends WorldInput
       readonly modules: "modules" extends keyof world ? world["modules"] : CONFIG_DEFAULTS["modules"];
     }
   : never;
-
-// & mergeIfUndefined<
-//     {
-//       [key in Exclude<keyof world, keyof Store>]: key extends "namespaces"
-//         ? resolveNamespaces<world[key], extendedScope<world>>
-//         : key extends "systems"
-//           ? // TODO: rework resolveSystems to not need this intersection type
-//             resolveSystems<world[key] & SystemsInput>
-//           : key extends "deploy"
-//             ? resolveDeploy<world[key]>
-//             : key extends "codegen"
-//               ? resolveCodegen<world[key]>
-//               : world[key];
-//     },
-//     CONFIG_DEFAULTS
-//   >;
 
 export type resolveWorld<world> = "namespaces" extends keyof world
   ? resolveWorldMultipleNamespaceMode<world>
