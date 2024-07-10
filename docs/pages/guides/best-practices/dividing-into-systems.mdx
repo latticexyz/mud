@@ -118,11 +118,11 @@ The caller identity will be the address of that `System`, and the value transfer
 
 `CombinedActionSystem` first calls the `World` with the function call `game__eat`.
 This call is translated by the `World` to `eat` in `EnergySystem`, located in the `game` namespace.
-This flow is shown in grey.
+This flow is shown in yellow.
 
 Then, `CombinedActionSystem` calls the `World` with the function call `game__move`.
 This call is translated by the `World` to `move` in `LocationSystem`, which is also located in the `game` namespace.
-This flow is shown in black.
+This flow is shown in green.
 
 </details>
 
