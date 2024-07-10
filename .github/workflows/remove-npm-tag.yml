@@ -26,4 +26,5 @@ jobs:
 
       - name: Remove npm dist tag
         run: pnpm dist-tag-rm
-        env: TAG=${{ github.event.inputs.tag }}
+        env:
+          TAG: ${{ github.event.inputs.tag }}
