@@ -28,6 +28,6 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Remove npm dist tag
-        run: pnpm dist-tag-rm
+        run: pnpm run dist-tag-rm
         env:
           TAG: ${{ github.event.inputs.tag }}
