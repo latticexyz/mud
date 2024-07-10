@@ -14,6 +14,7 @@ import {
 } from "@latticexyz/store/config/v2";
 import { WorldWithShorthandsInput } from "./input";
 import { resolveWorld, validateWorld } from "./world";
+import { evaluate } from "@arktype/util";
 
 export type resolveWorldWithShorthands<world> = resolveWorld<{
   [key in keyof world]: key extends "tables"
@@ -100,7 +101,7 @@ export function resolveWorldWithShorthands<world extends WorldWithShorthandsInpu
 
 export function defineWorldWithShorthands<world>(
   world: validateWorldWithShorthands<world>,
-): resolveWorldWithShorthands<world> {
+): evaluate<resolveWorldWithShorthands<world>> {
   validateWorldWithShorthands(world);
   return resolveWorldWithShorthands(world) as never;
 }

@@ -1,6 +1,7 @@
 import { Store } from "@latticexyz/store";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
 import { Namespace, Namespaces } from "@latticexyz/store/config/v2";
+import { evaluate } from "@arktype/util";
 
 export type Module = {
   /**
@@ -74,21 +75,24 @@ export type Codegen = {
 export type SingleNamespaceMode = { readonly multipleNamespaces: false } & Omit<Namespace, "label">;
 
 export type MultipleNamespaceMode = { readonly multipleNamespaces: true } & {
+  // TODO: rethink this since we can narrow types with `multipleNamespaces`, maybe just leave these out of the type? or `never`?
   readonly [key in keyof Omit<Namespace, "label">]: undefined;
 };
 
 export type NamespaceMode = SingleNamespaceMode | MultipleNamespaceMode;
 
-export type World = Omit<Store, keyof NamespaceMode> &
-  NamespaceMode & {
-    readonly namespaces: Namespaces;
-    readonly systems: Systems;
-    /** Systems to exclude from automatic deployment */
-    readonly excludeSystems: readonly string[];
-    /** Modules to in the World */
-    readonly modules: readonly Module[];
-    /** Deploy config */
-    readonly deploy: Deploy;
-    /** Codegen config */
-    readonly codegen: Codegen;
-  };
+export type World = evaluate<
+  Omit<Store, keyof NamespaceMode> &
+    NamespaceMode & {
+      readonly namespaces: Namespaces;
+      readonly systems: Systems;
+      /** Systems to exclude from automatic deployment */
+      readonly excludeSystems: readonly string[];
+      /** Modules to in the World */
+      readonly modules: readonly Module[];
+      /** Deploy config */
+      readonly deploy: Deploy;
+      /** Codegen config */
+      readonly codegen: Codegen;
+    }
+>;

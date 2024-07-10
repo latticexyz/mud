@@ -77,7 +77,8 @@ describe("defineWorldWithShorthands", () => {
           Second: 1,
         },
       },
-      namespace: "",
+      namespace: undefined,
+      tables: undefined,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -155,7 +156,8 @@ describe("defineWorldWithShorthands", () => {
           Second: 1,
         },
       },
-      namespace: "",
+      namespace: undefined,
+      tables: undefined,
     } as const;
 
     attest<typeof expected>(config).equals(expected);

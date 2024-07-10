@@ -7,3 +7,7 @@ import { StoreHooks } from "./tables/StoreHooks.sol";
 import { Tables, TablesData } from "./tables/Tables.sol";
 import { ResourceIds } from "./tables/ResourceIds.sol";
 import { Hooks } from "./tables/Hooks.sol";
+import { StoreHooks } from "./tables/StoreHooks.sol";
+import { Tables, TablesData } from "./tables/Tables.sol";
+import { ResourceIds } from "./tables/ResourceIds.sol";
+import { Hooks } from "./tables/Hooks.sol";

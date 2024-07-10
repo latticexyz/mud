@@ -90,7 +90,7 @@ export function resolveStore<const input extends StoreInput>(input: input): reso
   } as never;
 }
 
-export function defineStore<const input>(input: validateStore<input>): resolveStore<input> {
+export function defineStore<const input>(input: validateStore<input>): evaluate<resolveStore<input>> {
   validateStore(input);
   return resolveStore(input) as never;
 }

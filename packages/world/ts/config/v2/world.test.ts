@@ -76,7 +76,8 @@ describe("defineWorld", () => {
       userTypes: {},
       enums: {},
       enumValues: {},
-      namespace: "",
+      namespace: undefined,
+      tables: undefined,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -156,7 +157,8 @@ describe("defineWorld", () => {
           Second: 1,
         },
       },
-      namespace: "",
+      namespace: undefined,
+      tables: undefined,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -704,7 +706,7 @@ describe("defineWorld", () => {
       },
     });
 
-    attest<"Example", keyof typeof config.tables>();
+    attest<"Example" | "CustomNS__Example", keyof typeof config.tables>();
   });
 
   it("should throw if namespace is overridden in top level tables", () => {

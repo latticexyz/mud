@@ -8,6 +8,7 @@ import {
 } from "./tableShorthand";
 import { hasOwnKey, isObject } from "./generics";
 import { StoreWithShorthandsInput } from "./input";
+import { evaluate } from "@arktype/util";
 
 export type validateStoreWithShorthands<store> = {
   [key in keyof store]: key extends "tables"
@@ -51,7 +52,7 @@ export function resolveStoreWithShorthands<const store extends StoreWithShorthan
 
 export function defineStoreWithShorthands<const store>(
   store: validateStoreWithShorthands<store>,
-): resolveStoreWithShorthands<store> {
+): evaluate<resolveStoreWithShorthands<store>> {
   validateStoreWithShorthands(store);
   return resolveStoreWithShorthands(store) as never;
 }

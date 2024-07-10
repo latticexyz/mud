@@ -1,5 +1,4 @@
 import { CodegenInput, DeployInput, ModuleInput, SystemInput, WorldInput } from "./input";
-import { CONFIG_DEFAULTS as STORE_CONFIG_DEFAULTS } from "@latticexyz/store/config/v2";
 
 export const SYSTEM_DEFAULTS = {
   registerFunctionSelectors: true,
@@ -36,7 +35,6 @@ export const DEPLOY_DEFAULTS = {
 export type DEPLOY_DEFAULTS = typeof DEPLOY_DEFAULTS;
 
 export const CONFIG_DEFAULTS = {
-  ...STORE_CONFIG_DEFAULTS,
   namespaces: {},
   systems: {},
   tables: {},
