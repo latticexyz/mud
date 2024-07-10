@@ -16,38 +16,40 @@ describe("defineStore", () => {
       },
     });
 
+    const expectedTables = {
+      Example: {
+        tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
+        schema: {
+          id: {
+            type: "address",
+            internalType: "address",
+          },
+          name: {
+            type: "string",
+            internalType: "string",
+          },
+          age: {
+            type: "uint256",
+            internalType: "uint256",
+          },
+        },
+        key: ["age"],
+        label: "Example",
+        name: "Example",
+        namespace: "",
+        codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+        type: "table",
+        deploy: TABLE_DEPLOY_DEFAULTS,
+      },
+    } as const;
+
     const expected = {
       sourceDirectory: "src",
-      tables: {
-        Example: {
-          tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
-          schema: {
-            id: {
-              type: "address",
-              internalType: "address",
-            },
-            name: {
-              type: "string",
-              internalType: "string",
-            },
-            age: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
-          key: ["age"],
-          label: "Example",
-          name: "Example",
-          namespace: "",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
-          type: "table",
-          deploy: TABLE_DEPLOY_DEFAULTS,
-        },
-      },
+      tables: expectedTables,
+      namespaces: { "": { label: "", namespace: "", tables: expectedTables } },
       userTypes: {},
       enums: {},
       enumValues: {},
-      label: "",
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -174,64 +176,74 @@ describe("defineStore", () => {
       },
     });
 
-    const expected = {
-      sourceDirectory: "src",
-      tables: {
-        First: {
-          tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
-          schema: {
-            firstKey: {
-              type: "address",
-              internalType: "address",
-            },
-            firstName: {
-              type: "string",
-              internalType: "string",
-            },
-            firstAge: {
-              type: "uint256",
-              internalType: "uint256",
-            },
+    const expectedTables = {
+      First: {
+        tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
+        schema: {
+          firstKey: {
+            type: "address",
+            internalType: "address",
           },
-          key: ["firstKey", "firstAge"],
-          label: "First",
-          name: "First",
-          namespace: "",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-          type: "table",
-          deploy: TABLE_DEPLOY_DEFAULTS,
-        },
-        Second: {
-          tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
-          schema: {
-            secondKey: {
-              type: "address",
-              internalType: "address",
-            },
-            secondName: {
-              type: "string",
-              internalType: "string",
-            },
-            secondAge: {
-              type: "uint256",
-              internalType: "uint256",
-            },
+          firstName: {
+            type: "string",
+            internalType: "string",
           },
-          key: ["secondKey", "secondAge"],
-          label: "Second",
-          name: "Second",
-          namespace: "",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-          type: "table",
-          deploy: TABLE_DEPLOY_DEFAULTS,
+          firstAge: {
+            type: "uint256",
+            internalType: "uint256",
+          },
         },
+        key: ["firstKey", "firstAge"],
+        label: "First",
+        name: "First",
+        namespace: "",
+        codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+        type: "table",
+        deploy: TABLE_DEPLOY_DEFAULTS,
       },
+      Second: {
+        tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
+        schema: {
+          secondKey: {
+            type: "address",
+            internalType: "address",
+          },
+          secondName: {
+            type: "string",
+            internalType: "string",
+          },
+          secondAge: {
+            type: "uint256",
+            internalType: "uint256",
+          },
+        },
+        key: ["secondKey", "secondAge"],
+        label: "Second",
+        name: "Second",
+        namespace: "",
+        codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+        type: "table",
+        deploy: TABLE_DEPLOY_DEFAULTS,
+      },
+    } as const;
+
+    const expected = {
+      multipleNamespaces: false,
+      sourceDirectory: "src",
+      tables: expectedTables,
       userTypes: {},
       enums: {},
       enumValues: {},
       label: "",
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
+      namespaces: {
+        "": {
+          label: "",
+          namespace: "",
+          tables: expectedTables,
+        },
+      },
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -453,6 +465,28 @@ describe("defineStore", () => {
     attest<"custom">(config.namespace).equals("custom");
   });
 
+  it("should allow keys in single namespace mode or multiple namespace mode, not both", () => {
+    attest(() =>
+      defineStore({
+        namespace: "custom",
+        // @ts-expect-error Cannot use `namespaces` key with `namespace`, `tables` keys.
+        namespaces: {},
+      }),
+    )
+      .throws("Cannot use `namespaces` key with `namespace`, `tables` keys.")
+      .type.errors("Cannot use `namespaces` key with `namespace`, `tables` keys.");
+
+    attest(() =>
+      defineStore({
+        tables: {},
+        // @ts-expect-error Cannot use `namespaces` key with `namespace`, `tables` keys.
+        namespaces: {},
+      }),
+    )
+      .throws("Cannot use `namespaces` key with `namespace`, `tables` keys.")
+      .type.errors("Cannot use `namespaces` key with `namespace`, `tables` keys.");
+  });
+
   it("should extend the output Config type", () => {
     const config = defineStore({
       tables: { Name: { schema: { id: "address" }, key: ["id"] } },
@@ -472,6 +506,8 @@ describe("defineStore", () => {
         },
       },
     });
+
+    config.namespaces;
 
     attest<"namespace">(config.namespace).equals("namespace");
     attest<"namespace">(config.tables.Example.namespace).equals("namespace");
