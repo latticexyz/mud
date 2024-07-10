@@ -8,6 +8,8 @@ import { scopeWithUserTypes, validateUserTypes } from "./userTypes";
 import { mapEnums, resolveEnums, scopeWithEnums } from "./enums";
 import { resolveCodegen } from "./codegen";
 import { resolveNamespace, validateNamespace } from "./namespace";
+import { resolveTable } from "./table";
+import { resolveNamespacedTables } from "./namespacedTables";
 
 export type extendedScope<input> = scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>;
 
@@ -39,10 +41,22 @@ export function validateStore(input: unknown): asserts input is StoreInput {
   }
 }
 
-export type resolveStore<input> = resolveNamespace<
-  mergeIfUndefined<input, { label: CONFIG_DEFAULTS["label"] }>,
-  extendedScope<input>
-> & {
+export type resolveStore<
+  input,
+  namespace = "namespace" extends keyof input ? input["namespace"] : CONFIG_DEFAULTS["namespace"],
+> = {
+  readonly namespace: namespace;
+  readonly tables: "tables" extends keyof input
+    ? resolveNamespacedTables<
+        {
+          [label in keyof input["tables"]]: resolveTable<
+            mergeIfUndefined<input["tables"][label], { namespace: namespace; label: label }>,
+            extendedScope<input>
+          >;
+        },
+        namespace
+      >
+    : {};
   readonly sourceDirectory: "sourceDirectory" extends keyof input
     ? input["sourceDirectory"]
     : CONFIG_DEFAULTS["sourceDirectory"];
@@ -54,9 +68,20 @@ export type resolveStore<input> = resolveNamespace<
 
 export function resolveStore<const input extends StoreInput>(input: input): resolveStore<input> {
   const scope = extendedScope(input);
-  const namespace = resolveNamespace(mergeIfUndefined(input, { label: CONFIG_DEFAULTS.label }), scope);
+  const namespace = input.namespace ?? CONFIG_DEFAULTS.namespace;
+
+  const { tables } = resolveNamespace(
+    {
+      label: namespace,
+      namespace,
+      tables: input.tables,
+    },
+    scope,
+  );
+
   return {
-    ...namespace,
+    namespace,
+    tables: resolveNamespacedTables(tables, namespace),
     sourceDirectory: input.sourceDirectory ?? CONFIG_DEFAULTS["sourceDirectory"],
     userTypes: input.userTypes ?? {},
     enums: resolveEnums(input.enums ?? {}),

@@ -34,8 +34,7 @@ export type TABLE_DEFAULTS = typeof TABLE_DEFAULTS;
 
 export const CONFIG_DEFAULTS = {
   sourceDirectory: "src",
-  // this is also a namespace default, because namespace defaults to label
-  label: "",
+  namespace: "",
 } as const satisfies StoreInput;
 
 export type CONFIG_DEFAULTS = typeof CONFIG_DEFAULTS;

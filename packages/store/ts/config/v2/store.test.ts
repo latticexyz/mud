@@ -47,7 +47,6 @@ describe("defineStore", () => {
       userTypes: {},
       enums: {},
       enumValues: {},
-      label: "",
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -103,7 +102,6 @@ describe("defineStore", () => {
       },
       enums: {},
       enumValues: {},
-      label: "",
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -152,7 +150,6 @@ describe("defineStore", () => {
       userTypes: {},
       enums: {},
       enumValues: {},
-      label: "",
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -229,7 +226,6 @@ describe("defineStore", () => {
       userTypes: {},
       enums: {},
       enumValues: {},
-      label: "",
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -313,7 +309,6 @@ describe("defineStore", () => {
       },
       enums: {},
       enumValues: {},
-      label: "",
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -433,7 +428,6 @@ describe("defineStore", () => {
           second: 1,
         },
       },
-      label: "",
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -477,6 +471,24 @@ describe("defineStore", () => {
     attest<"namespace">(config.tables.Example.namespace).equals("namespace");
     attest<"Example">(config.tables.Example.name).equals("Example");
     attest(config.tables.Example.tableId).equals(
+      resourceToHex({ type: "table", name: "Example", namespace: "namespace" }),
+    );
+  });
+
+  it("should preserve namespace-prefixed tables for backwards compatibility", () => {
+    const config = defineStore({
+      namespace: "namespace",
+      tables: {
+        Example: {
+          schema: { id: "address", name: "string", age: "uint256" },
+          key: ["age"],
+        },
+      },
+    });
+
+    attest<"namespace">(config.tables.namespace__Example.namespace).equals("namespace");
+    attest<"Example">(config.tables.namespace__Example.name).equals("Example");
+    attest(config.tables.namespace__Example.tableId).equals(
       resourceToHex({ type: "table", name: "Example", namespace: "namespace" }),
     );
   });
