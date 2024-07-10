@@ -78,7 +78,28 @@ describe("defineWorldWithShorthands", () => {
         },
       },
       namespace: undefined,
-      tables: undefined,
+      tables: {
+        ExampleNS__ExampleTable: {
+          tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
+          schema: {
+            id: {
+              type: "bytes32",
+              internalType: "bytes32",
+            },
+            value: {
+              type: "address",
+              internalType: "Static",
+            },
+          },
+          key: ["id"],
+          label: "ExampleTable",
+          name: "ExampleTable",
+          namespace: "ExampleNS",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
+          type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
+        },
+      },
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -157,7 +178,33 @@ describe("defineWorldWithShorthands", () => {
         },
       },
       namespace: undefined,
-      tables: undefined,
+      tables: {
+        ExampleNS__ExampleTable: {
+          tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
+          schema: {
+            id: {
+              type: "address",
+              internalType: "Static",
+              // TODO: this should probably include `filePath` too, as `userTypeFilePath`
+            },
+            value: {
+              type: "uint8",
+              internalType: "MyEnum",
+            },
+            dynamic: {
+              type: "string",
+              internalType: "Dynamic",
+            },
+          },
+          key: ["id"],
+          label: "ExampleTable",
+          name: "ExampleTable",
+          namespace: "ExampleNS",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+          type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
+        },
+      },
     } as const;
 
     attest<typeof expected>(config).equals(expected);

@@ -77,7 +77,32 @@ describe("defineWorld", () => {
       enums: {},
       enumValues: {},
       namespace: undefined,
-      tables: undefined,
+      tables: {
+        ExampleNS__ExampleTable: {
+          tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
+          schema: {
+            id: {
+              type: "address",
+              internalType: "address",
+            },
+            value: {
+              type: "uint256",
+              internalType: "uint256",
+            },
+            dynamic: {
+              type: "string",
+              internalType: "string",
+            },
+          },
+          key: ["id"],
+          label: "ExampleTable",
+          name: "ExampleTable",
+          namespace: "ExampleNS",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+          type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
+        },
+      },
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -158,7 +183,32 @@ describe("defineWorld", () => {
         },
       },
       namespace: undefined,
-      tables: undefined,
+      tables: {
+        ExampleNS__ExampleTable: {
+          tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
+          schema: {
+            id: {
+              type: "address",
+              internalType: "Static",
+            },
+            value: {
+              type: "uint8",
+              internalType: "MyEnum",
+            },
+            dynamic: {
+              type: "string",
+              internalType: "Dynamic",
+            },
+          },
+          key: ["id"],
+          label: "ExampleTable",
+          name: "ExampleTable",
+          namespace: "ExampleNS",
+          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
+          type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
+        },
+      },
     } as const;
 
     attest<typeof expected>(config).equals(expected);

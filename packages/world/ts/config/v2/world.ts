@@ -18,6 +18,7 @@ import { CONFIG_DEFAULTS, MODULE_DEFAULTS } from "./defaults";
 import { resolveSystems } from "./systems";
 import { resolveCodegen } from "./codegen";
 import { resolveDeploy } from "./deploy";
+import { resolveNamespacedTables } from "./namespacedTables";
 
 // Ideally we'd be able to use an intersection of `validateNamespace<input> & { key in keyof input]: ... }`
 // to avoid duplicating logic, but TS doesn't work well when mapping over types like that.
@@ -70,9 +71,9 @@ type resolveWorldSingleNamespaceMode<world> = resolveStore<world> & {
 export type resolveWorldMultipleNamespaceMode<world> = world extends WorldInput
   ? Omit<resolveStore<world>, "namespace" | "tables"> & {
       readonly multipleNamespaces: true;
-      readonly namespace: undefined;
-      readonly tables: undefined;
       readonly namespaces: resolveNamespaces<world["namespaces"], extendedScope<world>>;
+      readonly namespace: undefined;
+      readonly tables: resolveNamespacedTables<resolveNamespaces<world["namespaces"], extendedScope<world>>>;
       readonly systems: "systems" extends keyof world
         ? // TODO: rework resolveSystems to not need this intersection type
           resolveSystems<world["systems"] & SystemsInput>
@@ -102,7 +103,7 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
     ...resolvedStore,
     multipleNamespaces,
     namespace: multipleNamespaces ? undefined : resolvedStore.namespace,
-    tables: multipleNamespaces ? undefined : resolvedStore.tables,
+    tables: multipleNamespaces ? resolveNamespacedTables(namespaces) : resolvedStore.tables,
     namespaces,
     codegen: {
       ...resolvedStore.codegen,
