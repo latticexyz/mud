@@ -64,7 +64,7 @@ export type Codegen = {
 
 export type Store = {
   /**
-   * Directory of contracts source (i.e. Solidity) relative to the MUD config.
+   * Directory of Solidity source relative to the MUD config.
    * This is used to resolve other paths in the config, like codegen and user types.
    *
    * Defaults to `src` to match `foundry.toml`'s default. If you change this from the default, you may also need to configure foundry with the same source directory.

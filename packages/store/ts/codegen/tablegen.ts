@@ -9,13 +9,16 @@ import { Store as StoreConfig } from "../config/v2/output";
 import { storeToV1 } from "../config/v2/compat";
 
 export type TablegenOptions = {
-  configPath: string;
+  /**
+   * MUD project root directory where all other relative paths are resolved from.
+   */
+  rootDir: string;
   config: StoreConfig;
   remappings: [string, string][];
 };
 
-export async function tablegen({ configPath, config, remappings }: TablegenOptions) {
-  const outputDirectory = path.join(path.dirname(configPath), config.sourceDirectory, config.codegen.outputDirectory);
+export async function tablegen({ rootDir, config, remappings }: TablegenOptions) {
+  const outputDirectory = path.join(rootDir, config.sourceDirectory, config.codegen.outputDirectory);
   const configV1 = storeToV1(config);
   const solidityUserTypes = loadAndExtractUserTypes(configV1.userTypes, outputDirectory, remappings);
   const allTableOptions = getTableOptions(config, solidityUserTypes);

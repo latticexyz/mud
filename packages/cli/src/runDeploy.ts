@@ -83,7 +83,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   // Run build
   if (!opts.skipBuild) {
-    await build({ configPath, config: configV2, srcDir, foundryProfile: profile });
+    await build({ rootDir: path.dirname(configPath), config: configV2, srcDir, foundryProfile: profile });
   }
 
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });

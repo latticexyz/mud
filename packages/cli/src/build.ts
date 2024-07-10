@@ -1,6 +1,6 @@
 import path from "node:path";
 import { tablegen } from "@latticexyz/store/codegen";
-import { worldgen } from "@latticexyz/world/node";
+import { generateSystemManifest, worldgen } from "@latticexyz/world/node";
 import { World as WorldConfig } from "@latticexyz/world";
 import { forge, getRemappings } from "@latticexyz/common/foundry";
 import { getExistingContracts } from "./utils/getExistingContracts";
@@ -10,16 +10,16 @@ type BuildOptions = {
   foundryProfile?: string;
   srcDir: string;
   /**
-   * Path to `mud.config.ts`. We use this as the "project root" to resolve other relative paths.
+   * MUD project root directory where all other relative paths are resolved from.
    *
-   * Defaults to finding the nearest `mud.config.ts`, looking in `process.cwd()` and moving up the directory tree.
+   * Defaults to the directory of the nearest `mud.config.ts`, looking in `process.cwd()` and moving up the directory tree.
    */
-  configPath: string;
+  rootDir: string;
   config: WorldConfig;
 };
 
 export async function build({
-  configPath,
+  rootDir,
   config,
   srcDir,
   foundryProfile = process.env.FOUNDRY_PROFILE,
@@ -28,8 +28,9 @@ export async function build({
   const remappings = await getRemappings(foundryProfile);
 
   await Promise.all([
-    tablegen({ configPath, config, remappings }),
+    tablegen({ rootDir, config, remappings }),
     worldgen(config, getExistingContracts(srcDir), outPath),
+    generateSystemManifest({ rootDir, config }),
   ]);
 
   await forge(["build"], { profile: foundryProfile });
