@@ -33,7 +33,7 @@ If access to some functions needs to be restricted to specific addresses, those 
 </Callout>
 
 Another consideration is that code should be given only those permissions necessary to perform its tasks ([the Principle of Least Privilege](https://en.wikipedia.org/wiki/Principle_of_least_privilege)).
-If only some of the functions of a `System` need to have certain privileges, it might make sense to put just those functions in a separate `System`.
+If only some of the functions of a `System` need to have certain privileges, it might make sense to put those functions in a separate `System`.
 
 #### Access to the root namespace
 
@@ -136,7 +136,8 @@ This flow is shown in green.
 If the functions require the identity of the message sender, you can still call them from a separate `System` (as long as it is _not_ running in the root namespace) using [delegation](/world/account-delegation#user-delegation).
 Non-root `System`s have their own addresses, so you can ask users to [call `registerDelegation`](/world/account-delegation#creating-a-user-delegation) to allow your `System` to act on their behalf, and then your system can [use `callFrom`](/world/account-delegation#using-a-user-delegation) to send the user's identity when calling `eat` and `move`.
 
-Note that this works for `_msgSender()` (the MUD version of `msg.sender`), not for `_msgValue()` (the MUD version of `msg.value`).
+Note that this _only_ works for `_msgSender()` (the MUD version of `msg.sender`).
+It does not let you propagate the value for `_msgValue()` (the MUD version of `msg.value`).
 
 <details>
   <summary>Illustration</summary>
