@@ -19,12 +19,15 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      - name: Setup
+        uses: ./.github/actions/setup
+
       - name: Set deployment token
         run: npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Remove npm dist tag
-        run: pnpm dist-tag-rm
+        run: pnpm run dist-tag-rm
         env:
           TAG: ${{ github.event.inputs.tag }}
