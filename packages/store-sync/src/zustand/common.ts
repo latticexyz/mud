@@ -19,4 +19,7 @@ export type TableRecord<table extends Table = Table> = {
   readonly keyTuple: readonly Hex[];
   readonly key: SchemaToPrimitives<getSchemaTypes<getKeySchema<table>>>;
   readonly value: SchemaToPrimitives<getSchemaTypes<getValueSchema<table>>>;
+  readonly fields: SchemaToPrimitives<getSchemaTypes<table["schema"]>>;
 };
+
+export type { Table };
