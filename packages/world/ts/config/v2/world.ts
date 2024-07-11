@@ -1,4 +1,4 @@
-import { ErrorMessage, conform, evaluate, narrow } from "@arktype/util";
+import { ErrorMessage, conform, narrow, type withJsDoc } from "@arktype/util";
 import {
   UserTypes,
   extendedScope,
@@ -19,6 +19,7 @@ import { resolveSystems } from "./systems";
 import { resolveNamespacedTables, validateNamespaces } from "./namespaces";
 import { resolveCodegen } from "./codegen";
 import { resolveDeploy } from "./deploy";
+import type { World } from "./output.js";
 
 export type validateWorld<world> = {
   readonly [key in keyof world]: key extends "tables"
@@ -44,7 +45,7 @@ export function validateWorld(world: unknown): asserts world is WorldInput {
   }
 }
 
-export type resolveWorld<world> = evaluate<
+export type resolveWorld<world> = withJsDoc<
   resolveStore<world> &
     mergeIfUndefined<
       { tables: resolveNamespacedTables<world> } & Omit<
@@ -60,7 +61,8 @@ export type resolveWorld<world> = evaluate<
         "namespaces" | keyof Store
       >,
       CONFIG_DEFAULTS
-    >
+    >,
+  World
 >;
 
 export function resolveWorld<const world extends WorldInput>(world: world): resolveWorld<world> {
@@ -99,7 +101,7 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
   ) as never;
 }
 
-export function defineWorld<const world>(world: validateWorld<world>): resolveWorld<world> {
-  validateWorld(world);
-  return resolveWorld(world) as never;
+export function defineWorld<const input>(input: validateWorld<input>): resolveWorld<input> {
+  validateWorld(input);
+  return resolveWorld(input) as never;
 }

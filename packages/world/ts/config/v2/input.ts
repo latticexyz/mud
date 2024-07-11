@@ -1,4 +1,4 @@
-import { evaluate } from "@arktype/util";
+import { show } from "@arktype/util";
 import { StoreInput, StoreWithShorthandsInput } from "@latticexyz/store/config/v2";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
 
@@ -79,7 +79,7 @@ export type CodegenInput = {
   worldImportPath?: string;
 };
 
-export type WorldInput = evaluate<
+export type WorldInput = show<
   StoreInput & {
     namespaces?: NamespacesInput;
     /**
@@ -101,7 +101,7 @@ export type WorldInput = evaluate<
   }
 >;
 
-export type NamespacesInput = { [key: string]: NamespaceInput };
+export type NamespacesInput = { [label: string]: NamespaceInput };
 
 export type NamespaceInput = Pick<StoreInput, "tables">;
 

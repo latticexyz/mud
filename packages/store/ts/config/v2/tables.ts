@@ -1,12 +1,12 @@
-import { ErrorMessage, evaluate } from "@arktype/util";
+import { ErrorMessage, show } from "@arktype/util";
 import { isObject, mergeIfUndefined } from "./generics";
 import { TablesInput } from "./input";
 import { Scope, AbiTypeScope } from "./scope";
 import { validateTable, resolveTable } from "./table";
 
 export type validateTables<tables, scope extends Scope = AbiTypeScope> = {
-  [key in keyof tables]: tables[key] extends object
-    ? validateTable<tables[key], scope, { inStoreContext: true }>
+  [label in keyof tables]: tables[label] extends object
+    ? validateTable<tables[label], scope, { inStoreContext: true }>
     : ErrorMessage<`Expected full table config.`>;
 };
 
@@ -23,8 +23,8 @@ export function validateTables<scope extends Scope = AbiTypeScope>(
   throw new Error(`Expected store config, received ${JSON.stringify(input)}`);
 }
 
-export type resolveTables<tables, scope extends Scope = AbiTypeScope> = evaluate<{
-  readonly [key in keyof tables]: resolveTable<mergeIfUndefined<tables[key], { name: key }>, scope>;
+export type resolveTables<tables, scope extends Scope = AbiTypeScope> = show<{
+  readonly [label in keyof tables]: resolveTable<mergeIfUndefined<tables[label], { name: label }>, scope>;
 }>;
 
 export function resolveTables<tables extends TablesInput, scope extends Scope = AbiTypeScope>(
@@ -36,8 +36,8 @@ export function resolveTables<tables extends TablesInput, scope extends Scope = 
   }
 
   return Object.fromEntries(
-    Object.entries(tables).map(([key, table]) => {
-      return [key, resolveTable(mergeIfUndefined(table, { name: key }), scope)];
+    Object.entries(tables).map(([label, table]) => {
+      return [label, resolveTable(mergeIfUndefined(table, { name: label }), scope)];
     }),
   ) as never;
 }
