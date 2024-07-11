@@ -51,7 +51,7 @@
     "build:abi": "forge build",
     "build:abi-ts": "abi-ts",
     "build:js": "tsup",
-    "build:mud": "tsx ./ts/scripts/tablegen.ts && tsx ./ts/scripts/worldgen.ts && tsx ./ts/scripts/generate-test-tables.ts",
+    "build:mud": "tsx ./ts/scripts/build.ts && tsx ./ts/scripts/generate-test-tables.ts",
     "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud",
     "clean:abi": "forge clean",
     "clean:js": "rimraf dist",
@@ -63,7 +63,7 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@arktype/util": "0.0.29",
+    "@arktype/util": "0.0.40",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
@@ -75,6 +75,7 @@
     "zod": "^3.22.2"
   },
   "devDependencies": {
+    "@arktype/attest": "0.7.5",
     "@latticexyz/abi-ts": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
     "@types/ejs": "^3.1.1",
