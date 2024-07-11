@@ -1,7 +1,7 @@
-import { mudCoreConfig, resolveTableId } from "../library";
+import { mudCoreConfig } from "../library";
 import { MUDCoreContext } from "../library/context";
 
-export { mudCoreConfig, resolveTableId };
+export { mudCoreConfig };
 
 // Importing this file has side-effects, and it should always be imported before MUD plugins.
 // Use this import for defining a MUD config.

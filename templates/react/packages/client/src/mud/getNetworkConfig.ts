@@ -6,11 +6,7 @@
 
 /*
  * By default the template just creates a temporary wallet
- * (called a burner wallet) and uses a faucet (on our test net)
- * to get ETH for it.
- *
- * See https://mud.dev/tutorials/minimal/deploy#wallet-managed-address
- * for how to use the user's own address instead.
+ * (called a burner wallet).
  */
 import { getBurnerPrivateKey } from "@latticexyz/common";
 
@@ -23,16 +19,6 @@ import worlds from "contracts/worlds.json";
 
 /*
  * The supported chains.
- * By default, there are only two chains here:
- *
- * - mudFoundry, the chain running on anvil that pnpm dev
- *   starts by default. It is similar to the viem anvil chain
- *   (see https://viem.sh/docs/clients/test.html), but with the
- *   basefee set to zero to avoid transaction fees.
- * - latticeTestnet, our public test network.
- *
- * See https://mud.dev/tutorials/minimal/deploy#run-the-user-interface
- * for instructions on how to add networks.
  */
 import { supportedChains } from "./supportedChains";
 
@@ -84,7 +70,6 @@ export async function getNetworkConfig() {
     privateKey: getBurnerPrivateKey(),
     chainId,
     chain,
-    faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
     worldAddress,
     initialBlockNumber,
   };

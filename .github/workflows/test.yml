@@ -4,16 +4,12 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - "docs/**"
   pull_request:
-    paths-ignore:
-      - "docs/**"
 
 jobs:
   test:
     name: Run tests
-    runs-on: ubuntu-latest-16-cores
+    runs-on: depot-ubuntu-22.04-16
     services:
       postgres:
         image: postgres:12.1-alpine
@@ -21,32 +17,49 @@ jobs:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      local-kms:
+        image: nsmithuk/local-kms
+        ports:
+          - 8080:8080
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Check for changes outside docs
+        id: check_changes
+        run: ./.github/scripts/check_changes_outside_docs.sh
 
       - name: Setup
+        if: steps.check_changes.outputs.changes_outside_docs
         uses: ./.github/actions/setup
 
       - name: Build
+        if: steps.check_changes.outputs.changes_outside_docs
         uses: ./.github/actions/build
 
       - name: Run tests
+        if: steps.check_changes.outputs.changes_outside_docs
+        timeout-minutes: 15
         env:
           DATABASE_URL: "postgres://postgres@localhost:5432/postgres"
+          AWS_ENDPOINT_URL: "http://localhost:8080"
         run: pnpm test:ci
 
       - name: Generate gas reports
+        if: steps.check_changes.outputs.changes_outside_docs
         run: pnpm gas-report
 
       - name: Outdated files, run `pnpm gas-report` and commit them
+        if: steps.check_changes.outputs.changes_outside_docs
         uses: ./.github/actions/require-empty-diff
 
-      - name: Lint
-        run: pnpm lint
-
       - name: Sort package.json
+        if: steps.check_changes.outputs.changes_outside_docs
         run: pnpm sort-package-json
 
       - name: Outdated files, run `sort-package-json` and commit them
+        if: steps.check_changes.outputs.changes_outside_docs
         uses: ./.github/actions/require-empty-diff

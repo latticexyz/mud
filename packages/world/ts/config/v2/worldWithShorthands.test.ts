@@ -3,18 +3,21 @@ import { defineWorldWithShorthands } from "./worldWithShorthands";
 import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
 import {
+  CONFIG_DEFAULTS as STORE_CONFIG_DEFAULTS,
   TABLE_CODEGEN_DEFAULTS,
   CODEGEN_DEFAULTS as STORE_CODEGEN_DEFAULTS,
   TABLE_DEPLOY_DEFAULTS,
 } from "@latticexyz/store/config/v2";
-import { CODEGEN_DEFAULTS as WORLD_CODEGEN_DEFAULTS, CONFIG_DEFAULTS } from "./defaults";
+import { CODEGEN_DEFAULTS as WORLD_CODEGEN_DEFAULTS, CONFIG_DEFAULTS as WORLD_CONFIG_DEFAULTS } from "./defaults";
+
+const CONFIG_DEFAULTS = { ...STORE_CONFIG_DEFAULTS, ...WORLD_CONFIG_DEFAULTS };
 const CODEGEN_DEFAULTS = { ...STORE_CODEGEN_DEFAULTS, ...WORLD_CODEGEN_DEFAULTS };
 
 describe("defineWorldWithShorthands", () => {
   it("should resolve namespaced shorthand table config with user types and enums", () => {
     const config = defineWorldWithShorthands({
       namespaces: {
-        ExampleNamespace: {
+        ExampleNS: {
           tables: {
             ExampleTable: "Static",
           },
@@ -33,8 +36,8 @@ describe("defineWorldWithShorthands", () => {
       ...CONFIG_DEFAULTS,
       codegen: CODEGEN_DEFAULTS,
       tables: {
-        ExampleNamespace__ExampleTable: {
-          tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
+        ExampleNS__ExampleTable: {
+          tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
           schema: {
             id: {
               type: "bytes32",
@@ -47,7 +50,7 @@ describe("defineWorldWithShorthands", () => {
           },
           key: ["id"],
           name: "ExampleTable",
-          namespace: "ExampleNamespace",
+          namespace: "ExampleNS",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
           type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
@@ -60,6 +63,12 @@ describe("defineWorldWithShorthands", () => {
       enums: {
         MyEnum: ["First", "Second"],
       },
+      enumValues: {
+        MyEnum: {
+          First: 0,
+          Second: 1,
+        },
+      },
       namespace: "",
     } as const;
 
@@ -69,7 +78,7 @@ describe("defineWorldWithShorthands", () => {
   it("should resolve namespaced shorthand schema table config with user types and enums", () => {
     const config = defineWorldWithShorthands({
       namespaces: {
-        ExampleNamespace: {
+        ExampleNS: {
           tables: {
             ExampleTable: {
               id: "Static",
@@ -92,8 +101,8 @@ describe("defineWorldWithShorthands", () => {
       ...CONFIG_DEFAULTS,
       codegen: CODEGEN_DEFAULTS,
       tables: {
-        ExampleNamespace__ExampleTable: {
-          tableId: resourceToHex({ type: "table", namespace: "ExampleNamespace", name: "ExampleTable" }),
+        ExampleNS__ExampleTable: {
+          tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
           schema: {
             id: {
               type: "address",
@@ -110,7 +119,7 @@ describe("defineWorldWithShorthands", () => {
           },
           key: ["id"],
           name: "ExampleTable",
-          namespace: "ExampleNamespace",
+          namespace: "ExampleNS",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
           type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
@@ -122,6 +131,12 @@ describe("defineWorldWithShorthands", () => {
       },
       enums: {
         MyEnum: ["First", "Second"],
+      },
+      enumValues: {
+        MyEnum: {
+          First: 0,
+          Second: 1,
+        },
       },
       namespace: "",
     } as const;
@@ -158,6 +173,7 @@ describe("defineWorldWithShorthands", () => {
       },
       userTypes: {},
       enums: {},
+      enumValues: {},
       namespace: "",
     } as const;
 
@@ -196,6 +212,7 @@ describe("defineWorldWithShorthands", () => {
       },
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" as string } },
       enums: {},
+      enumValues: {},
       namespace: "",
     } as const;
 
@@ -236,6 +253,7 @@ describe("defineWorldWithShorthands", () => {
       },
       userTypes: {},
       enums: {},
+      enumValues: {},
       namespace: "",
     } as const;
 
@@ -276,6 +294,7 @@ describe("defineWorldWithShorthands", () => {
       },
       userTypes: {},
       enums: {},
+      enumValues: {},
       namespace: "",
     } as const;
 
@@ -333,5 +352,33 @@ describe("defineWorldWithShorthands", () => {
     } as const;
 
     defineWorldWithShorthands(config);
+  });
+
+  it("should throw with an invalid namespace config option", () => {
+    attest(() =>
+      defineWorldWithShorthands({
+        namespaces: {
+          ExampleNS: {
+            tables: {
+              // @ts-expect-error Type '"number"' is not assignable to type 'AbiType'.
+              ExampleTable: "number",
+            },
+          },
+        },
+      }),
+    ).type.errors(`Type '"number"' is not assignable to type 'AbiType'.`);
+  });
+
+  it("should throw with a non-existent namespace config option", () => {
+    attest(() =>
+      defineWorldWithShorthands({
+        namespaces: {
+          ExampleNS: {
+            // @ts-expect-error Type 'true' is not assignable to type '"`invalidProperty` is not a valid namespace config option.
+            invalidProperty: true,
+          },
+        },
+      }),
+    ).type.errors("`invalidProperty` is not a valid namespace config option.");
   });
 });

@@ -1,5 +1,244 @@
 # Change Log
 
+## 2.0.12
+
+### Patch Changes
+
+- 36c8b5b24: Fixed `ERC20Module` to register the `TotalSupply` table when creating a new token.
+
+  If you've deployed a world with the `ERC20Module`, we recommend patching your world to register this table so that indexers can properly decode its record. You can do so with a simple Forge script:
+
+  ```solidity
+  // SPDX-License-Identifier: MIT
+  pragma solidity >=0.8.24;
+
+  import { Script } from "forge-std/Script.sol";
+  import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+  import { TotalSupply } from "@latticexyz/world-modules/src/modules/erc20-puppet/tables/TotalSupply.sol";
+  import { _totalSupplyTableId } from "@latticexyz/world-modules/src/modules/erc20-puppet/utils.sol";
+
+  contract RegisterTotalSupply is Script {
+    function run(address worldAddress, string memory namespaceString) external {
+      bytes14 namespace = bytes14(bytes(namespaceString));
+
+      StoreSwitch.setStoreAddress(worldAddress);
+
+      uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+      vm.startBroadcast(deployerPrivateKey);
+
+      TotalSupply.register(_totalSupplyTableId(namespace));
+
+      vm.stopBroadcast();
+    }
+  }
+  ```
+
+  Then execute the transactions by running the following [`forge script`](https://book.getfoundry.sh/reference/forge/forge-script?highlight=script#forge-script) command:
+
+  ```shell
+  forge script ./script/RegisterTotalSupply.s.sol --sig "run(address,string)" $WORLD_ADDRESS $NAMESPACE_STRING
+  ```
+
+- 96e7bf430: TS source has been removed from published packages in favor of DTS in an effort to improve TS performance. All packages now inherit from a base TS config in `@latticexyz/common` to allow us to continue iterating on TS performance without requiring changes in your project code.
+
+  If you have a MUD project that you're upgrading, we suggest adding a `tsconfig.json` file to your project workspace that extends this base config.
+
+  ```sh
+  pnpm add -D @latticexyz/common
+  echo "{\n  \"extends\": \"@latticexyz/common/tsconfig.base.json\"\n}" > tsconfig.json
+  ```
+
+  Then in each package of your project, inherit from your workspace root's config.
+
+  For example, your TS config in `packages/contracts/tsconfig.json` might look like:
+
+  ```json
+  {
+    "extends": "../../tsconfig.json"
+  }
+  ```
+
+  And your TS config in `packages/client/tsconfig.json` might look like:
+
+  ```json
+  {
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+      "types": ["vite/client"],
+      "target": "ESNext",
+      "lib": ["ESNext", "DOM"],
+      "jsx": "react-jsx",
+      "jsxImportSource": "react"
+    },
+    "include": ["src"]
+  }
+  ```
+
+  You may need to adjust the above configs to include any additional TS options you've set. This config pattern may also reveal new TS errors that need to be fixed or rules disabled.
+
+  If you want to keep your existing TS configs, we recommend at least updating your `moduleResolution` setting.
+
+  ```diff
+  -"moduleResolution": "node"
+  +"moduleResolution": "Bundler"
+  ```
+
+- Updated dependencies [c10c9fb2d]
+- Updated dependencies [c10c9fb2d]
+- Updated dependencies [9be2bb863]
+- Updated dependencies [96e7bf430]
+  - @latticexyz/store@2.0.12
+  - @latticexyz/world@2.0.12
+  - @latticexyz/common@2.0.12
+  - @latticexyz/config@2.0.12
+  - @latticexyz/schema-type@2.0.12
+
+## 2.0.11
+
+### Patch Changes
+
+- @latticexyz/common@2.0.11
+- @latticexyz/config@2.0.11
+- @latticexyz/schema-type@2.0.11
+- @latticexyz/store@2.0.11
+- @latticexyz/world@2.0.11
+
+## 2.0.10
+
+### Patch Changes
+
+- 4e4e9104: Removed the unused `ejs` dependency.
+- 4caca05e: Bumped zod dependency to comply with abitype peer dependencies.
+- Updated dependencies [a1b1ebf6]
+- Updated dependencies [4e4e9104]
+- Updated dependencies [4e4e9104]
+- Updated dependencies [51b137d3]
+- Updated dependencies [3dbf3bf3]
+- Updated dependencies [32c1cda6]
+- Updated dependencies [4caca05e]
+- Updated dependencies [27f888c7]
+  - @latticexyz/world@2.0.10
+  - @latticexyz/store@2.0.10
+  - @latticexyz/common@2.0.10
+  - @latticexyz/config@2.0.10
+  - @latticexyz/schema-type@2.0.10
+
+## 2.0.9
+
+### Patch Changes
+
+- Updated dependencies [764ca0a0]
+- Updated dependencies [bad3ad1b]
+  - @latticexyz/common@2.0.9
+  - @latticexyz/config@2.0.9
+  - @latticexyz/store@2.0.9
+  - @latticexyz/world@2.0.9
+  - @latticexyz/schema-type@2.0.9
+
+## 2.0.8
+
+### Patch Changes
+
+- Updated dependencies [df4781ac]
+  - @latticexyz/common@2.0.8
+  - @latticexyz/config@2.0.8
+  - @latticexyz/store@2.0.8
+  - @latticexyz/world@2.0.8
+  - @latticexyz/schema-type@2.0.8
+
+## 2.0.7
+
+### Patch Changes
+
+- 78a94d71: Fixed ERC721 module to properly encode token ID as part of token URI.
+- 2c9b16c7: Replaced the `systemId` field in the `Unstable_CallWithSignatureSystem` typehash with individual `systemNamespace` and `systemName` string fields.
+- Updated dependencies [375d902e]
+- Updated dependencies [38c61158]
+- Updated dependencies [3d1d5905]
+- Updated dependencies [ed404b7d]
+- Updated dependencies [2c9b16c7]
+- Updated dependencies [f736c43d]
+  - @latticexyz/common@2.0.7
+  - @latticexyz/world@2.0.7
+  - @latticexyz/store@2.0.7
+  - @latticexyz/config@2.0.7
+  - @latticexyz/schema-type@2.0.7
+
+## 2.0.6
+
+### Patch Changes
+
+- 96e82b7f: Moved the chain ID in `CallWithSignature` from the `domain.chainId` to the `domain.salt` field to allow for cross-chain signing without requiring wallets to switch networks. The value of this field should be the chain on which the world lives, rather than the chain the wallet is connected to.
+- Updated dependencies [6c8ab471]
+- Updated dependencies [103db6ce]
+- Updated dependencies [9720b568]
+- Updated dependencies [c18e93c5]
+- Updated dependencies [d95028a6]
+  - @latticexyz/common@2.0.6
+  - @latticexyz/store@2.0.6
+  - @latticexyz/world@2.0.6
+  - @latticexyz/config@2.0.6
+  - @latticexyz/schema-type@2.0.6
+
+## 2.0.5
+
+### Patch Changes
+
+- e2e8ec8b: Added missing system interfaces for ERC721, UniqueEntity, and CallWithSignature modules.
+- 081c3967: Added `validateCallWithSignature` function to `Unstable_CallWithSignatureModule` to validate a signature without executing the call.
+- e3c3a118: Exported mud config as internal.
+- d02efd80: Replaced the `Unstable_DelegationWithSignatureModule` preview module with a more generalized `Unstable_CallWithSignatureModule` that allows making arbitrary calls (similar to `callFrom`).
+
+  This module is still marked as `Unstable`, because it will be removed and included in the default `World` deployment once it is audited.
+
+- Updated dependencies [a9e8a407]
+- Updated dependencies [b798ccb2]
+- Updated dependencies [d02efd80]
+  - @latticexyz/common@2.0.5
+  - @latticexyz/store@2.0.5
+  - @latticexyz/world@2.0.5
+  - @latticexyz/config@2.0.5
+  - @latticexyz/schema-type@2.0.5
+
+## 2.0.4
+
+### Patch Changes
+
+- Updated dependencies [620e4ec1]
+  - @latticexyz/common@2.0.4
+  - @latticexyz/config@2.0.4
+  - @latticexyz/store@2.0.4
+  - @latticexyz/world@2.0.4
+  - @latticexyz/schema-type@2.0.4
+
+## 2.0.3
+
+### Patch Changes
+
+- Updated dependencies [d2e4d0fb]
+- Updated dependencies [d2e4d0fb]
+  - @latticexyz/common@2.0.3
+  - @latticexyz/world@2.0.3
+  - @latticexyz/config@2.0.3
+  - @latticexyz/store@2.0.3
+  - @latticexyz/schema-type@2.0.3
+
+## 2.0.2
+
+### Patch Changes
+
+- e86bd14d: Added a new preview module, `Unstable_DelegationWithSignatureModule`, which allows registering delegations with a signature.
+
+  Note: this module is marked as `Unstable`, because it will be removed and included in the default `World` deployment once it is audited.
+
+- Updated dependencies [e86bd14d]
+- Updated dependencies [a09bf251]
+  - @latticexyz/world@2.0.2
+  - @latticexyz/common@2.0.2
+  - @latticexyz/config@2.0.2
+  - @latticexyz/schema-type@2.0.2
+  - @latticexyz/store@2.0.2
+
 ## 2.0.1
 
 ### Patch Changes

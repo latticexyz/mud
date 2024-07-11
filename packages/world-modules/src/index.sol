@@ -22,3 +22,4 @@ import { Owners } from "./modules/erc721-puppet/tables/Owners.sol";
 import { TokenApproval } from "./modules/erc721-puppet/tables/TokenApproval.sol";
 import { OperatorApproval } from "./modules/erc721-puppet/tables/OperatorApproval.sol";
 import { ERC721Registry } from "./modules/erc721-puppet/tables/ERC721Registry.sol";
+import { CallWithSignatureNonces } from "./modules/callwithsignature/tables/CallWithSignatureNonces.sol";

@@ -7,14 +7,34 @@ There are two APIs to read data and react to changes with `recs`:
 - [Reading component value directly](#reading-component-value-directly).
 - [Subscribing to a query that returns a set of matching entities](#running-queries).
 
-For the examples below, let's assume this MUD config. Notice that each of these tables has an (implicit) `bytes32` key.
+For the examples below, let's assume this MUD config. Notice that each of these tables has a `bytes32` key.
 
 ```typescript
-const config = mudConfig({
+const config = defineWorld({
+  namespace: "app",
   tables: {
-    NameComponent: "string",
-    PlayerComponent: "bool",
-    PositionComponent: { valueSchema: { x: "int32", y: "int32" } },
+    NameComponent: {
+       schema: {
+         value: "string",
+         id: "bytes32"
+       },
+       key: ["id"],
+    }
+    PlayerComponent: {
+       schema: {
+         value: "bool",
+         id: "bytes32",
+       },
+       key: ["id"],
+    },
+    PositionComponent: {
+       schema: {
+         x: "int32",
+         y: "int32",
+         id: "bytes32",
+       },
+       key: ["id"],
+    },
   },
 });
 ```
@@ -27,11 +47,11 @@ If you have a specific key and a reference to a component, you can query its val
 
 ```typescript
 import { getComponentValueStrict } from "@latticexyz/recs";
-// note: NameComponent is an recs component; components could come from the `setup` function of MUD.
+// note: NameComponent is a recs component; components could come from the `setup` function of MUD.
 const { NameComponent } = components
-// get a reference to the recs world; as an example from the `setup` function of MUD.
+// get a reference to the world; as an example from the `setup` function of MUD.
 const world = [...]
-// you need a reference to an `Entity` from recs. For the sake of the example, let's say we know that the bytes32 key is "0xDEAD"
+// you need a reference to an `Entity`. For the sake of the example, let's say we know that the bytes32 key is "0xDEAD"
 // you wouldn't do normally: entities would be found via queries.
 const entityID = "0xDEAD" as EntityID;
 const entity = world.registerEntity({ id: "0xDEAD" as EntityI })
@@ -114,7 +134,7 @@ defineSystem(world, [Has(PlayerComponent), Has(Name), HasValue(PositionComponent
 import { useEntityQuery } from "@latticexyz/react";
 import { Has, HasValue, getComponentValueStrict } from "@latticexyz/recs";
 function ExampleComponent() {
-  const { components, world } = useMUD;
+  const { components, world } = useMUD();
   const { NameComponent, PlayerComponent, PositionCompoennt } = components
   // get a list of all entities that are named, players, and at the center of the universe
   // it is reactive and will trigger a re-render when the set of matching queries update

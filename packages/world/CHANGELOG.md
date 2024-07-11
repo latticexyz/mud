@@ -1,5 +1,292 @@
 # Change Log
 
+## 2.0.12
+
+### Patch Changes
+
+- c10c9fb2d: Added `sourceDirectory` as a top-level config option for specifying contracts source (i.e. Solidity) directory relative to the MUD config. This is used to resolve other paths in the config, like codegen and user types. Like `foundry.toml`, this defaults to `src` and should be kept in sync with `foundry.toml`.
+
+  Also added a `codegen.namespaceDirectories` option to organize codegen output (table libraries, etc.) into directories by namespace. For example, a `Counter` table in the `app` namespace will have codegen at `codegen/app/tables/Counter.sol`. If not set, defaults to `true` when using top-level `namespaces` key, `false` otherwise.
+
+- 9be2bb863: Fixed `resolveTableId` usage within config's module `args` to allow referencing both namespaced tables (e.g. `resolveTableId("app_Tasks")`) as well as tables by just their name (e.g. `resolveTableId("Tasks")`). Note that using just the table name requires it to be unique among all tables within the config.
+
+  This helper is now exported from `@latticexyz/world` package as intended. The previous, deprecated export has been removed.
+
+  ```diff
+  -import { resolveTableId } from "@latticexyz/config/library";
+  +import { resolveTableId } from "@latticexyz/world/internal";
+  ```
+
+- 96e7bf430: TS source has been removed from published packages in favor of DTS in an effort to improve TS performance. All packages now inherit from a base TS config in `@latticexyz/common` to allow us to continue iterating on TS performance without requiring changes in your project code.
+
+  If you have a MUD project that you're upgrading, we suggest adding a `tsconfig.json` file to your project workspace that extends this base config.
+
+  ```sh
+  pnpm add -D @latticexyz/common
+  echo "{\n  \"extends\": \"@latticexyz/common/tsconfig.base.json\"\n}" > tsconfig.json
+  ```
+
+  Then in each package of your project, inherit from your workspace root's config.
+
+  For example, your TS config in `packages/contracts/tsconfig.json` might look like:
+
+  ```json
+  {
+    "extends": "../../tsconfig.json"
+  }
+  ```
+
+  And your TS config in `packages/client/tsconfig.json` might look like:
+
+  ```json
+  {
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+      "types": ["vite/client"],
+      "target": "ESNext",
+      "lib": ["ESNext", "DOM"],
+      "jsx": "react-jsx",
+      "jsxImportSource": "react"
+    },
+    "include": ["src"]
+  }
+  ```
+
+  You may need to adjust the above configs to include any additional TS options you've set. This config pattern may also reveal new TS errors that need to be fixed or rules disabled.
+
+  If you want to keep your existing TS configs, we recommend at least updating your `moduleResolution` setting.
+
+  ```diff
+  -"moduleResolution": "node"
+  +"moduleResolution": "Bundler"
+  ```
+
+- Updated dependencies [c10c9fb2d]
+- Updated dependencies [c10c9fb2d]
+- Updated dependencies [96e7bf430]
+  - @latticexyz/store@2.0.12
+  - @latticexyz/common@2.0.12
+  - @latticexyz/config@2.0.12
+  - @latticexyz/protocol-parser@2.0.12
+  - @latticexyz/schema-type@2.0.12
+
+## 2.0.11
+
+### Patch Changes
+
+- @latticexyz/common@2.0.11
+- @latticexyz/config@2.0.11
+- @latticexyz/protocol-parser@2.0.11
+- @latticexyz/schema-type@2.0.11
+- @latticexyz/store@2.0.11
+
+## 2.0.10
+
+### Patch Changes
+
+- a1b1ebf6: Worlds can now be deployed with external modules, defined by a module's `artifactPath` in your MUD config, resolved with Node's module resolution. This allows for modules to be published to and imported from npm.
+
+  ```diff
+   defineWorld({
+     // …
+     modules: [
+       {
+  -      name: "KeysWithValueModule",
+  +      artifactPath: "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json",
+         root: true,
+         args: [resolveTableId("Inventory")],
+       },
+     ],
+   });
+  ```
+
+  Note that the above assumes `@latticexyz/world-modules` is included as a dependency of your project.
+
+- 4e4e9104: Upgraded the `ejs` dependency to 3.1.10.
+- 3dbf3bf3: Updated World config types to use readonly arrays.
+- 32c1cda6: `defineStore` and `defineWorld` will now throw a type error if an unexpected config option is used.
+- 4caca05e: Bumped zod dependency to comply with abitype peer dependencies.
+- 27f888c7: `defineStore` and `defineWorld` now maps your `enums` to usable, strongly-typed enums on `enumValues`.
+
+  ```ts
+  const config = defineStore({
+    enums: {
+      TerrainType: ["Water", "Grass", "Sand"],
+    },
+  });
+
+  config.enumValues.TerrainType.Water;
+  //                              ^? (property) Water: 0
+
+  config.enumValues.TerrainType.Grass;
+  //                              ^? (property) Grass: 1
+  ```
+
+  This allows for easier referencing of enum values (i.e. `uint8` equivalent) in contract calls.
+
+  ```ts
+  writeContract({
+    // …
+    functionName: "setTerrainType",
+    args: [config.enumValues.TerrainType.Grass],
+  });
+  ```
+
+- Updated dependencies [4e4e9104]
+- Updated dependencies [51b137d3]
+- Updated dependencies [32c1cda6]
+- Updated dependencies [4caca05e]
+- Updated dependencies [27f888c7]
+  - @latticexyz/store@2.0.10
+  - @latticexyz/common@2.0.10
+  - @latticexyz/config@2.0.10
+  - @latticexyz/protocol-parser@2.0.10
+  - @latticexyz/schema-type@2.0.10
+
+## 2.0.9
+
+### Patch Changes
+
+- Updated dependencies [764ca0a0]
+- Updated dependencies [bad3ad1b]
+  - @latticexyz/common@2.0.9
+  - @latticexyz/config@2.0.9
+  - @latticexyz/protocol-parser@2.0.9
+  - @latticexyz/store@2.0.9
+  - @latticexyz/schema-type@2.0.9
+
+## 2.0.8
+
+### Patch Changes
+
+- Updated dependencies [df4781ac]
+  - @latticexyz/common@2.0.8
+  - @latticexyz/config@2.0.8
+  - @latticexyz/protocol-parser@2.0.8
+  - @latticexyz/store@2.0.8
+  - @latticexyz/schema-type@2.0.8
+
+## 2.0.7
+
+### Patch Changes
+
+- 3d1d5905: Added a `deploy.upgradeableWorldImplementation` option to the MUD config that deploys the World as an upgradeable proxy contract. The proxy behaves like a regular World contract, but the underlying implementation can be upgraded by calling `setImplementation`.
+- 2c9b16c7: Replaced the `systemId` field in the `Unstable_CallWithSignatureSystem` typehash with individual `systemNamespace` and `systemName` string fields.
+- Updated dependencies [375d902e]
+- Updated dependencies [38c61158]
+- Updated dependencies [ed404b7d]
+- Updated dependencies [f736c43d]
+  - @latticexyz/common@2.0.7
+  - @latticexyz/store@2.0.7
+  - @latticexyz/config@2.0.7
+  - @latticexyz/protocol-parser@2.0.7
+  - @latticexyz/schema-type@2.0.7
+
+## 2.0.6
+
+### Patch Changes
+
+- 9720b568: Internal type improvements.
+- c18e93c5: Bumped viem to 2.9.20.
+- d95028a6: Bumped viem to 2.9.16.
+- Updated dependencies [6c8ab471]
+- Updated dependencies [103db6ce]
+- Updated dependencies [9720b568]
+- Updated dependencies [c18e93c5]
+- Updated dependencies [d95028a6]
+  - @latticexyz/common@2.0.6
+  - @latticexyz/store@2.0.6
+  - @latticexyz/config@2.0.6
+  - @latticexyz/protocol-parser@2.0.6
+  - @latticexyz/schema-type@2.0.6
+
+## 2.0.5
+
+### Patch Changes
+
+- d02efd80: Replaced the `Unstable_DelegationWithSignatureModule` preview module with a more generalized `Unstable_CallWithSignatureModule` that allows making arbitrary calls (similar to `callFrom`).
+
+  This module is still marked as `Unstable`, because it will be removed and included in the default `World` deployment once it is audited.
+
+- Updated dependencies [a9e8a407]
+- Updated dependencies [b798ccb2]
+  - @latticexyz/common@2.0.5
+  - @latticexyz/store@2.0.5
+  - @latticexyz/config@2.0.5
+  - @latticexyz/protocol-parser@2.0.5
+  - @latticexyz/schema-type@2.0.5
+
+## 2.0.4
+
+### Patch Changes
+
+- Updated dependencies [620e4ec1]
+  - @latticexyz/common@2.0.4
+  - @latticexyz/config@2.0.4
+  - @latticexyz/protocol-parser@2.0.4
+  - @latticexyz/store@2.0.4
+  - @latticexyz/schema-type@2.0.4
+
+## 2.0.3
+
+### Patch Changes
+
+- d2e4d0fb: `callFrom` decorator now accepts any `Client`, not just a `WalletClient`. It also no longer attempts to wrap/redirect calls to `call`, `callFrom`, and `registerDelegationWithSignature`.
+- Updated dependencies [d2e4d0fb]
+  - @latticexyz/common@2.0.3
+  - @latticexyz/config@2.0.3
+  - @latticexyz/protocol-parser@2.0.3
+  - @latticexyz/store@2.0.3
+  - @latticexyz/schema-type@2.0.3
+
+## 2.0.2
+
+### Patch Changes
+
+- e86bd14d: Added a new preview module, `Unstable_DelegationWithSignatureModule`, which allows registering delegations with a signature.
+
+  Note: this module is marked as `Unstable`, because it will be removed and included in the default `World` deployment once it is audited.
+
+- a09bf251: Added a viem client decorator for account delegation. By extending viem clients with this function after delegation, the delegation is automatically applied to World contract writes. This means that these writes are made on behalf of the delegator. Internally, it transforms the write arguments to use `callFrom`.
+
+  This is an internal feature and is not ready for stable consumption yet, so it's not yet exported. Its API may change.
+
+  When using with a viem public client, system function selectors will be fetched from the world:
+
+  ```ts
+  walletClient.extend(
+    callFrom({
+      worldAddress,
+      delegatorAddress,
+      publicClient,
+    }),
+  );
+  ```
+
+  Alternatively, a `worldFunctionToSystemFunction` handler can be passed in that will translate between world function selectors and system function selectors for cases where you want to provide your own behavior or use data already cached in e.g. Zustand or RECS.
+
+  ```ts
+  walletClient.extend(
+    callFrom({
+      worldAddress,
+      delegatorAddress,
+      worldFunctionToSystemFunction: async (worldFunctionSelector) => {
+        const systemFunction = useStore.getState().getValue(tables.FunctionSelectors, { worldFunctionSelector })!;
+        return {
+          systemId: systemFunction.systemId,
+          systemFunctionSelector: systemFunction.systemFunctionSelector,
+        };
+      },
+    }),
+  );
+  ```
+
+  - @latticexyz/common@2.0.2
+  - @latticexyz/config@2.0.2
+  - @latticexyz/protocol-parser@2.0.2
+  - @latticexyz/schema-type@2.0.2
+  - @latticexyz/store@2.0.2
+
 ## 2.0.1
 
 ### Patch Changes

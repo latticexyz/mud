@@ -17,6 +17,7 @@ describe("defineStore", () => {
     });
 
     const expected = {
+      sourceDirectory: "src",
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -44,6 +45,7 @@ describe("defineStore", () => {
       },
       userTypes: {},
       enums: {},
+      enumValues: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -66,6 +68,7 @@ describe("defineStore", () => {
     });
 
     const expected = {
+      sourceDirectory: "src",
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -96,6 +99,7 @@ describe("defineStore", () => {
         dynamic: { type: "string", filePath: "path/to/file" },
       },
       enums: {},
+      enumValues: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -114,6 +118,7 @@ describe("defineStore", () => {
     });
 
     const expected = {
+      sourceDirectory: "src",
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -141,6 +146,7 @@ describe("defineStore", () => {
       },
       userTypes: {},
       enums: {},
+      enumValues: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -163,6 +169,7 @@ describe("defineStore", () => {
     });
 
     const expected = {
+      sourceDirectory: "src",
       tables: {
         First: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
@@ -213,6 +220,7 @@ describe("defineStore", () => {
       },
       userTypes: {},
       enums: {},
+      enumValues: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -239,6 +247,7 @@ describe("defineStore", () => {
     });
 
     const expected = {
+      sourceDirectory: "src",
       tables: {
         First: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
@@ -292,6 +301,7 @@ describe("defineStore", () => {
         Dynamic: { type: "string", filePath: "path/to/file" },
       },
       enums: {},
+      enumValues: {},
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
@@ -371,6 +381,7 @@ describe("defineStore", () => {
       },
     });
     const expected = {
+      sourceDirectory: "src",
       tables: {
         Example: {
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
@@ -402,6 +413,12 @@ describe("defineStore", () => {
       },
       enums: {
         ValidNames: ["first", "second"],
+      },
+      enumValues: {
+        ValidNames: {
+          first: 0,
+          second: 1,
+        },
       },
       namespace: "",
       codegen: CODEGEN_DEFAULTS,
@@ -467,7 +484,7 @@ describe("defineStore", () => {
   it("should throw if name is overridden in the store context", () => {
     attest(() =>
       defineStore({
-        namespace: "CustomNamespace",
+        namespace: "CustomNS",
         tables: {
           Example: {
             schema: { id: "address" },
@@ -483,7 +500,7 @@ describe("defineStore", () => {
   it("should throw if namespace is overridden in the store context", () => {
     attest(() =>
       defineStore({
-        namespace: "CustomNamespace",
+        namespace: "CustomNS",
         tables: {
           Example: {
             schema: { id: "address" },
@@ -501,7 +518,16 @@ describe("defineStore", () => {
       Example: ["First", "Second"],
     } as const;
 
-    attest(defineStore({ enums }).enums).equals(enums);
+    attest(defineStore({ enums }).enums).equals({
+      Example: ["First", "Second"],
+    });
+
+    attest(defineStore({ enums }).enumValues).equals({
+      Example: {
+        First: 0,
+        Second: 1,
+      },
+    });
   });
 
   it("should allow a const config as input", () => {
@@ -515,5 +541,99 @@ describe("defineStore", () => {
     } as const;
 
     defineStore(config);
+  });
+
+  it("should throw if config has unexpected key", () => {
+    attest(() =>
+      defineStore({
+        // @ts-expect-error Invalid config option
+        invalidOption: "nope",
+      }),
+    ).type.errors("`invalidOption` is not a valid Store config option.");
+  });
+
+  it("should namespace output directories for tables", () => {
+    const config = defineStore({
+      namespace: "app",
+      codegen: {
+        namespaceDirectories: true,
+      },
+      tables: {
+        NamespaceDir: {
+          schema: { name: "string" },
+          key: [],
+        },
+        NotNamespaceDir: {
+          schema: { name: "string" },
+          key: [],
+          codegen: {
+            outputDirectory: "tables",
+          },
+        },
+      },
+    });
+
+    const expected = {
+      sourceDirectory: "src",
+      tables: {
+        app__NamespaceDir: {
+          tableId: resourceToHex({ type: "table", namespace: "app", name: "NamespaceDir" }),
+          schema: {
+            name: {
+              type: "string",
+              internalType: "string",
+            },
+          },
+          key: [],
+          name: "NamespaceDir",
+          namespace: "app",
+          codegen: {
+            ...TABLE_CODEGEN_DEFAULTS,
+            dataStruct: false as boolean,
+            outputDirectory: "app/tables" as string,
+          },
+          type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
+        },
+        app__NotNamespaceDir: {
+          tableId: resourceToHex({ type: "table", namespace: "app", name: "NotNamespaceDir" }),
+          schema: {
+            name: {
+              type: "string",
+              internalType: "string",
+            },
+          },
+          key: [],
+          name: "NotNamespaceDir",
+          namespace: "app",
+          codegen: {
+            ...TABLE_CODEGEN_DEFAULTS,
+            dataStruct: false as boolean,
+            outputDirectory: "tables",
+          },
+          type: "table",
+          deploy: TABLE_DEPLOY_DEFAULTS,
+        },
+      },
+      userTypes: {},
+      enums: {},
+      enumValues: {},
+      namespace: "app",
+      codegen: {
+        ...CODEGEN_DEFAULTS,
+        namespaceDirectories: true,
+      },
+    } as const;
+
+    // Running attest on the whole object is hard to parse when it fails, so test the inner objects first
+    attest<typeof expected.codegen>(config.codegen).equals(expected.codegen);
+    attest<typeof expected.tables.app__NamespaceDir.codegen>(config.tables.app__NamespaceDir.codegen).equals(
+      expected.tables.app__NamespaceDir.codegen,
+    );
+    attest<typeof expected.tables.app__NotNamespaceDir.codegen>(config.tables.app__NotNamespaceDir.codegen).equals(
+      expected.tables.app__NotNamespaceDir.codegen,
+    );
+
+    attest<typeof expected>(config).equals(expected);
   });
 });

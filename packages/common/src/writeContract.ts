@@ -3,22 +3,44 @@ import {
   Account,
   Chain,
   Client,
-  SimulateContractParameters,
   Transport,
   WriteContractParameters,
   WriteContractReturnType,
   ContractFunctionName,
   ContractFunctionArgs,
+  PublicClient,
+  encodeFunctionData,
+  EncodeFunctionDataParameters,
 } from "viem";
-import { simulateContract, writeContract as viem_writeContract } from "viem/actions";
+import {
+  prepareTransactionRequest as viem_prepareTransactionRequest,
+  writeContract as viem_writeContract,
+} from "viem/actions";
 import pRetry from "p-retry";
 import { debug as parentDebug } from "./debug";
 import { getNonceManager } from "./getNonceManager";
 import { parseAccount } from "viem/accounts";
+import { getFeeRef } from "./getFeeRef";
+import { getAction } from "viem/utils";
 
 const debug = parentDebug.extend("writeContract");
 
-// TODO: migrate away from this approach once we can hook into viem's nonce management: https://github.com/wagmi-dev/viem/discussions/1230
+export type WriteContractExtraOptions<chain extends Chain | undefined> = {
+  /**
+   * `publicClient` can be provided to be used in place of the extended viem client for making public action calls
+   * (`getChainId`, `getTransactionCount`, `simulateContract`). This helps in cases where the extended
+   * viem client is a smart account client, like in [permissionless.js](https://github.com/pimlicolabs/permissionless.js),
+   * where the transport is the bundler, not an RPC.
+   */
+  publicClient?: PublicClient<Transport, chain>;
+  /**
+   * Adjust the number of concurrent calls to the mempool. This defaults to `1` to ensure transactions are ordered
+   * and nonces are handled properly. Any number greater than that is likely to see nonce errors and/or transactions
+   * arriving out of order, but this may be an acceptable trade-off for some applications that can safely retry.
+   * @default 1
+   */
+  queueConcurrency?: number;
+};
 
 /** @deprecated Use `walletClient.extend(transactionQueue())` instead. */
 export async function writeContract<
@@ -31,6 +53,7 @@ export async function writeContract<
 >(
   client: Client<Transport, chain, account>,
   request: WriteContractParameters<abi, functionName, args, chain, account, chainOverride>,
+  opts: WriteContractExtraOptions<chain> = {},
 ): Promise<WriteContractReturnType> {
   const rawAccount = request.account ?? client.account;
   if (!rawAccount) {
@@ -38,44 +61,82 @@ export async function writeContract<
     throw new Error("No account provided");
   }
   const account = parseAccount(rawAccount);
+  const chain = client.chain;
+
+  const defaultParameters = {
+    chain,
+    ...(chain?.fees ? { type: "eip1559" } : {}),
+  } satisfies Omit<WriteContractParameters, "address" | "abi" | "account" | "functionName">;
 
   const nonceManager = await getNonceManager({
-    client,
+    client: opts.publicClient ?? client,
     address: account.address,
     blockTag: "pending",
+    queueConcurrency: opts.queueConcurrency,
   });
 
-  async function prepareWrite(): Promise<
-    WriteContractParameters<abi, functionName, args, chain, account, chainOverride>
-  > {
+  const feeRef = await getFeeRef({
+    client: opts.publicClient ?? client,
+    refreshInterval: 10000,
+    args: { chain },
+  });
+
+  async function prepare(): Promise<WriteContractParameters<abi, functionName, args, chain, account, chainOverride>> {
     if (request.gas) {
-      debug("gas provided, skipping simulate", request.functionName, request.address);
+      debug("gas provided, skipping preparation", request.functionName, request.address);
       return request;
     }
 
-    debug("simulating", request.functionName, "at", request.address);
-    const result = await simulateContract<chain, account, abi, functionName, args, chainOverride>(client, {
+    const { abi, address, args, dataSuffix, functionName } = request;
+    const data = encodeFunctionData({
+      abi,
+      args,
+      functionName,
+    } as EncodeFunctionDataParameters);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { nonce, maxFeePerGas, maxPriorityFeePerGas, ...preparedTransaction } = await getAction(
+      client,
+      viem_prepareTransactionRequest,
+      "prepareTransactionRequest",
+    )({
+      // The fee values don't need to be accurate for gas estimation
+      // and we can save a couple rpc calls by providing stubs here.
+      // These are later overridden with accurate values from `feeRef`.
+      maxFeePerGas: 0n,
+      maxPriorityFeePerGas: 0n,
+      // Send the current nonce without increasing the stored value
+      nonce: nonceManager.getNonce(),
+      ...defaultParameters,
       ...request,
       blockTag: "pending",
       account,
-    } as unknown as SimulateContractParameters<abi, functionName, args, chain, chainOverride>);
+      // From `viem/writeContract`
+      data: `${data}${dataSuffix ? dataSuffix.replace("0x", "") : ""}`,
+      to: address,
+    } as never);
 
-    return result.request as unknown as WriteContractParameters<abi, functionName, args, chain, account, chainOverride>;
+    return preparedTransaction as never;
   }
 
   return nonceManager.mempoolQueue.add(
     () =>
       pRetry(
         async () => {
-          const preparedWrite = await prepareWrite();
-
           if (!nonceManager.hasNonce()) {
             await nonceManager.resetNonce();
           }
 
+          // We estimate gas before increasing the local nonce to prevent nonce gaps.
+          // Invalid transactions fail the gas estimation step are never submitted
+          // to the network, so they should not increase the nonce.
+          const preparedRequest = await prepare();
+
           const nonce = nonceManager.nextNonce();
-          debug("calling", preparedWrite.functionName, "with nonce", nonce, "at", preparedWrite.address);
-          return await viem_writeContract(client, { nonce, ...preparedWrite } as typeof preparedWrite);
+
+          const fullRequest = { ...preparedRequest, nonce, ...feeRef.fees };
+          debug("calling", fullRequest.functionName, "with nonce", nonce, "at", fullRequest.address);
+          return await viem_writeContract(client, fullRequest as never);
         },
         {
           retries: 3,

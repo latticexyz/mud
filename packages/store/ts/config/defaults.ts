@@ -1,15 +1,10 @@
-export const PATH_DEFAULTS = {
-  storeImportPath: "@latticexyz/store/src/",
-  userTypesFilename: "common.sol",
-  codegenDirectory: "codegen",
-  codegenIndexFilename: "index.sol",
-} as const;
-
 export const DEFAULTS = {
   namespace: "",
-  enums: {} as Record<string, never>,
-  userTypes: {} as Record<string, never>,
+  enums: {},
+  userTypes: {},
 } as const;
+
+export type DEFAULTS = typeof DEFAULTS;
 
 export const TABLE_DEFAULTS = {
   directory: "tables",
@@ -18,3 +13,5 @@ export const TABLE_DEFAULTS = {
   storeArgument: false,
   offchainOnly: false,
 } as const;
+
+export type TABLE_DEFAULTS = typeof TABLE_DEFAULTS;

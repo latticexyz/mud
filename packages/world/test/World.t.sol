@@ -174,7 +174,7 @@ contract WorldTest is Test, GasReporter {
   bytes32[] keyTuple;
   bytes32[] singletonKey;
 
-  function setUp() public {
+  function setUp() public virtual {
     world = createWorld();
     StoreSwitch.setStoreAddress(address(world));
 

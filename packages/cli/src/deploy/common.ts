@@ -2,7 +2,6 @@ import { Abi, Address, Hex, padHex } from "viem";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
-import IModuleAbi from "@latticexyz/world-modules/out/IModule.sol/IModule.abi.json" assert { type: "json" };
 import { Tables, configToTables } from "./configToTables";
 import { helloStoreEvent } from "@latticexyz/store";
 import { StoreConfig } from "@latticexyz/store/internal";
@@ -22,11 +21,11 @@ export const worldTables = configToTables(worldToV1(worldConfig));
 
 export const worldDeployEvents = [helloStoreEvent, helloWorldEvent] as const;
 
-export const worldAbi = [...IBaseWorldAbi, ...IModuleAbi] as const;
+export const worldAbi = IBaseWorldAbi;
 
 // Ideally, this should be an append-only list. Before adding more versions here, be sure to add backwards-compatible support for old Store/World versions.
-export const supportedStoreVersions = ["2.0.0"];
-export const supportedWorldVersions = ["2.0.0"];
+export const supportedStoreVersions = ["2.0.0", "2.0.1", "2.0.2"];
+export const supportedWorldVersions = ["2.0.0", "2.0.1", "2.0.2"];
 
 // TODO: extend this to include factory+deployer address? so we can reuse the deployer for a world?
 export type WorldDeploy = {
@@ -117,6 +116,5 @@ export type ConfigInput = StoreConfig & WorldConfig;
 export type Config<config extends ConfigInput> = {
   readonly tables: Tables<config>;
   readonly systems: readonly System[];
-  readonly modules: readonly Module[];
   readonly libraries: readonly Library[];
 };

@@ -6,25 +6,7 @@ Access control in a `World` is based on namespaces.
 Every resource is part of a namespace (a blank namespace refers to the `root` namespace).
 Access to resources is managed by the owner of the namespace.
 
-## Resource identifiers
-
-A `ResourceId` is a 32-byte value that uniquely identifies a resource in a `World`.
-It is two bytes of resource type followed by 14 bytes of namespace and then 16 bytes of the name of the actual resource.
-
-Currently, MUD supports these resource types:
-
-- [Table (`tb`)](https://github.com/latticexyz/mud/blob/main/packages/store/src/storeResourceTypes.sol#L11).
-  An onchain table whose information is available both onchain (through calls to `view` functions) and offchain (either through calls to `view` functions, events, or an [indexer](/services/indexer)).
-- [Offchain table (`ot`)](https://github.com/latticexyz/mud/blob/main/packages/store/src/storeResourceTypes.sol#L14).
-  An offchain table whose information is only available offchain (either through events, or through an [indexer](/services/indexer)).
-- [Namespace (`ns`)](https://github.com/latticexyz/mud/blob/main/packages/world/src/worldResourceTypes.sol#L15).
-  A namespace is a container for tables, offchain tables, and systems, as explained here.
-- [System (`sy`)](https://github.com/latticexyz/mud/blob/main/packages/world/src/worldResourceTypes.sol#L25).
-  A [system](./systems) contains logic that interact with table data onchain.
-- [Module (`md`)](https://github.com/latticexyz/mud/blob/main/packages/world/src/worldResourceTypes.sol#L21).
-  A module is a deployed script that can install tables, systems, etc.
-
-Access control can be attached to any resource.
+Access control can be attached to [any resource](/world/resource-ids).
 
 ## Access control levels
 
@@ -98,11 +80,11 @@ import { console } from "forge-std/console.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { CounterTableId } from "../src/codegen/index.sol";
+import { Counter } from "../src/codegen/index.sol";
 
 contract Permissions is Script {
   function run() external {
-    address worldAddress = 0x6E9474e9c83676B9A71133FF96Db43E7AA0a4342;
+    address worldAddress = 0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1;
 
     // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
     uint256 namespaceOwnerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -110,8 +92,8 @@ contract Permissions is Script {
     // Start broadcasting transactions from the account owning the namespace
     vm.startBroadcast(namespaceOwnerPrivateKey);
 
-    IWorld(worldAddress).grantAccess(CounterTableId, address(0));
-    IWorld(worldAddress).revokeAccess(CounterTableId, address(1));
+    IWorld(worldAddress).grantAccess(Counter._tableId, address(0));
+    IWorld(worldAddress).revokeAccess(Counter._tableId, address(1));
 
     vm.stopBroadcast();
   }

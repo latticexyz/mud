@@ -11,10 +11,12 @@ export type CreateNonceManagerOptions = {
   address: Hex;
   blockTag?: BlockTag;
   broadcastChannelName?: string;
+  queueConcurrency?: number;
 };
 
 export type CreateNonceManagerResult = {
   hasNonce: () => boolean;
+  getNonce: () => number;
   nextNonce: () => number;
   resetNonce: () => Promise<void>;
   shouldResetNonce: (error: unknown) => boolean;
@@ -26,6 +28,7 @@ export function createNonceManager({
   address, // TODO: rename to account?
   blockTag = "pending",
   broadcastChannelName,
+  queueConcurrency = 1,
 }: CreateNonceManagerOptions): CreateNonceManagerResult {
   const nonceRef = { current: -1 };
   let channel: BroadcastChannel | null = null;
@@ -49,6 +52,11 @@ export function createNonceManager({
     return nonceRef.current >= 0;
   }
 
+  function getNonce(): number {
+    if (!hasNonce()) throw new Error("call resetNonce before using getNonce");
+    return nonceRef.current;
+  }
+
   function nextNonce(): number {
     if (!hasNonce()) throw new Error("call resetNonce before using nextNonce");
     const nonce = nonceRef.current++;
@@ -70,10 +78,11 @@ export function createNonceManager({
     );
   }
 
-  const mempoolQueue = new PQueue({ concurrency: 1 });
+  const mempoolQueue = new PQueue({ concurrency: queueConcurrency });
 
   return {
     hasNonce,
+    getNonce,
     nextNonce,
     resetNonce,
     shouldResetNonce,

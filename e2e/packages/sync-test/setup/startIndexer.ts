@@ -31,7 +31,7 @@ export async function startIndexer(opts: StartIndexerOptions) {
   });
 
   const env = {
-    DEBUG: "mud:*",
+    DEBUG: "mud:store-sync:createStoreSync",
     PORT: opts.port.toString(),
     CHAIN_ID: "31337",
     RPC_HTTP_URL: opts.rpcHttpUrl,

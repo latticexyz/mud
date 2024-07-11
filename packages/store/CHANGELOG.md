@@ -1,5 +1,206 @@
 # Change Log
 
+## 2.0.12
+
+### Patch Changes
+
+- c10c9fb2d: Internal `tablegen` function (exported from `@latticexyz/store/codegen`) now expects an object of options with a `configPath` to use as a base path to resolve other relative paths from.
+- c10c9fb2d: Added `sourceDirectory` as a top-level config option for specifying contracts source (i.e. Solidity) directory relative to the MUD config. This is used to resolve other paths in the config, like codegen and user types. Like `foundry.toml`, this defaults to `src` and should be kept in sync with `foundry.toml`.
+
+  Also added a `codegen.namespaceDirectories` option to organize codegen output (table libraries, etc.) into directories by namespace. For example, a `Counter` table in the `app` namespace will have codegen at `codegen/app/tables/Counter.sol`. If not set, defaults to `true` when using top-level `namespaces` key, `false` otherwise.
+
+- 96e7bf430: TS source has been removed from published packages in favor of DTS in an effort to improve TS performance. All packages now inherit from a base TS config in `@latticexyz/common` to allow us to continue iterating on TS performance without requiring changes in your project code.
+
+  If you have a MUD project that you're upgrading, we suggest adding a `tsconfig.json` file to your project workspace that extends this base config.
+
+  ```sh
+  pnpm add -D @latticexyz/common
+  echo "{\n  \"extends\": \"@latticexyz/common/tsconfig.base.json\"\n}" > tsconfig.json
+  ```
+
+  Then in each package of your project, inherit from your workspace root's config.
+
+  For example, your TS config in `packages/contracts/tsconfig.json` might look like:
+
+  ```json
+  {
+    "extends": "../../tsconfig.json"
+  }
+  ```
+
+  And your TS config in `packages/client/tsconfig.json` might look like:
+
+  ```json
+  {
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+      "types": ["vite/client"],
+      "target": "ESNext",
+      "lib": ["ESNext", "DOM"],
+      "jsx": "react-jsx",
+      "jsxImportSource": "react"
+    },
+    "include": ["src"]
+  }
+  ```
+
+  You may need to adjust the above configs to include any additional TS options you've set. This config pattern may also reveal new TS errors that need to be fixed or rules disabled.
+
+  If you want to keep your existing TS configs, we recommend at least updating your `moduleResolution` setting.
+
+  ```diff
+  -"moduleResolution": "node"
+  +"moduleResolution": "Bundler"
+  ```
+
+- Updated dependencies [96e7bf430]
+  - @latticexyz/common@2.0.12
+  - @latticexyz/config@2.0.12
+  - @latticexyz/protocol-parser@2.0.12
+  - @latticexyz/schema-type@2.0.12
+
+## 2.0.11
+
+### Patch Changes
+
+- @latticexyz/common@2.0.11
+- @latticexyz/config@2.0.11
+- @latticexyz/protocol-parser@2.0.11
+- @latticexyz/schema-type@2.0.11
+
+## 2.0.10
+
+### Patch Changes
+
+- 4e4e9104: Removed the unused `ejs` dependency.
+- 32c1cda6: `defineStore` and `defineWorld` will now throw a type error if an unexpected config option is used.
+- 4caca05e: Bumped zod dependency to comply with abitype peer dependencies.
+- 27f888c7: `defineStore` and `defineWorld` now maps your `enums` to usable, strongly-typed enums on `enumValues`.
+
+  ```ts
+  const config = defineStore({
+    enums: {
+      TerrainType: ["Water", "Grass", "Sand"],
+    },
+  });
+
+  config.enumValues.TerrainType.Water;
+  //                              ^? (property) Water: 0
+
+  config.enumValues.TerrainType.Grass;
+  //                              ^? (property) Grass: 1
+  ```
+
+  This allows for easier referencing of enum values (i.e. `uint8` equivalent) in contract calls.
+
+  ```ts
+  writeContract({
+    // …
+    functionName: "setTerrainType",
+    args: [config.enumValues.TerrainType.Grass],
+  });
+  ```
+
+- Updated dependencies [51b137d3]
+- Updated dependencies [4caca05e]
+  - @latticexyz/common@2.0.10
+  - @latticexyz/config@2.0.10
+  - @latticexyz/protocol-parser@2.0.10
+  - @latticexyz/schema-type@2.0.10
+
+## 2.0.9
+
+### Patch Changes
+
+- Updated dependencies [764ca0a0]
+- Updated dependencies [bad3ad1b]
+  - @latticexyz/common@2.0.9
+  - @latticexyz/config@2.0.9
+  - @latticexyz/protocol-parser@2.0.9
+  - @latticexyz/schema-type@2.0.9
+
+## 2.0.8
+
+### Patch Changes
+
+- Updated dependencies [df4781ac]
+  - @latticexyz/common@2.0.8
+  - @latticexyz/config@2.0.8
+  - @latticexyz/protocol-parser@2.0.8
+  - @latticexyz/schema-type@2.0.8
+
+## 2.0.7
+
+### Patch Changes
+
+- ed404b7d: Added a check to `registerTable` that prevents registering both an offchain and onchain table with the same name, making it easier to use human-readable names in indexers.
+- Updated dependencies [375d902e]
+- Updated dependencies [38c61158]
+- Updated dependencies [f736c43d]
+  - @latticexyz/common@2.0.7
+  - @latticexyz/config@2.0.7
+  - @latticexyz/protocol-parser@2.0.7
+  - @latticexyz/schema-type@2.0.7
+
+## 2.0.6
+
+### Patch Changes
+
+- 103db6ce: Patched `StoreRead.getDynamicFieldLength` to properly read `StoreCore.getDynamicFieldLength`.
+
+  Previously `StoreRead.getDynamicFieldLength` incorrectly read from `StoreCore.getFieldLength`, which expected a `fieldIndex` instead of a `dynamicFieldIndex`, and thereby returned an invalid result if the table had both static and dynamic fields (in which case `fieldIndex` != `dynamicFieldIndex`). `StoreRead` is used for external reads from the `Store`/`World` contract, so this bug only materialized in external table reads (ie from `Systems` outside the root namespace) of the dynamic length of a field in a table with both static and dynamic fields.
+
+- 9720b568: Internal type improvements.
+- c18e93c5: Bumped viem to 2.9.20.
+- d95028a6: Bumped viem to 2.9.16.
+- Updated dependencies [6c8ab471]
+- Updated dependencies [c18e93c5]
+- Updated dependencies [d95028a6]
+  - @latticexyz/common@2.0.6
+  - @latticexyz/config@2.0.6
+  - @latticexyz/protocol-parser@2.0.6
+  - @latticexyz/schema-type@2.0.6
+
+## 2.0.5
+
+### Patch Changes
+
+- b798ccb2: Fixed the behaviour of static arrays, so that they return zero for uninitialised values, to mirror the native Solidity behavior. Previously they reverted with `Store_IndexOutOfBounds` if the index had not been set yet.
+- Updated dependencies [a9e8a407]
+  - @latticexyz/common@2.0.5
+  - @latticexyz/config@2.0.5
+  - @latticexyz/protocol-parser@2.0.5
+  - @latticexyz/schema-type@2.0.5
+
+## 2.0.4
+
+### Patch Changes
+
+- Updated dependencies [620e4ec1]
+  - @latticexyz/common@2.0.4
+  - @latticexyz/config@2.0.4
+  - @latticexyz/protocol-parser@2.0.4
+  - @latticexyz/schema-type@2.0.4
+
+## 2.0.3
+
+### Patch Changes
+
+- Updated dependencies [d2e4d0fb]
+  - @latticexyz/common@2.0.3
+  - @latticexyz/config@2.0.3
+  - @latticexyz/protocol-parser@2.0.3
+  - @latticexyz/schema-type@2.0.3
+
+## 2.0.2
+
+### Patch Changes
+
+- @latticexyz/common@2.0.2
+- @latticexyz/config@2.0.2
+- @latticexyz/protocol-parser@2.0.2
+- @latticexyz/schema-type@2.0.2
+
 ## 2.0.1
 
 ### Patch Changes

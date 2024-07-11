@@ -6,6 +6,9 @@ on:
 # Ensure only one workflow/job is publishing to npm at a time
 concurrency: publish-to-npm
 
+env:
+  NODE_OPTIONS: "--max-old-space-size=4096"
+
 jobs:
   prerelease:
     name: Changesets Prerelease

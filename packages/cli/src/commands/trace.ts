@@ -43,7 +43,7 @@ const commandModule: CommandModule<Options, Options> = {
         type: "string",
         description: "World contract address. Defaults to the value from worlds.json, based on rpc's chainId",
       },
-      configPath: { type: "string", description: "Path to the config file" },
+      configPath: { type: "string", description: "Path to the MUD config file" },
       profile: { type: "string", description: "The foundry profile to use" },
       srcDir: { type: "string", description: "Source directory. Defaults to foundry src directory." },
       rpc: { type: "string", description: "json rpc endpoint. Defaults to foundry's configured eth_rpc_url" },

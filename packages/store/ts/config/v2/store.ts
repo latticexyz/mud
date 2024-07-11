@@ -1,11 +1,11 @@
-import { evaluate, narrow } from "@arktype/util";
+import { ErrorMessage, evaluate, flatMorph, narrow } from "@arktype/util";
 import { get, hasOwnKey, mergeIfUndefined } from "./generics";
 import { UserTypes } from "./output";
 import { CONFIG_DEFAULTS } from "./defaults";
 import { StoreInput } from "./input";
 import { resolveTables, validateTables } from "./tables";
 import { scopeWithUserTypes, validateUserTypes } from "./userTypes";
-import { resolveEnums, scopeWithEnums } from "./enums";
+import { mapEnums, resolveEnums, scopeWithEnums } from "./enums";
 import { resolveCodegen } from "./codegen";
 
 export type extendedScope<input> = scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>;
@@ -23,7 +23,7 @@ export type validateStore<store> = {
         ? narrow<store[key]>
         : key extends keyof StoreInput
           ? StoreInput[key]
-          : never;
+          : ErrorMessage<`\`${key & string}\` is not a valid Store config option.`>;
 };
 
 export function validateStore(store: unknown): asserts store is StoreInput {
@@ -37,13 +37,16 @@ export function validateStore(store: unknown): asserts store is StoreInput {
   }
 }
 
-type keyPrefix<store> = "namespace" extends keyof store
-  ? store["namespace"] extends ""
+type keyPrefix<store> = store extends { namespace: infer namespace extends string }
+  ? namespace extends ""
     ? ""
-    : `${store["namespace"] & string}__`
+    : `${namespace}__`
   : "";
 
-export type resolveStore<store> = evaluate<{
+export type resolveStore<store> = {
+  readonly sourceDirectory: "sourceDirectory" extends keyof store
+    ? store["sourceDirectory"]
+    : CONFIG_DEFAULTS["sourceDirectory"];
   readonly tables: "tables" extends keyof store
     ? resolveTables<
         {
@@ -56,30 +59,43 @@ export type resolveStore<store> = evaluate<{
       >
     : {};
   readonly userTypes: "userTypes" extends keyof store ? store["userTypes"] : {};
-  readonly enums: "enums" extends keyof store ? resolveEnums<store["enums"]> : {};
-  readonly namespace: "namespace" extends keyof store ? store["namespace"] : (typeof CONFIG_DEFAULTS)["namespace"];
+  readonly enums: "enums" extends keyof store ? evaluate<resolveEnums<store["enums"]>> : {};
+  readonly enumValues: "enums" extends keyof store ? evaluate<mapEnums<store["enums"]>> : {};
+  readonly namespace: "namespace" extends keyof store ? store["namespace"] : CONFIG_DEFAULTS["namespace"];
   readonly codegen: "codegen" extends keyof store ? resolveCodegen<store["codegen"]> : resolveCodegen<{}>;
-}>;
+};
 
 export function resolveStore<const store extends StoreInput>(store: store): resolveStore<store> {
+  // TODO: default `namespaceDirectories` to true if using top-level `namespaces` key (once its migrated to store)
+  const codegen = resolveCodegen(store.codegen);
   return {
+    sourceDirectory: store.sourceDirectory ?? CONFIG_DEFAULTS["sourceDirectory"],
     tables: resolveTables(
-      Object.fromEntries(
-        Object.entries(store.tables ?? {}).map(([tableKey, table]) => {
-          const key = store.namespace ? `${store.namespace}__${tableKey}` : tableKey;
-          return [key, mergeIfUndefined(table, { namespace: store.namespace, name: tableKey })];
-        }),
-      ),
+      flatMorph(store.tables ?? {}, (name, table) => {
+        const namespace = store.namespace;
+        const key = namespace ? `${namespace}__${name}` : name;
+        return [
+          key,
+          mergeIfUndefined(table, {
+            namespace: namespace,
+            name,
+            codegen: mergeIfUndefined(table.codegen ?? {}, {
+              outputDirectory: codegen.namespaceDirectories && namespace?.length ? `${namespace}/tables` : "tables",
+            }),
+          }),
+        ];
+      }),
       extendedScope(store),
     ),
     userTypes: store.userTypes ?? {},
-    enums: store.enums ?? {},
+    enums: resolveEnums(store.enums ?? {}),
+    enumValues: mapEnums(store.enums ?? {}),
     namespace: store.namespace ?? CONFIG_DEFAULTS["namespace"],
-    codegen: resolveCodegen(store.codegen),
-  } as unknown as resolveStore<store>;
+    codegen,
+  } as never;
 }
 
 export function defineStore<const store>(store: validateStore<store>): resolveStore<store> {
   validateStore(store);
-  return resolveStore(store) as unknown as resolveStore<store>;
+  return resolveStore(store) as never;
 }

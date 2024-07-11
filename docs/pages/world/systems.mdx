@@ -1,5 +1,6 @@
-import Illustration from "./world-table-illustration.mdx";
+import TableInWorld from "../../components/common-text/TableInWorld.mdx";
 import { CollapseCode } from "../../components/CollapseCode";
+import { Callout } from "nextra/components";
 
 # Systems
 
@@ -11,7 +12,7 @@ The business logic is implemented in stateless `System` contracts.
 
 <summary>Detailed illustration</summary>
 
-<Illustration />
+<TableInWorld />
 
 </details>
 
@@ -47,7 +48,7 @@ import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 
 contract Call is Script {
   function run() external {
-    address worldAddress = 0x256e6eAf6a6683aB771C576f2f5C8A774BdAC8e3;
+    address worldAddress = 0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1;
 
     // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -135,7 +136,26 @@ There are two ways to call one `System` from another one.
 
 #### Calling from a root `System`
 
-If you need to call a `System` from a `System` in the root namespace you can use [`SystemSwitch`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/utils/SystemSwitch.sol).
+For [security reasons](/retrospectives/2023-09-12-register-system-vulnerability) the `World` cannot call itself.
+A `System` in the root namespace runs in the `World` context, and therefore cannot call the `World` either.
+
+<Callout type="error" emoji="🚫">
+  You *could* use
+  [`delegatecall`](https://docs.soliditylang.org/en/v0.8.16/introduction-to-smart-contracts.html#delegatecall-callcode-and-libraries),
+  but you should only do it if it's necessary. A root `System` acts as the `World`, so a `delegatecall` from a root
+  `System` behaves exactly like a `delegatecall` from the `World`. Any contract you `delegatecall` inherits your
+  permissions, in this case unlimited access to the `World` and the ability to change everything.
+</Callout>
+
+An alternative solution is for the root `System` to do exactly what the `World` does with a normal call: check for access permission, run before hook (if configured), call the `System`, and then run the after hook (if configured).
+To do that, you can use [`SystemCall.callWithHooks()`](https://github.com/latticexyz/mud/blob/main/packages/world/src/SystemCall.sol#L77-L114).
+
+If you need to specify values for [`_msgSender()`](/world/reference/world-context#_msgsender) and [`_msgValue()`](/world/reference/world-context#_msgvalue) to provide for the called `System`, you can use [`WorldContextProviderLib.callWithContext`](https://github.com/latticexyz/mud/blob/main/packages/world/src/WorldContext.sol#L122-L140).
+Note that this function is _extremely_ low level, and if you use it you have to process hooks and access control yourself.
+
+#### `SystemSwitch`
+
+If your `System` needs run both from the root namespace and from other namespaces, you can call other `System`s using [`SystemSwitch`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/utils/SystemSwitch.sol).
 
 1. Import `SystemSwitch`.
 
@@ -275,6 +295,118 @@ Any access granted _manually_ to the old `System` is not revoked, nor granted to
 
 **Note:** You _should_ make sure to remove any such manually granted access.
 MUD access is based on the contract address, so somebody else could register a namespace they'd own, register the old `System` contract as a system in their namespace, and then abuse those permissions (if the `System` has code that can be used for that, of course).
+
+<details>
+
+<summary>Sample code</summary>
+
+<CollapseCode>
+
+```solidity copy showLineNumbers {11-12, 14-21, 33-42}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { System } from "@latticexyz/world/src/System.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { Counter } from "../src/codegen/index.sol";
+
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+contract IncrementSystem2 is System {
+  function increment() public returns (uint32) {
+    uint32 counter = Counter.get();
+    uint32 newValue = counter + 2;
+    Counter.set(newValue);
+    return newValue;
+  }
+}
+
+contract UpdateASystem is Script {
+  function run() external {
+    address worldAddress = 0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1;
+
+    // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+
+    // Start broadcasting transactions from the deployer account
+    vm.startBroadcast(deployerPrivateKey);
+
+    // Deploy IncrementSystem2
+    IncrementSystem2 incrementSystem2 = new IncrementSystem2();
+
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "",
+      name: "IncrementSystem"
+    });
+
+    IWorld(worldAddress).registerSystem(systemId, incrementSystem2, true);
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```solidity
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+```
+
+To upgrade a `System` we need the resource ID for it.
+
+```solidity
+contract IncrementSystem2 is System {
+  function increment() public returns (uint32) {
+    uint32 counter = Counter.get();
+    uint32 newValue = counter + 2;
+    Counter.set(newValue);
+    return newValue;
+  }
+}
+```
+
+The new `System`.
+It needs to implement the same `public` functions as the `System` being replaced.
+
+```solidity
+    ...
+
+    // Deploy IncrementSystem2
+    IncrementSystem2 incrementSystem2 = new IncrementSystem2();
+```
+
+Deploy the new `System`.
+
+```solidity
+    ResourceId systemId = WorldResourceIdLib.encode(
+      { typeId: RESOURCE_SYSTEM,
+        namespace: "",
+        name: "IncrementSystem"
+      });
+```
+
+Get the `ResourceId` for the `System`.
+
+```solidity
+    IWorld(worldAddress).registerSystem(systemId, incrementSystem2, true);
+```
+
+Register the new `System`.
+This removes the existing `System` and the access automatically granted to it.
+
+</details>
+
+</details>
 
 ## Access control
 

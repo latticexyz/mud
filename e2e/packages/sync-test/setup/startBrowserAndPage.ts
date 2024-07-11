@@ -9,7 +9,7 @@ export async function startBrowserAndPage(
   const page = await browser.newPage();
 
   await page.addInitScript(() => {
-    window.localStorage.setItem("debug", "mud:*");
+    window.localStorage.setItem("debug", "mud:store-sync:createStoreSync");
   });
 
   // log uncaught errors in the browser page (browser and test consoles are separate)

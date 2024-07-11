@@ -1,10 +1,11 @@
 import xlmJs from "xml-js";
 import fs from "fs";
-import glob from "glob";
+import { globSync } from "glob";
 import ejs from "ejs";
 import path from "path";
 
-const tilemaps = glob.sync("./tilesets/*.tsx");
+const tilemaps = globSync("./tilesets/*.tsx").sort();
+
 enum PropertyName {
   Name = "name",
   Frame = "frame",

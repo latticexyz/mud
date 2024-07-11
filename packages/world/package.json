@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/world",
-  "version": "2.0.1",
+  "version": "2.0.12",
   "description": "World framework",
   "repository": {
     "type": "git",
@@ -21,22 +21,31 @@
   "typesVersions": {
     "*": {
       "index": [
-        "./ts/exports/index.ts"
+        "./dist/index.d.ts"
       ],
       "internal": [
-        "./ts/exports/internal.ts"
+        "./dist/internal.d.ts"
+      ],
+      "mud.config": [
+        "./dist/mud.config.d.ts"
       ],
       "config/v2": [
-        "./ts/config/v2/index.ts"
+        "./dist/config/v2.d.ts"
       ],
       "register": [
-        "./ts/register/index.ts"
+        "./dist/register.d.ts"
       ],
       "node": [
-        "./ts/node/index.ts"
+        "./dist/node.d.ts"
       ]
     }
   },
+  "files": [
+    "dist",
+    "out",
+    "src",
+    "test/MudTest.t.sol"
+  ],
   "scripts": {
     "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts && pnpm run build:js",
     "build:abi": "forge build",
@@ -54,27 +63,27 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@arktype/util": "0.0.27",
+    "@arktype/util": "0.0.29",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
+    "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "abitype": "1.0.0",
     "arktype": "1.0.29-alpha",
-    "viem": "2.7.12",
-    "zod": "^3.21.4"
+    "viem": "2.9.20",
+    "zod": "^3.22.2"
   },
   "devDependencies": {
     "@latticexyz/abi-ts": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
     "@types/ejs": "^3.1.1",
-    "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.15.11",
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
-    "ejs": "^3.1.8",
+    "ejs": "^3.1.10",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
-    "glob": "^8.0.3",
+    "glob": "^10.4.2",
     "solhint": "^3.3.7",
     "tsup": "^6.7.0",
     "tsx": "^3.12.6",

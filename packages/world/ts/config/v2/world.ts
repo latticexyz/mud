@@ -11,13 +11,12 @@ import {
   Store,
   hasOwnKey,
   validateStore,
-  isObject,
 } from "@latticexyz/store/config/v2";
 import { SystemsInput, WorldInput } from "./input";
-import { CONFIG_DEFAULTS } from "./defaults";
+import { CONFIG_DEFAULTS, MODULE_DEFAULTS } from "./defaults";
 import { Tables } from "@latticexyz/store/internal";
 import { resolveSystems } from "./systems";
-import { resolveNamespacedTables } from "./namespaces";
+import { resolveNamespacedTables, validateNamespaces } from "./namespaces";
 import { resolveCodegen } from "./codegen";
 import { resolveDeploy } from "./deploy";
 
@@ -33,7 +32,7 @@ export type validateWorld<world> = {
             ErrorMessage<`Namespaces config will be enabled soon.`>
           : key extends keyof WorldInput
             ? conform<world[key], WorldInput[key]>
-            : world[key];
+            : ErrorMessage<`\`${key & string}\` is not a valid World config option.`>;
 };
 
 export function validateWorld(world: unknown): asserts world is WorldInput {
@@ -41,14 +40,7 @@ export function validateWorld(world: unknown): asserts world is WorldInput {
   validateStore(world);
 
   if (hasOwnKey(world, "namespaces")) {
-    if (!isObject(world.namespaces)) {
-      throw new Error(`Expected namespaces, received ${JSON.stringify(world.namespaces)}`);
-    }
-    for (const namespace of Object.values(world.namespaces)) {
-      if (hasOwnKey(namespace, "tables")) {
-        validateTables(namespace.tables, scope);
-      }
-    }
+    validateNamespaces(world.namespaces, scope);
   }
 }
 
@@ -67,7 +59,7 @@ export type resolveWorld<world> = evaluate<
         },
         "namespaces" | keyof Store
       >,
-      typeof CONFIG_DEFAULTS
+      CONFIG_DEFAULTS
     >
 >;
 
@@ -91,6 +83,8 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
 
   const resolvedStore = resolveStore(world);
 
+  const modules = (world.modules ?? CONFIG_DEFAULTS.modules).map((mod) => mergeIfUndefined(mod, MODULE_DEFAULTS));
+
   return mergeIfUndefined(
     {
       ...resolvedStore,
@@ -99,13 +93,13 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
       deploy: resolveDeploy(world.deploy),
       systems: resolveSystems(world.systems ?? CONFIG_DEFAULTS.systems),
       excludeSystems: get(world, "excludeSystems"),
-      modules: world.modules,
+      modules,
     },
     CONFIG_DEFAULTS,
-  ) as unknown as resolveWorld<world>;
+  ) as never;
 }
 
 export function defineWorld<const world>(world: validateWorld<world>): resolveWorld<world> {
   validateWorld(world);
-  return resolveWorld(world) as unknown as resolveWorld<world>;
+  return resolveWorld(world) as never;
 }

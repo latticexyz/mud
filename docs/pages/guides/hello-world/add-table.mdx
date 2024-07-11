@@ -7,7 +7,13 @@ For the sake of simplicity, we will implement this in the `increment` function r
 
 ## Setup
 
-[Create a new MUD application from the template](../../templates/typescript/getting-started).
+[Create a new MUD application from the template](/quickstart).
+Use the `vanilla` template.
+
+```sh copy
+pnpm create mud@latest tutorial --template vanilla
+cd tutorial
+```
 
 ## Modify the MUD configuration file
 
@@ -15,23 +21,25 @@ For the sake of simplicity, we will implement this in the `increment` function r
 
    <CollapseCode>
 
-   ```ts filename="mud.config.ts" showLineNumbers copy {9-17}
-   import { mudConfig } from "@latticexyz/world/register";
+   ```ts filename="mud.config.ts" showLineNumbers copy {12-19}
+   import { defineWorld } from "@latticexyz/world";
 
-   export default mudConfig({
+   export default defineWorld({
+     namespace: "app",
      tables: {
        Counter: {
-         keySchema: {},
-         valueSchema: "uint32",
+         schema: {
+           value: "uint32",
+         },
+         key: [],
        },
        History: {
-         keySchema: {
+         schema: {
            counterValue: "uint32",
-         },
-         valueSchema: {
            blockNumber: "uint256",
            time: "uint256",
          },
+         key: ["counterValue"],
        },
      },
    });
@@ -42,33 +50,32 @@ For the sake of simplicity, we will implement this in the `increment` function r
 <details>
 <summary>Explanation</summary>
 
-A MUD table has two schemas:
+A MUD table is a [key-value database](https://en.wikipedia.org/wiki/Key%E2%80%93value_database).
+The [schema](/store/data-model) includes all the fields in the key and the value, along with their types.
 
-- `keySchema`, the key used to find entries
-- `valueSchema`, the value in the entry
+To distinguish between the key fields and value fields the `key` field includes a list of fields that are part of the key.
 
-Each schema is represented as a structure with field names as keys, and the appropriate [Solidity data types](https://docs.soliditylang.org/en/latest/types.html) as their values.
-Note that the data types in the key schema are limited to those that are fixed length such at `bytes<n>`.
-You cannot use strings, arrays, etc.
-
-In this case, the counter value is represented as a 32 bit unsigned integer, because that is what `Counter` uses.
-Block numbers and timestamps can be values up to `uint256`, so we'll use this type for these fields.
+| Field        | Type    | Part of the |
+| ------------ | ------- | ----------- |
+| counterValue | uint32  | Key         |
+| blockNumber  | uint256 | Value       |
+| time         | uint256 | Value       |
 
 </details>
 
-2. Run this command in `packages/contracts` to regenerate the table libraries.
+2. Run this command to regenerate the table libraries.
 
    ```sh copy
-   pnpm build:mud
+   (cd packages/contracts; pnpm mud tablegen)
    ```
 
 ## Update `IncrementSystem`
 
-1. In an editor, open `packages/contracts/src/systems/IncrementSystem.sol`.
+In an editor, open `packages/contracts/src/systems/IncrementSystem.sol`.
 
-   - Modify the second `import` line to import `History`.
-   - Modify the `increment` function to also update `History`.
-     To see the exact functions that are available, you can look at `packages/contracts/src/codegen/tables/History.sol` (that is the reason we ran `pnpm build:mud` to recreate it already).
+- Modify the second `import` line to import `History`.
+- Modify the `increment` function to also update `History`.
+  To see the exact functions that are available, you can look at `packages/contracts/src/codegen/tables/History.sol` (that is the reason we ran `pnpm build` to recreate it already).
 
 <CollapseCode>
 
@@ -77,7 +84,7 @@ Block numbers and timestamps can be values up to `uint256`, so we'll use this ty
 pragma solidity >=0.8.0;
 
 import { System } from "@latticexyz/world/src/System.sol";
-import { Counter, History, HistoryData } from "../codegen/index.sol";
+import { Counter, History } from "../codegen/index.sol";
 
 contract IncrementSystem is System {
   function increment() public returns (uint32) {
@@ -96,41 +103,24 @@ contract IncrementSystem is System {
 <summary>Explanation</summary>
 
 ```solidity
-import { Counter, History, HistoryData } from "../codegen/index.sol";
+import { Counter, History } from "../codegen/index.sol";
 ```
 
-When a table has multiple fields in the value schema, MUD generates a [Struct](https://www.tutorialspoint.com/solidity/solidity_structs.htm) to hold a full value.
-Here is `HistoryData`, copied from `packages/contract/src/codegen/History.sol`.
-
-```solidity
-struct HistoryData {
-  uint256 blockNumber;
-  uint256 time;
-}
-```
-
-Note that `IncrementSystem` doesn't need to use `HistoryData`, because it only writes to history, it doesn't read from it.
-However, this is part of manipulating the schema and therefore included in this tutorial.
+Import the new table.
 
 ```solidity
 History.set(newValue, block.number, block.timestamp);
 ```
 
 Set the value.
-All MUD tables have a `<table>.set` function with the parameters being the key schema fields in order and then the value schema fields in order.
+All MUD tables have a `<table>.set` function with the parameters being the key fields in order and then the value schema fields in order.
 
 </details>
 
-2. Run this command in `packages/contracts` to rebuild everything this package produces.
-
-   ```sh copy
-   pnpm build
-   ```
-
 ## Update the user interface
 
-You can already run the application and see in the MUD Dev Tools that there is a `:History` table and it gets updates when you click **Increment**.
-Click the **Store data** tab and select the table **:History**.
+You can already run the application and see in the MUD Dev Tools that there is a `History` table and it gets updated when you click **Increment**.
+Click the **Components** tab and select the **History** component.
 
 However, you can also add the history to the user interface.
 The directions here apply to the `vanilla` client template, if you use anything else you'll need to modify them as appropriate.
@@ -142,7 +132,7 @@ The directions here apply to the `vanilla` client template, if you use anything 
 
    <CollapseCode>
 
-   ```ts filename="index.ts" copy showLineNumbers {3-4,18-29}
+   ```ts filename="index.ts" copy showLineNumbers {3-4,19-30}
    import { setup } from "./mud/setup";
    import mudConfig from "contracts/mud.config";
    import { encodeEntity, singletonEntity } from "@latticexyz/store-sync/recs";
@@ -174,12 +164,8 @@ The directions here apply to the `vanilla` client template, if you use anything 
      document.getElementById("history")!.innerHTML = `<table border>${table}</table>`;
    });
 
-   // Just for demonstration purposes: we create a global function that can be
-   // called to invoke the Increment system contract via the world.
-   // (See IncrementSystem.sol)
-   (window as any).increment = async () => {
-     console.log("new counter value:", await increment());
-   };
+   // Attach the increment function to the html element with ID `incrementButton` (if it exists)
+   document.querySelector("#incrementButton")?.addEventListener("click", increment);
 
    if (import.meta.env.DEV) {
      const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
@@ -260,7 +246,7 @@ This exclamation point tells the compiler that it's OK, there will be a real val
 
    <CollapseCode>
 
-   ```html filename="index.html" copy showLineNumbers {12-17}
+   ```html filename="index.html" copy showLineNumbers {12-14}
    <!doctype html>
    <html lang="en">
      <head>
@@ -271,7 +257,7 @@ This exclamation point tells the compiler that it's OK, there will be a real val
      <body>
        <script type="module" src="/src/index.ts"></script>
        <div>Counter: <span id="counter">0</span></div>
-       <button onclick="window.increment()">Increment</button>
+       <button id="incrementButton">Increment</button>
        <hr />
        <h2>History</h2>
        <div id="history"></div>
@@ -281,5 +267,5 @@ This exclamation point tells the compiler that it's OK, there will be a real val
 
    </CollapseCode>
 
-1. Run `pnpm dev` in the application's root directory (or restart it if already running), browse to the app URL, and click **Increment** a few times.
+1. Run `pnpm dev` in the application's root directory (unless it is already running), browse to the app URL, and click **Increment** a few times.
    See that the history table gets populated.

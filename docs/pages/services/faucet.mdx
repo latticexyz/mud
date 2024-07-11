@@ -4,27 +4,23 @@ A minimal Typescript faucet to drip native tokens on Ethereum chains
 
 ## Usage
 
-1. Install the faucet.
-
-   ```sh copy
-   pnpm install @latticexyz/faucet
-   ```
-
 1. Specify the environment variables.
    Note that you need to [`export`](https://linuxconfig.org/export) these variables for the faucet service to get them.
 
-   | Variable             | Description                                           | Default   |
-   | -------------------- | ----------------------------------------------------- | --------- |
-   | `HOST`               | Host that the indexer server listens on               | `0.0.0.0` |
-   | `PORT`               | Port that the indexer server listens on               | `3002`    |
-   | `RPC_HTTP_URL`       | HTTP URL for Ethereum RPC                             |           |
-   | `FAUCET_PRIVATE_KEY` | Private key of wallet to distribute faucet funds from |           |
-   | `DRIP_AMOUNT_ETHER`  | Drip amount in ether                                  |
+   | Variable                   | Description                                           | Default   |
+   | -------------------------- | ----------------------------------------------------- | --------- |
+   | `HOST`                     | Host that the indexer server listens on               | `0.0.0.0` |
+   | `PORT`                     | Port that the indexer server listens on               | `3002`    |
+   | `RPC_HTTP_URL`<sup>1</sup> | HTTP URL for Ethereum RPC                             |           |
+   | `FAUCET_PRIVATE_KEY`       | Private key of wallet to distribute faucet funds from |           |
+   | `DRIP_AMOUNT_ETHER`        | Drip amount in ether                                  |           |
+
+   (1) If you use `http://localhost:8545` and it fails try using `http://127.0.0.1:8545` instead
 
 1. Start the server.
 
    ```sh copy
-   pnpm faucet-server
+   npx @latticexyz/faucet
    ```
 
    For example, you can use these values to drip 1 ETH for a local [`anvil`](https://book.getfoundry.sh/anvil/) instance:

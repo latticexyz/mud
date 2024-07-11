@@ -45,9 +45,24 @@ export default defineWorld({
     },
     StaticArray: {
       schema: {
+        num: "uint256",
         value: "uint256[3]",
       },
       key: [],
     },
+    DynamicArray: {
+      schema: {
+        num: "uint256",
+        value: "uint256[]",
+      },
+      key: [],
+    },
   },
+  modules: [
+    {
+      artifactPath:
+        "@latticexyz/world-modules/out/Unstable_CallWithSignatureModule.sol/Unstable_CallWithSignatureModule.json",
+      root: true,
+    },
+  ],
 });
