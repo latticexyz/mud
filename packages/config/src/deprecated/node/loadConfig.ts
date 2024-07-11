@@ -40,7 +40,7 @@ export async function loadConfig(configPath?: string): Promise<unknown> {
 }
 
 /** @deprecated */
-export async function resolveConfigPath(configPath: string | undefined, toFileURL?: boolean) {
+export async function resolveConfigPath(configPath?: string, toFileURL?: boolean) {
   if (configPath === undefined) {
     configPath = await getUserConfigPath();
   } else {

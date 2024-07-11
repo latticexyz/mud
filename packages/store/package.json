@@ -54,7 +54,7 @@
     "build:abi": "forge build",
     "build:abi-ts": "abi-ts",
     "build:js": "tsup",
-    "build:mud": "tsx ./ts/scripts/tablegen.ts && tsx ./ts/scripts/generate-test-tables.ts",
+    "build:mud": "tsx ./ts/scripts/build.ts && tsx ./ts/scripts/generate-test-tables.ts",
     "build:tightcoder": "tsx ./ts/scripts/generate-tightcoder.ts",
     "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud",
     "clean:abi": "forge clean",
