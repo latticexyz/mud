@@ -1,4 +1,4 @@
-import { evaluate } from "@arktype/util";
+import { show } from "@arktype/util";
 import { AbiType, Schema, Table as BaseTable } from "@latticexyz/config";
 import { EnumsInput } from "./input";
 
@@ -33,7 +33,7 @@ export type TableDeploy = {
   readonly disabled: boolean;
 };
 
-export type Table = evaluate<
+export type Table = show<
   BaseTable & {
     readonly codegen: TableCodegen;
     readonly deploy: TableDeploy;
@@ -64,14 +64,14 @@ export type Codegen = {
 
 export type Store = {
   /**
-   * Directory of contracts source (i.e. Solidity) relative to the MUD config.
+   * Directory of Solidity source relative to the MUD config.
    * This is used to resolve other paths in the config, like codegen and user types.
    *
    * Defaults to `src` to match `foundry.toml`'s default. If you change this from the default, you may also need to configure foundry with the same source directory.
    */
   readonly sourceDirectory: string;
   readonly tables: {
-    readonly [namespacedTableName: string]: Table;
+    readonly [label: string]: Table;
   };
   readonly userTypes: UserTypes;
   readonly enums: EnumsInput;

@@ -30,6 +30,7 @@ export type KeySchema<userTypes extends UserTypes | undefined = undefined> = Rec
   string,
   userTypes extends UserTypes ? StaticAbiType | keyof userTypes : StaticAbiType
 >;
+
 export type ValueSchema<userTypes extends UserTypes | undefined = undefined> = Record<
   string,
   userTypes extends UserTypes ? SchemaAbiType | keyof userTypes : SchemaAbiType

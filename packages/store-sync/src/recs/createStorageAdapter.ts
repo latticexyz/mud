@@ -1,4 +1,4 @@
-import { Table, resolveConfig } from "@latticexyz/store/internal";
+import { Table } from "@latticexyz/config";
 import { debug } from "./debug";
 import { World as RecsWorld, getComponentValue, hasComponent, removeComponent, setComponent } from "@latticexyz/recs";
 import { defineInternalComponents } from "./defineInternalComponents";
@@ -14,18 +14,17 @@ import { singletonEntity } from "./singletonEntity";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { TablesToComponents, tablesToComponents } from "./tablesToComponents";
-import { storeToV1 } from "@latticexyz/store/config/v2";
 
-const storeTables = resolveConfig(storeToV1(storeConfig)).tables;
-const worldTables = resolveConfig(storeToV1(worldConfig)).tables;
+const storeTables = storeConfig.tables;
+const worldTables = worldConfig.tables;
 
-export type RecsStorageOptions<tables extends Record<string, Table>> = {
+export type CreateStorageAdapterOptions<tables extends Record<string, Table>> = {
   world: RecsWorld;
   tables: tables;
   shouldSkipUpdateStream?: () => boolean;
 };
 
-export type RecsStorageAdapter<tables extends Record<string, Table>> = {
+export type CreateStorageAdapterResult<tables extends Record<string, Table>> = {
   storageAdapter: StorageAdapter;
   components: TablesToComponents<tables> &
     TablesToComponents<typeof storeTables> &
@@ -33,11 +32,11 @@ export type RecsStorageAdapter<tables extends Record<string, Table>> = {
     ReturnType<typeof defineInternalComponents>;
 };
 
-export function recsStorage<tables extends Record<string, Table>>({
+export function createStorageAdapter<tables extends Record<string, Table>>({
   world,
   tables,
   shouldSkipUpdateStream,
-}: RecsStorageOptions<tables>): RecsStorageAdapter<tables> {
+}: CreateStorageAdapterOptions<tables>): CreateStorageAdapterResult<tables> {
   world.registerEntity({ id: singletonEntity });
 
   const components = {

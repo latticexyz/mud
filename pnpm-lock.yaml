@@ -8,12 +8,6 @@ importers:
 
   .:
     devDependencies:
-      '@arktype/attest':
-        specifier: 0.7.5
-        version: 0.7.5(typescript@5.4.2)
-      '@arktype/util':
-        specifier: 0.0.43
-        version: 0.0.43
       '@changesets/cli':
         specifier: ^2.26.1
         version: 2.26.1
@@ -454,6 +448,9 @@ importers:
 
   packages/config:
     dependencies:
+      '@arktype/util':
+        specifier: 0.0.40
+        version: 0.0.40
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -688,6 +685,9 @@ importers:
 
   packages/query:
     dependencies:
+      '@arktype/util':
+        specifier: 0.0.40
+        version: 0.0.40
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -844,8 +844,8 @@ importers:
   packages/store:
     dependencies:
       '@arktype/util':
-        specifier: 0.0.29
-        version: 0.0.29
+        specifier: 0.0.40
+        version: 0.0.40
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -871,6 +871,9 @@ importers:
         specifier: ^3.22.2
         version: 3.23.7
     devDependencies:
+      '@arktype/attest':
+        specifier: 0.7.5
+        version: 0.7.5(typescript@5.4.2)
       '@latticexyz/abi-ts':
         specifier: workspace:*
         version: link:../abi-ts
@@ -1142,8 +1145,8 @@ importers:
   packages/world:
     dependencies:
       '@arktype/util':
-        specifier: 0.0.29
-        version: 0.0.29
+        specifier: 0.0.40
+        version: 0.0.40
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -1172,6 +1175,9 @@ importers:
         specifier: ^3.22.2
         version: 3.23.7
     devDependencies:
+      '@arktype/attest':
+        specifier: 0.7.5
+        version: 0.7.5(typescript@5.4.2)
       '@latticexyz/abi-ts':
         specifier: workspace:*
         version: link:../abi-ts
@@ -1335,17 +1341,14 @@ packages:
   '@arktype/schema@0.1.2':
     resolution: {integrity: sha512-ggvxs5P0toqd/4/XK76URQrtyOYpbYcLhirEZeTso6FxkloPa0lT+whPg7DNQj5qi2OQXLUHBYKMx9DOb13ViQ==}
 
-  '@arktype/util@0.0.29':
-    resolution: {integrity: sha512-fDTBSVzxLj9k1ZjinkawmaQdcXFKMBVK8c+vqMPxwoa94mPMZxBo84yQcqyFVcIcWIkg6qQQmH1ozyT4nqFT/g==}
-
   '@arktype/util@0.0.38':
     resolution: {integrity: sha512-IvYMGnkUASJllRk3mdBVgckomKx2LNsDTrWCxz04EBK1OuU+4fJ/smSjxgZVWfopNXZds9sHNxZgTJOIw7GvJw==}
 
+  '@arktype/util@0.0.40':
+    resolution: {integrity: sha512-dwC3xZh9Bz6LWSJq71AUoh06zB0qM65N4zS/NNogbumhbO55yot7yqDlv0qeBMNOWXj/gX7l7l58v0EqEaXN2w==}
+
   '@arktype/util@0.0.41':
     resolution: {integrity: sha512-0YURzJ42v+lhlP1t5Dj90YezETRTCdFU0oM4xMVpYsmPx/DHJzr9n7AX1QPAlYWH4wY7hYY3gwai3O+8VntPgw==}
-
-  '@arktype/util@0.0.43':
-    resolution: {integrity: sha512-tVrvIoghAI/OY6Oc8wo8dpgiZc/a+C8M7NnpSDvfkagAasW9CzLtEbybP1xAALf3A6y5cuJOV6cCcIi9NKQRzA==}
 
   '@aws-crypto/ie11-detection@3.0.0':
     resolution: {integrity: sha512-341lBBkiY1DfDNKai/wXM3aujNBkXR7tq1URPQDL9wi3AUbI80NR74uF1TXHMm7po1AcnFk8iu2S2IeU/+/A+Q==}
@@ -10141,13 +10144,11 @@ snapshots:
     dependencies:
       '@arktype/util': 0.0.38
 
-  '@arktype/util@0.0.29': {}
-
   '@arktype/util@0.0.38': {}
 
-  '@arktype/util@0.0.41': {}
+  '@arktype/util@0.0.40': {}
 
-  '@arktype/util@0.0.43': {}
+  '@arktype/util@0.0.41': {}
 
   '@aws-crypto/ie11-detection@3.0.0':
     dependencies:

@@ -1,18 +1,18 @@
 import { Hex } from "viem";
 import { Codegen, TableCodegen, TableDeploy, UserTypes } from "./output";
 import { Scope } from "./scope";
-import { evaluate } from "@arktype/util";
+import { show } from "@arktype/util";
 
 export type EnumsInput = {
   readonly [enumName: string]: readonly [string, ...string[]];
 };
 
 export type SchemaInput = {
-  readonly [key: string]: string;
+  readonly [fieldName: string]: string;
 };
 
 export type ScopedSchemaInput<scope extends Scope> = {
-  readonly [key: string]: keyof scope["types"];
+  readonly [fieldName: string]: keyof scope["types"];
 };
 
 export type TableCodegenInput = Partial<TableCodegen>;
@@ -30,7 +30,7 @@ export type TableInput = {
 };
 
 export type TablesInput = {
-  readonly [key: string]: Omit<TableInput, "namespace" | "name">;
+  readonly [label: string]: Omit<TableInput, "namespace" | "name">;
 };
 
 export type CodegenInput = Partial<Codegen>;
@@ -55,7 +55,7 @@ export type StoreInput = {
 export type TableShorthandInput = SchemaInput | string;
 
 export type TablesWithShorthandsInput = {
-  readonly [key: string]: TableInput | TableShorthandInput;
+  readonly [label: string]: TableInput | TableShorthandInput;
 };
 
-export type StoreWithShorthandsInput = evaluate<Omit<StoreInput, "tables"> & { tables: TablesWithShorthandsInput }>;
+export type StoreWithShorthandsInput = show<Omit<StoreInput, "tables"> & { tables: TablesWithShorthandsInput }>;
