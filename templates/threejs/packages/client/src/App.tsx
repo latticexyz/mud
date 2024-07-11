@@ -84,7 +84,7 @@ const Player = (props: ThreeElements["mesh"] & { color: Color }) => {
 
 const Scene = () => {
   const {
-    components: { Position },
+    components: { app__Position: Position },
     network: { playerEntity },
   } = useMUD();
 
@@ -142,7 +142,7 @@ const Directions = () => {
 
 const PlayerInfo = () => {
   const {
-    components: { Position },
+    components: { app__Position: Position },
     network: { playerEntity },
   } = useMUD();
 
