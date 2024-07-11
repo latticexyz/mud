@@ -1,4 +1,4 @@
-import { ErrorMessage, evaluate, flatMorph, narrow } from "@arktype/util";
+import { ErrorMessage, show, flatMorph, narrow } from "@arktype/util";
 import { get, hasOwnKey, mergeIfUndefined } from "./generics";
 import { UserTypes } from "./output";
 import { CONFIG_DEFAULTS } from "./defaults";
@@ -59,8 +59,8 @@ export type resolveStore<store> = {
       >
     : {};
   readonly userTypes: "userTypes" extends keyof store ? store["userTypes"] : {};
-  readonly enums: "enums" extends keyof store ? evaluate<resolveEnums<store["enums"]>> : {};
-  readonly enumValues: "enums" extends keyof store ? evaluate<mapEnums<store["enums"]>> : {};
+  readonly enums: "enums" extends keyof store ? show<resolveEnums<store["enums"]>> : {};
+  readonly enumValues: "enums" extends keyof store ? show<mapEnums<store["enums"]>> : {};
   readonly namespace: "namespace" extends keyof store ? store["namespace"] : CONFIG_DEFAULTS["namespace"];
   readonly codegen: "codegen" extends keyof store ? resolveCodegen<store["codegen"]> : resolveCodegen<{}>;
 };
