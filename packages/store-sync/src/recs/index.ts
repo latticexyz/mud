@@ -4,6 +4,6 @@ export * from "./encodeEntity";
 export * from "./entityToHexKeyTuple";
 export * from "./hexKeyTupleToEntity";
 export * from "./isStoreComponent";
-export * from "./recsStorage";
+export * from "./createStorageAdapter";
 export * from "./singletonEntity";
 export * from "./syncToRecs";
