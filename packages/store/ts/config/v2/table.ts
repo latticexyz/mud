@@ -126,7 +126,7 @@ export function resolveTableCodegen<input extends TableInput>(input: input): res
     storeArgument: get(options, "storeArgument") ?? TABLE_CODEGEN_DEFAULTS.storeArgument,
     // dataStruct is true if there are at least 2 value fields
     dataStruct: get(options, "dataStruct") ?? Object.keys(input.schema).length - input.key.length > 1,
-  } satisfies TableCodegen as resolveTableCodegen<input>;
+  } satisfies TableCodegen as never;
 }
 
 export type resolveTable<input, scope extends Scope = Scope> = input extends TableInput

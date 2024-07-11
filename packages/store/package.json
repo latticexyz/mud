@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store",
-  "version": "2.0.9",
+  "version": "2.0.12",
   "description": "Store",
   "repository": {
     "type": "git",
@@ -22,25 +22,33 @@
   "typesVersions": {
     "*": {
       "index": [
-        "./ts/exports/index.ts"
+        "./dist/index.d.ts"
       ],
       "internal": [
-        "./ts/exports/internal.ts"
+        "./dist/internal.d.ts"
+      ],
+      "mud.config": [
+        "./dist/mud.config.d.ts"
       ],
       "codegen": [
-        "./ts/codegen/index.ts"
+        "./dist/codegen.d.ts"
       ],
       "config": [
-        "./ts/config/index.ts"
+        "./dist/config.d.ts"
       ],
       "config/v2": [
-        "./ts/config/v2/index.ts"
+        "./dist/config/v2.d.ts"
       ],
       "register": [
-        "./ts/register/index.ts"
+        "./dist/register.d.ts"
       ]
     }
   },
+  "files": [
+    "dist",
+    "out",
+    "src"
+  ],
   "scripts": {
     "build": "pnpm run build:tightcoder && pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts && pnpm run build:js",
     "build:abi": "forge build",

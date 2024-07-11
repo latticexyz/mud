@@ -1,10 +1,8 @@
-export enum DynamicResolutionType {
-  TABLE_ID,
-  SYSTEM_ADDRESS,
-}
+import { World } from "./output";
 
 export type DynamicResolution = {
-  type: DynamicResolutionType;
+  // TODO: add systemAddress support
+  type: "tableId";
   input: string;
 };
 
@@ -18,9 +16,9 @@ export type ValueWithType = {
  */
 export function resolveTableId(tableName: string) {
   return {
-    type: DynamicResolutionType.TABLE_ID,
+    type: "tableId",
     input: tableName,
-  };
+  } as const;
 }
 
 /** Type guard for DynamicResolution */
@@ -38,20 +36,29 @@ export function isValueWithType(value: unknown): value is ValueWithType {
  */
 export function resolveWithContext(
   input: unknown,
-  context: { systemAddresses?: Record<string, Promise<string>>; tableIds?: Record<string, Uint8Array> },
+  context: { config: World; systemAddresses?: Record<string, Promise<string>> },
 ): ValueWithType {
   if (isValueWithType(input)) return input;
 
   if (isDynamicResolution(input)) {
-    let resolved: ValueWithType | undefined = undefined;
+    if (input.type === "tableId") {
+      const tableEntries = Object.entries(context.config.tables).filter(
+        ([tableName, table]) => tableName === input.input || table.name === input.input,
+      );
 
-    if (input.type === DynamicResolutionType.TABLE_ID) {
-      const tableId = context.tableIds?.[input.input];
-      resolved = tableId && { value: tableId, type: "bytes32" };
+      if (tableEntries.length > 1) {
+        throw new Error(
+          `Found more than one table with name "${input.input}". Try using one of the following table names instead: ${tableEntries.map(([tableName]) => tableName).join(", ")}`,
+        );
+      }
+
+      if (tableEntries.length === 1) {
+        const [entry] = tableEntries;
+        const [, table] = entry;
+        return { type: "bytes32", value: table.tableId };
+      }
     }
-
-    if (resolved) return resolved;
   }
 
-  throw new Error(`Could not resolve dynamic resolution: \n${JSON.stringify(input, null, 2)}`);
+  throw new Error(`Could not resolve dynamic resolution:\n${JSON.stringify(input, null, 2)}`);
 }

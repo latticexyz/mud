@@ -4,7 +4,7 @@ import { InferredOptionTypes, Options } from "yargs";
 import { deploy } from "./deploy/deploy";
 import { createWalletClient, http, Hex, isHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { loadConfig } from "@latticexyz/config/node";
+import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
 import { worldToV1 } from "@latticexyz/world/config/v2";
 import { getOutDirectory, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
@@ -64,7 +64,8 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
 
-  const configV2 = (await loadConfig(opts.configPath)) as WorldConfig;
+  const configPath = await resolveConfigPath(opts.configPath);
+  const configV2 = (await loadConfig(configPath)) as WorldConfig;
   const config = worldToV1(configV2);
   if (opts.printConfig) {
     console.log(chalk.green("\nResolved config:\n"), JSON.stringify(config, null, 2));
@@ -82,7 +83,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   // Run build
   if (!opts.skipBuild) {
-    await build({ config: configV2, srcDir, foundryProfile: profile });
+    await build({ configPath, config: configV2, srcDir, foundryProfile: profile });
   }
 
   const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });

@@ -3,13 +3,21 @@ import { LibraryPlaceholder } from "../deploy/common";
 import { findPlaceholders } from "./findPlaceholders";
 import { z } from "zod";
 import { Abi as abiSchema } from "abitype/zod";
+import { createRequire } from "node:module";
+import { findUp } from "find-up";
 
 export type GetContractArtifactOptions = {
   /**
+   * Path to `package.json` where `artifactPath`s are resolved relative to.
+   *
+   * Defaults to nearest `package.json` relative to `process.cwd()`.
+   */
+  packageJsonPath?: string;
+  /**
    * Import path to contract's forge/solc JSON artifact with the contract's compiled bytecode.
    *
-   * This path is resolved using node's contract resolution, so this supports both relative file paths (`../path/to/MyModule.json`) as well as JS import paths
-   * (`@latticexyz/world-contracts/out/CallWithSignatureModule.sol/CallWithSignatureModule.json`).
+   * This path is resolved using node's module resolution relative to `configPath`, so this supports both
+   * relative file paths (`../path/to/MyModule.json`) as well as JS import paths (`@latticexyz/world-contracts/out/CallWithSignatureModule.sol/CallWithSignatureModule.json`).
    */
   artifactPath: string;
 };
@@ -42,17 +50,16 @@ const artifactSchema = z.object({
 });
 
 export async function getContractArtifact({
+  packageJsonPath,
   artifactPath,
 }: GetContractArtifactOptions): Promise<GetContractArtifactResult> {
   let importedArtifact;
   try {
-    importedArtifact = (
-      await import(artifactPath, {
-        with: { type: "json" },
-        // `with` is the new approach, but `assert` is kept for backwards-compatibility with Node 18
-        assert: { type: "json" },
-      })
-    ).default;
+    const requirePath = packageJsonPath ?? (await findUp("package.json", { cwd: process.cwd() }));
+    if (!requirePath) throw new Error("Could not find package.json to import relative to.");
+
+    const require = createRequire(requirePath);
+    importedArtifact = require(artifactPath);
   } catch (error) {
     console.error();
     console.error("Could not import contract artifact at", artifactPath);

@@ -1,8 +1,10 @@
+import { CodegenInput, DeployInput, ModuleInput, SystemInput, WorldInput } from "./input";
+
 export const SYSTEM_DEFAULTS = {
   registerFunctionSelectors: true,
   openAccess: true,
   accessList: [],
-} as const;
+} as const satisfies SystemInput;
 
 export type SYSTEM_DEFAULTS = typeof SYSTEM_DEFAULTS;
 
@@ -10,7 +12,7 @@ export const MODULE_DEFAULTS = {
   root: false,
   args: [],
   artifactPath: undefined,
-} as const;
+} as const satisfies Pick<ModuleInput, "root" | "args" | "artifactPath">;
 
 export type MODULE_DEFAULTS = typeof MODULE_DEFAULTS;
 
@@ -18,7 +20,7 @@ export const CODEGEN_DEFAULTS = {
   worldInterfaceName: "IWorld",
   worldgenDirectory: "world",
   worldImportPath: "@latticexyz/world/src/",
-} as const;
+} as const satisfies CodegenInput;
 
 export type CODEGEN_DEFAULTS = typeof CODEGEN_DEFAULTS;
 
@@ -28,7 +30,7 @@ export const DEPLOY_DEFAULTS = {
   deploysDirectory: "./deploys",
   worldsFile: "./worlds.json",
   upgradeableWorldImplementation: false,
-} as const;
+} as const satisfies DeployInput;
 
 export type DEPLOY_DEFAULTS = typeof DEPLOY_DEFAULTS;
 
@@ -39,6 +41,6 @@ export const CONFIG_DEFAULTS = {
   modules: [],
   codegen: CODEGEN_DEFAULTS,
   deploy: DEPLOY_DEFAULTS,
-} as const;
+} as const satisfies WorldInput;
 
 export type CONFIG_DEFAULTS = typeof CONFIG_DEFAULTS;

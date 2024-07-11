@@ -1,5 +1,68 @@
 # Change Log
 
+## 2.0.12
+
+### Patch Changes
+
+- 96e7bf430: TS source has been removed from published packages in favor of DTS in an effort to improve TS performance. All packages now inherit from a base TS config in `@latticexyz/common` to allow us to continue iterating on TS performance without requiring changes in your project code.
+
+  If you have a MUD project that you're upgrading, we suggest adding a `tsconfig.json` file to your project workspace that extends this base config.
+
+  ```sh
+  pnpm add -D @latticexyz/common
+  echo "{\n  \"extends\": \"@latticexyz/common/tsconfig.base.json\"\n}" > tsconfig.json
+  ```
+
+  Then in each package of your project, inherit from your workspace root's config.
+
+  For example, your TS config in `packages/contracts/tsconfig.json` might look like:
+
+  ```json
+  {
+    "extends": "../../tsconfig.json"
+  }
+  ```
+
+  And your TS config in `packages/client/tsconfig.json` might look like:
+
+  ```json
+  {
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+      "types": ["vite/client"],
+      "target": "ESNext",
+      "lib": ["ESNext", "DOM"],
+      "jsx": "react-jsx",
+      "jsxImportSource": "react"
+    },
+    "include": ["src"]
+  }
+  ```
+
+  You may need to adjust the above configs to include any additional TS options you've set. This config pattern may also reveal new TS errors that need to be fixed or rules disabled.
+
+  If you want to keep your existing TS configs, we recommend at least updating your `moduleResolution` setting.
+
+  ```diff
+  -"moduleResolution": "node"
+  +"moduleResolution": "Bundler"
+  ```
+
+- d75266073: Removed unnecessary build step in scripts and added deploy scripts for Redstone and Garnet chains.
+
+## 2.0.11
+
+### Patch Changes
+
+- 63e5d2d5: Added pnpm 9 to project's `engines`.
+
+## 2.0.10
+
+### Patch Changes
+
+- 18360244: Templates now use an `app` namespace by default, instead of the root namespace. This helps keep the root namespace clear for intentionally root-level things and avoids pitfalls with root systems calling other root systems.
+- 4a61a128: Removed usages of old testnet faucet in templates. The previous testnet faucet is broken, deprecated, and going offline soon. We'll be replacing the burner account pattern with something better very soon!
+
 ## 2.0.9
 
 ### Patch Changes

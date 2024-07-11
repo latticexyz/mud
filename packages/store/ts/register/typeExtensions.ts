@@ -1,7 +1,7 @@
 import { OrDefaults } from "@latticexyz/common/type-utils";
 import { MUDCoreUserConfig } from "@latticexyz/config/library";
 import { ExpandTablesConfig, StoreConfig, StoreUserConfig } from "../config";
-import { DEFAULTS, PATH_DEFAULTS } from "../config/defaults";
+import { DEFAULTS } from "../config/defaults";
 
 // Inject non-generic options into the core config.
 // Re-exporting an interface of an existing module merges them, adding new options to the interface.
@@ -23,6 +23,6 @@ declare module "@latticexyz/config/library" {
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore this doesn't cause an error I can reproduce in-editor but fails on TSC with a complaint
 // about a systems prop that is not being extended
-export interface ExpandMUDUserConfig<T extends MUDCoreUserConfig> extends OrDefaults<T, DEFAULTS & PATH_DEFAULTS> {
+export interface ExpandMUDUserConfig<T extends MUDCoreUserConfig> extends OrDefaults<T, DEFAULTS> {
   tables: ExpandTablesConfig<T["tables"]>;
 }

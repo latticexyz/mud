@@ -40,7 +40,7 @@ export type System = {
   readonly accessList: readonly string[];
 };
 
-export type Systems = { readonly [key: string]: System };
+export type Systems = { readonly [label: string]: System };
 
 export type Deploy = {
   /** The name of a custom World contract to deploy. If no name is provided, a default MUD World is deployed */
@@ -63,7 +63,10 @@ export type Codegen = {
   readonly worldInterfaceName: string;
   /** Directory to output system and world interfaces of `worldgen` (Default "world") */
   readonly worldgenDirectory: string;
-  /** Path for world package imports. Default is "@latticexyz/world/src/" */
+  /**
+   * Path for world package imports. Default is "@latticexyz/world/src/"
+   * @internal
+   */
   readonly worldImportPath: string;
 };
 

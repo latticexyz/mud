@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/config",
-  "version": "2.0.9",
+  "version": "2.0.12",
   "description": "Config for Store and World",
   "repository": {
     "type": "git",
@@ -19,22 +19,25 @@
   "typesVersions": {
     "*": {
       "index": [
-        "./src/exports/index.ts"
+        "./dist/index.d.ts"
       ],
       "internal": [
-        "./src/exports/internal.ts"
+        "./dist/internal.d.ts"
       ],
       "library": [
-        "./src/deprecated/library/index.ts"
+        "./dist/deprecated/library.d.ts"
       ],
       "register": [
-        "./src/deprecated/register/index.ts"
+        "./dist/deprecated/register.d.ts"
       ],
       "node": [
-        "./src/deprecated/node/index.ts"
+        "./dist/deprecated/node.d.ts"
       ]
     }
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",

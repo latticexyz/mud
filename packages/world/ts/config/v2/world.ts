@@ -11,13 +11,12 @@ import {
   Store,
   hasOwnKey,
   validateStore,
-  isObject,
 } from "@latticexyz/store/config/v2";
 import { SystemsInput, WorldInput } from "./input";
 import { CONFIG_DEFAULTS, MODULE_DEFAULTS } from "./defaults";
 import { Tables } from "@latticexyz/store/internal";
 import { resolveSystems } from "./systems";
-import { resolveNamespacedTables } from "./namespaces";
+import { resolveNamespacedTables, validateNamespaces } from "./namespaces";
 import { resolveCodegen } from "./codegen";
 import { resolveDeploy } from "./deploy";
 import type { World } from "./output.js";
@@ -42,14 +41,7 @@ export function validateWorld(world: unknown): asserts world is WorldInput {
   validateStore(world);
 
   if (hasOwnKey(world, "namespaces")) {
-    if (!isObject(world.namespaces)) {
-      throw new Error(`Expected namespaces, received ${JSON.stringify(world.namespaces)}`);
-    }
-    for (const namespace of Object.values(world.namespaces)) {
-      if (hasOwnKey(namespace, "tables")) {
-        validateTables(namespace.tables, scope);
-      }
-    }
+    validateNamespaces(world.namespaces, scope);
   }
 }
 

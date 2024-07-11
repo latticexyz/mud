@@ -1,11 +1,11 @@
-import { ErrorMessage, flatMorph, narrow } from "@arktype/util";
+import { ErrorMessage, evaluate, flatMorph, narrow } from "@arktype/util";
 import { get, hasOwnKey, mergeIfUndefined } from "./generics";
 import { UserTypes } from "./output";
 import { CONFIG_DEFAULTS } from "./defaults";
 import { StoreInput } from "./input";
 import { resolveTables, validateTables } from "./tables";
 import { scopeWithUserTypes, validateUserTypes } from "./userTypes";
-import { resolveEnums, scopeWithEnums } from "./enums";
+import { mapEnums, resolveEnums, scopeWithEnums } from "./enums";
 import { resolveCodegen } from "./codegen";
 
 export type extendedScope<input> = scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>;
@@ -44,6 +44,9 @@ type keyPrefix<store> = store extends { namespace: infer namespace extends strin
   : "";
 
 export type resolveStore<store> = {
+  readonly sourceDirectory: "sourceDirectory" extends keyof store
+    ? store["sourceDirectory"]
+    : CONFIG_DEFAULTS["sourceDirectory"];
   readonly tables: "tables" extends keyof store
     ? resolveTables<
         {
@@ -56,24 +59,39 @@ export type resolveStore<store> = {
       >
     : {};
   readonly userTypes: "userTypes" extends keyof store ? store["userTypes"] : {};
-  readonly enums: "enums" extends keyof store ? resolveEnums<store["enums"]> : {};
+  readonly enums: "enums" extends keyof store ? evaluate<resolveEnums<store["enums"]>> : {};
+  readonly enumValues: "enums" extends keyof store ? evaluate<mapEnums<store["enums"]>> : {};
   readonly namespace: "namespace" extends keyof store ? store["namespace"] : CONFIG_DEFAULTS["namespace"];
   readonly codegen: "codegen" extends keyof store ? resolveCodegen<store["codegen"]> : resolveCodegen<{}>;
 };
 
 export function resolveStore<const store extends StoreInput>(store: store): resolveStore<store> {
+  // TODO: default `namespaceDirectories` to true if using top-level `namespaces` key (once its migrated to store)
+  const codegen = resolveCodegen(store.codegen);
   return {
+    sourceDirectory: store.sourceDirectory ?? CONFIG_DEFAULTS["sourceDirectory"],
     tables: resolveTables(
-      flatMorph(store.tables ?? {}, (tableKey, table) => {
-        const key = store.namespace ? `${store.namespace}__${tableKey}` : tableKey;
-        return [key, mergeIfUndefined(table, { namespace: store.namespace, name: tableKey })];
+      flatMorph(store.tables ?? {}, (name, table) => {
+        const namespace = store.namespace;
+        const key = namespace ? `${namespace}__${name}` : name;
+        return [
+          key,
+          mergeIfUndefined(table, {
+            namespace: namespace,
+            name,
+            codegen: mergeIfUndefined(table.codegen ?? {}, {
+              outputDirectory: codegen.namespaceDirectories && namespace?.length ? `${namespace}/tables` : "tables",
+            }),
+          }),
+        ];
       }),
       extendedScope(store),
     ),
     userTypes: store.userTypes ?? {},
-    enums: store.enums ?? {},
+    enums: resolveEnums(store.enums ?? {}),
+    enumValues: mapEnums(store.enums ?? {}),
     namespace: store.namespace ?? CONFIG_DEFAULTS["namespace"],
-    codegen: resolveCodegen(store.codegen),
+    codegen,
   } as never;
 }
 
