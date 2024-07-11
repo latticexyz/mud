@@ -1,6 +1,6 @@
 import { PgDatabase } from "drizzle-orm/pg-core";
 import { and, eq, or } from "drizzle-orm";
-import { Table, schemasTableId } from "../common";
+import { Table, storeTables } from "../common";
 import { tables as internalTables } from "../postgres/tables";
 import { Hex } from "viem";
 import { decodeDynamicField } from "@latticexyz/protocol-parser/internal";
@@ -21,7 +21,7 @@ export async function getTables(
   const records = await db
     .select()
     .from(internalTables.recordsTable)
-    .where(and(eq(internalTables.recordsTable.tableId, schemasTableId), or(...conditions)));
+    .where(and(eq(internalTables.recordsTable.tableId, storeTables.Tables.tableId), or(...conditions)));
 
   const logs = records.map(
     (record) =>

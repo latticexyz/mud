@@ -6,7 +6,8 @@ import {
   valueSchemaToHex,
 } from "@latticexyz/protocol-parser/internal";
 import { encodeAbiParameters, parseAbiParameters } from "viem";
-import { StorageAdapterLog, Table, schemasTable } from "./common";
+import { StorageAdapterLog, Table, storeTables } from "./common";
+import { flattenSchema } from "./flattenSchema";
 
 /**
  * @internal
@@ -16,9 +17,9 @@ export function tableToLog(table: Table): StorageAdapterLog & { eventName: "Stor
     eventName: "Store_SetRecord",
     address: table.address,
     args: {
-      tableId: schemasTable.tableId,
-      keyTuple: encodeKey(schemasTable.keySchema, { tableId: table.tableId }),
-      ...encodeValueArgs(schemasTable.valueSchema, {
+      tableId: storeTables.Tables.tableId,
+      keyTuple: encodeKey(flattenSchema(storeTables.Tables.keySchema), { tableId: table.tableId }),
+      ...encodeValueArgs(flattenSchema(storeTables.Tables.valueSchema), {
         fieldLayout: valueSchemaToFieldLayoutHex(table.valueSchema),
         keySchema: keySchemaToHex(table.keySchema),
         valueSchema: valueSchemaToHex(table.valueSchema),

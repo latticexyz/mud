@@ -7,9 +7,9 @@ import {
   decodeKey,
   decodeValueArgs,
   getKeySchema,
-  getSchemaTypes,
   getValueSchema,
 } from "@latticexyz/protocol-parser/internal";
+import { flattenSchema } from "../flattenSchema";
 import debug from "debug";
 import { Tables } from "./common";
 
@@ -115,9 +115,9 @@ export function createStorageAdapter({ store }: CreateStorageAdapterOptions<Quer
     const records: readonly TableRecord[] = [
       ...previousRecords.filter((record) => !touchedIds.has(record.id)),
       ...Object.values(updatedRawRecords).map((rawRecord): TableRecord => {
-        const keySchema = getSchemaTypes(getKeySchema(rawRecord.table));
+        const keySchema = flattenSchema(getKeySchema(rawRecord.table));
         const key = decodeKey(keySchema as KeySchema, rawRecord.keyTuple);
-        const value = decodeValueArgs(getSchemaTypes(getValueSchema(rawRecord.table)), rawRecord);
+        const value = decodeValueArgs(flattenSchema(getValueSchema(rawRecord.table)), rawRecord);
 
         return {
           table: rawRecord.table,

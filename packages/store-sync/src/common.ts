@@ -1,24 +1,19 @@
 import { Address, Block, Hex, Log, PublicClient, TransactionReceipt } from "viem";
 import { StoreEventsAbiItem, StoreEventsAbi } from "@latticexyz/store";
+import { resolveConfig } from "@latticexyz/store/internal";
 import { Observable } from "rxjs";
 import { UnionPick } from "@latticexyz/common/type-utils";
-import {
-  KeySchema,
-  TableRecord,
-  ValueSchema,
-  getKeySchema,
-  getSchemaTypes,
-  getValueSchema,
-} from "@latticexyz/protocol-parser/internal";
+import { KeySchema, TableRecord, ValueSchema } from "@latticexyz/protocol-parser/internal";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
+import { flattenSchema } from "./flattenSchema";
 import { Store as StoreConfig } from "@latticexyz/store";
+import { storeToV1 } from "@latticexyz/store/config/v2";
 
-export const storeTables = storeConfig.tables;
-export type storeTables = typeof storeTables;
-
-export const worldTables = worldConfig.tables;
-export type worldTables = typeof worldTables;
+/** @internal Temporary workaround until we redo our config parsing and can pull this directly from the config (https://github.com/latticexyz/mud/issues/1668) */
+export const storeTables = resolveConfig(storeToV1(storeConfig)).tables;
+/** @internal Temporary workaround until we redo our config parsing and can pull this directly from the config (https://github.com/latticexyz/mud/issues/1668) */
+export const worldTables = resolveConfig(storeToV1(worldConfig)).tables;
 
 export const internalTableIds = [...Object.values(storeTables), ...Object.values(worldTables)].map(
   (table) => table.tableId,
@@ -132,9 +127,10 @@ export type StorageAdapterLog = Partial<StoreEventsLog> & UnionPick<StoreEventsL
 export type StorageAdapterBlock = { blockNumber: BlockLogs["blockNumber"]; logs: readonly StorageAdapterLog[] };
 export type StorageAdapter = (block: StorageAdapterBlock) => Promise<void>;
 
-export const schemasTableId = storeTables.store__Tables.tableId;
+export const schemasTableId = storeTables.Tables.tableId;
 export const schemasTable = {
-  ...storeTables.store__Tables,
-  keySchema: getSchemaTypes(getKeySchema(storeTables.store__Tables)),
-  valueSchema: getSchemaTypes(getValueSchema(storeTables.store__Tables)),
+  ...storeTables.Tables,
+  // TODO: remove once we've got everything using the new Table shape
+  keySchema: flattenSchema(storeTables.Tables.keySchema),
+  valueSchema: flattenSchema(storeTables.Tables.valueSchema),
 };
