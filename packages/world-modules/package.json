@@ -11,12 +11,18 @@
   "type": "module",
   "exports": {
     "./internal/mud.config": "./dist/mud.config.js",
-    "./out/*": "./out/*"
+    "./*.json": {
+      "types": "./*.json.d.ts",
+      "default": "./*.json"
+    }
   },
   "typesVersions": {
     "*": {
       "internal/mud.config": [
         "./dist/mud.config.d.ts"
+      ],
+      "*.json": [
+        "./*.json.d.ts"
       ]
     }
   },

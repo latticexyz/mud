@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parseAbiItem, AbiEvent } from "abitype";
-import IStoreAbi from "../out/IStore.sol/IStore.abi.json";
+import IStoreAbi from "@latticexyz/store/out/IStore.sol/IStore.abi.json";
 import { storeEvents, helloStoreEvent } from "./storeEvents";
 
 function normalizeAbiEvent(event: AbiEvent) {

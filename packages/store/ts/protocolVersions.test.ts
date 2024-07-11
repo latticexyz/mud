@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import fs from "node:fs";
-import StoreAbi from "../out/IStore.sol/IStore.abi.json";
+import StoreAbi from "@latticexyz/store/out/IStore.sol/IStore.abi.json";
 import { formatAbi } from "abitype";
 import { protocolVersions } from "./protocolVersions";
 
