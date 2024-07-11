@@ -19,7 +19,7 @@ import { useAppChain } from "./useAppChain";
 import { debug } from "./debug";
 import { transactionQueue } from "@latticexyz/common/actions";
 
-type Middleware = SmartAccountClientConfig<ENTRYPOINT_ADDRESS_V07_TYPE>["middleware"];
+// type Middleware = SmartAccountClientConfig<ENTRYPOINT_ADDRESS_V07_TYPE>["middleware"];
 
 export function useAppAccountClient(): UseQueryResult<AppAccountClient> {
   const [appSignerAccount] = useAppSigner();
@@ -85,56 +85,56 @@ export function useAppAccountClient(): UseQueryResult<AppAccountClient> {
               signer: appSignerAccount,
             });
 
-            const pimlicoBundlerClient = createPimlicoBundlerClient({
-              chain: publicClient.chain,
-              transport: transportObserver("pimlico bundler client", erc4337Config.transport),
-              entryPoint: entryPointAddress,
-              pollingInterval: defaultPollingInterval,
-            }).extend(() => publicActions(publicClient));
+            // const pimlicoBundlerClient = createPimlicoBundlerClient({
+            //   chain: publicClient.chain,
+            //   transport: transportObserver("pimlico bundler client", erc4337Config.transport),
+            //   entryPoint: entryPointAddress,
+            //   pollingInterval: defaultPollingInterval,
+            // }).extend(() => publicActions(publicClient));
 
-            const gasEstimationStateOverrides = gasTank
-              ? {
-                  // Pimlico's gas estimation runs with high gas limits, which can make the estimation fail if
-                  // the cost would exceed the user's balance.
-                  // We override the user's balance in the paymaster contract and the deposit balance of the
-                  // paymaster in the entry point contract to make the gas estimation succeed.
-                  [gasTank.address]: {
-                    stateDiff: {
-                      [getUserBalanceSlot(userAddress)]: toHex(maxUint256),
-                    },
-                  },
-                  [entryPointAddress]: {
-                    stateDiff: {
-                      [getEntryPointDepositSlot(gasTank.address)]: toHex(maxUint256),
-                    },
-                  },
-                }
-              : undefined;
+            // const gasEstimationStateOverrides = gasTank
+            //   ? {
+            //       // Pimlico's gas estimation runs with high gas limits, which can make the estimation fail if
+            //       // the cost would exceed the user's balance.
+            //       // We override the user's balance in the paymaster contract and the deposit balance of the
+            //       // paymaster in the entry point contract to make the gas estimation succeed.
+            //       [gasTank.address]: {
+            //         stateDiff: {
+            //           [getUserBalanceSlot(userAddress)]: toHex(maxUint256),
+            //         },
+            //       },
+            //       [entryPointAddress]: {
+            //         stateDiff: {
+            //           [getEntryPointDepositSlot(gasTank.address)]: toHex(maxUint256),
+            //         },
+            //       },
+            //     }
+            //   : undefined;
 
-            const gasTankMiddleware = gasTank
-              ? ({
-                  sponsorUserOperation: async ({ userOperation }) => {
-                    const gasEstimates = await pimlicoBundlerClient.estimateUserOperationGas(
-                      {
-                        userOperation: {
-                          ...userOperation,
-                          paymaster: gasTank.address,
-                          paymasterData: "0x",
-                        },
-                      },
-                      gasEstimationStateOverrides,
-                    );
+            // const gasTankMiddleware = gasTank
+            //   ? ({
+            //       sponsorUserOperation: async ({ userOperation }) => {
+            //         const gasEstimates = await pimlicoBundlerClient.estimateUserOperationGas(
+            //           {
+            //             userOperation: {
+            //               ...userOperation,
+            //               paymaster: gasTank.address,
+            //               paymasterData: "0x",
+            //             },
+            //           },
+            //           gasEstimationStateOverrides,
+            //         );
 
-                    return {
-                      paymasterData: "0x",
-                      paymaster: gasTank.address,
-                      ...gasEstimates,
-                    };
-                  },
-                } satisfies Middleware)
-              : null;
+            //         return {
+            //           paymasterData: "0x",
+            //           paymaster: gasTank.address,
+            //           ...gasEstimates,
+            //         };
+            //       },
+            //     } satisfies Middleware)
+            //   : null;
 
-            const middleware = { ...gasTankMiddleware };
+            // const middleware = { ...gasTankMiddleware };
 
             const appAccountClient = createClient({
               key: "Account",
@@ -146,25 +146,25 @@ export function useAppAccountClient(): UseQueryResult<AppAccountClient> {
               transport: transportObserver("app smart account client", erc4337Config.transport),
             })
               .extend(() => publicActions(publicClient))
-              .extend((client) => ({
-                sendTransaction: (args) => {
-                  return sendTransaction<Chain, SmartAccount<ENTRYPOINT_ADDRESS_V07_TYPE>, ENTRYPOINT_ADDRESS_V07_TYPE>(
-                    client,
-                    {
-                      ...args,
-                      middleware,
-                    } as SendTransactionWithPaymasterParameters<
-                      ENTRYPOINT_ADDRESS_V07_TYPE,
-                      Chain,
-                      SmartAccount<ENTRYPOINT_ADDRESS_V07_TYPE>
-                    >,
-                    {
-                      estimateFeesPerGas: async () => (await pimlicoBundlerClient.getUserOperationGasPrice()).fast,
-                    },
-                  );
-                },
-              }))
-              .extend(smartAccountActions({ middleware }))
+              // .extend((client) => ({
+              //   sendTransaction: (args) => {
+              //     return sendTransaction<Chain, SmartAccount<ENTRYPOINT_ADDRESS_V07_TYPE>, ENTRYPOINT_ADDRESS_V07_TYPE>(
+              //       client,
+              //       {
+              //         ...args,
+              //         middleware,
+              //       } as SendTransactionWithPaymasterParameters<
+              //         ENTRYPOINT_ADDRESS_V07_TYPE,
+              //         Chain,
+              //         SmartAccount<ENTRYPOINT_ADDRESS_V07_TYPE>
+              //       >,
+              //       {
+              //         estimateFeesPerGas: async () => (await pimlicoBundlerClient.getUserOperationGasPrice()).fast,
+              //       },
+              //     );
+              //   },
+              // }))
+              // .extend(smartAccountActions({ middleware }))
               .extend(
                 callFrom({
                   worldAddress,

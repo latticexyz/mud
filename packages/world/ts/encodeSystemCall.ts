@@ -1,6 +1,6 @@
 import { Abi, EncodeFunctionDataParameters, Hex, encodeFunctionData, type ContractFunctionName } from "viem";
 import type { AbiParametersToPrimitiveTypes, ExtractAbiFunction } from "abitype";
-import IWorldCallAbi from "../out/IWorldKernel.sol/IWorldCall.abi.json";
+import { abi as IWorldCallAbi } from "./abi/IWorldCall";
 
 export type SystemCall<abi extends Abi, functionName extends ContractFunctionName<abi>> = EncodeFunctionDataParameters<
   abi,

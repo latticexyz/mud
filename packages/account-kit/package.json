@@ -11,8 +11,7 @@
   "type": "module",
   "exports": {
     ".": "./dist/tsup/index.js",
-    "./internal": "./dist/tsup/internal.js",
-    "./bundle": "./dist/vite/bundle.js"
+    "./internal": "./dist/tsup/internal.js"
   },
   "files": [
     "dist"
@@ -23,7 +22,7 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch & vite build --watch",
-    "playground": "mprocs",
+    "local": "mprocs",
     "test": "tsc --noEmit && vitest",
     "test:ci": "tsc --noEmit && vitest --run"
   },
@@ -58,6 +57,7 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@arktype/util": "0.0.43",
     "@types/debug": "^4.1.7",
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",

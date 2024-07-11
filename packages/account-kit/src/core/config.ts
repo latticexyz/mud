@@ -34,10 +34,20 @@ export type Erc4337Config = {
   readonly paymasters: readonly [Paymaster, ...Paymaster[]];
 };
 
+/**
+ * @internal
+ */
+export type InternalConfig = {
+  /**
+   * @internal URL of the app that hosts the app signer private keys.
+   */
+  readonly appSignerSandboxUrl?: string;
+};
+
 export type Config = {
   /**
    * The chain ID where the world is deployed.
-   * There must be a matching chain entry in wagmi's configured chains.
+   * There must be a matching chain entry in Wagmi's configured chains.
    * The app account client returned by Account Kit will be tied to this chain.
    */
   readonly chainId: number;
@@ -103,4 +113,9 @@ export type Config = {
    * Defaults to 512 bytes.
    */
   readonly calldataPerAction?: number;
+
+  /**
+   * @internal These config options are only used internally. Do not rely as there is no backwards compatibility guarantee.
+   */
+  readonly internal?: InternalConfig;
 };
