@@ -18,6 +18,7 @@ export type EnumValues = {
 };
 
 export type TableCodegen = {
+  readonly disabled: boolean;
   /**
    * Directory to output codegenerated files relative to config's `codegen.outputDirectory`.
    *

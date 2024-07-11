@@ -12,6 +12,7 @@ export const CODEGEN_DEFAULTS = {
 export type CODEGEN_DEFAULTS = typeof CODEGEN_DEFAULTS;
 
 export const TABLE_CODEGEN_DEFAULTS = {
+  disabled: false,
   outputDirectory: "tables" as string,
   tableIdArgument: false,
   storeArgument: false,
