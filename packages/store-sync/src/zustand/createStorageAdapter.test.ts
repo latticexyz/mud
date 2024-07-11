@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { storeEventsAbi } from "@latticexyz/store";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { createStore } from "./createStore";
-import { config, deployMockGame } from "../../test/mockGame";
+import { configV2 as config, deployMockGame } from "../../test/mockGame";
 import { fetchAndStoreLogs } from "../fetchAndStoreLogs";
 import { testClient } from "../../test/common";
 import { getBlockNumber } from "viem/actions";
@@ -42,16 +42,25 @@ describe("createStorageAdapter", async () => {
             "0x000000000000000000000000078cf0753dd50f7c56f20b3ae02719ea199be2eb",
           ],
           "table": {
-            "keySchema": {
+            "codegen": {
+              "dataStruct": true,
+              "outputDirectory": "tables",
+              "storeArgument": false,
+              "tableIdArgument": false,
+            },
+            "deploy": {
+              "disabled": false,
+            },
+            "key": [
+              "player",
+            ],
+            "name": "Position",
+            "namespace": "",
+            "schema": {
               "player": {
                 "internalType": "address",
                 "type": "address",
               },
-            },
-            "name": "Position",
-            "namespace": "",
-            "tableId": "0x74620000000000000000000000000000506f736974696f6e0000000000000000",
-            "valueSchema": {
               "x": {
                 "internalType": "int32",
                 "type": "int32",
@@ -61,6 +70,8 @@ describe("createStorageAdapter", async () => {
                 "type": "int32",
               },
             },
+            "tableId": "0x74620000000000000000000000000000506f736974696f6e0000000000000000",
+            "type": "table",
           },
           "value": {
             "x": 3,
@@ -76,16 +87,25 @@ describe("createStorageAdapter", async () => {
             "0x0000000000000000000000001d96f2f6bef1202e4ce1ff6dad0c2cb002861d3e",
           ],
           "table": {
-            "keySchema": {
+            "codegen": {
+              "dataStruct": true,
+              "outputDirectory": "tables",
+              "storeArgument": false,
+              "tableIdArgument": false,
+            },
+            "deploy": {
+              "disabled": false,
+            },
+            "key": [
+              "player",
+            ],
+            "name": "Position",
+            "namespace": "",
+            "schema": {
               "player": {
                 "internalType": "address",
                 "type": "address",
               },
-            },
-            "name": "Position",
-            "namespace": "",
-            "tableId": "0x74620000000000000000000000000000506f736974696f6e0000000000000000",
-            "valueSchema": {
               "x": {
                 "internalType": "int32",
                 "type": "int32",
@@ -95,6 +115,8 @@ describe("createStorageAdapter", async () => {
                 "type": "int32",
               },
             },
+            "tableId": "0x74620000000000000000000000000000506f736974696f6e0000000000000000",
+            "type": "table",
           },
           "value": {
             "x": 1,
@@ -110,16 +132,25 @@ describe("createStorageAdapter", async () => {
             "0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6",
           ],
           "table": {
-            "keySchema": {
+            "codegen": {
+              "dataStruct": true,
+              "outputDirectory": "tables",
+              "storeArgument": false,
+              "tableIdArgument": false,
+            },
+            "deploy": {
+              "disabled": false,
+            },
+            "key": [
+              "player",
+            ],
+            "name": "Position",
+            "namespace": "",
+            "schema": {
               "player": {
                 "internalType": "address",
                 "type": "address",
               },
-            },
-            "name": "Position",
-            "namespace": "",
-            "tableId": "0x74620000000000000000000000000000506f736974696f6e0000000000000000",
-            "valueSchema": {
               "x": {
                 "internalType": "int32",
                 "type": "int32",
@@ -129,6 +160,8 @@ describe("createStorageAdapter", async () => {
                 "type": "int32",
               },
             },
+            "tableId": "0x74620000000000000000000000000000506f736974696f6e0000000000000000",
+            "type": "table",
           },
           "value": {
             "x": 3,
@@ -144,16 +177,25 @@ describe("createStorageAdapter", async () => {
             "0x000000000000000000000000dba86119a787422c593cef119e40887f396024e2",
           ],
           "table": {
-            "keySchema": {
+            "codegen": {
+              "dataStruct": true,
+              "outputDirectory": "tables",
+              "storeArgument": false,
+              "tableIdArgument": false,
+            },
+            "deploy": {
+              "disabled": false,
+            },
+            "key": [
+              "player",
+            ],
+            "name": "Position",
+            "namespace": "",
+            "schema": {
               "player": {
                 "internalType": "address",
                 "type": "address",
               },
-            },
-            "name": "Position",
-            "namespace": "",
-            "tableId": "0x74620000000000000000000000000000506f736974696f6e0000000000000000",
-            "valueSchema": {
               "x": {
                 "internalType": "int32",
                 "type": "int32",
@@ -163,6 +205,8 @@ describe("createStorageAdapter", async () => {
                 "type": "int32",
               },
             },
+            "tableId": "0x74620000000000000000000000000000506f736974696f6e0000000000000000",
+            "type": "table",
           },
           "value": {
             "x": 100,

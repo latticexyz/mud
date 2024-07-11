@@ -31,3 +31,7 @@ export type Table = {
   readonly schema: Schema;
   readonly key: readonly string[];
 };
+
+export type Tables = {
+  readonly [label: string]: Table;
+};
