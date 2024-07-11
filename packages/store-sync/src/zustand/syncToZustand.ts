@@ -1,4 +1,4 @@
-import { SyncOptions, SyncResult, storeTables, worldTables } from "../common";
+import { SyncOptions, SyncResult } from "../common";
 import { createStoreSync } from "../createStoreSync";
 import { ZustandStore } from "./createStore";
 import { createStore } from "./createStore";
@@ -7,22 +7,7 @@ import { Address } from "viem";
 import { SyncStep } from "../SyncStep";
 import { Store as StoreConfig } from "@latticexyz/store";
 import { Tables } from "@latticexyz/config";
-
-type AllTables<config extends StoreConfig, extraTables extends Tables = {}> = {
-  readonly [key in
-    | keyof config["tables"]
-    | keyof extraTables
-    | keyof storeTables
-    | keyof worldTables]: key extends keyof worldTables
-    ? worldTables[key]
-    : key extends keyof storeTables
-      ? storeTables[key]
-      : key extends keyof extraTables
-        ? extraTables[key]
-        : key extends keyof config["tables"]
-          ? config["tables"][key]
-          : never;
-};
+import { getAllTables } from "./getAllTables";
 
 type SyncToZustandOptions<config extends StoreConfig, extraTables extends Tables = {}> = Omit<
   SyncOptions,
@@ -32,32 +17,26 @@ type SyncToZustandOptions<config extends StoreConfig, extraTables extends Tables
   address: Address;
   config: config;
   tables?: extraTables;
-  store?: ZustandStore<AllTables<config, extraTables>>;
+  store?: ZustandStore<getAllTables<config, extraTables>>;
   startSync?: boolean;
 };
 
 type SyncToZustandResult<config extends StoreConfig, extraTables extends Tables = {}> = SyncResult & {
-  tables: AllTables<config, extraTables>;
-  useStore: ZustandStore<AllTables<config, extraTables>>;
+  tables: getAllTables<config, extraTables>;
+  useStore: ZustandStore<getAllTables<config, extraTables>>;
   stopSync: () => void;
 };
 
 export async function syncToZustand<config extends StoreConfig, extraTables extends Tables = {}>({
   config,
-  tables: extraTables,
+  tables: extraTables = {} as extraTables,
   store,
   startSync = true,
   ...syncOptions
 }: SyncToZustandOptions<config, extraTables>): Promise<SyncToZustandResult<config, extraTables>> {
-  const tables = {
-    ...config.tables,
-    ...extraTables,
-    ...storeTables,
-    ...worldTables,
-  } as const;
-
+  const tables = getAllTables(config, extraTables);
   const useStore = store ?? createStore({ tables });
-  const storageAdapter = createStorageAdapter({ store: useStore as never });
+  const storageAdapter = createStorageAdapter({ store: useStore });
 
   const storeSync = await createStoreSync({
     storageAdapter,
@@ -79,5 +58,5 @@ export async function syncToZustand<config extends StoreConfig, extraTables exte
     tables,
     useStore,
     stopSync,
-  } as never;
+  };
 }
