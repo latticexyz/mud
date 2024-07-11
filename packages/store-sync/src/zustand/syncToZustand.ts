@@ -1,5 +1,4 @@
-import { ResolvedStoreConfig, Tables, resolveConfig } from "@latticexyz/store/internal";
-import { SyncOptions, SyncResult, storeTables, worldTables } from "../common";
+import { SyncOptions, SyncResult } from "../common";
 import { createStoreSync } from "../createStoreSync";
 import { ZustandStore } from "./createStore";
 import { createStore } from "./createStore";
@@ -7,47 +6,35 @@ import { createStorageAdapter } from "./createStorageAdapter";
 import { Address } from "viem";
 import { SyncStep } from "../SyncStep";
 import { Store as StoreConfig } from "@latticexyz/store";
-import { storeToV1 } from "@latticexyz/store/config/v2";
+import { Tables } from "@latticexyz/config";
+import { getAllTables } from "./getAllTables";
 
-type AllTables<config extends StoreConfig, extraTables extends Tables | undefined> = ResolvedStoreConfig<
-  storeToV1<config>
->["tables"] &
-  (extraTables extends Tables ? extraTables : Record<never, never>) &
-  typeof storeTables &
-  typeof worldTables;
-
-type SyncToZustandOptions<config extends StoreConfig, extraTables extends Tables | undefined> = SyncOptions & {
+type SyncToZustandOptions<config extends StoreConfig, extraTables extends Tables = {}> = Omit<
+  SyncOptions,
+  "address" | "config"
+> & {
   // require address for now to keep the data model + retrieval simpler
   address: Address;
   config: config;
   tables?: extraTables;
-  store?: ZustandStore<AllTables<config, extraTables>>;
+  store?: ZustandStore<getAllTables<config, extraTables>>;
   startSync?: boolean;
 };
 
-type SyncToZustandResult<config extends StoreConfig, extraTables extends Tables | undefined> = SyncResult & {
-  tables: AllTables<config, extraTables>;
-  useStore: ZustandStore<AllTables<config, extraTables>>;
+type SyncToZustandResult<config extends StoreConfig, extraTables extends Tables = {}> = SyncResult & {
+  tables: getAllTables<config, extraTables>;
+  useStore: ZustandStore<getAllTables<config, extraTables>>;
   stopSync: () => void;
 };
 
-export async function syncToZustand<config extends StoreConfig, extraTables extends Tables | undefined>({
+export async function syncToZustand<config extends StoreConfig, extraTables extends Tables = {}>({
   config,
-  tables: extraTables,
+  tables: extraTables = {} as extraTables,
   store,
   startSync = true,
   ...syncOptions
 }: SyncToZustandOptions<config, extraTables>): Promise<SyncToZustandResult<config, extraTables>> {
-  // TODO: migrate this once we redo config to return fully resolved tables (https://github.com/latticexyz/mud/issues/1668)
-  // TODO: move store/world tables into `resolveConfig`
-  const resolvedConfig = resolveConfig(storeToV1(config as StoreConfig));
-  const tables = {
-    ...resolvedConfig.tables,
-    ...extraTables,
-    ...storeTables,
-    ...worldTables,
-  } as unknown as AllTables<config, extraTables>;
-
+  const tables = getAllTables(config, extraTables);
   const useStore = store ?? createStore({ tables });
   const storageAdapter = createStorageAdapter({ store: useStore });
 
