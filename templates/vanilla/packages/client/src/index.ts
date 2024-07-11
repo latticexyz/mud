@@ -2,13 +2,13 @@ import { setup } from "./mud/setup";
 import mudConfig from "contracts/mud.config";
 
 const {
-  components: { app__Counter: Counter },
+  components,
   systemCalls: { increment },
   network,
 } = await setup();
 
 // Components expose a stream that triggers when the component is updated.
-Counter.update$.subscribe((update) => {
+components.Counter.update$.subscribe((update) => {
   const [nextValue, prevValue] = update.value;
   console.log("Counter updated", update, { nextValue, prevValue });
   document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");

@@ -4,7 +4,7 @@ import { singletonEntity } from "@latticexyz/store-sync/recs";
 
 export const App = () => {
   const {
-    components: { app__Counter: Counter },
+    components: { Counter },
     systemCalls: { increment },
   } = useMUD();
 
