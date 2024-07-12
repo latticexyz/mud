@@ -1,20 +1,23 @@
-import { renderArguments, renderList, renderedSolidityHeader } from "./common";
-import { RenderEnum } from "./types";
+import { renderedSolidityHeader } from "./common";
+
+// importing this from config or store would be a cyclic dependency :(
+type Enums = {
+  readonly [name: string]: readonly [string, ...string[]];
+};
 
 /**
  * Render a list of enum data as solidity enum definitions
  */
-export function renderEnums(enums: RenderEnum[]): string {
-  let result = renderedSolidityHeader;
+export function renderEnums(enums: Enums): string {
+  return `
+    ${renderedSolidityHeader}
 
-  result += renderList(
-    enums,
-    ({ name, memberNames }) => `
-    enum ${name} {
-      ${renderArguments(memberNames)}
-    }
-  `,
-  );
-
-  return result;
+    ${Object.entries(enums).map(
+      ([name, values]) => `
+      enum ${name} {
+        ${values.join(", ")}
+      }
+    `,
+    )}
+  `;
 }

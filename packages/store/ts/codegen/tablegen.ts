@@ -6,7 +6,7 @@ import { renderTypesFromConfig } from "./renderTypesFromConfig";
 import { renderTableIndex } from "./renderTableIndex";
 import { rm } from "fs/promises";
 import { Store as StoreConfig } from "../config/v2/output";
-import { storeToV1 } from "../config/v2/compat";
+import { mapObject } from "@latticexyz/common/utils";
 
 export type TablegenOptions = {
   /**
@@ -19,8 +19,11 @@ export type TablegenOptions = {
 
 export async function tablegen({ rootDir, config, remappings }: TablegenOptions) {
   const outputDirectory = path.join(rootDir, config.sourceDirectory, config.codegen.outputDirectory);
-  const configV1 = storeToV1(config);
-  const solidityUserTypes = loadAndExtractUserTypes(configV1.userTypes, outputDirectory, remappings);
+  const solidityUserTypes = loadAndExtractUserTypes(
+    mapObject(config.userTypes, (type) => ({ ...type, internalType: type.type })),
+    outputDirectory,
+    remappings,
+  );
   const allTableOptions = getTableOptions(config, solidityUserTypes);
 
   const uniqueTableDirectories = Array.from(new Set(allTableOptions.map(({ outputPath }) => path.dirname(outputPath))));
@@ -47,9 +50,9 @@ export async function tablegen({ rootDir, config, remappings }: TablegenOptions)
   }
 
   // write types to file
-  if (Object.keys(configV1.enums).length > 0) {
+  if (Object.keys(config.enums).length > 0) {
     const fullOutputPath = path.join(outputDirectory, config.codegen.userTypesFilename);
-    const output = renderTypesFromConfig(configV1);
+    const output = renderTypesFromConfig(config);
     await formatAndWriteSolidity(output, fullOutputPath, "Generated types file");
   }
 }
