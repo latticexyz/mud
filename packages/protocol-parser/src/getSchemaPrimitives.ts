@@ -1,6 +1,6 @@
 import { Schema } from "@latticexyz/config";
-import { AbiTypeToPrimitiveType } from "abitype";
+import { SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type/internal";
 
 export type getSchemaPrimitives<schema extends Schema> = {
-  readonly [fieldName in keyof schema]: AbiTypeToPrimitiveType<schema[fieldName]["type"]>;
+  readonly [fieldName in keyof schema]: SchemaAbiTypeToPrimitiveType<schema[fieldName]["type"]>;
 };
