@@ -679,6 +679,7 @@ We will now fix this.
    import { defineWorld } from "@latticexyz/world";
 
    export default defineWorld({
+     namespace: "app",
      tables: {
        Counter: {
          schema: {
@@ -696,7 +697,7 @@ We will now fix this.
 
    <CollapseCode>
 
-   ```ts filename="setupNetwork.ts" copy showLineNumbers {24-25,38,96}
+   ```ts filename="setupNetwork.ts" copy showLineNumbers {24,37,83-91,105}
    /*
     * The MUD client code is built on top of viem
     * (https://viem.sh/docs/getting-started.html).
@@ -720,7 +721,6 @@ We will now fix this.
    import { createBurnerAccount, transportObserver, ContractWrite } from "@latticexyz/common";
    import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
 
-   import { resolveConfig } from "@latticexyz/store/internal";
    import { storeToV1 } from "@latticexyz/store/config/v2";
 
    import { Subject, share } from "rxjs";
@@ -780,6 +780,16 @@ We will now fix this.
        client: { public: publicClient, wallet: burnerWalletClient },
      });
 
+     /* Update counterConfig.tables so it'll work as components */
+     const resolvedTables = storeToV1(counterConfig).tables;
+     Object.keys(counterConfig.tables).map((tableName) => {
+       const oldTableName = tableName.replace(/.*__/, "");
+       counterConfig.tables[tableName].keySchema = resolvedTables[oldTableName].keySchema;
+       counterConfig.tables[tableName].valueSchema = resolvedTables[oldTableName].valueSchema;
+     });
+     counterConfig.tables.Counter = counterConfig.tables.app__Counter;
+     delete counterConfig.tables["app__Counter"];
+
      /*
       * Sync on-chain state into RECS and keeps our client in sync.
       * Uses the MUD indexer if available, otherwise falls back
@@ -792,7 +802,7 @@ We will now fix this.
        address: networkConfig.worldAddress as Hex,
        publicClient,
        startBlock: BigInt(networkConfig.initialBlockNumber),
-       tables: resolveConfig(storeToV1(counterConfig)).tables,
+       tables: counterConfig.tables,
      });
 
      return {
