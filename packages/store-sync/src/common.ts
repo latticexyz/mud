@@ -2,11 +2,16 @@ import { Address, Block, Hex, Log, PublicClient, TransactionReceipt } from "viem
 import { StoreEventsAbiItem, StoreEventsAbi } from "@latticexyz/store";
 import { Observable } from "rxjs";
 import { UnionPick } from "@latticexyz/common/type-utils";
-import { SchemaToPrimitives, getKeySchema, getSchemaTypes, getValueSchema } from "@latticexyz/protocol-parser/internal";
+import {
+  getKeySchema,
+  getSchemaPrimitives,
+  getSchemaTypes,
+  getValueSchema,
+} from "@latticexyz/protocol-parser/internal";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { Store as StoreConfig } from "@latticexyz/store";
-import { Table as ConfigTable } from "@latticexyz/config";
+import { Table as ConfigTable, Schema } from "@latticexyz/config";
 
 export const storeTables = storeConfig.tables;
 export type storeTables = typeof storeTables;
@@ -22,16 +27,17 @@ export type ChainId = number;
 export type WorldId = `${ChainId}:${Address}`;
 
 export type TableRecord<table extends ConfigTable = ConfigTable> = {
-  readonly key: SchemaToPrimitives<getSchemaTypes<getKeySchema<table>>>;
-  readonly value: SchemaToPrimitives<getSchemaTypes<getValueSchema<table>>>;
-  readonly fields: SchemaToPrimitives<getSchemaTypes<table["schema"]>>;
+  readonly key: getSchemaPrimitives<getKeySchema<table>>;
+  readonly value: getSchemaPrimitives<getValueSchema<table>>;
+  readonly fields: getSchemaPrimitives<table["schema"]>;
 };
 
 export type Table<table extends ConfigTable = ConfigTable> = table & {
   readonly address: Address;
-  readonly keySchema: getSchemaTypes<getValueSchema<table>>;
-  readonly valueSchema: getSchemaTypes<getValueSchema<table>>;
+  readonly keySchema: getSchemaTypes<ConfigTable extends table ? Schema : getKeySchema<table>>;
+  readonly valueSchema: getSchemaTypes<ConfigTable extends table ? Schema : getValueSchema<table>>;
 };
+
 export type TableWithRecords<table extends ConfigTable = ConfigTable> = Table<table> & {
   readonly records: TableRecord<table>[];
 };

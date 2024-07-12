@@ -29,3 +29,4 @@ export * from "../valueSchemaToHex";
 export * from "../getKeySchema";
 export * from "../getValueSchema";
 export * from "../getSchemaTypes";
+export * from "../getSchemaPrimitives";

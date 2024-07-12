@@ -5,13 +5,13 @@ import { tables as internalTables } from "../postgres/tables";
 import { Hex } from "viem";
 import { decodeDynamicField } from "@latticexyz/protocol-parser/internal";
 import { logToTable } from "../logToTable";
-import { Table } from "@latticexyz/config";
+import { PartialTable } from "./common";
 
 export async function getTables(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   db: PgDatabase<any>,
   filters: { address: Hex | null; tableId: Hex | null }[] = [],
-): Promise<readonly Table[]> {
+): Promise<readonly PartialTable[]> {
   const conditions = filters.map((filter) =>
     and(
       filter.address != null ? eq(internalTables.recordsTable.address, filter.address) : undefined,
