@@ -2,4 +2,4 @@
 "@latticexyz/store-sync": patch
 ---
 
-Refactored `syncToZustand` to use new Store config under the hood, removing compatibility layers and improving performance.
+Refactored package to use the new Store/World configs under the hood, removing compatibility layers and improving performance.

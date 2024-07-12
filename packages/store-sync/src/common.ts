@@ -1,19 +1,23 @@
 import { Address, Block, Hex, Log, PublicClient, TransactionReceipt } from "viem";
 import { StoreEventsAbiItem, StoreEventsAbi } from "@latticexyz/store";
-import { resolveConfig } from "@latticexyz/store/internal";
 import { Observable } from "rxjs";
 import { UnionPick } from "@latticexyz/common/type-utils";
-import { KeySchema, TableRecord, ValueSchema } from "@latticexyz/protocol-parser/internal";
+import {
+  getKeySchema,
+  getSchemaPrimitives,
+  getSchemaTypes,
+  getValueSchema,
+} from "@latticexyz/protocol-parser/internal";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
-import { flattenSchema } from "./flattenSchema";
 import { Store as StoreConfig } from "@latticexyz/store";
-import { storeToV1 } from "@latticexyz/store/config/v2";
+import { Table as ConfigTable, Schema } from "@latticexyz/config";
 
-/** @internal Temporary workaround until we redo our config parsing and can pull this directly from the config (https://github.com/latticexyz/mud/issues/1668) */
-export const storeTables = resolveConfig(storeToV1(storeConfig)).tables;
-/** @internal Temporary workaround until we redo our config parsing and can pull this directly from the config (https://github.com/latticexyz/mud/issues/1668) */
-export const worldTables = resolveConfig(storeToV1(worldConfig)).tables;
+export const storeTables = storeConfig.tables;
+export type storeTables = typeof storeTables;
+
+export const worldTables = worldConfig.tables;
+export type worldTables = typeof worldTables;
 
 export const internalTableIds = [...Object.values(storeTables), ...Object.values(worldTables)].map(
   (table) => table.tableId,
@@ -22,19 +26,21 @@ export const internalTableIds = [...Object.values(storeTables), ...Object.values
 export type ChainId = number;
 export type WorldId = `${ChainId}:${Address}`;
 
-export type TableNamespace = string;
-export type TableName = string;
-
-export type Table = {
-  address: Address;
-  tableId: Hex;
-  namespace: TableNamespace;
-  name: TableName;
-  keySchema: KeySchema;
-  valueSchema: ValueSchema;
+export type TableRecord<table extends ConfigTable = ConfigTable> = {
+  readonly key: getSchemaPrimitives<getKeySchema<table>>;
+  readonly value: getSchemaPrimitives<getValueSchema<table>>;
+  readonly fields: getSchemaPrimitives<table["schema"]>;
 };
 
-export type TableWithRecords = Table & { records: TableRecord[] };
+export type Table<table extends ConfigTable = ConfigTable> = table & {
+  readonly address: Address;
+  readonly keySchema: getSchemaTypes<ConfigTable extends table ? Schema : getKeySchema<table>>;
+  readonly valueSchema: getSchemaTypes<ConfigTable extends table ? Schema : getValueSchema<table>>;
+};
+
+export type TableWithRecords<table extends ConfigTable = ConfigTable> = Table<table> & {
+  readonly records: readonly TableRecord<table>[];
+};
 
 export type StoreEventsLog = Log<bigint, number, false, StoreEventsAbiItem, true, StoreEventsAbi>;
 export type BlockLogs = { blockNumber: StoreEventsLog["blockNumber"]; logs: readonly StoreEventsLog[] };
@@ -127,10 +133,8 @@ export type StorageAdapterLog = Partial<StoreEventsLog> & UnionPick<StoreEventsL
 export type StorageAdapterBlock = { blockNumber: BlockLogs["blockNumber"]; logs: readonly StorageAdapterLog[] };
 export type StorageAdapter = (block: StorageAdapterBlock) => Promise<void>;
 
-export const schemasTableId = storeTables.Tables.tableId;
 export const schemasTable = {
-  ...storeTables.Tables,
-  // TODO: remove once we've got everything using the new Table shape
-  keySchema: flattenSchema(storeTables.Tables.keySchema),
-  valueSchema: flattenSchema(storeTables.Tables.valueSchema),
+  ...storeTables.store__Tables,
+  keySchema: getSchemaTypes(getKeySchema(storeTables.store__Tables)),
+  valueSchema: getSchemaTypes(getValueSchema(storeTables.store__Tables)),
 };

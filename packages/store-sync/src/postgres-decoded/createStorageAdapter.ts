@@ -7,7 +7,7 @@ import { debug } from "./debug";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
-import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
+import { KeySchema, decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
 import { tables as internalTables } from "../postgres/tables";
 import { createStorageAdapter as createBytesStorageAdapter } from "../postgres/createStorageAdapter";
 import { setupTables } from "../postgres/setupTables";
@@ -66,7 +66,7 @@ export async function createStorageAdapter<config extends StoreConfig = StoreCon
 
         const sqlTable = buildTable(table);
         const keyBytes = concatHex(log.args.keyTuple as Hex[]);
-        const key = decodeKey(table.keySchema, log.args.keyTuple);
+        const key = decodeKey(table.keySchema as KeySchema, log.args.keyTuple);
 
         if (
           log.eventName === "Store_SetRecord" ||
