@@ -2,7 +2,7 @@ import { Middleware } from "koa";
 import Router from "@koa/router";
 import compose from "koa-compose";
 import { input } from "@latticexyz/store-sync/indexer-client";
-import { storeTables, tablesWithRecordsToLogs } from "@latticexyz/store-sync";
+import { schemasTable, tablesWithRecordsToLogs } from "@latticexyz/store-sync";
 import { debug } from "../debug";
 import { createBenchmark } from "@latticexyz/common";
 import { compress } from "../koa-middleware/compress";
@@ -28,7 +28,7 @@ export function apiRoutes(database: BaseSQLiteDatabase<"sync", any>): Middleware
     }
 
     try {
-      options.filters = options.filters.length > 0 ? [...options.filters, { tableId: storeTables.Tables.tableId }] : [];
+      options.filters = options.filters.length > 0 ? [...options.filters, { tableId: schemasTable.tableId }] : [];
       benchmark("parse config");
       const { blockNumber, tables } = getTablesWithRecords(database, options);
       benchmark("query tables with records");

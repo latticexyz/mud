@@ -39,7 +39,7 @@ export type Table<table extends ConfigTable = ConfigTable> = table & {
 };
 
 export type TableWithRecords<table extends ConfigTable = ConfigTable> = Table<table> & {
-  readonly records: TableRecord<table>[];
+  readonly records: readonly TableRecord<table>[];
 };
 
 export type StoreEventsLog = Log<bigint, number, false, StoreEventsAbiItem, true, StoreEventsAbi>;

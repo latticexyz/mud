@@ -6,8 +6,8 @@ export type QueryAdapter = {
    * @deprecated
    */
   findAll: (opts: { chainId: number; address?: Hex; filters?: readonly SyncFilter[] }) => Promise<{
-    blockNumber: bigint | null;
-    tables: readonly TableWithRecords[];
+    readonly blockNumber: bigint | null;
+    readonly tables: readonly TableWithRecords[];
   }>;
   getLogs: (opts: {
     readonly chainId: number;
