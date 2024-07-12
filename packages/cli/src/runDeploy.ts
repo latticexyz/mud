@@ -133,7 +133,9 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     salt,
     worldAddress: opts.worldAddress as Hex | undefined,
     client,
-    config: resolvedConfig,
+    tables: Object.values(configV2.tables),
+    systems: resolvedConfig.systems,
+    libraries: resolvedConfig.libraries,
     modules,
     withWorldProxy: configV2.deploy.upgradeableWorldImplementation,
   });
