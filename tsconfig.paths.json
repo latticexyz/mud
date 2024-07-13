@@ -3,6 +3,8 @@
     "paths": {
       "@latticexyz/abi-ts": ["./packages/abi-ts/src/index.ts"],
       "@latticexyz/block-logs-stream": ["./packages/block-logs-stream/src/index.ts"],
+      "@latticexyz/account-kit": ["./packages/account-kit/src/exports/index.ts"],
+      "@latticexyz/account-kit/internal": ["./packages/account-kit/src/exports/internal.ts"],
       "@latticexyz/cli": ["./packages/cli/src/index.ts"],
       "@latticexyz/common": ["./packages/common/src/index.ts"],
       "@latticexyz/common/actions": ["./packages/common/src/actions/index.ts"],

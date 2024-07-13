@@ -14,6 +14,7 @@ import { debug as parentDebug } from "./debug";
 import { getNonceManager } from "./getNonceManager";
 import { parseAccount } from "viem/accounts";
 import { getFeeRef } from "./getFeeRef";
+import { getAction } from "viem/utils";
 
 const debug = parentDebug.extend("sendTransaction");
 
@@ -54,6 +55,7 @@ export async function sendTransaction<
 
   const nonceManager = await getNonceManager({
     client: opts.publicClient ?? client,
+    chainId: chain?.id,
     address: account.address,
     blockTag: "pending",
     queueConcurrency: opts.queueConcurrency,
@@ -98,7 +100,7 @@ export async function sendTransaction<
             nonce,
             ...feeRef.fees,
           };
-          return await viem_sendTransaction(client, parameters);
+          return await getAction(client, viem_sendTransaction, "sendTransaction")(parameters);
         },
         {
           retries: 3,
