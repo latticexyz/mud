@@ -403,7 +403,7 @@ importers:
         version: 2.9.20(typescript@5.4.2)(zod@3.23.8)
       zustand:
         specifier: ^4.3.7
-        version: 4.3.7(react@18.2.0)
+        version: 4.3.7(immer@10.1.1)(react@18.2.0)
     devDependencies:
       '@types/react':
         specifier: 18.2.22
@@ -954,7 +954,7 @@ importers:
         version: 3.23.8
       zustand:
         specifier: ^4.3.7
-        version: 4.3.7(react@18.2.0)
+        version: 4.3.7(immer@10.1.1)(react@18.2.0)
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -1136,6 +1136,25 @@ importers:
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
+      vitest:
+        specifier: 0.34.6
+        version: 0.34.6(jsdom@22.1.0)
+
+  packages/zustand-query:
+    dependencies:
+      '@arktype/util':
+        specifier: 0.0.40
+        version: 0.0.40
+      viem:
+        specifier: 2.9.20
+        version: 2.9.20(typescript@5.4.2)(zod@3.23.7)
+      zustand:
+        specifier: ^4.3.7
+        version: 4.3.7(immer@10.1.1)(react@18.2.0)
+    devDependencies:
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.23)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0)
@@ -4261,6 +4280,9 @@ packages:
   ignore@5.2.4:
     resolution: {integrity: sha512-MAb38BcSbH0eHNBxn7ql2NH/kX33OkB3lZ1BNdh7ENeRChHTYsTvWrMubiIAMNS2llXEEgZ1MUOBtXChP3kaFQ==}
     engines: {node: '>= 4'}
+
+  immer@10.1.1:
+    resolution: {integrity: sha512-s2MPrmjovJcoMaHtx6K11Ra7oD05NT97w1IC5zpMkT6Atjr7H8LjaDd81iIxUYpMKSRRNMJE703M1Fhr/TctHw==}
 
   import-fresh@2.0.0:
     resolution: {integrity: sha512-eZ5H8rcgYazHbKC3PG4ClHNykCSxtAhxSSEM+2mb+7evD2CKF5V7c0dNum7AdpDh0ZdICwZY9sRSn8f+KH96sg==}
@@ -10549,6 +10571,9 @@ snapshots:
 
   ignore@5.2.4: {}
 
+  immer@10.1.1:
+    optional: true
+
   import-fresh@2.0.0:
     dependencies:
       caller-path: 2.0.0
@@ -13337,8 +13362,9 @@ snapshots:
 
   zod@3.23.8: {}
 
-  zustand@4.3.7(react@18.2.0):
+  zustand@4.3.7(immer@10.1.1)(react@18.2.0):
     dependencies:
       use-sync-external-store: 1.2.0(react@18.2.0)
     optionalDependencies:
+      immer: 10.1.1
       react: 18.2.0
