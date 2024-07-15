@@ -35,6 +35,7 @@
       "@latticexyz/store/register": ["./packages/store/ts/register/index.ts"],
       "@latticexyz/store/out/*": ["./packages/store/out/*"],
       "@latticexyz/store/*": ["./packages/store/ts/exports/*.ts"],
+      "@latticexyz/store-sync": ["./packages/store-sync/src/index.ts"],
       "@latticexyz/store-sync/*": ["./packages/store-sync/src/*"],
       "@latticexyz/utils": ["./packages/utils/src/index.ts"],
       "@latticexyz/world": ["./packages/world/ts/exports/index.ts"],

@@ -1,10 +1,12 @@
 import { describe, it, expect } from "vitest";
 import { buildTable } from "./buildTable";
+import { resourceToHex } from "@latticexyz/common";
 
 describe("buildTable", () => {
   it("should create table from schema", async () => {
     const table = buildTable({
       address: "0xffffffffffffffffffffffffffffffffffffffff",
+      tableId: resourceToHex({ type: "table", namespace: "test", name: "users" }),
       namespace: "test",
       name: "users",
       keySchema: { x: "uint32", y: "uint32" },
@@ -634,6 +636,7 @@ describe("buildTable", () => {
   it("can create a singleton table", async () => {
     const table = buildTable({
       address: "0xffffffffffffffffffffffffffffffffffffffff",
+      tableId: resourceToHex({ type: "table", namespace: "test", name: "users" }),
       namespace: "test",
       name: "users",
       keySchema: {},

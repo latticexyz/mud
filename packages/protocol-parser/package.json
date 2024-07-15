@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/protocol-parser",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "description": "Parser utilities for the MUD protocol",
   "repository": {
     "type": "git",
@@ -12,6 +12,16 @@
   "exports": {
     ".": "./dist/index.js",
     "./internal": "./dist/internal.js"
+  },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ],
+      "internal": [
+        "./dist/internal.d.ts"
+      ]
+    }
   },
   "files": [
     "dist"

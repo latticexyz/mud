@@ -13,7 +13,7 @@ import { StorageAdapter } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
-import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
+import { KeySchema, decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
 
 // TODO: upgrade drizzle and use async sqlite interface for consistency
 
@@ -46,7 +46,12 @@ export async function sqliteStorage<config extends StoreConfig = StoreConfig>({
           .values({
             schemaVersion,
             id: getTableName(table.address, table.namespace, table.name),
-            ...table,
+            address: table.address,
+            tableId: table.tableId,
+            namespace: table.namespace,
+            name: table.name,
+            keySchema: table.keySchema,
+            valueSchema: table.valueSchema,
             lastUpdatedBlockNumber: blockNumber,
           })
           .onConflictDoNothing()
@@ -97,7 +102,7 @@ export async function sqliteStorage<config extends StoreConfig = StoreConfig>({
 
         const sqlTable = buildTable(table);
         const uniqueKey = concatHex(log.args.keyTuple as Hex[]);
-        const key = decodeKey(table.keySchema, log.args.keyTuple);
+        const key = decodeKey(table.keySchema as KeySchema, log.args.keyTuple);
 
         if (log.eventName === "Store_SetRecord") {
           const value = decodeValueArgs(table.valueSchema, log.args);

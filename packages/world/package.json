@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/world",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "description": "World framework",
   "repository": {
     "type": "git",
@@ -18,10 +18,31 @@
     "./node": "./dist/node.js",
     "./out/*": "./out/*"
   },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ],
+      "internal": [
+        "./dist/internal.d.ts"
+      ],
+      "mud.config": [
+        "./dist/mud.config.d.ts"
+      ],
+      "config/v2": [
+        "./dist/config/v2.d.ts"
+      ],
+      "register": [
+        "./dist/register.d.ts"
+      ],
+      "node": [
+        "./dist/node.d.ts"
+      ]
+    }
+  },
   "files": [
     "dist",
     "out",
-    "foundry.toml",
     "src",
     "test/MudTest.t.sol"
   ],
@@ -30,7 +51,7 @@
     "build:abi": "forge build",
     "build:abi-ts": "abi-ts",
     "build:js": "tsup",
-    "build:mud": "tsx ./ts/scripts/tablegen.ts && tsx ./ts/scripts/worldgen.ts && tsx ./ts/scripts/generate-test-tables.ts",
+    "build:mud": "tsx ./ts/scripts/build.ts && tsx ./ts/scripts/generate-test-tables.ts",
     "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud",
     "clean:abi": "forge clean",
     "clean:js": "rimraf dist",
@@ -42,7 +63,7 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@arktype/util": "0.0.29",
+    "@arktype/util": "0.0.40",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
@@ -54,16 +75,16 @@
     "zod": "^3.22.2"
   },
   "devDependencies": {
+    "@arktype/attest": "0.7.5",
     "@latticexyz/abi-ts": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
     "@types/ejs": "^3.1.1",
-    "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.15.11",
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
     "ejs": "^3.1.10",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
-    "glob": "^8.0.3",
+    "glob": "^10.4.2",
     "solhint": "^3.3.7",
     "tsup": "^6.7.0",
     "tsx": "^3.12.6",

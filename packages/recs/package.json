@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/recs",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
@@ -11,6 +11,16 @@
   "exports": {
     ".": "./dist/index.js",
     "./deprecated": "./dist/deprecated/index.js"
+  },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ],
+      "deprecated": [
+        "./dist/deprecated/index.d.ts"
+      ]
+    }
   },
   "files": [
     "dist"

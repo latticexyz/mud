@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/query",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "description": "Tools for interacting with the MUD query API",
   "repository": {
     "type": "git",
@@ -13,6 +13,16 @@
     ".": "./dist/index.js",
     "./internal": "./dist/internal.js"
   },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ],
+      "internal": [
+        "./dist/internal.d.ts"
+      ]
+    }
+  },
   "files": [
     "dist"
   ],
@@ -24,6 +34,7 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
+    "@arktype/util": "0.0.40",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",

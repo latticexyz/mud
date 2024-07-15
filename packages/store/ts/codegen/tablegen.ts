@@ -9,13 +9,16 @@ import { Store as StoreConfig } from "../config/v2/output";
 import { storeToV1 } from "../config/v2/compat";
 
 export type TablegenOptions = {
-  configPath: string;
+  /**
+   * MUD project root directory where all other relative paths are resolved from.
+   */
+  rootDir: string;
   config: StoreConfig;
   remappings: [string, string][];
 };
 
-export async function tablegen({ configPath, config, remappings }: TablegenOptions) {
-  const outputDirectory = path.join(path.dirname(configPath), config.sourceDirectory, config.codegen.outputDirectory);
+export async function tablegen({ rootDir, config, remappings }: TablegenOptions) {
+  const outputDirectory = path.join(rootDir, config.sourceDirectory, config.codegen.outputDirectory);
   const configV1 = storeToV1(config);
   const solidityUserTypes = loadAndExtractUserTypes(configV1.userTypes, outputDirectory, remappings);
   const allTableOptions = getTableOptions(config, solidityUserTypes);
@@ -38,14 +41,14 @@ export async function tablegen({ configPath, config, remappings }: TablegenOptio
 
   // write table index
   if (allTableOptions.length > 0) {
-    const fullOutputPath = path.join(outputDirectory, configV1.codegenIndexFilename);
+    const fullOutputPath = path.join(outputDirectory, config.codegen.indexFilename);
     const output = renderTableIndex(allTableOptions);
     await formatAndWriteSolidity(output, fullOutputPath, "Generated table index");
   }
 
   // write types to file
   if (Object.keys(configV1.enums).length > 0) {
-    const fullOutputPath = path.join(outputDirectory, configV1.userTypesFilename);
+    const fullOutputPath = path.join(outputDirectory, config.codegen.userTypesFilename);
     const output = renderTypesFromConfig(configV1);
     await formatAndWriteSolidity(output, fullOutputPath, "Generated types file");
   }

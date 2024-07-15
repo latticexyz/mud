@@ -1,4 +1,4 @@
-import { ErrorMessage, conform, evaluate, narrow } from "@arktype/util";
+import { ErrorMessage, conform, narrow, type withJsDoc } from "@arktype/util";
 import {
   UserTypes,
   extendedScope,
@@ -11,15 +11,15 @@ import {
   Store,
   hasOwnKey,
   validateStore,
-  isObject,
 } from "@latticexyz/store/config/v2";
 import { SystemsInput, WorldInput } from "./input";
 import { CONFIG_DEFAULTS, MODULE_DEFAULTS } from "./defaults";
 import { Tables } from "@latticexyz/store/internal";
 import { resolveSystems } from "./systems";
-import { resolveNamespacedTables } from "./namespaces";
+import { resolveNamespacedTables, validateNamespaces } from "./namespaces";
 import { resolveCodegen } from "./codegen";
 import { resolveDeploy } from "./deploy";
+import type { World } from "./output.js";
 
 export type validateWorld<world> = {
   readonly [key in keyof world]: key extends "tables"
@@ -41,18 +41,11 @@ export function validateWorld(world: unknown): asserts world is WorldInput {
   validateStore(world);
 
   if (hasOwnKey(world, "namespaces")) {
-    if (!isObject(world.namespaces)) {
-      throw new Error(`Expected namespaces, received ${JSON.stringify(world.namespaces)}`);
-    }
-    for (const namespace of Object.values(world.namespaces)) {
-      if (hasOwnKey(namespace, "tables")) {
-        validateTables(namespace.tables, scope);
-      }
-    }
+    validateNamespaces(world.namespaces, scope);
   }
 }
 
-export type resolveWorld<world> = evaluate<
+export type resolveWorld<world> = withJsDoc<
   resolveStore<world> &
     mergeIfUndefined<
       { tables: resolveNamespacedTables<world> } & Omit<
@@ -68,7 +61,8 @@ export type resolveWorld<world> = evaluate<
         "namespaces" | keyof Store
       >,
       CONFIG_DEFAULTS
-    >
+    >,
+  World
 >;
 
 export function resolveWorld<const world extends WorldInput>(world: world): resolveWorld<world> {
@@ -107,7 +101,7 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
   ) as never;
 }
 
-export function defineWorld<const world>(world: validateWorld<world>): resolveWorld<world> {
-  validateWorld(world);
-  return resolveWorld(world) as never;
+export function defineWorld<const input>(input: validateWorld<input>): resolveWorld<input> {
+  validateWorld(input);
+  return resolveWorld(input) as never;
 }

@@ -1,6 +1,6 @@
 {
   "name": "solhint-config-mud",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
@@ -9,6 +9,13 @@
   "license": "MIT",
   "exports": {
     ".": "./dist/index.js"
+  },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ]
+    }
   },
   "files": [
     "dist"
