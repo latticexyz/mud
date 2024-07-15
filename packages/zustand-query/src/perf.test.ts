@@ -1,6 +1,7 @@
 import { describe, beforeEach, it } from "vitest";
 import { StoreApi, createStore } from "zustand/vanilla";
 import { Component, Type, createEntity, createWorld, defineComponent, setComponent } from "@latticexyz/recs";
+import { mutative } from "zustand-mutative";
 
 export function printDuration(description: string, fn: () => unknown) {
   const start = performance.now();
@@ -20,17 +21,20 @@ type NameSchema = {
   name: string;
 };
 
-type Store = {
+type State = {
   namespaces: {
     app: {
       Position: Record<string, PositionSchema>;
       Name: Record<string, NameSchema>;
     };
   };
+};
+
+type Actions = {
   setPosition: (entity: string, position: PositionSchema) => void;
 };
 
-describe.only("setting records in recs", () => {
+describe("setting records in recs", () => {
   let world: ReturnType<typeof createWorld>;
   let Position: Component<{
     x: Type.Number;
@@ -135,10 +139,10 @@ describe.only("setting records in recs", () => {
 });
 
 describe("setting records in zustand", () => {
-  let store: StoreApi<Store>;
+  let store: StoreApi<State & Actions>;
 
   beforeEach(() => {
-    store = createStore<Store>((set) => ({
+    store = createStore<State & Actions>((set) => ({
       namespaces: {
         app: {
           Position: {
@@ -220,6 +224,108 @@ describe("setting records in zustand", () => {
   it("[zustand]: setting 20,000 records", () => {
     printDuration("setting 20,000 records", () => {
       for (let i = 0; i < 20_000; i++) {
+        store.getState().setPosition(String(i), { x: i, y: i });
+      }
+    });
+  });
+});
+
+describe("setting records in zustand with mutative", () => {
+  let store: StoreApi<State & Actions>;
+
+  beforeEach(() => {
+    store = createStore<State & Actions>()(
+      mutative((set) => ({
+        namespaces: {
+          app: {
+            Position: {
+              "0x": {
+                x: 0,
+                y: 0,
+              },
+            },
+            Name: {
+              "0x": {
+                name: "Some Name",
+              },
+            },
+          },
+        },
+        setPosition: (entity: string, position: PositionSchema) =>
+          set((state) => {
+            state.namespaces.app.Position[entity] = position;
+          }),
+      })),
+    );
+  });
+
+  it("[zustand mutative]: setting 10 records", () => {
+    printDuration("setting 10 records", () => {
+      for (let i = 0; i < 10; i++) {
+        store.getState().setPosition(String(i), { x: i, y: i });
+      }
+    });
+  });
+
+  it("[zustand mutative]: setting 100 records", () => {
+    printDuration("setting 100 records", () => {
+      for (let i = 0; i < 100; i++) {
+        store.getState().setPosition(String(i), { x: i, y: i });
+      }
+    });
+  });
+
+  it("[zustand mutative]: setting 1,000 records", () => {
+    printDuration("setting 1,000 records", () => {
+      for (let i = 0; i < 1_000; i++) {
+        store.getState().setPosition(String(i), { x: i, y: i });
+      }
+    });
+  });
+
+  it("[zustand mutative]: setting 5,000 records", () => {
+    printDuration("setting 5,000 records", () => {
+      for (let i = 0; i < 5_000; i++) {
+        store.getState().setPosition(String(i), { x: i, y: i });
+      }
+    });
+  });
+
+  it("[zustand mutative]: setting 10,000 records", () => {
+    printDuration("setting 10,000 records", () => {
+      for (let i = 0; i < 10_000; i++) {
+        store.getState().setPosition(String(i), { x: i, y: i });
+      }
+    });
+  });
+
+  it("[zustand mutative]: setting 15,000 records", () => {
+    printDuration("setting 15,000 records", () => {
+      for (let i = 0; i < 15_000; i++) {
+        store.getState().setPosition(String(i), { x: i, y: i });
+      }
+    });
+  });
+
+  it("[zustand mutative]: setting 20,000 records", () => {
+    printDuration("setting 20,000 records", () => {
+      for (let i = 0; i < 20_000; i++) {
+        store.getState().setPosition(String(i), { x: i, y: i });
+      }
+    });
+  });
+
+  it.only("[zustand mutative]: setting 30,000 records", () => {
+    printDuration("setting 30,000 records", () => {
+      for (let i = 0; i < 30_000; i++) {
+        store.getState().setPosition(String(i), { x: i, y: i });
+      }
+    });
+  });
+
+  it("[zustand mutative]: setting 40,000 records", () => {
+    printDuration("setting 40,000 records", () => {
+      for (let i = 0; i < 40_000; i++) {
         store.getState().setPosition(String(i), { x: i, y: i });
       }
     });
