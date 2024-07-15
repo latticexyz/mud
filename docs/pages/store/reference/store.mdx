@@ -5,7 +5,7 @@
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStore.sol)
 
 **Inherits:**
-[IStoreKernel](/src/IStoreKernel.sol/interface.IStoreKernel.md), [IStoreRegistration](/store/reference/store#istoreregistration)
+[IStoreKernel](/store/reference/store#istorekernel), [IStoreRegistration](/store/reference/store#istoreregistration)
 
 ## IStoreEvents
 
@@ -608,3 +608,28 @@ function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 ena
 ```solidity
 function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) external;
 ```
+
+## IStoreKernel
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreKernel.sol)
+
+**Inherits:**
+[IStoreRead](/store/reference/store#istoreread), [IStoreWrite](/store/reference/store#istorewrite), [IStoreErrors](/store/reference/store#istoreerrors), [IFieldLayoutErrors](/src/IFieldLayoutErrors.sol/interface.IFieldLayoutErrors.md), [IEncodedLengthsErrors](/src/IEncodedLengthsErrors.sol/interface.IEncodedLengthsErrors.md), [ISchemaErrors](/src/ISchemaErrors.sol/interface.ISchemaErrors.md), [ISliceErrors](/src/ISliceErrors.sol/interface.ISliceErrors.md)
+
+IStoreKernel includes the error interfaces for each library that it uses.
+
+### Functions
+
+#### storeVersion
+
+Returns the protocol version of the Store contract.
+
+```solidity
+function storeVersion() external view returns (bytes32 version);
+```
+
+**Returns**
+
+| Name      | Type      | Description                                 |
+| --------- | --------- | ------------------------------------------- |
+| `version` | `bytes32` | The protocol version of the Store contract. |
