@@ -7,9 +7,8 @@ import { createStoreSync } from "../createStoreSync";
 import { singletonEntity } from "./singletonEntity";
 import { SyncStep } from "../SyncStep";
 
-type SyncToRecsOptions<config extends StoreConfig, extraTables extends Record<string, Table>> = Omit<
-  SyncOptions<config>,
-  "config"
+type SyncToRecsOptions<config extends StoreConfig, extraTables extends Record<string, Table>> = NoInfer<
+  Omit<SyncOptions<config>, "config">
 > & {
   world: RecsWorld;
   config: config;
