@@ -6,7 +6,6 @@ import { createWalletClient, http, Hex, isHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
-import { worldToV1 } from "@latticexyz/world/config/v2";
 import { getOutDirectory, getRpcUrl } from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import { MUDError } from "@latticexyz/common/errors";
@@ -64,9 +63,9 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
 
   const configPath = await resolveConfigPath(opts.configPath);
-  const configV2 = (await loadConfig(configPath)) as WorldConfig;
+  const config = (await loadConfig(configPath)) as WorldConfig;
   const rootDir = path.dirname(configPath);
-  const config = worldToV1(configV2);
+
   if (opts.printConfig) {
     console.log(chalk.green("\nResolved config:\n"), JSON.stringify(config, null, 2));
   }
@@ -82,15 +81,15 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   // Run build
   if (!opts.skipBuild) {
-    await build({ rootDir, config: configV2, foundryProfile: profile });
+    await build({ rootDir, config, foundryProfile: profile });
   }
 
   const { systems, libraries } = await resolveConfig({
     rootDir,
-    config: configV2,
+    config,
     forgeOutDir: outDir,
   });
-  const modules = await configToModules(configV2, outDir);
+  const modules = await configToModules(config, outDir);
 
   const account = await (async () => {
     if (opts.kms) {
@@ -136,15 +135,15 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     salt,
     worldAddress: opts.worldAddress as Hex | undefined,
     client,
-    tables: Object.values(configV2.tables),
+    tables: Object.values(config.tables),
     systems,
     libraries,
     modules,
-    withWorldProxy: configV2.deploy.upgradeableWorldImplementation,
+    withWorldProxy: config.deploy.upgradeableWorldImplementation,
   });
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
     await postDeploy(
-      config.postDeployScript,
+      config.deploy.postDeployScript,
       worldDeploy.address,
       rpc,
       profile,
@@ -161,23 +160,27 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   if (opts.saveDeployment) {
     const chainId = await getChainId(client);
-    const deploysDir = path.join(config.deploysDirectory, chainId.toString());
+    const deploysDir = path.join(config.deploy.deploysDirectory, chainId.toString());
     mkdirSync(deploysDir, { recursive: true });
     writeFileSync(path.join(deploysDir, "latest.json"), JSON.stringify(deploymentInfo, null, 2));
     writeFileSync(path.join(deploysDir, Date.now() + ".json"), JSON.stringify(deploymentInfo, null, 2));
 
     const localChains = [1337, 31337];
-    const deploys = existsSync(config.worldsFile) ? JSON.parse(readFileSync(config.worldsFile, "utf-8")) : {};
+    const deploys = existsSync(config.deploy.worldsFile)
+      ? JSON.parse(readFileSync(config.deploy.worldsFile, "utf-8"))
+      : {};
     deploys[chainId] = {
       address: deploymentInfo.worldAddress,
       // We expect the worlds file to be committed and since local deployments are often
       // a consistent address but different block number, we'll ignore the block number.
       blockNumber: localChains.includes(chainId) ? undefined : deploymentInfo.blockNumber,
     };
-    writeFileSync(config.worldsFile, JSON.stringify(deploys, null, 2));
+    writeFileSync(config.deploy.worldsFile, JSON.stringify(deploys, null, 2));
 
     console.log(
-      chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${config.worldsFile} and ${deploysDir}): \n`)),
+      chalk.bgGreen(
+        chalk.whiteBright(`\n Deployment result (written to ${config.deploy.worldsFile} and ${deploysDir}): \n`),
+      ),
     );
   }
 
