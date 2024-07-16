@@ -1,10 +1,10 @@
+import fs from "node:fs/promises";
 import path from "node:path";
 import { formatAndWriteSolidity, loadAndExtractUserTypes } from "@latticexyz/common/codegen";
 import { getTableOptions } from "./tableOptions";
 import { renderTable } from "./renderTable";
 import { renderTypesFromConfig } from "./renderTypesFromConfig";
 import { renderTableIndex } from "./renderTableIndex";
-import { rm } from "fs/promises";
 import { Store as StoreConfig } from "../config/v2/output";
 import { mapObject } from "@latticexyz/common/utils";
 
@@ -31,7 +31,7 @@ export async function tablegen({ rootDir, config, remappings }: TablegenOptions)
   const uniqueTableDirectories = Array.from(new Set(allTableOptions.map(({ outputPath }) => path.dirname(outputPath))));
   await Promise.all(
     uniqueTableDirectories.map(async (tableDir) => {
-      await rm(path.join(outputDirectory, tableDir), { recursive: true, force: true });
+      await fs.rm(path.join(outputDirectory, tableDir), { recursive: true, force: true });
     }),
   );
 
