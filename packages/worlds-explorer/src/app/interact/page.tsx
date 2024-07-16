@@ -1,7 +1,5 @@
-import { Flex, Container } from "@radix-ui/themes";
-import { Form } from "./Form";
-
 import { headers } from "next/headers";
+import { Form } from "./Form";
 
 async function getABI() {
   const headersList = headers();
@@ -19,10 +17,8 @@ async function getABI() {
 export default async function Interact() {
   const data = await getABI();
   return (
-    <Container>
-      <Flex direction="column" gap="2">
-        <Form data={data} />
-      </Flex>
-    </Container>
+    <div className="container">
+      <Form data={data} />
+    </div>
   );
 }
