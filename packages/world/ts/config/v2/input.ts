@@ -90,9 +90,9 @@ export type WorldInput = show<
      * The value is a SystemConfig object.
      */
     systems?: SystemsInput;
-    /** System names to exclude from automatic deployment */
+    /** System names to exclude from codegen and deployment */
     excludeSystems?: readonly string[];
-    /** Modules to in the World */
+    /** Modules to install in the World */
     modules?: readonly ModuleInput[];
     /** Deploy config */
     deploy?: DeployInput;

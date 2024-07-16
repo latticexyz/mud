@@ -2,6 +2,7 @@ import path from "node:path";
 import { glob } from "glob";
 import { World } from "../config/v2/output";
 
+// TODO: move to common codegen?
 export async function findSolidityFiles({ rootDir, config }: { rootDir: string; config: World }) {
   const files = await glob(path.join(config.sourceDirectory, "**", "*.sol"), {
     cwd: rootDir,

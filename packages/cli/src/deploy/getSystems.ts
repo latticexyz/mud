@@ -27,7 +27,7 @@ export async function getSystems({
       const { system: address, publicAccess } = await getTableValue({
         client,
         worldDeploy,
-        table: worldTables.world_Systems,
+        table: worldTables.world__Systems,
         key: { systemId: system.resourceId },
       });
       const systemFunctions = functions.filter((func) => func.systemId === system.resourceId);

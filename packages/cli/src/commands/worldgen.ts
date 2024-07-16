@@ -1,17 +1,12 @@
+import path from "node:path";
 import type { CommandModule } from "yargs";
-import { loadConfig } from "@latticexyz/config/node";
+import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
 import { worldgen } from "@latticexyz/world/node";
-import { getSrcDirectory } from "@latticexyz/common/foundry";
-import path from "path";
-import { rmSync } from "fs";
-import { getExistingContracts } from "../utils/getExistingContracts";
 
 type Options = {
   configPath?: string;
   clean?: boolean;
-  srcDir?: string;
-  config?: WorldConfig;
 };
 
 const commandModule: CommandModule<Options, Options> = {
@@ -37,22 +32,11 @@ const commandModule: CommandModule<Options, Options> = {
 };
 
 export async function worldgenHandler(args: Options) {
-  const srcDir = args.srcDir ?? (await getSrcDirectory());
+  const configPath = await resolveConfigPath(args.configPath);
+  const config = (await loadConfig(configPath)) as WorldConfig;
+  const rootDir = path.dirname(configPath);
 
-  const existingContracts = getExistingContracts(srcDir);
-
-  // Load the config
-  const mudConfig = args.config ?? ((await loadConfig(args.configPath)) as WorldConfig);
-
-  const outputBaseDirectory = path.join(srcDir, mudConfig.codegen.outputDirectory);
-
-  // clear the worldgen directory
-  if (args.clean) {
-    rmSync(path.join(outputBaseDirectory, mudConfig.codegen.worldgenDirectory), { recursive: true, force: true });
-  }
-
-  // generate new interfaces
-  await worldgen(mudConfig, existingContracts, outputBaseDirectory);
+  await worldgen({ rootDir, config, clean: args.clean });
 }
 
 export default commandModule;
