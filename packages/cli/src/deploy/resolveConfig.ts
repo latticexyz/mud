@@ -78,7 +78,6 @@ export async function resolveConfig({
       });
 
     return {
-      label: system.label,
       namespace,
       name,
       systemId,
