@@ -17,7 +17,7 @@ _._
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/Store.sol)
 
 **Inherits:**
-[IStore](/src/IStore.sol/interface.IStore.md), [StoreKernel](/src/StoreKernel.sol/abstract.StoreKernel.md)
+[IStore](/store/reference/store#istore), [StoreKernel](/store/reference/store-core#storekernel)
 
 This contract integrates the core storage functionalities and provides an interface for data storage.
 
@@ -701,7 +701,7 @@ function callFrom(
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/IWorldKernel.sol)
 
 **Inherits:**
-[IWorldModuleInstallation](/world/reference/world-external#iworldmoduleinstallation), [IWorldCall](/world/reference/world-external#iworldcall), [IWorldErrors](/world/reference/world-external#iworlderrors), [IWorldEvents](/src/IWorldEvents.sol/interface.IWorldEvents.md), [IModuleErrors](/src/IModuleErrors.sol/interface.IModuleErrors.md)
+[IWorldModuleInstallation](/world/reference/world-external#iworldmoduleinstallation), [IWorldCall](/world/reference/world-external#iworldcall), [IWorldErrors](/world/reference/world-external#iworlderrors), [IWorldEvents](/world/reference/world-external#iworldevents), [IModuleErrors](/world/reference/module-external#imoduleerrors)
 
 The IWorldKernel interface includes all methods that are part of the World contract's
 internal bytecode. Consumers should use the `IBaseWorld` interface instead, which includes dynamically
@@ -997,6 +997,29 @@ error World_CallbackNotAllowed(bytes4 functionSelector);
 | Name               | Type     | Description                                       |
 | ------------------ | -------- | ------------------------------------------------- |
 | `functionSelector` | `bytes4` | The function selector of the disallowed callback. |
+
+## IWorldEvents
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/IWorldEvents.sol)
+
+_We bundle these events in an interface (instead of at the file-level or in their corresponding library) so they can be inherited by IWorldKernel.
+This ensures that all events are included in the IWorldKernel ABI for proper decoding in the frontend._
+
+### Events
+
+#### HelloWorld
+
+Emitted when the World is created.
+
+```solidity
+event HelloWorld(bytes32 indexed worldVersion);
+```
+
+**Parameters**
+
+| Name           | Type      | Description                        |
+| -------------- | --------- | ---------------------------------- |
+| `worldVersion` | `bytes32` | The protocol version of the World. |
 
 ## IWorldFactory
 
