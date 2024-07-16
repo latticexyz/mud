@@ -1,0 +1,13 @@
+import { CollapseCode } from "../../../components/CollapseCode";
+import { Callout } from "nextra/components";
+
+# ERC 721 (NFT) module
+
+<Callout type="warning" emoji="⚠️">
+
+This module is unaudited and may change in the future.
+
+</Callout>
+
+The [`erc721-puppet`](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/erc721-puppet) module lets you create [ERC-721](https://ethereum.org/en/developers/docs/standards/tokens/erc-721/) NFTs as part of a MUD `World`.
+The advantage of doing this, rather than creating a separate [NFT contract](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/token/ERC721) and merely controlling it from MUD, is that all the information is in MUD tables and is immediately available in the client.
