@@ -2,8 +2,7 @@ import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
   codegen: {
-    worldgenDirectory: "interfaces",
-    worldInterfaceName: "IBaseWorld",
+    worldgenDirectory: "codegen/world",
     outputDirectory: ".",
   },
   userTypes: {
