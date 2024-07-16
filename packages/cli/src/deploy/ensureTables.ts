@@ -38,8 +38,8 @@ export async function ensureTables({
     debug("registering tables", missingTables.map(resourceToLabel).join(", "));
     return await Promise.all(
       missingTables.map((table) => {
-        const keySchema = getSchemaTypes(getValueSchema(table));
-        const valueSchema = getSchemaTypes(getKeySchema(table));
+        const keySchema = getSchemaTypes(getKeySchema(table));
+        const valueSchema = getSchemaTypes(getValueSchema(table));
         return pRetry(
           () =>
             writeContract(client, {
