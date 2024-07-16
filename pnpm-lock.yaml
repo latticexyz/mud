@@ -1087,9 +1087,6 @@ importers:
 
   packages/world-modules:
     dependencies:
-      '@latticexyz/cli':
-        specifier: workspace:*
-        version: link:../cli
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -1112,6 +1109,9 @@ importers:
       '@latticexyz/abi-ts':
         specifier: workspace:*
         version: link:../abi-ts
+      '@latticexyz/cli':
+        specifier: workspace:*
+        version: link:../cli
       '@latticexyz/gas-report':
         specifier: workspace:*
         version: link:../gas-report
