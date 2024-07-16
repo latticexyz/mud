@@ -7,7 +7,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
 import { worldToV1 } from "@latticexyz/world/config/v2";
-import { getOutDirectory, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
+import { getOutDirectory, getRpcUrl } from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import { MUDError } from "@latticexyz/common/errors";
 import { resolveConfig } from "./deploy/resolveConfig";
@@ -33,7 +33,6 @@ export const deployOptions = {
     desc: "Deploy using an existing deterministic deployer (https://github.com/Arachnid/deterministic-deployment-proxy)",
   },
   worldAddress: { type: "string", desc: "Deploy to an existing World at the given address" },
-  srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
   skipBuild: { type: "boolean", desc: "Skip rebuilding the contracts before deploying" },
   alwaysRunPostDeploy: {
     type: "boolean",
@@ -66,12 +65,12 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   const configPath = await resolveConfigPath(opts.configPath);
   const configV2 = (await loadConfig(configPath)) as WorldConfig;
+  const rootDir = path.dirname(configPath);
   const config = worldToV1(configV2);
   if (opts.printConfig) {
     console.log(chalk.green("\nResolved config:\n"), JSON.stringify(config, null, 2));
   }
 
-  const srcDir = opts.srcDir ?? (await getSrcDirectory(profile));
   const outDir = await getOutDirectory(profile);
 
   const rpc = opts.rpc ?? (await getRpcUrl(profile));
@@ -83,10 +82,14 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   // Run build
   if (!opts.skipBuild) {
-    await build({ rootDir: path.dirname(configPath), config: configV2, srcDir, foundryProfile: profile });
+    await build({ rootDir, config: configV2, foundryProfile: profile });
   }
 
-  const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
+  const { systems, libraries } = await resolveConfig({
+    rootDir,
+    config: configV2,
+    forgeOutDir: outDir,
+  });
   const modules = await configToModules(configV2, outDir);
 
   const account = await (async () => {
@@ -134,8 +137,8 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     worldAddress: opts.worldAddress as Hex | undefined,
     client,
     tables: Object.values(configV2.tables),
-    systems: resolvedConfig.systems,
-    libraries: resolvedConfig.libraries,
+    systems,
+    libraries,
     modules,
     withWorldProxy: configV2.deploy.upgradeableWorldImplementation,
   });

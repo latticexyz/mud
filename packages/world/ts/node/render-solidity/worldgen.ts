@@ -1,38 +1,40 @@
-import { readFileSync } from "fs";
+import fs from "fs";
 import path from "path";
 import { formatAndWriteSolidity, contractToInterface, type RelativeImportDatum } from "@latticexyz/common/codegen";
 import { renderSystemInterface } from "./renderSystemInterface";
 import { renderWorldInterface } from "./renderWorldInterface";
-import { resolveWorldConfig } from "../../config/resolveWorldConfig";
 import { World as WorldConfig } from "../../config/v2/output";
-import { worldToV1 } from "../../config/v2/compat";
+import { resolveSystems } from "../../config/resolveSystems";
 
-export async function worldgen(
-  configV2: WorldConfig,
-  existingContracts: { path: string; basename: string }[],
-  outputBaseDirectory: string,
-) {
-  const config = worldToV1(configV2);
-  const resolvedConfig = resolveWorldConfig(
-    config,
-    existingContracts.map(({ basename }) => basename),
-  );
+export async function worldgen({
+  rootDir,
+  config,
+  clean = true,
+}: {
+  rootDir: string;
+  config: WorldConfig;
+  clean?: boolean;
+}) {
+  const outDir = path.join(config.sourceDirectory, config.codegen.outputDirectory, config.codegen.worldgenDirectory);
 
-  const worldgenBaseDirectory = path.join(outputBaseDirectory, config.worldgenDirectory);
-  const systems = existingContracts.filter(({ basename }) => Object.keys(resolvedConfig.systems).includes(basename));
+  if (clean) {
+    fs.rmSync(outDir, { recursive: true, force: true });
+  }
+
+  const systems = await resolveSystems({ rootDir, config });
 
   const systemInterfaceImports: RelativeImportDatum[] = [];
   for (const system of systems) {
-    const data = readFileSync(system.path, "utf8");
+    const data = fs.readFileSync(system.sourcePath, "utf8");
     // get external funcions from a contract
-    const { functions, errors, symbolImports } = contractToInterface(data, system.basename);
+    const { functions, errors, symbolImports } = contractToInterface(data, system.name);
     const imports = symbolImports.map((symbolImport) => {
       if (symbolImport.path[0] === ".") {
         // relative import
         return {
           symbol: symbolImport.symbol,
-          fromPath: path.join(path.dirname(system.path), symbolImport.path),
-          usedInPath: worldgenBaseDirectory,
+          fromPath: path.join(path.dirname(system.sourcePath), symbolImport.path),
+          usedInPath: outDir,
         };
       } else {
         // absolute import
@@ -42,7 +44,7 @@ export async function worldgen(
         };
       }
     });
-    const systemInterfaceName = `I${system.basename}`;
+    const systemInterfaceName = `I${system.name}`;
     const output = renderSystemInterface({
       name: systemInterfaceName,
       functionPrefix: config.namespace === "" ? "" : `${config.namespace}__`,
@@ -51,7 +53,7 @@ export async function worldgen(
       imports,
     });
     // write to file
-    const fullOutputPath = path.join(worldgenBaseDirectory, systemInterfaceName + ".sol");
+    const fullOutputPath = path.join(rootDir, outDir, systemInterfaceName + ".sol");
     await formatAndWriteSolidity(output, fullOutputPath, "Generated system interface");
 
     // prepare imports for IWorld
@@ -64,12 +66,12 @@ export async function worldgen(
 
   // render IWorld
   const output = renderWorldInterface({
-    interfaceName: config.worldInterfaceName,
+    interfaceName: config.codegen.worldInterfaceName,
     imports: systemInterfaceImports,
-    storeImportPath: configV2.codegen.storeImportPath,
-    worldImportPath: config.worldImportPath,
+    storeImportPath: config.codegen.storeImportPath,
+    worldImportPath: config.codegen.worldImportPath,
   });
   // write to file
-  const fullOutputPath = path.join(worldgenBaseDirectory, config.worldInterfaceName + ".sol");
+  const fullOutputPath = path.join(rootDir, outDir, config.codegen.worldInterfaceName + ".sol");
   await formatAndWriteSolidity(output, fullOutputPath, "Generated world interface");
 }

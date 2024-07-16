@@ -1,19 +1,17 @@
-import { existsSync, readFileSync } from "fs";
+import path from "node:path";
+import { existsSync, readFileSync } from "node:fs";
 import type { CommandModule } from "yargs";
 import { ethers } from "ethers";
-
-import { loadConfig } from "@latticexyz/config/node";
+import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { MUDError } from "@latticexyz/common/errors";
-import { cast, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
-import { resolveWorldConfig } from "@latticexyz/world/internal";
+import { cast, getRpcUrl } from "@latticexyz/common/foundry";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import worldConfig from "@latticexyz/world/mud.config";
 import { resourceToHex } from "@latticexyz/common";
-import { getExistingContracts } from "../utils/getExistingContracts";
 import { createClient, http } from "viem";
 import { getChainId } from "viem/actions";
 import { World as WorldConfig } from "@latticexyz/world";
-import { worldToV1 } from "@latticexyz/world/config/v2";
+import { resolveSystems } from "@latticexyz/world/internal";
 
 // TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
 const systemsTableId = resourceToHex({
@@ -27,7 +25,6 @@ type Options = {
   worldAddress?: string;
   configPath?: string;
   profile?: string;
-  srcDir?: string;
   rpc?: string;
 };
 
@@ -45,56 +42,49 @@ const commandModule: CommandModule<Options, Options> = {
       },
       configPath: { type: "string", description: "Path to the MUD config file" },
       profile: { type: "string", description: "The foundry profile to use" },
-      srcDir: { type: "string", description: "Source directory. Defaults to foundry src directory." },
       rpc: { type: "string", description: "json rpc endpoint. Defaults to foundry's configured eth_rpc_url" },
     });
   },
 
   async handler(args) {
-    args.profile ??= process.env.FOUNDRY_PROFILE;
-    const { profile } = args;
-    args.srcDir ??= await getSrcDirectory(profile);
-    args.rpc ??= await getRpcUrl(profile);
-    const { tx, configPath, srcDir, rpc } = args;
+    const configPath = await resolveConfigPath(args.configPath);
+    const rootDir = path.dirname(configPath);
 
-    const existingContracts = getExistingContracts(srcDir);
+    const profile = args.profile ?? process.env.FOUNDRY_PROFILE;
+    const rpc = args.rpc ?? (await getRpcUrl(profile));
 
     // Load the config
-    const configV2 = (await loadConfig(configPath)) as WorldConfig;
-    const mudConfig = worldToV1(configV2);
-
-    const resolvedConfig = resolveWorldConfig(
-      mudConfig,
-      existingContracts.map(({ basename }) => basename),
-    );
+    const config = (await loadConfig(configPath)) as WorldConfig;
 
     // Get worldAddress either from args or from worldsFile
-    const worldAddress = args.worldAddress ?? (await getWorldAddress(mudConfig.worldsFile, rpc));
+    const worldAddress = args.worldAddress ?? (await getWorldAddress(config.deploy.worldsFile, rpc));
 
     // Create World contract instance from deployed address
     const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
     const WorldContract = new ethers.Contract(worldAddress, IBaseWorldAbi, provider);
 
-    // TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
-    const namespace = mudConfig.namespace;
-    const names = Object.values(resolvedConfig.systems).map(({ name }) => name);
+    // TODO: replace with system.namespace
+    const namespace = config.namespace;
+    const systems = await resolveSystems({ rootDir, config });
 
     // Fetch system table field layout from chain
     const systemTableFieldLayout = await WorldContract.getFieldLayout(systemsTableId);
-    const labels: { name: string; address: string }[] = [];
-    for (const name of names) {
-      const systemSelector = resourceToHex({ type: "system", namespace, name });
-      // Get the first field of `Systems` table (the table maps system name to its address and other data)
-      const address = await WorldContract.getField(systemsTableId, [systemSelector], 0, systemTableFieldLayout);
-      labels.push({ name, address });
-    }
+    const labels = await Promise.all(
+      systems.map(async (system) => {
+        // TODO: replace with system.systemId
+        const systemId = resourceToHex({ type: "system", namespace, name: system.name });
+        // Get the first field of `Systems` table (the table maps system name to its address and other data)
+        const address = await WorldContract.getField(systemsTableId, [systemId], 0, systemTableFieldLayout);
+        return { name: system.name, address };
+      }),
+    );
 
     const result = await cast([
       "run",
       "--label",
       `${worldAddress}:World`,
       ...labels.map(({ name, address }) => ["--label", `${address}:${name}`]).flat(),
-      `${tx}`,
+      `${args.tx}`,
     ]);
     console.log(result);
 

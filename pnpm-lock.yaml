@@ -1087,6 +1087,9 @@ importers:
 
   packages/world-modules:
     dependencies:
+      '@latticexyz/cli':
+        specifier: workspace:*
+        version: link:../cli
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
