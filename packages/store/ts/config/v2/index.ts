@@ -9,7 +9,6 @@ export * from "./store";
 export * from "./input";
 export * from "./output";
 export * from "./defaults";
-export * from "./compat";
 export * from "./codegen";
 export * from "./enums";
 export * from "./userTypes";
