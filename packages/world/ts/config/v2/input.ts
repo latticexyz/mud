@@ -92,7 +92,7 @@ export type WorldInput = show<
     systems?: SystemsInput;
     /** System names to exclude from codegen and deployment */
     excludeSystems?: readonly string[];
-    /** Modules to in the World */
+    /** Modules to install in the World */
     modules?: readonly ModuleInput[];
     /** Deploy config */
     deploy?: DeployInput;
