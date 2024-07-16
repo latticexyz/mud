@@ -1,12 +1,20 @@
 import { Client, Transport, Chain, Account, Hex } from "viem";
-import { Table } from "./configToTables";
 import { resourceToLabel, writeContract } from "@latticexyz/common";
 import { WorldDeploy, worldAbi } from "./common";
-import { valueSchemaToFieldLayoutHex, keySchemaToHex, valueSchemaToHex } from "@latticexyz/protocol-parser/internal";
+import {
+  valueSchemaToFieldLayoutHex,
+  keySchemaToHex,
+  valueSchemaToHex,
+  getSchemaTypes,
+  getValueSchema,
+  getKeySchema,
+  KeySchema,
+} from "@latticexyz/protocol-parser/internal";
 import { debug } from "./debug";
 import { getTables } from "./getTables";
 import pRetry from "p-retry";
 import { wait } from "@latticexyz/common/utils";
+import { Table } from "@latticexyz/config";
 
 export async function ensureTables({
   client,
@@ -29,8 +37,10 @@ export async function ensureTables({
   if (missingTables.length) {
     debug("registering tables", missingTables.map(resourceToLabel).join(", "));
     return await Promise.all(
-      missingTables.map((table) =>
-        pRetry(
+      missingTables.map((table) => {
+        const keySchema = getSchemaTypes(getValueSchema(table));
+        const valueSchema = getSchemaTypes(getKeySchema(table));
+        return pRetry(
           () =>
             writeContract(client, {
               chain: client.chain ?? null,
@@ -40,11 +50,11 @@ export async function ensureTables({
               functionName: "registerTable",
               args: [
                 table.tableId,
-                valueSchemaToFieldLayoutHex(table.valueSchema),
-                keySchemaToHex(table.keySchema),
-                valueSchemaToHex(table.valueSchema),
-                Object.keys(table.keySchema),
-                Object.keys(table.valueSchema),
+                valueSchemaToFieldLayoutHex(valueSchema),
+                keySchemaToHex(keySchema as KeySchema),
+                valueSchemaToHex(valueSchema),
+                Object.keys(keySchema),
+                Object.keys(valueSchema),
               ],
             }),
           {
@@ -55,8 +65,8 @@ export async function ensureTables({
               await wait(delay);
             },
           },
-        ),
-      ),
+        );
+      }),
     );
   }
 

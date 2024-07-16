@@ -24,7 +24,7 @@ export async function getResourceIds({
         fromBlock: worldDeploy.deployBlock,
         toBlock: worldDeploy.stateBlock,
         event: parseAbiItem(storeSpliceStaticDataEvent),
-        args: { tableId: storeTables.store_ResourceIds.tableId },
+        args: { tableId: storeTables.store__ResourceIds.tableId },
       }),
     {
       retries: 3,
