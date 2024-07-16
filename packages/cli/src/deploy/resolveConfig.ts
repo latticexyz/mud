@@ -49,7 +49,7 @@ export async function resolveConfig({
     // TODO: replace with system.systemId
     const systemId = resourceToHex({ type: "system", namespace, name });
     // TODO: replace system.name with system.label
-    const contractData = getContractData(`${system.name}.sol`, system.name, forgeOutDir);
+    const contractData = getContractData(`${system.label}.sol`, system.label, forgeOutDir);
 
     const systemFunctions = contractData.abi
       .filter((item): item is typeof item & { type: "function" } => item.type === "function")
@@ -72,12 +72,13 @@ export async function resolveConfig({
     const allowedSystemIds = system.accessList
       .filter((target) => !isHex(target))
       .map((label) => {
-        const system = configSystems.find((s) => s.name === label)!;
+        const system = configSystems.find((s) => s.label === label)!;
         // TODO: replace with system.systemId
         return resourceToHex({ type: "system", namespace, name: system.name });
       });
 
     return {
+      label: system.label,
       namespace,
       name,
       systemId,

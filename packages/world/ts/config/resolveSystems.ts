@@ -4,6 +4,8 @@ import { System, World } from "./v2";
 import { SYSTEM_DEFAULTS } from "./v2/defaults";
 
 export type ResolvedSystem = System & {
+  // TODO: move label into System config output
+  readonly label: string;
   readonly sourcePath: string;
 };
 
@@ -29,14 +31,14 @@ export async function resolveSystems({
       const systemConfig = config.systems[contract.name] ?? { ...SYSTEM_DEFAULTS, name: contract.name };
       return {
         ...systemConfig,
+        label: contract.name,
         sourcePath: contract.sourcePath,
       };
     })
     // TODO: replace `excludeSystems` with `deploy.disabled` or `codegen.disabled`
-    .filter((system) => !config.excludeSystems.includes(system.name));
+    .filter((system) => !config.excludeSystems.includes(system.label));
 
-  // TODO: replace `system.name` with `system.label`
-  const systemLabels = systems.map((system) => system.name);
+  const systemLabels = systems.map((system) => system.label);
 
   // validate every system has a valid access list
   for (const system of systems) {
@@ -44,7 +46,7 @@ export async function resolveSystems({
       if (isHex(accessListItem)) continue;
       if (systemLabels.includes(accessListItem)) continue;
       throw new Error(
-        `Access list item (${accessListItem}) for system (${system.name}) had no matching system contract.`,
+        `Access list item (${accessListItem}) for system (${system.label}) had no matching system contract.`,
       );
     }
   }

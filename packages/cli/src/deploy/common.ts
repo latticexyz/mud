@@ -87,6 +87,7 @@ export type Library = DeterministicContract & {
 };
 
 export type System = DeterministicContract & {
+  readonly label: string;
   readonly namespace: string;
   readonly name: string;
   readonly systemId: Hex;
