@@ -2,7 +2,7 @@ import type { CommandModule, InferredOptionTypes } from "yargs";
 import { verify } from "../verify";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
-import { resolveSystems } from "@latticexyz/world/internal";
+import { resolveSystems } from "@latticexyz/world/node";
 import { getOutDirectory, getRpcUrl } from "@latticexyz/common/foundry";
 import { getContractData } from "../utils/getContractData";
 import { Hex, createWalletClient, http } from "viem";

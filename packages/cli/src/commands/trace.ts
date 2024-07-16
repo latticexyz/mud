@@ -11,7 +11,7 @@ import { resourceToHex } from "@latticexyz/common";
 import { createClient, http } from "viem";
 import { getChainId } from "viem/actions";
 import { World as WorldConfig } from "@latticexyz/world";
-import { resolveSystems } from "@latticexyz/world/internal";
+import { resolveSystems } from "@latticexyz/world/node";
 
 const systemsTableId = worldConfig.tables.world__Systems.tableId;
 

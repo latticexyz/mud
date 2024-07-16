@@ -4,7 +4,7 @@ import { formatAndWriteSolidity, contractToInterface, type RelativeImportDatum }
 import { renderSystemInterface } from "./renderSystemInterface";
 import { renderWorldInterface } from "./renderWorldInterface";
 import { World as WorldConfig } from "../../config/v2/output";
-import { resolveSystems } from "../../config/resolveSystems";
+import { resolveSystems } from "../resolveSystems";
 
 export async function worldgen({
   rootDir,

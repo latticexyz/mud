@@ -1,7 +1,7 @@
 import { isHex } from "viem";
-import { getSystemContracts } from "../node";
-import { System, World } from "./v2";
-import { SYSTEM_DEFAULTS } from "./v2/defaults";
+import { getSystemContracts } from ".";
+import { System, World } from "../config/v2";
+import { SYSTEM_DEFAULTS } from "../config/v2/defaults";
 
 export type ResolvedSystem = System & {
   // TODO: move label into System config output

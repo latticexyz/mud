@@ -1,5 +1,5 @@
 import path from "path";
-import { resolveSystems } from "@latticexyz/world/internal";
+import { resolveSystems } from "@latticexyz/world/node";
 import { Library, System, WorldFunction } from "./common";
 import { resourceToHex } from "@latticexyz/common";
 import { Hex, isHex, toFunctionSelector, toFunctionSignature } from "viem";
