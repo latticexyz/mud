@@ -8,8 +8,6 @@ import { renderTableIndex } from "./renderTableIndex";
 import { Store as StoreConfig } from "../config/v2/output";
 import { mapObject } from "@latticexyz/common/utils";
 
-// TODO: clean
-
 export type TablegenOptions = {
   /**
    * MUD project root directory where all other relative paths are resolved from.
