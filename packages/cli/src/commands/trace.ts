@@ -13,12 +13,7 @@ import { getChainId } from "viem/actions";
 import { World as WorldConfig } from "@latticexyz/world";
 import { resolveSystems } from "@latticexyz/world/internal";
 
-// TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
-const systemsTableId = resourceToHex({
-  type: "system",
-  namespace: worldConfig.namespace,
-  name: worldConfig.tables.world__Systems.name,
-});
+const systemsTableId = worldConfig.tables.world__Systems.tableId;
 
 type Options = {
   tx: string;
