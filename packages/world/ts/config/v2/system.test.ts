@@ -38,7 +38,26 @@ describe("resolveSystem", () => {
     attest<typeof expected>(system).equals(expected);
   });
 
+  it("should allow setting openAccess to false", () => {
+    const system = defineSystem({
+      label: "ExampleSystem",
+      openAccess: false,
+    });
+
+    const expected = {
+      ...SYSTEM_DEFAULTS,
+      label: "ExampleSystem",
+      namespace: "",
+      name: "ExampleSystem" as string,
+      systemId: resourceToHex({ type: "system", namespace: "", name: "ExampleSystem" }),
+      openAccess: false,
+    } as const;
+
+    attest<typeof expected>(system).equals(expected);
+  });
+
   it("should throw if system config is missing required keys", () => {
+    // TODO: runtime validation error?
     attest(() =>
       // @ts-expect-error Property 'label' is missing in type
       defineSystem({}),

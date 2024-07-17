@@ -777,7 +777,7 @@ describe("defineWorld", () => {
       Example: {
         label: "Example",
         namespace: "app",
-        name: "Example",
+        name: "Example" as string,
         systemId: resourceToHex({ type: "system", namespace: "app", name: "Example" }),
         registerFunctionSelectors: true,
         openAccess: true,
@@ -785,7 +785,7 @@ describe("defineWorld", () => {
       },
     } as const;
 
-    attest(config.systems).equals(expectedSystems);
+    attest<typeof expectedSystems>(config.systems).equals(expectedSystems);
   });
 
   it("should allow setting openAccess of a system to false", () => {

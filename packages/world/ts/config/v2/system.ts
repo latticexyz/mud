@@ -66,6 +66,7 @@ export function resolveSystem<input extends SystemInput>(input: input): resolveS
 
   return mergeIfUndefined(
     {
+      ...input,
       label,
       namespace,
       name,
