@@ -114,7 +114,7 @@ describe("createStore", () => {
   });
 
   describe("registerTable", () => {
-    it("should add a new table to the store and return a wrapped table", () => {
+    it("should add a new table to the store and return a bound table", () => {
       const store = createStore({});
       const table = store.getState().actions.registerTable({
         label: "table1",
@@ -140,7 +140,7 @@ describe("createStore", () => {
   });
 
   describe("getTable", () => {
-    it("should return a wrapped table", () => {
+    it("should return a bound table", () => {
       const store = createStore({});
       store.getState().actions.registerTable({
         label: "table1",
