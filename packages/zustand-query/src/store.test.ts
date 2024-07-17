@@ -1,9 +1,16 @@
-import { describe, it, expect } from "vitest";
-import { Table } from "@latticexyz/config";
+import { describe, it } from "vitest";
+import { AbiType } from "@latticexyz/config";
 import { createStore as createZustandStore } from "zustand/vanilla";
 import { StoreApi } from "zustand";
 import { mutative } from "zustand-mutative";
 import { dynamicAbiTypeToDefaultValue, staticAbiTypeToDefaultValue } from "@latticexyz/schema-type/internal";
+
+/**
+ * TODOs
+ * - Add stronger types based on config
+ * - Add tests for all base API functions
+ * - Add query layer
+ */
 
 /**
  * A Record is one row of the table. It includes both the key and the value.
@@ -15,10 +22,25 @@ type Record = { [field: string]: number | string | bigint | number[] | string[] 
  */
 type Key = { [field: string]: number | string };
 
+type Schema = { [key: string]: AbiType };
+
+// TODO: reuse the store config table input for this
+type TableConfigInput = {
+  key: string[];
+  schema: Schema;
+};
+
+type TableConfigFull = {
+  key: string[];
+  schema: Schema;
+  label: string;
+  namespace: string;
+};
+
 type State = {
   config: {
     [namespace: string]: {
-      [table: string]: Table;
+      [table: string]: TableConfigFull;
     };
   };
   records: {
@@ -53,13 +75,9 @@ type BoundTable = {
   setRecord: (key: Key, record: Record) => void;
 };
 
-type Config = {
-  namespaces: {
-    [namespace: string]: {
-      tables: {
-        [label: string]: Table;
-      };
-    };
+type TablesConfig = {
+  [namespace: string]: {
+    [tableLabel: string]: TableConfigInput;
   };
 };
 
@@ -68,15 +86,15 @@ type TableLabel = { label: string; namespace?: string };
 /**
  * Initializes a Zustand store based on the provided table configs.
  */
-function createStore(config: Config): Store {
+function createStore(tablesConfig: TablesConfig): Store {
   return createZustandStore<State & Actions>()(
     mutative((set, get) => {
       const state: State = { config: {}, records: {} };
 
-      for (const [namespace, { tables }] of Object.entries(config.namespaces)) {
-        for (const [label, table] of Object.entries(tables)) {
+      for (const [namespace, tables] of Object.entries(tablesConfig)) {
+        for (const [label, tableConfig] of Object.entries(tables)) {
           state.config[namespace] = {};
-          state.config[namespace][label] = table;
+          state.config[namespace][label] = { ...tableConfig, namespace, label };
 
           state.records[namespace] = {};
           state.records[namespace][label] = {};
@@ -126,13 +144,13 @@ function createStore(config: Config): Store {
  * Registers a new table into an existing store.
  * @returns A bound Table object for easier interaction with the table.
  */
-function registerTable(store: Store, table: Table): BoundTable {
+function registerTable(store: Store, tableConfig: TableConfigFull): BoundTable {
   throw new Error("Not implemented");
   // TODO: add the table to store.config
   return getTable(
     store,
     // TODO: replace with table.label once available on the config
-    { label: table.name, namespace: table.name },
+    { label: tableConfig.label, namespace: tableConfig.namespace },
   );
 }
 
@@ -149,7 +167,20 @@ function getTable(store: Store, tableLabel: TableLabel): BoundTable {
 }
 
 describe("Zustand Query", () => {
-  it("should do the thing", () => {
-    expect(true).toBe(true);
+  describe("createStore", () => {
+    it("should initialize the store", () => {
+      const tablesConfig = {
+        namespace1: {
+          table1: {
+            schema: {
+              field1: "string",
+              field2: "uint32",
+            },
+            key: ["field2"],
+          },
+        },
+      } satisfies TablesConfig;
+      const store = createStore(tablesConfig);
+    });
   });
 });
