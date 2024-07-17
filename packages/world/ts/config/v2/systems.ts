@@ -1,5 +1,5 @@
 import { mapObject } from "@latticexyz/common/utils";
-import { SYSTEM_DEFAULTS } from "../defaults";
+import { SYSTEM_DEFAULTS } from "./defaults";
 import { SystemsInput } from "./input";
 import { mergeIfUndefined } from "@latticexyz/store/config/v2";
 
