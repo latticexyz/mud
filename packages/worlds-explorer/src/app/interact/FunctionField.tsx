@@ -65,7 +65,7 @@ export function FunctionField({ abi }: Props) {
   const inputsLabel = abi?.inputs.map((input) => input.type).join(", ");
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pb-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} id={abi.name} className="space-y-4 pb-4">
         <h3 className="font-semibold pt-4">
           {abi?.name}
           <span className="opacity-50">{inputsLabel && ` (${inputsLabel})`}</span>
