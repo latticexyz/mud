@@ -1,4 +1,4 @@
-import { describe, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { AbiType } from "@latticexyz/config";
 import { createStore as createZustandStore } from "zustand/vanilla";
 import { StoreApi } from "zustand";
@@ -76,15 +76,32 @@ type Actions = {
      * Get a record from a table.
      */
     getRecord: (args: GetRecordArgs) => Record;
+    /**
+     * Dynamically register a new table in the store
+     * @returns A bound Table object for easier interaction with the table.
+     */
+    registerTable: (config: TableConfigFull) => BoundTable;
+    /**
+     * @returns A bound Table object for easier interaction with the table.
+     */
+    getTable: (tableLabel: TableLabel) => BoundTable;
   };
 };
 
 type Store = StoreApi<State & Actions>;
 
+type BoundSetRecordArgs = {
+  key: Key;
+  record: Record;
+};
+
+type BoundGetRecordArgs = {
+  key: Key;
+};
+
 type BoundTable = {
-  store: Store;
-  getRecord: (key: Key) => Record;
-  setRecord: (key: Key, record: Record) => void;
+  getRecord: (args: BoundGetRecordArgs) => Record;
+  setRecord: (args: BoundSetRecordArgs) => void;
 };
 
 type TablesConfig = {
@@ -138,6 +155,9 @@ function createStore(tablesConfig: TablesConfig): Store {
       const setRecord = ({ tableLabel, key, record }: SetRecordArgs) => {
         set((prev) => {
           const namespace = tableLabel.namespace ?? "";
+          if (prev.config[namespace] == null) {
+            throw new Error(`Table '${namespace}__${tableLabel.label}' is not registered yet.`);
+          }
           const encodedKey = encodeKey(tableLabel, key);
           const prevRecord = prev.records[namespace][tableLabel.label][encodedKey] ?? {};
           const schema = prev.config[namespace][tableLabel.label].schema;
@@ -155,35 +175,28 @@ function createStore(tablesConfig: TablesConfig): Store {
         });
       };
 
-      return { ...state, actions: { setRecord, getRecord } };
+      const getTable = (tableLabel: TableLabel): BoundTable => {
+        return {
+          getRecord: ({ key }: BoundGetRecordArgs) => getRecord({ tableLabel, key }),
+          setRecord: ({ key, record }: BoundSetRecordArgs) => setRecord({ tableLabel, key, record }),
+          // TODO: dynamically add setters and getters for individual fields of the table
+        };
+      };
+
+      const registerTable = (tableConfig: TableConfigFull): BoundTable => {
+        set((prev) => {
+          const { namespace, label } = tableConfig;
+          prev.config[namespace] ??= {};
+          prev.config[namespace][label] = tableConfig;
+          prev.records[namespace] ??= {};
+          prev.records[namespace][label] ??= {};
+        });
+        return getTable(tableConfig);
+      };
+
+      return { ...state, actions: { setRecord, getRecord, getTable, registerTable } };
     }),
   );
-}
-
-/**
- * Registers a new table into an existing store.
- * @returns A bound Table object for easier interaction with the table.
- */
-function registerTable(store: Store, tableConfig: TableConfigFull): BoundTable {
-  throw new Error("Not implemented");
-  // TODO: add the table to store.config
-  return getTable(
-    store,
-    // TODO: replace with table.label once available on the config
-    { label: tableConfig.label, namespace: tableConfig.namespace },
-  );
-}
-
-/**
- * @returns A bound Table object for easier interaction with the table.
- */
-function getTable(store: Store, tableLabel: TableLabel): BoundTable {
-  return {
-    store,
-    getRecord: (key: Key) => store.getState().actions.getRecord({ tableLabel, key }),
-    setRecord: (key: Key, record: Record) => store.getState().actions.setRecord({ tableLabel, key, record }),
-    // TODO: dynamically add setters and getters for individual fields of the table
-  };
 }
 
 describe("Zustand Query", () => {
@@ -296,6 +309,77 @@ describe("Zustand Query", () => {
           key: { field2: 2, field3: 1 },
         }),
       ).snap({ field1: "world", field2: 2, field3: 1 });
+    });
+  });
+
+  describe("store.registerTable", () => {
+    it("should add a new table to the store and return a wrapped table", () => {
+      const store = createStore({});
+      const table = store.getState().actions.registerTable({
+        label: "table1",
+        namespace: "namespace1",
+        schema: { field1: "uint32", field2: "address" },
+        key: ["field1"],
+      });
+
+      attest(store.getState().config).snap({
+        namespace1: {
+          table1: {
+            label: "table1",
+            namespace: "namespace1",
+            schema: { field1: "uint32", field2: "address" },
+            key: ["field1"],
+          },
+        },
+      });
+      attest(store.getState().records).snap({ namespace1: { table1: {} } });
+      expect(table.setRecord).toBeDefined();
+      expect(table.getRecord).toBeDefined();
+    });
+  });
+
+  describe("store.getTable", () => {
+    it("should return a wrapped table", () => {
+      const store = createStore({});
+      store.getState().actions.registerTable({
+        label: "table1",
+        namespace: "namespace1",
+        schema: { field1: "uint32", field2: "address" },
+        key: ["field1"],
+      });
+      const table = store.getState().actions.getTable({ label: "table1", namespace: "namespace1" });
+
+      expect(table.setRecord).toBeDefined();
+      expect(table.getRecord).toBeDefined();
+    });
+  });
+
+  describe("BoundTable", () => {
+    let table: BoundTable;
+    let store: Store;
+
+    beforeEach(() => {
+      store = createStore({});
+      table = store.getState().actions.registerTable({
+        label: "table1",
+        namespace: "namespace1",
+        schema: { field1: "uint32", field2: "address" },
+        key: ["field1"],
+      });
+    });
+
+    describe("setRecord", () => {
+      it("should set a record in the table", () => {
+        table.setRecord({ key: { field1: 1 }, record: { field2: "0x00" } });
+        attest(store.getState().records).snap({ namespace1: { table1: { "1": { field1: 1, field2: "0x00" } } } });
+      });
+    });
+
+    describe("getRecord", () => {
+      it("should get a record from the table", () => {
+        table.setRecord({ key: { field1: 2 }, record: { field2: "0x01" } });
+        attest(table.getRecord({ key: { field1: 2 } })).snap({ field1: 2, field2: "0x01" });
+      });
     });
   });
 });
