@@ -47,7 +47,7 @@ export async function worldgen({
     const systemInterfaceName = `I${system.label}`;
     const output = renderSystemInterface({
       name: systemInterfaceName,
-      functionPrefix: config.namespace === "" ? "" : `${config.namespace}__`,
+      functionPrefix: system.namespace === "" ? "" : `${system.namespace}__`,
       functions,
       errors,
       imports,
