@@ -5,6 +5,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { Theme } from "@radix-ui/themes";
 import { Providers } from "./_providers";
+import { Navigation } from "@/components/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +24,10 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           <Theme>
-            <div className="container">{children}</div>
+            <div className="container">
+              <Navigation />
+              {children}
+            </div>
             <Toaster richColors />
           </Theme>
         </Providers>

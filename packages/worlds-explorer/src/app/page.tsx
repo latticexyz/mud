@@ -1,6 +1,6 @@
 "use client";
 
-import { Select, Flex, Button, Table, TextField, Container } from "@radix-ui/themes";
+import { Select, Flex, Button, Table, TextField } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import { FormEvent, useEffect, useState } from "react";
 
@@ -153,12 +153,12 @@ export default function Home() {
   }, [table, tables]);
 
   return (
-    <Container>
+    <div className="container">
       <Flex direction="column" gap="2">
         <TableSelector value={table} onChange={setTable} options={tables} />
         <SQLEditor table={table} tablesLoading={tablesLoading} setQuery={setQuery} />
         <TablesViewer table={table} query={query} />
       </Flex>
-    </Container>
+    </div>
   );
 }

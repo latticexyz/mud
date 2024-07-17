@@ -16,9 +16,5 @@ async function getABI() {
 
 export default async function Interact() {
   const data = await getABI();
-  return (
-    <div className="container">
-      <Form data={data} />
-    </div>
-  );
+  return <Form data={data} />;
 }
