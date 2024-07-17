@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@radix-ui/themes/styles.css";
 import "./globals.css";
+import { Toaster } from "sonner";
 import { Theme } from "@radix-ui/themes";
 import { Providers } from "./_providers";
-import { ConnectWallet } from "@/components/connect-wallet";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,10 +23,8 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           <Theme>
-            <div className="container">
-              <ConnectWallet />
-              {children}
-            </div>
+            <div className="container">{children}</div>
+            <Toaster richColors />
           </Theme>
         </Providers>
       </body>
