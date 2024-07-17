@@ -1,11 +1,14 @@
-import { isHex } from "viem";
+import { Hex, isHex } from "viem";
 import { getSystemContracts } from ".";
 import { System, World } from "../config/v2";
 import { SYSTEM_DEFAULTS } from "../config/v2/defaults";
+import { resourceToHex } from "@latticexyz/common";
 
 export type ResolvedSystem = System & {
-  // TODO: move label into System config output
+  // TODO: move label, namespace, systemId into System config output
   readonly label: string;
+  readonly namespace: string;
+  readonly systemId: Hex;
   readonly sourcePath: string;
 };
 
@@ -32,6 +35,10 @@ export async function resolveSystems({
       return {
         ...systemConfig,
         label: contract.name,
+        // TODO: remove once system ID is resolved by config
+        // TODO: replace config.namespace with system.namespace once available
+        systemId: resourceToHex({ type: "system", namespace: config.namespace, name: contract.name }),
+        namespace: config.namespace,
         sourcePath: contract.sourcePath,
       };
     })

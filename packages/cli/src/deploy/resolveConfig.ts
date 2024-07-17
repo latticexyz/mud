@@ -1,7 +1,6 @@
 import path from "path";
 import { resolveSystems } from "@latticexyz/world/node";
 import { Library, System, WorldFunction } from "./common";
-import { resourceToHex } from "@latticexyz/common";
 import { Hex, isHex, toFunctionSelector, toFunctionSignature } from "viem";
 import { getContractData } from "../utils/getContractData";
 import { groupBy } from "@latticexyz/common/utils";
@@ -43,12 +42,6 @@ export async function resolveConfig({
   const configSystems = await resolveSystems({ rootDir, config });
 
   const systems = configSystems.map((system): System => {
-    // TODO: replace with system.namespace
-    const namespace = config.namespace;
-    const name = system.name;
-    // TODO: replace with system.systemId
-    const systemId = resourceToHex({ type: "system", namespace, name });
-    // TODO: replace system.name with system.label
     const contractData = getContractData(`${system.label}.sol`, system.label, forgeOutDir);
 
     const systemFunctions = contractData.abi
@@ -57,11 +50,11 @@ export async function resolveConfig({
       .filter((sig) => !baseSystemFunctions.includes(sig))
       .map((sig): WorldFunction => {
         // TODO: figure out how to not duplicate contract behavior (https://github.com/latticexyz/mud/issues/1708)
-        const worldSignature = namespace === "" ? sig : `${namespace}__${sig}`;
+        const worldSignature = system.namespace === "" ? sig : `${system.namespace}__${sig}`;
         return {
           signature: worldSignature,
           selector: toFunctionSelector(worldSignature),
-          systemId,
+          systemId: system.systemId,
           systemFunctionSignature: sig,
           systemFunctionSelector: toFunctionSelector(sig),
         };
@@ -73,14 +66,11 @@ export async function resolveConfig({
       .filter((target) => !isHex(target))
       .map((label) => {
         const system = configSystems.find((s) => s.label === label)!;
-        // TODO: replace with system.systemId
-        return resourceToHex({ type: "system", namespace, name: system.name });
+        return system.systemId;
       });
 
     return {
-      namespace,
-      name,
-      systemId,
+      ...system,
       allowAll: system.openAccess,
       allowedAddresses,
       allowedSystemIds,
