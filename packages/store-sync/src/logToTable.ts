@@ -37,11 +37,13 @@ export function logToTable(log: StorageAdapterLog & { eventName: "Store_SetRecor
 
   return {
     address: log.address,
-    ...resource,
+    type: resource.type as never,
+    namespace: resource.namespace,
+    name: resource.name,
     tableId,
     schema: { ...keySchema, ...valueSchema },
     key: Object.keys(keySchema),
     keySchema: getSchemaTypes(keySchema),
     valueSchema: getSchemaTypes(valueSchema),
-  } as never;
+  };
 }
