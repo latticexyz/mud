@@ -20,13 +20,15 @@ const formSchema = z.object({
 });
 
 export function FunctionField({ abi }: Props) {
-  const { writeContract } = useWriteContract();
+  const { writeContract, ...rest } = useWriteContract();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       inputs: [],
     },
   });
+
+  console.log(rest);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
