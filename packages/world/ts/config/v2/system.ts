@@ -49,7 +49,7 @@ export type resolveSystem<input> = input extends SystemInput
       readonly label: input["label"];
       readonly namespace: undefined extends input["namespace"] ? SYSTEM_DEFAULTS["namespace"] : input["namespace"];
       readonly name: string;
-      readonly tableId: Hex;
+      readonly systemId: Hex;
       readonly registerFunctionSelectors: undefined extends input["registerFunctionSelectors"]
         ? SYSTEM_DEFAULTS["registerFunctionSelectors"]
         : input["registerFunctionSelectors"];

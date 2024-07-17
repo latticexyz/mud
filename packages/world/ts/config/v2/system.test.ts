@@ -15,7 +15,7 @@ describe("resolveSystem", () => {
       label: "ExampleSystem",
       namespace: "",
       name: "ExampleSystem" as string,
-      tableId: resourceToHex({ type: "table", namespace: "", name: "ExampleSystem" }),
+      systemId: resourceToHex({ type: "system", namespace: "", name: "ExampleSystem" }),
     } as const;
 
     attest<typeof expected>(system).equals(expected);
@@ -32,7 +32,7 @@ describe("resolveSystem", () => {
       label: "ExampleSystem",
       namespace: "",
       name: "ExampleSystem" as string,
-      tableId: resourceToHex({ type: "table", namespace: "", name: "ExampleSystem" }),
+      systemId: resourceToHex({ type: "system", namespace: "", name: "ExampleSystem" }),
     } as const;
 
     attest<typeof expected>(system).equals(expected);
