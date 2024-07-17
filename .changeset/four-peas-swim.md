@@ -2,4 +2,4 @@
 "@latticexyz/store-sync": patch
 ---
 
-Adjusted `SyncToRecsOptions` intersection to improve TypeScript performance.
+Adjusted `SyncToRecsOptions` type intersection to improve TypeScript performance.
