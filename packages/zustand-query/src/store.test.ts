@@ -53,6 +53,17 @@ type State = {
   };
 };
 
+type SetRecordArgs = {
+  tableLabel: TableLabel;
+  key: Key;
+  record: Record;
+};
+
+type GetRecordArgs = {
+  tableLabel: TableLabel;
+  key: Key;
+};
+
 type Actions = {
   actions: {
     /**
@@ -60,11 +71,11 @@ type Actions = {
      * and non-existing fields are initialized with the default value for this field.
      * Key fields of the record are always set to the provided key.
      */
-    setRecord: (tableLabel: TableLabel, key: Key, record: Record) => void;
+    setRecord: (args: SetRecordArgs) => void;
     /**
      * Get a record from a table.
      */
-    getRecord: (tableLabel: TableLabel, key: Key) => Record;
+    getRecord: (args: GetRecordArgs) => Record;
   };
 };
 
@@ -108,15 +119,23 @@ function createStore(tablesConfig: TablesConfig): Store {
        */
       function encodeKey({ label, namespace }: TableLabel, key: Key): string {
         const keyOrder = get().config[namespace ?? ""][label].key;
-        return keyOrder.map((keyName) => key[keyName]).join("|");
+        return keyOrder
+          .map((keyName) => {
+            const keyValue = key[keyName];
+            if (keyValue == null) {
+              throw new Error(`Provided key is missing field ${keyName}.`);
+            }
+            return key[keyName];
+          })
+          .join("|");
       }
 
-      const getRecord = (tableLabel: TableLabel, key: Key) => {
+      const getRecord = ({ tableLabel, key }: GetRecordArgs) => {
         return get().records[tableLabel.namespace ?? ""][tableLabel.label][encodeKey(tableLabel, key)];
       };
 
       // TODO: Benchmark performance of this function.
-      const setRecord = (tableLabel: TableLabel, key: Key, record: Record) => {
+      const setRecord = ({ tableLabel, key, record }: SetRecordArgs) => {
         set((prev) => {
           const namespace = tableLabel.namespace ?? "";
           const encodedKey = encodeKey(tableLabel, key);
@@ -161,8 +180,8 @@ function registerTable(store: Store, tableConfig: TableConfigFull): BoundTable {
 function getTable(store: Store, tableLabel: TableLabel): BoundTable {
   return {
     store,
-    getRecord: (key: Key) => store.getState().actions.getRecord(tableLabel, key),
-    setRecord: (key: Key, record: Record) => store.getState().actions.setRecord(tableLabel, key, record),
+    getRecord: (key: Key) => store.getState().actions.getRecord({ tableLabel, key }),
+    setRecord: (key: Key, record: Record) => store.getState().actions.setRecord({ tableLabel, key, record }),
     // TODO: dynamically add setters and getters for individual fields of the table
   };
 }
@@ -194,6 +213,89 @@ describe("Zustand Query", () => {
         },
       });
       attest(store.getState().records).snap({ namespace1: { table1: {} } });
+    });
+  });
+
+  describe("store.setRecord", () => {
+    it("should add the record to the table", () => {
+      const tablesConfig = {
+        namespace1: {
+          table1: {
+            schema: {
+              field1: "string",
+              field2: "uint32",
+              field3: "int32",
+            },
+            key: ["field2", "field3"],
+          },
+        },
+      } satisfies TablesConfig;
+
+      const store = createStore(tablesConfig);
+      store.getState().actions.setRecord({
+        tableLabel: { label: "table1", namespace: "namespace1" },
+        key: { field2: 1, field3: 2 },
+        record: { field1: "hello" },
+      });
+
+      store.getState().actions.setRecord({
+        tableLabel: { label: "table1", namespace: "namespace1" },
+        key: { field2: 2, field3: 1 },
+        record: { field1: "world" },
+      });
+
+      attest(store.getState().records).snap({
+        namespace1: {
+          table1: {
+            "1|2": { field1: "hello", field2: 1, field3: 2 },
+            "2|1": { field1: "world", field2: 2, field3: 1 },
+          },
+        },
+      });
+    });
+  });
+
+  describe("store.getRecord", () => {
+    it("should get a record by key from the table", () => {
+      const tablesConfig = {
+        namespace1: {
+          table1: {
+            schema: {
+              field1: "string",
+              field2: "uint32",
+              field3: "int32",
+            },
+            key: ["field2", "field3"],
+          },
+        },
+      } satisfies TablesConfig;
+
+      const store = createStore(tablesConfig);
+      store.getState().actions.setRecord({
+        tableLabel: { label: "table1", namespace: "namespace1" },
+        key: { field2: 1, field3: 2 },
+        record: { field1: "hello" },
+      });
+
+      store.getState().actions.setRecord({
+        tableLabel: { label: "table1", namespace: "namespace1" },
+        key: { field2: 2, field3: 1 },
+        record: { field1: "world" },
+      });
+
+      attest(
+        store.getState().actions.getRecord({
+          tableLabel: { label: "table1", namespace: "namespace1" },
+          key: { field2: 1, field3: 2 },
+        }),
+      ).snap({ field1: "hello", field2: 1, field3: 2 });
+
+      attest(
+        store.getState().actions.getRecord({
+          tableLabel: { label: "table1", namespace: "namespace1" },
+          key: { field2: 2, field3: 1 },
+        }),
+      ).snap({ field1: "world", field2: 2, field3: 1 });
     });
   });
 });
