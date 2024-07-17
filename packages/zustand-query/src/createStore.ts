@@ -5,9 +5,9 @@ import { mutative } from "zustand-mutative";
 import { dynamicAbiTypeToDefaultValue, staticAbiTypeToDefaultValue } from "@latticexyz/schema-type/internal";
 
 /**
- * A Record is one row of the table. It includes both the key and the value.
+ * A TableRecord is one row of the table. It includes both the key and the value.
  */
-type Record = { [field: string]: number | string | bigint | number[] | string[] | bigint[] };
+type TableRecord = { [field: string]: number | string | bigint | number[] | string[] | bigint[] };
 
 /**
  * A Key is the unique identifier for a row in the table.
@@ -44,7 +44,7 @@ type State = {
   records: {
     [namespace: string]: {
       [table: string]: {
-        [key: string]: Record;
+        [key: string]: TableRecord;
       };
     };
   };
@@ -53,7 +53,7 @@ type State = {
 type SetRecordArgs = {
   tableLabel: TableLabel;
   key: Key;
-  record: Record;
+  record: TableRecord;
 };
 
 type GetRecordArgs = {
@@ -72,7 +72,7 @@ type Actions = {
     /**
      * Get a record from a table.
      */
-    getRecord: (args: GetRecordArgs) => Record;
+    getRecord: (args: GetRecordArgs) => TableRecord;
     /**
      * Dynamically register a new table in the store
      * @returns A bound Table object for easier interaction with the table.
@@ -89,7 +89,7 @@ export type Store = StoreApi<State & Actions>;
 
 type BoundSetRecordArgs = {
   key: Key;
-  record: Record;
+  record: TableRecord;
 };
 
 type BoundGetRecordArgs = {
@@ -97,7 +97,7 @@ type BoundGetRecordArgs = {
 };
 
 export type BoundTable = {
-  getRecord: (args: BoundGetRecordArgs) => Record;
+  getRecord: (args: BoundGetRecordArgs) => TableRecord;
   setRecord: (args: BoundSetRecordArgs) => void;
 };
 
