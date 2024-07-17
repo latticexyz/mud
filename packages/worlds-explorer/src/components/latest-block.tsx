@@ -3,7 +3,7 @@ import { useBlockNumber } from "wagmi";
 export function LatestBlock() {
   const { data: block } = useBlockNumber();
 
-  if (block != null && block > BigInt(0)) {
+  if (block === undefined || block === BigInt(0)) {
     return;
   }
 
