@@ -1,12 +1,32 @@
-import { mapObject } from "@latticexyz/common/utils";
-import { SYSTEM_DEFAULTS } from "../defaults";
+import { ErrorMessage } from "@arktype/util";
+import { isObject } from "@latticexyz/store/config/v2";
 import { SystemsInput } from "./input";
-import { mergeIfUndefined } from "@latticexyz/store/config/v2";
+import { resolveSystem, validateSystem } from "./system";
+
+export type validateSystems<input> = {
+  [label in keyof input]: input[label] extends object
+    ? validateSystem<input[label], { inNamespace: true }>
+    : ErrorMessage<`Expected a system config for ${label & string}.`>;
+};
+
+export function validateSystems(input: unknown): asserts input is SystemsInput {
+  if (isObject(input)) {
+    for (const table of Object.values(input)) {
+      validateSystem(table, { inNamespace: true });
+    }
+    return;
+  }
+  throw new Error(`Expected system config, received ${JSON.stringify(input)}`);
+}
 
 export type resolveSystems<systems extends SystemsInput> = {
-  [label in keyof systems]: mergeIfUndefined<systems[label], typeof SYSTEM_DEFAULTS>;
+  [label in keyof systems]: resolveSystem<systems[label] & { label: label }>;
 };
 
 export function resolveSystems<systems extends SystemsInput>(systems: systems): resolveSystems<systems> {
-  return mapObject(systems, (system) => mergeIfUndefined(system, SYSTEM_DEFAULTS));
+  return Object.fromEntries(
+    Object.entries(systems).map(([label, system]) => {
+      return [label, resolveSystem({ ...system, label })];
+    }),
+  ) as never;
 }

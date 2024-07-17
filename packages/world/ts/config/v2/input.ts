@@ -3,8 +3,21 @@ import { StoreInput, StoreWithShorthandsInput } from "@latticexyz/store/config/v
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
 
 export type SystemInput = {
-  /** The full resource selector consists of namespace and name */
-  name?: string;
+  /**
+   * Human-readable system label. Used as config keys, interface names, and filenames.
+   * Labels are not length constrained like resource names, but special characters should be avoided to be compatible with the filesystem, Solidity compiler, etc.
+   */
+  readonly label: string;
+  /**
+   * System namespace used in systems's resource ID and determines access control.
+   * Defaults to the nearest namespace in the config or root namespace if not set.
+   */
+  readonly namespace?: string;
+  /**
+   * System name used in systems's resource ID.
+   * Defaults to the first 16 characters of `label` if not set.
+   */
+  readonly name?: string;
   /**
    * Register function selectors for the system in the World.
    * Defaults to true.
@@ -12,14 +25,16 @@ export type SystemInput = {
    * - For root systems all World function selectors will correspond to the system's function selectors.
    * - For non-root systems, the World function selectors will be <namespace>__<function>.
    */
-  registerFunctionSelectors?: boolean;
+  readonly registerFunctionSelectors?: boolean;
   /** If openAccess is true, any address can call the system */
-  openAccess?: boolean;
+  readonly openAccess?: boolean;
   /** An array of addresses or system names that can access the system */
-  accessList?: readonly string[];
+  readonly accessList?: readonly string[];
 };
 
-export type SystemsInput = { [key: string]: SystemInput };
+export type SystemsInput = {
+  readonly [label: string]: Omit<SystemInput, "label" | "namespace">;
+};
 
 type ModuleInputArtifactPath =
   | {

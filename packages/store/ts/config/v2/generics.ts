@@ -1,4 +1,4 @@
-import { merge } from "@arktype/util";
+import { merge, show } from "@arktype/util";
 
 export type get<input, key> = key extends keyof input ? input[key] : undefined;
 
@@ -31,15 +31,20 @@ export function isObject<input>(input: input): input is input & object {
   return input != null && typeof input === "object";
 }
 
-export type mergeIfUndefined<base, merged> = merge<
-  base,
-  {
-    [key in keyof merged]: key extends keyof base
-      ? undefined extends base[key]
-        ? merged[key]
-        : base[key]
-      : merged[key];
-  }
+export type mergeIfUndefined<base, merged> = show<
+  // TODO: remove `show<Readonly<...>>` wrapper once `merge` supports `readonly` props
+  Readonly<
+    merge<
+      base,
+      {
+        readonly [key in keyof merged]: key extends keyof base
+          ? undefined extends base[key]
+            ? merged[key]
+            : base[key]
+          : merged[key];
+      }
+    >
+  >
 >;
 
 export function mergeIfUndefined<base extends object, merged extends object>(
