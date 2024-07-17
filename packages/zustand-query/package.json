@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@arktype/util": "0.0.40",
+    "@latticexyz/config": "^2.0.12",
     "@latticexyz/recs": "^2.0.12",
     "mutative": "^1.0.6",
     "viem": "2.9.20",

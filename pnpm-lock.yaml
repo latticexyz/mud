@@ -1145,9 +1145,12 @@ importers:
       '@arktype/util':
         specifier: 0.0.40
         version: 0.0.40
+      '@latticexyz/config':
+        specifier: ^2.0.12
+        version: link:../config
       '@latticexyz/recs':
         specifier: ^2.0.12
-        version: 2.0.12(typescript@5.4.2)(zod@3.23.7)
+        version: link:../recs
       mutative:
         specifier: ^1.0.6
         version: 1.0.6
@@ -2180,15 +2183,6 @@ packages:
   '@koa/router@12.0.1':
     resolution: {integrity: sha512-ribfPYfHb+Uw3b27Eiw6NPqjhIhTpVFzEWLwyc/1Xp+DCdwRRyIlAUODX+9bPARF6aQtUu1+/PHzdNvRzcs/+Q==}
     engines: {node: '>= 12'}
-
-  '@latticexyz/recs@2.0.12':
-    resolution: {integrity: sha512-8tl1uZKsG/C4P+nnPYgQOIYR/QE0ZbIvnVSQGrWvuif/17oCRSpK6RUIY5DBzv93f95RndmJWi1iQ18KCkynCA==}
-
-  '@latticexyz/schema-type@2.0.12':
-    resolution: {integrity: sha512-QDnHU3iCQmY8e24CGR3hKUEprHrrNUfFTiUaSuj3J0d/x9iaIafYT2+dWydxgcpCmK4Xl7PgurvJiAVCmcLokg==}
-
-  '@latticexyz/utils@2.0.12':
-    resolution: {integrity: sha512-AwniovUlWY7YL92Mjz/3R0V9g8c5wYg5t3agRmMZ9wgktUB6BYZC65n+sKp88wUuN3DrMLb51UFZOycGh0JD2w==}
 
   '@manypkg/find-root@1.1.0':
     resolution: {integrity: sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA==}
@@ -8098,34 +8092,6 @@ snapshots:
       path-to-regexp: 6.2.1
     transitivePeerDependencies:
       - supports-color
-
-  '@latticexyz/recs@2.0.12(typescript@5.4.2)(zod@3.23.7)':
-    dependencies:
-      '@latticexyz/schema-type': 2.0.12(typescript@5.4.2)(zod@3.23.7)
-      '@latticexyz/utils': 2.0.12
-      mobx: 6.9.0
-      rxjs: 7.5.5
-    transitivePeerDependencies:
-      - bufferutil
-      - typescript
-      - utf-8-validate
-      - zod
-
-  '@latticexyz/schema-type@2.0.12(typescript@5.4.2)(zod@3.23.7)':
-    dependencies:
-      abitype: 1.0.0(typescript@5.4.2)(zod@3.23.7)
-      viem: 2.9.20(typescript@5.4.2)(zod@3.23.7)
-    transitivePeerDependencies:
-      - bufferutil
-      - typescript
-      - utf-8-validate
-      - zod
-
-  '@latticexyz/utils@2.0.12':
-    dependencies:
-      mobx: 6.9.0
-      proxy-deep: 3.1.1
-      rxjs: 7.5.5
 
   '@manypkg/find-root@1.1.0':
     dependencies:
