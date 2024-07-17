@@ -71,32 +71,32 @@ export type ModuleInput = ModuleInputArtifactPath & {
 export type DeployInput = {
   /** The name of a custom World contract to deploy. If no name is provided, a default MUD World is deployed. */
   // TODO: implement
-  customWorldContract?: never;
+  readonly customWorldContract?: never;
   /**
    * Script to execute after the deployment is complete (Default "PostDeploy").
    * Script must be placed in the forge scripts directory (see foundry.toml) and have a ".s.sol" extension.
    */
-  postDeployScript?: string;
+  readonly postDeployScript?: string;
   /** Directory to write the deployment info to (Default "./deploys") */
-  deploysDirectory?: string;
+  readonly deploysDirectory?: string;
   /** JSON file to write to with chain -> latest world deploy address (Default "./worlds.json") */
-  worldsFile?: string;
+  readonly worldsFile?: string;
   /** Deploy the World as an upgradeable proxy */
-  upgradeableWorldImplementation?: boolean;
+  readonly upgradeableWorldImplementation?: boolean;
 };
 
 export type CodegenInput = {
   /** The name of the World interface to generate. (Default `IWorld`) */
-  worldInterfaceName?: string;
+  readonly worldInterfaceName?: string;
   /** Directory to output system and world interfaces of `worldgen` (Default "world") */
-  worldgenDirectory?: string;
+  readonly worldgenDirectory?: string;
   /** Path for world package imports. Default is "@latticexyz/world/src/" */
-  worldImportPath?: string;
+  readonly worldImportPath?: string;
 };
 
 export type WorldInput = show<
   StoreInput & {
-    namespaces?: NamespacesInput;
+    readonly namespaces?: NamespacesInput;
     /**
      * Contracts named *System will be deployed by default
      * as public systems at `namespace/ContractName`, unless overridden
@@ -104,19 +104,21 @@ export type WorldInput = show<
      * The key is the system name (capitalized).
      * The value is a SystemConfig object.
      */
-    systems?: SystemsInput;
+    readonly systems?: SystemsInput;
     /** System names to exclude from codegen and deployment */
-    excludeSystems?: readonly string[];
+    readonly excludeSystems?: readonly string[];
     /** Modules to install in the World */
-    modules?: readonly ModuleInput[];
+    readonly modules?: readonly ModuleInput[];
     /** Deploy config */
-    deploy?: DeployInput;
+    readonly deploy?: DeployInput;
     /** Codegen config */
-    codegen?: CodegenInput;
+    readonly codegen?: CodegenInput;
   }
 >;
 
-export type NamespacesInput = { [label: string]: NamespaceInput };
+export type NamespacesInput = {
+  readonly [label: string]: NamespaceInput;
+};
 
 export type NamespaceInput = Pick<StoreInput, "tables">;
 

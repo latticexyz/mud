@@ -3,6 +3,8 @@ import { isObject } from "@latticexyz/store/config/v2";
 import { SystemsInput } from "./input";
 import { resolveSystem, validateSystem } from "./system";
 
+// TODO: add nuance between "in namespace" (namespace provided in context) and "in systems" (label provided in context)
+
 export type validateSystems<input> = {
   [label in keyof input]: input[label] extends object
     ? validateSystem<input[label], { inNamespace: true }>
