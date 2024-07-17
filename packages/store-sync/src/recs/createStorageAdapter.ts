@@ -13,7 +13,7 @@ import { StorageAdapter, StorageAdapterBlock } from "../common";
 import { singletonEntity } from "./singletonEntity";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
-import { TablesToComponents, tablesToComponents } from "./tablesToComponents";
+import { tablesToComponents } from "./tablesToComponents";
 
 const storeTables = storeConfig.tables;
 const worldTables = worldConfig.tables;
@@ -26,9 +26,9 @@ export type CreateStorageAdapterOptions<tables extends Record<string, Table>> = 
 
 export type CreateStorageAdapterResult<tables extends Record<string, Table>> = {
   storageAdapter: StorageAdapter;
-  components: TablesToComponents<tables> &
-    TablesToComponents<typeof storeTables> &
-    TablesToComponents<typeof worldTables> &
+  components: tablesToComponents<tables> &
+    tablesToComponents<typeof storeTables> &
+    tablesToComponents<typeof worldTables> &
     ReturnType<typeof defineInternalComponents>;
 };
 
