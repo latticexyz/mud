@@ -25,7 +25,8 @@ export async function resolveSystems({
 
   const systems = systemContracts
     .map((contract): ResolvedSystem => {
-      const systemConfig = config.systems[contract.name] ?? resolveSystem({ label: contract.name });
+      const systemConfig =
+        config.systems[contract.name] ?? resolveSystem({ label: contract.name, namespace: config.namespace });
       return {
         ...systemConfig,
         sourcePath: contract.sourcePath,
