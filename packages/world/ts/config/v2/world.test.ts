@@ -767,6 +767,7 @@ describe("defineWorld", () => {
 
   it("should expand systems config", () => {
     const config = defineWorld({
+      namespace: "app",
       systems: {
         Example: {},
       },
@@ -775,9 +776,9 @@ describe("defineWorld", () => {
     const expectedSystems = {
       Example: {
         label: "Example",
-        namespace: "",
+        namespace: "app",
         name: "Example",
-        systemId: resourceToHex({ type: "system", namespace: "", name: "Example" }),
+        systemId: resourceToHex({ type: "system", namespace: "app", name: "Example" }),
         registerFunctionSelectors: true,
         openAccess: true,
         accessList: [],

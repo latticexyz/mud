@@ -50,12 +50,12 @@ export function validateWorld(world: unknown): asserts world is WorldInput {
   }
 }
 
-export type resolveWorld<world> = withJsDoc<
+export type resolveWorld<world, namespace = resolveStore<world>["namespace"]> = withJsDoc<
   resolveStore<world> &
     mergeIfUndefined<
       { readonly tables: resolveNamespacedTables<world> } & {
         [key in Exclude<keyof world, "namespaces" | keyof Store>]: key extends "systems"
-          ? resolveSystems<world[key] & SystemsInput>
+          ? resolveSystems<world[key] & SystemsInput, namespace & string>
           : key extends "deploy"
             ? resolveDeploy<world[key]>
             : key extends "codegen"
@@ -95,7 +95,7 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
       tables: { ...resolvedStore.tables, ...resolvedNamespacedTables },
       codegen: mergeIfUndefined(resolvedStore.codegen, resolveCodegen(world.codegen)),
       deploy: resolveDeploy(world.deploy),
-      systems: resolveSystems(world.systems ?? CONFIG_DEFAULTS.systems),
+      systems: resolveSystems(world.systems ?? CONFIG_DEFAULTS.systems, resolvedStore.namespace),
       excludeSystems: get(world, "excludeSystems"),
       modules,
     },
