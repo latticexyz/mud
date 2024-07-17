@@ -13,9 +13,8 @@ export function Form({ data }: Props) {
   return (
     <>
       <h1 className="text-4xl font-bold py-4">Interact</h1>
-
-      {data.abi.map((item, idx) => {
-        return <FunctionField key={idx} data={item as AbiFunction} />;
+      {data.abi.map((abi, idx) => {
+        return <FunctionField key={idx} abi={abi as AbiFunction} />;
       })}
     </>
   );
