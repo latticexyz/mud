@@ -3,13 +3,10 @@
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useBlockNumber } from "wagmi";
+import { LatestBlock } from "@/components/latest-block";
 
 export function Navigation() {
   const pathname = usePathname();
-  const { data: block } = useBlockNumber();
-
-  console.log(block);
 
   return (
     <div className="flex justify-between items-center">
@@ -23,19 +20,7 @@ export function Navigation() {
       </div>
 
       <div>
-        {block != null && block > BigInt(0) && (
-          <div className="inline-block mr-4">
-            <div className="flex items-center justify-between text-xs font-extrabold text-green-600">
-              <span
-                className="mr-2 inline-block h-[8px] w-[8px] rounded-full animate-pulse"
-                style={{
-                  background: "rgb(64, 182, 107)",
-                }}
-              ></span>
-              <span className="opacity-70">{block.toString()}</span>
-            </div>
-          </div>
-        )}
+        <LatestBlock />
       </div>
     </div>
   );
