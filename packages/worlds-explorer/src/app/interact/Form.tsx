@@ -14,7 +14,7 @@ export function Form({ data }: Props) {
     <>
       <h1 className="text-4xl font-bold py-4">Interact</h1>
 
-      <div className="flex gap-4">
+      <div className="flex">
         <div className="w-[300px]">
           <div className="sticky top-0">
             <h4 className="font-semibold py-4">Jump to:</h4>
@@ -30,7 +30,7 @@ export function Form({ data }: Props) {
           </div>
         </div>
 
-        <div>
+        <div className="border-l pl-4">
           {data.abi.map((abi, idx) => {
             return <FunctionField key={idx} abi={abi as AbiFunction} />;
           })}
