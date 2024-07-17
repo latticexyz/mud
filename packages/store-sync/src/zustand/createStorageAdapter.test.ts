@@ -59,6 +59,7 @@ describe("createStorageAdapter", async () => {
             "key": [
               "player",
             ],
+            "label": "Position",
             "name": "Position",
             "namespace": "",
             "schema": {
@@ -109,6 +110,7 @@ describe("createStorageAdapter", async () => {
             "key": [
               "player",
             ],
+            "label": "Position",
             "name": "Position",
             "namespace": "",
             "schema": {
@@ -159,6 +161,7 @@ describe("createStorageAdapter", async () => {
             "key": [
               "player",
             ],
+            "label": "Position",
             "name": "Position",
             "namespace": "",
             "schema": {
@@ -209,6 +212,7 @@ describe("createStorageAdapter", async () => {
             "key": [
               "player",
             ],
+            "label": "Position",
             "name": "Position",
             "namespace": "",
             "schema": {

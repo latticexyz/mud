@@ -14,13 +14,16 @@ import {
 } from "@latticexyz/protocol-parser/internal";
 import { Schema, Table } from "@latticexyz/config";
 
+// TODO: add label once we register it onchain
+type DeployedTable = Omit<Table, "label">;
+
 export async function getTables({
   client,
   worldDeploy,
 }: {
   readonly client: Client;
   readonly worldDeploy: WorldDeploy;
-}): Promise<readonly Table[]> {
+}): Promise<readonly Omit<DeployedTable, "label">[]> {
   // This assumes we only use `Tables._set(...)`, which is true as of this writing.
   // TODO: PR to viem's getLogs to accept topics array so we can filter on all store events and quickly recreate this table's current state
   // TODO: consider moving this to a batched getRecord for Tables table
@@ -38,7 +41,7 @@ export async function getTables({
   });
 
   // TODO: combine with store-sync logToTable and export from somewhere
-  const tables = logs.map((log): Table => {
+  const tables = logs.map((log): DeployedTable => {
     const { tableId } = decodeKey(getSchemaTypes(getKeySchema(storeTables.store__Tables)), log.args.keyTuple);
     const { type, namespace, name } = hexToResource(tableId);
     const value = decodeValueArgs(getSchemaTypes(getValueSchema(storeTables.store__Tables)), log.args);

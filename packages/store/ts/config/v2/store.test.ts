@@ -20,6 +20,10 @@ describe("defineStore", () => {
       sourceDirectory: "src",
       tables: {
         Example: {
+          label: "Example",
+          type: "table",
+          namespace: "",
+          name: "Example" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
             id: {
@@ -36,10 +40,7 @@ describe("defineStore", () => {
             },
           },
           key: ["age"],
-          name: "Example",
-          namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
-          type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
@@ -71,6 +72,10 @@ describe("defineStore", () => {
       sourceDirectory: "src",
       tables: {
         Example: {
+          label: "Example",
+          type: "table",
+          namespace: "",
+          name: "Example" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
             id: {
@@ -87,10 +92,7 @@ describe("defineStore", () => {
             },
           },
           key: ["age"],
-          name: "Example",
-          namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
-          type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
@@ -121,6 +123,10 @@ describe("defineStore", () => {
       sourceDirectory: "src",
       tables: {
         Example: {
+          label: "Example",
+          type: "table",
+          namespace: "",
+          name: "Example" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
             id: {
@@ -137,10 +143,7 @@ describe("defineStore", () => {
             },
           },
           key: ["age", "id"],
-          name: "Example",
-          namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-          type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
@@ -172,6 +175,10 @@ describe("defineStore", () => {
       sourceDirectory: "src",
       tables: {
         First: {
+          label: "First",
+          type: "table",
+          namespace: "",
+          name: "First" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
           schema: {
             firstKey: {
@@ -188,13 +195,14 @@ describe("defineStore", () => {
             },
           },
           key: ["firstKey", "firstAge"],
-          name: "First",
-          namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-          type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
         Second: {
+          label: "Second",
+          type: "table",
+          namespace: "",
+          name: "Second" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
           schema: {
             secondKey: {
@@ -211,10 +219,7 @@ describe("defineStore", () => {
             },
           },
           key: ["secondKey", "secondAge"],
-          name: "Second",
-          namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-          type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
@@ -250,6 +255,10 @@ describe("defineStore", () => {
       sourceDirectory: "src",
       tables: {
         First: {
+          label: "First",
+          type: "table",
+          namespace: "",
+          name: "First" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
           schema: {
             firstKey: {
@@ -266,13 +275,14 @@ describe("defineStore", () => {
             },
           },
           key: ["firstKey", "firstAge"],
-          name: "First",
-          namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-          type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
         Second: {
+          label: "Second",
+          type: "table",
+          namespace: "",
+          name: "Second" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
           schema: {
             secondKey: {
@@ -289,10 +299,7 @@ describe("defineStore", () => {
             },
           },
           key: ["secondKey", "secondAge"],
-          name: "Second",
-          namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-          type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
@@ -384,6 +391,10 @@ describe("defineStore", () => {
       sourceDirectory: "src",
       tables: {
         Example: {
+          label: "Example",
+          type: "table",
+          namespace: "",
+          name: "Example" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
             id: {
@@ -400,10 +411,7 @@ describe("defineStore", () => {
             },
           },
           key: ["name"],
-          name: "Example",
-          namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
-          type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
@@ -460,8 +468,9 @@ describe("defineStore", () => {
     });
 
     attest<"namespace">(config.namespace).equals("namespace");
+    attest<"Example">(config.tables.namespace__Example.label).equals("Example");
     attest<"namespace">(config.tables.namespace__Example.namespace).equals("namespace");
-    attest<"Example">(config.tables.namespace__Example.name).equals("Example");
+    attest<string>(config.tables.namespace__Example.name).equals("Example");
     attest(config.tables.namespace__Example.tableId).equals(
       resourceToHex({ type: "table", name: "Example", namespace: "namespace" }),
     );
@@ -481,7 +490,7 @@ describe("defineStore", () => {
     );
   });
 
-  it("should throw if name is overridden in the store context", () => {
+  it("should throw if label is overridden in the store context", () => {
     attest(() =>
       defineStore({
         namespace: "CustomNS",
@@ -489,12 +498,12 @@ describe("defineStore", () => {
           Example: {
             schema: { id: "address" },
             key: ["id"],
-            // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
-            name: "NotAllowed",
+            // @ts-expect-error "Overrides of `label` and `namespace` are not allowed for tables in a store config"
+            label: "NotAllowed",
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
+    ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in a store config");
   });
 
   it("should throw if namespace is overridden in the store context", () => {
@@ -505,12 +514,12 @@ describe("defineStore", () => {
           Example: {
             schema: { id: "address" },
             key: ["id"],
-            // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
+            // @ts-expect-error "Overrides of `label` and `namespace` are not allowed for tables in a store config"
             namespace: "NotAllowed",
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
+    ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in a store config");
   });
 
   it("should allow const enum as input", () => {
@@ -577,6 +586,10 @@ describe("defineStore", () => {
       sourceDirectory: "src",
       tables: {
         app__NamespaceDir: {
+          label: "NamespaceDir",
+          type: "table",
+          namespace: "app",
+          name: "NamespaceDir" as string,
           tableId: resourceToHex({ type: "table", namespace: "app", name: "NamespaceDir" }),
           schema: {
             name: {
@@ -585,17 +598,18 @@ describe("defineStore", () => {
             },
           },
           key: [],
-          name: "NamespaceDir",
-          namespace: "app",
           codegen: {
             ...TABLE_CODEGEN_DEFAULTS,
             dataStruct: false as boolean,
             outputDirectory: "app/tables" as string,
           },
-          type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
         app__NotNamespaceDir: {
+          label: "NotNamespaceDir",
+          type: "table",
+          namespace: "app",
+          name: "NotNamespaceDir" as string,
           tableId: resourceToHex({ type: "table", namespace: "app", name: "NotNamespaceDir" }),
           schema: {
             name: {
@@ -604,14 +618,11 @@ describe("defineStore", () => {
             },
           },
           key: [],
-          name: "NotNamespaceDir",
-          namespace: "app",
           codegen: {
             ...TABLE_CODEGEN_DEFAULTS,
             dataStruct: false as boolean,
             outputDirectory: "tables",
           },
-          type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },

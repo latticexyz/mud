@@ -26,19 +26,22 @@ export const internalTableIds = [...Object.values(storeTables), ...Object.values
 export type ChainId = number;
 export type WorldId = `${ChainId}:${Address}`;
 
-export type TableRecord<table extends ConfigTable = ConfigTable> = {
+// TODO: add label once we register it onchain
+export type DeployedTable = Omit<ConfigTable, "label">;
+
+export type TableRecord<table extends DeployedTable = DeployedTable> = {
   readonly key: getSchemaPrimitives<getKeySchema<table>>;
   readonly value: getSchemaPrimitives<getValueSchema<table>>;
   readonly fields: getSchemaPrimitives<table["schema"]>;
 };
 
-export type Table<table extends ConfigTable = ConfigTable> = table & {
+export type Table<table extends DeployedTable = DeployedTable> = table & {
   readonly address: Address;
-  readonly keySchema: getSchemaTypes<ConfigTable extends table ? Schema : getKeySchema<table>>;
-  readonly valueSchema: getSchemaTypes<ConfigTable extends table ? Schema : getValueSchema<table>>;
+  readonly keySchema: getSchemaTypes<DeployedTable extends table ? Schema : getKeySchema<table>>;
+  readonly valueSchema: getSchemaTypes<DeployedTable extends table ? Schema : getValueSchema<table>>;
 };
 
-export type TableWithRecords<table extends ConfigTable = ConfigTable> = Table<table> & {
+export type TableWithRecords<table extends DeployedTable = DeployedTable> = Table<table> & {
   readonly records: readonly TableRecord<table>[];
 };
 

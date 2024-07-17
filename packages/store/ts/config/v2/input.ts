@@ -19,18 +19,35 @@ export type TableCodegenInput = Partial<TableCodegen>;
 export type TableDeployInput = Partial<TableDeploy>;
 
 export type TableInput = {
+  /**
+   * Human-readable table label. Used as config keys, table library names, and filenames.
+   * Labels are not length constrained like table names, but special characters should be avoided to be compatible with the filesystem, Solidity compiler, etc.
+   */
+  readonly label: string;
+  /**
+   * Defaults to `table` if not set.
+   */
+  readonly type?: "table" | "offchainTable";
+  /**
+   * Table namespace used in table's resource ID. Only root systems and systems of the same namespace can write to this table.
+   * Defaults to the nearest namespace in the config or root namespace if not set.
+   */
+  readonly namespace?: string;
+  /**
+   * Table name used in table's resource ID.
+   * Defaults to the first 16 characters of `label` if not set.
+   */
+  readonly name?: string;
   readonly schema: SchemaInput;
   readonly key: readonly string[];
   readonly tableId?: Hex;
-  readonly name: string;
-  readonly namespace?: string;
-  readonly type?: "table" | "offchainTable";
   readonly codegen?: TableCodegenInput;
   readonly deploy?: TableDeployInput;
 };
 
 export type TablesInput = {
-  readonly [label: string]: Omit<TableInput, "namespace" | "name">;
+  // remove label and namespace as these are set contextually
+  readonly [label: string]: Omit<TableInput, "label" | "namespace">;
 };
 
 export type CodegenInput = Partial<Codegen>;
@@ -55,7 +72,9 @@ export type StoreInput = {
 export type TableShorthandInput = SchemaInput | string;
 
 export type TablesWithShorthandsInput = {
-  readonly [label: string]: TableInput | TableShorthandInput;
+  readonly [label: string]: TablesInput[string] | TableShorthandInput;
 };
 
-export type StoreWithShorthandsInput = show<Omit<StoreInput, "tables"> & { tables: TablesWithShorthandsInput }>;
+export type StoreWithShorthandsInput = show<
+  Omit<StoreInput, "tables"> & { readonly tables: TablesWithShorthandsInput }
+>;
