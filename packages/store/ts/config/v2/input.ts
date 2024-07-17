@@ -29,10 +29,12 @@ export type TableInput = {
    */
   readonly type?: "table" | "offchainTable";
   /**
-   * Defaults to the root namespace if not set.
+   * Table namespace used in table's resource ID. Only root systems and systems of the same namespace can write to this table.
+   * Defaults to the nearest namespace in the config or root namespace if not set.
    */
   readonly namespace?: string;
   /**
+   * Table name used in table's resource ID.
    * Defaults to the first 16 characters of `label` if not set.
    */
   readonly name?: string;
