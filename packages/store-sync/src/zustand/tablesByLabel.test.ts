@@ -1,10 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { tablesByLabel } from "./tablesByLabel";
 import { defineWorld } from "@latticexyz/world";
+import { resourceToHex } from "@latticexyz/common";
 
 describe("tablesByLabel", () => {
-  // Eventually, config output will truncate table names and the label will move to a `label` key.
-  // This test ensures we still have tables named by their labels so we don't forget to update this code path.
   it("maps table label to component name", async () => {
     const config = defineWorld({
       namespace: "app",
@@ -14,6 +13,14 @@ describe("tablesByLabel", () => {
     });
 
     const tables = tablesByLabel(config.tables);
-    expect(tables.ExceedsResourceNameSizeLimit.name).toBe("ExceedsResourceNameSizeLimit");
+    expect(tables.ExceedsResourceNameSizeLimit.tableId).toBe(
+      resourceToHex({
+        type: "table",
+        namespace: "app",
+        name: "ExceedsResourceN",
+      }),
+    );
+    expect(tables.ExceedsResourceNameSizeLimit.label).toBe("ExceedsResourceNameSizeLimit");
+    expect(tables.ExceedsResourceNameSizeLimit.name).toBe("ExceedsResourceN");
   });
 });
