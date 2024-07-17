@@ -14,7 +14,6 @@
     "./internal": "./dist/internal.js",
     "./mud.config": "./dist/mud.config.js",
     "./config/v2": "./dist/config/v2.js",
-    "./register": "./dist/register.js",
     "./node": "./dist/node.js",
     "./out/*": "./out/*"
   },
@@ -31,9 +30,6 @@
       ],
       "config/v2": [
         "./dist/config/v2.d.ts"
-      ],
-      "register": [
-        "./dist/register.d.ts"
       ],
       "node": [
         "./dist/node.d.ts"
