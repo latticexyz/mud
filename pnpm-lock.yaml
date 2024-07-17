@@ -725,9 +725,6 @@ importers:
       viem:
         specifier: 2.9.20
         version: 2.9.20(typescript@5.4.2)(zod@3.23.7)
-      zod:
-        specifier: ^3.22.2
-        version: 3.23.7
     devDependencies:
       '@arktype/attest':
         specifier: 0.7.5
@@ -1029,9 +1026,6 @@ importers:
       viem:
         specifier: 2.9.20
         version: 2.9.20(typescript@5.4.2)(zod@3.23.7)
-      zod:
-        specifier: ^3.22.2
-        version: 3.23.7
     devDependencies:
       '@arktype/attest':
         specifier: 0.7.5
