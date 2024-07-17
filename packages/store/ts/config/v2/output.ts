@@ -40,6 +40,10 @@ export type Table = show<
   }
 >;
 
+export type Tables = {
+  readonly [label: string]: Table;
+};
+
 export type Codegen = {
   /** @internal */
   readonly storeImportPath: string;

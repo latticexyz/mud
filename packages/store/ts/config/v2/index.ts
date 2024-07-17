@@ -12,3 +12,4 @@ export * from "./defaults";
 export * from "./codegen";
 export * from "./enums";
 export * from "./userTypes";
+export * from "./namespacedTables";

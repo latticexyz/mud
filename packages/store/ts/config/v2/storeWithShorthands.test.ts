@@ -12,6 +12,10 @@ describe("defineStoreWithShorthands", () => {
       sourceDirectory: "src",
       tables: {
         Name: {
+          label: "Name",
+          type: "table",
+          namespace: "",
+          name: "Name" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
           schema: {
             id: {
@@ -24,10 +28,7 @@ describe("defineStoreWithShorthands", () => {
             },
           },
           key: ["id"],
-          name: "Name",
-          namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-          type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
@@ -50,6 +51,10 @@ describe("defineStoreWithShorthands", () => {
       sourceDirectory: "src",
       tables: {
         Name: {
+          label: "Name",
+          type: "table",
+          namespace: "",
+          name: "Name" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
           schema: {
             id: {
@@ -62,10 +67,7 @@ describe("defineStoreWithShorthands", () => {
             },
           },
           key: ["id"],
-          name: "Name",
-          namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-          type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
@@ -88,6 +90,10 @@ describe("defineStoreWithShorthands", () => {
       sourceDirectory: "src",
       tables: {
         Example: {
+          label: "Example",
+          type: "table",
+          namespace: "",
+          name: "Example" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
             id: {
@@ -104,10 +110,7 @@ describe("defineStoreWithShorthands", () => {
             },
           },
           key: ["id"],
-          name: "Example",
-          namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
-          type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
@@ -130,6 +133,10 @@ describe("defineStoreWithShorthands", () => {
       sourceDirectory: "src",
       tables: {
         Example: {
+          label: "Example",
+          type: "table",
+          namespace: "",
+          name: "Example" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
             id: {
@@ -146,10 +153,7 @@ describe("defineStoreWithShorthands", () => {
             },
           },
           key: ["id"],
-          name: "Example",
-          namespace: "",
           codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
-          type: "table",
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
