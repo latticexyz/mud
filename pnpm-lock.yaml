@@ -1147,13 +1147,13 @@ importers:
         version: 0.0.40
       '@latticexyz/config':
         specifier: ^2.0.12
-        version: link:../config
+        version: 2.0.12(@aws-sdk/client-kms@3.556.0)(asn1.js@5.4.1)(typescript@5.4.2)
       '@latticexyz/recs':
         specifier: ^2.0.12
-        version: link:../recs
+        version: 2.0.12(typescript@5.4.2)(zod@3.23.7)
       '@latticexyz/schema-type':
         specifier: ^2.0.12
-        version: link:../schema-type
+        version: 2.0.12(typescript@5.4.2)(zod@3.23.7)
       mutative:
         specifier: ^1.0.6
         version: 1.0.6
@@ -1167,6 +1167,9 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1(@types/react@18.2.22)(mutative@1.0.6)(react@18.2.0)(zustand@4.3.7(immer@10.1.1)(react@18.2.0))
     devDependencies:
+      '@arktype/attest':
+        specifier: 0.7.5
+        version: 0.7.5(typescript@5.4.2)
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.4.2)
@@ -2186,6 +2189,29 @@ packages:
   '@koa/router@12.0.1':
     resolution: {integrity: sha512-ribfPYfHb+Uw3b27Eiw6NPqjhIhTpVFzEWLwyc/1Xp+DCdwRRyIlAUODX+9bPARF6aQtUu1+/PHzdNvRzcs/+Q==}
     engines: {node: '>= 12'}
+
+  '@latticexyz/common@2.0.12':
+    resolution: {integrity: sha512-B077Ss6N6PO/KVDkXvOKCDR1BN6WP+xYGXGegiyCenvgR4qPvx3EHRe/yPcRXfNJx7vOX0i7zwhaLYcaB5QO/w==}
+    peerDependencies:
+      '@aws-sdk/client-kms': 3.x
+      asn1.js: 5.x
+    peerDependenciesMeta:
+      '@aws-sdk/client-kms':
+        optional: true
+      asn1.js:
+        optional: true
+
+  '@latticexyz/config@2.0.12':
+    resolution: {integrity: sha512-M9OvNabwuaQEAamv0270mMgT7+S8UpExwvS4OS9rSgRoSd6Y+7cmtNXW3VNXzSjHkLcEk8TFU5ZYp3aAPly+tQ==}
+
+  '@latticexyz/recs@2.0.12':
+    resolution: {integrity: sha512-8tl1uZKsG/C4P+nnPYgQOIYR/QE0ZbIvnVSQGrWvuif/17oCRSpK6RUIY5DBzv93f95RndmJWi1iQ18KCkynCA==}
+
+  '@latticexyz/schema-type@2.0.12':
+    resolution: {integrity: sha512-QDnHU3iCQmY8e24CGR3hKUEprHrrNUfFTiUaSuj3J0d/x9iaIafYT2+dWydxgcpCmK4Xl7PgurvJiAVCmcLokg==}
+
+  '@latticexyz/utils@2.0.12':
+    resolution: {integrity: sha512-AwniovUlWY7YL92Mjz/3R0V9g8c5wYg5t3agRmMZ9wgktUB6BYZC65n+sKp88wUuN3DrMLb51UFZOycGh0JD2w==}
 
   '@manypkg/find-root@1.1.0':
     resolution: {integrity: sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA==}
@@ -8095,6 +8121,72 @@ snapshots:
       path-to-regexp: 6.2.1
     transitivePeerDependencies:
       - supports-color
+
+  '@latticexyz/common@2.0.12(@aws-sdk/client-kms@3.556.0)(asn1.js@5.4.1)(typescript@5.4.2)(zod@3.23.7)':
+    dependencies:
+      '@latticexyz/schema-type': 2.0.12(typescript@5.4.2)(zod@3.23.7)
+      '@solidity-parser/parser': 0.16.0
+      debug: 4.3.4
+      execa: 7.2.0
+      p-queue: 7.4.1
+      p-retry: 5.1.2
+      prettier: 3.2.5
+      prettier-plugin-solidity: 1.3.1(prettier@3.2.5)
+      viem: 2.9.20(typescript@5.4.2)(zod@3.23.7)
+    optionalDependencies:
+      '@aws-sdk/client-kms': 3.556.0
+      asn1.js: 5.4.1
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - typescript
+      - utf-8-validate
+      - zod
+
+  '@latticexyz/config@2.0.12(@aws-sdk/client-kms@3.556.0)(asn1.js@5.4.1)(typescript@5.4.2)':
+    dependencies:
+      '@latticexyz/common': 2.0.12(@aws-sdk/client-kms@3.556.0)(asn1.js@5.4.1)(typescript@5.4.2)(zod@3.23.7)
+      '@latticexyz/schema-type': 2.0.12(typescript@5.4.2)(zod@3.23.7)
+      esbuild: 0.17.17
+      find-up: 6.3.0
+      viem: 2.9.20(typescript@5.4.2)(zod@3.23.7)
+      zod: 3.23.7
+      zod-validation-error: 1.3.0(zod@3.23.7)
+    transitivePeerDependencies:
+      - '@aws-sdk/client-kms'
+      - asn1.js
+      - bufferutil
+      - supports-color
+      - typescript
+      - utf-8-validate
+
+  '@latticexyz/recs@2.0.12(typescript@5.4.2)(zod@3.23.7)':
+    dependencies:
+      '@latticexyz/schema-type': 2.0.12(typescript@5.4.2)(zod@3.23.7)
+      '@latticexyz/utils': 2.0.12
+      mobx: 6.9.0
+      rxjs: 7.5.5
+    transitivePeerDependencies:
+      - bufferutil
+      - typescript
+      - utf-8-validate
+      - zod
+
+  '@latticexyz/schema-type@2.0.12(typescript@5.4.2)(zod@3.23.7)':
+    dependencies:
+      abitype: 1.0.0(typescript@5.4.2)(zod@3.23.7)
+      viem: 2.9.20(typescript@5.4.2)(zod@3.23.7)
+    transitivePeerDependencies:
+      - bufferutil
+      - typescript
+      - utf-8-validate
+      - zod
+
+  '@latticexyz/utils@2.0.12':
+    dependencies:
+      mobx: 6.9.0
+      proxy-deep: 3.1.1
+      rxjs: 7.5.5
 
   '@manypkg/find-root@1.1.0':
     dependencies:

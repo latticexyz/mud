@@ -4,6 +4,7 @@ import { createStore as createZustandStore } from "zustand/vanilla";
 import { StoreApi } from "zustand";
 import { mutative } from "zustand-mutative";
 import { dynamicAbiTypeToDefaultValue, staticAbiTypeToDefaultValue } from "@latticexyz/schema-type/internal";
+import { attest } from "@arktype/attest";
 
 /**
  * TODOs
@@ -181,6 +182,18 @@ describe("Zustand Query", () => {
         },
       } satisfies TablesConfig;
       const store = createStore(tablesConfig);
+
+      attest(store.getState().config).snap({
+        namespace1: {
+          table1: {
+            schema: { field1: "string", field2: "uint32" },
+            key: ["field2"],
+            namespace: "namespace1",
+            label: "table1",
+          },
+        },
+      });
+      attest(store.getState().records).snap({ namespace1: { table1: {} } });
     });
   });
 });

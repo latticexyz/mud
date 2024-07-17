@@ -44,6 +44,7 @@
     "zustand-mutative": "^1.0.1"
   },
   "devDependencies": {
+    "@arktype/attest": "0.7.5",
     "tsup": "^6.7.0",
     "vitest": "0.34.6"
   },
