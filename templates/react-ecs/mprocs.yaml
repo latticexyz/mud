@@ -19,4 +19,5 @@ procs:
     shell: pnpm dev
     env:
       PORT: "13690"
-      INDEXER_DB_PATH: "/Users/karolis/Code/Lattice.xyz/mud/templates/react-ecs/indexer.db"
+      # INDEXER_DB_PATH: "/Users/karolis/Code/Lattice.xyz/mud/templates/react-ecs/indexer.db"
+      INDEXER_DB_PATH_ABSOLUTE: "/Users/karolis/Code/Lattice.xyz/mud/templates/react-ecs/indexer.db"

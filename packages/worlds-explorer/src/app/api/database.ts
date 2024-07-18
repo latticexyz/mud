@@ -9,6 +9,7 @@ export const getDatabase = () => {
   if (!dbPath) {
     dbPath = path.join(process.env.PWD as string, process.env.INDEXER_DB_PATH || DEFAULT_DB_PATH);
   }
+  console.log(dbPath, fs.existsSync(dbPath));
 
   if (!fs.existsSync(dbPath)) {
     return null;
