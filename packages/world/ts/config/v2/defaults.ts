@@ -1,10 +1,11 @@
 import { CodegenInput, DeployInput, ModuleInput, SystemInput, WorldInput } from "./input";
 
 export const SYSTEM_DEFAULTS = {
+  namespace: "",
   registerFunctionSelectors: true,
   openAccess: true,
   accessList: [],
-} as const satisfies SystemInput;
+} as const satisfies Omit<Required<SystemInput>, "label" | "name">;
 
 export type SYSTEM_DEFAULTS = typeof SYSTEM_DEFAULTS;
 
