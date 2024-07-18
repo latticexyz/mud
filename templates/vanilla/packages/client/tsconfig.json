@@ -5,7 +5,8 @@
     "target": "ESNext",
     "lib": ["ESNext", "DOM"],
     "jsx": "react-jsx",
-    "jsxImportSource": "react"
+    "jsxImportSource": "react",
+    "paths": {}
   },
-  "include": ["src"]
+  "include": ["src", "bench.ts"]
 }
