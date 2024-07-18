@@ -4,6 +4,7 @@ import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
 import { CODEGEN_DEFAULTS, TABLE_CODEGEN_DEFAULTS, TABLE_DEPLOY_DEFAULTS } from "./defaults";
 import { Store } from "./output";
+import { satisfy } from "@arktype/util";
 
 describe("defineStore", () => {
   it("should return the full config given a full config with one key", () => {
@@ -447,13 +448,13 @@ describe("defineStore", () => {
     attest<"custom">(config.namespace).equals("custom");
   });
 
-  it("should extend the output Config type", () => {
+  it("should extend the output type", () => {
     const config = defineStore({
       tables: { Name: { schema: { id: "address" }, key: ["id"] } },
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
     });
 
-    attest<true, typeof config extends Store ? true : false>();
+    attest<typeof config, satisfy<Store, typeof config>>();
   });
 
   it("should use the global namespace instead for tables", () => {
