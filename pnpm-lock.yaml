@@ -1148,6 +1148,9 @@ importers:
       '@latticexyz/config':
         specifier: ^2.0.12
         version: 2.0.12(@aws-sdk/client-kms@3.556.0)(asn1.js@5.4.1)(typescript@5.4.2)
+      '@latticexyz/protocol-parser':
+        specifier: ^2.0.12
+        version: 2.0.12(@aws-sdk/client-kms@3.556.0)(asn1.js@5.4.1)(typescript@5.4.2)(zod@3.23.7)
       '@latticexyz/recs':
         specifier: ^2.0.12
         version: 2.0.12(typescript@5.4.2)(zod@3.23.7)
@@ -2203,6 +2206,9 @@ packages:
 
   '@latticexyz/config@2.0.12':
     resolution: {integrity: sha512-M9OvNabwuaQEAamv0270mMgT7+S8UpExwvS4OS9rSgRoSd6Y+7cmtNXW3VNXzSjHkLcEk8TFU5ZYp3aAPly+tQ==}
+
+  '@latticexyz/protocol-parser@2.0.12':
+    resolution: {integrity: sha512-2P+4nLPPC6ZG9BmAIvS7GBr8+ZiCxeFP5yzHyNrEEPUhZHXyXXPsElupcXV4IptfiFDipwJWkGx9nzF9p4g8ZQ==}
 
   '@latticexyz/recs@2.0.12':
     resolution: {integrity: sha512-8tl1uZKsG/C4P+nnPYgQOIYR/QE0ZbIvnVSQGrWvuif/17oCRSpK6RUIY5DBzv93f95RndmJWi1iQ18KCkynCA==}
@@ -8159,6 +8165,22 @@ snapshots:
       - supports-color
       - typescript
       - utf-8-validate
+
+  '@latticexyz/protocol-parser@2.0.12(@aws-sdk/client-kms@3.556.0)(asn1.js@5.4.1)(typescript@5.4.2)(zod@3.23.7)':
+    dependencies:
+      '@latticexyz/common': 2.0.12(@aws-sdk/client-kms@3.556.0)(asn1.js@5.4.1)(typescript@5.4.2)(zod@3.23.7)
+      '@latticexyz/config': 2.0.12(@aws-sdk/client-kms@3.556.0)(asn1.js@5.4.1)(typescript@5.4.2)
+      '@latticexyz/schema-type': 2.0.12(typescript@5.4.2)(zod@3.23.7)
+      abitype: 1.0.0(typescript@5.4.2)(zod@3.23.7)
+      viem: 2.9.20(typescript@5.4.2)(zod@3.23.7)
+    transitivePeerDependencies:
+      - '@aws-sdk/client-kms'
+      - asn1.js
+      - bufferutil
+      - supports-color
+      - typescript
+      - utf-8-validate
+      - zod
 
   '@latticexyz/recs@2.0.12(typescript@5.4.2)(zod@3.23.7)':
     dependencies:

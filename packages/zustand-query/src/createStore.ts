@@ -87,7 +87,7 @@ type Actions = {
      * @returns A bound Table object for easier interaction with the table.
      */
     getTable: (tableLabel: TableLabel) => BoundTable;
-    // TODO: add getRecords, getKeys
+    // TODO: add getRecords, getKeys, getConfig, find (get records with filter on key or value)
   };
 };
 
@@ -107,6 +107,7 @@ export type BoundTable = {
   setRecord: (args: BoundSetRecordArgs) => void;
   getRecords: () => TableRecords;
   getKeys: () => Keys;
+  getConfig: () => TableConfigFull;
 };
 
 type TableLabel = { label: string; namespace?: string };
@@ -121,10 +122,10 @@ export function createStore(tablesConfig: TablesConfig): Store {
 
       for (const [namespace, tables] of Object.entries(tablesConfig)) {
         for (const [label, tableConfig] of Object.entries(tables)) {
-          state.config[namespace] = {};
+          state.config[namespace] ??= {};
           state.config[namespace][label] = { ...tableConfig, namespace, label };
 
-          state.records[namespace] = {};
+          state.records[namespace] ??= {};
           state.records[namespace][label] = {};
         }
       }
@@ -176,14 +177,15 @@ export function createStore(tablesConfig: TablesConfig): Store {
 
       const getTable = (tableLabel: TableLabel): BoundTable => {
         const namespace = tableLabel.namespace ?? "";
+        const label = tableLabel.label;
 
         return {
           setRecord: ({ key, record }: BoundSetRecordArgs) => setRecord({ tableLabel, key, record }),
           getRecord: ({ key }: BoundGetRecordArgs) => getRecord({ tableLabel, key }),
-          getRecords: () => get().records[namespace][tableLabel.label],
+          getRecords: () => get().records[namespace][label],
           getKeys: () => {
-            const records = get().records[namespace][tableLabel.label];
-            const keyFields = get().config[namespace][tableLabel.label].key;
+            const records = get().records[namespace][label];
+            const keyFields = get().config[namespace][label].key;
             return Object.fromEntries(
               Object.entries(records).map(([key, record]) => [
                 key,
@@ -192,6 +194,7 @@ export function createStore(tablesConfig: TablesConfig): Store {
               ]) as never,
             );
           },
+          getConfig: () => get().config[namespace][label],
 
           // TODO: dynamically add setters and getters for individual fields of the table
         };
