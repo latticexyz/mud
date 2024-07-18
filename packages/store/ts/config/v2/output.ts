@@ -95,5 +95,5 @@ export type Store = Omit<Namespace, "label"> & {
   readonly enums: EnumsInput;
   readonly enumValues: EnumValues;
   readonly codegen: Codegen;
-  // readonly namespaces: Namespaces;
+  readonly namespaces: Namespaces;
 };

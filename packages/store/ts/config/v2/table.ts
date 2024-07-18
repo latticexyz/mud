@@ -140,7 +140,7 @@ export type resolveTable<input, scope extends Scope = Scope> = input extends Tab
   ? {
       readonly label: input["label"];
       readonly type: undefined extends input["type"] ? typeof TABLE_DEFAULTS.type : input["type"];
-      readonly namespace: undefined extends input["namespace"] ? typeof TABLE_DEFAULTS.namespace : input["namespace"];
+      readonly namespace: string;
       readonly name: string;
       readonly tableId: Hex;
       readonly schema: resolveSchema<input["schema"], scope>;

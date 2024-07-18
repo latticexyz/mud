@@ -17,13 +17,13 @@ describe("defineStore", () => {
       },
     });
 
-    const expected = {
-      sourceDirectory: "src",
+    const expectedBaseNamespace = {
+      namespace: "" as string,
       tables: {
         Example: {
           label: "Example",
           type: "table",
-          namespace: "",
+          namespace: "" as string,
           name: "Example" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
@@ -45,14 +45,24 @@ describe("defineStore", () => {
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
+    } as const;
+
+    const expectedConfig = {
+      ...expectedBaseNamespace,
+      namespaces: {
+        "": {
+          label: "",
+          ...expectedBaseNamespace,
+        },
+      },
+      sourceDirectory: "src",
       userTypes: {},
       enums: {},
       enumValues: {},
-      namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
 
-    attest<typeof expected>(config).equals(expected);
+    attest<typeof expectedConfig>(config).equals(expectedConfig);
   });
 
   it("should return the full config given a full config with one key and user types", () => {
@@ -69,13 +79,13 @@ describe("defineStore", () => {
       },
     });
 
-    const expected = {
-      sourceDirectory: "src",
+    const expectedBaseNamespace = {
+      namespace: "" as string,
       tables: {
         Example: {
           label: "Example",
           type: "table",
-          namespace: "",
+          namespace: "" as string,
           name: "Example" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
@@ -97,17 +107,27 @@ describe("defineStore", () => {
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
+    } as const;
+
+    const expectedConfig = {
+      ...expectedBaseNamespace,
+      namespaces: {
+        "": {
+          label: "",
+          ...expectedBaseNamespace,
+        },
+      },
+      sourceDirectory: "src",
       userTypes: {
         static: { type: "address", filePath: "path/to/file" },
         dynamic: { type: "string", filePath: "path/to/file" },
       },
       enums: {},
       enumValues: {},
-      namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
 
-    attest<typeof expected>(config).equals(expected);
+    attest<typeof expectedConfig>(config).equals(expectedConfig);
   });
 
   it("should return the full config given a full config with two key", () => {
@@ -120,13 +140,13 @@ describe("defineStore", () => {
       },
     });
 
-    const expected = {
-      sourceDirectory: "src",
+    const expectedBaseNamespace = {
+      namespace: "" as string,
       tables: {
         Example: {
           label: "Example",
           type: "table",
-          namespace: "",
+          namespace: "" as string,
           name: "Example" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
@@ -148,14 +168,24 @@ describe("defineStore", () => {
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
+    } as const;
+
+    const expectedConfig = {
+      ...expectedBaseNamespace,
+      namespaces: {
+        "": {
+          label: "",
+          ...expectedBaseNamespace,
+        },
+      },
+      sourceDirectory: "src",
       userTypes: {},
       enums: {},
       enumValues: {},
-      namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
 
-    attest<typeof expected>(config).equals(expected);
+    attest<typeof expectedConfig>(config).equals(expectedConfig);
   });
 
   it("should resolve two tables in the config with different schemas", () => {
@@ -172,13 +202,13 @@ describe("defineStore", () => {
       },
     });
 
-    const expected = {
-      sourceDirectory: "src",
+    const expectedBaseNamespace = {
+      namespace: "" as string,
       tables: {
         First: {
           label: "First",
           type: "table",
-          namespace: "",
+          namespace: "" as string,
           name: "First" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
           schema: {
@@ -202,7 +232,7 @@ describe("defineStore", () => {
         Second: {
           label: "Second",
           type: "table",
-          namespace: "",
+          namespace: "" as string,
           name: "Second" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
           schema: {
@@ -224,14 +254,24 @@ describe("defineStore", () => {
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
+    } as const;
+
+    const expectedConfig = {
+      ...expectedBaseNamespace,
+      namespaces: {
+        "": {
+          label: "",
+          ...expectedBaseNamespace,
+        },
+      },
+      sourceDirectory: "src",
       userTypes: {},
       enums: {},
       enumValues: {},
-      namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
 
-    attest<typeof expected>(config).equals(expected);
+    attest<typeof expectedConfig>(config).equals(expectedConfig);
   });
 
   it("should resolve two tables in the config with different schemas and user types", () => {
@@ -252,13 +292,13 @@ describe("defineStore", () => {
       },
     });
 
-    const expected = {
-      sourceDirectory: "src",
+    const expectedBaseNamespace = {
+      namespace: "" as string,
       tables: {
         First: {
           label: "First",
           type: "table",
-          namespace: "",
+          namespace: "" as string,
           name: "First" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
           schema: {
@@ -282,7 +322,7 @@ describe("defineStore", () => {
         Second: {
           label: "Second",
           type: "table",
-          namespace: "",
+          namespace: "" as string,
           name: "Second" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
           schema: {
@@ -304,17 +344,27 @@ describe("defineStore", () => {
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
+    } as const;
+
+    const expectedConfig = {
+      ...expectedBaseNamespace,
+      namespaces: {
+        "": {
+          label: "",
+          ...expectedBaseNamespace,
+        },
+      },
+      sourceDirectory: "src",
       userTypes: {
         Static: { type: "address", filePath: "path/to/file" },
         Dynamic: { type: "string", filePath: "path/to/file" },
       },
       enums: {},
       enumValues: {},
-      namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
 
-    attest<typeof expected>(config).equals(expected);
+    attest<typeof expectedConfig>(config).equals(expectedConfig);
   });
 
   it("should throw if referring to fields of different tables", () => {
@@ -388,13 +438,14 @@ describe("defineStore", () => {
         ValidNames: ["first", "second"],
       },
     });
-    const expected = {
-      sourceDirectory: "src",
+
+    const expectedBaseNamespace = {
+      namespace: "" as string,
       tables: {
         Example: {
           label: "Example",
           type: "table",
-          namespace: "",
+          namespace: "" as string,
           name: "Example" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
@@ -416,6 +467,17 @@ describe("defineStore", () => {
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
+    } as const;
+
+    const expectedConfig = {
+      ...expectedBaseNamespace,
+      namespaces: {
+        "": {
+          label: "",
+          ...expectedBaseNamespace,
+        },
+      },
+      sourceDirectory: "src",
       userTypes: {
         static: { type: "address", filePath: "path/to/file" },
         dynamic: { type: "string", filePath: "path/to/file" },
@@ -429,26 +491,25 @@ describe("defineStore", () => {
           second: 1,
         },
       },
-      namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
 
-    attest<typeof expected>(config).equals(expected);
+    attest<typeof expectedConfig>(config).equals(expectedConfig);
   });
 
   it("should use the root namespace as default namespace", () => {
     const config = defineStore({});
 
-    attest<"">(config.namespace).equals("");
+    attest<string>(config.namespace).equals("");
   });
 
-  it("should use pipe through non-default namespaces", () => {
+  it("should use pipe through non-default namespace", () => {
     const config = defineStore({ namespace: "custom" });
 
-    attest<"custom">(config.namespace).equals("custom");
+    attest<string>(config.namespace).equals("custom");
   });
 
-  it("should extend the output type", () => {
+  it("should satisfy the output type", () => {
     const config = defineStore({
       tables: { Name: { schema: { id: "address" }, key: ["id"] } },
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
@@ -468,9 +529,9 @@ describe("defineStore", () => {
       },
     });
 
-    attest<"namespace">(config.namespace).equals("namespace");
+    attest<string>(config.namespace).equals("namespace");
     attest<"Example">(config.tables.namespace__Example.label).equals("Example");
-    attest<"namespace">(config.tables.namespace__Example.namespace).equals("namespace");
+    attest<string>(config.tables.namespace__Example.namespace).equals("namespace");
     attest<string>(config.tables.namespace__Example.name).equals("Example");
     attest(config.tables.namespace__Example.tableId).equals(
       resourceToHex({ type: "table", name: "Example", namespace: "namespace" }),
@@ -583,13 +644,13 @@ describe("defineStore", () => {
       },
     });
 
-    const expected = {
-      sourceDirectory: "src",
+    const expectedConfig = {
+      namespace: "app" as string,
       tables: {
         app__NamespaceDir: {
           label: "NamespaceDir",
           type: "table",
-          namespace: "app",
+          namespace: "app" as string,
           name: "NamespaceDir" as string,
           tableId: resourceToHex({ type: "table", namespace: "app", name: "NamespaceDir" }),
           schema: {
@@ -609,7 +670,7 @@ describe("defineStore", () => {
         app__NotNamespaceDir: {
           label: "NotNamespaceDir",
           type: "table",
-          namespace: "app",
+          namespace: "app" as string,
           name: "NotNamespaceDir" as string,
           tableId: resourceToHex({ type: "table", namespace: "app", name: "NotNamespaceDir" }),
           schema: {
@@ -627,10 +688,58 @@ describe("defineStore", () => {
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
+      namespaces: {
+        app: {
+          label: "app",
+          namespace: "app" as string,
+          tables: {
+            NamespaceDir: {
+              label: "NamespaceDir",
+              type: "table",
+              namespace: "app" as string,
+              name: "NamespaceDir" as string,
+              tableId: resourceToHex({ type: "table", namespace: "app", name: "NamespaceDir" }),
+              schema: {
+                name: {
+                  type: "string",
+                  internalType: "string",
+                },
+              },
+              key: [],
+              codegen: {
+                ...TABLE_CODEGEN_DEFAULTS,
+                dataStruct: false as boolean,
+                outputDirectory: "app/tables" as string,
+              },
+              deploy: TABLE_DEPLOY_DEFAULTS,
+            },
+            NotNamespaceDir: {
+              label: "NotNamespaceDir",
+              type: "table",
+              namespace: "app" as string,
+              name: "NotNamespaceDir" as string,
+              tableId: resourceToHex({ type: "table", namespace: "app", name: "NotNamespaceDir" }),
+              schema: {
+                name: {
+                  type: "string",
+                  internalType: "string",
+                },
+              },
+              key: [],
+              codegen: {
+                ...TABLE_CODEGEN_DEFAULTS,
+                dataStruct: false as boolean,
+                outputDirectory: "tables",
+              },
+              deploy: TABLE_DEPLOY_DEFAULTS,
+            },
+          },
+        },
+      },
+      sourceDirectory: "src",
       userTypes: {},
       enums: {},
       enumValues: {},
-      namespace: "app",
       codegen: {
         ...CODEGEN_DEFAULTS,
         namespaceDirectories: true,
@@ -638,14 +747,17 @@ describe("defineStore", () => {
     } as const;
 
     // Running attest on the whole object is hard to parse when it fails, so test the inner objects first
-    attest<typeof expected.codegen>(config.codegen).equals(expected.codegen);
-    attest<typeof expected.tables.app__NamespaceDir.codegen>(config.tables.app__NamespaceDir.codegen).equals(
-      expected.tables.app__NamespaceDir.codegen,
+    attest<typeof expectedConfig.codegen>(config.codegen).equals(expectedConfig.codegen);
+    attest<typeof expectedConfig.tables.app__NamespaceDir.codegen>(config.tables.app__NamespaceDir.codegen).equals(
+      expectedConfig.tables.app__NamespaceDir.codegen,
     );
-    attest<typeof expected.tables.app__NotNamespaceDir.codegen>(config.tables.app__NotNamespaceDir.codegen).equals(
-      expected.tables.app__NotNamespaceDir.codegen,
-    );
+    attest<typeof expectedConfig.tables.app__NotNamespaceDir.codegen>(
+      config.tables.app__NotNamespaceDir.codegen,
+    ).equals(expectedConfig.tables.app__NotNamespaceDir.codegen);
 
-    attest<typeof expected>(config).equals(expected);
+    attest(config.tables.app__NamespaceDir).equals(config.namespaces.app.tables.NamespaceDir);
+    attest(config.tables.app__NotNamespaceDir).equals(config.namespaces.app.tables.NotNamespaceDir);
+
+    attest<typeof expectedConfig>(config).equals(expectedConfig);
   });
 });
