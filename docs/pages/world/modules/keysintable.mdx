@@ -1,0 +1,138 @@
+import { CollapseCode } from "../../../components/CollapseCode";
+
+# Keys in Table
+
+[The `KeysWithValue` module](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/keyswithvalue) tracks which keys are used with a specific table.
+This is useful if you need to be able to access all the entries in a table onchain.
+Note that it costs additional gas for every write to the table affected, so if you just need this functionality offchain it is best to look at the data offchain instead.
+
+## Deployment
+
+It can be deployed multiple times, each time for a different table.
+For example, here is the forge script to deploy it for the `Tasks` table in [the React template](https://github.com/latticexyz/mud/tree/main/templates/react).
+Before you use it, edit `.env` to specify the `WORLD_ADDRESS`.
+
+<CollapseCode>
+
+```solidity filename="DeployKeysInTable.s.sol" copy showLineNumbers {8-11,22-24}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_TABLE } from "@latticexyz/world/src/worldResourceTypes.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { KeysInTableModule } from "@latticexyz/world-modules/src/modules/keysintable/KeysInTableModule.sol";
+
+contract DeployKeysInTableModule is Script {
+  function run() external {
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+
+    vm.startBroadcast(deployerPrivateKey);
+    IWorld world = IWorld(worldAddress);
+
+    // Deploy the module
+    KeysInTableModule keysInTableModule = new KeysInTableModule();
+    ResourceId sourceTableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "app", name: "Tasks" });
+    world.installRootModule(keysInTableModule, abi.encode(sourceTableId));
+
+    console.log("Module address", address(keysInTableModule));
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```solidity
+    KeysWithValueModule keysWithValueModule = new KeysWithValueModule();
+```
+
+Deploy the module.
+Modules are stateless, so if there is already a copy of the contract on the blockchain you can just use that.
+
+```solidity
+    ResourceId sourceTableId =
+       WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "app", name: "Tasks" });
+```
+
+Get the resourceID for the table whose keys you wish to track.
+
+```solidity
+    world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
+```
+
+Actually install the module in the `World`.
+At present it is a root module to ensure it can specify a hook on the relevant table.
+In the future, we might add a feature to allow it to be in a namespace.
+
+</details>
+
+## Usage
+
+Installing the module creates two tables, `KeysInTable` and `UsedKeysIndex`.
+When entries are added in the source table, their keys are written to the arrays in `KeysInTable` and a hash of the keys is written to `keysHash`.
+This only applies from the time the module is installed, entries created prior to that don't get the reverse mapping.
+
+To get the keys you use [`getKeysInTable`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/keysintable/getKeysInTable.sol) with the identifier of the source table.
+
+For example, here is a Solidity script that reads the tasks added to `Tasks` after module installation.
+
+<CollapseCode>
+
+```solidity filename="UseGetKeysInTable.s.sol" copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { getKeysInTable } from "@latticexyz/world-modules/src/modules/keysintab$
+import { Tasks, TasksData } from "../src/codegen/index.sol";
+
+contract UseGetKeysInTable is Script {
+  function run() external {
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+
+    StoreSwitch.setStoreAddress(worldAddress);
+
+    bytes32[][] memory keys = getKeysInTable(Tasks._tableId);
+
+    console.log("Number of keys:", keys.length);
+    for(uint i=0; i<keys.length; i++) {
+       console.log("\nKey #", i, ":");
+       for(uint j=0; j<keys[i].length; j++) {
+          console.logBytes32(keys[i][j]);
+       }
+    }
+
+    console.log("\n\nTask descriptions");
+    for(uint i=0; i<keys.length; i++) {
+       TasksData memory task = Tasks.get(keys[i][0]);
+       console.log(task.description);
+    }
+  }
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+COMING SOON
+
+</details>
