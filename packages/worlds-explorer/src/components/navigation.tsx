@@ -21,8 +21,8 @@ export function Navigation() {
       </div>
 
       <div className="flex items-center gap-x-4">
-        <AccountSelect />
         <LatestBlock />
+        <AccountSelect />
       </div>
     </div>
   );
