@@ -113,13 +113,13 @@ export function resolveStore<const input extends StoreInput>(input: input): reso
 
   return {
     namespace,
-    sourceDirectory: input.sourceDirectory ?? CONFIG_DEFAULTS["sourceDirectory"],
     tables: resolveNamespacedTables(tables, namespace),
+    namespaces,
+    sourceDirectory: input.sourceDirectory ?? CONFIG_DEFAULTS["sourceDirectory"],
     userTypes: input.userTypes ?? {},
     enums: resolveEnums(input.enums ?? {}),
     enumValues: mapEnums(input.enums ?? {}),
     codegen,
-    namespaces,
   } as never;
 }
 

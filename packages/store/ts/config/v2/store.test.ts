@@ -499,14 +499,12 @@ describe("defineStore", () => {
 
   it("should use the root namespace as default namespace", () => {
     const config = defineStore({});
-
-    attest<string>(config.namespace).equals("");
+    attest(config.namespace).equals("");
   });
 
   it("should use pipe through non-default namespace", () => {
     const config = defineStore({ namespace: "custom" });
-
-    attest<string>(config.namespace).equals("custom");
+    attest(config.namespace).equals("custom");
   });
 
   it("should satisfy the output type", () => {
@@ -529,10 +527,10 @@ describe("defineStore", () => {
       },
     });
 
-    attest<string>(config.namespace).equals("namespace");
+    attest(config.namespace).equals("namespace");
     attest<"Example">(config.tables.namespace__Example.label).equals("Example");
-    attest<string>(config.tables.namespace__Example.namespace).equals("namespace");
-    attest<string>(config.tables.namespace__Example.name).equals("Example");
+    attest(config.tables.namespace__Example.namespace).equals("namespace");
+    attest(config.tables.namespace__Example.name).equals("Example");
     attest(config.tables.namespace__Example.tableId).equals(
       resourceToHex({ type: "table", name: "Example", namespace: "namespace" }),
     );
@@ -644,96 +642,60 @@ describe("defineStore", () => {
       },
     });
 
+    const expectedTables = {
+      NamespaceDir: {
+        label: "NamespaceDir",
+        type: "table",
+        namespace: "app" as string,
+        name: "NamespaceDir" as string,
+        tableId: resourceToHex({ type: "table", namespace: "app", name: "NamespaceDir" }),
+        schema: {
+          name: {
+            type: "string",
+            internalType: "string",
+          },
+        },
+        key: [],
+        codegen: {
+          ...TABLE_CODEGEN_DEFAULTS,
+          dataStruct: false as boolean,
+          outputDirectory: "app/tables" as string,
+        },
+        deploy: TABLE_DEPLOY_DEFAULTS,
+      },
+      NotNamespaceDir: {
+        label: "NotNamespaceDir",
+        type: "table",
+        namespace: "app" as string,
+        name: "NotNamespaceDir" as string,
+        tableId: resourceToHex({ type: "table", namespace: "app", name: "NotNamespaceDir" }),
+        schema: {
+          name: {
+            type: "string",
+            internalType: "string",
+          },
+        },
+        key: [],
+        codegen: {
+          ...TABLE_CODEGEN_DEFAULTS,
+          dataStruct: false as boolean,
+          outputDirectory: "tables",
+        },
+        deploy: TABLE_DEPLOY_DEFAULTS,
+      },
+    } as const;
+
     const expectedConfig = {
       namespace: "app" as string,
       tables: {
-        app__NamespaceDir: {
-          label: "NamespaceDir",
-          type: "table",
-          namespace: "app" as string,
-          name: "NamespaceDir" as string,
-          tableId: resourceToHex({ type: "table", namespace: "app", name: "NamespaceDir" }),
-          schema: {
-            name: {
-              type: "string",
-              internalType: "string",
-            },
-          },
-          key: [],
-          codegen: {
-            ...TABLE_CODEGEN_DEFAULTS,
-            dataStruct: false as boolean,
-            outputDirectory: "app/tables" as string,
-          },
-          deploy: TABLE_DEPLOY_DEFAULTS,
-        },
-        app__NotNamespaceDir: {
-          label: "NotNamespaceDir",
-          type: "table",
-          namespace: "app" as string,
-          name: "NotNamespaceDir" as string,
-          tableId: resourceToHex({ type: "table", namespace: "app", name: "NotNamespaceDir" }),
-          schema: {
-            name: {
-              type: "string",
-              internalType: "string",
-            },
-          },
-          key: [],
-          codegen: {
-            ...TABLE_CODEGEN_DEFAULTS,
-            dataStruct: false as boolean,
-            outputDirectory: "tables",
-          },
-          deploy: TABLE_DEPLOY_DEFAULTS,
-        },
+        app__NamespaceDir: expectedTables.NamespaceDir,
+        app__NotNamespaceDir: expectedTables.NotNamespaceDir,
       },
       namespaces: {
         app: {
           label: "app",
           namespace: "app" as string,
-          tables: {
-            NamespaceDir: {
-              label: "NamespaceDir",
-              type: "table",
-              namespace: "app" as string,
-              name: "NamespaceDir" as string,
-              tableId: resourceToHex({ type: "table", namespace: "app", name: "NamespaceDir" }),
-              schema: {
-                name: {
-                  type: "string",
-                  internalType: "string",
-                },
-              },
-              key: [],
-              codegen: {
-                ...TABLE_CODEGEN_DEFAULTS,
-                dataStruct: false as boolean,
-                outputDirectory: "app/tables" as string,
-              },
-              deploy: TABLE_DEPLOY_DEFAULTS,
-            },
-            NotNamespaceDir: {
-              label: "NotNamespaceDir",
-              type: "table",
-              namespace: "app" as string,
-              name: "NotNamespaceDir" as string,
-              tableId: resourceToHex({ type: "table", namespace: "app", name: "NotNamespaceDir" }),
-              schema: {
-                name: {
-                  type: "string",
-                  internalType: "string",
-                },
-              },
-              key: [],
-              codegen: {
-                ...TABLE_CODEGEN_DEFAULTS,
-                dataStruct: false as boolean,
-                outputDirectory: "tables",
-              },
-              deploy: TABLE_DEPLOY_DEFAULTS,
-            },
-          },
+          tables: expectedTables,
         },
       },
       sourceDirectory: "src",
