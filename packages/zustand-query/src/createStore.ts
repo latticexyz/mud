@@ -7,12 +7,14 @@ import { dynamicAbiTypeToDefaultValue, staticAbiTypeToDefaultValue } from "@latt
 /**
  * A TableRecord is one row of the table. It includes both the key and the value.
  */
-type TableRecord = { [field: string]: number | string | bigint | number[] | string[] | bigint[] };
+export type TableRecord = { readonly [field: string]: number | string | bigint | number[] | string[] | bigint[] };
+
+type TableRecords = { readonly [key: string]: TableRecord };
 
 /**
  * A Key is the unique identifier for a row in the table.
  */
-type Key = { [field: string]: number | string };
+export type Key = { [field: string]: number | string };
 
 type Schema = { [key: string]: AbiType };
 
@@ -43,9 +45,7 @@ type State = {
   };
   records: {
     [namespace: string]: {
-      [table: string]: {
-        [key: string]: TableRecord;
-      };
+      [table: string]: TableRecords;
     };
   };
 };
@@ -99,6 +99,7 @@ type BoundGetRecordArgs = {
 export type BoundTable = {
   getRecord: (args: BoundGetRecordArgs) => TableRecord;
   setRecord: (args: BoundSetRecordArgs) => void;
+  getRecords: () => TableRecords;
 };
 
 type TableLabel = { label: string; namespace?: string };
@@ -167,9 +168,13 @@ export function createStore(tablesConfig: TablesConfig): Store {
       };
 
       const getTable = (tableLabel: TableLabel): BoundTable => {
+        const namespace = tableLabel.namespace ?? "";
+
         return {
-          getRecord: ({ key }: BoundGetRecordArgs) => getRecord({ tableLabel, key }),
           setRecord: ({ key, record }: BoundSetRecordArgs) => setRecord({ tableLabel, key, record }),
+          getRecord: ({ key }: BoundGetRecordArgs) => getRecord({ tableLabel, key }),
+          getRecords: () => get().records[namespace][tableLabel.label],
+
           // TODO: dynamically add setters and getters for individual fields of the table
         };
       };
