@@ -41,7 +41,11 @@ export function validateStore(input: unknown): asserts input is StoreInput {
 
 export type resolveStore<
   input,
-  namespace = "namespace" extends keyof input ? input["namespace"] : CONFIG_DEFAULTS["namespace"],
+  namespace = "namespace" extends keyof input
+    ? input["namespace"] extends string
+      ? input["namespace"]
+      : CONFIG_DEFAULTS["namespace"]
+    : CONFIG_DEFAULTS["namespace"],
 > = {
   readonly namespace: namespace;
   readonly sourceDirectory: "sourceDirectory" extends keyof input

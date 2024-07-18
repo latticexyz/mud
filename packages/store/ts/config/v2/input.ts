@@ -21,7 +21,7 @@ export type TableDeployInput = Partial<TableDeploy>;
 export type TableInput = {
   /**
    * Human-readable table label. Used as config keys, table library names, and filenames.
-   * Labels are not length constrained like table names, but special characters should be avoided to be compatible with the filesystem, Solidity compiler, etc.
+   * Labels are not length constrained like resource names, but special characters should be avoided to be compatible with the filesystem, Solidity compiler, etc.
    */
   readonly label: string;
   /**

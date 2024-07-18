@@ -31,10 +31,6 @@ export function resolveTables<tables extends TablesInput, scope extends Scope = 
   tables: tables,
   scope: scope,
 ): resolveTables<tables, scope> {
-  if (!isObject(tables)) {
-    throw new Error(`Expected tables config, received ${JSON.stringify(tables)}`);
-  }
-
   return Object.fromEntries(
     Object.entries(tables).map(([label, table]) => {
       return [label, resolveTable(mergeIfUndefined(table, { label }), scope)];
