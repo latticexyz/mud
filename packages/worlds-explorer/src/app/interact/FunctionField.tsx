@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { privateKeyToAccount } from "viem/accounts";
 import { wagmiConfig } from "../_providers";
+import { PRIVATE_KEYS } from "@/consts";
 
 type Props = {
   abi: AbiFunction;
@@ -37,7 +38,7 @@ export function FunctionField({ abi }: Props) {
 
     try {
       const txHash = await writeContractAsync({
-        account: privateKeyToAccount(process.env.NEXT_PUBLIC_PRIVATE_KEY as Hex),
+        account: privateKeyToAccount(PRIVATE_KEYS[0]),
         abi: [abi],
         address: process.env.NEXT_PUBLIC_WORLD_ADDRESS as Hex,
         functionName: abi.name,

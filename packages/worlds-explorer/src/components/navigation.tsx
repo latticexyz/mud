@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LatestBlock } from "@/components/latest-block";
+import { AccountSelect } from "./account-select";
 
 export function Navigation() {
   const pathname = usePathname();
@@ -19,7 +20,8 @@ export function Navigation() {
         </Link>
       </div>
 
-      <div>
+      <div className="flex items-center gap-x-4">
+        <AccountSelect />
         <LatestBlock />
       </div>
     </div>
