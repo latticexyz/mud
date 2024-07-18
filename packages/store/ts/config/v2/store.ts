@@ -9,6 +9,7 @@ import { mapEnums, resolveEnums, scopeWithEnums } from "./enums";
 import { resolveCodegen } from "./codegen";
 import { resolveNamespacedTables } from "./namespacedTables";
 import { resolveTable } from "./table";
+import { resolveNamespace } from "./namespace";
 
 export type extendedScope<input> = scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>;
 
@@ -30,6 +31,11 @@ export type validateStore<input> = {
 
 export function validateStore(input: unknown): asserts input is StoreInput {
   const scope = extendedScope(input);
+
+  if (hasOwnKey(input, "namespace") && typeof input.namespace === "string" && input.namespace.length > 14) {
+    throw new Error(`\`namespace\` must fit into a \`bytes14\`, but "${input.namespace}" is too long.`);
+  }
+
   if (hasOwnKey(input, "tables")) {
     validateTables(input.tables, scope);
   }
@@ -47,7 +53,7 @@ export type resolveStore<
       : CONFIG_DEFAULTS["namespace"]
     : CONFIG_DEFAULTS["namespace"],
 > = {
-  readonly namespace: namespace;
+  readonly namespace: string;
   readonly sourceDirectory: "sourceDirectory" extends keyof input
     ? input["sourceDirectory"]
     : CONFIG_DEFAULTS["sourceDirectory"];
@@ -66,6 +72,15 @@ export type resolveStore<
   readonly enums: "enums" extends keyof input ? show<resolveEnums<input["enums"]>> : {};
   readonly enumValues: "enums" extends keyof input ? show<mapEnums<input["enums"]>> : {};
   readonly codegen: "codegen" extends keyof input ? resolveCodegen<input["codegen"]> : resolveCodegen<{}>;
+  readonly namespaces: {
+    readonly [label in namespace & string]: resolveNamespace<
+      {
+        readonly label: label;
+        readonly tables: "tables" extends keyof input ? input["tables"] : undefined;
+      },
+      extendedScope<input>
+    >;
+  };
 };
 
 export function resolveStore<const input extends StoreInput>(input: input): resolveStore<input> {
@@ -73,30 +88,34 @@ export function resolveStore<const input extends StoreInput>(input: input): reso
   const namespace = input.namespace ?? CONFIG_DEFAULTS["namespace"];
   const codegen = resolveCodegen(input.codegen);
 
-  const tables = resolveTables(
-    flatMorph(input.tables ?? {}, (label, table) => {
-      return [
+  const tablesInput = flatMorph(input.tables ?? {}, (label, table) => {
+    return [
+      label,
+      {
+        ...table,
         label,
-        {
-          ...table,
-          label,
-          namespace,
-          codegen: {
-            ...table.codegen,
-            outputDirectory:
-              table.codegen?.outputDirectory ??
-              (codegen.namespaceDirectories && namespace !== "" ? `${namespace}/tables` : "tables"),
-          },
+        namespace,
+        codegen: {
+          ...table.codegen,
+          outputDirectory:
+            table.codegen?.outputDirectory ??
+            (codegen.namespaceDirectories && namespace !== "" ? `${namespace}/tables` : "tables"),
         },
-      ];
-    }),
-    scope,
-  );
+      },
+    ];
+  });
+
+  const namespaces = {
+    [namespace]: resolveNamespace({ label: namespace, tables: tablesInput }, scope),
+  };
+
+  const tables = resolveTables(tablesInput, scope);
 
   return {
     namespace,
-    sourceDirectory: input.sourceDirectory ?? CONFIG_DEFAULTS["sourceDirectory"],
     tables: resolveNamespacedTables(tables, namespace),
+    namespaces,
+    sourceDirectory: input.sourceDirectory ?? CONFIG_DEFAULTS["sourceDirectory"],
     userTypes: input.userTypes ?? {},
     enums: resolveEnums(input.enums ?? {}),
     enumValues: mapEnums(input.enums ?? {}),

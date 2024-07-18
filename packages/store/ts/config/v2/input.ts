@@ -52,7 +52,21 @@ export type TablesInput = {
 
 export type CodegenInput = Partial<Codegen>;
 
-export type StoreInput = {
+export type NamespaceInput = {
+  /**
+   * Human-readable namespace label. Used as config keys and directory names.
+   * Labels are not length constrained like namespaces within resource IDs, but special characters should be avoided to be compatible with the filesystem, Solidity compiler, etc.
+   */
+  readonly label: string;
+  /**
+   * Namespace used in resource ID.
+   * Defaults to the first 16 characters of `label` if not set.
+   */
+  readonly namespace?: string;
+  readonly tables?: TablesInput;
+};
+
+export type StoreInput = Omit<NamespaceInput, "label"> & {
   /**
    * Directory of Solidity source relative to the MUD config.
    * This is used to resolve other paths in the config, like codegen and user types.
@@ -60,8 +74,6 @@ export type StoreInput = {
    * Defaults to `src` to match `foundry.toml`'s default. If you change this from the default, you may also need to configure foundry with the same source directory.
    */
   readonly sourceDirectory?: string;
-  readonly namespace?: string;
-  readonly tables?: TablesInput;
   readonly userTypes?: UserTypes;
   readonly enums?: EnumsInput;
   readonly codegen?: CodegenInput;

@@ -54,7 +54,7 @@ export type resolveWorld<world, namespace = resolveStore<world>["namespace"]> = 
   resolveStore<world> &
     mergeIfUndefined<
       { readonly tables: resolveNamespacedTables<world> } & {
-        [key in Exclude<keyof world, "namespaces" | keyof Store>]: key extends "systems"
+        [key in Exclude<keyof world, keyof Store>]: key extends "systems"
           ? resolveSystems<world[key] & SystemsInput, namespace & string>
           : key extends "deploy"
             ? resolveDeploy<world[key]>
@@ -69,6 +69,7 @@ export type resolveWorld<world, namespace = resolveStore<world>["namespace"]> = 
 
 export function resolveWorld<const world extends WorldInput>(world: world): resolveWorld<world> {
   const scope = extendedScope(world);
+  const resolvedStore = resolveStore(world);
   const namespaces = world.namespaces ?? {};
 
   const resolvedNamespacedTables = Object.fromEntries(
@@ -84,8 +85,6 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
       )
       .flat(),
   ) as Tables;
-
-  const resolvedStore = resolveStore(world);
 
   const modules = (world.modules ?? CONFIG_DEFAULTS.modules).map((mod) => mergeIfUndefined(mod, MODULE_DEFAULTS));
 

@@ -4,17 +4,20 @@ import { attest } from "@arktype/attest";
 import { resourceToHex } from "@latticexyz/common";
 import { CODEGEN_DEFAULTS, TABLE_CODEGEN_DEFAULTS, TABLE_DEPLOY_DEFAULTS } from "./defaults";
 import { defineStore } from "./store";
+import { satisfy } from "@arktype/util";
+import { Store } from "./output";
 
 describe("defineStoreWithShorthands", () => {
   it("should accept a shorthand store config as input and expand it", () => {
     const config = defineStoreWithShorthands({ tables: { Name: "address" } });
-    const expected = {
-      sourceDirectory: "src",
+
+    const expectedBaseNamespace = {
+      namespace: "" as string,
       tables: {
         Name: {
           label: "Name",
           type: "table",
-          namespace: "",
+          namespace: "" as string,
           name: "Name" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
           schema: {
@@ -32,14 +35,33 @@ describe("defineStoreWithShorthands", () => {
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
+    } as const;
+
+    const expectedConfig = {
+      ...expectedBaseNamespace,
+      namespaces: {
+        "": {
+          label: "",
+          ...expectedBaseNamespace,
+        },
+      },
+      sourceDirectory: "src",
       userTypes: {},
       enums: {},
       enumValues: {},
-      namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
 
-    attest<typeof expected>(config).equals(expected);
+    attest<typeof expectedConfig>(config).equals(expectedConfig);
+  });
+
+  it("should satisfy the output type", () => {
+    const config = defineStore({
+      tables: { Name: { schema: { id: "address" }, key: ["id"] } },
+      userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
+    });
+
+    attest<typeof config, satisfy<Store, typeof config>>();
   });
 
   it("should accept a user type as input and expand it", () => {
@@ -47,13 +69,14 @@ describe("defineStoreWithShorthands", () => {
       tables: { Name: "CustomType" },
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
     });
-    const expected = {
-      sourceDirectory: "src",
+
+    const expectedBaseNamespace = {
+      namespace: "" as string,
       tables: {
         Name: {
           label: "Name",
           type: "table",
-          namespace: "",
+          namespace: "" as string,
           name: "Name" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Name" }),
           schema: {
@@ -71,28 +94,39 @@ describe("defineStoreWithShorthands", () => {
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
+    } as const;
+
+    const expectedConfig = {
+      ...expectedBaseNamespace,
+      namespaces: {
+        "": {
+          label: "",
+          ...expectedBaseNamespace,
+        },
+      },
+      sourceDirectory: "src",
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
       enums: {},
       enumValues: {},
-      namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
 
-    attest<typeof expected>(config).equals(expected);
-    attest<typeof config>(expected);
+    attest<typeof expectedConfig>(config).equals(expectedConfig);
+    attest<typeof config>(expectedConfig);
   });
 
   it("given a schema with a key field with static ABI type, it should use `id` as single key", () => {
     const config = defineStoreWithShorthands({
       tables: { Example: { id: "address", name: "string", age: "uint256" } },
     });
-    const expected = {
-      sourceDirectory: "src",
+
+    const expectedBaseNamespace = {
+      namespace: "" as string,
       tables: {
         Example: {
           label: "Example",
           type: "table",
-          namespace: "",
+          namespace: "" as string,
           name: "Example" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
@@ -114,14 +148,24 @@ describe("defineStoreWithShorthands", () => {
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
+    } as const;
+
+    const expectedConfig = {
+      ...expectedBaseNamespace,
+      namespaces: {
+        "": {
+          label: "",
+          ...expectedBaseNamespace,
+        },
+      },
+      sourceDirectory: "src",
       userTypes: {},
       enums: {},
       enumValues: {},
-      namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
 
-    attest<typeof expected>(config).equals(expected);
+    attest<typeof expectedConfig>(config).equals(expectedConfig);
   });
 
   it("given a schema with a key field with static custom type, it should use `id` as single key", () => {
@@ -129,13 +173,13 @@ describe("defineStoreWithShorthands", () => {
       tables: { Example: { id: "address", name: "string", age: "uint256" } },
     });
 
-    const expected = {
-      sourceDirectory: "src",
+    const expectedBaseNamespace = {
+      namespace: "" as string,
       tables: {
         Example: {
           label: "Example",
           type: "table",
-          namespace: "",
+          namespace: "" as string,
           name: "Example" as string,
           tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
           schema: {
@@ -157,14 +201,24 @@ describe("defineStoreWithShorthands", () => {
           deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
+    } as const;
+
+    const expectedConfig = {
+      ...expectedBaseNamespace,
+      namespaces: {
+        "": {
+          label: "",
+          ...expectedBaseNamespace,
+        },
+      },
+      sourceDirectory: "src",
       userTypes: {},
       enums: {},
       enumValues: {},
-      namespace: "",
       codegen: CODEGEN_DEFAULTS,
     } as const;
 
-    attest<typeof expected>(config).equals(expected);
+    attest<typeof expectedConfig>(config).equals(expectedConfig);
   });
 
   it("should pass through full table config inputs", () => {

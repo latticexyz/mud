@@ -40,12 +40,12 @@ describe("defineWorld", () => {
 
     const expected = {
       ...CONFIG_DEFAULTS,
-      codegen: CODEGEN_DEFAULTS,
+      namespace: "" as string,
       tables: {
         ExampleNS__ExampleTable: {
           label: "ExampleTable",
           type: "table",
-          namespace: "ExampleNS",
+          namespace: "ExampleNS" as string,
           name: "ExampleTable" as string,
           tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
           schema: {
@@ -70,7 +70,7 @@ describe("defineWorld", () => {
       userTypes: {},
       enums: {},
       enumValues: {},
-      namespace: "",
+      codegen: CODEGEN_DEFAULTS,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -109,7 +109,7 @@ describe("defineWorld", () => {
         ExampleNS__ExampleTable: {
           label: "ExampleTable",
           type: "table",
-          namespace: "ExampleNS",
+          namespace: "ExampleNS" as string,
           name: "ExampleTable" as string,
           tableId: resourceToHex({ type: "table", namespace: "ExampleNS", name: "ExampleTable" }),
           schema: {
@@ -144,7 +144,7 @@ describe("defineWorld", () => {
           Second: 1,
         },
       },
-      namespace: "",
+      namespace: "" as string,
     } as const;
 
     attest<typeof expected>(config).equals(expected);
@@ -195,9 +195,9 @@ describe("defineWorld", () => {
       },
     });
 
-    attest<"namespace">(config.namespace).equals("namespace");
+    attest(config.namespace).equals("namespace");
     // @ts-expect-error TODO: fix once namespaces support ships
-    attest<"AnotherOne">(config.tables.AnotherOne__Example.namespace).equals("AnotherOne");
+    attest(config.tables.AnotherOne__Example.namespace).equals("AnotherOne");
     // @ts-expect-error TODO: fix once namespaces support ships
     attest(config.tables.AnotherOne__Example.tableId).equals(
       resourceToHex({ type: "table", name: "Example", namespace: "AnotherOne" }),
@@ -215,14 +215,13 @@ describe("defineWorld", () => {
         },
       });
 
-      const expected = {
-        ...CONFIG_DEFAULTS,
-        codegen: CODEGEN_DEFAULTS,
+      const expectedBaseNamespace = {
+        namespace: "" as string,
         tables: {
           Example: {
             label: "Example",
             type: "table",
-            namespace: "",
+            namespace: "" as string,
             name: "Example" as string,
             tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
             schema: {
@@ -244,13 +243,24 @@ describe("defineWorld", () => {
             deploy: TABLE_DEPLOY_DEFAULTS,
           },
         },
+      } as const;
+
+      const expectedConfig = {
+        ...CONFIG_DEFAULTS,
+        ...expectedBaseNamespace,
+        namespaces: {
+          "": {
+            label: "",
+            ...expectedBaseNamespace,
+          },
+        },
         userTypes: {},
         enums: {},
         enumValues: {},
-        namespace: "",
+        codegen: CODEGEN_DEFAULTS,
       } as const;
 
-      attest<typeof expected>(config).equals(expected);
+      attest<typeof expectedConfig>(config).equals(expectedConfig);
     });
 
     it("should return the full config given a full config with one key and user types", () => {
@@ -266,14 +276,14 @@ describe("defineWorld", () => {
           dynamic: { type: "string", filePath: "path/to/file" },
         },
       });
-      const expected = {
-        ...CONFIG_DEFAULTS,
-        codegen: CODEGEN_DEFAULTS,
+
+      const expectedBaseNamespace = {
+        namespace: "" as string,
         tables: {
           Example: {
             label: "Example",
             type: "table",
-            namespace: "",
+            namespace: "" as string,
             name: "Example" as string,
             tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
             schema: {
@@ -295,16 +305,27 @@ describe("defineWorld", () => {
             deploy: TABLE_DEPLOY_DEFAULTS,
           },
         },
+      } as const;
+
+      const expectedConfig = {
+        ...CONFIG_DEFAULTS,
+        ...expectedBaseNamespace,
+        namespaces: {
+          "": {
+            label: "",
+            ...expectedBaseNamespace,
+          },
+        },
         userTypes: {
           static: { type: "address", filePath: "path/to/file" },
           dynamic: { type: "string", filePath: "path/to/file" },
         },
         enums: {},
         enumValues: {},
-        namespace: "",
+        codegen: CODEGEN_DEFAULTS,
       } as const;
 
-      attest<typeof expected>(config).equals(expected);
+      attest<typeof expectedConfig>(config).equals(expectedConfig);
     });
 
     it("should return the full config given a full config with two key", () => {
@@ -316,14 +337,14 @@ describe("defineWorld", () => {
           },
         },
       });
-      const expected = {
-        ...CONFIG_DEFAULTS,
-        codegen: CODEGEN_DEFAULTS,
+
+      const expectedBaseNamespace = {
+        namespace: "" as string,
         tables: {
           Example: {
             label: "Example",
             type: "table",
-            namespace: "",
+            namespace: "" as string,
             name: "Example" as string,
             tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
             schema: {
@@ -345,14 +366,25 @@ describe("defineWorld", () => {
             deploy: TABLE_DEPLOY_DEFAULTS,
           },
         },
+      } as const;
+
+      const expectedConfig = {
+        ...CONFIG_DEFAULTS,
+        ...expectedBaseNamespace,
+        namespaces: {
+          "": {
+            label: "",
+            ...expectedBaseNamespace,
+          },
+        },
         userTypes: {},
         enums: {},
         enumValues: {},
-        namespace: "",
+        codegen: CODEGEN_DEFAULTS,
         deploy: DEPLOY_DEFAULTS,
       } as const;
 
-      attest<typeof expected>(config).equals(expected);
+      attest<typeof expectedConfig>(config).equals(expectedConfig);
     });
 
     it("should resolve two tables in the config with different schemas", () => {
@@ -368,14 +400,14 @@ describe("defineWorld", () => {
           },
         },
       });
-      const expected = {
-        ...CONFIG_DEFAULTS,
-        codegen: CODEGEN_DEFAULTS,
+
+      const expectedBaseNamespace = {
+        namespace: "" as string,
         tables: {
           First: {
             label: "First",
             type: "table",
-            namespace: "",
+            namespace: "" as string,
             name: "First" as string,
             tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
             schema: {
@@ -399,7 +431,7 @@ describe("defineWorld", () => {
           Second: {
             label: "Second",
             type: "table",
-            namespace: "",
+            namespace: "" as string,
             name: "Second" as string,
             tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
             schema: {
@@ -421,13 +453,24 @@ describe("defineWorld", () => {
             deploy: TABLE_DEPLOY_DEFAULTS,
           },
         },
+      } as const;
+
+      const expectedConfig = {
+        ...CONFIG_DEFAULTS,
+        ...expectedBaseNamespace,
+        namespaces: {
+          "": {
+            label: "",
+            ...expectedBaseNamespace,
+          },
+        },
         userTypes: {},
         enums: {},
         enumValues: {},
-        namespace: "",
+        codegen: CODEGEN_DEFAULTS,
       } as const;
 
-      attest<typeof expected>(config).equals(expected);
+      attest<typeof expectedConfig>(config).equals(expectedConfig);
     });
 
     it("should resolve two tables in the config with different schemas and user types", () => {
@@ -448,14 +491,13 @@ describe("defineWorld", () => {
         },
       });
 
-      const expected = {
-        ...CONFIG_DEFAULTS,
-        codegen: CODEGEN_DEFAULTS,
+      const expectedBaseNamespace = {
+        namespace: "" as string,
         tables: {
           First: {
             label: "First",
             type: "table",
-            namespace: "",
+            namespace: "" as string,
             name: "First" as string,
             tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
             schema: {
@@ -479,7 +521,7 @@ describe("defineWorld", () => {
           Second: {
             label: "Second",
             type: "table",
-            namespace: "",
+            namespace: "" as string,
             name: "Second" as string,
             tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
             schema: {
@@ -501,16 +543,27 @@ describe("defineWorld", () => {
             deploy: TABLE_DEPLOY_DEFAULTS,
           },
         },
+      } as const;
+
+      const expectedConfig = {
+        ...CONFIG_DEFAULTS,
+        ...expectedBaseNamespace,
+        namespaces: {
+          "": {
+            label: "",
+            ...expectedBaseNamespace,
+          },
+        },
         userTypes: {
           Static: { type: "address", filePath: "path/to/file" },
           Dynamic: { type: "string", filePath: "path/to/file" },
         },
         enums: {},
         enumValues: {},
-        namespace: "",
+        codegen: CODEGEN_DEFAULTS,
       } as const;
 
-      attest<typeof expected>(config).equals(expected);
+      attest<typeof expectedConfig>(config).equals(expectedConfig);
     });
 
     it("should throw if referring to fields of different tables", () => {
@@ -584,14 +637,14 @@ describe("defineWorld", () => {
           ValidNames: ["first", "second"],
         },
       });
-      const expected = {
-        ...CONFIG_DEFAULTS,
-        codegen: CODEGEN_DEFAULTS,
+
+      const expectedBaseNamespace = {
+        namespace: "" as string,
         tables: {
           Example: {
             label: "Example",
             type: "table",
-            namespace: "",
+            namespace: "" as string,
             name: "Example" as string,
             tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
             schema: {
@@ -613,6 +666,18 @@ describe("defineWorld", () => {
             deploy: TABLE_DEPLOY_DEFAULTS,
           },
         },
+      } as const;
+
+      const expectedConfig = {
+        ...CONFIG_DEFAULTS,
+        ...expectedBaseNamespace,
+        namespaces: {
+          "": {
+            label: "",
+            ...expectedBaseNamespace,
+          },
+        },
+        codegen: CODEGEN_DEFAULTS,
         userTypes: {
           static: { type: "address", filePath: "path/to/file" },
           dynamic: { type: "string", filePath: "path/to/file" },
@@ -626,23 +691,20 @@ describe("defineWorld", () => {
             second: 1,
           },
         },
-        namespace: "",
       } as const;
 
-      attest<typeof expected>(config).equals(expected);
-      attest<typeof config>(expected).equals(expected);
+      attest<typeof expectedConfig>(config).equals(expectedConfig);
+      attest<typeof config>(expectedConfig).equals(expectedConfig);
     });
 
     it("should use the root namespace as default namespace", () => {
       const config = defineWorld({});
-
-      attest<"">(config.namespace).equals("");
+      attest(config.namespace).equals("");
     });
 
     it("should use pipe through non-default namespaces", () => {
       const config = defineWorld({ namespace: "custom" });
-
-      attest<"custom">(config.namespace).equals("custom");
+      attest(config.namespace).equals("custom");
     });
 
     it("should extend the output World type", () => {
@@ -665,8 +727,8 @@ describe("defineWorld", () => {
         },
       });
 
-      attest<"namespace">(config.namespace).equals("namespace");
-      attest<"namespace">(config.tables.namespace__Example.namespace).equals("namespace");
+      attest(config.namespace).equals("namespace");
+      attest(config.tables.namespace__Example.namespace).equals("namespace");
       attest(config.tables.namespace__Example.tableId).equals(
         resourceToHex({ type: "table", name: "Example", namespace: "namespace" }),
       );
@@ -776,7 +838,7 @@ describe("defineWorld", () => {
     const expectedSystems = {
       Example: {
         label: "Example",
-        namespace: "app",
+        namespace: "app" as string,
         name: "Example" as string,
         systemId: resourceToHex({ type: "system", namespace: "app", name: "Example" }),
         registerFunctionSelectors: true,
