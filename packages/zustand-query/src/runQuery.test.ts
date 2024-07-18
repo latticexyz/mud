@@ -2,7 +2,7 @@ import { describe, beforeEach, it } from "vitest";
 import { attest } from "@arktype/attest";
 import { BoundTable, Store, createStore } from "./createStore";
 import { runQuery } from "./runQuery";
-import { In, MatchRecord } from "./queryFragments";
+import { In, MatchRecord, NotIn, NotMatchRecord } from "./queryFragments";
 
 describe("runQuery", () => {
   let store: Store;
@@ -67,6 +67,35 @@ describe("runQuery", () => {
       keys: {
         "3": { player: "3" },
         "4": { player: "4" },
+      },
+    });
+  });
+
+  it("should return all keys that have Position.x = 4 and are included in Health", () => {
+    const result = runQuery([MatchRecord(Position, { x: 4 }), In(Health)]);
+    attest(result).snap({ keys: { "4": { player: "4" } } });
+  });
+
+  it("should return all keys that are in Position but not Health", () => {
+    const result = runQuery([In(Position), NotIn(Health)]);
+    attest(result).snap({
+      keys: {
+        "0": { player: "0" },
+        "1": { player: "1" },
+        "2": { player: "2" },
+      },
+    });
+  });
+
+  it("should return all keys that don't include a gold item in the Inventory table", () => {
+    const result = runQuery([NotMatchRecord(Inventory, { item: "gold" })]);
+    attest(result).snap({
+      keys: {
+        "0|silver": { player: "0", item: "silver" },
+        "1|silver": { player: "1", item: "silver" },
+        "2|silver": { player: "2", item: "silver" },
+        "3|silver": { player: "3", item: "silver" },
+        "4|silver": { player: "4", item: "silver" },
       },
     });
   });
