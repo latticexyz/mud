@@ -1,7 +1,9 @@
 import { useBlockNumber } from "wagmi";
 
 export function LatestBlock() {
-  const { data: block } = useBlockNumber();
+  const { data: block } = useBlockNumber({
+    watch: true,
+  });
 
   if (block === undefined || block === BigInt(0)) {
     return;
