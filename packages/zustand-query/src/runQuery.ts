@@ -1,8 +1,6 @@
 import { Keys } from "./createStore";
-import { equals } from "./equals";
 import { QueryFragment } from "./queryFragments";
 import { getKeySchema } from "@latticexyz/protocol-parser/internal";
-import { recordMatches } from "./recordEquals";
 
 // TODO: maybe add option to include records in the result?
 export type QueryResult = { keys: Keys };
@@ -24,7 +22,7 @@ export function runQuery(query: [QueryFragment, ...QueryFragment[]], options?: Q
   }
 
   // Initial set of matching keys is either the provided `initialKeys` or all keys of the table of the first fragment
-  const matching = { keys: options?.initialKeys ?? query[0].table.getKeys() };
+  const matching = { keys: options?.initialKeys ?? query[0].getInitialKeys() };
 
   for (const fragment of query) {
     // TODO: this might be more efficient if we would use a Map() instead of an object

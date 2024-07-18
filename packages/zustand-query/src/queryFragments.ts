@@ -1,9 +1,15 @@
-import { BoundTable, TableRecord } from "./createStore";
+import { BoundTable, Keys, TableRecord } from "./createStore";
 import { recordMatches } from "./recordEquals";
 
 export type QueryFragment = {
   table: BoundTable;
   filter: (encodedKey: string) => boolean;
+  /**
+   * The keys that should be included in the query result if this is the first fragment in the query.
+   * This is to avoid having to iterate over each key in the first table if there is a more efficient
+   * way to get to the initial result.
+   */
+  getInitialKeys: () => Keys;
 };
 
 /**
@@ -12,7 +18,8 @@ export type QueryFragment = {
  */
 export function In(table: BoundTable): QueryFragment {
   const filter = (encodedKey: string) => encodedKey in table.getRecords();
-  return { table, filter };
+  const getInitialKeys = () => table.getKeys();
+  return { table, filter, getInitialKeys };
 }
 
 /**
@@ -21,7 +28,8 @@ export function In(table: BoundTable): QueryFragment {
  */
 export function NotIn(table: BoundTable): QueryFragment {
   const filter = (encodedKey: string) => !(encodedKey in table.getRecords());
-  return { table, filter };
+  const getInitialKeys = () => ({});
+  return { table, filter, getInitialKeys };
 }
 
 /**
@@ -34,7 +42,9 @@ export function MatchRecord(table: BoundTable, partialRecord: TableRecord): Quer
     const record = table.getRecords()[encodedKey];
     return recordMatches(partialRecord, record);
   };
-  return { table, filter };
+  // TODO: this is a very naive and inefficient implementation for large tables, can be optimized via indexer tables
+  const getInitialKeys = () => Object.fromEntries(Object.entries(table.getKeys()).filter(([key]) => filter(key)));
+  return { table, filter, getInitialKeys };
 }
 
 /**
@@ -49,5 +59,7 @@ export function NotMatchRecord(table: BoundTable, partialRecord: TableRecord): Q
     const record = table.getRecords()[encodedKey];
     return !recordMatches(partialRecord, record);
   };
-  return { table, filter };
+  // TODO: this is a very naive and inefficient implementation for large tables, can be optimized via indexer tables
+  const getInitialKeys = () => Object.fromEntries(Object.entries(table.getKeys()).filter(([key]) => filter(key)));
+  return { table, filter, getInitialKeys };
 }
