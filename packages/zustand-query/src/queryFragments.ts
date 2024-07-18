@@ -1,6 +1,8 @@
 import { BoundTable, Keys, TableRecord } from "./createStore";
 import { recordMatches } from "./recordEquals";
 
+// TODO: add more query fragments - ie GreaterThan, LessThan, Range, etc
+
 export type QueryFragment = {
   table: BoundTable;
   filter: (encodedKey: string) => boolean;
