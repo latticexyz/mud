@@ -37,7 +37,8 @@
     "tailwindcss-animate": "^1.0.7",
     "viem": "2.9.20",
     "wagmi": "^2.11.1",
-    "zod": "^3.22.2"
+    "zod": "^3.22.2",
+    "zustand": "^4.3.7"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.4",

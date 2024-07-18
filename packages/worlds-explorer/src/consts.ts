@@ -15,3 +15,12 @@ export const PRIVATE_KEYS: Hex[] = [
 ];
 
 export const ACCOUNTS: Hex[] = PRIVATE_KEYS.map((key) => privateKeyToAccount(key).address);
+
+export const ACCOUNT_PRIVATE_KEYS: Record<Hex, Hex> = PRIVATE_KEYS.reduce(
+  (acc, key) => {
+    const account = privateKeyToAccount(key).address;
+    acc[account] = key;
+    return acc;
+  },
+  {} as Record<Hex, Hex>,
+);

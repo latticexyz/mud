@@ -1223,6 +1223,9 @@ importers:
       zod:
         specifier: ^3.22.2
         version: 3.23.7
+      zustand:
+        specifier: ^4.3.7
+        version: 4.4.1(@types/react@18.2.22)(react@18.2.0)
     devDependencies:
       '@types/better-sqlite3':
         specifier: ^7.6.4

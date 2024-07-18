@@ -1,5 +1,6 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ACCOUNTS } from "@/consts";
+import { useStore } from "@/store";
 import { useEffect, useState } from "react";
 import { formatEther, fromHex, Hex } from "viem";
 
@@ -13,6 +14,7 @@ type Balances = {
 };
 
 export function AccountSelect() {
+  const { account, setAccount } = useStore();
   const [balances, setBalances] = useState<Balances>({});
 
   useEffect(() => {
@@ -53,7 +55,7 @@ export function AccountSelect() {
   }, []);
 
   return (
-    <Select defaultValue={ACCOUNTS[0]}>
+    <Select value={account} onValueChange={setAccount}>
       <SelectTrigger className="w-[300px] text-left">
         <SelectValue placeholder="Account" />
       </SelectTrigger>
