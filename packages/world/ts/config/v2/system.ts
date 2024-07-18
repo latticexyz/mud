@@ -19,7 +19,7 @@ export type validateSystem<input, options extends ValidateSystemOptions = {}> = 
         ? ErrorMessage<"Overrides of `label` and `namespace` are not allowed for systems in this context.">
         : key extends keyof input
           ? narrow<input[key]>
-          : never // TODO: should this be SystemInput[key] ?
+          : never
       : SystemInput[key]
     : ErrorMessage<`Key \`${key & string}\` does not exist in SystemInput`>;
 };
