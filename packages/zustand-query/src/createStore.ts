@@ -14,7 +14,12 @@ type TableRecords = { readonly [key: string]: TableRecord };
 /**
  * A Key is the unique identifier for a row in the table.
  */
-export type Key = { [field: string]: number | string };
+export type Key = { [field: string]: number | string | bigint };
+
+/**
+ * A map from encoded key to decoded key
+ */
+export type Keys = { [encodedKey: string]: Key };
 
 type Schema = { [key: string]: AbiType };
 
@@ -82,6 +87,7 @@ type Actions = {
      * @returns A bound Table object for easier interaction with the table.
      */
     getTable: (tableLabel: TableLabel) => BoundTable;
+    // TODO: add getRecords, getKeys
   };
 };
 
@@ -100,6 +106,7 @@ export type BoundTable = {
   getRecord: (args: BoundGetRecordArgs) => TableRecord;
   setRecord: (args: BoundSetRecordArgs) => void;
   getRecords: () => TableRecords;
+  getKeys: () => Keys;
 };
 
 type TableLabel = { label: string; namespace?: string };
@@ -174,6 +181,17 @@ export function createStore(tablesConfig: TablesConfig): Store {
           setRecord: ({ key, record }: BoundSetRecordArgs) => setRecord({ tableLabel, key, record }),
           getRecord: ({ key }: BoundGetRecordArgs) => getRecord({ tableLabel, key }),
           getRecords: () => get().records[namespace][tableLabel.label],
+          getKeys: () => {
+            const records = get().records[namespace][tableLabel.label];
+            const keyFields = get().config[namespace][tableLabel.label].key;
+            return Object.fromEntries(
+              Object.entries(records).map(([key, record]) => [
+                key,
+                Object.fromEntries(Object.entries(record).filter(([field]) => keyFields.includes(field))),
+                // Typecast needed because record values could be arrays, but we know they are not if they are key fields
+              ]) as never,
+            );
+          },
 
           // TODO: dynamically add setters and getters for individual fields of the table
         };

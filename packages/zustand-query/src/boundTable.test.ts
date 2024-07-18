@@ -29,4 +29,7 @@ describe("BoundTable", () => {
       attest(table.getRecord({ key: { field1: 2 } })).snap({ field1: 2, field2: "0x01" });
     });
   });
+
+  describe.todo("getRecords");
+  describe.todo("getKeys");
 });
