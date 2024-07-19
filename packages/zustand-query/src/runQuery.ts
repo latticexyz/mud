@@ -1,15 +1,7 @@
-import { Keys } from "./createStore";
-import { QueryFragment } from "./queryFragments";
+import { Query, CommonQueryOptions, CommonQueryResult } from "./common";
 import { getKeySchema } from "@latticexyz/protocol-parser/internal";
 
-// TODO: maybe add option to include records in the result?
-export type QueryResult = { keys: Keys };
-
-type QueryOptions = {
-  initialKeys?: Keys;
-};
-
-export function runQuery(query: [QueryFragment, ...QueryFragment[]], options?: QueryOptions): QueryResult {
+export function runQuery(query: Query, options?: CommonQueryOptions): CommonQueryResult {
   // Only allow fragments with matching table keys for now
   // TODO: we might be able to enable this if we add something like a `keySelector`
   // TODO: getKeySchema expects a full table as type, but only needs schema and key

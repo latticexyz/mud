@@ -7,6 +7,8 @@
 - Maybe turn `entityKey` into a tagged string? So we could make it the return type of `encodeKey`,
   and allow us to use Symbol (to reduce memory overhead) or something else later without breaking change
 - add more query fragments - ie GreaterThan, LessThan, Range, etc
+- we might be able to enable different key shapes if we add something like a `keySelector`
+- getKeySchema expects a full table as type, but only needs schema and key
 
 Ideas
 
