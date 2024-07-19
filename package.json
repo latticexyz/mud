@@ -37,7 +37,7 @@
     "package.json": "pnpm sort-package-json"
   },
   "devDependencies": {
-    "@arktype/attest": "0.9.1",
+    "@arktype/attest": "0.7.5",
     "@changesets/cli": "^2.26.1",
     "@types/node": "^18.15.11",
     "@typescript-eslint/eslint-plugin": "7.1.1",
