@@ -86,6 +86,11 @@ export function TablesViewer({
   const table = useReactTable({
     data: rows,
     columns,
+    initialState: {
+      pagination: {
+        pageSize: 50,
+      },
+    },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),

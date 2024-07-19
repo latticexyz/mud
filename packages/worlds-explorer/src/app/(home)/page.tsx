@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { SQLEditor } from "./SQLEditor";
 import { TableSelector } from "./TableSelector";
 import { TablesViewer } from "./TablesViewer";
+import { useSearchParams } from "next/navigation";
 
 export default function DataExplorer() {
-  const [selectedTable, setSelectedTable] = useState<string | undefined>();
+  const searchParams = useSearchParams();
   const [query, setQuery] = useState<string | undefined>();
 
   const { data: tables, isLoading: tablesLoading } = useQuery({
@@ -19,19 +20,13 @@ export default function DataExplorer() {
     select: (data) => data.tables.map((table: { name: string }) => table.name),
     refetchInterval: 15000,
   });
-
-  // Fetch tables, and select the first table if none is selected
-  useEffect(() => {
-    if (!selectedTable && tables) {
-      setSelectedTable(tables[0]);
-    }
-  }, [selectedTable, tables]);
+  const selectedTable = searchParams.get("table") || (tables?.length > 0 ? tables[0] : null);
 
   return (
     <>
       <h1 className="text-4xl font-bold py-4">Data explorer</h1>
       <div className="w-full">
-        <TableSelector value={selectedTable} onChange={setSelectedTable} options={tables} />
+        <TableSelector value={selectedTable} options={tables} />
         <SQLEditor table={selectedTable} tablesLoading={tablesLoading} setQuery={setQuery} />
         <TablesViewer table={selectedTable} query={query} />
       </div>
