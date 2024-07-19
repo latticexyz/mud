@@ -2,7 +2,7 @@ import { CollapseCode } from "../../../components/CollapseCode";
 
 # Keys in Table
 
-[The `KeysWithValue` module](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/keyswithvalue) tracks which keys are used with a specific table.
+[The `KeysInTable` module](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/keysintable) tracks which keys are used with a specific table.
 This is useful if you need to be able to access all the entries in a table onchain.
 Note that it costs additional gas for every write to the table affected, so if you just need this functionality offchain it is best to look at the data offchain instead.
 
@@ -98,7 +98,7 @@ import { console } from "forge-std/console.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { getKeysInTable } from "@latticexyz/world-modules/src/modules/keysintab$
+import { getKeysInTable } from "@latticexyz/world-modules/src/modules/keysintable/getKeysInTable.sol";
 import { Tasks, TasksData } from "../src/codegen/index.sol";
 
 contract UseGetKeysInTable is Script {
