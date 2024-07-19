@@ -1,7 +1,21 @@
-import { describe, expect, it } from "vitest";
-import { configToTables } from "./configToTables";
+import { describe, it } from "vitest";
+import { configToTables, flattenedTableKeys } from "./configToTables";
 import { defineWorld } from "@latticexyz/world";
 import { resourceToHex } from "@latticexyz/common";
+import { attest } from "@arktype/attest";
+
+describe("flattenedTableKeys", () => {
+  it("returns flattened table keys", () => {
+    const config = defineWorld({
+      namespace: "app",
+      tables: {
+        ExceedsResourceNameSizeLimit: "bytes32",
+        Table2: "address",
+      },
+    });
+    attest<"app__ExceedsResourceNameSizeLimit" | "app__Table2", flattenedTableKeys<typeof config>>();
+  });
+});
 
 describe("configToTables", () => {
   it("flattens tables from single namespace", async () => {
@@ -9,19 +23,33 @@ describe("configToTables", () => {
       namespace: "app",
       tables: {
         ExceedsResourceNameSizeLimit: "bytes32",
+        Table2: "address",
       },
     });
 
     const tables = configToTables(config);
-    expect(tables.ExceedsResourceNameSizeLimit.tableId).toBe(
+
+    attest<"ExceedsResourceNameSizeLimit" | "Table2", keyof typeof tables>();
+
+    attest(tables.ExceedsResourceNameSizeLimit.tableId).equals(
       resourceToHex({
         type: "table",
         namespace: "app",
         name: "ExceedsResourceN",
       }),
     );
-    expect(tables.ExceedsResourceNameSizeLimit.label).toBe("ExceedsResourceNameSizeLimit");
-    expect(tables.ExceedsResourceNameSizeLimit.name).toBe("ExceedsResourceN");
+    attest(tables.ExceedsResourceNameSizeLimit.label).equals("ExceedsResourceNameSizeLimit");
+    attest(tables.ExceedsResourceNameSizeLimit.name).equals("ExceedsResourceN");
+
+    attest(tables.Table2.tableId).equals(
+      resourceToHex({
+        type: "table",
+        namespace: "app",
+        name: "Table2",
+      }),
+    );
+    attest(tables.Table2.label).equals("Table2");
+    attest(tables.Table2.name).equals("Table2");
   });
 
   // TODO: add test with multiple namespaces
