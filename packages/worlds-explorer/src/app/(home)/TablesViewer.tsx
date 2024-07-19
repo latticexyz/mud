@@ -79,7 +79,7 @@ export function TablesViewer({
           </Button>
         );
       },
-      cell: ({ row }) => <div className="capitalize">{row.getValue(name)}</div>,
+      cell: ({ row }) => <input className="bg-transparent" defaultValue={row.getValue(name)} />,
     };
   });
 
