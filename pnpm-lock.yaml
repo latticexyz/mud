@@ -874,6 +874,9 @@ importers:
 
   packages/store-sync:
     dependencies:
+      '@arktype/util':
+        specifier: 0.0.40
+        version: 0.0.40
       '@latticexyz/block-logs-stream':
         specifier: workspace:*
         version: link:../block-logs-stream

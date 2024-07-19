@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { tablesByLabel } from "./tablesByLabel";
+import { configToTables } from "./configToTables";
 import { defineWorld } from "@latticexyz/world";
 import { resourceToHex } from "@latticexyz/common";
 
-describe("tablesByLabel", () => {
-  it("maps table label to component name", async () => {
+describe("configToTables", () => {
+  it("flattens tables from single namespace", async () => {
     const config = defineWorld({
       namespace: "app",
       tables: {
@@ -12,7 +12,7 @@ describe("tablesByLabel", () => {
       },
     });
 
-    const tables = tablesByLabel(config.tables);
+    const tables = configToTables(config);
     expect(tables.ExceedsResourceNameSizeLimit.tableId).toBe(
       resourceToHex({
         type: "table",
@@ -23,4 +23,7 @@ describe("tablesByLabel", () => {
     expect(tables.ExceedsResourceNameSizeLimit.label).toBe("ExceedsResourceNameSizeLimit");
     expect(tables.ExceedsResourceNameSizeLimit.name).toBe("ExceedsResourceN");
   });
+
+  // TODO: add test with multiple namespaces
+  // TODO: add test where the label is the same for two tables in different namespaces to make sure TS + runtime agree on which takes precedence
 });
