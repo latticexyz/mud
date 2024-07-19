@@ -765,6 +765,29 @@ describe("defineWorld", () => {
     ).type.errors("Namespaces config will be enabled soon.");
   });
 
+  it("should expand systems config", () => {
+    const config = defineWorld({
+      namespace: "app",
+      systems: {
+        Example: {},
+      },
+    });
+
+    const expectedSystems = {
+      Example: {
+        label: "Example",
+        namespace: "app",
+        name: "Example" as string,
+        systemId: resourceToHex({ type: "system", namespace: "app", name: "Example" }),
+        registerFunctionSelectors: true,
+        openAccess: true,
+        accessList: [],
+      },
+    } as const;
+
+    attest<typeof expectedSystems>(config.systems).equals(expectedSystems);
+  });
+
   it("should allow setting openAccess of a system to false", () => {
     const config = defineWorld({
       systems: {
