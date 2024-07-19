@@ -1,14 +1,30 @@
 "use client";
 
-import { Select, Flex, Button, Table, TextField } from "@radix-ui/themes";
+import { useEffect, useState } from "react";
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useQuery } from "@tanstack/react-query";
-import { FormEvent, useEffect, useState } from "react";
+import { ArrowUpDown, Loader } from "lucide-react";
 
 function bufferToBigInt(bufferData: number[]) {
   const hexString = bufferData.map((byte) => byte.toString(16).padStart(2, "0")).join("");
   const bigIntValue = BigInt("0x" + hexString);
   return bigIntValue;
 }
+
 function TableSelector({
   value,
   onChange,
@@ -19,18 +35,25 @@ function TableSelector({
   options: string[];
 }) {
   return (
-    <Select.Root value={value} onValueChange={onChange}>
-      <Select.Trigger style={{ width: "100%" }} placeholder="Select a table" />
-      <Select.Content>
-        {options?.map((option) => (
-          <Select.Item key={option} value={option}>
-            {option}
-          </Select.Item>
-        ))}
-      </Select.Content>
-    </Select.Root>
+    <div className="py-4">
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger>
+          <SelectValue placeholder="Select a table ..." />
+        </SelectTrigger>
+        <SelectContent>
+          {options?.map((option) => {
+            return (
+              <SelectItem key={option} value={option}>
+                {option}
+              </SelectItem>
+            );
+          })}
+        </SelectContent>
+      </Select>
+    </div>
   );
 }
+
 function SQLEditor({
   table,
   setQuery,
@@ -42,7 +65,7 @@ function SQLEditor({
 }) {
   const [deferredQuery, setDeferredQuery] = useState<string | undefined>("");
 
-  const submitQuery = (evt: FormEvent) => {
+  const submitQuery = (evt) => {
     evt.preventDefault();
     setQuery(deferredQuery);
   };
@@ -58,7 +81,7 @@ function SQLEditor({
 
   return (
     <form onSubmit={submitQuery}>
-      <Flex direction="row" gap="2">
+      {/* <Flex direction="row" gap="2">
         <TextField.Root
           style={{ flex: "1" }}
           placeholder="SQL query…"
@@ -69,18 +92,28 @@ function SQLEditor({
         </TextField.Root>
 
         <Button type="submit">Execute query</Button>
-      </Flex>
+      </Flex> */}
     </form>
   );
 }
-function TablesViewer({ table, query }: { table: string | undefined; query: string | undefined }) {
+
+function TablesViewer({ table: selectedTable, query }: { table: string | undefined; query: string | undefined }) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
+
   const { data: schema } = useQuery({
-    queryKey: ["schema", { table }],
+    queryKey: ["schema", { table: selectedTable }],
     queryFn: async () => {
-      const response = await fetch(`/api/schema?table=${table}`);
+      const response = await fetch(`/api/schema?table=${selectedTable}`);
       return response.json();
     },
-    select: (data) => data.schema,
+    select: (data) => {
+      return data.schema.filter((column: { name: string }) => {
+        return !column.name.startsWith("__");
+      });
+    },
   });
 
   const { data: rows } = useQuery({
@@ -101,39 +134,117 @@ function TablesViewer({ table, query }: { table: string | undefined; query: stri
         );
       });
     },
-    enabled: Boolean(table) && Boolean(query),
+    enabled: Boolean(selectedTable) && Boolean(query),
     refetchInterval: 1000,
   });
 
-  return (
-    <Table.Root>
-      <Table.Header>
-        <Table.Row>
-          {schema?.map((column: { name: string; type: string }) => (
-            <Table.ColumnHeaderCell key={column.name}>
-              {column.name} ({column.type})
-            </Table.ColumnHeaderCell>
-          ))}
-        </Table.Row>
-      </Table.Header>
+  const columns: ColumnDef<{}>[] = schema?.map(({ name, type }: { name: string; type: string }) => {
+    return {
+      accessorKey: name,
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            className="-ml-4"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            {name} ({type})
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => <div className="capitalize">{row.getValue(name)}</div>,
+    };
+  });
 
-      <Table.Body>
-        {rows?.map((row: Record<string, string>, idx: number) => {
-          return (
-            <Table.Row key={idx}>
-              {schema?.map((column: { name: string }) => {
-                return <Table.Cell key={column.name}>{row[column.name]}</Table.Cell>;
-              })}
-            </Table.Row>
-          );
-        })}
-      </Table.Body>
-    </Table.Root>
+  const table = useReactTable({
+    data: rows,
+    columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+  });
+
+  if (!schema || !rows) {
+    return (
+      <div className="rounded-md border p-4">
+        <Loader className="animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+          {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s)
+          selected.
+        </div>
+        <div className="space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+            Next
+          </Button>
+        </div>
+      </div>
+    </>
   );
 }
 
-export default function Home() {
-  const [table, setTable] = useState<string | undefined>();
+export default function DataExplorer() {
+  const [selectedTable, setSelectedTable] = useState<string | undefined>();
   const [query, setQuery] = useState<string | undefined>();
 
   const { data: tables, isLoading: tablesLoading } = useQuery({
@@ -146,19 +257,21 @@ export default function Home() {
     refetchInterval: 15000,
   });
 
+  // Fetch tables, and select the first table if none is selected
   useEffect(() => {
-    if (!table && tables) {
-      setTable(tables[0]);
+    if (!selectedTable && tables) {
+      setSelectedTable(tables[0]);
     }
-  }, [table, tables]);
+  }, [selectedTable, tables]);
 
   return (
-    <div className="container">
-      <Flex direction="column" gap="2">
-        <TableSelector value={table} onChange={setTable} options={tables} />
-        <SQLEditor table={table} tablesLoading={tablesLoading} setQuery={setQuery} />
-        <TablesViewer table={table} query={query} />
-      </Flex>
-    </div>
+    <>
+      <h1 className="text-4xl font-bold py-4">Data explorer</h1>
+      <div className="w-full">
+        <TableSelector value={selectedTable} onChange={setSelectedTable} options={tables} />
+        <SQLEditor table={selectedTable} tablesLoading={tablesLoading} setQuery={setQuery} />
+        <TablesViewer table={selectedTable} query={query} />
+      </div>
+    </>
   );
 }

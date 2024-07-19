@@ -13,7 +13,7 @@ export function Navigation() {
     <div className="flex justify-between items-center">
       <div className="flex gap-x-4 py-4">
         <Link href="/" className={cn(pathname === "/" && "font-semibold underline")}>
-          Home
+          Data
         </Link>
         <Link href="/interact" className={cn(pathname === "/interact" && "font-semibold underline")}>
           Interact
