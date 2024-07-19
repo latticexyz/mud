@@ -1161,13 +1161,13 @@ importers:
   test/ts-benchmarks:
     devDependencies:
       '@latticexyz/recs':
-        specifier: link:../../packages/recs
+        specifier: workspace:*
         version: link:../../packages/recs
       '@latticexyz/store-sync':
-        specifier: link:../../packages/store-sync
+        specifier: workspace:*
         version: link:../../packages/store-sync
       '@latticexyz/world':
-        specifier: link:../../packages/world
+        specifier: workspace:*
         version: link:../../packages/world
       tsx:
         specifier: 4.16.2
