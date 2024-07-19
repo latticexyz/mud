@@ -1,6 +1,9 @@
 import { show } from "@arktype/util";
 import { Store } from "@latticexyz/store";
 
+/**
+ * @internal
+ */
 export type flattenedTableKeys<config extends Store> = config extends { readonly namespaces: infer namespaces }
   ? {
       [namespaceLabel in keyof namespaces]: namespaces[namespaceLabel] extends { readonly tables: infer tables }

@@ -4,7 +4,7 @@ import { mergeRight } from "./mergeRight";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { configToTables } from "./configToTables";
-import { satisfy, show } from "@arktype/util";
+import { show } from "@arktype/util";
 
 type mudTables = mergeRight<configToTables<typeof storeConfig>, configToTables<typeof worldConfig>>;
 const mudTables = {
@@ -13,10 +13,9 @@ const mudTables = {
 };
 
 // TODO: validate that extraTables keys correspond to table labels?
-// TODO: move satisfy to type test
-export type getAllTables<config extends StoreConfig, extraTables extends Tables> = satisfy<
-  Tables,
-  mergeRight<configToTables<config>, mergeRight<extraTables, mudTables>>
+export type getAllTables<config extends StoreConfig, extraTables extends Tables> = mergeRight<
+  configToTables<config>,
+  mergeRight<extraTables, mudTables>
 >;
 
 export function getAllTables<config extends StoreConfig, extraTables extends Tables>(
