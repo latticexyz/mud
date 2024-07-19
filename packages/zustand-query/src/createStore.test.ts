@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { attest } from "@arktype/attest";
 import { TablesConfig, createStore } from "./createStore";
 
@@ -67,6 +67,60 @@ describe("createStore", () => {
         },
       });
     });
+  });
+
+  describe("subscribe", () => {
+    it("should notify listeners on table updates", () => {
+      const tablesConfig = {
+        namespace1: {
+          table1: {
+            schema: {
+              field1: "string",
+              field2: "uint32",
+              field3: "int32",
+            },
+            key: ["field2", "field3"],
+          },
+        },
+      } satisfies TablesConfig;
+
+      const store = createStore(tablesConfig);
+
+      const listener = vi.fn();
+
+      store.getState().actions.subscribe({
+        tableLabel: { label: "table1", namespace: "namespace1" },
+        listener,
+      });
+
+      store.getState().actions.setRecord({
+        tableLabel: { label: "table1", namespace: "namespace1" },
+        key: { field2: 1, field3: 2 },
+        record: { field1: "hello" },
+      });
+
+      expect(listener).toHaveBeenNthCalledWith(1, {
+        "1|2": {
+          prev: undefined,
+          current: { field1: "hello", field2: 1, field3: 2 },
+        },
+      });
+
+      store.getState().actions.setRecord({
+        tableLabel: { label: "table1", namespace: "namespace1" },
+        key: { field2: 1, field3: 2 },
+        record: { field1: "world" },
+      });
+
+      expect(listener).toHaveBeenNthCalledWith(2, {
+        "1|2": {
+          prev: { field1: "hello", field2: 1, field3: 2 },
+          current: { field1: "world", field2: 1, field3: 2 },
+        },
+      });
+    });
+
+    it.todo("should not notify listeners after they have been removed");
   });
 
   describe("getRecord", () => {

@@ -198,14 +198,14 @@ export function createStore(tablesConfig: TablesConfig): Store {
 
           // Update record
           const encodedKey = encodeKey(tableLabel, key);
-          const prevRecord = prev.records[namespace][label][encodedKey] ?? {};
+          const prevRecord = prev.records[namespace][label][encodedKey];
           const schema = prev.config[namespace][label].schema;
           const newRecord = Object.fromEntries(
             Object.keys(schema).map((fieldName) => [
               fieldName,
               key[fieldName] ?? // Key fields in record must match the key
                 record[fieldName] ?? // Override provided record fields
-                prevRecord[fieldName] ?? // Keep existing non-overridden fields
+                prevRecord?.[fieldName] ?? // Keep existing non-overridden fields
                 staticAbiTypeToDefaultValue[schema[fieldName] as never] ?? // Default values for new fields
                 dynamicAbiTypeToDefaultValue[schema[fieldName] as never],
             ]),
@@ -214,7 +214,7 @@ export function createStore(tablesConfig: TablesConfig): Store {
 
           // Notify table subscribers
           subscribers[namespace][label].forEach((listener) =>
-            listener({ [encodedKey]: { prev: prevRecord, current: newRecord } }),
+            listener({ [encodedKey]: { prev: prevRecord && { ...prevRecord }, current: newRecord } }),
           );
         });
       };
