@@ -88,7 +88,7 @@ For example, here is a Solidity script that reads the tasks added to `Tasks` aft
 
 <CollapseCode>
 
-```solidity filename="UseGetKeysInTable.s.sol" copy showLineNumbers
+```solidity filename="UseGetKeysInTable.s.sol" copy showLineNumbers {9,18-22,24,26,28-34,36-40}
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
@@ -104,15 +104,12 @@ contract UseGetKeysInTable is Script {
   function run() external {
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
     address worldAddress = vm.envAddress("WORLD_ADDRESS");
-
-    string memory description01 = "Walk the dog";
-    string memory description02 = "Cook delicious meal";
-    string memory description03 = "Practice German";
+    IWorld world = IWorld(worldAddress);
 
     vm.startBroadcast(deployerPrivateKey);
-    IWorld(worldAddress).addTask(description01);
-    IWorld(worldAddress).addTask(description02);
-    IWorld(worldAddress).addTask(description03);
+    world.app__addTask("Walk the cat");
+    world.app__addTask("Cook delicious meal");
+    world.app__addTask("Practice Elvish");
     vm.stopBroadcast();
 
     StoreSwitch.setStoreAddress(worldAddress);
@@ -120,17 +117,17 @@ contract UseGetKeysInTable is Script {
     bytes32[][] memory keys = getKeysInTable(Tasks._tableId);
 
     console.log("Number of keys:", keys.length);
-    for(uint i=0; i<keys.length; i++) {
-       console.log("\nKey #", i, ":");
-       for(uint j=0; j<keys[i].length; j++) {
-          console.logBytes32(keys[i][j]);
-       }
+    for (uint i = 0; i < keys.length; i++) {
+      console.log("\nKey #", i, ":");
+      for (uint j = 0; j < keys[i].length; j++) {
+        console.logBytes32(keys[i][j]);
+      }
     }
 
     console.log("\n\nTask descriptions");
-    for(uint i=0; i<keys.length; i++) {
-       TasksData memory task = Tasks.get(keys[i][0]);
-       console.log(task.description);
+    for (uint i = 0; i < keys.length; i++) {
+      TasksData memory task = Tasks.get(keys[i][0]);
+      console.log(task.description);
     }
   }
 }
@@ -143,32 +140,34 @@ contract UseGetKeysInTable is Script {
 <summary>Explanation</summary>
 
 ```solidity
-import { Tasks, TasksData } from "../src/codegen/index.sol";
+import { getKeysInTable } from "@latticexyz/world-modules/src/modules/keysintable/getKeysInTable.sol";
 ```
 
-In this example, the `Tasks` library and `TasksData` struct facilitate easy querying of data returned by the `getKeysWithValue` function.
+The function that gets the keys in the table.
 
 ```solidity
     vm.startBroadcast(deployerPrivateKey);
-    IWorld(worldAddress).addTask(description01);
-    IWorld(worldAddress).addTask(description02);
-    IWorld(worldAddress).addTask(description03);
+    world.app__addTask("Walk the cat");
+    world.app__addTask("Cook delicious meal");
+    world.app__addTask("Practice Elvish");
     vm.stopBroadcast();
 ```
 
-Creates three entries with different descriptions. The two static fields, createdAt and completedAt, are filled by the [`TasksSystem.addTask`](https://github.com/latticexyz/mud/blob/main/templates/react/packages/contracts/src/systems/TasksSystem.sol#L8-L11) function.
+Creates three entries with different descriptions, to ensure we have entries to show.
+Note that this is the _only_ place in the script we need to send transactions.
+`getKeysInTable` is [a `view` function](https://docs.soliditylang.org/en/v0.8.26/contracts.html#view-functions), and does not change the state.
 
 ```solidity
     StoreSwitch.setStoreAddress(worldAddress);
 ```
 
-To read from `keywval__Tasks` we need to set the store address to `worldAddress`.
+To use `getKeysInTable` we need to set the store address to `worldAddress`.
 
 ```solidity
     bytes32[][] memory keys = getKeysInTable(Tasks._tableId);
 ```
 
-Actually get the key(s) by passing the Tasks table id as parameter.
+Get the key(s) by passing the Tasks table id as a parameter.
 
 ```solidity
     console.log("Number of keys:", keys.length);
@@ -180,7 +179,9 @@ Actually get the key(s) by passing the Tasks table id as parameter.
     }
 ```
 
-The `getKeysInTable` function returns a two-dimensional array, where the first dimension represents the existing keys, and the second dimension contains each of the key values.
+The `getKeysInTable` function returns a two-dimensional array.
+The first dimension is the keys in the table.
+The second dimension is the different key fields (in this case there is only one).
 
 ```solidity
     console.log("\n\nTask descriptions");
@@ -188,8 +189,9 @@ The `getKeysInTable` function returns a two-dimensional array, where the first d
        TasksData memory task = Tasks.get(keys[i][0]);
        console.log(task.description);
     }
-````
+```
 
-Once you have the key you can query the rest of the data using `Tasks.get`. In this example we print all the `Tasks` description.
+Once you have the key you can query the rest of the data using `Tasks.get`.
+In this example we print all the task descriptions.
 
 </details>
