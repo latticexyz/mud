@@ -9,7 +9,10 @@ import { Store as StoreConfig } from "@latticexyz/store";
 import { Tables } from "@latticexyz/config";
 import { getAllTables } from "./getAllTables";
 
-type SyncToZustandOptions<config extends StoreConfig, extraTables extends Tables = {}> = SyncOptions & {
+type SyncToZustandOptions<config extends StoreConfig, extraTables extends Tables = {}> = Omit<
+  SyncOptions,
+  "address" | "config"
+> & {
   // require address for now to keep the data model + retrieval simpler
   address: Address;
   config: config;
