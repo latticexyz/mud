@@ -54,21 +54,20 @@ contract DeployKeysInTableModule is Script {
 <summary>Explanation</summary>
 
 ```solidity
-    KeysWithValueModule keysWithValueModule = new KeysWithValueModule();
+    KeysInTableModule keysInTableModule = new KeysInTableModule();
 ```
 
 Deploy the module.
 Modules are stateless, so if there is already a copy of the contract on the blockchain you can just use that.
 
 ```solidity
-    ResourceId sourceTableId =
-       WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "app", name: "Tasks" });
+    ResourceId sourceTableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "app", name: "Tasks" });
 ```
 
 Get the resourceID for the table whose keys you wish to track.
 
 ```solidity
-    world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
+    world.installRootModule(keysInTableModule, abi.encode(sourceTableId));
 ```
 
 Actually install the module in the `World`.
@@ -106,6 +105,16 @@ contract UseGetKeysInTable is Script {
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
     address worldAddress = vm.envAddress("WORLD_ADDRESS");
 
+    string memory description01 = "Walk the dog";
+    string memory description02 = "Cook delicious meal";
+    string memory description03 = "Practice German";
+
+    vm.startBroadcast(deployerPrivateKey);
+    IWorld(worldAddress).addTask(description01);
+    IWorld(worldAddress).addTask(description02);
+    IWorld(worldAddress).addTask(description03);
+    vm.stopBroadcast();
+
     StoreSwitch.setStoreAddress(worldAddress);
 
     bytes32[][] memory keys = getKeysInTable(Tasks._tableId);
@@ -133,6 +142,54 @@ contract UseGetKeysInTable is Script {
 
 <summary>Explanation</summary>
 
-COMING SOON
+```solidity
+import { Tasks, TasksData } from "../src/codegen/index.sol";
+```
+
+In this example, the `Tasks` library and `TasksData` struct facilitate easy querying of data returned by the `getKeysWithValue` function.
+
+```solidity
+    vm.startBroadcast(deployerPrivateKey);
+    IWorld(worldAddress).addTask(description01);
+    IWorld(worldAddress).addTask(description02);
+    IWorld(worldAddress).addTask(description03);
+    vm.stopBroadcast();
+```
+
+Creates three entries with different descriptions. The two static fields, createdAt and completedAt, are filled by the [`TasksSystem.addTask`](https://github.com/latticexyz/mud/blob/main/templates/react/packages/contracts/src/systems/TasksSystem.sol#L8-L11) function.
+
+```solidity
+    StoreSwitch.setStoreAddress(worldAddress);
+```
+
+To read from `keywval__Tasks` we need to set the store address to `worldAddress`.
+
+```solidity
+    bytes32[][] memory keys = getKeysInTable(Tasks._tableId);
+```
+
+Actually get the key(s) by passing the Tasks table id as parameter.
+
+```solidity
+    console.log("Number of keys:", keys.length);
+    for(uint i=0; i<keys.length; i++) {
+       console.log("\nKey #", i, ":");
+       for(uint j=0; j<keys[i].length; j++) {
+          console.logBytes32(keys[i][j]);
+       }
+    }
+```
+
+The `getKeysInTable` function returns a two-dimensional array, where the first dimension represents the existing keys, and the second dimension contains each of the key values.
+
+```solidity
+    console.log("\n\nTask descriptions");
+    for(uint i=0; i<keys.length; i++) {
+       TasksData memory task = Tasks.get(keys[i][0]);
+       console.log(task.description);
+    }
+````
+
+Once you have the key you can query the rest of the data using `Tasks.get`. In this example we print all the `Tasks` description.
 
 </details>
