@@ -120,7 +120,52 @@ describe("createStore", () => {
       });
     });
 
-    it.todo("should not notify listeners after they have been removed");
+    it("should not notify listeners after they have been removed", () => {
+      const tablesConfig = {
+        namespace1: {
+          table1: {
+            schema: {
+              field1: "string",
+              field2: "uint32",
+              field3: "int32",
+            },
+            key: ["field2", "field3"],
+          },
+        },
+      } satisfies TablesConfig;
+
+      const store = createStore(tablesConfig);
+
+      const listener = vi.fn();
+
+      const unsubscribe = store.getState().actions.subscribe({
+        tableLabel: { label: "table1", namespace: "namespace1" },
+        listener,
+      });
+
+      store.getState().actions.setRecord({
+        tableLabel: { label: "table1", namespace: "namespace1" },
+        key: { field2: 1, field3: 2 },
+        record: { field1: "hello" },
+      });
+
+      expect(listener).toHaveBeenNthCalledWith(1, {
+        "1|2": {
+          prev: undefined,
+          current: { field1: "hello", field2: 1, field3: 2 },
+        },
+      });
+
+      unsubscribe();
+
+      store.getState().actions.setRecord({
+        tableLabel: { label: "table1", namespace: "namespace1" },
+        key: { field2: 1, field3: 2 },
+        record: { field1: "world" },
+      });
+
+      expect(listener).toBeCalledTimes(1);
+    });
   });
 
   describe("getRecord", () => {
