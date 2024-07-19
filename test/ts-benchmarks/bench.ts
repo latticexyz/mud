@@ -1,4 +1,4 @@
-import { bench } from "@ark/attest";
+import { bench } from "@arktype/attest";
 import { syncToRecs } from "@latticexyz/store-sync/recs";
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import { Hex, type PublicClient } from "viem";
