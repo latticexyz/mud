@@ -228,7 +228,7 @@ export function createStore(tablesConfig: TablesConfig): Store {
         return Object.fromEntries(
           keys.map((key) => {
             const encodedKey = encodeKey(tableLabel, key);
-            return [encodeKey, records[encodedKey]];
+            return [encodedKey, records[encodedKey]];
           }),
         );
       };

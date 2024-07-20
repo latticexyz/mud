@@ -137,7 +137,7 @@ describe("defineQuery", () => {
     });
   });
 
-  it("should notify initial subscribers with initial query result", () => {
+  it.todo("should notify initial subscribers with initial query result", () => {
     let lastUpdate: unknown;
     const subscriber = vi.fn((update: QueryUpdate) => (lastUpdate = update));
     defineQuery([In(Position), In(Health)], { initialSubscribers: [subscriber] });

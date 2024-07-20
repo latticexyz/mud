@@ -1,7 +1,16 @@
-import { Query, CommonQueryOptions, CommonQueryResult } from "./common";
+import { Query, CommonQueryOptions, CommonQueryResult, StoreRecords } from "./common";
 import { getKeySchema } from "@latticexyz/protocol-parser/internal";
 
-export function runQuery(query: Query, options?: CommonQueryOptions): CommonQueryResult {
+type RunQueryOptions = CommonQueryOptions & {
+  includeRecords?: boolean;
+};
+
+type RunQueryResult = CommonQueryResult & {
+  // TODO: make records return type dependent on `includeRecords` on input type
+  records?: StoreRecords;
+};
+
+export function runQuery(query: Query, options?: RunQueryOptions): RunQueryResult {
   // Only allow fragments with matching table keys for now
   // TODO: we might be able to enable this if we add something like a `keySelector`
   // TODO: getKeySchema expects a full table as type, but only needs schema and key
@@ -14,16 +23,30 @@ export function runQuery(query: Query, options?: CommonQueryOptions): CommonQuer
   }
 
   // Initial set of matching keys is either the provided `initialKeys` or all keys of the table of the first fragment
-  const matching = { keys: options?.initialKeys ?? query[0].getInitialKeys() };
+  const keys = options?.initialKeys ?? query[0].getInitialKeys();
 
   for (const fragment of query) {
     // TODO: this might be more efficient if we would use a Map() instead of an object
-    for (const encodedKey of Object.keys(matching.keys)) {
+    for (const encodedKey of Object.keys(keys)) {
       if (!fragment.filter(encodedKey)) {
-        delete matching.keys[encodedKey];
+        delete keys[encodedKey];
       }
     }
   }
 
-  return matching;
+  // Early return if records are not requested
+  if (!options?.includeRecords) {
+    return { keys };
+  }
+
+  const records: StoreRecords = {};
+  for (const { table } of query) {
+    const namespace = table.tableLabel.namespace ?? "";
+    const label = table.tableLabel.label;
+    records[namespace] ??= {};
+    const tableRecords = table.getRecords({ keys: Object.values(keys) });
+    console.log("table records", tableRecords);
+    records[namespace][label] ??= tableRecords;
+  }
+  return { keys, records };
 }

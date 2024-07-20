@@ -10,7 +10,6 @@ export type Key = { [field: string]: number | string | bigint };
  */
 export type Keys = { [encodedKey: string]: Key };
 
-// TODO: maybe add option to include records in the result?
 export type CommonQueryResult = {
   /**
    * Readyonly, mutable, includes currently matching keys.

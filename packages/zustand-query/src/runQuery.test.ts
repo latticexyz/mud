@@ -32,8 +32,6 @@ describe("runQuery", () => {
     Health = store.getState().actions.getTable({ namespace: "namespace1", label: "Health" });
     Inventory = store.getState().actions.getTable({ namespace: "namespace1", label: "Inventory" });
 
-    console.log(store.getState());
-
     // Add some mock data
     const items = ["gold", "silver"];
     const num = 5;
@@ -104,5 +102,27 @@ describe("runQuery", () => {
     attest(() => runQuery([In(Position), MatchRecord(Inventory, { item: "gold", amount: 2 })])).throws(
       "All tables in a query must share the same key schema",
     );
+  });
+
+  it("should include all matching records from the tables if includeRecords is set", () => {
+    const result = runQuery([In(Position), In(Health)], { includeRecords: true });
+    attest(result).snap({
+      keys: {
+        "3": { player: "3" },
+        "4": { player: "4" },
+      },
+      records: {
+        namespace1: {
+          Position: {
+            "3": { player: "3", x: 3, y: 2 },
+            "4": { player: "4", x: 4, y: 1 },
+          },
+          Health: {
+            "3": { player: "3", health: 3 },
+            "4": { player: "4", health: 4 },
+          },
+        },
+      },
+    });
   });
 });
