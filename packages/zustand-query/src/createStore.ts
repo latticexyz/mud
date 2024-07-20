@@ -196,35 +196,36 @@ export function createStore(tablesConfig: TablesConfig): Store {
 
       // TODO: Benchmark performance of this function.
       const setRecord = ({ tableLabel, key, record }: SetRecordArgs) => {
+        const namespace = tableLabel.namespace ?? "";
+        const label = tableLabel.label;
+
+        if (get().config[namespace] == null) {
+          throw new Error(`Table '${namespace}__${label}' is not registered yet.`);
+        }
+
+        const encodedKey = encodeKey(tableLabel, key);
+        const prevRecord = get().records[namespace][label][encodedKey];
+        const schema = get().config[namespace][label].schema;
+        const newRecord = Object.fromEntries(
+          Object.keys(schema).map((fieldName) => [
+            fieldName,
+            key[fieldName] ?? // Key fields in record must match the key
+              record[fieldName] ?? // Override provided record fields
+              prevRecord?.[fieldName] ?? // Keep existing non-overridden fields
+              staticAbiTypeToDefaultValue[schema[fieldName] as never] ?? // Default values for new fields
+              dynamicAbiTypeToDefaultValue[schema[fieldName] as never],
+          ]),
+        );
+
+        // Update record
         set((prev) => {
-          const namespace = tableLabel.namespace ?? "";
-          const label = tableLabel.label;
-
-          if (prev.config[namespace] == null) {
-            throw new Error(`Table '${namespace}__${label}' is not registered yet.`);
-          }
-
-          // Update record
-          const encodedKey = encodeKey(tableLabel, key);
-          const prevRecord = prev.records[namespace][label][encodedKey];
-          const schema = prev.config[namespace][label].schema;
-          const newRecord = Object.fromEntries(
-            Object.keys(schema).map((fieldName) => [
-              fieldName,
-              key[fieldName] ?? // Key fields in record must match the key
-                record[fieldName] ?? // Override provided record fields
-                prevRecord?.[fieldName] ?? // Keep existing non-overridden fields
-                staticAbiTypeToDefaultValue[schema[fieldName] as never] ?? // Default values for new fields
-                dynamicAbiTypeToDefaultValue[schema[fieldName] as never],
-            ]),
-          );
           prev.records[tableLabel.namespace ?? ""][tableLabel.label][encodedKey] = newRecord;
-
-          // Notify table subscribers
-          subscribers[namespace][label].forEach((subscriber) =>
-            subscriber({ [encodedKey]: { prev: prevRecord && { ...prevRecord }, current: newRecord } }),
-          );
         });
+
+        // Notify table subscribers
+        subscribers[namespace][label].forEach((subscriber) =>
+          subscriber({ [encodedKey]: { prev: prevRecord && { ...prevRecord }, current: newRecord } }),
+        );
       };
 
       const subscribe = ({ tableLabel, subscriber }: SubscribeArgs): Unsubscribe => {
