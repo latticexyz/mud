@@ -1,7 +1,7 @@
-import { beforeEach, describe, it } from "vitest";
-import { defineQuery } from "./defineQuery";
+import { beforeEach, describe, it, vi, expect } from "vitest";
+import { QueryUpdate, defineQuery } from "./defineQuery";
 import { BoundTable, Store, createStore } from "./createStore";
-import { In } from "./queryFragments";
+import { In, MatchRecord } from "./queryFragments";
 import { attest } from "@arktype/attest";
 
 describe("defineQuery", () => {
@@ -54,10 +54,88 @@ describe("defineQuery", () => {
     });
 
     Health.setRecord({ key: { player: 2 }, record: { health: 2 } });
+
     attest(result.keys).snap({
       "2": { player: "2" },
       "3": { player: "3" },
       "4": { player: "4" },
     });
   });
+
+  it("should notify subscribers when a matching key is updated", () => {
+    let lastUpdate: unknown;
+    const subscriber = vi.fn((update: QueryUpdate) => (lastUpdate = update));
+    const result = defineQuery([MatchRecord(Position, { x: 4 }), In(Health)]);
+    result.subscribe(subscriber);
+
+    Position.setRecord({ key: { player: "4" }, record: { y: 2 } });
+
+    expect(subscriber).toBeCalledTimes(1);
+    attest(lastUpdate).snap({
+      records: {
+        namespace1: {
+          Position: {
+            "4": {
+              prev: { player: "4", x: 4, y: 1 },
+              current: { player: "4", x: 4, y: 2 },
+            },
+          },
+        },
+      },
+      keys: { "4": { player: "4" } },
+      types: { "4": "update" },
+    });
+  });
+
+  it("should notify subscribers when a new key matches", () => {
+    let lastUpdate: unknown;
+    const subscriber = vi.fn((update: QueryUpdate) => (lastUpdate = update));
+    const result = defineQuery([In(Position), In(Health)]);
+    result.subscribe(subscriber);
+
+    Health.setRecord({ key: { player: 2 }, record: { health: 2 } });
+
+    expect(subscriber).toBeCalledTimes(1);
+    attest(lastUpdate).snap({
+      records: {
+        namespace1: {
+          Health: {
+            "2": {
+              prev: undefined,
+              current: { player: 2, health: 2 },
+            },
+          },
+        },
+      },
+      keys: { "2": { player: "2" } },
+      types: { "2": "enter" },
+    });
+  });
+
+  it("should notify subscribers when a key doesn't match anymore", () => {
+    let lastUpdate: unknown;
+    const subscriber = vi.fn((update: QueryUpdate) => (lastUpdate = update));
+    const result = defineQuery([In(Position), In(Health)]);
+    result.subscribe(subscriber);
+
+    Position.deleteRecord({ key: { player: 3 } });
+
+    expect(subscriber).toBeCalledTimes(1);
+    attest(lastUpdate).snap({
+      records: {
+        namespace1: {
+          Position: {
+            "3": {
+              prev: { player: "3", x: 3, y: 2 },
+              current: undefined,
+            },
+          },
+        },
+      },
+      keys: { "3": { player: "3" } },
+      types: { "3": "exit" },
+    });
+  });
+
+  it.todo("should notify initial subscribers with initial query result");
 });

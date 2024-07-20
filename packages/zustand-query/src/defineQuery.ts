@@ -6,9 +6,10 @@ type DefineQueryOptions = CommonQueryOptions & {
   // Skip the initial `runQuery` to initialize the query result.
   // Only updates after the query was defined are considered in the result.
   skipInitialRun?: boolean;
+  initialSubscribers?: QuerySubscriber[];
 };
 
-type QueryUpdate = {
+export type QueryUpdate = {
   records: {
     [namespace: string]: {
       [table: string]: TableUpdates;
@@ -35,7 +36,7 @@ type DefineQueryResult = CommonQueryResult & {
 
 export function defineQuery(query: Query, options?: DefineQueryOptions): DefineQueryResult {
   const matching: Keys = options?.skipInitialRun ? {} : runQuery(query, { initialKeys: options?.initialKeys }).keys;
-  const subscribers = new Set<QuerySubscriber>();
+  const subscribers = new Set<QuerySubscriber>(options?.initialSubscribers);
 
   const subscribe = (subscriber: QuerySubscriber): Unsubscribe => {
     subscribers.add(subscriber);
@@ -88,6 +89,14 @@ export function defineQuery(query: Query, options?: DefineQueryOptions): DefineQ
   );
 
   const unsubscribe = () => unsubsribers.forEach((unsub) => unsub());
+
+  // Notify initial subscribers with the initial result
+  // TODO
+  // subscribers.forEach((subscriber) => subscriber({
+  //  keys: matching,
+  //  records: // records of all matching tables
+  //  types: // enter for all of them
+  // }));
 
   return { keys: matching, subscribe, unsubscribe };
 }

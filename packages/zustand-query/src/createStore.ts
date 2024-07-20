@@ -53,6 +53,11 @@ type SetRecordArgs = {
   record: TableRecord;
 };
 
+type DeleteRecordArgs = {
+  tableLabel: TableLabel;
+  key: Key;
+};
+
 type GetRecordArgs = {
   tableLabel: TableLabel;
   key: Key;
@@ -80,6 +85,10 @@ type Actions = {
      * Key fields of the record are always set to the provided key.
      */
     setRecord: (args: SetRecordArgs) => void;
+    /**
+     * Delete a record in a table.
+     */
+    deleteRecord: (args: DeleteRecordArgs) => void;
     /**
      * Get a record from a table.
      */
@@ -118,6 +127,10 @@ type BoundSetRecordArgs = {
   record: TableRecord;
 };
 
+type BoundDeleteRecordArgs = {
+  key: Key;
+};
+
 type BoundGetRecordArgs = {
   key: Key;
 };
@@ -134,6 +147,7 @@ export type BoundTable = {
   tableLabel: TableLabel;
   getRecord: (args: BoundGetRecordArgs) => TableRecord;
   setRecord: (args: BoundSetRecordArgs) => void;
+  deleteRecord: (args: BoundDeleteRecordArgs) => void;
   getRecords: () => TableRecords;
   getKeys: () => Keys;
   decodeKey: (args: BoundDecodeKeyArgs) => Key;
@@ -228,6 +242,27 @@ export function createStore(tablesConfig: TablesConfig): Store {
         );
       };
 
+      const deleteRecord = ({ tableLabel, key }: DeleteRecordArgs) => {
+        const namespace = tableLabel.namespace ?? "";
+        const label = tableLabel.label;
+        if (get().config[namespace] == null) {
+          throw new Error(`Table '${namespace}__${label}' is not registered yet.`);
+        }
+
+        const encodedKey = encodeKey(tableLabel, key);
+        const prevRecord = get().records[namespace][label][encodedKey];
+
+        // Delete record
+        set((prev) => {
+          delete prev.records[tableLabel.namespace ?? ""][tableLabel.label][encodedKey];
+        });
+
+        // Notify table subscribers
+        subscribers[namespace][label].forEach((subscriber) =>
+          subscriber({ [encodedKey]: { prev: prevRecord && { ...prevRecord }, current: undefined } }),
+        );
+      };
+
       const subscribe = ({ tableLabel, subscriber }: SubscribeArgs): Unsubscribe => {
         const namespace = tableLabel.namespace ?? "";
         const label = tableLabel.label;
@@ -265,6 +300,7 @@ export function createStore(tablesConfig: TablesConfig): Store {
         return {
           tableLabel,
           setRecord: ({ key, record }: BoundSetRecordArgs) => setRecord({ tableLabel, key, record }),
+          deleteRecord: ({ key }: BoundDeleteRecordArgs) => deleteRecord({ tableLabel, key }),
           getRecord: ({ key }: BoundGetRecordArgs) => getRecord({ tableLabel, key }),
           getRecords: () => get().records[namespace][label],
           getKeys: () => getKeys({ tableLabel }),
@@ -294,7 +330,10 @@ export function createStore(tablesConfig: TablesConfig): Store {
         return getTable(tableConfig);
       };
 
-      return { ...state, actions: { setRecord, getRecord, getTable, registerTable, subscribe, decodeKey, getKeys } };
+      return {
+        ...state,
+        actions: { setRecord, deleteRecord, getRecord, getTable, registerTable, subscribe, decodeKey, getKeys },
+      };
     }),
   );
 }
