@@ -9,7 +9,7 @@ import { Hex, size } from "viem";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
-import { StorageAdapter, StorageAdapterBlock, mudTables } from "../common";
+import { StorageAdapter, StorageAdapterBlock } from "../common";
 import { singletonEntity } from "./singletonEntity";
 import { tablesToComponents } from "./tablesToComponents";
 import { merge } from "@arktype/util";
@@ -22,7 +22,7 @@ export type CreateStorageAdapterOptions<tables extends Tables> = {
 
 export type CreateStorageAdapterResult<tables extends Tables> = {
   storageAdapter: StorageAdapter;
-  components: merge<tablesToComponents<merge<tables, mudTables>>, ReturnType<typeof defineInternalComponents>>;
+  components: merge<tablesToComponents<tables>, ReturnType<typeof defineInternalComponents>>;
 };
 
 export function createStorageAdapter<tables extends Tables>({
@@ -32,10 +32,10 @@ export function createStorageAdapter<tables extends Tables>({
 }: CreateStorageAdapterOptions<tables>): CreateStorageAdapterResult<tables> {
   world.registerEntity({ id: singletonEntity });
 
-  const components: CreateStorageAdapterResult<tables>["components"] = {
-    ...tablesToComponents(world, { ...tables, ...mudTables }),
+  const components = {
+    ...tablesToComponents(world, tables),
     ...defineInternalComponents(world),
-  } as never;
+  };
 
   async function recsStorageAdapter({ logs }: StorageAdapterBlock): Promise<void> {
     const newTables = logs.filter(isTableRegistrationLog).map(logToTable);

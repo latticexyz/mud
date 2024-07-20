@@ -1,7 +1,7 @@
 import { Tables } from "@latticexyz/config";
 import { Store as StoreConfig } from "@latticexyz/store";
 import { Component as RecsComponent, World as RecsWorld, getComponentValue, setComponent } from "@latticexyz/recs";
-import { SyncOptions, SyncResult, mudTables } from "../common";
+import { SyncOptions, SyncResult } from "../common";
 import { CreateStorageAdapterResult, createStorageAdapter } from "./createStorageAdapter";
 import { createStoreSync } from "../createStoreSync";
 import { singletonEntity } from "./singletonEntity";
@@ -17,7 +17,7 @@ export type SyncToRecsOptions<config extends StoreConfig, extraTables extends Ta
 };
 
 export type SyncToRecsResult<config extends StoreConfig, extraTables extends Tables> = SyncResult & {
-  components: CreateStorageAdapterResult<merge<merge<configToTables<config>, extraTables>, mudTables>>["components"];
+  components: CreateStorageAdapterResult<merge<configToTables<config>, extraTables>>["components"];
   stopSync: () => void;
 };
 
@@ -28,11 +28,10 @@ export async function syncToRecs<config extends StoreConfig, extraTables extends
   startSync = true,
   ...syncOptions
 }: SyncToRecsOptions<config, extraTables>): Promise<SyncToRecsResult<config, extraTables>> {
-  const tables = {
+  const tables: merge<configToTables<config>, extraTables> = {
     ...configToTables(config),
     ...extraTables,
-    ...mudTables,
-  };
+  } as never;
 
   const { storageAdapter, components } = createStorageAdapter({
     world,
@@ -80,7 +79,7 @@ export async function syncToRecs<config extends StoreConfig, extraTables extends
 
   return {
     ...storeSync,
-    components: components as never,
+    components,
     stopSync,
   };
 }
