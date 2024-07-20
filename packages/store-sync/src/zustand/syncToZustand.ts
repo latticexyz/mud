@@ -10,7 +10,7 @@ import { Tables } from "@latticexyz/config";
 import { merge } from "@arktype/util";
 import { configToTables } from "../configToTables";
 
-export type SyncToZustandOptions<config extends StoreConfig, extraTables extends Tables = {}> = Omit<
+export type SyncToZustandOptions<config extends StoreConfig, extraTables extends Tables> = Omit<
   SyncOptions,
   "address" | "config"
 > & {
@@ -22,7 +22,7 @@ export type SyncToZustandOptions<config extends StoreConfig, extraTables extends
   startSync?: boolean;
 };
 
-export type SyncToZustandResult<config extends StoreConfig, extraTables extends Tables = {}> = SyncResult & {
+export type SyncToZustandResult<config extends StoreConfig, extraTables extends Tables> = SyncResult & {
   tables: merge<merge<configToTables<config>, extraTables>, mudTables>;
   useStore: ZustandStore<merge<merge<configToTables<config>, extraTables>, mudTables>>;
   stopSync: () => void;

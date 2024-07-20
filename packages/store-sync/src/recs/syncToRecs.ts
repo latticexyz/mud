@@ -21,17 +21,17 @@ export type SyncToRecsResult<config extends StoreConfig, extraTables extends Tab
   stopSync: () => void;
 };
 
-export async function syncToRecs<config extends StoreConfig, extraTables extends Tables>({
+export async function syncToRecs<config extends StoreConfig, extraTables extends Tables = {}>({
   world,
   config,
-  tables: extraTables,
+  tables: extraTables = {} as extraTables,
   startSync = true,
   ...syncOptions
 }: SyncToRecsOptions<config, extraTables>): Promise<SyncToRecsResult<config, extraTables>> {
-  const tables: merge<configToTables<config>, extraTables> = {
+  const tables = {
     ...configToTables(config),
     ...extraTables,
-  } as never;
+  };
 
   const { storageAdapter, components } = createStorageAdapter({
     world,
@@ -81,5 +81,5 @@ export async function syncToRecs<config extends StoreConfig, extraTables extends
     ...storeSync,
     components,
     stopSync,
-  };
+  } as never;
 }
