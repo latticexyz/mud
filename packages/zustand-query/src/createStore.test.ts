@@ -90,7 +90,7 @@ describe("createStore", () => {
 
       store.getState().actions.subscribe({
         tableLabel: { label: "table1", namespace: "namespace1" },
-        listener,
+        subscriber: listener,
       });
 
       store.getState().actions.setRecord({
@@ -140,7 +140,7 @@ describe("createStore", () => {
 
       const unsubscribe = store.getState().actions.subscribe({
         tableLabel: { label: "table1", namespace: "namespace1" },
-        listener,
+        subscriber: listener,
       });
 
       store.getState().actions.setRecord({

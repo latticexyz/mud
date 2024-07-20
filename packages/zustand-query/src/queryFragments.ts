@@ -1,4 +1,6 @@
-import { BoundTable, Keys, TableRecord } from "./createStore";
+import { BoundTable } from "./createStore";
+import { Keys } from "./common";
+import { TableRecord } from "./common";
 import { recordMatches } from "./recordEquals";
 
 // TODO: add more query fragments - ie GreaterThan, LessThan, Range, etc

@@ -3,23 +3,13 @@ import { createStore as createZustandStore } from "zustand/vanilla";
 import { StoreApi } from "zustand";
 import { mutative } from "zustand-mutative";
 import { dynamicAbiTypeToDefaultValue, staticAbiTypeToDefaultValue } from "@latticexyz/schema-type/internal";
-
-/**
- * A TableRecord is one row of the table. It includes both the key and the value.
- */
-export type TableRecord = { readonly [field: string]: number | string | bigint | number[] | string[] | bigint[] };
+import { Unsubscribe } from "./common";
+import { TableRecord } from "./common";
+import { TableUpdates } from "./common";
+import { Key, Keys } from "./common";
+import { TableLabel } from "./common";
 
 type TableRecords = { readonly [key: string]: TableRecord };
-
-/**
- * A Key is the unique identifier for a row in the table.
- */
-export type Key = { [field: string]: number | string | bigint };
-
-/**
- * A map from encoded key to decoded key
- */
-export type Keys = { [encodedKey: string]: Key };
 
 type Schema = { [key: string]: AbiType };
 
@@ -42,11 +32,7 @@ export type TablesConfig = {
   };
 };
 
-type TableUpdate = { prev: TableRecord | undefined; current: TableRecord | undefined };
-type TableUpdates = { [key: string]: TableUpdate };
-
-type Unsubscribe = () => void;
-type TableUpdatesListener = (updates: TableUpdates) => void;
+type TableUpdatesSubscriber = (updates: TableUpdates) => void;
 
 type State = {
   config: {
@@ -74,7 +60,16 @@ type GetRecordArgs = {
 
 type SubscribeArgs = {
   tableLabel: TableLabel;
-  listener: TableUpdatesListener;
+  subscriber: TableUpdatesSubscriber;
+};
+
+type GetKeysArgs = {
+  tableLabel: TableLabel;
+};
+
+type DecodeKeyArgs = {
+  tableLabel: TableLabel;
+  encodedKey: string;
 };
 
 type Actions = {
@@ -99,10 +94,19 @@ type Actions = {
      */
     getTable: (tableLabel: TableLabel) => BoundTable;
     /**
-     * Add a listener for record updates on a table.
-     * @returns A function to unsubscribe the listener.
+     * Add a subscriber for record updates on a table.
+     * @returns A function to unsubscribe the subscriber.
      */
     subscribe: (args: SubscribeArgs) => Unsubscribe;
+    /**
+     * Turn the encoded key into the decoded key for the provided table
+     * @returns Key
+     */
+    decodeKey: (args: DecodeKeyArgs) => Key;
+    /**
+     * Get keys from the table
+     */
+    getKeys: (args: GetKeysArgs) => Keys;
     // TODO: add setRecords (batch), getRecords, getKeys, getConfig, find (get records with filter on key or value)
   };
 };
@@ -119,23 +123,27 @@ type BoundGetRecordArgs = {
 };
 
 type BoundSubscribeArgs = {
-  listener: TableUpdatesListener;
+  subscriber: TableUpdatesSubscriber;
+};
+
+type BoundDecodeKeyArgs = {
+  encodedKey: string;
 };
 
 export type BoundTable = {
+  tableLabel: TableLabel;
   getRecord: (args: BoundGetRecordArgs) => TableRecord;
   setRecord: (args: BoundSetRecordArgs) => void;
   getRecords: () => TableRecords;
   getKeys: () => Keys;
+  decodeKey: (args: BoundDecodeKeyArgs) => Key;
   getConfig: () => TableConfigFull;
   subscribe: (args: BoundSubscribeArgs) => Unsubscribe;
 };
 
-type TableLabel = { label: string; namespace?: string };
-
 type Subscribers = {
   [namespace: string]: {
-    [table: string]: Set<TableUpdatesListener>;
+    [table: string]: Set<TableUpdatesSubscriber>;
   };
 };
 
@@ -213,18 +221,40 @@ export function createStore(tablesConfig: TablesConfig): Store {
           prev.records[tableLabel.namespace ?? ""][tableLabel.label][encodedKey] = newRecord;
 
           // Notify table subscribers
-          subscribers[namespace][label].forEach((listener) =>
-            listener({ [encodedKey]: { prev: prevRecord && { ...prevRecord }, current: newRecord } }),
+          subscribers[namespace][label].forEach((subscriber) =>
+            subscriber({ [encodedKey]: { prev: prevRecord && { ...prevRecord }, current: newRecord } }),
           );
         });
       };
 
-      const subscribe = ({ tableLabel, listener }: SubscribeArgs): Unsubscribe => {
+      const subscribe = ({ tableLabel, subscriber }: SubscribeArgs): Unsubscribe => {
         const namespace = tableLabel.namespace ?? "";
         const label = tableLabel.label;
 
-        subscribers[namespace][label].add(listener);
-        return () => subscribers[namespace][label].delete(listener);
+        subscribers[namespace][label].add(subscriber);
+        return () => subscribers[namespace][label].delete(subscriber);
+      };
+
+      const decodeKey = ({ tableLabel, encodedKey }: DecodeKeyArgs): Key => {
+        const namespace = tableLabel.namespace ?? "";
+        const label = tableLabel.label;
+        const keyFields = get().config[namespace][label].key;
+        const record = get().records[namespace][label][encodedKey];
+
+        // Typecast needed because record values could be arrays, but we know they are not if they are key fields
+        return Object.fromEntries(Object.entries(record).filter(([field]) => keyFields.includes(field))) as never;
+      };
+
+      const getKeys = ({ tableLabel }: GetKeysArgs): Keys => {
+        const namespace = tableLabel.namespace ?? "";
+        const label = tableLabel.label;
+
+        return Object.fromEntries(
+          Object.keys(get().records[namespace][label]).map((encodedKey) => [
+            encodedKey,
+            decodeKey({ tableLabel, encodedKey }),
+          ]),
+        );
       };
 
       const getTable = (tableLabel: TableLabel): BoundTable => {
@@ -232,22 +262,14 @@ export function createStore(tablesConfig: TablesConfig): Store {
         const label = tableLabel.label;
 
         return {
+          tableLabel,
           setRecord: ({ key, record }: BoundSetRecordArgs) => setRecord({ tableLabel, key, record }),
           getRecord: ({ key }: BoundGetRecordArgs) => getRecord({ tableLabel, key }),
           getRecords: () => get().records[namespace][label],
-          getKeys: () => {
-            const records = get().records[namespace][label];
-            const keyFields = get().config[namespace][label].key;
-            return Object.fromEntries(
-              Object.entries(records).map(([key, record]) => [
-                key,
-                Object.fromEntries(Object.entries(record).filter(([field]) => keyFields.includes(field))),
-                // Typecast needed because record values could be arrays, but we know they are not if they are key fields
-              ]) as never,
-            );
-          },
+          getKeys: () => getKeys({ tableLabel }),
+          decodeKey: ({ encodedKey }: BoundDecodeKeyArgs) => decodeKey({ tableLabel, encodedKey }),
           getConfig: () => get().config[namespace][label],
-          subscribe: ({ listener }: BoundSubscribeArgs) => subscribe({ tableLabel, listener }),
+          subscribe: ({ subscriber }: BoundSubscribeArgs) => subscribe({ tableLabel, subscriber }),
 
           // TODO: dynamically add setters and getters for individual fields of the table
         };
@@ -271,7 +293,7 @@ export function createStore(tablesConfig: TablesConfig): Store {
         return getTable(tableConfig);
       };
 
-      return { ...state, actions: { setRecord, getRecord, getTable, registerTable, subscribe } };
+      return { ...state, actions: { setRecord, getRecord, getTable, registerTable, subscribe, decodeKey, getKeys } };
     }),
   );
 }

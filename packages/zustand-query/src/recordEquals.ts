@@ -1,4 +1,4 @@
-import { TableRecord } from "./createStore";
+import { TableRecord } from "./common";
 
 /**
  * Compare two {@link TableRecord}s.
