@@ -9,10 +9,9 @@ import { Hex, size } from "viem";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
-import { StorageAdapter, StorageAdapterBlock } from "../common";
+import { StorageAdapter, StorageAdapterBlock, mudTables } from "../common";
 import { singletonEntity } from "./singletonEntity";
 import { tablesToComponents } from "./tablesToComponents";
-import { getAllTables } from "../getAllTables";
 import { merge } from "@arktype/util";
 
 export type CreateStorageAdapterOptions<tables extends Tables> = {
@@ -23,7 +22,7 @@ export type CreateStorageAdapterOptions<tables extends Tables> = {
 
 export type CreateStorageAdapterResult<tables extends Tables> = {
   storageAdapter: StorageAdapter;
-  components: merge<tablesToComponents<getAllTables<tables>>, ReturnType<typeof defineInternalComponents>>;
+  components: merge<tablesToComponents<merge<tables, mudTables>>, ReturnType<typeof defineInternalComponents>>;
 };
 
 export function createStorageAdapter<tables extends Tables>({
@@ -34,7 +33,7 @@ export function createStorageAdapter<tables extends Tables>({
   world.registerEntity({ id: singletonEntity });
 
   const components: CreateStorageAdapterResult<tables>["components"] = {
-    ...tablesToComponents(world, getAllTables(tables)),
+    ...tablesToComponents(world, { ...tables, ...mudTables }),
     ...defineInternalComponents(world),
   } as never;
 

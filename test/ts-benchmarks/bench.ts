@@ -28,7 +28,7 @@ bench("syncToRecs", async () => {
   });
 
   return t;
-}).types([21188, "instantiations"]);
+}).types([21231, "instantiations"]);
 
 bench("syncToZustand", async () => {
   const config = defineWorld({
