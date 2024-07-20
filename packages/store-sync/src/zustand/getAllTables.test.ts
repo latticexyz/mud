@@ -5,10 +5,11 @@ import { getAllTables } from "./getAllTables";
 import { Tables } from "@latticexyz/config";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
+import { satisfy } from "@arktype/util";
 
 describe("getAllTables", () => {
   it("type satisfies Tables", () => {
-    attest<Tables, getAllTables<World, {}>>();
+    attest<getAllTables<World, {}>, satisfy<Tables, getAllTables<World, {}>>>();
   });
 
   it("returns combined tables", () => {
@@ -20,8 +21,10 @@ describe("getAllTables", () => {
       },
     });
     const tables = getAllTables(config, {});
-    attest<Tables, typeof tables>();
-    attest<keyof typeof tables, "ExceedsResourceNameSizeLimit" | "Table2" | "StoreHooks" | "NamespaceOwner">();
+    attest<typeof tables, satisfy<Tables, typeof tables>>();
+
+    type expectedKeys = "ExceedsResourceNameSizeLimit" | "Table2" | "StoreHooks" | "NamespaceOwner";
+    attest<expectedKeys, keyof typeof tables & expectedKeys>();
   });
 
   it("prioritizes MUD tables over user defined ones", () => {
