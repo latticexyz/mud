@@ -1,15 +1,16 @@
 import { describe, it } from "vitest";
-import { World, defineWorld } from "@latticexyz/world";
+import { defineWorld } from "@latticexyz/world";
 import { attest } from "@arktype/attest";
 import { getAllTables } from "./getAllTables";
 import { Tables } from "@latticexyz/config";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { satisfy } from "@arktype/util";
+import { configToTables } from "./configToTables";
 
 describe("getAllTables", () => {
   it("type satisfies Tables", () => {
-    attest<getAllTables<World, {}>, satisfy<Tables, getAllTables<World, {}>>>();
+    attest<getAllTables<{}>, satisfy<Tables, getAllTables<{}>>>();
   });
 
   it("returns combined tables", () => {
@@ -20,7 +21,7 @@ describe("getAllTables", () => {
         Table2: "address",
       },
     });
-    const tables = getAllTables(config, {});
+    const tables = getAllTables(configToTables(config));
     attest<typeof tables, satisfy<Tables, typeof tables>>();
 
     type expectedKeys = "ExceedsResourceNameSizeLimit" | "Table2" | "StoreHooks" | "NamespaceOwner";
@@ -35,7 +36,7 @@ describe("getAllTables", () => {
         NamespaceOwner: "bool",
       },
     });
-    const tables = getAllTables(config, {});
+    const tables = getAllTables(configToTables(config));
     attest(tables.StoreHooks).equals(storeConfig.namespaces.store.tables.StoreHooks);
     attest(tables.NamespaceOwner).equals(worldConfig.namespaces.world.tables.NamespaceOwner);
   });

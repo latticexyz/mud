@@ -1,4 +1,3 @@
-import { Store as StoreConfig } from "@latticexyz/store";
 import { Tables } from "@latticexyz/config";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
@@ -12,18 +11,11 @@ const mudTables = {
 };
 
 // TODO: validate that extraTables keys correspond to table labels?
-export type getAllTables<config extends StoreConfig, extraTables extends Tables> = merge<
-  configToTables<config>,
-  merge<extraTables, mudTables>
->;
+export type getAllTables<tables extends Tables> = merge<tables, mudTables>;
 
-export function getAllTables<config extends StoreConfig, extraTables extends Tables>(
-  config: config,
-  extraTables: extraTables,
-): show<getAllTables<config, extraTables>> {
+export function getAllTables<tables extends Tables>(tables: tables): show<getAllTables<tables>> {
   return {
-    ...configToTables(config),
-    ...extraTables,
+    ...tables,
     ...mudTables,
   } as never;
 }
