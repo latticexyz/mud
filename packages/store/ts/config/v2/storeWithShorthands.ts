@@ -37,6 +37,7 @@ export function resolveStoreWithShorthands<const store extends StoreWithShorthan
         return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
       })
     : null;
+
   const fullConfig = {
     ...store,
     ...(tables ? { tables } : null),
