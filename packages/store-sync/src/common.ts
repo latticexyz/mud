@@ -17,7 +17,7 @@ import { configToTables } from "./configToTables";
 export const mudTables = {
   ...configToTables(storeConfig),
   ...configToTables(worldConfig),
-};
+} as const;
 export type mudTables = typeof mudTables;
 
 export const internalTableIds = Object.values(mudTables).map((table) => table.tableId);
