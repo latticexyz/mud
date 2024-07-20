@@ -13,6 +13,14 @@ describe("getAllTables", () => {
     attest<getAllTables<{}>, satisfy<Tables, getAllTables<{}>>>();
   });
 
+  it("has no overlapping table labels", () => {
+    // TODO: is there a better way to write this test?
+    attest<
+      true,
+      keyof configToTables<typeof storeConfig> & keyof configToTables<typeof worldConfig> extends never ? true : false
+    >();
+  });
+
   it("returns combined tables", () => {
     const config = defineWorld({
       namespace: "app",
