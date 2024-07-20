@@ -9,12 +9,14 @@ type DefineQueryOptions = CommonQueryOptions & {
   initialSubscribers?: QuerySubscriber[];
 };
 
-export type QueryUpdate = {
-  records: {
-    [namespace: string]: {
-      [table: string]: TableUpdates;
-    };
+type QueryTableUpdates = {
+  [namespace: string]: {
+    [table: string]: TableUpdates;
   };
+};
+
+export type QueryUpdate = {
+  records: QueryTableUpdates;
   keys: Keys;
   types: { [key: string]: "enter" | "update" | "exit" };
 };
@@ -35,7 +37,15 @@ type DefineQueryResult = CommonQueryResult & {
 };
 
 export function defineQuery(query: Query, options?: DefineQueryOptions): DefineQueryResult {
-  const matching: Keys = options?.skipInitialRun ? {} : runQuery(query, { initialKeys: options?.initialKeys }).keys;
+  const initialRun = options?.skipInitialRun
+    ? undefined
+    : runQuery(query, {
+        // Pass the initial keys
+        initialKeys: options?.initialKeys,
+        // Request initial records if there are initial subscribers
+        includeRecords: options?.initialSubscribers && options.initialSubscribers.length > 0,
+      });
+  const matching: Keys = initialRun?.keys ?? {};
   const subscribers = new Set<QuerySubscriber>(options?.initialSubscribers);
 
   const subscribe = (subscriber: QuerySubscriber): Unsubscribe => {
@@ -90,13 +100,28 @@ export function defineQuery(query: Query, options?: DefineQueryOptions): DefineQ
 
   const unsubscribe = () => unsubsribers.forEach((unsub) => unsub());
 
-  // Notify initial subscribers with the initial result
-  // TODO
-  // subscribers.forEach((subscriber) => subscriber({
-  //  keys: matching,
-  //  records: // records of all matching tables
-  //  types: // enter for all of them
-  // }));
+  // TODO: find a more elegant way to do this
+  if (subscribers.size > 0 && initialRun?.records) {
+    // Convert records from the initial run to TableUpdate format
+    const records: QueryTableUpdates = {};
+    for (const namespace of Object.keys(initialRun.records)) {
+      for (const table of Object.keys(initialRun.records[namespace])) {
+        records[namespace] ??= {};
+        records[namespace][table] = Object.fromEntries(
+          Object.entries(initialRun.records[namespace][table]).map(([key, record]) => [
+            key,
+            { prev: undefined, current: record },
+          ]),
+        );
+      }
+    }
+
+    // Convert keys to types format
+    const types = Object.fromEntries(Object.keys(matching).map((key) => [key, "enter" as const]));
+
+    // Notify initial subscribers
+    subscribers.forEach((subscriber) => subscriber({ keys: matching, records, types }));
+  }
 
   return { keys: matching, subscribe, unsubscribe };
 }

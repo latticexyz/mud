@@ -137,12 +137,30 @@ describe("defineQuery", () => {
     });
   });
 
-  it.todo("should notify initial subscribers with initial query result", () => {
+  it("should notify initial subscribers with initial query result", () => {
     let lastUpdate: unknown;
     const subscriber = vi.fn((update: QueryUpdate) => (lastUpdate = update));
     defineQuery([In(Position), In(Health)], { initialSubscribers: [subscriber] });
 
     expect(subscriber).toBeCalledTimes(1);
-    attest(lastUpdate).snap();
+    attest(lastUpdate).snap({
+      keys: {
+        "3": { player: "3" },
+        "4": { player: "4" },
+      },
+      records: {
+        namespace1: {
+          Position: {
+            "3": { prev: undefined, current: { player: "3", x: 3, y: 2 } },
+            "4": { prev: undefined, current: { player: "4", x: 4, y: 1 } },
+          },
+          Health: {
+            "3": { prev: undefined, current: { player: "3", health: 3 } },
+            "4": { prev: undefined, current: { player: "4", health: 4 } },
+          },
+        },
+      },
+      types: { "3": "enter", "4": "enter" },
+    });
   });
 });
