@@ -1,21 +1,8 @@
 import { describe, it } from "vitest";
-import { configToTables, flattenedTableKeys } from "./configToTables";
+import { configToTables } from "./configToTables";
 import { defineWorld } from "@latticexyz/world";
 import { resourceToHex } from "@latticexyz/common";
 import { attest } from "@arktype/attest";
-
-describe("flattenedTableKeys", () => {
-  it("returns flattened table keys", () => {
-    const config = defineWorld({
-      namespace: "app",
-      tables: {
-        ExceedsResourceNameSizeLimit: "bytes32",
-        Table2: "address",
-      },
-    });
-    attest<"app__ExceedsResourceNameSizeLimit" | "app__Table2", flattenedTableKeys<typeof config>>();
-  });
-});
 
 describe("configToTables", () => {
   it("flattens tables from single namespace", async () => {
