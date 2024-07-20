@@ -1,21 +1,20 @@
 import { Store as StoreConfig } from "@latticexyz/store";
 import { Tables } from "@latticexyz/config";
-import { mergeRight } from "./mergeRight";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { configToTables } from "./configToTables";
-import { show } from "@arktype/util";
+import { merge, show } from "@arktype/util";
 
-type mudTables = mergeRight<configToTables<typeof storeConfig>, configToTables<typeof worldConfig>>;
+type mudTables = merge<configToTables<typeof storeConfig>, configToTables<typeof worldConfig>>;
 const mudTables = {
   ...configToTables(storeConfig),
   ...configToTables(worldConfig),
 };
 
 // TODO: validate that extraTables keys correspond to table labels?
-export type getAllTables<config extends StoreConfig, extraTables extends Tables> = mergeRight<
+export type getAllTables<config extends StoreConfig, extraTables extends Tables> = merge<
   configToTables<config>,
-  mergeRight<extraTables, mudTables>
+  merge<extraTables, mudTables>
 >;
 
 export function getAllTables<config extends StoreConfig, extraTables extends Tables>(

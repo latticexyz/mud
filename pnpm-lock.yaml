@@ -881,8 +881,8 @@ importers:
   packages/store-sync:
     dependencies:
       '@arktype/util':
-        specifier: 0.0.40
-        version: 0.0.40
+        specifier: 0.1.0
+        version: 0.1.0
       '@latticexyz/block-logs-stream':
         specifier: workspace:*
         version: link:../block-logs-stream
@@ -1219,6 +1219,9 @@ packages:
 
   '@arktype/util@0.0.41':
     resolution: {integrity: sha512-0YURzJ42v+lhlP1t5Dj90YezETRTCdFU0oM4xMVpYsmPx/DHJzr9n7AX1QPAlYWH4wY7hYY3gwai3O+8VntPgw==}
+
+  '@arktype/util@0.1.0':
+    resolution: {integrity: sha512-t5jCNbspCF/XizGfmM5fn+86IMtQgCB2Px3Y1E8ckm5AjTECyI7Aj5pV6e9iL8qXF9FdKA53FBLRzAZUqYBnCw==}
 
   '@aws-crypto/ie11-detection@3.0.0':
     resolution: {integrity: sha512-341lBBkiY1DfDNKai/wXM3aujNBkXR7tq1URPQDL9wi3AUbI80NR74uF1TXHMm7po1AcnFk8iu2S2IeU/+/A+Q==}
@@ -6941,6 +6944,8 @@ snapshots:
   '@arktype/util@0.0.40': {}
 
   '@arktype/util@0.0.41': {}
+
+  '@arktype/util@0.1.0': {}
 
   '@aws-crypto/ie11-detection@3.0.0':
     dependencies:
