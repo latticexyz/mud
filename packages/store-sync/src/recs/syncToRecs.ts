@@ -10,7 +10,7 @@ import { getAllTables } from "../getAllTables";
 import { configToTables } from "../configToTables";
 import { merge } from "@arktype/util";
 
-type SyncToRecsOptions<config extends StoreConfig, extraTables extends Tables> = SyncOptions & {
+type SyncToRecsOptions<config extends StoreConfig, extraTables extends Tables> = Omit<SyncOptions, "config"> & {
   world: RecsWorld;
   config: config;
   tables?: extraTables;
@@ -30,8 +30,7 @@ export async function syncToRecs<config extends StoreConfig, extraTables extends
   ...syncOptions
 }: SyncToRecsOptions<config, extraTables>): Promise<SyncToRecsResult<config, extraTables>> {
   const tables: getAllTables<merge<configToTables<config>, extraTables>> = getAllTables({
-    // TODO: rework SyncToRecsOption intersection to remove config being possibly undefined
-    ...configToTables(config as config),
+    ...configToTables(config),
     ...extraTables,
   }) as never;
 
