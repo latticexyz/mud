@@ -1,4 +1,4 @@
-import { DeployedSystem, WorldDeploy, worldTables } from "./common";
+import { DeployedSystem, WorldDeploy } from "./common";
 import { Client } from "viem";
 import { getResourceIds } from "./getResourceIds";
 import { hexToResource, resourceToLabel } from "@latticexyz/common";
@@ -6,6 +6,7 @@ import { getTableValue } from "./getTableValue";
 import { debug } from "./debug";
 import { getFunctions } from "./getFunctions";
 import { getResourceAccess } from "./getResourceAccess";
+import worldConfig from "@latticexyz/world/mud.config";
 
 export async function getSystems({
   client,
@@ -27,7 +28,7 @@ export async function getSystems({
       const { system: address, publicAccess } = await getTableValue({
         client,
         worldDeploy,
-        table: worldTables.world__Systems,
+        table: worldConfig.namespaces.world.tables.Systems,
         key: { systemId: system.resourceId },
       });
       const systemFunctions = functions.filter((func) => func.systemId === system.resourceId);

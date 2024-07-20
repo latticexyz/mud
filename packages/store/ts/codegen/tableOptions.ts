@@ -29,7 +29,8 @@ export function getTableOptions(
   config: StoreConfig,
   solidityUserTypes: Record<string, SolidityUserDefinedType>,
 ): TableOptions[] {
-  const options = Object.values(config.tables).map((table): TableOptions => {
+  const tables = Object.values(config.namespaces).flatMap((namespace) => Object.values(namespace.tables));
+  const options = tables.map((table): TableOptions => {
     const keySchema = getKeySchema(table);
     const valueSchema = getValueSchema(table);
 
