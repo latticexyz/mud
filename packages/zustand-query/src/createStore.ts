@@ -8,8 +8,7 @@ import { TableRecord } from "./common";
 import { TableUpdates } from "./common";
 import { Key, Keys } from "./common";
 import { TableLabel } from "./common";
-
-type TableRecords = { readonly [key: string]: TableRecord };
+import { StoreRecords, TableRecords } from "./common";
 
 type Schema = { [key: string]: AbiType };
 
@@ -40,11 +39,7 @@ type State = {
       [table: string]: TableConfigFull;
     };
   };
-  records: {
-    [namespace: string]: {
-      [table: string]: TableRecords;
-    };
-  };
+  records: StoreRecords;
 };
 
 type SetRecordArgs = {
@@ -61,6 +56,11 @@ type DeleteRecordArgs = {
 type GetRecordArgs = {
   tableLabel: TableLabel;
   key: Key;
+};
+
+type GetRecordsArgs = {
+  tableLabel: TableLabel;
+  keys?: Key[];
 };
 
 type SubscribeArgs = {
@@ -93,6 +93,10 @@ type Actions = {
      * Get a record from a table.
      */
     getRecord: (args: GetRecordArgs) => TableRecord;
+    /**
+     * Get records from a table.
+     */
+    getRecords: (args: GetRecordsArgs) => TableRecords;
     /**
      * Dynamically register a new table in the store
      * @returns A bound Table object for easier interaction with the table.
@@ -135,6 +139,10 @@ type BoundGetRecordArgs = {
   key: Key;
 };
 
+type BoundGetRecordsArgs = {
+  keys?: Key[];
+};
+
 type BoundSubscribeArgs = {
   subscriber: TableUpdatesSubscriber;
 };
@@ -146,9 +154,9 @@ type BoundDecodeKeyArgs = {
 export type BoundTable = {
   tableLabel: TableLabel;
   getRecord: (args: BoundGetRecordArgs) => TableRecord;
+  getRecords: (args?: BoundGetRecordsArgs) => TableRecords;
   setRecord: (args: BoundSetRecordArgs) => void;
   deleteRecord: (args: BoundDeleteRecordArgs) => void;
-  getRecords: () => TableRecords;
   getKeys: () => Keys;
   decodeKey: (args: BoundDecodeKeyArgs) => Key;
   getConfig: () => TableConfigFull;
@@ -206,6 +214,23 @@ export function createStore(tablesConfig: TablesConfig): Store {
 
       const getRecord = ({ tableLabel, key }: GetRecordArgs) => {
         return get().records[tableLabel.namespace ?? ""][tableLabel.label][encodeKey(tableLabel, key)];
+      };
+
+      const getRecords = ({ tableLabel, keys }: GetRecordsArgs) => {
+        const namespace = tableLabel.namespace ?? "";
+        const label = tableLabel.label;
+        const records = get().records[namespace][label];
+
+        if (!keys) {
+          return records;
+        }
+
+        return Object.fromEntries(
+          keys.map((key) => {
+            const encodedKey = encodeKey(tableLabel, key);
+            return [encodeKey, records[encodedKey]];
+          }),
+        );
       };
 
       // TODO: Benchmark performance of this function.
@@ -302,7 +327,7 @@ export function createStore(tablesConfig: TablesConfig): Store {
           setRecord: ({ key, record }: BoundSetRecordArgs) => setRecord({ tableLabel, key, record }),
           deleteRecord: ({ key }: BoundDeleteRecordArgs) => deleteRecord({ tableLabel, key }),
           getRecord: ({ key }: BoundGetRecordArgs) => getRecord({ tableLabel, key }),
-          getRecords: () => get().records[namespace][label],
+          getRecords: (args?: BoundGetRecordsArgs) => getRecords({ tableLabel, keys: args?.keys }),
           getKeys: () => getKeys({ tableLabel }),
           decodeKey: ({ encodedKey }: BoundDecodeKeyArgs) => decodeKey({ tableLabel, encodedKey }),
           getConfig: () => get().config[namespace][label],
@@ -332,7 +357,17 @@ export function createStore(tablesConfig: TablesConfig): Store {
 
       return {
         ...state,
-        actions: { setRecord, deleteRecord, getRecord, getTable, registerTable, subscribe, decodeKey, getKeys },
+        actions: {
+          setRecord,
+          deleteRecord,
+          getRecord,
+          getRecords,
+          getTable,
+          registerTable,
+          subscribe,
+          decodeKey,
+          getKeys,
+        },
       };
     }),
   );

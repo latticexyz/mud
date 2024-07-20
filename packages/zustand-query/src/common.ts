@@ -36,3 +36,11 @@ export type TableUpdate = { prev: TableRecord | undefined; current: TableRecord 
 export type TableUpdates = { [key: string]: TableUpdate };
 
 export type TableLabel = { label: string; namespace?: string };
+
+export type TableRecords = { readonly [key: string]: TableRecord };
+
+export type StoreRecords = {
+  [namespace: string]: {
+    [table: string]: TableRecords;
+  };
+};

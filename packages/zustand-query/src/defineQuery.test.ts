@@ -137,5 +137,12 @@ describe("defineQuery", () => {
     });
   });
 
-  it.todo("should notify initial subscribers with initial query result");
+  it("should notify initial subscribers with initial query result", () => {
+    let lastUpdate: unknown;
+    const subscriber = vi.fn((update: QueryUpdate) => (lastUpdate = update));
+    defineQuery([In(Position), In(Health)], { initialSubscribers: [subscriber] });
+
+    expect(subscriber).toBeCalledTimes(1);
+    attest(lastUpdate).snap();
+  });
 });
