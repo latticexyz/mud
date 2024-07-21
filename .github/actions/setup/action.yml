@@ -1,10 +1,17 @@
 name: Setup
 description: Common setup steps used by our workflows
+inputs:
+ node-version:
+    description: 'Node.js version to install'
+    required: true
+    default: 18
 runs:
   using: composite
   steps:
     - name: Setup prerequisites
       uses: ./.github/actions/setup-prerequisites
+      with:
+          node-version: ${{ inputs.node-version }}
 
     # pnpm no longer runs this before the actual install (https://github.com/pnpm/pnpm/issues/3760)
     # but we need to create some placeholder files like bins so that the install step can find them and put references to them in the right spot

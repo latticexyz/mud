@@ -7,9 +7,15 @@ on:
   pull_request:
 
 jobs:
+  build-nodejs-matrix:
+    uses: ./.github/workflows/build-nodejs-matrix.yml
   test:
-    name: Run tests
+    name: Run tests (Node.js v${{ matrix.node-version }})
+    needs: build-nodejs-matrix
     runs-on: depot-ubuntu-22.04-16
+    strategy:
+      matrix:
+        node-version: ${{ fromJson(needs.build-nodejs-matrix.outputs.node-version) }}
     services:
       postgres:
         image: postgres:12.1-alpine
@@ -35,6 +41,8 @@ jobs:
       - name: Setup
         if: steps.check_changes.outputs.changes_outside_docs
         uses: ./.github/actions/setup
+        with:
+          node-version: ${{ matrix.node-version }}
 
       - name: Build
         if: steps.check_changes.outputs.changes_outside_docs
