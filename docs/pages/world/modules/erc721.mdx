@@ -11,3 +11,20 @@ This module is unaudited and may change in the future.
 
 The [`erc721-puppet`](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/erc721-puppet) module lets you create [ERC-721](https://ethereum.org/en/developers/docs/standards/tokens/erc-721/) NFTs as part of a MUD `World`.
 The advantage of doing this, rather than creating a separate [NFT contract](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/token/ERC721) and merely controlling it from MUD, is that all the information is in MUD tables and is immediately available in the client.
+
+## Deployment
+
+To deploy this module you use a Solidity script.
+To use the one here, first edit `.env` to make sure we have these environment variables.
+
+| Variable       | Explanation                                                   | Sample Value                                                       |
+| -------------- | ------------------------------------------------------------- | ------------------------------------------------------------------ |
+| PRIVATE_KEY    | The private key for an address that has ETH on the blockchain | 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 |
+| WORLD_ADDRESS  | The address of the `World` that gets the NFT                  | 0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b                         |
+| NFT_NAMESPACE  | Namespace for the NFT tables and `System`s                    | DDDD<sup>1</sup>                                                   |
+| TOKEN_NAME     | The name of the token                                         | No features or traits                                              |
+| TOKEN_SYMBOL   | The symbol of the token                                       | NFT                                                                |
+| TOKEN_BASE_URI | The base URI for the token                                    | http://example.com/                                                |
+
+(1) The reason to use `DDDD` is that in ASCII it is 0x44444444, which makes debugging easier.
+Of course, not a production system you'd use a meaningful name.
