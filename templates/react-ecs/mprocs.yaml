@@ -15,9 +15,9 @@ procs:
       FOLLOW_BLOCK_TAG: "latest"
       SQLITE_FILENAME: "indexer.db"
   explorer:
-    cwd: /Users/karolis/Code/Lattice.xyz/mud/packages/worlds-explorer
+    cwd: /Users/karolis/Code/Lattice.xyz/experiments/mud-2/packages/worlds-explorer
     shell: pnpm dev
     env:
       PORT: "13690"
-      # INDEXER_DB_PATH: "/Users/karolis/Code/Lattice.xyz/mud/templates/react-ecs/indexer.db"
-      INDEXER_DB_PATH_ABSOLUTE: "/Users/karolis/Code/Lattice.xyz/mud/templates/react-ecs/indexer.db"
+      # INDEXER_DB_PATH: "/Users/karolis/Code/Lattice.xyz/experiments/mud-2/templates/react-ecs/indexer.db"
+      INDEXER_DB_PATH_ABSOLUTE: "/Users/karolis/Code/Lattice.xyz/experiments/mud-2/templates/react-ecs/indexer.db"

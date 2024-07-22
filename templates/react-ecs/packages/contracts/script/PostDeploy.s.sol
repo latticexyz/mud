@@ -24,6 +24,11 @@ contract PostDeploy is Script {
     uint32 newValue = IWorld(worldAddress).app__increment();
     console.log("Increment via IWorld:", newValue);
 
+    // Add checkboxes
+    for (uint256 i = 0; i < 100; i++) {
+      IWorld(worldAddress).app__addCheckbox(i, i % 2 == 0);
+    }
+
     vm.stopBroadcast();
   }
 }
