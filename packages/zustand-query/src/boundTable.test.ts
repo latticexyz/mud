@@ -7,7 +7,7 @@ describe("BoundTable", () => {
   let store: Store;
 
   beforeEach(() => {
-    store = createStore({});
+    store = createStore();
     table = store.getState().actions.registerTable({
       label: "table1",
       namespace: "namespace1",

@@ -4,11 +4,9 @@ import { mutative } from "zustand-mutative";
 import { dynamicAbiTypeToDefaultValue, staticAbiTypeToDefaultValue } from "@latticexyz/schema-type/internal";
 import { Unsubscribe, TableRecord, TableUpdates, Key, Keys, TableLabel, StoreRecords, TableRecords } from "./common";
 import { Table } from "@latticexyz/config";
-import { AbiTypeScope, TableInput, TablesInput, resolveTable, resolveTables } from "@latticexyz/store/config/v2";
+import { TableInput, resolveTable, Store as StoreConfig } from "@latticexyz/store/config/v2";
 
-export type TablesConfig = {
-  readonly [namespace: string]: TablesInput;
-};
+export type Config = StoreConfig;
 
 type TableUpdatesSubscriber = (updates: TableUpdates) => void;
 
@@ -151,31 +149,32 @@ type Subscribers = {
 /**
  * Initializes a Zustand store based on the provided table configs.
  */
-export function createStore(tablesConfig: TablesConfig): Store {
+export function createStore(storeConfig?: StoreConfig): Store {
   const subscribers: Subscribers = {};
 
   return createZustandStore<State & Actions>()(
     mutative((set, get) => {
       const state: State = { config: {}, records: {} };
 
-      for (const [namespace, tables] of Object.entries(tablesConfig)) {
-        const resolvedTables = resolveTables(tables, AbiTypeScope);
-        for (const [label, tableConfig] of Object.entries(resolvedTables)) {
-          // TODO: add option to resolveTables to not add codegen/deploy?
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { codegen, deploy, ...relevantConfig } = tableConfig;
+      if (storeConfig) {
+        for (const [namespace, { tables }] of Object.entries(storeConfig.namespaces)) {
+          for (const [label, tableConfig] of Object.entries(tables)) {
+            // TODO: add option to resolveTables to not add codegen/deploy?
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { codegen, deploy, ...relevantConfig } = tableConfig;
 
-          // Set config for tables
-          state.config[namespace] ??= {};
-          state.config[namespace][label] = relevantConfig;
+            // Set config for tables
+            state.config[namespace] ??= {};
+            state.config[namespace][label] = relevantConfig;
 
-          // Init records map for tables
-          state.records[namespace] ??= {};
-          state.records[namespace][label] = {};
+            // Init records map for tables
+            state.records[namespace] ??= {};
+            state.records[namespace][label] = {};
 
-          // Init subscribers set for tables
-          subscribers[namespace] ??= {};
-          subscribers[namespace][label] ??= new Set();
+            // Init subscribers set for tables
+            subscribers[namespace] ??= {};
+            subscribers[namespace][label] ??= new Set();
+          }
         }
       }
 

@@ -1,11 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
 import { attest } from "@arktype/attest";
-import { TablesConfig, createStore } from "./createStore";
+import { createStore } from "./createStore";
+import { defineStore } from "@latticexyz/store/config/v2";
 
 describe("createStore", () => {
   it("should initialize the store", () => {
-    const tablesConfig = {
-      namespace1: {
+    const tablesConfig = defineStore({
+      namespace: "namespace1",
+      tables: {
         table1: {
           schema: {
             field1: "string",
@@ -14,7 +16,7 @@ describe("createStore", () => {
           key: ["field2"],
         },
       },
-    } satisfies TablesConfig;
+    });
     const store = createStore(tablesConfig);
 
     attest(store.getState().config).snap({
@@ -22,9 +24,9 @@ describe("createStore", () => {
         table1: {
           label: "table1",
           type: "table",
-          namespace: "",
+          namespace: "namespace1",
           name: "table1",
-          tableId: "0x746200000000000000000000000000007461626c653100000000000000000000",
+          tableId: "0x74626e616d65737061636531000000007461626c653100000000000000000000",
           schema: {
             field1: { type: "string", internalType: "string" },
             field2: { type: "uint32", internalType: "uint32" },
@@ -38,8 +40,9 @@ describe("createStore", () => {
 
   describe("setRecord", () => {
     it("should add the record to the table", () => {
-      const tablesConfig = {
-        namespace1: {
+      const tablesConfig = defineStore({
+        namespace: "namespace1",
+        tables: {
           table1: {
             schema: {
               field1: "string",
@@ -49,7 +52,7 @@ describe("createStore", () => {
             key: ["field2", "field3"],
           },
         },
-      } satisfies TablesConfig;
+      });
 
       const store = createStore(tablesConfig);
       store.getState().actions.setRecord({
@@ -77,8 +80,9 @@ describe("createStore", () => {
 
   describe("subscribe", () => {
     it("should notify listeners on table updates", () => {
-      const tablesConfig = {
-        namespace1: {
+      const tablesConfig = defineStore({
+        namespace: "namespace1",
+        tables: {
           table1: {
             schema: {
               field1: "string",
@@ -88,7 +92,7 @@ describe("createStore", () => {
             key: ["field2", "field3"],
           },
         },
-      } satisfies TablesConfig;
+      });
 
       const store = createStore(tablesConfig);
 
@@ -127,8 +131,9 @@ describe("createStore", () => {
     });
 
     it("should not notify listeners after they have been removed", () => {
-      const tablesConfig = {
-        namespace1: {
+      const tablesConfig = defineStore({
+        namespace: "namespace1",
+        tables: {
           table1: {
             schema: {
               field1: "string",
@@ -138,7 +143,7 @@ describe("createStore", () => {
             key: ["field2", "field3"],
           },
         },
-      } satisfies TablesConfig;
+      });
 
       const store = createStore(tablesConfig);
 
@@ -176,8 +181,9 @@ describe("createStore", () => {
 
   describe("getRecord", () => {
     it("should get a record by key from the table", () => {
-      const tablesConfig = {
-        namespace1: {
+      const tablesConfig = defineStore({
+        namespace: "namespace1",
+        tables: {
           table1: {
             schema: {
               field1: "string",
@@ -187,7 +193,7 @@ describe("createStore", () => {
             key: ["field2", "field3"],
           },
         },
-      } satisfies TablesConfig;
+      });
 
       const store = createStore(tablesConfig);
       store.getState().actions.setRecord({
@@ -220,7 +226,7 @@ describe("createStore", () => {
 
   describe("registerTable", () => {
     it("should add a new table to the store and return a bound table", () => {
-      const store = createStore({});
+      const store = createStore();
       const table = store.getState().actions.registerTable({
         label: "table1",
         namespace: "namespace1",
@@ -252,7 +258,7 @@ describe("createStore", () => {
 
   describe("getTable", () => {
     it("should return a bound table", () => {
-      const store = createStore({});
+      const store = createStore();
       store.getState().actions.registerTable({
         label: "table1",
         namespace: "namespace1",

@@ -3,6 +3,7 @@ import { QueryUpdate, defineQuery } from "./defineQuery";
 import { BoundTable, Store, createStore } from "./createStore";
 import { In, MatchRecord } from "./queryFragments";
 import { attest } from "@arktype/attest";
+import { defineStore } from "@latticexyz/store";
 
 describe("defineQuery", () => {
   let store: Store;
@@ -11,22 +12,25 @@ describe("defineQuery", () => {
   let Inventory: BoundTable;
 
   beforeEach(() => {
-    store = createStore({
-      namespace1: {
-        Position: {
-          schema: { player: "bytes32", x: "int32", y: "int32" },
-          key: ["player"],
+    store = createStore(
+      defineStore({
+        namespace: "namespace1",
+        tables: {
+          Position: {
+            schema: { player: "bytes32", x: "int32", y: "int32" },
+            key: ["player"],
+          },
+          Health: {
+            schema: { player: "bytes32", health: "uint32" },
+            key: ["player"],
+          },
+          Inventory: {
+            schema: { player: "bytes32", item: "bytes32", amount: "uint32" },
+            key: ["player", "item"],
+          },
         },
-        Health: {
-          schema: { player: "bytes32", health: "uint32" },
-          key: ["player"],
-        },
-        Inventory: {
-          schema: { player: "bytes32", item: "bytes32", amount: "uint32" },
-          key: ["player", "item"],
-        },
-      },
-    });
+      }),
+    );
 
     Position = store.getState().actions.getTable({ namespace: "namespace1", label: "Position" });
     Health = store.getState().actions.getTable({ namespace: "namespace1", label: "Health" });
