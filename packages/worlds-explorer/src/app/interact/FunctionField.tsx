@@ -22,7 +22,7 @@ type Props = {
 };
 
 const formSchema = z.object({
-  inputs: z.string().array(),
+  inputs: z.array(z.string()),
 });
 
 export function FunctionField({ abi }: Props) {

@@ -67,7 +67,14 @@ export function TablesViewer({
   const columns: ColumnDef<{}>[] = schema?.map(({ name, type }: { name: string; type: string }) => {
     return {
       accessorKey: name,
-      header: ({ column }) => {
+      header: ({
+        column,
+      }: {
+        column: {
+          toggleSorting: (ascending: boolean) => void;
+          getIsSorted: () => "asc" | "desc" | undefined;
+        };
+      }) => {
         return (
           <Button
             variant="ghost"
@@ -79,7 +86,13 @@ export function TablesViewer({
           </Button>
         );
       },
-      cell: ({ row }) => <input className="bg-transparent" defaultValue={row.getValue(name)} />,
+      cell: ({
+        row,
+      }: {
+        row: {
+          getValue: (name: string) => string;
+        };
+      }) => <input className="bg-transparent" defaultValue={row.getValue(name)} />,
     };
   });
 

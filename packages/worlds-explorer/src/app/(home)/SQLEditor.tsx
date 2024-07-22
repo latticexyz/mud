@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 export function SQLEditor({
   table,
@@ -11,7 +11,7 @@ export function SQLEditor({
 }) {
   const [deferredQuery, setDeferredQuery] = useState<string | undefined>("");
 
-  const submitQuery = (evt) => {
+  const submitQuery = (evt: FormEvent) => {
     evt.preventDefault();
     setQuery(deferredQuery);
   };
