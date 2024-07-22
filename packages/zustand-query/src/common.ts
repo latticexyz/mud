@@ -3,7 +3,7 @@ import { QueryFragment } from "./queryFragments";
 /**
  * A Key is the unique identifier for a row in the table.
  */
-export type Key = { [field: string]: number | string | bigint };
+export type Key = { [field: string]: number | string | bigint | boolean };
 
 /**
  * A map from encoded key to decoded key
@@ -28,7 +28,17 @@ export type Unsubscribe = () => void;
 /**
  * A TableRecord is one row of the table. It includes both the key and the value.
  */
-export type TableRecord = { readonly [field: string]: number | string | bigint | number[] | string[] | bigint[] };
+export type TableRecord = {
+  readonly [field: string]:
+    | number
+    | string
+    | bigint
+    | boolean
+    | readonly number[]
+    | readonly string[]
+    | readonly bigint[]
+    | readonly boolean[];
+};
 
 export type TableUpdate = { prev: TableRecord | undefined; current: TableRecord | undefined };
 
