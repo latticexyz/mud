@@ -11,7 +11,15 @@ const queryClient = new QueryClient();
 
 export const wagmiConfig = createConfig({
   chains: [localhost],
-  connectors: [injected(), metaMask(), safe()],
+  connectors: [
+    injected(),
+    metaMask({
+      dappMetadata: {
+        name: "World Explorer",
+      },
+    }),
+    safe(),
+  ],
   transports: {
     [localhost.id]: http(),
   },
