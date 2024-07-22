@@ -1,5 +1,6 @@
 import { Store } from "@latticexyz/store";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
+import { Hex } from "viem";
 
 export type Module = {
   /**
@@ -24,8 +25,23 @@ export type Module = {
 };
 
 export type System = {
-  /** The name of the system contract. Becomes part of the `systemId`. */
+  /**
+   * Human-readable system label. Used as config keys, interface names, and filenames.
+   * Labels are not length constrained like resource names, but special characters should be avoided to be compatible with the filesystem, Solidity compiler, etc.
+   */
+  readonly label: string;
+  /**
+   * System namespace used in system's resource ID and determines access control.
+   */
+  readonly namespace: string;
+  /**
+   * System name used in system's resource ID.
+   */
   readonly name: string;
+  /**
+   * System's resource ID.
+   */
+  readonly systemId: Hex;
   /**
    * Register function selectors for the system in the World.
    * Defaults to true.
@@ -40,7 +56,9 @@ export type System = {
   readonly accessList: readonly string[];
 };
 
-export type Systems = { readonly [label: string]: System };
+export type Systems = {
+  readonly [label: string]: System;
+};
 
 export type Deploy = {
   /** The name of a custom World contract to deploy. If no name is provided, a default MUD World is deployed */

@@ -4,9 +4,17 @@ import {
   SchemaType,
   SchemaTypeToAbiType,
 } from "@latticexyz/schema-type/deprecated";
-import { parseStaticArray } from "@latticexyz/config/library";
 import { ImportDatum, RenderType, SolidityUserDefinedType } from "@latticexyz/common/codegen";
 import { Store as StoreConfig } from "../config/v2/output";
+
+function parseStaticArray(abiType: string) {
+  const matches = abiType.match(/^(\w+)\[(\d+)\]$/);
+  if (!matches) return null;
+  return {
+    elementType: matches[1],
+    staticLength: Number.parseInt(matches[2]),
+  };
+}
 
 /**
  * Resolve an abi or user type into a SchemaType and RenderType

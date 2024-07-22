@@ -35,7 +35,7 @@ export async function ensureNamespaceOwner({
       const { owner } = await getTableValue({
         client,
         worldDeploy,
-        table: worldTables.world_NamespaceOwner,
+        table: worldTables.world__NamespaceOwner,
         key: { namespaceId: resourceToHex({ type: "namespace", namespace, name: "" }) },
       });
       return [namespace, owner];

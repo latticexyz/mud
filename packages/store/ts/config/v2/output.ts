@@ -40,6 +40,10 @@ export type Table = show<
   }
 >;
 
+export type Tables = {
+  readonly [label: string]: Table;
+};
+
 export type Codegen = {
   /** @internal */
   readonly storeImportPath: string;
@@ -62,7 +66,24 @@ export type Codegen = {
   readonly indexFilename: string;
 };
 
-export type Store = {
+export type Namespace = {
+  /**
+   * Human-readable namespace label. Used as config keys and directory names.
+   * Labels are not length constrained like namespaces within resource IDs, but special characters should be avoided to be compatible with the filesystem, Solidity compiler, etc.
+   */
+  readonly label: string;
+  /**
+   * Namespace used in resource ID.
+   */
+  readonly namespace: string;
+  readonly tables: Tables;
+};
+
+export type Namespaces = {
+  readonly [label: string]: Namespace;
+};
+
+export type Store = Omit<Namespace, "label"> & {
   /**
    * Directory of Solidity source relative to the MUD config.
    * This is used to resolve other paths in the config, like codegen and user types.
@@ -70,12 +91,9 @@ export type Store = {
    * Defaults to `src` to match `foundry.toml`'s default. If you change this from the default, you may also need to configure foundry with the same source directory.
    */
   readonly sourceDirectory: string;
-  readonly tables: {
-    readonly [label: string]: Table;
-  };
   readonly userTypes: UserTypes;
   readonly enums: EnumsInput;
   readonly enumValues: EnumValues;
-  readonly namespace: string;
   readonly codegen: Codegen;
+  readonly namespaces: Namespaces;
 };

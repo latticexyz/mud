@@ -30,7 +30,6 @@ describe("logToTable", () => {
         },
         "name": "Tables",
         "namespace": "mudstore",
-        "resourceId": "0x74626d756473746f72650000000000005461626c657300000000000000000000",
         "schema": {
           "abiEncodedFieldNames": {
             "internalType": "bytes",

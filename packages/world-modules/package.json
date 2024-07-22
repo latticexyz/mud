@@ -30,7 +30,7 @@
     "build:abi": "forge build",
     "build:abi-ts": "abi-ts",
     "build:js": "tsup",
-    "build:mud": "tsx ./ts/scripts/tablegen.ts && tsx ./ts/scripts/worldgen.ts",
+    "build:mud": "mud build",
     "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud",
     "clean:abi": "forge clean",
     "clean:js": "rimraf dist",
@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "@latticexyz/abi-ts": "workspace:*",
+    "@latticexyz/cli": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
     "@types/ejs": "^3.1.1",
     "@types/mocha": "^9.1.1",

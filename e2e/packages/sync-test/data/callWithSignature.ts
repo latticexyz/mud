@@ -5,7 +5,7 @@ import CallWithSignatureAbi from "@latticexyz/world-modules/out/Unstable_CallWit
 
 type CallWithSignatureAbi = typeof CallWithSignatureAbi;
 
-type WorldContract = GetContractReturnType<CallWithSignatureAbi, PublicClient, WalletClient>;
+type WorldContract = GetContractReturnType<CallWithSignatureAbi, PublicClient & WalletClient>;
 
 type WriteMethodName = ExtractAbiFunctionNames<CallWithSignatureAbi>;
 type WriteMethod<TMethod extends WriteMethodName> = ExtractAbiFunction<CallWithSignatureAbi, TMethod>;
