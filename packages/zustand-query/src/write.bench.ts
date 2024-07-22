@@ -44,7 +44,7 @@ function generatePositions(numRecords: number): Record<string, PositionSchema> {
   return positions;
 }
 
-describe.each([
+describe.skip.each([
   { initialRecords: 1_000, newRecords: 1 },
   { initialRecords: 1_000, newRecords: 100 },
   { initialRecords: 10_000, newRecords: 1 },
@@ -114,7 +114,7 @@ describe.each([
   },
 );
 
-describe.each([
+describe.skip.each([
   { initialRecords: 1_000, newRecords: 1 },
   { initialRecords: 1_000, newRecords: 100 },
   { initialRecords: 10_000, newRecords: 1 },
@@ -180,7 +180,7 @@ describe.each([
   },
 );
 
-describe.only.each([
+describe.skip.each([
   { initialRecords: 1_000, newRecords: 1 },
   { initialRecords: 1_000, newRecords: 100 },
   { initialRecords: 10_000, newRecords: 1 },

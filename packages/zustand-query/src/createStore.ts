@@ -1,34 +1,13 @@
-import { AbiType } from "@latticexyz/config";
 import { createStore as createZustandStore } from "zustand/vanilla";
 import { StoreApi } from "zustand";
 import { mutative } from "zustand-mutative";
 import { dynamicAbiTypeToDefaultValue, staticAbiTypeToDefaultValue } from "@latticexyz/schema-type/internal";
-import { Unsubscribe } from "./common";
-import { TableRecord } from "./common";
-import { TableUpdates } from "./common";
-import { Key, Keys } from "./common";
-import { TableLabel } from "./common";
-import { StoreRecords, TableRecords } from "./common";
-
-type Schema = { [key: string]: AbiType };
-
-// TODO: reuse the store config table input for this
-type TableConfigInput = {
-  key: string[];
-  schema: Schema;
-};
-
-type TableConfigFull = {
-  key: string[];
-  schema: Schema;
-  label: string;
-  namespace: string;
-};
+import { Unsubscribe, TableRecord, TableUpdates, Key, Keys, TableLabel, StoreRecords, TableRecords } from "./common";
+import { Table } from "@latticexyz/config";
+import { AbiTypeScope, TableInput, TablesInput, resolveTable, resolveTables } from "@latticexyz/store/config/v2";
 
 export type TablesConfig = {
-  [namespace: string]: {
-    [tableLabel: string]: TableConfigInput;
-  };
+  readonly [namespace: string]: TablesInput;
 };
 
 type TableUpdatesSubscriber = (updates: TableUpdates) => void;
@@ -36,7 +15,7 @@ type TableUpdatesSubscriber = (updates: TableUpdates) => void;
 type State = {
   config: {
     [namespace: string]: {
-      [table: string]: TableConfigFull;
+      [tableConfig: string]: Table;
     };
   };
   records: StoreRecords;
@@ -101,7 +80,7 @@ type Actions = {
      * Dynamically register a new table in the store
      * @returns A bound Table object for easier interaction with the table.
      */
-    registerTable: (config: TableConfigFull) => BoundTable;
+    registerTable: (config: TableInput) => BoundTable;
     /**
      * @returns A bound Table object for easier interaction with the table.
      */
@@ -159,7 +138,7 @@ export type BoundTable = {
   deleteRecord: (args: BoundDeleteRecordArgs) => void;
   getKeys: () => Keys;
   decodeKey: (args: BoundDecodeKeyArgs) => Key;
-  getConfig: () => TableConfigFull;
+  getConfig: () => Table;
   subscribe: (args: BoundSubscribeArgs) => Unsubscribe;
 };
 
@@ -180,10 +159,15 @@ export function createStore(tablesConfig: TablesConfig): Store {
       const state: State = { config: {}, records: {} };
 
       for (const [namespace, tables] of Object.entries(tablesConfig)) {
-        for (const [label, tableConfig] of Object.entries(tables)) {
+        const resolvedTables = resolveTables(tables, AbiTypeScope);
+        for (const [label, tableConfig] of Object.entries(resolvedTables)) {
+          // TODO: add option to resolveTables to not add codegen/deploy?
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { codegen, deploy, ...relevantConfig } = tableConfig;
+
           // Set config for tables
           state.config[namespace] ??= {};
-          state.config[namespace][label] = { ...tableConfig, namespace, label };
+          state.config[namespace][label] = relevantConfig;
 
           // Init records map for tables
           state.records[namespace] ??= {};
@@ -337,12 +321,16 @@ export function createStore(tablesConfig: TablesConfig): Store {
         };
       };
 
-      const registerTable = (tableConfig: TableConfigFull): BoundTable => {
+      const registerTable = (tableInput: TableInput): BoundTable => {
+        // TODO: add option to resolveTable to not include codegen/deploy options?
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { codegen, deploy, ...tableConfig } = resolveTable(tableInput);
         set((prev) => {
           const { namespace, label } = tableConfig;
           // Set config for table
           prev.config[namespace] ??= {};
-          prev.config[namespace][label] = tableConfig;
+          // TODO figure out type issue here - looks like mutative removes the `readonly` type
+          prev.config[namespace][label] = tableConfig as never;
 
           // Init records map for table
           prev.records[namespace] ??= {};

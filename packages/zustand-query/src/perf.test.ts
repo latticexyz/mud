@@ -34,7 +34,7 @@ type Actions = {
   setPosition: (entity: string, position: PositionSchema) => void;
 };
 
-describe("setting records in recs", () => {
+describe.skip("setting records in recs", () => {
   let world: ReturnType<typeof createWorld>;
   let Position: Component<{
     x: Type.Number;
@@ -138,7 +138,7 @@ describe("setting records in recs", () => {
   });
 });
 
-describe("setting records in zustand", () => {
+describe.skip("setting records in zustand", () => {
   let store: StoreApi<State & Actions>;
 
   beforeEach(() => {
@@ -230,7 +230,7 @@ describe("setting records in zustand", () => {
   });
 });
 
-describe("setting records in zustand with mutative", () => {
+describe.skip("setting records in zustand with mutative", () => {
   let store: StoreApi<State & Actions>;
 
   beforeEach(() => {

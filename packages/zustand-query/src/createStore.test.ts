@@ -20,10 +20,16 @@ describe("createStore", () => {
     attest(store.getState().config).snap({
       namespace1: {
         table1: {
-          schema: { field1: "string", field2: "uint32" },
-          key: ["field2"],
-          namespace: "namespace1",
           label: "table1",
+          type: "table",
+          namespace: "",
+          name: "table1",
+          tableId: "0x746200000000000000000000000000007461626c653100000000000000000000",
+          schema: {
+            field1: { type: "string", internalType: "string" },
+            field2: { type: "uint32", internalType: "uint32" },
+          },
+          key: ["field2"],
         },
       },
     });
@@ -226,8 +232,14 @@ describe("createStore", () => {
         namespace1: {
           table1: {
             label: "table1",
+            type: "table",
             namespace: "namespace1",
-            schema: { field1: "uint32", field2: "address" },
+            name: "table1",
+            tableId: "0x74626e616d65737061636531000000007461626c653100000000000000000000",
+            schema: {
+              field1: { type: "uint32", internalType: "uint32" },
+              field2: { type: "address", internalType: "address" },
+            },
             key: ["field1"],
           },
         },
