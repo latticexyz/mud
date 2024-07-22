@@ -25,6 +25,11 @@ type SetRecordArgs = {
   record: TableRecord;
 };
 
+type SetRecordsArgs = {
+  tableLabel: TableLabel;
+  records: TableRecord[];
+};
+
 type DeleteRecordArgs = {
   tableLabel: TableLabel;
   key: Key;
@@ -62,6 +67,10 @@ type Actions = {
      * Key fields of the record are always set to the provided key.
      */
     setRecord: (args: SetRecordArgs) => void;
+    /**
+     * Set multiple records in a table.
+     */
+    setRecords: (args: SetRecordsArgs) => void;
     /**
      * Delete a record in a table.
      */
@@ -108,6 +117,10 @@ type BoundSetRecordArgs = {
   record: TableRecord;
 };
 
+type BoundSetRecordsArgs = {
+  records: TableRecord[];
+};
+
 type BoundDeleteRecordArgs = {
   key: Key;
 };
@@ -133,6 +146,7 @@ export type BoundTable = {
   getRecord: (args: BoundGetRecordArgs) => TableRecord;
   getRecords: (args?: BoundGetRecordsArgs) => TableRecords;
   setRecord: (args: BoundSetRecordArgs) => void;
+  setRecords: (args: BoundSetRecordsArgs) => void;
   deleteRecord: (args: BoundDeleteRecordArgs) => void;
   getKeys: () => Keys;
   decodeKey: (args: BoundDecodeKeyArgs) => Key;
@@ -182,7 +196,7 @@ export function createStore(storeConfig?: StoreConfig): Store {
        * Encode a key object into a string that can be used as index in the store
        * TODO: Benchmark performance of this function
        */
-      function encodeKey({ label, namespace }: TableLabel, key: Key): string {
+      function encodeKey({ label, namespace }: TableLabel, key: TableRecord): string {
         const keyOrder = get().config[namespace ?? ""][label].key;
         return keyOrder
           .map((keyName) => {
@@ -217,6 +231,7 @@ export function createStore(storeConfig?: StoreConfig): Store {
       };
 
       // TODO: Benchmark performance of this function.
+      // TODO: dedupe logic with setRecords below
       const setRecord = ({ tableLabel, key, record }: SetRecordArgs) => {
         const namespace = tableLabel.namespace ?? "";
         const label = tableLabel.label;
@@ -248,6 +263,43 @@ export function createStore(storeConfig?: StoreConfig): Store {
         subscribers[namespace][label].forEach((subscriber) =>
           subscriber({ [encodedKey]: { prev: prevRecord && { ...prevRecord }, current: newRecord } }),
         );
+      };
+
+      const setRecords = ({ tableLabel, records }: SetRecordsArgs) => {
+        const namespace = tableLabel.namespace ?? "";
+        const label = tableLabel.label;
+
+        if (get().config[namespace] == null) {
+          throw new Error(`Table '${namespace}__${label}' is not registered yet.`);
+        }
+
+        const updates: TableUpdates = {};
+        for (const record of records) {
+          const encodedKey = encodeKey(tableLabel, record);
+          const prevRecord = get().records[namespace][label][encodedKey];
+          const schema = get().config[namespace][label].schema;
+          const newRecord = Object.fromEntries(
+            Object.keys(schema).map((fieldName) => [
+              fieldName,
+              record[fieldName] ?? // Override provided record fields
+                prevRecord?.[fieldName] ?? // Keep existing non-overridden fields
+                staticAbiTypeToDefaultValue[schema[fieldName] as never] ?? // Default values for new fields
+                dynamicAbiTypeToDefaultValue[schema[fieldName] as never],
+            ]),
+          );
+          updates[encodedKey] = { prev: prevRecord, current: newRecord };
+        }
+
+        // Update records
+        set((prev) => {
+          for (const [encodedKey, { current }] of Object.entries(updates)) {
+            // TODO: seems like mutative removes `readonly` from type, causing type error here
+            prev.records[tableLabel.namespace ?? ""][tableLabel.label][encodedKey] = current as never;
+          }
+        });
+
+        // Notify table subscribers
+        subscribers[namespace][label].forEach((subscriber) => subscriber(updates));
       };
 
       const deleteRecord = ({ tableLabel, key }: DeleteRecordArgs) => {
@@ -308,6 +360,7 @@ export function createStore(storeConfig?: StoreConfig): Store {
         return {
           tableLabel,
           setRecord: ({ key, record }: BoundSetRecordArgs) => setRecord({ tableLabel, key, record }),
+          setRecords: ({ records }: BoundSetRecordsArgs) => setRecords({ tableLabel, records }),
           deleteRecord: ({ key }: BoundDeleteRecordArgs) => deleteRecord({ tableLabel, key }),
           getRecord: ({ key }: BoundGetRecordArgs) => getRecord({ tableLabel, key }),
           getRecords: (args?: BoundGetRecordsArgs) => getRecords({ tableLabel, keys: args?.keys }),
@@ -346,6 +399,7 @@ export function createStore(storeConfig?: StoreConfig): Store {
         ...state,
         actions: {
           setRecord,
+          setRecords,
           deleteRecord,
           getRecord,
           getRecords,

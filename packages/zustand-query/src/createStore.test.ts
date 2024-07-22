@@ -78,6 +78,42 @@ describe("createStore", () => {
     });
   });
 
+  describe("setRecords", () => {
+    it("should add the records to the table", () => {
+      const tablesConfig = defineStore({
+        namespace: "namespace1",
+        tables: {
+          table1: {
+            schema: {
+              field1: "string",
+              field2: "uint32",
+              field3: "int32",
+            },
+            key: ["field2", "field3"],
+          },
+        },
+      });
+
+      const store = createStore(tablesConfig);
+      store.getState().actions.setRecords({
+        tableLabel: { label: "table1", namespace: "namespace1" },
+        records: [
+          { field1: "hello", field2: 1, field3: 2 },
+          { field1: "world", field2: 2, field3: 1 },
+        ],
+      });
+
+      attest(store.getState().records).snap({
+        namespace1: {
+          table1: {
+            "1|2": { field1: "hello", field2: 1, field3: 2 },
+            "2|1": { field1: "world", field2: 2, field3: 1 },
+          },
+        },
+      });
+    });
+  });
+
   describe("subscribe", () => {
     it("should notify listeners on table updates", () => {
       const tablesConfig = defineStore({
