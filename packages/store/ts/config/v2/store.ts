@@ -2,7 +2,7 @@ import { ErrorMessage, show, flatMorph, narrow } from "@arktype/util";
 import { get, hasOwnKey, mergeIfUndefined } from "./generics";
 import { UserTypes } from "./output";
 import { CONFIG_DEFAULTS } from "./defaults";
-import { StoreInput } from "./input";
+import { StoreInput, TableInput } from "./input";
 import { resolveTables, validateTables } from "./tables";
 import { scopeWithUserTypes, validateUserTypes } from "./userTypes";
 import { mapEnums, resolveEnums, scopeWithEnums } from "./enums";
@@ -10,6 +10,7 @@ import { resolveCodegen } from "./codegen";
 import { resolveNamespacedTables } from "./namespacedTables";
 import { resolveTable } from "./table";
 import { resolveNamespace } from "./namespace";
+import { expandTableShorthand } from "./expandTableShorthand";
 
 export type extendedScope<input> = scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>;
 
@@ -88,7 +89,8 @@ export function resolveStore<const input extends StoreInput>(input: input): reso
   const namespace = input.namespace ?? CONFIG_DEFAULTS["namespace"];
   const codegen = resolveCodegen(input.codegen);
 
-  const tablesInput = flatMorph(input.tables ?? {}, (label, table) => {
+  const tablesInput = flatMorph(input.tables ?? {}, (label, shorthand) => {
+    const table = expandTableShorthand(shorthand) as TableInput;
     return [
       label,
       {
