@@ -1,9 +1,10 @@
+import { Hex } from "viem";
 import { QueryFragment } from "./queryFragments";
 
 /**
  * A Key is the unique identifier for a row in the table.
  */
-export type Key = { [field: string]: number | string | bigint | boolean };
+export type Key = { [field: string]: number | Hex | bigint | boolean };
 
 /**
  * A map from encoded key to decoded key
@@ -34,8 +35,9 @@ export type TableRecord = {
     | string
     | bigint
     | boolean
+    | Hex
     | readonly number[]
-    | readonly string[]
+    | readonly Hex[]
     | readonly bigint[]
     | readonly boolean[];
 };

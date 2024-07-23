@@ -15,6 +15,7 @@
     "./postgres": "./dist/postgres/index.js",
     "./postgres-decoded": "./dist/postgres-decoded/index.js",
     "./recs": "./dist/recs/index.js",
+    "./tabler": "./dist/tabler/index.js",
     "./sqlite": "./dist/sqlite/index.js",
     "./trpc-indexer": "./dist/trpc-indexer/index.js",
     "./zustand": "./dist/zustand/index.js"
@@ -35,6 +36,9 @@
       ],
       "recs": [
         "./dist/recs/index.d.ts"
+      ],
+      "tabler": [
+        "./src/tabler/index.ts"
       ],
       "sqlite": [
         "./dist/sqlite/index.d.ts"
@@ -72,6 +76,7 @@
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/world": "workspace:*",
+    "@latticexyz/zustand-query": "workspace:*",
     "@trpc/client": "10.34.0",
     "@trpc/server": "10.34.0",
     "change-case": "^5.2.0",

@@ -23,13 +23,15 @@ export type CreateStorageAdapterResult = {
   storageAdapter: StorageAdapter;
 };
 
+const emptyValueArgs = { staticData: "0x", encodedLengths: "0x", dynamicData: "0x" } as const;
+
 export function createStorageAdapter({ store }: CreateStorageAdapterOptions): CreateStorageAdapterResult {
   async function storageAdapter({ logs }: StorageAdapterBlock): Promise<void> {
     const newTables = logs.filter(isTableRegistrationLog).map(logToTable);
 
     for (const newTable of newTables) {
       // TODO: switch this to `newTable.label` once available
-      const existingTable = store.getState().config[newTable.namespace][newTable.name];
+      const existingTable = store.getState().config[newTable.namespace]?.[newTable.name];
       if (existingTable) {
         console.warn("table already registered, ignoring", {
           newTable,
@@ -75,14 +77,15 @@ export function createStorageAdapter({ store }: CreateStorageAdapterOptions): Cr
         boundTable.setRecord({ key, record });
       } else if (log.eventName === "Store_SpliceStaticData") {
         // TODO: add tests that this works when no record had been set before
-        const previousRecord = boundTable.getRecord({ key }) ?? {};
+        const previousRecord = boundTable.getRecord({ key });
 
         // TODO: maybe better to also store the static data than to re-encode here?
         const {
           staticData: previousStaticData,
           encodedLengths,
           dynamicData,
-        } = encodeValueArgs(valueSchema, previousRecord);
+        } = previousRecord ? encodeValueArgs(valueSchema, previousRecord) : emptyValueArgs;
+
         const newStaticData = spliceHex(previousStaticData, log.args.start, size(log.args.data), log.args.data);
         const newValue = decodeValueArgs(valueSchema, {
           staticData: newStaticData,
@@ -102,10 +105,13 @@ export function createStorageAdapter({ store }: CreateStorageAdapterOptions): Cr
         boundTable.setRecord({ key, record: newValue });
       } else if (log.eventName === "Store_SpliceDynamicData") {
         // TODO: add tests that this works when no record had been set before
-        const previousRecord = boundTable.getRecord({ key }) ?? {};
+        const previousRecord = boundTable.getRecord({ key });
 
         // TODO: maybe better to also store the dynamic data than to re-encode here?
-        const { staticData, dynamicData: previousDynamicData } = encodeValueArgs(valueSchema, previousRecord);
+        console.log("what's going on now", previousRecord, valueSchema);
+        const { staticData, dynamicData: previousDynamicData } = previousRecord
+          ? encodeValueArgs(valueSchema, previousRecord)
+          : emptyValueArgs;
 
         const newDynamicData = spliceHex(previousDynamicData, log.args.start, log.args.deleteCount, log.args.data);
         const newValue = decodeValueArgs(valueSchema, {
