@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { SQLEditor } from "./SQLEditor";
 import { TableSelector } from "./TableSelector";
 import { TablesViewer } from "./TablesViewer";
+import { CallWorld } from "./CallWorld";
 
 export function DataExplorer() {
   const searchParams = useSearchParams();
@@ -23,6 +24,8 @@ export function DataExplorer() {
 
   return (
     <>
+      <CallWorld />
+
       <TableSelector value={selectedTable} options={tables} />
       <SQLEditor table={selectedTable} tablesLoading={tablesLoading} setQuery={setQuery} />
       <TablesViewer table={selectedTable} query={query} />
