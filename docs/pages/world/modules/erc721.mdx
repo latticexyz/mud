@@ -22,9 +22,11 @@ To use the one here, first edit `.env` to make sure we have these environment va
 | PRIVATE_KEY    | The private key for an address that has ETH on the blockchain | 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 |
 | WORLD_ADDRESS  | The address of the `World` that gets the NFT                  | 0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b                         |
 | NFT_NAMESPACE  | Namespace for the NFT tables and `System`s                    | DDDD<sup>1</sup>                                                   |
-| TOKEN_NAME     | The name of the token                                         | No features or traits                                              |
+| TOKEN_NAME     | The name of the token                                         | "No features or traits"<sup>2</sup>                                |
 | TOKEN_SYMBOL   | The symbol of the token                                       | NFT                                                                |
 | TOKEN_BASE_URI | The base URI for the token                                    | http://example.com/                                                |
 
 (1) The reason to use `DDDD` is that in ASCII it is 0x44444444, which makes debugging easier.
 Of course, not a production system you'd use a meaningful name.
+
+(2) Values that include white spaces need to be enclosed by quotes.
