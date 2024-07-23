@@ -59,6 +59,12 @@ type DecodeKeyArgs = {
   encodedKey: string;
 };
 
+type BoundTables = {
+  [namespace: string]: {
+    [table: string]: BoundTable;
+  };
+};
+
 type Actions = {
   actions: {
     /**
@@ -92,6 +98,10 @@ type Actions = {
      * @returns A bound Table object for easier interaction with the table.
      */
     getTable: (tableLabel: TableLabel) => BoundTable;
+    /**
+     * @return Bound version of all tables in the store.
+     */
+    getTables: () => BoundTables;
     /**
      * Add a subscriber for record updates on a table.
      * @returns A function to unsubscribe the subscriber.
@@ -373,6 +383,18 @@ export function createStore(storeConfig?: StoreConfig): Store {
         };
       };
 
+      const getTables = (): BoundTables => {
+        const boundTables: BoundTables = {};
+        const config = get().config;
+        for (const namespace of Object.keys(config)) {
+          boundTables[namespace] ??= {};
+          for (const label of Object.keys(config[namespace])) {
+            boundTables[namespace][label] = getTable({ namespace, label });
+          }
+        }
+        return boundTables;
+      };
+
       const registerTable = (tableInput: TableInput): BoundTable => {
         // TODO: add option to resolveTable to not include codegen/deploy options?
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -404,6 +426,7 @@ export function createStore(storeConfig?: StoreConfig): Store {
           getRecord,
           getRecords,
           getTable,
+          getTables,
           registerTable,
           subscribe,
           decodeKey,
