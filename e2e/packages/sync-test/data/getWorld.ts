@@ -4,7 +4,7 @@ import { GetContractReturnType, PublicClient, WalletClient } from "viem";
 
 type WorldAbi = typeof IWorldAbi;
 
-type WorldContract = GetContractReturnType<WorldAbi, PublicClient, WalletClient>;
+type WorldContract = GetContractReturnType<WorldAbi, PublicClient & WalletClient>;
 
 export function getWorld(page: Page) {
   return page.evaluate(() => {

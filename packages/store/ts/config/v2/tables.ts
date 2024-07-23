@@ -24,20 +24,16 @@ export function validateTables<scope extends Scope = AbiTypeScope>(
 }
 
 export type resolveTables<tables, scope extends Scope = AbiTypeScope> = show<{
-  readonly [label in keyof tables]: resolveTable<mergeIfUndefined<tables[label], { name: label }>, scope>;
+  readonly [label in keyof tables]: resolveTable<mergeIfUndefined<tables[label], { label: label }>, scope>;
 }>;
 
 export function resolveTables<tables extends TablesInput, scope extends Scope = AbiTypeScope>(
   tables: tables,
-  scope: scope = AbiTypeScope as unknown as scope,
+  scope: scope,
 ): resolveTables<tables, scope> {
-  if (!isObject(tables)) {
-    throw new Error(`Expected tables config, received ${JSON.stringify(tables)}`);
-  }
-
   return Object.fromEntries(
     Object.entries(tables).map(([label, table]) => {
-      return [label, resolveTable(mergeIfUndefined(table, { name: label }), scope)];
+      return [label, resolveTable(mergeIfUndefined(table, { label }), scope)];
     }),
   ) as never;
 }

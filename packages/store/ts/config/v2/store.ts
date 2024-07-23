@@ -7,6 +7,9 @@ import { resolveTables, validateTables } from "./tables";
 import { scopeWithUserTypes, validateUserTypes } from "./userTypes";
 import { mapEnums, resolveEnums, scopeWithEnums } from "./enums";
 import { resolveCodegen } from "./codegen";
+import { resolveNamespacedTables } from "./namespacedTables";
+import { resolveTable } from "./table";
+import { resolveNamespace } from "./namespace";
 
 export type extendedScope<input> = scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>;
 
@@ -14,88 +17,113 @@ export function extendedScope<input>(input: input): extendedScope<input> {
   return scopeWithEnums(get(input, "enums"), scopeWithUserTypes(get(input, "userTypes")));
 }
 
-export type validateStore<store> = {
-  [key in keyof store]: key extends "tables"
-    ? validateTables<store[key], extendedScope<store>>
+export type validateStore<input> = {
+  [key in keyof input]: key extends "tables"
+    ? validateTables<input[key], extendedScope<input>>
     : key extends "userTypes"
       ? UserTypes
       : key extends "enums"
-        ? narrow<store[key]>
+        ? narrow<input[key]>
         : key extends keyof StoreInput
           ? StoreInput[key]
           : ErrorMessage<`\`${key & string}\` is not a valid Store config option.`>;
 };
 
-export function validateStore(store: unknown): asserts store is StoreInput {
-  const scope = extendedScope(store);
-  if (hasOwnKey(store, "tables")) {
-    validateTables(store.tables, scope);
+export function validateStore(input: unknown): asserts input is StoreInput {
+  const scope = extendedScope(input);
+
+  if (hasOwnKey(input, "namespace") && typeof input.namespace === "string" && input.namespace.length > 14) {
+    throw new Error(`\`namespace\` must fit into a \`bytes14\`, but "${input.namespace}" is too long.`);
   }
 
-  if (hasOwnKey(store, "userTypes")) {
-    validateUserTypes(store.userTypes);
+  if (hasOwnKey(input, "tables")) {
+    validateTables(input.tables, scope);
+  }
+
+  if (hasOwnKey(input, "userTypes")) {
+    validateUserTypes(input.userTypes);
   }
 }
 
-type keyPrefix<store> = store extends { namespace: infer namespace extends string }
-  ? namespace extends ""
-    ? ""
-    : `${namespace}__`
-  : "";
-
-export type resolveStore<store> = {
-  readonly sourceDirectory: "sourceDirectory" extends keyof store
-    ? store["sourceDirectory"]
+export type resolveStore<
+  input,
+  namespace = "namespace" extends keyof input
+    ? input["namespace"] extends string
+      ? input["namespace"]
+      : CONFIG_DEFAULTS["namespace"]
+    : CONFIG_DEFAULTS["namespace"],
+> = {
+  readonly namespace: string;
+  readonly sourceDirectory: "sourceDirectory" extends keyof input
+    ? input["sourceDirectory"]
     : CONFIG_DEFAULTS["sourceDirectory"];
-  readonly tables: "tables" extends keyof store
-    ? resolveTables<
+  readonly tables: "tables" extends keyof input
+    ? resolveNamespacedTables<
         {
-          [tableKey in keyof store["tables"] & string as `${keyPrefix<store>}${tableKey}`]: mergeIfUndefined<
-            store["tables"][tableKey],
-            { namespace: get<store, "namespace">; name: tableKey }
+          readonly [label in keyof input["tables"]]: resolveTable<
+            mergeIfUndefined<input["tables"][label], { label: label; namespace: namespace }>,
+            extendedScope<input>
           >;
         },
-        extendedScope<store>
+        namespace
       >
     : {};
-  readonly userTypes: "userTypes" extends keyof store ? store["userTypes"] : {};
-  readonly enums: "enums" extends keyof store ? show<resolveEnums<store["enums"]>> : {};
-  readonly enumValues: "enums" extends keyof store ? show<mapEnums<store["enums"]>> : {};
-  readonly namespace: "namespace" extends keyof store ? store["namespace"] : CONFIG_DEFAULTS["namespace"];
-  readonly codegen: "codegen" extends keyof store ? resolveCodegen<store["codegen"]> : resolveCodegen<{}>;
+  readonly userTypes: "userTypes" extends keyof input ? input["userTypes"] : {};
+  readonly enums: "enums" extends keyof input ? show<resolveEnums<input["enums"]>> : {};
+  readonly enumValues: "enums" extends keyof input ? show<mapEnums<input["enums"]>> : {};
+  readonly codegen: "codegen" extends keyof input ? resolveCodegen<input["codegen"]> : resolveCodegen<{}>;
+  readonly namespaces: {
+    readonly [label in namespace & string]: resolveNamespace<
+      {
+        readonly label: label;
+        readonly tables: "tables" extends keyof input ? input["tables"] : undefined;
+      },
+      extendedScope<input>
+    >;
+  };
 };
 
-export function resolveStore<const store extends StoreInput>(store: store): resolveStore<store> {
-  // TODO: default `namespaceDirectories` to true if using top-level `namespaces` key (once its migrated to store)
-  const codegen = resolveCodegen(store.codegen);
+export function resolveStore<const input extends StoreInput>(input: input): resolveStore<input> {
+  const scope = extendedScope(input);
+  const namespace = input.namespace ?? CONFIG_DEFAULTS["namespace"];
+  const codegen = resolveCodegen(input.codegen);
+
+  const tablesInput = flatMorph(input.tables ?? {}, (label, table) => {
+    return [
+      label,
+      {
+        ...table,
+        label,
+        namespace,
+        codegen: {
+          ...table.codegen,
+          outputDirectory:
+            table.codegen?.outputDirectory ??
+            (codegen.namespaceDirectories && namespace !== "" ? `${namespace}/tables` : "tables"),
+        },
+      },
+    ];
+  });
+
+  const namespaces = {
+    [namespace]: resolveNamespace({ label: namespace, tables: tablesInput }, scope),
+  };
+
+  const tables = resolveTables(tablesInput, scope);
+
   return {
-    sourceDirectory: store.sourceDirectory ?? CONFIG_DEFAULTS["sourceDirectory"],
-    tables: resolveTables(
-      flatMorph(store.tables ?? {}, (name, table) => {
-        const namespace = store.namespace;
-        const key = namespace ? `${namespace}__${name}` : name;
-        return [
-          key,
-          mergeIfUndefined(table, {
-            namespace: namespace,
-            name,
-            codegen: mergeIfUndefined(table.codegen ?? {}, {
-              outputDirectory: codegen.namespaceDirectories && namespace?.length ? `${namespace}/tables` : "tables",
-            }),
-          }),
-        ];
-      }),
-      extendedScope(store),
-    ),
-    userTypes: store.userTypes ?? {},
-    enums: resolveEnums(store.enums ?? {}),
-    enumValues: mapEnums(store.enums ?? {}),
-    namespace: store.namespace ?? CONFIG_DEFAULTS["namespace"],
+    namespace,
+    tables: resolveNamespacedTables(tables, namespace),
+    namespaces,
+    sourceDirectory: input.sourceDirectory ?? CONFIG_DEFAULTS["sourceDirectory"],
+    userTypes: input.userTypes ?? {},
+    enums: resolveEnums(input.enums ?? {}),
+    enumValues: mapEnums(input.enums ?? {}),
     codegen,
   } as never;
 }
 
-export function defineStore<const store>(store: validateStore<store>): resolveStore<store> {
-  validateStore(store);
-  return resolveStore(store) as never;
+export function defineStore<const input>(input: validateStore<input>): show<resolveStore<input>> {
+  validateStore(input);
+  return resolveStore(input) as never;
 }

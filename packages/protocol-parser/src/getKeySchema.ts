@@ -1,9 +1,13 @@
-import { Table } from "@latticexyz/config";
+import { Schema, Table } from "@latticexyz/config";
 
-export type getKeySchema<table extends Table> = {
-  [fieldName in table["key"][number]]: table["schema"][fieldName];
-};
+type PartialTable = Pick<Table, "schema" | "key">;
 
-export function getKeySchema<table extends Table>(table: table): getKeySchema<table> {
+export type getKeySchema<table extends PartialTable> = PartialTable extends table
+  ? Schema
+  : {
+      readonly [fieldName in Extract<keyof table["schema"], table["key"][number]>]: table["schema"][fieldName];
+    };
+
+export function getKeySchema<table extends PartialTable>(table: table): getKeySchema<table> {
   return Object.fromEntries(table.key.map((fieldName) => [fieldName, table.schema[fieldName]])) as getKeySchema<table>;
 }

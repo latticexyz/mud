@@ -1,33 +1,37 @@
-import { existsSync, readFileSync } from "fs";
+import path from "node:path";
+import fs from "node:fs";
 import type { CommandModule } from "yargs";
-import { ethers } from "ethers";
-
-import { loadConfig } from "@latticexyz/config/node";
+import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { MUDError } from "@latticexyz/common/errors";
-import { cast, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
-import { resolveWorldConfig } from "@latticexyz/world/internal";
-import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
+import { cast, getRpcUrl } from "@latticexyz/common/foundry";
 import worldConfig from "@latticexyz/world/mud.config";
-import { resourceToHex } from "@latticexyz/common";
-import { getExistingContracts } from "../utils/getExistingContracts";
-import { createClient, http } from "viem";
-import { getChainId } from "viem/actions";
+import { Hex, createClient, http } from "viem";
+import { getChainId, readContract } from "viem/actions";
 import { World as WorldConfig } from "@latticexyz/world";
-import { worldToV1 } from "@latticexyz/world/config/v2";
+import { resolveSystems } from "@latticexyz/world/node";
+import { worldAbi } from "../deploy/common";
 
-// TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
-const systemsTableId = resourceToHex({
-  type: "system",
-  namespace: worldConfig.namespace,
-  name: worldConfig.tables.world__Systems.name,
-});
+const systemsTableId = worldConfig.namespaces.world.tables.Systems.tableId;
+
+function getWorldAddress(worldsFile: string, chainId: number): Hex {
+  if (!fs.existsSync(worldsFile)) {
+    throw new MUDError(`Missing expected worlds.json file at "${worldsFile}"`);
+  }
+
+  const deploys = JSON.parse(fs.readFileSync(worldsFile, "utf-8"));
+
+  if (!deploys[chainId]) {
+    throw new MUDError(`Missing chain ID ${chainId} in "${worldsFile}"`);
+  }
+
+  return deploys[chainId].address as Hex;
+}
 
 type Options = {
   tx: string;
   worldAddress?: string;
   configPath?: string;
   profile?: string;
-  srcDir?: string;
   rpc?: string;
 };
 
@@ -45,56 +49,43 @@ const commandModule: CommandModule<Options, Options> = {
       },
       configPath: { type: "string", description: "Path to the MUD config file" },
       profile: { type: "string", description: "The foundry profile to use" },
-      srcDir: { type: "string", description: "Source directory. Defaults to foundry src directory." },
       rpc: { type: "string", description: "json rpc endpoint. Defaults to foundry's configured eth_rpc_url" },
     });
   },
 
   async handler(args) {
-    args.profile ??= process.env.FOUNDRY_PROFILE;
-    const { profile } = args;
-    args.srcDir ??= await getSrcDirectory(profile);
-    args.rpc ??= await getRpcUrl(profile);
-    const { tx, configPath, srcDir, rpc } = args;
+    const configPath = await resolveConfigPath(args.configPath);
+    const rootDir = path.dirname(configPath);
 
-    const existingContracts = getExistingContracts(srcDir);
+    const profile = args.profile ?? process.env.FOUNDRY_PROFILE;
+    const rpc = args.rpc ?? (await getRpcUrl(profile));
 
-    // Load the config
-    const configV2 = (await loadConfig(configPath)) as WorldConfig;
-    const mudConfig = worldToV1(configV2);
+    const config = (await loadConfig(configPath)) as WorldConfig;
 
-    const resolvedConfig = resolveWorldConfig(
-      mudConfig,
-      existingContracts.map(({ basename }) => basename),
+    const client = createClient({ transport: http(rpc) });
+    const chainId = await getChainId(client);
+    const worldAddress = (args.worldAddress ?? getWorldAddress(config.deploy.worldsFile, chainId)) as Hex;
+
+    const systems = await resolveSystems({ rootDir, config });
+
+    const labels = await Promise.all(
+      systems.map(async (system) => ({
+        label: system.label,
+        address: await readContract(client, {
+          abi: worldAbi,
+          address: worldAddress,
+          functionName: "getField",
+          args: [systemsTableId, [system.systemId], 0],
+        }),
+      })),
     );
-
-    // Get worldAddress either from args or from worldsFile
-    const worldAddress = args.worldAddress ?? (await getWorldAddress(mudConfig.worldsFile, rpc));
-
-    // Create World contract instance from deployed address
-    const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
-    const WorldContract = new ethers.Contract(worldAddress, IBaseWorldAbi, provider);
-
-    // TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
-    const namespace = mudConfig.namespace;
-    const names = Object.values(resolvedConfig.systems).map(({ name }) => name);
-
-    // Fetch system table field layout from chain
-    const systemTableFieldLayout = await WorldContract.getFieldLayout(systemsTableId);
-    const labels: { name: string; address: string }[] = [];
-    for (const name of names) {
-      const systemSelector = resourceToHex({ type: "system", namespace, name });
-      // Get the first field of `Systems` table (the table maps system name to its address and other data)
-      const address = await WorldContract.getField(systemsTableId, [systemSelector], 0, systemTableFieldLayout);
-      labels.push({ name, address });
-    }
 
     const result = await cast([
       "run",
       "--label",
       `${worldAddress}:World`,
-      ...labels.map(({ name, address }) => ["--label", `${address}:${name}`]).flat(),
-      `${tx}`,
+      ...labels.map(({ label, address }) => ["--label", `${address}:${label}`]).flat(),
+      `${args.tx}`,
     ]);
     console.log(result);
 
@@ -103,18 +94,3 @@ const commandModule: CommandModule<Options, Options> = {
 };
 
 export default commandModule;
-
-async function getWorldAddress(worldsFile: string, rpc: string) {
-  if (existsSync(worldsFile)) {
-    const client = createClient({ transport: http(rpc) });
-    const chainId = await getChainId(client);
-    const deploys = JSON.parse(readFileSync(worldsFile, "utf-8"));
-
-    if (!deploys[chainId]) {
-      throw new MUDError(`chainId ${chainId} is missing in worldsFile "${worldsFile}"`);
-    }
-    return deploys[chainId].address as string;
-  } else {
-    throw new MUDError("worldAddress is not specified and worldsFile is missing");
-  }
-}

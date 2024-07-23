@@ -22,12 +22,42 @@ describe("logToTable", () => {
     ).toMatchInlineSnapshot(`
       {
         "address": "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
+        "key": [
+          "tableId",
+        ],
         "keySchema": {
           "tableId": "bytes32",
         },
         "name": "Tables",
         "namespace": "mudstore",
+        "schema": {
+          "abiEncodedFieldNames": {
+            "internalType": "bytes",
+            "type": "bytes",
+          },
+          "abiEncodedKeyNames": {
+            "internalType": "bytes",
+            "type": "bytes",
+          },
+          "fieldLayout": {
+            "internalType": "bytes32",
+            "type": "bytes32",
+          },
+          "keySchema": {
+            "internalType": "bytes32",
+            "type": "bytes32",
+          },
+          "tableId": {
+            "internalType": "bytes32",
+            "type": "bytes32",
+          },
+          "valueSchema": {
+            "internalType": "bytes32",
+            "type": "bytes32",
+          },
+        },
         "tableId": "0x74626d756473746f72650000000000005461626c657300000000000000000000",
+        "type": "table",
         "valueSchema": {
           "abiEncodedFieldNames": "bytes",
           "abiEncodedKeyNames": "bytes",

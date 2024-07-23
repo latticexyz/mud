@@ -6,3 +6,5 @@ DOCS.md
 artifacts
 yarn-error.log
 API
+
+src/codegen

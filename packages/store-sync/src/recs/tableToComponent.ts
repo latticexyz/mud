@@ -3,10 +3,9 @@ import { StoreComponentMetadata } from "./common";
 import { SchemaAbiTypeToRecsType, schemaAbiTypeToRecsType } from "./schemaAbiTypeToRecsType";
 import { Table } from "@latticexyz/config";
 import { mapObject } from "@latticexyz/common/utils";
-import { ResourceLabel, resourceToLabel } from "@latticexyz/common";
 import { getKeySchema, getSchemaTypes, getValueSchema } from "@latticexyz/protocol-parser/internal";
 
-export type TableToComponent<table extends Table> = Component<
+export type tableToComponent<table extends Table> = Component<
   {
     __staticData: Type.OptionalString;
     __encodedLengths: Type.OptionalString;
@@ -15,14 +14,14 @@ export type TableToComponent<table extends Table> = Component<
     [fieldName in keyof getValueSchema<table>]: Type & SchemaAbiTypeToRecsType<table["schema"][fieldName]["type"]>;
   },
   StoreComponentMetadata & {
-    componentName: table["name"];
-    tableName: ResourceLabel;
+    componentName: table["label"];
+    tableName: table["label"];
     keySchema: getSchemaTypes<getKeySchema<table>>;
     valueSchema: getSchemaTypes<getValueSchema<table>>;
   }
 >;
 
-export function tableToComponent<table extends Table>(world: World, table: table): TableToComponent<table> {
+export function tableToComponent<table extends Table>(world: World, table: table): tableToComponent<table> {
   const keySchema = getSchemaTypes(getKeySchema(table));
   const valueSchema = getSchemaTypes(getValueSchema(table));
   return defineComponent(
@@ -36,11 +35,11 @@ export function tableToComponent<table extends Table>(world: World, table: table
     {
       id: table.tableId,
       metadata: {
-        componentName: table.name,
-        tableName: resourceToLabel(table),
+        componentName: table.label,
+        tableName: table.label,
         keySchema,
         valueSchema,
       },
     },
-  ) as TableToComponent<table>;
+  ) as never;
 }

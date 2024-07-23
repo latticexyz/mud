@@ -2,23 +2,25 @@ import { Account, Address, Chain, Client, Hex, Transport } from "viem";
 import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
-import { Config, ConfigInput, Module, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
+import { Library, Module, System, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
 import { ensureSystems } from "./ensureSystems";
 import { waitForTransactionReceipt } from "viem/actions";
 import { getWorldDeploy } from "./getWorldDeploy";
 import { ensureFunctions } from "./ensureFunctions";
 import { ensureModules } from "./ensureModules";
-import { Table } from "./configToTables";
 import { ensureNamespaceOwner } from "./ensureNamespaceOwner";
 import { debug } from "./debug";
 import { resourceToLabel } from "@latticexyz/common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";
 import { ensureWorldFactory } from "./ensureWorldFactory";
+import { Table } from "@latticexyz/config";
 
-type DeployOptions<configInput extends ConfigInput> = {
+type DeployOptions = {
   client: Client<Transport, Chain | undefined, Account>;
-  config: Config<configInput>;
+  tables: readonly Table[];
+  systems: readonly System[];
+  libraries: readonly Library[];
   modules?: readonly Module[];
   salt?: Hex;
   worldAddress?: Address;
@@ -38,17 +40,17 @@ type DeployOptions<configInput extends ConfigInput> = {
  * amount of work to make the world match the config (e.g. deploy new tables,
  * replace systems, etc.)
  */
-export async function deploy<configInput extends ConfigInput>({
+export async function deploy({
   client,
-  config,
+  tables,
+  systems,
+  libraries,
   modules = [],
   salt,
   worldAddress: existingWorldAddress,
   deployerAddress: initialDeployerAddress,
   withWorldProxy,
-}: DeployOptions<configInput>): Promise<WorldDeploy> {
-  const tables = Object.values(config.tables) as Table[];
-
+}: DeployOptions): Promise<WorldDeploy> {
   const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
 
   await ensureWorldFactory(client, deployerAddress, withWorldProxy);
@@ -58,18 +60,18 @@ export async function deploy<configInput extends ConfigInput>({
     client,
     deployerAddress,
     contracts: [
-      ...config.libraries.map((library) => ({
-        bytecode: library.prepareDeploy(deployerAddress, config.libraries).bytecode,
+      ...libraries.map((library) => ({
+        bytecode: library.prepareDeploy(deployerAddress, libraries).bytecode,
         deployedBytecodeSize: library.deployedBytecodeSize,
         label: `${library.path}:${library.name} library`,
       })),
-      ...config.systems.map((system) => ({
-        bytecode: system.prepareDeploy(deployerAddress, config.libraries).bytecode,
+      ...systems.map((system) => ({
+        bytecode: system.prepareDeploy(deployerAddress, libraries).bytecode,
         deployedBytecodeSize: system.deployedBytecodeSize,
         label: `${resourceToLabel(system)} system`,
       })),
       ...modules.map((mod) => ({
-        bytecode: mod.prepareDeploy(deployerAddress, config.libraries).bytecode,
+        bytecode: mod.prepareDeploy(deployerAddress, libraries).bytecode,
         deployedBytecodeSize: mod.deployedBytecodeSize,
         label: `${mod.name} module`,
       })),
@@ -90,7 +92,7 @@ export async function deploy<configInput extends ConfigInput>({
   const namespaceTxs = await ensureNamespaceOwner({
     client,
     worldDeploy,
-    resourceIds: [...tables.map((table) => table.tableId), ...config.systems.map((system) => system.systemId)],
+    resourceIds: [...tables.map((table) => table.tableId), ...systems.map((system) => system.systemId)],
   });
 
   debug("waiting for all namespace registration transactions to confirm");
@@ -106,19 +108,19 @@ export async function deploy<configInput extends ConfigInput>({
   const systemTxs = await ensureSystems({
     client,
     deployerAddress,
-    libraries: config.libraries,
+    libraries,
     worldDeploy,
-    systems: config.systems,
+    systems,
   });
   const functionTxs = await ensureFunctions({
     client,
     worldDeploy,
-    functions: config.systems.flatMap((system) => system.functions),
+    functions: systems.flatMap((system) => system.functions),
   });
   const moduleTxs = await ensureModules({
     client,
     deployerAddress,
-    libraries: config.libraries,
+    libraries,
     worldDeploy,
     modules,
   });

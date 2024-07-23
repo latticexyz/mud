@@ -113,11 +113,11 @@ export type resolveTableWithShorthand<table, scope extends Scope = AbiTypeScope>
   : table;
 
 export type resolveTablesWithShorthands<input, scope extends AbiTypeScope = AbiTypeScope> = {
-  [key in keyof input]: resolveTableWithShorthand<input[key], scope>;
+  [label in keyof input]: resolveTableWithShorthand<input[label], scope>;
 };
 
 export type validateTablesWithShorthands<tables, scope extends Scope = AbiTypeScope> = {
-  [key in keyof tables]: validateTableWithShorthand<tables[key], scope, { inStoreContext: true }>;
+  [label in keyof tables]: validateTableWithShorthand<tables[label], scope, { inStoreContext: true }>;
 };
 
 export function validateTablesWithShorthands<scope extends Scope = AbiTypeScope>(
@@ -125,11 +125,11 @@ export function validateTablesWithShorthands<scope extends Scope = AbiTypeScope>
   scope: scope,
 ): asserts tables is TablesWithShorthandsInput {
   if (isObject(tables)) {
-    for (const key of Object.keys(tables)) {
-      if (isTableShorthandInput(get(tables, key))) {
-        validateTableShorthand(get(tables, key), scope);
+    for (const label of Object.keys(tables)) {
+      if (isTableShorthandInput(get(tables, label))) {
+        validateTableShorthand(get(tables, label), scope);
       } else {
-        validateTable(get(tables, key), scope);
+        validateTable(get(tables, label), scope);
       }
     }
   }

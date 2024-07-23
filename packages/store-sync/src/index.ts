@@ -1,4 +1,5 @@
 export * from "./common";
+export * from "./configToTables";
 export * from "./createStoreSync";
 export * from "./SyncStep";
 export * from "./isTableRegistrationLog";

@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { storeEventsAbi } from "@latticexyz/store";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { createStore } from "./createStore";
-import { configV2 as config, deployMockGame } from "../../test/mockGame";
+import { config, deployMockGame } from "../../test/mockGame";
 import { fetchAndStoreLogs } from "../fetchAndStoreLogs";
 import { testClient } from "../../test/common";
 import { getBlockNumber } from "viem/actions";
@@ -59,6 +59,7 @@ describe("createStorageAdapter", async () => {
             "key": [
               "player",
             ],
+            "label": "Position",
             "name": "Position",
             "namespace": "",
             "schema": {
@@ -109,6 +110,7 @@ describe("createStorageAdapter", async () => {
             "key": [
               "player",
             ],
+            "label": "Position",
             "name": "Position",
             "namespace": "",
             "schema": {
@@ -159,6 +161,7 @@ describe("createStorageAdapter", async () => {
             "key": [
               "player",
             ],
+            "label": "Position",
             "name": "Position",
             "namespace": "",
             "schema": {
@@ -209,6 +212,7 @@ describe("createStorageAdapter", async () => {
             "key": [
               "player",
             ],
+            "label": "Position",
             "name": "Position",
             "namespace": "",
             "schema": {

@@ -47,7 +47,7 @@ export type ValidateTableOptions = { inStoreContext: boolean };
 
 export type requiredTableKey<inStoreContext extends boolean> = Exclude<
   requiredKeyOf<TableInput>,
-  inStoreContext extends true ? "name" | "namespace" : ""
+  inStoreContext extends true ? "label" | "namespace" : ""
 >;
 
 export type validateTable<
@@ -59,9 +59,9 @@ export type validateTable<
     ? validateKeys<getStaticAbiTypeKeys<conform<get<input, "schema">, SchemaInput>, scope>, get<input, key>>
     : key extends "schema"
       ? validateSchema<get<input, key>, scope>
-      : key extends "name" | "namespace"
+      : key extends "label" | "namespace"
         ? options["inStoreContext"] extends true
-          ? ErrorMessage<"Overrides of `name` and `namespace` are not allowed for tables in a store config">
+          ? ErrorMessage<"Overrides of `label` and `namespace` are not allowed for tables in a store config">
           : key extends keyof input
             ? narrow<input[key]>
             : never
@@ -96,8 +96,15 @@ export function validateTable<input, scope extends Scope = AbiTypeScope>(
     );
   }
 
-  if ((options.inStoreContext && hasOwnKey(input, "name")) || hasOwnKey(input, "namespace")) {
-    throw new Error("Overrides of `name` and `namespace` are not allowed for tables in a store config.");
+  if (hasOwnKey(input, "namespace") && typeof input.namespace === "string" && input.namespace.length > 14) {
+    throw new Error(`Table \`namespace\` must fit into a \`bytes14\`, but "${input.namespace}" is too long.`);
+  }
+  if (hasOwnKey(input, "name") && typeof input.name === "string" && input.name.length > 16) {
+    throw new Error(`Table \`name\` must fit into a \`bytes16\`, but "${input.name}" is too long.`);
+  }
+
+  if (options.inStoreContext && (hasOwnKey(input, "label") || hasOwnKey(input, "namespace"))) {
+    throw new Error("Overrides of `label` and `namespace` are not allowed for tables in a store config.");
   }
 }
 
@@ -131,12 +138,13 @@ export function resolveTableCodegen<input extends TableInput>(input: input): res
 
 export type resolveTable<input, scope extends Scope = Scope> = input extends TableInput
   ? {
-      readonly tableId: Hex;
-      readonly name: input["name"];
-      readonly namespace: undefined extends input["namespace"] ? typeof TABLE_DEFAULTS.namespace : input["namespace"];
+      readonly label: input["label"];
       readonly type: undefined extends input["type"] ? typeof TABLE_DEFAULTS.type : input["type"];
-      readonly key: Readonly<input["key"]>;
+      readonly namespace: string;
+      readonly name: string;
+      readonly tableId: Hex;
       readonly schema: resolveSchema<input["schema"], scope>;
+      readonly key: Readonly<input["key"]>;
       readonly codegen: resolveTableCodegen<input>;
       readonly deploy: mergeIfUndefined<
         undefined extends input["deploy"] ? {} : input["deploy"],
@@ -149,18 +157,20 @@ export function resolveTable<input extends TableInput, scope extends Scope = Abi
   input: input,
   scope: scope = AbiTypeScope as unknown as scope,
 ): resolveTable<input, scope> {
-  const name = input.name;
+  const label = input.label;
   const type = input.type ?? TABLE_DEFAULTS.type;
   const namespace = input.namespace ?? TABLE_DEFAULTS.namespace;
-  const tableId = input.tableId ?? resourceToHex({ type, namespace, name });
+  const name = input.name ?? label.slice(0, 16);
+  const tableId = resourceToHex({ type, namespace, name });
 
   return {
-    tableId,
-    name,
-    namespace,
+    label,
     type,
-    key: input.key,
+    namespace,
+    name,
+    tableId,
     schema: resolveSchema(input.schema, scope),
+    key: input.key,
     codegen: resolveTableCodegen(input),
     deploy: mergeIfUndefined(input.deploy ?? {}, TABLE_DEPLOY_DEFAULTS),
   } as never;

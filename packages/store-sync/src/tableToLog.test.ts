@@ -1,19 +1,14 @@
 /* eslint-disable max-len */
 import { describe, it, expect } from "vitest";
 import { tableToLog } from "./tableToLog";
-import { storeTables } from "./common";
-import { flattenSchema } from "./flattenSchema";
+import { schemasTable } from "./common";
 
 describe("tableToLog", () => {
   it("should convert a table object to table registration log", async () => {
     expect(
       tableToLog({
+        ...schemasTable,
         address: "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
-        tableId: storeTables.Tables.tableId,
-        namespace: storeTables.Tables.namespace,
-        name: storeTables.Tables.name,
-        keySchema: flattenSchema(storeTables.Tables.keySchema),
-        valueSchema: flattenSchema(storeTables.Tables.valueSchema),
       }),
     ).toMatchInlineSnapshot(`
       {

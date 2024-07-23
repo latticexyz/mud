@@ -48,12 +48,16 @@ describe("validateKeys", () => {
 describe("resolveTable", () => {
   it("should return the full config given a full config with one key", () => {
     const table = defineTable({
+      label: "",
       schema: { id: "address", name: "string", age: "uint256" },
       key: ["age"],
-      name: "",
     });
 
     const expected = {
+      label: "",
+      type: "table",
+      namespace: "" as string,
+      name: "" as string,
       tableId: resourceToHex({ type: "table", namespace: "", name: "" }),
       schema: {
         id: { type: "address", internalType: "address" },
@@ -61,10 +65,7 @@ describe("resolveTable", () => {
         age: { type: "uint256", internalType: "uint256" },
       },
       key: ["age"],
-      name: "",
-      namespace: "",
       codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
-      type: "table",
       deploy: TABLE_DEPLOY_DEFAULTS,
     } as const;
 
@@ -73,11 +74,15 @@ describe("resolveTable", () => {
 
   it("should return the full config given a full config with two key", () => {
     const table = defineTable({
+      label: "",
       schema: { id: "address", name: "string", age: "uint256" },
       key: ["age", "id"],
-      name: "",
     });
     const expected = {
+      label: "",
+      type: "table",
+      namespace: "" as string,
+      name: "" as string,
       tableId: resourceToHex({ type: "table", namespace: "", name: "" }),
       schema: {
         id: { type: "address", internalType: "address" },
@@ -85,10 +90,7 @@ describe("resolveTable", () => {
         age: { type: "uint256", internalType: "uint256" },
       },
       key: ["age", "id"],
-      name: "",
-      namespace: "",
       codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-      type: "table",
       deploy: TABLE_DEPLOY_DEFAULTS,
     } as const;
 
@@ -100,14 +102,18 @@ describe("resolveTable", () => {
 
     const table = defineTable(
       {
+        label: "",
         schema: { id: "Static", name: "Dynamic", age: "uint256" },
         key: ["age"],
-        name: "",
       },
       scope,
     );
 
     const expected = {
+      label: "",
+      type: "table",
+      namespace: "" as string,
+      name: "" as string,
       tableId: resourceToHex({ type: "table", namespace: "", name: "" }),
       schema: {
         id: { type: "address", internalType: "Static" },
@@ -115,10 +121,7 @@ describe("resolveTable", () => {
         age: { type: "uint256", internalType: "uint256" },
       },
       key: ["age"],
-      name: "",
-      namespace: "",
       codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
-      type: "table",
       deploy: TABLE_DEPLOY_DEFAULTS,
     } as const;
 
@@ -127,9 +130,9 @@ describe("resolveTable", () => {
 
   it("should pass through deploy config", () => {
     const table = defineTable({
+      label: "",
       schema: { id: "address" },
       key: ["id"],
-      name: "",
       deploy: { disabled: true },
     });
 
@@ -141,10 +144,10 @@ describe("resolveTable", () => {
   it("should throw if the provided key is a dynamic ABI type", () => {
     attest(() =>
       defineTable({
+        label: "",
         schema: { id: "address", name: "string", age: "uint256" },
         // @ts-expect-error Type '"name"' is not assignable to type '"id" | "age"'
         key: ["name"],
-        name: "",
       }),
     )
       .throws('Invalid key. Expected `("id" | "age")[]`, received `["name"]`')
@@ -156,10 +159,10 @@ describe("resolveTable", () => {
     attest(() =>
       defineTable(
         {
+          label: "",
           schema: { id: "address", name: "string", age: "uint256" },
           // @ts-expect-error Type '"name"' is not assignable to type '"id" | "age"'
           key: ["name"],
-          name: "",
         },
         scope,
       ),
@@ -173,10 +176,10 @@ describe("resolveTable", () => {
     attest(() =>
       defineTable(
         {
+          label: "",
           schema: { id: "CustomType", name: "string", age: "uint256" },
           // @ts-expect-error Type '"id"' is not assignable to type '"age"'
           key: ["id"],
-          name: "",
         },
         scope,
       ),
@@ -190,10 +193,10 @@ describe("resolveTable", () => {
     attest(() =>
       defineTable(
         {
+          label: "",
           schema: { id: "address", name: "string", age: "uint256" },
           // @ts-expect-error Type '"NotAKey"' is not assignable to type '"id" | "age"'
           key: ["NotAKey"],
-          name: "",
         },
         scope,
       ),
@@ -206,8 +209,8 @@ describe("resolveTable", () => {
     attest(() =>
       // @ts-expect-error Property 'key' is missing in type
       defineTable({
+        label: "",
         schema: { id: "address" },
-        name: "",
       }),
     )
       .throws('Invalid key. Expected `("id")[]`, received `undefined')
@@ -217,10 +220,10 @@ describe("resolveTable", () => {
   it("should throw if a string is provided as key", () => {
     attest(() =>
       defineTable({
+        label: "",
         schema: { id: "address" },
         // @ts-expect-error Type 'string' is not assignable to type 'readonly string[]'
         key: "",
-        name: "",
       }),
     )
       .throws('Invalid key. Expected `("id")[]`, received ``')
@@ -230,10 +233,10 @@ describe("resolveTable", () => {
   it("should throw if a string is provided as schema", () => {
     attest(() =>
       defineTable({
+        label: "",
         // @ts-expect-error Type 'string' is not assignable to type 'SchemaInput'.
         schema: "uint256",
         key: [],
-        name: "",
       }),
     )
       .throws('Error: Expected schema, received "uint256"')
@@ -243,9 +246,9 @@ describe("resolveTable", () => {
   it("should throw if an unknown key is provided", () => {
     attest(() =>
       defineTable({
+        label: "",
         schema: { id: "address" },
         key: ["id"],
-        name: "",
         // @ts-expect-error Key `keySchema` does not exist in TableInput
         keySchema: { id: "address" },
       }),
@@ -259,9 +262,9 @@ describe("getKeySchema", () => {
     const scope = extendScope(AbiTypeScope, { Static: "address", Dynamic: "string" });
     const table = defineTable(
       {
+        label: "",
         schema: { id: "Static", name: "Dynamic", age: "uint256" },
         key: ["age"],
-        name: "",
       },
       scope,
     );
@@ -283,9 +286,9 @@ describe("getValueSchema", () => {
     const scope = extendScope(AbiTypeScope, { Static: "address", Dynamic: "string" });
     const table = defineTable(
       {
+        label: "",
         schema: { id: "Static", name: "Dynamic", age: "uint256" },
         key: ["age"],
-        name: "",
       },
       scope,
     );
