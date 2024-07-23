@@ -16,6 +16,7 @@ import { ArrowUpDown, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { bufferToBigInt } from "./utils/bufferToBigInt";
+import { Input } from "@/components/ui/input";
 
 export function TablesViewer({
   table: selectedTable,
@@ -28,6 +29,7 @@ export function TablesViewer({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const [globalFilter, setGlobalFilter] = useState("");
 
   const { data: schema } = useQuery({
     queryKey: ["schema", { table: selectedTable }],
@@ -92,7 +94,11 @@ export function TablesViewer({
         row: {
           getValue: (name: string) => string;
         };
-      }) => <input className="bg-transparent" defaultValue={row.getValue(name)} />,
+      }) => {
+        // TODO: editable row
+        // return <input className="bg-transparent" defaultValue={row.getValue(name)} />;
+        return row.getValue(name);
+      },
     };
   });
 
@@ -112,11 +118,15 @@ export function TablesViewer({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: "includesString",
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      globalFilter,
     },
   });
 
@@ -130,6 +140,15 @@ export function TablesViewer({
 
   return (
     <>
+      <div className="pb-4">
+        <Input
+          placeholder="Filter all columns..."
+          value={globalFilter ?? ""}
+          onChange={(event) => table.setGlobalFilter(event.target.value)}
+          className="max-w-sm border rounded px-2 py-1"
+        />
+      </div>
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -165,10 +184,6 @@ export function TablesViewer({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        {/* <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s)
-          selected.
-        </div> */}
         <div className="space-x-2">
           <Button
             variant="outline"
