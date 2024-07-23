@@ -4,6 +4,7 @@ export default defineConfig({
   entry: {
     index: "src/exports/index.ts",
     internal: "src/exports/internal.ts",
+    recs: "src/exports/recs.ts",
   },
   target: "esnext",
   format: ["esm"],
