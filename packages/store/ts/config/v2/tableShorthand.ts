@@ -32,16 +32,13 @@ export type validateTableShorthand<input, scope extends Scope = AbiTypeScope> = 
     ? // Require all values to be valid types in this scope
       conform<input, ScopedSchemaInput<scope>>
     : NoStaticKeyFieldError
-  : // If a fixed array type is provided, accept it
-    input extends FixedArrayAbiType
+  : // If a fixed array type or a valid type from the scope is provided, accept it
+    input extends FixedArrayAbiType | keyof scope["types"]
     ? input
-    : // If a valid type from the scope is provided, accept it
-      input extends keyof scope["types"]
-      ? input
-      : // If the input is not a valid shorthand, return the expected type
-        input extends string
-        ? keyof scope["types"]
-        : ScopedSchemaInput<scope>;
+    : // If the input is not a valid shorthand, return the expected type
+      input extends string
+      ? keyof scope["types"]
+      : ScopedSchemaInput<scope>;
 
 export function validateTableShorthand<scope extends Scope = AbiTypeScope>(
   shorthand: unknown,
@@ -65,16 +62,16 @@ export function validateTableShorthand<scope extends Scope = AbiTypeScope>(
   throw new Error(`Invalid table shorthand.`);
 }
 
-export type shorthandToTableInput<shorthand, scope extends Scope = AbiTypeScope> = shorthand extends FixedArrayAbiType
+export type shorthandToTableInput<shorthand, scope extends Scope = AbiTypeScope> = shorthand extends
+  | FixedArrayAbiType
+  | keyof scope["types"]
   ? { schema: { id: "bytes32"; value: shorthand }; key: ["id"] }
-  : shorthand extends keyof scope["types"]
-    ? { schema: { id: "bytes32"; value: shorthand }; key: ["id"] }
-    : shorthand extends SchemaInput
-      ? "id" extends getStaticAbiTypeKeys<shorthand, scope>
-        ? // If the shorthand includes a static field called `id`, use it as `key`
-          { schema: shorthand; key: ["id"] }
-        : never
-      : never;
+  : shorthand extends SchemaInput
+    ? "id" extends getStaticAbiTypeKeys<shorthand, scope>
+      ? // If the shorthand includes a static field called `id`, use it as `key`
+        { schema: shorthand; key: ["id"] }
+      : never
+    : never;
 
 export function shorthandToTableInput<shorthand extends TableShorthandInput, scope extends Scope = AbiTypeScope>(
   shorthand: shorthand,
