@@ -40,6 +40,30 @@ export async function syncToZustandQuery({
     key: [],
   });
 
+  /**
+   * Two potential approaches:
+   *
+   * - Fetch initial state from dozer SQL
+   * - Encode to logs
+   * - Fetch logs from min to max from RPC and append them at the end
+   * - Pass everything as `initialRecords` to `createStoreSync`
+   *
+   * OR
+   *
+   * - Fetch initial state from dozer SQL, keep in temporary decoded structure
+   * - Fetch logs from min to max from RPC, decode and apply to temporary structure
+   * - Write everything in one go to the store
+   * - Skip fetching from indexer, continue syncing from RPC
+   *
+   * In both approaches we need the local tables to not send updates until the sync is done,
+   * then send an update with the entire store.
+   *
+   * The first approach seems like a lot of processing overhead (encoding records) but would be
+   * compatible with all state libs. The second approach would be specific to ZustandQuery.
+   *
+   * Let's do first approach for now.
+   */
+
   const storeSync = await createStoreSync({
     storageAdapter,
     config,
