@@ -1239,6 +1239,9 @@ importers:
       '@types/react-dom':
         specifier: ^18
         version: 18.2.7
+      '@types/react-highlight-words':
+        specifier: ^0.20.0
+        version: 0.20.0
       eslint:
         specifier: ^8
         version: 8.57.0
@@ -4661,6 +4664,9 @@ packages:
 
   '@types/react-dom@18.2.7':
     resolution: {integrity: sha512-GRaAEriuT4zp9N4p1i8BDBYmEyfo+xQ3yHjJU4eiK5NDa1RmUZG+unZABUTK4/Ox/M+GaHwb6Ow8rUITrtjszA==}
+
+  '@types/react-highlight-words@0.20.0':
+    resolution: {integrity: sha512-Qm512TiOakvtNzHJ2+TNVHnLn5cJ2wLQV0+LrhuispVth6dRf5b8ydjq3Kc0thpZ7bz4s6RnG6meboAXHWRK+Q==}
 
   '@types/react@18.2.22':
     resolution: {integrity: sha512-60fLTOLqzarLED2O3UQImc/lsNRgG0jE/a1mPW9KjMemY0LMITWEsbS4VvZ4p6rorEHd5YKxxmMKSDK505GHpA==}
@@ -15536,6 +15542,10 @@ snapshots:
   '@types/range-parser@1.2.7': {}
 
   '@types/react-dom@18.2.7':
+    dependencies:
+      '@types/react': 18.2.22
+
+  '@types/react-highlight-words@0.20.0':
     dependencies:
       '@types/react': 18.2.22
 
