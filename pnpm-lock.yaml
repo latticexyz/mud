@@ -8,9 +8,9 @@ importers:
 
   .:
     devDependencies:
-      '@ark/attest':
-        specifier: 0.9.2
-        version: 0.9.2(typescript@5.4.2)
+      '@arktype/attest':
+        specifier: 0.7.5
+        version: 0.7.5(typescript@5.4.2)
       '@changesets/cli':
         specifier: ^2.26.1
         version: 2.26.1
@@ -880,6 +880,9 @@ importers:
 
   packages/store-sync:
     dependencies:
+      '@arktype/util':
+        specifier: 0.1.0
+        version: 0.1.0
       '@latticexyz/block-logs-stream':
         specifier: workspace:*
         version: link:../block-logs-stream
@@ -1196,21 +1199,6 @@ packages:
     resolution: {integrity: sha512-lFMjJTrFL3j7L9yBxwYfCq2k6qqwHyzuUl/XBnif78PWTJYyL/dfowQHWE3sp6U6ZzqWiiIZnpTMO96zhkjwtg==}
     engines: {node: '>=6.0.0'}
 
-  '@ark/attest@0.9.2':
-    resolution: {integrity: sha512-AgwTHTmRMKiEWFeXIHtNb87KISPwACn+kUrAxlqyRx+0/opXA1qnEn/hKCyB61zWPfcur4dB0GUnx+ILDCl5Dg==}
-    hasBin: true
-    peerDependencies:
-      typescript: '*'
-
-  '@ark/fs@0.1.0':
-    resolution: {integrity: sha512-A7zoIqcO8dPKbzYruYuCro1J4Ai/20rwlIJv2ExbKOBl/XowczKnNV8bh+6azOkkieeZJdrnSXSfNklVHf7zoA==}
-
-  '@ark/schema@0.2.0':
-    resolution: {integrity: sha512-IkNWCSHdjaoemMXpps4uFHEAQzwJPbTAS8K2vcQpk90sa+eNBuPSVyB/81/Qyl1VYW0iX3ceGC5NL/OznQv1jg==}
-
-  '@ark/util@0.1.0':
-    resolution: {integrity: sha512-qCLYICQoCy3kEKDVwirQp8qvxhY7NJd8BhhoHaj1l3wCFAk9NUbcDsxAkPStZEMdPI/d7NcbGJe8SWZuRG2twQ==}
-
   '@arktype/attest@0.7.5':
     resolution: {integrity: sha512-ZOF9uqLbvoVO6RHhlByJEBBj5qhWLpaCK/wWa5guD1OQR1/a7JZ9jCrDAcaASt6tYBA3dGhDerXhc7FcDWlRQw==}
     hasBin: true
@@ -1231,6 +1219,9 @@ packages:
 
   '@arktype/util@0.0.41':
     resolution: {integrity: sha512-0YURzJ42v+lhlP1t5Dj90YezETRTCdFU0oM4xMVpYsmPx/DHJzr9n7AX1QPAlYWH4wY7hYY3gwai3O+8VntPgw==}
+
+  '@arktype/util@0.1.0':
+    resolution: {integrity: sha512-t5jCNbspCF/XizGfmM5fn+86IMtQgCB2Px3Y1E8ckm5AjTECyI7Aj5pV6e9iL8qXF9FdKA53FBLRzAZUqYBnCw==}
 
   '@aws-crypto/ie11-detection@3.0.0':
     resolution: {integrity: sha512-341lBBkiY1DfDNKai/wXM3aujNBkXR7tq1URPQDL9wi3AUbI80NR74uF1TXHMm7po1AcnFk8iu2S2IeU/+/A+Q==}
@@ -2741,11 +2732,6 @@ packages:
   '@typescript/vfs@1.5.0':
     resolution: {integrity: sha512-AJS307bPgbsZZ9ggCT3wwpg3VbTKMFNHfaY/uF0ahSkYYrPF2dSSKDNIDIQAHm9qJqbLvCsSJH7yN4Vs/CsMMg==}
 
-  '@typescript/vfs@1.5.3':
-    resolution: {integrity: sha512-OSZ/o3wwD5VPZVdGGsXWk7sRGRtwrGnqA4zwmb33FTs7Wxmad0QTkQCbaNyqWA8hL09TCwAthdp8yjFA5G1lvw==}
-    peerDependencies:
-      typescript: '*'
-
   '@ungap/structured-clone@1.2.0':
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
 
@@ -2956,9 +2942,6 @@ packages:
 
   arktype@1.0.29-alpha:
     resolution: {integrity: sha512-glMLgVhIQRSkR3tymiS+POAcWVJH09sfrgic0jHnyFL8BlhHAJZX2BzdImU9zYr1y9NBqy+U93ZNrRTHXsKRDw==}
-
-  arktype@2.0.0-beta.0:
-    resolution: {integrity: sha512-fE3ssMiXjr/bLqFPzlDhRlXngdyHQreu7p7i8+dtcY1CA+f8WrVUcue6JxywhnqEJXPG4HOcIwQcC+q4VfeUMQ==}
 
   arktype@2.0.0-dev.11:
     resolution: {integrity: sha512-k+WVQoHsHsTyTiVQkO201mxLQxyXHmy3buJW8TXLOkr4X2yOUCp0K1SBscuG9OEJoc8MjpvoIharjPHEkFI7kg==}
@@ -6939,25 +6922,6 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.3
       '@jridgewell/trace-mapping': 0.3.18
 
-  '@ark/attest@0.9.2(typescript@5.4.2)':
-    dependencies:
-      '@ark/fs': 0.1.0
-      '@ark/util': 0.1.0
-      '@typescript/analyze-trace': 0.10.1
-      '@typescript/vfs': 1.5.3(typescript@5.4.2)
-      arktype: 2.0.0-beta.0
-      typescript: 5.4.2
-    transitivePeerDependencies:
-      - supports-color
-
-  '@ark/fs@0.1.0': {}
-
-  '@ark/schema@0.2.0':
-    dependencies:
-      '@ark/util': 0.1.0
-
-  '@ark/util@0.1.0': {}
-
   '@arktype/attest@0.7.5(typescript@5.4.2)':
     dependencies:
       '@arktype/fs': 0.0.19
@@ -6980,6 +6944,8 @@ snapshots:
   '@arktype/util@0.0.40': {}
 
   '@arktype/util@0.0.41': {}
+
+  '@arktype/util@0.1.0': {}
 
   '@aws-crypto/ie11-detection@3.0.0':
     dependencies:
@@ -8985,13 +8951,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript/vfs@1.5.3(typescript@5.4.2)':
-    dependencies:
-      debug: 4.3.4
-      typescript: 5.4.2
-    transitivePeerDependencies:
-      - supports-color
-
   '@ungap/structured-clone@1.2.0': {}
 
   '@viem/anvil@0.0.7(debug@4.3.4)':
@@ -9185,11 +9144,6 @@ snapshots:
       iftype: 4.0.9
 
   arktype@1.0.29-alpha: {}
-
-  arktype@2.0.0-beta.0:
-    dependencies:
-      '@ark/schema': 0.2.0
-      '@ark/util': 0.1.0
 
   arktype@2.0.0-dev.11:
     dependencies:

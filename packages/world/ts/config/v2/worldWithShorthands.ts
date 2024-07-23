@@ -41,13 +41,18 @@ export function resolveWorldWithShorthands<world extends WorldWithShorthandsInpu
   world: world,
 ): resolveWorldWithShorthands<world> {
   const scope = extendedScope(world);
-  const tables = mapObject(world.tables ?? {}, (table) => {
-    return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
-  });
+  const tables = world.tables
+    ? mapObject(world.tables, (table) => {
+        return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
+      })
+    : null;
 
-  const fullConfig = { ...world, tables };
+  const fullConfig = {
+    ...world,
+    ...(tables ? { tables } : null),
+  };
+
   validateWorld(fullConfig);
-
   return resolveWorld(fullConfig) as never;
 }
 

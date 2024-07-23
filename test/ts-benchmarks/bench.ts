@@ -1,4 +1,4 @@
-import { bench } from "@ark/attest";
+import { bench } from "@arktype/attest";
 import { syncToRecs } from "@latticexyz/store-sync/recs";
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import { Hex, type PublicClient } from "viem";
@@ -28,7 +28,7 @@ bench("syncToRecs", async () => {
   });
 
   return t;
-}).types([20704, "instantiations"]);
+}).types([21231, "instantiations"]);
 
 bench("syncToZustand", async () => {
   const config = defineWorld({
@@ -52,4 +52,4 @@ bench("syncToZustand", async () => {
   });
 
   return t;
-}).types([20728, "instantiations"]);
+}).types([21214, "instantiations"]);

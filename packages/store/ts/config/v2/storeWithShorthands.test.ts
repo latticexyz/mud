@@ -56,11 +56,16 @@ describe("defineStoreWithShorthands", () => {
   });
 
   it("should satisfy the output type", () => {
-    const config = defineStore({
+    const config = defineStoreWithShorthands({
       tables: { Name: { schema: { id: "address" }, key: ["id"] } },
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
     });
 
+    attest<typeof config, satisfy<Store, typeof config>>();
+  });
+
+  it("should accept an empty input", () => {
+    const config = defineStoreWithShorthands({});
     attest<typeof config, satisfy<Store, typeof config>>();
   });
 

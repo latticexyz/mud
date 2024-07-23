@@ -88,5 +88,5 @@ export type TablesWithShorthandsInput = {
 };
 
 export type StoreWithShorthandsInput = show<
-  Omit<StoreInput, "tables"> & { readonly tables: TablesWithShorthandsInput }
+  Omit<StoreInput, "tables"> & { readonly tables?: TablesWithShorthandsInput }
 >;

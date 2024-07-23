@@ -4,7 +4,7 @@ import { SyncOptions, SyncResult } from "../common";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { createStoreSync } from "../createStoreSync";
 
-type SyncToPostgresOptions<config extends StoreConfig = StoreConfig> = SyncOptions<config> & {
+export type SyncToPostgresOptions<config extends StoreConfig = StoreConfig> = SyncOptions<config> & {
   /**
    * [Postgres database object from Drizzle][0].
    *
@@ -15,7 +15,7 @@ type SyncToPostgresOptions<config extends StoreConfig = StoreConfig> = SyncOptio
   startSync?: boolean;
 };
 
-type SyncToPostgresResult = SyncResult & {
+export type SyncToPostgresResult = SyncResult & {
   stopSync: () => void;
 };
 

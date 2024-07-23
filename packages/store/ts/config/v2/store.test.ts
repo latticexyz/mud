@@ -516,6 +516,11 @@ describe("defineStore", () => {
     attest<typeof config, satisfy<Store, typeof config>>();
   });
 
+  it("should accept an empty input", () => {
+    const config = defineStore({});
+    attest<typeof config, satisfy<Store, typeof config>>();
+  });
+
   it("should use the global namespace instead for tables", () => {
     const config = defineStore({
       namespace: "namespace",
