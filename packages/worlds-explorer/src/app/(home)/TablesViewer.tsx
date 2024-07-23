@@ -13,11 +13,12 @@ import {
 } from "@tanstack/react-table";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowUpDown, Loader } from "lucide-react";
+import Highlighter from "react-highlight-words";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { bufferToBigInt } from "./utils/bufferToBigInt";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@radix-ui/themes";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export function TablesViewer({
   table: selectedTable,
@@ -102,7 +103,14 @@ export function TablesViewer({
       }) => {
         // TODO: editable row
         // return <input className="bg-transparent" defaultValue={row.getValue(name)} />;
-        return row.getValue(name);
+        return (
+          <Highlighter
+            highlightClassName="highlight"
+            searchWords={[globalFilter]}
+            autoEscape={true}
+            textToHighlight={row.getValue(name)?.toString()}
+          />
+        );
       },
     };
   });
