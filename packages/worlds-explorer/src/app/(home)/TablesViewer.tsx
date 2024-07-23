@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { bufferToBigInt } from "./utils/bufferToBigInt";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@radix-ui/themes";
 
 export function TablesViewer({
   table: selectedTable,
@@ -30,6 +31,7 @@ export function TablesViewer({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
+  const [showAllColumns, setShowAllColumns] = useState(false);
 
   const { data: schema } = useQuery({
     queryKey: ["schema", { table: selectedTable }],
@@ -39,6 +41,9 @@ export function TablesViewer({
     },
     select: (data) => {
       return data.schema.filter((column: { name: string }) => {
+        if (showAllColumns) {
+          return true;
+        }
         return !column.name.startsWith("__");
       });
     },
@@ -140,13 +145,31 @@ export function TablesViewer({
 
   return (
     <>
-      <div className="pb-4">
+      <div className="flex pb-4 gap-4 items-center justify-between">
         <Input
           placeholder="Filter all columns..."
           value={globalFilter ?? ""}
           onChange={(event) => table.setGlobalFilter(event.target.value)}
           className="max-w-sm border rounded px-2 py-1"
         />
+
+        <div className="items-top flex space-x-2">
+          <Checkbox
+            id="show-all-columns"
+            checked={showAllColumns}
+            onCheckedChange={() => {
+              setShowAllColumns(!showAllColumns);
+            }}
+          />
+          <div className="grid gap-1.5 leading-none">
+            <label
+              htmlFor="show-all-columns"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Show all columns
+            </label>
+          </div>
+        </div>
       </div>
 
       <div className="rounded-md border">
