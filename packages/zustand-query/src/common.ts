@@ -4,7 +4,7 @@ import { QueryFragment } from "./queryFragments";
 /**
  * A Key is the unique identifier for a row in the table.
  */
-export type Key = { [field: string]: number | Hex | bigint | boolean };
+export type Key = { [field: string]: number | Hex | bigint | boolean | string };
 
 /**
  * A map from encoded key to decoded key
