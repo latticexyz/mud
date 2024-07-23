@@ -3,7 +3,7 @@ import { isObject, mergeIfUndefined } from "./generics";
 import { TableShorthandInput, TablesInput } from "./input";
 import { Scope, AbiTypeScope } from "./scope";
 import { validateTable, resolveTable } from "./table";
-import { expandTableShorthand, isTableShorthandInput, validateTableShorthand } from "./expandTableShorthand";
+import { expandTableShorthand, isTableShorthandInput, validateTableShorthand } from "./tableShorthand";
 
 export type validateTables<tables, scope extends Scope = AbiTypeScope> = {
   [label in keyof tables]: tables[label] extends TableShorthandInput

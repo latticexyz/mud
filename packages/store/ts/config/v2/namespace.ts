@@ -3,6 +3,7 @@ import { hasOwnKey, mergeIfUndefined } from "./generics";
 import { NamespaceInput } from "./input";
 import { resolveTables, validateTables } from "./tables";
 import { AbiTypeScope, Scope } from "./scope";
+import { expandTableShorthand } from "./tableShorthand";
 
 export type validateNamespace<input, scope extends Scope = AbiTypeScope> = {
   [key in keyof input]: key extends "tables"
@@ -33,7 +34,7 @@ export type resolveNamespace<input, scope extends Scope = AbiTypeScope> = input 
         : resolveTables<
             {
               readonly [label in keyof input["tables"]]: mergeIfUndefined<
-                input["tables"][label],
+                expandTableShorthand<input["tables"][label]>,
                 { readonly namespace: string }
               >;
             },
@@ -53,7 +54,7 @@ export function resolveNamespace<const input extends NamespaceInput, scope exten
     namespace,
     tables: resolveTables(
       flatMorph(input.tables ?? {}, (label, table) => {
-        return [label, mergeIfUndefined(table, { namespace })];
+        return [label, mergeIfUndefined(expandTableShorthand(table, scope), { namespace })];
       }),
       scope,
     ),

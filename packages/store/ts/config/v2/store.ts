@@ -10,7 +10,7 @@ import { resolveCodegen } from "./codegen";
 import { resolveNamespacedTables } from "./namespacedTables";
 import { resolveTable } from "./table";
 import { resolveNamespace } from "./namespace";
-import { expandTableShorthand } from "./expandTableShorthand";
+import { expandTableShorthand } from "./tableShorthand";
 
 export type extendedScope<input> = scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>;
 
@@ -90,7 +90,7 @@ export function resolveStore<const input extends StoreInput>(input: input): reso
   const codegen = resolveCodegen(input.codegen);
 
   const tablesInput = flatMorph(input.tables ?? {}, (label, shorthand) => {
-    const table = expandTableShorthand(shorthand) as TableInput;
+    const table = expandTableShorthand(shorthand, scope) as TableInput;
     return [
       label,
       {

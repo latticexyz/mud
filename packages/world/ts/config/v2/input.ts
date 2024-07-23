@@ -1,5 +1,5 @@
 import { show } from "@arktype/util";
-import { StoreInput, StoreWithShorthandsInput } from "@latticexyz/store/config/v2";
+import { StoreInput } from "@latticexyz/store/config/v2";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
 
 export type SystemInput = {
@@ -121,7 +121,3 @@ export type NamespacesInput = {
 };
 
 export type NamespaceInput = Pick<StoreInput, "tables">;
-
-/******** Variations with shorthands ********/
-
-export type WorldWithShorthandsInput = Omit<WorldInput, "tables"> & Pick<StoreWithShorthandsInput, "tables">;
