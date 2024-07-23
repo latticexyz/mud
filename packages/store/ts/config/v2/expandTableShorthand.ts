@@ -69,7 +69,10 @@ export type expandTableShorthand<shorthand> = shorthand extends string
       }
     : shorthand;
 
-export function expandTableShorthand<shorthand>(shorthand: shorthand): expandTableShorthand<shorthand> {
+export function expandTableShorthand<shorthand, scope extends Scope = AbiTypeScope>(
+  shorthand: shorthand,
+  scope: scope,
+): expandTableShorthand<shorthand> {
   if (typeof shorthand === "string") {
     return {
       schema: {
@@ -80,7 +83,7 @@ export function expandTableShorthand<shorthand>(shorthand: shorthand): expandTab
     } as never;
   }
 
-  if (isSchemaInput(shorthand)) {
+  if (isSchemaInput(shorthand, scope)) {
     return {
       schema: shorthand,
       key: ["id"],
@@ -88,4 +91,12 @@ export function expandTableShorthand<shorthand>(shorthand: shorthand): expandTab
   }
 
   return shorthand as never;
+}
+
+export function defineTableShorthand<input, scope extends Scope = AbiTypeScope>(
+  input: validateTableShorthand<input, scope>,
+  scope: scope = AbiTypeScope as unknown as scope,
+): expandTableShorthand<input> {
+  validateTableShorthand(input, scope);
+  return expandTableShorthand(input, scope) as never;
 }

@@ -32,19 +32,26 @@ export function validateTables<scope extends Scope = AbiTypeScope>(
 
 export type resolveTables<tables, scope extends Scope = AbiTypeScope> = {
   readonly [label in keyof tables]: resolveTable<
-    mergeIfUndefined<expandTableShorthand<tables[label]>, { label: label }>,
+    mergeIfUndefined<expandTableShorthand<tables[label]>, { readonly label: label }>,
     scope
   >;
 };
 
-export function resolveTables<tables, scope extends Scope = AbiTypeScope>(
-  tables: validateTables<tables, scope>,
+export function resolveTables<tables extends TablesInput, scope extends Scope = AbiTypeScope>(
+  tables: tables,
   scope: scope,
-): show<resolveTables<tables, scope>> {
-  validateTables(tables, scope);
+): resolveTables<tables, scope> {
   return Object.fromEntries(
     Object.entries(tables).map(([label, table]) => {
-      return [label, resolveTable(mergeIfUndefined(expandTableShorthand(table), { label }), scope)];
+      return [label, resolveTable(mergeIfUndefined(expandTableShorthand(table, scope), { label }), scope)];
     }),
   ) as never;
+}
+
+export function defineTables<input, scope extends Scope = AbiTypeScope>(
+  input: validateTables<input, scope>,
+  scope: scope = AbiTypeScope as never,
+): show<resolveTables<input, scope>> {
+  validateTables(input, scope);
+  return resolveTables(input, scope) as never;
 }
