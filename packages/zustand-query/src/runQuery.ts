@@ -16,7 +16,9 @@ export function runQuery(query: Query, options?: RunQueryOptions): RunQueryResul
   // TODO: getKeySchema expects a full table as type, but only needs schema and key
   const expectedKeySchema = getKeySchema(query[0].table.getConfig() as never);
   for (const fragment of query) {
-    if (JSON.stringify(expectedKeySchema) !== JSON.stringify(getKeySchema(fragment.table.getConfig() as never))) {
+    if (
+      Object.values(expectedKeySchema).join("|") !== Object.values(getKeySchema(fragment.table.getConfig())).join("|")
+    ) {
       throw new Error("All tables in a query must share the same key schema");
     }
   }
