@@ -1,10 +1,20 @@
+import { Callout } from "nextra/components";
+
 import { CollapseCode } from "../../../components/CollapseCode";
 
 # Keys in Table Module
 
 [The `KeysInTable` module](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/keysintable) tracks which keys are used with a specific table.
 This is useful if you need to be able to iterate through all the records of a table onchain.
-Note that it costs additional gas for every write to the table affected, so if you just need this functionality offchain it is best to look at the data offchain instead.
+
+<Callout type="warning" emoji="💰">
+It costs additional gas for every write to the table affected.
+If you just need this functionality offchain it is best to look at the data offchain instead.
+
+Also, this is a _generic_ solution.
+You can usually save gas by implementing a solution that is specific to your use case, using [hooks](/store/store-hooks).
+
+</Callout>
 
 ## Deployment
 
@@ -88,7 +98,7 @@ For example, here is a Solidity script that reads the tasks added to `Tasks` aft
 
 <CollapseCode>
 
-```solidity filename="UseGetKeysInTable.s.sol" copy showLineNumbers {9,18-22,24,26,28-34,36-40}
+```solidity filename="UseGetKeysInTable.s.sol" copy showLineNumbers {9,19-23,25,27-33,35-39}
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
@@ -105,14 +115,13 @@ contract UseGetKeysInTable is Script {
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
     address worldAddress = vm.envAddress("WORLD_ADDRESS");
     IWorld world = IWorld(worldAddress);
+    StoreSwitch.setStoreAddress(worldAddress);
 
     vm.startBroadcast(deployerPrivateKey);
     world.app__addTask("Walk the cat");
     world.app__addTask("Cook delicious meal");
     world.app__addTask("Practice Elvish");
     vm.stopBroadcast();
-
-    StoreSwitch.setStoreAddress(worldAddress);
 
     bytes32[][] memory keys = getKeysInTable(Tasks._tableId);
 
@@ -146,6 +155,12 @@ import { getKeysInTable } from "@latticexyz/world-modules/src/modules/keysintabl
 The function that gets the keys in the table.
 
 ```solidity
+    StoreSwitch.setStoreAddress(worldAddress);
+```
+
+To use `getKeysInTable` we need to set the store address to `worldAddress`.
+
+```solidity
     vm.startBroadcast(deployerPrivateKey);
     world.app__addTask("Walk the cat");
     world.app__addTask("Cook delicious meal");
@@ -156,12 +171,6 @@ The function that gets the keys in the table.
 Creates three entries with different descriptions, to ensure we have entries to show.
 Note that this is the _only_ place in the script we need to send transactions.
 `getKeysInTable` is [a `view` function](https://docs.soliditylang.org/en/v0.8.26/contracts.html#view-functions), and does not change the state.
-
-```solidity
-    StoreSwitch.setStoreAddress(worldAddress);
-```
-
-To use `getKeysInTable` we need to set the store address to `worldAddress`.
 
 ```solidity
     bytes32[][] memory keys = getKeysInTable(Tasks._tableId);
