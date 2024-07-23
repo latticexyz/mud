@@ -37,10 +37,11 @@ export type resolveTables<tables, scope extends Scope = AbiTypeScope> = {
   >;
 };
 
-export function resolveTables<tables extends TablesInput, scope extends Scope = AbiTypeScope>(
-  tables: tables,
+export function resolveTables<tables, scope extends Scope = AbiTypeScope>(
+  tables: validateTables<tables, scope>,
   scope: scope,
 ): show<resolveTables<tables, scope>> {
+  validateTables(tables, scope);
   return Object.fromEntries(
     Object.entries(tables).map(([label, table]) => {
       return [label, resolveTable(mergeIfUndefined(expandTableShorthand(table), { label }), scope)];
