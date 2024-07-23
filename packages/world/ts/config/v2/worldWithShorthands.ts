@@ -5,35 +5,35 @@ import {
   hasOwnKey,
   isObject,
   isTableShorthandInput,
-  resolveTableShorthand,
-  resolveTablesWithShorthands,
-  validateTablesWithShorthands,
+  shorthandToTableInput,
+  expandShorthandTables,
+  validateShorthandTables,
 } from "@latticexyz/store/config/v2";
 import { WorldWithShorthandsInput } from "./input";
 import { resolveWorld, validateWorld } from "./world";
 
 export type validateWorldWithShorthands<world> = {
   [key in keyof world]: key extends "tables"
-    ? validateTablesWithShorthands<world[key], extendedScope<world>>
+    ? validateShorthandTables<world[key], extendedScope<world>>
     : validateWorld<world>[key];
 };
 
 function validateWorldWithShorthands(world: unknown): asserts world is WorldWithShorthandsInput {
   const scope = extendedScope(world);
   if (hasOwnKey(world, "tables")) {
-    validateTablesWithShorthands(world.tables, scope);
+    validateShorthandTables(world.tables, scope);
   }
 
   if (hasOwnKey(world, "namespaces") && isObject(world.namespaces)) {
     for (const namespaceKey of Object.keys(world.namespaces)) {
-      validateTablesWithShorthands(getPath(world.namespaces, [namespaceKey, "tables"]) ?? {}, scope);
+      validateShorthandTables(getPath(world.namespaces, [namespaceKey, "tables"]) ?? {}, scope);
     }
   }
 }
 
 export type resolveWorldWithShorthands<world> = resolveWorld<{
   readonly [key in keyof world]: key extends "tables"
-    ? resolveTablesWithShorthands<world[key], extendedScope<world>>
+    ? expandShorthandTables<world[key], extendedScope<world>>
     : world[key];
 }>;
 
@@ -43,7 +43,7 @@ export function resolveWorldWithShorthands<world extends WorldWithShorthandsInpu
   const scope = extendedScope(world);
   const tables = world.tables
     ? mapObject(world.tables, (table) => {
-        return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
+        return isTableShorthandInput(table) ? shorthandToTableInput(table, scope) : table;
       })
     : null;
 

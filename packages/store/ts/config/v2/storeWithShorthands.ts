@@ -2,30 +2,28 @@ import { mapObject } from "@latticexyz/common/utils";
 import { resolveStore, validateStore, extendedScope } from "./store";
 import {
   isTableShorthandInput,
-  resolveTableShorthand,
-  resolveTablesWithShorthands,
-  validateTablesWithShorthands,
+  shorthandToTableInput,
+  expandShorthandTables,
+  validateShorthandTables,
 } from "./tableShorthand";
 import { hasOwnKey, isObject } from "./generics";
 import { StoreWithShorthandsInput } from "./input";
 
 export type validateStoreWithShorthands<store> = {
   [key in keyof store]: key extends "tables"
-    ? validateTablesWithShorthands<store[key], extendedScope<store>>
+    ? validateShorthandTables<store[key], extendedScope<store>>
     : validateStore<store>[key];
 };
 
 export function validateStoreWithShorthands(store: unknown): asserts store is StoreWithShorthandsInput {
   const scope = extendedScope(store);
   if (hasOwnKey(store, "tables") && isObject(store.tables)) {
-    validateTablesWithShorthands(store.tables, scope);
+    validateShorthandTables(store.tables, scope);
   }
 }
 
 export type resolveStoreWithShorthands<store> = resolveStore<{
-  [key in keyof store]: key extends "tables"
-    ? resolveTablesWithShorthands<store[key], extendedScope<store>>
-    : store[key];
+  [key in keyof store]: key extends "tables" ? expandShorthandTables<store[key], extendedScope<store>> : store[key];
 }>;
 
 export function resolveStoreWithShorthands<const store extends StoreWithShorthandsInput>(
@@ -34,7 +32,7 @@ export function resolveStoreWithShorthands<const store extends StoreWithShorthan
   const scope = extendedScope(store);
   const tables = store.tables
     ? mapObject(store.tables, (table) => {
-        return isTableShorthandInput(table) ? resolveTableShorthand(table, scope) : table;
+        return isTableShorthandInput(table) ? shorthandToTableInput(table, scope) : table;
       })
     : null;
 
