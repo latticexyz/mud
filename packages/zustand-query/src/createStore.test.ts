@@ -307,4 +307,26 @@ describe("createStore", () => {
       expect(table.getRecord).toBeDefined();
     });
   });
+
+  describe("getTables", () => {
+    it("should return an object of bound tables in the store", () => {
+      const store = createStore();
+      store.getState().actions.registerTable({
+        label: "table1",
+        namespace: "namespace1",
+        schema: { field1: "uint32", field2: "address" },
+        key: ["field1"],
+      });
+      store.getState().actions.registerTable({
+        label: "table2",
+        namespace: "namespace2",
+        schema: { field1: "uint32", field2: "address" },
+        key: ["field1"],
+      });
+      const tables = store.getState().actions.getTables();
+
+      expect(tables.namespace1.table1).toBeDefined();
+      expect(tables.namespace2.table2).toBeDefined();
+    });
+  });
 });

@@ -17,7 +17,6 @@ export function runQuery(query: Query, options?: RunQueryOptions): RunQueryResul
   const expectedKeySchema = getKeySchema(query[0].table.getConfig() as never);
   for (const fragment of query) {
     if (JSON.stringify(expectedKeySchema) !== JSON.stringify(getKeySchema(fragment.table.getConfig() as never))) {
-      console.log(expectedKeySchema, getKeySchema(fragment.table.getConfig() as never));
       throw new Error("All tables in a query must share the same key schema");
     }
   }
@@ -45,7 +44,6 @@ export function runQuery(query: Query, options?: RunQueryOptions): RunQueryResul
     const label = table.tableLabel.label;
     records[namespace] ??= {};
     const tableRecords = table.getRecords({ keys: Object.values(keys) });
-    console.log("table records", tableRecords);
     records[namespace][label] ??= tableRecords;
   }
   return { keys, records };
