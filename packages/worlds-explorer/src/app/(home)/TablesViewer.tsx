@@ -104,12 +104,14 @@ export function TablesViewer({
         // TODO: editable row
         // return <input className="bg-transparent" defaultValue={row.getValue(name)} />;
         return (
-          <Highlighter
-            highlightClassName="highlight"
-            searchWords={[globalFilter]}
-            autoEscape={true}
-            textToHighlight={row.getValue(name)?.toString()}
-          />
+          <div contentEditable={true}>
+            <Highlighter
+              highlightClassName="highlight"
+              searchWords={[globalFilter]}
+              autoEscape={true}
+              textToHighlight={row.getValue(name)?.toString()}
+            />
+          </div>
         );
       },
     };
