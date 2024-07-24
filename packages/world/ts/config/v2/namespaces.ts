@@ -8,6 +8,7 @@ import {
   mergeIfUndefined,
   extendedScope,
   getPath,
+  expandTableShorthand,
 } from "@latticexyz/store/config/v2";
 import { NamespaceInput, NamespacesInput } from "./input";
 import { ErrorMessage, conform } from "@arktype/util";
@@ -58,7 +59,7 @@ export type resolveNamespacedTables<world> = "namespaces" extends keyof world
       readonly [key in namespacedTableKeys<world>]: key extends `${infer namespace}__${infer table}`
         ? resolveTable<
             mergeIfUndefined<
-              getPath<world, ["namespaces", namespace, "tables", table]>,
+              expandTableShorthand<getPath<world, ["namespaces", namespace, "tables", table]>>,
               { name: table; namespace: namespace }
             >,
             extendedScope<world>

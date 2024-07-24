@@ -1,4 +1,4 @@
-import { flatMorph } from "@arktype/util";
+import { flatMorph, show } from "@arktype/util";
 import { Tables } from "./output";
 
 /**
@@ -16,7 +16,7 @@ export type resolveNamespacedTables<tables, namespace> = {
 export function resolveNamespacedTables<tables, namespace>(
   tables: tables,
   namespace: namespace,
-): resolveNamespacedTables<tables, namespace> {
+): show<resolveNamespacedTables<tables, namespace>> {
   return flatMorph(tables as Tables, (label, table) => [
     namespace === "" ? label : `${namespace}__${label}`,
     table,

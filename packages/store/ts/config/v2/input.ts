@@ -1,7 +1,6 @@
 import { Hex } from "viem";
 import { Codegen, TableCodegen, TableDeploy, UserTypes } from "./output";
 import { Scope } from "./scope";
-import { show } from "@arktype/util";
 
 export type EnumsInput = {
   readonly [enumName: string]: readonly [string, ...string[]];
@@ -45,9 +44,12 @@ export type TableInput = {
   readonly deploy?: TableDeployInput;
 };
 
+export type TableShorthandInput = SchemaInput | string;
+
 export type TablesInput = {
-  // remove label and namespace as these are set contextually
-  readonly [label: string]: Omit<TableInput, "label" | "namespace">;
+  // remove label and namespace from table input as these are set contextually
+  // and allow defining a table using shorthand
+  readonly [label: string]: Omit<TableInput, "label" | "namespace"> | TableShorthandInput;
 };
 
 export type CodegenInput = Partial<Codegen>;
@@ -78,15 +80,3 @@ export type StoreInput = Omit<NamespaceInput, "label"> & {
   readonly enums?: EnumsInput;
   readonly codegen?: CodegenInput;
 };
-
-/******** Variations with shorthands ********/
-
-export type TableShorthandInput = SchemaInput | string;
-
-export type TablesWithShorthandsInput = {
-  readonly [label: string]: TablesInput[string] | TableShorthandInput;
-};
-
-export type StoreWithShorthandsInput = show<
-  Omit<StoreInput, "tables"> & { readonly tables?: TablesWithShorthandsInput }
->;
