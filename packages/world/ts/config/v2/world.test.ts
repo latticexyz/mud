@@ -1108,13 +1108,14 @@ describe("defineWorld", () => {
             ...expectedBaseNamespace,
           },
         },
-        userTypes: { CustomType: { type: "address", filePath: "path/to/file" as string } },
+        userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
         enums: {},
         enumValues: {},
         codegen: CODEGEN_DEFAULTS,
       } as const;
 
       attest<typeof expectedConfig>(config).equals(expectedConfig);
+      attest<typeof config>(expectedConfig);
     });
 
     it("given a schema with a key field with static ABI type, it should use `id` as single key", () => {

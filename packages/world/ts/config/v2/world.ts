@@ -11,6 +11,7 @@ import {
   Store,
   hasOwnKey,
   validateStore,
+  expandTableShorthand,
 } from "@latticexyz/store/config/v2";
 import { SystemsInput, WorldInput } from "./input";
 import { CONFIG_DEFAULTS, MODULE_DEFAULTS } from "./defaults";
@@ -79,7 +80,10 @@ export function resolveWorld<const world extends WorldInput>(world: world): reso
           validateTable(table, scope);
           return [
             `${namespaceKey}__${tableKey}`,
-            resolveTable(mergeIfUndefined(table, { namespace: namespaceKey, name: tableKey }), scope),
+            resolveTable(
+              mergeIfUndefined(expandTableShorthand(table, scope), { namespace: namespaceKey, label: tableKey }),
+              scope,
+            ),
           ];
         }),
       )
