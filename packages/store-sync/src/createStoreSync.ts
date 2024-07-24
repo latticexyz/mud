@@ -90,6 +90,21 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
       message: "Getting snapshot",
     });
 
+    // We execute the list of provided SQL queries for hydration.
+    // For performance reasons the queries are not executed against a fixed block height,
+    // but against the latest state.
+    // We therefore pass the min block number of all query results as overall block number.
+    // This means some logs will be fetched again during the hydration process, but after the
+    // hydration is complete, the state will be correct.
+    // Intermediate state updates during hydration might be incorrect (for partial updates),
+    // so we only notify consumers of state updates after the initial hydration is complete.
+
+    // TODO: execute dozer sql queries, encode to logs
+
+    // Additionally fetch logs from the snapshot for tables not included in the SQL hydration approach.
+    // The block number passed in the overall result will be the min of all queries and the snapshot.
+
+    // TODO: remove tables from filter for snapshot that are also included in SQL filter.
     const snapshot = await getSnapshot({
       chainId,
       address,
