@@ -1,4 +1,4 @@
-import { renderArguments, renderList, renderedSolidityHeader, renderImports } from "@latticexyz/common/codegen";
+import { renderArguments, renderedSolidityHeader, renderImports } from "@latticexyz/common/codegen";
 import { RenderSystemInterfaceOptions } from "./types";
 
 export function renderSystemInterface(options: RenderSystemInterfaceOptions) {
@@ -15,16 +15,17 @@ export function renderSystemInterface(options: RenderSystemInterfaceOptions) {
      * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
      */
     interface ${name} {
-      ${renderList(errors, ({ name, parameters }) => `error ${name}(${renderArguments(parameters)});`)}
+      ${errors.map(({ name, parameters }) => `error ${name}(${renderArguments(parameters)});`).join("\n")}
 
-      ${renderList(
-        functions,
-        ({ name, parameters, stateMutability, returnParameters }) => `
-          function ${functionPrefix}${name}(
-            ${renderArguments(parameters)}
-          ) external ${stateMutability} ${renderReturnParameters(returnParameters)};
-        `,
-      )}
+      ${functions
+        .map(
+          ({ name, parameters, stateMutability, returnParameters }) => `
+            function ${functionPrefix}${name}(
+              ${renderArguments(parameters)}
+            ) external ${stateMutability} ${renderReturnParameters(returnParameters)};
+          `,
+        )
+        .join("\n")}
     }
   `;
 }

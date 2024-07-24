@@ -1,10 +1,4 @@
-import {
-  RenderDynamicField,
-  renderArguments,
-  renderCommonData,
-  renderList,
-  renderWithStore,
-} from "@latticexyz/common/codegen";
+import { RenderDynamicField, renderArguments, renderCommonData, renderWithStore } from "@latticexyz/common/codegen";
 import { renderDecodeValueType } from "./field";
 import { RenderTableOptions } from "./types";
 
@@ -204,12 +198,7 @@ function renderDecodeFunctions({ structName, fields, staticFields, dynamicFields
       function decodeStatic(bytes memory _blob) internal pure returns (${renderArguments(
         staticFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`),
       )}) {
-        ${renderList(
-          staticFields,
-          (field, index) => `
-          ${field.name} = ${renderDecodeValueType(field, staticOffsets[index])};
-          `,
-        )}
+        ${staticFields.map((field, index) => `${field.name} = ${renderDecodeValueType(field, staticOffsets[index])};`).join(" ")}
       }
     `;
   }
@@ -222,11 +211,10 @@ function renderDecodeFunctions({ structName, fields, staticFields, dynamicFields
       function decodeDynamic(EncodedLengths _encodedLengths, bytes memory _blob) internal pure returns (${renderArguments(
         dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`),
       )}) {
-        ${renderList(
-          dynamicFields,
-          // unchecked is only dangerous if _encodedLengths (and _blob) is invalid,
-          // but it's assumed to be valid, and this function is meant to be mostly used internally
-          (field, index) => {
+        ${dynamicFields
+          .map((field, index) => {
+            // unchecked is only dangerous if _encodedLengths (and _blob) is invalid,
+            // but it's assumed to be valid, and this function is meant to be mostly used internally
             if (index === 0) {
               return `
                 uint256 _start;
@@ -245,8 +233,8 @@ function renderDecodeFunctions({ structName, fields, staticFields, dynamicFields
                 ${field.name} = ${renderDecodeDynamicFieldPartial(field)};
               `;
             }
-          },
-        )}
+          })
+          .join("\n")}
       }
     `;
   }

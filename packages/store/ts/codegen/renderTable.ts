@@ -2,7 +2,6 @@ import {
   RenderDynamicField,
   renderArguments,
   renderCommonData,
-  renderList,
   renderImports,
   renderTableId,
   renderTypeHelpers,
@@ -64,13 +63,13 @@ export function renderTable(options: RenderTableOptions) {
     }
 
     ${
-      !structName
-        ? ""
-        : `
+      structName
+        ? `
           struct ${structName} {
-            ${renderList(fields, ({ name, typeId }) => `${typeId} ${name};`)}
+            ${fields.map(({ name, typeId }) => `${typeId} ${name};`).join(" ")}
           }
           `
+        : ""
     }
 
     library ${libraryName} {
@@ -93,7 +92,7 @@ export function renderTable(options: RenderTableOptions) {
        */
       function getKeyNames() internal pure returns (string[] memory keyNames) {
         keyNames = new string[](${keyTuple.length});
-        ${renderList(keyTuple, (keyElement, index) => `keyNames[${index}] = "${keyElement.name}";`)}
+        ${keyTuple.map((element, index) => `keyNames[${index}] = "${element.name}";`).join(" ")}
       }
 
       /**
@@ -102,7 +101,7 @@ export function renderTable(options: RenderTableOptions) {
        */
       function getFieldNames() internal pure returns (string[] memory fieldNames) {
         fieldNames = new string[](${fields.length});
-        ${renderList(fields, (field, index) => `fieldNames[${index}] = "${field.name}";`)}
+        ${fields.map((field, index) => `fieldNames[${index}] = "${field.name}";`).join(" ")}
       }
 
       ${renderWithStore(
