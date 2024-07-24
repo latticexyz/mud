@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { AbiFunction, Hex } from "viem";
+import { AbiFunction } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { useWriteContract } from "wagmi";
 import { waitForTransactionReceipt } from "@wagmi/core";
@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { wagmiConfig } from "../_providers";
 import { ACCOUNT_PRIVATE_KEYS } from "@/consts";
 import { useStore } from "@/store";
+import { useWorldAddress } from "@/hooks/useWorldAddress";
 
 type Props = {
   abi: AbiFunction;
@@ -27,6 +28,7 @@ const formSchema = z.object({
 
 export function FunctionField({ abi }: Props) {
   const { account } = useStore();
+  const worldAddress = useWorldAddress();
   const { writeContractAsync } = useWriteContract();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,7 +44,7 @@ export function FunctionField({ abi }: Props) {
       const txHash = await writeContractAsync({
         account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
         abi: [abi],
-        address: process.env.NEXT_PUBLIC_WORLD_ADDRESS as Hex,
+        address: worldAddress,
         functionName: abi.name,
         args: values.inputs,
       });
