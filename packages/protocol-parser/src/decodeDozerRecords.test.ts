@@ -1,25 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { decodeDozerRecords } from "./decodeDozerRecords";
-import { defineStore } from "@latticexyz/store/config/v2";
 
 describe("decodeDozerRecord", () => {
-  const TestTable = defineStore({
-    namespace: "store",
-    tables: {
-      TestTable: {
-        schema: {
-          address: "address",
-          uint256: "uint256",
-          uint32: "uint32",
-          bool: "bool",
-          bytes: "bytes",
-          string: "string",
-          uint32Arr: "uint32[]",
-        },
-        key: [],
-      },
-    },
-  }).tables.store__TestTable;
+  const schema = {
+    address: { type: "address", internalType: "address" },
+    uint256: { type: "uint256", internalType: "uint256" },
+    uint32: { type: "uint32", internalType: "uint32" },
+    bool: { type: "bool", internalType: "bool" },
+    bytes: { type: "bytes", internalType: "bytes" },
+    string: { type: "string", internalType: "string" },
+    uint32Arr: { type: "uint32[]", internalType: "uint32[]" },
+  } as const;
 
   it("decodes dozer record", () => {
     const dozerRecord = [
@@ -41,7 +32,7 @@ describe("decodeDozerRecord", () => {
       uint32Arr: [1234, 5678],
     };
 
-    const decoded = decodeDozerRecords({ table: TestTable, records: [dozerRecord] });
+    const decoded = decodeDozerRecords({ schema, records: [dozerRecord] });
     expect(decoded).toStrictEqual([decodedRecord]);
   });
 });
