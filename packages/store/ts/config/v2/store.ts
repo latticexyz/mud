@@ -47,7 +47,7 @@ export function validateStore(input: unknown): asserts input is StoreInput {
 type resolveNamespaceMode<input> = "namespaces" extends keyof input
   ? {
       readonly multipleNamespaces: true;
-      readonly namespace: undefined;
+      readonly namespace: null;
       readonly namespaces: resolveNamespaces<input["namespaces"], extendedScope<input>>;
     }
   : {
@@ -83,7 +83,7 @@ export function resolveStore<const input extends StoreInput>(input: input): reso
   const namespaces = input.namespaces
     ? ({
         multipleNamespaces: true,
-        namespace: undefined,
+        namespace: null,
         namespaces: resolveNamespaces(input.namespaces, scope),
       } as const)
     : ({

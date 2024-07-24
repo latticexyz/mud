@@ -74,7 +74,7 @@ export type Namespaces = {
   readonly [label: string]: Namespace;
 };
 
-export type Store = Omit<Namespace, "label"> & {
+export type Store = {
   /**
    * Whether this project is using multiple namespaces or not, dictated by using `namespaces` config key.
    *
@@ -85,7 +85,19 @@ export type Store = Omit<Namespace, "label"> & {
   //       alternatively could allow defining `sourceDirectory` per namespace and default it to the pattern above,
   //       but it makes resolving user types a little more confusing
   readonly multipleNamespaces: boolean;
+  /**
+   * When in single-namespace mode, this is set to the config's base `namespace`.
+   * When in multi-namespace mode, this is `null`.
+   */
+  readonly namespace: string | null;
   readonly namespaces: Namespaces;
+  /**
+   * Flattened set of tables, where each key is `{namespaceLabel}__{tableLabel}`.
+   * For namespace labels using an empty string, no double-underscore is used, so the key is `{tableLabel}`.
+   * This is kept for backwards compatibility.
+   * It's recommended that you use `config.namespaces[namespaceLabel].tables[tableLabel]` instead.
+   */
+  readonly tables: Namespace["tables"];
   /**
    * Directory of Solidity source relative to the MUD config.
    * This is used to resolve other paths in the config, like codegen and user types.
