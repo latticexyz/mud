@@ -174,7 +174,7 @@ export function TablesViewer({
           <div className="grid gap-1.5 leading-none">
             <label
               htmlFor="show-all-columns"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="text-sm font-medium cursor-pointer leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
               Show all columns
             </label>
