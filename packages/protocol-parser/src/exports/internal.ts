@@ -25,6 +25,8 @@ export * from "../schemaToHex";
 export * from "../staticDataLength";
 export * from "../valueSchemaToFieldLayoutHex";
 export * from "../valueSchemaToHex";
+export * from "../decodeDozerField";
+export * from "../decodeDozerRecord";
 
 export * from "../getKeySchema";
 export * from "../getValueSchema";
