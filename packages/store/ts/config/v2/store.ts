@@ -62,7 +62,7 @@ export type resolveStore<
     ? resolveNamespacedTables<
         {
           readonly [label in keyof input["tables"]]: resolveTable<
-            mergeIfUndefined<input["tables"][label], { label: label; namespace: namespace }>,
+            mergeIfUndefined<expandTableShorthand<input["tables"][label]>, { label: label; namespace: namespace }>,
             extendedScope<input>
           >;
         },
