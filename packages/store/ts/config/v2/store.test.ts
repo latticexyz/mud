@@ -170,6 +170,28 @@ describe("defineStore", () => {
     attest<typeof config>(expectedConfig);
   });
 
+  it("should not allow using both `namespaces` with `namespace` or `table` keys", () => {
+    attest(() =>
+      defineStore({
+        // @ts-expect-error Cannot use `namespaces` with `namespace` or `tables` keys.
+        namespaces: {},
+        namespace: "app",
+      }),
+    )
+      .throws("Cannot use `namespaces` with `namespace` or `tables` keys.")
+      .type.errors("Cannot use `namespaces` with `namespace` or `tables` keys.");
+
+    attest(() =>
+      defineStore({
+        // @ts-expect-error Cannot use `namespaces` with `namespace` or `tables` keys.
+        namespaces: {},
+        tables: {},
+      }),
+    )
+      .throws("Cannot use `namespaces` with `namespace` or `tables` keys.")
+      .type.errors("Cannot use `namespaces` with `namespace` or `tables` keys.");
+  });
+
   // TODO: move to table tests
   it("should resolve schema with user types", () => {
     const config = defineStore({

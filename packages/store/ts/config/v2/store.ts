@@ -7,7 +7,7 @@ import { validateTables } from "./tables";
 import { scopeWithUserTypes, validateUserTypes } from "./userTypes";
 import { mapEnums, resolveEnums, scopeWithEnums } from "./enums";
 import { resolveCodegen } from "./codegen";
-import { resolveNamespaces } from "./namespaces";
+import { resolveNamespaces, validateNamespaces } from "./namespaces";
 import { flattenNamespacedTables } from "./flattenNamespacedTables";
 
 export type extendedScope<input> = scopeWithEnums<get<input, "enums">, scopeWithUserTypes<get<input, "userTypes">>>;
@@ -17,19 +17,30 @@ export function extendedScope<input>(input: input): extendedScope<input> {
 }
 
 export type validateStore<input> = {
-  [key in keyof input]: key extends "tables"
-    ? validateTables<input[key], extendedScope<input>>
-    : key extends "userTypes"
-      ? UserTypes
-      : key extends "enums"
-        ? narrow<input[key]>
-        : key extends keyof StoreInput
-          ? StoreInput[key]
-          : ErrorMessage<`\`${key & string}\` is not a valid Store config option.`>;
+  [key in keyof input]: key extends "namespaces"
+    ? input extends { namespace?: unknown; tables?: unknown }
+      ? ErrorMessage<"Cannot use `namespaces` with `namespace` or `tables` keys.">
+      : validateNamespaces<input[key], extendedScope<input>>
+    : key extends "tables"
+      ? validateTables<input[key], extendedScope<input>>
+      : key extends "userTypes"
+        ? UserTypes
+        : key extends "enums"
+          ? narrow<input[key]>
+          : key extends keyof StoreInput
+            ? StoreInput[key]
+            : ErrorMessage<`\`${key & string}\` is not a valid Store config option.`>;
 };
 
 export function validateStore(input: unknown): asserts input is StoreInput {
   const scope = extendedScope(input);
+
+  if (hasOwnKey(input, "namespaces")) {
+    if (hasOwnKey(input, "namespace") || hasOwnKey(input, "tables")) {
+      throw new Error("Cannot use `namespaces` with `namespace` or `tables` keys.");
+    }
+    validateNamespaces(input.namespaces, scope);
+  }
 
   if (hasOwnKey(input, "namespace") && typeof input.namespace === "string" && input.namespace.length > 14) {
     throw new Error(`\`namespace\` must fit into a \`bytes14\`, but "${input.namespace}" is too long.`);
