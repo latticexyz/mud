@@ -448,10 +448,18 @@ describe("defineStore", () => {
     attest<typeof config, satisfy<Store, typeof config>>();
   });
 
-  it("should satisfy the output type", () => {
+  it("should satisfy the output type when using single namespace", () => {
     const config = defineStore({
       tables: { Name: { schema: { id: "address" }, key: ["id"] } },
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
+    });
+
+    attest<typeof config, satisfy<Store, typeof config>>();
+  });
+
+  it("should satisfy the output type when using multiple namespaces", () => {
+    const config = defineStore({
+      namespaces: {},
     });
 
     attest<typeof config, satisfy<Store, typeof config>>();

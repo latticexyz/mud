@@ -43,7 +43,7 @@ export async function tablegen({ rootDir, config, remappings }: TablegenOptions)
   );
 
   // write table index
-  if (allTableOptions.length > 0) {
+  if (config.codegen.indexFilename !== false && allTableOptions.length > 0) {
     const fullOutputPath = path.join(outputDirectory, config.codegen.indexFilename);
     const output = renderTableIndex(allTableOptions);
     await formatAndWriteSolidity(output, fullOutputPath, "Generated table index");

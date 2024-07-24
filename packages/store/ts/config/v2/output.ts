@@ -54,7 +54,14 @@ export type Codegen = {
    * Defaults to `codegen`.
    */
   readonly outputDirectory: string;
-  readonly indexFilename: string;
+  /**
+   * Tables index filename.
+   *
+   * Defaults to `"index.sol"` when in single-namespace mode, and `false` for multi-namespace mode.
+   *
+   * @deprecated We recommend importing directly from table libraries rather than from the index for better compile times and deterministic deploys.
+   */
+  readonly indexFilename: string | false;
 };
 
 export type Namespace = {
@@ -76,14 +83,12 @@ export type Namespaces = {
 
 export type Store = {
   /**
+   * @internal
    * Whether this project is using multiple namespaces or not, dictated by using `namespaces` config key.
    *
-   * If using multiple namespaces, systems must be organized in `{sourceDirectory}/namespaces/{namespaceLabel}` directories.
-   * Table libraries will similarly be generated into these namespace directories.
+   * If using multiple namespaces, systems must be organized in `namespaces/{namespaceLabel}` directories.
+   * Similarly, table libraries will be generated into these namespace directories.
    */
-  // TODO: do we like this approach?
-  //       alternatively could allow defining `sourceDirectory` per namespace and default it to the pattern above,
-  //       but it makes resolving user types a little more confusing
   readonly multipleNamespaces: boolean;
   /**
    * When in single-namespace mode, this is set to the config's base `namespace`.
