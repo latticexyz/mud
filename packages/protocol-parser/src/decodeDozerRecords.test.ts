@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { decodeDozerRecord } from "./decodeDozerRecord";
+import { decodeDozerRecords } from "./decodeDozerRecords";
 import { defineStore } from "@latticexyz/store/config/v2";
 
 describe("decodeDozerRecord", () => {
@@ -41,7 +41,7 @@ describe("decodeDozerRecord", () => {
       uint32Arr: [1234, 5678],
     };
 
-    const decoded = decodeDozerRecord({ table: TestTable, records: [dozerRecord] });
-    expect(decoded).toStrictEqual({ records: [decodedRecord] });
+    const decoded = decodeDozerRecords({ table: TestTable, records: [dozerRecord] });
+    expect(decoded).toStrictEqual([decodedRecord]);
   });
 });
