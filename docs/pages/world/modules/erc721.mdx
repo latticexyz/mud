@@ -30,3 +30,81 @@ To use the one here, first edit `.env` to make sure we have these environment va
 Of course, not a production system you'd use a meaningful name.
 
 (2) Values that include white spaces need to be enclosed by quotes.
+
+Then, run this script:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { ERC721Module } from "@latticexyz/world-modules/src/modules/erc721-puppet/ERC721Module.sol";
+import { ERC721MetadataData } from "@latticexyz/world-modules/src/modules/erc721-puppet/tables/ERC721Metadata.sol";
+import { registerERC721 } from "@latticexyz/world-modules/src/modules/erc721-puppet/registerERC721.sol";
+import { IERC721Mintable } from "@latticexyz/world-modules/src/modules/erc721-puppet/IERC721Mintable.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+contract PostDeploy is Script {
+  function run() external {
+    // Load the environment
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+    string memory nftNamespace = vm.envString("NFT_NAMESPACE");
+    ERC721MetadataData memory metadata;
+    metadata.name = vm.envString("TOKEN_NAME");
+    metadata.symbol = vm.envString("TOKEN_SYMBOL");
+    metadata.baseURI = vm.envString("TOKEN_BASE_URI");
+
+    // Specify a store so that you can use tables directly
+    IWorld world = IWorld(worldAddress);
+    StoreSwitch.setStoreAddress(worldAddress);
+
+    // Start broadcasting transactions from the deployer account
+    vm.startBroadcast(deployerPrivateKey);
+
+    IERC721Mintable seasonPass = registerERC721(
+      world,
+      bytes14(bytes("DDDD")),
+      ERC721MetadataData({
+        name: "Token",
+        symbol: "ffff",
+        baseURI: "https://skystrife-metadata.latticexyz.workers.dev/metadata/1/"
+      })
+    );
+
+    /*
+    // Create namespace for the token
+    bytes14 namespace14 = bytes14(bytes(nftNamespace));
+
+    IERC721Mintable token = registerERC721(world, 
+	namespace14, 
+	metadata
+    );
+    console.log(address(token));
+*/
+
+    /*
+    // Deploy the module's contract
+    ERC721Module nftModule = new ERC721Module();
+    console.log("Module deployed at address:", address(nftModule));
+
+    // Install the new module on the World
+    console.log("Before world.installModule");
+    world.installModule(nftModule, abi.encode(namespace14, metadata));
+    console.log("Module installed");
+*/
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+```sh
+forge script --rpc-url http://localhost:8545  script/DeployNFT.s.sol --broadcast
+```
