@@ -14,6 +14,11 @@ export async function resolveSystems({
   rootDir: string;
   config: World;
 }): Promise<readonly ResolvedSystem[]> {
+  // TODO: support systems in multiple namespaces
+  if (config.multipleNamespaces) {
+    throw new Error("Systems in namespaces are not yet supported.");
+  }
+
   const systemContracts = await getSystemContracts({ rootDir, config });
   const contractNames = systemContracts.map((contract) => contract.name);
 
@@ -25,8 +30,9 @@ export async function resolveSystems({
 
   const systems = systemContracts
     .map((contract): ResolvedSystem => {
+      // TODO: remove `config.namespace!` type coercion once multiple namespaces are supported
       const systemConfig =
-        config.systems[contract.name] ?? resolveSystem({ label: contract.name, namespace: config.namespace });
+        config.systems[contract.name] ?? resolveSystem({ label: contract.name, namespace: config.namespace! });
       return {
         ...systemConfig,
         sourcePath: contract.sourcePath,

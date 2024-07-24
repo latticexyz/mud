@@ -1,5 +1,4 @@
-import { show } from "@arktype/util";
-import { StoreInput } from "@latticexyz/store/config/v2";
+import { StoreInput, NamespaceInput as StoreNamespaceInput } from "@latticexyz/store/config/v2";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
 
 export type SystemInput = {
@@ -34,6 +33,14 @@ export type SystemInput = {
 
 export type SystemsInput = {
   readonly [label: string]: Omit<SystemInput, "label" | "namespace">;
+};
+
+export type NamespaceInput = StoreNamespaceInput & {
+  readonly systems?: SystemsInput;
+};
+
+export type NamespacesInput = {
+  readonly [label: string]: Omit<NamespaceInput, "label">;
 };
 
 type ModuleInputArtifactPath =
@@ -94,25 +101,22 @@ export type CodegenInput = {
   readonly worldImportPath?: string;
 };
 
-export type WorldInput = show<
-  StoreInput & {
-    /**
-     * Contracts named *System will be deployed by default
-     * as public systems at `namespace/ContractName`, unless overridden
-     *
-     * The key is the system name (capitalized).
-     * The value is a SystemConfig object.
-     */
-    readonly systems?: SystemsInput;
-    /** System names to exclude from codegen and deployment */
-    readonly excludeSystems?: readonly string[];
-    /** Modules to install in the World */
-    readonly modules?: readonly ModuleInput[];
-    /** Deploy config */
-    readonly deploy?: DeployInput;
-    /** Codegen config */
-    readonly codegen?: CodegenInput;
-  }
->;
-
-export type NamespaceInput = Pick<StoreInput, "tables">;
+export type WorldInput = Omit<StoreInput, "namespaces"> & {
+  readonly namespaces?: NamespacesInput;
+  /**
+   * Contracts named *System will be deployed by default
+   * as public systems at `namespace/ContractName`, unless overridden
+   *
+   * The key is the system name (capitalized).
+   * The value is a SystemConfig object.
+   */
+  readonly systems?: SystemsInput;
+  /** System names to exclude from codegen and deployment */
+  readonly excludeSystems?: readonly string[];
+  /** Modules to install in the World */
+  readonly modules?: readonly ModuleInput[];
+  /** Deploy config */
+  readonly deploy?: DeployInput;
+  /** Codegen config */
+  readonly codegen?: CodegenInput;
+};

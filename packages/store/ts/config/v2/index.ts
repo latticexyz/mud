@@ -12,3 +12,5 @@ export * from "./codegen";
 export * from "./enums";
 export * from "./userTypes";
 export * from "./flattenNamespacedTables";
+export * from "./namespace";
+export * from "./namespaces";

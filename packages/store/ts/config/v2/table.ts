@@ -61,7 +61,7 @@ export type validateTable<
       ? validateSchema<get<input, key>, scope>
       : key extends "label" | "namespace"
         ? options["inStoreContext"] extends true
-          ? ErrorMessage<"Overrides of `label` and `namespace` are not allowed for tables in a store config">
+          ? ErrorMessage<"Overrides of `label` and `namespace` are not allowed for tables in this context">
           : key extends keyof input
             ? narrow<input[key]>
             : never
@@ -104,7 +104,7 @@ export function validateTable<input, scope extends Scope = AbiTypeScope>(
   }
 
   if (options.inStoreContext && (hasOwnKey(input, "label") || hasOwnKey(input, "namespace"))) {
-    throw new Error("Overrides of `label` and `namespace` are not allowed for tables in a store config.");
+    throw new Error("Overrides of `label` and `namespace` are not allowed for tables in this context.");
   }
 }
 
