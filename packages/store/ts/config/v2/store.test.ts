@@ -48,6 +48,7 @@ describe("defineStore", () => {
     } as const;
 
     const expectedConfig = {
+      multipleNamespaces: false,
       ...expectedBaseNamespace,
       namespaces: {
         "": {
@@ -110,6 +111,7 @@ describe("defineStore", () => {
     } as const;
 
     const expectedConfig = {
+      multipleNamespaces: false,
       ...expectedBaseNamespace,
       namespaces: {
         "": {
@@ -171,6 +173,7 @@ describe("defineStore", () => {
     } as const;
 
     const expectedConfig = {
+      multipleNamespaces: false,
       ...expectedBaseNamespace,
       namespaces: {
         "": {
@@ -257,6 +260,7 @@ describe("defineStore", () => {
     } as const;
 
     const expectedConfig = {
+      multipleNamespaces: false,
       ...expectedBaseNamespace,
       namespaces: {
         "": {
@@ -347,6 +351,7 @@ describe("defineStore", () => {
     } as const;
 
     const expectedConfig = {
+      multipleNamespaces: false,
       ...expectedBaseNamespace,
       namespaces: {
         "": {
@@ -470,6 +475,7 @@ describe("defineStore", () => {
     } as const;
 
     const expectedConfig = {
+      multipleNamespaces: false,
       ...expectedBaseNamespace,
       namespaces: {
         "": {
@@ -619,108 +625,6 @@ describe("defineStore", () => {
     ).type.errors("`invalidOption` is not a valid Store config option.");
   });
 
-  it("should namespace output directories for tables", () => {
-    const config = defineStore({
-      namespace: "app",
-      codegen: {
-        namespaceDirectories: true,
-      },
-      tables: {
-        NamespaceDir: {
-          schema: { name: "string" },
-          key: [],
-        },
-        NotNamespaceDir: {
-          schema: { name: "string" },
-          key: [],
-          codegen: {
-            outputDirectory: "tables",
-          },
-        },
-      },
-    });
-
-    const expectedTables = {
-      NamespaceDir: {
-        label: "NamespaceDir",
-        type: "table",
-        namespace: "app" as string,
-        name: "NamespaceDir" as string,
-        tableId: resourceToHex({ type: "table", namespace: "app", name: "NamespaceDir" }),
-        schema: {
-          name: {
-            type: "string",
-            internalType: "string",
-          },
-        },
-        key: [],
-        codegen: {
-          ...TABLE_CODEGEN_DEFAULTS,
-          dataStruct: false as boolean,
-          outputDirectory: "app/tables" as string,
-        },
-        deploy: TABLE_DEPLOY_DEFAULTS,
-      },
-      NotNamespaceDir: {
-        label: "NotNamespaceDir",
-        type: "table",
-        namespace: "app" as string,
-        name: "NotNamespaceDir" as string,
-        tableId: resourceToHex({ type: "table", namespace: "app", name: "NotNamespaceDir" }),
-        schema: {
-          name: {
-            type: "string",
-            internalType: "string",
-          },
-        },
-        key: [],
-        codegen: {
-          ...TABLE_CODEGEN_DEFAULTS,
-          dataStruct: false as boolean,
-          outputDirectory: "tables",
-        },
-        deploy: TABLE_DEPLOY_DEFAULTS,
-      },
-    } as const;
-
-    const expectedConfig = {
-      namespace: "app" as string,
-      tables: {
-        app__NamespaceDir: expectedTables.NamespaceDir,
-        app__NotNamespaceDir: expectedTables.NotNamespaceDir,
-      },
-      namespaces: {
-        app: {
-          label: "app",
-          namespace: "app" as string,
-          tables: expectedTables,
-        },
-      },
-      sourceDirectory: "src",
-      userTypes: {},
-      enums: {},
-      enumValues: {},
-      codegen: {
-        ...CODEGEN_DEFAULTS,
-        namespaceDirectories: true,
-      },
-    } as const;
-
-    // Running attest on the whole object is hard to parse when it fails, so test the inner objects first
-    attest<typeof expectedConfig.codegen>(config.codegen).equals(expectedConfig.codegen);
-    attest<typeof expectedConfig.tables.app__NamespaceDir.codegen>(config.tables.app__NamespaceDir.codegen).equals(
-      expectedConfig.tables.app__NamespaceDir.codegen,
-    );
-    attest<typeof expectedConfig.tables.app__NotNamespaceDir.codegen>(
-      config.tables.app__NotNamespaceDir.codegen,
-    ).equals(expectedConfig.tables.app__NotNamespaceDir.codegen);
-
-    attest(config.tables.app__NamespaceDir).equals(config.namespaces.app.tables.NamespaceDir);
-    attest(config.tables.app__NotNamespaceDir).equals(config.namespaces.app.tables.NotNamespaceDir);
-
-    attest<typeof expectedConfig>(config).equals(expectedConfig);
-  });
-
   describe("shorthands", () => {
     it("should accept a shorthand store config as input and expand it", () => {
       const config = defineStore({ tables: { Name: "address" } });
@@ -752,6 +656,7 @@ describe("defineStore", () => {
       } as const;
 
       const expectedConfig = {
+        multipleNamespaces: false,
         ...expectedBaseNamespace,
         namespaces: {
           "": {
@@ -816,6 +721,7 @@ describe("defineStore", () => {
       } as const;
 
       const expectedConfig = {
+        multipleNamespaces: false,
         ...expectedBaseNamespace,
         namespaces: {
           "": {
@@ -870,6 +776,7 @@ describe("defineStore", () => {
       } as const;
 
       const expectedConfig = {
+        multipleNamespaces: false,
         ...expectedBaseNamespace,
         namespaces: {
           "": {
@@ -923,6 +830,7 @@ describe("defineStore", () => {
       } as const;
 
       const expectedConfig = {
+        multipleNamespaces: false,
         ...expectedBaseNamespace,
         namespaces: {
           "": {

@@ -96,7 +96,6 @@ export type CodegenInput = {
 
 export type WorldInput = show<
   StoreInput & {
-    readonly namespaces?: NamespacesInput;
     /**
      * Contracts named *System will be deployed by default
      * as public systems at `namespace/ContractName`, unless overridden
@@ -115,9 +114,5 @@ export type WorldInput = show<
     readonly codegen?: CodegenInput;
   }
 >;
-
-export type NamespacesInput = {
-  readonly [label: string]: NamespaceInput;
-};
 
 export type NamespaceInput = Pick<StoreInput, "tables">;

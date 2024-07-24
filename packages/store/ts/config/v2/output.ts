@@ -54,15 +54,6 @@ export type Codegen = {
    * Defaults to `codegen`.
    */
   readonly outputDirectory: string;
-  /**
-   * Whether or not to organize codegen output (table libraries, etc.) into directories by namespace.
-   *
-   * For example, a `Counter` table in the `app` namespace will have codegen at `codegen/app/tables/Counter.sol`.
-   *
-   * Defaults to `true` when using top-level `namespaces` key, `false` otherwise.
-   */
-  // TODO: move `namespaces` key handling into store so we can conditionally turn this on/off
-  readonly namespaceDirectories: boolean;
   readonly indexFilename: string;
 };
 
@@ -85,6 +76,17 @@ export type Namespaces = {
 
 export type Store = Omit<Namespace, "label"> & {
   /**
+   * Whether this project is using multiple namespaces or not, dictated by using `namespaces` config key.
+   *
+   * If using multiple namespaces, systems must be organized in `{sourceDirectory}/namespaces/{namespaceLabel}` directories.
+   * Table libraries will similarly be generated into these namespace directories.
+   */
+  // TODO: do we like this approach?
+  //       alternatively could allow defining `sourceDirectory` per namespace and default it to the pattern above,
+  //       but it makes resolving user types a little more confusing
+  readonly multipleNamespaces: boolean;
+  readonly namespaces: Namespaces;
+  /**
    * Directory of Solidity source relative to the MUD config.
    * This is used to resolve other paths in the config, like codegen and user types.
    *
@@ -95,5 +97,4 @@ export type Store = Omit<Namespace, "label"> & {
   readonly enums: EnumsInput;
   readonly enumValues: EnumValues;
   readonly codegen: Codegen;
-  readonly namespaces: Namespaces;
 };
