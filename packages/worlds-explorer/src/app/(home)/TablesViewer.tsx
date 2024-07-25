@@ -120,7 +120,7 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
           getValue: (name: string) => string;
         };
       }) => {
-        return <EditableTableCell value={row.getValue(name)} />;
+        return <EditableTableCell config={mudTableConfig} value={row.getValue(name)} />;
       },
     };
   });
