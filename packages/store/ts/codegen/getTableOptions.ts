@@ -12,6 +12,7 @@ import { getSchemaTypeInfo, resolveAbiOrUserType } from "./userType";
 import { Table } from "../config/v2/output";
 import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
 import { UserType } from "./getUserTypes";
+import { isDefined } from "@latticexyz/common/utils";
 
 export interface TableOptions {
   /** Path where the file is expected to be written (relative to project root) */
@@ -52,16 +53,10 @@ export function getTableOptions({
     // field methods can include simply get/set if there's only 1 field and no record methods
     const withSuffixlessFieldMethods = !withRecordMethods && Object.keys(valueSchema).length === 1;
     // list of any symbols that need to be imported
-    const imports = Object.entries(table.schema)
-      // TODO: refactor this to support static-length array types (where type and internalType won't match)
-      .filter(([, field]) => field.type !== field.internalType)
-      .map(([fieldName, field]): ImportDatum => {
-        const userType = userTypes.find((userType) => userType.name === field.internalType);
-        if (!userType) {
-          throw new Error(
-            `Table "${table.label}" schema with field "${fieldName}" had no corresponding user type for "${field.internalType}".`,
-          );
-        }
+    const imports = Object.values(table.schema)
+      .map((field) => userTypes.find((type) => type.name === field.internalType))
+      .filter(isDefined)
+      .map((userType): ImportDatum => {
         return {
           symbol: userType.name,
           path: userType.importPath.startsWith(".")
