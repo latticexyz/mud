@@ -17,8 +17,8 @@ const config = defineStore({
   userTypes: {
     TestTypeAddress: { filePath: "./contracts/src/types.sol", type: "address" },
     TestTypeInt64: { filePath: "./contracts/src/types.sol", type: "int64" },
-    TestTypeBool: { filePath: "./contracts/src/types.sol", type: "bool" },
-    TestTypeUint128: { filePath: "./contracts/src/types.sol", type: "uint128" },
+    "TestTypeLibrary.TestTypeBool": { filePath: "./contracts/src/types.sol", type: "bool" },
+    "TestTypeLibrary.TestTypeUint128": { filePath: "./contracts/src/types.sol", type: "uint128" },
     ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", type: "bytes32" },
   },
   tables: {
@@ -81,13 +81,13 @@ const config = defineStore({
       schema: {
         k1: "TestTypeAddress",
         k2: "TestTypeInt64",
-        k3: "TestTypeBool",
-        k4: "TestTypeUint128",
+        k3: "TestTypeLibrary.TestTypeBool",
+        k4: "TestTypeLibrary.TestTypeUint128",
         k5: "ResourceId",
         v1: "TestTypeAddress",
         v2: "TestTypeInt64",
-        v3: "TestTypeBool",
-        v4: "TestTypeUint128",
+        v3: "TestTypeLibrary.TestTypeBool",
+        v4: "TestTypeLibrary.TestTypeUint128",
         v5: "ResourceId",
       },
       key: ["k1", "k2", "k3", "k4", "k5"],

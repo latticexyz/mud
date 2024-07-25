@@ -58,7 +58,9 @@ export function getTableOptions({
       .filter(isDefined)
       .map((userType): ImportDatum => {
         return {
-          symbol: userType.name,
+          // If it's a fully qualified name, remove trailing references
+          // This enables support for user types inside libraries
+          symbol: userType.name.replace(/\..*$/, ""),
           path: userType.importPath.startsWith(".")
             ? "./" + path.relative(path.dirname(outputPath), path.join(rootDir, userType.importPath))
             : userType.importPath,

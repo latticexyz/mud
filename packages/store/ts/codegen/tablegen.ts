@@ -22,11 +22,9 @@ export async function tablegen({ rootDir, config }: TablegenOptions) {
 
   // Write enums to user types file
   if (Object.keys(config.enums).length > 0) {
-    await formatAndWriteSolidity(
-      renderEnums(config.enums),
-      path.join(rootDir, getUserTypesFilename({ config })),
-      "Generated types file with enums",
-    );
+    const userTypesFilename = path.join(rootDir, getUserTypesFilename({ config }));
+    const source = renderEnums(config.enums);
+    await formatAndWriteSolidity(source, userTypesFilename, "Generated types file with enums");
   }
 
   await Promise.all(
@@ -56,17 +54,15 @@ export async function tablegen({ rootDir, config }: TablegenOptions) {
       await Promise.all(tableDirs.map((dir) => fs.rm(dir, { recursive: true, force: true })));
 
       await Promise.all(
-        tableOptions.map(({ outputPath, renderOptions }) =>
-          formatAndWriteSolidity(renderTable(renderOptions), outputPath, "Generated table"),
-        ),
+        tableOptions.map(async ({ outputPath, renderOptions }) => {
+          const source = renderTable(renderOptions);
+          return await formatAndWriteSolidity(source, outputPath, "Generated table");
+        }),
       );
 
       const codegenIndexPath = path.join(rootDir, codegenDir, config.codegen.indexFilename);
-      await formatAndWriteSolidity(
-        renderTableIndex(codegenIndexPath, tableOptions),
-        codegenIndexPath,
-        "Generated table index",
-      );
+      const source = renderTableIndex(codegenIndexPath, tableOptions);
+      await formatAndWriteSolidity(source, codegenIndexPath, "Generated table index");
     }),
   );
 }
