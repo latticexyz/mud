@@ -6,7 +6,6 @@ export function transportObserver<TTransport extends Transport>(name: string, tr
     const result = transport(opts);
     const request: typeof result.request = async (req) => {
       debug("request", name, req);
-      console.trace("request", name, req.method);
       const response = await result.request(req);
       debug("response", name, response);
       return response as never;
