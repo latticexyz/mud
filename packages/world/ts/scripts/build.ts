@@ -1,6 +1,5 @@
 import path from "node:path";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
-import { getRemappings } from "@latticexyz/common/foundry";
 import { tablegen } from "@latticexyz/store/codegen";
 import { World } from "../config/v2";
 import { worldgen } from "../node";
@@ -15,10 +14,9 @@ import { worldgen } from "../node";
 const configPath = await resolveConfigPath();
 const rootDir = path.dirname(configPath);
 const config = (await loadConfig(configPath)) as World;
-const remappings = await getRemappings();
 
 await Promise.all([
-  tablegen({ rootDir, config, remappings }),
+  tablegen({ rootDir, config }),
   worldgen({
     rootDir,
     config: {
