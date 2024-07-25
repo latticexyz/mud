@@ -28,6 +28,9 @@ export * from "../valueSchemaToHex";
 export * from "../decodeDozerField";
 export * from "../decodeDozerRecords";
 
+export * from "../getKey";
+export * from "../getValue";
+
 export * from "../getKeySchema";
 export * from "../getValueSchema";
 export * from "../getSchemaTypes";

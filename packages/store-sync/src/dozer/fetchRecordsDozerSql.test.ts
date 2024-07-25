@@ -8,7 +8,7 @@ describe("fetch dozer sql", () => {
   it.skip("should fetch dozer sql", async () => {
     const result = await fetchRecordsDozerSql({
       url: "https://redstone2.dozer.skystrife.xyz/q",
-      worldAddress: "0x9d05cc196c87104a7196fcca41280729b505dbbf",
+      address: "0x9d05cc196c87104a7196fcca41280729b505dbbf",
       queries: [selectFrom({ table: mudConfig.tables.world__Balances, where: '"balance" > 0', limit: 2 })],
     });
 

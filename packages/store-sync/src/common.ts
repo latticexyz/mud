@@ -13,6 +13,7 @@ import worldConfig from "@latticexyz/world/mud.config";
 import { Store as StoreConfig } from "@latticexyz/store";
 import { Table as ConfigTable, Schema } from "@latticexyz/config";
 import { configToTables } from "./configToTables";
+import { DozerTableQuery } from "./dozer/common";
 
 export const mudTables = {
   ...configToTables(storeConfig),
@@ -80,6 +81,10 @@ export type SyncOptions<config extends StoreConfig = StoreConfig> = {
    * MUD Store/World contract address
    */
   address?: Address;
+  /**
+   * Optional dozer SQL queries to filter records.
+   */
+  dozerQueries?: DozerTableQuery[];
   /**
    * Optional filters for indexer and RPC state. Useful to narrow down the data received by the client for large worlds.
    */

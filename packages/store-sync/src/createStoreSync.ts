@@ -34,6 +34,9 @@ import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/uti
 import { getSnapshot } from "./getSnapshot";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 import { Store as StoreConfig } from "@latticexyz/store";
+import { fetchRecordsDozerSql } from "./dozer/fetchRecordsDozerSql";
+import { tablesWithRecordsToLogs } from "./tablesWithRecordsToLogs";
+import { recordToLog } from "./recordToLog";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -55,6 +58,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
   onProgress,
   publicClient,
   address,
+  dozerQueries,
   filters: initialFilters = [],
   tableIds = [],
   followBlockTag = "latest",
@@ -94,15 +98,33 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
     // For performance reasons the queries are not executed against a fixed block height,
     // but against the latest state.
     // We therefore pass the min block number of all query results as overall block number.
-    // This means some logs will be fetched again during the hydration process, but after the
+    // This means some logs will be re-fetched again during the hydration process, but after the
     // hydration is complete, the state will be correct.
     // Intermediate state updates during hydration might be incorrect (for partial updates),
     // so we only notify consumers of state updates after the initial hydration is complete.
 
+    const indexer =
+      indexerUrl !== false
+        ? indexerUrl ??
+          (publicClient.chain && "indexerUrl" in publicClient.chain && typeof publicClient.chain.indexerUrl === "string"
+            ? publicClient.chain.indexerUrl
+            : undefined)
+        : undefined;
+
+    if (!indexer || !address) {
+      return;
+    }
+
+    const initialStorageAdapterBlock: StorageAdapterBlock = { blockNumber: 0n, logs: [] };
+
+    const dozerTables = dozerQueries && (await fetchRecordsDozerSql({ url: indexer, address, queries: dozerQueries }));
+
     // TODO: execute dozer sql queries, encode to logs
+    initialStorageAdapterBlock.logs = dozerTables?.result.flatMap(({ table, records }) =>
+      records.map((record) => recordToLog({ table, record, address })),
+    );
 
     // Additionally fetch logs from the snapshot for tables not included in the SQL hydration approach.
-    // The block number passed in the overall result will be the min of all queries and the snapshot.
 
     // TODO: remove tables from filter for snapshot that are also included in SQL filter.
     const snapshot = await getSnapshot({
@@ -121,6 +143,8 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
               : undefined)
           : undefined,
     });
+
+    // The block number passed in the overall result will be the min of all queries and the snapshot.
 
     onProgress?.({
       step: SyncStep.SNAPSHOT,

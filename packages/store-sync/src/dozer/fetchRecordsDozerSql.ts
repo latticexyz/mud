@@ -1,6 +1,7 @@
 import { DecodeDozerRecordsResult, DozerQueryResult, decodeDozerRecords } from "@latticexyz/protocol-parser/internal";
 import { Hex } from "viem";
-import { TableQuery } from "./common";
+import { DozerTableQuery } from "./common";
+import { Table } from "@latticexyz/config";
 
 type DozerResponseSuccess = {
   block_height: string;
@@ -13,14 +14,17 @@ type DozerResponse = DozerResponseSuccess | DozerResponseFail;
 
 type FetchDozerSqlArgs = {
   url: string;
-  worldAddress: Hex;
-  queries: TableQuery[];
+  address: Hex;
+  queries: DozerTableQuery[];
 };
 
 type FetchDozerSqlResult =
   | {
       blockHeight: bigint;
-      result: DecodeDozerRecordsResult[];
+      result: {
+        table: Table;
+        records: DecodeDozerRecordsResult;
+      }[];
     }
   | undefined;
 
@@ -28,19 +32,14 @@ function isDozerResponseFail(response: DozerResponse): response is DozerResponse
   return "msg" in response;
 }
 
-export async function fetchRecordsDozerSql({
-  url,
-  queries,
-  worldAddress,
-}: FetchDozerSqlArgs): Promise<FetchDozerSqlResult> {
-  console.log("queries", queries);
+export async function fetchRecordsDozerSql({ url, queries, address }: FetchDozerSqlArgs): Promise<FetchDozerSqlResult> {
   const response: DozerResponse = await (
     await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(queries.map((query) => ({ address: worldAddress, query: query.sql }))),
+      body: JSON.stringify(queries.map((query) => ({ address, query: query.sql }))),
     })
   ).json();
 
@@ -51,9 +50,10 @@ export async function fetchRecordsDozerSql({
 
   const result: FetchDozerSqlResult = {
     blockHeight: BigInt(response.block_height),
-    result: response.result.map((records, index) =>
-      decodeDozerRecords({ schema: queries[index].table.schema, records }),
-    ),
+    result: response.result.map((records, index) => ({
+      table: queries[index].table,
+      records: decodeDozerRecords({ schema: queries[index].table.schema, records }),
+    })),
   };
 
   return result;

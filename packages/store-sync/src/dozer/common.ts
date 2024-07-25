@@ -1,6 +1,6 @@
 import { Table } from "@latticexyz/config";
 
-export type TableQuery = {
+export type DozerTableQuery = {
   table: Table;
   sql: string;
 };
