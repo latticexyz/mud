@@ -1,5 +1,5 @@
 import { renderList, renderedSolidityHeader } from "@latticexyz/common/codegen";
-import { TableOptions } from "./tableOptions";
+import { TableOptions } from "./getTableOptions";
 import path from "node:path/posix";
 
 /**
