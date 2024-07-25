@@ -15,10 +15,10 @@ const config = defineStore({
     Enum2: ["E1"],
   },
   userTypes: {
-    TestTypeAddress: { filePath: "./contracts/src/types.sol", type: "address" },
-    TestTypeInt64: { filePath: "./contracts/src/types.sol", type: "int64" },
-    "TestTypeLibrary.TestTypeBool": { filePath: "./contracts/src/types.sol", type: "bool" },
-    "TestTypeLibrary.TestTypeUint128": { filePath: "./contracts/src/types.sol", type: "uint128" },
+    TestTypeAddress: { filePath: "../contracts/src/types.sol", type: "address" },
+    TestTypeInt64: { filePath: "../contracts/src/types.sol", type: "int64" },
+    "TestTypeLibrary.TestTypeBool": { filePath: "../contracts/src/types.sol", type: "bool" },
+    "TestTypeLibrary.TestTypeUint128": { filePath: "../contracts/src/types.sol", type: "uint128" },
     ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", type: "bytes32" },
   },
   tables: {
