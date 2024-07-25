@@ -1,10 +1,10 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { formatAndWriteSolidity, loadAndExtractUserTypes, renderEnums } from "@latticexyz/common/codegen";
+import { formatAndWriteSolidity, renderEnums } from "@latticexyz/common/codegen";
 import { renderTable } from "./renderTable";
 import { renderTableIndex } from "./renderTableIndex";
 import { Store as StoreConfig } from "../config/v2/output";
-import { mapObject, uniqueBy } from "@latticexyz/common/utils";
+import { uniqueBy } from "@latticexyz/common/utils";
 import { getUserTypes } from "./getUserTypes";
 import { getUserTypesFilename } from "./getUserTypesFilename";
 import { getTableOptions } from "./getTableOptions";
@@ -15,17 +15,10 @@ export type TablegenOptions = {
    */
   rootDir: string;
   config: StoreConfig;
-  remappings: [string, string][];
 };
 
-export async function tablegen({ rootDir, config, remappings }: TablegenOptions) {
+export async function tablegen({ rootDir, config }: TablegenOptions) {
   const userTypes = getUserTypes({ config });
-
-  const solidityUserTypes = loadAndExtractUserTypes(
-    mapObject(config.userTypes, (type) => ({ ...type, internalType: type.type })),
-    path.join(rootDir, config.sourceDirectory, config.codegen.outputDirectory),
-    remappings,
-  );
 
   // Write enums to user types file
   if (Object.keys(config.enums).length > 0) {
@@ -54,9 +47,6 @@ export async function tablegen({ rootDir, config, remappings }: TablegenOptions)
         codegenDir,
         userTypes,
         storeImportPath: config.codegen.storeImportPath,
-        // TODO: remove
-        config,
-        solidityUserTypes,
       });
 
       const tableDirs = uniqueBy(

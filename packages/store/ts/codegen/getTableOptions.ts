@@ -6,11 +6,10 @@ import {
   RenderField,
   RenderKeyTuple,
   RenderStaticField,
-  SolidityUserDefinedType,
 } from "@latticexyz/common/codegen";
 import { RenderTableOptions } from "./types";
 import { getSchemaTypeInfo, resolveAbiOrUserType } from "./userType";
-import { Store, Table } from "../config/v2/output";
+import { Table } from "../config/v2/output";
 import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
 import { UserType } from "./getUserTypes";
 
@@ -32,8 +31,6 @@ export function getTableOptions({
   codegenDir,
   userTypes,
   storeImportPath,
-  config,
-  solidityUserTypes,
 }: {
   readonly tables: Table[];
   readonly rootDir: string;
@@ -41,10 +38,6 @@ export function getTableOptions({
   readonly codegenDir: string;
   readonly userTypes: readonly UserType[];
   readonly storeImportPath: string;
-  /** @deprecated */
-  readonly config: Store;
-  /** @deprecated */
-  readonly solidityUserTypes: Record<string, SolidityUserDefinedType>;
 }): TableOptions[] {
   const options = tables.map((table): TableOptions => {
     const outputPath = path.join(rootDir, codegenDir, table.codegen.outputDirectory, `${table.label}.sol`);
@@ -60,6 +53,7 @@ export function getTableOptions({
     const withSuffixlessFieldMethods = !withRecordMethods && Object.keys(valueSchema).length === 1;
     // list of any symbols that need to be imported
     const imports = Object.entries(table.schema)
+      // TODO: refactor this to support static-length array types (where type and internalType won't match)
       .filter(([, field]) => field.type !== field.internalType)
       .map(([fieldName, field]): ImportDatum => {
         const userType = userTypes.find((userType) => userType.name === field.internalType);
@@ -77,8 +71,7 @@ export function getTableOptions({
       });
 
     const keyTuple = Object.entries(keySchema).map(([name, field]): RenderKeyTuple => {
-      const abiOrUserType = field.internalType;
-      const { renderType } = resolveAbiOrUserType(abiOrUserType, config, solidityUserTypes);
+      const { renderType } = resolveAbiOrUserType(field.internalType, userTypes);
 
       return {
         ...renderType,
@@ -88,8 +81,7 @@ export function getTableOptions({
     });
 
     const fields = Object.entries(valueSchema).map(([name, field]): RenderField => {
-      const abiOrUserType = field.internalType;
-      const { renderType, schemaType } = resolveAbiOrUserType(abiOrUserType, config, solidityUserTypes);
+      const { renderType, schemaType } = resolveAbiOrUserType(field.internalType, userTypes);
 
       const elementType = SchemaTypeArrayToElement[schemaType];
       return {
