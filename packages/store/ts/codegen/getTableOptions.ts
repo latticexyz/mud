@@ -35,7 +35,7 @@ export function getTableOptions({
 }: {
   readonly tables: Table[];
   readonly rootDir: string;
-  /** Absolute path to base codegen dir */
+  /** namespace codegen output dir, relative to project root dir */
   readonly codegenDir: string;
   readonly userTypes: readonly UserType[];
   readonly storeImportPath: string;
