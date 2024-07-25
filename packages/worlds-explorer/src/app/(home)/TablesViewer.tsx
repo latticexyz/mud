@@ -1,4 +1,5 @@
 import { useState } from "react";
+import _ from "lodash";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -13,20 +14,19 @@ import {
 } from "@tanstack/react-table";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowUpDown, Loader } from "lucide-react";
-import Highlighter from "react-highlight-words";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { bufferToBigInt } from "./utils/bufferToBigInt";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { EditableTableCell } from "./EditableTableCell";
 
-export function TablesViewer({
-  table: selectedTable,
-  query,
-}: {
+type Props = {
   table: string | undefined;
   query: string | undefined;
-}) {
+};
+
+export function TablesViewer({ table: selectedTable, query }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -72,6 +72,24 @@ export function TablesViewer({
     refetchInterval: 1000,
   });
 
+  const { data: mudTableConfig } = useQuery({
+    queryKey: ["table", { selectedTable }],
+    queryFn: async () => {
+      const response = await fetch(`/api/table?tableId=${selectedTable}`);
+      return response.json();
+    },
+    select: (data) => {
+      return {
+        ...data.table,
+        key_schema: JSON.parse(data.table.key_schema).json,
+        value_schema: JSON.parse(data.table.value_schema).json,
+      };
+    },
+    enabled: Boolean(selectedTable),
+  });
+
+  console.log(selectedTable, mudTableConfig);
+
   const columns: ColumnDef<{}>[] = schema?.map(({ name, type }: { name: string; type: string }) => {
     return {
       accessorKey: name,
@@ -89,7 +107,8 @@ export function TablesViewer({
             className="-ml-4"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            {name} ({type})
+            {name} (
+            {mudTableConfig?.key_schema[name] || mudTableConfig?.value_schema[_.camelCase(name)] || type.toLowerCase()})
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
@@ -101,18 +120,7 @@ export function TablesViewer({
           getValue: (name: string) => string;
         };
       }) => {
-        // TODO: editable row
-        // return <input className="bg-transparent" defaultValue={row.getValue(name)} />;
-        return (
-          <div contentEditable={true}>
-            <Highlighter
-              highlightClassName="highlight"
-              searchWords={[globalFilter]}
-              autoEscape={true}
-              textToHighlight={row.getValue(name)?.toString()}
-            />
-          </div>
-        );
+        return <EditableTableCell value={row.getValue(name)} />;
       },
     };
   });

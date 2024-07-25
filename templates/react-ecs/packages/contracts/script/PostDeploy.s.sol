@@ -29,6 +29,12 @@ contract PostDeploy is Script {
       IWorld(worldAddress).app__addCheckbox(i, i % 2 == 0);
     }
 
+    // Or we can call our own systems
+    IWorld(worldAddress).app__addTask("Take out the trash");
+
+    bytes32 key = IWorld(worldAddress).app__addTask("Do the dishes");
+    IWorld(worldAddress).app__completeTask(key);
+
     vm.stopBroadcast();
   }
 }
