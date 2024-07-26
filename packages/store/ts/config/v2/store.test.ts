@@ -75,7 +75,7 @@ describe("defineStore", () => {
       enums: {},
       enumValues: {},
       codegen: {
-        storeImportPath: "@latticexyz/store/src/",
+        storeImportPath: "@latticexyz/store/src",
         userTypesFilename: "common.sol",
         outputDirectory: "codegen",
         indexFilename: "index.sol",
@@ -159,7 +159,7 @@ describe("defineStore", () => {
       enums: {},
       enumValues: {},
       codegen: {
-        storeImportPath: "@latticexyz/store/src/",
+        storeImportPath: "@latticexyz/store/src",
         userTypesFilename: "common.sol",
         outputDirectory: "codegen",
         indexFilename: "index.sol",
