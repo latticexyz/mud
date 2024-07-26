@@ -2,14 +2,12 @@ import {
   renderArguments,
   renderedSolidityHeader,
   renderAbsoluteImports,
-  renderRelativeImports,
   type AbsoluteImportDatum,
-  type RelativeImportDatum,
 } from "@latticexyz/common/codegen";
 
 export type RenderWorldOptions = {
   /** List of symbols to import, and their file paths */
-  imports: RelativeImportDatum[];
+  imports: AbsoluteImportDatum[];
   /** Name of the interface to render */
   interfaceName: string;
   /** Path for store package imports */
@@ -18,9 +16,14 @@ export type RenderWorldOptions = {
   worldImportPath: string;
 };
 
-export function renderWorldInterface({ interfaceName, storeImportPath, worldImportPath, imports }: RenderWorldOptions) {
-  const baseImports: AbsoluteImportDatum[] =
-    interfaceName === "IBaseWorld"
+export function renderWorldInterface({
+  interfaceName,
+  storeImportPath,
+  worldImportPath,
+  imports: initialImports,
+}: RenderWorldOptions) {
+  const imports = [
+    ...(interfaceName === "IBaseWorld"
       ? [
           { symbol: "IStore", path: `${storeImportPath}/IStore.sol` },
           { symbol: "IWorldKernel", path: `${worldImportPath}/IWorldKernel.sol` },
@@ -30,15 +33,16 @@ export function renderWorldInterface({ interfaceName, storeImportPath, worldImpo
             symbol: "IBaseWorld",
             path: `${worldImportPath}/codegen/interfaces/IBaseWorld.sol`,
           },
-        ];
-  const importSymbols = [...baseImports, ...imports].map(({ symbol }) => symbol);
+        ]),
+    ...initialImports,
+  ];
+
+  const importSymbols = imports.map(({ symbol }) => symbol);
 
   return `
     ${renderedSolidityHeader}
 
-    ${renderAbsoluteImports(baseImports)}
-
-    ${renderRelativeImports(imports)}
+    ${renderAbsoluteImports(imports)}
 
     /**
      * @title ${interfaceName} 

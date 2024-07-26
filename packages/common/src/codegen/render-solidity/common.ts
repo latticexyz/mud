@@ -1,12 +1,5 @@
 import path from "path";
-import {
-  AbsoluteImportDatum,
-  RelativeImportDatum,
-  ImportDatum,
-  StaticResourceData,
-  RenderKeyTuple,
-  RenderType,
-} from "./types";
+import { AbsoluteImportDatum, ImportDatum, StaticResourceData, RenderKeyTuple, RenderType } from "./types";
 import { posixPath } from "../utils";
 import { resourceToHex } from "../../resourceToHex";
 import { hexToResource } from "../../hexToResource";
@@ -100,19 +93,6 @@ export function renderImports(imports: ImportDatum[]): string {
         };
       }
     }),
-  );
-}
-
-/**
- * Aggregates, deduplicates and renders imports for symbols per path.
- * Identical symbols from different paths are NOT handled, they should be checked before rendering.
- */
-export function renderRelativeImports(imports: RelativeImportDatum[]): string {
-  return renderAbsoluteImports(
-    imports.map(({ symbol, fromPath, usedInPath }) => ({
-      symbol,
-      path: solidityRelativeImportPath(fromPath, usedInPath),
-    })),
   );
 }
 
