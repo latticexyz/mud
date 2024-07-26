@@ -72,7 +72,10 @@ export function renderCommonData({
   };
 }
 
-/** For 2 paths which are relative to a common root, create a relative import path from one to another */
+/**
+ * For 2 paths which are relative to a common root, create a relative import path from one to another
+ * @deprecated Use `renderImportPath` instead.
+ */
 export function solidityRelativeImportPath(fromPath: string, usedInPath: string): string {
   // 1st "./" must be added because path strips it,
   // but solidity expects it unless there's "../" ("./../" is fine).
