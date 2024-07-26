@@ -1,5 +1,5 @@
 import { waitForTransactionReceipt } from "@wagmi/core";
-import { encodeValueArgs } from "@latticexyz/protocol-parser/internal";
+import { encodeField, encodeValueArgs } from "@latticexyz/protocol-parser/internal";
 import { ChangeEvent, useState } from "react";
 import { toast } from "sonner";
 import { privateKeyToAccount } from "viem/accounts";
@@ -56,7 +56,7 @@ async function setDynamicField(config, writeContractAsync, worldAddress, account
   return txHash;
 }
 
-export function EditableTableCell({ name, config, keyTuple, values, value: defaultValue }: Props) {
+export function EditableTableCell({ config, keyTuple, value: defaultValue }: Props) {
   const { account } = useStore();
   const { writeContractAsync } = useWriteContract();
   const worldAddress = useWorldAddress();
@@ -67,51 +67,24 @@ export function EditableTableCell({ name, config, keyTuple, values, value: defau
     setValue(value);
   };
 
-  console.log(values);
-
   const handleSubmit = async () => {
     const toastId = toast.loading("Transaction submitted");
-
-    console.log("name:", name);
-    console.log("config:", config.value_schema);
-    console.log("new value:", value);
-    console.log("values:", values);
-
-    console.log("new values:", {
-      // createdAt: BigInt(0),
-      // completedAt: BigInt(12323),
-      // description: "Check 12123",
-
-      ...values,
-      [name]: value,
-    });
-
     try {
-      console.log(config.value_schema);
-
-      const dynamic = true;
+      const dynamic = false;
       let txHash;
 
       if (dynamic) {
         txHash = await setDynamicField(config, writeContractAsync, worldAddress, account, keyTuple);
       } else {
-        // TODO: works for editing singleton, nice
-        // const txHash = await writeContractAsync({
-        //   account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
-        //   abi,
-        //   address: worldAddress,
-        //   functionName: "setField",
-        //   args: ["0x74626170700000000000000000000000436f756e746572000000000000000000", [], 0, "0x00000012"],
-        // });
-
         const tableId = config.table_id;
+        const fieldType = config.value_schema.value;
 
         txHash = await writeContractAsync({
           account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
           abi,
           address: worldAddress,
           functionName: "setField",
-          args: [tableId, keyTuple, 0, "0x0100000000000000000000000000000000000000000000000000000000000000"],
+          args: [tableId, keyTuple, 0, encodeField(fieldType, value)],
         });
       }
 
