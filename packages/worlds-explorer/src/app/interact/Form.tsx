@@ -19,7 +19,9 @@ export function Form({ data }: Props) {
             {data.abi.map((abi, idx) => {
               return (
                 <li key={idx}>
-                  <a href={`#${(abi as AbiFunction).name}`}>{(abi as AbiFunction).name}</a>
+                  <a href={`#${(abi as AbiFunction).name}`} className="hover:underline">
+                    {(abi as AbiFunction).name}
+                  </a>
                 </li>
               );
             })}

@@ -18,7 +18,7 @@ export function TableSelector({ value, options }: { value: string | undefined; o
         <SelectContent>
           {options?.map((option) => {
             return (
-              <SelectItem key={option} value={option}>
+              <SelectItem key={option} value={option} className="font-mono">
                 {option}
               </SelectItem>
             );

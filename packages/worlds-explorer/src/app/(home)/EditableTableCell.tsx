@@ -10,6 +10,7 @@ import { useStore } from "@/store";
 import { wagmiConfig } from "../_providers";
 import { abi } from "./abi";
 import { parseEventLogs } from "viem";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type Props = {
   name: string;
@@ -38,7 +39,7 @@ async function setDynamicField(config, writeContractAsync, worldAddress, account
   );
 
   // TODO: set tasks
-  const tableId = config.table_id;
+  const tableId = config?.table_id;
   const txHash = await writeContractAsync({
     account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
     abi,
@@ -56,35 +57,36 @@ async function setDynamicField(config, writeContractAsync, worldAddress, account
   return txHash;
 }
 
-export function EditableTableCell({ config, keyTuple, value: defaultValue }: Props) {
+export function EditableTableCell({ name, config, keyTuple, value: defaultValue }: Props) {
   const { account } = useStore();
   const { writeContractAsync } = useWriteContract();
   const worldAddress = useWorldAddress();
   const [value, setValue] = useState(defaultValue);
 
-  const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
-    const value = evt.target.value;
-    setValue(value);
-  };
+  const isRecord = false; // TODO: determine properly
+  const tableId = config?.table_id;
+  const fieldType = config?.value_schema[name];
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (newValue: unknown) => {
     const toastId = toast.loading("Transaction submitted");
+
+    const valueToSet = newValue === undefined ? value : newValue;
+    if (newValue !== undefined) {
+      setValue(newValue);
+    }
+
     try {
-      const dynamic = false;
       let txHash;
 
-      if (dynamic) {
+      if (isRecord) {
         txHash = await setDynamicField(config, writeContractAsync, worldAddress, account, keyTuple);
       } else {
-        const tableId = config.table_id;
-        const fieldType = config.value_schema.value;
-
         txHash = await writeContractAsync({
           account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
           abi,
           address: worldAddress,
           functionName: "setField",
-          args: [tableId, keyTuple, 0, encodeField(fieldType, value)],
+          args: [tableId, keyTuple, 0, encodeField("bool", valueToSet)],
         });
       }
 
@@ -112,5 +114,28 @@ export function EditableTableCell({ config, keyTuple, value: defaultValue }: Pro
     }
   };
 
-  return <input className="bg-transparent w-full" onChange={handleChange} onBlur={handleSubmit} defaultValue={value} />;
+  if (fieldType === "bool") {
+    return (
+      <Checkbox
+        id="show-all-columns"
+        checked={value === "1"}
+        onCheckedChange={async () => {
+          const newValue = value === "1" ? "0" : "1";
+          handleSubmit(newValue);
+        }}
+      />
+    );
+  }
+
+  return (
+    <input
+      className="bg-transparent w-full"
+      onChange={(evt: ChangeEvent<HTMLInputElement>) => {
+        const value = evt.target.value;
+        setValue(value);
+      }}
+      onBlur={handleSubmit}
+      defaultValue={value}
+    />
+  );
 }

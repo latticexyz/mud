@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "@radix-ui/themes/styles.css";
 import "./globals.css";
 import { Toaster } from "sonner";
@@ -7,7 +7,16 @@ import { Theme } from "@radix-ui/themes";
 import { Providers } from "./_providers";
 import { Navigation } from "@/components/navigation";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
+});
 
 export const metadata: Metadata = {
   title: "Worlds Explorer",
@@ -21,10 +30,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.variable} ${jetbrains.variable}`}>
         <Providers>
           <Theme>
-            <div className="container">
+            <div
+              className="container"
+              style={{
+                fontFamily: "var(--font-jetbrains-mono)",
+              }}
+            >
               <Navigation />
               {children}
             </div>
