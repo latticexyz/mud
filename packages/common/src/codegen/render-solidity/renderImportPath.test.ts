@@ -71,4 +71,13 @@ describe("renderImportPath", () => {
       '"./test/codegen/common.sol"',
     );
   });
+
+  it("normalizes to POSIX paths", () => {
+    expect(renderImportPath("C:\\src")).toMatchInlineSnapshot('"C:/src"');
+    expect(renderImportPath("C:\\src\\")).toMatchInlineSnapshot('"C:/src"');
+    expect(renderImportPath("C:\\src", "./IStore.sol")).toMatchInlineSnapshot('"C:/src/IStore.sol"');
+    expect(renderImportPath("C:\\src\\", "./IStore.sol")).toMatchInlineSnapshot('"C:/src/IStore.sol"');
+    expect(renderImportPath("./src", ".\\IStore.sol")).toMatchInlineSnapshot('"./src/IStore.sol"');
+    expect(renderImportPath("./src", ".\\IStore.sol")).toMatchInlineSnapshot('"./src/IStore.sol"');
+  });
 });

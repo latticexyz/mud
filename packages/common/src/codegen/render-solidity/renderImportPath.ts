@@ -1,9 +1,15 @@
-// Solidity compiler expects POSIX paths
-import path from "node:path/posix";
+import path from "node:path";
+
+// This will probably break for backslash-escaped POSIX paths,
+// but we'll worry about that later.
+function winToPosix(segment: string): string {
+  return segment.replaceAll(path.win32.sep, path.posix.sep);
+}
 
 export function renderImportPath(basePath: string, ...segments: readonly string[]): string {
-  const fullPath = path
-    .join(basePath, ...segments)
+  // Solidity compiler expects POSIX paths
+  const fullPath = path.posix
+    .join(winToPosix(basePath), ...segments.map(winToPosix))
     // remove trailing slash
     .replace(/\/$/, "");
 
