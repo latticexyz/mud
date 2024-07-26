@@ -17,12 +17,11 @@ export async function getSystemContracts({
   rootDir,
   config,
 }: GetSystemContractsOptions): Promise<readonly SystemContract[]> {
+  // TODO: get this value from config once multiple namespaces are supported
   const multipleNamespaces = false;
   const solidityFiles = await findSolidityFiles({
     cwd: rootDir,
-    pattern: multipleNamespaces
-      ? path.join(config.sourceDirectory, "namespaces/*/**")
-      : path.join(config.sourceDirectory, "**"),
+    pattern: path.join(config.sourceDirectory, "**"),
   });
 
   return solidityFiles
@@ -43,7 +42,11 @@ export async function getSystemContracts({
         if (namespacesDir === "namespaces" && namespaceDir) {
           return namespaceDir;
         }
-        throw new Error(`Expected namespace directory for system file at ${file.filename}`);
+        // TODO: is this too aggressive? will this be problematic for world-modules (systems independent of namespaces)?
+        // TODO: filter based on excluded systems in config?
+        throw new Error(
+          `Expected system file at "${file.filename}" to be in a namespace directory like "${path.join(config.sourceDirectory, "namespaces/{namespace}", relativePath)}"`,
+        );
       })();
 
       return {
