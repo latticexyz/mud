@@ -53,8 +53,8 @@ export async function worldgen({
       imports,
     });
     // write to file
-    const fullOutputPath = path.join(rootDir, outDir, systemInterfaceName + ".sol");
-    await formatAndWriteSolidity(output, fullOutputPath, "Generated system interface");
+    const outputPath = path.join(rootDir, outDir, systemInterfaceName + ".sol");
+    await formatAndWriteSolidity(output, outputPath, "Generated system interface");
 
     // prepare imports for IWorld
     systemInterfaceImports.push({
@@ -65,13 +65,17 @@ export async function worldgen({
   }
 
   // render IWorld
+  const outputPath = path.join(rootDir, outDir, config.codegen.worldInterfaceName + ".sol");
   const output = renderWorldInterface({
     interfaceName: config.codegen.worldInterfaceName,
     imports: systemInterfaceImports,
-    storeImportPath: config.codegen.storeImportPath,
-    worldImportPath: config.codegen.worldImportPath,
+    storeImportPath: config.codegen.storeImportPath.startsWith(".")
+      ? "./" + path.relative(path.dirname(outputPath), path.join(rootDir, config.codegen.storeImportPath))
+      : config.codegen.storeImportPath,
+    worldImportPath: config.codegen.worldImportPath.startsWith(".")
+      ? "./" + path.relative(path.dirname(outputPath), path.join(rootDir, config.codegen.worldImportPath))
+      : config.codegen.worldImportPath,
   });
   // write to file
-  const fullOutputPath = path.join(rootDir, outDir, config.codegen.worldInterfaceName + ".sol");
-  await formatAndWriteSolidity(output, fullOutputPath, "Generated world interface");
+  await formatAndWriteSolidity(output, outputPath, "Generated world interface");
 }

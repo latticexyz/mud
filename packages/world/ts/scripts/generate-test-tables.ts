@@ -3,10 +3,10 @@ import { defineWorld } from "../config/v2/world";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
-const configPath = fileURLToPath(import.meta.url);
+const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 const config = defineWorld({
-  sourceDirectory: "../../test",
+  sourceDirectory: "test",
   tables: {
     Bool: {
       schema: {
@@ -40,4 +40,4 @@ const config = defineWorld({
   },
 });
 
-await tablegen({ rootDir: path.dirname(configPath), config });
+await tablegen({ rootDir, config });

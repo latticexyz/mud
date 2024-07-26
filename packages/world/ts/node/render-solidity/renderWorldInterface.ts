@@ -4,21 +4,31 @@ import {
   renderAbsoluteImports,
   renderRelativeImports,
   type AbsoluteImportDatum,
+  type RelativeImportDatum,
 } from "@latticexyz/common/codegen";
-import type { RenderWorldOptions } from "./types";
 
-export function renderWorldInterface(options: RenderWorldOptions) {
-  const { interfaceName, storeImportPath, worldImportPath, imports } = options;
+export type RenderWorldOptions = {
+  /** List of symbols to import, and their file paths */
+  imports: RelativeImportDatum[];
+  /** Name of the interface to render */
+  interfaceName: string;
+  /** Path for store package imports */
+  storeImportPath: string;
+  /** Path for world package imports */
+  worldImportPath: string;
+};
+
+export function renderWorldInterface({ interfaceName, storeImportPath, worldImportPath, imports }: RenderWorldOptions) {
   const baseImports: AbsoluteImportDatum[] =
     interfaceName === "IBaseWorld"
       ? [
           { symbol: "IStore", path: `${storeImportPath}/IStore.sol` },
-          { symbol: "IWorldKernel", path: `${worldImportPath}IWorldKernel.sol` },
+          { symbol: "IWorldKernel", path: `${worldImportPath}/IWorldKernel.sol` },
         ]
       : [
           {
             symbol: "IBaseWorld",
-            path: `${worldImportPath}codegen/interfaces/IBaseWorld.sol`,
+            path: `${worldImportPath}/codegen/interfaces/IBaseWorld.sol`,
           },
         ];
   const importSymbols = [...baseImports, ...imports].map(({ symbol }) => symbol);
