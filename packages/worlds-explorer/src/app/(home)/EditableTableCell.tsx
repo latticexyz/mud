@@ -1,77 +1,14 @@
 import { waitForTransactionReceipt } from "@wagmi/core";
+import { encodeValueArgs } from "@latticexyz/protocol-parser/internal";
+import { ChangeEvent, useState } from "react";
+import { toast } from "sonner";
+import { privateKeyToAccount } from "viem/accounts";
+import { useWriteContract } from "wagmi";
 import { ACCOUNT_PRIVATE_KEYS } from "@/consts";
 import { useWorldAddress } from "@/hooks/useWorldAddress";
 import { useStore } from "@/store";
-import { encodeValueArgs } from "@latticexyz/protocol-parser/internal";
-import { ChangeEvent, useState } from "react";
-import { privateKeyToAccount } from "viem/accounts";
-import { useWriteContract } from "wagmi";
 import { wagmiConfig } from "../_providers";
-import { toast } from "sonner";
-
-export const abi = [
-  {
-    type: "function",
-    name: "setField",
-    inputs: [
-      {
-        name: "tableId",
-        type: "bytes32",
-        internalType: "ResourceId",
-      },
-      {
-        name: "keyTuple",
-        type: "bytes32[]",
-        internalType: "bytes32[]",
-      },
-      {
-        name: "fieldIndex",
-        type: "uint8",
-        internalType: "uint8",
-      },
-      {
-        name: "data",
-        type: "bytes",
-        internalType: "bytes",
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "setRecord",
-    inputs: [
-      {
-        name: "tableId",
-        type: "bytes32",
-        internalType: "ResourceId",
-      },
-      {
-        name: "keyTuple",
-        type: "bytes32[]",
-        internalType: "bytes32[]",
-      },
-      {
-        name: "staticData",
-        type: "bytes",
-        internalType: "bytes",
-      },
-      {
-        name: "encodedLengths",
-        type: "bytes32",
-        internalType: "EncodedLengths",
-      },
-      {
-        name: "dynamicData",
-        type: "bytes",
-        internalType: "bytes",
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-];
+import { abi } from "./abi";
 
 type Props = {
   name: string;
@@ -100,14 +37,32 @@ export function EditableTableCell({ name, config, keyTuple, values, value: defau
     console.log("new value:", value);
     console.log("values:", values);
 
-    try {
-      const encodedValueArgs = encodeValueArgs(config.value_schema, {
-        createdAt: BigInt(0),
-        completedAt: BigInt(12323),
-        description: "Check 12123",
+    console.log("new values:", {
+      // createdAt: BigInt(0),
+      // completedAt: BigInt(12323),
+      // description: "Check 12123",
 
-        // TODO: change values here
-      });
+      ...values,
+      [name]: value,
+    });
+
+    try {
+      console.log(config.value_schema);
+
+      const encodedValueArgs = encodeValueArgs(
+        {
+          createdAt: "uint256",
+          completedAt: "uint256",
+          description: "string",
+        },
+        {
+          completedAt: BigInt(1),
+          createdAt: BigInt(2),
+          description: "Desc",
+        },
+      );
+
+      console.log("encodedValueArgs:", encodedValueArgs);
 
       // TODO: set tasks
       const tableId = config.table_id;

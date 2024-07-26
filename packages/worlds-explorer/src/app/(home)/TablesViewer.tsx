@@ -68,7 +68,7 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
         return Object.fromEntries(
           Object.entries(row).map(([key, value]) => {
             if (value?.type === "Buffer") {
-              return [key, bufferToBigInt(value?.data).toString()];
+              return [key, bufferToBigInt(value?.data)];
             }
             return [key, value];
           }),
@@ -130,15 +130,19 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
         const keysSchema = Object.keys(mudTableConfig?.key_schema || {});
         const keyTuple = keysSchema.map((key) => row.getValue(key));
 
-        console.log(name, row.original);
+        const valuesSchema = Object.keys(mudTableConfig?.value_schema || {});
+        const values = valuesSchema.reduce((acc, key) => {
+          acc[key] = row.getValue(key);
+          return acc;
+        }, {});
 
         return (
           <EditableTableCell
             config={mudTableConfig}
             keyTuple={keyTuple}
             name={name}
-            value={row.getValue(name)}
-            values={row.original}
+            value={row.getValue(name).toString()}
+            values={values}
           />
         );
       },
