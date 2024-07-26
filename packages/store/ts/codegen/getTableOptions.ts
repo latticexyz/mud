@@ -1,18 +1,13 @@
 import path from "path";
 import { SchemaTypeArrayToElement } from "@latticexyz/schema-type/deprecated";
-import {
-  ImportDatum,
-  RenderDynamicField,
-  RenderField,
-  RenderKeyTuple,
-  RenderStaticField,
-} from "@latticexyz/common/codegen";
+import { RenderDynamicField, RenderField, RenderKeyTuple, RenderStaticField } from "@latticexyz/common/codegen";
 import { RenderTableOptions } from "./types";
 import { getSchemaTypeInfo, resolveAbiOrUserType } from "./userType";
 import { Table } from "../config/v2/output";
 import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
 import { UserType } from "./getUserTypes";
 import { isDefined } from "@latticexyz/common/utils";
+import { ImportDatum } from "@latticexyz/common/codegen";
 
 export interface TableOptions {
   /** Path where the file is expected to be written (relative to project root) */

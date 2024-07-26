@@ -82,8 +82,10 @@ export type Codegen = {
   /** Directory to output system and world interfaces of `worldgen` (Default "world") */
   readonly worldgenDirectory: string;
   /**
-   * Path for world package imports. Default is "@latticexyz/world/src/"
    * @internal
+   * Absolute import path for a package import or starting with `.` for an import relative to project root dir.
+   *
+   * Defaults to `@latticexyz/world/src` if not set.
    */
   readonly worldImportPath: string;
 };
