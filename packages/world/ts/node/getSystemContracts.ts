@@ -37,12 +37,13 @@ export async function getSystemContracts({
     .map((file) => {
       const namespaceLabel = (() => {
         if (!multipleNamespaces) return config.namespace;
+
         const relativePath = path.relative(path.join(rootDir, config.sourceDirectory), file.filename);
-        const label = (relativePath.match(/^namespaces\/(.*?)\//) ?? []).at(1);
-        if (!label) {
-          throw new Error(`Expected namespace directory for system file at ${file.filename}`);
+        const [namespacesDir, namespaceDir] = relativePath.split(path.sep);
+        if (namespacesDir === "namespaces" && namespaceDir) {
+          return namespaceDir;
         }
-        return label;
+        throw new Error(`Expected namespace directory for system file at ${file.filename}`);
       })();
 
       return {
