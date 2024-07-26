@@ -2,6 +2,7 @@ import { isHex } from "viem";
 import { getSystemContracts } from "./getSystemContracts";
 import { System, World } from "../config/v2";
 import { resolveSystem } from "../config/v2/system";
+import { resolveNamespace } from "@latticexyz/store/config/v2";
 
 export type ResolvedSystem = System & {
   readonly sourcePath: string;
@@ -14,13 +15,8 @@ export async function resolveSystems({
   rootDir: string;
   config: World;
 }): Promise<readonly ResolvedSystem[]> {
-  // TODO: support systems in multiple namespaces
-  if (config.multipleNamespaces) {
-    throw new Error("Systems in namespaces are not yet supported.");
-  }
-
   const systemContracts = await getSystemContracts({ rootDir, config });
-  const contractNames = systemContracts.map((contract) => contract.name);
+  const contractNames = systemContracts.map((contract) => contract.systemLabel);
 
   // validate every system in config refers to an existing system contract
   const missingSystems = Object.keys(config.systems).filter((systemLabel) => !contractNames.includes(systemLabel));
@@ -30,9 +26,13 @@ export async function resolveSystems({
 
   const systems = systemContracts
     .map((contract): ResolvedSystem => {
-      // TODO: remove `config.namespace!` type coercion once multiple namespaces are supported
       const systemConfig =
-        config.systems[contract.name] ?? resolveSystem({ label: contract.name, namespace: config.namespace! });
+        config.systems[contract.systemLabel] ??
+        // TODO: move this to `resolveNamespace({ systems: ... })`
+        resolveSystem({
+          label: contract.systemLabel,
+          namespace: resolveNamespace({ label: contract.namespaceLabel }).namespace,
+        });
       return {
         ...systemConfig,
         sourcePath: contract.sourcePath,

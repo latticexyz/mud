@@ -45,7 +45,7 @@ export type resolveNamespace<input, scope extends Scope = AbiTypeScope> = input 
 
 export function resolveNamespace<const input extends NamespaceInput, scope extends Scope = AbiTypeScope>(
   input: input,
-  scope: scope,
+  scope: scope = AbiTypeScope as never,
 ): resolveNamespace<input, scope> {
   const label = input.label;
   const namespace = input.namespace ?? label.slice(0, 14);

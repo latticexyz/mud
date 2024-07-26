@@ -1,5 +1,6 @@
 import { StoreInput, NamespaceInput as StoreNamespaceInput } from "@latticexyz/store/config/v2";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
+import { Codegen } from "./output";
 
 export type SystemInput = {
   /**
@@ -92,14 +93,7 @@ export type DeployInput = {
   readonly upgradeableWorldImplementation?: boolean;
 };
 
-export type CodegenInput = {
-  /** The name of the World interface to generate. (Default `IWorld`) */
-  readonly worldInterfaceName?: string;
-  /** Directory to output system and world interfaces of `worldgen` (Default "world") */
-  readonly worldgenDirectory?: string;
-  /** Path for world package imports. Default is "@latticexyz/world/src/" */
-  readonly worldImportPath?: string;
-};
+export type CodegenInput = Partial<Codegen>;
 
 export type WorldInput = Omit<StoreInput, "namespaces"> & {
   readonly namespaces?: NamespacesInput;

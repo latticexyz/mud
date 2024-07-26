@@ -1,17 +1,13 @@
 import path from "path";
 import { SchemaTypeArrayToElement } from "@latticexyz/schema-type/deprecated";
-import {
-  ImportDatum,
-  RenderDynamicField,
-  RenderField,
-  RenderKeyTuple,
-  RenderStaticField,
-  SolidityUserDefinedType,
-} from "@latticexyz/common/codegen";
+import { RenderDynamicField, RenderField, RenderKeyTuple, RenderStaticField } from "@latticexyz/common/codegen";
 import { RenderTableOptions } from "./types";
-import { getSchemaTypeInfo, importForAbiOrUserType, resolveAbiOrUserType } from "./userType";
-import { Store as StoreConfig } from "../config/v2/output";
+import { getSchemaTypeInfo, resolveAbiOrUserType } from "./userType";
+import { Table } from "../config/v2/output";
 import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
+import { UserType } from "./getUserTypes";
+import { isDefined } from "@latticexyz/common/utils";
+import { ImportDatum } from "@latticexyz/common/codegen";
 
 export interface TableOptions {
   /** Path where the file is expected to be written (relative to project root) */
@@ -25,12 +21,24 @@ export interface TableOptions {
 /**
  * Transforms store config and available solidity user types into useful options for `tablegen` and `renderTable`
  */
-export function getTableOptions(
-  config: StoreConfig,
-  solidityUserTypes: Record<string, SolidityUserDefinedType>,
-): TableOptions[] {
-  const tables = Object.values(config.namespaces).flatMap((namespace) => Object.values(namespace.tables));
+export function getTableOptions({
+  tables,
+  rootDir,
+  codegenDir,
+  userTypes,
+  storeImportPath,
+}: {
+  readonly tables: Table[];
+  readonly rootDir: string;
+  /** namespace codegen output dir, relative to project root dir */
+  readonly codegenDir: string;
+  readonly userTypes: readonly UserType[];
+  /** absolute import path or, if starting with `.`, relative to project root dir */
+  readonly storeImportPath: string;
+}): TableOptions[] {
   const options = tables.map((table): TableOptions => {
+    const outputPath = path.join(rootDir, codegenDir, table.codegen.outputDirectory, `${table.label}.sol`);
+
     const keySchema = getKeySchema(table);
     const valueSchema = getValueSchema(table);
 
@@ -41,19 +49,22 @@ export function getTableOptions(
     // field methods can include simply get/set if there's only 1 field and no record methods
     const withSuffixlessFieldMethods = !withRecordMethods && Object.keys(valueSchema).length === 1;
     // list of any symbols that need to be imported
-    const imports: ImportDatum[] = [];
+    const imports = Object.values(table.schema)
+      .map((field) => userTypes.find((type) => type.name === field.internalType))
+      .filter(isDefined)
+      .map((userType): ImportDatum => {
+        return {
+          // If it's a fully qualified name, remove trailing references
+          // This enables support for user types inside libraries
+          symbol: userType.name.replace(/\..*$/, ""),
+          path: userType.importPath.startsWith(".")
+            ? "./" + path.relative(path.dirname(outputPath), path.join(rootDir, userType.importPath))
+            : userType.importPath,
+        };
+      });
 
     const keyTuple = Object.entries(keySchema).map(([name, field]): RenderKeyTuple => {
-      const abiOrUserType = field.internalType;
-      const { renderType } = resolveAbiOrUserType(abiOrUserType, config, solidityUserTypes);
-
-      const importDatum = importForAbiOrUserType(
-        abiOrUserType,
-        table.codegen.outputDirectory,
-        config,
-        solidityUserTypes,
-      );
-      if (importDatum) imports.push(importDatum);
+      const { renderType } = resolveAbiOrUserType(field.internalType, userTypes);
 
       return {
         ...renderType,
@@ -63,16 +74,7 @@ export function getTableOptions(
     });
 
     const fields = Object.entries(valueSchema).map(([name, field]): RenderField => {
-      const abiOrUserType = field.internalType;
-      const { renderType, schemaType } = resolveAbiOrUserType(abiOrUserType, config, solidityUserTypes);
-
-      const importDatum = importForAbiOrUserType(
-        abiOrUserType,
-        table.codegen.outputDirectory,
-        config,
-        solidityUserTypes,
-      );
-      if (importDatum) imports.push(importDatum);
+      const { renderType, schemaType } = resolveAbiOrUserType(field.internalType, userTypes);
 
       const elementType = SchemaTypeArrayToElement[schemaType];
       return {
@@ -96,14 +98,16 @@ export function getTableOptions(
         };
 
     return {
-      outputPath: path.join(table.codegen.outputDirectory, `${table.label}.sol`),
+      outputPath,
       tableName: table.label,
       renderOptions: {
         imports,
         libraryName: table.label,
         structName: withStruct ? table.label + "Data" : undefined,
         staticResourceData,
-        storeImportPath: config.codegen.storeImportPath,
+        storeImportPath: storeImportPath.startsWith(".")
+          ? "./" + path.relative(path.dirname(outputPath), path.join(rootDir, storeImportPath))
+          : storeImportPath,
         keyTuple,
         fields,
         staticFields,

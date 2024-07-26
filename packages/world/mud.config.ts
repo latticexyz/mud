@@ -2,7 +2,7 @@ import { defineWorld } from "./ts/config/v2/world";
 
 export default defineWorld({
   codegen: {
-    worldImportPath: "../../",
+    worldImportPath: "./src",
     worldgenDirectory: "interfaces",
     worldInterfaceName: "IBaseWorld",
   },

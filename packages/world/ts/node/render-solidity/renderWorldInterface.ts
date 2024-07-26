@@ -1,34 +1,43 @@
-import {
-  renderArguments,
-  renderedSolidityHeader,
-  renderAbsoluteImports,
-  renderRelativeImports,
-  type AbsoluteImportDatum,
-} from "@latticexyz/common/codegen";
-import type { RenderWorldOptions } from "./types";
+import { renderArguments, renderedSolidityHeader, renderImports, type ImportDatum } from "@latticexyz/common/codegen";
 
-export function renderWorldInterface(options: RenderWorldOptions) {
-  const { interfaceName, storeImportPath, worldImportPath, imports } = options;
-  const baseImports: AbsoluteImportDatum[] =
-    interfaceName === "IBaseWorld"
+export type RenderWorldOptions = {
+  /** List of symbols to import, and their file paths */
+  imports: ImportDatum[];
+  /** Name of the interface to render */
+  interfaceName: string;
+  /** Path for store package imports */
+  storeImportPath: string;
+  /** Path for world package imports */
+  worldImportPath: string;
+};
+
+export function renderWorldInterface({
+  interfaceName,
+  storeImportPath,
+  worldImportPath,
+  imports: initialImports,
+}: RenderWorldOptions) {
+  const imports = [
+    ...(interfaceName === "IBaseWorld"
       ? [
-          { symbol: "IStore", path: `${storeImportPath}IStore.sol` },
-          { symbol: "IWorldKernel", path: `${worldImportPath}IWorldKernel.sol` },
+          { symbol: "IStore", path: `${storeImportPath}/IStore.sol` },
+          { symbol: "IWorldKernel", path: `${worldImportPath}/IWorldKernel.sol` },
         ]
       : [
           {
             symbol: "IBaseWorld",
-            path: `${worldImportPath}codegen/interfaces/IBaseWorld.sol`,
+            path: `${worldImportPath}/codegen/interfaces/IBaseWorld.sol`,
           },
-        ];
-  const importSymbols = [...baseImports, ...imports].map(({ symbol }) => symbol);
+        ]),
+    ...initialImports,
+  ];
+
+  const importSymbols = imports.map(({ symbol }) => symbol);
 
   return `
     ${renderedSolidityHeader}
 
-    ${renderAbsoluteImports(baseImports)}
-
-    ${renderRelativeImports(imports)}
+    ${renderImports(imports)}
 
     /**
      * @title ${interfaceName} 
