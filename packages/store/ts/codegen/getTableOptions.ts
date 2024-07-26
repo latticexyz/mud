@@ -7,7 +7,7 @@ import { Table } from "../config/v2/output";
 import { getKeySchema, getValueSchema } from "@latticexyz/protocol-parser/internal";
 import { UserType } from "./getUserTypes";
 import { isDefined } from "@latticexyz/common/utils";
-import { AbsoluteImportDatum } from "@latticexyz/common/codegen";
+import { ImportDatum } from "@latticexyz/common/codegen";
 
 export interface TableOptions {
   /** Path where the file is expected to be written (relative to project root) */
@@ -52,7 +52,7 @@ export function getTableOptions({
     const imports = Object.values(table.schema)
       .map((field) => userTypes.find((type) => type.name === field.internalType))
       .filter(isDefined)
-      .map((userType): AbsoluteImportDatum => {
+      .map((userType): ImportDatum => {
         return {
           // If it's a fully qualified name, remove trailing references
           // This enables support for user types inside libraries

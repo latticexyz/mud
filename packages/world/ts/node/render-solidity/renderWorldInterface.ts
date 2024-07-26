@@ -1,13 +1,8 @@
-import {
-  renderArguments,
-  renderedSolidityHeader,
-  renderAbsoluteImports,
-  type AbsoluteImportDatum,
-} from "@latticexyz/common/codegen";
+import { renderArguments, renderedSolidityHeader, renderImports, type ImportDatum } from "@latticexyz/common/codegen";
 
 export type RenderWorldOptions = {
   /** List of symbols to import, and their file paths */
-  imports: AbsoluteImportDatum[];
+  imports: ImportDatum[];
   /** Name of the interface to render */
   interfaceName: string;
   /** Path for store package imports */
@@ -42,7 +37,7 @@ export function renderWorldInterface({
   return `
     ${renderedSolidityHeader}
 
-    ${renderAbsoluteImports(imports)}
+    ${renderImports(imports)}
 
     /**
      * @title ${interfaceName} 

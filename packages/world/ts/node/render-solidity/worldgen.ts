@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { formatAndWriteSolidity, contractToInterface, type AbsoluteImportDatum } from "@latticexyz/common/codegen";
+import { formatAndWriteSolidity, contractToInterface, type ImportDatum } from "@latticexyz/common/codegen";
 import { renderSystemInterface } from "./renderSystemInterface";
 import { renderWorldInterface } from "./renderWorldInterface";
 import { World as WorldConfig } from "../../config/v2/output";
@@ -38,7 +38,7 @@ export async function worldgen({
   });
 
   const worldImports = systems.map(
-    (system): AbsoluteImportDatum => ({
+    (system): ImportDatum => ({
       symbol: system.interfaceName,
       path: "./" + path.relative(path.dirname(outputPath), system.interfacePath),
     }),
@@ -50,7 +50,7 @@ export async function worldgen({
       // get external functions from a contract
       const { functions, errors, symbolImports } = contractToInterface(data, system.label);
       const imports = symbolImports.map(
-        ({ symbol, path: importPath }): AbsoluteImportDatum => ({
+        ({ symbol, path: importPath }): ImportDatum => ({
           symbol,
           path: importPath.startsWith(".")
             ? "./" + path.relative(outDir, path.join(rootDir, path.dirname(system.sourcePath), importPath))

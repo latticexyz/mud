@@ -1,6 +1,4 @@
-import path from "path";
-import { AbsoluteImportDatum, ImportDatum, StaticResourceData, RenderKeyTuple, RenderType } from "./types";
-import { posixPath } from "../utils";
+import { ImportDatum, StaticResourceData, RenderKeyTuple, RenderType } from "./types";
 import { resourceToHex } from "../../resourceToHex";
 import { hexToResource } from "../../hexToResource";
 import { renderImportPath } from "./renderImportPath";
@@ -67,40 +65,10 @@ export function renderCommonData({
 }
 
 /**
- * For 2 paths which are relative to a common root, create a relative import path from one to another
- * @deprecated Use `renderImportPath` instead.
- */
-export function solidityRelativeImportPath(fromPath: string, usedInPath: string): string {
-  // 1st "./" must be added because path strips it,
-  // but solidity expects it unless there's "../" ("./../" is fine).
-  // 2nd and 3rd "./" forcefully avoid absolute paths (everything is relative to `src`).
-  return posixPath("./" + path.relative("./" + usedInPath, "./" + fromPath));
-}
-
-/**
  * Aggregates, deduplicates and renders imports for symbols per path.
  * Identical symbols from different paths are NOT handled, they should be checked before rendering.
  */
 export function renderImports(imports: ImportDatum[]): string {
-  return renderAbsoluteImports(
-    imports.map((importDatum) => {
-      if ("path" in importDatum) {
-        return importDatum;
-      } else {
-        return {
-          symbol: importDatum.symbol,
-          path: solidityRelativeImportPath(importDatum.fromPath, importDatum.usedInPath),
-        };
-      }
-    }),
-  );
-}
-
-/**
- * Aggregates, deduplicates and renders imports for symbols per path.
- * Identical symbols from different paths are NOT handled, they should be checked before rendering.
- */
-export function renderAbsoluteImports(imports: AbsoluteImportDatum[]): string {
   // Aggregate symbols by import path, also deduplicating them
   const aggregatedImports = new Map<string, Set<string>>();
   for (const { symbol, path } of imports) {
