@@ -47,7 +47,12 @@ export type Tables = {
 };
 
 export type Codegen = {
-  /** @internal */
+  /**
+   * @internal
+   * Absolute import path for a package import or starting with `.` for an import relative to project root dir.
+   *
+   * Defaults to `@latticexyz/store/src` if not set.
+   */
   readonly storeImportPath: string;
   readonly userTypesFilename: string;
   /**

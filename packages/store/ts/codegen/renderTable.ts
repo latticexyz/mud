@@ -9,6 +9,7 @@ import {
   renderWithStore,
   renderedSolidityHeader,
   RenderStaticField,
+  renderImportPath,
 } from "@latticexyz/common/codegen";
 import { renderEncodeFieldSingle, renderFieldMethods } from "./field";
 import { renderDeleteRecordMethods, renderRecordData, renderRecordMethods } from "./record";
@@ -42,17 +43,17 @@ export function renderTable(options: RenderTableOptions) {
     ${renderedSolidityHeader}
 
     // Import store internals
-    import { IStore } from "${storeImportPath}IStore.sol";
-    import { StoreSwitch } from "${storeImportPath}StoreSwitch.sol";
-    import { StoreCore } from "${storeImportPath}StoreCore.sol";
-    import { Bytes } from "${storeImportPath}Bytes.sol";
-    import { Memory } from "${storeImportPath}Memory.sol";
-    import { SliceLib } from "${storeImportPath}Slice.sol";
-    import { EncodeArray } from "${storeImportPath}tightcoder/EncodeArray.sol";
-    import { FieldLayout } from "${storeImportPath}FieldLayout.sol";
-    import { Schema } from "${storeImportPath}Schema.sol";
-    import { EncodedLengths, EncodedLengthsLib } from "${storeImportPath}EncodedLengths.sol";
-    import { ResourceId } from "${storeImportPath}ResourceId.sol";
+    import { IStore } from "${renderImportPath(storeImportPath, "IStore.sol")}";
+    import { StoreSwitch } from "${renderImportPath(storeImportPath, "StoreSwitch.sol")}";
+    import { StoreCore } from "${renderImportPath(storeImportPath, "StoreCore.sol")}";
+    import { Bytes } from "${renderImportPath(storeImportPath, "Bytes.sol")}";
+    import { Memory } from "${renderImportPath(storeImportPath, "Memory.sol")}";
+    import { SliceLib } from "${renderImportPath(storeImportPath, "Slice.sol")}";
+    import { EncodeArray } from "${renderImportPath(storeImportPath, "tightcoder/EncodeArray.sol")}";
+    import { FieldLayout } from "${renderImportPath(storeImportPath, "FieldLayout.sol")}";
+    import { Schema } from "${renderImportPath(storeImportPath, "Schema.sol")}";
+    import { EncodedLengths, EncodedLengthsLib } from "${renderImportPath(storeImportPath, "EncodedLengths.sol")}";
+    import { ResourceId } from "${renderImportPath(storeImportPath, "ResourceId.sol")}";
 
     ${
       imports.length > 0

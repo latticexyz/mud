@@ -2,7 +2,7 @@ import { defineStore } from "./ts/config/v2/store";
 
 export default defineStore({
   codegen: {
-    storeImportPath: "../../",
+    storeImportPath: "./src",
   },
   namespace: "store",
   userTypes: {

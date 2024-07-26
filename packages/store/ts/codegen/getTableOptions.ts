@@ -38,6 +38,7 @@ export function getTableOptions({
   /** namespace codegen output dir, relative to project root dir */
   readonly codegenDir: string;
   readonly userTypes: readonly UserType[];
+  /** absolute import path or, if starting with `.`, relative to project root dir */
   readonly storeImportPath: string;
 }): TableOptions[] {
   const options = tables.map((table): TableOptions => {
@@ -109,7 +110,9 @@ export function getTableOptions({
         libraryName: table.label,
         structName: withStruct ? table.label + "Data" : undefined,
         staticResourceData,
-        storeImportPath,
+        storeImportPath: storeImportPath.startsWith(".")
+          ? "./" + path.relative(path.dirname(outputPath), path.join(rootDir, storeImportPath))
+          : storeImportPath,
         keyTuple,
         fields,
         staticFields,

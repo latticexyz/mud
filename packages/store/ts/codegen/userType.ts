@@ -4,8 +4,7 @@ import {
   SchemaType,
   SchemaTypeToAbiType,
 } from "@latticexyz/schema-type/deprecated";
-import { ImportDatum, RenderType, SolidityUserDefinedType } from "@latticexyz/common/codegen";
-import { Store as StoreConfig } from "../config/v2/output";
+import { RenderType } from "@latticexyz/common/codegen";
 import { UserType } from "./getUserTypes";
 
 function parseStaticArray(abiType: string) {
@@ -51,50 +50,6 @@ export function resolveAbiOrUserType(
     throw new Error(`User type "${abiOrUserType}" not found`);
   }
   return getUserTypeInfo(userType);
-}
-
-/**
- * Get the required import for SchemaType|userType (`undefined` means that no import is required)
- */
-export function importForAbiOrUserType(
-  abiOrUserType: string,
-  usedInDirectory: string,
-  config: StoreConfig,
-  solidityUserTypes: Record<string, SolidityUserDefinedType>,
-): ImportDatum | undefined {
-  // abi types which directly mirror a SchemaType
-  if (abiOrUserType in AbiTypeToSchemaType) {
-    return undefined;
-  }
-  // static arrays
-  const staticArray = parseStaticArray(abiOrUserType);
-  if (staticArray) {
-    return undefined;
-  }
-  // user-defined types in a user-provided file
-  if (abiOrUserType in solidityUserTypes) {
-    // these types can have a library name as their import symbol
-    const solidityUserType = solidityUserTypes[abiOrUserType];
-    const symbol = solidityUserType.importSymbol;
-    if (solidityUserType.isRelativePath) {
-      return {
-        symbol,
-        fromPath: solidityUserType.fromPath,
-        usedInPath: usedInDirectory,
-      };
-    } else {
-      return {
-        symbol,
-        path: solidityUserType.fromPath,
-      };
-    }
-  }
-  // other user types
-  return {
-    symbol: abiOrUserType,
-    fromPath: config.codegen.userTypesFilename,
-    usedInPath: usedInDirectory,
-  };
 }
 
 export function getSchemaTypeInfo(schemaType: SchemaType): RenderType {

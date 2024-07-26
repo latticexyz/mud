@@ -10,6 +10,7 @@ import {
 import { posixPath } from "../utils";
 import { resourceToHex } from "../../resourceToHex";
 import { hexToResource } from "../../hexToResource";
+import { renderImportPath } from "./renderImportPath";
 
 /**
  * Common header for all codegenerated solidity files
@@ -132,7 +133,7 @@ export function renderAbsoluteImports(imports: AbsoluteImportDatum[]): string {
   const renderedImports = [];
   for (const [path, symbols] of aggregatedImports) {
     const renderedSymbols = [...symbols].join(", ");
-    renderedImports.push(`import { ${renderedSymbols} } from "${posixPath(path)}";`);
+    renderedImports.push(`import { ${renderedSymbols} } from "${renderImportPath(path)}";`);
   }
   return renderedImports.join("\n");
 }
