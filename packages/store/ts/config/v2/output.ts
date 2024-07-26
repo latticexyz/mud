@@ -11,6 +11,8 @@ export type UserTypes = {
   };
 };
 
+export type Enums = EnumsInput;
+
 export type EnumValues = {
   readonly [enumName: string]: {
     readonly [enumElement: string]: number;
@@ -45,7 +47,12 @@ export type Tables = {
 };
 
 export type Codegen = {
-  /** @internal */
+  /**
+   * @internal
+   * Absolute import path for a package import or starting with `.` for an import relative to project root dir.
+   *
+   * Defaults to `@latticexyz/store/src` if not set.
+   */
   readonly storeImportPath: string;
   readonly userTypesFilename: string;
   /**
@@ -92,7 +99,7 @@ export type Store = Omit<Namespace, "label"> & {
    */
   readonly sourceDirectory: string;
   readonly userTypes: UserTypes;
-  readonly enums: EnumsInput;
+  readonly enums: Enums;
   readonly enumValues: EnumValues;
   readonly codegen: Codegen;
   readonly namespaces: Namespaces;

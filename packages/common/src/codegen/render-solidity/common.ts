@@ -10,6 +10,7 @@ import {
 import { posixPath } from "../utils";
 import { resourceToHex } from "../../resourceToHex";
 import { hexToResource } from "../../hexToResource";
+import { renderImportPath } from "./renderImportPath";
 
 /**
  * Common header for all codegenerated solidity files
@@ -72,7 +73,10 @@ export function renderCommonData({
   };
 }
 
-/** For 2 paths which are relative to a common root, create a relative import path from one to another */
+/**
+ * For 2 paths which are relative to a common root, create a relative import path from one to another
+ * @deprecated Use `renderImportPath` instead.
+ */
 export function solidityRelativeImportPath(fromPath: string, usedInPath: string): string {
   // 1st "./" must be added because path strips it,
   // but solidity expects it unless there's "../" ("./../" is fine).
@@ -129,7 +133,7 @@ export function renderAbsoluteImports(imports: AbsoluteImportDatum[]): string {
   const renderedImports = [];
   for (const [path, symbols] of aggregatedImports) {
     const renderedSymbols = [...symbols].join(", ");
-    renderedImports.push(`import { ${renderedSymbols} } from "${posixPath(path)}";`);
+    renderedImports.push(`import { ${renderedSymbols} } from "${renderImportPath(path)}";`);
   }
   return renderedImports.join("\n");
 }

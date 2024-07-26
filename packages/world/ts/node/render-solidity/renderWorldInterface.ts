@@ -12,7 +12,7 @@ export function renderWorldInterface(options: RenderWorldOptions) {
   const baseImports: AbsoluteImportDatum[] =
     interfaceName === "IBaseWorld"
       ? [
-          { symbol: "IStore", path: `${storeImportPath}IStore.sol` },
+          { symbol: "IStore", path: `${storeImportPath}/IStore.sol` },
           { symbol: "IWorldKernel", path: `${worldImportPath}IWorldKernel.sol` },
         ]
       : [
