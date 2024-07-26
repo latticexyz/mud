@@ -9,11 +9,6 @@ import { useWriteContract } from "wagmi";
 import { wagmiConfig } from "../_providers";
 import { toast } from "sonner";
 
-type Props = {
-  value: string;
-  config: Record<string, string>;
-};
-
 export const abi = [
   {
     type: "function",
@@ -78,7 +73,15 @@ export const abi = [
   },
 ];
 
-export function EditableTableCell({ value: defaultValue }: Props) {
+type Props = {
+  name: string;
+  value: string;
+  values: Record<string, string>;
+  keyTuple: [string];
+  config: Record<string, string>;
+};
+
+export function EditableTableCell({ name, config, keyTuple, values, value: defaultValue }: Props) {
   const { account } = useStore();
   const { writeContractAsync } = useWriteContract();
   const worldAddress = useWorldAddress();
@@ -92,25 +95,30 @@ export function EditableTableCell({ value: defaultValue }: Props) {
   const handleSubmit = async () => {
     const toastId = toast.loading("Transaction submitted");
 
+    console.log("name:", name);
+    console.log("config:", config.value_schema);
+    console.log("new value:", value);
+    console.log("values:", values);
+
     try {
-      const encodedValueArgs = encodeValueArgs(
-        { createdAt: "uint256", completedAt: "uint256", description: "string" },
-        {
-          createdAt: BigInt(0),
-          completedAt: BigInt(12323),
-          description: "Check 12",
-        },
-      );
+      const encodedValueArgs = encodeValueArgs(config.value_schema, {
+        createdAt: BigInt(0),
+        completedAt: BigInt(12323),
+        description: "Check 12123",
+
+        // TODO: change values here
+      });
 
       // TODO: set tasks
+      const tableId = config.table_id;
       const txHash = await writeContractAsync({
         account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
         abi,
         address: worldAddress,
         functionName: "setRecord",
         args: [
-          "0x746261707000000000000000000000005461736b730000000000000000000000",
-          ["0x0c9151148be227a42be8d3e3e7e61da28a532f2340b0ad9ca8bc747703ec2417"],
+          tableId,
+          keyTuple,
           encodedValueArgs.staticData,
           encodedValueArgs.encodedLengths,
           encodedValueArgs.dynamicData,

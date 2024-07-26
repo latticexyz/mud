@@ -41,12 +41,19 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
       return response.json();
     },
     select: (data) => {
-      return data.schema.filter((column: { name: string }) => {
-        if (showAllColumns) {
-          return true;
-        }
-        return !column.name.startsWith("__");
-      });
+      return data.schema
+        .filter((column: { name: string }) => {
+          if (showAllColumns) {
+            return true;
+          }
+          return !column.name.startsWith("__");
+        })
+        .map((column: { name: string; type: string }) => {
+          return {
+            ...column,
+            name: _.camelCase(column.name),
+          };
+        });
     },
   });
 
@@ -88,8 +95,6 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
     enabled: Boolean(selectedTable),
   });
 
-  console.log(selectedTable, mudTableConfig);
-
   const columns: ColumnDef<{}>[] = schema?.map(({ name, type }: { name: string; type: string }) => {
     return {
       accessorKey: name,
@@ -107,8 +112,10 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
             className="-ml-4"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            {name} (
-            {mudTableConfig?.key_schema[name] || mudTableConfig?.value_schema[_.camelCase(name)] || type.toLowerCase()})
+            {name}
+            <span className="opacity-70 ml-1">
+              ({mudTableConfig?.key_schema[name] || mudTableConfig?.value_schema[name] || type.toLowerCase()})
+            </span>
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
@@ -120,7 +127,20 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
           getValue: (name: string) => string;
         };
       }) => {
-        return <EditableTableCell config={mudTableConfig} value={row.getValue(name)} />;
+        const keysSchema = Object.keys(mudTableConfig?.key_schema || {});
+        const keyTuple = keysSchema.map((key) => row.getValue(key));
+
+        console.log(name, row.original);
+
+        return (
+          <EditableTableCell
+            config={mudTableConfig}
+            keyTuple={keyTuple}
+            name={name}
+            value={row.getValue(name)}
+            values={row.original}
+          />
+        );
       },
     };
   });
@@ -141,7 +161,6 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: "includesString",
     state: {
