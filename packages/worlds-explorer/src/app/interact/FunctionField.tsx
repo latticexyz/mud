@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { AbiFunction } from "viem";
+import { AbiFunction, parseEventLogs } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { useWriteContract } from "wagmi";
 import { waitForTransactionReceipt } from "@wagmi/core";
@@ -17,6 +17,7 @@ import { wagmiConfig } from "../_providers";
 import { ACCOUNT_PRIVATE_KEYS } from "@/consts";
 import { useStore } from "@/store";
 import { useWorldAddress } from "@/hooks/useWorldAddress";
+import { abi as WorldABI } from "../(home)/abi";
 
 type Props = {
   abi: AbiFunction;
@@ -41,9 +42,10 @@ export function FunctionField({ abi }: Props) {
     const toastId = toast.loading("Transaction submitted");
 
     try {
+      const fullABI = [abi, ...WorldABI];
       const txHash = await writeContractAsync({
         account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
-        abi: [abi],
+        abi: fullABI,
         address: worldAddress,
         functionName: abi.name,
         args: values.inputs,
@@ -52,6 +54,12 @@ export function FunctionField({ abi }: Props) {
       const transactionReceipt = await waitForTransactionReceipt(wagmiConfig, {
         hash: txHash,
       });
+
+      const logs = parseEventLogs({
+        abi: fullABI,
+        logs: transactionReceipt.logs,
+      });
+      console.log("logs:", logs);
 
       toast.success(`Transaction successful with hash: ${txHash}`, {
         id: toastId,

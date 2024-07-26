@@ -7,7 +7,7 @@ import { Tasks, TasksData } from "../codegen/index.sol";
 contract TasksSystem is System {
   function addTask(string memory description) public returns (bytes32 id) {
     id = keccak256(abi.encode(block.prevrandao, _msgSender(), description));
-    Tasks.set(id, TasksData({ description: description, createdAt: block.timestamp, completedAt: 0 }));
+    Tasks.set(id, TasksData({ description: description, createdAt: 1, completedAt: 2 }));
   }
 
   function completeTask(bytes32 id) public {

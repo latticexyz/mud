@@ -141,7 +141,7 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
             config={mudTableConfig}
             keyTuple={keyTuple}
             name={name}
-            value={row.getValue(name).toString()}
+            value={row.getValue(name)?.toString()}
             values={values}
           />
         );

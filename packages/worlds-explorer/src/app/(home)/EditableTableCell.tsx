@@ -9,6 +9,7 @@ import { useWorldAddress } from "@/hooks/useWorldAddress";
 import { useStore } from "@/store";
 import { wagmiConfig } from "../_providers";
 import { abi } from "./abi";
+import { parseEventLogs } from "viem";
 
 type Props = {
   name: string;
@@ -17,6 +18,43 @@ type Props = {
   keyTuple: [string];
   config: Record<string, string>;
 };
+
+BigInt.prototype.toJSON = function () {
+  return this.toString();
+};
+
+async function setDynamicField(config, writeContractAsync, worldAddress, account, keyTuple) {
+  const encodedValueArgs = encodeValueArgs(
+    {
+      createdAt: "uint256",
+      completedAt: "uint256",
+      description: "string",
+    },
+    {
+      completedAt: BigInt(1),
+      createdAt: BigInt(10),
+      description: "Desc",
+    },
+  );
+
+  // TODO: set tasks
+  const tableId = config.table_id;
+  const txHash = await writeContractAsync({
+    account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
+    abi,
+    address: worldAddress,
+    functionName: "setRecord",
+    args: [
+      tableId,
+      keyTuple,
+      encodedValueArgs.staticData,
+      encodedValueArgs.encodedLengths,
+      encodedValueArgs.dynamicData,
+    ],
+  });
+
+  return txHash;
+}
 
 export function EditableTableCell({ name, config, keyTuple, values, value: defaultValue }: Props) {
   const { account } = useStore();
@@ -28,6 +66,8 @@ export function EditableTableCell({ name, config, keyTuple, values, value: defau
     const value = evt.target.value;
     setValue(value);
   };
+
+  console.log(values);
 
   const handleSubmit = async () => {
     const toastId = toast.loading("Transaction submitted");
@@ -49,62 +89,41 @@ export function EditableTableCell({ name, config, keyTuple, values, value: defau
     try {
       console.log(config.value_schema);
 
-      const encodedValueArgs = encodeValueArgs(
-        {
-          createdAt: "uint256",
-          completedAt: "uint256",
-          description: "string",
-        },
-        {
-          completedAt: BigInt(1),
-          createdAt: BigInt(2),
-          description: "Desc",
-        },
-      );
+      const dynamic = true;
+      let txHash;
 
-      console.log("encodedValueArgs:", encodedValueArgs);
+      if (dynamic) {
+        txHash = await setDynamicField(config, writeContractAsync, worldAddress, account, keyTuple);
+      } else {
+        // TODO: works for editing singleton, nice
+        // const txHash = await writeContractAsync({
+        //   account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
+        //   abi,
+        //   address: worldAddress,
+        //   functionName: "setField",
+        //   args: ["0x74626170700000000000000000000000436f756e746572000000000000000000", [], 0, "0x00000012"],
+        // });
 
-      // TODO: set tasks
-      const tableId = config.table_id;
-      const txHash = await writeContractAsync({
-        account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
-        abi,
-        address: worldAddress,
-        functionName: "setRecord",
-        args: [
-          tableId,
-          keyTuple,
-          encodedValueArgs.staticData,
-          encodedValueArgs.encodedLengths,
-          encodedValueArgs.dynamicData,
-        ],
-      });
+        const tableId = config.table_id;
 
-      // TODO: works for editing singleton, nice
-      // const txHash = await writeContractAsync({
-      //   account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
-      //   abi,
-      //   address: worldAddress,
-      //   functionName: "setField",
-      //   args: ["0x74626170700000000000000000000000436f756e746572000000000000000000", [], 0, "0x00000012"],
-      // });
-
-      // const txHash = await writeContractAsync({
-      //   account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
-      //   abi,
-      //   address: worldAddress,
-      //   functionName: "setField",
-      //   args: [
-      //     "0x74626170700000000000000000000000436865636b6564000000000000000000",
-      //     ["0x405787fa12a823e0f2b7631cc41b3ba8828b3321ca811111fa75cd3aa3bb5ace"],
-      //     0,
-      //     "0x0100000000000000000000000000000000000000000000000000000000000000",
-      //   ],
-      // });
+        txHash = await writeContractAsync({
+          account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
+          abi,
+          address: worldAddress,
+          functionName: "setField",
+          args: [tableId, keyTuple, 0, "0x0100000000000000000000000000000000000000000000000000000000000000"],
+        });
+      }
 
       const transactionReceipt = await waitForTransactionReceipt(wagmiConfig, {
         hash: txHash,
       });
+
+      const logs = parseEventLogs({
+        abi: abi,
+        logs: transactionReceipt.logs,
+      });
+      console.log("logs:", logs);
 
       toast.success(`Transaction successful with hash: ${txHash}`, {
         id: toastId,

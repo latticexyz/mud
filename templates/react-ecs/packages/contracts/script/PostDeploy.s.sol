@@ -35,6 +35,14 @@ contract PostDeploy is Script {
     bytes32 key = IWorld(worldAddress).app__addTask("Do the dishes");
     IWorld(worldAddress).app__completeTask(key);
 
+    IWorld(worldAddress).app__addTask("Task 1");
+    IWorld(worldAddress).app__addTask("Task 2");
+    IWorld(worldAddress).app__addTask("Task 3");
+    IWorld(worldAddress).app__addTask("Task 4");
+    IWorld(worldAddress).app__addTask("Task 5");
+    IWorld(worldAddress).app__addTask("Task 6");
+    IWorld(worldAddress).app__addTask("Task 7");
+
     vm.stopBroadcast();
   }
 }
