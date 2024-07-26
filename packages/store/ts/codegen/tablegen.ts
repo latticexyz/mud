@@ -29,9 +29,7 @@ export async function tablegen({ rootDir, config }: TablegenOptions) {
 
   await Promise.all(
     Object.values(config.namespaces).map(async (namespace) => {
-      // TODO: get this value from config once multiple namespaces are supported
-      const multipleNamespaces = false;
-      const sourceDir = multipleNamespaces
+      const sourceDir = config.multipleNamespaces
         ? path.join(config.sourceDirectory, "namespaces", namespace.label)
         : config.sourceDirectory;
       const codegenDir = path.join(sourceDir, config.codegen.outputDirectory);
