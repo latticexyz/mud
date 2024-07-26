@@ -10,7 +10,7 @@ export function selectFrom<table extends Table>({ table, where, limit }: SelectF
   return {
     table: table,
     sql: `select ${Object.keys(table.schema)
-      // .map((key) => `"${key}"`)
+      .map((key) => `"${key}"`)
       .join(
         ", ",
       )} from ${table.namespace}__${table.name}${where != null ? ` where ${where}` : ""}${limit != null ? ` limit ${limit}` : ""}`,

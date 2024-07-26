@@ -30,12 +30,11 @@ import {
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
-import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/utils";
+import { bigIntMax, bigIntMin, chunk, isDefined, waitForIdle } from "@latticexyz/common/utils";
 import { getSnapshot } from "./getSnapshot";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 import { Store as StoreConfig } from "@latticexyz/store";
 import { fetchRecordsDozerSql } from "./dozer/fetchRecordsDozerSql";
-import { tablesWithRecordsToLogs } from "./tablesWithRecordsToLogs";
 import { recordToLog } from "./recordToLog";
 
 const debug = parentDebug.extend("createStoreSync");
@@ -115,36 +114,37 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
       return;
     }
 
-    const initialStorageAdapterBlock: StorageAdapterBlock = { blockNumber: 0n, logs: [] };
+    const initialStorageAdapterBlock: StorageAdapterBlock = { blockNumber: initialStartBlock, logs: [] };
 
     const dozerTables = dozerQueries && (await fetchRecordsDozerSql({ url: indexer, address, queries: dozerQueries }));
 
-    // TODO: execute dozer sql queries, encode to logs
-    initialStorageAdapterBlock.logs = dozerTables?.result.flatMap(({ table, records }) =>
-      records.map((record) => recordToLog({ table, record, address })),
-    );
+    if (dozerTables) {
+      // TODO: take min block height of all subqueries
+      initialStorageAdapterBlock.blockNumber = dozerTables.blockHeight;
+      initialStorageAdapterBlock.logs = dozerTables.result.flatMap(({ table, records }) =>
+        records.map((record) => recordToLog({ table, record, address })),
+      );
+    }
 
     // Additionally fetch logs from the snapshot for tables not included in the SQL hydration approach.
-
-    // TODO: remove tables from filter for snapshot that are also included in SQL filter.
+    // Remove tables from filter for snapshot that are also included in SQL filter.
+    const filtersWithoutSql = filters.filter(
+      (filter) => !dozerQueries?.find((query) => query.table.tableId === filter.tableId),
+    );
     const snapshot = await getSnapshot({
       chainId,
       address,
-      filters,
+      filters: filtersWithoutSql,
       initialState,
       initialBlockLogs,
-      indexerUrl:
-        indexerUrl !== false
-          ? indexerUrl ??
-            (publicClient.chain &&
-            "indexerUrl" in publicClient.chain &&
-            typeof publicClient.chain.indexerUrl === "string"
-              ? publicClient.chain.indexerUrl
-              : undefined)
-          : undefined,
+      indexerUrl: indexer,
     });
 
     // The block number passed in the overall result will be the min of all queries and the snapshot.
+    if (snapshot) {
+      initialStorageAdapterBlock.blockNumber = bigIntMin(initialStorageAdapterBlock.blockNumber, snapshot.blockNumber);
+      initialStorageAdapterBlock.logs = [...initialStorageAdapterBlock.logs, ...snapshot.logs];
+    }
 
     onProgress?.({
       step: SyncStep.SNAPSHOT,
@@ -154,7 +154,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
       message: "Got snapshot",
     });
 
-    return snapshot;
+    return initialStorageAdapterBlock;
   }).pipe(
     catchError((error) => {
       debug("error getting snapshot", error);

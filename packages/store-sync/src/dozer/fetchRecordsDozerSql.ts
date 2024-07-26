@@ -44,7 +44,12 @@ export async function fetchRecordsDozerSql({ url, queries, address }: FetchDozer
   ).json();
 
   if (isDozerResponseFail(response)) {
-    console.warn(`Dozer response: ${response.msg}`);
+    console.warn(`Dozer response: ${response.msg}\n\nTry reproducing via cURL:
+    curl ${url} \\
+    --compressed \\
+    -H 'Accept-Encoding: gzip' \\
+    -H 'Content-Type: application/json' \\
+    -d '[${queries.map((query) => `{"address": "${address}", "query": "${query.sql.replaceAll('"', '\\"')}"}`).join(",")}]'`);
     return;
   }
 
