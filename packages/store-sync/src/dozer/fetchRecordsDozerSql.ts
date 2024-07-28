@@ -8,7 +8,7 @@ type DozerResponseSuccess = {
   result: DozerQueryResult[];
 };
 
-type DozerResponseFail = { msg: "schemas not found" };
+type DozerResponseFail = { msg: string };
 
 type DozerResponse = DozerResponseSuccess | DozerResponseFail;
 
