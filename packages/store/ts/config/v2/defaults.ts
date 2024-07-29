@@ -4,8 +4,6 @@ export const CODEGEN_DEFAULTS = {
   storeImportPath: "@latticexyz/store/src",
   userTypesFilename: "common.sol",
   outputDirectory: "codegen",
-  // TODO: default to true if using top-level `namespaces` key (once its migrated to store)
-  namespaceDirectories: false,
   indexFilename: "index.sol",
 } as const satisfies CodegenInput;
 

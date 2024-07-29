@@ -62,15 +62,13 @@ export type Codegen = {
    */
   readonly outputDirectory: string;
   /**
-   * Whether or not to organize codegen output (table libraries, etc.) into directories by namespace.
+   * Tables index filename.
    *
-   * For example, a `Counter` table in the `app` namespace will have codegen at `codegen/app/tables/Counter.sol`.
+   * Defaults to `"index.sol"` when in single-namespace mode, and `false` for multi-namespace mode.
    *
-   * Defaults to `true` when using top-level `namespaces` key, `false` otherwise.
+   * @deprecated We recommend importing directly from table libraries rather than from the index for better compile times and deterministic deploys.
    */
-  // TODO: move `namespaces` key handling into store so we can conditionally turn this on/off
-  readonly namespaceDirectories: boolean;
-  readonly indexFilename: string;
+  readonly indexFilename: string | false;
 };
 
 export type Namespace = {
@@ -90,7 +88,28 @@ export type Namespaces = {
   readonly [label: string]: Namespace;
 };
 
-export type Store = Omit<Namespace, "label"> & {
+export type Store = {
+  /**
+   * @internal
+   * Whether this project is using multiple namespaces or not, dictated by using `namespaces` config key.
+   *
+   * If using multiple namespaces, systems must be organized in `namespaces/{namespaceLabel}` directories.
+   * Similarly, table libraries will be generated into these namespace directories.
+   */
+  readonly multipleNamespaces: boolean;
+  /**
+   * When in single-namespace mode, this is set to the config's base `namespace`.
+   * When in multi-namespace mode, this is `null`.
+   */
+  readonly namespace: string | null;
+  readonly namespaces: Namespaces;
+  /**
+   * Flattened set of tables, where each key is `{namespaceLabel}__{tableLabel}`.
+   * For namespace labels using an empty string, no double-underscore is used, so the key is `{tableLabel}`.
+   * This is kept for backwards compatibility.
+   * It's recommended that you use `config.namespaces[namespaceLabel].tables[tableLabel]` instead.
+   */
+  readonly tables: Namespace["tables"];
   /**
    * Directory of Solidity source relative to the MUD config.
    * This is used to resolve other paths in the config, like codegen and user types.
@@ -102,5 +121,4 @@ export type Store = Omit<Namespace, "label"> & {
   readonly enums: Enums;
   readonly enumValues: EnumValues;
   readonly codegen: Codegen;
-  readonly namespaces: Namespaces;
 };

@@ -1,8 +1,8 @@
 import { isHex } from "viem";
 import { getSystemContracts } from "./getSystemContracts";
 import { System, World } from "../config/v2";
-import { resolveSystem } from "../config/v2/system";
-import { resolveNamespace } from "@latticexyz/store/config/v2";
+import { resolveNamespace } from "../config/v2/namespace";
+import { resourceToLabel } from "@latticexyz/common";
 
 export type ResolvedSystem = System & {
   readonly sourcePath: string;
@@ -16,23 +16,34 @@ export async function resolveSystems({
   config: World;
 }): Promise<readonly ResolvedSystem[]> {
   const systemContracts = await getSystemContracts({ rootDir, config });
-  const contractNames = systemContracts.map((contract) => contract.systemLabel);
 
   // validate every system in config refers to an existing system contract
-  const missingSystems = Object.keys(config.systems).filter((systemLabel) => !contractNames.includes(systemLabel));
+  const configSystems = Object.values(config.namespaces).flatMap((namespace) =>
+    Object.values(namespace.systems).map((system) => ({
+      ...system,
+      // TODO: remove this once config outputs namespace labels of resources
+      namespaceLabel: namespace.label,
+    })),
+  );
+  const missingSystems = configSystems.filter(
+    (system) => !systemContracts.some((s) => s.namespaceLabel === system.namespace && s.systemLabel === system.label),
+  );
   if (missingSystems.length > 0) {
-    throw new Error(`Found systems in config with no corresponding system contract: ${missingSystems.join(", ")}`);
+    throw new Error(
+      `Found systems in config with no corresponding system contract: ${missingSystems.map(resourceToLabel).join(", ")}`,
+    );
   }
 
   const systems = systemContracts
     .map((contract): ResolvedSystem => {
       const systemConfig =
-        config.systems[contract.systemLabel] ??
-        // TODO: move this to `resolveNamespace({ systems: ... })`
-        resolveSystem({
-          label: contract.systemLabel,
-          namespace: resolveNamespace({ label: contract.namespaceLabel }).namespace,
-        });
+        config.namespaces[contract.namespaceLabel].systems[contract.systemLabel] ??
+        resolveNamespace({
+          label: contract.namespaceLabel,
+          systems: {
+            [contract.systemLabel]: {},
+          },
+        }).systems[contract.systemLabel];
       return {
         ...systemConfig,
         sourcePath: contract.sourcePath,

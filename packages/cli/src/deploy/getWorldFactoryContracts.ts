@@ -20,7 +20,7 @@ export function getWorldFactoryContracts(deployerAddress: Hex) {
     WorldFactory: {
       bytecode: worldFactoryBytecode,
       deployedBytecodeSize: worldFactoryDeployedBytecodeSize,
-      label: "world factory",
+      debugLabel: "world factory",
       address: worldFactory,
     },
   };

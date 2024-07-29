@@ -1,112 +1,127 @@
-import { ErrorMessage, conform, narrow, type withJsDoc } from "@arktype/util";
+import { ErrorMessage, conform, type withJsDoc } from "@arktype/util";
 import {
-  UserTypes,
   extendedScope,
   get,
-  resolveTable,
-  validateTable,
   mergeIfUndefined,
-  validateTables,
   resolveStore,
-  Store,
   hasOwnKey,
   validateStore,
-  expandTableShorthand,
+  flattenNamespacedTables,
+  CONFIG_DEFAULTS as STORE_CONFIG_DEFAULTS,
 } from "@latticexyz/store/config/v2";
 import { SystemsInput, WorldInput } from "./input";
 import { CONFIG_DEFAULTS, MODULE_DEFAULTS } from "./defaults";
-import { Tables } from "@latticexyz/store/internal";
 import { resolveSystems, validateSystems } from "./systems";
-import { resolveNamespacedTables, validateNamespaces } from "./namespaces";
+import { resolveNamespaces, validateNamespaces } from "./namespaces";
 import { resolveCodegen } from "./codegen";
 import { resolveDeploy } from "./deploy";
 import type { World } from "./output.js";
+import { StoreInput } from "@latticexyz/store/config/v2";
 
-export type validateWorld<world> = {
-  readonly [key in keyof world]: key extends "tables"
-    ? validateTables<world[key], extendedScope<world>>
-    : key extends "userTypes"
-      ? UserTypes
-      : key extends "enums"
-        ? narrow<world[key]>
-        : key extends "systems"
-          ? validateSystems<world[key]>
-          : key extends "namespaces"
-            ? // ? validateNamespaces<world[key], extendedScope<world>>
-              ErrorMessage<`Namespaces config will be enabled soon.`>
-            : key extends keyof WorldInput
-              ? conform<world[key], WorldInput[key]>
-              : ErrorMessage<`\`${key & string}\` is not a valid World config option.`>;
+export type validateWorld<input> = {
+  readonly [key in keyof input]: key extends "namespaces"
+    ? input extends { namespace?: unknown; tables?: unknown; systems?: unknown }
+      ? ErrorMessage<"Cannot use `namespaces` with `namespace`, `tables`, or `systems` keys.">
+      : validateNamespaces<input[key], extendedScope<input>>
+    : key extends "systems"
+      ? validateSystems<input[key]>
+      : key extends "codegen"
+        ? conform<input[key], WorldInput[key] & StoreInput[key]>
+        : key extends keyof StoreInput
+          ? validateStore<input>[key]
+          : key extends keyof WorldInput
+            ? conform<input[key], WorldInput[key]>
+            : ErrorMessage<`\`${key & string}\` is not a valid World config option.`>;
 };
 
-export function validateWorld(world: unknown): asserts world is WorldInput {
-  const scope = extendedScope(world);
-  validateStore(world);
+export function validateWorld(input: unknown): asserts input is WorldInput {
+  const scope = extendedScope(input);
 
-  if (hasOwnKey(world, "systems")) {
-    validateSystems(world.systems);
+  if (hasOwnKey(input, "namespaces")) {
+    if (hasOwnKey(input, "namespace") || hasOwnKey(input, "tables") || hasOwnKey(input, "systems")) {
+      throw new Error("Cannot use `namespaces` with `namespace`, `tables`, or `systems` keys.");
+    }
+    validateNamespaces(input.namespaces, scope);
   }
-  if (hasOwnKey(world, "namespaces")) {
-    validateNamespaces(world.namespaces, scope);
+  if (hasOwnKey(input, "systems")) {
+    validateSystems(input.systems);
   }
+
+  validateStore(input);
 }
 
-export type resolveWorld<world, namespace = resolveStore<world>["namespace"]> = withJsDoc<
-  resolveStore<world> &
-    mergeIfUndefined<
-      { readonly tables: resolveNamespacedTables<world> } & {
-        [key in Exclude<keyof world, keyof Store>]: key extends "systems"
-          ? resolveSystems<world[key] & SystemsInput, namespace & string>
-          : key extends "deploy"
-            ? resolveDeploy<world[key]>
-            : key extends "codegen"
-              ? resolveCodegen<world[key]>
-              : world[key];
-      },
-      CONFIG_DEFAULTS
-    >,
-  World
->;
+type resolveNamespaceMode<input> = "namespaces" extends keyof input
+  ? {
+      readonly multipleNamespaces: true;
+      readonly namespace: null;
+      readonly namespaces: resolveNamespaces<input["namespaces"], extendedScope<input>>;
+    }
+  : {
+      readonly multipleNamespaces: false;
+      readonly namespace: string;
+      readonly namespaces: resolveNamespaces<
+        {
+          // TODO: improve this so we don't have to duplicate store behavior
+          readonly [label in "namespace" extends keyof input
+            ? input["namespace"] extends string
+              ? input["namespace"]
+              : STORE_CONFIG_DEFAULTS["namespace"]
+            : STORE_CONFIG_DEFAULTS["namespace"]]: input;
+        },
+        extendedScope<input>
+      >;
+    };
 
-export function resolveWorld<const world extends WorldInput>(world: world): resolveWorld<world> {
-  const scope = extendedScope(world);
-  const resolvedStore = resolveStore(world);
-  const namespaces = world.namespaces ?? {};
+export type resolveWorld<input> = resolveNamespaceMode<input> &
+  Omit<resolveStore<input>, "multipleNamespaces" | "namespace" | "namespaces" | "tables"> & {
+    readonly tables: flattenNamespacedTables<resolveNamespaceMode<input>>;
+    // TODO: flatten systems from namespaces
+    readonly systems: "systems" extends keyof input
+      ? input["systems"] extends SystemsInput
+        ? resolveNamespaceMode<input>["namespace"] extends string
+          ? resolveSystems<input["systems"], resolveNamespaceMode<input>["namespace"]>
+          : {}
+        : {}
+      : {};
+    readonly excludeSystems: "excludeSystems" extends keyof input
+      ? input["excludeSystems"]
+      : CONFIG_DEFAULTS["excludeSystems"];
+    readonly modules: "modules" extends keyof input ? input["modules"] : CONFIG_DEFAULTS["modules"];
+    readonly codegen: "codegen" extends keyof input ? resolveCodegen<input["codegen"]> : resolveCodegen<{}>;
+    readonly deploy: "deploy" extends keyof input ? resolveDeploy<input["deploy"]> : resolveDeploy<{}>;
+  };
 
-  const resolvedNamespacedTables = Object.fromEntries(
-    Object.entries(namespaces)
-      .map(([namespaceKey, namespace]) =>
-        Object.entries(namespace.tables ?? {}).map(([tableKey, table]) => {
-          validateTable(table, scope);
-          return [
-            `${namespaceKey}__${tableKey}`,
-            resolveTable(
-              mergeIfUndefined(expandTableShorthand(table, scope), { namespace: namespaceKey, label: tableKey }),
-              scope,
-            ),
-          ];
-        }),
-      )
-      .flat(),
-  ) as Tables;
+export function resolveWorld<const input extends WorldInput>(input: input): resolveWorld<input> {
+  const scope = extendedScope(input);
+  const store = resolveStore(input);
 
-  const modules = (world.modules ?? CONFIG_DEFAULTS.modules).map((mod) => mergeIfUndefined(mod, MODULE_DEFAULTS));
+  const namespaces = input.namespaces
+    ? resolveNamespaces(input.namespaces, scope)
+    : resolveNamespaces({ [store.namespace!]: input }, scope);
+
+  const tables = flattenNamespacedTables({ namespaces });
+  const modules = (input.modules ?? CONFIG_DEFAULTS.modules).map((mod) => mergeIfUndefined(mod, MODULE_DEFAULTS));
 
   return mergeIfUndefined(
     {
-      ...resolvedStore,
-      tables: { ...resolvedStore.tables, ...resolvedNamespacedTables },
-      codegen: mergeIfUndefined(resolvedStore.codegen, resolveCodegen(world.codegen)),
-      deploy: resolveDeploy(world.deploy),
-      systems: resolveSystems(world.systems ?? CONFIG_DEFAULTS.systems, resolvedStore.namespace),
-      excludeSystems: get(world, "excludeSystems"),
+      ...store,
+      namespaces,
+      tables,
+      // TODO: flatten systems from namespaces
+      systems:
+        !store.multipleNamespaces && input.systems
+          ? resolveSystems(input.systems, store.namespace)
+          : CONFIG_DEFAULTS.systems,
+      excludeSystems: get(input, "excludeSystems"),
+      codegen: mergeIfUndefined(store.codegen, resolveCodegen(input.codegen)),
+      deploy: resolveDeploy(input.deploy),
       modules,
     },
     CONFIG_DEFAULTS,
   ) as never;
 }
 
-export function defineWorld<const input>(input: validateWorld<input>): resolveWorld<input> {
+export function defineWorld<const input>(input: validateWorld<input>): withJsDoc<resolveWorld<input>, World> {
   validateWorld(input);
   return resolveWorld(input) as never;
 }
