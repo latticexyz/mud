@@ -129,7 +129,9 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   console.log("Deploying from", client.account.address);
 
-  const tables = Object.values(config.namespaces).flatMap((namespace) => Object.values(namespace.tables));
+  const tables = Object.values(config.namespaces)
+    .flatMap((namespace) => Object.values(namespace.tables))
+    .filter((table) => !table.deploy.disabled);
 
   const startTime = Date.now();
   const worldDeploy = await deploy({
