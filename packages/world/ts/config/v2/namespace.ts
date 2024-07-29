@@ -6,14 +6,10 @@ import {
   Scope,
   AbiTypeScope,
 } from "@latticexyz/store/config/v2";
-import { resolveSystems } from "./systems";
-import { ErrorMessage } from "@arktype/util";
+import { resolveSystems, validateSystems } from "./systems";
 
 export type validateNamespace<input, scope extends Scope = AbiTypeScope> = {
-  [key in keyof input]: key extends "systems"
-    ? // TODO: validateSystems<input[key]>
-      ErrorMessage<"Systems in namespaces are not yet supported.">
-    : validateStoreNamespace<input, scope>[key];
+  [key in keyof input]: key extends "systems" ? validateSystems<input[key]> : validateStoreNamespace<input, scope>[key];
 };
 
 export function validateNamespace<scope extends Scope = AbiTypeScope>(
@@ -21,8 +17,7 @@ export function validateNamespace<scope extends Scope = AbiTypeScope>(
   scope: scope,
 ): asserts input is NamespaceInput {
   if (hasOwnKey(input, "systems")) {
-    // TODO: validateSystems(input.systems);
-    throw new Error("Systems in namespaces are not yet supported.");
+    validateSystems(input.systems);
   }
   validateStoreNamespace(input, scope);
 }
