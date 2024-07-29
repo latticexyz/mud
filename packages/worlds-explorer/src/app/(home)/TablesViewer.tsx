@@ -136,12 +136,17 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
           return acc;
         }, {});
 
+        const value = row.getValue(name);
+        if (keysSchema.includes(name)) {
+          return value?.toString();
+        }
+
         return (
           <EditableTableCell
             config={mudTableConfig}
             keyTuple={keyTuple}
             name={name}
-            value={row.getValue(name)?.toString()}
+            value={value?.toString()}
             values={values}
           />
         );

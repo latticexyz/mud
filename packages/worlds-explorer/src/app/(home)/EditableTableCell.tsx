@@ -20,10 +20,6 @@ type Props = {
   config: Record<string, string>;
 };
 
-BigInt.prototype.toJSON = function () {
-  return this.toString();
-};
-
 async function setDynamicField(config, writeContractAsync, worldAddress, account, keyTuple) {
   const encodedValueArgs = encodeValueArgs(
     {
@@ -38,7 +34,6 @@ async function setDynamicField(config, writeContractAsync, worldAddress, account
     },
   );
 
-  // TODO: set tasks
   const tableId = config?.table_id;
   const txHash = await writeContractAsync({
     account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
