@@ -36,7 +36,7 @@ export default defineStore({
       },
       key: ["resourceId"],
     },
-    // The Hooks table is a generic table used by the `filterFromList` util in `Hook.sol`
+    // This is generic, codegen-only table used by `filterFromList` in `Hook.sol`
     Hooks: {
       schema: {
         resourceId: "ResourceId",
@@ -45,6 +45,9 @@ export default defineStore({
       key: ["resourceId"],
       codegen: {
         tableIdArgument: true,
+      },
+      deploy: {
+        disabled: true,
       },
     },
   },
