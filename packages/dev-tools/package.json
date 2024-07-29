@@ -60,12 +60,12 @@
     "vitest": "0.34.6"
   },
   "peerDependencies": {
-    "@latticexyz/common": "2.0.12",
-    "@latticexyz/recs": "2.0.12",
-    "@latticexyz/store": "2.0.12",
-    "@latticexyz/store-sync": "2.0.12",
-    "@latticexyz/utils": "2.0.12",
-    "@latticexyz/world": "2.0.12"
+    "@latticexyz/common": "2.x",
+    "@latticexyz/recs": "2.x",
+    "@latticexyz/store": "2.x",
+    "@latticexyz/store-sync": "2.x",
+    "@latticexyz/utils": "2.x",
+    "@latticexyz/world": "2.x"
   },
   "publishConfig": {
     "access": "public"
