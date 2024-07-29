@@ -78,9 +78,6 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
     try {
       let txHash;
 
-      console.log("hiii", fieldType, valueToSet);
-      console.log("yoo", encodeField(fieldType, valueToSet));
-
       if (isRecord) {
         txHash = await setDynamicField(config, writeContractAsync, worldAddress, account, keyTuple);
       } else {

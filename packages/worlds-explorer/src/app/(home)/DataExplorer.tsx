@@ -23,8 +23,6 @@ export function DataExplorer() {
 
   return (
     <>
-      {/* <CallWorld /> */}
-
       <TableSelector value={selectedTable} options={tables} />
       <SQLEditor table={selectedTable} tablesLoading={tablesLoading} setQuery={setQuery} />
       <TablesViewer table={selectedTable} query={query} />
