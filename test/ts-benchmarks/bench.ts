@@ -27,7 +27,7 @@ bench.baseline(() => {
   });
 });
 
-bench("syncToRecs", async () => {
+bench("syncToRecs(1 table)", async () => {
   const config = defineWorld({
     namespace: "demo",
     tables: {
@@ -51,7 +51,7 @@ bench("syncToRecs", async () => {
   return t;
 }).types([4033, "instantiations"]);
 
-bench("syncToRecs (5)", async () => {
+bench("syncToRecs(5 tables)", async () => {
   const config = defineWorld({
     namespace: "demo",
     tables: {

@@ -1,6 +1,5 @@
 {
-  // We intentionally do not extend the workspace root tsconfig to avoid paths, because we want this project to resolve types using DTS rather than TS source.
-  "extends": ["../../packages/common/tsconfig.base.json"],
+  "extends": ["../../tsconfig.json"],
   "exclude": ["**/dist", "**/node_modules", "**/docs", "**/e2e"],
   "compilerOptions": {
     "outDir": "dist"
