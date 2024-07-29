@@ -1,4 +1,4 @@
-import { ErrorMessage, show } from "@arktype/util";
+import { ErrorMessage, show } from "@ark/util";
 import { isObject, mergeIfUndefined } from "./generics";
 import { TableShorthandInput, TablesInput } from "./input";
 import { Scope, AbiTypeScope } from "./scope";

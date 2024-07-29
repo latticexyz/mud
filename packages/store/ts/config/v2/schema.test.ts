@@ -2,7 +2,7 @@ import { describe, it } from "vitest";
 import { defineSchema } from "./schema";
 import { Schema } from "./output";
 import { extendScope, AbiTypeScope } from "./scope";
-import { attest } from "@arktype/attest";
+import { attest } from "@ark/attest";
 
 describe("resolveSchema", () => {
   it("should map user types to their primitive type", () => {

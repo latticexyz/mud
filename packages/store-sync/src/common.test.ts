@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
-import { attest } from "@arktype/attest";
-import { isDisjoint } from "@arktype/util";
+import { attest } from "@ark/attest";
+import { isDisjoint } from "@ark/util";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { configToTables } from "./configToTables";

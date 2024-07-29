@@ -7,7 +7,7 @@ import { createStoreSync } from "../createStoreSync";
 import { singletonEntity } from "./singletonEntity";
 import { SyncStep } from "../SyncStep";
 import { configToTables } from "../configToTables";
-import { merge } from "@arktype/util";
+import { merge } from "@ark/util";
 
 export type SyncToRecsOptions<config extends StoreConfig, extraTables extends Tables> = Omit<SyncOptions, "config"> & {
   world: RecsWorld;

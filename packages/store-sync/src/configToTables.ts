@@ -1,4 +1,4 @@
-import { show } from "@arktype/util";
+import { show } from "@ark/util";
 import { Store } from "@latticexyz/store";
 
 type flattenedTableKeys<config extends Store> = config extends { readonly namespaces: infer namespaces }

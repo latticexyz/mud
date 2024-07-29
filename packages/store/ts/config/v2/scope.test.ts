@@ -1,4 +1,4 @@
-import { attest } from "@arktype/attest";
+import { attest } from "@ark/attest";
 import { describe, it } from "vitest";
 import { AbiTypeScope, Scope, ScopeOptions, extendScope, getStaticAbiTypeKeys } from "./scope";
 

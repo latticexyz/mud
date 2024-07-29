@@ -1,9 +1,30 @@
-import { bench } from "@arktype/attest";
+import { bench } from "@ark/attest";
 import { syncToRecs } from "@latticexyz/store-sync/recs";
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import { Hex, type PublicClient } from "viem";
 import { defineWorld } from "@latticexyz/world";
 import { createWorld } from "@latticexyz/recs";
+
+() => {
+  const config = defineWorld({
+    namespace: "baseline",
+    tables: {
+      test: {
+        schema: {
+          a: "address",
+        },
+        key: ["a"],
+      },
+    },
+  });
+
+  return syncToRecs({
+    world: createWorld(),
+    config,
+    address: {} as Hex,
+    publicClient: {} as PublicClient,
+  });
+};
 
 bench("syncToRecs", async () => {
   const config = defineWorld({

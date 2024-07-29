@@ -37,7 +37,7 @@
     "package.json": "pnpm sort-package-json"
   },
   "devDependencies": {
-    "@arktype/attest": "0.7.5",
+    "@ark/attest": "0.10.2",
     "@changesets/cli": "^2.27.7",
     "@types/node": "^18.15.11",
     "@typescript-eslint/eslint-plugin": "7.1.1",
@@ -56,9 +56,9 @@
     "turbo": "^1.9.3",
     "typescript": "5.4.2"
   },
-  "packageManager": "pnpm@9.1.1",
+  "packageManager": "pnpm@9.6.0",
   "engines": {
     "node": "^18.20.1",
-    "pnpm": "^9.1.1"
+    "pnpm": "^9.6.0"
   }
 }

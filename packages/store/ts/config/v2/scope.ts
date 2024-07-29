@@ -1,4 +1,4 @@
-import { Dict, show } from "@arktype/util";
+import { Dict, show } from "@ark/util";
 import { SchemaInput } from "./input";
 import { StaticAbiType, schemaAbiTypes } from "@latticexyz/schema-type/internal";
 import { AbiType } from "./output";

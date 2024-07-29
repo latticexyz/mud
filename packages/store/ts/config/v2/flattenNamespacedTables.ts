@@ -1,4 +1,4 @@
-import { show } from "@arktype/util";
+import { show } from "@ark/util";
 import { Namespaces } from "./output";
 
 type flattenNamespacedTableKeys<config> = config extends {

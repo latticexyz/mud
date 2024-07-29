@@ -40,7 +40,7 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@arktype/util": "0.0.40",
+    "@ark/util": "catalog:",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "esbuild": "^0.17.15",

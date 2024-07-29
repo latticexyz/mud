@@ -1,7 +1,7 @@
 import { Tables } from "@latticexyz/config";
 import { tableToComponent } from "./tableToComponent";
 import { World } from "@latticexyz/recs";
-import { show } from "@arktype/util";
+import { show } from "@ark/util";
 
 export type tablesToComponents<tables extends Tables> = {
   [label in keyof tables as tables[label]["label"]]: tableToComponent<tables[label]>;
