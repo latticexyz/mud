@@ -69,7 +69,7 @@ export async function ensureSystems({
     contracts: missingSystems.map((system) => ({
       bytecode: system.prepareDeploy(deployerAddress, libraries).bytecode,
       deployedBytecodeSize: system.deployedBytecodeSize,
-      label: `${resourceToLabel(system)} system`,
+      debugLabel: `${resourceToLabel(system)} system`,
     })),
   });
 

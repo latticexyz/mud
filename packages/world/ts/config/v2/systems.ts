@@ -13,8 +13,8 @@ export type validateSystems<input> = {
 
 export function validateSystems(input: unknown): asserts input is SystemsInput {
   if (isObject(input)) {
-    for (const table of Object.values(input)) {
-      validateSystem(table, { inNamespace: true });
+    for (const system of Object.values(input)) {
+      validateSystem(system, { inNamespace: true });
     }
     return;
   }

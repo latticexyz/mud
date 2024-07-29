@@ -29,9 +29,7 @@ export async function tablegen({ rootDir, config }: TablegenOptions) {
 
   await Promise.all(
     Object.values(config.namespaces).map(async (namespace) => {
-      // TODO: get this value from config once multiple namespaces are supported
-      const multipleNamespaces = false;
-      const sourceDir = multipleNamespaces
+      const sourceDir = config.multipleNamespaces
         ? path.join(config.sourceDirectory, "namespaces", namespace.label)
         : config.sourceDirectory;
       const codegenDir = path.join(sourceDir, config.codegen.outputDirectory);
@@ -60,9 +58,11 @@ export async function tablegen({ rootDir, config }: TablegenOptions) {
         }),
       );
 
-      const codegenIndexPath = path.join(rootDir, codegenDir, config.codegen.indexFilename);
-      const source = renderTableIndex(codegenIndexPath, tableOptions);
-      await formatAndWriteSolidity(source, codegenIndexPath, "Generated table index");
+      if (config.codegen.indexFilename !== false && tableOptions.length > 0) {
+        const codegenIndexPath = path.join(rootDir, codegenDir, config.codegen.indexFilename);
+        const source = renderTableIndex(codegenIndexPath, tableOptions);
+        await formatAndWriteSolidity(source, codegenIndexPath, "Generated table index");
+      }
     }),
   );
 }

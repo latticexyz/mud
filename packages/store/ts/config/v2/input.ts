@@ -47,7 +47,7 @@ export type TableInput = {
 export type TableShorthandInput = SchemaInput | string;
 
 export type TablesInput = {
-  // remove label and namespace from table input as these are set contextually
+  // remove label and namespace as these are set contextually
   // and allow defining a table using shorthand
   readonly [label: string]: Omit<TableInput, "label" | "namespace"> | TableShorthandInput;
 };
@@ -68,7 +68,12 @@ export type NamespaceInput = {
   readonly tables?: TablesInput;
 };
 
+export type NamespacesInput = {
+  readonly [label: string]: Omit<NamespaceInput, "label">;
+};
+
 export type StoreInput = Omit<NamespaceInput, "label"> & {
+  readonly namespaces?: NamespacesInput;
   /**
    * Directory of Solidity source relative to the MUD config.
    * This is used to resolve other paths in the config, like codegen and user types.

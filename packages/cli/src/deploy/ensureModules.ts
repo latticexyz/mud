@@ -27,7 +27,7 @@ export async function ensureModules({
     contracts: modules.map((mod) => ({
       bytecode: mod.prepareDeploy(deployerAddress, libraries).bytecode,
       deployedBytecodeSize: mod.deployedBytecodeSize,
-      label: `${mod.name} module`,
+      debugLabel: `${mod.name} module`,
     })),
   });
 

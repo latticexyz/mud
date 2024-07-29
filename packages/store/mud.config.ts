@@ -1,10 +1,10 @@
 import { defineStore } from "./ts/config/v2/store";
 
 export default defineStore({
+  namespace: "store",
   codegen: {
     storeImportPath: "./src",
   },
-  namespace: "store",
   userTypes: {
     ResourceId: { filePath: "./src/ResourceId.sol", type: "bytes32" },
     FieldLayout: { filePath: "./src/FieldLayout.sol", type: "bytes32" },

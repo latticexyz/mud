@@ -1,11 +1,9 @@
 import { show, flatMorph } from "@arktype/util";
+import { isObject, mergeIfUndefined } from "./generics";
 import { NamespacesInput } from "./input";
+import { AbiTypeScope, Scope } from "./scope";
 import { validateNamespace, resolveNamespace } from "./namespace";
 import { groupBy } from "@latticexyz/common/utils";
-import { AbiTypeScope, Scope, isObject, mergeIfUndefined } from "@latticexyz/store/config/v2";
-
-// Copied from store/ts/config/v2/namespaces.ts but using world namespace validate/resolve methods
-// TODO: figure out how to dedupe these?
 
 export type validateNamespaces<namespaces, scope extends Scope = AbiTypeScope> = {
   [label in keyof namespaces]: validateNamespace<namespaces[label], scope>;

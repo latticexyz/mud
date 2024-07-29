@@ -17,8 +17,6 @@ export async function getSystemContracts({
   rootDir,
   config,
 }: GetSystemContractsOptions): Promise<readonly SystemContract[]> {
-  // TODO: get this value from config once multiple namespaces are supported
-  const multipleNamespaces = false;
   const solidityFiles = await findSolidityFiles({
     cwd: rootDir,
     pattern: path.join(config.sourceDirectory, "**"),
@@ -35,7 +33,8 @@ export async function getSystemContracts({
     )
     .map((file) => {
       const namespaceLabel = (() => {
-        if (!multipleNamespaces) return config.namespace;
+        // TODO: remove `config.namespace` null check once this narrows properly
+        if (!config.multipleNamespaces && config.namespace != null) return config.namespace;
 
         const relativePath = path.relative(path.join(rootDir, config.sourceDirectory), file.filename);
         const [namespacesDir, namespaceDir] = relativePath.split(path.sep);
