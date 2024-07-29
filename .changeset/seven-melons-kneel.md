@@ -19,7 +19,7 @@ export default defineWorld({
 });
 ```
 
-Once you use the top-level `namespaces` config option, your project will be in "multiple namespaces" mode, which expects a source directory layout with a top-level `namespaces` directory with nested namespace directories that correspond to each namespace in the config.
+Once you use the top-level `namespaces` config option, your project will be in "multiple namespaces mode", which expects a source directory layout with a top-level `namespaces` directory with nested namespace directories that correspond to each namespace in the config.
 
 ```
 mud-project/
