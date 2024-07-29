@@ -56,6 +56,8 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
   const { account } = useStore();
   const { writeContractAsync } = useWriteContract();
   const worldAddress = useWorldAddress();
+
+  const [prevValue, setPrevValue] = useState(defaultValue);
   const [value, setValue] = useState(defaultValue);
 
   const isRecord = false; // TODO: determine properly
@@ -63,13 +65,17 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
   const fieldType = config?.value_schema[name];
 
   const handleSubmit = async (newValue: unknown) => {
-    const toastId = toast.loading("Transaction submitted");
-
     const valueToSet = newValue === undefined ? value : newValue;
     if (newValue !== undefined) {
       setValue(newValue);
     }
 
+    if (valueToSet === prevValue) {
+      return;
+    }
+
+    setPrevValue(valueToSet);
+    const toastId = toast.loading("Transaction submitted");
     try {
       let txHash;
 
@@ -128,6 +134,9 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
       onChange={(evt: ChangeEvent<HTMLInputElement>) => {
         const value = evt.target.value;
         setValue(value);
+      }}
+      onFocus={() => {
+        setPrevValue(value);
       }}
       onBlur={() => {
         handleSubmit(value);
