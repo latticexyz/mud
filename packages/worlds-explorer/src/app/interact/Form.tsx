@@ -17,7 +17,7 @@ export function Form({ data }: Props) {
   return (
     <div className="flex">
       <div className="w-[300px]">
-        <div className="sticky top-0">
+        <div className="sticky top-16">
           <h4 className="font-semibold py-4 uppercase opacity-70 text-xs">Jump to:</h4>
           <ul className="space-y-2">
             {data.abi.map((abi, idx) => {
