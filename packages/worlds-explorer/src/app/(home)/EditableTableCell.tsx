@@ -78,6 +78,9 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
     try {
       let txHash;
 
+      console.log("hiii", fieldType, valueToSet);
+      console.log("yoo", encodeField(fieldType, valueToSet));
+
       if (isRecord) {
         txHash = await setDynamicField(config, writeContractAsync, worldAddress, account, keyTuple);
       } else {
@@ -86,7 +89,7 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
           abi,
           address: worldAddress,
           functionName: "setField",
-          args: [tableId, keyTuple, 0, encodeField("bool", valueToSet)],
+          args: [tableId, keyTuple, 0, encodeField(fieldType, valueToSet)],
         });
       }
 
@@ -134,7 +137,9 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
         const value = evt.target.value;
         setValue(value);
       }}
-      onBlur={handleSubmit}
+      onBlur={() => {
+        handleSubmit(value);
+      }}
       defaultValue={value}
     />
   );

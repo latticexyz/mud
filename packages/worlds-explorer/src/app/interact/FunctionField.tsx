@@ -69,7 +69,8 @@ export function FunctionField({ abi }: Props) {
     } catch (error) {
       console.log("error:", error);
 
-      toast.error("Uh oh! Something went wrong.", {
+      const msg = error.message;
+      toast.error(msg, {
         id: toastId,
       });
     }
@@ -80,7 +81,7 @@ export function FunctionField({ abi }: Props) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} id={abi.name} className="space-y-4 pb-4">
         <h3 className="font-semibold pt-4">
-          {abi?.name}
+          <span className="text-orange-500">{abi?.name}</span>
           <span className="opacity-50">{inputsLabel && ` (${inputsLabel})`}</span>
         </h3>
 

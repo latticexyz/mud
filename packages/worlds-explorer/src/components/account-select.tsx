@@ -62,7 +62,7 @@ export function AccountSelect() {
       <SelectContent>
         {ACCOUNTS.map((address, idx) => {
           return (
-            <SelectItem key={address} value={address}>
+            <SelectItem key={address} value={address} className="font-mono">
               Account {idx + 1} {balances[address] !== undefined && `(${formatEther(balances[address])} ETH)`}
             </SelectItem>
           );

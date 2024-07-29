@@ -18,7 +18,7 @@ export default async function Interact() {
   const data = await getABI();
   return (
     <>
-      <h1 className="text-2xl font-bold py-4">Interact</h1>
+      {/* <h1 className="text-2xl font-bold py-4">Interact</h1> */}
       <Form data={data} />
     </>
   );

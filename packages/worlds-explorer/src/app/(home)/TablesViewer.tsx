@@ -112,7 +112,7 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
             className="-ml-4"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            {name}
+            <span className="text-orange-500">{name}</span>
             <span className="opacity-70 ml-1">
               ({mudTableConfig?.key_schema[name] || mudTableConfig?.value_schema[name] || type.toLowerCase()})
             </span>

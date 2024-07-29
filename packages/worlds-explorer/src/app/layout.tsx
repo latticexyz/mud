@@ -30,7 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${jetbrains.variable}`}>
+      <body className={`${inter.variable} ${jetbrains.variable} dark`}>
         <Providers>
           <Theme>
             <div
