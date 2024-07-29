@@ -224,39 +224,39 @@ There are two ways in which MUD supports arrays.
 
     </details>
 
-{ /\*
+{
 
-## Events
+// ## Events
 
-Normally we expect onchain-to-client communication to happen using [table synchronization](/guides/replicating-onchain-state), but sometimes it is useful to have a mechanism that is typical event handling, with events triggering code.
+// Normally we expect onchain-to-client communication to happen using [table synchronization](/guides/replicating-onchain-state), but sometimes it is useful to have a mechanism that is typical event handling, with events triggering code.
 
-You shouldn't [`emit`](https://docs.soliditylang.org/en/latest/contracts.html#events) events from your `System`s.
-Unless your `System` is in the [highly discouraged](/guides/best-practices/system-best-practices#avoid-the-root-namespace-if-possible) root namespace, events will come from the `System`'s address.
-When you upgrade the `System` that address changes.
-Instead, we recommend you use an offchain singleton table
+// You shouldn't [`emit`](https://docs.soliditylang.org/en/latest/contracts.html#events) events from your `System`s.
+// Unless your `System` is in the [highly discouraged](/guides/best-practices/system-best-practices#avoid-the-root-namespace-if-possible) root namespace, events will come from the `System`'s address.
+// When you upgrade the `System` that address changes.
+// Instead, we recommend you use an offchain singleton table
 
-To do this:
+// To do this:
 
-1. In the `mud.config.ts` file create an [offchain](/store/tables#types-of-tables) singleton table.
+// 1. In the `mud.config.ts` file create an [offchain](/store/tables#types-of-tables) singleton table.
 
-   ```typescript
-   Event: {
-     schema: {
-       id: "bytes32",
-       message: "string",
-     },
-     key: [],
-     type: "offchain",
-   },
-   ```
+// `typescript
+//   Event: {
+//     schema: {
+//       id: "bytes32",
+//       message: "string",
+//     },
+//     key: [],
+//     type: "offchain",
+//   },
+//   `
 
-1. Add code to emit the event to any `System` call that needs it.
+// 1. Add code to emit the event to any `System` call that needs it.
 
-   ```solidity
-   Event.set(id, "new task");
-   ```
+// `solidity
+//   Event.set(id, "new task");
+//   `
 
-1. `Event` gets updated, same as all the other tables. However, here we cannot rely on these updates.
-   `Event` might end up being updated multiple times in the same block, and
+// 1. `Event` gets updated, same as all the other tables. However, here we cannot rely on these updates.
+// `Event` might end up being updated multiple times in the same block, and
 
-\*/ }
+}
