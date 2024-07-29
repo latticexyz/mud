@@ -6,15 +6,20 @@ describe("extendScope", () => {
   it("should extend the provided scope", () => {
     const extendedScope = extendScope(Scope, { static: "uint256", dynamic: "string" });
     attest<ScopeOptions<{ static: "uint256"; dynamic: "string" }>>(extendedScope).type.toString.snap(
-      '{ types: { static: "uint256"; dynamic: "string"; }; }',
+      '{ types: { static: "uint256"; dynamic: "string" } }',
     );
 
     const furtherExtendedScope = extendScope(extendedScope, { static2: "uint256", dynamic2: "string" });
     attest<ScopeOptions<{ static: "uint256"; dynamic: "string"; static2: "uint256"; dynamic2: "string" }>>(
       furtherExtendedScope,
-    ).type.toString.snap(
-      '{ types: { static: "uint256"; dynamic: "string"; static2: "uint256"; dynamic2: "string"; }; }',
-    );
+    ).type.toString.snap(`{
+	types: {
+		static: "uint256"
+		dynamic: "string"
+		static2: "uint256"
+		dynamic2: "string"
+	}
+}`);
   });
 });
 

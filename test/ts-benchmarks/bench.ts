@@ -1,7 +1,7 @@
 import { bench } from "@ark/attest";
 import { syncToRecs, type SyncToRecsOptions } from "@latticexyz/store-sync/recs";
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
-import { Hex, type PublicClient } from "viem";
+import type { Hex, PublicClient } from "viem";
 import { defineWorld } from "@latticexyz/world";
 import { createWorld } from "@latticexyz/recs";
 
@@ -49,7 +49,7 @@ bench("syncToRecs(1 table)", async () => {
   });
 
   return t;
-}).types([4033, "instantiations"]);
+}).types([4041, "instantiations"]);
 
 bench("syncToRecs(5 tables)", async () => {
   const config = defineWorld({
@@ -105,7 +105,7 @@ bench("syncToRecs(5 tables)", async () => {
   });
 
   return t;
-}).types([16273, "instantiations"]);
+}).types([16313, "instantiations"]);
 
 bench("syncToZustand", async () => {
   const config = defineWorld({
@@ -128,4 +128,4 @@ bench("syncToZustand", async () => {
   });
 
   return t;
-}).types([4090, "instantiations"]);
+}).types([4098, "instantiations"]);
