@@ -1,6 +1,6 @@
 import { renderImportPath, renderList, renderedSolidityHeader } from "@latticexyz/common/codegen";
 import { TableOptions } from "./getTableOptions";
-import path from "node:path/posix";
+import path from "node:path";
 
 /**
  * Returns Solidity code for table index file that imports all codegen tables
