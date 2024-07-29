@@ -28,7 +28,7 @@ const formSchema = z.object({
 });
 
 export function FunctionField({ abi }: Props) {
-  const { account } = useStore();
+  const { account, fetchBalances } = useStore();
   const worldAddress = useWorldAddress();
   const { writeContractAsync } = useWriteContract();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -73,6 +73,8 @@ export function FunctionField({ abi }: Props) {
       toast.error(msg, {
         id: toastId,
       });
+    } finally {
+      fetchBalances();
     }
   }
 
