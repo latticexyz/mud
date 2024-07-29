@@ -20,6 +20,12 @@ export default defineWorld({
           key: ["player"],
         },
       },
+      systems: {
+        HiddenSystem: {
+          openAccess: false,
+          accessList: ["MoveSystem"],
+        },
+      },
     },
   },
 });
