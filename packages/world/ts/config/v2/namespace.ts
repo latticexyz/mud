@@ -32,7 +32,7 @@ export type resolveNamespace<input, scope extends Scope = AbiTypeScope> = input 
 
 export function resolveNamespace<const input extends NamespaceInput, scope extends Scope = AbiTypeScope>(
   input: input,
-  scope: scope,
+  scope: scope = AbiTypeScope as never,
 ): resolveNamespace<input, scope> {
   const namespace = resolveStoreNamespace(input, scope);
   const systems = resolveSystems(input.systems ?? {}, namespace.namespace);
