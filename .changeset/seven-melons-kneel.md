@@ -22,13 +22,12 @@ export default defineWorld({
 Once you use the top-level `namespaces` config option, your project will be in "multiple namespaces mode", which expects a source directory structure similar to the config structure: a top-level `namespaces` directory with nested namespace directories that correspond to each namespace label in the config.
 
 ```
-mud-project/
-├─ mud.config.ts
-└─ src/
-   └─ namespaces/
-      └─ app/
-         ├─ TasksSystem.sol
-         └─ codegen/
-            ├─ tables/
-            └─ Tasks.sol
+~/mud-app
+├── mud.config.ts
+└── namespaces
+    └── app
+        ├── TasksSystem.sol
+        └── codegen
+            └── tables
+                └── Tasks.sol
 ```
