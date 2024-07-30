@@ -124,6 +124,14 @@ In addition to `namespaces`, these fields are also supported.
   - **`upgradeableWorldImplementation`** a `bool`: Whether the `World` is to be deployed behind a proxy to [enable upgrades
     of the core World implementation](/world/upgrades). The default is `false`.
 
+### Directory structure
+
+- `src/namespaces/<namespace>/systems` - `System`s that belong to this namespace.
+- `src/namespaces/<namespace>/codegen/tables` - the generated code for tables that belong to this namespace.
+- `src/namespaces/<namespace>/codegen/index.sol` - a single file that imports all the table definitions.
+- `src/codegn/common.sol` - the enumerations in the config file.
+- `src/codegen/world/I*.sol` - interfaces for all the `System`s.
+
 ## Single namespace
 
 This is an older config file format which is still supported.
