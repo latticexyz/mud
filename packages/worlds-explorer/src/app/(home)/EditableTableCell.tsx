@@ -20,19 +20,13 @@ type Props = {
   config: Record<string, string>;
 };
 
-async function setDynamicField(config, writeContractAsync, worldAddress, account, keyTuple) {
-  const encodedValueArgs = encodeValueArgs(
-    {
-      createdAt: "uint256",
-      completedAt: "uint256",
-      description: "string",
-    },
-    {
-      completedAt: BigInt(1),
-      createdAt: BigInt(10),
-      description: "Desc",
-    },
-  );
+async function setDynamicField(config, writeContractAsync, worldAddress, account, keyTuple, name, value, values) {
+  console.log("setDynamicField", config.value_schema);
+
+  const encodedValueArgs = encodeValueArgs(config?.value_schema, {
+    ...values,
+    [name]: value,
+  });
 
   const tableId = config?.table_id;
   const txHash = await writeContractAsync({
@@ -52,7 +46,7 @@ async function setDynamicField(config, writeContractAsync, worldAddress, account
   return txHash;
 }
 
-export function EditableTableCell({ name, config, keyTuple, value: defaultValue }: Props) {
+export function EditableTableCell({ name, config, keyTuple, values, value: defaultValue }: Props) {
   const { account } = useStore();
   const { writeContractAsync } = useWriteContract();
   const worldAddress = useWorldAddress();
@@ -80,7 +74,16 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
       let txHash;
 
       if (isRecord) {
-        txHash = await setDynamicField(config, writeContractAsync, worldAddress, account, keyTuple);
+        txHash = await setDynamicField(
+          config,
+          writeContractAsync,
+          worldAddress,
+          account,
+          keyTuple,
+          name,
+          value,
+          values,
+        );
       } else {
         txHash = await writeContractAsync({
           account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
