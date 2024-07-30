@@ -11,6 +11,7 @@ import { wagmiConfig } from "../_providers";
 import { abi } from "./abi";
 import { parseEventLogs } from "viem";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Loader } from "lucide-react";
 
 type Props = {
   name: string;
@@ -21,8 +22,6 @@ type Props = {
 };
 
 async function setDynamicField(config, writeContractAsync, worldAddress, account, keyTuple, name, value, values) {
-  console.log("setDynamicField", config.value_schema);
-
   const encodedValueArgs = encodeValueArgs(config?.value_schema, {
     ...values,
     [name]: value,
@@ -51,6 +50,7 @@ export function EditableTableCell({ name, config, keyTuple, values, value: defau
   const { writeContractAsync } = useWriteContract();
   const worldAddress = useWorldAddress();
 
+  const [loading, setLoading] = useState(false);
   const [prevValue, setPrevValue] = useState(defaultValue);
   const [value, setValue] = useState(defaultValue);
 
@@ -69,6 +69,8 @@ export function EditableTableCell({ name, config, keyTuple, values, value: defau
     }
 
     setPrevValue(valueToSet);
+    setLoading(true);
+
     const toastId = toast.loading("Transaction submitted");
     try {
       let txHash;
@@ -116,6 +118,9 @@ export function EditableTableCell({ name, config, keyTuple, values, value: defau
         id: toastId,
       });
     }
+    {
+      setLoading(false);
+    }
   };
 
   if (fieldType === "bool") {
@@ -128,6 +133,14 @@ export function EditableTableCell({ name, config, keyTuple, values, value: defau
           handleSubmit(newValue);
         }}
       />
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center gap-1 cursor-wait">
+        {value} <Loader className="animate-spin h-4" />
+      </div>
     );
   }
 
