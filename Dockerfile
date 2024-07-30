@@ -31,7 +31,7 @@ RUN curl -L https://foundry.paradigm.xyz/ | bash && \
 # pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="${PATH}:${PNPM_HOME}"
-RUN npm install pnpm@9.1.1 --global && pnpm --version
+RUN npm install pnpm@9.6.0 --global && pnpm --version
 
 FROM base AS mud
 COPY . /app
