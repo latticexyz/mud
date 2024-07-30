@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+// enable sourcemaps
+import "source-map-support/register";
+
 // Load .env file into process.env
 import * as dotenv from "dotenv";
 dotenv.config();
