@@ -60,7 +60,7 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
   const [prevValue, setPrevValue] = useState(defaultValue);
   const [value, setValue] = useState(defaultValue);
 
-  const isRecord = false; // TODO: determine properly
+  const isRecord = true; // TODO: determine properly
   const tableId = config?.table_id;
   const fieldType = config?.value_schema[name];
 
