@@ -26,7 +26,7 @@ export default defineWorld({
         TreasurySystem: { ... },
       },
     },
-  }, 
+  },
 });
 ```
 
