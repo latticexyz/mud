@@ -145,19 +145,25 @@ export function EditableTableCell({ name, config, keyTuple, values, value: defau
   }
 
   return (
-    <input
-      className="bg-transparent w-full"
-      onChange={(evt: ChangeEvent<HTMLInputElement>) => {
-        const value = evt.target.value;
-        setValue(value);
-      }}
-      onFocus={() => {
-        setPrevValue(value);
-      }}
-      onBlur={() => {
+    <form
+      onSubmit={() => {
         handleSubmit(value);
       }}
-      defaultValue={value}
-    />
+    >
+      <input
+        className="bg-transparent w-full"
+        onChange={(evt: ChangeEvent<HTMLInputElement>) => {
+          const value = evt.target.value;
+          setValue(value);
+        }}
+        onFocus={() => {
+          setPrevValue(value);
+        }}
+        onBlur={() => {
+          handleSubmit(value);
+        }}
+        defaultValue={value}
+      />
+    </form>
   );
 }
