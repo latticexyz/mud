@@ -12,6 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { getStaticByteLength, AbiTypeToSchemaType } from "@latticexyz/schema-type/deprecated";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowUpDown, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -141,6 +142,12 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
           return value?.toString();
         }
 
+        const isDynamic = Object.keys(mudTableConfig?.value_schema).some((key: string) => {
+          const schemaType = AbiTypeToSchemaType[mudTableConfig?.value_schema[key]];
+          const staticByteLength = getStaticByteLength(schemaType);
+          return staticByteLength === 0;
+        });
+
         return (
           <EditableTableCell
             config={mudTableConfig}
@@ -148,6 +155,7 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
             name={name}
             value={value?.toString()}
             values={values}
+            isDynamic={isDynamic}
           />
         );
       },

@@ -19,6 +19,7 @@ type Props = {
   values: Record<string, string>;
   keyTuple: [string];
   config: Record<string, string>;
+  isDynamic: boolean;
 };
 
 async function setDynamicField(config, writeContractAsync, worldAddress, account, keyTuple, name, value, values) {
@@ -45,7 +46,7 @@ async function setDynamicField(config, writeContractAsync, worldAddress, account
   return txHash;
 }
 
-export function EditableTableCell({ name, config, keyTuple, values, value: defaultValue }: Props) {
+export function EditableTableCell({ name, config, keyTuple, isDynamic, values, value: defaultValue }: Props) {
   const { account } = useStore();
   const { writeContractAsync } = useWriteContract();
   const worldAddress = useWorldAddress();
@@ -54,7 +55,6 @@ export function EditableTableCell({ name, config, keyTuple, values, value: defau
   const [prevValue, setPrevValue] = useState(defaultValue);
   const [value, setValue] = useState(defaultValue);
 
-  const isRecord = true; // TODO: determine properly
   const tableId = config?.table_id;
   const fieldType = config?.value_schema[name];
 
@@ -75,7 +75,7 @@ export function EditableTableCell({ name, config, keyTuple, values, value: defau
     try {
       let txHash;
 
-      if (isRecord) {
+      if (isDynamic) {
         txHash = await setDynamicField(
           config,
           writeContractAsync,
