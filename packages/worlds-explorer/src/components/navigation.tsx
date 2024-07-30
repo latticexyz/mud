@@ -16,7 +16,7 @@ export function Navigation() {
         <div className="flex gap-x-6 py-4">
           <Link
             href="/"
-            className={cn("underline-offset-[16px] uppercase", {
+            className={cn("underline-offset-[16px] text-sm uppercase", {
               "font-semibold underline decoration-orange-500 decoration-4": pathname === "/",
             })}
           >
@@ -25,7 +25,7 @@ export function Navigation() {
 
           <Link
             href="/interact"
-            className={cn("underline-offset-[16px] uppercase", {
+            className={cn("underline-offset-[16px] text-sm uppercase", {
               "font-semibold underline decoration-orange-500 decoration-4": pathname === "/interact",
             })}
           >
