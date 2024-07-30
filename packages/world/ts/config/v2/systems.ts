@@ -1,4 +1,4 @@
-import { ErrorMessage } from "@arktype/util";
+import { ErrorMessage } from "@ark/util";
 import { isObject } from "@latticexyz/store/config/v2";
 import { SystemsInput } from "./input";
 import { resolveSystem, validateSystem } from "./system";

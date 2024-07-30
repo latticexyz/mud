@@ -1,4 +1,4 @@
-import { ErrorMessage, show, narrow } from "@arktype/util";
+import { ErrorMessage, show, narrow } from "@ark/util";
 import { get, hasOwnKey } from "./generics";
 import { UserTypes } from "./output";
 import { CONFIG_DEFAULTS } from "./defaults";

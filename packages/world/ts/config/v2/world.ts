@@ -1,4 +1,4 @@
-import { ErrorMessage, conform, type withJsDoc } from "@arktype/util";
+import { ErrorMessage, conform, type withJsDoc } from "@ark/util";
 import {
   extendedScope,
   get,

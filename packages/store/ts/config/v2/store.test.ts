@@ -1,9 +1,9 @@
 import { describe, it } from "vitest";
 import { defineStore } from "./store";
-import { attest } from "@arktype/attest";
+import { attest } from "@ark/attest";
 import { resourceToHex } from "@latticexyz/common";
 import { Store } from "./output";
-import { satisfy } from "@arktype/util";
+import { satisfy } from "@ark/util";
 import { Hex } from "viem";
 
 describe("defineStore", () => {

@@ -1,5 +1,5 @@
 import { describe, it } from "vitest";
-import { attest } from "@arktype/attest";
+import { attest } from "@ark/attest";
 import { defineNamespaces } from "./namespaces";
 
 describe("defineNamespaces", () => {

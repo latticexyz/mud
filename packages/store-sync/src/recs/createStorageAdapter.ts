@@ -12,7 +12,7 @@ import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
 import { singletonEntity } from "./singletonEntity";
 import { tablesToComponents } from "./tablesToComponents";
-import { merge } from "@arktype/util";
+import { merge } from "@ark/util";
 
 export type CreateStorageAdapterOptions<tables extends Tables> = {
   world: RecsWorld;

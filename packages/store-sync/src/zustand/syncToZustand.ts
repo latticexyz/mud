@@ -7,7 +7,7 @@ import { Address } from "viem";
 import { SyncStep } from "../SyncStep";
 import { Store as StoreConfig } from "@latticexyz/store";
 import { Tables } from "@latticexyz/config";
-import { merge } from "@arktype/util";
+import { merge } from "@ark/util";
 import { configToTables } from "../configToTables";
 
 export type SyncToZustandOptions<config extends StoreConfig, extraTables extends Tables> = Omit<
