@@ -25,10 +25,10 @@ Once you use the top-level `namespaces` config option, your project will be in "
 ~/mud-app
 ├─ mud.config.ts
 └─ src
-    └─ namespaces
-        └─ app
-            ├─ TasksSystem.sol
-            └─ codegen
-                └─ tables
-                    └─ Tasks.sol
+   └─ namespaces
+      └─ app
+         ├─ TasksSystem.sol
+         └─ codegen
+            └─ tables
+               └─ Tasks.sol
 ```
