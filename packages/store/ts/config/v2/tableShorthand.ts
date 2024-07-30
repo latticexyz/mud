@@ -3,7 +3,7 @@ import { hasOwnKey, isObject } from "./generics";
 import { SchemaInput, ScopedSchemaInput, TableShorthandInput } from "./input";
 import { isSchemaInput } from "./schema";
 import { AbiTypeScope, Scope, getStaticAbiTypeKeys } from "./scope";
-import { ErrorMessage, conform } from "@arktype/util";
+import { ErrorMessage, conform } from "@ark/util";
 
 export const NoStaticKeyFieldError =
   "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.";

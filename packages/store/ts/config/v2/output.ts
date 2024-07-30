@@ -1,4 +1,4 @@
-import { show } from "@arktype/util";
+import { show } from "@ark/util";
 import { AbiType, Schema, Table as BaseTable } from "@latticexyz/config";
 import { EnumsInput } from "./input";
 

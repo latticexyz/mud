@@ -1,7 +1,7 @@
 import { SYSTEM_DEFAULTS } from "./defaults";
 import { SystemInput } from "./input";
 import { hasOwnKey, mergeIfUndefined } from "@latticexyz/store/config/v2";
-import { ErrorMessage, narrow, requiredKeyOf } from "@arktype/util";
+import { ErrorMessage, narrow, requiredKeyOf } from "@ark/util";
 import { Hex } from "viem";
 import { resourceToHex } from "@latticexyz/common";
 

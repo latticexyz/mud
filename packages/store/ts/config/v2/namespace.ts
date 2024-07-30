@@ -1,4 +1,4 @@
-import { ErrorMessage, flatMorph } from "@arktype/util";
+import { ErrorMessage, flatMorph } from "@ark/util";
 import { hasOwnKey, mergeIfUndefined } from "./generics";
 import { NamespaceInput } from "./input";
 import { resolveTables, validateTables } from "./tables";

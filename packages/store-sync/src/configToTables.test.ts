@@ -2,7 +2,7 @@ import { describe, it } from "vitest";
 import { configToTables } from "./configToTables";
 import { defineWorld } from "@latticexyz/world";
 import { resourceToHex } from "@latticexyz/common";
-import { attest } from "@arktype/attest";
+import { attest } from "@ark/attest";
 
 describe("configToTables", () => {
   it("flattens tables from single namespace", async () => {

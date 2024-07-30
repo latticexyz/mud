@@ -1,5 +1,5 @@
 import { describe, it } from "vitest";
-import { attest } from "@arktype/attest";
+import { attest } from "@ark/attest";
 import { AbiTypeScope, extendScope } from "./scope";
 import { defineTables, validateTables } from "./tables";
 

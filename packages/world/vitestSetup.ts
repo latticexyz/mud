@@ -1,1 +1,1 @@
-export { setup, cleanup as teardown } from "@arktype/attest";
+export { setup, cleanup as teardown } from "@ark/attest";

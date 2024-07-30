@@ -1,7 +1,7 @@
 import { Hex } from "viem";
 import { DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type/internal";
 import { ResourceType } from "@latticexyz/common";
-import { satisfy } from "@arktype/util";
+import { satisfy } from "@ark/util";
 
 /**
  * Common output types of a MUD config. We use these types as inputs for libraries.

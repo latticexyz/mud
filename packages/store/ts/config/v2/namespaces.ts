@@ -1,4 +1,4 @@
-import { show, flatMorph } from "@arktype/util";
+import { show, flatMorph } from "@ark/util";
 import { isObject, mergeIfUndefined } from "./generics";
 import { NamespacesInput } from "./input";
 import { AbiTypeScope, Scope } from "./scope";

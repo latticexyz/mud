@@ -1,4 +1,4 @@
-import { show, flatMorph } from "@arktype/util";
+import { show, flatMorph } from "@ark/util";
 import { NamespacesInput } from "./input";
 import { validateNamespace, resolveNamespace } from "./namespace";
 import { groupBy } from "@latticexyz/common/utils";

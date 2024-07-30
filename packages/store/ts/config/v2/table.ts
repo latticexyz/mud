@@ -1,4 +1,4 @@
-import { ErrorMessage, conform, show, narrow, requiredKeyOf } from "@arktype/util";
+import { ErrorMessage, conform, show, narrow, requiredKeyOf } from "@ark/util";
 import { isStaticAbiType } from "@latticexyz/schema-type/internal";
 import { Hex } from "viem";
 import { get, hasOwnKey, mergeIfUndefined } from "./generics";
