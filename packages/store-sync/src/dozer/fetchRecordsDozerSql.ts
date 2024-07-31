@@ -13,8 +13,8 @@ type DozerResponseFail = { msg: string };
 type DozerResponse = DozerResponseSuccess | DozerResponseFail;
 
 type FetchDozerSqlArgs = {
-  url: string;
-  address: Hex;
+  dozerUrl: string;
+  storeAddress: Hex;
   queries: DozerTableQuery[];
 };
 
@@ -32,14 +32,18 @@ function isDozerResponseFail(response: DozerResponse): response is DozerResponse
   return "msg" in response;
 }
 
-export async function fetchRecordsDozerSql({ url, queries, address }: FetchDozerSqlArgs): Promise<FetchDozerSqlResult> {
+export async function fetchRecordsDozerSql({
+  dozerUrl,
+  queries,
+  storeAddress,
+}: FetchDozerSqlArgs): Promise<FetchDozerSqlResult> {
   const response: DozerResponse = await (
-    await fetch(url, {
+    await fetch(dozerUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(queries.map((query) => ({ address, query: query.sql }))),
+      body: JSON.stringify(queries.map((query) => ({ address: storeAddress, query: query.sql }))),
     })
   ).json();
 
@@ -49,7 +53,7 @@ export async function fetchRecordsDozerSql({ url, queries, address }: FetchDozer
     --compressed \\
     -H 'Accept-Encoding: gzip' \\
     -H 'Content-Type: application/json' \\
-    -d '[${queries.map((query) => `{"address": "${address}", "query": "${query.sql.replaceAll('"', '\\"')}"}`).join(",")}]'`);
+    -d '[${queries.map((query) => `{"address": "${storeAddress}", "query": "${query.sql.replaceAll('"', '\\"')}"}`).join(",")}]'`);
     return;
   }
 
