@@ -1,3 +1,4 @@
+import { Table } from "@latticexyz/config";
 import {
   DynamicAbiType,
   SchemaAbiType,
@@ -51,3 +52,5 @@ export type ValueArgs = {
   encodedLengths: Hex;
   dynamicData: Hex;
 };
+
+export type PartialTable = Pick<Table, "schema" | "key">;
