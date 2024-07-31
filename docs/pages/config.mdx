@@ -5,19 +5,66 @@ This file needs to be named `mud.config.ts` and be in the same folder as your `f
 
 The config is used to define:
 
-- The tables in your project in the `tables` object of your configuration.
-- The [namespace](/world/namespaces-access-control) that [systems](/world/systems) and tables will be deployed in.
+- The tables in your project.
+- The [namespace(s)](/world/namespaces-access-control) that [`System`s](/world/systems) and tables will be deployed in.
 - The `System`s in your project.
   By default, the deployer will find all Solidity matching `*System.sol` (so any file ending in `System.sol`, in any folder) and deploy them as public `System`.
   If you want greater control over your systems (to change their public access or their name), you can use the `systems` object in the config.
 - The [modules](/world/modules) that will be installed in the `World`.
+- The enumerations in your `World`.
+- Deployment and code generation options.
 
 ## Multiple namespaces
 
 Starting with version 2.1 you can put multiple namespaces in the same config file, you create a `namespaces` record and within it a record for every namespace.
 For example:
 
-```tsx
+### Sample `mud.config.ts` files
+
+#### A namespace
+
+This is an extremely simple configuration file with a single namespace that contains a single table.
+The `System`s are defined implicitly, as all the contracts that match `src/namespaces/app/systems/*System.sol`.
+
+```typescript filename="mud.config.ts"
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
+  namespaces: {
+    app: {
+      tables: {
+        Tasks: {
+          schema: {
+            id: "bytes32",
+            createdAt: "uint256",
+            completedAt: "uint256",
+            description: "string",
+          },
+          key: ["id"],
+        },
+      },
+    },
+  },
+});
+```
+
+**Source files**
+
+- `src/namespaces/app/systems` - `System`s that belong to the `app` namespace.
+
+**Generated files**
+
+- `src/namespaces/app/codegen/tables/Tasks.sol` - the generated code for `app__Tasks` table.
+- `src/namespaces/app/codegen/index.sol` - a single file that imports all the table definitions of the namespace (in this case, only `Tasks.sol`).
+- `src/codegen/world/I*System.sol` - interfaces for all the `System`s.
+- `src/codegen/world/IWorld.sol` - the `IWorld` interface that inherits from all the `I*System.sol` files.
+
+#### A namespace with an explicit `System` definition
+
+By default `Systems` are publicly accessible.
+In this configuration, we explicitly specify `RootSystem` so we can specify that access to it is limited to authorized addresses.
+
+```typescript filename="mud.config.ts" {17-21}
 import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
@@ -35,7 +82,7 @@ export default defineWorld({
         },
       },
       systems: {
-        TestSystem: {
+        RootSystem: {
           openAccess: false,
         },
       },
@@ -44,8 +91,120 @@ export default defineWorld({
 });
 ```
 
-This configuration file creates a single namespace, `app`.
-Within that namespace, there is one table, `app__Tasks`.
+**Source files**
+
+- `src/namespaces/app/systems` - `System`s that belong to the `app` namespace.
+- `src/namespaces/app/systems/RootSystem.sol` - The `System` specified in `mud.config.ts`.
+
+**Generated files**
+
+- `src/namespaces/app/codegen/tables/Tasks.sol` - the generated code for `app__Tasks`.
+- `src/namespaces/app/codegen/index.sol` - a single file that imports all the table definitions (in this case, only `Tasks.sol`).
+- `src/codegen/world/I*System.sol` - interfaces for all the `System`s, including `IRootSystem.sol`
+- `src/codegen/world/IWorld.sol` - the `IWorld` interface that inherits from all the `I*System.sol` files.
+
+#### Two namespaces
+
+In this example there are two namespaces, `app` and `config`.
+Each namespace contains a single table: `app__Tasks` and `config__Configuration`.
+
+```typescript filename="mud.config.ts" {4-5,18}
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
+  namespaces: {
+    app: {
+      tables: {
+        Tasks: {
+          schema: {
+            id: "bytes32",
+            createdAt: "uint256",
+            completedAt: "uint256",
+            description: "string",
+          },
+          key: ["id"],
+        },
+      },
+    },
+    config: {
+      tables: {
+        Configuration: {
+          schema: {
+            deployer: "address",
+            tokenAddress: "address",
+            ipAddress: "bytes4",
+            url: "string",
+          },
+          key: [],
+        },
+      },
+    },
+  },
+});
+```
+
+**Source files**
+
+- `src/namespaces/app/systems` - `System`s that belong to the `app` namespace.
+- `src/namespaces/config/systems` - `System`s that belong to the `app` namespace.
+
+**Generated files**
+
+- `src/namespaces/app/codegen/tables/Tasks.sol` - the generated code for `app__Tasks` table.
+- `src/namespaces/app/codegen/index.sol` - a single file that imports all the table definitions of the namespace (in this case, only `Tasks.sol`).
+- `src/namespaces/config/systems` - `System`s that belong to the `config` namespace.
+- `src/namespaces/config/codegen/tables/Tasks.sol` - the generated code for `config__Configuration` table.
+- `src/namespaces/config/codegen/index.sol` - a single file that imports all the table definitions of the namespace (in this case, only `Configuration.sol`).
+- `src/codegen/world/I*System.sol` - interfaces for all the `System`s.
+- `src/codegen/world/IWorld.sol` - the `IWorld` interface that inherits from all the `I*System.sol` files.
+
+#### Enumerations
+
+```typescript filename="mud.config.ts" {4-7}
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
+  enums: {
+    Direction: ["Up", "Down", "Left", "Right"],
+    MapDirection: ["North", "East", "South", "West"],
+  },
+  namespaces: {
+    app: {
+      tables: {
+        Heading: {
+          schema: {
+            id: "bytes32",
+            direction: "Direction",
+            name: "string",
+          },
+          key: ["id"],
+        },
+        MapCursor: {
+          schema: {
+            id: "bytes32",
+            direction: "MapDirection",
+            name: "string",
+          },
+          key: ["id"],
+        },
+      },
+    },
+  },
+});
+```
+
+**Source files**
+
+- `src/namespaces/app/systems` - `System`s that belong to the `app` namespace.
+
+**Generated files**
+
+- `src/namespaces/app/codegen/tables/Heading.sol` - the generated code for `app__Heading` table.
+- `src/namespaces/app/codegen/tables/MapCursor.sol` - the generated code for `app__MapCursor` table.
+- `src/namespaces/app/codegen/index.sol` - a single file that imports all the table definitions of the namespace (in this case, `Heading.sol` and `MapCursor.sol`).
+- `src/codegn/common.sol` - the enumerations in the config file.
+- `src/codegen/world/I*.sol` - interfaces for all the `System`s.
+- `src/codegen/world/IWorld.sol` - the `IWorld` interface that inherits from all the `I*System.sol` files.
 
 ### Fields within a namespace
 
@@ -91,9 +250,6 @@ In addition to `namespaces`, these fields are also supported.
   The keys are the names of the enumerations.
   The values are arrays of the strings for the values the enumeration can take.
 
-- **`tables`**: a record of tables. The keys in the record are table names.
-  The value is a record of [table properties](https://github.com/latticexyz/mud/blob/main/packages/store/ts/config/storeConfig.ts#L110-L135).
-
 - **`modules`** an array of module definitions: each module definition has a `name`, `root` (optional), and `args` key.
 
   - `name`: Name of the module to install. The same module can be installed multiple times. This should be the name of the contract file without `.sol` (eg: if the file is named `DopeModule.sol`, the name of the module is `DopeModule`)
@@ -123,14 +279,6 @@ In addition to `namespaces`, these fields are also supported.
 
   - **`upgradeableWorldImplementation`** a `bool`: Whether the `World` is to be deployed behind a proxy to [enable upgrades
     of the core World implementation](/world/upgrades). The default is `false`.
-
-### Directory structure
-
-- `src/namespaces/<namespace>/systems` - `System`s that belong to this namespace.
-- `src/namespaces/<namespace>/codegen/tables` - the generated code for tables that belong to this namespace.
-- `src/namespaces/<namespace>/codegen/index.sol` - a single file that imports all the table definitions.
-- `src/codegn/common.sol` - the enumerations in the config file.
-- `src/codegen/world/I*.sol` - interfaces for all the `System`s.
 
 ## Single namespace
 
@@ -214,9 +362,6 @@ The global configuration keys are all optional.
 - **`enums`**: a record of [enumerations](https://solidity-by-example.org/enum/).
   The keys are the names of the enumerations.
   The values are arrays of the strings for the values the enumeration can take.
-
-- **`tables`**: a record of tables. The keys in the record are table names.
-  The value is a record of [table properties](https://github.com/latticexyz/mud/blob/main/packages/store/ts/config/storeConfig.ts#L110-L135).
 
 - **`excludeSystems`**: an array of `string`: which systems to not deploy, even if their name ends with “System”.
 
