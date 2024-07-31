@@ -18,6 +18,7 @@ import { ACCOUNT_PRIVATE_KEYS } from "@/consts";
 import { useStore } from "@/store";
 import { useWorldAddress } from "@/hooks/useWorldAddress";
 import { abi as WorldABI } from "../(home)/abi";
+import { Coins, Eye, Send } from "lucide-react";
 
 type Props = {
   abi: AbiFunction;
@@ -85,6 +86,13 @@ export function FunctionField({ abi }: Props) {
         <h3 className="font-semibold pt-4">
           <span className="text-orange-500">{abi?.name}</span>
           <span className="opacity-50">{inputsLabel && ` (${inputsLabel})`}</span>
+          <span className="opacity-50 ml-2">
+            {abi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
+            {(abi.stateMutability === "view" || abi.stateMutability === "pure") && (
+              <Eye className="mr-2 inline-block h-4 w-4" />
+            )}
+            {abi.stateMutability === "nonpayable" && <Send className="mr-2 inline-block h-4 w-4" />}
+          </span>
         </h3>
 
         {abi?.inputs.map((input, idx) => {
