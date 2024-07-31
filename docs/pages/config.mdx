@@ -24,7 +24,7 @@ For example:
 #### A namespace
 
 This is an extremely simple configuration file with a single namespace that contains a single table.
-The `System`s are defined implicitly, as all the contracts that match `src/namespaces/app/systems/*System.sol`.
+The `System`s are defined implicitly, as all the contracts under `src/namespaces/app` that match `*System.sol`.
 
 ```typescript filename="mud.config.ts"
 import { defineWorld } from "@latticexyz/world";
@@ -52,6 +52,8 @@ export default defineWorld({
 
 - `src/namespaces/app/systems` - `System`s that belong to the `app` namespace.
 
+Note that this is a convention, _any_ `*System.sol` under `src/namespaces/<namespace>` is interpreted as a `System` in that namespace.
+
 **Generated files**
 
 - `src/namespaces/app/codegen/tables/Tasks.sol` - the generated code for `app__Tasks` table.
@@ -62,7 +64,7 @@ export default defineWorld({
 #### A namespace with an explicit `System` definition
 
 By default `Systems` are publicly accessible.
-In this configuration, we explicitly specify `RootSystem` so we can specify that access to it is limited to authorized addresses.
+In this configuration, we explicitly specify `TestSystem` so we can specify that access to it is limited to authorized addresses.
 
 ```typescript filename="mud.config.ts" {17-21}
 import { defineWorld } from "@latticexyz/world";
@@ -82,7 +84,7 @@ export default defineWorld({
         },
       },
       systems: {
-        RootSystem: {
+        TestSystem: {
           openAccess: false,
         },
       },
@@ -93,8 +95,10 @@ export default defineWorld({
 
 **Source files**
 
-- `src/namespaces/app/systems` - `System`s that belong to the `app` namespace.
 - `src/namespaces/app/systems/RootSystem.sol` - The `System` specified in `mud.config.ts`.
+- `src/namespaces/app/systems` - `System`s that belong to the `app` namespace.
+
+Note that this is a convention, _any_ `*System.sol` under `src/namespaces/<namespace>` is interpreted as a `System` in that namespace.
 
 **Generated files**
 
@@ -146,7 +150,9 @@ export default defineWorld({
 **Source files**
 
 - `src/namespaces/app/systems` - `System`s that belong to the `app` namespace.
-- `src/namespaces/config/systems` - `System`s that belong to the `app` namespace.
+- `src/namespaces/config/systems` - `System`s that belong to the `config` namespace.
+
+Note that this is a convention, _any_ `*System.sol` under `src/namespaces/<namespace>` is interpreted as a `System` in that namespace.
 
 **Generated files**
 
@@ -196,6 +202,8 @@ export default defineWorld({
 **Source files**
 
 - `src/namespaces/app/systems` - `System`s that belong to the `app` namespace.
+
+Note that this is a convention, _any_ `*System.sol` under `src/namespaces/<namespace>` is interpreted as a `System` in that namespace.
 
 **Generated files**
 
