@@ -13,6 +13,7 @@ type Props = {
 
 export function Form({ data }: Props) {
   const [hash] = useHashState();
+  const abiFunctions = data.abi.filter((abi) => (abi as AbiFunction).type === "function");
 
   return (
     <div className="flex">
@@ -20,12 +21,12 @@ export function Form({ data }: Props) {
         <div className="sticky top-16">
           <h4 className="font-semibold py-4 uppercase opacity-70 text-xs">Jump to:</h4>
           <ul
-            className="space-y-2 max-h-max overflow-y-auto"
+            className="space-y-2 max-h-max overflow-y-auto pb-4"
             style={{
               maxHeight: "calc(100vh - 115px)",
             }}
           >
-            {data.abi.map((abi, idx) => {
+            {abiFunctions.map((abi, idx) => {
               if ((abi as AbiFunction).type !== "function") {
                 return null;
               }
@@ -49,7 +50,7 @@ export function Form({ data }: Props) {
       </div>
 
       <div className="border-l pl-4">
-        {data.abi.map((abi, idx) => {
+        {abiFunctions.map((abi, idx) => {
           return <FunctionField key={idx} abi={abi as AbiFunction} />;
         })}
       </div>
