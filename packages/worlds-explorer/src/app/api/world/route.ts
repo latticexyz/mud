@@ -1,8 +1,20 @@
 import { createWalletClient, Hex, http } from "viem";
 import { getWorldDeploy, getWorldAbi } from "@latticexyz/cli";
 import { getRpcUrl } from "@latticexyz/common/foundry";
+import { abi as defaultAbi } from "./abi";
 
 export const dynamic = "force-dynamic";
+
+function removeDuplicateObjects(array) {
+  return array.filter(function (item, index, self) {
+    return (
+      index ===
+      self.findIndex(function (t) {
+        return JSON.stringify(t) === JSON.stringify(item);
+      })
+    );
+  });
+}
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -24,8 +36,10 @@ export async function GET(req: Request) {
       client,
       worldDeploy,
     });
+    const duplicatedABI = [...worldAbi, ...defaultAbi];
+    const abi = removeDuplicateObjects(duplicatedABI);
 
-    return Response.json({ abi: worldAbi });
+    return Response.json({ abi });
   } catch (error: unknown) {
     if (error instanceof Error) {
       return Response.json({ error: error.message }, { status: 400 });
