@@ -1,11 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { AbiFunction, parseEventLogs } from "viem";
+import { Abi, AbiFunction, parseEventLogs } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { useWriteContract } from "wagmi";
-import { waitForTransactionReceipt } from "@wagmi/core";
+import { readContract, waitForTransactionReceipt } from "@wagmi/core";
 import { z } from "zod";
 
 import { toast } from "sonner";
@@ -17,7 +18,6 @@ import { wagmiConfig } from "../_providers";
 import { ACCOUNT_PRIVATE_KEYS } from "@/consts";
 import { useStore } from "@/store";
 import { useWorldAddress } from "@/hooks/useWorldAddress";
-import { abi as WorldABI } from "../(home)/abi";
 import { Coins, Eye, Send } from "lucide-react";
 
 type Props = {
@@ -29,9 +29,11 @@ const formSchema = z.object({
 });
 
 export function FunctionField({ abi }: Props) {
+  const [result, setResult] = useState<string | null>(null);
   const { account, fetchBalances } = useStore();
   const worldAddress = useWorldAddress();
   const { writeContractAsync } = useWriteContract();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -40,42 +42,52 @@ export function FunctionField({ abi }: Props) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const toastId = toast.loading("Transaction submitted");
-
-    try {
-      const fullABI = [abi, ...WorldABI];
-      const txHash = await writeContractAsync({
-        account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
-        abi: fullABI,
+    if (abi.stateMutability === "pure" || abi.stateMutability === "view") {
+      const result = await readContract(wagmiConfig, {
+        abi: [abi] as Abi,
         address: worldAddress,
         functionName: abi.name,
         args: values.inputs,
       });
 
-      const transactionReceipt = await waitForTransactionReceipt(wagmiConfig, {
-        hash: txHash,
-      });
+      setResult(result as string);
+    } else {
+      const toastId = toast.loading("Transaction submitted");
 
-      const logs = parseEventLogs({
-        abi: fullABI,
-        logs: transactionReceipt.logs,
-      });
-      console.log("logs:", logs);
+      try {
+        const txHash = await writeContractAsync({
+          account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
+          abi: [abi] as Abi,
+          address: worldAddress,
+          functionName: abi.name,
+          args: values.inputs,
+        });
 
-      toast.success(`Transaction successful with hash: ${txHash}`, {
-        id: toastId,
-      });
+        const transactionReceipt = await waitForTransactionReceipt(wagmiConfig, {
+          hash: txHash,
+        });
 
-      console.log("result:", txHash, transactionReceipt);
-    } catch (error) {
-      console.log("error:", error);
+        const logs = parseEventLogs({
+          abi: fullABI,
+          logs: transactionReceipt.logs,
+        });
+        console.log("logs:", logs);
 
-      const msg = error.message;
-      toast.error(msg, {
-        id: toastId,
-      });
-    } finally {
-      fetchBalances();
+        toast.success(`Transaction successful with hash: ${txHash}`, {
+          id: toastId,
+        });
+
+        console.log("result:", txHash, transactionReceipt);
+      } catch (error) {
+        console.log("error:", error);
+
+        const msg = error.message;
+        toast.error(msg, {
+          id: toastId,
+        });
+      } finally {
+        fetchBalances();
+      }
     }
   }
 
@@ -115,6 +127,8 @@ export function FunctionField({ abi }: Props) {
         })}
 
         <Button type="submit">Run</Button>
+
+        {result && <pre className="text-md border text-sm rounded p-3">{result}</pre>}
       </form>
 
       <Separator />
