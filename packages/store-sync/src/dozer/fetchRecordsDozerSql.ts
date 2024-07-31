@@ -49,7 +49,7 @@ export async function fetchRecordsDozerSql({
 
   if (isDozerResponseFail(response)) {
     console.warn(`Dozer response: ${response.msg}\n\nTry reproducing via cURL:
-    curl ${url} \\
+    curl ${dozerUrl} \\
     --compressed \\
     -H 'Accept-Encoding: gzip' \\
     -H 'Content-Type: application/json' \\

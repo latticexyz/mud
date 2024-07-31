@@ -30,12 +30,10 @@ import {
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
-import { bigIntMax, bigIntMin, chunk, isDefined, waitForIdle } from "@latticexyz/common/utils";
+import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/utils";
 import { getSnapshot } from "./getSnapshot";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 import { Store as StoreConfig } from "@latticexyz/store";
-import { fetchRecordsDozerSql } from "./dozer/fetchRecordsDozerSql";
-import { recordToLog } from "./recordToLog";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -57,7 +55,6 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
   onProgress,
   publicClient,
   address,
-  dozerQueries,
   filters: initialFilters = [],
   tableIds = [],
   followBlockTag = "latest",
@@ -93,58 +90,22 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
       message: "Getting snapshot",
     });
 
-    // We execute the list of provided SQL queries for hydration.
-    // For performance reasons the queries are not executed against a fixed block height,
-    // but against the latest state.
-    // We therefore pass the min block number of all query results as overall block number.
-    // This means some logs will be re-fetched again during the hydration process, but after the
-    // hydration is complete, the state will be correct.
-    // Intermediate state updates during hydration might be incorrect (for partial updates),
-    // so we only notify consumers of state updates after the initial hydration is complete.
-
-    const indexer =
-      indexerUrl !== false
-        ? indexerUrl ??
-          (publicClient.chain && "indexerUrl" in publicClient.chain && typeof publicClient.chain.indexerUrl === "string"
-            ? publicClient.chain.indexerUrl
-            : undefined)
-        : undefined;
-
-    if (!indexer || !address) {
-      return;
-    }
-
-    const initialStorageAdapterBlock: StorageAdapterBlock = { blockNumber: initialStartBlock, logs: [] };
-
-    const dozerTables = dozerQueries && (await fetchRecordsDozerSql({ url: indexer, address, queries: dozerQueries }));
-
-    if (dozerTables) {
-      // TODO: take min block height of all subqueries
-      initialStorageAdapterBlock.blockNumber = dozerTables.blockHeight;
-      initialStorageAdapterBlock.logs = dozerTables.result.flatMap(({ table, records }) =>
-        records.map((record) => recordToLog({ table, record, address })),
-      );
-    }
-
-    // Additionally fetch logs from the snapshot for tables not included in the SQL hydration approach.
-    // Remove tables from filter for snapshot that are also included in SQL filter.
-    const filtersWithoutSql = filters.filter(
-      (filter) => !dozerQueries?.find((query) => query.table.tableId === filter.tableId),
-    );
     const snapshot = await getSnapshot({
       chainId,
       address,
-      filters: filtersWithoutSql,
+      filters,
       initialState,
       initialBlockLogs,
-      indexerUrl: indexer,
+      indexerUrl:
+        indexerUrl !== false
+          ? indexerUrl ??
+            (publicClient.chain &&
+            "indexerUrl" in publicClient.chain &&
+            typeof publicClient.chain.indexerUrl === "string"
+              ? publicClient.chain.indexerUrl
+              : undefined)
+          : undefined,
     });
-
-    // The block number passed in the overall result will be the min of all queries and the snapshot.
-    if (snapshot) {
-      initialStorageAdapterBlock.blockNumber = bigIntMin(initialStorageAdapterBlock.blockNumber, snapshot.blockNumber);
-      initialStorageAdapterBlock.logs = [...initialStorageAdapterBlock.logs, ...snapshot.logs];
-    }
 
     onProgress?.({
       step: SyncStep.SNAPSHOT,
@@ -154,7 +115,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
       message: "Got snapshot",
     });
 
-    return initialStorageAdapterBlock;
+    return snapshot;
   }).pipe(
     catchError((error) => {
       debug("error getting snapshot", error);

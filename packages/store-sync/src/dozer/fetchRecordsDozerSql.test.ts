@@ -7,8 +7,8 @@ describe("fetch dozer sql", () => {
   // TODO: set up CI test case for this (requires setting up dozer in CI)
   it("should fetch dozer sql", async () => {
     const result = await fetchRecordsDozerSql({
-      url: "https://redstone2.dozer.skystrife.xyz/q",
-      address: "0x9d05cc196c87104a7196fcca41280729b505dbbf",
+      dozerUrl: "https://redstone2.dozer.skystrife.xyz/q",
+      storeAddress: "0x9d05cc196c87104a7196fcca41280729b505dbbf",
       queries: [
         selectFrom({ table: mudConfig.tables.world__Balances, where: '"balance" > 0', limit: 2 }),
         selectFrom({ table: mudConfig.tables.world__FunctionSignatures, limit: 10 }),

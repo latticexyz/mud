@@ -27,7 +27,7 @@ export type DozerSyncFilter = DozerTableQuery | LogFilter;
 export type FetchInitialBlockLogsDozerArgs = {
   dozerUrl: string;
   storeAddress: Hex;
-  filters: DozerSyncFilter[];
+  filters?: DozerSyncFilter[];
   startBlock?: bigint;
   chainId: number;
 };
@@ -54,13 +54,15 @@ export async function fetchInitialBlockLogsDozer({
   // partial updates), so we only notify consumers of state updates after the
   // initial hydration is complete.
 
-  const sqlFilters = filters.filter((filter) => "sql" in filter) as DozerTableQuery[];
+  const sqlFilters = filters && (filters.filter((filter) => "sql" in filter) as DozerTableQuery[]);
 
   // TODO: it might be more performant to execute individual sql queries separately than in one network request
   // to parallelize on the backend (one request is expected to be execute against the same db state so it can't
   // be parallelized).
   const dozerTables =
-    sqlFilters.length > 0 ? await fetchRecordsDozerSql({ dozerUrl, storeAddress, queries: sqlFilters }) : undefined;
+    sqlFilters && sqlFilters.length > 0
+      ? await fetchRecordsDozerSql({ dozerUrl, storeAddress, queries: sqlFilters })
+      : undefined;
 
   if (dozerTables) {
     initialBlockLogs.blockNumber = dozerTables.blockHeight;
@@ -70,19 +72,25 @@ export async function fetchInitialBlockLogsDozer({
   }
 
   // Fetch the tables without SQL filter from the snapshot logs API for better performance.
-  const snapshotFilters = filters
-    .filter((filter) => !("sql" in filter))
-    .map((filter) => {
-      const { table, key0, key1 } = filter as LogFilter;
-      return { tableId: table.tableId, key0, key1 } as SyncFilter;
-    });
+  const snapshotFilters =
+    filters &&
+    filters
+      .filter((filter) => !("sql" in filter))
+      .map((filter) => {
+        const { table, key0, key1 } = filter as LogFilter;
+        return { tableId: table.tableId, key0, key1 } as SyncFilter;
+      });
 
-  const snapshot = await getSnapshot({
-    chainId,
-    address: storeAddress,
-    filters: snapshotFilters,
-    indexerUrl: dozerUrl,
-  });
+  const snapshot =
+    // If no filters are provided, the entire state is fetched
+    !snapshotFilters || snapshotFilters.length > 0
+      ? await getSnapshot({
+          chainId,
+          address: storeAddress,
+          filters: snapshotFilters,
+          indexerUrl: dozerUrl,
+        })
+      : undefined;
 
   // The block number passed in the overall result will be the min of all queries and the snapshot.
   if (snapshot) {
