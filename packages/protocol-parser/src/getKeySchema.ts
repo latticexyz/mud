@@ -1,11 +1,13 @@
-import { Schema, Table } from "@latticexyz/config";
+import { KeySchema, StaticAbiType, Table } from "@latticexyz/config";
 
 type PartialTable = Pick<Table, "schema" | "key">;
 
 export type getKeySchema<table extends PartialTable> = PartialTable extends table
-  ? Schema
+  ? KeySchema
   : {
-      readonly [fieldName in Extract<keyof table["schema"], table["key"][number]>]: table["schema"][fieldName];
+      readonly [fieldName in Extract<keyof table["schema"], table["key"][number]>]: table["schema"][fieldName] & {
+        type: StaticAbiType;
+      };
     };
 
 export function getKeySchema<table extends PartialTable>(table: table): getKeySchema<table> {
