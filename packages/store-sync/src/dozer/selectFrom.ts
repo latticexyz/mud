@@ -7,12 +7,13 @@ export type Where<table extends Table> = `"${keyof table["schema"] & string}"` |
 export type SelectFromArgs<table extends Table> = { table: table; where?: Where<table>; limit?: number };
 
 export function selectFrom<table extends Table>({ table, where, limit }: SelectFromArgs<table>): DozerTableQuery {
+  const dozerTableLabel = table.namespace === "" ? table.name : `${table.namespace}__${table.name}`;
   return {
     table: table,
     sql: `select ${Object.keys(table.schema)
       .map((key) => `"${key}"`)
       .join(
         ", ",
-      )} from ${table.namespace}__${table.name}${where != null ? ` where ${where}` : ""}${limit != null ? ` limit ${limit}` : ""}`,
+      )} from ${dozerTableLabel}${where != null ? ` where ${where}` : ""}${limit != null ? ` limit ${limit}` : ""}`,
   };
 }

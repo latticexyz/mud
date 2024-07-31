@@ -27,7 +27,7 @@ export function decodeDozerRecords<schema extends Schema>({
   records,
 }: DecodeDozerRecordsArgs): DecodeDozerRecordsResult<schema> {
   const fieldNames = Object.keys(schema);
-  if (fieldNames.length !== records[0].length) {
+  if (records.length > 0 && fieldNames.length !== records[0].length) {
     throw new Error(
       `Mismatch between schema and query result.\nSchema: [${fieldNames.join(", ")}]\nQuery result: [${records[0].join(", ")}]`,
     );
