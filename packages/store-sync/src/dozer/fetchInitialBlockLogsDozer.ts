@@ -1,28 +1,10 @@
-import { Table } from "@latticexyz/config";
-import { DozerTableQuery } from "./common";
+import { DozerLogFilter, DozerSyncFilter, DozerTableQuery } from "./common";
 import { Hex } from "viem";
 import { StorageAdapterBlock, SyncFilter } from "../common";
 import { fetchRecordsDozerSql } from "./fetchRecordsDozerSql";
 import { recordToLog } from "../recordToLog";
 import { getSnapshot } from "../getSnapshot";
 import { bigIntMin } from "@latticexyz/common/utils";
-
-type LogFilter = {
-  /**
-   * Filter logs by the table ID.
-   */
-  table: Table;
-  /**
-   * Optionally filter by the `bytes32` value of the key in the first position (index zero of the record's key tuple).
-   */
-  key0?: Hex;
-  /**
-   * Optionally filter by the `bytes32` value of the key in the second position (index one of the record's key tuple).
-   */
-  key1?: Hex;
-};
-
-export type DozerSyncFilter = DozerTableQuery | LogFilter;
 
 export type FetchInitialBlockLogsDozerArgs = {
   dozerUrl: string;
@@ -77,7 +59,7 @@ export async function fetchInitialBlockLogsDozer({
     filters
       .filter((filter) => !("sql" in filter))
       .map((filter) => {
-        const { table, key0, key1 } = filter as LogFilter;
+        const { table, key0, key1 } = filter as DozerLogFilter;
         return { tableId: table.tableId, key0, key1 } as SyncFilter;
       });
 
