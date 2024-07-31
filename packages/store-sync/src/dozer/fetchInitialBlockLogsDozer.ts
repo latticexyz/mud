@@ -4,7 +4,7 @@ import { StorageAdapterBlock, SyncFilter } from "../common";
 import { fetchRecordsDozerSql } from "./fetchRecordsDozerSql";
 import { recordToLog } from "../recordToLog";
 import { getSnapshot } from "../getSnapshot";
-import { bigIntMin } from "@latticexyz/common/utils";
+import { bigIntMin, isDefined } from "@latticexyz/common/utils";
 
 export type FetchInitialBlockLogsDozerArgs = {
   dozerUrl: string;
@@ -36,19 +36,19 @@ export async function fetchInitialBlockLogsDozer({
   // partial updates), so we only notify consumers of state updates after the
   // initial hydration is complete.
 
-  const sqlFilters = filters && (filters.filter((filter) => "sql" in filter) as DozerTableQuery[]);
+  const sqlFilters = filters ? (filters.filter((filter) => "sql" in filter) as DozerTableQuery[]) : [];
 
-  // TODO: it might be more performant to execute individual sql queries separately than in one network request
-  // to parallelize on the backend (one request is expected to be execute against the same db state so it can't
-  // be parallelized).
-  const dozerTables =
-    sqlFilters && sqlFilters.length > 0
-      ? await fetchRecordsDozerSql({ dozerUrl, storeAddress, queries: sqlFilters })
-      : undefined;
+  // Execute individual SQL queries as separate requests to parallelize on the backend.
+  // Each individual request is expected to be executed against the same db state so it
+  // can't be parallelized.
+  const dozerTables = (
+    await Promise.all(sqlFilters.map((filter) => fetchRecordsDozerSql({ dozerUrl, storeAddress, queries: [filter] })))
+  ).filter(isDefined);
 
-  if (dozerTables) {
-    initialBlockLogs.blockNumber = dozerTables.blockHeight;
-    initialBlockLogs.logs = dozerTables.result.flatMap(({ table, records }) =>
+  if (dozerTables.length > 0) {
+    // Use the minimum block number of all query results as the block number to start syncing from.
+    initialBlockLogs.blockNumber = bigIntMin(...dozerTables.map((result) => result.blockHeight));
+    initialBlockLogs.logs = dozerTables.flatMap(({ result: [{ table, records }] }) =>
       records.map((record) => recordToLog({ table, record, address: storeAddress })),
     );
   }
