@@ -6,9 +6,9 @@ This file needs to be named `mud.config.ts` and be in the same folder as your `f
 The config is used to define:
 
 - The tables in your project.
-- The [namespace(s)](/world/namespaces-access-control) that [`System`s](/world/systems) and tables will be deployed in.
-- The `System`s in your project.
-  By default, the deployer will find all Solidity matching `*System.sol` (so any file ending in `System.sol`, in any folder) and deploy them as public `System`.
+- The [namespace(s)](/world/namespaces-access-control) that [systems](/world/systems) and tables will be deployed in.
+- The systems in your project.
+  By default, the deployer will find all Solidity matching `*System.sol` (so any file ending in `System.sol`, in any folder) and deploy them as public systems.
   If you want greater control over your systems (to change their public access or their name), you can use the `systems` object in the config.
 - The [modules](/world/modules) that will be installed in the `World`.
 - The enumerations in your `World`.
@@ -24,7 +24,7 @@ For example:
 #### A namespace
 
 This is an extremely simple configuration file with a single namespace that contains a single table.
-The `System`s are defined implicitly, as all the contracts under `src/namespaces/app` that match `*System.sol`.
+The systems are defined implicitly, as all the contracts under `src/namespaces/app` that match `*System.sol`.
 
 ```typescript filename="mud.config.ts"
 import { defineWorld } from "@latticexyz/world";
@@ -50,18 +50,18 @@ export default defineWorld({
 
 **Source files**
 
-- `src/namespaces/app/systems` - `System`s that belong to the `app` namespace.
+- `src/namespaces/app/systems` - systems that belong to the `app` namespace.
 
-Note that this is a convention, _any_ `*System.sol` under `src/namespaces/<namespace>` is interpreted as a `System` in that namespace.
+Note that this is a convention, _any_ `*System.sol` under `src/namespaces/<namespace>` is interpreted as a system in that namespace.
 
 **Generated files**
 
 - `src/namespaces/app/codegen/tables/Tasks.sol` - the generated code for `app__Tasks` table.
 - `src/namespaces/app/codegen/index.sol` - a single file that imports all the table definitions of the namespace (in this case, only `Tasks.sol`).
-- `src/codegen/world/I*System.sol` - interfaces for all the `System`s.
+- `src/codegen/world/I*System.sol` - interfaces for all the systems.
 - `src/codegen/world/IWorld.sol` - the `IWorld` interface that inherits from all the `I*System.sol` files.
 
-#### A namespace with an explicit `System` definition
+#### A namespace with an explicit system definition
 
 By default `Systems` are publicly accessible.
 In this configuration, we explicitly specify `TestSystem` so we can specify that access to it is limited to authorized addresses.
@@ -95,16 +95,16 @@ export default defineWorld({
 
 **Source files**
 
-- `src/namespaces/app/systems/RootSystem.sol` - The `System` specified in `mud.config.ts`.
-- `src/namespaces/app/systems` - `System`s that belong to the `app` namespace.
+- `src/namespaces/app/systems/RootSystem.sol` - The system specified in `mud.config.ts`.
+- `src/namespaces/app/systems` - systems that belong to the `app` namespace.
 
-Note that this is a convention, _any_ `*System.sol` under `src/namespaces/<namespace>` is interpreted as a `System` in that namespace.
+Note that this is a convention, _any_ `*System.sol` under `src/namespaces/<namespace>` is interpreted as a system in that namespace.
 
 **Generated files**
 
 - `src/namespaces/app/codegen/tables/Tasks.sol` - the generated code for `app__Tasks`.
 - `src/namespaces/app/codegen/index.sol` - a single file that imports all the table definitions (in this case, only `Tasks.sol`).
-- `src/codegen/world/I*System.sol` - interfaces for all the `System`s, including `IRootSystem.sol`
+- `src/codegen/world/I*System.sol` - interfaces for all the systems, including `IRootSystem.sol`
 - `src/codegen/world/IWorld.sol` - the `IWorld` interface that inherits from all the `I*System.sol` files.
 
 #### Two namespaces
@@ -149,19 +149,19 @@ export default defineWorld({
 
 **Source files**
 
-- `src/namespaces/app/systems` - `System`s that belong to the `app` namespace.
-- `src/namespaces/config/systems` - `System`s that belong to the `config` namespace.
+- `src/namespaces/app/systems` - systems that belong to the `app` namespace.
+- `src/namespaces/config/systems` - systems that belong to the `config` namespace.
 
-Note that this is a convention, _any_ `*System.sol` under `src/namespaces/<namespace>` is interpreted as a `System` in that namespace.
+Note that this is a convention, _any_ `*System.sol` under `src/namespaces/<namespace>` is interpreted as a system in that namespace.
 
 **Generated files**
 
 - `src/namespaces/app/codegen/tables/Tasks.sol` - the generated code for `app__Tasks` table.
 - `src/namespaces/app/codegen/index.sol` - a single file that imports all the table definitions of the namespace (in this case, only `Tasks.sol`).
-- `src/namespaces/config/systems` - `System`s that belong to the `config` namespace.
+- `src/namespaces/config/systems` - systems that belong to the `config` namespace.
 - `src/namespaces/config/codegen/tables/Tasks.sol` - the generated code for `config__Configuration` table.
 - `src/namespaces/config/codegen/index.sol` - a single file that imports all the table definitions of the namespace (in this case, only `Configuration.sol`).
-- `src/codegen/world/I*System.sol` - interfaces for all the `System`s.
+- `src/codegen/world/I*System.sol` - interfaces for all the systems.
 - `src/codegen/world/IWorld.sol` - the `IWorld` interface that inherits from all the `I*System.sol` files.
 
 #### Enumerations
@@ -201,9 +201,9 @@ export default defineWorld({
 
 **Source files**
 
-- `src/namespaces/app/systems` - `System`s that belong to the `app` namespace.
+- `src/namespaces/app/systems` - systems that belong to the `app` namespace.
 
-Note that this is a convention, _any_ `*System.sol` under `src/namespaces/<namespace>` is interpreted as a `System` in that namespace.
+Note that this is a convention, _any_ `*System.sol` under `src/namespaces/<namespace>` is interpreted as a system in that namespace.
 
 **Generated files**
 
@@ -211,7 +211,7 @@ Note that this is a convention, _any_ `*System.sol` under `src/namespaces/<names
 - `src/namespaces/app/codegen/tables/MapCursor.sol` - the generated code for `app__MapCursor` table.
 - `src/namespaces/app/codegen/index.sol` - a single file that imports all the table definitions of the namespace (in this case, `Heading.sol` and `MapCursor.sol`).
 - `src/codegn/common.sol` - the enumerations in the config file.
-- `src/codegen/world/I*.sol` - interfaces for all the `System`s.
+- `src/codegen/world/I*.sol` - interfaces for all the systems.
 - `src/codegen/world/IWorld.sol` - the `IWorld` interface that inherits from all the `I*System.sol` files.
 
 ### Fields within a namespace
@@ -238,13 +238,13 @@ Note that this is a convention, _any_ `*System.sol` under `src/namespaces/<names
   The value is a record of system configuration properties:
 
   - `registerFunctionSelectors` (optional, default `true`): a `bool`.
-    Whether we want to automatically register the `public` functions of the `System` as
+    Whether we want to automatically register the `public` functions of the system as
     [function selectors](/world/function-selectors)
   - `openAccess` (optional, default `true`): a `bool`.
     If set to `false`, access is limited to:
-    - `System`s in the same namespace
+    - systems in the same namespace
     - Addresses listed in `accessList`
-    - `System`s listed in `accessList`
+    - systems listed in `accessList`
     - [Addresses added to the access list after deployment](/world/namespaces-access-control#modifying-access-control).
   - `accessList`: an array of `string`. Each address in the array will be granted access to this system, allowing them to call it.
 
@@ -357,13 +357,13 @@ The global configuration keys are all optional.
   The value is a record of system configuration properties:
 
   - `registerFunctionSelectors` (optional, default `true`): a `bool`.
-    Whether we want to automatically register the `public` functions of the `System` as
+    Whether we want to automatically register the `public` functions of the system as
     [function selectors](/world/function-selectors)
   - `openAccess` (optional, default `true`): a `bool`.
     If set to `false`, access is limited to:
-    - `System`s in the same namespace
+    - Systems in the same namespace
     - Addresses listed in `accessList`
-    - `System`s listed in `accessList`
+    - Systems listed in `accessList`
     - [Addresses added to the access list after deployment](/world/namespaces-access-control#modifying-access-control).
   - `accessList`: an array of `string`. Each address in the array will be granted access to this system, allowing them to call it.
 
