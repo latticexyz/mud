@@ -127,8 +127,8 @@ export function FunctionField({ abi }: Props) {
         })}
 
         <Button type="submit">
-          {abi.stateMutability === "view" || (abi.stateMutability === "pure" && "Read")}
-          {abi.stateMutability === "payable" || (abi.stateMutability === "nonpayable" && "Write")}
+          {(abi.stateMutability === "view" || abi.stateMutability === "pure") && "Read"}
+          {(abi.stateMutability === "payable" || abi.stateMutability === "nonpayable") && "Write"}
         </Button>
 
         {result && <pre className="text-md border text-sm rounded p-3">{result}</pre>}
