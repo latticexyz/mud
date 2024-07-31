@@ -5,7 +5,7 @@ import { selectFrom } from "./selectFrom";
 
 describe("fetch dozer sql", () => {
   // TODO: set up CI test case for this (requires setting up dozer in CI)
-  it("should fetch dozer sql", async () => {
+  it.skip("should fetch dozer sql", async () => {
     const result = await fetchRecordsDozerSql({
       dozerUrl: "https://redstone2.dozer.skystrife.xyz/q",
       storeAddress: "0x9d05cc196c87104a7196fcca41280729b505dbbf",
