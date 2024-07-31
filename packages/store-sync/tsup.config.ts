@@ -3,6 +3,7 @@ import { defineConfig } from "tsup";
 export default defineConfig({
   entry: [
     "src/index.ts",
+    "src/dozer/index.ts",
     "src/sqlite/index.ts",
     "src/postgres/index.ts",
     "src/postgres-decoded/index.ts",
