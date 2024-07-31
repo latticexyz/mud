@@ -4,6 +4,7 @@ import { Abi, AbiFunction } from "viem";
 import { FunctionField } from "./FunctionField";
 import { useHashState } from "@/hooks/useHash";
 import { cn } from "@/lib/utils";
+import { Coins, Eye, Send } from "lucide-react";
 
 type Props = {
   data: {
@@ -39,6 +40,14 @@ export function Form({ data }: Props) {
                       "text-orange-500": hash === (abi as AbiFunction).name,
                     })}
                   >
+                    <span className="opacity-50">
+                      {abi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
+                      {(abi.stateMutability === "view" || abi.stateMutability === "pure") && (
+                        <Eye className="mr-2 inline-block h-4 w-4" />
+                      )}
+                      {abi.stateMutability === "nonpayable" && <Send className="mr-2 inline-block h-4 w-4" />}
+                    </span>
+
                     <span>{(abi as AbiFunction).name}</span>
                     {abi.inputs.length > 0 && <span className="opacity-50"> ({abi.inputs.length})</span>}
                   </a>
