@@ -50,7 +50,7 @@ export function validateWorld(input: unknown): asserts input is WorldInput {
   validateStore(input);
 }
 
-type resolveNamespaceMode<input> = "namespaces" extends keyof input
+export type resolveNamespaceMode<input> = "namespaces" extends keyof input
   ? {
       readonly multipleNamespaces: true;
       readonly namespace: null;

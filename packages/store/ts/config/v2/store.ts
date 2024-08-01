@@ -55,7 +55,7 @@ export function validateStore(input: unknown): asserts input is StoreInput {
   }
 }
 
-type resolveNamespaceMode<input> = "namespaces" extends keyof input
+export type resolveNamespaceMode<input> = "namespaces" extends keyof input
   ? {
       readonly multipleNamespaces: true;
       readonly namespace: null;
