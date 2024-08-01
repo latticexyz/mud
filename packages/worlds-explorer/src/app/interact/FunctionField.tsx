@@ -26,6 +26,7 @@ type Props = {
 
 const formSchema = z.object({
   inputs: z.array(z.string()),
+  value: z.string().optional(),
 });
 
 export function FunctionField({ abi }: Props) {
@@ -61,6 +62,7 @@ export function FunctionField({ abi }: Props) {
           address: worldAddress,
           functionName: abi.name,
           args: values.inputs,
+          ...(values.value && { value: BigInt(values.value) }),
         });
 
         const transactionReceipt = await waitForTransactionReceipt(wagmiConfig, {
@@ -68,7 +70,7 @@ export function FunctionField({ abi }: Props) {
         });
 
         const logs = parseEventLogs({
-          abi: fullABI,
+          abi: [abi] as Abi,
           logs: transactionReceipt.logs,
         });
         console.log("logs:", logs);
@@ -125,6 +127,22 @@ export function FunctionField({ abi }: Props) {
             />
           );
         })}
+
+        {abi.stateMutability === "payable" && (
+          <FormField
+            control={form.control}
+            name="value"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>ETH value</FormLabel>
+                <FormControl>
+                  <Input placeholder="uint256" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <Button type="submit">
           {(abi.stateMutability === "view" || abi.stateMutability === "pure") && "Read"}
