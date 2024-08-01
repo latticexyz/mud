@@ -9,3 +9,4 @@ export { helloWorldEvent, worldDeployedEvent } from "../worldEvents";
 export { defineWorld } from "../config/v2/world";
 export type { WorldInput } from "../config/v2/input";
 export type { World } from "../config/v2/output";
+export type { resolveNamespaces } from "../config/v2/namespaces";
