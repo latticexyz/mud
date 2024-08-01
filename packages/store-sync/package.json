@@ -45,6 +45,9 @@
       ],
       "trpc-indexer": [
         "./dist/trpc-indexer/index.d.ts"
+      ],
+      "zustand": [
+        "./dist/zustand/index.d.ts"
       ]
     }
   },
