@@ -7,11 +7,12 @@ import {
   getValueSchema,
   getKey,
   getValue,
-  PartialTable,
 } from "@latticexyz/protocol-parser/internal";
 import { StorageAdapterLog } from "./common";
 import { Table } from "@latticexyz/config";
 import { Hex } from "viem";
+
+type PartialTable = Pick<Table, "schema" | "key">;
 
 type RecordToLogArgs<table extends PartialTable> = {
   address: Hex;
