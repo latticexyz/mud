@@ -77,7 +77,10 @@ export type Deploy = {
 };
 
 export type Codegen = {
-  /** The name of the World interface to generate. (Default `IWorld`) */
+  /**
+   * @internal
+   * The name of the World interface to generate. (Default `IWorld`)
+   */
   readonly worldInterfaceName: string;
   /** Directory to output system and world interfaces of `worldgen` (Default "world") */
   readonly worldgenDirectory: string;
