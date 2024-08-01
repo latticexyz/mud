@@ -41,7 +41,7 @@ export function Form({ data }: Props) {
           <ul
             className="space-y-2 max-h-max overflow-y-auto pb-4 mt-4"
             style={{
-              maxHeight: "calc(100vh - 115px)",
+              maxHeight: "calc(100vh - 160px)",
             }}
           >
             {filteredFunctions.map((abi, idx) => {
