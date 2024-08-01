@@ -13,6 +13,8 @@ describe("decodeDozerRecord", () => {
   } as const;
 
   it("decodes dozer record", () => {
+    const dozerHeader = Object.keys(schema);
+
     const dozerRecord = [
       "0x0000000000000000000000000000000000000000",
       "1234",
@@ -32,7 +34,7 @@ describe("decodeDozerRecord", () => {
       uint32Arr: [1234, 5678],
     };
 
-    const decoded = decodeDozerRecords({ schema, records: [dozerRecord] });
+    const decoded = decodeDozerRecords({ schema, records: [dozerHeader, dozerRecord] });
     expect(decoded).toStrictEqual([decodedRecord]);
   });
 });
