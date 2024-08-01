@@ -1,10 +1,12 @@
 "use client";
 
+import { useDeferredValue, useState } from "react";
 import { Abi, AbiFunction } from "viem";
 import { FunctionField } from "./FunctionField";
 import { useHashState } from "@/hooks/useHash";
 import { cn } from "@/lib/utils";
 import { Coins, Eye, Send } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 type Props = {
   data: {
@@ -14,20 +16,35 @@ type Props = {
 
 export function Form({ data }: Props) {
   const [hash] = useHashState();
+  const [filterValue, setFilterValue] = useState("");
+  const deferredFilterValue = useDeferredValue(filterValue);
   const abiFunctions = data.abi.filter((abi) => (abi as AbiFunction).type === "function");
+  const filteredFunctions = abiFunctions.filter((abi) => {
+    return (abi as AbiFunction).name.toLowerCase().includes(deferredFilterValue.toLowerCase());
+  });
 
   return (
     <div className="flex">
       <div className="w-[350px]">
         <div className="sticky top-16">
           <h4 className="font-semibold py-4 uppercase opacity-70 text-xs">Jump to:</h4>
+
+          <Input
+            type="text"
+            placeholder="Filter functions..."
+            value={deferredFilterValue}
+            onChange={(evt) => {
+              setFilterValue(evt.target.value);
+            }}
+          />
+
           <ul
-            className="space-y-2 max-h-max overflow-y-auto pb-4"
+            className="space-y-2 max-h-max overflow-y-auto pb-4 mt-4"
             style={{
               maxHeight: "calc(100vh - 115px)",
             }}
           >
-            {abiFunctions.map((abi, idx) => {
+            {filteredFunctions.map((abi, idx) => {
               if ((abi as AbiFunction).type !== "function") {
                 return null;
               }
@@ -59,8 +76,8 @@ export function Form({ data }: Props) {
       </div>
 
       <div className="border-l pl-4">
-        {abiFunctions.map((abi, idx) => {
-          return <FunctionField key={idx} abi={abi as AbiFunction} />;
+        {filteredFunctions.map((abi) => {
+          return <FunctionField key={JSON.stringify(abi)} abi={abi as AbiFunction} />;
         })}
       </div>
     </div>
