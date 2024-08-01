@@ -1,4 +1,4 @@
 export * from "./common";
-export * from "./fetchRecordsDozerSql";
+export * from "./fetchRecordsSql";
 export * from "./selectFrom";
-export * from "./fetchInitialBlockLogsDozer";
+export * from "./getSnapshot";

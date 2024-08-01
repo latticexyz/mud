@@ -1,30 +1,30 @@
-import { DozerLogFilter, DozerSyncFilter, DozerTableQuery } from "./common";
+import { LogFilter, SyncFilter, TableQuery } from "./common";
 import { Hex } from "viem";
-import { StorageAdapterBlock, SyncFilter } from "../common";
-import { fetchRecordsDozerSql } from "./fetchRecordsDozerSql";
+import { StorageAdapterBlock, SyncFilter as LegacyLogFilter } from "../common";
+import { fetchRecordsSql } from "./fetchRecordsSql";
 import { recordToLog } from "../recordToLog";
-import { getSnapshot } from "../getSnapshot";
+import { getSnapshot as getSnapshotLogs } from "../getSnapshot";
 import { bigIntMin, isDefined } from "@latticexyz/common/utils";
 
-export type FetchInitialBlockLogsDozerArgs = {
+export type GetSnapshotArgs = {
   dozerUrl: string;
   storeAddress: Hex;
-  filters?: DozerSyncFilter[];
+  filters?: SyncFilter[];
   startBlock?: bigint;
   chainId: number;
 };
 
-export type FetchInitialBlockLogsDozerResult = {
+export type GetSnapshotResult = {
   initialBlockLogs: StorageAdapterBlock;
 };
 
-export async function fetchInitialBlockLogsDozer({
+export async function getSnapshot({
   dozerUrl,
   storeAddress,
   filters,
   startBlock = 0n,
   chainId,
-}: FetchInitialBlockLogsDozerArgs): Promise<FetchInitialBlockLogsDozerResult> {
+}: GetSnapshotArgs): Promise<GetSnapshotResult> {
   const initialBlockLogs: StorageAdapterBlock = { blockNumber: startBlock, logs: [] };
 
   // We execute the list of provided SQL queries for hydration. For performance
@@ -36,13 +36,13 @@ export async function fetchInitialBlockLogsDozer({
   // partial updates), so we only notify consumers of state updates after the
   // initial hydration is complete.
 
-  const sqlFilters = filters ? (filters.filter((filter) => "sql" in filter) as DozerTableQuery[]) : [];
+  const sqlFilters = filters ? (filters.filter((filter) => "sql" in filter) as TableQuery[]) : [];
 
   // Execute individual SQL queries as separate requests to parallelize on the backend.
   // Each individual request is expected to be executed against the same db state so it
   // can't be parallelized.
   const dozerTables = (
-    await Promise.all(sqlFilters.map((filter) => fetchRecordsDozerSql({ dozerUrl, storeAddress, queries: [filter] })))
+    await Promise.all(sqlFilters.map((filter) => fetchRecordsSql({ dozerUrl, storeAddress, queries: [filter] })))
   ).filter(isDefined);
 
   if (dozerTables.length > 0) {
@@ -54,30 +54,30 @@ export async function fetchInitialBlockLogsDozer({
   }
 
   // Fetch the tables without SQL filter from the snapshot logs API for better performance.
-  const snapshotFilters =
+  const logsFilters =
     filters &&
     filters
       .filter((filter) => !("sql" in filter))
       .map((filter) => {
-        const { table, key0, key1 } = filter as DozerLogFilter;
-        return { tableId: table.tableId, key0, key1 } as SyncFilter;
+        const { table, key0, key1 } = filter as LogFilter;
+        return { tableId: table.tableId, key0, key1 } as LegacyLogFilter;
       });
 
-  const snapshot =
+  const logs =
     // If no filters are provided, the entire state is fetched
-    !snapshotFilters || snapshotFilters.length > 0
-      ? await getSnapshot({
+    !logsFilters || logsFilters.length > 0
+      ? await getSnapshotLogs({
           chainId,
           address: storeAddress,
-          filters: snapshotFilters,
+          filters: logsFilters,
           indexerUrl: dozerUrl,
         })
       : undefined;
 
-  // The block number passed in the overall result will be the min of all queries and the snapshot.
-  if (snapshot) {
-    initialBlockLogs.blockNumber = bigIntMin(initialBlockLogs.blockNumber, snapshot.blockNumber);
-    initialBlockLogs.logs = [...initialBlockLogs.logs, ...snapshot.logs];
+  // The block number passed in the overall result will be the min of all queries and the logs.
+  if (logs) {
+    initialBlockLogs.blockNumber = bigIntMin(initialBlockLogs.blockNumber, logs.blockNumber);
+    initialBlockLogs.logs = [...initialBlockLogs.logs, ...logs.logs];
   }
 
   return { initialBlockLogs };

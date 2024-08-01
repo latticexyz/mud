@@ -1,6 +1,6 @@
 import { DecodeDozerRecordsResult, DozerQueryResult, decodeDozerRecords } from "./decodeDozerRecords";
 import { Hex } from "viem";
-import { DozerTableQuery } from "./common";
+import { TableQuery } from "./common";
 import { Table } from "@latticexyz/config";
 
 type DozerResponseSuccess = {
@@ -12,13 +12,17 @@ type DozerResponseFail = { msg: string };
 
 type DozerResponse = DozerResponseSuccess | DozerResponseFail;
 
-type FetchDozerSqlArgs = {
+function isDozerResponseFail(response: DozerResponse): response is DozerResponseFail {
+  return "msg" in response;
+}
+
+type FetchRecordsSqlArgs = {
   dozerUrl: string;
   storeAddress: Hex;
-  queries: DozerTableQuery[];
+  queries: TableQuery[];
 };
 
-type FetchDozerSqlResult =
+type FetchRecordsSqlResult =
   | {
       blockHeight: bigint;
       result: {
@@ -28,15 +32,11 @@ type FetchDozerSqlResult =
     }
   | undefined;
 
-function isDozerResponseFail(response: DozerResponse): response is DozerResponseFail {
-  return "msg" in response;
-}
-
-export async function fetchRecordsDozerSql({
+export async function fetchRecordsSql({
   dozerUrl,
   queries,
   storeAddress,
-}: FetchDozerSqlArgs): Promise<FetchDozerSqlResult> {
+}: FetchRecordsSqlArgs): Promise<FetchRecordsSqlResult> {
   const response: DozerResponse = await (
     await fetch(dozerUrl, {
       method: "POST",
@@ -57,7 +57,7 @@ export async function fetchRecordsDozerSql({
     return;
   }
 
-  const result: FetchDozerSqlResult = {
+  const result: FetchRecordsSqlResult = {
     blockHeight: BigInt(response.block_height),
     result: response.result.map((records, index) => ({
       table: queries[index].table,

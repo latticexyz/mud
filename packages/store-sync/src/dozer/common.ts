@@ -1,7 +1,7 @@
 import { Table } from "@latticexyz/config";
 import { Hex } from "viem";
 
-export type DozerTableQuery = {
+export type TableQuery = {
   table: Table;
   /**
    * SQL to filter the records of this table.
@@ -12,7 +12,7 @@ export type DozerTableQuery = {
   sql: string;
 };
 
-export type DozerLogFilter = {
+export type LogFilter = {
   /**
    * Filter logs by the table ID.
    */
@@ -27,4 +27,4 @@ export type DozerLogFilter = {
   key1?: Hex;
 };
 
-export type DozerSyncFilter = DozerTableQuery | DozerLogFilter;
+export type SyncFilter = TableQuery | LogFilter;
