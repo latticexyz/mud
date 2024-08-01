@@ -129,36 +129,12 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
       }) => {
         const keysSchema = Object.keys(mudTableConfig?.key_schema || {});
         const keyTuple = keysSchema.map((key) => row.getValue(key));
-
-        const valuesSchema = Object.keys(mudTableConfig?.value_schema || {});
-        const values = valuesSchema.reduce((acc, key) => {
-          acc[key] = row.getValue(key);
-          return acc;
-        }, {});
-
         const value = row.getValue(name);
         if (keysSchema.includes(name)) {
           return value?.toString();
         }
 
-        // const isDynamic = Object.keys(mudTableConfig?.value_schema).some((key: string) => {
-        //   const schemaType = AbiTypeToSchemaType[mudTableConfig?.value_schema[key]];
-        //   const staticByteLength = getStaticByteLength(schemaType);
-        //   return staticByteLength === 0;
-        // });
-
-        console.log(mudTableConfig);
-
-        return (
-          <EditableTableCell
-            config={mudTableConfig}
-            keyTuple={keyTuple}
-            name={name}
-            value={value?.toString()}
-            values={values}
-            isDynamic={false}
-          />
-        );
+        return <EditableTableCell config={mudTableConfig} keyTuple={keyTuple} name={name} value={value?.toString()} />;
       },
     };
   });

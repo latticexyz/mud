@@ -1,6 +1,8 @@
 import { waitForTransactionReceipt } from "@wagmi/core";
-import { encodeField, encodeValueArgs } from "@latticexyz/protocol-parser/internal";
+import { encodeField } from "@latticexyz/protocol-parser/internal";
 import { ChangeEvent, useState } from "react";
+import { parseEventLogs } from "viem";
+import { Loader } from "lucide-react";
 import { toast } from "sonner";
 import { privateKeyToAccount } from "viem/accounts";
 import { useWriteContract } from "wagmi";
@@ -9,44 +11,17 @@ import { useWorldAddress } from "@/hooks/useWorldAddress";
 import { useStore } from "@/store";
 import { wagmiConfig } from "../_providers";
 import { abi } from "./abi";
-import { parseEventLogs } from "viem";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader } from "lucide-react";
+import { getFieldIdx } from "./utils/getFieldIdx";
 
 type Props = {
   name: string;
   value: string;
-  values: Record<string, string>;
   keyTuple: [string];
   config: Record<string, string>;
-  isDynamic: boolean;
 };
 
-async function setDynamicField(config, writeContractAsync, worldAddress, account, keyTuple, name, value, values) {
-  const encodedValueArgs = encodeValueArgs(config?.value_schema, {
-    ...values,
-    [name]: value,
-  });
-
-  const tableId = config?.table_id;
-  const txHash = await writeContractAsync({
-    account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
-    abi,
-    address: worldAddress,
-    functionName: "setRecord",
-    args: [
-      tableId,
-      keyTuple,
-      encodedValueArgs.staticData,
-      encodedValueArgs.encodedLengths,
-      encodedValueArgs.dynamicData,
-    ],
-  });
-
-  return txHash;
-}
-
-export function EditableTableCell({ name, config, keyTuple, isDynamic, values, value: defaultValue }: Props) {
+export function EditableTableCell({ name, config, keyTuple, value: defaultValue }: Props) {
   const { account } = useStore();
   const { writeContractAsync } = useWriteContract();
   const worldAddress = useWorldAddress();
@@ -73,28 +48,14 @@ export function EditableTableCell({ name, config, keyTuple, isDynamic, values, v
 
     const toastId = toast.loading("Transaction submitted");
     try {
-      let txHash;
-
-      if (isDynamic) {
-        txHash = await setDynamicField(
-          config,
-          writeContractAsync,
-          worldAddress,
-          account,
-          keyTuple,
-          name,
-          value,
-          values,
-        );
-      } else {
-        txHash = await writeContractAsync({
-          account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
-          abi,
-          address: worldAddress,
-          functionName: "setField",
-          args: [tableId, keyTuple, 0, encodeField(fieldType, valueToSet)],
-        });
-      }
+      const fieldIdx = getFieldIdx(config?.value_schema, name);
+      const txHash = await writeContractAsync({
+        account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
+        abi,
+        address: worldAddress,
+        functionName: "setField",
+        args: [tableId, keyTuple, fieldIdx, encodeField(fieldType, valueToSet)],
+      });
 
       const transactionReceipt = await waitForTransactionReceipt(wagmiConfig, {
         hash: txHash,
