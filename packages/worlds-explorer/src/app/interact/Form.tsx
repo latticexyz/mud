@@ -26,7 +26,7 @@ export function Form({ data }: Props) {
   return (
     <div className="flex">
       <div className="w-[350px]">
-        <div className="sticky top-16">
+        <div className="sticky top-16 pr-4">
           <h4 className="font-semibold py-4 uppercase opacity-70 text-xs">Jump to:</h4>
 
           <Input
