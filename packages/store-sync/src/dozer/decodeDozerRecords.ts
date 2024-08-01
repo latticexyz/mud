@@ -1,6 +1,6 @@
 import { Schema } from "@latticexyz/config";
+import { getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
 import { decodeDozerField } from "./decodeDozerField";
-import { getSchemaPrimitives } from "./getSchemaPrimitives";
 
 type DozerQueryHeader = string[];
 type DozerQueryRecord = (string | boolean | string[])[];

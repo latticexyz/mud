@@ -1,4 +1,4 @@
-import { DecodeDozerRecordsResult, DozerQueryResult, decodeDozerRecords } from "@latticexyz/protocol-parser/internal";
+import { DecodeDozerRecordsResult, DozerQueryResult, decodeDozerRecords } from "./decodeDozerRecords";
 import { Hex } from "viem";
 import { DozerTableQuery } from "./common";
 import { Table } from "@latticexyz/config";
