@@ -417,7 +417,6 @@ describe("defineWorld", () => {
         namespace: "app" as string,
         name: "Example" as string,
         systemId: resourceToHex({ type: "system", namespace: "app", name: "Example" }),
-        registerFunctionSelectors: true,
         openAccess: true,
         accessList: [],
       },

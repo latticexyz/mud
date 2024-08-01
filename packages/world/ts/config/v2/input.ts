@@ -18,14 +18,6 @@ export type SystemInput = {
    * Defaults to the first 16 characters of `label` if not set.
    */
   readonly name?: string;
-  /**
-   * Register function selectors for the system in the World.
-   * Defaults to true.
-   * Note:
-   * - For root systems all World function selectors will correspond to the system's function selectors.
-   * - For non-root systems, the World function selectors will be <namespace>__<function>.
-   */
-  readonly registerFunctionSelectors?: boolean;
   /** If openAccess is true, any address can call the system */
   readonly openAccess?: boolean;
   /** An array of addresses or system names that can access the system */
