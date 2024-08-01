@@ -1,6 +1,8 @@
+import { Table } from "@latticexyz/config";
 import { getKeySchema } from "./getKeySchema";
 import { getSchemaPrimitives } from "./getSchemaPrimitives";
-import { PartialTable } from "./common";
+
+type PartialTable = Pick<Table, "schema" | "key">;
 
 export function getKey<table extends PartialTable>(
   table: table,
