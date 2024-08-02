@@ -69,25 +69,25 @@ export type SyncOptions<config extends StoreConfig = StoreConfig> = {
   /**
    * MUD config
    */
-  config?: any; //config;
+  config?: config;
   /**
    * [viem `PublicClient`][0] used for fetching logs from the RPC.
    *
    * [0]: https://viem.sh/docs/clients/public.html
    */
-  publicClient: any; //PublicClient;
+  publicClient: PublicClient;
   /**
    * MUD Store/World contract address
    */
-  address?: any; //Address;
+  address?: Address;
   /**
    * Optional filters for indexer and RPC state. Useful to narrow down the data received by the client for large worlds.
    */
-  filters?: any; //SyncFilter[];
+  filters?: SyncFilter[];
   /**
    * @deprecated Use `filters` option instead.
    * */
-  tableIds?: any; // Hex[];
+  tableIds?: Hex[];
   /**
    * Optional block tag to follow for the latest block number. Defaults to `latest`. It's recommended to use `safe` for indexers.
    */
