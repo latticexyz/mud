@@ -69,7 +69,7 @@ export type SyncOptions<config extends StoreConfig = StoreConfig> = {
   /**
    * MUD config
    */
-  config?: config;
+  config?: StoreConfig;
   /**
    * [viem `PublicClient`][0] used for fetching logs from the RPC.
    *
