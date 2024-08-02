@@ -30,7 +30,8 @@ export async function syncToRecs<config extends StoreConfig, extraTables extends
   tables: extraTables = {} as extraTables,
   startSync = true,
   ...syncOptions
-}: SyncToRecsOptions<config, extraTables>): Promise<SyncToRecsResult<config, extraTables>> {
+}: SyncToRecsOptions<config, extraTables>): Promise<any> {
+  // Promise<SyncToRecsResult<config, extraTables>> {
   const tables = {
     ...configToTables(config),
     ...extraTables,
