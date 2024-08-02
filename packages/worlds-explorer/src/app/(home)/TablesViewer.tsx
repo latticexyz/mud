@@ -15,7 +15,14 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { ArrowUpDown, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { bufferToBigInt } from "./utils/bufferToBigInt";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -95,49 +102,64 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
     enabled: Boolean(selectedTable),
   });
 
-  const columns: ColumnDef<{}>[] = schema?.map(({ name, type }: { name: string; type: string }) => {
-    return {
-      accessorKey: name,
-      header: ({
-        column,
-      }: {
-        column: {
-          toggleSorting: (ascending: boolean) => void;
-          getIsSorted: () => "asc" | "desc" | undefined;
-        };
-      }) => {
-        return (
-          <Button
-            variant="ghost"
-            className="-ml-4"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            <span className="text-orange-500">{name}</span>
-            <span className="opacity-70 ml-1">
-              ({mudTableConfig?.key_schema[name] || mudTableConfig?.value_schema[name] || type.toLowerCase()})
-            </span>
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({
-        row,
-      }: {
-        row: {
-          getValue: (name: string) => string;
-        };
-      }) => {
-        const keysSchema = Object.keys(mudTableConfig?.key_schema || {});
-        const keyTuple = keysSchema.map((key) => row.getValue(key));
-        const value = row.getValue(name);
-        if (keysSchema.includes(name)) {
-          return value?.toString();
-        }
+  const columns: ColumnDef<{}>[] = schema?.map(
+    ({ name, type }: { name: string; type: string }) => {
+      return {
+        accessorKey: name,
+        header: ({
+          column,
+        }: {
+          column: {
+            toggleSorting: (ascending: boolean) => void;
+            getIsSorted: () => "asc" | "desc" | undefined;
+          };
+        }) => {
+          return (
+            <Button
+              variant="ghost"
+              className="-ml-4"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              <span className="text-orange-500">{name}</span>
+              <span className="ml-1 opacity-70">
+                (
+                {mudTableConfig?.key_schema[name] ||
+                  mudTableConfig?.value_schema[name] ||
+                  type.toLowerCase()}
+                )
+              </span>
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          );
+        },
+        cell: ({
+          row,
+        }: {
+          row: {
+            getValue: (name: string) => string;
+          };
+        }) => {
+          const keysSchema = Object.keys(mudTableConfig?.key_schema || {});
+          const keyTuple = keysSchema.map((key) => row.getValue(key));
+          const value = row.getValue(name);
+          if (keysSchema.includes(name)) {
+            return value?.toString();
+          }
 
-        return <EditableTableCell config={mudTableConfig} keyTuple={keyTuple} name={name} value={value?.toString()} />;
-      },
-    };
-  });
+          return (
+            <EditableTableCell
+              config={mudTableConfig}
+              keyTuple={keyTuple}
+              name={name}
+              value={value?.toString()}
+            />
+          );
+        },
+      };
+    },
+  );
 
   const table = useReactTable({
     data: rows,
@@ -176,12 +198,12 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
 
   return (
     <>
-      <div className="flex pb-4 gap-4 items-center justify-between">
+      <div className="flex items-center justify-between gap-4 pb-4">
         <Input
           placeholder="Filter all columns..."
           value={globalFilter ?? ""}
           onChange={(event) => table.setGlobalFilter(event.target.value)}
-          className="max-w-sm border rounded px-2 py-1"
+          className="max-w-sm rounded border px-2 py-1"
         />
 
         <div className="items-top flex space-x-2">
@@ -195,7 +217,7 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
           <div className="grid gap-1.5 leading-none">
             <label
               htmlFor="show-all-columns"
-              className="text-sm font-medium cursor-pointer leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
               Show all columns
             </label>
@@ -211,7 +233,12 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                     </TableHead>
                   );
                 })}
@@ -221,15 +248,26 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   No results.
                 </TableCell>
               </TableRow>
@@ -247,7 +285,12 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
           >
             Previous
           </Button>
-          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
             Next
           </Button>
         </div>

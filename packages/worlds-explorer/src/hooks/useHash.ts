@@ -8,7 +8,10 @@ import queryString from "query-string";
 // source: https://github.com/vercel/next.js/discussions/49465
 export const useHashState = () => {
   const getCurrentHash = useMemo(
-    () => () => (typeof window !== "undefined" ? window.location.hash.replace(/^#!?/, "") : ""),
+    () => () =>
+      typeof window !== "undefined"
+        ? window.location.hash.replace(/^#!?/, "")
+        : "",
     [],
   );
   const router = useRouter();
@@ -17,7 +20,10 @@ export const useHashState = () => {
 
   const setHash = (newHash: string) => {
     let updatedUrl = window.location.href;
-    updatedUrl = queryString.stringifyUrl({ url: updatedUrl.split("#")[0], fragmentIdentifier: newHash });
+    updatedUrl = queryString.stringifyUrl({
+      url: updatedUrl.split("#")[0],
+      fragmentIdentifier: newHash,
+    });
 
     _setHash(newHash);
     router.replace(updatedUrl);
@@ -25,6 +31,7 @@ export const useHashState = () => {
   useEffect(() => {
     const currentHash = getCurrentHash();
     _setHash(currentHash);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params]);
 
   const handleHashChange = () => {

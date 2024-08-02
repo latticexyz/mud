@@ -19,12 +19,17 @@ export function DataExplorer() {
     select: (data) => data.tables.map((table: { name: string }) => table.name),
     refetchInterval: 15000,
   });
-  const selectedTable = searchParams.get("table") || (tables?.length > 0 ? tables[0] : null);
+  const selectedTable =
+    searchParams.get("table") || (tables?.length > 0 ? tables[0] : null);
 
   return (
     <>
       <TableSelector value={selectedTable} options={tables} />
-      <SQLEditor table={selectedTable} tablesLoading={tablesLoading} setQuery={setQuery} />
+      <SQLEditor
+        table={selectedTable}
+        tablesLoading={tablesLoading}
+        setQuery={setQuery}
+      />
       <TablesViewer table={selectedTable} query={query} />
     </>
   );

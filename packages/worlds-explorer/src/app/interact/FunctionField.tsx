@@ -11,7 +11,14 @@ import { z } from "zod";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { wagmiConfig } from "../_providers";
@@ -65,9 +72,12 @@ export function FunctionField({ abi }: Props) {
           ...(values.value && { value: BigInt(values.value) }),
         });
 
-        const transactionReceipt = await waitForTransactionReceipt(wagmiConfig, {
-          hash: txHash,
-        });
+        const transactionReceipt = await waitForTransactionReceipt(
+          wagmiConfig,
+          {
+            hash: txHash,
+          },
+        );
 
         const logs = parseEventLogs({
           abi: [abi] as Abi,
@@ -96,16 +106,27 @@ export function FunctionField({ abi }: Props) {
   const inputsLabel = abi?.inputs.map((input) => input.type).join(", ");
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} id={abi.name} className="space-y-4 pb-4">
-        <h3 className="font-semibold pt-4">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        id={abi.name}
+        className="space-y-4 pb-4"
+      >
+        <h3 className="pt-4 font-semibold">
           <span className="text-orange-500">{abi?.name}</span>
-          <span className="opacity-50">{inputsLabel && ` (${inputsLabel})`}</span>
-          <span className="opacity-50 ml-2">
-            {abi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
-            {(abi.stateMutability === "view" || abi.stateMutability === "pure") && (
+          <span className="opacity-50">
+            {inputsLabel && ` (${inputsLabel})`}
+          </span>
+          <span className="ml-2 opacity-50">
+            {abi.stateMutability === "payable" && (
+              <Coins className="mr-2 inline-block h-4 w-4" />
+            )}
+            {(abi.stateMutability === "view" ||
+              abi.stateMutability === "pure") && (
               <Eye className="mr-2 inline-block h-4 w-4" />
             )}
-            {abi.stateMutability === "nonpayable" && <Send className="mr-2 inline-block h-4 w-4" />}
+            {abi.stateMutability === "nonpayable" && (
+              <Send className="mr-2 inline-block h-4 w-4" />
+            )}
           </span>
         </h3>
 
@@ -145,11 +166,16 @@ export function FunctionField({ abi }: Props) {
         )}
 
         <Button type="submit">
-          {(abi.stateMutability === "view" || abi.stateMutability === "pure") && "Read"}
-          {(abi.stateMutability === "payable" || abi.stateMutability === "nonpayable") && "Write"}
+          {(abi.stateMutability === "view" || abi.stateMutability === "pure") &&
+            "Read"}
+          {(abi.stateMutability === "payable" ||
+            abi.stateMutability === "nonpayable") &&
+            "Write"}
         </Button>
 
-        {result && <pre className="text-md border text-sm rounded p-3">{result}</pre>}
+        {result && (
+          <pre className="text-md rounded border p-3 text-sm">{result}</pre>
+        )}
       </form>
 
       <Separator />

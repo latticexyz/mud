@@ -24,7 +24,6 @@ export const useStore = create<Store>((set) => ({
   setAccount: (account) => set({ account }),
 
   balances: {},
-
   fetchBalances: async () => {
     try {
       const requests = ACCOUNTS.map((account, i) => ({

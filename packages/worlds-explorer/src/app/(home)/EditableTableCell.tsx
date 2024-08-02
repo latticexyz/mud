@@ -21,7 +21,12 @@ type Props = {
   config: Record<string, string>;
 };
 
-export function EditableTableCell({ name, config, keyTuple, value: defaultValue }: Props) {
+export function EditableTableCell({
+  name,
+  config,
+  keyTuple,
+  value: defaultValue,
+}: Props) {
   const { account } = useStore();
   const { writeContractAsync } = useWriteContract();
   const worldAddress = useWorldAddress();
@@ -99,8 +104,8 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
 
   if (loading) {
     return (
-      <div className="flex items-center gap-1 cursor-wait">
-        {value} <Loader className="animate-spin h-4" />
+      <div className="flex cursor-wait items-center gap-1">
+        {value} <Loader className="h-4 animate-spin" />
       </div>
     );
   }
@@ -112,7 +117,7 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
       }}
     >
       <input
-        className="bg-transparent w-full"
+        className="w-full bg-transparent"
         onChange={(evt: ChangeEvent<HTMLInputElement>) => {
           const value = evt.target.value;
           setValue(value);

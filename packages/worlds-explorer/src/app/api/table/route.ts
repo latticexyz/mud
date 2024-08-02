@@ -12,7 +12,9 @@ export async function GET(req: Request) {
   }
 
   const db = getDatabase();
-  const table = db?.prepare(`SELECT * FROM __mudStoreTables WHERE id='${tableId}'`).get();
+  const table = db
+    ?.prepare(`SELECT * FROM __mudStoreTables WHERE id='${tableId}'`)
+    .get();
 
   return Response.json({ table });
 }
