@@ -12,6 +12,14 @@ export default defineWorld({
       key: [],
     },
 
+    OffchainCounter: {
+      schema: {
+        value: "uint32",
+      },
+      key: [],
+      type: "offchainTable",
+    },
+
     Tasks: {
       schema: {
         id: "bytes32",

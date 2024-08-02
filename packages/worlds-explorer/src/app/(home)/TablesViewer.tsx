@@ -25,6 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { NON_EDITABLE_TABLES } from "@/consts";
 import { EditableTableCell } from "./EditableTableCell";
 import { bufferToBigInt } from "./utils/bufferToBigInt";
 
@@ -144,7 +145,10 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
           const keysSchema = Object.keys(mudTableConfig?.key_schema || {});
           const keyTuple = keysSchema.map((key) => row.getValue(key));
           const value = row.getValue(name);
-          if (keysSchema.includes(name)) {
+          if (
+            (selectedTable && NON_EDITABLE_TABLES.includes(selectedTable)) ||
+            keysSchema.includes(name)
+          ) {
             return value?.toString();
           }
 

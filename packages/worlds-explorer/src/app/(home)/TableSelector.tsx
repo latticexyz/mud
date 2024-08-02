@@ -1,3 +1,4 @@
+import { Lock } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -5,6 +6,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { NON_EDITABLE_TABLES } from "@/consts";
+import { useWorldAddress } from "@/hooks/useWorldAddress";
 
 export function TableSelector({
   value,
@@ -13,6 +16,7 @@ export function TableSelector({
   value: string | undefined;
   options: string[];
 }) {
+  const worldAddress = useWorldAddress();
   return (
     <div className="py-4">
       <Select
@@ -35,7 +39,10 @@ export function TableSelector({
           {options?.map((option) => {
             return (
               <SelectItem key={option} value={option} className="font-mono">
-                {option}
+                {NON_EDITABLE_TABLES.includes(option) && (
+                  <Lock className="mr-2 inline-block opacity-70" size={14} />
+                )}
+                {option.replace(`${worldAddress}__`, "")}
               </SelectItem>
             );
           })}
