@@ -9,10 +9,10 @@ import { SyncStep } from "../SyncStep";
 import { configToTables } from "../configToTables";
 import { merge } from "@ark/util";
 
-export type SyncToRecsOptions = Omit<SyncOptions, "config"> & {
+export type SyncToRecsOptions<config extends StoreConfig = StoreConfig, extraTables extends Tables = Tables> = {
   world: RecsWorld;
-  config: StoreConfig;
-  tables?: Tables;
+  config: config;
+  tables?: extraTables;
   startSync?: boolean;
 };
 
@@ -27,7 +27,7 @@ export async function syncToRecs<config extends StoreConfig, extraTables extends
   tables: extraTables = {} as extraTables,
   startSync = true,
   ...syncOptions
-}: SyncToRecsOptions): Promise<SyncToRecsResult<config, extraTables>> {
+}: SyncToRecsOptions<config, extraTables>): Promise<SyncToRecsResult<config, extraTables>> {
   const tables = {
     ...configToTables(config),
     ...extraTables,
@@ -41,35 +41,36 @@ export async function syncToRecs<config extends StoreConfig, extraTables extends
       getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE,
   });
 
-  const storeSync = await createStoreSync({
-    storageAdapter,
-    config,
-    ...syncOptions,
-    onProgress: ({ step, percentage, latestBlockNumber, lastBlockNumberProcessed, message }) => {
-      // already live, no need for more progress updates
-      if (getComponentValue(components.SyncProgress, singletonEntity)?.step === SyncStep.LIVE) return;
+  const storeSync = {} as any;
+  // const storeSync = await createStoreSync({
+  //   storageAdapter,
+  //   config,
+  //   ...syncOptions,
+  //   onProgress: ({ step, percentage, latestBlockNumber, lastBlockNumberProcessed, message }) => {
+  //     // already live, no need for more progress updates
+  //     if (getComponentValue(components.SyncProgress, singletonEntity)?.step === SyncStep.LIVE) return;
 
-      setComponent(components.SyncProgress, singletonEntity, {
-        step,
-        percentage,
-        latestBlockNumber,
-        lastBlockNumberProcessed,
-        message,
-      });
+  //     setComponent(components.SyncProgress, singletonEntity, {
+  //       step,
+  //       percentage,
+  //       latestBlockNumber,
+  //       lastBlockNumberProcessed,
+  //       message,
+  //     });
 
-      // when we switch to live, trigger update for all entities in all components
-      if (step === SyncStep.LIVE) {
-        for (const _component of Object.values(components)) {
-          // downcast component for easier calling of generic methods on all components
-          const component = _component as RecsComponent;
-          for (const entity of component.entities()) {
-            const value = getComponentValue(component, entity);
-            component.update$.next({ component, entity, value: [value, value] });
-          }
-        }
-      }
-    },
-  });
+  //     // when we switch to live, trigger update for all entities in all components
+  //     if (step === SyncStep.LIVE) {
+  //       for (const _component of Object.values(components)) {
+  //         // downcast component for easier calling of generic methods on all components
+  //         const component = _component as RecsComponent;
+  //         for (const entity of component.entities()) {
+  //           const value = getComponentValue(component, entity);
+  //           component.update$.next({ component, entity, value: [value, value] });
+  //         }
+  //       }
+  //     }
+  //   },
+  // });
 
   const sub = startSync ? storeSync.storedBlockLogs$.subscribe() : null;
   const stopSync = (): void => {
