@@ -3,7 +3,7 @@ pragma solidity >=0.8.24;
 
 import { System } from "@latticexyz/world/src/System.sol";
 
-import { Counter, Checkboxes, Checked } from "../codegen/index.sol";
+import { OffchainCounter, Counter, Checkboxes, Checked } from "../codegen/index.sol";
 
 import { console } from "forge-std/console.sol";
 import { indexToEntityKey } from "../indexToEntityKey.sol";
@@ -13,9 +13,12 @@ contract IncrementSystem is System {
     uint32 counter = Counter.get();
     uint32 newValue = counter + 1;
     Counter.set(newValue);
+    return newValue;
+  }
 
-    console.log("new value:", newValue);
-
+  function incrementOffchain() public returns (uint32) {
+    uint32 newValue = 42;
+    OffchainCounter.set(newValue);
     return newValue;
   }
 
