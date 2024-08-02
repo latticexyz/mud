@@ -69,7 +69,7 @@ export type SyncOptions<config extends StoreConfig = StoreConfig> = {
   /**
    * MUD config
    */
-  config?: any; //config;
+  config?: config;
   /**
    * [viem `PublicClient`][0] used for fetching logs from the RPC.
    *
@@ -87,7 +87,7 @@ export type SyncOptions<config extends StoreConfig = StoreConfig> = {
   /**
    * @deprecated Use `filters` option instead.
    * */
-  tableIds?: any; //Hex[];
+  tableIds?: Hex[];
   /**
    * Optional block tag to follow for the latest block number. Defaults to `latest`. It's recommended to use `safe` for indexers.
    */
