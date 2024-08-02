@@ -16,6 +16,7 @@ import config from "../../contracts/mud.config";
 export function encodeTestData(testData: Data) {
   return mapObject(testData, (records, table) => {
     if (!records) return undefined;
+
     const tableConfig = config.tables[table];
     return records.map((record) => {
       const keySchema = getSchemaTypes(getKeySchema(tableConfig));
@@ -23,7 +24,6 @@ export function encodeTestData(testData: Data) {
       const key = encodeKey(keySchema, record.key);
       const valueArgs = encodeValueArgs(valueSchema, record.value);
       const fieldLayout = valueSchemaToFieldLayoutHex(valueSchema);
-
       return {
         key,
         ...valueArgs,

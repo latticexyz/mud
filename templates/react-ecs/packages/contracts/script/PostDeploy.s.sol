@@ -24,6 +24,27 @@ contract PostDeploy is Script {
     uint32 newValue = IWorld(worldAddress).app__increment();
     console.log("Increment via IWorld:", newValue);
 
+    IWorld(worldAddress).app__incrementOffchain();
+
+    // Add checkboxes
+    for (uint256 i = 0; i < 100; i++) {
+      IWorld(worldAddress).app__addCheckbox(i, i % 2 == 0);
+    }
+
+    // Or we can call our own systems
+    IWorld(worldAddress).app__addTask("Take out the trash");
+
+    bytes32 key = IWorld(worldAddress).app__addTask("Do the dishes");
+    IWorld(worldAddress).app__completeTask(key);
+
+    IWorld(worldAddress).app__addTask("Task 1");
+    IWorld(worldAddress).app__addTask("Task 2");
+    IWorld(worldAddress).app__addTask("Task 3");
+    IWorld(worldAddress).app__addTask("Task 4");
+    IWorld(worldAddress).app__addTask("Task 5");
+    IWorld(worldAddress).app__addTask("Task 6");
+    IWorld(worldAddress).app__addTask("Task 7");
+
     vm.stopBroadcast();
   }
 }
