@@ -69,56 +69,58 @@ export type SyncOptions<config extends StoreConfig = StoreConfig> = {
   /**
    * MUD config
    */
-  config?: StoreConfig;
+  config?: any; //config;
   /**
    * [viem `PublicClient`][0] used for fetching logs from the RPC.
    *
    * [0]: https://viem.sh/docs/clients/public.html
    */
-  publicClient: PublicClient;
+  publicClient: any; //PublicClient;
   /**
    * MUD Store/World contract address
    */
-  address?: Address;
+  address?: any; //Address;
   /**
    * Optional filters for indexer and RPC state. Useful to narrow down the data received by the client for large worlds.
    */
-  filters?: SyncFilter[];
+  filters?: any; //SyncFilter[];
   /**
    * @deprecated Use `filters` option instead.
    * */
-  tableIds?: Hex[];
+  tableIds?: any; // Hex[];
   /**
    * Optional block tag to follow for the latest block number. Defaults to `latest`. It's recommended to use `safe` for indexers.
    */
-  followBlockTag?: "latest" | "safe" | "finalized";
+  followBlockTag?: any; //"latest" | "safe" | "finalized";
   /**
    * Optional block number to start indexing from. Useful for resuming the indexer from a particular point in time or starting after a particular contract deployment.
    */
-  startBlock?: bigint;
+  startBlock?: any; //bigint;
   /**
    * Optional maximum block range, if your RPC limits the amount of blocks fetched at a time.
    */
-  maxBlockRange?: bigint;
+  maxBlockRange?: any; // bigint;
   /**
    * Optional MUD tRPC indexer URL to fetch initial state from.
    */
-  indexerUrl?: string | false;
+  indexerUrl?: any; //string | false;
   /**
    * Optional initial state to hydrate from. Useful if you're hydrating from an indexer or cache.
    * @deprecated Use `initialLogs` option instead.
    */
-  initialState?: {
-    blockNumber: bigint;
-    tables: readonly TableWithRecords[];
-  };
+  initialState?: any;
+  // {
+  //   blockNumber: bigint;
+  //   tables: readonly TableWithRecords[];
+  // };
   /**
    * Optional initial logs to hydrate from. Useful if you're hydrating from an indexer or cache.
    */
-  initialBlockLogs?: {
-    blockNumber: bigint;
-    logs: readonly StorageAdapterLog[];
-  };
+  initialBlockLogs?: any;
+  // {
+  //   blockNumber: bigint;
+  //   logs: readonly StorageAdapterLog[];
+  // };
 };
 
 export type WaitForTransactionResult = Pick<TransactionReceipt, "blockNumber" | "status" | "transactionHash">;
