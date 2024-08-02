@@ -9,10 +9,10 @@ import { SyncStep } from "../SyncStep";
 import { configToTables } from "../configToTables";
 import { merge } from "@ark/util";
 
-export type SyncToRecsOptions<
-  config extends StoreConfig = StoreConfig,
-  extraTables extends Tables = Tables,
-> = SyncOptions & {
+export type SyncToRecsOptions<config extends StoreConfig = StoreConfig, extraTables extends Tables = Tables> = Omit<
+  SyncOptions,
+  "config"
+> & {
   world: RecsWorld;
   config: config;
   tables?: extraTables;
@@ -25,12 +25,16 @@ export type SyncToRecsResult<config extends StoreConfig, extraTables extends Tab
 };
 
 export async function syncToRecs<config extends StoreConfig, extraTables extends Tables = {}>({
-  world,
-  config,
-  tables: extraTables = {} as extraTables,
-  startSync = true,
+  // world,
+  // config,
+  // tables: extraTables = {} as extraTables,
+  // startSync = true,
   ...syncOptions
-}: SyncToRecsOptions<config, extraTables>): Promise<SyncToRecsResult<config, extraTables>> {
+}: SyncOptions): Promise<SyncToRecsResult<config, extraTables>> {
+  const world = {} as any;
+  const config = {} as any;
+  const extraTables = {} as any;
+  const startSync = {} as any;
   const tables = {
     ...configToTables(config),
     ...extraTables,
