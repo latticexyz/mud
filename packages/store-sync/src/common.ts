@@ -69,13 +69,13 @@ export type SyncOptions<config extends StoreConfig = StoreConfig> = {
   /**
    * MUD config
    */
-  config?: config;
+  config?: any; //config;
   /**
    * [viem `PublicClient`][0] used for fetching logs from the RPC.
    *
    * [0]: https://viem.sh/docs/clients/public.html
    */
-  publicClient: PublicClient;
+  publicClient: any; //PublicClient;
   /**
    * MUD Store/World contract address
    */
@@ -87,40 +87,38 @@ export type SyncOptions<config extends StoreConfig = StoreConfig> = {
   /**
    * @deprecated Use `filters` option instead.
    * */
-  tableIds?: Hex[];
+  tableIds?: any; //Hex[];
   /**
    * Optional block tag to follow for the latest block number. Defaults to `latest`. It's recommended to use `safe` for indexers.
    */
-  followBlockTag?: any; //"latest" | "safe" | "finalized";
+  followBlockTag?: "latest" | "safe" | "finalized";
   /**
    * Optional block number to start indexing from. Useful for resuming the indexer from a particular point in time or starting after a particular contract deployment.
    */
-  startBlock?: any; //bigint;
+  startBlock?: bigint;
   /**
    * Optional maximum block range, if your RPC limits the amount of blocks fetched at a time.
    */
-  maxBlockRange?: any; // bigint;
+  maxBlockRange?: bigint;
   /**
    * Optional MUD tRPC indexer URL to fetch initial state from.
    */
-  indexerUrl?: any; //string | false;
+  indexerUrl?: string | false;
   /**
    * Optional initial state to hydrate from. Useful if you're hydrating from an indexer or cache.
    * @deprecated Use `initialLogs` option instead.
    */
-  initialState?: any;
-  // {
-  //   blockNumber: bigint;
-  //   tables: readonly TableWithRecords[];
-  // };
+  initialState?: {
+    blockNumber: bigint;
+    tables: readonly TableWithRecords[];
+  };
   /**
    * Optional initial logs to hydrate from. Useful if you're hydrating from an indexer or cache.
    */
-  initialBlockLogs?: any;
-  // {
-  //   blockNumber: bigint;
-  //   logs: readonly StorageAdapterLog[];
-  // };
+  initialBlockLogs?: {
+    blockNumber: bigint;
+    logs: readonly StorageAdapterLog[];
+  };
 };
 
 export type WaitForTransactionResult = Pick<TransactionReceipt, "blockNumber" | "status" | "transactionHash">;
