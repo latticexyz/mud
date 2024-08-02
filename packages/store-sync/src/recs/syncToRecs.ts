@@ -9,7 +9,10 @@ import { SyncStep } from "../SyncStep";
 import { configToTables } from "../configToTables";
 import { merge } from "@ark/util";
 
-export type SyncToRecsOptions<config extends StoreConfig = StoreConfig, extraTables extends Tables = Tables> = {
+export type SyncToRecsOptions<config extends StoreConfig = StoreConfig, extraTables extends Tables = Tables> = Omit<
+  SyncOptions,
+  "config"
+> & {
   world: RecsWorld;
   config: config;
   tables?: extraTables;
