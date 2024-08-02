@@ -3,10 +3,8 @@ import { useMUD } from "./MUDContext";
 import { singletonEntity } from "@latticexyz/store-sync/recs";
 
 export const App = () => {
-  const {
-    components: { Counter },
-    systemCalls: { increment },
-  } = useMUD();
+  const mud = useMUD();
+  const Counter = mud.network.components.Counter;
 
   const counter = useComponentValue(Counter, singletonEntity);
 
@@ -19,7 +17,6 @@ export const App = () => {
         type="button"
         onClick={async (event) => {
           event.preventDefault();
-          console.log("new counter value:", await increment());
         }}
       >
         Increment

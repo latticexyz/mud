@@ -13,13 +13,15 @@ import {
   ClientConfig,
   getContract,
 } from "viem";
-import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
+import { encodeEntity, syncToRecs, tablesToComponents } from "@latticexyz/store-sync/recs";
+import { configToTables } from "@latticexyz/store-sync";
 
 import { getNetworkConfig } from "./getNetworkConfig";
 import { world } from "./world";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 import { createBurnerAccount, transportObserver, ContractWrite } from "@latticexyz/common";
 import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
+import config from "contracts/mud.config";
 
 import { Subject, share } from "rxjs";
 
@@ -35,7 +37,9 @@ import mudConfig from "contracts/mud.config";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
-export async function setupNetwork() {
+export async function setupNetwork(): Promise<{
+  components: tablesToComponents<configToTables<typeof config>>;
+}> {
   const networkConfig = await getNetworkConfig();
 
   /*
