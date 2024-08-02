@@ -2,18 +2,14 @@
  * This file sets up all the definitions required for a MUD client.
  */
 
-// import { createSystemCalls } from "./createSystemCalls";
-import { setupNetwork } from "./setupNetwork";
+import { SetupNetworkResult, setupNetwork } from "./setupNetwork";
 
-export type SetupResult = Awaited<ReturnType<typeof setup>>;
+export type SetupResult = { network: SetupNetworkResult };
 
-export async function setup() {
+export async function setup(): Promise<SetupResult> {
   const network = await setupNetwork();
-  const systemCalls = createSystemCalls(network, network.components);
 
   return {
     network,
-    components: network.components,
-    systemCalls,
   };
 }

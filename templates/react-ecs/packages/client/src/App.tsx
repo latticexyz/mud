@@ -5,7 +5,6 @@ import { singletonEntity } from "@latticexyz/store-sync/recs";
 export const App = () => {
   const mud = useMUD();
   const Counter = mud.network.components.Counter;
-
   const counter = useComponentValue(Counter, singletonEntity);
 
   return (
