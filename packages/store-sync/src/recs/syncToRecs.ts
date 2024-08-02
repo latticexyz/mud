@@ -14,7 +14,7 @@ export type SyncToRecsOptions<config extends StoreConfig = StoreConfig, extraTab
   "config"
 > & {
   world: RecsWorld;
-  config: config;
+  config: StoreConfig;
   tables?: extraTables;
   startSync?: boolean;
 };
@@ -25,16 +25,12 @@ export type SyncToRecsResult<config extends StoreConfig, extraTables extends Tab
 };
 
 export async function syncToRecs<config extends StoreConfig, extraTables extends Tables = {}>({
-  // world,
-  // config,
-  // tables: extraTables = {} as extraTables,
-  // startSync = true,
+  world,
+  config,
+  tables: extraTables = {} as extraTables,
+  startSync = true,
   ...syncOptions
-}: SyncOptions): Promise<SyncToRecsResult<config, extraTables>> {
-  const world = {} as any;
-  const config = {} as any;
-  const extraTables = {} as any;
-  const startSync = {} as any;
+}: SyncToRecsOptions<config, extraTables>): Promise<SyncToRecsResult<config, extraTables>> {
   const tables = {
     ...configToTables(config),
     ...extraTables,
