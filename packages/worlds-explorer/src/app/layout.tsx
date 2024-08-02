@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
-import "@radix-ui/themes/styles.css";
-import "./globals.css";
 import { Toaster } from "sonner";
 import { Theme } from "@radix-ui/themes";
-import { Providers } from "./_providers";
+import "@radix-ui/themes/styles.css";
 import { Navigation } from "@/components/navigation";
+import { Providers } from "./_providers";
+import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],

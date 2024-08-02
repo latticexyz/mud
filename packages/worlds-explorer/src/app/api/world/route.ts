@@ -1,5 +1,5 @@
-import { createWalletClient, Hex, http } from "viem";
-import { getWorldDeploy, getWorldAbi } from "@latticexyz/cli";
+import { Hex, createWalletClient, http } from "viem";
+import { getWorldAbi, getWorldDeploy } from "@latticexyz/cli";
 import { getRpcUrl } from "@latticexyz/common/foundry";
 import { abi as defaultAbi } from "./abi";
 import { deduplicateABI } from "./utils/deduplicateABI";
@@ -28,7 +28,9 @@ export async function GET(req: Request) {
     });
 
     const combinedABI = [...worldAbi, ...defaultAbi];
-    const filteredABI = deduplicateABI(combinedABI).sort((a, b) => a.name.localeCompare(b.name));
+    const filteredABI = deduplicateABI(combinedABI).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
     const sortedABI = filteredABI.sort((a, b) => a.name.localeCompare(b.name));
 
     return Response.json({ abi: sortedABI });
@@ -36,7 +38,10 @@ export async function GET(req: Request) {
     if (error instanceof Error) {
       return Response.json({ error: error.message }, { status: 400 });
     } else {
-      return Response.json({ error: "An unknown error occurred" }, { status: 400 });
+      return Response.json(
+        { error: "An unknown error occurred" },
+        { status: 400 },
+      );
     }
   }
 }

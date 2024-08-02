@@ -51,6 +51,7 @@
     "zustand": "^4.3.7"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/better-sqlite3": "^7.6.4",
     "@types/lodash": "^4.17.7",
     "@types/node": "^20",

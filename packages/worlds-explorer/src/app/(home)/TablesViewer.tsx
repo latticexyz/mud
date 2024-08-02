@@ -1,5 +1,7 @@
-import { useState } from "react";
 import _ from "lodash";
+import { ArrowUpDown, Loader } from "lucide-react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -12,9 +14,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowUpDown, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -23,10 +25,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { bufferToBigInt } from "./utils/bufferToBigInt";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { EditableTableCell } from "./EditableTableCell";
+import { bufferToBigInt } from "./utils/bufferToBigInt";
 
 type Props = {
   table: string | undefined;

@@ -1,4 +1,4 @@
-import { fromHex, Hex } from "viem";
+import { Hex, fromHex } from "viem";
 import { create } from "zustand";
 import { ACCOUNTS } from "./consts";
 

@@ -9,7 +9,10 @@ export function deduplicateABI(abi) {
     const key = `${entry.type}_${entry.name}`;
     const existingEntry = uniqueEntries.get(key);
 
-    if (!existingEntry || (hasNamedInputs(entry) && !hasNamedInputs(existingEntry))) {
+    if (
+      !existingEntry ||
+      (hasNamedInputs(entry) && !hasNamedInputs(existingEntry))
+    ) {
       uniqueEntries.set(key, entry);
     }
   });

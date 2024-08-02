@@ -1,9 +1,9 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LatestBlock } from "@/components/latest-block";
+import { cn } from "@/lib/utils";
 import { AccountSelect } from "./account-select";
 import { Separator } from "./ui/separator";
 
@@ -17,7 +17,8 @@ export function Navigation() {
           <Link
             href="/"
             className={cn("underline-offset-[16px] text-sm uppercase", {
-              "font-semibold underline decoration-orange-500 decoration-4": pathname === "/",
+              "font-semibold underline decoration-orange-500 decoration-4":
+                pathname === "/",
             })}
           >
             Data explorer
@@ -26,7 +27,8 @@ export function Navigation() {
           <Link
             href="/interact"
             className={cn("underline-offset-[16px] text-sm uppercase", {
-              "font-semibold underline decoration-orange-500 decoration-4": pathname === "/interact",
+              "font-semibold underline decoration-orange-500 decoration-4":
+                pathname === "/interact",
             })}
           >
             Interact

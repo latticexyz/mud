@@ -1,6 +1,12 @@
-import { useEffect } from "react";
 import { formatEther } from "viem";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useEffect } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ACCOUNTS } from "@/consts";
 import { useStore } from "@/store";
 
@@ -21,7 +27,9 @@ export function AccountSelect() {
         {ACCOUNTS.map((address, idx) => {
           return (
             <SelectItem key={address} value={address} className="font-mono">
-              Account {idx + 1} {balances[address] !== undefined && `(${formatEther(balances[address])} ETH)`}
+              Account {idx + 1}{" "}
+              {balances[address] !== undefined &&
+                `(${formatEther(balances[address])} ETH)`}
             </SelectItem>
           );
         })}

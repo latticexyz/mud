@@ -1,17 +1,17 @@
-import { waitForTransactionReceipt } from "@wagmi/core";
-import { encodeField } from "@latticexyz/protocol-parser/internal";
-import { ChangeEvent, useState } from "react";
-import { parseEventLogs } from "viem";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
+import { parseEventLogs } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { useWriteContract } from "wagmi";
+import { ChangeEvent, useState } from "react";
+import { encodeField } from "@latticexyz/protocol-parser/internal";
+import { waitForTransactionReceipt } from "@wagmi/core";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ACCOUNT_PRIVATE_KEYS } from "@/consts";
 import { useWorldAddress } from "@/hooks/useWorldAddress";
 import { useStore } from "@/store";
 import { wagmiConfig } from "../_providers";
 import { abi } from "./abi";
-import { Checkbox } from "@/components/ui/checkbox";
 import { getFieldIdx } from "./utils/getFieldIdx";
 
 type Props = {

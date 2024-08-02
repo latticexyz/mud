@@ -1,6 +1,6 @@
 import {
-  isStaticAbiType,
   isDynamicAbiType,
+  isStaticAbiType,
 } from "@latticexyz/schema-type/internal";
 
 export function getFieldIdx(valueSchema, fieldName) {
