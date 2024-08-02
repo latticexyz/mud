@@ -9,15 +9,17 @@ import { SyncStep } from "../SyncStep";
 import { configToTables } from "../configToTables";
 import { merge } from "@ark/util";
 
-export type SyncToRecsOptions<config extends StoreConfig = StoreConfig, extraTables extends Tables = Tables> = Omit<
-  SyncOptions,
-  "config"
-> & {
-  world: RecsWorld;
-  config: config;
-  tables?: extraTables;
-  startSync?: boolean;
-};
+export type SyncToRecsOptions<config extends StoreConfig = StoreConfig, extraTables extends Tables = Tables> = any;
+
+// Omit<
+//   SyncOptions,
+//   "config"
+// > & {
+//   world: RecsWorld;
+//   config: config;
+//   tables?: extraTables;
+//   startSync?: boolean;
+// };
 
 export type SyncToRecsResult<config extends StoreConfig, extraTables extends Tables> = SyncResult & {
   components: CreateStorageAdapterResult<merge<merge<configToTables<config>, extraTables>, mudTables>>["components"];
@@ -37,14 +39,12 @@ export async function syncToRecs<config extends StoreConfig, extraTables extends
     ...mudTables,
   };
 
-  // const { storageAdapter, components } = createStorageAdapter({
-  //   world,
-  //   tables,
-  //   shouldSkipUpdateStream: (): boolean =>
-  //     getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE,
-  // });
-
-  const { storageAdapter, components } = {} as any;
+  const { storageAdapter, components } = createStorageAdapter({
+    world,
+    tables,
+    shouldSkipUpdateStream: (): boolean =>
+      getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE,
+  });
 
   const storeSync = await createStoreSync({
     storageAdapter,
