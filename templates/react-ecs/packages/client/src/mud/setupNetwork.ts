@@ -40,9 +40,7 @@ import { Observable, Subject, share } from "rxjs";
 import mudConfig from "contracts/mud.config";
 import { Entity, World } from "@latticexyz/recs";
 
-export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
-
-export async function setupNetwork(): Promise<{
+export type SetupNetworkResult = {
   components: tablesToComponents<configToTables<typeof config>>;
   world: World;
   playerEntity: Entity;
@@ -51,9 +49,11 @@ export async function setupNetwork(): Promise<{
   latestBlock$: Observable<Block>;
   storedBlockLogs$: Observable<StorageAdapterBlock>;
   waitForTransaction: (tx: `0x${string}`) => Promise<WaitForTransactionResult>;
-  worldContract: GetContractReturnType<typeof IWorldAbi>;
+  worldContract: GetContractReturnType<typeof IWorldAbi, WalletClient>;
   write$: Observable<ContractWrite>;
-}> {
+};
+
+export async function setupNetwork(): Promise<SetupNetworkResult> {
   const networkConfig = await getNetworkConfig();
 
   /*
