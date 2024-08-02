@@ -2,7 +2,7 @@
  * This file sets up all the definitions required for a MUD client.
  */
 
-import { createSystemCalls } from "./createSystemCalls";
+// import { createSystemCalls } from "./createSystemCalls";
 import { setupNetwork } from "./setupNetwork";
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>;
