@@ -75,7 +75,7 @@ export type SyncOptions<config extends StoreConfig = StoreConfig> = {
    *
    * [0]: https://viem.sh/docs/clients/public.html
    */
-  publicClient: any; //PublicClient;
+  publicClient: PublicClient;
   /**
    * MUD Store/World contract address
    */
