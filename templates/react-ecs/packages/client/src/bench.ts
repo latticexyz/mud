@@ -3,4 +3,4 @@ import { setup } from "./mud/setup";
 
 bench("bench type", () => {
   setup();
-}).types([586478, "instantiations"]);
+}).types([586735, "instantiations"]);
