@@ -27,7 +27,6 @@ import {
   combineLatest,
   scan,
   mergeMap,
-  Observable,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
@@ -67,7 +66,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
 }: CreateStoreSyncOptions<config>): Promise<SyncResult> {
   const filters: SyncFilter[] =
     initialFilters.length || tableIds.length
-      ? [...initialFilters, ...tableIds.map((tableId: any) => ({ tableId })), ...defaultFilters]
+      ? [...initialFilters, ...tableIds.map((tableId) => ({ tableId })), ...defaultFilters]
       : [];
 
   const logFilter = filters.length
@@ -195,7 +194,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
       debug("on block number", blockNumber, "for", followBlockTag, "block tag");
     }),
     shareReplay(1),
-  ) as unknown as Observable<bigint>;
+  );
 
   let startBlock: bigint | null = null;
   let endBlock: bigint | null = null;
@@ -216,7 +215,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
         fromBlock: lastBlockNumberProcessed
           ? bigIntMax(range.startBlock, lastBlockNumberProcessed + 1n)
           : range.startBlock,
-        toBlock: 0n, //range.endBlock,
+        toBlock: range.endBlock,
         storageAdapter,
         logFilter,
       });
