@@ -9,16 +9,12 @@ import { SyncStep } from "../SyncStep";
 import { configToTables } from "../configToTables";
 import { merge } from "@ark/util";
 
-export type SyncToRecsOptions<config extends StoreConfig = StoreConfig, extraTables extends Tables = Tables> = Omit<
-  SyncOptions,
-  "config"
-> &
-  NoInfer<{
-    world: RecsWorld;
-    config: config;
-    tables?: extraTables;
-    startSync?: boolean;
-  }>;
+export type SyncToRecsOptions = Omit<SyncOptions, "config"> & {
+  world: RecsWorld;
+  config: StoreConfig;
+  tables?: Tables;
+  startSync?: boolean;
+};
 
 export type SyncToRecsResult<config extends StoreConfig, extraTables extends Tables> = SyncResult & {
   components: CreateStorageAdapterResult<merge<merge<configToTables<config>, extraTables>, mudTables>>["components"];
@@ -31,7 +27,7 @@ export async function syncToRecs<config extends StoreConfig, extraTables extends
   tables: extraTables = {} as extraTables,
   startSync = true,
   ...syncOptions
-}: SyncToRecsOptions<config, extraTables>): Promise<SyncToRecsResult<config, extraTables>> {
+}: SyncToRecsOptions): Promise<SyncToRecsResult<config, extraTables>> {
   const tables = {
     ...configToTables(config),
     ...extraTables,
