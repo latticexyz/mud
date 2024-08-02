@@ -30,20 +30,21 @@ export async function syncToRecs<config extends StoreConfig, extraTables extends
   tables: extraTables = {} as extraTables,
   startSync = true,
   ...syncOptions
-}: SyncToRecsOptions<config, extraTables>): Promise<any> {
-  // Promise<SyncToRecsResult<config, extraTables>> {
+}: SyncToRecsOptions<config, extraTables>): Promise<SyncToRecsResult<config, extraTables>> {
   const tables = {
     ...configToTables(config),
     ...extraTables,
     ...mudTables,
   };
 
-  const { storageAdapter, components } = createStorageAdapter({
-    world,
-    tables,
-    shouldSkipUpdateStream: (): boolean =>
-      getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE,
-  });
+  // const { storageAdapter, components } = createStorageAdapter({
+  //   world,
+  //   tables,
+  //   shouldSkipUpdateStream: (): boolean =>
+  //     getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE,
+  // });
+
+  const { storageAdapter, components } = {} as any;
 
   const storeSync = await createStoreSync({
     storageAdapter,
