@@ -75,6 +75,7 @@ export function FunctionField({ abi }: Props) {
           wagmiConfig,
           {
             hash: txHash,
+            pollingInterval: 100,
           },
         );
 

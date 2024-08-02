@@ -65,6 +65,7 @@ export function EditableTableCell({
 
       const transactionReceipt = await waitForTransactionReceipt(wagmiConfig, {
         hash: txHash,
+        pollingInterval: 100,
       });
 
       const logs = parseEventLogs({
