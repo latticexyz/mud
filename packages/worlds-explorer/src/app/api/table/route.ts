@@ -3,6 +3,18 @@ import { getDatabase } from "../database";
 
 export const dynamic = "force-dynamic";
 
+export type TableConfig = {
+  address: Hex;
+  id: string;
+  key_schema: Record<string, string>;
+  last_error: string | null;
+  name: string;
+  namespace: string;
+  schema_version: number;
+  table_id: Hex;
+  value_schema: Record<string, string>;
+};
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const tableId = searchParams.get("tableId") as Hex;

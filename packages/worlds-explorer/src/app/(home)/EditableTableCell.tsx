@@ -11,6 +11,7 @@ import { ACCOUNT_PRIVATE_KEYS } from "@/consts";
 import { useWorldAddress } from "@/hooks/useWorldAddress";
 import { useStore } from "@/store";
 import { wagmiConfig } from "../_providers";
+import { TableConfig } from "../api/table/route";
 import { abi } from "./abi";
 import { getFieldIdx } from "./utils/getFieldIdx";
 
@@ -18,7 +19,7 @@ type Props = {
   name: string;
   value: string;
   keyTuple: [string];
-  config: Record<string, string>;
+  config: TableConfig;
 };
 
 export function EditableTableCell({
@@ -32,8 +33,8 @@ export function EditableTableCell({
   const worldAddress = useWorldAddress();
 
   const [loading, setLoading] = useState(false);
-  const [prevValue, setPrevValue] = useState(defaultValue);
-  const [value, setValue] = useState(defaultValue);
+  const [prevValue, setPrevValue] = useState<unknown>(defaultValue);
+  const [value, setValue] = useState<unknown>(defaultValue);
 
   const tableId = config?.table_id;
   const fieldType = config?.value_schema[name];
@@ -105,7 +106,7 @@ export function EditableTableCell({
   if (loading) {
     return (
       <div className="flex cursor-wait items-center gap-1">
-        {value} <Loader className="h-4 animate-spin" />
+        {String(value)} <Loader className="h-4 animate-spin" />
       </div>
     );
   }
@@ -128,7 +129,7 @@ export function EditableTableCell({
         onBlur={() => {
           handleSubmit(value);
         }}
-        defaultValue={value}
+        defaultValue={String(value)}
       />
     </form>
   );
