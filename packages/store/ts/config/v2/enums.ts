@@ -1,4 +1,4 @@
-import { flatMorph } from "@arktype/util";
+import { flatMorph } from "@ark/util";
 import { EnumsInput } from "./input";
 import { AbiTypeScope, extendScope } from "./scope";
 import { parseNumber } from "./generics";

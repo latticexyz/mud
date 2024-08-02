@@ -4,7 +4,7 @@ import { SyncOptions, SyncResult } from "../common";
 import { sqliteStorage } from "./sqliteStorage";
 import { createStoreSync } from "../createStoreSync";
 
-type SyncToSqliteOptions<config extends StoreConfig = StoreConfig> = SyncOptions<config> & {
+export type SyncToSqliteOptions<config extends StoreConfig = StoreConfig> = SyncOptions<config> & {
   /**
    * [SQLite database object from Drizzle][0].
    *
@@ -15,7 +15,7 @@ type SyncToSqliteOptions<config extends StoreConfig = StoreConfig> = SyncOptions
   startSync?: boolean;
 };
 
-type SyncToSqliteResult = SyncResult & {
+export type SyncToSqliteResult = SyncResult & {
   stopSync: () => void;
 };
 

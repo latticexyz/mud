@@ -17,7 +17,7 @@ import { EncodedLengths, EncodedLengthsLib } from "../../EncodedLengths.sol";
 import { ResourceId } from "../../ResourceId.sol";
 
 // Import user types
-import { ResourceId } from "./../../ResourceId.sol";
+import { ResourceId } from "../../ResourceId.sol";
 
 library Hooks {
   FieldLayout constant _fieldLayout =

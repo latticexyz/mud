@@ -1,15 +1,7 @@
-export interface AbsoluteImportDatum {
+export type ImportDatum = {
   symbol: string;
   path: string;
-}
-
-export interface RelativeImportDatum {
-  symbol: string;
-  fromPath: string;
-  usedInPath: string;
-}
-
-export type ImportDatum = AbsoluteImportDatum | RelativeImportDatum;
+};
 
 export interface StaticResourceData {
   /** Table namespace string */

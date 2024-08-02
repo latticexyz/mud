@@ -1,5 +1,5 @@
 import { Client, parseAbiItem } from "viem";
-import { WorldDeploy, WorldFunction, worldTables } from "./common";
+import { WorldDeploy, WorldFunction } from "./common";
 import { debug } from "./debug";
 import { storeSetRecordEvent } from "@latticexyz/store";
 import { getLogs } from "viem/actions";
@@ -10,6 +10,7 @@ import {
   getSchemaTypes,
   getValueSchema,
 } from "@latticexyz/protocol-parser/internal";
+import worldConfig from "@latticexyz/world/mud.config";
 
 export async function getFunctions({
   client,
@@ -26,13 +27,19 @@ export async function getFunctions({
     toBlock: worldDeploy.stateBlock,
     address: worldDeploy.address,
     event: parseAbiItem(storeSetRecordEvent),
-    args: { tableId: worldTables.world__FunctionSelectors.tableId },
+    args: { tableId: worldConfig.namespaces.world.tables.FunctionSelectors.tableId },
   });
 
   const selectors = selectorLogs.map((log) => {
     return {
-      ...decodeValueArgs(getSchemaTypes(getValueSchema(worldTables.world__FunctionSelectors)), log.args),
-      ...decodeKey(getSchemaTypes(getKeySchema(worldTables.world__FunctionSelectors)), log.args.keyTuple),
+      ...decodeValueArgs(
+        getSchemaTypes(getValueSchema(worldConfig.namespaces.world.tables.FunctionSelectors)),
+        log.args,
+      ),
+      ...decodeKey(
+        getSchemaTypes(getKeySchema(worldConfig.namespaces.world.tables.FunctionSelectors)),
+        log.args.keyTuple,
+      ),
     };
   });
   debug("found", selectors.length, "function selectors for", worldDeploy.address);
@@ -45,16 +52,20 @@ export async function getFunctions({
     toBlock: worldDeploy.stateBlock,
     address: worldDeploy.address,
     event: parseAbiItem(storeSetRecordEvent),
-    args: { tableId: worldTables.world__FunctionSignatures.tableId },
+    args: { tableId: worldConfig.namespaces.world.tables.FunctionSignatures.tableId },
   });
 
   const selectorToSignature = Object.fromEntries(
     signatureLogs.map((log) => {
       return [
-        decodeKey(getSchemaTypes(getKeySchema(worldTables.world__FunctionSignatures)), log.args.keyTuple)
-          .functionSelector,
-        decodeValueArgs(getSchemaTypes(getValueSchema(worldTables.world__FunctionSignatures)), log.args)
-          .functionSignature,
+        decodeKey(
+          getSchemaTypes(getKeySchema(worldConfig.namespaces.world.tables.FunctionSignatures)),
+          log.args.keyTuple,
+        ).functionSelector,
+        decodeValueArgs(
+          getSchemaTypes(getValueSchema(worldConfig.namespaces.world.tables.FunctionSignatures)),
+          log.args,
+        ).functionSignature,
       ];
     }),
   );

@@ -1,0 +1,20 @@
+import { Callout } from "nextra/components";
+
+# Recommended Deployment Settings
+
+These are our recommended settings for deploying MUD applications on a production network, such as [Redstone](https://redstone.xyz/).
+
+## Before the deployment
+
+- Make sure you are using [the latest MUD version](https://mud.dev/changelog).
+- To make the `World`'s core contract [upgradeable](https://mud.dev/world/upgrades#making-an-upgradeable-world), set `deploy.upgradeableWorldImplementation` to `true` in [the `mud.config.ts` file](/config).
+- When writing the client use chain configs from [`@latticexyz/common/chains`](https://github.com/latticexyz/mud/tree/main/packages/common/src/chains): [Garnet (the testnet)](https://github.com/latticexyz/mud/blob/main/packages/common/src/chains/garnet.ts) and [Redstone (the production network)](https://github.com/latticexyz/mud/blob/main/packages/common/src/chains/redstone.ts).
+
+## During the deployment
+
+If possible, [deploy using AWS KMS](./kms).
+If not, [transfer ownership](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/AccessManagementSystem.sol#L50-L74) of the root namespace to AWS KMS or a multi-sig wallet as early as possible.
+
+## After the deployment
+
+- [Verify the contracts](/cli/verify) as soon as possible after deployment.

@@ -2,7 +2,7 @@ import { describe, it } from "vitest";
 import { defineSchema } from "./schema";
 import { Schema } from "./output";
 import { extendScope, AbiTypeScope } from "./scope";
-import { attest } from "@arktype/attest";
+import { attest } from "@ark/attest";
 
 describe("resolveSchema", () => {
   it("should map user types to their primitive type", () => {
@@ -19,11 +19,16 @@ describe("resolveSchema", () => {
       },
     } as const;
 
-    attest<typeof expected>(resolved)
-      .equals(expected)
-      .type.toString.snap(
-        '{ readonly regular: { readonly type: "uint256"; readonly internalType: "uint256"; }; readonly user: { readonly type: "address"; readonly internalType: "CustomType"; }; }',
-      );
+    attest<typeof expected>(resolved).equals(expected).type.toString.snap(`{
+	readonly regular: {
+		readonly type: "uint256"
+		readonly internalType: "uint256"
+	}
+	readonly user: {
+		readonly type: "address"
+		readonly internalType: "CustomType"
+	}
+}`);
   });
 
   it("should throw if a type is not part of the scope", () => {
@@ -57,8 +62,11 @@ describe("resolveSchema", () => {
       },
     } as const;
 
-    attest<typeof expected>(resolved)
-      .equals(expected)
-      .type.toString.snap('{ readonly coordinate: { readonly type: "int32[]"; readonly internalType: "int32[2]"; }; }');
+    attest<typeof expected>(resolved).equals(expected).type.toString.snap(`{
+	readonly coordinate: {
+		readonly type: "int32[]"
+		readonly internalType: "int32[2]"
+	}
+}`);
   });
 });

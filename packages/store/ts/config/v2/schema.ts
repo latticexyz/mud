@@ -1,4 +1,4 @@
-import { conform, show } from "@arktype/util";
+import { conform, show } from "@ark/util";
 import { AbiTypeScope, Scope } from "./scope";
 import { hasOwnKey, isObject } from "./generics";
 import { SchemaInput } from "./input";

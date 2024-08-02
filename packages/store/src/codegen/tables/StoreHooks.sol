@@ -17,7 +17,7 @@ import { EncodedLengths, EncodedLengthsLib } from "../../EncodedLengths.sol";
 import { ResourceId } from "../../ResourceId.sol";
 
 // Import user types
-import { ResourceId } from "./../../ResourceId.sol";
+import { ResourceId } from "../../ResourceId.sol";
 
 library StoreHooks {
   // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "store", name: "StoreHooks", typeId: RESOURCE_TABLE });`

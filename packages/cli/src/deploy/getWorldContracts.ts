@@ -48,31 +48,31 @@ export function getWorldContracts(deployerAddress: Hex) {
     AccessManagementSystem: {
       bytecode: accessManagementSystemBytecode,
       deployedBytecodeSize: accessManagementSystemDeployedBytecodeSize,
-      label: "access management system",
+      debugLabel: "access management system",
       address: accessManagementSystem,
     },
     BalanceTransferSystem: {
       bytecode: balanceTransferSystemBytecode,
       deployedBytecodeSize: balanceTransferSystemDeployedBytecodeSize,
-      label: "balance transfer system",
+      debugLabel: "balance transfer system",
       address: balanceTransferSystem,
     },
     BatchCallSystem: {
       bytecode: batchCallSystemBytecode,
       deployedBytecodeSize: batchCallSystemDeployedBytecodeSize,
-      label: "batch call system",
+      debugLabel: "batch call system",
       address: batchCallSystem,
     },
     RegistrationSystem: {
       bytecode: registrationBytecode,
       deployedBytecodeSize: registrationDeployedBytecodeSize,
-      label: "core registration system",
+      debugLabel: "core registration system",
       address: registration,
     },
     InitModule: {
       bytecode: initModuleBytecode,
       deployedBytecodeSize: initModuleDeployedBytecodeSize,
-      label: "core module",
+      debugLabel: "core module",
       address: initModule,
     },
   };

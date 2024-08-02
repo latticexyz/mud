@@ -1,7 +1,7 @@
 import { tablegen } from "@latticexyz/store/codegen";
 import { worldgen } from "@latticexyz/world/node";
 import { World as WorldConfig } from "@latticexyz/world";
-import { forge, getRemappings } from "@latticexyz/common/foundry";
+import { forge } from "@latticexyz/common/foundry";
 import { execa } from "execa";
 
 type BuildOptions = {
@@ -20,9 +20,7 @@ export async function build({
   config,
   foundryProfile = process.env.FOUNDRY_PROFILE,
 }: BuildOptions): Promise<void> {
-  const remappings = await getRemappings(foundryProfile);
-
-  await Promise.all([tablegen({ rootDir, config, remappings }), worldgen({ rootDir, config })]);
+  await Promise.all([tablegen({ rootDir, config }), worldgen({ rootDir, config })]);
 
   await forge(["build"], { profile: foundryProfile });
   await execa("mud", ["abi-ts"], { stdio: "inherit" });

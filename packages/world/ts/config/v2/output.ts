@@ -1,4 +1,5 @@
 import { Store } from "@latticexyz/store";
+import { Namespace as StoreNamespace } from "@latticexyz/store/config/v2";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
 import { Hex } from "viem";
 
@@ -60,6 +61,13 @@ export type Systems = {
   readonly [label: string]: System;
 };
 
+// TODO: should we make Namespace an interface that we can extend here instead of overriding?
+export type Namespace = StoreNamespace & { readonly systems: Systems };
+
+export type Namespaces = {
+  readonly [label: string]: Namespace;
+};
+
 export type Deploy = {
   /** The name of a custom World contract to deploy. If no name is provided, a default MUD World is deployed */
   readonly customWorldContract: string | undefined;
@@ -82,13 +90,16 @@ export type Codegen = {
   /** Directory to output system and world interfaces of `worldgen` (Default "world") */
   readonly worldgenDirectory: string;
   /**
-   * Path for world package imports. Default is "@latticexyz/world/src/"
    * @internal
+   * Absolute import path for a package import or starting with `.` for an import relative to project root dir.
+   *
+   * Defaults to `@latticexyz/world/src` if not set.
    */
   readonly worldImportPath: string;
 };
 
-export type World = Store & {
+export type World = Omit<Store, "namespaces"> & {
+  readonly namespaces: Namespaces;
   readonly systems: Systems;
   /** Systems to exclude from automatic deployment */
   readonly excludeSystems: readonly string[];

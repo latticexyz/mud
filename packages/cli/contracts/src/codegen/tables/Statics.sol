@@ -17,7 +17,7 @@ import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/Encoded
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 // Import user types
-import { Enum2, Enum1 } from "./../common.sol";
+import { Enum2, Enum1 } from "../common.sol";
 
 struct StaticsData {
   uint256 v1;

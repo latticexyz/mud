@@ -1,5 +1,5 @@
 import { Hex } from "viem";
-import { satisfy } from "@arktype/util";
+import { satisfy } from "@ark/util";
 import { StaticPrimitiveType, DynamicPrimitiveType, SchemaAbiType } from "@latticexyz/schema-type/internal";
 import { SchemaToPrimitives } from "@latticexyz/store/internal";
 import { Table } from "@latticexyz/config";

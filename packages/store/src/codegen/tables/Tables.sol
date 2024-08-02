@@ -17,9 +17,9 @@ import { EncodedLengths, EncodedLengthsLib } from "../../EncodedLengths.sol";
 import { ResourceId } from "../../ResourceId.sol";
 
 // Import user types
-import { ResourceId } from "./../../ResourceId.sol";
-import { FieldLayout } from "./../../FieldLayout.sol";
-import { Schema } from "./../../Schema.sol";
+import { ResourceId } from "../../ResourceId.sol";
+import { FieldLayout } from "../../FieldLayout.sol";
+import { Schema } from "../../Schema.sol";
 
 struct TablesData {
   FieldLayout fieldLayout;
