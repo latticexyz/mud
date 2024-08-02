@@ -49,7 +49,7 @@ export type SetupNetworkResult = {
   latestBlock$: Observable<Block>;
   storedBlockLogs$: Observable<StorageAdapterBlock>;
   waitForTransaction: (tx: `0x${string}`) => Promise<WaitForTransactionResult>;
-  worldContract: GetContractReturnType<typeof IWorldAbi, WalletClient>;
+  worldContract: GetContractReturnType<typeof IWorldAbi, WalletClient, Hex>;
   write$: Observable<ContractWrite>;
 };
 
