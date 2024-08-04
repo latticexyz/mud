@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 import "dotenv/config";
 import { z } from "zod";
+import postgres from "postgres";
+import { sse } from "../src/postgres/sse";
 import Koa from "koa";
 import cors from "@koa/cors";
 import { createKoaMiddleware } from "trpc-koa-adapter";
 import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 import { frontendEnvSchema, parseEnv } from "./parseEnv";
 import { createQueryAdapter } from "../src/postgres/deprecated/createQueryAdapter";
 import { apiRoutes } from "../src/postgres/apiRoutes";
@@ -44,6 +45,10 @@ server.use(
 server.use(helloWorld());
 server.use(apiRoutes(database));
 
+// SSE endpoints
+server.use(sse(database));
+
+// tRPC endpoints
 server.use(
   createKoaMiddleware({
     prefix: "/trpc",
