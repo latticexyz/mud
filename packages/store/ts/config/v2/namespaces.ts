@@ -28,7 +28,7 @@ export type resolveNamespaces<namespaces, scope extends Scope = AbiTypeScope> = 
 export function resolveNamespaces<input extends NamespacesInput, scope extends Scope = AbiTypeScope>(
   input: input,
   scope: scope,
-): show<resolveNamespaces<input, scope>> {
+): resolveNamespaces<input, scope> {
   if (!isObject(input)) {
     throw new Error(`Expected namespaces config, received ${JSON.stringify(input)}`);
   }
