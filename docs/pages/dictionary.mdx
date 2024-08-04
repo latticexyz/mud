@@ -276,6 +276,8 @@ To do this:
 
 1. Add code to emit the event to any `System` call that needs it.
 
+   <CollapseCode>
+
    ```solidity filename="TasksSystem.sol" copy {5,11}
    // SPDX-License-Identifier: MIT
    pragma solidity >=0.8.24;
@@ -304,20 +306,20 @@ To do this:
    }
    ```
 
-1. The actual registration depends on the state library used.
+   </CollapseCode>
+
+1. The client-side registration depends on the state library used.
 
    - **RECS**
 
-     Use `components.Event.update$.subscribe`:
+     Use `components.Event.update$.subscribe`.
 
      ```typescript
-     components.Counter.update$.subscribe((update) => {
-       const [nextValue, prevValue] = update.value;
-       console.log("Counter updated", update, { nextValue, prevValue });
-       document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
+     components.Event.update$.subscribe((update) => {
+       console.log(update);
      });
      ```
 
    - **ZuStand**
 
-     Blih Blih
+     ???
