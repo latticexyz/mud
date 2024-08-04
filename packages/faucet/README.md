@@ -8,7 +8,7 @@ Install and run with:
 
 ```sh
 npm install @latticexyz/faucet@next
-npm faucet-server
+npx faucet-server
 ```
 
 or execute the package bin directly:
