@@ -7,6 +7,7 @@ import {
   AbiTypeScope,
 } from "@latticexyz/store/config/v2";
 import { resolveSystems, validateSystems } from "./systems";
+import { show } from "@ark/util";
 
 export type validateNamespace<input, scope extends Scope = AbiTypeScope> = {
   [key in keyof input]: key extends "systems" ? validateSystems<input[key]> : validateStoreNamespace<input, scope>[key];
@@ -23,11 +24,13 @@ export function validateNamespace<scope extends Scope = AbiTypeScope>(
 }
 
 export type resolveNamespace<input, scope extends Scope = AbiTypeScope> = input extends NamespaceInput
-  ? resolveStoreNamespace<input, scope> & {
-      readonly systems: input["systems"] extends SystemsInput
-        ? resolveSystems<input["systems"], resolveStoreNamespace<input, scope>["namespace"]>
-        : {};
-    }
+  ? show<
+      resolveStoreNamespace<input, scope> & {
+        readonly systems: input["systems"] extends SystemsInput
+          ? show<resolveSystems<input["systems"], resolveStoreNamespace<input, scope>["namespace"]>>
+          : {};
+      }
+    >
   : never;
 
 export function resolveNamespace<const input extends NamespaceInput, scope extends Scope = AbiTypeScope>(

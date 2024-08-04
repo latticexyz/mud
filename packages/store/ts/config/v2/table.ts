@@ -146,9 +146,8 @@ export type resolveTable<input, scope extends Scope = Scope> = input extends Tab
       readonly schema: resolveSchema<input["schema"], scope>;
       readonly key: Readonly<input["key"]>;
       readonly codegen: resolveTableCodegen<input>;
-      readonly deploy: mergeIfUndefined<
-        undefined extends input["deploy"] ? {} : input["deploy"],
-        TABLE_DEPLOY_DEFAULTS
+      readonly deploy: show<
+        mergeIfUndefined<undefined extends input["deploy"] ? {} : input["deploy"], TABLE_DEPLOY_DEFAULTS>
       >;
     }
   : never;
