@@ -25,8 +25,7 @@ The MUD config has two modes: single namespace and multiple namespaces. By defau
         [Table type](/store/tables#types-of-tables), either `"table"` or `"offchainTable"`. Defaults to `"table"`.
       </Param>
       <Param name="schema">
-        A mapping of field names to their schema type, `enums` label, or `userTypes` label.
-        Note that static-length fields such as `uint256` have to appear before dynamic-length fields such as `string` or `uint8[]`.
+        An ordered mapping of field names to their schema type, `enums` label, or `userTypes` label. Static-length field types (e.g. `uint256`) must come before dynamic-length field types (e.g. `string` or `uint8[]`).
       </Param>
       <Param name="key">
         A tuple of field names in the `schema` to be used as the primary key of table records. Only static-length fields
