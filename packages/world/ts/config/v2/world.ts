@@ -1,4 +1,4 @@
-import { ErrorMessage, conform, type withJsDoc } from "@ark/util";
+import { ErrorMessage, conform, show, type withJsDoc } from "@ark/util";
 import {
   extendedScope,
   get,
@@ -54,21 +54,23 @@ export type resolveNamespaceMode<input> = "namespaces" extends keyof input
   ? {
       readonly multipleNamespaces: true;
       readonly namespace: null;
-      readonly namespaces: resolveNamespaces<input["namespaces"], extendedScope<input>>;
+      readonly namespaces: show<resolveNamespaces<input["namespaces"], extendedScope<input>>>;
     }
   : {
       readonly multipleNamespaces: false;
       readonly namespace: string;
-      readonly namespaces: resolveNamespaces<
-        {
-          // TODO: improve this so we don't have to duplicate store behavior
-          readonly [label in "namespace" extends keyof input
-            ? input["namespace"] extends string
-              ? input["namespace"]
-              : STORE_CONFIG_DEFAULTS["namespace"]
-            : STORE_CONFIG_DEFAULTS["namespace"]]: input;
-        },
-        extendedScope<input>
+      readonly namespaces: show<
+        resolveNamespaces<
+          {
+            // TODO: improve this so we don't have to duplicate store behavior
+            readonly [label in "namespace" extends keyof input
+              ? input["namespace"] extends string
+                ? input["namespace"]
+                : STORE_CONFIG_DEFAULTS["namespace"]
+              : STORE_CONFIG_DEFAULTS["namespace"]]: input;
+          },
+          extendedScope<input>
+        >
       >;
     };
 
@@ -79,7 +81,7 @@ export type resolveWorld<input> = resolveNamespaceMode<input> &
     readonly systems: "systems" extends keyof input
       ? input["systems"] extends SystemsInput
         ? resolveNamespaceMode<input>["namespace"] extends string
-          ? resolveSystems<input["systems"], resolveNamespaceMode<input>["namespace"]>
+          ? show<resolveSystems<input["systems"], resolveNamespaceMode<input>["namespace"]>>
           : {}
         : {}
       : {};
@@ -87,8 +89,8 @@ export type resolveWorld<input> = resolveNamespaceMode<input> &
       ? input["excludeSystems"]
       : CONFIG_DEFAULTS["excludeSystems"];
     readonly modules: "modules" extends keyof input ? input["modules"] : CONFIG_DEFAULTS["modules"];
-    readonly codegen: "codegen" extends keyof input ? resolveCodegen<input["codegen"]> : resolveCodegen<{}>;
-    readonly deploy: "deploy" extends keyof input ? resolveDeploy<input["deploy"]> : resolveDeploy<{}>;
+    readonly codegen: show<resolveCodegen<"codegen" extends keyof input ? input["codegen"] : {}>>;
+    readonly deploy: show<resolveDeploy<"deploy" extends keyof input ? input["deploy"] : {}>>;
   };
 
 export function resolveWorld<const input extends WorldInput>(input: input): resolveWorld<input> {
