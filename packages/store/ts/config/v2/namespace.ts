@@ -1,4 +1,4 @@
-import { ErrorMessage, flatMorph } from "@ark/util";
+import { ErrorMessage, flatMorph, show } from "@ark/util";
 import { hasOwnKey, mergeIfUndefined } from "./generics";
 import { NamespaceInput } from "./input";
 import { resolveTables, validateTables } from "./tables";
@@ -31,14 +31,16 @@ export type resolveNamespace<input, scope extends Scope = AbiTypeScope> = input 
       readonly namespace: string;
       readonly tables: undefined extends input["tables"]
         ? {}
-        : resolveTables<
-            {
-              readonly [label in keyof input["tables"]]: mergeIfUndefined<
-                expandTableShorthand<input["tables"][label]>,
-                { readonly namespace: string }
-              >;
-            },
-            scope
+        : show<
+            resolveTables<
+              {
+                readonly [label in keyof input["tables"]]: mergeIfUndefined<
+                  expandTableShorthand<input["tables"][label]>,
+                  { readonly namespace: string }
+                >;
+              },
+              scope
+            >
           >;
     }
   : never;

@@ -1,10 +1,8 @@
 import { describe, it } from "vitest";
 import { defineWorld } from "./world";
 import { attest } from "@ark/attest";
-import { resourceToHex } from "@latticexyz/common";
 import { World } from "./output";
 import { satisfy } from "@ark/util";
-import { Hex } from "viem";
 
 describe("defineWorld", () => {
   it("should resolve namespaced tables", () => {
@@ -134,32 +132,27 @@ describe("defineWorld", () => {
       },
     });
 
-    const expectedConfig = {
+    attest(config).snap({
       multipleNamespaces: false,
-      namespace: "" as string,
+      namespace: "",
       namespaces: {
         "": {
           label: "",
-          namespace: "" as string,
+          namespace: "",
           tables: {
             Example: {
               label: "Example",
               type: "table",
-              namespace: "" as string,
-              name: "Example" as string,
-              tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000" as Hex,
+              namespace: "",
+              name: "Example",
+              tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
               schema: {
                 id: { type: "address", internalType: "address" },
                 name: { type: "string", internalType: "string" },
                 age: { type: "uint256", internalType: "uint256" },
               },
               key: ["age"],
-              codegen: {
-                outputDirectory: "tables" as string,
-                tableIdArgument: false,
-                storeArgument: false,
-                dataStruct: true as boolean,
-              },
+              codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: true },
               deploy: { disabled: false },
             },
           },
@@ -170,21 +163,16 @@ describe("defineWorld", () => {
         Example: {
           label: "Example",
           type: "table",
-          namespace: "" as string,
-          name: "Example" as string,
-          tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000" as Hex,
+          namespace: "",
+          name: "Example",
+          tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
           schema: {
             id: { type: "address", internalType: "address" },
             name: { type: "string", internalType: "string" },
             age: { type: "uint256", internalType: "uint256" },
           },
           key: ["age"],
-          codegen: {
-            outputDirectory: "tables" as string,
-            tableIdArgument: false,
-            storeArgument: false,
-            dataStruct: true as boolean,
-          },
+          codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: true },
           deploy: { disabled: false },
         },
       },
@@ -204,17 +192,110 @@ describe("defineWorld", () => {
       systems: {},
       excludeSystems: [],
       deploy: {
-        customWorldContract: undefined,
+        customWorldContract: "(undefined)",
         postDeployScript: "PostDeploy",
         deploysDirectory: "./deploys",
         worldsFile: "./worlds.json",
         upgradeableWorldImplementation: false,
       },
       modules: [],
-    } as const;
-
-    attest<typeof expectedConfig>(config).equals(expectedConfig);
-    attest<typeof config>(expectedConfig);
+    }).type.toString.snap(`{
+	readonly namespace: string
+	readonly tables: {
+		readonly Example: {
+			readonly label: "Example"
+			readonly type: "table"
+			readonly namespace: string
+			readonly name: string
+			readonly tableId: \`0x\${string}\`
+			readonly schema: {
+				readonly id: {
+					readonly type: "address"
+					readonly internalType: "address"
+				}
+				readonly name: {
+					readonly type: "string"
+					readonly internalType: "string"
+				}
+				readonly age: {
+					readonly type: "uint256"
+					readonly internalType: "uint256"
+				}
+			}
+			readonly key: readonly ["age"]
+			readonly codegen: {
+				readonly outputDirectory: string
+				readonly tableIdArgument: false
+				readonly storeArgument: false
+				readonly dataStruct: boolean
+			}
+			readonly deploy: { readonly disabled: false }
+		}
+	}
+	readonly codegen: {
+		readonly storeImportPath: "@latticexyz/store/src"
+		readonly userTypesFilename: "common.sol"
+		readonly outputDirectory: "codegen"
+		readonly indexFilename: "index.sol"
+	} & {
+		readonly worldInterfaceName: "IWorld"
+		readonly worldgenDirectory: "world"
+		readonly worldImportPath: "@latticexyz/world/src"
+	}
+	readonly sourceDirectory: "src"
+	readonly enums: {}
+	readonly userTypes: {}
+	readonly enumValues: {}
+	readonly multipleNamespaces: false
+	readonly namespaces: {
+		readonly "": {
+			readonly label: ""
+			readonly namespace: string
+			readonly tables: {
+				readonly Example: {
+					readonly label: "Example"
+					readonly type: "table"
+					readonly namespace: string
+					readonly name: string
+					readonly tableId: \`0x\${string}\`
+					readonly schema: {
+						readonly id: {
+							readonly type: "address"
+							readonly internalType: "address"
+						}
+						readonly name: {
+							readonly type: "string"
+							readonly internalType: "string"
+						}
+						readonly age: {
+							readonly type: "uint256"
+							readonly internalType: "uint256"
+						}
+					}
+					readonly key: readonly ["age"]
+					readonly codegen: {
+						readonly outputDirectory: string
+						readonly tableIdArgument: false
+						readonly storeArgument: false
+						readonly dataStruct: boolean
+					}
+					readonly deploy: { readonly disabled: false }
+				}
+			}
+			readonly systems: {}
+		}
+	}
+	readonly systems: {}
+	readonly excludeSystems: readonly []
+	readonly modules: readonly []
+	readonly deploy: {
+		readonly customWorldContract: undefined
+		readonly postDeployScript: "PostDeploy"
+		readonly deploysDirectory: "./deploys"
+		readonly worldsFile: "./worlds.json"
+		readonly upgradeableWorldImplementation: false
+	}
+}`);
   });
 
   it("should return a fully resolved config for multiple namespaces", () => {
@@ -232,32 +313,27 @@ describe("defineWorld", () => {
       },
     });
 
-    const expectedConfig = {
+    attest(config).snap({
       multipleNamespaces: true,
       namespace: null,
       namespaces: {
         root: {
           label: "root",
-          namespace: "" as string,
+          namespace: "",
           tables: {
             Example: {
               label: "Example",
               type: "table",
-              namespace: "" as string,
-              name: "Example" as string,
-              tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000" as Hex,
+              namespace: "",
+              name: "Example",
+              tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
               schema: {
                 id: { type: "address", internalType: "address" },
                 name: { type: "string", internalType: "string" },
                 age: { type: "uint256", internalType: "uint256" },
               },
               key: ["age"],
-              codegen: {
-                outputDirectory: "tables" as string,
-                tableIdArgument: false,
-                storeArgument: false,
-                dataStruct: true as boolean,
-              },
+              codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: true },
               deploy: { disabled: false },
             },
           },
@@ -268,21 +344,16 @@ describe("defineWorld", () => {
         root__Example: {
           label: "Example",
           type: "table",
-          namespace: "" as string,
-          name: "Example" as string,
-          tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000" as Hex,
+          namespace: "",
+          name: "Example",
+          tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
           schema: {
             id: { type: "address", internalType: "address" },
             name: { type: "string", internalType: "string" },
             age: { type: "uint256", internalType: "uint256" },
           },
           key: ["age"],
-          codegen: {
-            outputDirectory: "tables" as string,
-            tableIdArgument: false,
-            storeArgument: false,
-            dataStruct: true as boolean,
-          },
+          codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: true },
           deploy: { disabled: false },
         },
       },
@@ -302,17 +373,110 @@ describe("defineWorld", () => {
       systems: {},
       excludeSystems: [],
       deploy: {
-        customWorldContract: undefined,
+        customWorldContract: "(undefined)",
         postDeployScript: "PostDeploy",
         deploysDirectory: "./deploys",
         worldsFile: "./worlds.json",
         upgradeableWorldImplementation: false,
       },
       modules: [],
-    } as const;
-
-    attest<typeof expectedConfig>(config).equals(expectedConfig);
-    attest<typeof config>(expectedConfig);
+    }).type.toString.snap(`{
+	readonly namespace: null
+	readonly tables: {
+		readonly root__Example: {
+			readonly label: "Example"
+			readonly type: "table"
+			readonly namespace: string
+			readonly name: string
+			readonly tableId: \`0x\${string}\`
+			readonly schema: {
+				readonly id: {
+					readonly type: "address"
+					readonly internalType: "address"
+				}
+				readonly name: {
+					readonly type: "string"
+					readonly internalType: "string"
+				}
+				readonly age: {
+					readonly type: "uint256"
+					readonly internalType: "uint256"
+				}
+			}
+			readonly key: readonly ["age"]
+			readonly codegen: {
+				readonly outputDirectory: string
+				readonly tableIdArgument: false
+				readonly storeArgument: false
+				readonly dataStruct: boolean
+			}
+			readonly deploy: { readonly disabled: false }
+		}
+	}
+	readonly codegen: {
+		readonly storeImportPath: "@latticexyz/store/src"
+		readonly userTypesFilename: "common.sol"
+		readonly outputDirectory: "codegen"
+		readonly indexFilename: "index.sol"
+	} & {
+		readonly worldInterfaceName: "IWorld"
+		readonly worldgenDirectory: "world"
+		readonly worldImportPath: "@latticexyz/world/src"
+	}
+	readonly sourceDirectory: "src"
+	readonly enums: {}
+	readonly userTypes: {}
+	readonly enumValues: {}
+	readonly multipleNamespaces: true
+	readonly namespaces: {
+		readonly root: {
+			readonly label: "root"
+			readonly namespace: string
+			readonly tables: {
+				readonly Example: {
+					readonly label: "Example"
+					readonly type: "table"
+					readonly namespace: string
+					readonly name: string
+					readonly tableId: \`0x\${string}\`
+					readonly schema: {
+						readonly id: {
+							readonly type: "address"
+							readonly internalType: "address"
+						}
+						readonly name: {
+							readonly type: "string"
+							readonly internalType: "string"
+						}
+						readonly age: {
+							readonly type: "uint256"
+							readonly internalType: "uint256"
+						}
+					}
+					readonly key: readonly ["age"]
+					readonly codegen: {
+						readonly outputDirectory: string
+						readonly tableIdArgument: false
+						readonly storeArgument: false
+						readonly dataStruct: boolean
+					}
+					readonly deploy: { readonly disabled: false }
+				}
+			}
+			readonly systems: {}
+		}
+	}
+	readonly systems: {}
+	readonly excludeSystems: readonly []
+	readonly modules: readonly []
+	readonly deploy: {
+		readonly customWorldContract: undefined
+		readonly postDeployScript: "PostDeploy"
+		readonly deploysDirectory: "./deploys"
+		readonly worldsFile: "./worlds.json"
+		readonly upgradeableWorldImplementation: false
+	}
+}`);
   });
 
   it("should use the root namespace as default namespace", () => {
@@ -411,18 +575,25 @@ describe("defineWorld", () => {
       },
     });
 
-    const expectedSystems = {
+    attest(config.systems).snap({
       Example: {
         label: "Example",
-        namespace: "app" as string,
-        name: "Example" as string,
-        systemId: resourceToHex({ type: "system", namespace: "app", name: "Example" }),
+        namespace: "app",
+        name: "Example",
+        systemId: "0x737961707000000000000000000000004578616d706c65000000000000000000",
         openAccess: true,
         accessList: [],
       },
-    } as const;
-
-    attest<typeof expectedSystems>(config.systems).equals(expectedSystems);
+    }).type.toString.snap(`{
+	readonly Example: {
+		readonly label: "Example"
+		readonly namespace: string
+		readonly name: string
+		readonly systemId: \`0x\${string}\`
+		readonly openAccess: true
+		readonly accessList: readonly []
+	}
+}`);
   });
 
   it("should allow setting openAccess of a system to false", () => {
