@@ -50,9 +50,6 @@ export type resolveSystem<input> = input extends SystemInput
       readonly namespace: undefined extends input["namespace"] ? SYSTEM_DEFAULTS["namespace"] : input["namespace"];
       readonly name: string;
       readonly systemId: Hex;
-      readonly registerFunctionSelectors: undefined extends input["registerFunctionSelectors"]
-        ? SYSTEM_DEFAULTS["registerFunctionSelectors"]
-        : input["registerFunctionSelectors"];
       readonly openAccess: undefined extends input["openAccess"] ? SYSTEM_DEFAULTS["openAccess"] : input["openAccess"];
       readonly accessList: undefined extends input["accessList"] ? SYSTEM_DEFAULTS["accessList"] : input["accessList"];
     }

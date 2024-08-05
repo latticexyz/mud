@@ -581,7 +581,6 @@ describe("defineWorld", () => {
         namespace: "app",
         name: "Example",
         systemId: "0x737961707000000000000000000000004578616d706c65000000000000000000",
-        registerFunctionSelectors: true,
         openAccess: true,
         accessList: [],
       },
@@ -591,7 +590,6 @@ describe("defineWorld", () => {
 		readonly namespace: string
 		readonly name: string
 		readonly systemId: \`0x\${string}\`
-		readonly registerFunctionSelectors: true
 		readonly openAccess: true
 		readonly accessList: readonly []
 	}

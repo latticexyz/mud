@@ -1,4 +1,3 @@
-import { Hex } from "viem";
 import { Codegen, TableCodegen, TableDeploy, UserTypes } from "./output";
 import { Scope } from "./scope";
 
@@ -39,7 +38,6 @@ export type TableInput = {
   readonly name?: string;
   readonly schema: SchemaInput;
   readonly key: readonly string[];
-  readonly tableId?: Hex;
   readonly codegen?: TableCodegenInput;
   readonly deploy?: TableDeployInput;
 };

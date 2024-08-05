@@ -2,7 +2,6 @@ import { CodegenInput, DeployInput, ModuleInput, SystemInput, WorldInput } from 
 
 export const SYSTEM_DEFAULTS = {
   namespace: "",
-  registerFunctionSelectors: true,
   openAccess: true,
   accessList: [],
 } as const satisfies Omit<Required<SystemInput>, "label" | "name">;

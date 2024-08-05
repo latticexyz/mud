@@ -43,14 +43,6 @@ export type System = {
    * System's resource ID.
    */
   readonly systemId: Hex;
-  /**
-   * Register function selectors for the system in the World.
-   * Defaults to true.
-   * Note:
-   * - For root systems all World function selectors will correspond to the system's function selectors.
-   * - For non-root systems, the World function selectors will be <namespace>__<function>.
-   */
-  readonly registerFunctionSelectors: boolean;
   /** If openAccess is true, any address can call the system */
   readonly openAccess: boolean;
   /** An array of addresses or system names that can access the system */
@@ -85,7 +77,10 @@ export type Deploy = {
 };
 
 export type Codegen = {
-  /** The name of the World interface to generate. (Default `IWorld`) */
+  /**
+   * @internal
+   * The name of the World interface to generate. (Default `IWorld`)
+   */
   readonly worldInterfaceName: string;
   /** Directory to output system and world interfaces of `worldgen` (Default "world") */
   readonly worldgenDirectory: string;
