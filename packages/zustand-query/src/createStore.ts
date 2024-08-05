@@ -20,42 +20,42 @@ type State = {
 };
 
 type SetRecordArgs = {
-  tableLabel: TableLabel;
+  table: TableLabel;
   key: Key;
   record: TableRecord;
 };
 
 type SetRecordsArgs = {
-  tableLabel: TableLabel;
+  table: TableLabel;
   records: TableRecord[];
 };
 
 type DeleteRecordArgs = {
-  tableLabel: TableLabel;
+  table: TableLabel;
   key: Key;
 };
 
 type GetRecordArgs = {
-  tableLabel: TableLabel;
+  table: TableLabel;
   key: Key;
 };
 
 type GetRecordsArgs = {
-  tableLabel: TableLabel;
+  table: TableLabel;
   keys?: Key[];
 };
 
 type SubscribeArgs = {
-  tableLabel: TableLabel;
+  table: TableLabel;
   subscriber: TableUpdatesSubscriber;
 };
 
 type GetKeysArgs = {
-  tableLabel: TableLabel;
+  table: TableLabel;
 };
 
 type DecodeKeyArgs = {
-  tableLabel: TableLabel;
+  table: TableLabel;
   encodedKey: string;
 };
 
@@ -219,11 +219,11 @@ export function createStore(storeConfig?: StoreConfig): Store {
           .join("|");
       }
 
-      const getRecord = ({ tableLabel, key }: GetRecordArgs) => {
+      const getRecord = ({ table: tableLabel, key }: GetRecordArgs) => {
         return get().records[tableLabel.namespace ?? ""][tableLabel.label][encodeKey(tableLabel, key)];
       };
 
-      const getRecords = ({ tableLabel, keys }: GetRecordsArgs) => {
+      const getRecords = ({ table: tableLabel, keys }: GetRecordsArgs) => {
         const namespace = tableLabel.namespace ?? "";
         const label = tableLabel.label;
         const records = get().records[namespace][label];
@@ -242,7 +242,7 @@ export function createStore(storeConfig?: StoreConfig): Store {
 
       // TODO: Benchmark performance of this function.
       // TODO: dedupe logic with setRecords below
-      const setRecord = ({ tableLabel, key, record }: SetRecordArgs) => {
+      const setRecord = ({ table: tableLabel, key, record }: SetRecordArgs) => {
         const namespace = tableLabel.namespace ?? "";
         const label = tableLabel.label;
 
@@ -275,7 +275,7 @@ export function createStore(storeConfig?: StoreConfig): Store {
         );
       };
 
-      const setRecords = ({ tableLabel, records }: SetRecordsArgs) => {
+      const setRecords = ({ table: tableLabel, records }: SetRecordsArgs) => {
         const namespace = tableLabel.namespace ?? "";
         const label = tableLabel.label;
 
@@ -312,7 +312,7 @@ export function createStore(storeConfig?: StoreConfig): Store {
         subscribers[namespace][label].forEach((subscriber) => subscriber(updates));
       };
 
-      const deleteRecord = ({ tableLabel, key }: DeleteRecordArgs) => {
+      const deleteRecord = ({ table: tableLabel, key }: DeleteRecordArgs) => {
         const namespace = tableLabel.namespace ?? "";
         const label = tableLabel.label;
         if (get().config[namespace] == null) {
@@ -333,7 +333,7 @@ export function createStore(storeConfig?: StoreConfig): Store {
         );
       };
 
-      const subscribe = ({ tableLabel, subscriber }: SubscribeArgs): Unsubscribe => {
+      const subscribe = ({ table: tableLabel, subscriber }: SubscribeArgs): Unsubscribe => {
         const namespace = tableLabel.namespace ?? "";
         const label = tableLabel.label;
 
@@ -341,7 +341,7 @@ export function createStore(storeConfig?: StoreConfig): Store {
         return () => subscribers[namespace][label].delete(subscriber);
       };
 
-      const decodeKey = ({ tableLabel, encodedKey }: DecodeKeyArgs): Key => {
+      const decodeKey = ({ table: tableLabel, encodedKey }: DecodeKeyArgs): Key => {
         const namespace = tableLabel.namespace ?? "";
         const label = tableLabel.label;
         const keyFields = get().config[namespace][label].key;
@@ -351,14 +351,14 @@ export function createStore(storeConfig?: StoreConfig): Store {
         return Object.fromEntries(Object.entries(record).filter(([field]) => keyFields.includes(field))) as never;
       };
 
-      const getKeys = ({ tableLabel }: GetKeysArgs): Keys => {
+      const getKeys = ({ table: tableLabel }: GetKeysArgs): Keys => {
         const namespace = tableLabel.namespace ?? "";
         const label = tableLabel.label;
 
         return Object.fromEntries(
           Object.keys(get().records[namespace][label]).map((encodedKey) => [
             encodedKey,
-            decodeKey({ tableLabel, encodedKey }),
+            decodeKey({ table: tableLabel, encodedKey }),
           ]),
         );
       };
@@ -369,15 +369,15 @@ export function createStore(storeConfig?: StoreConfig): Store {
 
         return {
           tableLabel,
-          setRecord: ({ key, record }: BoundSetRecordArgs) => setRecord({ tableLabel, key, record }),
-          setRecords: ({ records }: BoundSetRecordsArgs) => setRecords({ tableLabel, records }),
-          deleteRecord: ({ key }: BoundDeleteRecordArgs) => deleteRecord({ tableLabel, key }),
-          getRecord: ({ key }: BoundGetRecordArgs) => getRecord({ tableLabel, key }),
-          getRecords: (args?: BoundGetRecordsArgs) => getRecords({ tableLabel, keys: args?.keys }),
-          getKeys: () => getKeys({ tableLabel }),
-          decodeKey: ({ encodedKey }: BoundDecodeKeyArgs) => decodeKey({ tableLabel, encodedKey }),
+          setRecord: ({ key, record }: BoundSetRecordArgs) => setRecord({ table: tableLabel, key, record }),
+          setRecords: ({ records }: BoundSetRecordsArgs) => setRecords({ table: tableLabel, records }),
+          deleteRecord: ({ key }: BoundDeleteRecordArgs) => deleteRecord({ table: tableLabel, key }),
+          getRecord: ({ key }: BoundGetRecordArgs) => getRecord({ table: tableLabel, key }),
+          getRecords: (args?: BoundGetRecordsArgs) => getRecords({ table: tableLabel, keys: args?.keys }),
+          getKeys: () => getKeys({ table: tableLabel }),
+          decodeKey: ({ encodedKey }: BoundDecodeKeyArgs) => decodeKey({ table: tableLabel, encodedKey }),
           getConfig: () => get().config[namespace][label],
-          subscribe: ({ subscriber }: BoundSubscribeArgs) => subscribe({ tableLabel, subscriber }),
+          subscribe: ({ subscriber }: BoundSubscribeArgs) => subscribe({ table: tableLabel, subscriber }),
 
           // TODO: dynamically add setters and getters for individual fields of the table
         };

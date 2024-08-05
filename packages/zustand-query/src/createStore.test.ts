@@ -56,13 +56,13 @@ describe("createStore", () => {
 
       const store = createStore(tablesConfig);
       store.getState().actions.setRecord({
-        tableLabel: { label: "table1", namespace: "namespace1" },
+        table: { label: "table1", namespace: "namespace1" },
         key: { field2: 1, field3: 2 },
         record: { field1: "hello" },
       });
 
       store.getState().actions.setRecord({
-        tableLabel: { label: "table1", namespace: "namespace1" },
+        table: { label: "table1", namespace: "namespace1" },
         key: { field2: 2, field3: 1 },
         record: { field1: "world" },
       });
@@ -96,7 +96,7 @@ describe("createStore", () => {
 
       const store = createStore(tablesConfig);
       store.getState().actions.setRecords({
-        tableLabel: { label: "table1", namespace: "namespace1" },
+        table: { label: "table1", namespace: "namespace1" },
         records: [
           { field1: "hello", field2: 1, field3: 2 },
           { field1: "world", field2: 2, field3: 1 },
@@ -135,12 +135,12 @@ describe("createStore", () => {
       const listener = vi.fn();
 
       store.getState().actions.subscribe({
-        tableLabel: { label: "table1", namespace: "namespace1" },
+        table: { label: "table1", namespace: "namespace1" },
         subscriber: listener,
       });
 
       store.getState().actions.setRecord({
-        tableLabel: { label: "table1", namespace: "namespace1" },
+        table: { label: "table1", namespace: "namespace1" },
         key: { field2: 1, field3: 2 },
         record: { field1: "hello" },
       });
@@ -153,7 +153,7 @@ describe("createStore", () => {
       });
 
       store.getState().actions.setRecord({
-        tableLabel: { label: "table1", namespace: "namespace1" },
+        table: { label: "table1", namespace: "namespace1" },
         key: { field2: 1, field3: 2 },
         record: { field1: "world" },
       });
@@ -186,12 +186,12 @@ describe("createStore", () => {
       const listener = vi.fn();
 
       const unsubscribe = store.getState().actions.subscribe({
-        tableLabel: { label: "table1", namespace: "namespace1" },
+        table: { label: "table1", namespace: "namespace1" },
         subscriber: listener,
       });
 
       store.getState().actions.setRecord({
-        tableLabel: { label: "table1", namespace: "namespace1" },
+        table: { label: "table1", namespace: "namespace1" },
         key: { field2: 1, field3: 2 },
         record: { field1: "hello" },
       });
@@ -206,7 +206,7 @@ describe("createStore", () => {
       unsubscribe();
 
       store.getState().actions.setRecord({
-        tableLabel: { label: "table1", namespace: "namespace1" },
+        table: { label: "table1", namespace: "namespace1" },
         key: { field2: 1, field3: 2 },
         record: { field1: "world" },
       });
@@ -233,27 +233,27 @@ describe("createStore", () => {
 
       const store = createStore(tablesConfig);
       store.getState().actions.setRecord({
-        tableLabel: { label: "table1", namespace: "namespace1" },
+        table: { label: "table1", namespace: "namespace1" },
         key: { field2: 1, field3: 2 },
         record: { field1: "hello" },
       });
 
       store.getState().actions.setRecord({
-        tableLabel: { label: "table1", namespace: "namespace1" },
+        table: { label: "table1", namespace: "namespace1" },
         key: { field2: 2, field3: 1 },
         record: { field1: "world" },
       });
 
       attest(
         store.getState().actions.getRecord({
-          tableLabel: { label: "table1", namespace: "namespace1" },
+          table: { label: "table1", namespace: "namespace1" },
           key: { field2: 1, field3: 2 },
         }),
       ).snap({ field1: "hello", field2: 1, field3: 2 });
 
       attest(
         store.getState().actions.getRecord({
-          tableLabel: { label: "table1", namespace: "namespace1" },
+          table: { label: "table1", namespace: "namespace1" },
           key: { field2: 2, field3: 1 },
         }),
       ).snap({ field1: "world", field2: 2, field3: 1 });
