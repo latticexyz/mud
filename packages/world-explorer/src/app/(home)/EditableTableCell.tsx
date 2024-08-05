@@ -1,6 +1,5 @@
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
-import { parseEventLogs } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { useWriteContract } from "wagmi";
 import { ChangeEvent, useState } from "react";
@@ -55,24 +54,19 @@ export function EditableTableCell({
     const toastId = toast.loading("Transaction submitted");
     try {
       const fieldIdx = getFieldIdx(config?.value_schema, name);
+      const encodedField = encodeField(fieldType, valueToSet);
       const txHash = await writeContractAsync({
         account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
         abi,
         address: worldAddress,
         functionName: "setField",
-        args: [tableId, keyTuple, fieldIdx, encodeField(fieldType, valueToSet)],
+        args: [tableId, keyTuple, fieldIdx, encodedField],
       });
 
       const transactionReceipt = await waitForTransactionReceipt(wagmiConfig, {
         hash: txHash,
         pollingInterval: 100,
       });
-
-      const logs = parseEventLogs({
-        abi: abi,
-        logs: transactionReceipt.logs,
-      });
-      console.log("logs:", logs);
 
       toast.success(`Transaction successful with hash: ${txHash}`, {
         id: toastId,

@@ -2,7 +2,7 @@
 
 import { Coins, Eye, Send } from "lucide-react";
 import { toast } from "sonner";
-import { Abi, AbiFunction, parseEventLogs } from "viem";
+import { Abi, AbiFunction } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { useWriteContract } from "wagmi";
 import { z } from "zod";
@@ -78,12 +78,6 @@ export function FunctionField({ abi }: Props) {
             pollingInterval: 100,
           },
         );
-
-        const logs = parseEventLogs({
-          abi: [abi] as Abi,
-          logs: transactionReceipt.logs,
-        });
-        console.log("logs:", logs);
 
         toast.success(`Transaction successful with hash: ${txHash}`, {
           id: toastId,
