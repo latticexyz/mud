@@ -70,86 +70,86 @@ describe("defineStore", () => {
         indexFilename: "index.sol",
       },
     }).type.toString.snap(`{
-	readonly multipleNamespaces: false
-	readonly namespace: string
-	readonly namespaces: {
-		readonly "": {
-			readonly label: ""
-			readonly namespace: string
-			readonly tables: {
-				readonly Example: {
-					readonly label: "Example"
-					readonly type: "table"
-					readonly namespace: string
-					readonly name: string
-					readonly tableId: \`0x\${string}\`
-					readonly schema: {
-						readonly id: {
-							readonly type: "address"
-							readonly internalType: "address"
-						}
-						readonly name: {
-							readonly type: "string"
-							readonly internalType: "string"
-						}
-						readonly age: {
-							readonly type: "uint256"
-							readonly internalType: "uint256"
-						}
-					}
-					readonly key: readonly ["age"]
-					readonly codegen: {
-						readonly outputDirectory: string
-						readonly tableIdArgument: false
-						readonly storeArgument: false
-						readonly dataStruct: boolean
-					}
-					readonly deploy: { readonly disabled: false }
-				}
-			}
-		}
-	}
-	readonly tables: {
-		readonly Example: {
-			readonly label: "Example"
-			readonly type: "table"
-			readonly namespace: string
-			readonly name: string
-			readonly tableId: \`0x\${string}\`
-			readonly schema: {
-				readonly id: {
-					readonly type: "address"
-					readonly internalType: "address"
-				}
-				readonly name: {
-					readonly type: "string"
-					readonly internalType: "string"
-				}
-				readonly age: {
-					readonly type: "uint256"
-					readonly internalType: "uint256"
-				}
-			}
-			readonly key: readonly ["age"]
-			readonly codegen: {
-				readonly outputDirectory: string
-				readonly tableIdArgument: false
-				readonly storeArgument: false
-				readonly dataStruct: boolean
-			}
-			readonly deploy: { readonly disabled: false }
-		}
-	}
-	readonly sourceDirectory: "src"
-	readonly userTypes: {}
-	readonly enums: {}
-	readonly enumValues: {}
-	readonly codegen: {
-		readonly storeImportPath: "@latticexyz/store/src"
-		readonly userTypesFilename: "common.sol"
-		readonly outputDirectory: "codegen"
-		readonly indexFilename: "index.sol"
-	}
+  readonly multipleNamespaces: false
+  readonly namespace: string
+  readonly namespaces: {
+    readonly "": {
+      readonly label: ""
+      readonly namespace: string
+      readonly tables: {
+        readonly Example: {
+          readonly label: "Example"
+          readonly type: "table"
+          readonly namespace: string
+          readonly name: string
+          readonly tableId: \`0x\${string}\`
+          readonly schema: {
+            readonly id: {
+              readonly type: "address"
+              readonly internalType: "address"
+            }
+            readonly name: {
+              readonly type: "string"
+              readonly internalType: "string"
+            }
+            readonly age: {
+              readonly type: "uint256"
+              readonly internalType: "uint256"
+            }
+          }
+          readonly key: readonly ["age"]
+          readonly codegen: {
+            readonly outputDirectory: string
+            readonly tableIdArgument: false
+            readonly storeArgument: false
+            readonly dataStruct: boolean
+          }
+          readonly deploy: { readonly disabled: false }
+        }
+      }
+    }
+  }
+  readonly tables: {
+    readonly Example: {
+      readonly label: "Example"
+      readonly type: "table"
+      readonly namespace: string
+      readonly name: string
+      readonly tableId: \`0x\${string}\`
+      readonly schema: {
+        readonly id: {
+          readonly type: "address"
+          readonly internalType: "address"
+        }
+        readonly name: {
+          readonly type: "string"
+          readonly internalType: "string"
+        }
+        readonly age: {
+          readonly type: "uint256"
+          readonly internalType: "uint256"
+        }
+      }
+      readonly key: readonly ["age"]
+      readonly codegen: {
+        readonly outputDirectory: string
+        readonly tableIdArgument: false
+        readonly storeArgument: false
+        readonly dataStruct: boolean
+      }
+      readonly deploy: { readonly disabled: false }
+    }
+  }
+  readonly sourceDirectory: "src"
+  readonly userTypes: {}
+  readonly enums: {}
+  readonly enumValues: {}
+  readonly codegen: {
+    readonly storeImportPath: "@latticexyz/store/src"
+    readonly userTypesFilename: "common.sol"
+    readonly outputDirectory: "codegen"
+    readonly indexFilename: "index.sol"
+  }
 }`);
   });
 
@@ -222,86 +222,86 @@ describe("defineStore", () => {
         indexFilename: "index.sol",
       },
     }).type.toString.snap(`{
-	readonly multipleNamespaces: true
-	readonly namespace: null
-	readonly namespaces: {
-		readonly root: {
-			readonly label: "root"
-			readonly namespace: string
-			readonly tables: {
-				readonly Example: {
-					readonly label: "Example"
-					readonly type: "table"
-					readonly namespace: string
-					readonly name: string
-					readonly tableId: \`0x\${string}\`
-					readonly schema: {
-						readonly id: {
-							readonly type: "address"
-							readonly internalType: "address"
-						}
-						readonly name: {
-							readonly type: "string"
-							readonly internalType: "string"
-						}
-						readonly age: {
-							readonly type: "uint256"
-							readonly internalType: "uint256"
-						}
-					}
-					readonly key: readonly ["age"]
-					readonly codegen: {
-						readonly outputDirectory: string
-						readonly tableIdArgument: false
-						readonly storeArgument: false
-						readonly dataStruct: boolean
-					}
-					readonly deploy: { readonly disabled: false }
-				}
-			}
-		}
-	}
-	readonly tables: {
-		readonly root__Example: {
-			readonly label: "Example"
-			readonly type: "table"
-			readonly namespace: string
-			readonly name: string
-			readonly tableId: \`0x\${string}\`
-			readonly schema: {
-				readonly id: {
-					readonly type: "address"
-					readonly internalType: "address"
-				}
-				readonly name: {
-					readonly type: "string"
-					readonly internalType: "string"
-				}
-				readonly age: {
-					readonly type: "uint256"
-					readonly internalType: "uint256"
-				}
-			}
-			readonly key: readonly ["age"]
-			readonly codegen: {
-				readonly outputDirectory: string
-				readonly tableIdArgument: false
-				readonly storeArgument: false
-				readonly dataStruct: boolean
-			}
-			readonly deploy: { readonly disabled: false }
-		}
-	}
-	readonly sourceDirectory: "src"
-	readonly userTypes: {}
-	readonly enums: {}
-	readonly enumValues: {}
-	readonly codegen: {
-		readonly storeImportPath: "@latticexyz/store/src"
-		readonly userTypesFilename: "common.sol"
-		readonly outputDirectory: "codegen"
-		readonly indexFilename: "index.sol"
-	}
+  readonly multipleNamespaces: true
+  readonly namespace: null
+  readonly namespaces: {
+    readonly root: {
+      readonly label: "root"
+      readonly namespace: string
+      readonly tables: {
+        readonly Example: {
+          readonly label: "Example"
+          readonly type: "table"
+          readonly namespace: string
+          readonly name: string
+          readonly tableId: \`0x\${string}\`
+          readonly schema: {
+            readonly id: {
+              readonly type: "address"
+              readonly internalType: "address"
+            }
+            readonly name: {
+              readonly type: "string"
+              readonly internalType: "string"
+            }
+            readonly age: {
+              readonly type: "uint256"
+              readonly internalType: "uint256"
+            }
+          }
+          readonly key: readonly ["age"]
+          readonly codegen: {
+            readonly outputDirectory: string
+            readonly tableIdArgument: false
+            readonly storeArgument: false
+            readonly dataStruct: boolean
+          }
+          readonly deploy: { readonly disabled: false }
+        }
+      }
+    }
+  }
+  readonly tables: {
+    readonly root__Example: {
+      readonly label: "Example"
+      readonly type: "table"
+      readonly namespace: string
+      readonly name: string
+      readonly tableId: \`0x\${string}\`
+      readonly schema: {
+        readonly id: {
+          readonly type: "address"
+          readonly internalType: "address"
+        }
+        readonly name: {
+          readonly type: "string"
+          readonly internalType: "string"
+        }
+        readonly age: {
+          readonly type: "uint256"
+          readonly internalType: "uint256"
+        }
+      }
+      readonly key: readonly ["age"]
+      readonly codegen: {
+        readonly outputDirectory: string
+        readonly tableIdArgument: false
+        readonly storeArgument: false
+        readonly dataStruct: boolean
+      }
+      readonly deploy: { readonly disabled: false }
+    }
+  }
+  readonly sourceDirectory: "src"
+  readonly userTypes: {}
+  readonly enums: {}
+  readonly enumValues: {}
+  readonly codegen: {
+    readonly storeImportPath: "@latticexyz/store/src"
+    readonly userTypesFilename: "common.sol"
+    readonly outputDirectory: "codegen"
+    readonly indexFilename: "index.sol"
+  }
 }`);
   });
 
