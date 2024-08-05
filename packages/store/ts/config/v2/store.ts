@@ -55,24 +55,26 @@ export function validateStore(input: unknown): asserts input is StoreInput {
   }
 }
 
-type resolveNamespaceMode<input> = "namespaces" extends keyof input
+export type resolveNamespaceMode<input> = "namespaces" extends keyof input
   ? {
       readonly multipleNamespaces: true;
       readonly namespace: null;
-      readonly namespaces: resolveNamespaces<input["namespaces"], extendedScope<input>>;
+      readonly namespaces: show<resolveNamespaces<input["namespaces"], extendedScope<input>>>;
     }
   : {
       readonly multipleNamespaces: false;
       readonly namespace: string;
-      readonly namespaces: resolveNamespaces<
-        {
-          readonly [label in "namespace" extends keyof input
-            ? input["namespace"] extends string
-              ? input["namespace"]
-              : CONFIG_DEFAULTS["namespace"]
-            : CONFIG_DEFAULTS["namespace"]]: input;
-        },
-        extendedScope<input>
+      readonly namespaces: show<
+        resolveNamespaces<
+          {
+            readonly [label in "namespace" extends keyof input
+              ? input["namespace"] extends string
+                ? input["namespace"]
+                : CONFIG_DEFAULTS["namespace"]
+              : CONFIG_DEFAULTS["namespace"]]: input;
+          },
+          extendedScope<input>
+        >
       >;
     };
 

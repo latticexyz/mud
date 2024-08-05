@@ -4,7 +4,6 @@ import { attest } from "@ark/attest";
 import { resourceToHex } from "@latticexyz/common";
 import { Store } from "./output";
 import { satisfy } from "@ark/util";
-import { Hex } from "viem";
 
 describe("defineStore", () => {
   it("should return a fully resolved config for a single namespace", () => {
@@ -17,32 +16,27 @@ describe("defineStore", () => {
       },
     });
 
-    const expectedConfig = {
+    attest(config).snap({
       multipleNamespaces: false,
-      namespace: "" as string,
+      namespace: "",
       namespaces: {
         "": {
           label: "",
-          namespace: "" as string,
+          namespace: "",
           tables: {
             Example: {
               label: "Example",
               type: "table",
-              namespace: "" as string,
-              name: "Example" as string,
-              tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000" as Hex,
+              namespace: "",
+              name: "Example",
+              tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
               schema: {
                 id: { type: "address", internalType: "address" },
                 name: { type: "string", internalType: "string" },
                 age: { type: "uint256", internalType: "uint256" },
               },
               key: ["age"],
-              codegen: {
-                outputDirectory: "tables" as string,
-                tableIdArgument: false,
-                storeArgument: false,
-                dataStruct: true as boolean,
-              },
+              codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: true },
               deploy: { disabled: false },
             },
           },
@@ -52,21 +46,16 @@ describe("defineStore", () => {
         Example: {
           label: "Example",
           type: "table",
-          namespace: "" as string,
-          name: "Example" as string,
-          tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000" as Hex,
+          namespace: "",
+          name: "Example",
+          tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
           schema: {
             id: { type: "address", internalType: "address" },
             name: { type: "string", internalType: "string" },
             age: { type: "uint256", internalType: "uint256" },
           },
           key: ["age"],
-          codegen: {
-            outputDirectory: "tables" as string,
-            tableIdArgument: false,
-            storeArgument: false,
-            dataStruct: true as boolean,
-          },
+          codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: true },
           deploy: { disabled: false },
         },
       },
@@ -80,10 +69,88 @@ describe("defineStore", () => {
         outputDirectory: "codegen",
         indexFilename: "index.sol",
       },
-    } as const;
-
-    attest<typeof expectedConfig>(config).equals(expectedConfig);
-    attest<typeof config>(expectedConfig);
+    }).type.toString.snap(`{
+	readonly multipleNamespaces: false
+	readonly namespace: string
+	readonly namespaces: {
+		readonly "": {
+			readonly label: ""
+			readonly namespace: string
+			readonly tables: {
+				readonly Example: {
+					readonly label: "Example"
+					readonly type: "table"
+					readonly namespace: string
+					readonly name: string
+					readonly tableId: \`0x\${string}\`
+					readonly schema: {
+						readonly id: {
+							readonly type: "address"
+							readonly internalType: "address"
+						}
+						readonly name: {
+							readonly type: "string"
+							readonly internalType: "string"
+						}
+						readonly age: {
+							readonly type: "uint256"
+							readonly internalType: "uint256"
+						}
+					}
+					readonly key: readonly ["age"]
+					readonly codegen: {
+						readonly outputDirectory: string
+						readonly tableIdArgument: false
+						readonly storeArgument: false
+						readonly dataStruct: boolean
+					}
+					readonly deploy: { readonly disabled: false }
+				}
+			}
+		}
+	}
+	readonly tables: {
+		readonly Example: {
+			readonly label: "Example"
+			readonly type: "table"
+			readonly namespace: string
+			readonly name: string
+			readonly tableId: \`0x\${string}\`
+			readonly schema: {
+				readonly id: {
+					readonly type: "address"
+					readonly internalType: "address"
+				}
+				readonly name: {
+					readonly type: "string"
+					readonly internalType: "string"
+				}
+				readonly age: {
+					readonly type: "uint256"
+					readonly internalType: "uint256"
+				}
+			}
+			readonly key: readonly ["age"]
+			readonly codegen: {
+				readonly outputDirectory: string
+				readonly tableIdArgument: false
+				readonly storeArgument: false
+				readonly dataStruct: boolean
+			}
+			readonly deploy: { readonly disabled: false }
+		}
+	}
+	readonly sourceDirectory: "src"
+	readonly userTypes: {}
+	readonly enums: {}
+	readonly enumValues: {}
+	readonly codegen: {
+		readonly storeImportPath: "@latticexyz/store/src"
+		readonly userTypesFilename: "common.sol"
+		readonly outputDirectory: "codegen"
+		readonly indexFilename: "index.sol"
+	}
+}`);
   });
 
   it("should return a fully resolved config for multiple namespaces", () => {
@@ -101,32 +168,27 @@ describe("defineStore", () => {
       },
     });
 
-    const expectedConfig = {
+    attest(config).snap({
       multipleNamespaces: true,
       namespace: null,
       namespaces: {
         root: {
           label: "root",
-          namespace: "" as string,
+          namespace: "",
           tables: {
             Example: {
               label: "Example",
               type: "table",
-              namespace: "" as string,
-              name: "Example" as string,
-              tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000" as Hex,
+              namespace: "",
+              name: "Example",
+              tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
               schema: {
                 id: { type: "address", internalType: "address" },
                 name: { type: "string", internalType: "string" },
                 age: { type: "uint256", internalType: "uint256" },
               },
               key: ["age"],
-              codegen: {
-                outputDirectory: "tables" as string,
-                tableIdArgument: false,
-                storeArgument: false,
-                dataStruct: true as boolean,
-              },
+              codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: true },
               deploy: { disabled: false },
             },
           },
@@ -136,21 +198,16 @@ describe("defineStore", () => {
         root__Example: {
           label: "Example",
           type: "table",
-          namespace: "" as string,
-          name: "Example" as string,
-          tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000" as Hex,
+          namespace: "",
+          name: "Example",
+          tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
           schema: {
             id: { type: "address", internalType: "address" },
             name: { type: "string", internalType: "string" },
             age: { type: "uint256", internalType: "uint256" },
           },
           key: ["age"],
-          codegen: {
-            outputDirectory: "tables" as string,
-            tableIdArgument: false,
-            storeArgument: false,
-            dataStruct: true as boolean,
-          },
+          codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: true },
           deploy: { disabled: false },
         },
       },
@@ -164,10 +221,88 @@ describe("defineStore", () => {
         outputDirectory: "codegen",
         indexFilename: "index.sol",
       },
-    } as const;
-
-    attest<typeof expectedConfig>(config).equals(expectedConfig);
-    attest<typeof config>(expectedConfig);
+    }).type.toString.snap(`{
+	readonly multipleNamespaces: true
+	readonly namespace: null
+	readonly namespaces: {
+		readonly root: {
+			readonly label: "root"
+			readonly namespace: string
+			readonly tables: {
+				readonly Example: {
+					readonly label: "Example"
+					readonly type: "table"
+					readonly namespace: string
+					readonly name: string
+					readonly tableId: \`0x\${string}\`
+					readonly schema: {
+						readonly id: {
+							readonly type: "address"
+							readonly internalType: "address"
+						}
+						readonly name: {
+							readonly type: "string"
+							readonly internalType: "string"
+						}
+						readonly age: {
+							readonly type: "uint256"
+							readonly internalType: "uint256"
+						}
+					}
+					readonly key: readonly ["age"]
+					readonly codegen: {
+						readonly outputDirectory: string
+						readonly tableIdArgument: false
+						readonly storeArgument: false
+						readonly dataStruct: boolean
+					}
+					readonly deploy: { readonly disabled: false }
+				}
+			}
+		}
+	}
+	readonly tables: {
+		readonly root__Example: {
+			readonly label: "Example"
+			readonly type: "table"
+			readonly namespace: string
+			readonly name: string
+			readonly tableId: \`0x\${string}\`
+			readonly schema: {
+				readonly id: {
+					readonly type: "address"
+					readonly internalType: "address"
+				}
+				readonly name: {
+					readonly type: "string"
+					readonly internalType: "string"
+				}
+				readonly age: {
+					readonly type: "uint256"
+					readonly internalType: "uint256"
+				}
+			}
+			readonly key: readonly ["age"]
+			readonly codegen: {
+				readonly outputDirectory: string
+				readonly tableIdArgument: false
+				readonly storeArgument: false
+				readonly dataStruct: boolean
+			}
+			readonly deploy: { readonly disabled: false }
+		}
+	}
+	readonly sourceDirectory: "src"
+	readonly userTypes: {}
+	readonly enums: {}
+	readonly enumValues: {}
+	readonly codegen: {
+		readonly storeImportPath: "@latticexyz/store/src"
+		readonly userTypesFilename: "common.sol"
+		readonly outputDirectory: "codegen"
+		readonly indexFilename: "index.sol"
+	}
+}`);
   });
 
   it("should only allow for single namespace or multiple namespaces, not both", () => {
