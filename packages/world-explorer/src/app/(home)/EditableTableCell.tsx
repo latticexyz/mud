@@ -4,6 +4,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { useWriteContract } from "wagmi";
 import { ChangeEvent, useState } from "react";
 import { encodeField } from "@latticexyz/protocol-parser/internal";
+import { SchemaAbiType } from "@latticexyz/schema-type/internal";
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ACCOUNT_PRIVATE_KEYS } from "@/consts";
@@ -36,7 +37,7 @@ export function EditableTableCell({
   const [value, setValue] = useState<unknown>(defaultValue);
 
   const tableId = config?.table_id;
-  const fieldType = config?.value_schema[name];
+  const fieldType = config?.value_schema[name] as SchemaAbiType;
 
   const handleSubmit = async (newValue: unknown) => {
     const valueToSet = newValue === undefined ? value : newValue;
