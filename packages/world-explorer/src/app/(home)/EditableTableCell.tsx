@@ -18,7 +18,7 @@ import { getFieldIdx } from "./utils/getFieldIdx";
 type Props = {
   name: string;
   value: string;
-  keyTuple: [string];
+  keyTuple: string[];
   config: TableConfig;
 };
 

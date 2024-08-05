@@ -3,7 +3,10 @@ import {
   isStaticAbiType,
 } from "@latticexyz/schema-type/internal";
 
-export function getFieldIdx(valueSchema, fieldName) {
+export function getFieldIdx(
+  valueSchema: Record<string, string>,
+  fieldName: string,
+) {
   const fieldNames = [
     ...Object.entries(valueSchema)
       .filter(([, fieldType]) => isStaticAbiType(fieldType))
