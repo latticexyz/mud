@@ -1,5 +1,11 @@
 # @latticexyz/abi-ts
 
+## 2.1.0
+
+### Patch Changes
+
+- e49059f: Bumped `glob` dependency.
+
 ## 2.0.12
 
 ### Patch Changes
