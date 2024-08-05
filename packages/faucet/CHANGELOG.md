@@ -1,5 +1,13 @@
 # @latticexyz/faucet
 
+## 3.0.0-next.0
+
+### Patch Changes
+
+- Updated dependencies [7129a16]
+- Updated dependencies [8d0453e]
+  - @latticexyz/common@3.0.0-next.0
+
 ## 2.0.12
 
 ### Patch Changes

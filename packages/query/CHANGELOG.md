@@ -1,5 +1,23 @@
 # @latticexyz/query
 
+## 3.0.0-next.0
+
+### Patch Changes
+
+- 7129a16: Bumped `@arktype/util` and moved `evaluate`/`satisfy` usages to its `show`/`satisfy` helpers.
+- Updated dependencies [24e285d]
+- Updated dependencies [7129a16]
+- Updated dependencies [7129a16]
+- Updated dependencies [e85dc53]
+- Updated dependencies [a10b453]
+- Updated dependencies [69eb63b]
+- Updated dependencies [8d0453e]
+- Updated dependencies [fb1cfef]
+  - @latticexyz/store@3.0.0-next.0
+  - @latticexyz/config@3.0.0-next.0
+  - @latticexyz/common@3.0.0-next.0
+  - @latticexyz/schema-type@3.0.0-next.0
+
 ## 2.0.12
 
 ### Patch Changes

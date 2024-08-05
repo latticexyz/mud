@@ -1,3 +1,9 @@
+## Version 3.0.0-next.0
+
+Release date: Mon Aug 05 2024
+
+---
+
 ## Version 2.0.12
 
 Release date: Fri May 31 2024

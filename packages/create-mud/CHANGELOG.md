@@ -1,5 +1,11 @@
 # Change Log
 
+## 3.0.0-next.0
+
+### Patch Changes
+
+- e49059f: Bumped `glob` dependency.
+
 ## 2.0.12
 
 ### Patch Changes

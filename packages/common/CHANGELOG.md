@@ -1,5 +1,13 @@
 # Change Log
 
+## 3.0.0-next.0
+
+### Patch Changes
+
+- 7129a16: Removed `evaluate` and `satisfy` type utils in favor of `show` and `satisfy` from `@arktype/util`.
+- 8d0453e: `resourceToHex` will now throw if provided namespace is >14 characters. Since namespaces are used to determine access control, it's not safe to automatically truncate to fit into `bytes14` as that may change the indended namespace for resource access.
+  - @latticexyz/schema-type@3.0.0-next.0
+
 ## 2.0.12
 
 ### Patch Changes

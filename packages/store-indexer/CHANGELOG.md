@@ -1,5 +1,27 @@
 # @latticexyz/store-indexer
 
+## 3.0.0-next.0
+
+### Patch Changes
+
+- b62cf9f: Updated return values to match updated types in `@latticexyz/store-sync`.
+- Updated dependencies [24e285d]
+- Updated dependencies [9e05278]
+- Updated dependencies [f640fef]
+- Updated dependencies [7129a16]
+- Updated dependencies [3440a86]
+- Updated dependencies [7129a16]
+- Updated dependencies [e85dc53]
+- Updated dependencies [a10b453]
+- Updated dependencies [69eb63b]
+- Updated dependencies [8d0453e]
+- Updated dependencies [fb1cfef]
+  - @latticexyz/store@3.0.0-next.0
+  - @latticexyz/store-sync@3.0.0-next.0
+  - @latticexyz/common@3.0.0-next.0
+  - @latticexyz/protocol-parser@3.0.0-next.0
+  - @latticexyz/block-logs-stream@3.0.0-next.0
+
 ## 2.0.12
 
 ### Patch Changes

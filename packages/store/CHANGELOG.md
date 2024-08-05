@@ -1,5 +1,82 @@
 # Change Log
 
+## 3.0.0-next.0
+
+### Minor Changes
+
+- e85dc53: Tables and systems in config output now include a `label` property. Labels are now used throughout the codebase as a user-friendly way to reference the given resource: config keys, contract names, generated libraries, etc.
+
+  Inside `namespaces` config output, keys for tables and systems and their filenames will always correspond to their labels. This should make MUD tooling more intuitive and predictable. For backwards compatibility, `tables` config output still uses namespace-prefixed keys.
+
+  Labels replace the previous resource `name` usage, which is truncated to `bytes16` to be used as part of the resource ID and, in the future, may not always be human-readable.
+
+  These labels will soon be registered onchain so that developers can initialize a new MUD project from an existing world, generating config and interfaces with user-friendly names.
+
+- a10b453: MUD projects can now use multiple namespaces via a new top-level `namespaces` config option.
+
+  ```ts
+  import { defineWorld } from "@latticexyz/world";
+
+  export default defineWorld({
+    namespaces: {
+      game: {
+        tables: {
+          Player: { ... },
+          Position: { ... },
+        },
+      },
+      guilds: {
+        tables: {
+          Guild: { ... },
+        },
+        systems: {
+          MembershipSystem: { ... },
+          TreasurySystem: { ... },
+        },
+      },
+    },
+  });
+  ```
+
+  Once you use the top-level `namespaces` config option, your project will be in "multiple namespaces mode", which expects a source directory structure similar to the config structure: a top-level `namespaces` directory with nested namespace directories that correspond to each namespace label in the config.
+
+  ```
+  ~/guilds
+  ├── mud.config.ts
+  └── src
+      └── namespaces
+          ├── game
+          │   └── codegen
+          │       └── tables
+          │           ├── Player.sol
+          │           └── Position.sol
+          └── guilds
+              ├── MembershipSystem.sol
+              ├── TreasurySystem.sol
+              └── codegen
+                  └── tables
+                      └── Guild.sol
+  ```
+
+### Patch Changes
+
+- 24e285d: Disabled deploy of `Hooks` table, as this was meant to be a generic, codegen-only table.
+- 7129a16: Bumped `@arktype/util` and moved `evaluate`/`satisfy` usages to its `show`/`satisfy` helpers.
+- 69eb63b: Refactored tablegen in preparation for multiple namespaces and addressed a few edge cases:
+
+  - User types configured with a relative `filePath` are now resolved relative to the project root (where the `mud.config.ts` lives) rather than the current working directory.
+  - User types inside libraries now need to be referenced with their fully-qualified code path (e.g. `LibraryName.UserTypeName`).
+
+- fb1cfef: Refactored how the config handles shorthand table definitions, greatly simplifying the codebase. This will make it easier to add support for multiple namespaces.
+- Updated dependencies [7129a16]
+- Updated dependencies [7129a16]
+- Updated dependencies [e85dc53]
+- Updated dependencies [8d0453e]
+  - @latticexyz/config@3.0.0-next.0
+  - @latticexyz/common@3.0.0-next.0
+  - @latticexyz/protocol-parser@3.0.0-next.0
+  - @latticexyz/schema-type@3.0.0-next.0
+
 ## 2.0.12
 
 ### Patch Changes
