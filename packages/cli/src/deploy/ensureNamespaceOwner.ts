@@ -39,7 +39,8 @@ export async function ensureNamespaceOwner({
     existingDesiredNamespaces.map(async (namespace) => {
       const { owner } = await getTableValue({
         client,
-        worldDeploy,
+        worldAddress: worldDeploy.address,
+        stateBlock: worldDeploy.stateBlock,
         table: worldConfig.namespaces.world.tables.NamespaceOwner,
         key: { namespaceId: resourceToHex({ type: "namespace", namespace, name: "" }) },
       });
