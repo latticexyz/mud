@@ -41,45 +41,47 @@ export async function resolveConfig({
 
   const configSystems = await resolveSystems({ rootDir, config });
 
-  const systems = configSystems.map((system): System => {
-    const contractData = getContractData(`${system.label}.sol`, system.label, forgeOutDir);
+  const systems = configSystems
+    .filter((system) => !system.deploy.disabled)
+    .map((system): System => {
+      const contractData = getContractData(`${system.label}.sol`, system.label, forgeOutDir);
 
-    const systemFunctions = contractData.abi
-      .filter((item): item is typeof item & { type: "function" } => item.type === "function")
-      .map(toFunctionSignature)
-      .filter((sig) => !baseSystemFunctions.includes(sig))
-      .map((sig): WorldFunction => {
-        // TODO: figure out how to not duplicate contract behavior (https://github.com/latticexyz/mud/issues/1708)
-        const worldSignature = system.namespace === "" ? sig : `${system.namespace}__${sig}`;
-        return {
-          signature: worldSignature,
-          selector: toFunctionSelector(worldSignature),
-          systemId: system.systemId,
-          systemFunctionSignature: sig,
-          systemFunctionSelector: toFunctionSelector(sig),
-        };
-      });
+      const systemFunctions = contractData.abi
+        .filter((item): item is typeof item & { type: "function" } => item.type === "function")
+        .map(toFunctionSignature)
+        .filter((sig) => !baseSystemFunctions.includes(sig))
+        .map((sig): WorldFunction => {
+          // TODO: figure out how to not duplicate contract behavior (https://github.com/latticexyz/mud/issues/1708)
+          const worldSignature = system.namespace === "" ? sig : `${system.namespace}__${sig}`;
+          return {
+            signature: worldSignature,
+            selector: toFunctionSelector(worldSignature),
+            systemId: system.systemId,
+            systemFunctionSignature: sig,
+            systemFunctionSelector: toFunctionSelector(sig),
+          };
+        });
 
-    // TODO: move to resolveSystems?
-    const allowedAddresses = system.accessList.filter((target): target is Hex => isHex(target));
-    const allowedSystemIds = system.accessList
-      .filter((target) => !isHex(target))
-      .map((label) => {
-        const system = configSystems.find((s) => s.label === label)!;
-        return system.systemId;
-      });
+      // TODO: move to resolveSystems?
+      const allowedAddresses = system.accessList.filter((target): target is Hex => isHex(target));
+      const allowedSystemIds = system.accessList
+        .filter((target) => !isHex(target))
+        .map((label) => {
+          const system = configSystems.find((s) => s.label === label)!;
+          return system.systemId;
+        });
 
-    return {
-      ...system,
-      allowAll: system.openAccess,
-      allowedAddresses,
-      allowedSystemIds,
-      prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
-      deployedBytecodeSize: contractData.deployedBytecodeSize,
-      abi: contractData.abi,
-      functions: systemFunctions,
-    };
-  });
+      return {
+        ...system,
+        allowAll: system.openAccess,
+        allowedAddresses,
+        allowedSystemIds,
+        prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
+        deployedBytecodeSize: contractData.deployedBytecodeSize,
+        abi: contractData.abi,
+        functions: systemFunctions,
+      };
+    });
 
   // Check for overlapping system IDs (since names get truncated when turning into IDs)
   // TODO: move this into the world config resolve step once it resolves system IDs
