@@ -23,8 +23,13 @@ export async function ensureSystems({
   readonly systems: readonly System[];
 }): Promise<readonly Hex[]> {
   const [worldSystems, worldAccess] = await Promise.all([
-    getSystems({ client, worldDeploy }),
-    getResourceAccess({ client, worldDeploy }),
+    getSystems({ client, worldAddress: worldDeploy.address }),
+    getResourceAccess({
+      client,
+      worldAddress: worldDeploy.address,
+      deployBlock: worldDeploy.deployBlock,
+      stateBlock: worldDeploy.stateBlock,
+    }),
   ]);
 
   // Register or replace systems

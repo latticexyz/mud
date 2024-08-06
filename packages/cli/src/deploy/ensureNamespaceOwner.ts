@@ -15,7 +15,12 @@ export async function ensureNamespaceOwner({
   readonly resourceIds: readonly Hex[];
 }): Promise<readonly Hex[]> {
   const desiredNamespaces = Array.from(new Set(resourceIds.map((resourceId) => hexToResource(resourceId).namespace)));
-  const existingResourceIds = await getResourceIds({ client, worldDeploy });
+  const existingResourceIds = await getResourceIds({
+    client,
+    worldAddress: worldDeploy.address,
+    deployBlock: worldDeploy.deployBlock,
+    stateBlock: worldDeploy.stateBlock,
+  });
   const existingNamespaces = new Set(existingResourceIds.map((resourceId) => hexToResource(resourceId).namespace));
   if (existingNamespaces.size) {
     debug(

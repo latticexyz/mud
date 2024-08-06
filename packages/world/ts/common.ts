@@ -7,20 +7,6 @@ export const worldAbi = IBaseWorldAbi;
 
 export const worldDeployEvents = [helloStoreEvent, helloWorldEvent] as const;
 
-export type WorldDeploy = {
-  readonly address: Address;
-  readonly worldVersion: string;
-  readonly storeVersion: string;
-  /** Block number where the world was deployed */
-  readonly deployBlock: bigint;
-  /**
-   * Block number at the time of fetching world deploy.
-   * We use this block number when requesting data from the chain to align chain state
-   * with the same block during the introspection steps of the deploy.
-   */
-  readonly stateBlock: bigint;
-};
-
 export type Library = DeterministicContract & {
   /**
    * Path to library source file, e.g. `src/libraries/SomeLib.sol`

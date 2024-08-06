@@ -15,7 +15,12 @@ export async function ensureFunctions({
   readonly worldDeploy: WorldDeploy;
   readonly functions: readonly WorldFunction[];
 }): Promise<readonly Hex[]> {
-  const worldFunctions = await getFunctions({ client, worldDeploy });
+  const worldFunctions = await getFunctions({
+    client,
+    worldAddress: worldDeploy.address,
+    deployBlock: worldDeploy.deployBlock,
+    stateBlock: worldDeploy.stateBlock,
+  });
   const worldSelectorToFunction = Object.fromEntries(worldFunctions.map((func) => [func.selector, func]));
 
   const toSkip = functions.filter((func) => worldSelectorToFunction[func.selector]);
