@@ -65,6 +65,15 @@ The MUD config has two modes: single namespace and multiple namespaces. By defau
       </Param>
       <Param name="openAccess">Whether or not any address can call this system. Defaults to `true`.</Param>
       <Param name="accessList">A list of contract addresses or system labels that can call this system, used with `openAccess: false`.</Param>
+      <Param name="deploy">
+        Customize how to deploy this system.
+
+        <Params>
+          <Param name="disabled">Disable deployment of this system. Defaults to `false`.</Param>
+          <Param name="registerWorldFunctions">Whether this system's functions should be registered on the world, prefixed with the system namespace. Defaults to `true`.</Param>
+        </Params>
+
+      </Param>
     </Params>
 
   </Param>
