@@ -46,21 +46,23 @@ export async function resolveConfig({
     .map((system): System => {
       const contractData = getContractData(`${system.label}.sol`, system.label, forgeOutDir);
 
-      const systemFunctions = contractData.abi
-        .filter((item): item is typeof item & { type: "function" } => item.type === "function")
-        .map(toFunctionSignature)
-        .filter((sig) => !baseSystemFunctions.includes(sig))
-        .map((sig): WorldFunction => {
-          // TODO: figure out how to not duplicate contract behavior (https://github.com/latticexyz/mud/issues/1708)
-          const worldSignature = system.namespace === "" ? sig : `${system.namespace}__${sig}`;
-          return {
-            signature: worldSignature,
-            selector: toFunctionSelector(worldSignature),
-            systemId: system.systemId,
-            systemFunctionSignature: sig,
-            systemFunctionSelector: toFunctionSelector(sig),
-          };
-        });
+      const worldFunctions = system.deploy.registerWorldFunctions
+        ? contractData.abi
+            .filter((item): item is typeof item & { type: "function" } => item.type === "function")
+            .map(toFunctionSignature)
+            .filter((sig) => !baseSystemFunctions.includes(sig))
+            .map((sig): WorldFunction => {
+              // TODO: figure out how to not duplicate contract behavior (https://github.com/latticexyz/mud/issues/1708)
+              const worldSignature = system.namespace === "" ? sig : `${system.namespace}__${sig}`;
+              return {
+                signature: worldSignature,
+                selector: toFunctionSelector(worldSignature),
+                systemId: system.systemId,
+                systemFunctionSignature: sig,
+                systemFunctionSelector: toFunctionSelector(sig),
+              };
+            })
+        : [];
 
       // TODO: move to resolveSystems?
       const allowedAddresses = system.accessList.filter((target): target is Hex => isHex(target));
@@ -79,7 +81,7 @@ export async function resolveConfig({
         prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
         deployedBytecodeSize: contractData.deployedBytecodeSize,
         abi: contractData.abi,
-        functions: systemFunctions,
+        worldFunctions,
       };
     });
 
