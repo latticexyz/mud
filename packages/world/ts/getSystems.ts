@@ -1,5 +1,6 @@
-import { DeployedSystem, WorldDeploy } from "./common";
-import { Client } from "viem";
+import { DeployedSystem, worldDeployEvents } from "./common";
+import { Client, Address, parseAbi } from "viem";
+import { getBlockNumber, getLogs } from "viem/actions";
 import { getResourceIds } from "./getResourceIds";
 import { hexToResource, resourceToLabel } from "@latticexyz/common";
 import { getTableValue } from "./getTableValue";
@@ -10,15 +11,27 @@ import worldConfig from "../mud.config";
 
 export async function getSystems({
   client,
-  worldDeploy,
+  worldAddress,
 }: {
   readonly client: Client;
-  readonly worldDeploy: WorldDeploy;
+  readonly worldAddress: Address;
 }): Promise<readonly DeployedSystem[]> {
+  const stateBlock = await getBlockNumber(client);
+  const logs = await getLogs(client, {
+    strict: true,
+    address: worldAddress,
+    events: parseAbi(worldDeployEvents),
+    // this may fail for certain RPC providers with block range limits
+    // if so, could potentially use our fetchLogs helper (which does pagination)
+    fromBlock: "earliest",
+    toBlock: stateBlock,
+  });
+  const deployBlock = logs[0].blockNumber;
+
   const [resourceIds, functions, resourceAccess] = await Promise.all([
-    getResourceIds({ client, worldDeploy }),
-    getFunctions({ client, worldDeploy }),
-    getResourceAccess({ client, worldDeploy }),
+    getResourceIds({ client, worldAddress, deployBlock, stateBlock }),
+    getFunctions({ client, worldAddress, deployBlock, stateBlock }),
+    getResourceAccess({ client, worldAddress, deployBlock, stateBlock }),
   ]);
   const systems = resourceIds.map(hexToResource).filter((resource) => resource.type === "system");
 
@@ -27,7 +40,8 @@ export async function getSystems({
     systems.map(async (system): Promise<DeployedSystem> => {
       const { system: address, publicAccess } = await getTableValue({
         client,
-        worldDeploy,
+        worldAddress,
+        stateBlock,
         table: worldConfig.namespaces.world.tables.Systems,
         key: { systemId: system.resourceId },
       });

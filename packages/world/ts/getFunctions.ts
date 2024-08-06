@@ -1,5 +1,5 @@
-import { Client, parseAbiItem } from "viem";
-import { WorldDeploy, WorldFunction } from "./common";
+import { Client, parseAbiItem, Address } from "viem";
+import { WorldFunction } from "./common";
 import { debug } from "./debug";
 import { storeSetRecordEvent } from "@latticexyz/store";
 import { getLogs } from "viem/actions";
@@ -14,18 +14,22 @@ import worldConfig from "../mud.config";
 
 export async function getFunctions({
   client,
-  worldDeploy,
+  worldAddress,
+  deployBlock,
+  stateBlock,
 }: {
   readonly client: Client;
-  readonly worldDeploy: WorldDeploy;
+  readonly worldAddress: Address;
+  readonly deployBlock: bigint;
+  readonly stateBlock: bigint;
 }): Promise<readonly WorldFunction[]> {
   // This assumes we only use `FunctionSelectors._set(...)`, which is true as of this writing.
-  debug("looking up function selectors for", worldDeploy.address);
+  debug("looking up function selectors for", worldAddress);
   const selectorLogs = await getLogs(client, {
     strict: true,
-    fromBlock: worldDeploy.deployBlock,
-    toBlock: worldDeploy.stateBlock,
-    address: worldDeploy.address,
+    fromBlock: deployBlock,
+    toBlock: stateBlock,
+    address: worldAddress,
     event: parseAbiItem(storeSetRecordEvent),
     args: { tableId: worldConfig.namespaces.world.tables.FunctionSelectors.tableId },
   });
@@ -42,15 +46,15 @@ export async function getFunctions({
       ),
     };
   });
-  debug("found", selectors.length, "function selectors for", worldDeploy.address);
+  debug("found", selectors.length, "function selectors for", worldAddress);
 
   // This assumes we only use `FunctionSignatures._set(...)`, which is true as of this writing.
-  debug("looking up function signatures for", worldDeploy.address);
+  debug("looking up function signatures for", worldAddress);
   const signatureLogs = await getLogs(client, {
     strict: true,
-    fromBlock: worldDeploy.deployBlock,
-    toBlock: worldDeploy.stateBlock,
-    address: worldDeploy.address,
+    fromBlock: deployBlock,
+    toBlock: stateBlock,
+    address: worldAddress,
     event: parseAbiItem(storeSetRecordEvent),
     args: { tableId: worldConfig.namespaces.world.tables.FunctionSignatures.tableId },
   });
@@ -69,7 +73,7 @@ export async function getFunctions({
       ];
     }),
   );
-  debug("found", signatureLogs.length, "function signatures for", worldDeploy.address);
+  debug("found", signatureLogs.length, "function signatures for", worldAddress);
 
   const functions = selectors.map(({ worldFunctionSelector, systemFunctionSelector, systemId }) => ({
     selector: worldFunctionSelector,

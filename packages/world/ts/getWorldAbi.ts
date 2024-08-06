@@ -1,17 +1,16 @@
-import { Abi } from "abitype";
+import { Client, Abi, Address, getAddress } from "viem";
 import { getSystems } from "./getSystems";
 import { functionSignatureToAbiItem } from "./functionSignatureToAbiItem";
-import { Client } from "viem";
-import { WorldDeploy } from "./common";
 
 export async function getWorldAbi({
   client,
-  worldDeploy,
+  worldAddress,
 }: {
   readonly client: Client;
-  readonly worldDeploy: WorldDeploy;
+  readonly worldAddress: Address;
 }): Promise<Abi> {
-  const systems = await getSystems({ client, worldDeploy });
+  const formattedWorldAddress = getAddress(worldAddress);
+  const systems = await getSystems({ client, worldAddress: formattedWorldAddress });
 
   const worldAbi = systems.flatMap((system) =>
     system.functions.map((func) => functionSignatureToAbiItem(func.signature)),
