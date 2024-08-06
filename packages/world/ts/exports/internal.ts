@@ -7,7 +7,6 @@ export * from "../actions/callFrom";
 
 export * from "../callWithSignatureTypes";
 
-export * from "../debug";
 export * from "../getSystems";
 export * from "../getFunctions";
 export * from "../getTableValue";
