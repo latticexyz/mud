@@ -3,7 +3,7 @@ import { waitForTransactionReceipt } from "viem/actions";
 import { ensureWorldFactory } from "./ensureWorldFactory";
 import WorldFactoryAbi from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.abi.json" assert { type: "json" };
 import { writeContract } from "@latticexyz/common";
-import { logsToWorldDeploy } from "@latticexyz/world/internal";
+import { logsToWorldDeploy } from "./logsToWorldDeploy";
 import { debug } from "./debug";
 import { WorldDeploy } from "./common";
 
