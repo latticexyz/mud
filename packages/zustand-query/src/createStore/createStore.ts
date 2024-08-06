@@ -1,34 +1,15 @@
 import { createStore as createZustandStore } from "zustand/vanilla";
 import { StoreApi } from "zustand";
 import { mutative } from "zustand-mutative";
-import { dynamicAbiTypeToDefaultValue, staticAbiTypeToDefaultValue } from "@latticexyz/schema-type/internal";
-import { Unsubscribe, TableRecord, TableUpdates, Key, Keys, TableLabel, StoreRecords, TableRecords } from "./common";
-import { Table } from "@latticexyz/config";
+import { Unsubscribe, TableRecord, Key, Keys, TableLabel, TableRecords } from "../common";
 import { TableInput, resolveTable, Store as StoreConfig } from "@latticexyz/store/config/v2";
+import { SetRecordArgs, setRecord } from "./setRecord";
+import { State, Subscribers, TableUpdatesSubscriber } from "./common";
+import { Table } from "@latticexyz/config";
+import { SetRecordsArgs, setRecords } from "./setRecords";
+import { encodeKey } from "./encodeKey";
 
 export type Config = StoreConfig;
-
-type TableUpdatesSubscriber = (updates: TableUpdates) => void;
-
-type State = {
-  config: {
-    [namespace: string]: {
-      [tableConfig: string]: Table;
-    };
-  };
-  records: StoreRecords;
-};
-
-type SetRecordArgs = {
-  table: TableLabel;
-  key: Key;
-  record: TableRecord;
-};
-
-type SetRecordsArgs = {
-  table: TableLabel;
-  records: TableRecord[];
-};
 
 type DeleteRecordArgs = {
   table: TableLabel;
@@ -164,12 +145,6 @@ export type BoundTable = {
   subscribe: (args: BoundSubscribeArgs) => Unsubscribe;
 };
 
-type Subscribers = {
-  [namespace: string]: {
-    [table: string]: Set<TableUpdatesSubscriber>;
-  };
-};
-
 /**
  * Initializes a Zustand store based on the provided table configs.
  */
@@ -179,6 +154,7 @@ export function createStore(storeConfig?: StoreConfig): Store {
   return createZustandStore<State & Actions>()(
     mutative((set, get) => {
       const state: State = { config: {}, records: {} };
+      const context = { subscribers, get, set };
 
       if (storeConfig) {
         for (const [namespace, { tables }] of Object.entries(storeConfig.namespaces)) {
@@ -202,25 +178,8 @@ export function createStore(storeConfig?: StoreConfig): Store {
         }
       }
 
-      /**
-       * Encode a key object into a string that can be used as index in the store
-       * TODO: Benchmark performance of this function
-       */
-      function encodeKey({ label, namespace }: TableLabel, key: TableRecord): string {
-        const keyOrder = get().config[namespace ?? ""][label].key;
-        return keyOrder
-          .map((keyName) => {
-            const keyValue = key[keyName];
-            if (keyValue == null) {
-              throw new Error(`Provided key is missing field ${keyName}.`);
-            }
-            return key[keyName];
-          })
-          .join("|");
-      }
-
       const getRecord = ({ table: tableLabel, key }: GetRecordArgs) => {
-        return get().records[tableLabel.namespace ?? ""][tableLabel.label][encodeKey(tableLabel, key)];
+        return get().records[tableLabel.namespace ?? ""][tableLabel.label][encodeKey(context, tableLabel, key)];
       };
 
       const getRecords = ({ table: tableLabel, keys }: GetRecordsArgs) => {
@@ -234,7 +193,7 @@ export function createStore(storeConfig?: StoreConfig): Store {
 
         return Object.fromEntries(
           keys.map((key) => {
-            const encodedKey = encodeKey(tableLabel, key);
+            const encodedKey = encodeKey(context, tableLabel, key);
             return [encodedKey, records[encodedKey]];
           }),
         );
@@ -242,75 +201,6 @@ export function createStore(storeConfig?: StoreConfig): Store {
 
       // TODO: Benchmark performance of this function.
       // TODO: dedupe logic with setRecords below
-      const setRecord = ({ table: tableLabel, key, record }: SetRecordArgs) => {
-        const namespace = tableLabel.namespace ?? "";
-        const label = tableLabel.label;
-
-        if (get().config[namespace] == null) {
-          throw new Error(`Table '${namespace}__${label}' is not registered yet.`);
-        }
-
-        const encodedKey = encodeKey(tableLabel, key);
-        const prevRecord = get().records[namespace][label][encodedKey];
-        const schema = get().config[namespace][label].schema;
-        const newRecord = Object.fromEntries(
-          Object.keys(schema).map((fieldName) => [
-            fieldName,
-            key[fieldName] ?? // Key fields in record must match the key
-              record[fieldName] ?? // Override provided record fields
-              prevRecord?.[fieldName] ?? // Keep existing non-overridden fields
-              staticAbiTypeToDefaultValue[schema[fieldName] as never] ?? // Default values for new fields
-              dynamicAbiTypeToDefaultValue[schema[fieldName] as never],
-          ]),
-        );
-
-        // Update record
-        set((prev) => {
-          prev.records[tableLabel.namespace ?? ""][tableLabel.label][encodedKey] = newRecord;
-        });
-
-        // Notify table subscribers
-        subscribers[namespace][label].forEach((subscriber) =>
-          subscriber({ [encodedKey]: { prev: prevRecord && { ...prevRecord }, current: newRecord } }),
-        );
-      };
-
-      const setRecords = ({ table: tableLabel, records }: SetRecordsArgs) => {
-        const namespace = tableLabel.namespace ?? "";
-        const label = tableLabel.label;
-
-        if (get().config[namespace] == null) {
-          throw new Error(`Table '${namespace}__${label}' is not registered yet.`);
-        }
-
-        const updates: TableUpdates = {};
-        for (const record of records) {
-          const encodedKey = encodeKey(tableLabel, record);
-          const prevRecord = get().records[namespace][label][encodedKey];
-          const schema = get().config[namespace][label].schema;
-          const newRecord = Object.fromEntries(
-            Object.keys(schema).map((fieldName) => [
-              fieldName,
-              record[fieldName] ?? // Override provided record fields
-                prevRecord?.[fieldName] ?? // Keep existing non-overridden fields
-                staticAbiTypeToDefaultValue[schema[fieldName] as never] ?? // Default values for new fields
-                dynamicAbiTypeToDefaultValue[schema[fieldName] as never],
-            ]),
-          );
-          updates[encodedKey] = { prev: prevRecord, current: newRecord };
-        }
-
-        // Update records
-        set((prev) => {
-          for (const [encodedKey, { current }] of Object.entries(updates)) {
-            // TODO: seems like mutative removes `readonly` from type, causing type error here
-            prev.records[tableLabel.namespace ?? ""][tableLabel.label][encodedKey] = current as never;
-          }
-        });
-
-        // Notify table subscribers
-        subscribers[namespace][label].forEach((subscriber) => subscriber(updates));
-      };
 
       const deleteRecord = ({ table: tableLabel, key }: DeleteRecordArgs) => {
         const namespace = tableLabel.namespace ?? "";
@@ -319,7 +209,7 @@ export function createStore(storeConfig?: StoreConfig): Store {
           throw new Error(`Table '${namespace}__${label}' is not registered yet.`);
         }
 
-        const encodedKey = encodeKey(tableLabel, key);
+        const encodedKey = encodeKey(context, tableLabel, key);
         const prevRecord = get().records[namespace][label][encodedKey];
 
         // Delete record
@@ -420,8 +310,8 @@ export function createStore(storeConfig?: StoreConfig): Store {
       return {
         ...state,
         actions: {
-          setRecord,
-          setRecords,
+          setRecord: setRecord(context),
+          setRecords: setRecords(context),
           deleteRecord,
           getRecord,
           getRecords,
