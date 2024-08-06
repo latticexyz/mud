@@ -581,6 +581,7 @@ describe("defineWorld", () => {
         namespace: "app",
         name: "Example",
         systemId: "0x737961707000000000000000000000004578616d706c65000000000000000000",
+        deploy: { disabled: false, registerWorldFunctions: true },
         openAccess: true,
         accessList: [],
       },
@@ -592,6 +593,10 @@ describe("defineWorld", () => {
     readonly systemId: \`0x\${string}\`
     readonly openAccess: true
     readonly accessList: readonly []
+    readonly deploy: {
+      readonly disabled: false
+      readonly registerWorldFunctions: true
+    }
   }
 }`);
   });

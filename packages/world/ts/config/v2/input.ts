@@ -1,6 +1,8 @@
 import { StoreInput, NamespaceInput as StoreNamespaceInput } from "@latticexyz/store/config/v2";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
-import { Codegen } from "./output";
+import { Codegen, SystemDeploy } from "./output";
+
+export type SystemDeployInput = Partial<SystemDeploy>;
 
 export type SystemInput = {
   /**
@@ -22,6 +24,7 @@ export type SystemInput = {
   readonly openAccess?: boolean;
   /** An array of addresses or system names that can access the system */
   readonly accessList?: readonly string[];
+  readonly deploy?: SystemDeployInput;
 };
 
 export type SystemsInput = {
