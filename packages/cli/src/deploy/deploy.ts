@@ -1,5 +1,5 @@
 import { Account, Address, Chain, Client, Hex, Transport } from "viem";
-import { debug, getWorldDeploy } from "@latticexyz/world/internal";
+import { getWorldDeploy } from "@latticexyz/world/internal";
 import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
@@ -14,6 +14,7 @@ import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";
 import { ensureWorldFactory } from "./ensureWorldFactory";
 import { Table } from "@latticexyz/config";
+import { debug } from "./debug";
 
 type DeployOptions = {
   client: Client<Transport, Chain | undefined, Account>;
