@@ -45,7 +45,7 @@ export async function getSystems({
         table: worldConfig.namespaces.world.tables.Systems,
         key: { systemId: system.resourceId },
       });
-      const systemFunctions = functions.filter((func) => func.systemId === system.resourceId);
+      const worldFunctions = functions.filter((func) => func.systemId === system.resourceId);
       return {
         address,
         namespace: system.namespace,
@@ -55,7 +55,7 @@ export async function getSystems({
         allowedAddresses: resourceAccess
           .filter(({ resourceId }) => resourceId === system.resourceId)
           .map(({ address }) => address),
-        functions: systemFunctions,
+        worldFunctions,
       };
     }),
   );

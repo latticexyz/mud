@@ -115,7 +115,7 @@ export async function deploy({
   const functionTxs = await ensureFunctions({
     client,
     worldDeploy,
-    functions: systems.flatMap((system) => system.functions),
+    functions: systems.flatMap((system) => system.worldFunctions),
   });
   const moduleTxs = await ensureModules({
     client,

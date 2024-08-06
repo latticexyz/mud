@@ -25,6 +25,20 @@ export type Module = {
   readonly artifactPath: string | undefined;
 };
 
+export type SystemDeploy = {
+  /**
+   * Whether or not to deploy the system.
+   * Defaults to `false`.
+   */
+  readonly disabled: boolean;
+  /**
+   * Whether or not to register system functions on the world.
+   * System functions are prefixed with the system namespace when registering on the world, so system function names must be unique within their namespace.
+   * Defaults to `true`.
+   */
+  readonly registerWorldFunctions: boolean;
+};
+
 export type System = {
   /**
    * Human-readable system label. Used as config keys, interface names, and filenames.
@@ -47,6 +61,7 @@ export type System = {
   readonly openAccess: boolean;
   /** An array of addresses or system names that can access the system */
   readonly accessList: readonly string[];
+  readonly deploy: SystemDeploy;
 };
 
 export type Systems = {

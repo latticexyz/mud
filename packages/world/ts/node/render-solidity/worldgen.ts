@@ -28,14 +28,17 @@ export async function worldgen({
 
   const outputPath = path.join(outDir, config.codegen.worldInterfaceName + ".sol");
 
-  const systems = (await resolveSystems({ rootDir, config })).map((system) => {
-    const interfaceName = `I${system.label}`;
-    return {
-      ...system,
-      interfaceName,
-      interfacePath: path.join(path.dirname(outputPath), `${interfaceName}.sol`),
-    };
-  });
+  const systems = (await resolveSystems({ rootDir, config }))
+    // TODO: move to codegen option or generate "system manifest" and codegen from that
+    .filter((system) => system.deploy.registerWorldFunctions)
+    .map((system) => {
+      const interfaceName = `I${system.label}`;
+      return {
+        ...system,
+        interfaceName,
+        interfacePath: path.join(path.dirname(outputPath), `${interfaceName}.sol`),
+      };
+    });
 
   const worldImports = systems.map(
     (system): ImportDatum => ({
