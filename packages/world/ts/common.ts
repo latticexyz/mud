@@ -1,6 +1,9 @@
 import { Abi, Address, Hex } from "viem";
+import IBaseWorldAbi from "../out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import { helloStoreEvent } from "@latticexyz/store";
-import { helloWorldEvent } from "@latticexyz/world";
+import { helloWorldEvent } from "./worldEvents";
+
+export const worldAbi = IBaseWorldAbi;
 
 export const worldDeployEvents = [helloStoreEvent, helloWorldEvent] as const;
 

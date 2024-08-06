@@ -5,7 +5,7 @@ import { storeSpliceStaticDataEvent } from "@latticexyz/store";
 import { getLogs } from "viem/actions";
 import { decodeKey, getKeySchema, getSchemaTypes } from "@latticexyz/protocol-parser/internal";
 import { getTableValue } from "./getTableValue";
-import worldConfig from "@latticexyz/world/mud.config";
+import worldConfig from "../mud.config";
 
 export async function getResourceAccess({
   client,
