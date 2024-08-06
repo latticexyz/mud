@@ -23,12 +23,17 @@ export async function ensureSystems({
   readonly systems: readonly System[];
 }): Promise<readonly Hex[]> {
   const [worldSystems, worldAccess] = await Promise.all([
-    getSystems({ client, worldAddress: worldDeploy.address }),
+    getSystems({
+      client,
+      worldAddress: worldDeploy.address,
+      stateBlock: BigInt(worldDeploy.stateBlock),
+      deployBlock: BigInt(worldDeploy.deployBlock),
+    }),
     getResourceAccess({
       client,
       worldAddress: worldDeploy.address,
-      deployBlock: worldDeploy.deployBlock,
-      stateBlock: worldDeploy.stateBlock,
+      stateBlock: BigInt(worldDeploy.stateBlock),
+      deployBlock: BigInt(worldDeploy.deployBlock),
     }),
   ]);
 

@@ -1,8 +1,8 @@
 import { Client, Address, getAddress, parseAbi } from "viem";
 import { getBlockNumber, getLogs } from "viem/actions";
 import { WorldDeploy, worldDeployEvents } from "./common";
-import { logsToWorldDeploy } from "./logsToWorldDeploy";
 import { debug } from "./debug";
+import { logsToWorldDeploy } from "./logsToWorldDeploy";
 
 const deploys = new Map<Address, WorldDeploy>();
 

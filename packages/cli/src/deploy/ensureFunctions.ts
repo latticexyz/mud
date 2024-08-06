@@ -18,8 +18,8 @@ export async function ensureFunctions({
   const worldFunctions = await getFunctions({
     client,
     worldAddress: worldDeploy.address,
-    deployBlock: worldDeploy.deployBlock,
-    stateBlock: worldDeploy.stateBlock,
+    deployBlock: BigInt(worldDeploy.deployBlock),
+    stateBlock: BigInt(worldDeploy.stateBlock),
   });
   const worldSelectorToFunction = Object.fromEntries(worldFunctions.map((func) => [func.selector, func]));
 

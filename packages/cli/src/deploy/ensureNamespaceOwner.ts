@@ -18,8 +18,8 @@ export async function ensureNamespaceOwner({
   const existingResourceIds = await getResourceIds({
     client,
     worldAddress: worldDeploy.address,
-    deployBlock: worldDeploy.deployBlock,
-    stateBlock: worldDeploy.stateBlock,
+    deployBlock: BigInt(worldDeploy.deployBlock),
+    stateBlock: BigInt(worldDeploy.stateBlock),
   });
   const existingNamespaces = new Set(existingResourceIds.map((resourceId) => hexToResource(resourceId).namespace));
   if (existingNamespaces.size) {
@@ -40,7 +40,7 @@ export async function ensureNamespaceOwner({
       const { owner } = await getTableValue({
         client,
         worldAddress: worldDeploy.address,
-        stateBlock: worldDeploy.stateBlock,
+        stateBlock: BigInt(worldDeploy.stateBlock),
         table: worldConfig.namespaces.world.tables.NamespaceOwner,
         key: { namespaceId: resourceToHex({ type: "namespace", namespace, name: "" }) },
       });
