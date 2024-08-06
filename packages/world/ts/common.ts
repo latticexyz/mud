@@ -46,7 +46,7 @@ export type System = DeterministicContract & {
   readonly allowAll: boolean;
   readonly allowedAddresses: readonly Hex[];
   readonly allowedSystemIds: readonly Hex[];
-  readonly functions: readonly WorldFunction[];
+  readonly worldFunctions: readonly WorldFunction[];
 };
 
 export type DeployedSystem = Omit<System, "abi" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"> & {
