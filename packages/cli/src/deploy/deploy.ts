@@ -1,15 +1,14 @@
 import { Account, Address, Chain, Client, Hex, Transport } from "viem";
+import { debug, getWorldDeploy } from "@latticexyz/world/internal";
 import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
 import { Library, Module, System, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
 import { ensureSystems } from "./ensureSystems";
 import { waitForTransactionReceipt } from "viem/actions";
-import { getWorldDeploy } from "./getWorldDeploy";
 import { ensureFunctions } from "./ensureFunctions";
 import { ensureModules } from "./ensureModules";
 import { ensureNamespaceOwner } from "./ensureNamespaceOwner";
-import { debug } from "./debug";
 import { resourceToLabel } from "@latticexyz/common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";

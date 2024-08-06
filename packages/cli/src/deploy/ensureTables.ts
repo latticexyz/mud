@@ -10,7 +10,7 @@ import {
   getKeySchema,
   KeySchema,
 } from "@latticexyz/protocol-parser/internal";
-import { debug } from "./debug";
+import { debug } from "@latticexyz/world/internal";
 import { getTables } from "./getTables";
 import pRetry from "p-retry";
 import { wait } from "@latticexyz/common/utils";

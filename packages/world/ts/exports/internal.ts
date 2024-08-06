@@ -7,6 +7,13 @@ export * from "../actions/callFrom";
 
 export * from "../callWithSignatureTypes";
 
+export * from "../debug";
+export * from "../getSystems";
+export * from "../getFunctions";
+export * from "../getTableValue";
+export * from "../getResourceIds";
+export * from "../getResourceAccess";
+export * from "../logsToWorldDeploy";
 export * from "../getWorldAbi";
 export * from "../getWorldDeploy";
 

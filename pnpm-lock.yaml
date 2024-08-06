@@ -1045,6 +1045,9 @@ importers:
       '@latticexyz/gas-report':
         specifier: workspace:*
         version: link:../gas-report
+      '@types/debug':
+        specifier: ^4.1.7
+        version: 4.1.7
       '@types/ejs':
         specifier: ^3.1.1
         version: 3.1.1

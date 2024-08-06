@@ -1,7 +1,7 @@
 import { Client, Transport, Chain, Account, Hex, BaseError } from "viem";
 import { writeContract } from "@latticexyz/common";
 import { Library, Module, WorldDeploy, worldAbi } from "./common";
-import { debug } from "./debug";
+import { debug } from "@latticexyz/world/internal";
 import { isDefined, wait } from "@latticexyz/common/utils";
 import pRetry from "p-retry";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";

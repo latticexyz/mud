@@ -1,7 +1,7 @@
 import { Client, parseAbiItem, decodeAbiParameters, parseAbiParameters } from "viem";
 import { hexToResource } from "@latticexyz/common";
+import { debug } from "@latticexyz/world/internal";
 import { WorldDeploy } from "./common";
-import { debug } from "./debug";
 import { storeSetRecordEvent } from "@latticexyz/store";
 import { getLogs } from "viem/actions";
 import {

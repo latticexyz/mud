@@ -1,6 +1,6 @@
 import { Client, Transport, Chain, Account, Hex } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
-import { debug } from "./debug";
+import { debug } from "@latticexyz/world/internal";
 import { Contract, ensureContract } from "./ensureContract";
 import { uniqueBy } from "@latticexyz/common/utils";
 

@@ -1,7 +1,7 @@
 import { Address, Chain, Client, Transport, sliceHex } from "viem";
 import { getBytecode } from "viem/actions";
+import { debug } from "@latticexyz/world/internal";
 import deployment from "./create2/deployment.json";
-import { debug } from "./debug";
 
 const deployer = `0x${deployment.address}` as const;
 
