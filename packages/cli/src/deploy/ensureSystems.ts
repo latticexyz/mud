@@ -1,10 +1,11 @@
 import { Client, Transport, Chain, Account, Hex, getAddress, Address } from "viem";
 import { writeContract, resourceToLabel } from "@latticexyz/common";
-import { debug, getSystems, getResourceAccess } from "@latticexyz/world/internal";
+import { getSystems, getResourceAccess } from "@latticexyz/world/internal";
 import { Library, System, WorldDeploy, worldAbi } from "./common";
 import { wait } from "@latticexyz/common/utils";
 import pRetry from "p-retry";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
+import { debug } from "./debug";
 
 // TODO: move each system registration+access to batch call to be atomic
 

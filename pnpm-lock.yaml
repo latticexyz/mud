@@ -4,6 +4,12 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@ark/util':
+      specifier: 0.1.2
+      version: 0.1.2
+
 importers:
 
   .:
@@ -169,6 +175,9 @@ importers:
       chokidar:
         specifier: ^3.5.3
         version: 3.5.3
+      debug:
+        specifier: ^4.3.4
+        version: 4.3.4
       dotenv:
         specifier: ^16.0.3
         version: 16.0.3

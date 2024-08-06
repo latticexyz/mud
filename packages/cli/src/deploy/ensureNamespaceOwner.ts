@@ -1,8 +1,9 @@
 import { Account, Chain, Client, Hex, Transport, getAddress } from "viem";
 import { WorldDeploy, worldAbi } from "./common";
 import { hexToResource, resourceToHex, writeContract } from "@latticexyz/common";
-import { debug, getResourceIds, getTableValue } from "@latticexyz/world/internal";
+import { getResourceIds, getTableValue } from "@latticexyz/world/internal";
 import worldConfig from "@latticexyz/world/mud.config";
+import { debug } from "./debug";
 
 export async function ensureNamespaceOwner({
   client,

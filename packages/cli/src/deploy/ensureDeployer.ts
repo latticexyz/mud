@@ -1,6 +1,6 @@
 import { Account, Address, Chain, Client, Transport } from "viem";
 import { getBalance, sendRawTransaction, sendTransaction, waitForTransactionReceipt } from "viem/actions";
-import { debug } from "@latticexyz/world/internal";
+import { debug } from "./debug";
 import deployment from "./create2/deployment.json";
 import { getDeployer } from "./getDeployer";
 

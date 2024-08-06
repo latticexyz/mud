@@ -10,11 +10,11 @@ import {
   getKeySchema,
   KeySchema,
 } from "@latticexyz/protocol-parser/internal";
-import { debug } from "@latticexyz/world/internal";
 import { getTables } from "./getTables";
 import pRetry from "p-retry";
 import { wait } from "@latticexyz/common/utils";
 import { Table } from "@latticexyz/config";
+import { debug } from "./debug";
 
 export async function ensureTables({
   client,

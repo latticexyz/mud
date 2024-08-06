@@ -2,7 +2,7 @@ import { Client, Transport, Chain, Account, concatHex, getCreate2Address, Hex } 
 import { getBytecode } from "viem/actions";
 import { contractSizeLimit, salt } from "./common";
 import { sendTransaction } from "@latticexyz/common";
-import { debug } from "@latticexyz/world/internal";
+import { debug } from "./debug";
 import pRetry from "p-retry";
 import { wait } from "@latticexyz/common/utils";
 
