@@ -2,7 +2,6 @@ import { createStore as createZustandStore } from "zustand/vanilla";
 import { StoreApi } from "zustand";
 import { mutative } from "zustand-mutative";
 import { Store as StoreConfig } from "@latticexyz/store/config/v2";
-import { TableLabel } from "../common";
 import { State, Subscribers } from "./common";
 import { SetRecordArgs, SetRecordResult, setRecord } from "./setRecord";
 import { SetRecordsArgs, SetRecordsResult, setRecords } from "./setRecords";
@@ -10,7 +9,7 @@ import { DeleteRecordArgs, DeleteRecordResult, deleteRecord } from "./deleteReco
 import { GetRecordArgs, GetRecordResult, getRecord } from "./getRecord";
 import { GetRecordsArgs, GetRecordsResult, getRecords } from "./getRecords";
 import { RegisterTableArgs, RegisterTableResult, registerTable } from "./registerTable";
-import { GetTableResult, getTable } from "./getTable";
+import { GetTableArgs, GetTableResult, getTable } from "./getTable";
 import { GetTablesResult, getTables } from "./getTables";
 import { SubscribeArgs, SubscribeResult, subscribe } from "./subscribe";
 import { DecodeKeyArgs, DecodeKeyResult, decodeKey } from "./decodeKey";
@@ -19,7 +18,7 @@ import { GetConfigArgs, GetConfigResult, getConfig } from "./getConfig";
 
 export type Config = StoreConfig;
 
-type Actions = {
+export type Actions = {
   actions: {
     /**
      * Get a record from a table.
@@ -69,7 +68,7 @@ type Actions = {
     /**
      * @returns A bound Table object for easier interaction with the table.
      */
-    getTable: (tableLabel: TableLabel) => GetTableResult;
+    getTable: (args: GetTableArgs) => GetTableResult;
     /**
      * @return Bound version of all tables in the store.
      */
