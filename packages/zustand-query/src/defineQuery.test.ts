@@ -29,7 +29,7 @@ describe("defineQuery", () => {
   const { Position, Health, Inventory } = config.namespaces.namespace1.tables;
 
   beforeEach(() => {
-    store = createStore();
+    store = createStore(config);
 
     // Add some mock data
     const items = ["gold", "silver"];
@@ -67,7 +67,7 @@ describe("defineQuery", () => {
     const result = defineQuery(store, [MatchRecord(Position, { x: 4 }), In(Health)]);
     result.subscribe(subscriber);
 
-    setRecord(store, { table: Health, key: { player: "4" }, record: { y: 2 } });
+    setRecord(store, { table: Position, key: { player: "4" }, record: { y: 2 } });
 
     expect(subscriber).toBeCalledTimes(1);
     attest(lastUpdate).snap({
