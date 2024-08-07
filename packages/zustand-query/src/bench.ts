@@ -33,6 +33,6 @@ bench("boundTable", () => {
 }).types([2, "instantiations"]);
 
 bench("runQuery", () => {
-  const Position = store.getState().actions.getTable(config.tables.Position);
-  runQuery([In(Position)]);
+  const { Position } = config.tables;
+  runQuery(store, [In(Position)]);
 }).types([10, "instantiations"]);

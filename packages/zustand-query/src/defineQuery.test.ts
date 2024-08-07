@@ -1,63 +1,58 @@
 import { beforeEach, describe, it, vi, expect } from "vitest";
 import { QueryUpdate, defineQuery } from "./defineQuery";
-import { BoundTable, Store, createStore } from "./createStore";
+import { Store, createStore } from "./createStore";
 import { In, MatchRecord } from "./queryFragments";
 import { attest } from "@arktype/attest";
 import { defineStore } from "@latticexyz/store";
+import { deleteRecord, setRecord } from "./actions";
 
 describe("defineQuery", () => {
   let store: Store;
-  let Position: BoundTable;
-  let Health: BoundTable;
-  let Inventory: BoundTable;
+  const config = defineStore({
+    namespace: "namespace1",
+    tables: {
+      Position: {
+        schema: { player: "bytes32", x: "int32", y: "int32" },
+        key: ["player"],
+      },
+      Health: {
+        schema: { player: "bytes32", health: "uint32" },
+        key: ["player"],
+      },
+      Inventory: {
+        schema: { player: "bytes32", item: "bytes32", amount: "uint32" },
+        key: ["player", "item"],
+      },
+    },
+  });
+
+  const { Position, Health, Inventory } = config.namespaces.namespace1.tables;
 
   beforeEach(() => {
-    store = createStore(
-      defineStore({
-        namespace: "namespace1",
-        tables: {
-          Position: {
-            schema: { player: "bytes32", x: "int32", y: "int32" },
-            key: ["player"],
-          },
-          Health: {
-            schema: { player: "bytes32", health: "uint32" },
-            key: ["player"],
-          },
-          Inventory: {
-            schema: { player: "bytes32", item: "bytes32", amount: "uint32" },
-            key: ["player", "item"],
-          },
-        },
-      }),
-    );
-
-    Position = store.getState().actions.getTable({ namespace: "namespace1", label: "Position" });
-    Health = store.getState().actions.getTable({ namespace: "namespace1", label: "Health" });
-    Inventory = store.getState().actions.getTable({ namespace: "namespace1", label: "Inventory" });
+    store = createStore();
 
     // Add some mock data
     const items = ["gold", "silver"];
     const num = 5;
     for (let i = 0; i < num; i++) {
-      Position.setRecord({ key: { player: String(i) }, record: { x: i, y: num - i } });
+      setRecord(store, { table: Position, key: { player: String(i) }, record: { x: i, y: num - i } });
       if (i > 2) {
-        Health.setRecord({ key: { player: String(i) }, record: { health: i } });
+        setRecord(store, { table: Health, key: { player: String(i) }, record: { health: i } });
       }
       for (const item of items) {
-        Inventory.setRecord({ key: { player: String(i), item }, record: { amount: i } });
+        setRecord(store, { table: Inventory, key: { player: String(i), item }, record: { amount: i } });
       }
     }
   });
 
   it("should return the matching keys and keep it updated", () => {
-    const result = defineQuery([In(Position), In(Health)]);
+    const result = defineQuery(store, [In(Position), In(Health)]);
     attest(result.keys).snap({
       "3": { player: "3" },
       "4": { player: "4" },
     });
 
-    Health.setRecord({ key: { player: 2 }, record: { health: 2 } });
+    setRecord(store, { table: Health, key: { player: 2 }, record: { health: 2 } });
 
     attest(result.keys).snap({
       "2": { player: "2" },
@@ -69,10 +64,10 @@ describe("defineQuery", () => {
   it("should notify subscribers when a matching key is updated", () => {
     let lastUpdate: unknown;
     const subscriber = vi.fn((update: QueryUpdate) => (lastUpdate = update));
-    const result = defineQuery([MatchRecord(Position, { x: 4 }), In(Health)]);
+    const result = defineQuery(store, [MatchRecord(Position, { x: 4 }), In(Health)]);
     result.subscribe(subscriber);
 
-    Position.setRecord({ key: { player: "4" }, record: { y: 2 } });
+    setRecord(store, { table: Health, key: { player: "4" }, record: { y: 2 } });
 
     expect(subscriber).toBeCalledTimes(1);
     attest(lastUpdate).snap({
@@ -94,10 +89,10 @@ describe("defineQuery", () => {
   it("should notify subscribers when a new key matches", () => {
     let lastUpdate: unknown;
     const subscriber = vi.fn((update: QueryUpdate) => (lastUpdate = update));
-    const result = defineQuery([In(Position), In(Health)]);
+    const result = defineQuery(store, [In(Position), In(Health)]);
     result.subscribe(subscriber);
 
-    Health.setRecord({ key: { player: 2 }, record: { health: 2 } });
+    setRecord(store, { table: Health, key: { player: 2 }, record: { health: 2 } });
 
     expect(subscriber).toBeCalledTimes(1);
     attest(lastUpdate).snap({
@@ -119,10 +114,10 @@ describe("defineQuery", () => {
   it("should notify subscribers when a key doesn't match anymore", () => {
     let lastUpdate: unknown;
     const subscriber = vi.fn((update: QueryUpdate) => (lastUpdate = update));
-    const result = defineQuery([In(Position), In(Health)]);
+    const result = defineQuery(store, [In(Position), In(Health)]);
     result.subscribe(subscriber);
 
-    Position.deleteRecord({ key: { player: 3 } });
+    deleteRecord(store, { table: Position, key: { player: 3 } });
 
     expect(subscriber).toBeCalledTimes(1);
     attest(lastUpdate).snap({
@@ -144,7 +139,7 @@ describe("defineQuery", () => {
   it("should notify initial subscribers with initial query result", () => {
     let lastUpdate: unknown;
     const subscriber = vi.fn((update: QueryUpdate) => (lastUpdate = update));
-    defineQuery([In(Position), In(Health)], { initialSubscribers: [subscriber] });
+    defineQuery(store, [In(Position), In(Health)], { initialSubscribers: [subscriber] });
 
     expect(subscriber).toBeCalledTimes(1);
     attest(lastUpdate).snap({

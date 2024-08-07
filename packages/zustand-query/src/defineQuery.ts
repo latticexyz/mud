@@ -1,5 +1,7 @@
+import { decodeKey, getTable } from "./actions";
 import { Query, CommonQueryOptions, CommonQueryResult, Unsubscribe, TableUpdates, TableLabel } from "./common";
 import { Keys } from "./common";
+import { Store } from "./createStore";
 import { runQuery } from "./runQuery";
 
 type DefineQueryOptions = CommonQueryOptions & {
@@ -36,10 +38,10 @@ type DefineQueryResult = CommonQueryResult & {
   unsubscribe: () => void;
 };
 
-export function defineQuery(query: Query, options?: DefineQueryOptions): DefineQueryResult {
+export function defineQuery(store: Store, query: Query, options?: DefineQueryOptions): DefineQueryResult {
   const initialRun = options?.skipInitialRun
     ? undefined
-    : runQuery(query, {
+    : runQuery(store, query, {
         // Pass the initial keys
         initialKeys: options?.initialKeys,
         // Request initial records if there are initial subscribers
@@ -64,10 +66,8 @@ export function defineQuery(query: Query, options?: DefineQueryOptions): DefineQ
       if (key in matching) {
         update.keys[key] = matching[key];
         // If the key matched before, check if the relevant fragments (accessing this table) still match
-        const relevantFragments = query.filter(
-          (f) => f.table.tableLabel.namespace === namespace && f.table.tableLabel.label === label,
-        );
-        const match = relevantFragments.every((f) => f.filter(key));
+        const relevantFragments = query.filter((f) => f.table.namespace === namespace && f.table.label === label);
+        const match = relevantFragments.every((f) => f.match(store, key));
         if (match) {
           // If all relevant fragments still match, the key still matches the query.
           update.types[key] = "update";
@@ -78,10 +78,10 @@ export function defineQuery(query: Query, options?: DefineQueryOptions): DefineQ
         }
       } else {
         // If this key didn't match the query before, check all fragments
-        const match = query.every((f) => f.filter(key));
+        const match = query.every((f) => f.match(store, key));
         if (match) {
           // Since the key schema of query fragments has to match, we can pick any fragment to decode they key
-          const decodedKey = query[0].table.decodeKey({ encodedKey: key });
+          const decodedKey = decodeKey(store, { table: query[0].table, encodedKey: key });
           matching[key] = decodedKey;
           update.keys[key] = decodedKey;
           update.types[key] = "enter";
@@ -95,7 +95,9 @@ export function defineQuery(query: Query, options?: DefineQueryOptions): DefineQ
 
   // Subscribe to each table's update stream and store the unsubscribers
   const unsubsribers = query.map((fragment) =>
-    fragment.table.subscribe({ subscriber: (updates) => updateQueryResult(fragment.table.tableLabel, updates) }),
+    getTable(store, fragment.table).subscribe({
+      subscriber: (updates) => updateQueryResult(fragment.table, updates),
+    }),
   );
 
   const unsubscribe = () => unsubsribers.forEach((unsub) => unsub());
