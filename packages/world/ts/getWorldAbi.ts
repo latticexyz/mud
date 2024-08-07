@@ -12,7 +12,6 @@ export async function getWorldAbi({
   readonly client: Client;
   readonly worldAddress: Address;
 }): Promise<Abi> {
-  const formattedWorldAddress = getAddress(worldAddress);
   const stateBlock = await getBlockNumber(client);
   const logs = await getLogs(client, {
     strict: true,
@@ -27,7 +26,7 @@ export async function getWorldAbi({
 
   const systems = await getSystems({
     client,
-    worldAddress: formattedWorldAddress,
+    worldAddress: getAddress(worldAddress),
     stateBlock,
     deployBlock,
   });

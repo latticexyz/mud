@@ -1,6 +1,6 @@
-import { Client, Transport, Chain, Account, Hex } from "viem";
+import { Client, Transport, Chain, Account, Hex, Address } from "viem";
 import { resourceToLabel, writeContract } from "@latticexyz/common";
-import { WorldDeploy, worldAbi } from "./common";
+import { worldAbi } from "./common";
 import {
   valueSchemaToFieldLayoutHex,
   keySchemaToHex,
@@ -18,14 +18,18 @@ import { debug } from "./debug";
 
 export async function ensureTables({
   client,
-  worldDeploy,
+  worldAddress,
+  deployBlock,
+  stateBlock,
   tables,
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
-  readonly worldDeploy: WorldDeploy;
+  readonly worldAddress: Address;
+  readonly deployBlock: bigint;
+  readonly stateBlock: bigint;
   readonly tables: readonly Table[];
 }): Promise<readonly Hex[]> {
-  const worldTables = await getTables({ client, worldDeploy });
+  const worldTables = await getTables({ client, worldAddress, deployBlock, stateBlock });
   const worldTableIds = worldTables.map((table) => table.tableId);
 
   const existingTables = tables.filter((table) => worldTableIds.includes(table.tableId));
@@ -44,7 +48,7 @@ export async function ensureTables({
           () =>
             writeContract(client, {
               chain: client.chain ?? null,
-              address: worldDeploy.address,
+              address: worldAddress,
               abi: worldAbi,
               // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
               functionName: "registerTable",

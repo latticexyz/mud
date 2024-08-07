@@ -39,7 +39,7 @@ export async function getSystems({
   debug("looking up systems", systems.map(resourceToLabel).join(", "));
   return await Promise.all(
     systems.map(async (system): Promise<DeployedSystem> => {
-      const { system: address, publicAccess } = await getTableValue({
+      const { system: systemAddress, publicAccess } = await getTableValue({
         client,
         worldAddress,
         stateBlock,
@@ -48,7 +48,7 @@ export async function getSystems({
       });
       const worldFunctions = functions.filter((func) => func.systemId === system.resourceId);
       return {
-        address,
+        address: systemAddress,
         namespace: system.namespace,
         name: system.name,
         systemId: system.resourceId,

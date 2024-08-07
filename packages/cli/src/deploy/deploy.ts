@@ -89,9 +89,12 @@ export async function deploy({
     throw new Error(`Unsupported World version: ${worldDeploy.worldVersion}`);
   }
 
+  const { address: worldAddress, stateBlock, deployBlock } = worldDeploy;
   const namespaceTxs = await ensureNamespaceOwner({
     client,
-    worldDeploy,
+    worldAddress,
+    stateBlock,
+    deployBlock,
     resourceIds: [...tables.map((table) => table.tableId), ...systems.map((system) => system.systemId)],
   });
 
@@ -102,26 +105,32 @@ export async function deploy({
 
   const tableTxs = await ensureTables({
     client,
-    worldDeploy,
+    worldAddress,
+    stateBlock,
+    deployBlock,
     tables,
   });
   const systemTxs = await ensureSystems({
     client,
     deployerAddress,
     libraries,
-    worldDeploy,
+    worldAddress,
+    stateBlock,
+    deployBlock,
     systems,
   });
   const functionTxs = await ensureFunctions({
     client,
-    worldDeploy,
+    worldAddress,
+    deployBlock,
+    stateBlock,
     functions: systems.flatMap((system) => system.worldFunctions),
   });
   const moduleTxs = await ensureModules({
     client,
     deployerAddress,
     libraries,
-    worldDeploy,
+    worldAddress,
     modules,
   });
 

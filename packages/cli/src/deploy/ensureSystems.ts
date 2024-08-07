@@ -1,7 +1,7 @@
 import { Client, Transport, Chain, Account, Hex, getAddress, Address } from "viem";
 import { writeContract, resourceToLabel } from "@latticexyz/common";
 import { getSystems, getResourceAccess } from "@latticexyz/world/internal";
-import { Library, System, WorldDeploy, worldAbi } from "./common";
+import { Library, System, worldAbi } from "./common";
 import { wait } from "@latticexyz/common/utils";
 import pRetry from "p-retry";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
@@ -13,27 +13,31 @@ export async function ensureSystems({
   client,
   deployerAddress,
   libraries,
-  worldDeploy,
+  worldAddress,
+  stateBlock,
+  deployBlock,
   systems,
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
   readonly deployerAddress: Hex;
   readonly libraries: readonly Library[];
-  readonly worldDeploy: WorldDeploy;
+  readonly worldAddress: Address;
+  readonly stateBlock: bigint;
+  readonly deployBlock: bigint;
   readonly systems: readonly System[];
 }): Promise<readonly Hex[]> {
   const [worldSystems, worldAccess] = await Promise.all([
     getSystems({
       client,
-      worldAddress: worldDeploy.address,
-      stateBlock: BigInt(worldDeploy.stateBlock),
-      deployBlock: BigInt(worldDeploy.deployBlock),
+      worldAddress,
+      stateBlock,
+      deployBlock,
     }),
     getResourceAccess({
       client,
-      worldAddress: worldDeploy.address,
-      stateBlock: BigInt(worldDeploy.stateBlock),
-      deployBlock: BigInt(worldDeploy.deployBlock),
+      worldAddress,
+      stateBlock,
+      deployBlock,
     }),
   ]);
 
@@ -88,7 +92,7 @@ export async function ensureSystems({
         () =>
           writeContract(client, {
             chain: client.chain ?? null,
-            address: worldDeploy.address,
+            address: worldAddress,
             abi: worldAbi,
             // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
             functionName: "registerSystem",
@@ -155,7 +159,7 @@ export async function ensureSystems({
         () =>
           writeContract(client, {
             chain: client.chain ?? null,
-            address: worldDeploy.address,
+            address: worldAddress,
             abi: worldAbi,
             functionName: "revokeAccess",
             args: [access.resourceId, access.address],
@@ -175,7 +179,7 @@ export async function ensureSystems({
         () =>
           writeContract(client, {
             chain: client.chain ?? null,
-            address: worldDeploy.address,
+            address: worldAddress,
             abi: worldAbi,
             functionName: "grantAccess",
             args: [access.resourceId, access.address],

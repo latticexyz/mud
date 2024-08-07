@@ -1,6 +1,6 @@
-import { Client, Transport, Chain, Account, Hex } from "viem";
+import { Client, Transport, Chain, Account, Hex, Address } from "viem";
 import { hexToResource, writeContract } from "@latticexyz/common";
-import { WorldDeploy, WorldFunction, worldAbi } from "./common";
+import { WorldFunction, worldAbi } from "./common";
 import { getFunctions } from "@latticexyz/world/internal";
 import pRetry from "p-retry";
 import { wait } from "@latticexyz/common/utils";
@@ -8,18 +8,22 @@ import { debug } from "./debug";
 
 export async function ensureFunctions({
   client,
-  worldDeploy,
+  worldAddress,
+  deployBlock,
+  stateBlock,
   functions,
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
-  readonly worldDeploy: WorldDeploy;
+  readonly worldAddress: Address;
+  readonly deployBlock: bigint;
+  readonly stateBlock: bigint;
   readonly functions: readonly WorldFunction[];
 }): Promise<readonly Hex[]> {
   const worldFunctions = await getFunctions({
     client,
-    worldAddress: worldDeploy.address,
-    deployBlock: worldDeploy.deployBlock,
-    stateBlock: worldDeploy.stateBlock,
+    worldAddress,
+    deployBlock,
+    stateBlock,
   });
   const worldSelectorToFunction = Object.fromEntries(worldFunctions.map((func) => [func.selector, func]));
 
@@ -51,7 +55,7 @@ export async function ensureFunctions({
           () =>
             writeContract(client, {
               chain: client.chain ?? null,
-              address: worldDeploy.address,
+              address: worldAddress,
               abi: worldAbi,
               // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
               functionName: "registerRootFunctionSelector",
@@ -71,7 +75,7 @@ export async function ensureFunctions({
         () =>
           writeContract(client, {
             chain: client.chain ?? null,
-            address: worldDeploy.address,
+            address: worldAddress,
             abi: worldAbi,
             // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
             functionName: "registerFunctionSelector",

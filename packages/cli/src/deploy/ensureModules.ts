@@ -1,6 +1,6 @@
-import { Client, Transport, Chain, Account, Hex, BaseError } from "viem";
+import { Client, Transport, Chain, Account, Hex, BaseError, Address } from "viem";
 import { writeContract } from "@latticexyz/common";
-import { Library, Module, WorldDeploy, worldAbi } from "./common";
+import { Library, Module, worldAbi } from "./common";
 import { isDefined, wait } from "@latticexyz/common/utils";
 import pRetry from "p-retry";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
@@ -10,13 +10,13 @@ export async function ensureModules({
   client,
   deployerAddress,
   libraries,
-  worldDeploy,
+  worldAddress,
   modules,
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
   readonly deployerAddress: Hex;
   readonly libraries: readonly Library[];
-  readonly worldDeploy: WorldDeploy;
+  readonly worldAddress: Address;
   readonly modules: readonly Module[];
 }): Promise<readonly Hex[]> {
   if (!modules.length) return [];
@@ -44,7 +44,7 @@ export async function ensureModules({
               return mod.installAsRoot
                 ? await writeContract(client, {
                     chain: client.chain ?? null,
-                    address: worldDeploy.address,
+                    address: worldAddress,
                     abi,
                     // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
                     functionName: "installRootModule",
@@ -52,7 +52,7 @@ export async function ensureModules({
                   })
                 : await writeContract(client, {
                     chain: client.chain ?? null,
-                    address: worldDeploy.address,
+                    address: worldAddress,
                     abi,
                     // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
                     functionName: "installModule",
