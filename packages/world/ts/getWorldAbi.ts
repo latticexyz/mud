@@ -1,4 +1,5 @@
 import { Client, Abi, Address, getAddress } from "viem";
+import IBaseWorldAbi from "../out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { functionSignatureToAbiItem } from "./functionSignatureToAbiItem";
 import { getFunctions } from "./getFunctions";
 
@@ -20,6 +21,7 @@ export async function getWorldAbi({
     toBlock,
   });
   const worldAbi = worldFunctions.map((func) => functionSignatureToAbiItem(func.signature));
+  const abi = [...IBaseWorldAbi, ...worldAbi];
 
-  return worldAbi;
+  return abi;
 }
