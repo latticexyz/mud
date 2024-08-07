@@ -28,8 +28,8 @@ export async function getWorldAbi({
   const systems = await getSystems({
     client,
     worldAddress: formattedWorldAddress,
-    stateBlock: BigInt(stateBlock),
-    deployBlock: BigInt(deployBlock),
+    stateBlock,
+    deployBlock,
   });
 
   const worldAbi = systems.flatMap((system) =>
