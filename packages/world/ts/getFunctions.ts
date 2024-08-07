@@ -52,8 +52,8 @@ export async function getFunctions({
   debug("looking up function signatures for", worldAddress);
   const signatureLogs = await getLogs(client, {
     strict: true,
-    fromBlock: fromBlock,
-    toBlock: toBlock,
+    fromBlock,
+    toBlock,
     address: worldAddress,
     event: parseAbiItem(storeSetRecordEvent),
     args: { tableId: worldConfig.namespaces.world.tables.FunctionSignatures.tableId },
