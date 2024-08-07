@@ -20,8 +20,8 @@ export async function getWorldAbi({
     fromBlock,
     toBlock,
   });
-  const worldAbi = worldFunctions.map((func) => functionSignatureToAbiItem(func.signature));
-  const abi = [...IBaseWorldAbi, ...worldAbi];
+  const worldFunctionsAbi = worldFunctions.map((func) => functionSignatureToAbiItem(func.signature));
+  const abi = [...IBaseWorldAbi, ...worldFunctionsAbi];
 
   return abi;
 }
