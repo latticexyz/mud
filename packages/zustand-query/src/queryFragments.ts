@@ -1,39 +1,44 @@
-import { BoundTable } from "./createStore";
+import { Table } from "@latticexyz/config";
 import { Keys } from "./common";
 import { TableRecord } from "./common";
 import { recordMatches } from "./recordEquals";
+import { Store } from "./createStore";
+import { getKeys, getRecords } from "./actions";
 
 // TODO: add more query fragments - ie GreaterThan, LessThan, Range, etc
 
 export type QueryFragment = {
-  table: BoundTable;
-  filter: (encodedKey: string) => boolean;
+  table: Table;
+  /**
+   * Checking an individual table row for whether it matches the query fragment
+   */
+  match: (store: Store, encodedKey: string) => boolean;
   /**
    * The keys that should be included in the query result if this is the first fragment in the query.
    * This is to avoid having to iterate over each key in the first table if there is a more efficient
    * way to get to the initial result.
    */
-  getInitialKeys: () => Keys;
+  getInitialKeys: (store: Store) => Keys;
 };
 
 /**
  * Matches all records that exist in the table.
  * RECS equivalent: Has(Component)
  */
-export function In(table: BoundTable): QueryFragment {
-  const filter = (encodedKey: string) => encodedKey in table.getRecords();
-  const getInitialKeys = () => table.getKeys();
-  return { table, filter, getInitialKeys };
+export function In(table: Table): QueryFragment {
+  const match = (store: Store, encodedKey: string) => encodedKey in getRecords(store, { table });
+  const getInitialKeys = (store: Store) => getKeys(store, { table });
+  return { table, match, getInitialKeys };
 }
 
 /**
  * Matches all records that don't exist in the table.
  * RECS equivalent: Not(Component)
  */
-export function NotIn(table: BoundTable): QueryFragment {
-  const filter = (encodedKey: string) => !(encodedKey in table.getRecords());
+export function NotIn(table: Table): QueryFragment {
+  const match = (store: Store, encodedKey: string) => !(encodedKey in getRecords(store, { table }));
   const getInitialKeys = () => ({});
-  return { table, filter, getInitialKeys };
+  return { table, match, getInitialKeys };
 }
 
 /**
@@ -41,14 +46,15 @@ export function NotIn(table: BoundTable): QueryFragment {
  * This works for both value and key, since both are part of the record.
  * RECS equivalent (only for value match): HasValue(Component, value)
  */
-export function MatchRecord(table: BoundTable, partialRecord: TableRecord): QueryFragment {
-  const filter = (encodedKey: string) => {
-    const record = table.getRecords()[encodedKey];
+export function MatchRecord(table: Table, partialRecord: TableRecord): QueryFragment {
+  const match = (store: Store, encodedKey: string) => {
+    const record = getRecords(store, { table })[encodedKey];
     return recordMatches(partialRecord, record);
   };
   // TODO: this is a very naive and inefficient implementation for large tables, can be optimized via indexer tables
-  const getInitialKeys = () => Object.fromEntries(Object.entries(table.getKeys()).filter(([key]) => filter(key)));
-  return { table, filter, getInitialKeys };
+  const getInitialKeys = (store: Store) =>
+    Object.fromEntries(Object.entries(getKeys(store, { table })).filter(([key]) => match(store, key)));
+  return { table, match, getInitialKeys };
 }
 
 /**
@@ -58,12 +64,13 @@ export function MatchRecord(table: BoundTable, partialRecord: TableRecord): Quer
  * @param table
  * @param partialRecord
  */
-export function NotMatchRecord(table: BoundTable, partialRecord: TableRecord): QueryFragment {
-  const filter = (encodedKey: string) => {
-    const record = table.getRecords()[encodedKey];
+export function NotMatchRecord(table: Table, partialRecord: TableRecord): QueryFragment {
+  const match = (store: Store, encodedKey: string) => {
+    const record = getRecords(store, { table })[encodedKey];
     return !recordMatches(partialRecord, record);
   };
   // TODO: this is a very naive and inefficient implementation for large tables, can be optimized via indexer tables
-  const getInitialKeys = () => Object.fromEntries(Object.entries(table.getKeys()).filter(([key]) => filter(key)));
-  return { table, filter, getInitialKeys };
+  const getInitialKeys = (store: Store) =>
+    Object.fromEntries(Object.entries(getKeys(store, { table })).filter(([key]) => match(store, key)));
+  return { table, match, getInitialKeys };
 }
