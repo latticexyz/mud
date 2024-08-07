@@ -8,8 +8,10 @@ export type SetRecordArgs = {
   record: TableRecord;
 };
 
+export type SetRecordResult = void;
+
 export const setRecord =
-  (context: Context): ((args: SetRecordArgs) => void) =>
+  (context: Context): ((args: SetRecordArgs) => SetRecordResult) =>
   ({ table, key, record }) => {
     setRecords(context)({
       table,

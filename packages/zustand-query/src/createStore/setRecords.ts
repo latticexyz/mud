@@ -8,8 +8,10 @@ export type SetRecordsArgs = {
   records: TableRecord[];
 };
 
+export type SetRecordsResult = void;
+
 export const setRecords =
-  (context: Context): ((args: SetRecordsArgs) => void) =>
+  (context: Context): ((args: SetRecordsArgs) => SetRecordsResult) =>
   ({ table: tableLabel, records }) => {
     const { get, set, subscribers } = context;
     const namespace = tableLabel.namespace ?? "";
