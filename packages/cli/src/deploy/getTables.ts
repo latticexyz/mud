@@ -1,5 +1,6 @@
-import { Client, parseAbiItem, decodeAbiParameters, parseAbiParameters, Address } from "viem";
+import { Client, parseAbiItem, decodeAbiParameters, parseAbiParameters } from "viem";
 import { hexToResource } from "@latticexyz/common";
+import { WorldDeploy } from "./common";
 import { debug } from "./debug";
 import { storeSetRecordEvent } from "@latticexyz/store";
 import { getLogs } from "viem/actions";
@@ -19,27 +20,23 @@ type DeployedTable = Omit<Table, "label">;
 
 export async function getTables({
   client,
-  worldAddress,
-  deployBlock,
-  stateBlock,
+  worldDeploy,
 }: {
   readonly client: Client;
-  readonly worldAddress: Address;
-  readonly deployBlock: bigint;
-  readonly stateBlock: bigint;
+  readonly worldDeploy: WorldDeploy;
 }): Promise<readonly Omit<DeployedTable, "label">[]> {
   // This assumes we only use `Tables._set(...)`, which is true as of this writing.
   // TODO: PR to viem's getLogs to accept topics array so we can filter on all store events and quickly recreate this table's current state
   // TODO: consider moving this to a batched getRecord for Tables table
 
-  debug("looking up tables for", worldAddress);
+  debug("looking up tables for", worldDeploy.address);
   const logs = await getLogs(client, {
     strict: true,
     // this may fail for certain RPC providers with block range limits
     // if so, could potentially use our fetchLogs helper (which does pagination)
-    fromBlock: deployBlock,
-    toBlock: stateBlock,
-    address: worldAddress,
+    fromBlock: worldDeploy.deployBlock,
+    toBlock: worldDeploy.stateBlock,
+    address: worldDeploy.address,
     event: parseAbiItem(storeSetRecordEvent),
     args: { tableId: storeConfig.namespaces.store.tables.Tables.tableId },
   });
@@ -79,7 +76,8 @@ export async function getTables({
   });
 
   // TODO: filter/detect duplicates?
-  debug("found", tables.length, "tables for", worldAddress);
+
+  debug("found", tables.length, "tables for", worldDeploy.address);
 
   return tables;
 }

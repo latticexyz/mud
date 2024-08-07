@@ -68,7 +68,6 @@
     "abitype": "1.0.0",
     "arktype": "1.0.29-alpha",
     "debug": "^4.3.4",
-    "p-retry": "^5.1.2",
     "viem": "2.9.20"
   },
   "devDependencies": {

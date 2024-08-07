@@ -1,7 +1,7 @@
 import { Account, Address, Chain, Client, Transport } from "viem";
 import { getBalance, sendRawTransaction, sendTransaction, waitForTransactionReceipt } from "viem/actions";
-import { debug } from "./debug";
 import deployment from "./create2/deployment.json";
+import { debug } from "./debug";
 import { getDeployer } from "./getDeployer";
 
 const deployer = `0x${deployment.address}` as const;
