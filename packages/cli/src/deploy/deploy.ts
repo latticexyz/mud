@@ -5,16 +5,16 @@ import { ensureTables } from "./ensureTables";
 import { Library, Module, System, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
 import { ensureSystems } from "./ensureSystems";
 import { waitForTransactionReceipt } from "viem/actions";
+import { getWorldDeploy } from "./getWorldDeploy";
 import { ensureFunctions } from "./ensureFunctions";
 import { ensureModules } from "./ensureModules";
 import { ensureNamespaceOwner } from "./ensureNamespaceOwner";
+import { debug } from "./debug";
 import { resourceToLabel } from "@latticexyz/common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";
 import { ensureWorldFactory } from "./ensureWorldFactory";
 import { Table } from "@latticexyz/config";
-import { getWorldDeploy } from "./getWorldDeploy";
-import { debug } from "./debug";
 
 type DeployOptions = {
   client: Client<Transport, Chain | undefined, Account>;
@@ -89,12 +89,9 @@ export async function deploy({
     throw new Error(`Unsupported World version: ${worldDeploy.worldVersion}`);
   }
 
-  const { address: worldAddress, stateBlock, deployBlock } = worldDeploy;
   const namespaceTxs = await ensureNamespaceOwner({
     client,
-    worldAddress,
-    stateBlock,
-    deployBlock,
+    worldDeploy,
     resourceIds: [...tables.map((table) => table.tableId), ...systems.map((system) => system.systemId)],
   });
 
@@ -105,32 +102,26 @@ export async function deploy({
 
   const tableTxs = await ensureTables({
     client,
-    worldAddress,
-    stateBlock,
-    deployBlock,
+    worldDeploy,
     tables,
   });
   const systemTxs = await ensureSystems({
     client,
     deployerAddress,
     libraries,
-    worldAddress,
-    stateBlock,
-    deployBlock,
+    worldDeploy,
     systems,
   });
   const functionTxs = await ensureFunctions({
     client,
-    worldAddress,
-    deployBlock,
-    stateBlock,
+    worldDeploy,
     functions: systems.flatMap((system) => system.worldFunctions),
   });
   const moduleTxs = await ensureModules({
     client,
     deployerAddress,
     libraries,
-    worldAddress,
+    worldDeploy,
     modules,
   });
 
