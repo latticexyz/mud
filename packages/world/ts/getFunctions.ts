@@ -15,20 +15,20 @@ import worldConfig from "../mud.config";
 export async function getFunctions({
   client,
   worldAddress,
-  deployBlock,
-  stateBlock,
+  fromBlock,
+  toBlock,
 }: {
   readonly client: Client;
   readonly worldAddress: Address;
-  readonly deployBlock: bigint;
-  readonly stateBlock: bigint;
+  readonly fromBlock: bigint;
+  readonly toBlock: bigint;
 }): Promise<readonly WorldFunction[]> {
   // This assumes we only use `FunctionSelectors._set(...)`, which is true as of this writing.
   debug("looking up function selectors for", worldAddress);
   const selectorLogs = await getLogs(client, {
     strict: true,
-    fromBlock: deployBlock,
-    toBlock: stateBlock,
+    fromBlock,
+    toBlock,
     address: worldAddress,
     event: parseAbiItem(storeSetRecordEvent),
     args: { tableId: worldConfig.namespaces.world.tables.FunctionSelectors.tableId },
@@ -52,8 +52,8 @@ export async function getFunctions({
   debug("looking up function signatures for", worldAddress);
   const signatureLogs = await getLogs(client, {
     strict: true,
-    fromBlock: deployBlock,
-    toBlock: stateBlock,
+    fromBlock: fromBlock,
+    toBlock: toBlock,
     address: worldAddress,
     event: parseAbiItem(storeSetRecordEvent),
     args: { tableId: worldConfig.namespaces.world.tables.FunctionSignatures.tableId },

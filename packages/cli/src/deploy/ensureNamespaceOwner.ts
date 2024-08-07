@@ -1,30 +1,22 @@
-import { Account, Address, Chain, Client, Hex, Transport, getAddress } from "viem";
-import { worldAbi } from "./common";
+import { Account, Chain, Client, Hex, Transport, getAddress } from "viem";
+import { WorldDeploy, worldAbi } from "./common";
 import { hexToResource, resourceToHex, writeContract } from "@latticexyz/common";
-import { getResourceIds, getTableValue } from "@latticexyz/world/internal";
-import worldConfig from "@latticexyz/world/mud.config";
+import { getResourceIds } from "./getResourceIds";
+import { getTableValue } from "./getTableValue";
 import { debug } from "./debug";
+import worldConfig from "@latticexyz/world/mud.config";
 
 export async function ensureNamespaceOwner({
   client,
-  worldAddress,
-  deployBlock,
-  stateBlock,
+  worldDeploy,
   resourceIds,
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
-  readonly worldAddress: Address;
-  readonly deployBlock: bigint;
-  readonly stateBlock: bigint;
+  readonly worldDeploy: WorldDeploy;
   readonly resourceIds: readonly Hex[];
 }): Promise<readonly Hex[]> {
   const desiredNamespaces = Array.from(new Set(resourceIds.map((resourceId) => hexToResource(resourceId).namespace)));
-  const existingResourceIds = await getResourceIds({
-    client,
-    worldAddress,
-    deployBlock,
-    stateBlock,
-  });
+  const existingResourceIds = await getResourceIds({ client, worldDeploy });
   const existingNamespaces = new Set(existingResourceIds.map((resourceId) => hexToResource(resourceId).namespace));
   if (existingNamespaces.size) {
     debug(
@@ -43,8 +35,7 @@ export async function ensureNamespaceOwner({
     existingDesiredNamespaces.map(async (namespace) => {
       const { owner } = await getTableValue({
         client,
-        worldAddress,
-        stateBlock,
+        worldDeploy,
         table: worldConfig.namespaces.world.tables.NamespaceOwner,
         key: { namespaceId: resourceToHex({ type: "namespace", namespace, name: "" }) },
       });
@@ -69,7 +60,7 @@ export async function ensureNamespaceOwner({
     missingNamespaces.map((namespace) =>
       writeContract(client, {
         chain: client.chain ?? null,
-        address: worldAddress,
+        address: worldDeploy.address,
         abi: worldAbi,
         functionName: "registerNamespace",
         args: [resourceToHex({ namespace, type: "namespace", name: "" })],

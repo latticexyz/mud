@@ -6,27 +6,25 @@ import {
   getSchemaTypes,
   getValueSchema,
 } from "@latticexyz/protocol-parser/internal";
-import { worldAbi } from "./common";
-import { Client, Hex, Address } from "viem";
+import { WorldDeploy, worldAbi } from "./common";
+import { Client, Hex } from "viem";
 import { readContract } from "viem/actions";
 import { Table } from "@latticexyz/config";
 
 export async function getTableValue<table extends Table>({
   client,
-  worldAddress,
-  stateBlock,
+  worldDeploy,
   table,
   key,
 }: {
   readonly client: Client;
-  readonly worldAddress: Address;
-  readonly stateBlock: bigint;
+  readonly worldDeploy: WorldDeploy;
   readonly table: table;
   readonly key: getSchemaPrimitives<getKeySchema<table>>;
 }): Promise<getSchemaPrimitives<getValueSchema<table>>> {
   const [staticData, encodedLengths, dynamicData] = (await readContract(client, {
-    blockNumber: stateBlock,
-    address: worldAddress,
+    blockNumber: worldDeploy.stateBlock,
+    address: worldDeploy.address,
     abi: worldAbi,
     functionName: "getRecord",
     args: [table.tableId, encodeKey(getSchemaTypes(getKeySchema(table)) as never, key as never)],

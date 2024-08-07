@@ -1,54 +1,44 @@
-import { DeployedSystem } from "./common";
-import { Client, Address } from "viem";
-import { getResourceIds } from "./getResourceIds";
+import { DeployedSystem, WorldDeploy } from "./common";
+import { Client } from "viem";
 import { hexToResource, resourceToLabel } from "@latticexyz/common";
+import { getFunctions } from "@latticexyz/world/internal";
+import { getResourceIds } from "./getResourceIds";
 import { getTableValue } from "./getTableValue";
 import { debug } from "./debug";
-import { getFunctions } from "./getFunctions";
 import { getResourceAccess } from "./getResourceAccess";
-import worldConfig from "../mud.config";
+import worldConfig from "@latticexyz/world/mud.config";
 
 export async function getSystems({
   client,
-  worldAddress,
-  stateBlock,
-  deployBlock,
+  worldDeploy,
 }: {
   readonly client: Client;
-  readonly worldAddress: Address;
-  readonly stateBlock: bigint;
-  readonly deployBlock: bigint;
+  readonly worldDeploy: WorldDeploy;
 }): Promise<readonly DeployedSystem[]> {
   const [resourceIds, functions, resourceAccess] = await Promise.all([
-    getResourceIds({
-      client,
-      worldAddress,
-      deployBlock: deployBlock,
-      stateBlock: stateBlock,
-    }),
+    getResourceIds({ client, worldDeploy }),
     getFunctions({
       client,
-      worldAddress,
-      deployBlock,
-      stateBlock,
+      worldAddress: worldDeploy.address,
+      fromBlock: worldDeploy.deployBlock,
+      toBlock: worldDeploy.stateBlock,
     }),
-    getResourceAccess({ client, worldAddress, deployBlock, stateBlock }),
+    getResourceAccess({ client, worldDeploy }),
   ]);
   const systems = resourceIds.map(hexToResource).filter((resource) => resource.type === "system");
 
   debug("looking up systems", systems.map(resourceToLabel).join(", "));
   return await Promise.all(
     systems.map(async (system): Promise<DeployedSystem> => {
-      const { system: systemAddress, publicAccess } = await getTableValue({
+      const { system: address, publicAccess } = await getTableValue({
         client,
-        worldAddress,
-        stateBlock,
+        worldDeploy,
         table: worldConfig.namespaces.world.tables.Systems,
         key: { systemId: system.resourceId },
       });
       const worldFunctions = functions.filter((func) => func.systemId === system.resourceId);
       return {
-        address: systemAddress,
+        address,
         namespace: system.namespace,
         name: system.name,
         systemId: system.resourceId,

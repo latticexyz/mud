@@ -1,6 +1,6 @@
-import { Client, Transport, Chain, Account, Hex, Address } from "viem";
+import { Client, Transport, Chain, Account, Hex } from "viem";
 import { resourceToLabel, writeContract } from "@latticexyz/common";
-import { worldAbi } from "./common";
+import { WorldDeploy, worldAbi } from "./common";
 import {
   valueSchemaToFieldLayoutHex,
   keySchemaToHex,
@@ -10,26 +10,22 @@ import {
   getKeySchema,
   KeySchema,
 } from "@latticexyz/protocol-parser/internal";
+import { debug } from "./debug";
 import { getTables } from "./getTables";
 import pRetry from "p-retry";
 import { wait } from "@latticexyz/common/utils";
 import { Table } from "@latticexyz/config";
-import { debug } from "./debug";
 
 export async function ensureTables({
   client,
-  worldAddress,
-  deployBlock,
-  stateBlock,
+  worldDeploy,
   tables,
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
-  readonly worldAddress: Address;
-  readonly deployBlock: bigint;
-  readonly stateBlock: bigint;
+  readonly worldDeploy: WorldDeploy;
   readonly tables: readonly Table[];
 }): Promise<readonly Hex[]> {
-  const worldTables = await getTables({ client, worldAddress, deployBlock, stateBlock });
+  const worldTables = await getTables({ client, worldDeploy });
   const worldTableIds = worldTables.map((table) => table.tableId);
 
   const existingTables = tables.filter((table) => worldTableIds.includes(table.tableId));
@@ -48,7 +44,7 @@ export async function ensureTables({
           () =>
             writeContract(client, {
               chain: client.chain ?? null,
-              address: worldAddress,
+              address: worldDeploy.address,
               abi: worldAbi,
               // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
               functionName: "registerTable",

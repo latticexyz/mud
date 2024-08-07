@@ -1,39 +1,25 @@
-import { Client, Abi, Address, getAddress, parseAbi } from "viem";
-import { worldDeployEvents } from "./common";
-import { getBlockNumber, getLogs } from "viem/actions";
-
-import { getSystems } from "./getSystems";
+import { Client, Abi, Address, getAddress } from "viem";
 import { functionSignatureToAbiItem } from "./functionSignatureToAbiItem";
+import { getFunctions } from "./getFunctions";
 
 export async function getWorldAbi({
   client,
   worldAddress,
+  fromBlock,
+  toBlock,
 }: {
   readonly client: Client;
   readonly worldAddress: Address;
+  readonly fromBlock: bigint;
+  readonly toBlock: bigint;
 }): Promise<Abi> {
-  const stateBlock = await getBlockNumber(client);
-  const logs = await getLogs(client, {
-    strict: true,
-    address: worldAddress,
-    events: parseAbi(worldDeployEvents),
-    // this may fail for certain RPC providers with block range limits
-    // if so, could potentially use our fetchLogs helper (which does pagination)
-    fromBlock: "earliest",
-    toBlock: stateBlock,
-  });
-  const deployBlock = logs[0].blockNumber;
-
-  const systems = await getSystems({
+  const worldFunctions = await getFunctions({
     client,
     worldAddress: getAddress(worldAddress),
-    stateBlock,
-    deployBlock,
+    fromBlock,
+    toBlock,
   });
-
-  const worldAbi = systems.flatMap((system) =>
-    system.worldFunctions.map((func) => functionSignatureToAbiItem(func.signature)),
-  );
+  const worldAbi = worldFunctions.map((func) => functionSignatureToAbiItem(func.signature));
 
   return worldAbi;
 }
