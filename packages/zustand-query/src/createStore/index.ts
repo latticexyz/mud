@@ -1,3 +1,3 @@
 export * from "./createStore";
 export * from "./common";
-export { BoundTable } from "./getTable";
+export type { BoundTable } from "./getTable";
