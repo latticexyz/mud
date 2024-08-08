@@ -34,28 +34,28 @@ export function getComponentValue(t: BoundTable, key: string): TableRecord | und
 export function getComponentValueStrict(t: BoundTable, key: string): TableRecord {
   const value = getComponentValue(t, key);
   if (!value) {
-    throw new Error(`No value found for key ${key} in table ${t.tableLabel}`);
+    throw new Error(`No value found for key ${key} in table ${t.getConfig().key}`);
   }
   return value;
 }
 
 export function Has(t: BoundTable) {
-  return In(t);
+  return In(t.getConfig());
 }
 export function Not(t: BoundTable) {
-  return NotIn(t);
+  return NotIn(t.getConfig());
 }
 
 export function HasValue(t: BoundTable, partialRecord: TableRecord) {
-  return MatchRecord(t, partialRecord);
+  return MatchRecord(t.getConfig(), partialRecord);
 }
 
 export function NotValue(t: BoundTable, partialRecord: TableRecord) {
-  return NotMatchRecord(t, partialRecord);
+  return NotMatchRecord(t.getConfig(), partialRecord);
 }
 
-export function runQuery(query: Query) {
-  const result = runQueryInternal(query);
+export function runQuery(store: Store, query: Query) {
+  const result = runQueryInternal(store, query);
 
   return new Set(Object.keys(result.keys));
 }
@@ -116,7 +116,7 @@ function defineSystemInternal(
   options: { runOnInit?: boolean } = { runOnInit: true },
   updateFilter?: "enter" | "update" | "exit",
 ) {
-  defineQuery(query, {
+  defineQuery(store, query, {
     skipInitialRun: !options.runOnInit,
     initialSubscribers: [
       (update) => {
