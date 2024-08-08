@@ -1,0 +1,322 @@
+# Writing MUD Modules
+
+On this page you learn how to write a MUD module.
+Modules are onchain installation scripts that create resources and their associated configuration when called by a `World`.
+The main difference between writing modules and writing MUD tables and `System`s directly is that you have to use the registration functions directly, you cannot rely on the [configuration file](/config).
+
+## The sample module
+
+The sample module lets games specify when a specific match began, and how long it is supposed to take.
+This is implemented in a single `System`.
+We also need a single table whose key is a game ID, and whose schema includes a start time and a length.
+
+## Create the table
+
+You could hand-craft the table, but that is a lot of unnecessary (and error-prone) work.
+The easiest way to create tables is to create a `mud.config.ts` file and use [`mud tablegen`](/cli/tablegen) to create the Solidity code.
+
+1. Create an application from a template, and delete the parts that are not needed.
+
+   ```sh copy
+   pnpm create mud@latest module --template vanilla
+   cd module
+   rm -r packages/client
+   cd packages/contracts
+   rm test/*.sol script/*.sol src/systems/*.sol
+   ```
+
+1. Create this `mud.config.ts` file:
+
+   ```typescript filename="mud.config.ts" copy
+   import { defineWorld } from "@latticexyz/world";
+
+   export default defineWorld({
+     namespace: "timer",
+     tables: {
+       Timer: {
+         schema: {
+           id: "uint256",
+           startTime: "uint256",
+           lengthSeconds: "uint256",
+         },
+         key: ["id"],
+       },
+     },
+   });
+   ```
+
+1. Run the table generation.
+
+   ```sh copy
+   pnpm mud tablegen
+   ```
+
+You can now see the table's Solidity code under `src/codegen/tables`.
+
+## Create the `System`
+
+We need to provide this functionality:
+
+- `createTimer` is the function that creates a timer, with an id, a start time (the present) and a time length.
+  If a timer already exists with that ID, don't modify it (that would enable some abuses).
+- `timePassed` is a view function that tells the caller how much time passed since the timer was created.
+- `timeLeft` is a view function that tells the caller how much time is left.
+  It reverts if it has already been `lengthSeconds` since `startTime`.
+
+Create this file in `src/systems/TimerSystem.sol`:
+
+```solidity filename="TimeSystem.sol" copy
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+
+import { System } from "@latticexyz/world/src/System.sol";
+import { Timer } from "../codegen/index.sol";
+
+contract TimerSystem is System {
+  function createTimer(uint256 id, uint256 lengthSeconds) external {
+    // First, verify there isn't already a value here
+    require(Timer.getStartTime(id) == 0, "Can't modify an existing timer");
+    Timer.set(id, block.timestamp, lengthSeconds);
+  }
+
+  function timePassed(uint256 id) external view returns (uint256) {
+    uint256 startTime = Timer.getStartTime(id);
+    return block.timestamp - startTime;
+  }
+
+  function timeLeft(uint256 id) external view returns (uint256) {
+    uint256 endTime = Timer.getStartTime(id) + Timer.getLengthSeconds(id);
+    require(endTime >= block.timestamp, "Timer already done");
+    return endTime - block.timestamp;
+  }
+}
+```
+
+## Create the module itself
+
+The module has two parts, a constructor and a registration function.
+The constructor deploys the `System` and stores its address for future registrations.
+
+The registration function has these jobs:
+
+- Create the `timer` namespace
+- Register the table
+- Register the `System`
+- Transfer ownership of the `timer` namespace to whoever called the module registration function.
+
+Create this file in `src/TimerModule.sol`
+
+```solidity filename="TimerModule.sol" copy
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+
+import { Module } from "@latticexyz/world/src/Module.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+import { IWorld } from "./codegen/world/IWorld.sol";
+
+// The System
+import { TimerSystem } from "./systems/TimerSystem.sol";
+
+// The table
+import { Timer } from "./codegen/index.sol";
+
+contract TimerModule is Module {
+  using WorldResourceIdInstance for ResourceId;
+
+  // The System that is deployed once when the module itself is deployed.
+  TimerSystem private immutable timerSystem = new TimerSystem();
+
+  // The resource IDs
+  ResourceId private immutable namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("timer"));
+  ResourceId private immutable timerSystemResource = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "timer", "TimerSystem");
+
+  function installRoot(bytes memory) public pure override {
+    revert Module_RootInstallNotSupported();
+  }
+
+  function install(bytes memory) public {
+    IWorld world = IWorld(_world());
+
+    // Register the namespace.
+    // Note that if it is already registered `registerNamespace`
+    // reverts, so we cannot be installed twice.
+    world.registerNamespace(namespaceResource);
+
+    // Register the table
+    Timer.register();
+
+    // Register the System
+    world.registerSystem(timerSystemResource, timerSystem, true);
+
+    // Register the functions that can be called
+    world.registerFunctionSelector(timerSystemResource, "createTimer(uint256,uint256)");
+    world.registerFunctionSelector(timerSystemResource, "timePassed(uint256)");
+    world.registerFunctionSelector(timerSystemResource, "timeLeft(uint256)");
+
+    // Transfer namespace ownership
+    world.transferOwnership(namespaceResource, _msgSender());
+  }
+}
+```
+
+<details>
+
+<summary>Explanation</summary>
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+
+import { Module } from "@latticexyz/world/src/Module.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+```
+
+We need to know how to be a `Module` and how to generate resource IDs for registration.
+
+```solidity
+import { IWorld } from "./codegen/world/IWorld.sol";
+
+// The System
+import { TimerSystem } from "./systems/TimerSystem.sol";
+
+// The table
+import { Timer } from "./codegen/index.sol";
+```
+
+Import previously created definitions.
+
+```solidity
+contract TimerModule is Module {
+  using WorldResourceIdInstance for ResourceId;
+
+  // The System that is deployed once when the module itself is deployed.
+  TimerSystem private immutable timerSystem = new TimerSystem();
+```
+
+In Solidity [`immutable`](https://docs.soliditylang.org/en/latest/contracts.html#constant-and-immutable-state-variables) variables are values set when the contract is first deployed.
+As `System`s are stateless, it is best to deploy them only once, and just register them to any `World` that needs them.
+
+```solidity
+  // The resource IDs
+  ResourceId private immutable namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("timer"));
+  ResourceId private immutable timerSystemResource =
+    WorldResourceIdLib.encode(RESOURCE_SYSTEM, "timer", "TimerSystem");
+```
+
+We need these identifiers to register the namespace and `System`s.
+There is no point wasting gas on recalculating these values either, so it's best to do it once.
+
+```solidity
+function installRoot(bytes memory) public pure override {
+  revert Module_RootInstallNotSupported();
+}
+```
+
+We do _not_ need root privileges, so it's best if we [don't have them](https://en.wikipedia.org/wiki/Principle_of_least_privilege).
+
+```solidity
+  function install(bytes memory) public {
+    IWorld world = IWorld(_world());
+
+    // Register the namespace.
+    // Note that if it is already registered `registerNamespace`
+    // reverts, so we cannot be installed twice.
+    world.registerNamespace(namespaceResource);
+```
+
+Register the namespace.
+
+```solidity
+     // Register the table
+    Timer.register();
+
+```
+
+The table generated from `mud.config.ts` comes with its own `register()` method to register it to the current `World`.
+Note that if the namespace was not a constant the way it is here we wouldn't be able to use `.register()` because it uses a resource ID that includes the namespace.
+
+```solidity
+    // Register the System
+    world.registerSystem(timerSystemResource, timerSystem, true);
+```
+
+For `System`s, which are written directly in Solidity by the developer, we call [`registerSystem`](/world/systems#registering-systems).
+The third parameter is whether [public access](/world/systems#access-control) is enabled or not.
+
+```solidity
+    // Register the functions that can be called
+    world.registerFunctionSelector(timerSystemResource, "createTimer(uint256,uint256)");
+    world.registerFunctionSelector(timerSystemResource, "timePassed(uint256)");
+    world.registerFunctionSelector(timerSystemResource, "timeLeft(uint256)");
+```
+
+We should also [register](/world/function-selectors) every function that needs to be accessible through the `World`.
+This is not necessary, you can use [`call`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L333-L345), but the registration makes it a lot easier to use our `System`s.
+
+```solidity
+
+    // Transfer namespace ownership
+    world.transferOwnership(namespaceResource, _msgSender());
+  }
+}
+```
+
+Finally, transfer [ownership of the namespace](/world/namespaces-access-control#ownership) to whoever called us.
+Otherwise, the namespace cannot be modified, because it will be owned by the module contract.
+
+</details>
+
+## Verify the module works
+
+1. In a separate directory, deploy and run a `World`.
+
+   ```sh copy
+   pnpm create mud@latest world --template react
+   cd world
+   pnpm dev
+   ```
+
+1. Make a note of the `World`'s address.
+
+1. Return to the module's directory, build the module and deploy it to the same blockchain.
+
+   ```sh copy
+   source .env
+   forge create TimerModule --private-key $PRIVATE_KEY --rpc-url http://127.0.0.1:8545
+   ```
+
+1. Set these environment variables:
+
+   | Variable       | Value                                                               |
+   | -------------- | ------------------------------------------------------------------- |
+   | WORLD_ADDRESS  | Address of the `World` from the first step                          |
+   | MODULE_ADDRESS | Address of the module you just deployed (the `deployed to` address) |
+
+1. [Install the module](/world/modules#module-installation) in the `World`:
+
+   ```sh copy
+   cast send $WORLD_ADDRESS "installModule(address,bytes)" $MODULE_ADDRESS 0x --private-key $PRIVATE_KEY --rpc-url http://127.0.0.1:8545
+   ```
+
+1. Create a ten-minute timer.
+
+   ```sh copy
+   cast send --private-key $PRIVATE_KEY --rpc-url http://127.0.0.1:8545 $WORLD_ADDRESS "timer__createTimer(uint,uint)" 0x1234 600
+   ```
+
+1. Try to run the same command again, see that you can't modify an existing timer.
+
+1. See how much time passed.
+
+   ```sh copy
+   cast call --rpc-url http://127.0.0.1:8545 $WORLD_ADDRESS "timer__timePassed(uint256)" 0x1234 | cast to-dec
+   ```
+
+1. See how much time is left.
+
+   ```sh copy
+   cast call --rpc-url http://127.0.0.1:8545 $WORLD_ADDRESS "timer__timeLeft(uint256)" 0x1234 | cast to-dec
+   ```
