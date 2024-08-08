@@ -1,10 +1,38 @@
-import { Hex, createWalletClient, http } from "viem";
-import { getWorldAbi, getWorldDeploy } from "@latticexyz/cli";
+import { Abi, Address, Hex, createWalletClient, http, parseAbi } from "viem";
+import { getBlockNumber, getLogs } from "viem/actions";
 import { getRpcUrl } from "@latticexyz/common/foundry";
+import { helloStoreEvent } from "@latticexyz/store";
+import { helloWorldEvent } from "@latticexyz/world";
+import { getWorldAbi } from "@latticexyz/world/internal";
 import { abi as defaultAbi } from "./abi";
-import { deduplicateABI } from "./utils/deduplicateABI";
+import { deduplicateAbi } from "./utils/deduplicateAbi";
 
 export const dynamic = "force-dynamic";
+
+async function getClient() {
+  const profile = process.env.FOUNDRY_PROFILE;
+  const rpc = await getRpcUrl(profile);
+  const client = createWalletClient({
+    transport: http(rpc),
+  });
+
+  return client;
+}
+
+async function getParameters(worldAddress: Address) {
+  const client = await getClient();
+  const toBlock = await getBlockNumber(client);
+  const logs = await getLogs(client, {
+    strict: true,
+    address: worldAddress,
+    events: parseAbi([helloStoreEvent, helloWorldEvent] as const),
+    fromBlock: "earliest",
+    toBlock,
+  });
+  const fromBlock = logs[0].blockNumber;
+
+  return { fromBlock, toBlock };
+}
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -14,21 +42,19 @@ export async function GET(req: Request) {
     return Response.json({ error: "address is required" }, { status: 400 });
   }
 
-  const profile = process.env.FOUNDRY_PROFILE;
-  const rpc = await getRpcUrl(profile);
-  const client = createWalletClient({
-    transport: http(rpc),
-  });
-
   try {
-    const worldDeploy = await getWorldDeploy(client, worldAddress);
+    const client = await getClient();
+    const { fromBlock, toBlock } = await getParameters(worldAddress);
+    // const worldDeploy = await getWorldDeploy(client, worldAddress);
     const worldAbi = await getWorldAbi({
       client,
-      worldDeploy,
+      worldAddress,
+      fromBlock,
+      toBlock,
     });
 
-    const combinedABI = [...worldAbi, ...defaultAbi];
-    const filteredABI = deduplicateABI(combinedABI).sort((a, b) =>
+    const combinedAbi = [...worldAbi, ...defaultAbi] as Abi;
+    const filteredABI = deduplicateAbi(combinedAbi).sort((a, b) =>
       a.name.localeCompare(b.name),
     );
     const sortedABI = filteredABI.sort((a, b) => a.name.localeCompare(b.name));

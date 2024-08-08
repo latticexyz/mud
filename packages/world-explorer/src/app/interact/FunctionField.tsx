@@ -31,7 +31,7 @@ type Props = {
 };
 
 const formSchema = z.object({
-  inputs: z.array(z.string()),
+  inputs: z.array(z.string()).default([]),
   value: z.string().optional(),
 });
 

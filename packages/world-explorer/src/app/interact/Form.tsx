@@ -20,7 +20,7 @@ export function Form({ data }: Props) {
   const deferredFilterValue = useDeferredValue(filterValue);
   const abiFunctions = data.abi.filter(
     (abi) => (abi as AbiFunction).type === "function",
-  );
+  ) as AbiFunction[];
   const filteredFunctions = abiFunctions.filter((abi) => {
     return (abi as AbiFunction).name
       .toLowerCase()

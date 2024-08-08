@@ -13,10 +13,11 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
-    "@latticexyz/cli": "workspace:*",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
+    "@latticexyz/store": "workspace:*",
+    "@latticexyz/world": "workspace:*",
     "@radix-ui/react-checkbox": "^1.1.1",
     "@radix-ui/react-dropdown-menu": "^2.1.1",
     "@radix-ui/react-label": "^2.1.0",

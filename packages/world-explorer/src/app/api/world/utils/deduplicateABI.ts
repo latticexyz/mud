@@ -1,12 +1,20 @@
-function hasNamedInputs(entry) {
-  return entry.inputs && entry.inputs.some((input) => input.name);
+import { Abi, AbiItem } from "viem";
+
+function hasNamedInputs(entry: AbiItem) {
+  if (!("inputs" in entry) || !entry.inputs || !entry.inputs.length) {
+    return false;
+  }
+  return entry.inputs.some((input) => input.name);
 }
 
-export function deduplicateABI(abi) {
+export function deduplicateAbi(abi: Abi) {
   const uniqueEntries = new Map();
 
-  abi.forEach((entry) => {
-    const key = `${entry.type}_${entry.name}`;
+  for (const entry of abi) {
+    let key: string = entry.type;
+    if ("name" in entry) {
+      key = `${entry.type}_${entry.name}`;
+    }
     const existingEntry = uniqueEntries.get(key);
 
     if (
@@ -15,7 +23,7 @@ export function deduplicateABI(abi) {
     ) {
       uniqueEntries.set(key, entry);
     }
-  });
+  }
 
   return Array.from(uniqueEntries.values());
 }
