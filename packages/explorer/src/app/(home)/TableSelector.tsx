@@ -5,9 +5,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/Select";
-import { NON_EDITABLE_TABLES } from "@/consts";
-import { useWorldAddress } from "@/hooks/useWorldAddress";
+} from "../../components/ui/Select";
+import { NON_EDITABLE_TABLES } from "../../consts";
+import { useWorldAddress } from "../../hooks/useWorldAddress";
 
 export function TableSelector({
   value,

@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LatestBlock } from "@/components/LatestBlock";
-import { Separator } from "@/components/ui/Separator";
-import { cn } from "@/lib/utils";
+import { LatestBlock } from "../components/LatestBlock";
+import { Separator } from "../components/ui/Separator";
+import { cn } from "../lib/utils";
 import { AccountSelect } from "./AccountSelect";
 
 export function Navigation() {

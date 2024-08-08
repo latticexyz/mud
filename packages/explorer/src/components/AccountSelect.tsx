@@ -1,14 +1,14 @@
 import { formatEther } from "viem";
 import { useEffect } from "react";
+import { ACCOUNTS } from "../consts";
+import { useStore } from "../store";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/Select";
-import { ACCOUNTS } from "@/consts";
-import { useStore } from "@/store";
+} from "./ui/Select";
 
 export function AccountSelect() {
   const { account, setAccount, balances, fetchBalances } = useStore();

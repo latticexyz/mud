@@ -10,7 +10,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { readContract, waitForTransactionReceipt } from "@wagmi/core";
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../components/ui/Button";
 import {
   Form,
   FormControl,
@@ -18,12 +18,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/Form";
-import { Input } from "@/components/ui/Input";
-import { Separator } from "@/components/ui/Separator";
-import { ACCOUNT_PRIVATE_KEYS } from "@/consts";
-import { useWorldAddress } from "@/hooks/useWorldAddress";
-import { useStore } from "@/store";
+} from "../../components/ui/Form";
+import { Input } from "../../components/ui/Input";
+import { Separator } from "../../components/ui/Separator";
+import { ACCOUNT_PRIVATE_KEYS } from "../../consts";
+import { useWorldAddress } from "../../hooks/useWorldAddress";
+import { useStore } from "../../store";
 import { wagmiConfig } from "../_providers";
 
 type Props = {

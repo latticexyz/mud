@@ -3,7 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
-import { Navigation } from "@/components/Navigation";
+import { Navigation } from "../components/Navigation";
 import { Providers } from "./_providers";
 import "./globals.css";
 

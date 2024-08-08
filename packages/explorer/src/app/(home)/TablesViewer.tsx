@@ -14,9 +14,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Button } from "@/components/ui/Button";
-import { Checkbox } from "@/components/ui/Checkbox";
-import { Input } from "@/components/ui/Input";
+import { Button } from "../../components/ui/Button";
+import { Checkbox } from "../../components/ui/Checkbox";
+import { Input } from "../../components/ui/Input";
 import {
   Table,
   TableBody,
@@ -24,8 +24,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/Table";
-import { NON_EDITABLE_TABLES } from "@/consts";
+} from "../../components/ui/Table";
+import { NON_EDITABLE_TABLES } from "../../consts";
 import { EditableTableCell } from "./EditableTableCell";
 import { bufferToBigInt } from "./utils/bufferToBigInt";
 
