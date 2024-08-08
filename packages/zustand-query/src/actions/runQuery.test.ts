@@ -1,12 +1,13 @@
 import { describe, beforeEach, it } from "vitest";
 import { attest } from "@arktype/attest";
-import { Store, createStore } from "./createStore";
+import { createStore } from "../createStore";
 import { runQuery } from "./runQuery";
-import { In, MatchRecord, NotIn, NotMatchRecord } from "./queryFragments";
 import { defineStore } from "@latticexyz/store";
-import { setRecord } from "./actions";
+import { Store } from "../common";
+import { setRecord } from "./setRecord";
+import { In, MatchRecord, NotIn, NotMatchRecord } from "../queryFragments";
 
-describe("runQuery", () => {
+describe("query", () => {
   let store: Store;
   const config = defineStore({
     namespace: "namespace1",
@@ -35,18 +36,18 @@ describe("runQuery", () => {
     const items = ["gold", "silver"];
     const num = 5;
     for (let i = 0; i < num; i++) {
-      setRecord(store, { table: Position, key: { player: String(i) }, record: { x: i, y: num - i } });
+      setRecord({ store, table: Position, key: { player: String(i) }, record: { x: i, y: num - i } });
       if (i > 2) {
-        setRecord(store, { table: Health, key: { player: String(i) }, record: { health: i } });
+        setRecord({ store, table: Health, key: { player: String(i) }, record: { health: i } });
       }
       for (const item of items) {
-        setRecord(store, { table: Inventory, key: { player: String(i), item }, record: { amount: i } });
+        setRecord({ store, table: Inventory, key: { player: String(i), item }, record: { amount: i } });
       }
     }
   });
 
   it("should return all keys in the Position table", () => {
-    const result = runQuery(store, [In(Position)]);
+    const result = runQuery({ store, query: [In(Position)] });
     attest(result).snap({
       keys: {
         "0": { player: "0" },
@@ -59,7 +60,7 @@ describe("runQuery", () => {
   });
 
   it("should return all keys that are in the Position and Health table", () => {
-    const result = runQuery(store, [In(Position), In(Health)]);
+    const result = runQuery({ store, query: [In(Position), In(Health)] });
     attest(result).snap({
       keys: {
         "3": { player: "3" },
@@ -69,12 +70,12 @@ describe("runQuery", () => {
   });
 
   it("should return all keys that have Position.x = 4 and are included in Health", () => {
-    const result = runQuery(store, [MatchRecord(Position, { x: 4 }), In(Health)]);
+    const result = runQuery({ store, query: [MatchRecord(Position, { x: 4 }), In(Health)] });
     attest(result).snap({ keys: { "4": { player: "4" } } });
   });
 
   it("should return all keys that are in Position but not Health", () => {
-    const result = runQuery(store, [In(Position), NotIn(Health)]);
+    const result = runQuery({ store, query: [In(Position), NotIn(Health)] });
     attest(result).snap({
       keys: {
         "0": { player: "0" },
@@ -85,7 +86,7 @@ describe("runQuery", () => {
   });
 
   it("should return all keys that don't include a gold item in the Inventory table", () => {
-    const result = runQuery(store, [NotMatchRecord(Inventory, { item: "gold" })]);
+    const result = runQuery({ store, query: [NotMatchRecord(Inventory, { item: "gold" })] });
     attest(result).snap({
       keys: {
         "0|silver": { player: "0", item: "silver" },
@@ -98,13 +99,13 @@ describe("runQuery", () => {
   });
 
   it("should throw an error when tables with different key schemas are mixed", () => {
-    attest(() => runQuery(store, [In(Position), MatchRecord(Inventory, { item: "gold", amount: 2 })])).throws(
-      "All tables in a query must share the same key schema",
-    );
+    attest(() =>
+      runQuery({ store, query: [In(Position), MatchRecord(Inventory, { item: "gold", amount: 2 })] }),
+    ).throws("All tables in a query must share the same key schema");
   });
 
   it("should include all matching records from the tables if includeRecords is set", () => {
-    const result = runQuery(store, [In(Position), In(Health)], { includeRecords: true });
+    const result = runQuery({ store, query: [In(Position), In(Health)], options: { includeRecords: true } });
     attest(result).snap({
       keys: {
         "3": { player: "3" },

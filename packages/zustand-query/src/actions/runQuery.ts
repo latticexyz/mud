@@ -1,25 +1,31 @@
-import { Query, CommonQueryOptions, CommonQueryResult, StoreRecords } from "./common";
 import { getKeySchema } from "@latticexyz/protocol-parser/internal";
-import { Store } from "./createStore";
-import { getConfig, getRecords } from "./actions";
+import { StoreRecords, Query, Store, MutableStoreRecords, CommonQueryOptions, CommonQueryResult } from "../common";
+import { getConfig } from "./getConfig";
+import { getRecords } from "./getRecords";
 
 type RunQueryOptions = CommonQueryOptions & {
   includeRecords?: boolean;
 };
 
-type RunQueryResult = CommonQueryResult & {
+export type RunQueryArgs = {
+  store: Store;
+  query: Query;
+  options?: RunQueryOptions;
+};
+
+export type RunQueryResult = CommonQueryResult & {
   // TODO: make records return type dependent on `includeRecords` on input type
   records?: StoreRecords;
 };
 
-export function runQuery(store: Store, query: Query, options?: RunQueryOptions): RunQueryResult {
+export function runQuery({ store, query, options }: RunQueryArgs): RunQueryResult {
   // Only allow fragments with matching table keys for now
   // TODO: we might be able to enable this if we add something like a `keySelector`
-  const expectedKeySchema = getKeySchema(getConfig(store, { table: query[0].table }));
+  const expectedKeySchema = getKeySchema(getConfig({ store, table: query[0].table }));
   for (const fragment of query) {
     if (
       Object.values(expectedKeySchema).join("|") !==
-      Object.values(getKeySchema(getConfig(store, { table: fragment.table }))).join("|")
+      Object.values(getKeySchema(getConfig({ store, table: fragment.table }))).join("|")
     ) {
       throw new Error("All tables in a query must share the same key schema");
     }
@@ -42,12 +48,12 @@ export function runQuery(store: Store, query: Query, options?: RunQueryOptions):
     return { keys };
   }
 
-  const records: StoreRecords = {};
+  const records: MutableStoreRecords = {};
   for (const { table } of query) {
     const namespace = table.namespace ?? "";
     const label = table.label;
     records[namespace] ??= {};
-    const tableRecords = getRecords(store, { table, keys: Object.values(keys) });
+    const tableRecords = getRecords({ store, table, keys: Object.values(keys) });
     records[namespace][label] ??= tableRecords;
   }
   return { keys, records };

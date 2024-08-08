@@ -1,9 +1,9 @@
 import { Table } from "@latticexyz/config";
-import { Keys } from "./common";
+import { Keys, Store } from "./common";
 import { TableRecord } from "./common";
 import { recordMatches } from "./recordEquals";
-import { Store } from "./createStore";
-import { getKeys, getRecords } from "./actions";
+import { getRecords } from "./actions/getRecords";
+import { getKeys } from "./actions/getKeys";
 
 // TODO: add more query fragments - ie GreaterThan, LessThan, Range, etc
 
@@ -26,8 +26,8 @@ export type QueryFragment = {
  * RECS equivalent: Has(Component)
  */
 export function In(table: Table): QueryFragment {
-  const match = (store: Store, encodedKey: string) => encodedKey in getRecords(store, { table });
-  const getInitialKeys = (store: Store) => getKeys(store, { table });
+  const match = (store: Store, encodedKey: string) => encodedKey in getRecords({ store, table });
+  const getInitialKeys = (store: Store) => getKeys({ store, table });
   return { table, match, getInitialKeys };
 }
 
@@ -36,7 +36,7 @@ export function In(table: Table): QueryFragment {
  * RECS equivalent: Not(Component)
  */
 export function NotIn(table: Table): QueryFragment {
-  const match = (store: Store, encodedKey: string) => !(encodedKey in getRecords(store, { table }));
+  const match = (store: Store, encodedKey: string) => !(encodedKey in getRecords({ store, table }));
   const getInitialKeys = () => ({});
   return { table, match, getInitialKeys };
 }
@@ -48,12 +48,12 @@ export function NotIn(table: Table): QueryFragment {
  */
 export function MatchRecord(table: Table, partialRecord: TableRecord): QueryFragment {
   const match = (store: Store, encodedKey: string) => {
-    const record = getRecords(store, { table })[encodedKey];
+    const record = getRecords({ store, table })[encodedKey];
     return recordMatches(partialRecord, record);
   };
   // TODO: this is a very naive and inefficient implementation for large tables, can be optimized via indexer tables
   const getInitialKeys = (store: Store) =>
-    Object.fromEntries(Object.entries(getKeys(store, { table })).filter(([key]) => match(store, key)));
+    Object.fromEntries(Object.entries(getKeys({ store, table })).filter(([key]) => match(store, key)));
   return { table, match, getInitialKeys };
 }
 
@@ -66,11 +66,11 @@ export function MatchRecord(table: Table, partialRecord: TableRecord): QueryFrag
  */
 export function NotMatchRecord(table: Table, partialRecord: TableRecord): QueryFragment {
   const match = (store: Store, encodedKey: string) => {
-    const record = getRecords(store, { table })[encodedKey];
+    const record = getRecords({ store, table })[encodedKey];
     return !recordMatches(partialRecord, record);
   };
   // TODO: this is a very naive and inefficient implementation for large tables, can be optimized via indexer tables
   const getInitialKeys = (store: Store) =>
-    Object.fromEntries(Object.entries(getKeys(store, { table })).filter(([key]) => match(store, key)));
+    Object.fromEntries(Object.entries(getKeys({ store, table })).filter(([key]) => match(store, key)));
   return { table, match, getInitialKeys };
 }

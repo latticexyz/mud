@@ -1,10 +1,18 @@
-import { decodeKey, getTable } from "./actions";
-import { Query, CommonQueryOptions, CommonQueryResult, Unsubscribe, TableUpdates, TableLabel } from "./common";
-import { Keys } from "./common";
-import { Store } from "./createStore";
+import {
+  TableUpdates,
+  Keys,
+  Unsubscribe,
+  Query,
+  TableLabel,
+  Store,
+  CommonQueryOptions,
+  CommonQueryResult,
+} from "../common";
+import { decodeKey } from "./decodeKey";
+import { getTable } from "./getTable";
 import { runQuery } from "./runQuery";
 
-type DefineQueryOptions = CommonQueryOptions & {
+export type SubscribeQueryOptions = CommonQueryOptions & {
   // Skip the initial `runQuery` to initialize the query result.
   // Only updates after the query was defined are considered in the result.
   skipInitialRun?: boolean;
@@ -25,7 +33,13 @@ export type QueryUpdate = {
 
 type QuerySubscriber = (update: QueryUpdate) => void;
 
-type DefineQueryResult = CommonQueryResult & {
+export type SubscribeQueryArgs = {
+  store: Store;
+  query: Query;
+  options?: SubscribeQueryOptions;
+};
+
+export type SubscribeQueryResult = CommonQueryResult & {
   /**
    * Subscribe to query updates.
    * Returns a function to unsubscribe the provided subscriber.
@@ -38,14 +52,18 @@ type DefineQueryResult = CommonQueryResult & {
   unsubscribe: () => void;
 };
 
-export function defineQuery(store: Store, query: Query, options?: DefineQueryOptions): DefineQueryResult {
+export function subscribeQuery({ store, query, options }: SubscribeQueryArgs): SubscribeQueryResult {
   const initialRun = options?.skipInitialRun
     ? undefined
-    : runQuery(store, query, {
-        // Pass the initial keys
-        initialKeys: options?.initialKeys,
-        // Request initial records if there are initial subscribers
-        includeRecords: options?.initialSubscribers && options.initialSubscribers.length > 0,
+    : runQuery({
+        store,
+        query,
+        options: {
+          // Pass the initial keys
+          initialKeys: options?.initialKeys,
+          // Request initial records if there are initial subscribers
+          includeRecords: options?.initialSubscribers && options.initialSubscribers.length > 0,
+        },
       });
   const matching: Keys = initialRun?.keys ?? {};
   const subscribers = new Set<QuerySubscriber>(options?.initialSubscribers);
@@ -81,7 +99,7 @@ export function defineQuery(store: Store, query: Query, options?: DefineQueryOpt
         const match = query.every((f) => f.match(store, key));
         if (match) {
           // Since the key schema of query fragments has to match, we can pick any fragment to decode they key
-          const decodedKey = decodeKey(store, { table: query[0].table, encodedKey: key });
+          const decodedKey = decodeKey({ store, table: query[0].table, encodedKey: key });
           matching[key] = decodedKey;
           update.keys[key] = decodedKey;
           update.types[key] = "enter";
@@ -95,7 +113,7 @@ export function defineQuery(store: Store, query: Query, options?: DefineQueryOpt
 
   // Subscribe to each table's update stream and store the unsubscribers
   const unsubsribers = query.map((fragment) =>
-    getTable(store, fragment.table).subscribe({
+    getTable({ store, table: fragment.table }).subscribe({
       subscriber: (updates) => updateQueryResult(fragment.table, updates),
     }),
   );
