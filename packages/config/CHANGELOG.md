@@ -1,5 +1,25 @@
 # Change Log
 
+## 2.1.0
+
+### Minor Changes
+
+- e85dc53: Tables and systems in config output now include a `label` property. Labels are now used throughout the codebase as a user-friendly way to reference the given resource: config keys, contract names, generated libraries, etc.
+
+  Inside `namespaces` config output, keys for tables and systems and their filenames will always correspond to their labels. This should make MUD tooling more intuitive and predictable. For backwards compatibility, `tables` config output still uses namespace-prefixed keys.
+
+  Labels replace the previous resource `name` usage, which is truncated to `bytes16` to be used as part of the resource ID and, in the future, may not always be human-readable.
+
+  These labels will soon be registered onchain so that developers can initialize a new MUD project from an existing world, generating config and interfaces with user-friendly names.
+
+### Patch Changes
+
+- 7129a16: Bumped `@arktype/util` and moved `evaluate`/`satisfy` usages to its `show`/`satisfy` helpers.
+- Updated dependencies [7129a16]
+- Updated dependencies [8d0453e]
+  - @latticexyz/common@2.1.0
+  - @latticexyz/schema-type@2.1.0
+
 ## 2.0.12
 
 ### Patch Changes

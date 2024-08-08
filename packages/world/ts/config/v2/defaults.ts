@@ -1,11 +1,17 @@
-import { CodegenInput, DeployInput, ModuleInput, SystemInput, WorldInput } from "./input";
+import { CodegenInput, DeployInput, ModuleInput, SystemDeployInput, SystemInput, WorldInput } from "./input";
+
+export const SYSTEM_DEPLOY_DEFAULTS = {
+  disabled: false,
+  registerWorldFunctions: true,
+} as const satisfies Required<SystemDeployInput>;
+
+export type SYSTEM_DEPLOY_DEFAULTS = typeof SYSTEM_DEPLOY_DEFAULTS;
 
 export const SYSTEM_DEFAULTS = {
   namespace: "",
-  registerFunctionSelectors: true,
   openAccess: true,
   accessList: [],
-} as const satisfies Omit<Required<SystemInput>, "label" | "name">;
+} as const satisfies Omit<Required<SystemInput>, "label" | "name" | "deploy">;
 
 export type SYSTEM_DEFAULTS = typeof SYSTEM_DEFAULTS;
 

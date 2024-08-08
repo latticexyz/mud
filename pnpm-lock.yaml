@@ -15,8 +15,8 @@ importers:
   .:
     devDependencies:
       '@ark/attest':
-        specifier: 0.10.2
-        version: 0.10.2(typescript@5.4.2)
+        specifier: 0.11.0
+        version: 0.11.0(typescript@5.4.2)
       '@changesets/cli':
         specifier: ^2.27.7
         version: 2.27.7
@@ -995,10 +995,10 @@ importers:
         version: 27.4.1
       jest:
         specifier: ^29.3.1
-        version: 29.5.0(@types/node@20.12.12)
+        version: 29.5.0(@types/node@18.15.11)
       ts-jest:
         specifier: ^29.0.5
-        version: 29.0.5(@babel/core@7.21.4)(@jest/types@29.5.0)(babel-jest@29.5.0(@babel/core@7.21.4))(jest@29.5.0(@types/node@20.12.12))(typescript@5.4.2)
+        version: 29.0.5(@babel/core@7.21.4)(@jest/types@29.5.0)(babel-jest@29.5.0(@babel/core@7.21.4))(jest@29.5.0(@types/node@18.15.11))(typescript@5.4.2)
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
@@ -1029,6 +1029,9 @@ importers:
       arktype:
         specifier: 1.0.29-alpha
         version: 1.0.29-alpha
+      debug:
+        specifier: ^4.3.4
+        version: 4.3.4
       viem:
         specifier: 2.9.20
         version: 2.9.20(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
@@ -1039,6 +1042,9 @@ importers:
       '@latticexyz/gas-report':
         specifier: workspace:*
         version: link:../gas-report
+      '@types/debug':
+        specifier: ^4.1.7
+        version: 4.1.7
       '@types/ejs':
         specifier: ^3.1.1
         version: 3.1.1
@@ -1356,20 +1362,23 @@ packages:
     resolution: {integrity: sha512-lFMjJTrFL3j7L9yBxwYfCq2k6qqwHyzuUl/XBnif78PWTJYyL/dfowQHWE3sp6U6ZzqWiiIZnpTMO96zhkjwtg==}
     engines: {node: '>=6.0.0'}
 
-  '@ark/attest@0.10.2':
-    resolution: {integrity: sha512-GLsLvxVFhgNx6JlCkhriKQW+XQFxGuOEH4SQNekLkmz1VLvdhy6fwOPWjXQlFiSUjFsF2DX4jOgBsxQs65n3xA==}
+  '@ark/attest@0.11.0':
+    resolution: {integrity: sha512-KTLvnB8mjH967z9ktzlXd3q/nVLddenjR7cWJR+u2DJh9NPSSQzwoDf30ab+5VtKf0abVzRxLfqRk80T3uGD3Q==}
     hasBin: true
     peerDependencies:
       typescript: '*'
 
-  '@ark/fs@0.1.2':
-    resolution: {integrity: sha512-u0clA/Ka4fxianc31di2B44FKBMJ4+jFzq8I7cmYb+gCTanmyQxcJ5SmHwxK+vcWObGr75T5TxQd2ozIENQAHw==}
+  '@ark/fs@0.2.0':
+    resolution: {integrity: sha512-nmrCG9XPHbz5Vg4wqxro1UMksPCZk4crxVa/XbWQuHfxFa6e9H+BNPhcehNEl5ePVK3Wzv/Y4aoy4vNqYZ4Ajg==}
 
-  '@ark/schema@0.2.2':
-    resolution: {integrity: sha512-3GyWVptFzmUZTBAwobiuk2Xa1wXeWNOOaHWcYl3pYTTdl5QNuB/53JnHXL0NrFW4Yvv7cgTcRsZQby7pNAeeJA==}
+  '@ark/schema@0.3.0':
+    resolution: {integrity: sha512-Xw6MkotVCgmmZ/OYFIXZ4DIbchNI0Okl20xrF7aZGouODZ75bED0EVyYsLDVrQ3PSKr0G4WOQbGCfM1FuN5oJw==}
 
   '@ark/util@0.1.2':
     resolution: {integrity: sha512-JhcPZhF8T8Eb9UxJqh3X8tOwZpnuW89azKlPnRhFXymhy/wBFPRC9+J+Vu+iUc/kplW3uloZb9n5R3EVVWUBgw==}
+
+  '@ark/util@0.2.0':
+    resolution: {integrity: sha512-L38ALnAR1wXxYQN9pn0ir+9ybPKA0O1+hl8PKZOvT9JSbTues4kEB8lgo80DeE0X1Jw+qoHe4lxgSwaHNa3xyg==}
 
   '@aws-crypto/ie11-detection@3.0.0':
     resolution: {integrity: sha512-341lBBkiY1DfDNKai/wXM3aujNBkXR7tq1URPQDL9wi3AUbI80NR74uF1TXHMm7po1AcnFk8iu2S2IeU/+/A+Q==}
@@ -2902,6 +2911,7 @@ packages:
   '@humanwhocodes/config-array@0.11.14':
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
     engines: {node: '>=10.10.0'}
+    deprecated: Use @eslint/config-array instead
 
   '@humanwhocodes/module-importer@1.0.1':
     resolution: {integrity: sha512-bxveV4V8v5Yb4ncFTT3rPSgZBOpCkjfK0y4oVVVJwIuDVBRMDXrPyXRL988i5ap9m9bnyEEjWfm5WkBmtffLfA==}
@@ -2909,6 +2919,7 @@ packages:
 
   '@humanwhocodes/object-schema@2.0.2':
     resolution: {integrity: sha512-6EwiSjwWYP7pTckG6I5eyFANjPhmPjUX9JRLUSfNPC7FX7zK9gyZAfUEaECL6ALTpGX5AjnBq3C9XmVWPitNpw==}
+    deprecated: Use @eslint/object-schema instead
 
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -4916,6 +4927,7 @@ packages:
 
   abab@2.0.6:
     resolution: {integrity: sha512-j2afSsaIENvHZN2B8GOpF566vZ5WVk5opAiMTvWgaQT8DkbOqsTfvNAvHoRGU2zzP8cPoqys+xHTRDWW8L+/BA==}
+    deprecated: Use your platform's native atob() and btoa() methods instead
 
   abbrev@1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
@@ -5086,6 +5098,7 @@ packages:
   are-we-there-yet@3.0.1:
     resolution: {integrity: sha512-QZW4EDmGwlYur0Yyf/b2uGucHQMa8aFUP7eu9ddR73vvhFyt4V0Vl3QHPcTNJ8l6qYOBdxgXdnBXQrHilfRQBg==}
     engines: {node: ^12.13.0 || ^14.15.0 || >=16.0.0}
+    deprecated: This package is no longer supported.
 
   arg@5.0.2:
     resolution: {integrity: sha512-PYjyFOLKQ9y57JvQ6QLo8dAgNqswh8M1RMJYdQduT6xbWSgK36P/Z/v+p888pM69jMMfS8Xd8F6I1kQ/I9HUGg==}
@@ -5114,8 +5127,8 @@ packages:
   arktype@1.0.29-alpha:
     resolution: {integrity: sha512-glMLgVhIQRSkR3tymiS+POAcWVJH09sfrgic0jHnyFL8BlhHAJZX2BzdImU9zYr1y9NBqy+U93ZNrRTHXsKRDw==}
 
-  arktype@2.0.0-beta.2:
-    resolution: {integrity: sha512-WLxtViYiR8T+COYzZgHGnl3eVGwAJJXHRPfGMqRCoMeNpVb1EE+9kMhiEOq0yzEoP6Y91yTPTuhINt3WbBCYxA==}
+  arktype@2.0.0-beta.3:
+    resolution: {integrity: sha512-a08Q7Mj+5hes+UvV9CdqWoXPc/qdYpCIANcg8Bhs+iYyIdKGxMpj976oevd19uRkx0qtqMwS/O4QeyvHT0/oRQ==}
 
   array-buffer-byte-length@1.0.1:
     resolution: {integrity: sha512-ahC5W1xgou+KTXix4sAO8Ki12Q+jf4i0+tmk3sC+zgcynshkHxzpXdImBehiUYKKKDwvfFiJl1tZt6ewscS1Mg==}
@@ -5370,6 +5383,7 @@ packages:
 
   bun@1.0.11:
     resolution: {integrity: sha512-cKyQAQOfWNIP511UpQjkABUp7z/5+1ci2kXfhjL9PozHoCaCtnYFtVjeqU1LovpqEP1agAsMiDpGNKbJP89RIw==}
+    cpu: [arm64, x64]
     os: [darwin, linux]
     hasBin: true
 
@@ -5972,6 +5986,7 @@ packages:
   domexception@4.0.0:
     resolution: {integrity: sha512-A2is4PLG+eeSfoTMA95/s4pvAoSo2mKtiM5jlHkAVewmiO8ISFTFKZjH7UAM1Atli/OT/7JHOrJRJiMKUZKYBw==}
     engines: {node: '>=12'}
+    deprecated: Use your platform's native DOMException instead
 
   dotenv@16.0.3:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
@@ -6717,6 +6732,7 @@ packages:
   gauge@4.0.4:
     resolution: {integrity: sha512-f9m+BEN5jkg6a0fZjleidjN51VE1X+mPFQ2DJ0uv1V39oCLCbsGe6yjbBnp7eK7z/+GAon99a3nHuqbuuthyPg==}
     engines: {node: ^12.13.0 || ^14.15.0 || >=16.0.0}
+    deprecated: This package is no longer supported.
 
   gensync@1.0.0-beta.2:
     resolution: {integrity: sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==}
@@ -7069,6 +7085,7 @@ packages:
 
   inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
+    deprecated: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
 
   inherits@2.0.3:
     resolution: {integrity: sha512-x00IRNXNy63jwGkJmzPigoySHbaqpNuzKbBOmzK+g2OdZpQ9w+sxCN+VSB3ja7IAge2OP2qpfxTjeNcyjmW1uw==}
@@ -8328,6 +8345,7 @@ packages:
   npmlog@6.0.2:
     resolution: {integrity: sha512-/vBvz5Jfr9dT/aFWd0FIRf+T/Q2WBsLENygUaFUqstqsycmZAP/t5BvFJTK0viFmSUxiUKTUplWy5vt+rvKIxg==}
     engines: {node: ^12.13.0 || ^14.15.0 || >=16.0.0}
+    deprecated: This package is no longer supported.
 
   nullthrows@1.1.1:
     resolution: {integrity: sha512-2vPPEi+Z7WqML2jZYddDIfy5Dqb0r2fze2zTxNNknZaFpVHU3mFB3R+DWeJWGVx0ecvttSGlJTI+WG+8Z4cDWw==}
@@ -9311,10 +9329,12 @@ packages:
 
   rimraf@2.6.3:
     resolution: {integrity: sha512-mwqeW5XsA2qAejG46gYdENaxXjx9onRNCfn7L0duuP4hCuTIi/QO7PDK07KJfp1d+izWPrzEJDcSqBa0OZQriA==}
+    deprecated: Rimraf versions prior to v4 are no longer supported
     hasBin: true
 
   rimraf@3.0.2:
     resolution: {integrity: sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==}
+    deprecated: Rimraf versions prior to v4 are no longer supported
     hasBin: true
 
   rollup-plugin-visualizer@5.12.0:
@@ -10778,26 +10798,28 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.3
       '@jridgewell/trace-mapping': 0.3.18
 
-  '@ark/attest@0.10.2(typescript@5.4.2)':
+  '@ark/attest@0.11.0(typescript@5.4.2)':
     dependencies:
-      '@ark/fs': 0.1.2
-      '@ark/util': 0.1.2
+      '@ark/fs': 0.2.0
+      '@ark/util': 0.2.0
       '@prettier/sync': 0.5.2(prettier@3.3.3)
       '@typescript/analyze-trace': 0.10.1
       '@typescript/vfs': 1.5.3(typescript@5.4.2)
-      arktype: 2.0.0-beta.2
+      arktype: 2.0.0-beta.3
       prettier: 3.3.3
       typescript: 5.4.2
     transitivePeerDependencies:
       - supports-color
 
-  '@ark/fs@0.1.2': {}
+  '@ark/fs@0.2.0': {}
 
-  '@ark/schema@0.2.2':
+  '@ark/schema@0.3.0':
     dependencies:
-      '@ark/util': 0.1.2
+      '@ark/util': 0.2.0
 
   '@ark/util@0.1.2': {}
+
+  '@ark/util@0.2.0': {}
 
   '@aws-crypto/ie11-detection@3.0.0':
     dependencies:
@@ -15906,10 +15928,10 @@ snapshots:
 
   arktype@1.0.29-alpha: {}
 
-  arktype@2.0.0-beta.2:
+  arktype@2.0.0-beta.3:
     dependencies:
-      '@ark/schema': 0.2.2
-      '@ark/util': 0.1.2
+      '@ark/schema': 0.3.0
+      '@ark/util': 0.2.0
 
   array-buffer-byte-length@1.0.1:
     dependencies:

@@ -1,3 +1,169 @@
+## Version 2.1.0
+
+Release date: Mon Aug 05 2024
+
+### Minor changes
+
+**[docs: update resource labels changeset (#2985)](https://github.com/latticexyz/mud/commit/9145d0abc513b3f5976666f25f94c0c85d1be262)** (@latticexyz/config, @latticexyz/store, @latticexyz/world)
+
+Tables and systems in config output now include a `label` property. Labels are now used throughout the codebase as a user-friendly way to reference the given resource: config keys, contract names, generated libraries, etc.
+
+Inside `namespaces` config output, keys for tables and systems and their filenames will always correspond to their labels. This should make MUD tooling more intuitive and predictable. For backwards compatibility, `tables` config output still uses namespace-prefixed keys.
+
+Labels replace the previous resource `name` usage, which is truncated to `bytes16` to be used as part of the resource ID and, in the future, may not always be human-readable.
+
+These labels will soon be registered onchain so that developers can initialize a new MUD project from an existing world, generating config and interfaces with user-friendly names.
+
+**[docs: update namespaces changeset (#2989)](https://github.com/latticexyz/mud/commit/1fe57dea0553ab89ea1ecca0d4fe0cc8281ca09d)** (@latticexyz/cli, @latticexyz/store, @latticexyz/world)
+
+MUD projects can now use multiple namespaces via a new top-level `namespaces` config option.
+
+```ts
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
+  namespaces: {
+    game: {
+      tables: {
+        Player: { ... },
+        Position: { ... },
+      },
+    },
+    guilds: {
+      tables: {
+        Guild: { ... },
+      },
+      systems: {
+        MembershipSystem: { ... },
+        TreasurySystem: { ... },
+      },
+    },
+  },
+});
+```
+
+Once you use the top-level `namespaces` config option, your project will be in "multiple namespaces mode", which expects a source directory structure similar to the config structure: a top-level `namespaces` directory with nested namespace directories that correspond to each namespace label in the config.
+
+```
+~/guilds
+├── mud.config.ts
+└── src
+    └── namespaces
+        ├── game
+        │   └── codegen
+        │       └── tables
+        │           ├── Player.sol
+        │           └── Position.sol
+        └── guilds
+            ├── MembershipSystem.sol
+            ├── TreasurySystem.sol
+            └── codegen
+                └── tables
+                    └── Guild.sol
+```
+
+### Patch changes
+
+**[fix(cli,store): don't deploy disabled tables (#2982)](https://github.com/latticexyz/mud/commit/24e285d5ae2d4f5791688d96ee7f8635551d3fb8)** (@latticexyz/store)
+
+Disabled deploy of `Hooks` table, as this was meant to be a generic, codegen-only table.
+
+**[refactor(store-sync): remove remaining refs to old config (#2938)](https://github.com/latticexyz/mud/commit/b62cf9fb061206a02a798403db0637e49fdabcfa)** (@latticexyz/store-sync)
+
+Refactored package to use the new Store/World configs under the hood, removing compatibility layers and improving performance.
+
+**[refactor(store-sync): remove remaining refs to old config (#2938)](https://github.com/latticexyz/mud/commit/b62cf9fb061206a02a798403db0637e49fdabcfa)** (@latticexyz/store-indexer)
+
+Updated return values to match updated types in `@latticexyz/store-sync`.
+
+**[refactor(world): update worldgen with namespaces output (#2974)](https://github.com/latticexyz/mud/commit/570086e7b4980639c0150a150eed1e09591e739a)** (@latticexyz/world)
+
+Refactored worldgen in preparation for multiple namespaces.
+
+**[chore(store-sync): simplify types (#2946)](https://github.com/latticexyz/mud/commit/f43f945eea9e948fa58550990b35c5dd2bc04678)** (@latticexyz/store-sync)
+
+Adjusted `SyncToRecsOptions` type intersection to improve TypeScript performance.
+
+**[refactor(cli): move off of old config (#2941)](https://github.com/latticexyz/mud/commit/3cbbc62c9ace1a5eb1a5cb832ff88f3d05c5722e)** (@latticexyz/cli)
+
+Refactored package to use the new Store/World configs under the hood, removing compatibility layers.
+
+Removed `--srcDir` option from all commands in favor of using `sourceDirectory` in the project's MUD config.
+
+**[fix: preserve JsDoc on defineWorld output, bump @arktype/util (#2815)](https://github.com/latticexyz/mud/commit/7129a16057a7fcc7195015a916bdf74e0809f3a2)** (@latticexyz/config, @latticexyz/query, @latticexyz/store, @latticexyz/world)
+
+Bumped `@arktype/util` and moved `evaluate`/`satisfy` usages to its `show`/`satisfy` helpers.
+
+**[refactor(store-sync): use config namespaces for tables (#2963)](https://github.com/latticexyz/mud/commit/3440a86b56823d0d54cd2e11ea4b90acc0e40682)** (@latticexyz/store-sync)
+
+Refactored `syncToRecs` and `syncToZustand` to use tables from config namespaces output. This is a precursor for supporting multiple namespaces.
+
+Note for library authors: If you were using `createStorageAdapter` from `@latticexyz/store-sync/recs`, this helper no longer appends MUD's built-in tables from Store and World packages. This behavior was moved into `syncToRecs` for consistency with `syncToZustand` and makes `createStorageAdapter` less opinionated.
+
+You can achieve the previous behavior with:
+
+```diff
+ import { createStorageAdapter } from "@latticexyz/store-sync/recs";
++import { mudTables } from "@latticexyz/store-sync";
+
+ createStorageAdapter({
+-  tables,
++  tables: { ...tables, ...mudTables },
+   ...
+ });
+```
+
+**[refactor(cli): move off of old config (#2941)](https://github.com/latticexyz/mud/commit/3cbbc62c9ace1a5eb1a5cb832ff88f3d05c5722e)** (@latticexyz/world)
+
+Refactored how worldgen resolves systems from the config and filesystem.
+
+**[fix(cli,store): don't deploy disabled tables (#2982)](https://github.com/latticexyz/mud/commit/24e285d5ae2d4f5791688d96ee7f8635551d3fb8)** (@latticexyz/cli)
+
+`mud deploy` will now correctly skip tables configured with `deploy: { disabled: true }`.
+
+**[refactor(cli): use config namespaces for tables (#2965)](https://github.com/latticexyz/mud/commit/2da9e48cd4bb8e3dafecf6c37799929b7bbbc39d)** (@latticexyz/cli)
+
+Refactored CLI commands to use tables from config namespaces output. This is a precursor for supporting multiple namespaces.
+
+**[fix: preserve JsDoc on defineWorld output, bump @arktype/util (#2815)](https://github.com/latticexyz/mud/commit/7129a16057a7fcc7195015a916bdf74e0809f3a2)** (@latticexyz/common)
+
+Removed `evaluate` and `satisfy` type utils in favor of `show` and `satisfy` from `@arktype/util`.
+
+**[refactor(cli): move off of old config (#2941)](https://github.com/latticexyz/mud/commit/3cbbc62c9ace1a5eb1a5cb832ff88f3d05c5722e)** (@latticexyz/world-modules)
+
+Moved build scripts to `mud build` now that CLI doesn't depend on this package.
+
+Removed generated world interfaces as this package isn't meant to be used as a "world", but as a set of individual modules.
+
+**[refactor(store-sync): move syncToZustand to new config (#2936)](https://github.com/latticexyz/mud/commit/9e05278de6730517647ae33fd9d46f2687ea5f93)** (@latticexyz/dev-tools)
+
+Updated Zustand components after changes to `syncToZustand`.
+
+**[refactor(cli): remove last ethers usage (#2952)](https://github.com/latticexyz/mud/commit/609de113f35e0e2a0fe4c6dafd25a900c6cd2cfa)** (@latticexyz/cli)
+
+Refactored `mud trace` command to use Viem instead of Ethers and removed Ethers dependencies from the package.
+
+**[refactor(store): update tablegen with namespaces output (#2972)](https://github.com/latticexyz/mud/commit/69eb63b5939c30515a62da9afbdd71f89a67f8a2)** (@latticexyz/store)
+
+Refactored tablegen in preparation for multiple namespaces and addressed a few edge cases:
+
+- User types configured with a relative `filePath` are now resolved relative to the project root (where the `mud.config.ts` lives) rather than the current working directory.
+- User types inside libraries now need to be referenced with their fully-qualified code path (e.g. `LibraryName.UserTypeName`).
+
+**[chore: bump glob (#2922)](https://github.com/latticexyz/mud/commit/e49059f057575614071ad992cd4df387ba10ca33)** (@latticexyz/abi-ts, @latticexyz/cli, @latticexyz/world-modules, @latticexyz/world, create-mud)
+
+Bumped `glob` dependency.
+
+**[feat(common): throw instead of truncating namespace (#2917)](https://github.com/latticexyz/mud/commit/8d0453e7b52e23da4ebe4eef30db734dd33c06b9)** (@latticexyz/common)
+
+`resourceToHex` will now throw if provided namespace is >14 characters. Since namespaces are used to determine access control, it's not safe to automatically truncate to fit into `bytes14` as that may change the indended namespace for resource access.
+
+**[refactor(store,world): simplify table shorthands (#2969)](https://github.com/latticexyz/mud/commit/fb1cfef0c19e7b9b5bb3ea5ef8b581e8db892fb7)** (@latticexyz/store, @latticexyz/world)
+
+Refactored how the config handles shorthand table definitions, greatly simplifying the codebase. This will make it easier to add support for multiple namespaces.
+
+---
+
 ## Version 2.0.12
 
 Release date: Fri May 31 2024

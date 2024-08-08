@@ -20,14 +20,14 @@ describe("resolveSchema", () => {
     } as const;
 
     attest<typeof expected>(resolved).equals(expected).type.toString.snap(`{
-	readonly regular: {
-		readonly type: "uint256"
-		readonly internalType: "uint256"
-	}
-	readonly user: {
-		readonly type: "address"
-		readonly internalType: "CustomType"
-	}
+  readonly regular: {
+    readonly type: "uint256"
+    readonly internalType: "uint256"
+  }
+  readonly user: {
+    readonly type: "address"
+    readonly internalType: "CustomType"
+  }
 }`);
   });
 
@@ -63,10 +63,10 @@ describe("resolveSchema", () => {
     } as const;
 
     attest<typeof expected>(resolved).equals(expected).type.toString.snap(`{
-	readonly coordinate: {
-		readonly type: "int32[]"
-		readonly internalType: "int32[2]"
-	}
+  readonly coordinate: {
+    readonly type: "int32[]"
+    readonly internalType: "int32[2]"
+  }
 }`);
   });
 });

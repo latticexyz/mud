@@ -200,101 +200,101 @@ describe("defineWorld", () => {
       },
       modules: [],
     }).type.toString.snap(`{
-	readonly namespace: string
-	readonly tables: {
-		readonly Example: {
-			readonly label: "Example"
-			readonly type: "table"
-			readonly namespace: string
-			readonly name: string
-			readonly tableId: \`0x\${string}\`
-			readonly schema: {
-				readonly id: {
-					readonly type: "address"
-					readonly internalType: "address"
-				}
-				readonly name: {
-					readonly type: "string"
-					readonly internalType: "string"
-				}
-				readonly age: {
-					readonly type: "uint256"
-					readonly internalType: "uint256"
-				}
-			}
-			readonly key: readonly ["age"]
-			readonly codegen: {
-				readonly outputDirectory: string
-				readonly tableIdArgument: false
-				readonly storeArgument: false
-				readonly dataStruct: boolean
-			}
-			readonly deploy: { readonly disabled: false }
-		}
-	}
-	readonly codegen: {
-		readonly storeImportPath: "@latticexyz/store/src"
-		readonly userTypesFilename: "common.sol"
-		readonly outputDirectory: "codegen"
-		readonly indexFilename: "index.sol"
-	} & {
-		readonly worldInterfaceName: "IWorld"
-		readonly worldgenDirectory: "world"
-		readonly worldImportPath: "@latticexyz/world/src"
-	}
-	readonly sourceDirectory: "src"
-	readonly enums: {}
-	readonly userTypes: {}
-	readonly enumValues: {}
-	readonly multipleNamespaces: false
-	readonly namespaces: {
-		readonly "": {
-			readonly label: ""
-			readonly namespace: string
-			readonly tables: {
-				readonly Example: {
-					readonly label: "Example"
-					readonly type: "table"
-					readonly namespace: string
-					readonly name: string
-					readonly tableId: \`0x\${string}\`
-					readonly schema: {
-						readonly id: {
-							readonly type: "address"
-							readonly internalType: "address"
-						}
-						readonly name: {
-							readonly type: "string"
-							readonly internalType: "string"
-						}
-						readonly age: {
-							readonly type: "uint256"
-							readonly internalType: "uint256"
-						}
-					}
-					readonly key: readonly ["age"]
-					readonly codegen: {
-						readonly outputDirectory: string
-						readonly tableIdArgument: false
-						readonly storeArgument: false
-						readonly dataStruct: boolean
-					}
-					readonly deploy: { readonly disabled: false }
-				}
-			}
-			readonly systems: {}
-		}
-	}
-	readonly systems: {}
-	readonly excludeSystems: readonly []
-	readonly modules: readonly []
-	readonly deploy: {
-		readonly customWorldContract: undefined
-		readonly postDeployScript: "PostDeploy"
-		readonly deploysDirectory: "./deploys"
-		readonly worldsFile: "./worlds.json"
-		readonly upgradeableWorldImplementation: false
-	}
+  readonly namespace: string
+  readonly tables: {
+    readonly Example: {
+      readonly label: "Example"
+      readonly type: "table"
+      readonly namespace: string
+      readonly name: string
+      readonly tableId: \`0x\${string}\`
+      readonly schema: {
+        readonly id: {
+          readonly type: "address"
+          readonly internalType: "address"
+        }
+        readonly name: {
+          readonly type: "string"
+          readonly internalType: "string"
+        }
+        readonly age: {
+          readonly type: "uint256"
+          readonly internalType: "uint256"
+        }
+      }
+      readonly key: readonly ["age"]
+      readonly codegen: {
+        readonly outputDirectory: string
+        readonly tableIdArgument: false
+        readonly storeArgument: false
+        readonly dataStruct: boolean
+      }
+      readonly deploy: { readonly disabled: false }
+    }
+  }
+  readonly codegen: {
+    readonly storeImportPath: "@latticexyz/store/src"
+    readonly userTypesFilename: "common.sol"
+    readonly outputDirectory: "codegen"
+    readonly indexFilename: "index.sol"
+  } & {
+    readonly worldInterfaceName: "IWorld"
+    readonly worldgenDirectory: "world"
+    readonly worldImportPath: "@latticexyz/world/src"
+  }
+  readonly sourceDirectory: "src"
+  readonly enums: {}
+  readonly userTypes: {}
+  readonly enumValues: {}
+  readonly multipleNamespaces: false
+  readonly namespaces: {
+    readonly "": {
+      readonly label: ""
+      readonly namespace: string
+      readonly tables: {
+        readonly Example: {
+          readonly label: "Example"
+          readonly type: "table"
+          readonly namespace: string
+          readonly name: string
+          readonly tableId: \`0x\${string}\`
+          readonly schema: {
+            readonly id: {
+              readonly type: "address"
+              readonly internalType: "address"
+            }
+            readonly name: {
+              readonly type: "string"
+              readonly internalType: "string"
+            }
+            readonly age: {
+              readonly type: "uint256"
+              readonly internalType: "uint256"
+            }
+          }
+          readonly key: readonly ["age"]
+          readonly codegen: {
+            readonly outputDirectory: string
+            readonly tableIdArgument: false
+            readonly storeArgument: false
+            readonly dataStruct: boolean
+          }
+          readonly deploy: { readonly disabled: false }
+        }
+      }
+      readonly systems: {}
+    }
+  }
+  readonly systems: {}
+  readonly excludeSystems: readonly []
+  readonly modules: readonly []
+  readonly deploy: {
+    readonly customWorldContract: undefined
+    readonly postDeployScript: "PostDeploy"
+    readonly deploysDirectory: "./deploys"
+    readonly worldsFile: "./worlds.json"
+    readonly upgradeableWorldImplementation: false
+  }
 }`);
   });
 
@@ -381,101 +381,101 @@ describe("defineWorld", () => {
       },
       modules: [],
     }).type.toString.snap(`{
-	readonly namespace: null
-	readonly tables: {
-		readonly root__Example: {
-			readonly label: "Example"
-			readonly type: "table"
-			readonly namespace: string
-			readonly name: string
-			readonly tableId: \`0x\${string}\`
-			readonly schema: {
-				readonly id: {
-					readonly type: "address"
-					readonly internalType: "address"
-				}
-				readonly name: {
-					readonly type: "string"
-					readonly internalType: "string"
-				}
-				readonly age: {
-					readonly type: "uint256"
-					readonly internalType: "uint256"
-				}
-			}
-			readonly key: readonly ["age"]
-			readonly codegen: {
-				readonly outputDirectory: string
-				readonly tableIdArgument: false
-				readonly storeArgument: false
-				readonly dataStruct: boolean
-			}
-			readonly deploy: { readonly disabled: false }
-		}
-	}
-	readonly codegen: {
-		readonly storeImportPath: "@latticexyz/store/src"
-		readonly userTypesFilename: "common.sol"
-		readonly outputDirectory: "codegen"
-		readonly indexFilename: "index.sol"
-	} & {
-		readonly worldInterfaceName: "IWorld"
-		readonly worldgenDirectory: "world"
-		readonly worldImportPath: "@latticexyz/world/src"
-	}
-	readonly sourceDirectory: "src"
-	readonly enums: {}
-	readonly userTypes: {}
-	readonly enumValues: {}
-	readonly multipleNamespaces: true
-	readonly namespaces: {
-		readonly root: {
-			readonly label: "root"
-			readonly namespace: string
-			readonly tables: {
-				readonly Example: {
-					readonly label: "Example"
-					readonly type: "table"
-					readonly namespace: string
-					readonly name: string
-					readonly tableId: \`0x\${string}\`
-					readonly schema: {
-						readonly id: {
-							readonly type: "address"
-							readonly internalType: "address"
-						}
-						readonly name: {
-							readonly type: "string"
-							readonly internalType: "string"
-						}
-						readonly age: {
-							readonly type: "uint256"
-							readonly internalType: "uint256"
-						}
-					}
-					readonly key: readonly ["age"]
-					readonly codegen: {
-						readonly outputDirectory: string
-						readonly tableIdArgument: false
-						readonly storeArgument: false
-						readonly dataStruct: boolean
-					}
-					readonly deploy: { readonly disabled: false }
-				}
-			}
-			readonly systems: {}
-		}
-	}
-	readonly systems: {}
-	readonly excludeSystems: readonly []
-	readonly modules: readonly []
-	readonly deploy: {
-		readonly customWorldContract: undefined
-		readonly postDeployScript: "PostDeploy"
-		readonly deploysDirectory: "./deploys"
-		readonly worldsFile: "./worlds.json"
-		readonly upgradeableWorldImplementation: false
-	}
+  readonly namespace: null
+  readonly tables: {
+    readonly root__Example: {
+      readonly label: "Example"
+      readonly type: "table"
+      readonly namespace: string
+      readonly name: string
+      readonly tableId: \`0x\${string}\`
+      readonly schema: {
+        readonly id: {
+          readonly type: "address"
+          readonly internalType: "address"
+        }
+        readonly name: {
+          readonly type: "string"
+          readonly internalType: "string"
+        }
+        readonly age: {
+          readonly type: "uint256"
+          readonly internalType: "uint256"
+        }
+      }
+      readonly key: readonly ["age"]
+      readonly codegen: {
+        readonly outputDirectory: string
+        readonly tableIdArgument: false
+        readonly storeArgument: false
+        readonly dataStruct: boolean
+      }
+      readonly deploy: { readonly disabled: false }
+    }
+  }
+  readonly codegen: {
+    readonly storeImportPath: "@latticexyz/store/src"
+    readonly userTypesFilename: "common.sol"
+    readonly outputDirectory: "codegen"
+    readonly indexFilename: "index.sol"
+  } & {
+    readonly worldInterfaceName: "IWorld"
+    readonly worldgenDirectory: "world"
+    readonly worldImportPath: "@latticexyz/world/src"
+  }
+  readonly sourceDirectory: "src"
+  readonly enums: {}
+  readonly userTypes: {}
+  readonly enumValues: {}
+  readonly multipleNamespaces: true
+  readonly namespaces: {
+    readonly root: {
+      readonly label: "root"
+      readonly namespace: string
+      readonly tables: {
+        readonly Example: {
+          readonly label: "Example"
+          readonly type: "table"
+          readonly namespace: string
+          readonly name: string
+          readonly tableId: \`0x\${string}\`
+          readonly schema: {
+            readonly id: {
+              readonly type: "address"
+              readonly internalType: "address"
+            }
+            readonly name: {
+              readonly type: "string"
+              readonly internalType: "string"
+            }
+            readonly age: {
+              readonly type: "uint256"
+              readonly internalType: "uint256"
+            }
+          }
+          readonly key: readonly ["age"]
+          readonly codegen: {
+            readonly outputDirectory: string
+            readonly tableIdArgument: false
+            readonly storeArgument: false
+            readonly dataStruct: boolean
+          }
+          readonly deploy: { readonly disabled: false }
+        }
+      }
+      readonly systems: {}
+    }
+  }
+  readonly systems: {}
+  readonly excludeSystems: readonly []
+  readonly modules: readonly []
+  readonly deploy: {
+    readonly customWorldContract: undefined
+    readonly postDeployScript: "PostDeploy"
+    readonly deploysDirectory: "./deploys"
+    readonly worldsFile: "./worlds.json"
+    readonly upgradeableWorldImplementation: false
+  }
 }`);
   });
 
@@ -581,20 +581,23 @@ describe("defineWorld", () => {
         namespace: "app",
         name: "Example",
         systemId: "0x737961707000000000000000000000004578616d706c65000000000000000000",
-        registerFunctionSelectors: true,
+        deploy: { disabled: false, registerWorldFunctions: true },
         openAccess: true,
         accessList: [],
       },
     }).type.toString.snap(`{
-	readonly Example: {
-		readonly label: "Example"
-		readonly namespace: string
-		readonly name: string
-		readonly systemId: \`0x\${string}\`
-		readonly registerFunctionSelectors: true
-		readonly openAccess: true
-		readonly accessList: readonly []
-	}
+  readonly Example: {
+    readonly label: "Example"
+    readonly namespace: string
+    readonly name: string
+    readonly systemId: \`0x\${string}\`
+    readonly openAccess: true
+    readonly accessList: readonly []
+    readonly deploy: {
+      readonly disabled: false
+      readonly registerWorldFunctions: true
+    }
+  }
 }`);
   });
 
