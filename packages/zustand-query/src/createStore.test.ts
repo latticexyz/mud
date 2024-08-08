@@ -19,7 +19,7 @@ describe("createStore", () => {
     });
     const store = createStore(tablesConfig);
 
-    attest(store.getState().config).snap({
+    attest(store.get().config).snap({
       namespace1: {
         table1: {
           label: "table1",
@@ -35,7 +35,7 @@ describe("createStore", () => {
         },
       },
     });
-    attest(store.getState().records).snap({ namespace1: { table1: {} } });
+    attest(store.get().records).snap({ namespace1: { table1: {} } });
   });
 
   describe("setRecord", () => {
@@ -55,19 +55,19 @@ describe("createStore", () => {
       });
 
       const store = createStore(tablesConfig);
-      store.getState().actions.setRecord({
+      store.setRecord({
         table: { label: "table1", namespace: "namespace1" },
         key: { field2: 1, field3: 2 },
         record: { field1: "hello" },
       });
 
-      store.getState().actions.setRecord({
+      store.setRecord({
         table: { label: "table1", namespace: "namespace1" },
         key: { field2: 2, field3: 1 },
         record: { field1: "world" },
       });
 
-      attest(store.getState().records).snap({
+      attest(store.get().records).snap({
         namespace1: {
           table1: {
             "1|2": { field1: "hello", field2: 1, field3: 2 },
@@ -95,7 +95,7 @@ describe("createStore", () => {
       });
 
       const store = createStore(tablesConfig);
-      store.getState().actions.setRecords({
+      store.setRecords({
         table: { label: "table1", namespace: "namespace1" },
         records: [
           { field1: "hello", field2: 1, field3: 2 },
@@ -103,7 +103,7 @@ describe("createStore", () => {
         ],
       });
 
-      attest(store.getState().records).snap({
+      attest(store.get().records).snap({
         namespace1: {
           table1: {
             "1|2": { field1: "hello", field2: 1, field3: 2 },
@@ -134,12 +134,12 @@ describe("createStore", () => {
 
       const listener = vi.fn();
 
-      store.getState().actions.subscribe({
+      store.subscribe({
         table: { label: "table1", namespace: "namespace1" },
         subscriber: listener,
       });
 
-      store.getState().actions.setRecord({
+      store.setRecord({
         table: { label: "table1", namespace: "namespace1" },
         key: { field2: 1, field3: 2 },
         record: { field1: "hello" },
@@ -152,7 +152,7 @@ describe("createStore", () => {
         },
       });
 
-      store.getState().actions.setRecord({
+      store.setRecord({
         table: { label: "table1", namespace: "namespace1" },
         key: { field2: 1, field3: 2 },
         record: { field1: "world" },
@@ -185,12 +185,12 @@ describe("createStore", () => {
 
       const listener = vi.fn();
 
-      const unsubscribe = store.getState().actions.subscribe({
+      const unsubscribe = store.subscribe({
         table: { label: "table1", namespace: "namespace1" },
         subscriber: listener,
       });
 
-      store.getState().actions.setRecord({
+      store.setRecord({
         table: { label: "table1", namespace: "namespace1" },
         key: { field2: 1, field3: 2 },
         record: { field1: "hello" },
@@ -205,7 +205,7 @@ describe("createStore", () => {
 
       unsubscribe();
 
-      store.getState().actions.setRecord({
+      store.setRecord({
         table: { label: "table1", namespace: "namespace1" },
         key: { field2: 1, field3: 2 },
         record: { field1: "world" },
@@ -232,27 +232,27 @@ describe("createStore", () => {
       });
 
       const store = createStore(tablesConfig);
-      store.getState().actions.setRecord({
+      store.setRecord({
         table: { label: "table1", namespace: "namespace1" },
         key: { field2: 1, field3: 2 },
         record: { field1: "hello" },
       });
 
-      store.getState().actions.setRecord({
+      store.setRecord({
         table: { label: "table1", namespace: "namespace1" },
         key: { field2: 2, field3: 1 },
         record: { field1: "world" },
       });
 
       attest(
-        store.getState().actions.getRecord({
+        store.getRecord({
           table: { label: "table1", namespace: "namespace1" },
           key: { field2: 1, field3: 2 },
         }),
       ).snap({ field1: "hello", field2: 1, field3: 2 });
 
       attest(
-        store.getState().actions.getRecord({
+        store.getRecord({
           table: { label: "table1", namespace: "namespace1" },
           key: { field2: 2, field3: 1 },
         }),
@@ -263,14 +263,16 @@ describe("createStore", () => {
   describe("registerTable", () => {
     it("should add a new table to the store and return a bound table", () => {
       const store = createStore();
-      const table = store.getState().actions.registerTable({
-        label: "table1",
-        namespace: "namespace1",
-        schema: { field1: "uint32", field2: "address" },
-        key: ["field1"],
+      const table = store.registerTable({
+        table: {
+          label: "table1",
+          namespace: "namespace1",
+          schema: { field1: "uint32", field2: "address" },
+          key: ["field1"],
+        },
       });
 
-      attest(store.getState().config).snap({
+      attest(store.get().config).snap({
         namespace1: {
           table1: {
             label: "table1",
@@ -286,7 +288,7 @@ describe("createStore", () => {
           },
         },
       });
-      attest(store.getState().records).snap({ namespace1: { table1: {} } });
+      attest(store.get().records).snap({ namespace1: { table1: {} } });
       expect(table.setRecord).toBeDefined();
       expect(table.getRecord).toBeDefined();
     });
@@ -295,13 +297,15 @@ describe("createStore", () => {
   describe("getTable", () => {
     it("should return a bound table", () => {
       const store = createStore();
-      store.getState().actions.registerTable({
-        label: "table1",
-        namespace: "namespace1",
-        schema: { field1: "uint32", field2: "address" },
-        key: ["field1"],
+      store.registerTable({
+        table: {
+          label: "table1",
+          namespace: "namespace1",
+          schema: { field1: "uint32", field2: "address" },
+          key: ["field1"],
+        },
       });
-      const table = store.getState().actions.getTable({ label: "table1", namespace: "namespace1" });
+      const table = store.getTable({ table: { label: "table1", namespace: "namespace1" } });
 
       expect(table.setRecord).toBeDefined();
       expect(table.getRecord).toBeDefined();
@@ -311,19 +315,23 @@ describe("createStore", () => {
   describe("getTables", () => {
     it("should return an object of bound tables in the store", () => {
       const store = createStore();
-      store.getState().actions.registerTable({
-        label: "table1",
-        namespace: "namespace1",
-        schema: { field1: "uint32", field2: "address" },
-        key: ["field1"],
+      store.registerTable({
+        table: {
+          label: "table1",
+          namespace: "namespace1",
+          schema: { field1: "uint32", field2: "address" },
+          key: ["field1"],
+        },
       });
-      store.getState().actions.registerTable({
-        label: "table2",
-        namespace: "namespace2",
-        schema: { field1: "uint32", field2: "address" },
-        key: ["field1"],
+      store.registerTable({
+        table: {
+          label: "table2",
+          namespace: "namespace2",
+          schema: { field1: "uint32", field2: "address" },
+          key: ["field1"],
+        },
       });
-      const tables = store.getState().actions.getTables();
+      const tables = store.getTables();
 
       expect(tables.namespace1.table1).toBeDefined();
       expect(tables.namespace2.table2).toBeDefined();

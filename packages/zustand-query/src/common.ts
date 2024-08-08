@@ -1,5 +1,6 @@
 import { Hex } from "viem";
 import { QueryFragment } from "./queryFragments";
+import { Table } from "@latticexyz/config";
 
 /**
  * A Key is the unique identifier for a row in the table.
@@ -50,8 +51,65 @@ export type TableLabel = { label: string; namespace?: string };
 
 export type TableRecords = { readonly [key: string]: TableRecord };
 
+export type MutableTableRecords = { [key: string]: TableRecord };
+
 export type StoreRecords = {
-  [namespace: string]: {
-    [table: string]: TableRecords;
+  readonly [namespace: string]: {
+    readonly [table: string]: TableRecords;
   };
 };
+
+export type MutableStoreRecords = {
+  [namespace: string]: {
+    [table: string]: MutableTableRecords;
+  };
+};
+
+export type State = {
+  readonly config: {
+    readonly [namespace: string]: {
+      readonly [tableConfig: string]: Table;
+    };
+  };
+  readonly records: StoreRecords;
+};
+
+export type MutableState = {
+  config: {
+    [namespace: string]: {
+      [tableConfig: string]: Table;
+    };
+  };
+  records: MutableStoreRecords;
+};
+
+export type TableUpdatesSubscriber = (updates: TableUpdates) => void;
+
+export type Subscribers = {
+  [namespace: string]: {
+    [table: string]: Set<TableUpdatesSubscriber>;
+  };
+};
+
+export type Store = {
+  /**
+   * Get a readonly reference to the current state
+   */
+  get: () => State;
+  /**
+   * Internal references for interacting with the state.
+   * @internal
+   * @deprecated Do not use this internal reference externally.
+   */
+  _: {
+    subscribers: Subscribers;
+    state: MutableState;
+  };
+};
+
+export function withDefaultNamespace({ namespace, label }: TableLabel): Required<TableLabel> {
+  return {
+    namespace: namespace ?? "",
+    label,
+  };
+}
