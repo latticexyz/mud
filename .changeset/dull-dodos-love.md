@@ -6,4 +6,4 @@
 "@latticexyz/world-modules": patch
 ---
 
-Upgrade `zod` to the latest version to avoid `Recursive type: Type instantiation is excessively deep and possibly infinite` error.
+Upgrade `zod` to `^3.23.8` to avoid issues with [excessively deep type instantiations](https://github.com/colinhacks/zod/issues/577).
