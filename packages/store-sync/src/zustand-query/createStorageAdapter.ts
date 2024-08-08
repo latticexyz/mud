@@ -12,7 +12,7 @@ import { size } from "viem";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
-import { Store } from "@latticexyz/zustand-query/internal";
+import { Store, getTable, registerTable } from "@latticexyz/zustand-query/internal";
 import { debug } from "./debug";
 
 export type CreateStorageAdapterOptions = {
@@ -31,7 +31,7 @@ export function createStorageAdapter({ store }: CreateStorageAdapterOptions): Cr
 
     for (const newTable of newTables) {
       // TODO: switch this to `newTable.label` once available
-      const existingTable = store.getState().config[newTable.namespace]?.[newTable.name];
+      const existingTable = store.get().config[newTable.namespace]?.[newTable.name];
       if (existingTable) {
         console.warn("table already registered, ignoring", {
           newTable,
@@ -39,11 +39,14 @@ export function createStorageAdapter({ store }: CreateStorageAdapterOptions): Cr
         });
       } else {
         // TODO: create util for converting table config
-        store.getState().actions.registerTable({
-          ...newTable,
-          key: newTable.key as string[],
-          label: newTable.name,
-          schema: Object.fromEntries(Object.entries(newTable.schema).map(([field, { type }]) => [field, type])),
+        registerTable({
+          store,
+          table: {
+            ...newTable,
+            key: newTable.key as string[],
+            label: newTable.name,
+            schema: Object.fromEntries(Object.entries(newTable.schema).map(([field, { type }]) => [field, type])),
+          },
         });
       }
     }
@@ -52,8 +55,8 @@ export function createStorageAdapter({ store }: CreateStorageAdapterOptions): Cr
     for (const log of logs) {
       const { namespace, name } = hexToResource(log.args.tableId);
       // TODO: use label once available
-      const tableConfig = store.getState().config[namespace][name];
-      const boundTable = store.getState().actions.getTable({ namespace, label: name });
+      const tableConfig = store.get().config[namespace][name];
+      const boundTable = getTable({ store, table: { namespace, label: name } });
 
       if (!tableConfig || !boundTable) {
         debug(`skipping update for unknown table: ${resourceToLabel({ namespace, name })} at ${log.address}`);

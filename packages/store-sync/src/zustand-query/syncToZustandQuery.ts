@@ -3,7 +3,7 @@ import { SyncOptions, SyncResult } from "../common";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { createStoreSync } from "../createStoreSync";
 import { SyncStep } from "../SyncStep";
-import { BoundTable, Store } from "@latticexyz/zustand-query/internal";
+import { BoundTable, Store, registerTable } from "@latticexyz/zustand-query/internal";
 
 type SyncToZustandQueryOptions = SyncOptions & {
   store: Store;
@@ -27,17 +27,20 @@ export async function syncToZustandQuery({
   });
 
   // Create SyncProgress table
-  const SyncProgress = store.getState().actions.registerTable({
-    namespace: "store_sync_internal",
-    label: "SyncProgress",
-    schema: {
-      step: "uint8",
-      percentage: "uint32",
-      latestBlockNumber: "uint256",
-      lastBlockNumberProcessed: "uint256",
-      message: "string",
+  const SyncProgress = registerTable({
+    store,
+    table: {
+      namespace: "store_sync_internal",
+      label: "SyncProgress",
+      schema: {
+        step: "uint8",
+        percentage: "uint32",
+        latestBlockNumber: "uint256",
+        lastBlockNumberProcessed: "uint256",
+        message: "string",
+      },
+      key: [],
     },
-    key: [],
   });
 
   /**

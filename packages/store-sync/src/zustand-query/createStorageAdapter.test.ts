@@ -7,7 +7,7 @@ import { groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import { StoreEventsLog } from "../common";
 import { RpcLog, formatLog, decodeEventLog, Hex } from "viem";
 import { storeEventsAbi } from "@latticexyz/store";
-import { createStore } from "@latticexyz/zustand-query/internal";
+import { createStore, getTable } from "@latticexyz/zustand-query/internal";
 
 // TODO: make test-data a proper package and export this
 const blocks = groupLogsByBlockNumber(
@@ -32,7 +32,7 @@ describe("createStorageAdapter", () => {
       await storageAdapter(block);
     }
 
-    const NumberList = store.getState().actions.getTable({ namespace: "", label: "NumberList" });
+    const NumberList = getTable({ store, table: { namespace: "", label: "NumberList" } });
 
     expect(NumberList.getKeys()).toMatchInlineSnapshot(`
       {
@@ -51,7 +51,7 @@ describe("createStorageAdapter", () => {
       }
     `);
 
-    expect(store.getState().records).toMatchInlineSnapshot(`
+    expect(store.get().records).toMatchInlineSnapshot(`
       {
         "": {
           "DynamicArray": {},
