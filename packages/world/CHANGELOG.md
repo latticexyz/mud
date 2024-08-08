@@ -1,5 +1,34 @@
 # Change Log
 
+## 2.1.1
+
+### Patch Changes
+
+- 86a8104: Added `deploy` config options to systems in the MUD config:
+
+  - `disabled` to toggle deploying the system (defaults to `false`)
+  - `registerWorldFunctions` to toggle registering namespace-prefixed system functions on the world (defaults to `true`)
+
+  ```ts
+  import { defineWorld } from "@latticexyz/world";
+
+  export default defineWorld({
+    systems: {
+      HiddenSystem: {
+        deploy: {
+          registerWorldFunctions: false,
+        },
+      },
+    },
+  });
+  ```
+
+  - @latticexyz/common@2.1.1
+  - @latticexyz/config@2.1.1
+  - @latticexyz/protocol-parser@2.1.1
+  - @latticexyz/schema-type@2.1.1
+  - @latticexyz/store@2.1.1
+
 ## 2.1.0
 
 ### Minor Changes
