@@ -1,15 +1,15 @@
 {
-  "name": "@latticexyz/worlds-explorer",
+  "name": "@latticexyz/explorer",
   "version": "0.1.0",
   "private": true,
   "bin": {
-    "worlds-explorer": ".next/standalone/packages/world-explorer/server.js"
+    "explorer": ".next/standalone/packages/explorer/server.js"
   },
   "scripts": {
-    "build": "next build && cp -r .next/static .next/standalone/packages/world-explorer/.next && pnpm link .",
+    "build": "next build && cp -r .next/static .next/standalone/packages/explorer/.next && pnpm link .",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "node .next/standalone/packages/world-explorer/server.js"
+    "start": "node .next/standalone/packages/explorer/server.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
