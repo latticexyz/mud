@@ -6,3 +6,4 @@ export * from "./isTableRegistrationLog";
 export * from "./logToTable";
 export * from "./tablesWithRecordsToLogs";
 export * from "./tableToLog";
+export * from "./recordToLog";

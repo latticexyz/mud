@@ -12,6 +12,7 @@
   "exports": {
     ".": "./dist/index.js",
     "./indexer-client": "./dist/indexer-client/index.js",
+    "./dozer": "./dist/dozer/index.js",
     "./postgres": "./dist/postgres/index.js",
     "./postgres-decoded": "./dist/postgres-decoded/index.js",
     "./recs": "./dist/recs/index.js",
@@ -26,6 +27,9 @@
       ],
       "indexer-client": [
         "./dist/indexer-client/index.d.ts"
+      ],
+      "dozer": [
+        "./dist/dozer/index.d.ts"
       ],
       "postgres": [
         "./dist/postgres/index.d.ts"
