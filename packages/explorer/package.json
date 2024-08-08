@@ -1,7 +1,8 @@
 {
   "name": "@latticexyz/explorer",
-  "version": "0.1.0",
+  "version": "2.1.0",
   "private": true,
+  "description": "Explorer is a tool for visually exploring and manipulating the state of worlds",
   "bin": {
     "explorer": ".next/standalone/packages/explorer/server.js"
   },
