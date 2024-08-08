@@ -45,7 +45,6 @@ export async function GET(req: Request) {
   try {
     const client = await getClient();
     const { fromBlock, toBlock } = await getParameters(worldAddress);
-    // const worldDeploy = await getWorldDeploy(client, worldAddress);
     const worldAbi = await getWorldAbi({
       client,
       worldAddress,
