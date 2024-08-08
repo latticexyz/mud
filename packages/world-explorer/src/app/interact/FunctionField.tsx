@@ -31,7 +31,7 @@ type Props = {
 };
 
 const formSchema = z.object({
-  inputs: z.array(z.string()).default([]),
+  inputs: z.array(z.string()),
   value: z.string().optional(),
 });
 
@@ -84,10 +84,14 @@ export function FunctionField({ abi }: Props) {
         });
 
         console.log("result:", txHash, transactionReceipt);
-      } catch (error) {
+      } catch (error: Error | unknown) {
         console.log("error:", error);
 
-        const msg = error.message;
+        let msg = "Something went wrong. Please try again.";
+        if (error instanceof Error) {
+          msg = error.message;
+        }
+
         toast.error(msg, {
           id: toastId,
         });

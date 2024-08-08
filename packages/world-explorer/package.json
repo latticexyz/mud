@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "bin": {
-    "worlds-explorer": ".next/standalone/packages/worlds-explorer/server.js"
+    "worlds-explorer": ".next/standalone/packages/world-explorer/server.js"
   },
   "scripts": {
-    "build": "next build && cp -r .next/static .next/standalone/packages/worlds-explorer/.next && pnpm link .",
+    "build": "next build && cp -r .next/static .next/standalone/packages/world-explorer/.next && pnpm link .",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "node .next/standalone/packages/worlds-explorer/server.js"
+    "start": "node .next/standalone/packages/world-explorer/server.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -48,7 +48,7 @@
     "tailwindcss-animate": "^1.0.7",
     "viem": "2.9.20",
     "wagmi": "^2.11.1",
-    "zod": "^3.22.2",
+    "zod": "^3.23.8",
     "zustand": "^4.3.7"
   },
   "devDependencies": {
