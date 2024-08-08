@@ -1,9 +1,9 @@
-import { BoundTable, Store } from "../createStore";
 import { In, MatchRecord, NotIn, NotMatchRecord } from "../queryFragments";
-import { Query, TableRecord } from "../common";
-import { runQuery as runQueryInternal } from "../runQuery";
+import { Query, Store, TableRecord } from "../common";
 import { UpdateType } from "@latticexyz/recs";
-import { QueryUpdate, defineQuery } from "../defineQuery";
+import { BoundTable, getTable } from "../actions/getTable";
+import { runQuery as runQueryInternal } from "../actions/runQuery";
+import { QueryUpdate, subscribeQuery } from "../actions/subscribeQuery";
 
 export type Entity = string;
 export const singletonEntity = "";
@@ -55,7 +55,7 @@ export function NotValue(t: BoundTable, partialRecord: TableRecord) {
 }
 
 export function runQuery(store: Store, query: Query) {
-  const result = runQueryInternal(store, query);
+  const result = runQueryInternal({ store, query });
 
   return new Set(Object.keys(result.keys));
 }
@@ -84,7 +84,7 @@ function transformUpdate(s: Store, update: QueryUpdate, updateFilter?: "enter" |
   const namespaces = Object.entries(update.records);
   for (const [namespace, tableUpdates] of namespaces) {
     for (const [tableLabel, updates] of Object.entries(tableUpdates)) {
-      const table = s.getState().actions.getTable({ namespace, label: tableLabel });
+      const table = getTable({ store: s, table: { namespace, label: tableLabel } });
       const updateList = Object.entries(updates);
 
       for (const [key, recordUpdate] of updateList) {
@@ -116,16 +116,20 @@ function defineSystemInternal(
   options: { runOnInit?: boolean } = { runOnInit: true },
   updateFilter?: "enter" | "update" | "exit",
 ) {
-  defineQuery(store, query, {
-    skipInitialRun: !options.runOnInit,
-    initialSubscribers: [
-      (update) => {
-        const updates = transformUpdate(store, update, updateFilter);
-        for (const update of updates) {
-          system(update);
-        }
-      },
-    ],
+  subscribeQuery({
+    store,
+    query,
+    options: {
+      skipInitialRun: !options.runOnInit,
+      initialSubscribers: [
+        (update) => {
+          const updates = transformUpdate(store, update, updateFilter);
+          for (const update of updates) {
+            system(update);
+          }
+        },
+      ],
+    },
   });
 }
 
