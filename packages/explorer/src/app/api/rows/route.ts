@@ -26,8 +26,10 @@ function convertKeysToCamelCase(rows: RowsResponse): Row[] {
 export async function GET(request: Request) {
   const db = getDatabase();
   const { searchParams } = new URL(request.url);
-  const query = searchParams.get("query");
-  const rows = db?.prepare(query || "").all() as RowsResponse;
+  const table = searchParams.get("table");
+  const rows = db
+    ?.prepare(`SELECT * FROM '${table}' LIMIT 30`)
+    .all() as RowsResponse;
 
   return Response.json({ rows: convertKeysToCamelCase(rows) });
 }

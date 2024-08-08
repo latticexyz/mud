@@ -1,16 +1,13 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { SQLEditor } from "./SQLEditor";
 import { TableSelector } from "./TableSelector";
 import { TablesViewer } from "./TablesViewer";
 
 export function DataExplorer() {
   const searchParams = useSearchParams();
-  const [query, setQuery] = useState<string | undefined>();
-  const { data: tables, isLoading: tablesLoading } = useQuery({
+  const { data: tables } = useQuery({
     queryKey: ["tables"],
     queryFn: async () => {
       const response = await fetch("/api/tables");
@@ -25,12 +22,7 @@ export function DataExplorer() {
   return (
     <>
       <TableSelector value={selectedTable} options={tables} />
-      <SQLEditor
-        table={selectedTable}
-        tablesLoading={tablesLoading}
-        setQuery={setQuery}
-      />
-      <TablesViewer table={selectedTable} query={query} />
+      <TablesViewer table={selectedTable} />
     </>
   );
 }

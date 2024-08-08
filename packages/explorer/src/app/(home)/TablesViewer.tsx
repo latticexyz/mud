@@ -31,10 +31,9 @@ import { bufferToBigInt } from "./utils/bufferToBigInt";
 
 type Props = {
   table: string | undefined;
-  query: string | undefined;
 };
 
-export function TablesViewer({ table: selectedTable, query }: Props) {
+export function TablesViewer({ table: selectedTable }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -66,9 +65,9 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
   });
 
   const { data: rows } = useQuery({
-    queryKey: ["rows", { query }],
+    queryKey: ["rows", { table: selectedTable }],
     queryFn: async () => {
-      const response = await fetch(`/api/rows?query=${query}`);
+      const response = await fetch(`/api/rows?table=${selectedTable}`);
       return response.json();
     },
     select: (data) => {
@@ -83,7 +82,7 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
         );
       });
     },
-    enabled: Boolean(selectedTable) && Boolean(query),
+    enabled: Boolean(selectedTable),
     refetchInterval: 1000,
   });
 
