@@ -6,7 +6,7 @@ import { ChangeEvent, useState } from "react";
 import { encodeField } from "@latticexyz/protocol-parser/internal";
 import { SchemaAbiType } from "@latticexyz/schema-type/internal";
 import { waitForTransactionReceipt } from "@wagmi/core";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { ACCOUNT_PRIVATE_KEYS } from "@/consts";
 import { useWorldAddress } from "@/hooks/useWorldAddress";
 import { useStore } from "@/store";

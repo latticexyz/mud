@@ -3,7 +3,7 @@
 import { Coins, Eye, Send } from "lucide-react";
 import { Abi, AbiFunction } from "viem";
 import { useDeferredValue, useState } from "react";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/ui/Input";
 import { useHashState } from "@/hooks/useHash";
 import { cn } from "@/lib/utils";
 import { FunctionField } from "./FunctionField";
