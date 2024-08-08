@@ -1,5 +1,14 @@
 # Change Log
 
+## 2.1.1
+
+### Patch Changes
+
+- @latticexyz/common@2.1.1
+- @latticexyz/config@2.1.1
+- @latticexyz/protocol-parser@2.1.1
+- @latticexyz/schema-type@2.1.1
+
 ## 2.1.0
 
 ### Minor Changes

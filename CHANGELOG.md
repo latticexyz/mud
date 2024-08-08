@@ -1,3 +1,36 @@
+## Version 2.1.1
+
+Release date: Thu Aug 08 2024
+
+### Patch changes
+
+**[chore: upgrade zod to latest (#3020)](https://github.com/latticexyz/mud/commit/64354814ed325cefd1066282944408de7c40b4a7)** (@latticexyz/cli, @latticexyz/faucet, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/world-modules)
+
+Upgrade `zod` to `3.23.8` to avoid issues with [excessively deep type instantiations](https://github.com/colinhacks/zod/issues/577).
+
+**[feat(world,cli): add system deploy config (#3011)](https://github.com/latticexyz/mud/commit/86a810488f7ffb481534062c9c3ff170a1120982)** (@latticexyz/world)
+
+Added `deploy` config options to systems in the MUD config:
+
+- `disabled` to toggle deploying the system (defaults to `false`)
+- `registerWorldFunctions` to toggle registering namespace-prefixed system functions on the world (defaults to `true`)
+
+```ts
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
+  systems: {
+    HiddenSystem: {
+      deploy: {
+        registerWorldFunctions: false,
+      },
+    },
+  },
+});
+```
+
+---
+
 ## Version 2.1.0
 
 Release date: Mon Aug 05 2024

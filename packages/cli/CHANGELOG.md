@@ -1,5 +1,21 @@
 # Change Log
 
+## 2.1.1
+
+### Patch Changes
+
+- 6435481: Upgrade `zod` to `3.23.8` to avoid issues with [excessively deep type instantiations](https://github.com/colinhacks/zod/issues/577).
+- Updated dependencies [86a8104]
+  - @latticexyz/world@2.1.1
+  - @latticexyz/abi-ts@2.1.1
+  - @latticexyz/common@2.1.1
+  - @latticexyz/config@2.1.1
+  - @latticexyz/gas-report@2.1.1
+  - @latticexyz/protocol-parser@2.1.1
+  - @latticexyz/schema-type@2.1.1
+  - @latticexyz/store@2.1.1
+  - @latticexyz/utils@2.1.1
+
 ## 2.1.0
 
 ### Minor Changes
