@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { camelCase } from "../../../lib/utils";
 import { getDatabase } from "../database";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +16,7 @@ function convertKeysToCamelCase(rows: RowsResponse): Row[] {
 
   return rows.map((row) => {
     return Object.keys(row).reduce((result: { [key: string]: string }, key) => {
-      const camelKey = _.camelCase(key);
+      const camelKey = camelCase(key);
       result[camelKey] = row[key];
       return result;
     }, {});

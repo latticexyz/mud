@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { ArrowUpDown, Loader } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -26,6 +25,7 @@ import {
   TableRow,
 } from "../../components/ui/Table";
 import { NON_EDITABLE_TABLES } from "../../consts";
+import { camelCase } from "../../lib/utils";
 import { EditableTableCell } from "./EditableTableCell";
 import { bufferToBigInt } from "./utils/bufferToBigInt";
 
@@ -58,7 +58,7 @@ export function TablesViewer({ table: selectedTable }: Props) {
         .map((column: { name: string; type: string }) => {
           return {
             ...column,
-            name: _.camelCase(column.name),
+            name: camelCase(column.name),
           };
         });
     },
