@@ -1,0 +1,1 @@
+# @latticexyz/zustand-query
