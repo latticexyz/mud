@@ -1,10 +1,11 @@
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
 import { privateKeyToAccount } from "viem/accounts";
-import { useWriteContract } from "wagmi";
+import { useChainId, useWriteContract } from "wagmi";
 import { ChangeEvent, useState } from "react";
 import { encodeField } from "@latticexyz/protocol-parser/internal";
 import { SchemaAbiType } from "@latticexyz/schema-type/internal";
+import { useQueryClient } from "@tanstack/react-query";
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { Checkbox } from "../../components/ui/Checkbox";
 import { ACCOUNT_PRIVATE_KEYS } from "../../consts";
@@ -29,6 +30,8 @@ export function EditableTableCell({
   keyTuple,
   value: defaultValue,
 }: Props) {
+  const queryClient = useQueryClient();
+  const chainId = useChainId();
   const { account } = useStore();
   const { writeContractAsync } = useWriteContract();
   const worldAddress = useWorldAddress();
@@ -81,9 +84,17 @@ export function EditableTableCell({
       toast.error("Uh oh! Something went wrong.", {
         id: toastId,
       });
-    }
-    {
+    } finally {
       setLoading(false);
+      queryClient.invalidateQueries({
+        queryKey: [
+          "balance",
+          {
+            address: account,
+            chainId,
+          },
+        ],
+      });
     }
   };
 

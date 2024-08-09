@@ -1,6 +1,6 @@
-import { formatEther } from "viem";
-import { useEffect } from "react";
-import { ACCOUNTS } from "../consts";
+import { Address, formatEther } from "viem";
+import { useBalance } from "wagmi";
+import { ACCOUNTS, CONFIG } from "../consts";
 import { useStore } from "../store";
 import {
   Select,
@@ -10,13 +10,31 @@ import {
   SelectValue,
 } from "./ui/Select";
 
-export function AccountSelect() {
-  const { account, setAccount, balances, fetchBalances } = useStore();
+function AccountSelectItem({
+  address,
+  name,
+}: {
+  address: Address;
+  name: string;
+}) {
+  const balance = useBalance({
+    address,
+    query: {
+      refetchInterval: CONFIG.BALANCES_REFETCH_INTERVAL,
+    },
+  });
+  const balanceValue = balance.data?.value;
 
-  useEffect(() => {
-    fetchBalances();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  return (
+    <SelectItem key={address} value={address} className="font-mono">
+      {name}
+      {balanceValue !== undefined && ` (${formatEther(balanceValue)} ETH)`}
+    </SelectItem>
+  );
+}
+
+export function AccountSelect() {
+  const { account, setAccount } = useStore();
 
   return (
     <Select value={account} onValueChange={setAccount}>
@@ -26,11 +44,11 @@ export function AccountSelect() {
       <SelectContent>
         {ACCOUNTS.map((address, idx) => {
           return (
-            <SelectItem key={address} value={address} className="font-mono">
-              Account {idx + 1}{" "}
-              {balances[address] !== undefined &&
-                `(${formatEther(balances[address])} ETH)`}
-            </SelectItem>
+            <AccountSelectItem
+              key={address}
+              address={address}
+              name={`Account ${idx + 1}`}
+            />
           );
         })}
       </SelectContent>

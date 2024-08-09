@@ -4,11 +4,12 @@ import { Coins, Eye, Send } from "lucide-react";
 import { toast } from "sonner";
 import { Abi, AbiFunction } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { useWriteContract } from "wagmi";
+import { useChainId, useWriteContract } from "wagmi";
 import { z } from "zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { readContract, waitForTransactionReceipt } from "@wagmi/core";
 import { Button } from "../../components/ui/Button";
 import {
@@ -36,8 +37,10 @@ const formSchema = z.object({
 });
 
 export function FunctionField({ abi }: Props) {
+  const queryClient = useQueryClient();
+  const chainId = useChainId();
   const [result, setResult] = useState<string | null>(null);
-  const { account, fetchBalances } = useStore();
+  const { account } = useStore();
   const worldAddress = useWorldAddress();
   const { writeContractAsync } = useWriteContract();
 
@@ -96,7 +99,16 @@ export function FunctionField({ abi }: Props) {
           id: toastId,
         });
       } finally {
-        fetchBalances();
+        console.log(account);
+        queryClient.invalidateQueries({
+          queryKey: [
+            "balance",
+            {
+              address: account,
+              chainId,
+            },
+          ],
+        });
       }
     }
   }

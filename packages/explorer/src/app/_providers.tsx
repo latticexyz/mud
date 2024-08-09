@@ -15,7 +15,7 @@ export const wagmiConfig = createConfig({
     injected(),
     metaMask({
       dappMetadata: {
-        name: "World Explorer",
+        name: "Explorer",
       },
     }),
     safe(),
