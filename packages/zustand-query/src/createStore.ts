@@ -1,5 +1,5 @@
 import { Store as StoreConfig } from "@latticexyz/store/config/v2";
-import { MutableState, Store, TableSubscribers } from "./common";
+import { MutableState, Store, StoreSubscribers, TableSubscribers } from "./common";
 import { DefaultActions, defaultActions } from "./decorators/default";
 import { extend } from "./actions/extend";
 
@@ -16,7 +16,9 @@ export function createStore(storeConfig?: Config): CreateStoreResult {
   //   (global one can be used for useStore selector, table one can be used for useTable selector)
   // - update API to not require the Zustand Store return type bc we don't have prevState
   //
+
   const tableSubscribers: TableSubscribers = {};
+  const storeSubscribers: StoreSubscribers = new Set();
 
   const state: MutableState = {
     config: {},
@@ -51,8 +53,9 @@ export function createStore(storeConfig?: Config): CreateStoreResult {
     _: {
       state,
       tableSubscribers,
+      storeSubscribers,
     },
-  };
+  } satisfies Store;
 
   return extend({ store, actions: defaultActions(store) });
 }

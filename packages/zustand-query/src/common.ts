@@ -43,10 +43,6 @@ export type TableRecord = {
     | readonly boolean[];
 };
 
-export type TableUpdate = { prev: TableRecord | undefined; current: TableRecord | undefined };
-
-export type TableUpdates = { [key: string]: TableUpdate };
-
 export type TableLabel = { label: string; namespace?: string };
 
 export type TableRecords = { readonly [key: string]: TableRecord };
@@ -83,6 +79,10 @@ export type MutableState = {
   records: MutableStoreRecords;
 };
 
+export type TableUpdate = { prev: TableRecord | undefined; current: TableRecord | undefined };
+
+export type TableUpdates = { [key: string]: TableUpdate };
+
 export type TableUpdatesSubscriber = (updates: TableUpdates) => void;
 
 export type TableSubscribers = {
@@ -90,6 +90,25 @@ export type TableSubscribers = {
     [table: string]: Set<TableUpdatesSubscriber>;
   };
 };
+
+export type ConfigUpdate = { prev: Table | undefined; current: Table };
+
+export type StoreUpdates = {
+  config: {
+    [namespace: string]: {
+      [table: string]: ConfigUpdate;
+    };
+  };
+  records: {
+    [namespace: string]: {
+      [table: string]: TableUpdates;
+    };
+  };
+};
+
+export type StoreUpdatesSubscriber = (updates: StoreUpdates) => void;
+
+export type StoreSubscribers = Set<StoreUpdatesSubscriber>;
 
 export type Store = {
   /**
@@ -103,6 +122,7 @@ export type Store = {
    */
   _: {
     tableSubscribers: TableSubscribers;
+    storeSubscribers: StoreSubscribers;
     state: MutableState;
   };
 };

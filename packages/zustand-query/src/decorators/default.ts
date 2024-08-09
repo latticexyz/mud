@@ -13,8 +13,9 @@ import { RegisterTableArgs, RegisterTableResult, registerTable } from "../action
 import { RunQueryArgs, RunQueryResult, runQuery } from "../actions/runQuery";
 import { SetRecordArgs, SetRecordResult, setRecord } from "../actions/setRecord";
 import { SetRecordsArgs, SetRecordsResult, setRecords } from "../actions/setRecords";
-import { SubscribeTableArgs, SubscribeTableResult, subscribeTable } from "../actions/subscribeTable";
 import { SubscribeQueryArgs, SubscribeQueryResult, subscribeQuery } from "../actions/subscribeQuery";
+import { SubscribeStoreResult, subscribeStore } from "../actions/subscribeStore";
+import { SubscribeTableArgs, SubscribeTableResult, subscribeTable } from "../actions/subscribeTable";
 
 export type StoreBoundDecodeKeyArgs = Omit<DecodeKeyArgs, "store">;
 export type StoreBoundDeleteRecordArgs = Omit<DeleteRecordArgs, "store">;
@@ -29,8 +30,9 @@ export type StoreBoundRegisterTableArgs = Omit<RegisterTableArgs, "store">;
 export type StoreBoundRunQueryArgs = Omit<RunQueryArgs, "store">;
 export type StoreBoundSetRecordArgs = Omit<SetRecordArgs, "store">;
 export type StoreBoundSetRecordsArgs = Omit<SetRecordsArgs, "store">;
-export type StoreBoundSubscribeArgs = Omit<SubscribeTableArgs, "store">;
 export type StoreBoundSubscribeQueryArgs = Omit<SubscribeQueryArgs, "store">;
+export type StoreBoundSubscribeStoreArgs = Omit<SubscribeStoreResult, "store">;
+export type StoreBoundSubscribeTableArgs = Omit<SubscribeTableArgs, "store">;
 
 export type DefaultActions = {
   decodeKey: (args: StoreBoundDecodeKeyArgs) => DecodeKeyResult;
@@ -47,8 +49,9 @@ export type DefaultActions = {
   runQuery: (args: StoreBoundRunQueryArgs) => RunQueryResult;
   setRecord: (args: StoreBoundSetRecordArgs) => SetRecordResult;
   setRecords: (args: StoreBoundSetRecordsArgs) => SetRecordsResult;
-  subscribeTable: (args: StoreBoundSubscribeArgs) => SubscribeTableResult;
   subscribeQuery: (args: StoreBoundSubscribeQueryArgs) => SubscribeQueryResult;
+  subscribeStore: (args: StoreBoundSubscribeStoreArgs) => SubscribeStoreResult;
+  subscribeTable: (args: StoreBoundSubscribeTableArgs) => SubscribeTableResult;
 };
 
 export function defaultActions(store: Store): DefaultActions {
@@ -67,7 +70,8 @@ export function defaultActions(store: Store): DefaultActions {
     runQuery: (args: StoreBoundRunQueryArgs) => runQuery({ store, ...args }),
     setRecord: (args: StoreBoundSetRecordArgs) => setRecord({ store, ...args }),
     setRecords: (args: StoreBoundSetRecordsArgs) => setRecords({ store, ...args }),
-    subscribeTable: (args: StoreBoundSubscribeArgs) => subscribeTable({ store, ...args }),
     subscribeQuery: (args: StoreBoundSubscribeQueryArgs) => subscribeQuery({ store, ...args }),
+    subscribeStore: (args: StoreBoundSubscribeStoreArgs) => subscribeStore({ store, ...args }),
+    subscribeTable: (args: StoreBoundSubscribeTableArgs) => subscribeTable({ store, ...args }),
   };
 }

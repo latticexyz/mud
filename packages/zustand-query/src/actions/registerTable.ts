@@ -27,5 +27,12 @@ export function registerTable({ store, table }: RegisterTableArgs): RegisterTabl
   store._.tableSubscribers[namespace] ??= {};
   store._.tableSubscribers[namespace][label] ??= new Set();
 
+  // Notify store subscribers
+  const storeUpdate = {
+    config: { [namespace]: { [label]: { prev: undefined, current: tableConfig } } },
+    records: {},
+  };
+  store._.storeSubscribers.forEach((subscriber) => subscriber(storeUpdate));
+
   return getTable({ store, table });
 }

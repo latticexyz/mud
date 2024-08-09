@@ -42,4 +42,8 @@ export function setRecords({ store, table, records }: SetRecordsArgs): SetRecord
 
   // Notify table subscribers
   store._.tableSubscribers[namespace][label].forEach((subscriber) => subscriber(updates));
+
+  // Notify store subscribers
+  const storeUpdate = { config: {}, records: { [namespace]: { [label]: updates } } };
+  store._.storeSubscribers.forEach((subscriber) => subscriber(storeUpdate));
 }
