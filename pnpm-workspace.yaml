@@ -4,3 +4,4 @@ packages:
 
 catalog:
   "@ark/util": "0.1.2"
+  "arktype": "2.0.0-beta.5"
