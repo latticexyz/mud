@@ -3,7 +3,9 @@ import { describe, expect, it } from "vitest";
 import { encodeSystemCall } from "./encodeSystemCall";
 import { resourceToHex } from "@latticexyz/common";
 import AccessManagementSystemAbi from "../out/AccessManagementSystem.sol/AccessManagementSystem.abi.json";
-import StoreRegistrationSystem from "../out/StoreRegistrationSystem.sol/StoreRegistrationSystem.abi.json";
+import type AccessManagementSystemAbiType from "../out/AccessManagementSystem.sol/AccessManagementSystem.abi.json.d";
+import StoreRegistrationSystemAbi from "../out/StoreRegistrationSystem.sol/StoreRegistrationSystem.abi.json";
+import type StoreRegistrationSystemAbiType from "../out/StoreRegistrationSystem.sol/StoreRegistrationSystem.abi.json.d";
 
 describe("SystemCall", () => {
   it("encodes grantAccess properly", async () => {
@@ -12,7 +14,7 @@ describe("SystemCall", () => {
 
     expect(
       encodeSystemCall({
-        abi: AccessManagementSystemAbi,
+        abi: AccessManagementSystemAbi as typeof AccessManagementSystemAbiType,
         systemId: resourceToHex({ type: "system", namespace: "", name: "" }),
         functionName: "grantAccess",
         args: [resourceId, grantee],
@@ -35,7 +37,7 @@ describe("SystemCall", () => {
 
     expect(
       encodeSystemCall({
-        abi: StoreRegistrationSystem,
+        abi: StoreRegistrationSystemAbi as typeof StoreRegistrationSystemAbiType,
         systemId: resourceToHex({ type: "system", namespace: "", name: "" }),
         functionName: "registerTable",
         args: [tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames],
