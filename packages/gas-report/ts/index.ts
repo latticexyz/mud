@@ -116,7 +116,11 @@ async function runGasReport(options: Options): Promise<GasReport> {
       // Run the default test command to capture the logs
       const child = execa("forge", ["test", "-vvv", "--isolate"], {
         stdio: ["inherit", "pipe", "inherit"],
-        env: { GAS_REPORTER_ENABLED: "true" },
+        env: {
+          // work around for https://github.com/vercel/next.js/issues/8379
+          NODE_ENV: process.env.NODE_ENV,
+          GAS_REPORTER_ENABLED: "true",
+        },
       });
       logs = (await child).stdout;
     }

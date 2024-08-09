@@ -38,6 +38,8 @@ export async function generateLogs(
     cwd: "../contracts",
     stdio: "pipe",
     env: {
+      // work around for https://github.com/vercel/next.js/issues/8379
+      NODE_ENV: process.env.NODE_ENV,
       DEBUG: "mud:store-sync:createStoreSync",
     },
   });

@@ -16,6 +16,8 @@ export async function deployMockGame(): Promise<Hex> {
     {
       cwd: `${__dirname}/../../../test/mock-game-contracts`,
       env: {
+        // work around for https://github.com/vercel/next.js/issues/8379
+        NODE_ENV: process.env.NODE_ENV,
         // anvil default account
         PRIVATE_KEY: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
         DEBUG: "mud:*",

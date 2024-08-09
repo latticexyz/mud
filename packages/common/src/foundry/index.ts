@@ -24,7 +24,11 @@ export interface ForgeConfig {
 export async function getForgeConfig(profile?: string): Promise<ForgeConfig> {
   const { stdout } = await execa("forge", ["config", "--json"], {
     stdio: ["inherit", "pipe", "pipe"],
-    env: { FOUNDRY_PROFILE: profile },
+    env: {
+      // work around for https://github.com/vercel/next.js/issues/8379
+      NODE_ENV: process.env.NODE_ENV,
+      FOUNDRY_PROFILE: profile,
+    },
   });
 
   return JSON.parse(stdout) as ForgeConfig;
@@ -80,12 +84,17 @@ export async function forge(
   args: string[],
   options?: { profile?: string; silent?: boolean; env?: NodeJS.ProcessEnv; cwd?: string },
 ): Promise<void> {
-  const execOptions: Options<string> = {
-    env: { FOUNDRY_PROFILE: options?.profile, ...options?.env },
+  const execOptions = {
+    env: {
+      // work around for https://github.com/vercel/next.js/issues/8379
+      NODE_ENV: process.env.NODE_ENV,
+      FOUNDRY_PROFILE: options?.profile,
+      ...options?.env,
+    },
     stdout: "inherit",
     stderr: "pipe",
     cwd: options?.cwd,
-  };
+  } as const satisfies Options<string>;
 
   await (options?.silent ? execa("forge", args, execOptions) : execLog("forge", args, execOptions));
 }
@@ -97,7 +106,11 @@ export async function forge(
  */
 export async function cast(args: string[], options?: { profile?: string }): Promise<string> {
   return execLog("cast", args, {
-    env: { FOUNDRY_PROFILE: options?.profile },
+    env: {
+      // work around for https://github.com/vercel/next.js/issues/8379
+      NODE_ENV: process.env.NODE_ENV,
+      FOUNDRY_PROFILE: options?.profile,
+    },
   });
 }
 

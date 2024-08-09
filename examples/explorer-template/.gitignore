@@ -1,0 +1,4 @@
+# Ignore SQLite database
+**/*.db
+
+node_modules
