@@ -1,5 +1,6 @@
 import { camelCase } from "../../../lib/utils";
 import { getDatabase } from "../database";
+import { TableRow } from "../tables/route";
 
 export const dynamic = "force-dynamic";
 
@@ -27,8 +28,18 @@ export async function GET(request: Request) {
   const db = getDatabase();
   const { searchParams } = new URL(request.url);
   const table = searchParams.get("table");
+
+  const tables = db
+    ?.prepare("SELECT name FROM sqlite_master WHERE type='table'")
+    .all() as TableRow[];
+
+  const isTable = tables.find((t) => t.name === table);
+  if (!isTable) {
+    return Response.json({ error: "table does not exist" }, { status: 400 });
+  }
+
   const rows = db
-    ?.prepare(`SELECT * FROM '${table}' LIMIT 30`)
+    ?.prepare(`SELECT * FROM "${table}" LIMIT 30`)
     .all() as RowsResponse;
 
   return Response.json({ rows: convertKeysToCamelCase(rows) });

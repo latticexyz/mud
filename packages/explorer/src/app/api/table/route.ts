@@ -25,8 +25,8 @@ export async function GET(req: Request) {
 
   const db = getDatabase();
   const table = db
-    ?.prepare(`SELECT * FROM __mudStoreTables WHERE id='${tableId}'`)
-    .get();
+    ?.prepare("SELECT * FROM __mudStoreTables WHERE id = ?")
+    .get(tableId) as TableConfig;
 
   return Response.json({ table });
 }
