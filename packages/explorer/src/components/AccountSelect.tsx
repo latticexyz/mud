@@ -1,7 +1,6 @@
 import { Address, formatEther } from "viem";
 import { useBalance } from "wagmi";
 import { ACCOUNTS, CONFIG } from "../consts";
-import { truncateEthAddress } from "../lib/utils";
 import { useStore } from "../store";
 import {
   Select,
@@ -10,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/Select";
+import { TruncatedHex } from "./ui/TruncatedHex";
 
 function AccountSelectItem({
   address,
@@ -25,19 +25,19 @@ function AccountSelectItem({
     },
   });
   const balanceValue = balance.data?.value;
-
   return (
     <SelectItem key={address} value={address} className="font-mono">
       {name}
-      {balanceValue !== undefined && ` (${formatEther(balanceValue)} ETH)`}
-      <span className="opacity-70"> ({truncateEthAddress(address)})</span>
+      {balanceValue !== undefined && ` (${formatEther(balanceValue)} ETH)`}{" "}
+      <span className="opacity-70">
+        (<TruncatedHex hex={address} />)
+      </span>
     </SelectItem>
   );
 }
 
 export function AccountSelect() {
   const { account, setAccount } = useStore();
-
   return (
     <Select value={account} onValueChange={setAccount}>
       <SelectTrigger className="w-[300px] text-left">
