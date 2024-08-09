@@ -9,6 +9,7 @@ import { waitForTransactionReceipt } from "@wagmi/core";
 import { Checkbox } from "../../components/ui/Checkbox";
 import { ACCOUNT_PRIVATE_KEYS } from "../../consts";
 import { useWorldAddress } from "../../hooks/useWorldAddress";
+import { camelCase } from "../../lib/utils";
 import { useStore } from "../../store";
 import { wagmiConfig } from "../_providers";
 import { TableConfig } from "../api/table/route";
@@ -37,7 +38,7 @@ export function EditableTableCell({
   const [value, setValue] = useState<unknown>(defaultValue);
 
   const tableId = config?.table_id;
-  const fieldType = config?.value_schema[name] as SchemaAbiType;
+  const fieldType = config?.value_schema[camelCase(name)] as SchemaAbiType;
 
   const handleSubmit = async (newValue: unknown) => {
     const valueToSet = newValue === undefined ? value : newValue;
@@ -54,7 +55,7 @@ export function EditableTableCell({
 
     const toastId = toast.loading("Transaction submitted");
     try {
-      const fieldIdx = getFieldIdx(config?.value_schema, name);
+      const fieldIdx = getFieldIdx(config?.value_schema, camelCase(name));
       const encodedField = encodeField(fieldType, valueToSet);
       const txHash = await writeContractAsync({
         account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
