@@ -5,10 +5,12 @@ import { extend } from "./actions/extend";
 
 export type Config = StoreConfig;
 
+export type CreateStoreResult = Store & DefaultActions;
+
 /**
  * Initializes a Zustand store based on the provided table configs.
  */
-export function createStore(storeConfig?: StoreConfig): Store & DefaultActions {
+export function createStore(storeConfig?: Config): CreateStoreResult {
   // TODO:
   // - differentiate between table subscriber and global subscriber
   //   (global one can be used for useStore selector, table one can be used for useTable selector)
