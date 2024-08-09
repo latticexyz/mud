@@ -15,19 +15,32 @@ describe("store actions, bound table", () => {
   });
 
   it("should expose the same functionality", () => {
-    // Bound table exposes same surface as internal store
-    const excludedKeys = [
+    const excludedStoreKeys = [
       "registerTable",
       "getTable",
       "getTables",
       "extend",
       "runQuery",
       "subscribeQuery",
+      "subscribeTable", // renamed to subscribe in table API
       "_",
       "get",
     ] as const;
-    attest<keyof BoundTable, keyof Omit<DefaultActions, (typeof excludedKeys)[number]>>();
-    attest<keyof Omit<DefaultActions, (typeof excludedKeys)[number]>, keyof BoundTable>();
-    expect(Object.keys(Position)).toEqual(Object.keys(store).filter((key) => !excludedKeys.includes(key as never)));
+
+    const excludedTableKeys = [
+      "subscribe", // renamed from subscribeTable in store API
+    ] as const;
+
+    attest<
+      keyof Omit<BoundTable, (typeof excludedTableKeys)[number]>,
+      keyof Omit<DefaultActions, (typeof excludedStoreKeys)[number]>
+    >();
+    attest<
+      keyof Omit<DefaultActions, (typeof excludedStoreKeys)[number]>,
+      keyof Omit<BoundTable, (typeof excludedTableKeys)[number]>
+    >();
+    expect(Object.keys(Position).filter((key) => !excludedTableKeys.includes(key as never))).toEqual(
+      Object.keys(store).filter((key) => !excludedStoreKeys.includes(key as never)),
+    );
   });
 });

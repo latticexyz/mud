@@ -24,8 +24,8 @@ export function registerTable({ store, table }: RegisterTableArgs): RegisterTabl
   store._.state.records[namespace][label] ??= {};
 
   // Init subscribers set for table
-  store._.subscribers[namespace] ??= {};
-  store._.subscribers[namespace][label] ??= new Set();
+  store._.tableSubscribers[namespace] ??= {};
+  store._.tableSubscribers[namespace][label] ??= new Set();
 
   return getTable({ store, table });
 }

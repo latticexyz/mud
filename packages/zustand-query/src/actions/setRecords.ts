@@ -41,5 +41,5 @@ export function setRecords({ store, table, records }: SetRecordsArgs): SetRecord
   }
 
   // Notify table subscribers
-  store._.subscribers[namespace][label].forEach((subscriber) => subscriber(updates));
+  store._.tableSubscribers[namespace][label].forEach((subscriber) => subscriber(updates));
 }

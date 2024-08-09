@@ -85,7 +85,7 @@ export type MutableState = {
 
 export type TableUpdatesSubscriber = (updates: TableUpdates) => void;
 
-export type Subscribers = {
+export type TableSubscribers = {
   [namespace: string]: {
     [table: string]: Set<TableUpdatesSubscriber>;
   };
@@ -102,7 +102,7 @@ export type Store = {
    * @deprecated Do not use this internal reference externally.
    */
   _: {
-    subscribers: Subscribers;
+    tableSubscribers: TableSubscribers;
     state: MutableState;
   };
 };

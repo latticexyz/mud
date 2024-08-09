@@ -134,7 +134,7 @@ describe("createStore", () => {
 
       const listener = vi.fn();
 
-      store.subscribe({
+      store.subscribeTable({
         table: { label: "table1", namespace: "namespace1" },
         subscriber: listener,
       });
@@ -185,7 +185,7 @@ describe("createStore", () => {
 
       const listener = vi.fn();
 
-      const unsubscribe = store.subscribe({
+      const unsubscribe = store.subscribeTable({
         table: { label: "table1", namespace: "namespace1" },
         subscriber: listener,
       });

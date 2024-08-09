@@ -8,7 +8,7 @@ import { GetRecordArgs, GetRecordResult, getRecord } from "./getRecord";
 import { GetRecordsArgs, GetRecordsResult, getRecords } from "./getRecords";
 import { SetRecordArgs, SetRecordResult, setRecord } from "./setRecord";
 import { SetRecordsArgs, SetRecordsResult, setRecords } from "./setRecords";
-import { SubscribeArgs, SubscribeResult, subscribe } from "./subscribe";
+import { SubscribeTableArgs, SubscribeTableResult, subscribeTable } from "./subscribeTable";
 
 export type TableBoundDecodeKeyArgs = Omit<DecodeKeyArgs, "store" | "table">;
 export type TableBoundDeleteRecordArgs = Omit<DeleteRecordArgs, "store" | "table">;
@@ -17,7 +17,7 @@ export type TableBoundGetRecordArgs = Omit<GetRecordArgs, "store" | "table">;
 export type TableBoundGetRecordsArgs = Omit<GetRecordsArgs, "store" | "table">;
 export type TableBoundSetRecordArgs = Omit<SetRecordArgs, "store" | "table">;
 export type TableBoundSetRecordsArgs = Omit<SetRecordsArgs, "store" | "table">;
-export type TableBoundSubscribeArgs = Omit<SubscribeArgs, "store" | "table">;
+export type TableBoundSubscribeTableArgs = Omit<SubscribeTableArgs, "store" | "table">;
 
 export type BoundTable = {
   decodeKey: (args: TableBoundDecodeKeyArgs) => DecodeKeyResult;
@@ -29,7 +29,7 @@ export type BoundTable = {
   getRecords: (args?: TableBoundGetRecordsArgs) => GetRecordsResult;
   setRecord: (args: TableBoundSetRecordArgs) => SetRecordResult;
   setRecords: (args: TableBoundSetRecordsArgs) => SetRecordsResult;
-  subscribe: (args: TableBoundSubscribeArgs) => SubscribeResult;
+  subscribe: (args: TableBoundSubscribeTableArgs) => SubscribeTableResult;
 };
 
 export type GetTableArgs = {
@@ -50,7 +50,7 @@ export function getTable({ store, table }: GetTableArgs): GetTableResult {
     getRecords: (args?: TableBoundGetRecordsArgs) => getRecords({ store, table, ...args }),
     setRecord: (args: TableBoundSetRecordArgs) => setRecord({ store, table, ...args }),
     setRecords: (args: TableBoundSetRecordsArgs) => setRecords({ store, table, ...args }),
-    subscribe: (args: TableBoundSubscribeArgs) => subscribe({ store, table, ...args }),
+    subscribe: (args: TableBoundSubscribeTableArgs) => subscribeTable({ store, table, ...args }),
 
     // TODO: dynamically add setters and getters for individual fields of the table
   };

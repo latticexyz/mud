@@ -26,7 +26,7 @@ export function deleteRecord({ store, table, key }: DeleteRecordArgs): DeleteRec
   delete store._.state.records[namespace][label][encodedKey];
 
   // Notify table subscribers
-  store._.subscribers[namespace][label].forEach((subscriber) =>
+  store._.tableSubscribers[namespace][label].forEach((subscriber) =>
     subscriber({ [encodedKey]: { prev: prevRecord && { ...prevRecord }, current: undefined } }),
   );
 }
