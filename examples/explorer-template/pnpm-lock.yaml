@@ -14,12 +14,12 @@ importers:
       '@latticexyz/common':
         specifier: 2.1.0
         version: 2.1.0(@aws-sdk/client-kms@3.624.0)(asn1.js@5.4.1)(typescript@5.4.2)(zod@3.23.8)
+      '@latticexyz/explorer':
+        specifier: link:../../packages/explorer
+        version: link:../../packages/explorer
       '@latticexyz/store-indexer':
         specifier: link:../../packages/store-indexer
         version: link:../../packages/store-indexer
-      '@latticexyz/worlds-explorer':
-        specifier: link:../../packages/worlds-explorer
-        version: link:../../packages/worlds-explorer
       '@types/debug':
         specifier: 4.1.7
         version: 4.1.7

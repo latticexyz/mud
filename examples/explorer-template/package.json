@@ -14,8 +14,8 @@
   "devDependencies": {
     "@latticexyz/cli": "2.1.0",
     "@latticexyz/common": "2.1.0",
+    "@latticexyz/explorer": "link:../../packages/explorer",
     "@latticexyz/store-indexer": "link:../../packages/store-indexer",
-    "@latticexyz/worlds-explorer": "link:../../packages/worlds-explorer",
     "@types/debug": "4.1.7",
     "@typescript-eslint/eslint-plugin": "7.1.1",
     "@typescript-eslint/parser": "7.1.1",

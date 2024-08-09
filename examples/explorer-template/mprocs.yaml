@@ -15,9 +15,7 @@ procs:
       FOLLOW_BLOCK_TAG: "latest"
       SQLITE_FILENAME: "indexer.db"
   explorer:
-    cwd: ../../packages/explorer
-    shell: pnpm dev # pnpm explorer
+    shell: pnpm explorer
     env:
       PORT: "13690"
-      INDEXER_DB_PATH: "../../examples/explorer-template/indexer.db"
-      # INDEXER_DB_PATH_ABSOLUTE: "/Users/karolis/Code/Lattice.xyz/experiments/mud-2/examples/explorer-template/indexer.db"
+      INDEXER_DB_PATH: "indexer.db"
