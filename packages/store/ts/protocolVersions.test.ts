@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import fs from "node:fs";
 import StoreAbi from "../out/IStore.sol/IStore.abi.json";
+import type StoreAbiType from "../out/IStore.sol/IStore.abi.json.d";
 import { formatAbi } from "abitype";
 import { protocolVersions } from "./protocolVersions";
 
@@ -19,7 +20,7 @@ import { protocolVersions } from "./protocolVersions";
 
 const [, currentVersion] = fs.readFileSync(`${__dirname}/../src/version.sol`, "utf8").match(/VERSION = "(.*?)"/) ?? [];
 
-const currentAbi = formatAbi(StoreAbi).sort((a, b) => a.localeCompare(b));
+const currentAbi = formatAbi(StoreAbi as typeof StoreAbiType).sort((a, b) => a.localeCompare(b));
 
 describe("Store protocol version", () => {
   it("is up to date", async () => {

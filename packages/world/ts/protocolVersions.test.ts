@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import fs from "node:fs";
 import WorldAbi from "../out/IBaseWorld.sol/IBaseWorld.abi.json";
+import type WorldAbiType from "../out/IBaseWorld.sol/IBaseWorld.abi.json.d";
 import { formatAbi } from "abitype";
 import { protocolVersions } from "./protocolVersions";
 
@@ -19,7 +20,7 @@ import { protocolVersions } from "./protocolVersions";
 
 const [, currentVersion] = fs.readFileSync(`${__dirname}/../src/version.sol`, "utf8").match(/VERSION = "(.*?)"/) ?? [];
 
-const currentAbi = formatAbi(WorldAbi).sort((a, b) => a.localeCompare(b));
+const currentAbi = formatAbi(WorldAbi as typeof WorldAbiType).sort((a, b) => a.localeCompare(b));
 
 describe("World protocol version", () => {
   it("is up to date", async () => {
