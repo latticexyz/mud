@@ -1,9 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { glob } from "glob";
 import { parseArtifact } from "./types";
-import { LibraryPlaceholder } from "./common";
+import { ContractArtifact } from "./common";
 import { getPlaceholders } from "./getPlaceholders";
-import { Hex, size } from "viem";
+import { size } from "viem";
 import path from "node:path";
 import { type } from "arktype";
 
@@ -11,17 +11,7 @@ export type Input = {
   readonly forgeOutDir: string;
 };
 
-export type Output = readonly {
-  readonly sourcePath: string;
-  readonly name: string;
-  // TODO: rename `createCode` or `creationBytecode` to better differentiate from deployed bytecode?
-  readonly bytecode: Hex;
-  readonly placeholders: readonly LibraryPlaceholder[];
-  /**
-   * Size of deployed bytecode so that our tooling can warn when a contract is getting close to the EVM size limit.
-   */
-  readonly deployedBytecodeSize: number;
-}[];
+export type Output = readonly ContractArtifact[];
 
 // TODO: figure out what `sourcePath` is for imported public libs (actual import path? resolved path from remappings?)
 

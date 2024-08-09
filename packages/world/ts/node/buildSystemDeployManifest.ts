@@ -6,6 +6,7 @@ import { findContractArtifacts } from "./findContractArtifacts";
 import { getOutDirectory as getForgeOutDirectory } from "@latticexyz/common/foundry";
 import { uniqueBy } from "@latticexyz/common/utils";
 import path from "node:path";
+import { getDependencies } from "./getDependencies";
 
 export type SystemDeployManifest = {
   readonly systems: readonly SystemDeploy[];
@@ -32,21 +33,18 @@ export async function buildSystemDeployManifest({
         `Could not find build artifact for system \`${system.label}\` at \`${system.sourcePath}\`. Did \`forge build\` run successfully?`,
       );
     }
-    return { ...system, bytecode: artifact.bytecode, placeholders: artifact.placeholders };
+    return {
+      ...system,
+      bytecode: artifact.bytecode,
+      placeholders: artifact.placeholders,
+      deployedBytecodeSize: artifact.deployedBytecodeSize,
+    };
   });
 
-  const libraryArtifacts = uniqueBy(
-    systemArtifacts.flatMap((system) => system.placeholders.map(({ sourcePath, name }) => ({ sourcePath, name }))),
+  const dependencies = uniqueBy(
+    getDependencies(systemArtifacts, contractArtifacts),
     ({ sourcePath, name }) => `${sourcePath}:${name}`,
-  ).map(({ sourcePath, name }) => {
-    const artifact = contractArtifacts.find((a) => a.sourcePath === sourcePath && a.name === name);
-    if (!artifact) {
-      throw new Error(
-        `Could not find build artifact for reference \`${name}\` at \`${sourcePath}\`. Did \`forge build\` run successfully?`,
-      );
-    }
-    return artifact;
-  });
+  );
 
   // TODO: sort by deploy order?
 
@@ -57,7 +55,7 @@ export async function buildSystemDeployManifest({
     JSON.stringify(
       {
         systems: systemArtifacts,
-        libraries: libraryArtifacts,
+        libraries: dependencies,
       },
       null,
       2,
