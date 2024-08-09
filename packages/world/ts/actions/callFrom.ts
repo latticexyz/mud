@@ -23,6 +23,7 @@ import {
 } from "@latticexyz/protocol-parser/internal";
 import worldConfig from "../../mud.config";
 import IStoreReadAbi from "../../out/IStoreRead.sol/IStoreRead.abi.json";
+import type IStoreReadAbiType from "../../out/IStoreRead.sol/IStoreRead.abi.json.d";
 
 // Accepts either `worldFunctionToSystemFunction` or `publicClient`, but not both.
 type CallFromParameters = CallFromFunctionParameters | CallFromClientParameters;
@@ -130,7 +131,7 @@ async function retrieveSystemFunctionFromContract(
 
   const [staticData, encodedLengths, dynamicData] = await publicClient.readContract({
     address: worldAddress,
-    abi: IStoreReadAbi,
+    abi: IStoreReadAbi as typeof IStoreReadAbiType,
     functionName: "getRecord",
     args: [table.tableId, encodeKey(keySchema, { worldFunctionSelector })],
   });
