@@ -1,10 +1,9 @@
-import { Abi, Address, Hex, createWalletClient, http, parseAbi } from "viem";
+import { Address, Hex, createWalletClient, http, parseAbi } from "viem";
 import { getBlockNumber, getLogs } from "viem/actions";
 import { getRpcUrl } from "@latticexyz/common/foundry";
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
 import { getWorldAbi } from "@latticexyz/world/internal";
-import { abi as defaultAbi } from "./abi";
 import { deduplicateAbi } from "./utils/deduplicateAbi";
 
 export const dynamic = "force-dynamic";
@@ -45,20 +44,17 @@ export async function GET(req: Request) {
   try {
     const client = await getClient();
     const { fromBlock, toBlock } = await getParameters(worldAddress);
-    const worldAbi = await getWorldAbi({
+    const worldAbiResponse = await getWorldAbi({
       client,
       worldAddress,
       fromBlock,
       toBlock,
     });
+    const worldAbi = deduplicateAbi(worldAbiResponse)
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .sort((a, b) => a.name.localeCompare(b.name));
 
-    const combinedAbi = [...worldAbi, ...defaultAbi] as Abi;
-    const filteredABI = deduplicateAbi(combinedAbi).sort((a, b) =>
-      a.name.localeCompare(b.name),
-    );
-    const sortedABI = filteredABI.sort((a, b) => a.name.localeCompare(b.name));
-
-    return Response.json({ abi: sortedABI });
+    return Response.json({ abi: worldAbi });
   } catch (error: unknown) {
     if (error instanceof Error) {
       return Response.json({ error: error.message }, { status: 400 });

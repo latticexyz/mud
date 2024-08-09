@@ -89,7 +89,7 @@ export function TablesViewer({ table: selectedTable }: Props) {
   const { data: mudTableConfig } = useQuery({
     queryKey: ["table", { selectedTable }],
     queryFn: async () => {
-      const response = await fetch(`/api/table?tableId=${selectedTable}`);
+      const response = await fetch(`/api/table?table=${selectedTable}`);
       return response.json();
     },
     select: (data) => {

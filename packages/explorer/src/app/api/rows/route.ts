@@ -1,6 +1,5 @@
 import { camelCase } from "../../../lib/utils";
 import { getDatabase } from "../database";
-import { TableRow } from "../tables/route";
 
 export const dynamic = "force-dynamic";
 
@@ -24,23 +23,37 @@ function convertKeysToCamelCase(rows: RowsResponse): Row[] {
   });
 }
 
-export async function GET(request: Request) {
+function doesTableExist(table: string) {
   const db = getDatabase();
+  const result = db
+    ?.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ?")
+    .get(table);
+
+  return Boolean(result);
+}
+
+export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const table = searchParams.get("table");
 
-  const tables = db
-    ?.prepare("SELECT name FROM sqlite_master WHERE type='table'")
-    .all() as TableRow[];
+  try {
+    if (!table || !doesTableExist(table)) {
+      return Response.json({ error: "table does not exist" }, { status: 400 });
+    }
 
-  const isTable = tables.find((t) => t.name === table);
-  if (!isTable) {
-    return Response.json({ error: "table does not exist" }, { status: 400 });
+    const db = getDatabase();
+    const query = `SELECT * FROM "${table}" LIMIT 30`;
+    const rows = db?.prepare(query).all() as RowsResponse;
+
+    return Response.json({ rows: convertKeysToCamelCase(rows) });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return Response.json({ error: error.message }, { status: 400 });
+    } else {
+      return Response.json(
+        { error: "An unknown error occurred" },
+        { status: 400 },
+      );
+    }
   }
-
-  const rows = db
-    ?.prepare(`SELECT * FROM "${table}" LIMIT 30`)
-    .all() as RowsResponse;
-
-  return Response.json({ rows: convertKeysToCamelCase(rows) });
 }

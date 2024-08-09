@@ -17,16 +17,27 @@ export type TableConfig = {
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const tableId = searchParams.get("tableId") as Hex;
+  const table = searchParams.get("table") as Hex;
 
-  if (!tableId) {
-    return Response.json({ error: "tableId is required" }, { status: 400 });
+  if (!table) {
+    return Response.json({ error: "table is required" }, { status: 400 });
   }
 
-  const db = getDatabase();
-  const table = db
-    ?.prepare("SELECT * FROM __mudStoreTables WHERE id = ?")
-    .get(tableId) as TableConfig;
+  try {
+    const db = getDatabase();
+    const tableData = db
+      ?.prepare("SELECT * FROM __mudStoreTables WHERE id = ?")
+      .get(table) as TableConfig;
 
-  return Response.json({ table });
+    return Response.json({ table: tableData });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return Response.json({ error: error.message }, { status: 400 });
+    } else {
+      return Response.json(
+        { error: "An unknown error occurred" },
+        { status: 400 },
+      );
+    }
+  }
 }
