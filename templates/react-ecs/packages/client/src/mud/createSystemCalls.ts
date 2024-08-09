@@ -8,7 +8,9 @@ import { ClientComponents } from "./createClientComponents";
 import { SetupNetworkResult } from "./setupNetwork";
 import { singletonEntity } from "@latticexyz/store-sync/recs";
 
-export type SystemCalls = ReturnType<typeof createSystemCalls>;
+export type SystemCalls = {
+  increment: () => Promise<{ value: number } | undefined>;
+};
 
 export function createSystemCalls(
   /*
@@ -32,7 +34,7 @@ export function createSystemCalls(
    */
   { worldContract, waitForTransaction }: SetupNetworkResult,
   { Counter }: ClientComponents,
-) {
+): SystemCalls {
   const increment = async () => {
     /*
      * Because IncrementSystem
