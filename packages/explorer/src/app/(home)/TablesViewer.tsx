@@ -25,7 +25,6 @@ import {
   TableRow,
 } from "../../components/ui/Table";
 import { NON_EDITABLE_TABLES } from "../../consts";
-import { camelCase } from "../../lib/utils";
 import { EditableTableCell } from "./EditableTableCell";
 import { bufferToBigInt } from "./utils/bufferToBigInt";
 
@@ -48,19 +47,12 @@ export function TablesViewer({ table: selectedTable }: Props) {
       return response.json();
     },
     select: (data) => {
-      return data.schema
-        .filter((column: { name: string }) => {
-          if (showAllColumns) {
-            return true;
-          }
-          return !column.name.startsWith("__");
-        })
-        .map((column: { name: string; type: string }) => {
-          return {
-            ...column,
-            name: camelCase(column.name),
-          };
-        });
+      return data.schema.filter((column: { name: string }) => {
+        if (showAllColumns) {
+          return true;
+        }
+        return !column.name.startsWith("__");
+      });
     },
   });
 

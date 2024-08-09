@@ -16,6 +16,9 @@ export async function GET(request: Request) {
     const db = getDatabase();
     const schema = db?.prepare("SELECT * FROM pragma_table_info(?)").all(table);
 
+    console.log("schema:");
+    console.log(schema);
+
     return new Response(JSON.stringify({ schema }), { status: 200 });
   } catch (error: unknown) {
     if (error instanceof Error) {

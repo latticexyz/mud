@@ -10,4 +10,12 @@ pragma solidity >=0.8.24;
  */
 interface IIncrementSystem {
   function app__increment() external returns (uint32);
+
+  function app__incrementOffchain() external returns (uint32);
+
+  function app__decrement() external returns (uint32);
+
+  function app__addCheckbox(uint256 _idx, bool _checked) external;
+
+  function app__toggleCheckbox(bytes32 _entity) external;
 }

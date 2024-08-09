@@ -1,4 +1,3 @@
-import { camelCase } from "../../../lib/utils";
 import { getDatabase } from "../database";
 
 export const dynamic = "force-dynamic";
@@ -8,20 +7,6 @@ type Row = {
 };
 
 type RowsResponse = Row[] | undefined;
-
-function convertKeysToCamelCase(rows: RowsResponse): Row[] {
-  if (rows == undefined) {
-    return [];
-  }
-
-  return rows.map((row) => {
-    return Object.keys(row).reduce((result: { [key: string]: string }, key) => {
-      const camelKey = camelCase(key);
-      result[camelKey] = row[key];
-      return result;
-    }, {});
-  });
-}
 
 function doesTableExist(table: string) {
   const db = getDatabase();
@@ -45,7 +30,7 @@ export async function GET(request: Request) {
     const query = `SELECT * FROM "${table}" LIMIT 30`;
     const rows = db?.prepare(query).all() as RowsResponse;
 
-    return Response.json({ rows: convertKeysToCamelCase(rows) });
+    return Response.json({ rows });
   } catch (error: unknown) {
     if (error instanceof Error) {
       return Response.json({ error: error.message }, { status: 400 });
