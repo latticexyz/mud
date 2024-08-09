@@ -8,3 +8,4 @@ broadcast/
 # Ignore all MUD deploy artifacts
 deploys
 worlds.json*
+.mud

@@ -2,15 +2,15 @@ import path from "node:path";
 import { World } from "../config/v2/output";
 import { findSolidityFiles } from "./findSolidityFiles";
 
+export type GetSystemContractsOptions = {
+  readonly rootDir: string;
+  readonly config: World;
+};
+
 export type SystemContract = {
   readonly sourcePath: string;
   readonly namespaceLabel: string;
   readonly systemLabel: string;
-};
-
-export type GetSystemContractsOptions = {
-  readonly rootDir: string;
-  readonly config: World;
 };
 
 export async function getSystemContracts({

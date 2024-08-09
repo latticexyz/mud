@@ -22,4 +22,5 @@ await Promise.all([
     // use root namespace to generate the core system interfaces
     config: defineWorld({ ...configInput, namespace: "" }),
   }),
+  // TODO: build system deploy manifest for config modules (e.g. metadata)
 ]);

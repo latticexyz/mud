@@ -1,5 +1,5 @@
 import { tablegen } from "@latticexyz/store/codegen";
-import { worldgen } from "@latticexyz/world/node";
+import { buildSystemDeployManifest, worldgen } from "@latticexyz/world/node";
 import { World as WorldConfig } from "@latticexyz/world";
 import { forge } from "@latticexyz/common/foundry";
 import { execa } from "execa";
@@ -23,5 +23,6 @@ export async function build({
   await Promise.all([tablegen({ rootDir, config }), worldgen({ rootDir, config })]);
 
   await forge(["build"], { profile: foundryProfile });
+  await buildSystemDeployManifest({ rootDir, config });
   await execa("mud", ["abi-ts"], { stdio: "inherit" });
 }

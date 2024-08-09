@@ -7,3 +7,4 @@ broadcast/
 
 # Ignore MUD deploy artifacts
 deploys/**/*.json
+.mud
