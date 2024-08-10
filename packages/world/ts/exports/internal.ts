@@ -7,4 +7,7 @@ export * from "../actions/callFrom";
 
 export * from "../callWithSignatureTypes";
 
+export * from "../getFunctions";
+export * from "../getWorldAbi";
+
 export { resolveTableId, resolveWithContext } from "../config/v2/dynamicResolution";

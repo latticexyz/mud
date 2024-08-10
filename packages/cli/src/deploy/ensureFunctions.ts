@@ -1,8 +1,8 @@
 import { Client, Transport, Chain, Account, Hex } from "viem";
 import { hexToResource, writeContract } from "@latticexyz/common";
+import { getFunctions } from "@latticexyz/world/internal";
 import { WorldDeploy, WorldFunction, worldAbi } from "./common";
 import { debug } from "./debug";
-import { getFunctions } from "./getFunctions";
 import pRetry from "p-retry";
 import { wait } from "@latticexyz/common/utils";
 
@@ -15,7 +15,12 @@ export async function ensureFunctions({
   readonly worldDeploy: WorldDeploy;
   readonly functions: readonly WorldFunction[];
 }): Promise<readonly Hex[]> {
-  const worldFunctions = await getFunctions({ client, worldDeploy });
+  const worldFunctions = await getFunctions({
+    client,
+    worldAddress: worldDeploy.address,
+    fromBlock: worldDeploy.deployBlock,
+    toBlock: worldDeploy.stateBlock,
+  });
   const worldSelectorToFunction = Object.fromEntries(worldFunctions.map((func) => [func.selector, func]));
 
   const toSkip = functions.filter((func) => worldSelectorToFunction[func.selector]);
