@@ -150,7 +150,7 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
    * Emits a {Transfer} event.
    */
   function mint(address to, uint256 tokenId) public virtual {
-    _requireOwner();
+    _requireAccess();
     _mint(to, tokenId);
   }
 
@@ -166,7 +166,7 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
    * Emits a {Transfer} event.
    */
   function safeMint(address to, uint256 tokenId) public {
-    _requireOwner();
+    _requireAccess();
     _safeMint(to, tokenId, "");
   }
 
@@ -175,7 +175,7 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
    * forwarded in {IERC721Receiver-onERC721Received} to contract recipients.
    */
   function safeMint(address to, uint256 tokenId, bytes memory data) public virtual {
-    _requireOwner();
+    _requireAccess();
     _safeMint(to, tokenId, data);
   }
 
@@ -190,7 +190,7 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
    * Emits a {Transfer} event.
    */
   function burn(uint256 tokenId) public {
-    _requireOwner();
+    _requireAccess();
     _burn(tokenId);
   }
 
@@ -525,7 +525,7 @@ contract ERC721System is IERC721Mintable, System, PuppetMaster {
     return systemId.getNamespace();
   }
 
-  function _requireOwner() internal view {
-    AccessControlLib.requireOwner(SystemRegistry.get(address(this)), _msgSender());
+  function _requireAccess() internal view {
+    AccessControlLib.requireAccess(SystemRegistry.get(address(this)), _msgSender());
   }
 }

@@ -144,7 +144,7 @@ contract ERC20System is System, IERC20Mintable, PuppetMaster {
    */
   function mint(address account, uint256 value) public {
     // Require the caller to own the namespace
-    _requireOwner();
+    _requireAccess();
 
     if (account == address(0)) {
       revert ERC20InvalidReceiver(address(0));
@@ -163,7 +163,7 @@ contract ERC20System is System, IERC20Mintable, PuppetMaster {
    */
   function burn(address account, uint256 value) public {
     // Require the caller to own the namespace
-    _requireOwner();
+    _requireAccess();
 
     if (account == address(0)) {
       revert ERC20InvalidSender(address(0));
@@ -280,7 +280,7 @@ contract ERC20System is System, IERC20Mintable, PuppetMaster {
     return systemId.getNamespace();
   }
 
-  function _requireOwner() internal view {
-    AccessControlLib.requireOwner(SystemRegistry.get(address(this)), _msgSender());
+  function _requireAccess() internal view {
+    AccessControlLib.requireAccess(SystemRegistry.get(address(this)), _msgSender());
   }
 }
