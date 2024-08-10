@@ -1,13 +1,13 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { ResolvedSystem, resolveSystems } from "./resolveSystems";
 import { World } from "../config/v2";
-import { ContractArtifact, PendingBytecode, contractSizeLimit } from "./common";
+import { ContractArtifact, ReferenceIdentifier } from "./common";
 import { findContractArtifacts } from "./findContractArtifacts";
 import { getOutDirectory as getForgeOutDirectory } from "@latticexyz/common/foundry";
 import path from "node:path";
-import { getPendingBytecode } from "./getPendingBytecode";
 import { Hex } from "viem";
 import { getDependencies } from "./getDependencies";
+import { referenceIdentifier } from "./types";
 
 export type SystemDeployManifest = {
   readonly systems: readonly {
@@ -15,12 +15,12 @@ export type SystemDeployManifest = {
     readonly deployable: string;
   }[];
   readonly deployables: {
-    readonly [id: string]: PendingBytecode;
+    readonly [id: string]: readonly (Hex | { readonly deployable: string })[];
   };
 };
 
-function getDeployableId(artifact: ContractArtifact): string {
-  return `${artifact.sourcePath}:${artifact.name}`;
+function getDeployableId(ref: ReferenceIdentifier): string {
+  return `${ref.sourcePath}:${ref.name}`;
 }
 
 export async function buildSystemDeployManifest({
@@ -52,21 +52,12 @@ export async function buildSystemDeployManifest({
   });
 
   const deployables = Object.fromEntries(
-    deployableArtifacts.map((artifact) => {
-      if (artifact.deployedBytecodeSize > contractSizeLimit) {
-        console.warn(
-          // eslint-disable-next-line max-len
-          `\nBytecode for \`${artifact.name}\` at \`${artifact.sourcePath}\` (${artifact.deployedBytecodeSize} bytes) is over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`,
-        );
-      } else if (artifact.deployedBytecodeSize > contractSizeLimit * 0.95) {
-        console.warn(
-          // eslint-disable-next-line max-len
-          `\nBytecode for \`${artifact.name}\` at \`${artifact.sourcePath}\` (${artifact.deployedBytecodeSize} bytes) is almost over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`,
-        );
-      }
-
-      return [getDeployableId(artifact), getPendingBytecode(artifact, contractArtifacts)];
-    }),
+    deployableArtifacts.map((artifact) => [
+      getDeployableId(artifact),
+      artifact.bytecode.map((part) =>
+        referenceIdentifier.allows(part) ? { deployable: getDeployableId(part) } : part,
+      ),
+    ]),
   );
 
   const manifest = {

@@ -4,9 +4,8 @@ import { parseArtifact } from "./types";
 import path from "node:path";
 import { type } from "arktype";
 import { isDefined } from "@latticexyz/common/utils";
-import { getPlaceholders } from "./getPlaceholders";
-import { size } from "viem";
-import { ContractArtifact } from "./common";
+import { Hex, size, sliceHex } from "viem";
+import { ContractArtifact, ReferenceIdentifier, contractSizeLimit } from "./common";
 
 export type Input = {
   readonly forgeOutDir: string;
@@ -41,9 +40,34 @@ export async function findContractArtifacts({ forgeOutDir }: Input): Promise<Out
     .map((artifact) => {
       const sourcePath = Object.keys(artifact.metadata.settings.compilationTarget)[0];
       const name = artifact.metadata.settings.compilationTarget[sourcePath];
-      const bytecode = artifact.bytecode.object;
-      const placeholders = getPlaceholders(artifact.bytecode.linkReferences ?? {});
       const deployedBytecodeSize = size(artifact.deployedBytecode.object);
-      return { sourcePath, name, bytecode, placeholders, deployedBytecodeSize };
+
+      if (deployedBytecodeSize > contractSizeLimit) {
+        console.warn(
+          // eslint-disable-next-line max-len
+          `\nBytecode for \`${name}\` at \`${sourcePath}\` (${deployedBytecodeSize} bytes) is over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`,
+        );
+      } else if (deployedBytecodeSize > contractSizeLimit * 0.95) {
+        console.warn(
+          // eslint-disable-next-line max-len
+          `\nBytecode for \`${name}\` at \`${sourcePath}\` (${deployedBytecodeSize} bytes) is almost over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`,
+        );
+      }
+
+      const bytecode = artifact.bytecode.object;
+      const placeholders = Object.entries(artifact.bytecode.linkReferences ?? {}).flatMap(([sourcePath, names]) =>
+        Object.entries(names).flatMap(([name, slices]) => slices.map((slice) => ({ sourcePath, name, ...slice }))),
+      );
+
+      const pendingBytecode: (Hex | ReferenceIdentifier)[] = [];
+      let offset = 0;
+      for (const { sourcePath, name, start, length } of placeholders) {
+        pendingBytecode.push(sliceHex(bytecode, offset, start));
+        pendingBytecode.push({ sourcePath, name });
+        offset = start + length;
+      }
+      pendingBytecode.push(sliceHex(bytecode, offset));
+
+      return { sourcePath, name, bytecode: pendingBytecode };
     });
 }

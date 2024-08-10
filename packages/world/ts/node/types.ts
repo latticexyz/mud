@@ -6,6 +6,17 @@ export const bytecode = type("string").narrow(
 
 export const slice = type({ start: "number", length: "number" }).readonly();
 
+export const referenceIdentifier = type({
+  /**
+   * Path to source file, e.g. `src/SomeLib.sol`
+   */
+  sourcePath: "string",
+  /**
+   * Reference name, e.g. `SomeLib`
+   */
+  name: "string",
+}).readonly();
+
 export const linkReferences = type({
   // key is source filename like `src/WorldResourceId.sol`
   // TODO: support for named generic keys?
