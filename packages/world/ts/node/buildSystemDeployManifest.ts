@@ -1,18 +1,27 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import { resolveSystems } from "./resolveSystems";
+import { ResolvedSystem, resolveSystems } from "./resolveSystems";
 import { World } from "../config/v2";
-import { LibraryDeploy, SystemDeploy } from "./common";
+import { ContractArtifact, PendingBytecode, contractSizeLimit } from "./common";
 import { findContractArtifacts } from "./findContractArtifacts";
 import { getOutDirectory as getForgeOutDirectory } from "@latticexyz/common/foundry";
-import { uniqueBy } from "@latticexyz/common/utils";
 import path from "node:path";
-import { getDependencies } from "./getDependencies";
 import { getPendingBytecode } from "./getPendingBytecode";
+import { Hex } from "viem";
+import { getDependencies } from "./getDependencies";
 
 export type SystemDeployManifest = {
-  readonly systems: readonly SystemDeploy[];
-  readonly libraries: readonly LibraryDeploy[];
+  readonly systems: readonly {
+    readonly systemId: Hex;
+    readonly deployable: string;
+  }[];
+  readonly deployables: {
+    readonly [id: string]: PendingBytecode;
+  };
 };
+
+function getDeployableId(artifact: ContractArtifact): string {
+  return `${artifact.sourcePath}:${artifact.name}`;
+}
 
 export async function buildSystemDeployManifest({
   rootDir,
@@ -27,40 +36,48 @@ export async function buildSystemDeployManifest({
   const forgeOutDir = await getForgeOutDirectory();
   const contractArtifacts = await findContractArtifacts({ forgeOutDir });
 
-  const systemArtifacts = systems.map((system) => {
+  function getSystemArtifact(system: ResolvedSystem): ContractArtifact {
     const artifact = contractArtifacts.find((a) => a.sourcePath === system.sourcePath && a.name === system.label);
     if (!artifact) {
       throw new Error(
         `Could not find build artifact for system \`${system.label}\` at \`${system.sourcePath}\`. Did \`forge build\` run successfully?`,
       );
     }
-    return {
-      ...system,
-      bytecode: artifact.bytecode,
-      placeholders: artifact.placeholders,
-      deployedBytecodeSize: artifact.deployedBytecodeSize,
-      pendingBytecode: getPendingBytecode(artifact, contractArtifacts),
-    };
+    return artifact;
+  }
+
+  const deployableArtifacts = systems.flatMap((system) => {
+    const artifact = getSystemArtifact(system);
+    return [artifact, ...getDependencies(artifact, contractArtifacts)];
   });
 
-  const dependencies = uniqueBy(
-    getDependencies(systemArtifacts, contractArtifacts),
-    ({ sourcePath, name }) => `${sourcePath}:${name}`,
+  const deployables = Object.fromEntries(
+    deployableArtifacts.map((artifact) => {
+      if (artifact.deployedBytecodeSize > contractSizeLimit) {
+        console.warn(
+          // eslint-disable-next-line max-len
+          `\nBytecode for \`${artifact.name}\` at \`${artifact.sourcePath}\` (${artifact.deployedBytecodeSize} bytes) is over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`,
+        );
+      } else if (artifact.deployedBytecodeSize > contractSizeLimit * 0.95) {
+        console.warn(
+          // eslint-disable-next-line max-len
+          `\nBytecode for \`${artifact.name}\` at \`${artifact.sourcePath}\` (${artifact.deployedBytecodeSize} bytes) is almost over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`,
+        );
+      }
+
+      return [getDeployableId(artifact), getPendingBytecode(artifact, contractArtifacts)];
+    }),
   );
 
-  // TODO: sort by deploy order?
+  const manifest = {
+    systems: systems.map((system) => ({
+      ...system,
+      deployable: getDeployableId(getSystemArtifact(system)),
+    })),
+    deployables,
+  } satisfies SystemDeployManifest;
 
   const outFile = path.join(rootDir, ".mud/pending/systems.json");
   await mkdir(path.dirname(outFile), { recursive: true });
-  await writeFile(
-    outFile,
-    JSON.stringify(
-      {
-        systems: systemArtifacts,
-        libraries: dependencies,
-      },
-      null,
-      2,
-    ),
-  );
+  await writeFile(outFile, JSON.stringify(manifest, null, 2));
 }

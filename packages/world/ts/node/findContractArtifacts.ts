@@ -1,11 +1,12 @@
 import { readFile } from "node:fs/promises";
 import { glob } from "glob";
 import { parseArtifact } from "./types";
-import { ContractArtifact } from "./common";
-import { getPlaceholders } from "./getPlaceholders";
-import { size } from "viem";
 import path from "node:path";
 import { type } from "arktype";
+import { isDefined } from "@latticexyz/common/utils";
+import { getPlaceholders } from "./getPlaceholders";
+import { size } from "viem";
+import { ContractArtifact } from "./common";
 
 export type Input = {
   readonly forgeOutDir: string;
@@ -13,7 +14,9 @@ export type Input = {
 
 export type Output = readonly ContractArtifact[];
 
-// TODO: figure out what `sourcePath` is for imported public libs (actual import path? resolved path from remappings?)
+function indent(message: string, indentation = "  "): string {
+  return message.replaceAll(/(^|\n)/g, `$1${indentation}`);
+}
 
 export async function findContractArtifacts({ forgeOutDir }: Input): Promise<Output> {
   const files = (await glob("**/*.sol/*.json", { ignore: "**/*.abi.json", cwd: forgeOutDir })).sort();
@@ -28,14 +31,16 @@ export async function findContractArtifacts({ forgeOutDir }: Input): Promise<Out
     .map(({ filename, json }) => {
       const artifact = parseArtifact(json);
       if (artifact instanceof type.errors) {
-        throw new Error(`Could not parse artifact at \`${filename}\`\n\n${artifact.message}`);
+        // TODO: replace with debug
+        console.warn(`Skipping invalid artifact at \`${filename}\`:\n\n${indent(artifact.message)}\n`);
+        return;
       }
       return artifact;
     })
-    .filter((artifact) => artifact.metadata)
+    .filter(isDefined)
     .map((artifact) => {
-      const sourcePath = Object.keys(artifact.metadata!.settings.compilationTarget)[0];
-      const name = artifact.metadata!.settings.compilationTarget[sourcePath];
+      const sourcePath = Object.keys(artifact.metadata.settings.compilationTarget)[0];
+      const name = artifact.metadata.settings.compilationTarget[sourcePath];
       const bytecode = artifact.bytecode.object;
       const placeholders = getPlaceholders(artifact.bytecode.linkReferences ?? {});
       const deployedBytecodeSize = size(artifact.deployedBytecode.object);

@@ -1,8 +1,8 @@
 import { Hex, sliceHex } from "viem";
-import { ContractArtifact, PendingBytecode } from "./common";
+import { ContractArtifact, DeployableReference, PendingBytecode } from "./common";
 
 export function getPendingBytecode(target: ContractArtifact, artifacts: readonly ContractArtifact[]): PendingBytecode {
-  const bytecode: (Hex | PendingBytecode)[] = [];
+  const bytecode: (Hex | DeployableReference)[] = [];
   let offset = 0;
   for (const placeholder of target.placeholders) {
     const artifact = artifacts.find((a) => a.sourcePath === placeholder.sourcePath && a.name === placeholder.name);
@@ -14,7 +14,7 @@ export function getPendingBytecode(target: ContractArtifact, artifacts: readonly
     }
 
     bytecode.push(sliceHex(target.bytecode, offset, placeholder.start));
-    bytecode.push(getPendingBytecode(artifact, artifacts));
+    bytecode.push({ deployable: `${artifact.sourcePath}:${artifact.name}` });
     offset = placeholder.start + placeholder.length;
   }
   bytecode.push(sliceHex(target.bytecode, offset));

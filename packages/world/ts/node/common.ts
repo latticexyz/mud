@@ -1,5 +1,8 @@
 import { Hex } from "viem";
 
+// https://eips.ethereum.org/EIPS/eip-170
+export const contractSizeLimit = parseInt("6000", 16);
+
 export type LibraryIdentifier = {
   /**
    * Path to library source file, e.g. `src/libraries/SomeLib.sol`
@@ -22,35 +25,9 @@ export type LibraryPlaceholder = LibraryIdentifier & {
   readonly length: number;
 };
 
-export type PendingContract = {
-  readonly bytecode: Hex;
-  readonly placeholders: readonly LibraryPlaceholder[];
-  // TODO: ABI
-};
+export type DeployableReference = { readonly deployable: string };
+export type PendingBytecode = readonly (Hex | DeployableReference)[];
 
-export type PendingLibrary = LibraryIdentifier & PendingContract;
-
-export type PendingSystem = PendingContract & {
-  readonly systemId: Hex;
-  // TODO: system function signtures
-  // TODO: world function signatures
-  // TODO: access control
-};
-
-export type PendingBytecode = readonly (Hex | PendingBytecode)[];
-
-export type SystemDeploy = {
-  readonly systemId: Hex;
-  readonly bytecode: Hex;
-  readonly placeholders: readonly LibraryPlaceholder[];
-};
-
-export type LibraryDeploy = LibraryIdentifier & {
-  readonly bytecode: Hex;
-  readonly placeholders: readonly LibraryPlaceholder[];
-};
-
-// TODO: clean up
 export type ContractArtifact = {
   readonly sourcePath: string;
   readonly name: string;

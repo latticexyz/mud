@@ -28,7 +28,7 @@ export const artifact = type({
   deployedBytecode: artifactBytecode,
   // TODO
   abi: "unknown[]",
-  "metadata?": type({
+  metadata: type({
     // TODO: figure out if this is optional
     settings: type({
       // TODO: figure out if this is optional
