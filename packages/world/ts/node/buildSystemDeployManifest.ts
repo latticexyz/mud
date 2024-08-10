@@ -7,6 +7,7 @@ import { getOutDirectory as getForgeOutDirectory } from "@latticexyz/common/foun
 import { uniqueBy } from "@latticexyz/common/utils";
 import path from "node:path";
 import { getDependencies } from "./getDependencies";
+import { getPendingBytecode } from "./getPendingBytecode";
 
 export type SystemDeployManifest = {
   readonly systems: readonly SystemDeploy[];
@@ -38,6 +39,7 @@ export async function buildSystemDeployManifest({
       bytecode: artifact.bytecode,
       placeholders: artifact.placeholders,
       deployedBytecodeSize: artifact.deployedBytecodeSize,
+      pendingBytecode: getPendingBytecode(artifact, contractArtifacts),
     };
   });
 
