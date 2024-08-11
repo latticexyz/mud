@@ -27,7 +27,12 @@ export function runQuery({ store, query, options }: RunQueryArgs): RunQueryResul
       Object.values(expectedKeySchema).join("|") !==
       Object.values(getKeySchema(getConfig({ store, table: fragment.table }))).join("|")
     ) {
-      throw new Error("All tables in a query must share the same key schema");
+      throw new Error(
+        "All tables in a query must share the same key schema. Found mismatch when comparing tables: " +
+          fragment.table.label +
+          " and " +
+          query[0].table.label,
+      );
     }
   }
 
