@@ -30,7 +30,7 @@ export async function syncToZustandQuery({
   const SyncProgress = registerTable({
     store,
     table: {
-      namespace: "store_sync_internal",
+      namespace: "store_sync",
       label: "SyncProgress",
       schema: {
         step: "uint8",
