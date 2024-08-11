@@ -1,6 +1,5 @@
 import { bench } from "@ark/attest";
 import { defineStore } from "@latticexyz/store";
-import { runQuery } from "./runQuery";
 import { createStore } from "./createStore";
 import { In } from "./queryFragments";
 
@@ -34,7 +33,7 @@ bench("boundTable", () => {
 
 bench("runQuery", () => {
   const { Position } = config.tables;
-  runQuery(store, [In(Position)]);
+  store.runQuery({ query: [In(Position)] });
 }).types([10, "instantiations"]);
 
 const filledStore = createStore(config);
