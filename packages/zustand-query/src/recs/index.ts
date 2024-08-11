@@ -1,12 +1,18 @@
 import { In, MatchRecord, NotIn, NotMatchRecord } from "../queryFragments";
 import { Query, Store, TableRecord } from "../common";
-import { UpdateType } from "@latticexyz/recs";
+import { UpdateType as RecsUpdateType } from "@latticexyz/recs";
 import { BoundTable, getTable } from "../actions/getTable";
 import { runQuery as runQueryInternal } from "../actions/runQuery";
 import { QueryUpdate, subscribeQuery } from "../actions/subscribeQuery";
 
 export type Entity = string;
 export const singletonEntity = "";
+
+export enum UpdateType {
+  Enter = "enter",
+  Update = "update",
+  Exit = "exit",
+}
 
 export function hasComponent(t: BoundTable, key: string): boolean {
   return Boolean(t.getKeys()[key]);
@@ -63,18 +69,18 @@ export function runQuery(store: Store, query: Query) {
 function transformUpdateType(type: "enter" | "update" | "exit") {
   switch (type) {
     case "enter":
-      return UpdateType.Enter;
+      return RecsUpdateType.Enter;
     case "update":
-      return UpdateType.Update;
+      return RecsUpdateType.Update;
     case "exit":
-      return UpdateType.Exit;
+      return RecsUpdateType.Exit;
   }
 }
 
 type SystemUpdate = {
   entity: string;
   value: [TableRecord | undefined, TableRecord | undefined];
-  type: UpdateType;
+  type: RecsUpdateType;
   component: BoundTable;
 };
 
