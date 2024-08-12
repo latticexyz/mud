@@ -1,4 +1,5 @@
 import { Store } from "@latticexyz/store";
+import { Namespace as StoreNamespace } from "@latticexyz/store/config/v2";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
 import { Hex } from "viem";
 
@@ -24,6 +25,20 @@ export type Module = {
   readonly artifactPath: string | undefined;
 };
 
+export type SystemDeploy = {
+  /**
+   * Whether or not to deploy the system.
+   * Defaults to `false`.
+   */
+  readonly disabled: boolean;
+  /**
+   * Whether or not to register system functions on the world.
+   * System functions are prefixed with the system namespace when registering on the world, so system function names must be unique within their namespace.
+   * Defaults to `true`.
+   */
+  readonly registerWorldFunctions: boolean;
+};
+
 export type System = {
   /**
    * Human-readable system label. Used as config keys, interface names, and filenames.
@@ -42,22 +57,22 @@ export type System = {
    * System's resource ID.
    */
   readonly systemId: Hex;
-  /**
-   * Register function selectors for the system in the World.
-   * Defaults to true.
-   * Note:
-   * - For root systems all World function selectors will correspond to the system's function selectors.
-   * - For non-root systems, the World function selectors will be <namespace>__<function>.
-   */
-  readonly registerFunctionSelectors: boolean;
   /** If openAccess is true, any address can call the system */
   readonly openAccess: boolean;
   /** An array of addresses or system names that can access the system */
   readonly accessList: readonly string[];
+  readonly deploy: SystemDeploy;
 };
 
 export type Systems = {
   readonly [label: string]: System;
+};
+
+// TODO: should we make Namespace an interface that we can extend here instead of overriding?
+export type Namespace = StoreNamespace & { readonly systems: Systems };
+
+export type Namespaces = {
+  readonly [label: string]: Namespace;
 };
 
 export type Deploy = {
@@ -77,18 +92,24 @@ export type Deploy = {
 };
 
 export type Codegen = {
-  /** The name of the World interface to generate. (Default `IWorld`) */
+  /**
+   * @internal
+   * The name of the World interface to generate. (Default `IWorld`)
+   */
   readonly worldInterfaceName: string;
   /** Directory to output system and world interfaces of `worldgen` (Default "world") */
   readonly worldgenDirectory: string;
   /**
-   * Path for world package imports. Default is "@latticexyz/world/src/"
    * @internal
+   * Absolute import path for a package import or starting with `.` for an import relative to project root dir.
+   *
+   * Defaults to `@latticexyz/world/src` if not set.
    */
   readonly worldImportPath: string;
 };
 
-export type World = Store & {
+export type World = Omit<Store, "namespaces"> & {
+  readonly namespaces: Namespaces;
   readonly systems: Systems;
   /** Systems to exclude from automatic deployment */
   readonly excludeSystems: readonly string[];

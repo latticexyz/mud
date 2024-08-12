@@ -1,6 +1,6 @@
 import { Client, parseAbiItem, decodeAbiParameters, parseAbiParameters } from "viem";
 import { hexToResource } from "@latticexyz/common";
-import { WorldDeploy, storeTables } from "./common";
+import { WorldDeploy } from "./common";
 import { debug } from "./debug";
 import { storeSetRecordEvent } from "@latticexyz/store";
 import { getLogs } from "viem/actions";
@@ -13,6 +13,7 @@ import {
   hexToSchema,
 } from "@latticexyz/protocol-parser/internal";
 import { Schema, Table } from "@latticexyz/config";
+import storeConfig from "@latticexyz/store/mud.config";
 
 // TODO: add label once we register it onchain
 type DeployedTable = Omit<Table, "label">;
@@ -37,14 +38,17 @@ export async function getTables({
     toBlock: worldDeploy.stateBlock,
     address: worldDeploy.address,
     event: parseAbiItem(storeSetRecordEvent),
-    args: { tableId: storeTables.store__Tables.tableId },
+    args: { tableId: storeConfig.namespaces.store.tables.Tables.tableId },
   });
 
   // TODO: combine with store-sync logToTable and export from somewhere
   const tables = logs.map((log): DeployedTable => {
-    const { tableId } = decodeKey(getSchemaTypes(getKeySchema(storeTables.store__Tables)), log.args.keyTuple);
+    const { tableId } = decodeKey(
+      getSchemaTypes(getKeySchema(storeConfig.namespaces.store.tables.Tables)),
+      log.args.keyTuple,
+    );
     const { type, namespace, name } = hexToResource(tableId);
-    const value = decodeValueArgs(getSchemaTypes(getValueSchema(storeTables.store__Tables)), log.args);
+    const value = decodeValueArgs(getSchemaTypes(getValueSchema(storeConfig.namespaces.store.tables.Tables)), log.args);
 
     const solidityKeySchema = hexToSchema(value.keySchema);
     const solidityValueSchema = hexToSchema(value.valueSchema);

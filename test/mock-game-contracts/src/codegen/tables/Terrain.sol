@@ -17,7 +17,7 @@ import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/Encoded
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 // Import user types
-import { TerrainType } from "./../common.sol";
+import { TerrainType } from "../common.sol";
 
 library Terrain {
   // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Terrain", typeId: RESOURCE_TABLE });`

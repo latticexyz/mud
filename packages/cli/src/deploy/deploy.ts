@@ -63,17 +63,17 @@ export async function deploy({
       ...libraries.map((library) => ({
         bytecode: library.prepareDeploy(deployerAddress, libraries).bytecode,
         deployedBytecodeSize: library.deployedBytecodeSize,
-        label: `${library.path}:${library.name} library`,
+        debugLabel: `${library.path}:${library.name} library`,
       })),
       ...systems.map((system) => ({
         bytecode: system.prepareDeploy(deployerAddress, libraries).bytecode,
         deployedBytecodeSize: system.deployedBytecodeSize,
-        label: `${resourceToLabel(system)} system`,
+        debugLabel: `${resourceToLabel(system)} system`,
       })),
       ...modules.map((mod) => ({
         bytecode: mod.prepareDeploy(deployerAddress, libraries).bytecode,
         deployedBytecodeSize: mod.deployedBytecodeSize,
-        label: `${mod.name} module`,
+        debugLabel: `${mod.name} module`,
       })),
     ],
   });
@@ -115,7 +115,7 @@ export async function deploy({
   const functionTxs = await ensureFunctions({
     client,
     worldDeploy,
-    functions: systems.flatMap((system) => system.functions),
+    functions: systems.flatMap((system) => system.worldFunctions),
   });
   const moduleTxs = await ensureModules({
     client,

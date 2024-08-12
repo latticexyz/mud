@@ -1,7 +1,7 @@
-import { SYSTEM_DEFAULTS } from "./defaults";
+import { SYSTEM_DEFAULTS, SYSTEM_DEPLOY_DEFAULTS } from "./defaults";
 import { SystemInput } from "./input";
 import { hasOwnKey, mergeIfUndefined } from "@latticexyz/store/config/v2";
-import { ErrorMessage, narrow, requiredKeyOf } from "@arktype/util";
+import { ErrorMessage, narrow, requiredKeyOf, show } from "@ark/util";
 import { Hex } from "viem";
 import { resourceToHex } from "@latticexyz/common";
 
@@ -50,11 +50,11 @@ export type resolveSystem<input> = input extends SystemInput
       readonly namespace: undefined extends input["namespace"] ? SYSTEM_DEFAULTS["namespace"] : input["namespace"];
       readonly name: string;
       readonly systemId: Hex;
-      readonly registerFunctionSelectors: undefined extends input["registerFunctionSelectors"]
-        ? SYSTEM_DEFAULTS["registerFunctionSelectors"]
-        : input["registerFunctionSelectors"];
       readonly openAccess: undefined extends input["openAccess"] ? SYSTEM_DEFAULTS["openAccess"] : input["openAccess"];
       readonly accessList: undefined extends input["accessList"] ? SYSTEM_DEFAULTS["accessList"] : input["accessList"];
+      readonly deploy: show<
+        mergeIfUndefined<undefined extends input["deploy"] ? {} : input["deploy"], SYSTEM_DEPLOY_DEFAULTS>
+      >;
     }
   : never;
 
@@ -71,6 +71,7 @@ export function resolveSystem<input extends SystemInput>(input: input): resolveS
       namespace,
       name,
       systemId,
+      deploy: mergeIfUndefined(input.deploy ?? {}, SYSTEM_DEPLOY_DEFAULTS),
     },
     SYSTEM_DEFAULTS,
   ) as never;

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/config",
-  "version": "2.0.12",
+  "version": "2.1.0",
   "description": "Config for Store and World",
   "repository": {
     "type": "git",
@@ -40,7 +40,7 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@arktype/util": "0.0.40",
+    "@ark/util": "catalog:",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "esbuild": "^0.17.15",

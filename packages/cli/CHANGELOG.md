@@ -1,5 +1,86 @@
 # Change Log
 
+## 2.1.0
+
+### Minor Changes
+
+- a10b453: MUD projects can now use multiple namespaces via a new top-level `namespaces` config option.
+
+  ```ts
+  import { defineWorld } from "@latticexyz/world";
+
+  export default defineWorld({
+    namespaces: {
+      game: {
+        tables: {
+          Player: { ... },
+          Position: { ... },
+        },
+      },
+      guilds: {
+        tables: {
+          Guild: { ... },
+        },
+        systems: {
+          MembershipSystem: { ... },
+          TreasurySystem: { ... },
+        },
+      },
+    },
+  });
+  ```
+
+  Once you use the top-level `namespaces` config option, your project will be in "multiple namespaces mode", which expects a source directory structure similar to the config structure: a top-level `namespaces` directory with nested namespace directories that correspond to each namespace label in the config.
+
+  ```
+  ~/guilds
+  ├── mud.config.ts
+  └── src
+      └── namespaces
+          ├── game
+          │   └── codegen
+          │       └── tables
+          │           ├── Player.sol
+          │           └── Position.sol
+          └── guilds
+              ├── MembershipSystem.sol
+              ├── TreasurySystem.sol
+              └── codegen
+                  └── tables
+                      └── Guild.sol
+  ```
+
+### Patch Changes
+
+- 3cbbc62: Refactored package to use the new Store/World configs under the hood, removing compatibility layers.
+
+  Removed `--srcDir` option from all commands in favor of using `sourceDirectory` in the project's MUD config.
+
+- 24e285d: `mud deploy` will now correctly skip tables configured with `deploy: { disabled: true }`.
+- 2da9e48: Refactored CLI commands to use tables from config namespaces output. This is a precursor for supporting multiple namespaces.
+- 609de11: Refactored `mud trace` command to use Viem instead of Ethers and removed Ethers dependencies from the package.
+- e49059f: Bumped `glob` dependency.
+- Updated dependencies [24e285d]
+- Updated dependencies [570086e]
+- Updated dependencies [7129a16]
+- Updated dependencies [3cbbc62]
+- Updated dependencies [7129a16]
+- Updated dependencies [e85dc53]
+- Updated dependencies [a10b453]
+- Updated dependencies [69eb63b]
+- Updated dependencies [e49059f]
+- Updated dependencies [8d0453e]
+- Updated dependencies [fb1cfef]
+  - @latticexyz/store@2.1.0
+  - @latticexyz/world@2.1.0
+  - @latticexyz/config@2.1.0
+  - @latticexyz/common@2.1.0
+  - @latticexyz/abi-ts@2.1.0
+  - @latticexyz/protocol-parser@2.1.0
+  - @latticexyz/gas-report@2.1.0
+  - @latticexyz/schema-type@2.1.0
+  - @latticexyz/utils@2.1.0
+
 ## 2.0.12
 
 ### Patch Changes

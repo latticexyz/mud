@@ -1,6 +1,4 @@
 import { Abi, Address, Hex, padHex } from "viem";
-import storeConfig from "@latticexyz/store/mud.config";
-import worldConfig from "@latticexyz/world/mud.config";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
@@ -9,9 +7,6 @@ export const salt = padHex("0x", { size: 32 });
 
 // https://eips.ethereum.org/EIPS/eip-170
 export const contractSizeLimit = parseInt("6000", 16);
-
-export const storeTables = storeConfig.tables;
-export const worldTables = worldConfig.tables;
 
 export const worldDeployEvents = [helloStoreEvent, helloWorldEvent] as const;
 
@@ -94,7 +89,7 @@ export type System = DeterministicContract & {
   readonly allowAll: boolean;
   readonly allowedAddresses: readonly Hex[];
   readonly allowedSystemIds: readonly Hex[];
-  readonly functions: readonly WorldFunction[];
+  readonly worldFunctions: readonly WorldFunction[];
 };
 
 export type DeployedSystem = Omit<System, "abi" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"> & {

@@ -17,7 +17,7 @@ import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/Encoded
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 // Import user types
-import { TestTypeAddress, TestTypeInt64, TestTypeLibrary } from "./../../types.sol";
+import { TestTypeAddress, TestTypeInt64, TestTypeLibrary } from "../../types.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 struct UserTypedData {

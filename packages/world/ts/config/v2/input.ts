@@ -1,6 +1,8 @@
-import { show } from "@arktype/util";
-import { StoreInput, StoreWithShorthandsInput } from "@latticexyz/store/config/v2";
+import { StoreInput, NamespaceInput as StoreNamespaceInput } from "@latticexyz/store/config/v2";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
+import { Codegen, SystemDeploy } from "./output";
+
+export type SystemDeployInput = Partial<SystemDeploy>;
 
 export type SystemInput = {
   /**
@@ -18,22 +20,23 @@ export type SystemInput = {
    * Defaults to the first 16 characters of `label` if not set.
    */
   readonly name?: string;
-  /**
-   * Register function selectors for the system in the World.
-   * Defaults to true.
-   * Note:
-   * - For root systems all World function selectors will correspond to the system's function selectors.
-   * - For non-root systems, the World function selectors will be <namespace>__<function>.
-   */
-  readonly registerFunctionSelectors?: boolean;
   /** If openAccess is true, any address can call the system */
   readonly openAccess?: boolean;
   /** An array of addresses or system names that can access the system */
   readonly accessList?: readonly string[];
+  readonly deploy?: SystemDeployInput;
 };
 
 export type SystemsInput = {
   readonly [label: string]: Omit<SystemInput, "label" | "namespace">;
+};
+
+export type NamespaceInput = StoreNamespaceInput & {
+  readonly systems?: SystemsInput;
+};
+
+export type NamespacesInput = {
+  readonly [label: string]: Omit<NamespaceInput, "label">;
 };
 
 type ModuleInputArtifactPath =
@@ -85,43 +88,24 @@ export type DeployInput = {
   readonly upgradeableWorldImplementation?: boolean;
 };
 
-export type CodegenInput = {
-  /** The name of the World interface to generate. (Default `IWorld`) */
-  readonly worldInterfaceName?: string;
-  /** Directory to output system and world interfaces of `worldgen` (Default "world") */
-  readonly worldgenDirectory?: string;
-  /** Path for world package imports. Default is "@latticexyz/world/src/" */
-  readonly worldImportPath?: string;
+export type CodegenInput = Partial<Codegen>;
+
+export type WorldInput = Omit<StoreInput, "namespaces"> & {
+  readonly namespaces?: NamespacesInput;
+  /**
+   * Contracts named *System will be deployed by default
+   * as public systems at `namespace/ContractName`, unless overridden
+   *
+   * The key is the system name (capitalized).
+   * The value is a SystemConfig object.
+   */
+  readonly systems?: SystemsInput;
+  /** System names to exclude from codegen and deployment */
+  readonly excludeSystems?: readonly string[];
+  /** Modules to install in the World */
+  readonly modules?: readonly ModuleInput[];
+  /** Deploy config */
+  readonly deploy?: DeployInput;
+  /** Codegen config */
+  readonly codegen?: CodegenInput;
 };
-
-export type WorldInput = show<
-  StoreInput & {
-    readonly namespaces?: NamespacesInput;
-    /**
-     * Contracts named *System will be deployed by default
-     * as public systems at `namespace/ContractName`, unless overridden
-     *
-     * The key is the system name (capitalized).
-     * The value is a SystemConfig object.
-     */
-    readonly systems?: SystemsInput;
-    /** System names to exclude from codegen and deployment */
-    readonly excludeSystems?: readonly string[];
-    /** Modules to install in the World */
-    readonly modules?: readonly ModuleInput[];
-    /** Deploy config */
-    readonly deploy?: DeployInput;
-    /** Codegen config */
-    readonly codegen?: CodegenInput;
-  }
->;
-
-export type NamespacesInput = {
-  readonly [label: string]: NamespaceInput;
-};
-
-export type NamespaceInput = Pick<StoreInput, "tables">;
-
-/******** Variations with shorthands ********/
-
-export type WorldWithShorthandsInput = Omit<WorldInput, "tables"> & Pick<StoreWithShorthandsInput, "tables">;

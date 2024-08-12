@@ -12,16 +12,15 @@ import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { Store as StoreConfig } from "@latticexyz/store";
 import { Table as ConfigTable, Schema } from "@latticexyz/config";
+import { configToTables } from "./configToTables";
 
-export const storeTables = storeConfig.tables;
-export type storeTables = typeof storeTables;
+export const mudTables = {
+  ...configToTables(storeConfig),
+  ...configToTables(worldConfig),
+} as const;
+export type mudTables = typeof mudTables;
 
-export const worldTables = worldConfig.tables;
-export type worldTables = typeof worldTables;
-
-export const internalTableIds = [...Object.values(storeTables), ...Object.values(worldTables)].map(
-  (table) => table.tableId,
-);
+export const internalTableIds = Object.values(mudTables).map((table) => table.tableId);
 
 export type ChainId = number;
 export type WorldId = `${ChainId}:${Address}`;
@@ -137,7 +136,7 @@ export type StorageAdapterBlock = { blockNumber: BlockLogs["blockNumber"]; logs:
 export type StorageAdapter = (block: StorageAdapterBlock) => Promise<void>;
 
 export const schemasTable = {
-  ...storeTables.store__Tables,
-  keySchema: getSchemaTypes(getKeySchema(storeTables.store__Tables)),
-  valueSchema: getSchemaTypes(getValueSchema(storeTables.store__Tables)),
+  ...mudTables.Tables,
+  keySchema: getSchemaTypes(getKeySchema(mudTables.Tables)),
+  valueSchema: getSchemaTypes(getValueSchema(mudTables.Tables)),
 };

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/world",
-  "version": "2.0.12",
+  "version": "2.1.0",
   "description": "World framework",
   "repository": {
     "type": "git",
@@ -59,7 +59,7 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@arktype/util": "0.0.40",
+    "@ark/util": "catalog:",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
@@ -67,12 +67,13 @@
     "@latticexyz/store": "workspace:*",
     "abitype": "1.0.0",
     "arktype": "1.0.29-alpha",
+    "debug": "^4.3.4",
     "viem": "2.9.20"
   },
   "devDependencies": {
-    "@arktype/attest": "0.7.5",
     "@latticexyz/abi-ts": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
+    "@types/debug": "^4.1.7",
     "@types/ejs": "^3.1.1",
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.15.11",

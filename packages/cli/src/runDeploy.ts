@@ -129,13 +129,17 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   console.log("Deploying from", client.account.address);
 
+  const tables = Object.values(config.namespaces)
+    .flatMap((namespace) => Object.values(namespace.tables))
+    .filter((table) => !table.deploy.disabled);
+
   const startTime = Date.now();
   const worldDeploy = await deploy({
     deployerAddress: opts.deployerAddress as Hex | undefined,
     salt,
     worldAddress: opts.worldAddress as Hex | undefined,
     client,
-    tables: Object.values(config.tables),
+    tables,
     systems,
     libraries,
     modules,

@@ -1,4 +1,4 @@
-import { attest } from "@arktype/attest";
+import { attest } from "@ark/attest";
 import { describe, it } from "vitest";
 import { getStaticAbiTypeKeys, AbiTypeScope, extendScope } from "./scope";
 import { validateKeys, defineTable } from "./table";
@@ -56,7 +56,7 @@ describe("resolveTable", () => {
     const expected = {
       label: "",
       type: "table",
-      namespace: "",
+      namespace: "" as string,
       name: "" as string,
       tableId: resourceToHex({ type: "table", namespace: "", name: "" }),
       schema: {
@@ -81,7 +81,7 @@ describe("resolveTable", () => {
     const expected = {
       label: "",
       type: "table",
-      namespace: "",
+      namespace: "" as string,
       name: "" as string,
       tableId: resourceToHex({ type: "table", namespace: "", name: "" }),
       schema: {
@@ -112,7 +112,7 @@ describe("resolveTable", () => {
     const expected = {
       label: "",
       type: "table",
-      namespace: "",
+      namespace: "" as string,
       name: "" as string,
       tableId: resourceToHex({ type: "table", namespace: "", name: "" }),
       schema: {

@@ -1,5 +1,31 @@
 # Change Log
 
+## 2.1.0
+
+### Patch Changes
+
+- 3cbbc62: Moved build scripts to `mud build` now that CLI doesn't depend on this package.
+
+  Removed generated world interfaces as this package isn't meant to be used as a "world", but as a set of individual modules.
+
+- e49059f: Bumped `glob` dependency.
+- Updated dependencies [24e285d]
+- Updated dependencies [570086e]
+- Updated dependencies [7129a16]
+- Updated dependencies [3cbbc62]
+- Updated dependencies [7129a16]
+- Updated dependencies [e85dc53]
+- Updated dependencies [a10b453]
+- Updated dependencies [69eb63b]
+- Updated dependencies [e49059f]
+- Updated dependencies [8d0453e]
+- Updated dependencies [fb1cfef]
+  - @latticexyz/store@2.1.0
+  - @latticexyz/world@2.1.0
+  - @latticexyz/config@2.1.0
+  - @latticexyz/common@2.1.0
+  - @latticexyz/schema-type@2.1.0
+
 ## 2.0.12
 
 ### Patch Changes

@@ -1,4 +1,4 @@
-import { ErrorMessage, conform, show, narrow, requiredKeyOf } from "@arktype/util";
+import { ErrorMessage, conform, show, narrow, requiredKeyOf } from "@ark/util";
 import { isStaticAbiType } from "@latticexyz/schema-type/internal";
 import { Hex } from "viem";
 import { get, hasOwnKey, mergeIfUndefined } from "./generics";
@@ -61,7 +61,7 @@ export type validateTable<
       ? validateSchema<get<input, key>, scope>
       : key extends "label" | "namespace"
         ? options["inStoreContext"] extends true
-          ? ErrorMessage<"Overrides of `label` and `namespace` are not allowed for tables in a store config">
+          ? ErrorMessage<"Overrides of `label` and `namespace` are not allowed for tables in this context">
           : key extends keyof input
             ? narrow<input[key]>
             : never
@@ -104,7 +104,7 @@ export function validateTable<input, scope extends Scope = AbiTypeScope>(
   }
 
   if (options.inStoreContext && (hasOwnKey(input, "label") || hasOwnKey(input, "namespace"))) {
-    throw new Error("Overrides of `label` and `namespace` are not allowed for tables in a store config.");
+    throw new Error("Overrides of `label` and `namespace` are not allowed for tables in this context.");
   }
 }
 
@@ -140,15 +140,14 @@ export type resolveTable<input, scope extends Scope = Scope> = input extends Tab
   ? {
       readonly label: input["label"];
       readonly type: undefined extends input["type"] ? typeof TABLE_DEFAULTS.type : input["type"];
-      readonly namespace: undefined extends input["namespace"] ? typeof TABLE_DEFAULTS.namespace : input["namespace"];
+      readonly namespace: string;
       readonly name: string;
       readonly tableId: Hex;
       readonly schema: resolveSchema<input["schema"], scope>;
       readonly key: Readonly<input["key"]>;
       readonly codegen: resolveTableCodegen<input>;
-      readonly deploy: mergeIfUndefined<
-        undefined extends input["deploy"] ? {} : input["deploy"],
-        TABLE_DEPLOY_DEFAULTS
+      readonly deploy: show<
+        mergeIfUndefined<undefined extends input["deploy"] ? {} : input["deploy"], TABLE_DEPLOY_DEFAULTS>
       >;
     }
   : never;

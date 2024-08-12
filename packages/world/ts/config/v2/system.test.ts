@@ -1,5 +1,5 @@
 import { describe, it } from "vitest";
-import { attest } from "@arktype/attest";
+import { attest } from "@ark/attest";
 import { resourceToHex } from "@latticexyz/common";
 import { defineSystem } from "./system";
 import { SYSTEM_DEFAULTS } from "./defaults";
@@ -16,6 +16,10 @@ describe("resolveSystem", () => {
       namespace: "",
       name: "ExampleSystem" as string,
       systemId: resourceToHex({ type: "system", namespace: "", name: "ExampleSystem" }),
+      deploy: {
+        disabled: false,
+        registerWorldFunctions: true,
+      },
     } as const;
 
     attest<typeof expected>(system).equals(expected);
@@ -33,6 +37,10 @@ describe("resolveSystem", () => {
       namespace: "",
       name: "ExampleSystem" as string,
       systemId: resourceToHex({ type: "system", namespace: "", name: "ExampleSystem" }),
+      deploy: {
+        disabled: false,
+        registerWorldFunctions: true,
+      },
     } as const;
 
     attest<typeof expected>(system).equals(expected);
@@ -51,6 +59,10 @@ describe("resolveSystem", () => {
       name: "ExampleSystem" as string,
       systemId: resourceToHex({ type: "system", namespace: "", name: "ExampleSystem" }),
       openAccess: false,
+      deploy: {
+        disabled: false,
+        registerWorldFunctions: true,
+      },
     } as const;
 
     attest<typeof expected>(system).equals(expected);

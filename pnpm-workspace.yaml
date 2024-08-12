@@ -1,3 +1,6 @@
 packages:
   - packages/*
   - test/*
+
+catalog:
+  "@ark/util": "0.1.2"

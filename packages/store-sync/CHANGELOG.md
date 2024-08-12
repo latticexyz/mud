@@ -1,5 +1,49 @@
 # @latticexyz/store-sync
 
+## 2.1.0
+
+### Patch Changes
+
+- 9e05278: Refactored package to use the new Store/World configs under the hood, removing compatibility layers and improving performance.
+- f640fef: Adjusted `SyncToRecsOptions` type intersection to improve TypeScript performance.
+- 3440a86: Refactored `syncToRecs` and `syncToZustand` to use tables from config namespaces output. This is a precursor for supporting multiple namespaces.
+
+  Note for library authors: If you were using `createStorageAdapter` from `@latticexyz/store-sync/recs`, this helper no longer appends MUD's built-in tables from Store and World packages. This behavior was moved into `syncToRecs` for consistency with `syncToZustand` and makes `createStorageAdapter` less opinionated.
+
+  You can achieve the previous behavior with:
+
+  ```diff
+   import { createStorageAdapter } from "@latticexyz/store-sync/recs";
+  +import { mudTables } from "@latticexyz/store-sync";
+
+   createStorageAdapter({
+  -  tables,
+  +  tables: { ...tables, ...mudTables },
+     ...
+   });
+  ```
+
+- Updated dependencies [24e285d]
+- Updated dependencies [570086e]
+- Updated dependencies [7129a16]
+- Updated dependencies [3cbbc62]
+- Updated dependencies [7129a16]
+- Updated dependencies [e85dc53]
+- Updated dependencies [a10b453]
+- Updated dependencies [69eb63b]
+- Updated dependencies [e49059f]
+- Updated dependencies [8d0453e]
+- Updated dependencies [fb1cfef]
+  - @latticexyz/store@2.1.0
+  - @latticexyz/world@2.1.0
+  - @latticexyz/config@2.1.0
+  - @latticexyz/query@2.1.0
+  - @latticexyz/common@2.1.0
+  - @latticexyz/protocol-parser@2.1.0
+  - @latticexyz/block-logs-stream@2.1.0
+  - @latticexyz/recs@2.1.0
+  - @latticexyz/schema-type@2.1.0
+
 ## 2.0.12
 
 ### Patch Changes

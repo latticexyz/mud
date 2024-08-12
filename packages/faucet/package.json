@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/faucet",
-  "version": "2.0.12",
+  "version": "2.1.0",
   "description": "Faucet API for Lattice testnet",
   "repository": {
     "type": "git",
@@ -46,7 +46,7 @@
     "dotenv": "^16.0.3",
     "fastify": "^4.21.0",
     "viem": "2.9.20",
-    "zod": "^3.22.2"
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",

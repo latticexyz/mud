@@ -11,7 +11,7 @@ import { World as WorldConfig } from "@latticexyz/world";
 import { resolveSystems } from "@latticexyz/world/node";
 import { worldAbi } from "../deploy/common";
 
-const systemsTableId = worldConfig.tables.world__Systems.tableId;
+const systemsTableId = worldConfig.namespaces.world.tables.Systems.tableId;
 
 function getWorldAddress(worldsFile: string, chainId: number): Hex {
   if (!fs.existsSync(worldsFile)) {
