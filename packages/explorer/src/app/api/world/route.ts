@@ -1,5 +1,5 @@
 import {
-  // AbiFunction,
+  AbiFunction,
   Address,
   Hex,
   createWalletClient,
@@ -11,7 +11,7 @@ import { getRpcUrl } from "@latticexyz/common/foundry";
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
 import { getWorldAbi } from "@latticexyz/world/internal";
-import { deduplicateAbi } from "./deduplicateabi";
+import { deduplicateAbi } from "./deduplicateAbi";
 
 export const dynamic = "force-dynamic";
 
@@ -57,27 +57,7 @@ export async function GET(req: Request) {
       fromBlock,
       toBlock,
     });
-    const abi = deduplicateAbi([
-      ...worldAbiResponse,
-      {
-        type: "function",
-        name: "setNumber",
-        inputs: [{ name: "isNumberSet", type: "bool", internalType: "bool" }],
-        outputs: [],
-        stateMutability: "nonpayable",
-      },
-      {
-        type: "function",
-        name: "setNumber",
-        inputs: [
-          { name: "newNumber", type: "uint256", internalType: "uint256" },
-        ],
-        outputs: [],
-        stateMutability: "nonpayable",
-      },
-      { type: "error", name: "Error1", inputs: [] },
-      { type: "error", name: "Error2", inputs: [] },
-    ])
+    const abi = deduplicateAbi(worldAbiResponse)
       .filter((entry): entry is AbiFunction => entry.type === "function")
       .sort((a, b) => a.name.localeCompare(b.name));
 
