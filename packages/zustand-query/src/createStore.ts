@@ -11,12 +11,6 @@ export type CreateStoreResult = Store & DefaultActions;
  * Initializes a Zustand store based on the provided table configs.
  */
 export function createStore(storeConfig?: Config): CreateStoreResult {
-  // TODO:
-  // - differentiate between table subscriber and global subscriber
-  //   (global one can be used for useStore selector, table one can be used for useTable selector)
-  // - update API to not require the Zustand Store return type bc we don't have prevState
-  //
-
   const tableSubscribers: TableSubscribers = {};
   const storeSubscribers: StoreSubscribers = new Set();
 
