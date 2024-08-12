@@ -1,0 +1,38 @@
+import { Callout } from "nextra/components";
+import { CollapseCode } from "../../../components/CollapseCode";
+
+# Using the indexer
+
+The source code of a MUD client has a call either to [`syncToRecs`](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/recs/syncToRecs.ts#L21-L82) or to [`syncToZustand`](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/zustand/syncToZustand.ts#L33-L74), typically in [`setupNetwork.ts`](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/setupNetwork.ts#L74-L79).
+This call initializes the synchronization between the data source (RPC or indexer) and the client's copy.
+
+To use the indexer, specify an `indexerUrl` parameter with the URL.
+
+<CollapseCode>
+
+```ts {7}
+const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToRecs({
+  world,
+  config: mudConfig,
+  address: networkConfig.worldAddress as Hex,
+  publicClient,
+  startBlock: BigInt(networkConfig.initialBlockNumber),
+  indexerUrl: "https://indexer.mud.redstonechain.com/",
+});
+```
+
+</CollapseCode>
+
+If the client does not need all the information stored in the `World`, you can [filter the synchronization](/guides/hello-world/filter-sync) to save on resources.
+
+## What URL to use
+
+If you use our blockchains, either production [(Redstone)](https://redstone.xyz/docs/network-info) or testing [(Garnet)](https://garnetchain.com/docs/network-info), we provide an indexer you can use.
+
+- Redstone: `https://indexer.mud.redstonechain.com/`
+- Garnet: `https://indexer.mud.garnetchain.com/`
+
+Note that those indexers are still experimental, and there might be downtime.
+If you need production-level reliability, [contact us on Discord](https://lattice.xyz/discord).
+
+If you use a different blockchain, you need to host your own indexer, using either [SQLite](sqlite-indexer) or [PostgreSQL](postgresql-indexer).
