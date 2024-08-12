@@ -24,9 +24,9 @@ Before you use it, edit `.env` to specify the `WORLD_ADDRESS`.
 
 <CollapseCode>
 
-```typescript filename="mud.config.ts" copy showLineNumbers
-import { defineWorld } from "@latticexyz/world"
-import { resourceToHex } from "@latticexyz/common"
+```typescript filename="mud.config.ts" copy showLineNumbers {2,17-32}
+import { defineWorld } from "@latticexyz/world";
+import { resourceToHex } from "@latticexyz/common";
 
 export default defineWorld({
   namespace: "app",
@@ -44,24 +44,20 @@ export default defineWorld({
   modules: [
     {
       root: true,
-      artifactPath: "@latticexyz/world-modules/out/KeysInTableModule.sol/KeysIn$
+      artifactPath: "@latticexyz/world-modules/out/KeysInTableModule.sol/KeysInTableModule.json",
       args: [
         {
           type: "bytes32",
-//          value: "0x746261707000000000000000000000005461736b73000000000000000$
-
           value: resourceToHex({
-            typeId: "table",
+            type: "table",
             namespace: "app",
             name: "Tasks",
-          })  // end of value
-
-        }     // end of arg
-      ]       // end of args
-    }         // end of module
-  ]           // end of modules
+          }), // end of value
+        }, // end of arg
+      ], // end of args
+    }, // end of module
+  ], // end of modules
 });
-
 ```
 
 </CollapseCode>
@@ -70,26 +66,57 @@ export default defineWorld({
 
 <summary>Explanation</summary>
 
-```solidity
-    KeysInTableModule keysInTableModule = new KeysInTableModule();
+```typescript
+import { resourceToHex } from "@latticexyz/common";
 ```
 
-Deploy the module.
-Modules are stateless, so if there is already a copy of the contract on the blockchain you can just use that.
+We need to provide `KeysInTable` with the resource ID for the table.
 
-```solidity
-    ResourceId sourceTableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "app", name: "Tasks" });
+```typescript
+  modules: [
+    {
 ```
 
-Get the resourceID for the table whose keys you wish to track.
+To install modules using `mud.config.ts`, you specify `modules:` which contains a list of module defintions.
 
-```solidity
-    world.installRootModule(keysInTableModule, abi.encode(sourceTableId));
+```typescript
+      root: true,
+      artifactPath: "@latticexyz/world-modules/out/KeysInTableModule.sol/KeysInTableModule.json",
+      args: [
 ```
 
-Actually install the module in the `World`.
-At present it is a root module to ensure it can specify a hook on the relevant table.
-In the future, we might add a feature to allow it to be in a namespace.
+- `artifactPath`, a link to the compiled JSON file for the module.
+- `root`, whether to install the module with [root namespace permissions](/world/systems#root-systems) or not.
+- `args` the module arguments.
+
+```typescript
+        {
+          type: "bytes32",
+          value:
+```
+
+The `args` list contains structures.
+Each structure has two fields:
+
+- `type`, the [Solidity data type](https://docs.soliditylang.org/en/latest/types.html)
+- `value`, the value
+
+```typescript
+resourceToHex({
+  type: "table",
+  namespace: "app",
+  name: "Tasks",
+}); // end of value
+```
+
+[This function](https://github.com/latticexyz/mud/blob/main/packages/common/src/resourceToHex.ts) creates the [resourceID](/world/resource-ids) for us from the table's data.
+
+```typescript
+        }     // end of arg
+      ]       // end of args
+    }         // end of module
+  ]           // end of modules
+```
 
 </details>
 
