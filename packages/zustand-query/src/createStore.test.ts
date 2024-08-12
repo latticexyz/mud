@@ -106,18 +106,37 @@ describe("createStore", () => {
         },
       });
 
+      const table = config.namespaces.namespace1.tables.table1;
       const store = createStore(config);
 
       attest(() =>
         store.setRecord({
-          // @ts-expect-error Type '"invalid"' is not assignable to type '"namespace1"'.
-          table: { namespace: "invalid", label: "table1" },
-          key: { field2: 1, field3: 2 },
+          table,
+          // @ts-expect-error Property 'field2' is missing in type '{ field3: number; }'
+          key: { field3: 2 },
           record: { field1: "" },
         }),
       )
-        .throws("Table 'invalid__table1' is not registered yet.")
-        .type.errors(`Type '"invalid"' is not assignable to type '"namespace1"'.`);
+        .throws("Provided key is missing field field2.")
+        .type.errors(`Property 'field2' is missing in type '{ field3: number; }`);
+
+      attest(() =>
+        store.setRecord({
+          table,
+          // @ts-expect-error Type 'string' is not assignable to type 'number'.
+          key: { field2: 1, field3: "invalid" },
+          record: { field1: "" },
+        }),
+      ).type.errors(`Type 'string' is not assignable to type 'number'.`);
+
+      attest(() =>
+        store.setRecord({
+          table,
+          key: { field2: 1, field3: 2 },
+          // @ts-expect-error Type 'number' is not assignable to type 'string'.
+          record: { field1: 1 },
+        }),
+      ).type.errors(`Type 'number' is not assignable to type 'string'.`);
     });
   });
 
@@ -159,7 +178,7 @@ describe("createStore", () => {
 
   describe("subscribeTable", () => {
     it("should notify listeners on table updates", () => {
-      const tablesConfig = defineStore({
+      const config = defineStore({
         namespace: "namespace1",
         tables: {
           table1: {
@@ -173,7 +192,8 @@ describe("createStore", () => {
         },
       });
 
-      const store = createStore(tablesConfig);
+      const table = config.namespaces.namespace1.tables.table1;
+      const store = createStore(config);
 
       const listener = vi.fn();
 
@@ -183,7 +203,7 @@ describe("createStore", () => {
       });
 
       store.setRecord({
-        table: { label: "table1", namespace: "namespace1" },
+        table,
         key: { field2: 1, field3: 2 },
         record: { field1: "hello" },
       });
@@ -196,7 +216,7 @@ describe("createStore", () => {
       });
 
       store.setRecord({
-        table: { label: "table1", namespace: "namespace1" },
+        table,
         key: { field2: 1, field3: 2 },
         record: { field1: "world" },
       });
@@ -222,7 +242,7 @@ describe("createStore", () => {
     });
 
     it("should not notify listeners after they have been removed", () => {
-      const tablesConfig = defineStore({
+      const config = defineStore({
         namespace: "namespace1",
         tables: {
           table1: {
@@ -236,7 +256,8 @@ describe("createStore", () => {
         },
       });
 
-      const store = createStore(tablesConfig);
+      const table = config.namespaces.namespace1.tables.table1;
+      const store = createStore(config);
 
       const subscriber = vi.fn();
 
@@ -246,7 +267,7 @@ describe("createStore", () => {
       });
 
       store.setRecord({
-        table: { label: "table1", namespace: "namespace1" },
+        table,
         key: { field2: 1, field3: 2 },
         record: { field1: "hello" },
       });
@@ -261,7 +282,7 @@ describe("createStore", () => {
       unsubscribe();
 
       store.setRecord({
-        table: { label: "table1", namespace: "namespace1" },
+        table,
         key: { field2: 1, field3: 2 },
         record: { field1: "world" },
       });
@@ -272,7 +293,7 @@ describe("createStore", () => {
 
   describe("subscribeStore", () => {
     it("should notify listeners on store updates", () => {
-      const tablesConfig = defineStore({
+      const config = defineStore({
         namespace: "namespace1",
         tables: {
           table1: {
@@ -286,14 +307,15 @@ describe("createStore", () => {
         },
       });
 
-      const store = createStore(tablesConfig);
+      const table = config.namespaces.namespace1.tables.table1;
+      const store = createStore(config);
 
       const subscriber = vi.fn();
 
       store.subscribeStore({ subscriber });
 
       store.setRecord({
-        table: { label: "table1", namespace: "namespace1" },
+        table,
         key: { field2: 1, field3: 2 },
         record: { field1: "hello" },
       });
@@ -313,7 +335,7 @@ describe("createStore", () => {
       });
 
       store.setRecord({
-        table: { label: "table1", namespace: "namespace1" },
+        table,
         key: { field2: 1, field3: 2 },
         record: { field1: "world" },
       });
@@ -391,7 +413,7 @@ describe("createStore", () => {
     });
 
     it("should not notify listeners after they have been removed", () => {
-      const tablesConfig = defineStore({
+      const config = defineStore({
         namespace: "namespace1",
         tables: {
           table1: {
@@ -405,7 +427,8 @@ describe("createStore", () => {
         },
       });
 
-      const store = createStore(tablesConfig);
+      const table = config.namespaces.namespace1.tables.table1;
+      const store = createStore(config);
 
       const subscriber = vi.fn();
 
@@ -414,7 +437,7 @@ describe("createStore", () => {
       });
 
       store.setRecord({
-        table: { label: "table1", namespace: "namespace1" },
+        table,
         key: { field2: 1, field3: 2 },
         record: { field1: "hello" },
       });
@@ -436,7 +459,7 @@ describe("createStore", () => {
       unsubscribe();
 
       store.setRecord({
-        table: { label: "table1", namespace: "namespace1" },
+        table,
         key: { field2: 1, field3: 2 },
         record: { field1: "world" },
       });
@@ -447,7 +470,7 @@ describe("createStore", () => {
 
   describe("getRecord", () => {
     it("should get a record by key from the table", () => {
-      const tablesConfig = defineStore({
+      const config = defineStore({
         namespace: "namespace1",
         tables: {
           table1: {
@@ -461,15 +484,17 @@ describe("createStore", () => {
         },
       });
 
-      const store = createStore(tablesConfig);
+      const table = config.namespaces.namespace1.tables.table1;
+
+      const store = createStore(config);
       store.setRecord({
-        table: { label: "table1", namespace: "namespace1" },
+        table,
         key: { field2: 1, field3: 2 },
         record: { field1: "hello" },
       });
 
       store.setRecord({
-        table: { label: "table1", namespace: "namespace1" },
+        table,
         key: { field2: 2, field3: 1 },
         record: { field1: "world" },
       });

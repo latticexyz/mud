@@ -6,7 +6,7 @@ import { setRecord } from "./setRecord";
 
 describe("setRecord", () => {
   it("should add the record to the table", () => {
-    const tablesConfig = defineStore({
+    const config = defineStore({
       namespace: "namespace1",
       tables: {
         table1: {
@@ -20,17 +20,19 @@ describe("setRecord", () => {
       },
     });
 
-    const store = createStore(tablesConfig);
+    const table = config.namespaces.namespace1.tables.table1;
+    const store = createStore(config);
+
     setRecord({
       store,
-      table: { label: "table1", namespace: "namespace1" },
+      table,
       key: { field2: 1, field3: 2 },
       record: { field1: "hello" },
     });
 
     setRecord({
       store,
-      table: { label: "table1", namespace: "namespace1" },
+      table,
       key: { field2: 2, field3: 1 },
       record: { field1: "world" },
     });
@@ -60,36 +62,13 @@ describe("setRecord", () => {
       },
     });
 
+    const table = config.namespaces.namespace1.tables.table1;
     const store = createStore(config);
 
     attest(() =>
       setRecord({
         store,
-        // @ts-expect-error Type '"invalid"' is not assignable to type '"namespace1"'.
-        table: { namespace: "invalid", label: "table1" },
-        key: { field2: 1, field3: 2 },
-        record: { field1: "" },
-      }),
-    )
-      .throws("Table 'invalid__table1' is not registered yet.")
-      .type.errors(`Type '"invalid"' is not assignable to type '"namespace1"'.`);
-
-    attest(() =>
-      setRecord({
-        store,
-        // @ts-expect-error Type '"invalid"' is not assignable to type '"table1"'.
-        table: { namespace: "namespace1", label: "invalid" },
-        key: { field2: 1, field3: 2 },
-        record: { field1: "" },
-      }),
-    )
-      .throws("Table 'namespace1__invalid' is not registered yet.")
-      .type.errors(`Type '"invalid"' is not assignable to type '"table1"'.`);
-
-    attest(() =>
-      setRecord({
-        store,
-        table: { namespace: "namespace1", label: "table1" },
+        table,
         // @ts-expect-error Property 'field2' is missing in type '{ field3: number; }'
         key: { field3: 2 },
         record: { field1: "" },
@@ -101,7 +80,7 @@ describe("setRecord", () => {
     attest(() =>
       setRecord({
         store,
-        table: { namespace: "namespace1", label: "table1" },
+        table,
         // @ts-expect-error Type 'string' is not assignable to type 'number'.
         key: { field2: 1, field3: "invalid" },
         record: { field1: "" },
@@ -111,7 +90,7 @@ describe("setRecord", () => {
     attest(() =>
       setRecord({
         store,
-        table: { namespace: "namespace1", label: "table1" },
+        table,
         key: { field2: 1, field3: 2 },
         // @ts-expect-error Type 'number' is not assignable to type 'string'.
         record: { field1: 1 },
