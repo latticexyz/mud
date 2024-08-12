@@ -5,12 +5,12 @@ import { extend } from "./actions/extend";
 
 export type Config = StoreConfig;
 
-export type CreateStoreResult = Store & DefaultActions;
+export type CreateStoreResult<config extends Config = Config> = Store<config> & DefaultActions;
 
 /**
  * Initializes a Zustand store based on the provided table configs.
  */
-export function createStore(storeConfig?: Config): CreateStoreResult {
+export function createStore<config extends Config>(storeConfig?: config): CreateStoreResult<config> {
   const tableSubscribers: TableSubscribers = {};
   const storeSubscribers: StoreSubscribers = new Set();
 

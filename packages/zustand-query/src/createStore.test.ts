@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { attest } from "@arktype/attest";
-import { createStore } from "./createStore";
+import { CreateStoreResult, createStore } from "./createStore";
 import { defineStore } from "@latticexyz/store/config/v2";
+import { Hex } from "viem";
 
 describe("createStore", () => {
   it("should initialize the store", () => {
@@ -36,6 +37,57 @@ describe("createStore", () => {
       },
     });
     attest(store.get().records).snap({ namespace1: { table1: {} } });
+  });
+
+  it("should be typed with the config tables", () => {
+    const config = defineStore({
+      namespace: "namespace1",
+      tables: {
+        table1: {
+          schema: {
+            field1: "string",
+            field2: "uint32",
+          },
+          key: ["field2"],
+        },
+      },
+    });
+    const store = createStore(config);
+    store.setRecord({
+      table: config.namespaces.namespace1.tables.table1,
+      key: { field2: 1 },
+      record: { field1: "hello" },
+    });
+
+    attest<CreateStoreResult<typeof config>>(store);
+    attest<{
+      config: {
+        namespace1: {
+          table1: {
+            label: "table1";
+            type: "table";
+            namespace: string;
+            name: string;
+            tableId: Hex;
+            schema: {
+              field1: { type: "string"; internalType: "string" };
+              field2: { type: "uint32"; internalType: "uint32" };
+            };
+            key: readonly ["field2"];
+          };
+        };
+      };
+      records: {
+        namespace1: {
+          table1: {
+            [key: string]: {
+              field1: string;
+              field2: number;
+            };
+          };
+        };
+      };
+    }>(store.get());
   });
 
   describe("setRecord", () => {
