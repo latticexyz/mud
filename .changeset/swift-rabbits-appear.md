@@ -2,11 +2,7 @@
 "@latticexyz/explorer": patch
 ---
 
-### Initial Release of Explorer
-
-Explorer is a GUI tool designed for visually exploring and manipulating the state of worlds.
-
-## Getting Started
+Initial release of the @latticexyz/explorer package. Explorer is a standalone tool designed to explore and manage worlds. This initial release includes support for only local worlds, with support for any world in the near future.
 
 To set up and start using the Explorer, follow these steps:
 

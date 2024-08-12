@@ -13,8 +13,15 @@ contract IncrementSystem is System {
     uint32 counter = Counter.get();
     uint32 newValue = counter + 1;
     Counter.set(newValue);
+
+    // require(2 == 3, "does 2 equal 3?");
+
+    // revert SomeError();
+
     return newValue;
   }
+
+  error SomeError();
 
   function incrementOffchain() public returns (uint32) {
     uint32 newValue = 42;

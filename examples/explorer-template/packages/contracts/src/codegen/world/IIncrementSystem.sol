@@ -9,6 +9,8 @@ pragma solidity >=0.8.24;
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IIncrementSystem {
+  error SomeError();
+
   function app__increment() external returns (uint32);
 
   function app__incrementOffchain() external returns (uint32);
