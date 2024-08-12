@@ -29,7 +29,7 @@ export default {
   },
   guides: "Guides",
   templates: "Templates",
-  dictionary: "Solidity to MUD Dictionary",
+  dictionary: "MUD for Solidity programmers",
   contribute: {
     title: "Contribute",
     theme: { breadcrumb: false },
