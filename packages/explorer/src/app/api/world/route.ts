@@ -1,10 +1,17 @@
-import { Address, Hex, createWalletClient, http, parseAbi } from "viem";
+import {
+  // AbiFunction,
+  Address,
+  Hex,
+  createWalletClient,
+  http,
+  parseAbi,
+} from "viem";
 import { getBlockNumber, getLogs } from "viem/actions";
 import { getRpcUrl } from "@latticexyz/common/foundry";
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
 import { getWorldAbi } from "@latticexyz/world/internal";
-import { deduplicateAbi } from "./utils/deduplicateAbi";
+import { deduplicateAbi } from "./deduplicateabi";
 
 export const dynamic = "force-dynamic";
 
@@ -50,11 +57,31 @@ export async function GET(req: Request) {
       fromBlock,
       toBlock,
     });
-    const worldAbi = deduplicateAbi(worldAbiResponse).sort((a, b) =>
-      a.name.localeCompare(b.name),
-    );
+    const abi = deduplicateAbi([
+      ...worldAbiResponse,
+      {
+        type: "function",
+        name: "setNumber",
+        inputs: [{ name: "isNumberSet", type: "bool", internalType: "bool" }],
+        outputs: [],
+        stateMutability: "nonpayable",
+      },
+      {
+        type: "function",
+        name: "setNumber",
+        inputs: [
+          { name: "newNumber", type: "uint256", internalType: "uint256" },
+        ],
+        outputs: [],
+        stateMutability: "nonpayable",
+      },
+      { type: "error", name: "Error1", inputs: [] },
+      { type: "error", name: "Error2", inputs: [] },
+    ])
+      .filter((entry): entry is AbiFunction => entry.type === "function")
+      .sort((a, b) => a.name.localeCompare(b.name));
 
-    return Response.json({ abi: worldAbi });
+    return Response.json({ abi });
   } catch (error: unknown) {
     if (error instanceof Error) {
       return Response.json({ error: error.message }, { status: 400 });

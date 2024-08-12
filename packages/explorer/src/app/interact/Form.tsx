@@ -1,7 +1,7 @@
 "use client";
 
 import { Coins, Eye, Send } from "lucide-react";
-import { Abi, AbiFunction } from "viem";
+import { AbiFunction } from "viem";
 import { useDeferredValue, useState } from "react";
 import { Input } from "../../components/ui/Input";
 import { useHashState } from "../../hooks/useHash";
@@ -10,7 +10,7 @@ import { FunctionField } from "./FunctionField";
 
 type Props = {
   data: {
-    abi: Abi;
+    abi: AbiFunction[];
   };
 };
 
@@ -18,10 +18,7 @@ export function Form({ data }: Props) {
   const [hash] = useHashState();
   const [filterValue, setFilterValue] = useState("");
   const deferredFilterValue = useDeferredValue(filterValue);
-  const abiFunctions = data.abi.filter(
-    (item): item is AbiFunction => item.type === "function",
-  );
-  const filteredFunctions = abiFunctions.filter((item) =>
+  const filteredFunctions = data.abi.filter((item) =>
     item.name.toLowerCase().includes(deferredFilterValue.toLowerCase()),
   );
 
