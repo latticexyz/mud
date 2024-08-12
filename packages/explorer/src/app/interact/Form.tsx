@@ -58,7 +58,7 @@ export function Form({ data }: Props) {
               return (
                 <li key={idx}>
                   <a
-                    href={`#${(abi as AbiFunction).name}`}
+                    href={`#${abi.name}`}
                     className={cn(
                       "whitespace-nowrap text-sm hover:text-orange-500 hover:underline",
                       abi.name === hash ? "text-orange-500" : null,
