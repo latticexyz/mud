@@ -13,7 +13,7 @@ export type SetRecordsResult = void;
 export function setRecords({ store, table, records }: SetRecordsArgs): SetRecordsResult {
   const { namespace, label } = withDefaultNamespace(table);
 
-  if (store.get().config[namespace] == null) {
+  if (store.get().config[namespace]?.[label] == null) {
     throw new Error(`Table '${namespace}__${label}' is not registered yet.`);
   }
 
