@@ -4,7 +4,7 @@ import { Toaster } from "sonner";
 import { Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import { Navigation } from "../components/Navigation";
-import { Providers } from "./_providers";
+import { Providers } from "./Providers";
 import "./globals.css";
 
 const inter = Inter({

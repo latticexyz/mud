@@ -12,7 +12,7 @@ import { ACCOUNT_PRIVATE_KEYS } from "../../consts";
 import { useWorldAddress } from "../../hooks/useWorldAddress";
 import { camelCase } from "../../lib/utils";
 import { useStore } from "../../store";
-import { wagmiConfig } from "../_providers";
+import { wagmiConfig } from "../Providers";
 import { TableConfig } from "../api/table/route";
 import { abi } from "./abi";
 import { getFieldIndex } from "./utils/getFieldIndex";

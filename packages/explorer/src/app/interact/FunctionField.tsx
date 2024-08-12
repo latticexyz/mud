@@ -25,7 +25,7 @@ import { Separator } from "../../components/ui/Separator";
 import { ACCOUNT_PRIVATE_KEYS } from "../../consts";
 import { useWorldAddress } from "../../hooks/useWorldAddress";
 import { useStore } from "../../store";
-import { wagmiConfig } from "../_providers";
+import { wagmiConfig } from "../Providers";
 
 type Props = {
   abi: AbiFunction;
