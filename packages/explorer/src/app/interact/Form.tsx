@@ -19,13 +19,11 @@ export function Form({ data }: Props) {
   const [filterValue, setFilterValue] = useState("");
   const deferredFilterValue = useDeferredValue(filterValue);
   const abiFunctions = data.abi.filter(
-    (abi) => (abi as AbiFunction).type === "function",
-  ) as AbiFunction[];
-  const filteredFunctions = abiFunctions.filter((abi) => {
-    return (abi as AbiFunction).name
-      .toLowerCase()
-      .includes(deferredFilterValue.toLowerCase());
-  });
+    (item): item is AbiFunction => item.type === "function",
+  );
+  const filteredFunctions = abiFunctions.filter((item) =>
+    item.name.toLowerCase().includes(deferredFilterValue.toLowerCase()),
+  );
 
   return (
     <div className="flex">
