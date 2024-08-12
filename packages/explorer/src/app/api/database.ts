@@ -1,10 +1,10 @@
-import Database from "better-sqlite3";
+import sqliteDB, { Database } from "better-sqlite3";
 import fs from "fs";
 import path from "path";
 
 const DEFAULT_DB_PATH = "indexer.db";
 
-export const getDatabase = () => {
+export const getDatabase = (): Database | null => {
   let dbPath = process.env.INDEXER_DB_PATH_ABSOLUTE;
   if (!dbPath) {
     dbPath = path.join(
@@ -17,7 +17,7 @@ export const getDatabase = () => {
     return null;
   }
 
-  const db = new Database(dbPath);
+  const db = new sqliteDB(dbPath);
   if (!db) {
     return null;
   }
