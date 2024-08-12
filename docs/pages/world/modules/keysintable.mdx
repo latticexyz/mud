@@ -19,42 +19,49 @@ You can usually save gas by implementing a solution that is specific to your use
 ## Deployment
 
 It can be deployed multiple times, each time for a different table.
-For example, here is the forge script to deploy it for the `Tasks` table in [the React template](https://github.com/latticexyz/mud/tree/main/templates/react).
+For example, here is a `mud.config.ts` that deploys it for the `Tasks` table in [the React template](https://github.com/latticexyz/mud/tree/main/templates/react).
 Before you use it, edit `.env` to specify the `WORLD_ADDRESS`.
 
 <CollapseCode>
 
-```solidity filename="DeployKeysInTable.s.sol" copy showLineNumbers {8-11,22-24}
-// SPDX-License-Identifier: MIT
-pragma solidity >=0.8.21;
+```typescript filename="mud.config.ts" copy showLineNumbers
+import { defineWorld } from "@latticexyz/world"
+import { resourceToHex } from "@latticexyz/common"
 
-import { Script } from "forge-std/Script.sol";
-import { console } from "forge-std/console.sol";
+export default defineWorld({
+  namespace: "app",
+  tables: {
+    Tasks: {
+      schema: {
+        id: "bytes32",
+        createdAt: "uint256",
+        completedAt: "uint256",
+        description: "string",
+      },
+      key: ["id"],
+    },
+  },
+  modules: [
+    {
+      root: true,
+      artifactPath: "@latticexyz/world-modules/out/KeysInTableModule.sol/KeysIn$
+      args: [
+        {
+          type: "bytes32",
+//          value: "0x746261707000000000000000000000005461736b73000000000000000$
 
-import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
-import { RESOURCE_TABLE } from "@latticexyz/world/src/worldResourceTypes.sol";
-import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { KeysInTableModule } from "@latticexyz/world-modules/src/modules/keysintable/KeysInTableModule.sol";
+          value: resourceToHex({
+            typeId: "table",
+            namespace: "app",
+            name: "Tasks",
+          })  // end of value
 
-contract DeployKeysInTableModule is Script {
-  function run() external {
-    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+        }     // end of arg
+      ]       // end of args
+    }         // end of module
+  ]           // end of modules
+});
 
-    vm.startBroadcast(deployerPrivateKey);
-    IWorld world = IWorld(worldAddress);
-
-    // Deploy the module
-    KeysInTableModule keysInTableModule = new KeysInTableModule();
-    ResourceId sourceTableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "app", name: "Tasks" });
-    world.installRootModule(keysInTableModule, abi.encode(sourceTableId));
-
-    console.log("Module address", address(keysInTableModule));
-
-    vm.stopBroadcast();
-  }
-}
 ```
 
 </CollapseCode>
