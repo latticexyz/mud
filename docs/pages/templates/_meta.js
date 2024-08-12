@@ -5,4 +5,5 @@ export default {
   swift: "Swift",
   svelte: "Svelte",
   unity: "Unity",
+  nethereum: "Nethereum"
 };
