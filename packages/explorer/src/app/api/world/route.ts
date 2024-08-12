@@ -50,9 +50,9 @@ export async function GET(req: Request) {
       fromBlock,
       toBlock,
     });
-    const worldAbi = deduplicateAbi(worldAbiResponse)
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .sort((a, b) => a.name.localeCompare(b.name));
+    const worldAbi = deduplicateAbi(worldAbiResponse).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
 
     return Response.json({ abi: worldAbi });
   } catch (error: unknown) {
