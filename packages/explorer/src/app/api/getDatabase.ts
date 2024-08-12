@@ -4,7 +4,7 @@ import path from "path";
 
 const DEFAULT_DB_PATH = "indexer.db";
 
-export const getDatabase = (): Database | null => {
+export function getDatabase(): Database | null {
   let dbPath = process.env.INDEXER_DB_PATH_ABSOLUTE;
   if (!dbPath) {
     dbPath = path.join(
@@ -23,4 +23,4 @@ export const getDatabase = (): Database | null => {
   }
 
   return db;
-};
+}
