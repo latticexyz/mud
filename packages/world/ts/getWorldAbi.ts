@@ -2,6 +2,7 @@ import { Client, Abi, Address, getAddress } from "viem";
 import IBaseWorldAbi from "../out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { functionSignatureToAbiItem } from "./functionSignatureToAbiItem";
 import { getFunctions } from "./getFunctions";
+import { deduplicateAbi } from "./deduplicateAbi";
 
 export async function getWorldAbi({
   client,
@@ -21,7 +22,7 @@ export async function getWorldAbi({
     toBlock,
   });
   const worldFunctionsAbi = worldFunctions.map((func) => functionSignatureToAbiItem(func.signature));
-  const abi = [...IBaseWorldAbi, ...worldFunctionsAbi];
+  const abi = deduplicateAbi([...IBaseWorldAbi, ...worldFunctionsAbi]);
 
   return abi;
 }
