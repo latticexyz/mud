@@ -44,12 +44,12 @@ export function AccountSelect() {
         <SelectValue placeholder="Account" />
       </SelectTrigger>
       <SelectContent>
-        {ACCOUNTS.map((address, idx) => {
+        {ACCOUNTS.map((address, index) => {
           return (
             <AccountSelectItem
               key={address}
               address={address}
-              name={`Account ${idx + 1}`}
+              name={`Account ${index + 1}`}
             />
           );
         })}

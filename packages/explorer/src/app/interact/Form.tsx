@@ -45,13 +45,13 @@ export function Form({ data }: Props) {
               maxHeight: "calc(100vh - 160px)",
             }}
           >
-            {filteredFunctions.map((abi, idx) => {
+            {filteredFunctions.map((abi, index) => {
               if ((abi as AbiFunction).type !== "function") {
                 return null;
               }
 
               return (
-                <li key={idx}>
+                <li key={index}>
                   <a
                     href={`#${abi.name}`}
                     className={cn(

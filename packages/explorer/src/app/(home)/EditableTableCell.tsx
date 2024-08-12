@@ -15,7 +15,7 @@ import { useStore } from "../../store";
 import { wagmiConfig } from "../_providers";
 import { TableConfig } from "../api/table/route";
 import { abi } from "./abi";
-import { getFieldIdx } from "./utils/getFieldIdx";
+import { getFieldIndex } from "./utils/getFieldIndex";
 
 type Props = {
   name: string;
@@ -58,14 +58,14 @@ export function EditableTableCell({
 
     const toastId = toast.loading("Transaction submitted");
     try {
-      const fieldIdx = getFieldIdx(config?.value_schema, camelCase(name));
+      const fieldIndex = getFieldIndex(config?.value_schema, camelCase(name));
       const encodedField = encodeField(fieldType, valueToSet);
       const txHash = await writeContractAsync({
         account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
         abi,
         address: worldAddress,
         functionName: "setField",
-        args: [tableId, keyTuple, fieldIdx, encodedField],
+        args: [tableId, keyTuple, fieldIndex, encodedField],
       });
 
       const transactionReceipt = await waitForTransactionReceipt(wagmiConfig, {

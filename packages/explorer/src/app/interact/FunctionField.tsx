@@ -140,12 +140,12 @@ export function FunctionField({ abi }: Props) {
           </span>
         </h3>
 
-        {abi?.inputs.map((input, idx) => {
+        {abi?.inputs.map((input, index) => {
           return (
             <FormField
-              key={idx}
+              key={index}
               control={form.control}
-              name={`inputs.${idx}`}
+              name={`inputs.${index}`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{input.name}</FormLabel>

@@ -3,7 +3,7 @@ import {
   isStaticAbiType,
 } from "@latticexyz/schema-type/internal";
 
-export function getFieldIdx(
+export function getFieldIndex(
   valueSchema: Record<string, string>,
   fieldName: string,
 ) {
