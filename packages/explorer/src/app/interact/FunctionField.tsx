@@ -183,9 +183,9 @@ export function FunctionField({ abi }: Props) {
             "Write"}
         </Button>
 
-        {result && (
+        {result ? (
           <pre className="text-md rounded border p-3 text-sm">{result}</pre>
-        )}
+        ) : null}
       </form>
 
       <Separator />
