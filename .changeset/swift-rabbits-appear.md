@@ -25,7 +25,7 @@ To set up and start using the Explorer, follow these steps:
    pnpm install
    ```
 
-3. **Start the Development Server**
+3. **Start the development server**
 
    Use the following command to start the development server:
 
