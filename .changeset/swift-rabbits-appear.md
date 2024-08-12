@@ -10,7 +10,7 @@ Explorer is a GUI tool designed for visually exploring and manipulating the stat
 
 To set up and start using the Explorer, follow these steps:
 
-1. **Configure Paths to Indexer's Database**
+1. **Configure paths to SQLite indexer database**
 
    Set up either a relative or an absolute path to the indexer's database using environment variables. You may use `@latticexyz/store-indexer` for indexing your world's data.
 
