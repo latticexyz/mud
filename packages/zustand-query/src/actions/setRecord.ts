@@ -4,6 +4,10 @@ import { setRecords } from "./setRecords";
 
 export type SetRecordArgs<
   config extends StoreConfig = StoreConfig,
+  // TODO: should we require a full table config here? then we wouldn't have to look up and infer as much
+  // and could just register a table if it wasn't seen before.
+  // And users can still do `getTable()` to do it via only the namespace/label.
+  // Also wouldn't need the `withDefaultNamespace` stuff then.
   tableLabel extends TableLabel<config, getNamespaces<config>> = TableLabel<config, getNamespaces<config>>,
 > = {
   store: Store<config>;

@@ -1,4 +1,5 @@
 import { Store } from "../common";
+import { Store as StoreConfig } from "@latticexyz/store/config/v2";
 import { DecodeKeyArgs, DecodeKeyResult, decodeKey } from "../actions/decodeKey";
 import { DeleteRecordArgs, DeleteRecordResult, deleteRecord } from "../actions/deleteRecord";
 import { EncodeKeyArgs, EncodeKeyResult, encodeKey } from "../actions/encodeKey";
@@ -14,7 +15,7 @@ import { RunQueryArgs, RunQueryResult, runQuery } from "../actions/runQuery";
 import { SetRecordArgs, SetRecordResult, setRecord } from "../actions/setRecord";
 import { SetRecordsArgs, SetRecordsResult, setRecords } from "../actions/setRecords";
 import { SubscribeQueryArgs, SubscribeQueryResult, subscribeQuery } from "../actions/subscribeQuery";
-import { SubscribeStoreResult, subscribeStore } from "../actions/subscribeStore";
+import { SubscribeStoreArgs, SubscribeStoreResult, subscribeStore } from "../actions/subscribeStore";
 import { SubscribeTableArgs, SubscribeTableResult, subscribeTable } from "../actions/subscribeTable";
 
 export type StoreBoundDecodeKeyArgs = Omit<DecodeKeyArgs, "store">;
@@ -28,13 +29,13 @@ export type StoreBoundGetRecordsArgs = Omit<GetRecordsArgs, "store">;
 export type StoreBoundGetTableArgs = Omit<GetTableArgs, "store">;
 export type StoreBoundRegisterTableArgs = Omit<RegisterTableArgs, "store">;
 export type StoreBoundRunQueryArgs = Omit<RunQueryArgs, "store">;
-export type StoreBoundSetRecordArgs = Omit<SetRecordArgs, "store">;
+export type StoreBoundSetRecordArgs<config extends StoreConfig = StoreConfig> = Omit<SetRecordArgs<config>, "store">;
 export type StoreBoundSetRecordsArgs = Omit<SetRecordsArgs, "store">;
 export type StoreBoundSubscribeQueryArgs = Omit<SubscribeQueryArgs, "store">;
-export type StoreBoundSubscribeStoreArgs = Omit<SubscribeStoreResult, "store">;
+export type StoreBoundSubscribeStoreArgs = Omit<SubscribeStoreArgs, "store">;
 export type StoreBoundSubscribeTableArgs = Omit<SubscribeTableArgs, "store">;
 
-export type DefaultActions = {
+export type DefaultActions<config extends StoreConfig = StoreConfig> = {
   decodeKey: (args: StoreBoundDecodeKeyArgs) => DecodeKeyResult;
   deleteRecord: (args: StoreBoundDeleteRecordArgs) => DeleteRecordResult;
   encodeKey: (args: StoreBoundEncodeKeyArgs) => EncodeKeyResult;
@@ -47,7 +48,7 @@ export type DefaultActions = {
   getTables: () => GetTablesResult;
   registerTable: (args: StoreBoundRegisterTableArgs) => RegisterTableResult;
   runQuery: (args: StoreBoundRunQueryArgs) => RunQueryResult;
-  setRecord: (args: StoreBoundSetRecordArgs) => SetRecordResult;
+  setRecord: <tableLabel>(args: StoreBoundSetRecordArgs<config, tableLabel>) => SetRecordResult;
   setRecords: (args: StoreBoundSetRecordsArgs) => SetRecordsResult;
   subscribeQuery: (args: StoreBoundSubscribeQueryArgs) => SubscribeQueryResult;
   subscribeStore: (args: StoreBoundSubscribeStoreArgs) => SubscribeStoreResult;

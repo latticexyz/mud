@@ -90,6 +90,37 @@ describe("createStore", () => {
     }>(store.get());
   });
 
+  describe("setRecord", () => {
+    it("should show a type warning if an invalid table, key or record is used", () => {
+      const config = defineStore({
+        namespace: "namespace1",
+        tables: {
+          table1: {
+            schema: {
+              field1: "string",
+              field2: "uint32",
+              field3: "int32",
+            },
+            key: ["field2", "field3"],
+          },
+        },
+      });
+
+      const store = createStore(config);
+
+      attest(() =>
+        store.setRecord({
+          // @ts-expect-error Type '"invalid"' is not assignable to type '"namespace1"'.
+          table: { namespace: "invalid", label: "table1" },
+          key: { field2: 1, field3: 2 },
+          record: { field1: "" },
+        }),
+      )
+        .throws("Table 'invalid__table1' is not registered yet.")
+        .type.errors(`Type '"invalid"' is not assignable to type '"namespace1"'.`);
+    });
+  });
+
   describe("setRecords", () => {
     it("should add the records to the table", () => {
       const tablesConfig = defineStore({
