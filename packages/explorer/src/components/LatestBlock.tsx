@@ -5,7 +5,7 @@ export function LatestBlock() {
     watch: true,
   });
 
-  if (block === undefined || block === BigInt(0)) {
+  if (block === undefined || block === 0n) {
     return;
   }
 
