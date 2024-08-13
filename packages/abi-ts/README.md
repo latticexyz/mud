@@ -1,6 +1,6 @@
 # abi-ts
 
-Create TypeScript type declaration files (`.d.ts`) for your ABI JSON files.
+Create TypeScript type declaration files (`.d.json.ts`) for your ABI JSON files.
 
 This allows you to import your JSON ABI and use it directly with libraries like [viem](https://npmjs.com/package/viem) and [abitype](https://npmjs.com/package/abitype).
 
