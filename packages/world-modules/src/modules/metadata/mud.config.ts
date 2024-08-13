@@ -7,7 +7,7 @@ export default defineWorld({
     ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", type: "bytes32" },
   },
   tables: {
-    Metadata: {
+    Resource: {
       schema: {
         resource: "ResourceId",
         name: "bytes32",
