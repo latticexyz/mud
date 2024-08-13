@@ -2,14 +2,17 @@ import { Table } from "@latticexyz/config";
 import { getTable, BoundTable } from "./getTable";
 import { Store } from "../common";
 
-export type RegisterTableArgs = {
+export type RegisterTableArgs<table extends Table = Table> = {
   store: Store;
-  table: Table;
+  table: table;
 };
 
-export type RegisterTableResult = BoundTable;
+export type RegisterTableResult<table extends Table = Table> = BoundTable<table>;
 
-export function registerTable({ store, table }: RegisterTableArgs): RegisterTableResult {
+export function registerTable<table extends Table>({
+  store,
+  table,
+}: RegisterTableArgs<table>): RegisterTableResult<table> {
   // Pick only relevant keys from the table config, ignore keys like `codegen`, `deploy`
   const { namespace, name, label, key, schema, type, tableId } = table;
   const tableConfig = { namespace, name, label, key, schema, type, tableId };

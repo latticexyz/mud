@@ -1,4 +1,5 @@
-import { Store, TableLabel } from "../common";
+import { Table } from "@latticexyz/config";
+import { Store } from "../common";
 import { DecodeKeyArgs, DecodeKeyResult, decodeKey } from "./decodeKey";
 import { DeleteRecordArgs, DeleteRecordResult, deleteRecord } from "./deleteRecord";
 import { EncodeKeyArgs, EncodeKeyResult, encodeKey } from "./encodeKey";
@@ -9,17 +10,18 @@ import { GetRecordsArgs, GetRecordsResult, getRecords } from "./getRecords";
 import { SetRecordArgs, SetRecordResult, setRecord } from "./setRecord";
 import { SetRecordsArgs, SetRecordsResult, setRecords } from "./setRecords";
 import { SubscribeTableArgs, SubscribeTableResult, subscribeTable } from "./subscribeTable";
+import { registerTable } from "./registerTable";
 
 export type TableBoundDecodeKeyArgs = Omit<DecodeKeyArgs, "store" | "table">;
 export type TableBoundDeleteRecordArgs = Omit<DeleteRecordArgs, "store" | "table">;
 export type TableBoundEncodeKeyArgs = Omit<EncodeKeyArgs, "store" | "table">;
 export type TableBoundGetRecordArgs = Omit<GetRecordArgs, "store" | "table">;
 export type TableBoundGetRecordsArgs = Omit<GetRecordsArgs, "store" | "table">;
-export type TableBoundSetRecordArgs = Omit<SetRecordArgs, "store" | "table">;
-export type TableBoundSetRecordsArgs = Omit<SetRecordsArgs, "store" | "table">;
+export type TableBoundSetRecordArgs<table extends Table = Table> = Omit<SetRecordArgs<table>, "store" | "table">;
+export type TableBoundSetRecordsArgs<table extends Table = Table> = Omit<SetRecordsArgs<table>, "store" | "table">;
 export type TableBoundSubscribeTableArgs = Omit<SubscribeTableArgs, "store" | "table">;
 
-export type BoundTable = {
+export type BoundTable<table extends Table = Table> = {
   decodeKey: (args: TableBoundDecodeKeyArgs) => DecodeKeyResult;
   deleteRecord: (args: TableBoundDeleteRecordArgs) => DeleteRecordResult;
   encodeKey: (args: TableBoundEncodeKeyArgs) => EncodeKeyResult;
@@ -27,19 +29,25 @@ export type BoundTable = {
   getKeys: () => GetKeysResult;
   getRecord: (args: TableBoundGetRecordArgs) => GetRecordResult;
   getRecords: (args?: TableBoundGetRecordsArgs) => GetRecordsResult;
-  setRecord: (args: TableBoundSetRecordArgs) => SetRecordResult;
-  setRecords: (args: TableBoundSetRecordsArgs) => SetRecordsResult;
+  setRecord: (args: TableBoundSetRecordArgs<table>) => SetRecordResult;
+  setRecords: (args: TableBoundSetRecordsArgs<table>) => SetRecordsResult;
   subscribe: (args: TableBoundSubscribeTableArgs) => SubscribeTableResult;
 };
 
-export type GetTableArgs = {
+export type GetTableArgs<table extends Table = Table> = {
   store: Store;
-  table: TableLabel;
+  table: table;
 };
 
-export type GetTableResult = BoundTable;
+export type GetTableResult<table extends Table = Table> = BoundTable<table>;
 
-export function getTable({ store, table }: GetTableArgs): GetTableResult {
+export function getTable<table extends Table>({ store, table }: GetTableArgs<table>): GetTableResult<table> {
+  const { namespace, label } = table;
+
+  if (store.get().config[namespace]?.[label] == null) {
+    registerTable({ store, table });
+  }
+
   return {
     decodeKey: (args: TableBoundDecodeKeyArgs) => decodeKey({ store, table, ...args }),
     deleteRecord: (args: TableBoundDeleteRecordArgs) => deleteRecord({ store, table, ...args }),
@@ -48,8 +56,8 @@ export function getTable({ store, table }: GetTableArgs): GetTableResult {
     getKeys: () => getKeys({ store, table }),
     getRecord: (args: TableBoundGetRecordArgs) => getRecord({ store, table, ...args }),
     getRecords: (args?: TableBoundGetRecordsArgs) => getRecords({ store, table, ...args }),
-    setRecord: (args: TableBoundSetRecordArgs) => setRecord({ store, table, ...args }),
-    setRecords: (args: TableBoundSetRecordsArgs) => setRecords({ store, table, ...args }),
+    setRecord: (args: TableBoundSetRecordArgs<table>) => setRecord({ store, table, ...args }),
+    setRecords: (args: TableBoundSetRecordsArgs<table>) => setRecords({ store, table, ...args }),
     subscribe: (args: TableBoundSubscribeTableArgs) => subscribeTable({ store, table, ...args }),
 
     // TODO: dynamically add setters and getters for individual fields of the table
