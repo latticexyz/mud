@@ -6,26 +6,39 @@ import { bytesToHex } from "viem";
 import { createPrepareDeploy } from "./createPrepareDeploy";
 import { World } from "@latticexyz/world";
 import { getContractArtifact } from "../utils/getContractArtifact";
-import { knownModuleArtifacts } from "../utils/knownModuleArtifacts";
+import { importContractArtifact } from "../utils/importContractArtifact";
 import { resolveWithContext } from "@latticexyz/world/internal";
+import metadataModule from "@latticexyz/world-modules/out/MetadataModule.sol/MetadataModule.json" assert { type: "json" };
+
+/** Please don't add to this list! These are kept for backwards compatibility and assumes the downstream project has this module installed as a dependency. */
+const knownModuleArtifacts = {
+  KeysWithValueModule: "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json",
+  KeysInTableModule: "@latticexyz/world-modules/out/KeysInTableModule.sol/KeysInTableModule.json",
+  UniqueEntityModule: "@latticexyz/world-modules/out/UniqueEntityModule.sol/UniqueEntityModule.json",
+  Unstable_CallWithSignatureModule:
+    "@latticexyz/world-modules/out/Unstable_CallWithSignatureModule.sol/Unstable_CallWithSignatureModule.json",
+};
+
+const metadataModuleArtifact = getContractArtifact(metadataModule);
 
 export async function configToModules<config extends World>(
   config: config,
   // TODO: remove/replace `forgeOutDir`
   forgeOutDir: string,
 ): Promise<readonly Module[]> {
-  const configModules = [
+  const defaultModules: Module[] = [
     {
-      name: "metadata",
-      artifactPath: "@latticexyz/world-modules/out/MetadataModule.sol/MetadataModule.json",
-      root: false,
-      args: [],
+      name: "MetadataModule",
+      installAsRoot: false,
+      installData: "0x",
+      prepareDeploy: createPrepareDeploy(metadataModuleArtifact.bytecode, metadataModuleArtifact.placeholders),
+      deployedBytecodeSize: metadataModuleArtifact.deployedBytecodeSize,
+      abi: metadataModuleArtifact.abi,
     },
-    ...config.modules,
   ];
 
   const modules = await Promise.all(
-    configModules.map(async (mod): Promise<Module> => {
+    config.modules.map(async (mod): Promise<Module> => {
       let artifactPath = mod.artifactPath;
 
       // Backwards compatibility
@@ -56,7 +69,7 @@ export async function configToModules<config extends World>(
       }
 
       const name = path.basename(artifactPath, ".json");
-      const artifact = await getContractArtifact({ artifactPath });
+      const artifact = await importContractArtifact({ artifactPath });
 
       // TODO: replace args with something more strongly typed
       const installArgs = mod.args
@@ -81,5 +94,5 @@ export async function configToModules<config extends World>(
     }),
   );
 
-  return modules;
+  return [...defaultModules, ...modules];
 }

@@ -49,6 +49,7 @@
     "@latticexyz/store": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
+    "@latticexyz/world-modules": "workspace:*",
     "abitype": "1.0.0",
     "asn1.js": "^5.4.1",
     "chalk": "^5.0.1",
@@ -84,8 +85,5 @@
     "tsup": "^6.7.0",
     "tsx": "^3.12.6",
     "vitest": "0.34.6"
-  },
-  "peerDependencies": {
-    "@latticexyz/world-modules": "*"
   }
 }
