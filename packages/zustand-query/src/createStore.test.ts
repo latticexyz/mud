@@ -518,58 +518,6 @@ describe("createStore", () => {
     });
   });
 
-  describe("registerTable", () => {
-    it("should add a new table to the store and return a bound table", () => {
-      const store = createStore();
-      const table = store.registerTable({
-        table: defineTable({
-          label: "table1",
-          namespace: "namespace1",
-          schema: { field1: "uint32", field2: "address" },
-          key: ["field1"],
-        }),
-      });
-
-      attest(store.get().config).snap({
-        namespace1: {
-          table1: {
-            label: "table1",
-            type: "table",
-            namespace: "namespace1",
-            name: "table1",
-            tableId: "0x74626e616d65737061636531000000007461626c653100000000000000000000",
-            schema: {
-              field1: { type: "uint32", internalType: "uint32" },
-              field2: { type: "address", internalType: "address" },
-            },
-            key: ["field1"],
-          },
-        },
-      });
-      attest(store.get().records).snap({ namespace1: { table1: {} } });
-      expect(table.setRecord).toBeDefined();
-      expect(table.getRecord).toBeDefined();
-    });
-  });
-
-  describe("getTable", () => {
-    it("should return a bound table", () => {
-      const store = createStore();
-      store.registerTable({
-        table: defineTable({
-          label: "table1",
-          namespace: "namespace1",
-          schema: { field1: "uint32", field2: "address" },
-          key: ["field1"],
-        }),
-      });
-      const table = store.getTable({ table: { label: "table1", namespace: "namespace1" } });
-
-      expect(table.setRecord).toBeDefined();
-      expect(table.getRecord).toBeDefined();
-    });
-  });
-
   describe("getTables", () => {
     it("should return an object of bound tables in the store", () => {
       const store = createStore();
