@@ -14,8 +14,18 @@ export async function configToModules<config extends World>(
   // TODO: remove/replace `forgeOutDir`
   forgeOutDir: string,
 ): Promise<readonly Module[]> {
+  const configModules = [
+    {
+      name: "metadata",
+      artifactPath: "@latticexyz/world-modules/out/MetadataModule.sol/MetadataModule.json",
+      root: false,
+      args: [],
+    },
+    ...config.modules,
+  ];
+
   const modules = await Promise.all(
-    config.modules.map(async (mod): Promise<Module> => {
+    configModules.map(async (mod): Promise<Module> => {
       let artifactPath = mod.artifactPath;
 
       // Backwards compatibility
