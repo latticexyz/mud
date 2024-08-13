@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
+import { createTestClient, http } from "viem";
 import { getWorldAbi } from "./getWorldAbi";
-import { testClient } from "./common";
+import { foundry } from "viem/chains";
 
 vi.mock("./getFunctions", () => {
   const mockGetFunctionsResult = [{ signature: "setNumber(bool)" }, { signature: "batchCall((bytes32,bytes)[])" }];
@@ -14,8 +15,14 @@ vi.mock("./getFunctions", () => {
 
 describe("World ABI", () => {
   it("should concat base and world ABI", async () => {
+    const client = createTestClient({
+      chain: foundry,
+      mode: "anvil",
+      transport: http(),
+    });
+
     const abi = await getWorldAbi({
-      client: testClient,
+      client,
       worldAddress: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
       fromBlock: 0n,
       toBlock: 0n,
