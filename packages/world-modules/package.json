@@ -28,11 +28,11 @@
   "scripts": {
     "build": "pnpm run build:mud && pnpm run build:js",
     "build:js": "tsup",
-    "build:mud": "mud build",
+    "build:mud": "for dir in src/modules/metadata; do (cd \"$dir\" && pwd && mud tablegen); done && mud build",
     "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud",
     "clean:abi": "forge clean",
     "clean:js": "rimraf dist",
-    "clean:mud": "rimraf src/codegen",
+    "clean:mud": "rimraf src/**/codegen",
     "dev": "tsup --watch",
     "gas-report": "gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
