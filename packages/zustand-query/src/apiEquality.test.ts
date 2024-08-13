@@ -3,15 +3,16 @@ import { createStore } from "./createStore";
 import { attest } from "@ark/attest";
 import { BoundTable } from "./actions/getTable";
 import { DefaultActions } from "./decorators/default";
+import { defineTable } from "@latticexyz/store/config/v2";
 
 describe("store actions, bound table", () => {
   const store = createStore();
   const Position = store.registerTable({
-    table: {
+    table: defineTable({
       label: "Position",
       schema: { player: "address", x: "uint32", y: "uint32" },
       key: ["player"],
-    },
+    }),
   });
 
   it("should expose the same functionality", () => {
@@ -22,6 +23,7 @@ describe("store actions, bound table", () => {
       "extend",
       "runQuery",
       "subscribeQuery",
+      "subscribeStore",
       "subscribeTable", // renamed to subscribe in table API
       "_",
       "get",

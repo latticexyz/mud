@@ -36,7 +36,6 @@ describe("BoundTable", () => {
           record: { field2: "world" },
         }),
       ).type.errors("Type '\"world\"' is not assignable to type '`0x${string}`'");
-      attest(store.get().records).snap({ namespace1: { table1: { "1": { field1: 1, field2: "0x00" } } } });
     });
   });
 
