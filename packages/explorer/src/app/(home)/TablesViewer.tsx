@@ -24,7 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../components/ui/Table";
-import { CONFIG, NON_EDITABLE_TABLES } from "../../consts";
+import { NON_EDITABLE_TABLES } from "../../consts";
 import { EditableTableCell } from "./EditableTableCell";
 import { bufferToBigInt } from "./utils/bufferToBigInt";
 
@@ -75,7 +75,7 @@ export function TablesViewer({ table: selectedTable }: Props) {
       });
     },
     enabled: Boolean(selectedTable),
-    refetchInterval: CONFIG.TABLES_VIEWER_REFETCH_INTERVAL,
+    refetchInterval: 1000,
   });
 
   const { data: mudTableConfig } = useQuery({
@@ -161,7 +161,7 @@ export function TablesViewer({ table: selectedTable }: Props) {
     columns,
     initialState: {
       pagination: {
-        pageSize: CONFIG.TABLE_PAGE_SIZE,
+        pageSize: 50,
       },
     },
     onSortingChange: setSorting,

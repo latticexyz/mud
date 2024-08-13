@@ -1,6 +1,6 @@
 import { Address, formatEther } from "viem";
 import { useBalance } from "wagmi";
-import { ACCOUNTS, CONFIG } from "../consts";
+import { ACCOUNTS } from "../consts";
 import { useStore } from "../store";
 import {
   Select,
@@ -21,7 +21,7 @@ function AccountSelectItem({
   const balance = useBalance({
     address,
     query: {
-      refetchInterval: CONFIG.BALANCES_REFETCH_INTERVAL,
+      refetchInterval: 15000,
     },
   });
   const balanceValue = balance.data?.value;
