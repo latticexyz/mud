@@ -4,6 +4,25 @@ import { describe, it } from "vitest";
 import { createStore } from "../createStore";
 
 describe("store with default actions", () => {
+  it("should decode an encoded table key", () => {
+    const config = defineStore({
+      namespace: "namespace1",
+      tables: {
+        table1: {
+          schema: { field1: "string", field2: "uint32", field3: "uint256" },
+          key: ["field2", "field3"],
+        },
+      },
+    });
+    const store = createStore(config);
+    const table = config.namespaces.namespace1.tables.table1;
+    const key = { field2: 1, field3: 2n };
+    store.setRecord({ table, key, record: { field1: "hello" } });
+
+    const encodedKey = store.encodeKey({ table, key });
+    attest<typeof key>(store.decodeKey({ table, encodedKey })).equals({ field2: 1, field3: 2n });
+  });
+
   describe("getRecord", () => {
     it("should get a record by key from the table", () => {
       const config = defineStore({

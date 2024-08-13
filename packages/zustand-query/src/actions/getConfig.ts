@@ -1,14 +1,14 @@
 import { Table } from "@latticexyz/config";
-import { Store, TableLabel, withDefaultNamespace } from "../common";
+import { Store } from "../common";
 
 export type GetConfigArgs = {
   store: Store;
-  table: TableLabel;
+  table: { label: string; namespace?: string };
 };
 
 export type GetConfigResult = Table;
 
 export function getConfig({ store, table }: GetConfigArgs): GetConfigResult {
-  const { namespace, label } = withDefaultNamespace(table);
-  return store.get().config[namespace][label];
+  const { namespace, label } = table;
+  return store.get().config[namespace ?? ""][label];
 }

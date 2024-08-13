@@ -24,7 +24,7 @@ export type Key<table extends Table = Table> = getSchemaPrimitives<getKeySchema<
 /**
  * A map from encoded key to decoded key
  */
-export type Keys = { [encodedKey: string]: Key };
+export type Keys<table extends Table = Table> = { [encodedKey: string]: Key<table> };
 
 export type CommonQueryResult = {
   /**
@@ -85,11 +85,14 @@ export type MutableState<config extends StoreConfig = StoreConfig> = {
   records: MutableStoreRecords<config>;
 };
 
-export type TableUpdate = { prev: TableRecord | undefined; current: TableRecord | undefined };
+export type TableUpdate<table extends Table = Table> = {
+  prev: TableRecord<table> | undefined;
+  current: TableRecord<table> | undefined;
+};
 
-export type TableUpdates = { [key: string]: TableUpdate };
+export type TableUpdates<table extends Table = Table> = { [key: string]: TableUpdate<table> };
 
-export type TableUpdatesSubscriber = (updates: TableUpdates) => void;
+export type TableUpdatesSubscriber<table extends Table = Table> = (updates: TableUpdates<table>) => void;
 
 export type TableSubscribers = {
   [namespace: string]: {

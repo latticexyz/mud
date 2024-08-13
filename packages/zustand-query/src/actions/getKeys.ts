@@ -1,15 +1,16 @@
-import { Store, Keys, TableLabel, withDefaultNamespace } from "../common";
+import { Table } from "@latticexyz/config";
+import { Store, Keys } from "../common";
 import { decodeKey } from "./decodeKey";
 
-export type GetKeysArgs = {
+export type GetKeysArgs<table extends Table = Table> = {
   store: Store;
-  table: TableLabel;
+  table: table;
 };
 
-export type GetKeysResult = Keys;
+export type GetKeysResult<table extends Table = Table> = Keys<table>;
 
-export function getKeys({ store, table }: GetKeysArgs): GetKeysResult {
-  const { namespace, label } = withDefaultNamespace(table);
+export function getKeys<table extends Table>({ store, table }: GetKeysArgs<table>): GetKeysResult<table> {
+  const { namespace, label } = table;
 
   return Object.fromEntries(
     Object.keys(store.get().records[namespace][label]).map((encodedKey) => [

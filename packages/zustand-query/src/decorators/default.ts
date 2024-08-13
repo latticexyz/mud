@@ -18,9 +18,9 @@ import { SubscribeStoreArgs, SubscribeStoreResult, subscribeStore } from "../act
 import { SubscribeTableArgs, SubscribeTableResult, subscribeTable } from "../actions/subscribeTable";
 import { Table } from "@latticexyz/config";
 
-export type StoreBoundDecodeKeyArgs = Omit<DecodeKeyArgs, "store">;
+export type StoreBoundDecodeKeyArgs<table extends Table = Table> = Omit<DecodeKeyArgs<table>, "store">;
 export type StoreBoundDeleteRecordArgs = Omit<DeleteRecordArgs, "store">;
-export type StoreBoundEncodeKeyArgs = Omit<EncodeKeyArgs, "store">;
+export type StoreBoundEncodeKeyArgs = EncodeKeyArgs;
 export type StoreBoundExtendArgs<actions> = Omit<ExtendArgs<Store, actions>, "store">;
 export type StoreBoundGetConfigArgs = Omit<GetConfigArgs, "store">;
 export type StoreBoundGetKeysArgs = Omit<GetKeysArgs, "store">;
@@ -36,7 +36,7 @@ export type StoreBoundSubscribeStoreArgs = Omit<SubscribeStoreArgs, "store">;
 export type StoreBoundSubscribeTableArgs = Omit<SubscribeTableArgs, "store">;
 
 export type DefaultActions = {
-  decodeKey: (args: StoreBoundDecodeKeyArgs) => DecodeKeyResult;
+  decodeKey: <table extends Table>(args: StoreBoundDecodeKeyArgs<table>) => DecodeKeyResult<table>;
   deleteRecord: (args: StoreBoundDeleteRecordArgs) => DeleteRecordResult;
   encodeKey: (args: StoreBoundEncodeKeyArgs) => EncodeKeyResult;
   extend: <actions>(args: StoreBoundExtendArgs<actions>) => ExtendResult<Store, actions>;
@@ -57,9 +57,9 @@ export type DefaultActions = {
 
 export function defaultActions(store: Store): DefaultActions {
   return {
-    decodeKey: (args: StoreBoundDecodeKeyArgs) => decodeKey({ store, ...args }),
+    decodeKey: <table extends Table>(args: StoreBoundDecodeKeyArgs<table>) => decodeKey({ store, ...args }),
     deleteRecord: (args: StoreBoundDeleteRecordArgs) => deleteRecord({ store, ...args }),
-    encodeKey: (args: StoreBoundEncodeKeyArgs) => encodeKey({ store, ...args }),
+    encodeKey: (args: StoreBoundEncodeKeyArgs) => encodeKey(args),
     extend: <actions>(args: StoreBoundExtendArgs<actions>) => extend({ store, ...args }),
     getConfig: (args: StoreBoundGetConfigArgs) => getConfig({ store, ...args }),
     getKeys: (args: StoreBoundGetKeysArgs) => getKeys({ store, ...args }),

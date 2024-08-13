@@ -1,26 +1,33 @@
-import { Store } from "../common";
+import { Store as StoreConfig } from "@latticexyz/store/config/v2";
+import { Store, getNamespaces, getTableConfig, getTables } from "../common";
 import { BoundTable, getTable } from "./getTable";
 
-export type BoundTables = {
-  [namespace: string]: {
-    [table: string]: BoundTable;
+type MutableBoundTables<config extends StoreConfig = StoreConfig> = {
+  -readonly [namespace in getNamespaces<config>]: {
+    -readonly [table in getTables<config, namespace>]: BoundTable<getTableConfig<config, namespace, table>>;
   };
 };
 
-export type GetTablesArgs = {
-  store: Store;
+export type BoundTables<config extends StoreConfig = StoreConfig> = {
+  [namespace in getNamespaces<config>]: {
+    [table in getTables<config, namespace>]: BoundTable<getTableConfig<config, namespace, table>>;
+  };
 };
 
-export type GetTablesResult = BoundTables;
+export type GetTablesArgs<config extends StoreConfig = StoreConfig> = {
+  store: Store<config>;
+};
 
-export function getTables({ store }: GetTablesArgs): GetTablesResult {
-  const boundTables: BoundTables = {};
+export type GetTablesResult<config extends StoreConfig = StoreConfig> = BoundTables<config>;
+
+export function getTables<config extends StoreConfig>({ store }: GetTablesArgs<config>): GetTablesResult<config> {
+  const boundTables: MutableBoundTables = {};
   const config = store.get().config;
   for (const namespace of Object.keys(config)) {
     boundTables[namespace] ??= {};
     for (const label of Object.keys(config[namespace])) {
-      boundTables[namespace][label] = getTable({ store, table: { namespace, label } });
+      boundTables[namespace][label] = getTable({ store, table: config[namespace][label] }) as never;
     }
   }
-  return boundTables;
+  return boundTables as never;
 }

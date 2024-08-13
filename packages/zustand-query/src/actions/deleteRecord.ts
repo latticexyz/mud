@@ -1,22 +1,24 @@
-import { Key, Store, TableLabel, withDefaultNamespace } from "../common";
+import { Table } from "@latticexyz/config";
+import { Key, Store } from "../common";
 import { encodeKey } from "./encodeKey";
+import { registerTable } from "./registerTable";
 
-export type DeleteRecordArgs = {
+export type DeleteRecordArgs<table extends Table = Table> = {
   store: Store;
-  table: TableLabel;
-  key: Key;
+  table: table;
+  key: Key<table>;
 };
 
 export type DeleteRecordResult = void;
 
-export function deleteRecord({ store, table, key }: DeleteRecordArgs): DeleteRecordResult {
-  const { namespace, label } = withDefaultNamespace(table);
+export function deleteRecord<table extends Table>({ store, table, key }: DeleteRecordArgs<table>): DeleteRecordResult {
+  const { namespace, label } = table;
 
   if (store.get().config[namespace] == null) {
-    throw new Error(`Table '${namespace}__${label}' is not registered yet.`);
+    registerTable({ store, table });
   }
 
-  const encodedKey = encodeKey({ store, table, key });
+  const encodedKey = encodeKey({ table, key });
   const prevRecord = store.get().records[namespace][label][encodedKey];
 
   // Early return if this record doesn't exist

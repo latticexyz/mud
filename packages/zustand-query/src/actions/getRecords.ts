@@ -1,16 +1,21 @@
-import { Key, Store, TableLabel, TableRecords, withDefaultNamespace } from "../common";
+import { Table } from "@latticexyz/config";
+import { Key, Store, TableRecords } from "../common";
 import { encodeKey } from "./encodeKey";
 
-export type GetRecordsArgs = {
+export type GetRecordsArgs<table extends Table = Table> = {
   store: Store;
-  table: TableLabel;
-  keys?: Key[];
+  table: table;
+  keys?: Key<table>[];
 };
 
-export type GetRecordsResult = TableRecords;
+export type GetRecordsResult<table extends Table = Table> = TableRecords<table>;
 
-export function getRecords({ store, table, keys }: GetRecordsArgs): GetRecordsResult {
-  const { namespace, label } = withDefaultNamespace(table);
+export function getRecords<table extends Table>({
+  store,
+  table,
+  keys,
+}: GetRecordsArgs<table>): GetRecordsResult<table> {
+  const { namespace, label } = table;
   const records = store.get().records[namespace][label];
 
   if (!keys) {
@@ -19,7 +24,7 @@ export function getRecords({ store, table, keys }: GetRecordsArgs): GetRecordsRe
 
   return Object.fromEntries(
     keys.map((key) => {
-      const encodedKey = encodeKey({ store, table, key });
+      const encodedKey = encodeKey({ table, key });
       return [encodedKey, records[encodedKey]];
     }),
   );
