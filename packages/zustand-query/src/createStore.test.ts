@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { attest } from "@arktype/attest";
 import { CreateStoreResult, createStore } from "./createStore";
-import { defineStore } from "@latticexyz/store/config/v2";
+import { defineStore, defineTable } from "@latticexyz/store/config/v2";
 import { Hex } from "viem";
 
 describe("createStore", () => {
@@ -141,8 +141,8 @@ describe("createStore", () => {
   });
 
   describe("setRecords", () => {
-    it("should add the records to the table", () => {
-      const tablesConfig = defineStore({
+    it("should show a type warning if an invalid table, key or record is used", () => {
+      const config = defineStore({
         namespace: "namespace1",
         tables: {
           table1: {
@@ -156,23 +156,26 @@ describe("createStore", () => {
         },
       });
 
-      const store = createStore(tablesConfig);
-      store.setRecords({
-        table: { label: "table1", namespace: "namespace1" },
-        records: [
-          { field1: "hello", field2: 1, field3: 2 },
-          { field1: "world", field2: 2, field3: 1 },
-        ],
-      });
+      const table = config.namespaces.namespace1.tables.table1;
+      const store = createStore(config);
 
-      attest(store.get().records).snap({
-        namespace1: {
-          table1: {
-            "1|2": { field1: "hello", field2: 1, field3: 2 },
-            "2|1": { field1: "world", field2: 2, field3: 1 },
-          },
-        },
-      });
+      attest(() =>
+        store.setRecords({
+          table,
+          // @ts-expect-error Type '{ field1: string; }' is missing the following properties from type
+          records: [{ field1: "" }],
+        }),
+      )
+        .throws("Provided key is missing field field2.")
+        .type.errors(`Type '{ field1: string; }' is missing the following properties from type`);
+
+      attest(() =>
+        store.setRecords({
+          table,
+          // @ts-expect-error Type 'number' is not assignable to type 'string'.
+          records: [{ field1: 1, field2: 1, field3: 2 }],
+        }),
+      ).type.errors(`Type 'number' is not assignable to type 'string'.`);
     });
   });
 
@@ -374,12 +377,12 @@ describe("createStore", () => {
       });
 
       store.registerTable({
-        table: {
+        table: defineTable({
           namespace: "namespace2",
           label: "table2",
           schema: { field1: "uint256", value: "uint256" },
           key: ["field1"],
-        },
+        }),
       });
 
       expect(subscriber).toHaveBeenNthCalledWith(4, {
@@ -519,12 +522,12 @@ describe("createStore", () => {
     it("should add a new table to the store and return a bound table", () => {
       const store = createStore();
       const table = store.registerTable({
-        table: {
+        table: defineTable({
           label: "table1",
           namespace: "namespace1",
           schema: { field1: "uint32", field2: "address" },
           key: ["field1"],
-        },
+        }),
       });
 
       attest(store.get().config).snap({
@@ -553,12 +556,12 @@ describe("createStore", () => {
     it("should return a bound table", () => {
       const store = createStore();
       store.registerTable({
-        table: {
+        table: defineTable({
           label: "table1",
           namespace: "namespace1",
           schema: { field1: "uint32", field2: "address" },
           key: ["field1"],
-        },
+        }),
       });
       const table = store.getTable({ table: { label: "table1", namespace: "namespace1" } });
 
@@ -571,20 +574,20 @@ describe("createStore", () => {
     it("should return an object of bound tables in the store", () => {
       const store = createStore();
       store.registerTable({
-        table: {
+        table: defineTable({
           label: "table1",
           namespace: "namespace1",
           schema: { field1: "uint32", field2: "address" },
           key: ["field1"],
-        },
+        }),
       });
       store.registerTable({
-        table: {
+        table: defineTable({
           label: "table2",
           namespace: "namespace2",
           schema: { field1: "uint32", field2: "address" },
           key: ["field1"],
-        },
+        }),
       });
       const tables = store.getTables();
 

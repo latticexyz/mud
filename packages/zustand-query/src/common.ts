@@ -62,8 +62,8 @@ export type StoreRecords<config extends StoreConfig = StoreConfig> = {
 };
 
 export type MutableStoreRecords<config extends StoreConfig = StoreConfig> = {
-  [namespace in getNamespaces<config>]: {
-    [table in getTables<config, namespace>]: MutableTableRecords<getTableConfig<config, namespace, table>>;
+  -readonly [namespace in getNamespaces<config>]: {
+    -readonly [table in getTables<config, namespace>]: MutableTableRecords<getTableConfig<config, namespace, table>>;
   };
 };
 
@@ -78,8 +78,8 @@ export type State<config extends StoreConfig = StoreConfig> = {
 
 export type MutableState<config extends StoreConfig = StoreConfig> = {
   config: {
-    [namespace in getNamespaces<config>]: {
-      [table in getTables<config, namespace>]: getTableConfig<config, namespace, table>;
+    -readonly [namespace in getNamespaces<config>]: {
+      -readonly [table in getTables<config, namespace>]: getTableConfig<config, namespace, table>;
     };
   };
   records: MutableStoreRecords<config>;

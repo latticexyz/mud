@@ -1,19 +1,18 @@
-import { TableInput, resolveTable } from "@latticexyz/store/config/v2";
+import { Table } from "@latticexyz/config";
 import { getTable, BoundTable } from "./getTable";
 import { Store } from "../common";
 
 export type RegisterTableArgs = {
   store: Store;
-  table: TableInput;
+  table: Table;
 };
 
 export type RegisterTableResult = BoundTable;
 
 export function registerTable({ store, table }: RegisterTableArgs): RegisterTableResult {
-  // TODO: add option to resolveTable to not include codegen/deploy options?
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { codegen, deploy, ...tableConfig } = resolveTable(table);
-  const { namespace, label } = tableConfig;
+  // Pick only relevant keys from the table config, ignore keys like `codegen`, `deploy`
+  const { namespace, name, label, key, schema, type, tableId } = table;
+  const tableConfig = { namespace, name, label, key, schema, type, tableId };
 
   // Set config for table
   store._.state.config[namespace] ??= {};
