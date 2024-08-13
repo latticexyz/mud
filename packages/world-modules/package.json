@@ -48,7 +48,6 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
-    "@latticexyz/abi-ts": "workspace:*",
     "@latticexyz/cli": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
     "@types/ejs": "^3.1.1",
