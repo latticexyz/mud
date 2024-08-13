@@ -5,6 +5,7 @@ import { useChainId, useWriteContract } from "wagmi";
 import { ChangeEvent, useState } from "react";
 import { encodeField } from "@latticexyz/protocol-parser/internal";
 import { SchemaAbiType } from "@latticexyz/schema-type/internal";
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { useQueryClient } from "@tanstack/react-query";
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { Checkbox } from "../../components/ui/Checkbox";
@@ -14,7 +15,6 @@ import { camelCase } from "../../lib/utils";
 import { useStore } from "../../store";
 import { wagmiConfig } from "../Providers";
 import { TableConfig } from "../api/table/route";
-import { abi } from "./abi";
 import { getFieldIndex } from "./utils/getFieldIndex";
 
 type Props = {
@@ -62,7 +62,7 @@ export function EditableTableCell({
       const encodedField = encodeField(fieldType, valueToSet);
       const txHash = await writeContractAsync({
         account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
-        abi,
+        abi: IBaseWorldAbi,
         address: worldAddress,
         functionName: "setField",
         args: [tableId, keyTuple, fieldIndex, encodedField],
