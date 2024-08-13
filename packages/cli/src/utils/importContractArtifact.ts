@@ -1,6 +1,6 @@
 import { createRequire } from "node:module";
 import { findUp } from "find-up";
-import { GetContractArtifactResult } from "./getContractArtifact";
+import { GetContractArtifactResult, getContractArtifact } from "./getContractArtifact";
 
 export type ImportContractArtifactOptions = {
   /**
