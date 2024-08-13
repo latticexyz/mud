@@ -26,9 +26,7 @@
     "src"
   ],
   "scripts": {
-    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts && pnpm run build:js",
-    "build:abi": "forge build",
-    "build:abi-ts": "abi-ts",
+    "build": "pnpm run build:mud && pnpm run build:js",
     "build:js": "tsup",
     "build:mud": "mud build",
     "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud",
