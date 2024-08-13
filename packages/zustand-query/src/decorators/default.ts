@@ -1,3 +1,4 @@
+import { Store as StoreConfig } from "@latticexyz/store/config/v2";
 import { Store } from "../common";
 import { DecodeKeyArgs, DecodeKeyResult, decodeKey } from "../actions/decodeKey";
 import { DeleteRecordArgs, DeleteRecordResult, deleteRecord } from "../actions/deleteRecord";
@@ -19,13 +20,13 @@ import { SubscribeTableArgs, SubscribeTableResult, subscribeTable } from "../act
 import { Table } from "@latticexyz/config";
 
 export type StoreBoundDecodeKeyArgs<table extends Table = Table> = Omit<DecodeKeyArgs<table>, "store">;
-export type StoreBoundDeleteRecordArgs = Omit<DeleteRecordArgs, "store">;
-export type StoreBoundEncodeKeyArgs = EncodeKeyArgs;
+export type StoreBoundDeleteRecordArgs<table extends Table> = Omit<DeleteRecordArgs<table>, "store">;
+export type StoreBoundEncodeKeyArgs<table extends Table = Table> = EncodeKeyArgs<table>;
 export type StoreBoundExtendArgs<actions> = Omit<ExtendArgs<Store, actions>, "store">;
 export type StoreBoundGetConfigArgs = Omit<GetConfigArgs, "store">;
-export type StoreBoundGetKeysArgs = Omit<GetKeysArgs, "store">;
+export type StoreBoundGetKeysArgs<table extends Table = Table> = Omit<GetKeysArgs<table>, "store">;
 export type StoreBoundGetRecordArgs<table extends Table = Table> = Omit<GetRecordArgs<table>, "store">;
-export type StoreBoundGetRecordsArgs = Omit<GetRecordsArgs, "store">;
+export type StoreBoundGetRecordsArgs<table extends Table = Table> = Omit<GetRecordsArgs<table>, "store">;
 export type StoreBoundGetTableArgs<table extends Table = Table> = Omit<GetTableArgs<table>, "store">;
 export type StoreBoundRegisterTableArgs<table extends Table = Table> = Omit<RegisterTableArgs<table>, "store">;
 export type StoreBoundRunQueryArgs = Omit<RunQueryArgs, "store">;
@@ -33,46 +34,47 @@ export type StoreBoundSetRecordArgs<table extends Table = Table> = Omit<SetRecor
 export type StoreBoundSetRecordsArgs<table extends Table = Table> = Omit<SetRecordsArgs<table>, "store">;
 export type StoreBoundSubscribeQueryArgs = Omit<SubscribeQueryArgs, "store">;
 export type StoreBoundSubscribeStoreArgs = Omit<SubscribeStoreArgs, "store">;
-export type StoreBoundSubscribeTableArgs = Omit<SubscribeTableArgs, "store">;
+export type StoreBoundSubscribeTableArgs<table extends Table = Table> = Omit<SubscribeTableArgs<table>, "store">;
 
-export type DefaultActions = {
+export type DefaultActions<config extends StoreConfig = StoreConfig> = {
   decodeKey: <table extends Table>(args: StoreBoundDecodeKeyArgs<table>) => DecodeKeyResult<table>;
-  deleteRecord: (args: StoreBoundDeleteRecordArgs) => DeleteRecordResult;
-  encodeKey: (args: StoreBoundEncodeKeyArgs) => EncodeKeyResult;
+  deleteRecord: <table extends Table>(args: StoreBoundDeleteRecordArgs<table>) => DeleteRecordResult;
+  encodeKey: <table extends Table>(args: StoreBoundEncodeKeyArgs<table>) => EncodeKeyResult;
   extend: <actions>(args: StoreBoundExtendArgs<actions>) => ExtendResult<Store, actions>;
   getConfig: (args: GetConfigArgs) => GetConfigResult;
-  getKeys: (args: GetKeysArgs) => GetKeysResult;
+  getKeys: <table extends Table>(args: GetKeysArgs<table>) => GetKeysResult<table>;
   getRecord: <table extends Table>(args: StoreBoundGetRecordArgs<table>) => GetRecordResult<table>;
-  getRecords: (args: StoreBoundGetRecordsArgs) => GetRecordsResult;
+  getRecords: <table extends Table>(args: StoreBoundGetRecordsArgs<table>) => GetRecordsResult<table>;
   getTable: <table extends Table>(args: StoreBoundGetTableArgs<table>) => GetTableResult<table>;
-  getTables: () => GetTablesResult;
+  getTables: () => GetTablesResult<config>;
   registerTable: <table extends Table>(args: StoreBoundRegisterTableArgs<table>) => RegisterTableResult<table>;
   runQuery: (args: StoreBoundRunQueryArgs) => RunQueryResult;
   setRecord: <table extends Table>(args: StoreBoundSetRecordArgs<table>) => SetRecordResult;
   setRecords: <table extends Table>(args: StoreBoundSetRecordsArgs<table>) => SetRecordsResult;
   subscribeQuery: (args: StoreBoundSubscribeQueryArgs) => SubscribeQueryResult;
   subscribeStore: (args: StoreBoundSubscribeStoreArgs) => SubscribeStoreResult;
-  subscribeTable: (args: StoreBoundSubscribeTableArgs) => SubscribeTableResult;
+  subscribeTable: <table extends Table>(args: StoreBoundSubscribeTableArgs<table>) => SubscribeTableResult;
 };
 
-export function defaultActions(store: Store): DefaultActions {
+export function defaultActions<config extends StoreConfig>(store: Store<config>): DefaultActions<config> {
   return {
     decodeKey: <table extends Table>(args: StoreBoundDecodeKeyArgs<table>) => decodeKey({ store, ...args }),
-    deleteRecord: (args: StoreBoundDeleteRecordArgs) => deleteRecord({ store, ...args }),
-    encodeKey: (args: StoreBoundEncodeKeyArgs) => encodeKey(args),
+    deleteRecord: <table extends Table>(args: StoreBoundDeleteRecordArgs<table>) => deleteRecord({ store, ...args }),
+    encodeKey: <table extends Table>(args: StoreBoundEncodeKeyArgs<table>) => encodeKey(args),
     extend: <actions>(args: StoreBoundExtendArgs<actions>) => extend({ store, ...args }),
     getConfig: (args: StoreBoundGetConfigArgs) => getConfig({ store, ...args }),
-    getKeys: (args: StoreBoundGetKeysArgs) => getKeys({ store, ...args }),
-    getRecord: (args: StoreBoundGetRecordArgs) => getRecord({ store, ...args }),
-    getRecords: (args: StoreBoundGetRecordsArgs) => getRecords({ store, ...args }),
-    getTable: (args: StoreBoundGetTableArgs) => getTable({ store, ...args }),
+    getKeys: <table extends Table>(args: StoreBoundGetKeysArgs<table>) => getKeys({ store, ...args }),
+    getRecord: <table extends Table>(args: StoreBoundGetRecordArgs<table>) => getRecord({ store, ...args }),
+    getRecords: <table extends Table>(args: StoreBoundGetRecordsArgs<table>) => getRecords({ store, ...args }),
+    getTable: <table extends Table>(args: StoreBoundGetTableArgs<table>) => getTable({ store, ...args }),
     getTables: () => getTables({ store }),
     registerTable: (args: StoreBoundRegisterTableArgs) => registerTable({ store, ...args }),
     runQuery: (args: StoreBoundRunQueryArgs) => runQuery({ store, ...args }),
-    setRecord: (args: StoreBoundSetRecordArgs) => setRecord({ store, ...args }),
-    setRecords: (args: StoreBoundSetRecordsArgs) => setRecords({ store, ...args }),
+    setRecord: <table extends Table>(args: StoreBoundSetRecordArgs<table>) => setRecord({ store, ...args }),
+    setRecords: <table extends Table>(args: StoreBoundSetRecordsArgs<table>) => setRecords({ store, ...args }),
     subscribeQuery: (args: StoreBoundSubscribeQueryArgs) => subscribeQuery({ store, ...args }),
     subscribeStore: (args: StoreBoundSubscribeStoreArgs) => subscribeStore({ store, ...args }),
-    subscribeTable: (args: StoreBoundSubscribeTableArgs) => subscribeTable({ store, ...args }),
+    subscribeTable: <table extends Table>(args: StoreBoundSubscribeTableArgs<table>) =>
+      subscribeTable({ store, ...args }),
   };
 }
