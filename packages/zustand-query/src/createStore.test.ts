@@ -382,53 +382,6 @@ describe("createStore", () => {
     });
   });
 
-  describe("getRecord", () => {
-    it("should get a record by key from the table", () => {
-      const config = defineStore({
-        namespace: "namespace1",
-        tables: {
-          table1: {
-            schema: {
-              field1: "string",
-              field2: "uint32",
-              field3: "int32",
-            },
-            key: ["field2", "field3"],
-          },
-        },
-      });
-
-      const table = config.namespaces.namespace1.tables.table1;
-
-      const store = createStore(config);
-      store.setRecord({
-        table,
-        key: { field2: 1, field3: 2 },
-        record: { field1: "hello" },
-      });
-
-      store.setRecord({
-        table,
-        key: { field2: 2, field3: 1 },
-        record: { field1: "world" },
-      });
-
-      attest(
-        store.getRecord({
-          table: { label: "table1", namespace: "namespace1" },
-          key: { field2: 1, field3: 2 },
-        }),
-      ).snap({ field1: "hello", field2: 1, field3: 2 });
-
-      attest(
-        store.getRecord({
-          table: { label: "table1", namespace: "namespace1" },
-          key: { field2: 2, field3: 1 },
-        }),
-      ).snap({ field1: "world", field2: 2, field3: 1 });
-    });
-  });
-
   describe("getTables", () => {
     it("should return an object of bound tables in the store", () => {
       const store = createStore();

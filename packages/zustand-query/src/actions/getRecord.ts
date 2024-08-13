@@ -1,16 +1,16 @@
-import { Key, Store, TableLabel, TableRecord, withDefaultNamespace } from "../common";
+import { Table } from "@latticexyz/config";
+import { Key, Store, TableRecord } from "../common";
 import { encodeKey } from "./encodeKey";
 
-export type GetRecordArgs = {
+export type GetRecordArgs<table extends Table = Table> = {
   store: Store;
-  table: TableLabel;
-  key: Key;
+  table: table;
+  key: Key<table>;
 };
 
-export type GetRecordResult = TableRecord;
+export type GetRecordResult<table extends Table = Table> = TableRecord<table>;
 
-export function getRecord({ store, table, key }: GetRecordArgs): GetRecordResult {
-  const { namespace, label } = withDefaultNamespace(table);
-
+export function getRecord<table extends Table>({ store, table, key }: GetRecordArgs<table>): GetRecordResult<table> {
+  const { namespace, label } = table;
   return store.get().records[namespace][label][encodeKey({ store, table, key })];
 }

@@ -24,7 +24,7 @@ export type StoreBoundEncodeKeyArgs = Omit<EncodeKeyArgs, "store">;
 export type StoreBoundExtendArgs<actions> = Omit<ExtendArgs<Store, actions>, "store">;
 export type StoreBoundGetConfigArgs = Omit<GetConfigArgs, "store">;
 export type StoreBoundGetKeysArgs = Omit<GetKeysArgs, "store">;
-export type StoreBoundGetRecordArgs = Omit<GetRecordArgs, "store">;
+export type StoreBoundGetRecordArgs<table extends Table = Table> = Omit<GetRecordArgs<table>, "store">;
 export type StoreBoundGetRecordsArgs = Omit<GetRecordsArgs, "store">;
 export type StoreBoundGetTableArgs<table extends Table = Table> = Omit<GetTableArgs<table>, "store">;
 export type StoreBoundRegisterTableArgs<table extends Table = Table> = Omit<RegisterTableArgs<table>, "store">;
@@ -42,7 +42,7 @@ export type DefaultActions = {
   extend: <actions>(args: StoreBoundExtendArgs<actions>) => ExtendResult<Store, actions>;
   getConfig: (args: GetConfigArgs) => GetConfigResult;
   getKeys: (args: GetKeysArgs) => GetKeysResult;
-  getRecord: (args: StoreBoundGetRecordArgs) => GetRecordResult;
+  getRecord: <table extends Table>(args: StoreBoundGetRecordArgs<table>) => GetRecordResult<table>;
   getRecords: (args: StoreBoundGetRecordsArgs) => GetRecordsResult;
   getTable: <table extends Table>(args: StoreBoundGetTableArgs<table>) => GetTableResult<table>;
   getTables: () => GetTablesResult;
