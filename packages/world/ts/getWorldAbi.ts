@@ -1,7 +1,11 @@
-import { Client, Abi, Address, getAddress } from "viem";
+import { Client, Abi, AbiItem, AbiFunction, Address, getAddress, toFunctionSelector } from "viem";
 import IBaseWorldAbi from "../out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { functionSignatureToAbiItem } from "./functionSignatureToAbiItem";
 import { getFunctions } from "./getFunctions";
+
+function isAbiFunction(abiItem: AbiItem): abiItem is AbiFunction {
+  return abiItem.type === "function";
+}
 
 export async function getWorldAbi({
   client,
@@ -20,7 +24,10 @@ export async function getWorldAbi({
     fromBlock,
     toBlock,
   });
-  const worldFunctionsAbi = worldFunctions.map((func) => functionSignatureToAbiItem(func.signature));
+  const baseFunctionSelectors = (IBaseWorldAbi as Abi).filter(isAbiFunction).map(toFunctionSelector);
+  const worldFunctionsAbi = worldFunctions
+    .map((func) => functionSignatureToAbiItem(func.signature))
+    .filter((abiItem) => !baseFunctionSelectors.includes(toFunctionSelector(abiItem)));
   const abi = [...IBaseWorldAbi, ...worldFunctionsAbi];
 
   return abi;
