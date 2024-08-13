@@ -46,7 +46,10 @@ export function NotIn(table: Table): QueryFragment {
  * This works for both value and key, since both are part of the record.
  * RECS equivalent (only for value match): HasValue(Component, value)
  */
-export function MatchRecord(table: Table, partialRecord: TableRecord): QueryFragment {
+export function MatchRecord<table extends Table>(
+  table: table,
+  partialRecord: Partial<TableRecord<table>>,
+): QueryFragment {
   const match = (store: Store, encodedKey: string) => {
     const record = getRecords({ store, table })[encodedKey];
     return recordMatches(partialRecord, record);
@@ -64,7 +67,10 @@ export function MatchRecord(table: Table, partialRecord: TableRecord): QueryFrag
  * @param table
  * @param partialRecord
  */
-export function NotMatchRecord(table: Table, partialRecord: TableRecord): QueryFragment {
+export function NotMatchRecord<table extends Table>(
+  table: table,
+  partialRecord: Partial<TableRecord<table>>,
+): QueryFragment {
   const match = (store: Store, encodedKey: string) => {
     const record = getRecords({ store, table })[encodedKey];
     return !recordMatches(partialRecord, record);

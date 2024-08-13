@@ -112,7 +112,7 @@ describe("createStore", () => {
       const listener = vi.fn();
 
       store.subscribeTable({
-        table: { label: "table1", namespace: "namespace1" },
+        table,
         subscriber: listener,
       });
 
@@ -143,7 +143,7 @@ describe("createStore", () => {
       });
 
       store.deleteRecord({
-        table: { label: "table1", namespace: "namespace1" },
+        table,
         key: { field2: 1, field3: 2 },
       });
 
@@ -176,7 +176,7 @@ describe("createStore", () => {
       const subscriber = vi.fn();
 
       const unsubscribe = store.subscribeTable({
-        table: { label: "table1", namespace: "namespace1" },
+        table,
         subscriber,
       });
 
@@ -269,7 +269,7 @@ describe("createStore", () => {
       });
 
       store.deleteRecord({
-        table: { label: "table1", namespace: "namespace1" },
+        table,
         key: { field2: 1, field3: 2 },
       });
 

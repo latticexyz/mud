@@ -19,6 +19,7 @@ export type SubscribeQueryOptions = CommonQueryOptions & {
   initialSubscribers?: QuerySubscriber[];
 };
 
+// TODO: is it feasible to type the table updates based on the query?
 type QueryTableUpdates = {
   [namespace: string]: {
     [table: string]: TableUpdates;

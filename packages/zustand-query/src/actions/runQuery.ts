@@ -7,6 +7,7 @@ type RunQueryOptions = CommonQueryOptions & {
   includeRecords?: boolean;
 };
 
+// TODO: is it feasible to type the store records return type based on the query?
 export type RunQueryArgs = {
   store: Store;
   query: Query;
@@ -55,8 +56,7 @@ export function runQuery({ store, query, options }: RunQueryArgs): RunQueryResul
 
   const records: MutableStoreRecords = {};
   for (const { table } of query) {
-    const namespace = table.namespace ?? "";
-    const label = table.label;
+    const { namespace, label } = table;
     records[namespace] ??= {};
     const tableRecords = getRecords({ store, table, keys: Object.values(keys) });
     records[namespace][label] ??= tableRecords;

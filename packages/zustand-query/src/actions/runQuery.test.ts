@@ -33,15 +33,15 @@ describe("query", () => {
     store = createStore(config);
 
     // Add some mock data
-    const items = ["gold", "silver"];
+    const items = ["0xgold", "0xsilver"] as const;
     const num = 5;
     for (let i = 0; i < num; i++) {
-      setRecord({ store, table: Position, key: { player: String(i) }, record: { x: i, y: num - i } });
+      setRecord({ store, table: Position, key: { player: `0x${String(i)}` }, record: { x: i, y: num - i } });
       if (i > 2) {
-        setRecord({ store, table: Health, key: { player: String(i) }, record: { health: i } });
+        setRecord({ store, table: Health, key: { player: `0x${String(i)}` }, record: { health: i } });
       }
       for (const item of items) {
-        setRecord({ store, table: Inventory, key: { player: String(i), item }, record: { amount: i } });
+        setRecord({ store, table: Inventory, key: { player: `0x${String(i)}`, item }, record: { amount: i } });
       }
     }
   });
@@ -50,11 +50,11 @@ describe("query", () => {
     const result = runQuery({ store, query: [In(Position)] });
     attest(result).snap({
       keys: {
-        "0": { player: "0" },
-        "1": { player: "1" },
-        "2": { player: "2" },
-        "3": { player: "3" },
-        "4": { player: "4" },
+        "0x0": { player: "0x0" },
+        "0x1": { player: "0x1" },
+        "0x2": { player: "0x2" },
+        "0x3": { player: "0x3" },
+        "0x4": { player: "0x4" },
       },
     });
   });
@@ -63,44 +63,44 @@ describe("query", () => {
     const result = runQuery({ store, query: [In(Position), In(Health)] });
     attest(result).snap({
       keys: {
-        "3": { player: "3" },
-        "4": { player: "4" },
+        "0x3": { player: "0x3" },
+        "0x4": { player: "0x4" },
       },
     });
   });
 
   it("should return all keys that have Position.x = 4 and are included in Health", () => {
     const result = runQuery({ store, query: [MatchRecord(Position, { x: 4 }), In(Health)] });
-    attest(result).snap({ keys: { "4": { player: "4" } } });
+    attest(result).snap({ keys: { "0x4": { player: "0x4" } } });
   });
 
   it("should return all keys that are in Position but not Health", () => {
     const result = runQuery({ store, query: [In(Position), NotIn(Health)] });
     attest(result).snap({
       keys: {
-        "0": { player: "0" },
-        "1": { player: "1" },
-        "2": { player: "2" },
+        "0x0": { player: "0x0" },
+        "0x1": { player: "0x1" },
+        "0x2": { player: "0x2" },
       },
     });
   });
 
   it("should return all keys that don't include a gold item in the Inventory table", () => {
-    const result = runQuery({ store, query: [NotMatchRecord(Inventory, { item: "gold" })] });
+    const result = runQuery({ store, query: [NotMatchRecord(Inventory, { item: "0xgold" })] });
     attest(result).snap({
       keys: {
-        "0|silver": { player: "0", item: "silver" },
-        "1|silver": { player: "1", item: "silver" },
-        "2|silver": { player: "2", item: "silver" },
-        "3|silver": { player: "3", item: "silver" },
-        "4|silver": { player: "4", item: "silver" },
+        "0x0|0xsilver": { player: "0x0", item: "0xsilver" },
+        "0x1|0xsilver": { player: "0x1", item: "0xsilver" },
+        "0x2|0xsilver": { player: "0x2", item: "0xsilver" },
+        "0x3|0xsilver": { player: "0x3", item: "0xsilver" },
+        "0x4|0xsilver": { player: "0x4", item: "0xsilver" },
       },
     });
   });
 
   it("should throw an error when tables with different key schemas are mixed", () => {
     attest(() =>
-      runQuery({ store, query: [In(Position), MatchRecord(Inventory, { item: "gold", amount: 2 })] }),
+      runQuery({ store, query: [In(Position), MatchRecord(Inventory, { item: "0xgold", amount: 2 })] }),
     ).throws("All tables in a query must share the same key schema");
   });
 
@@ -108,18 +108,18 @@ describe("query", () => {
     const result = runQuery({ store, query: [In(Position), In(Health)], options: { includeRecords: true } });
     attest(result).snap({
       keys: {
-        "3": { player: "3" },
-        "4": { player: "4" },
+        "0x3": { player: "0x3" },
+        "0x4": { player: "0x4" },
       },
       records: {
         namespace1: {
           Position: {
-            "3": { player: "3", x: 3, y: 2 },
-            "4": { player: "4", x: 4, y: 1 },
+            "0x3": { player: "0x3", x: 3, y: 2 },
+            "0x4": { player: "0x4", x: 4, y: 1 },
           },
           Health: {
-            "3": { player: "3", health: 3 },
-            "4": { player: "4", health: 4 },
+            "0x3": { player: "0x3", health: 3 },
+            "0x4": { player: "0x4", health: 4 },
           },
         },
       },

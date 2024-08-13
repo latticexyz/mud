@@ -34,15 +34,15 @@ describe("defineQuery", () => {
     store = createStore(config);
 
     // Add some mock data
-    const items = ["gold", "silver"];
+    const items = ["0xgold", "0xsilver"] as const;
     const num = 5;
     for (let i = 0; i < num; i++) {
-      setRecord({ store, table: Position, key: { player: String(i) }, record: { x: i, y: num - i } });
+      setRecord({ store, table: Position, key: { player: `0x${String(i)}` }, record: { x: i, y: num - i } });
       if (i > 2) {
-        setRecord({ store, table: Health, key: { player: String(i) }, record: { health: i } });
+        setRecord({ store, table: Health, key: { player: `0x${String(i)}` }, record: { health: i } });
       }
       for (const item of items) {
-        setRecord({ store, table: Inventory, key: { player: String(i), item }, record: { amount: i } });
+        setRecord({ store, table: Inventory, key: { player: `0x${String(i)}`, item }, record: { amount: i } });
       }
     }
   });
@@ -50,16 +50,16 @@ describe("defineQuery", () => {
   it("should return the matching keys and keep it updated", () => {
     const result = subscribeQuery({ store, query: [In(Position), In(Health)] });
     attest(result.keys).snap({
-      "3": { player: "3" },
-      "4": { player: "4" },
+      "0x3": { player: "0x3" },
+      "0x4": { player: "0x4" },
     });
 
-    setRecord({ store, table: Health, key: { player: 2 }, record: { health: 2 } });
+    setRecord({ store, table: Health, key: { player: `0x2` }, record: { health: 2 } });
 
     attest(result.keys).snap({
-      "2": { player: "2" },
-      "3": { player: "3" },
-      "4": { player: "4" },
+      "0x2": { player: "0x2" },
+      "0x3": { player: "0x3" },
+      "0x4": { player: "0x4" },
     });
   });
 
@@ -69,22 +69,22 @@ describe("defineQuery", () => {
     const result = subscribeQuery({ store, query: [MatchRecord(Position, { x: 4 }), In(Health)] });
     result.subscribe(subscriber);
 
-    setRecord({ store, table: Position, key: { player: "4" }, record: { y: 2 } });
+    setRecord({ store, table: Position, key: { player: "0x4" }, record: { y: 2 } });
 
     expect(subscriber).toBeCalledTimes(1);
     attest(lastUpdate).snap({
       records: {
         namespace1: {
           Position: {
-            "4": {
-              prev: { player: "4", x: 4, y: 1 },
-              current: { player: "4", x: 4, y: 2 },
+            "0x4": {
+              prev: { player: "0x4", x: 4, y: 1 },
+              current: { player: "0x4", x: 4, y: 2 },
             },
           },
         },
       },
-      keys: { "4": { player: "4" } },
-      types: { "4": "update" },
+      keys: { "0x4": { player: "0x4" } },
+      types: { "0x4": "update" },
     });
   });
 
@@ -94,22 +94,22 @@ describe("defineQuery", () => {
     const result = subscribeQuery({ store, query: [In(Position), In(Health)] });
     result.subscribe(subscriber);
 
-    setRecord({ store, table: Health, key: { player: 2 }, record: { health: 2 } });
+    setRecord({ store, table: Health, key: { player: `0x2` }, record: { health: 2 } });
 
     expect(subscriber).toBeCalledTimes(1);
     attest(lastUpdate).snap({
       records: {
         namespace1: {
           Health: {
-            "2": {
+            "0x2": {
               prev: undefined,
-              current: { player: 2, health: 2 },
+              current: { player: `0x2`, health: 2 },
             },
           },
         },
       },
-      keys: { "2": { player: "2" } },
-      types: { "2": "enter" },
+      keys: { "0x2": { player: "0x2" } },
+      types: { "0x2": "enter" },
     });
   });
 
@@ -119,22 +119,22 @@ describe("defineQuery", () => {
     const result = subscribeQuery({ store, query: [In(Position), In(Health)] });
     result.subscribe(subscriber);
 
-    deleteRecord({ store, table: Position, key: { player: 3 } });
+    deleteRecord({ store, table: Position, key: { player: `0x3` } });
 
     expect(subscriber).toBeCalledTimes(1);
     attest(lastUpdate).snap({
       records: {
         namespace1: {
           Position: {
-            "3": {
-              prev: { player: "3", x: 3, y: 2 },
+            "0x3": {
+              prev: { player: "0x3", x: 3, y: 2 },
               current: undefined,
             },
           },
         },
       },
-      keys: { "3": { player: "3" } },
-      types: { "3": "exit" },
+      keys: { "0x3": { player: "0x3" } },
+      types: { "0x3": "exit" },
     });
   });
 
@@ -146,22 +146,22 @@ describe("defineQuery", () => {
     expect(subscriber).toBeCalledTimes(1);
     attest(lastUpdate).snap({
       keys: {
-        "3": { player: "3" },
-        "4": { player: "4" },
+        "0x3": { player: "0x3" },
+        "0x4": { player: "0x4" },
       },
       records: {
         namespace1: {
           Position: {
-            "3": { prev: undefined, current: { player: "3", x: 3, y: 2 } },
-            "4": { prev: undefined, current: { player: "4", x: 4, y: 1 } },
+            "0x3": { prev: undefined, current: { player: "0x3", x: 3, y: 2 } },
+            "0x4": { prev: undefined, current: { player: "0x4", x: 4, y: 1 } },
           },
           Health: {
-            "3": { prev: undefined, current: { player: "3", health: 3 } },
-            "4": { prev: undefined, current: { player: "4", health: 4 } },
+            "0x3": { prev: undefined, current: { player: "0x3", health: 3 } },
+            "0x4": { prev: undefined, current: { player: "0x4", health: 4 } },
           },
         },
       },
-      types: { "3": "enter", "4": "enter" },
+      types: { "0x3": "enter", "0x4": "enter" },
     });
   });
 });

@@ -14,7 +14,7 @@ import { TableRecord } from "./common";
  * recordMatches({ x: 1 }, { x: 1, y: 3 }) // returns true because x is equal and y is not present in a
  * ```
  */
-export function recordMatches(a?: TableRecord, b?: TableRecord) {
+export function recordMatches(a?: Partial<TableRecord>, b?: TableRecord) {
   if (!a && !b) return true;
   if (!a || !b) return false;
 
