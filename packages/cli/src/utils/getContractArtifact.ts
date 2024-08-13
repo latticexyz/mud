@@ -31,9 +31,9 @@ const artifactSchema = z.object({
   abi: abiSchema,
 });
 
-export function getContractArtifact(importedArtifact: unknown): GetContractArtifactResult {
+export function getContractArtifact(artifactJson: unknown): GetContractArtifactResult {
   // TODO: improve errors or replace with arktype?
-  const artifact = artifactSchema.parse(importedArtifact);
+  const artifact = artifactSchema.parse(artifactJson);
   const placeholders = findPlaceholders(artifact.bytecode.linkReferences);
 
   return {

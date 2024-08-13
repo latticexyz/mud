@@ -22,13 +22,13 @@ export async function importContractArtifact({
   packageJsonPath,
   artifactPath,
 }: ImportContractArtifactOptions): Promise<GetContractArtifactResult> {
-  let importedArtifact;
+  let artfactJson;
   try {
     const requirePath = packageJsonPath ?? (await findUp("package.json", { cwd: process.cwd() }));
     if (!requirePath) throw new Error("Could not find package.json to import relative to.");
 
     const require = createRequire(requirePath);
-    importedArtifact = require(artifactPath);
+    artfactJson = require(artifactPath);
   } catch (error) {
     console.error();
     console.error("Could not import contract artifact at", artifactPath);
@@ -36,5 +36,5 @@ export async function importContractArtifact({
     throw error;
   }
 
-  return getContractArtifact(importedArtifact);
+  return getContractArtifact(artfactJson);
 }
