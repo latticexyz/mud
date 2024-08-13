@@ -2,7 +2,10 @@ import { Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
 export const CONFIG = {
+  TABLES_VIEWER_REFETCH_INTERVAL: 1_000,
   BALANCES_REFETCH_INTERVAL: 15_000,
+  TRANSACTION_RECEIPT_POLL_INTERVAL: 100,
+  TABLE_PAGE_SIZE: 50,
 };
 
 export const NON_EDITABLE_TABLES = ["__chainState", "__mudStoreTables"];

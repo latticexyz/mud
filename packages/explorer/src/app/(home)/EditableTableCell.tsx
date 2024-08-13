@@ -8,7 +8,7 @@ import { SchemaAbiType } from "@latticexyz/schema-type/internal";
 import { useQueryClient } from "@tanstack/react-query";
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { Checkbox } from "../../components/ui/Checkbox";
-import { ACCOUNT_PRIVATE_KEYS } from "../../consts";
+import { ACCOUNT_PRIVATE_KEYS, CONFIG } from "../../consts";
 import { useWorldAddress } from "../../hooks/useWorldAddress";
 import { camelCase } from "../../lib/utils";
 import { useStore } from "../../store";
@@ -70,7 +70,7 @@ export function EditableTableCell({
 
       const transactionReceipt = await waitForTransactionReceipt(wagmiConfig, {
         hash: txHash,
-        pollingInterval: 100,
+        pollingInterval: CONFIG.TRANSACTION_RECEIPT_POLL_INTERVAL,
       });
 
       toast.success(`Transaction successful with hash: ${txHash}`, {
