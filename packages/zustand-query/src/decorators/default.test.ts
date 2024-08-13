@@ -63,6 +63,45 @@ describe("store with default actions", () => {
     });
   });
 
+  describe("encodeKey", () => {
+    it("should throw a type error if an invalid key is provided", () => {
+      const config = defineStore({
+        tables: {
+          test: {
+            schema: { field1: "uint32", field2: "uint256", field3: "string" },
+            key: ["field1", "field2"],
+          },
+        },
+      });
+
+      const store = createStore(config);
+      const table = config.tables.test;
+
+      attest(() =>
+        store.encodeKey({
+          table,
+          // @ts-expect-error Property 'field2' is missing in type '{ field1: number; }'
+          key: {
+            field1: 1,
+          },
+        }),
+      )
+        .throws(`Provided key is missing field field2.`)
+        .type.errors(`Property 'field2' is missing in type '{ field1: number; }'`);
+
+      attest(
+        store.encodeKey({
+          table,
+          key: {
+            field1: 1,
+            // @ts-expect-error Type 'string' is not assignable to type 'bigint'.
+            field2: "invalid",
+          },
+        }),
+      ).type.errors(`Type 'string' is not assignable to type 'bigint'.`);
+    });
+  });
+
   describe("getRecord", () => {
     it("should get a record by key from the table", () => {
       const config = defineStore({
