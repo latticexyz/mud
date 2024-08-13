@@ -26,9 +26,11 @@
     "src"
   ],
   "scripts": {
-    "build": "pnpm run build:mud && pnpm run build:js",
+    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts && pnpm run build:js",
+    "build:abi": "forge build",
+    "build:abi-ts": "abi-ts",
     "build:js": "tsup",
-    "build:mud": "for dir in src/modules/metadata; do (cd \"$dir\" && pwd && mud tablegen); done && mud build",
+    "build:mud": "tsx ./ts/build.ts",
     "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud",
     "clean:abi": "forge clean",
     "clean:js": "rimraf dist",
@@ -48,7 +50,7 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
-    "@latticexyz/cli": "workspace:*",
+    "@latticexyz/abi-ts": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
     "@types/ejs": "^3.1.1",
     "@types/mocha": "^9.1.1",
