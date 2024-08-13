@@ -28,6 +28,7 @@ export async function configToModules<config extends World>(
 ): Promise<readonly Module[]> {
   const defaultModules: Module[] = [
     {
+      optional: true,
       name: "MetadataModule",
       installAsRoot: false,
       installData: "0x",
@@ -84,6 +85,7 @@ export async function configToModules<config extends World>(
       }
 
       return {
+        optional: false,
         name,
         installAsRoot: mod.root,
         installData: installArgs.length === 0 ? "0x" : installArgs[0],

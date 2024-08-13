@@ -15,6 +15,7 @@ import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";
 import { ensureWorldFactory } from "./ensureWorldFactory";
 import { Table } from "@latticexyz/config";
+import { ensureResourceLabels } from "./ensureResourceLabels";
 
 type DeployOptions = {
   client: Client<Transport, Chain | undefined, Account>;
@@ -89,10 +90,14 @@ export async function deploy({
     throw new Error(`Unsupported World version: ${worldDeploy.worldVersion}`);
   }
 
+  const resources = [
+    ...tables.map((table) => ({ resourceId: table.tableId, label: table.label })),
+    ...systems.map((system) => ({ resourceId: system.systemId, label: system.label })),
+  ];
   const namespaceTxs = await ensureNamespaceOwner({
     client,
     worldDeploy,
-    resourceIds: [...tables.map((table) => table.tableId), ...systems.map((system) => system.systemId)],
+    resourceIds: resources.map(({ resourceId }) => resourceId),
   });
 
   debug("waiting for all namespace registration transactions to confirm");
@@ -124,8 +129,13 @@ export async function deploy({
     worldDeploy,
     modules,
   });
+  const labelTxs = await ensureResourceLabels({
+    client,
+    worldDeploy,
+    resources,
+  });
 
-  const txs = [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs];
+  const txs = [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs, ...labelTxs];
 
   // wait for each tx separately/serially, because parallelizing results in RPC errors
   debug("waiting for all transactions to confirm");
