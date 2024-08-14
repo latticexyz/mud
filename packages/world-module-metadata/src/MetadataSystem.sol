@@ -16,7 +16,7 @@ contract MetadataSystem is System {
   }
 
   function tagResource(ResourceId resource, bytes32 tag) public {
-    _tagResource(resource, tag, abi.encodePacked(true));
+    _tagResource(resource, tag, new bytes(1));
   }
 
   function tagResource(ResourceId resource, bytes32 tag, bytes memory value) public {

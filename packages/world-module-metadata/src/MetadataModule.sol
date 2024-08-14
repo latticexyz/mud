@@ -11,8 +11,6 @@ import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 import { MetadataSystem } from "./MetadataSystem.sol";
 import { ResourceTag } from "./codegen/tables/ResourceTag.sol";
 
-// TODO: docs on intended use (optional module, default installed, labels are optional for UX)
-
 /**
  * @title MetadataModule
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
@@ -51,6 +49,7 @@ contract MetadataModule is Module {
       world.registerSystem(metadataSystemId, metadataSystem, true);
       world.registerFunctionSelector(metadataSystemId, "hasResourceTag(bytes32,bytes32)");
       world.registerFunctionSelector(metadataSystemId, "getResourceTag(bytes32,bytes32)");
+      world.registerFunctionSelector(metadataSystemId, "tagResource(bytes32,bytes32)");
       world.registerFunctionSelector(metadataSystemId, "tagResource(bytes32,bytes32,bytes)");
       world.registerFunctionSelector(metadataSystemId, "untagResource(bytes32,bytes32)");
     }

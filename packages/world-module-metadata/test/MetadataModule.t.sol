@@ -50,11 +50,28 @@ contract MetadataModuleTest is Test, GasReporter {
     world.installModule(metadataModule, new bytes(0));
     ResourceId resource = ResourceTag._tableId;
 
+    assertEq(world.metadata__hasResourceTag(resource, "admin"), false);
+    assertEq(world.metadata__getResourceTag(resource, "admin"), "");
+    assertEq(ResourceTag.get(resource, "admin"), "");
+
+    startGasReport("tag resource");
+    world.metadata__tagResource(resource, "admin");
+    endGasReport();
+
+    assertEq(world.metadata__hasResourceTag(resource, "admin"), true);
+    assertEq(world.metadata__getResourceTag(resource, "admin"), new bytes(1));
+    assertEq(ResourceTag.get(resource, "admin"), new bytes(1));
+  }
+
+  function testTagResourceWithValue() public {
+    world.installModule(metadataModule, new bytes(0));
+    ResourceId resource = ResourceTag._tableId;
+
     assertEq(world.metadata__hasResourceTag(resource, "label"), false);
     assertEq(world.metadata__getResourceTag(resource, "label"), "");
     assertEq(ResourceTag.get(resource, "label"), "");
 
-    startGasReport("tag resource");
+    startGasReport("tag resource with value");
     world.metadata__tagResource(resource, "label", "ResourceTag");
     endGasReport();
 
