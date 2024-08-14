@@ -1,3 +1,4 @@
+import { CollapseCode } from "../../components/CollapseCode";
 import { Callout } from "nextra/components";
 
 # Dozer
@@ -28,6 +29,40 @@ You can see the data schema for the `World` [in the block explorer](https://expl
 
 1. In Mud DevTools see your account address and [fund it on Garnet](https://garnetchain.com/faucet).
    You may need to get test ETH for your own address, and then transfer it to the account address the application uses.
+
+1. You can now create, complete, and delete tasks.
+
+1. If you want to see the content of the `app__Creator` table, edit `mud.config.ts` to add this definition.
+
+   <CollapseCode>
+
+   ```typescript filename="mud.config.ts" copy showLineNumbers {15-21}
+   import { defineWorld } from "@latticexyz/world";
+
+   export default defineWorld({
+     namespace: "app",
+     tables: {
+       Tasks: {
+         schema: {
+           id: "bytes32",
+           createdAt: "uint256",
+           completedAt: "uint256",
+           description: "string",
+         },
+         key: ["id"],
+       },
+       Creator: {
+         schema: {
+           id: "bytes32",
+           taskCreator: "address",
+         },
+         key: ["id"],
+       },
+     },
+   });
+   ```
+
+   </CollapseCode>
 
 </details>
 
