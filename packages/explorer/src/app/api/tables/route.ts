@@ -1,4 +1,4 @@
-import { getDatabase } from "../getDatabase";
+import { getDatabase } from "../utils/getDatabase";
 
 export const dynamic = "force-dynamic";
 

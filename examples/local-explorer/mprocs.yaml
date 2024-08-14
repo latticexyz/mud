@@ -18,4 +18,4 @@ procs:
     shell: bash explorer-watcher.sh
     env:
       PORT: "13690"
-      MODE: "production"
+      MODE: "development"
