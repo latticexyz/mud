@@ -28,6 +28,7 @@ describe("defineStore", () => {
               label: "Example",
               type: "table",
               namespace: "",
+              namespaceLabel: "",
               name: "Example",
               tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
               schema: {
@@ -47,6 +48,7 @@ describe("defineStore", () => {
           label: "Example",
           type: "table",
           namespace: "",
+          namespaceLabel: "",
           name: "Example",
           tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
           schema: {
@@ -80,6 +82,7 @@ describe("defineStore", () => {
         readonly Example: {
           readonly label: "Example"
           readonly type: "table"
+          readonly namespaceLabel: ""
           readonly namespace: string
           readonly name: string
           readonly tableId: \`0x\${string}\`
@@ -113,6 +116,7 @@ describe("defineStore", () => {
     readonly Example: {
       readonly label: "Example"
       readonly type: "table"
+      readonly namespaceLabel: ""
       readonly namespace: string
       readonly name: string
       readonly tableId: \`0x\${string}\`
@@ -180,6 +184,7 @@ describe("defineStore", () => {
               label: "Example",
               type: "table",
               namespace: "",
+              namespaceLabel: "",
               name: "Example",
               tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
               schema: {
@@ -199,6 +204,7 @@ describe("defineStore", () => {
           label: "Example",
           type: "table",
           namespace: "",
+          namespaceLabel: "",
           name: "Example",
           tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
           schema: {
@@ -232,6 +238,7 @@ describe("defineStore", () => {
         readonly Example: {
           readonly label: "Example"
           readonly type: "table"
+          readonly namespaceLabel: "root"
           readonly namespace: string
           readonly name: string
           readonly tableId: \`0x\${string}\`
@@ -265,6 +272,7 @@ describe("defineStore", () => {
     readonly root__Example: {
       readonly label: "Example"
       readonly type: "table"
+      readonly namespaceLabel: "root"
       readonly namespace: string
       readonly name: string
       readonly tableId: \`0x\${string}\`

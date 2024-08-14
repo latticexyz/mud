@@ -36,6 +36,7 @@ export type Table = {
   readonly label: string;
   readonly type: satisfy<ResourceType, "table" | "offchainTable">;
   readonly namespace: string;
+  readonly namespaceLabel: string;
   readonly name: string;
   readonly tableId: Hex;
   readonly schema: Schema;
