@@ -15,7 +15,7 @@ procs:
       FOLLOW_BLOCK_TAG: "latest"
       SQLITE_FILENAME: "indexer.db"
   explorer-watcher:
-    shell: bash explorer-watcher.sh
+    shell: node explorer-watcher.mjs
     env:
       PORT: "13690"
       MODE: "development"

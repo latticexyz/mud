@@ -2,9 +2,17 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const worldAddress = request.nextUrl.searchParams.get("worldAddress") || process.env.NEXT_PUBLIC_WORLD_ADDRESS;
+  const chainId = request.nextUrl.searchParams.get("chainId");
+  const worldAddress = request.nextUrl.searchParams.get("worldAddress");
   const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-world-address", worldAddress as string);
+
+  if (chainId) {
+    requestHeaders.set("x-chain-id", chainId);
+  }
+
+  if (worldAddress) {
+    requestHeaders.set("x-world-address", worldAddress as string);
+  }
 
   return NextResponse.next({
     request: {
