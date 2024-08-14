@@ -11,7 +11,6 @@ import { getRpcUrl } from "@latticexyz/common/foundry";
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
 import { getWorldAbi } from "@latticexyz/world/internal";
-import { deduplicateAbi } from "./deduplicateAbi";
 
 export const dynamic = "force-dynamic";
 
@@ -57,7 +56,7 @@ export async function GET(req: Request) {
       fromBlock,
       toBlock,
     });
-    const abi = deduplicateAbi(worldAbiResponse)
+    const abi = worldAbiResponse
       .filter((entry): entry is AbiFunction => entry.type === "function")
       .sort((a, b) => a.name.localeCompare(b.name));
 
