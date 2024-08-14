@@ -11,5 +11,9 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IMetadataSystem {
-  function metadata__setResource(ResourceId resource, bytes32 name, string memory value) external;
+  function metadata__getResourceTag(ResourceId resource, bytes32 tag) external view returns (bytes memory);
+
+  function metadata__setResourceTag(ResourceId resource, bytes32 tag, bytes memory value) external;
+
+  function metadata__deleteResourceTag(ResourceId resource, bytes32 tag) external;
 }

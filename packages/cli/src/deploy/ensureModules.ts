@@ -60,7 +60,9 @@ export async function ensureModules({
                   });
             } catch (error) {
               if (mod.optional) {
-                debug(`optional module ${mod.name} install failed\n\n${error}`);
+                debug(
+                  `optional module ${mod.name} install failed, skipping\n  ${error instanceof BaseError ? error.shortMessage : error}`,
+                );
                 return;
               }
               if (error instanceof BaseError && error.message.includes("Module_AlreadyInstalled")) {

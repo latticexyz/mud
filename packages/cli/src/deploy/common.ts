@@ -107,5 +107,5 @@ export type Module = DeterministicContract & {
    * @internal
    * Optional modules warn instead of throw if they revert while being installed.
    */
-  readonly optional: boolean;
+  readonly optional?: boolean;
 };

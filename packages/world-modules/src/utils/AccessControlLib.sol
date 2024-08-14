@@ -5,7 +5,6 @@ import { ResourceId, WorldResourceIdInstance } from "@latticexyz/world/src/World
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
 import { ResourceAccess } from "@latticexyz/world/src/codegen/tables/ResourceAccess.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
-import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 
 /**
  * @title AccessControlLib
@@ -51,17 +50,6 @@ library AccessControlLib {
   function requireOwner(ResourceId resourceId, address caller) internal view {
     if (NamespaceOwner.get(resourceId.getNamespaceId()) != caller) {
       revert IWorldErrors.World_AccessDenied(resourceId.toString(), caller);
-    }
-  }
-
-  /**
-   * @notice Check for existence of the given resource ID.
-   * @dev Reverts with IWorldErrors.World_ResourceNotFound if the resource does not exist.
-   * @param resourceId The resource ID to check existence for.
-   */
-  function requireExistence(ResourceId resourceId) internal view {
-    if (!ResourceIds.getExists(resourceId)) {
-      revert IWorldErrors.World_ResourceNotFound(resourceId, resourceId.toString());
     }
   }
 }

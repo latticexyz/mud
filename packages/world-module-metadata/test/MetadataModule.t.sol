@@ -10,9 +10,9 @@ import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@lattic
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
 
-import { MetadataModule } from "../src/modules/metadata/MetadataModule.sol";
-import { IWorld } from "../src/modules/metadata/codegen/world/IWorld.sol";
-import { Resource as ResourceMetadata } from "../src/modules/metadata/codegen/tables/Resource.sol";
+import { MetadataModule } from "../src/MetadataModule.sol";
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { ResourceTag } from "../src/codegen/tables/ResourceTag.sol";
 
 contract MetadataModuleTest is Test, GasReporter {
   using WorldResourceIdInstance for ResourceId;
@@ -30,7 +30,7 @@ contract MetadataModuleTest is Test, GasReporter {
     world.installModule(metadataModule, new bytes(0));
     endGasReport();
 
-    ResourceId namespace = ResourceMetadata._tableId.getNamespaceId();
+    ResourceId namespace = ResourceTag._tableId.getNamespaceId();
     assertEq(NamespaceOwner.get(namespace), address(this));
 
     // Installing again will revert because metadata namespace isn't owned by the module, so the module is unable to write to it.
@@ -46,42 +46,70 @@ contract MetadataModuleTest is Test, GasReporter {
     assertEq(NamespaceOwner.get(namespace), address(this));
   }
 
-  function testSetResourceMetadata() public {
+  function testSetResourceTag() public {
     world.installModule(metadataModule, new bytes(0));
-    ResourceId resource = ResourceMetadata._tableId;
+    ResourceId resource = ResourceTag._tableId;
 
-    assertEq(ResourceMetadata.get(resource, "label"), "");
+    assertEq(world.metadata__getResourceTag(resource, "label"), "");
+    assertEq(ResourceTag.get(resource, "label"), "");
 
-    startGasReport("set resource metadata");
-    world.metadata__setResource(resource, "label", "ResourceMetadata");
+    startGasReport("set resource tag");
+    world.metadata__setResourceTag(resource, "label", "ResourceTag");
     endGasReport();
 
-    assertEq(ResourceMetadata.get(resource, "label"), "ResourceMetadata");
+    assertEq(world.metadata__getResourceTag(resource, "label"), "ResourceTag");
+    assertEq(ResourceTag.get(resource, "label"), "ResourceTag");
 
-    // metadata is mutable
-    world.metadata__setResource(resource, "label", "Resource");
-    assertEq(ResourceMetadata.get(resource, "label"), "Resource");
+    // metadata is mutable, so make sure we can mutate it
+    world.metadata__setResourceTag(resource, "label", "Resource");
+    assertEq(world.metadata__getResourceTag(resource, "label"), "Resource");
+    assertEq(ResourceTag.get(resource, "label"), "Resource");
   }
 
-  function testSetNonexistentResourceMetadata() public {
+  function testDeleteResourceTag() public {
+    world.installModule(metadataModule, new bytes(0));
+    ResourceId resource = ResourceTag._tableId;
+
+    world.metadata__setResourceTag(resource, "label", "ResourceTag");
+    assertEq(ResourceTag.get(resource, "label"), "ResourceTag");
+    assertEq(world.metadata__getResourceTag(resource, "label"), "ResourceTag");
+
+    startGasReport("delete resource tag");
+    world.metadata__deleteResourceTag(resource, "label");
+    endGasReport();
+
+    assertEq(world.metadata__getResourceTag(resource, "label"), "");
+    assertEq(ResourceTag.get(resource, "label"), "");
+  }
+
+  function testTagNonexistentResource() public {
     world.installModule(metadataModule, new bytes(0));
     ResourceId resource = WorldResourceIdLib.encode("tb", "whatever", "SomeTable");
 
     vm.expectRevert(
       abi.encodeWithSelector(IWorldErrors.World_ResourceNotFound.selector, resource, resource.toString())
     );
-    world.metadata__setResource(resource, "label", "SomeTable");
+    world.metadata__setResourceTag(resource, "label", "SomeTable");
+
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_ResourceNotFound.selector, resource, resource.toString())
+    );
+    world.metadata__deleteResourceTag(resource, "label");
   }
 
-  function testSetUnownedResourceMetadata(address caller) public {
+  function testTagUnownedResource(address caller) public {
     vm.assume(caller != address(0));
     vm.assume(caller != address(this));
 
     world.installModule(metadataModule, new bytes(0));
     ResourceId resource = NamespaceOwner._tableId;
 
-    vm.prank(caller);
+    vm.startPrank(caller);
+
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, resource.toString(), caller));
-    world.metadata__setResource(resource, "label", "NamespaceOwner");
+    world.metadata__setResourceTag(resource, "label", "NamespaceOwner");
+
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, resource.toString(), caller));
+    world.metadata__deleteResourceTag(resource, "label");
   }
 }

@@ -1,21 +1,21 @@
 {
-  "name": "@latticexyz/world-modules",
+  "name": "@latticexyz/world-module-metadata",
   "version": "2.1.0",
-  "description": "World modules",
+  "description": "Metadata world module",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/world-modules"
+    "directory": "packages/world-module-metadata"
   },
   "license": "MIT",
   "type": "module",
   "exports": {
-    "./internal/mud.config": "./dist/mud.config.js",
+    "./mud.config": "./dist/mud.config.js",
     "./out/*": "./out/*"
   },
   "typesVersions": {
     "*": {
-      "internal/mud.config": [
+      "mud.config": [
         "./dist/mud.config.d.ts"
       ]
     }
@@ -30,11 +30,11 @@
     "build:abi": "forge build",
     "build:abi-ts": "abi-ts",
     "build:js": "tsup",
-    "build:mud": "mud build",
+    "build:mud": "tsx ./ts/build.ts",
     "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud",
     "clean:abi": "forge clean",
     "clean:js": "rimraf dist",
-    "clean:mud": "rimraf src/codegen",
+    "clean:mud": "rimraf src/**/codegen",
     "dev": "tsup --watch",
     "gas-report": "gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
@@ -42,23 +42,16 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@latticexyz/common": "workspace:*",
-    "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
-    "@latticexyz/world": "workspace:*",
-    "zod": "3.23.8"
+    "@latticexyz/world": "workspace:*"
   },
   "devDependencies": {
     "@latticexyz/abi-ts": "workspace:*",
-    "@latticexyz/cli": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
-    "@types/ejs": "^3.1.1",
-    "@types/mocha": "^9.1.1",
     "@types/node": "^18.15.11",
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
-    "glob": "^10.4.2",
     "solhint": "^3.3.7",
     "tsup": "^6.7.0",
     "tsx": "^3.12.6",
