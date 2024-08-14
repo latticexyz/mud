@@ -3,13 +3,13 @@ pragma solidity >=0.8.24;
 
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { Module } from "@latticexyz/world/src/Module.sol";
-import { AccessControlLib } from "./AccessControlLib.sol";
+import { requireOwner } from "./common.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 
 import { MetadataSystem } from "./MetadataSystem.sol";
-import { Resource as ResourceMetadata } from "./codegen/tables/Resource.sol";
+import { ResourceTag } from "./codegen/tables/ResourceTag.sol";
 
 // TODO: docs on intended use (optional module, default installed, labels are optional for UX)
 
@@ -25,15 +25,14 @@ contract MetadataModule is Module {
   function install(bytes memory) public {
     IBaseWorld world = IBaseWorld(_world());
 
-    ResourceId namespace = ResourceMetadata._tableId.getNamespaceId();
+    ResourceId namespace = ResourceTag._tableId.getNamespaceId();
     if (!ResourceIds.getExists(namespace)) {
       world.registerNamespace(namespace);
     }
+    requireOwner(namespace, address(this));
 
-    AccessControlLib.requireOwner(namespace, address(this));
-
-    if (!ResourceIds.getExists(ResourceMetadata._tableId)) {
-      ResourceMetadata.register();
+    if (!ResourceIds.getExists(ResourceTag._tableId)) {
+      ResourceTag.register();
     }
 
     ResourceId metadataSystemId = WorldResourceIdLib.encode(
@@ -41,9 +40,13 @@ contract MetadataModule is Module {
       namespace.getNamespace(),
       "MetadataSystem"
     );
+    // TODO: add support for upgrading system and registering new function selectors
     if (!ResourceIds.getExists(metadataSystemId)) {
       world.registerSystem(metadataSystemId, metadataSystem, true);
-      world.registerFunctionSelector(metadataSystemId, "setResource(bytes32,bytes32,string)");
+      world.registerFunctionSelector(metadataSystemId, "hasResourceTag(bytes32,bytes32)");
+      world.registerFunctionSelector(metadataSystemId, "getResourceTag(bytes32,bytes32)");
+      world.registerFunctionSelector(metadataSystemId, "tagResource(bytes32,bytes32,bytes)");
+      world.registerFunctionSelector(metadataSystemId, "untagResource(bytes32,bytes32)");
     }
 
     world.transferOwnership(namespace, _msgSender());
