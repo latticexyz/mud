@@ -11,6 +11,8 @@ import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 import { MetadataSystem } from "./MetadataSystem.sol";
 import { Resource as ResourceMetadata } from "./codegen/tables/Resource.sol";
 
+// TODO: docs on intended use (optional module, default installed, labels are optional for UX)
+
 contract MetadataModule is Module {
   using WorldResourceIdInstance for ResourceId;
 

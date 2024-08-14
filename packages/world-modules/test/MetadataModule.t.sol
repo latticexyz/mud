@@ -33,6 +33,9 @@ contract MetadataModuleTest is Test, GasReporter {
     assertEq(NamespaceOwner.get(ResourceMetadata._tableId.getNamespaceId()), address(this));
   }
 
+  // TODO: second install is idempotent
+  // TODO: install with metadata namespace existing
+
   function testSetResourceMetadata() public {
     world.installModule(metadataModule, new bytes(0));
 
@@ -43,5 +46,9 @@ contract MetadataModuleTest is Test, GasReporter {
     endGasReport();
 
     assertEq(ResourceMetadata.get(ResourceMetadata._tableId, "label"), "ResourceMetadata");
+
+    // TODO: can't set metadata in a namespace I don't own
+    // TODO: can't set metadata for a non existent resource
+    // TODO: can override label if it already is set
   }
 }
