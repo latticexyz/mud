@@ -102,20 +102,24 @@ export type TableSubscribers = {
 
 export type ConfigUpdate = { prev: Table | undefined; current: Table };
 
-export type StoreUpdates = {
+export type StoreUpdates<config extends StoreConfig = StoreConfig> = {
   config: {
     [namespace: string]: {
       [table: string]: ConfigUpdate;
     };
   };
   records: {
+    [namespace in getNamespaces<config>]: {
+      [table in getTables<config, namespace>]: TableUpdates<getTableConfig<config, namespace, table>>;
+    };
+  } & {
     [namespace: string]: {
       [table: string]: TableUpdates;
     };
   };
 };
 
-export type StoreUpdatesSubscriber = (updates: StoreUpdates) => void;
+export type StoreUpdatesSubscriber<config extends StoreConfig = StoreConfig> = (updates: StoreUpdates<config>) => void;
 
 export type StoreSubscribers = Set<StoreUpdatesSubscriber>;
 
