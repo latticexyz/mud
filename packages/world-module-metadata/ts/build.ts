@@ -8,6 +8,7 @@ import { worldgen } from "@latticexyz/world/node";
  */
 
 // TODO: move tablegen/worldgen to CLI commands from store/world we can run in package.json instead of a custom script
+//       (https://github.com/latticexyz/mud/issues/3030)
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const configPath = "../mud.config";

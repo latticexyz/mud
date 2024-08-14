@@ -40,7 +40,6 @@ contract MetadataModuleTest is Test, GasReporter {
     world.installModule(metadataModule, new bytes(0));
 
     // Transferring the namespace to the module and installing should be a no-op/idempotent and the module will return namespace ownership.
-    // TODO: is this a security concern? could someone frontrun by putting a tx in between the two calls below?
     world.transferOwnership(namespace, address(metadataModule));
     world.installModule(metadataModule, new bytes(0));
     assertEq(NamespaceOwner.get(namespace), address(this));
