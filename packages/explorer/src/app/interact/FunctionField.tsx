@@ -1,16 +1,11 @@
 "use client";
 
 import { Coins, Eye, Send } from "lucide-react";
-import { toast } from "sonner";
-import { Abi, AbiFunction } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
-import { useChainId, useWriteContract } from "wagmi";
+import { AbiFunction } from "viem";
 import { z } from "zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
-import { readContract, waitForTransactionReceipt } from "@wagmi/core";
 import { Button } from "../../components/ui/Button";
 import {
   Form,
@@ -22,10 +17,12 @@ import {
 } from "../../components/ui/Form";
 import { Input } from "../../components/ui/Input";
 import { Separator } from "../../components/ui/Separator";
-import { ACCOUNT_PRIVATE_KEYS } from "../../consts";
-import { useWorldAddress } from "../../hooks/useWorldAddress";
-import { useStore } from "../../store";
-import { wagmiConfig } from "../Providers";
+import { useContractMutation } from "./useContractMutation";
+
+export enum FunctionType {
+  READ,
+  WRITE,
+}
 
 type Props = {
   abi: AbiFunction;
@@ -37,12 +34,12 @@ const formSchema = z.object({
 });
 
 export function FunctionField({ abi }: Props) {
-  const queryClient = useQueryClient();
-  const chainId = useChainId();
+  const operationType: FunctionType =
+    abi.stateMutability === "view" || abi.stateMutability === "pure"
+      ? FunctionType.READ
+      : FunctionType.WRITE;
   const [result, setResult] = useState<string | null>(null);
-  const { account } = useStore();
-  const worldAddress = useWorldAddress();
-  const { writeContractAsync } = useWriteContract();
+  const mutation = useContractMutation({ abi, operationType });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,64 +49,13 @@ export function FunctionField({ abi }: Props) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (abi.stateMutability === "pure" || abi.stateMutability === "view") {
-      const result = await readContract(wagmiConfig, {
-        abi: [abi] as Abi,
-        address: worldAddress,
-        functionName: abi.name,
-        args: values.inputs,
-      });
+    const mutationResult = await mutation.mutateAsync({
+      inputs: values.inputs,
+      value: values.value,
+    });
 
-      setResult(result as string);
-    } else {
-      const toastId = toast.loading("Transaction submitted");
-
-      try {
-        const txHash = await writeContractAsync({
-          account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
-          abi: [abi] as Abi,
-          address: worldAddress,
-          functionName: abi.name,
-          args: values.inputs,
-          ...(values.value && { value: BigInt(values.value) }),
-        });
-
-        const transactionReceipt = await waitForTransactionReceipt(
-          wagmiConfig,
-          {
-            hash: txHash,
-            pollingInterval: 100,
-          },
-        );
-
-        toast.success(`Transaction successful with hash: ${txHash}`, {
-          id: toastId,
-        });
-
-        console.log("result:", txHash, transactionReceipt);
-      } catch (error: Error | unknown) {
-        console.log("error:", error);
-
-        let msg = "Something went wrong. Please try again.";
-        if (error instanceof Error) {
-          msg = error.message;
-        }
-
-        toast.error(msg, {
-          id: toastId,
-        });
-      } finally {
-        console.log(account);
-        queryClient.invalidateQueries({
-          queryKey: [
-            "balance",
-            {
-              address: account,
-              chainId,
-            },
-          ],
-        });
-      }
+    if (operationType === FunctionType.READ && "result" in mutationResult) {
+      setResult(JSON.stringify(mutationResult.result, null, 2));
     }
   }
 
@@ -140,24 +86,22 @@ export function FunctionField({ abi }: Props) {
           </span>
         </h3>
 
-        {abi?.inputs.map((input, index) => {
-          return (
-            <FormField
-              key={index}
-              control={form.control}
-              name={`inputs.${index}`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{input.name}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={input.type} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          );
-        })}
+        {abi?.inputs.map((input, index) => (
+          <FormField
+            key={index}
+            control={form.control}
+            name={`inputs.${index}`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{input.name}</FormLabel>
+                <FormControl>
+                  <Input placeholder={input.type} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ))}
 
         {abi.stateMutability === "payable" && (
           <FormField
@@ -175,7 +119,7 @@ export function FunctionField({ abi }: Props) {
           />
         )}
 
-        <Button type="submit">
+        <Button type="submit" disabled={mutation.isPending}>
           {(abi.stateMutability === "view" || abi.stateMutability === "pure") &&
             "Read"}
           {(abi.stateMutability === "payable" ||
@@ -183,9 +127,13 @@ export function FunctionField({ abi }: Props) {
             "Write"}
         </Button>
 
-        {result ? (
+        {result && (
           <pre className="text-md rounded border p-3 text-sm">{result}</pre>
-        ) : null}
+        )}
+
+        {mutation.isError && (
+          <p className="text-red-500">Error: {mutation.error.message}</p>
+        )}
       </form>
 
       <Separator />
