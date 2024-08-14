@@ -1,16 +1,14 @@
-import { Hex, Client, Transport, Chain, Account, stringToHex, parseAbi, BaseError } from "viem";
+import { Hex, Client, Transport, Chain, Account, stringToHex, BaseError } from "viem";
 import { WorldDeploy } from "./common";
 import { debug } from "./debug";
 import { hexToResource, writeContract } from "@latticexyz/common";
 import { isDefined } from "@latticexyz/common/utils";
+import metadataAbi from "@latticexyz/world-module-metadata/out/IMetadataSystem.sol/IMetadataSystem.abi.json" assert { type: "json" };
 
 type LabeledResource = {
   readonly resourceId: Hex;
   readonly label: string;
 };
-
-// TODO: import from metadata module (forge output is currently mangled)
-const metadataAbi = parseAbi(["function metadata__setResource(bytes32,bytes32,string)"]);
 
 export async function ensureResourceLabels({
   client,
@@ -38,8 +36,8 @@ export async function ensureResourceLabels({
             address: worldDeploy.address,
             abi: metadataAbi,
             // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
-            functionName: "metadata__setResource",
-            args: [resourceId, stringToHex("label", { size: 32 }), label],
+            functionName: "metadata__setResourceTag",
+            args: [resourceId, stringToHex("label", { size: 32 }), stringToHex(label)],
           });
         } catch (error) {
           debug(
