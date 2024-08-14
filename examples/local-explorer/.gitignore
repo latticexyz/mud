@@ -1,4 +1,4 @@
-# local env files
 .env*.local
+indexer.db
 
 node_modules
