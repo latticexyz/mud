@@ -5,10 +5,7 @@ import path from "path";
 const DEFAULT_DB_PATH = "indexer.db";
 
 export function getDatabase(): Database | null {
-  let dbPath = process.env.INDEXER_DB_PATH_ABSOLUTE;
-  if (!dbPath) {
-    dbPath = path.join(process.env.PWD as string, process.env.INDEXER_DB_PATH || DEFAULT_DB_PATH);
-  }
+  const dbPath = path.join(process.env.INIT_PWD as string, process.env.INDEXER_DB_PATH || DEFAULT_DB_PATH);
 
   if (!fs.existsSync(dbPath)) {
     return null;

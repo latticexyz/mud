@@ -14,8 +14,8 @@ procs:
       RPC_HTTP_URL: "http://127.0.0.1:8545"
       FOLLOW_BLOCK_TAG: "latest"
       SQLITE_FILENAME: "indexer.db"
-  explorer:
-    shell: pnpm explorer
+  explorer-watcher:
+    shell: bash explorer-watcher.sh
     env:
       PORT: "13690"
-      INDEXER_DB_PATH: "indexer.db"
+      EXPLORER_MODE: "development"
