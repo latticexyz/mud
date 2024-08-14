@@ -26,9 +26,7 @@ export function Form({ data }: Props) {
     <div className="flex">
       <div className="w-[350px]">
         <div className="sticky top-16 pr-4">
-          <h4 className="py-4 text-xs font-semibold uppercase opacity-70">
-            Jump to:
-          </h4>
+          <h4 className="py-4 text-xs font-semibold uppercase opacity-70">Jump to:</h4>
 
           <Input
             type="text"
@@ -60,22 +58,15 @@ export function Form({ data }: Props) {
                     )}
                   >
                     <span className="opacity-50">
-                      {abi.stateMutability === "payable" && (
-                        <Coins className="mr-2 inline-block h-4 w-4" />
-                      )}
-                      {(abi.stateMutability === "view" ||
-                        abi.stateMutability === "pure") && (
+                      {abi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
+                      {(abi.stateMutability === "view" || abi.stateMutability === "pure") && (
                         <Eye className="mr-2 inline-block h-4 w-4" />
                       )}
-                      {abi.stateMutability === "nonpayable" && (
-                        <Send className="mr-2 inline-block h-4 w-4" />
-                      )}
+                      {abi.stateMutability === "nonpayable" && <Send className="mr-2 inline-block h-4 w-4" />}
                     </span>
 
                     <span>{(abi as AbiFunction).name}</span>
-                    {abi.inputs.length > 0 && (
-                      <span className="opacity-50"> ({abi.inputs.length})</span>
-                    )}
+                    {abi.inputs.length > 0 && <span className="opacity-50"> ({abi.inputs.length})</span>}
                   </a>
                 </li>
               );
@@ -86,9 +77,7 @@ export function Form({ data }: Props) {
 
       <div className="border-l pl-4">
         {filteredFunctions.map((abi) => {
-          return (
-            <FunctionField key={JSON.stringify(abi)} abi={abi as AbiFunction} />
-          );
+          return <FunctionField key={JSON.stringify(abi)} abi={abi as AbiFunction} />;
         })}
       </div>
     </div>

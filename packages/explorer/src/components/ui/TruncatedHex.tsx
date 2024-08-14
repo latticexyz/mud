@@ -11,12 +11,8 @@ export function TruncatedHex({ hex }: Props) {
 
   return (
     <span>
-      <span className="after:select-none after:content-['…']">
-        {hex.slice(0, 6)}
-      </span>
-      <span className="tracking-[-1ch] text-transparent">
-        {hex.slice(6, -4)}
-      </span>
+      <span className="after:select-none after:content-['…']">{hex.slice(0, 6)}</span>
+      <span className="tracking-[-1ch] text-transparent">{hex.slice(6, -4)}</span>
       {hex.slice(-4)}
     </span>
   );

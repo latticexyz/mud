@@ -16,14 +16,7 @@ import {
 import { Button } from "../../components/ui/Button";
 import { Checkbox } from "../../components/ui/Checkbox";
 import { Input } from "../../components/ui/Input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../components/ui/Table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/Table";
 import { NON_EDITABLE_TABLES } from "../../consts";
 import { EditableTableCell } from "./EditableTableCell";
 import { bufferToBigInt } from "./utils/bufferToBigInt";
@@ -94,67 +87,49 @@ export function TablesViewer({ table: selectedTable }: Props) {
     enabled: Boolean(selectedTable),
   });
 
-  const columns: ColumnDef<{}>[] = schema?.map(
-    ({ name, type }: { name: string; type: string }) => {
-      return {
-        accessorKey: name,
-        header: ({
-          column,
-        }: {
-          column: {
-            toggleSorting: (ascending: boolean) => void;
-            getIsSorted: () => "asc" | "desc" | undefined;
-          };
-        }) => {
-          return (
-            <Button
-              variant="ghost"
-              className="-ml-4"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-            >
-              <span className="text-orange-500">{name}</span>
-              <span className="ml-1 opacity-70">
-                (
-                {mudTableConfig?.key_schema[name] ||
-                  mudTableConfig?.value_schema[name] ||
-                  type.toLowerCase()}
-                )
-              </span>
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-          );
-        },
-        cell: ({
-          row,
-        }: {
-          row: {
-            getValue: (name: string) => string;
-          };
-        }) => {
-          const keysSchema = Object.keys(mudTableConfig?.key_schema || {});
-          const keyTuple = keysSchema.map((key) => row.getValue(key));
-          const value = row.getValue(name);
-          if (
-            (selectedTable && NON_EDITABLE_TABLES.includes(selectedTable)) ||
-            keysSchema.includes(name)
-          ) {
-            return value?.toString();
-          }
+  const columns: ColumnDef<{}>[] = schema?.map(({ name, type }: { name: string; type: string }) => {
+    return {
+      accessorKey: name,
+      header: ({
+        column,
+      }: {
+        column: {
+          toggleSorting: (ascending: boolean) => void;
+          getIsSorted: () => "asc" | "desc" | undefined;
+        };
+      }) => {
+        return (
+          <Button
+            variant="ghost"
+            className="-ml-4"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            <span className="text-orange-500">{name}</span>
+            <span className="ml-1 opacity-70">
+              ({mudTableConfig?.key_schema[name] || mudTableConfig?.value_schema[name] || type.toLowerCase()})
+            </span>
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({
+        row,
+      }: {
+        row: {
+          getValue: (name: string) => string;
+        };
+      }) => {
+        const keysSchema = Object.keys(mudTableConfig?.key_schema || {});
+        const keyTuple = keysSchema.map((key) => row.getValue(key));
+        const value = row.getValue(name);
+        if ((selectedTable && NON_EDITABLE_TABLES.includes(selectedTable)) || keysSchema.includes(name)) {
+          return value?.toString();
+        }
 
-          return (
-            <EditableTableCell
-              config={mudTableConfig}
-              keyTuple={keyTuple}
-              name={name}
-              value={value?.toString()}
-            />
-          );
-        },
-      };
-    },
-  );
+        return <EditableTableCell config={mudTableConfig} keyTuple={keyTuple} name={name} value={value?.toString()} />;
+      },
+    };
+  });
 
   const table = useReactTable({
     data: rows,
@@ -228,12 +203,7 @@ export function TablesViewer({ table: selectedTable }: Props) {
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   );
                 })}
@@ -243,26 +213,15 @@ export function TablesViewer({ table: selectedTable }: Props) {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
+                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
@@ -280,12 +239,7 @@ export function TablesViewer({ table: selectedTable }: Props) {
           >
             Previous
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
+          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
             Next
           </Button>
         </div>

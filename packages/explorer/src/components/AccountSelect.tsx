@@ -2,22 +2,10 @@ import { Address, formatEther } from "viem";
 import { useBalance } from "wagmi";
 import { ACCOUNTS } from "../consts";
 import { useStore } from "../store";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/Select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
 import { TruncatedHex } from "./ui/TruncatedHex";
 
-function AccountSelectItem({
-  address,
-  name,
-}: {
-  address: Address;
-  name: string;
-}) {
+function AccountSelectItem({ address, name }: { address: Address; name: string }) {
   const balance = useBalance({
     address,
     query: {
@@ -45,13 +33,7 @@ export function AccountSelect() {
       </SelectTrigger>
       <SelectContent>
         {ACCOUNTS.map((address, index) => {
-          return (
-            <AccountSelectItem
-              key={address}
-              address={address}
-              name={`Account ${index + 1}`}
-            />
-          );
+          return <AccountSelectItem key={address} address={address} name={`Account ${index + 1}`} />;
         })}
       </SelectContent>
     </Select>

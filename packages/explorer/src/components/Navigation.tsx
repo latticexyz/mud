@@ -17,8 +17,7 @@ export function Navigation() {
           <Link
             href="/"
             className={cn("underline-offset-[16px] text-sm uppercase", {
-              "font-semibold underline decoration-orange-500 decoration-4":
-                pathname === "/",
+              "font-semibold underline decoration-orange-500 decoration-4": pathname === "/",
             })}
           >
             Data explorer
@@ -27,8 +26,7 @@ export function Navigation() {
           <Link
             href="/interact"
             className={cn("underline-offset-[16px] text-sm uppercase", {
-              "font-semibold underline decoration-orange-500 decoration-4":
-                pathname === "/interact",
+              "font-semibold underline decoration-orange-500 decoration-4": pathname === "/interact",
             })}
           >
             Interact

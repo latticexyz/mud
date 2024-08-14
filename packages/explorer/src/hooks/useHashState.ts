@@ -7,10 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 // source: https://github.com/vercel/next.js/discussions/49465
 export const useHashState = () => {
   const getCurrentHash = useMemo(
-    () => () =>
-      typeof window !== "undefined"
-        ? window.location.hash.replace(/^#!?/, "")
-        : "",
+    () => () => (typeof window !== "undefined" ? window.location.hash.replace(/^#!?/, "") : ""),
     [],
   );
   const router = useRouter();

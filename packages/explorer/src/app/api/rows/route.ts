@@ -10,9 +10,7 @@ type RowsResponse = Row[] | undefined;
 
 function doesTableExist(table: string) {
   const db = getDatabase();
-  const result = db
-    ?.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ?")
-    .get(table);
+  const result = db?.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ?").get(table);
 
   return Boolean(result);
 }
@@ -35,10 +33,7 @@ export async function GET(request: Request) {
     if (error instanceof Error) {
       return Response.json({ error: error.message }, { status: 400 });
     } else {
-      return Response.json(
-        { error: "An unknown error occurred" },
-        { status: 400 },
-      );
+      return Response.json({ error: "An unknown error occurred" }, { status: 400 });
     }
   }
 }

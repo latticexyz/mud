@@ -20,8 +20,7 @@ const jetbrains = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "Explorer",
-  description:
-    "Explorer is a tool for visually exploring and manipulating the state of worlds",
+  description: "Explorer is a tool for visually exploring and manipulating the state of worlds",
 };
 
 export default function RootLayout({

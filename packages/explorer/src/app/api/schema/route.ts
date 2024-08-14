@@ -21,10 +21,7 @@ export async function GET(request: Request) {
     if (error instanceof Error) {
       return Response.json({ error: error.message }, { status: 400 });
     } else {
-      return Response.json(
-        { error: "An unknown error occurred" },
-        { status: 400 },
-      );
+      return Response.json({ error: "An unknown error occurred" }, { status: 400 });
     }
   }
 }

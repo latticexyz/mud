@@ -24,12 +24,7 @@ type Props = {
   config: TableConfig;
 };
 
-export function EditableTableCell({
-  name,
-  config,
-  keyTuple,
-  value: defaultValue,
-}: Props) {
+export function EditableTableCell({ name, config, keyTuple, value: defaultValue }: Props) {
   const queryClient = useQueryClient();
   const chainId = useChainId();
   const { account } = useStore();

@@ -1,11 +1,4 @@
-import {
-  AbiFunction,
-  Address,
-  Hex,
-  createWalletClient,
-  http,
-  parseAbi,
-} from "viem";
+import { AbiFunction, Address, Hex, createWalletClient, http, parseAbi } from "viem";
 import { getBlockNumber, getLogs } from "viem/actions";
 import { getRpcUrl } from "@latticexyz/common/foundry";
 import { helloStoreEvent } from "@latticexyz/store";
@@ -65,10 +58,7 @@ export async function GET(req: Request) {
     if (error instanceof Error) {
       return Response.json({ error: error.message }, { status: 400 });
     } else {
-      return Response.json(
-        { error: "An unknown error occurred" },
-        { status: 400 },
-      );
+      return Response.json({ error: "An unknown error occurred" }, { status: 400 });
     }
   }
 }

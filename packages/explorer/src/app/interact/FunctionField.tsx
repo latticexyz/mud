@@ -7,14 +7,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../../components/ui/Button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../../components/ui/Form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../components/ui/Form";
 import { Input } from "../../components/ui/Input";
 import { Separator } from "../../components/ui/Separator";
 import { useContractMutation } from "./useContractMutation";
@@ -35,9 +28,7 @@ const formSchema = z.object({
 
 export function FunctionField({ abi }: Props) {
   const operationType: FunctionType =
-    abi.stateMutability === "view" || abi.stateMutability === "pure"
-      ? FunctionType.READ
-      : FunctionType.WRITE;
+    abi.stateMutability === "view" || abi.stateMutability === "pure" ? FunctionType.READ : FunctionType.WRITE;
   const [result, setResult] = useState<string | null>(null);
   const mutation = useContractMutation({ abi, operationType });
 
@@ -62,27 +53,16 @@ export function FunctionField({ abi }: Props) {
   const inputsLabel = abi?.inputs.map((input) => input.type).join(", ");
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        id={abi.name}
-        className="space-y-4 pb-4"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} id={abi.name} className="space-y-4 pb-4">
         <h3 className="pt-4 font-semibold">
           <span className="text-orange-500">{abi?.name}</span>
-          <span className="opacity-50">
-            {inputsLabel && ` (${inputsLabel})`}
-          </span>
+          <span className="opacity-50">{inputsLabel && ` (${inputsLabel})`}</span>
           <span className="ml-2 opacity-50">
-            {abi.stateMutability === "payable" && (
-              <Coins className="mr-2 inline-block h-4 w-4" />
-            )}
-            {(abi.stateMutability === "view" ||
-              abi.stateMutability === "pure") && (
+            {abi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
+            {(abi.stateMutability === "view" || abi.stateMutability === "pure") && (
               <Eye className="mr-2 inline-block h-4 w-4" />
             )}
-            {abi.stateMutability === "nonpayable" && (
-              <Send className="mr-2 inline-block h-4 w-4" />
-            )}
+            {abi.stateMutability === "nonpayable" && <Send className="mr-2 inline-block h-4 w-4" />}
           </span>
         </h3>
 
@@ -120,16 +100,11 @@ export function FunctionField({ abi }: Props) {
         )}
 
         <Button type="submit" disabled={mutation.isPending}>
-          {(abi.stateMutability === "view" || abi.stateMutability === "pure") &&
-            "Read"}
-          {(abi.stateMutability === "payable" ||
-            abi.stateMutability === "nonpayable") &&
-            "Write"}
+          {(abi.stateMutability === "view" || abi.stateMutability === "pure") && "Read"}
+          {(abi.stateMutability === "payable" || abi.stateMutability === "nonpayable") && "Write"}
         </Button>
 
-        {result && (
-          <pre className="text-md rounded border p-3 text-sm">{result}</pre>
-        )}
+        {result && <pre className="text-md rounded border p-3 text-sm">{result}</pre>}
       </form>
 
       <Separator />

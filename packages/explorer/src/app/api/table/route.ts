@@ -25,19 +25,14 @@ export async function GET(req: Request) {
 
   try {
     const db = getDatabase();
-    const tableData = db
-      ?.prepare("SELECT * FROM __mudStoreTables WHERE id = ?")
-      .get(table) as TableConfig;
+    const tableData = db?.prepare("SELECT * FROM __mudStoreTables WHERE id = ?").get(table) as TableConfig;
 
     return Response.json({ table: tableData });
   } catch (error: unknown) {
     if (error instanceof Error) {
       return Response.json({ error: error.message }, { status: 400 });
     } else {
-      return Response.json(
-        { error: "An unknown error occurred" },
-        { status: 400 },
-      );
+      return Response.json({ error: "An unknown error occurred" }, { status: 400 });
     }
   }
 }

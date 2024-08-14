@@ -3,11 +3,7 @@ import { Abi, AbiFunction } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { useChainId } from "wagmi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  readContract,
-  waitForTransactionReceipt,
-  writeContract,
-} from "@wagmi/core";
+import { readContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { ACCOUNT_PRIVATE_KEYS } from "../../consts";
 import { useWorldAddress } from "../../hooks/useWorldAddress";
 import { useStore } from "../../store";
@@ -19,23 +15,14 @@ type UseContractMutationProps = {
   operationType: FunctionType;
 };
 
-export function useContractMutation({
-  abi,
-  operationType,
-}: UseContractMutationProps) {
+export function useContractMutation({ abi, operationType }: UseContractMutationProps) {
   const queryClient = useQueryClient();
   const chainId = useChainId();
   const { account } = useStore();
   const worldAddress = useWorldAddress();
 
   return useMutation({
-    mutationFn: async ({
-      inputs,
-      value,
-    }: {
-      inputs: unknown[];
-      value?: string;
-    }) => {
+    mutationFn: async ({ inputs, value }: { inputs: unknown[]; value?: string }) => {
       if (operationType === FunctionType.READ) {
         const result = await readContract(wagmiConfig, {
           abi: [abi] as Abi,
