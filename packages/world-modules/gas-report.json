@@ -213,13 +213,13 @@
     "file": "test/MetadataModule.t.sol",
     "test": "testInstall",
     "name": "install metadata module",
-    "gasUsed": 950179
+    "gasUsed": 950185
   },
   {
     "file": "test/MetadataModule.t.sol",
     "test": "testSetResourceMetadata",
     "name": "set resource metadata",
-    "gasUsed": 116532
+    "gasUsed": 116547
   },
   {
     "file": "test/query.t.sol",
