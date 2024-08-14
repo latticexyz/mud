@@ -100,4 +100,9 @@ export type Module = DeterministicContract & {
   readonly name: string;
   readonly installAsRoot: boolean;
   readonly installData: Hex; // TODO: figure out better naming for this
+  /**
+   * @internal
+   * Optional modules warn instead of throw if they revert while being installed.
+   */
+  readonly optional?: boolean;
 };
