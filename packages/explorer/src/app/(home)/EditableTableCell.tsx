@@ -61,7 +61,7 @@ export function EditableTableCell({
     },
     onMutate: () => {
       const toastId = toast.loading("Transaction submitted");
-      return { toastId, previousValue: value };
+      return { toastId };
     },
     onSuccess: ({ txHash }, newValue, { toastId }) => {
       setValue(newValue);
