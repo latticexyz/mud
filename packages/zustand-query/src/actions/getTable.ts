@@ -42,9 +42,9 @@ export type GetTableArgs<table extends Table = Table> = {
 export type GetTableResult<table extends Table = Table> = BoundTable<table>;
 
 export function getTable<table extends Table>({ store, table }: GetTableArgs<table>): GetTableResult<table> {
-  const { namespace, label } = table;
+  const { namespaceLabel, label } = table;
 
-  if (store.get().config[namespace]?.[label] == null) {
+  if (store.get().config[namespaceLabel]?.[label] == null) {
     registerTable({ store, table });
   }
 

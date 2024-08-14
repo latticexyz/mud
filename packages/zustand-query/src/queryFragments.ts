@@ -7,8 +7,8 @@ import { getKeys } from "./actions/getKeys";
 
 // TODO: add more query fragments - ie GreaterThan, LessThan, Range, etc
 
-export type QueryFragment = {
-  table: Table;
+export type QueryFragment<table extends Table = Table> = {
+  table: table;
   /**
    * Checking an individual table row for whether it matches the query fragment
    */
@@ -25,7 +25,7 @@ export type QueryFragment = {
  * Matches all records that exist in the table.
  * RECS equivalent: Has(Component)
  */
-export function In(table: Table): QueryFragment {
+export function In<table extends Table>(table: table): QueryFragment<table> {
   const match = (store: Store, encodedKey: string) => encodedKey in getRecords({ store, table });
   const getInitialKeys = (store: Store) => getKeys({ store, table });
   return { table, match, getInitialKeys };
@@ -35,7 +35,7 @@ export function In(table: Table): QueryFragment {
  * Matches all records that don't exist in the table.
  * RECS equivalent: Not(Component)
  */
-export function NotIn(table: Table): QueryFragment {
+export function NotIn<table extends Table>(table: table): QueryFragment<table> {
   const match = (store: Store, encodedKey: string) => !(encodedKey in getRecords({ store, table }));
   const getInitialKeys = () => ({});
   return { table, match, getInitialKeys };
@@ -49,7 +49,7 @@ export function NotIn(table: Table): QueryFragment {
 export function MatchRecord<table extends Table>(
   table: table,
   partialRecord: Partial<TableRecord<table>>,
-): QueryFragment {
+): QueryFragment<table> {
   const match = (store: Store, encodedKey: string) => {
     const record = getRecords({ store, table })[encodedKey];
     return recordMatches(partialRecord, record);
@@ -70,7 +70,7 @@ export function MatchRecord<table extends Table>(
 export function NotMatchRecord<table extends Table>(
   table: table,
   partialRecord: Partial<TableRecord<table>>,
-): QueryFragment {
+): QueryFragment<table> {
   const match = (store: Store, encodedKey: string) => {
     const record = getRecords({ store, table })[encodedKey];
     return !recordMatches(partialRecord, record);

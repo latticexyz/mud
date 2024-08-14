@@ -11,6 +11,6 @@ export type GetRecordArgs<table extends Table = Table> = {
 export type GetRecordResult<table extends Table = Table> = TableRecord<table>;
 
 export function getRecord<table extends Table>({ store, table, key }: GetRecordArgs<table>): GetRecordResult<table> {
-  const { namespace, label } = table;
-  return store.get().records[namespace][label][encodeKey({ table, key })];
+  const { namespaceLabel, label } = table;
+  return store.get().records[namespaceLabel][label][encodeKey({ table, key })];
 }

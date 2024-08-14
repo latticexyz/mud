@@ -12,7 +12,7 @@ import { size } from "viem";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
-import { Store, getTable, registerTable } from "@latticexyz/zustand-query/internal";
+import { Store, getConfig, getTable, registerTable } from "@latticexyz/zustand-query/internal";
 import { debug } from "./debug";
 
 export type CreateStorageAdapterOptions = {
@@ -53,10 +53,14 @@ export function createStorageAdapter({ store }: CreateStorageAdapterOptions): Cr
 
     // Convert logs in (partial) table updates
     for (const log of logs) {
+      // TODO: find table config by table ID
       const { namespace, name } = hexToResource(log.args.tableId);
       // TODO: use label once available
       const tableConfig = store.get().config[namespace][name];
-      const boundTable = getTable({ store, table: { namespace, label: name } });
+      const boundTable = getTable({
+        store,
+        table: getConfig({ store, table: { namespaceLabel: namespace, label: name } }),
+      });
 
       if (!tableConfig || !boundTable) {
         debug(`skipping update for unknown table: ${resourceToLabel({ namespace, name })} at ${log.address}`);

@@ -37,7 +37,13 @@ export type CommonQueryOptions = {
   initialKeys?: Keys;
 };
 
-export type Query = [QueryFragment, ...QueryFragment[]];
+export type Query = readonly [QueryFragment, ...QueryFragment[]];
+
+export type getQueryTables<query extends Query> = {
+  [namespace in query[number]["table"]["namespace"]]: {
+    [label in query[number]["table"]["label"]]: query[number] & { namespace: namespace; label: label };
+  };
+};
 
 export type Unsubscribe = () => void;
 
@@ -139,10 +145,3 @@ export type Store<config extends StoreConfig = StoreConfig> = {
     state: MutableState<config>;
   };
 };
-
-export function withDefaultNamespace({ namespace, label }: TableLabel): Required<TableLabel> {
-  return {
-    namespace: namespace ?? "",
-    label,
-  };
-}

@@ -3,7 +3,7 @@ import { attest } from "@arktype/attest";
 import { createStore } from "../createStore";
 import { runQuery } from "./runQuery";
 import { defineStore } from "@latticexyz/store";
-import { Store } from "../common";
+import { Store, getQueryTables } from "../common";
 import { setRecord } from "./setRecord";
 import { In, MatchRecord, NotIn, NotMatchRecord } from "../queryFragments";
 
@@ -57,6 +57,11 @@ describe("query", () => {
         "0x4": { player: "0x4" },
       },
     });
+
+    Position.namespaceLabel;
+    const query = [In(Position), In(Health)] as const;
+    const test = {} as getQueryTables<typeof query>;
+    test;
   });
 
   it("should return all keys that are in the Position and Health table", () => {

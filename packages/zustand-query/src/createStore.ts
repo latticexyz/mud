@@ -22,22 +22,22 @@ export function createStore<config extends Config>(storeConfig?: config): Create
   // Initialize the store
   if (storeConfig) {
     for (const [namespace, { tables }] of Object.entries(storeConfig.namespaces)) {
-      for (const [label, tableConfig] of Object.entries(tables)) {
+      for (const [table, tableConfig] of Object.entries(tables)) {
         // TODO: add option to resolveTables to not add codegen/deploy?
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { codegen, deploy, ...relevantConfig } = tableConfig;
 
         // Set config for tables
         state.config[namespace] ??= {};
-        state.config[namespace][label] = relevantConfig;
+        state.config[namespace][table] = relevantConfig;
 
         // Init records map for tables
         state.records[namespace] ??= {};
-        state.records[namespace][label] = {};
+        state.records[namespace][table] = {};
 
         // Init subscribers set for tables
         tableSubscribers[namespace] ??= {};
-        tableSubscribers[namespace][label] ??= new Set();
+        tableSubscribers[namespace][table] ??= new Set();
       }
     }
   }

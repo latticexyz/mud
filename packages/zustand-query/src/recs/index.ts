@@ -4,6 +4,7 @@ import { UpdateType as RecsUpdateType } from "@latticexyz/recs";
 import { BoundTable, getTable } from "../actions/getTable";
 import { runQuery as runQueryInternal } from "../actions/runQuery";
 import { QueryUpdate, subscribeQuery } from "../actions/subscribeQuery";
+import { getConfig } from "../actions";
 
 export type Entity = string;
 export const singletonEntity = "";
@@ -88,9 +89,12 @@ function transformUpdate(s: Store, update: QueryUpdate, updateFilter?: "enter" |
   const transformedUpdates = [] as SystemUpdate[];
 
   const namespaces = Object.entries(update.records);
-  for (const [namespace, tableUpdates] of namespaces) {
+  for (const [namespaceLabel, tableUpdates] of namespaces) {
     for (const [tableLabel, updates] of Object.entries(tableUpdates)) {
-      const table = getTable({ store: s, table: { namespace, label: tableLabel } });
+      const table = getTable({
+        store: s,
+        table: getConfig({ store: s, table: { namespaceLabel, label: tableLabel } }),
+      });
       const updateList = Object.entries(updates);
 
       for (const [key, recordUpdate] of updateList) {

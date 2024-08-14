@@ -56,10 +56,10 @@ export function runQuery({ store, query, options }: RunQueryArgs): RunQueryResul
 
   const records: MutableStoreRecords = {};
   for (const { table } of query) {
-    const { namespace, label } = table;
-    records[namespace] ??= {};
+    const { namespaceLabel, label } = table;
+    records[namespaceLabel] ??= {};
     const tableRecords = getRecords({ store, table, keys: Object.values(keys) });
-    records[namespace][label] ??= tableRecords;
+    records[namespaceLabel][label] ??= tableRecords;
   }
   return { keys, records };
 }

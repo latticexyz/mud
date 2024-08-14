@@ -14,8 +14,8 @@ export function subscribeTable<table extends Table>({
   table,
   subscriber,
 }: SubscribeTableArgs<table>): SubscribeTableResult {
-  const { namespace, label } = table;
+  const { namespaceLabel, label } = table;
 
-  store._.tableSubscribers[namespace][label].add(subscriber);
-  return () => store._.tableSubscribers[namespace][label].delete(subscriber);
+  store._.tableSubscribers[namespaceLabel][label].add(subscriber);
+  return () => store._.tableSubscribers[namespaceLabel][label].delete(subscriber);
 }

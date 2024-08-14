@@ -14,8 +14,8 @@ export function decodeKey<table extends Table>({
   table,
   encodedKey,
 }: DecodeKeyArgs<table>): DecodeKeyResult<table> {
-  const { namespace, label, key } = table;
-  const record = store.get().records[namespace][label][encodedKey];
+  const { namespaceLabel, label, key } = table;
+  const record = store.get().records[namespaceLabel][label][encodedKey];
 
   // Typecast needed because record values could be arrays, but we know they are not if they are key fields
   return Object.fromEntries(Object.entries(record).filter(([field]) => key.includes(field))) as never;

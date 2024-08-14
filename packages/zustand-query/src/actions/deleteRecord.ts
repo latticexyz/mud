@@ -12,26 +12,26 @@ export type DeleteRecordArgs<table extends Table = Table> = {
 export type DeleteRecordResult = void;
 
 export function deleteRecord<table extends Table>({ store, table, key }: DeleteRecordArgs<table>): DeleteRecordResult {
-  const { namespace, label } = table;
+  const { namespaceLabel, label } = table;
 
-  if (store.get().config[namespace] == null) {
+  if (store.get().config[namespaceLabel] == null) {
     registerTable({ store, table });
   }
 
   const encodedKey = encodeKey({ table, key });
-  const prevRecord = store.get().records[namespace][label][encodedKey];
+  const prevRecord = store.get().records[namespaceLabel][label][encodedKey];
 
   // Early return if this record doesn't exist
   if (prevRecord == null) return;
 
   // Delete record
-  delete store._.state.records[namespace][label][encodedKey];
+  delete store._.state.records[namespaceLabel][label][encodedKey];
 
   // Notify table subscribers
   const updates = { [encodedKey]: { prev: prevRecord && { ...prevRecord }, current: undefined } };
-  store._.tableSubscribers[namespace][label].forEach((subscriber) => subscriber(updates));
+  store._.tableSubscribers[namespaceLabel][label].forEach((subscriber) => subscriber(updates));
 
   // Notify store subscribers
-  const storeUpdate = { config: {}, records: { [namespace]: { [label]: updates } } };
+  const storeUpdate = { config: {}, records: { [namespaceLabel]: { [label]: updates } } };
   store._.storeSubscribers.forEach((subscriber) => subscriber(storeUpdate));
 }

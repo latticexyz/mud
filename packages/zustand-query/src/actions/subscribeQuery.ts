@@ -1,13 +1,5 @@
-import {
-  TableUpdates,
-  Keys,
-  Unsubscribe,
-  Query,
-  TableLabel,
-  Store,
-  CommonQueryOptions,
-  CommonQueryResult,
-} from "../common";
+import { Table } from "@latticexyz/config";
+import { TableUpdates, Keys, Unsubscribe, Query, Store, CommonQueryOptions, CommonQueryResult } from "../common";
 import { decodeKey } from "./decodeKey";
 import { getTable } from "./getTable";
 import { runQuery } from "./runQuery";
@@ -74,9 +66,9 @@ export function subscribeQuery({ store, query, options }: SubscribeQueryArgs): S
     return () => subscribers.delete(subscriber);
   };
 
-  const updateQueryResult = ({ namespace, label }: TableLabel, tableUpdates: TableUpdates) => {
+  const updateQueryResult = ({ namespaceLabel, label }: Table, tableUpdates: TableUpdates) => {
     const update: QueryUpdate = {
-      records: { [namespace ?? ""]: { [label]: tableUpdates } },
+      records: { [namespaceLabel]: { [label]: tableUpdates } },
       keys: {},
       types: {},
     };
@@ -85,7 +77,7 @@ export function subscribeQuery({ store, query, options }: SubscribeQueryArgs): S
       if (key in matching) {
         update.keys[key] = matching[key];
         // If the key matched before, check if the relevant fragments (accessing this table) still match
-        const relevantFragments = query.filter((f) => f.table.namespace === namespace && f.table.label === label);
+        const relevantFragments = query.filter((f) => f.table.namespace === namespaceLabel && f.table.label === label);
         const match = relevantFragments.every((f) => f.match(store, key));
         if (match) {
           // If all relevant fragments still match, the key still matches the query.

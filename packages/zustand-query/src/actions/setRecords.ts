@@ -1,5 +1,5 @@
 import { dynamicAbiTypeToDefaultValue, staticAbiTypeToDefaultValue } from "@latticexyz/schema-type/internal";
-import { Key, Store, TableRecord, TableUpdates } from "../common";
+import { Store, TableRecord, TableUpdates } from "../common";
 import { encodeKey } from "./encodeKey";
 import { Table } from "@latticexyz/config";
 import { registerTable } from "./registerTable";
@@ -13,17 +13,17 @@ export type SetRecordsArgs<table extends Table = Table> = {
 export type SetRecordsResult = void;
 
 export function setRecords<table extends Table>({ store, table, records }: SetRecordsArgs<table>): SetRecordsResult {
-  const { namespace, label, schema } = table;
+  const { namespaceLabel, label, schema } = table;
 
-  if (store.get().config[namespace]?.[label] == null) {
+  if (store.get().config[namespaceLabel]?.[label] == null) {
     registerTable({ store, table });
   }
 
   // Construct table updates
   const updates: TableUpdates = {};
   for (const record of records) {
-    const encodedKey = encodeKey({ store, table, key: record as Key });
-    const prevRecord = store.get().records[namespace][label][encodedKey];
+    const encodedKey = encodeKey({ table, key: record as never });
+    const prevRecord = store.get().records[namespaceLabel][label][encodedKey];
     const newRecord = Object.fromEntries(
       Object.keys(schema).map((fieldName) => [
         fieldName,
@@ -38,13 +38,13 @@ export function setRecords<table extends Table>({ store, table, records }: SetRe
 
   // Update records
   for (const [encodedKey, { current }] of Object.entries(updates)) {
-    store._.state.records[namespace][label][encodedKey] = current as never;
+    store._.state.records[namespaceLabel][label][encodedKey] = current as never;
   }
 
   // Notify table subscribers
-  store._.tableSubscribers[namespace][label].forEach((subscriber) => subscriber(updates));
+  store._.tableSubscribers[namespaceLabel][label].forEach((subscriber) => subscriber(updates));
 
   // Notify store subscribers
-  const storeUpdate = { config: {}, records: { [namespace]: { [label]: updates } } };
+  const storeUpdate = { config: {}, records: { [namespaceLabel]: { [label]: updates } } };
   store._.storeSubscribers.forEach((subscriber) => subscriber(storeUpdate));
 }

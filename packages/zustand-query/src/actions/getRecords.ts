@@ -15,8 +15,8 @@ export function getRecords<table extends Table>({
   table,
   keys,
 }: GetRecordsArgs<table>): GetRecordsResult<table> {
-  const { namespace, label } = table;
-  const records = store.get().records[namespace][label];
+  const { namespaceLabel, label } = table;
+  const records = store.get().records[namespaceLabel][label];
 
   if (!keys) {
     return records;
