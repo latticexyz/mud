@@ -3,7 +3,6 @@ import { Store } from "../common";
 import { DecodeKeyArgs, DecodeKeyResult, decodeKey } from "../actions/decodeKey";
 import { DeleteRecordArgs, DeleteRecordResult, deleteRecord } from "../actions/deleteRecord";
 import { EncodeKeyArgs, EncodeKeyResult, encodeKey } from "../actions/encodeKey";
-import { ExtendArgs, ExtendResult, extend } from "../actions/extend";
 import { GetConfigArgs, GetConfigResult, getConfig } from "../actions/getConfig";
 import { GetKeysArgs, GetKeysResult, getKeys } from "../actions/getKeys";
 import { GetRecordArgs, GetRecordResult, getRecord } from "../actions/getRecord";
@@ -22,7 +21,6 @@ import { Table } from "@latticexyz/config";
 export type StoreBoundDecodeKeyArgs<table extends Table = Table> = Omit<DecodeKeyArgs<table>, "store">;
 export type StoreBoundDeleteRecordArgs<table extends Table> = Omit<DeleteRecordArgs<table>, "store">;
 export type StoreBoundEncodeKeyArgs<table extends Table = Table> = EncodeKeyArgs<table>;
-export type StoreBoundExtendArgs<actions> = Omit<ExtendArgs<Store, actions>, "store">;
 export type StoreBoundGetConfigArgs = Omit<GetConfigArgs, "store">;
 export type StoreBoundGetKeysArgs<table extends Table = Table> = Omit<GetKeysArgs<table>, "store">;
 export type StoreBoundGetRecordArgs<table extends Table = Table> = Omit<GetRecordArgs<table>, "store">;
@@ -40,7 +38,6 @@ export type DefaultActions<config extends StoreConfig = StoreConfig> = {
   decodeKey: <table extends Table>(args: StoreBoundDecodeKeyArgs<table>) => DecodeKeyResult<table>;
   deleteRecord: <table extends Table>(args: StoreBoundDeleteRecordArgs<table>) => DeleteRecordResult;
   encodeKey: <table extends Table>(args: StoreBoundEncodeKeyArgs<table>) => EncodeKeyResult;
-  extend: <actions>(args: StoreBoundExtendArgs<actions>) => ExtendResult<Store, actions>;
   getConfig: (args: GetConfigArgs) => GetConfigResult;
   getKeys: <table extends Table>(args: GetKeysArgs<table>) => GetKeysResult<table>;
   getRecord: <table extends Table>(args: StoreBoundGetRecordArgs<table>) => GetRecordResult<table>;
@@ -61,7 +58,6 @@ export function defaultActions<config extends StoreConfig>(store: Store<config>)
     decodeKey: <table extends Table>(args: StoreBoundDecodeKeyArgs<table>) => decodeKey({ store, ...args }),
     deleteRecord: <table extends Table>(args: StoreBoundDeleteRecordArgs<table>) => deleteRecord({ store, ...args }),
     encodeKey: <table extends Table>(args: StoreBoundEncodeKeyArgs<table>) => encodeKey(args),
-    extend: <actions>(args: StoreBoundExtendArgs<actions>) => extend({ store, ...args }),
     getConfig: (args: StoreBoundGetConfigArgs) => getConfig({ store, ...args }),
     getKeys: <table extends Table>(args: StoreBoundGetKeysArgs<table>) => getKeys({ store, ...args }),
     getRecord: <table extends Table>(args: StoreBoundGetRecordArgs<table>) => getRecord({ store, ...args }),

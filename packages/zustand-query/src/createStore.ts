@@ -5,7 +5,7 @@ import { extend } from "./actions/extend";
 
 export type Config = StoreConfig;
 
-export type CreateStoreResult<config extends Config = Config> = Store<config> & DefaultActions;
+export type CreateStoreResult<config extends Config = Config> = Store<config> & DefaultActions<config>;
 
 /**
  * Initializes a Zustand store based on the provided table configs.

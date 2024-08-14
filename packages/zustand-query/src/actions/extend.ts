@@ -11,5 +11,5 @@ export function extend<store extends Store, actions>({
   store,
   actions,
 }: ExtendArgs<store, actions>): ExtendResult<store, actions> {
-  return Object.assign(store, actions);
+  return { ...store, ...actions };
 }

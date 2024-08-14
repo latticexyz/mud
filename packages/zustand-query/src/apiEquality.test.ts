@@ -20,7 +20,6 @@ describe("store actions, bound table", () => {
       "registerTable",
       "getTable",
       "getTables",
-      "extend",
       "runQuery",
       "subscribeQuery",
       "subscribeStore",
