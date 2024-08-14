@@ -79,8 +79,8 @@ export function EditableTableCell({
       });
     },
     onError: (error, _, context) => {
-      console.error("Transaction error:", error);
-      toast.error("Uh oh! Something went wrong.", {
+      console.error("Error:", error);
+      toast.error(error.message || "Something went wrong. Please try again.", {
         id: context?.toastId,
       });
       setValue(defaultValue);
