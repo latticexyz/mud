@@ -187,42 +187,6 @@ describe("store with default actions", () => {
       ).snap({ field1: "world", field2: 2, field3: 1 });
     });
 
-    describe("getRecords", () => {
-      it("should get all records from a table", () => {
-        const config = defineStore({
-          tables: {
-            test: {
-              schema: {
-                player: "int32",
-                match: "int32",
-                x: "uint256",
-                y: "uint256",
-              },
-              key: ["player", "match"],
-            },
-          },
-        });
-        const table = config.tables.test;
-        const store = createStore(config);
-
-        store.setRecord({ table, key: { player: 1, match: 2 }, record: { x: 3n, y: 4n } });
-        store.setRecord({ table, key: { player: 5, match: 6 }, record: { x: 7n, y: 8n } });
-
-        attest<{ [encodedKey: string]: { player: number; match: number; x: bigint; y: bigint } }>(
-          store.getRecords({ table }),
-        ).equals({
-          "1|2": { player: 1, match: 2, x: 3n, y: 4n },
-          "5|6": { player: 5, match: 6, x: 7n, y: 8n },
-        });
-
-        attest<{ [encodedKey: string]: { player: number; match: number; x: bigint; y: bigint } }>(
-          store.getRecords({ table, keys: [{ player: 1, match: 2 }] }),
-        ).equals({
-          "1|2": { player: 1, match: 2, x: 3n, y: 4n },
-        });
-      });
-    });
-
     it("should throw a type error if the key type doesn't match", () => {
       const config = defineStore({
         namespace: "namespace1",
@@ -257,6 +221,104 @@ describe("store with default actions", () => {
           key: { field2: 1, field3: "invalid" },
         }),
       ).type.errors(`Type 'string' is not assignable to type 'number'`);
+    });
+  });
+
+  describe("getRecords", () => {
+    it("should get all records from a table", () => {
+      const config = defineStore({
+        tables: {
+          test: {
+            schema: {
+              player: "int32",
+              match: "int32",
+              x: "uint256",
+              y: "uint256",
+            },
+            key: ["player", "match"],
+          },
+        },
+      });
+      const table = config.tables.test;
+      const store = createStore(config);
+
+      store.setRecord({ table, key: { player: 1, match: 2 }, record: { x: 3n, y: 4n } });
+      store.setRecord({ table, key: { player: 5, match: 6 }, record: { x: 7n, y: 8n } });
+
+      attest<{ [encodedKey: string]: { player: number; match: number; x: bigint; y: bigint } }>(
+        store.getRecords({ table }),
+      ).equals({
+        "1|2": { player: 1, match: 2, x: 3n, y: 4n },
+        "5|6": { player: 5, match: 6, x: 7n, y: 8n },
+      });
+
+      attest<{ [encodedKey: string]: { player: number; match: number; x: bigint; y: bigint } }>(
+        store.getRecords({ table, keys: [{ player: 1, match: 2 }] }),
+      ).equals({
+        "1|2": { player: 1, match: 2, x: 3n, y: 4n },
+      });
+    });
+  });
+
+  describe("getTables", () => {
+    it("should return bound tables for each registered table in the store", () => {
+      const config = defineStore({
+        namespaces: {
+          namespace1: {
+            tables: {
+              table1: {
+                schema: { a: "address", b: "uint256", c: "uint32" },
+                key: ["a"],
+              },
+            },
+          },
+          namespace2: {
+            tables: {
+              table2: {
+                schema: { a: "address", b: "uint256", c: "uint32" },
+                key: ["a"],
+              },
+            },
+          },
+        },
+      });
+      const store = createStore(config);
+      const tables = store.getTables();
+
+      attest<"namespace1" | "namespace2", keyof typeof tables>();
+
+      attest<"table2", keyof typeof tables.namespace2>();
+
+      attest(tables).snap({
+        namespace1: {
+          table1: {
+            decodeKey: "Function(decodeKey)",
+            deleteRecord: "Function(deleteRecord)",
+            encodeKey: "Function(encodeKey)",
+            getConfig: "Function(getConfig)",
+            getKeys: "Function(getKeys)",
+            getRecord: "Function(getRecord)",
+            getRecords: "Function(getRecords)",
+            setRecord: "Function(setRecord)",
+            setRecords: "Function(setRecords)",
+            subscribe: "Function(subscribe)",
+          },
+        },
+        namespace2: {
+          table2: {
+            decodeKey: "Function(decodeKey1)",
+            deleteRecord: "Function(deleteRecord1)",
+            encodeKey: "Function(encodeKey1)",
+            getConfig: "Function(getConfig1)",
+            getKeys: "Function(getKeys1)",
+            getRecord: "Function(getRecord1)",
+            getRecords: "Function(getRecords1)",
+            setRecord: "Function(setRecord1)",
+            setRecords: "Function(setRecords1)",
+            subscribe: "Function(subscribe1)",
+          },
+        },
+      });
     });
   });
 
