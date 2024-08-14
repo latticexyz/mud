@@ -13,6 +13,12 @@ import { ResourceTag } from "./codegen/tables/ResourceTag.sol";
 
 // TODO: docs on intended use (optional module, default installed, labels are optional for UX)
 
+/**
+ * @title MetadataModule
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ * @dev Adds metadata tables and systems for annotating data in MUD apps.
+ * For example, tagging resources with labels for better UX when reconstructing a MUD project from a world using onchain state.
+ */
 contract MetadataModule is Module {
   using WorldResourceIdInstance for ResourceId;
 
