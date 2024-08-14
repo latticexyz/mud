@@ -3,12 +3,12 @@ import { attest } from "@arktype/attest";
 import { createStore } from "../createStore";
 import { runQuery } from "./runQuery";
 import { defineStore } from "@latticexyz/store";
-import { Store } from "../common";
+import { Store, StoreRecords, getQueryConfig } from "../common";
 import { setRecord } from "./setRecord";
 import { In, MatchRecord, NotIn, NotMatchRecord } from "../queryFragments";
 import { Hex } from "viem";
 
-describe("query", () => {
+describe("runQuery", () => {
   let store: Store;
   const config = defineStore({
     namespaces: {
@@ -16,10 +16,6 @@ describe("query", () => {
         tables: {
           Position: {
             schema: { player: "bytes32", x: "int32", y: "int32" },
-            key: ["player"],
-          },
-          Health: {
-            schema: { player: "bytes32", health: "uint32" },
             key: ["player"],
           },
         },
@@ -30,13 +26,17 @@ describe("query", () => {
             schema: { player: "bytes32", item: "bytes32", amount: "uint32" },
             key: ["player", "item"],
           },
+          Health: {
+            schema: { player: "bytes32", health: "uint32" },
+            key: ["player"],
+          },
         },
       },
     },
   });
 
-  const { Position, Health } = config.namespaces.namespace1.tables;
-  const { Inventory } = config.namespaces.namespace2.tables;
+  const { Position } = config.namespaces.namespace1.tables;
+  const { Inventory, Health } = config.namespaces.namespace2.tables;
 
   beforeEach(() => {
     store = createStore(config);
@@ -126,6 +126,8 @@ describe("query", () => {
             "0x3": { player: "0x3", x: 3, y: 2 },
             "0x4": { player: "0x4", x: 4, y: 1 },
           },
+        },
+        namespace2: {
           Health: {
             "0x3": { player: "0x3", health: 3 },
             "0x4": { player: "0x4", health: 4 },
@@ -136,20 +138,21 @@ describe("query", () => {
   });
 
   it("should include `records` only if the `includeRecords` option is provided", () => {
-    const resultWithoutRecords = runQuery({ store, query: [In(Position)] });
-    attest<"keys", keyof typeof resultWithoutRecords>();
+    const query = [In(Position)] as const;
+    const resultWithoutRecords = runQuery({ store, query });
+    attest<never | undefined, (typeof resultWithoutRecords)["records"]>();
 
-    const resultWithRecords = runQuery({ store, query: [In(Position)], options: { includeRecords: true } });
-    attest<"keys" | "records", keyof typeof resultWithRecords>();
+    const resultWithRecords = runQuery({ store, query, options: { includeRecords: true } });
+    attest<StoreRecords<getQueryConfig<typeof query>>, (typeof resultWithRecords)["records"]>();
   });
 
   it("should type the `records` in the result based on tables in the query", () => {
-    const result = runQuery({ store, query: [In(Position), In(Inventory)], options: { includeRecords: true } });
+    const result = runQuery({ store, query: [In(Position), In(Health)], options: { includeRecords: true } });
 
     attest<"namespace1" | "namespace2", keyof (typeof result)["records"]>();
     attest<"Position", keyof (typeof result)["records"]["namespace1"]>();
-    attest<"Inventory", keyof (typeof result)["records"]["namespace2"]>();
+    attest<"Health", keyof (typeof result)["records"]["namespace2"]>();
     attest<{ player: Hex; x: number; y: number }, (typeof result)["records"]["namespace1"]["Position"][string]>();
-    attest<{ player: Hex; item: Hex; amount: number }, (typeof result)["records"]["namespace2"]["Inventory"][string]>();
+    attest<{ player: Hex; health: number }, (typeof result)["records"]["namespace2"]["Health"][string]>();
   });
 });

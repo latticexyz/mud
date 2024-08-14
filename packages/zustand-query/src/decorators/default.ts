@@ -1,4 +1,4 @@
-import { Store, StoreConfig } from "../common";
+import { Query, Store, StoreConfig } from "../common";
 import { DecodeKeyArgs, DecodeKeyResult, decodeKey } from "../actions/decodeKey";
 import { DeleteRecordArgs, DeleteRecordResult, deleteRecord } from "../actions/deleteRecord";
 import { EncodeKeyArgs, EncodeKeyResult, encodeKey } from "../actions/encodeKey";
@@ -9,7 +9,7 @@ import { GetRecordsArgs, GetRecordsResult, getRecords } from "../actions/getReco
 import { GetTableArgs, GetTableResult, getTable } from "../actions/getTable";
 import { GetTablesResult, getTables } from "../actions/getTables";
 import { RegisterTableArgs, RegisterTableResult, registerTable } from "../actions/registerTable";
-import { RunQueryArgs, RunQueryResult, runQuery } from "../actions/runQuery";
+import { RunQueryArgs, RunQueryOptions, RunQueryResult, runQuery } from "../actions/runQuery";
 import { SetRecordArgs, SetRecordResult, setRecord } from "../actions/setRecord";
 import { SetRecordsArgs, SetRecordsResult, setRecords } from "../actions/setRecords";
 import { SubscribeQueryArgs, SubscribeQueryResult, subscribeQuery } from "../actions/subscribeQuery";
@@ -26,7 +26,10 @@ export type StoreBoundGetRecordArgs<table extends Table = Table> = Omit<GetRecor
 export type StoreBoundGetRecordsArgs<table extends Table = Table> = Omit<GetRecordsArgs<table>, "store">;
 export type StoreBoundGetTableArgs<table extends Table = Table> = Omit<GetTableArgs<table>, "store">;
 export type StoreBoundRegisterTableArgs<table extends Table = Table> = Omit<RegisterTableArgs<table>, "store">;
-export type StoreBoundRunQueryArgs = Omit<RunQueryArgs, "store">;
+export type StoreBoundRunQueryArgs<
+  query extends Query = Query,
+  options extends RunQueryOptions = RunQueryOptions,
+> = Omit<RunQueryArgs<query, options>, "store">;
 export type StoreBoundSetRecordArgs<table extends Table = Table> = Omit<SetRecordArgs<table>, "store">;
 export type StoreBoundSetRecordsArgs<table extends Table = Table> = Omit<SetRecordsArgs<table>, "store">;
 export type StoreBoundSubscribeQueryArgs = Omit<SubscribeQueryArgs, "store">;
@@ -47,7 +50,9 @@ export type DefaultActions<config extends StoreConfig = StoreConfig> = {
   getTable: <table extends Table>(args: StoreBoundGetTableArgs<table>) => GetTableResult<table>;
   getTables: () => GetTablesResult<config>;
   registerTable: <table extends Table>(args: StoreBoundRegisterTableArgs<table>) => RegisterTableResult<table>;
-  runQuery: (args: StoreBoundRunQueryArgs) => RunQueryResult;
+  runQuery: <query extends Query, options extends RunQueryOptions>(
+    args: StoreBoundRunQueryArgs<query, options>,
+  ) => RunQueryResult<query, options>;
   setRecord: <table extends Table>(args: StoreBoundSetRecordArgs<table>) => SetRecordResult;
   setRecords: <table extends Table>(args: StoreBoundSetRecordsArgs<table>) => SetRecordsResult;
   subscribeQuery: (args: StoreBoundSubscribeQueryArgs) => SubscribeQueryResult;
@@ -67,11 +72,13 @@ export function defaultActions<config extends StoreConfig>(store: Store<config>)
     getTable: <table extends Table>(args: StoreBoundGetTableArgs<table>) => getTable({ store, ...args }),
     getTables: () => getTables({ store }),
     registerTable: (args: StoreBoundRegisterTableArgs) => registerTable({ store, ...args }),
-    runQuery: (args: StoreBoundRunQueryArgs) => runQuery({ store, ...args }),
+    runQuery: <query extends Query, options extends RunQueryOptions>(args: StoreBoundRunQueryArgs<query, options>) =>
+      runQuery({ store, ...args }),
     setRecord: <table extends Table>(args: StoreBoundSetRecordArgs<table>) => setRecord({ store, ...args }),
     setRecords: <table extends Table>(args: StoreBoundSetRecordsArgs<table>) => setRecords({ store, ...args }),
     subscribeQuery: (args: StoreBoundSubscribeQueryArgs) => subscribeQuery({ store, ...args }),
-    subscribeStore: (args: StoreBoundSubscribeStoreArgs) => subscribeStore({ store, ...args }),
+    subscribeStore: <config extends StoreConfig>(args: StoreBoundSubscribeStoreArgs<config>) =>
+      subscribeStore({ store, ...args }),
     subscribeTable: <table extends Table>(args: StoreBoundSubscribeTableArgs<table>) =>
       subscribeTable({ store, ...args }),
   };

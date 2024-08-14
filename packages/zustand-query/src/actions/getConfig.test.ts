@@ -37,6 +37,6 @@ describe("getConfig", () => {
     registerTable({ store, table: namespacedTable });
 
     attest(getConfig({ store, table: { label: "test" } })).equals(rootTable);
-    attest(getConfig({ store, table: { label: "test", namespace: "namespace" } })).equals(namespacedTable);
+    attest(getConfig({ store, table: { label: "test", namespaceLabel: "namespace" } })).equals(namespacedTable);
   });
 });

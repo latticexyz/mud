@@ -11,27 +11,34 @@ import {
 import { getConfig } from "./getConfig";
 import { getRecords } from "./getRecords";
 
-type RunQueryOptions = CommonQueryOptions & {
+export type RunQueryOptions = CommonQueryOptions & {
   includeRecords?: boolean;
 };
 
 // TODO: is it feasible to type the store records return type based on the query?
-export type RunQueryArgs = {
+export type RunQueryArgs<query extends Query = Query, options extends RunQueryOptions = RunQueryOptions> = {
   store: Store;
-  query: Query;
-  options?: RunQueryOptions;
+  query: query;
+  options?: options;
 };
 
-export type RunQueryResult<args extends RunQueryArgs = RunQueryArgs> = CommonQueryResult &
-  (args["options"] extends {
+export type RunQueryResult<
+  query extends Query = Query,
+  options extends RunQueryOptions = RunQueryOptions,
+> = CommonQueryResult &
+  (options extends {
     includeRecords: true;
   }
     ? {
-        records: StoreRecords<getQueryConfig<args["query"]>>;
+        records: StoreRecords<getQueryConfig<query>>;
       }
-    : {});
+    : { records?: never });
 
-export function runQuery<args extends RunQueryArgs>({ store, query, options }: args): RunQueryResult<args> {
+export function runQuery<query extends Query, options extends RunQueryOptions>({
+  store,
+  query,
+  options,
+}: RunQueryArgs<query, options>): RunQueryResult<query, options> {
   // Only allow fragments with matching table keys for now
   // TODO: we might be able to enable this if we add something like a `keySelector`
   const expectedKeySchema = getKeySchema(getConfig({ store, table: query[0].table }));
@@ -63,7 +70,7 @@ export function runQuery<args extends RunQueryArgs>({ store, query, options }: a
 
   // Early return if records are not requested
   if (!options?.includeRecords) {
-    return { keys };
+    return { keys } as never;
   }
 
   const records: MutableStoreRecords = {};
@@ -73,5 +80,5 @@ export function runQuery<args extends RunQueryArgs>({ store, query, options }: a
     const tableRecords = getRecords({ store, table, keys: Object.values(keys) });
     records[namespaceLabel][label] ??= tableRecords;
   }
-  return { keys, records };
+  return { keys, records } as never;
 }

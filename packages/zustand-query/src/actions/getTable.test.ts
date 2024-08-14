@@ -23,6 +23,7 @@ describe("getTable", () => {
           label: "table1",
           type: "table",
           namespace: "namespace1",
+          namespaceLabel: "namespace1",
           name: "table1",
           tableId: "0x74626e616d65737061636531000000007461626c653100000000000000000000",
           schema: {

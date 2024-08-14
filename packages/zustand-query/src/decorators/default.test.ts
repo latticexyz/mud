@@ -3,6 +3,10 @@ import { defineStore } from "@latticexyz/store";
 import { describe, expect, it, vi } from "vitest";
 import { createStore } from "../createStore";
 import { defineTable } from "@latticexyz/store/config/v2";
+import { In } from "../queryFragments";
+import { Hex } from "viem";
+import { runQuery } from "../actions";
+import { StoreRecords, getQueryConfig } from "../common";
 
 describe("store with default actions", () => {
   describe("decodeKey", () => {
@@ -121,7 +125,7 @@ describe("store with default actions", () => {
       const store = createStore();
       store.registerTable({ table });
 
-      attest(store.getConfig({ table: { label: "test", namespace: "namespace" } })).equals(table);
+      attest(store.getConfig({ table: { label: "test", namespaceLabel: "namespace" } })).equals(table);
     });
   });
 
@@ -319,6 +323,51 @@ describe("store with default actions", () => {
           },
         },
       });
+    });
+  });
+
+  describe("runQuery", () => {
+    const config = defineStore({
+      namespaces: {
+        namespace1: {
+          tables: {
+            Position: {
+              schema: { player: "bytes32", x: "int32", y: "int32" },
+              key: ["player"],
+            },
+          },
+        },
+        namespace2: {
+          tables: {
+            Health: {
+              schema: { player: "bytes32", health: "uint32" },
+              key: ["player"],
+            },
+          },
+        },
+      },
+    });
+    const store = createStore(config);
+    const { Position } = config.namespaces.namespace1.tables;
+    const { Health } = config.namespaces.namespace2.tables;
+
+    it("should include `records` only if the `includeRecords` option is provided", () => {
+      const query = [In(Position)] as const;
+      const resultWithoutRecords = store.runQuery({ query });
+      attest<never | undefined, (typeof resultWithoutRecords)["records"]>();
+
+      const resultWithRecords = store.runQuery({ query, options: { includeRecords: true } });
+      attest<StoreRecords<getQueryConfig<typeof query>>, (typeof resultWithRecords)["records"]>();
+    });
+
+    it("should type the `records` in the result based on tables in the query", () => {
+      const result = runQuery({ store, query: [In(Position), In(Health)], options: { includeRecords: true } });
+
+      attest<"namespace1" | "namespace2", keyof (typeof result)["records"]>();
+      attest<"Position", keyof (typeof result)["records"]["namespace1"]>();
+      attest<"Health", keyof (typeof result)["records"]["namespace2"]>();
+      attest<{ player: Hex; x: number; y: number }, (typeof result)["records"]["namespace1"]["Position"][string]>();
+      attest<{ player: Hex; health: number }, (typeof result)["records"]["namespace2"]["Health"][string]>();
     });
   });
 

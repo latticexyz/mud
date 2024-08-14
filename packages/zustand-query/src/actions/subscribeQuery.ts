@@ -125,7 +125,7 @@ export function subscribeQuery({ store, query, options }: SubscribeQueryArgs): S
             key,
             { prev: undefined, current: record },
           ]),
-        );
+        ) as never;
       }
     }
 
