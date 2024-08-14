@@ -30,25 +30,58 @@ contract MetadataModuleTest is Test, GasReporter {
     world.installModule(metadataModule, new bytes(0));
     endGasReport();
 
-    assertEq(NamespaceOwner.get(ResourceMetadata._tableId.getNamespaceId()), address(this));
-  }
+    ResourceId namespace = ResourceMetadata._tableId.getNamespaceId();
+    assertEq(NamespaceOwner.get(namespace), address(this));
 
-  // TODO: second install is idempotent
-  // TODO: install with metadata namespace existing
+    // Installing again will revert because metadata namespace isn't owned by the module, so the module is unable to write to it.
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, namespace.toString(), address(metadataModule))
+    );
+    world.installModule(metadataModule, new bytes(0));
+
+    // Transferring the namespace to the module and installing should be a no-op/idempotent and the module will return namespace ownership.
+    // TODO: is this a security concern? could someone frontrun by putting a tx in between the two calls below?
+    world.transferOwnership(namespace, address(metadataModule));
+    world.installModule(metadataModule, new bytes(0));
+    assertEq(NamespaceOwner.get(namespace), address(this));
+  }
 
   function testSetResourceMetadata() public {
     world.installModule(metadataModule, new bytes(0));
+    ResourceId resource = ResourceMetadata._tableId;
 
-    assertEq(ResourceMetadata.get(ResourceMetadata._tableId, "label"), "");
+    assertEq(ResourceMetadata.get(resource, "label"), "");
 
     startGasReport("set resource metadata");
-    world.metadata__setResource(ResourceMetadata._tableId, "label", "ResourceMetadata");
+    world.metadata__setResource(resource, "label", "ResourceMetadata");
     endGasReport();
 
-    assertEq(ResourceMetadata.get(ResourceMetadata._tableId, "label"), "ResourceMetadata");
+    assertEq(ResourceMetadata.get(resource, "label"), "ResourceMetadata");
 
-    // TODO: can't set metadata in a namespace I don't own
-    // TODO: can't set metadata for a non existent resource
-    // TODO: can override label if it already is set
+    // metadata is mutable
+    world.metadata__setResource(resource, "label", "Resource");
+    assertEq(ResourceMetadata.get(resource, "label"), "Resource");
+  }
+
+  function testSetNonexistentResourceMetadata() public {
+    world.installModule(metadataModule, new bytes(0));
+    ResourceId resource = WorldResourceIdLib.encode("tb", "whatever", "SomeTable");
+
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_ResourceNotFound.selector, resource, resource.toString())
+    );
+    world.metadata__setResource(resource, "label", "SomeTable");
+  }
+
+  function testSetUnownedResourceMetadata(address caller) public {
+    vm.assume(caller != address(0));
+    vm.assume(caller != address(this));
+
+    world.installModule(metadataModule, new bytes(0));
+    ResourceId resource = NamespaceOwner._tableId;
+
+    vm.prank(caller);
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, resource.toString(), caller));
+    world.metadata__setResource(resource, "label", "NamespaceOwner");
   }
 }
