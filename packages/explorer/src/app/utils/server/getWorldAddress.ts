@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { Hex } from "viem";
 
-export function getWorldAddress(): Hex | undefined {
+export function getWorldAddress(): Hex {
   const headersList = headers();
   const worldAddress = headersList.get("x-world-address") || process.env.NEXT_PUBLIC_WORLD_ADDRESS;
 

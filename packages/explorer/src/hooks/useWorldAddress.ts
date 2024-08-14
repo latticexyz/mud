@@ -1,6 +1,6 @@
 import { Hex } from "viem";
 
-export function getWorldAddress(): Hex | undefined {
+export function useWorldAddress(): Hex {
   const searchParams = new URLSearchParams(window.location.search);
   const worldAddress = searchParams.get("worldAddress") || process.env.NEXT_PUBLIC_WORLD_ADDRESS;
 
