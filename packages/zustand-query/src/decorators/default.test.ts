@@ -2,6 +2,7 @@ import { attest } from "@ark/attest";
 import { defineStore } from "@latticexyz/store";
 import { describe, it } from "vitest";
 import { createStore } from "../createStore";
+import { defineTable } from "@latticexyz/store/config/v2";
 
 describe("store with default actions", () => {
   describe("decodeKey", () => {
@@ -99,6 +100,56 @@ describe("store with default actions", () => {
           },
         }),
       ).type.errors(`Type 'string' is not assignable to type 'bigint'.`);
+    });
+  });
+
+  describe("getConfig", () => {
+    it("should return the config of the given table", () => {
+      const {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        codegen: _,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        deploy: __,
+        ...table
+      } = defineTable({
+        namespace: "namespace",
+        label: "test",
+        schema: { field1: "address", field2: "string" },
+        key: ["field1"],
+      });
+
+      const store = createStore();
+      store.registerTable({ table });
+
+      attest(store.getConfig({ table: { label: "test", namespace: "namespace" } })).equals(table);
+    });
+  });
+
+  describe("getKeys", () => {
+    it("should return the key map of a table", () => {
+      const config = defineStore({
+        tables: {
+          test: {
+            schema: {
+              player: "int32",
+              match: "int32",
+              x: "int32",
+              y: "int32",
+            },
+            key: ["player", "match"],
+          },
+        },
+      });
+      const table = config.tables.test;
+      const store = createStore(config);
+
+      store.setRecord({ table, key: { player: 1, match: 2 }, record: { x: 3, y: 4 } });
+      store.setRecord({ table, key: { player: 5, match: 6 }, record: { x: 7, y: 8 } });
+
+      attest<{ [encodedKey: string]: { player: number; match: number } }>(store.getKeys({ store, table })).snap({
+        "1|2": { player: 1, match: 2 },
+        "5|6": { player: 5, match: 6 },
+      });
     });
   });
 
