@@ -32,7 +32,7 @@ export type StoreBoundRunQueryArgs<
 > = Omit<RunQueryArgs<query, options>, "store">;
 export type StoreBoundSetRecordArgs<table extends Table = Table> = Omit<SetRecordArgs<table>, "store">;
 export type StoreBoundSetRecordsArgs<table extends Table = Table> = Omit<SetRecordsArgs<table>, "store">;
-export type StoreBoundSubscribeQueryArgs = Omit<SubscribeQueryArgs, "store">;
+export type StoreBoundSubscribeQueryArgs<query extends Query = Query> = Omit<SubscribeQueryArgs<query>, "store">;
 export type StoreBoundSubscribeStoreArgs<config extends StoreConfig = StoreConfig> = Omit<
   SubscribeStoreArgs<config>,
   "store"
@@ -55,7 +55,7 @@ export type DefaultActions<config extends StoreConfig = StoreConfig> = {
   ) => RunQueryResult<query, options>;
   setRecord: <table extends Table>(args: StoreBoundSetRecordArgs<table>) => SetRecordResult;
   setRecords: <table extends Table>(args: StoreBoundSetRecordsArgs<table>) => SetRecordsResult;
-  subscribeQuery: (args: StoreBoundSubscribeQueryArgs) => SubscribeQueryResult;
+  subscribeQuery: <query extends Query>(args: StoreBoundSubscribeQueryArgs<query>) => SubscribeQueryResult<query>;
   subscribeStore: (args: StoreBoundSubscribeStoreArgs<config>) => SubscribeStoreResult;
   subscribeTable: <table extends Table>(args: StoreBoundSubscribeTableArgs<table>) => SubscribeTableResult;
 };
@@ -76,7 +76,8 @@ export function defaultActions<config extends StoreConfig>(store: Store<config>)
       runQuery({ store, ...args }),
     setRecord: <table extends Table>(args: StoreBoundSetRecordArgs<table>) => setRecord({ store, ...args }),
     setRecords: <table extends Table>(args: StoreBoundSetRecordsArgs<table>) => setRecords({ store, ...args }),
-    subscribeQuery: (args: StoreBoundSubscribeQueryArgs) => subscribeQuery({ store, ...args }),
+    subscribeQuery: <query extends Query>(args: StoreBoundSubscribeQueryArgs<query>) =>
+      subscribeQuery({ store, ...args }),
     subscribeStore: <config extends StoreConfig>(args: StoreBoundSubscribeStoreArgs<config>) =>
       subscribeStore({ store, ...args }),
     subscribeTable: <table extends Table>(args: StoreBoundSubscribeTableArgs<table>) =>
