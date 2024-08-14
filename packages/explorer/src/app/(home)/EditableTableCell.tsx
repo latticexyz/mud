@@ -1,17 +1,17 @@
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
 import { privateKeyToAccount } from "viem/accounts";
-import { useChainId, useWriteContract } from "wagmi";
+import { useChainId } from "wagmi";
 import { ChangeEvent, useState } from "react";
 import { encodeField } from "@latticexyz/protocol-parser/internal";
 import { SchemaAbiType } from "@latticexyz/schema-type/internal";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
-import { useQueryClient } from "@tanstack/react-query";
-import { waitForTransactionReceipt } from "@wagmi/core";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Checkbox } from "../../components/ui/Checkbox";
 import { ACCOUNT_PRIVATE_KEYS } from "../../consts";
 import { useWorldAddress } from "../../hooks/useWorldAddress";
-import { camelCase } from "../../lib/utils";
+import { camelCase, cn } from "../../lib/utils";
 import { useStore } from "../../store";
 import { wagmiConfig } from "../Providers";
 import { TableConfig } from "../api/table/route";
@@ -33,34 +33,18 @@ export function EditableTableCell({
   const queryClient = useQueryClient();
   const chainId = useChainId();
   const { account } = useStore();
-  const { writeContractAsync } = useWriteContract();
   const worldAddress = useWorldAddress();
 
-  const [loading, setLoading] = useState(false);
-  const [prevValue, setPrevValue] = useState<unknown>(defaultValue);
   const [value, setValue] = useState<unknown>(defaultValue);
 
   const tableId = config?.table_id;
   const fieldType = config?.value_schema[camelCase(name)] as SchemaAbiType;
 
-  const handleSubmit = async (newValue: unknown) => {
-    const valueToSet = newValue === undefined ? value : newValue;
-    if (newValue !== undefined) {
-      setValue(newValue);
-    }
-
-    if (valueToSet === prevValue) {
-      return;
-    }
-
-    setPrevValue(valueToSet);
-    setLoading(true);
-
-    const toastId = toast.loading("Transaction submitted");
-    try {
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (newValue: unknown) => {
       const fieldIndex = getFieldIndex(config?.value_schema, camelCase(name));
-      const encodedField = encodeField(fieldType, valueToSet);
-      const txHash = await writeContractAsync({
+      const encodedField = encodeField(fieldType, newValue);
+      const txHash = await writeContract(wagmiConfig, {
         account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
         abi: IBaseWorldAbi,
         address: worldAddress,
@@ -68,24 +52,22 @@ export function EditableTableCell({
         args: [tableId, keyTuple, fieldIndex, encodedField],
       });
 
-      const transactionReceipt = await waitForTransactionReceipt(wagmiConfig, {
+      const receipt = await waitForTransactionReceipt(wagmiConfig, {
         hash: txHash,
         pollingInterval: 100,
       });
 
+      return { txHash, receipt };
+    },
+    onMutate: () => {
+      const toastId = toast.loading("Transaction submitted");
+      return { toastId, previousValue: value };
+    },
+    onSuccess: ({ txHash }, newValue, { toastId }) => {
+      setValue(newValue);
       toast.success(`Transaction successful with hash: ${txHash}`, {
         id: toastId,
       });
-
-      console.log("result:", txHash, transactionReceipt);
-    } catch (error) {
-      console.log("error:", error);
-
-      toast.error("Uh oh! Something went wrong.", {
-        id: toastId,
-      });
-    } finally {
-      setLoading(false);
       queryClient.invalidateQueries({
         queryKey: [
           "balance",
@@ -95,50 +77,69 @@ export function EditableTableCell({
           },
         ],
       });
+    },
+    onError: (error, _, context) => {
+      console.error("Transaction error:", error);
+      toast.error("Uh oh! Something went wrong.", {
+        id: context?.toastId,
+      });
+      setValue(defaultValue);
+    },
+  });
+
+  const handleSubmit = (newValue: unknown) => {
+    if (newValue !== defaultValue) {
+      mutate(newValue);
     }
   };
 
   if (fieldType === "bool") {
     return (
-      <Checkbox
-        id="show-all-columns"
-        checked={value === "1"}
-        onCheckedChange={async () => {
-          const newValue = value === "1" ? "0" : "1";
-          handleSubmit(newValue);
-        }}
-      />
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="flex cursor-wait items-center gap-1">
-        {String(value)} <Loader className="h-4 animate-spin" />
-      </div>
+      <>
+        <Checkbox
+          id={`checkbox-${name}`}
+          checked={value === "1"}
+          onCheckedChange={(checked) => {
+            const newValue = checked ? "1" : "0";
+            handleSubmit(newValue);
+          }}
+          disabled={isPending}
+        />
+        {isPending && <Loader className="h-4 w-4 animate-spin" />}
+      </>
     );
   }
 
   return (
-    <form
-      onSubmit={() => {
-        handleSubmit(value);
-      }}
+    <div
+      className={cn("w-full", {
+        "cursor-wait flex items-center gap-1": isPending,
+      })}
     >
-      <input
-        className="w-full bg-transparent"
-        onChange={(evt: ChangeEvent<HTMLInputElement>) => {
-          const value = evt.target.value;
-          setValue(value);
-        }}
-        onFocus={() => {
-          setPrevValue(value);
-        }}
-        onBlur={() => {
-          handleSubmit(value);
-        }}
-        defaultValue={String(value)}
-      />
-    </form>
+      {!isPending && (
+        <form
+          onSubmit={() => {
+            handleSubmit(value);
+          }}
+        >
+          <input
+            className="w-full bg-transparent"
+            onChange={(evt: ChangeEvent<HTMLInputElement>) => {
+              setValue(evt.target.value);
+            }}
+            onBlur={(evt) => handleSubmit(evt.target.value)}
+            value={String(value)}
+            disabled={isPending}
+          />
+        </form>
+      )}
+
+      {isPending && (
+        <>
+          {String(value)}
+          <Loader className="h-4 w-4 animate-spin" />
+        </>
+      )}
+    </div>
   );
 }
