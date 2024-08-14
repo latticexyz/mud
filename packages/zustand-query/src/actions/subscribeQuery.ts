@@ -1,43 +1,56 @@
 import { Table } from "@latticexyz/config";
-import { TableUpdates, Keys, Unsubscribe, Query, Store, CommonQueryOptions, CommonQueryResult } from "../common";
+import {
+  TableUpdates,
+  Keys,
+  Unsubscribe,
+  Query,
+  Store,
+  CommonQueryOptions,
+  CommonQueryResult,
+  StoreConfig,
+  getNamespaces,
+  getTables,
+  getTableConfig,
+  getQueryConfig,
+} from "../common";
 import { decodeKey } from "./decodeKey";
 import { getTable } from "./getTable";
 import { runQuery } from "./runQuery";
 
-export type SubscribeQueryOptions = CommonQueryOptions & {
+export type SubscribeQueryOptions<query extends Query = Query> = CommonQueryOptions & {
   // Skip the initial `runQuery` to initialize the query result.
   // Only updates after the query was defined are considered in the result.
   skipInitialRun?: boolean;
-  initialSubscribers?: QuerySubscriber[];
+  initialSubscribers?: QuerySubscriber<query>[];
 };
 
 // TODO: is it feasible to type the table updates based on the query?
-type QueryTableUpdates = {
-  [namespace: string]: {
-    [table: string]: TableUpdates;
+type QueryTableUpdates<config extends StoreConfig = StoreConfig> = {
+  [namespace in getNamespaces<config>]: {
+    [table in getTables<config, namespace>]: TableUpdates<getTableConfig<config, namespace, table>>;
   };
 };
 
-export type QueryUpdate = {
-  records: QueryTableUpdates;
+export type QueryUpdate<query extends Query = Query> = {
+  records: QueryTableUpdates<getQueryConfig<query>>;
   keys: Keys;
   types: { [key: string]: "enter" | "update" | "exit" };
 };
 
-type QuerySubscriber = (update: QueryUpdate) => void;
+type QuerySubscriber<query extends Query = Query> = (update: QueryUpdate<query>) => void;
 
-export type SubscribeQueryArgs = {
+export type SubscribeQueryArgs<query extends Query = Query> = {
   store: Store;
-  query: Query;
-  options?: SubscribeQueryOptions;
+  query: query;
+  options?: SubscribeQueryOptions<query>;
 };
 
-export type SubscribeQueryResult = CommonQueryResult & {
+export type SubscribeQueryResult<query extends Query = Query> = CommonQueryResult & {
   /**
    * Subscribe to query updates.
    * Returns a function to unsubscribe the provided subscriber.
    */
-  subscribe: (subscriber: QuerySubscriber) => Unsubscribe;
+  subscribe: (subscriber: QuerySubscriber<query>) => Unsubscribe;
   /**
    * Unsubscribe the query from all table updates.
    * Note: this is different from unsubscribing a query subscriber.
@@ -45,7 +58,11 @@ export type SubscribeQueryResult = CommonQueryResult & {
   unsubscribe: () => void;
 };
 
-export function subscribeQuery({ store, query, options }: SubscribeQueryArgs): SubscribeQueryResult {
+export function subscribeQuery<query extends Query>({
+  store,
+  query,
+  options,
+}: SubscribeQueryArgs<query>): SubscribeQueryResult<query> {
   const initialRun = options?.skipInitialRun
     ? undefined
     : runQuery({
