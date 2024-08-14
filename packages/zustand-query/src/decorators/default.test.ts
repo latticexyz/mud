@@ -187,6 +187,42 @@ describe("store with default actions", () => {
       ).snap({ field1: "world", field2: 2, field3: 1 });
     });
 
+    describe("getRecords", () => {
+      it("should get all records from a table", () => {
+        const config = defineStore({
+          tables: {
+            test: {
+              schema: {
+                player: "int32",
+                match: "int32",
+                x: "uint256",
+                y: "uint256",
+              },
+              key: ["player", "match"],
+            },
+          },
+        });
+        const table = config.tables.test;
+        const store = createStore(config);
+
+        store.setRecord({ table, key: { player: 1, match: 2 }, record: { x: 3n, y: 4n } });
+        store.setRecord({ table, key: { player: 5, match: 6 }, record: { x: 7n, y: 8n } });
+
+        attest<{ [encodedKey: string]: { player: number; match: number; x: bigint; y: bigint } }>(
+          store.getRecords({ table }),
+        ).equals({
+          "1|2": { player: 1, match: 2, x: 3n, y: 4n },
+          "5|6": { player: 5, match: 6, x: 7n, y: 8n },
+        });
+
+        attest<{ [encodedKey: string]: { player: number; match: number; x: bigint; y: bigint } }>(
+          store.getRecords({ table, keys: [{ player: 1, match: 2 }] }),
+        ).equals({
+          "1|2": { player: 1, match: 2, x: 3n, y: 4n },
+        });
+      });
+    });
+
     it("should throw a type error if the key type doesn't match", () => {
       const config = defineStore({
         namespace: "namespace1",
