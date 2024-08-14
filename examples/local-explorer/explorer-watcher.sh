@@ -3,9 +3,9 @@
 function start_explorer() {
     export INIT_PWD=$(pwd)
     
-    EXPLORER_MODE=${EXPLORER_MODE:-production}
+    MODE=${MODE:-production}
 
-    if [ "$EXPLORER_MODE" = "production" ]; then
+    if [ "$MODE" = "production" ]; then
         echo "Running explorer in production mode"
         pnpm explorer
     else
