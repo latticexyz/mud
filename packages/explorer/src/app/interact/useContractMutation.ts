@@ -19,15 +19,6 @@ type UseContractMutationProps = {
   operationType: FunctionType;
 };
 
-type ContractMutationResult =
-  | {
-      txHash: string;
-      receipt: unknown;
-    }
-  | {
-      result: unknown;
-    };
-
 export function useContractMutation({
   abi,
   operationType,
@@ -44,7 +35,7 @@ export function useContractMutation({
     }: {
       inputs: unknown[];
       value?: string;
-    }): Promise<ContractMutationResult> => {
+    }) => {
       if (operationType === FunctionType.READ) {
         const result = await readContract(wagmiConfig, {
           abi: [abi] as Abi,
@@ -77,9 +68,7 @@ export function useContractMutation({
       return { toastId };
     },
     onSuccess: (data, _, { toastId }) => {
-      if (operationType === FunctionType.READ) {
-        toast.success("Read successful", { id: toastId });
-      } else if (operationType === FunctionType.WRITE && "txHash" in data) {
+      if (operationType === FunctionType.WRITE && "txHash" in data) {
         toast.success(`Transaction successful with hash: ${data.txHash}`, {
           id: toastId,
         });
