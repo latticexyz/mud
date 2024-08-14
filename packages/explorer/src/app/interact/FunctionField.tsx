@@ -130,10 +130,6 @@ export function FunctionField({ abi }: Props) {
         {result && (
           <pre className="text-md rounded border p-3 text-sm">{result}</pre>
         )}
-
-        {mutation.isError && (
-          <p className="text-red-500">Error: {mutation.error.message}</p>
-        )}
       </form>
 
       <Separator />
