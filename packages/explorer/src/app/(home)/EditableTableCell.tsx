@@ -118,7 +118,8 @@ export function EditableTableCell({
     >
       {!isPending && (
         <form
-          onSubmit={() => {
+          onSubmit={(evt) => {
+            evt.preventDefault();
             handleSubmit(value);
           }}
         >
