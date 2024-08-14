@@ -10,9 +10,9 @@ import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@lattic
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
 
-import { MetadataModule } from "../src/modules/metadata/MetadataModule.sol";
-import { IWorld } from "../src/modules/metadata/codegen/world/IWorld.sol";
-import { Resource as ResourceMetadata } from "../src/modules/metadata/codegen/tables/Resource.sol";
+import { MetadataModule } from "../src/MetadataModule.sol";
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { Resource as ResourceMetadata } from "../src/codegen/tables/Resource.sol";
 
 contract MetadataModuleTest is Test, GasReporter {
   using WorldResourceIdInstance for ResourceId;

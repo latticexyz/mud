@@ -8,7 +8,7 @@ import { World } from "@latticexyz/world";
 import { getContractArtifact } from "../utils/getContractArtifact";
 import { importContractArtifact } from "../utils/importContractArtifact";
 import { resolveWithContext } from "@latticexyz/world/internal";
-import metadataModule from "@latticexyz/world-modules/out/MetadataModule.sol/MetadataModule.json" assert { type: "json" };
+import metadataModule from "@latticexyz/world-module-metadata/out/MetadataModule.sol/MetadataModule.json" assert { type: "json" };
 
 /** Please don't add to this list! These are kept for backwards compatibility and assumes the downstream project has this module installed as a dependency. */
 const knownModuleArtifacts = {

@@ -1,0 +1,10 @@
+cache
+out
+docs
+_docs
+DOCS.md
+artifacts
+yarn-error.log
+API
+
+src/codegen

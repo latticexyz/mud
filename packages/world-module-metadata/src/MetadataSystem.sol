@@ -3,7 +3,7 @@ pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { System } from "@latticexyz/world/src/System.sol";
-import { AccessControlLib } from "../../utils/AccessControlLib.sol";
+import { AccessControlLib } from "./AccessControlLib.sol";
 import { Resource } from "./codegen/tables/Resource.sol";
 
 contract MetadataSystem is System {
