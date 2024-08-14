@@ -1,5 +1,4 @@
-import { Store as StoreConfig } from "@latticexyz/store";
-import { Store, StoreUpdatesSubscriber, Unsubscribe } from "../common";
+import { Store, StoreConfig, StoreUpdatesSubscriber, Unsubscribe } from "../common";
 
 export type SubscribeStoreArgs<config extends StoreConfig = StoreConfig> = {
   store: Store<config>;

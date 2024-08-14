@@ -1,5 +1,4 @@
-import { Store as StoreConfig } from "@latticexyz/store/config/v2";
-import { Store, getNamespaces, getTableConfig, getTables } from "../common";
+import { Store, StoreConfig, getNamespaces, getTableConfig, getTables } from "../common";
 import { BoundTable, getTable } from "./getTable";
 
 type MutableBoundTables<config extends StoreConfig = StoreConfig> = {

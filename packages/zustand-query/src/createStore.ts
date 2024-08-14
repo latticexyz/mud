@@ -1,5 +1,4 @@
-import { Store as StoreConfig } from "@latticexyz/store/config/v2";
-import { MutableState, Store, StoreSubscribers, TableSubscribers } from "./common";
+import { MutableState, Store, StoreConfig, StoreSubscribers, TableSubscribers } from "./common";
 import { DefaultActions, defaultActions } from "./decorators/default";
 import { extend } from "./actions/extend";
 

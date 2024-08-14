@@ -1,5 +1,4 @@
-import { Store as StoreConfig } from "@latticexyz/store/config/v2";
-import { Store } from "../common";
+import { Store, StoreConfig } from "../common";
 import { DecodeKeyArgs, DecodeKeyResult, decodeKey } from "../actions/decodeKey";
 import { DeleteRecordArgs, DeleteRecordResult, deleteRecord } from "../actions/deleteRecord";
 import { EncodeKeyArgs, EncodeKeyResult, encodeKey } from "../actions/encodeKey";

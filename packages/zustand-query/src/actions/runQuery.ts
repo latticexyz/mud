@@ -1,5 +1,13 @@
 import { getKeySchema } from "@latticexyz/protocol-parser/internal";
-import { StoreRecords, Query, Store, MutableStoreRecords, CommonQueryOptions, CommonQueryResult } from "../common";
+import {
+  StoreRecords,
+  Query,
+  Store,
+  MutableStoreRecords,
+  CommonQueryOptions,
+  CommonQueryResult,
+  getQueryConfig,
+} from "../common";
 import { getConfig } from "./getConfig";
 import { getRecords } from "./getRecords";
 
@@ -14,12 +22,16 @@ export type RunQueryArgs = {
   options?: RunQueryOptions;
 };
 
-export type RunQueryResult = CommonQueryResult & {
-  // TODO: make records return type dependent on `includeRecords` on input type
-  records?: StoreRecords;
-};
+export type RunQueryResult<args extends RunQueryArgs = RunQueryArgs> = CommonQueryResult &
+  (args["options"] extends {
+    includeRecords: true;
+  }
+    ? {
+        records: StoreRecords<getQueryConfig<args["query"]>>;
+      }
+    : {});
 
-export function runQuery({ store, query, options }: RunQueryArgs): RunQueryResult {
+export function runQuery<args extends RunQueryArgs>({ store, query, options }: args): RunQueryResult<args> {
   // Only allow fragments with matching table keys for now
   // TODO: we might be able to enable this if we add something like a `keySelector`
   const expectedKeySchema = getKeySchema(getConfig({ store, table: query[0].table }));

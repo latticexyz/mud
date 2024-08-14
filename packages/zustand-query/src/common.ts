@@ -1,7 +1,16 @@
 import { QueryFragment } from "./queryFragments";
 import { Table } from "@latticexyz/config";
-import { Store as StoreConfig } from "@latticexyz/store/config/v2";
 import { getKeySchema, getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
+
+export type StoreConfig = {
+  namespaces: {
+    [namespaceLabel: string]: {
+      tables: {
+        [tableLabel: string]: Table;
+      };
+    };
+  };
+};
 
 export type getNamespaces<config extends StoreConfig> = keyof config["namespaces"];
 
@@ -39,9 +48,18 @@ export type CommonQueryOptions = {
 
 export type Query = readonly [QueryFragment, ...QueryFragment[]];
 
-export type getQueryTables<query extends Query> = {
-  [namespace in query[number]["table"]["namespace"]]: {
-    [label in query[number]["table"]["label"]]: query[number] & { namespace: namespace; label: label };
+type OmitNeverKeys<T> = { [key in keyof T as T[key] extends never ? never : key]: T[key] };
+
+export type getQueryConfig<query extends Query> = {
+  namespaces: {
+    [namespaceLabel in query[number]["table"]["namespaceLabel"]]: {
+      tables: OmitNeverKeys<{
+        [label in query[number]["table"]["label"]]: query[number]["table"] & {
+          namespaceLabel: namespaceLabel;
+          label: label;
+        };
+      }>;
+    };
   };
 };
 
