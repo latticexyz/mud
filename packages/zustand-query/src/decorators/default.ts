@@ -31,7 +31,10 @@ export type StoreBoundRunQueryArgs = Omit<RunQueryArgs, "store">;
 export type StoreBoundSetRecordArgs<table extends Table = Table> = Omit<SetRecordArgs<table>, "store">;
 export type StoreBoundSetRecordsArgs<table extends Table = Table> = Omit<SetRecordsArgs<table>, "store">;
 export type StoreBoundSubscribeQueryArgs = Omit<SubscribeQueryArgs, "store">;
-export type StoreBoundSubscribeStoreArgs = Omit<SubscribeStoreArgs, "store">;
+export type StoreBoundSubscribeStoreArgs<config extends StoreConfig = StoreConfig> = Omit<
+  SubscribeStoreArgs<config>,
+  "store"
+>;
 export type StoreBoundSubscribeTableArgs<table extends Table = Table> = Omit<SubscribeTableArgs<table>, "store">;
 
 export type DefaultActions<config extends StoreConfig = StoreConfig> = {
@@ -49,7 +52,7 @@ export type DefaultActions<config extends StoreConfig = StoreConfig> = {
   setRecord: <table extends Table>(args: StoreBoundSetRecordArgs<table>) => SetRecordResult;
   setRecords: <table extends Table>(args: StoreBoundSetRecordsArgs<table>) => SetRecordsResult;
   subscribeQuery: (args: StoreBoundSubscribeQueryArgs) => SubscribeQueryResult;
-  subscribeStore: (args: StoreBoundSubscribeStoreArgs) => SubscribeStoreResult;
+  subscribeStore: (args: StoreBoundSubscribeStoreArgs<config>) => SubscribeStoreResult;
   subscribeTable: <table extends Table>(args: StoreBoundSubscribeTableArgs<table>) => SubscribeTableResult;
 };
 

@@ -1,6 +1,6 @@
 import { attest } from "@ark/attest";
 import { defineStore } from "@latticexyz/store";
-import { describe, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createStore } from "../createStore";
 import { defineTable } from "@latticexyz/store/config/v2";
 
@@ -408,6 +408,45 @@ describe("store with default actions", () => {
           records: [{ field1: 1, field2: 1, field3: 2 }],
         }),
       ).type.errors(`Type 'number' is not assignable to type 'string'.`);
+    });
+  });
+
+  describe("subscribeStore", () => {
+    it("should notify subscriber of any store change", () => {
+      const config = defineStore({
+        namespaces: {
+          namespace1: {
+            tables: {
+              table1: {
+                schema: { a: "address", b: "uint256", c: "uint32" },
+                key: ["a"],
+              },
+            },
+          },
+        },
+      });
+
+      const store = createStore(config);
+      const subscriber = vi.fn();
+
+      store.subscribeStore({ subscriber });
+
+      store.setRecord({ table: config.tables.namespace1__table1, key: { a: "0x00" }, record: { b: 1n, c: 2 } });
+
+      expect(subscriber).toHaveBeenCalledTimes(1);
+      expect(subscriber).toHaveBeenNthCalledWith(1, {
+        config: {},
+        records: {
+          namespace1: {
+            table1: {
+              "0x00": {
+                prev: undefined,
+                current: { a: "0x00", b: 1n, c: 2 },
+              },
+            },
+          },
+        },
+      });
     });
   });
 });
