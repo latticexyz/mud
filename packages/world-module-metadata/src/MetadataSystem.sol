@@ -7,29 +7,17 @@ import { requireExistence, requireOwner } from "./common.sol";
 import { ResourceTag } from "./codegen/tables/ResourceTag.sol";
 
 contract MetadataSystem is System {
-  function hasResourceTag(ResourceId resource, bytes32 tag) public view returns (bool) {
-    return ResourceTag.get(resource, tag).length != 0;
-  }
-
   function getResourceTag(ResourceId resource, bytes32 tag) public view returns (bytes memory) {
     return ResourceTag.get(resource, tag);
   }
 
-  function tagResource(ResourceId resource, bytes32 tag) public {
-    _tagResource(resource, tag, new bytes(1));
-  }
-
-  function tagResource(ResourceId resource, bytes32 tag, bytes memory value) public {
-    _tagResource(resource, tag, value);
-  }
-
-  function _tagResource(ResourceId resource, bytes32 tag, bytes memory value) internal {
+  function setResourceTag(ResourceId resource, bytes32 tag, bytes memory value) public {
     requireExistence(resource);
     requireOwner(resource, _msgSender());
     ResourceTag.set(resource, tag, value);
   }
 
-  function untagResource(ResourceId resource, bytes32 tag) public {
+  function deleteResourceTag(ResourceId resource, bytes32 tag) public {
     requireExistence(resource);
     requireOwner(resource, _msgSender());
     ResourceTag.deleteRecord(resource, tag);

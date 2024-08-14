@@ -46,60 +46,38 @@ contract MetadataModuleTest is Test, GasReporter {
     assertEq(NamespaceOwner.get(namespace), address(this));
   }
 
-  function testTagResource() public {
+  function testSetResourceTag() public {
     world.installModule(metadataModule, new bytes(0));
     ResourceId resource = ResourceTag._tableId;
 
-    assertEq(world.metadata__hasResourceTag(resource, "admin"), false);
-    assertEq(world.metadata__getResourceTag(resource, "admin"), "");
-    assertEq(ResourceTag.get(resource, "admin"), "");
-
-    startGasReport("tag resource");
-    world.metadata__tagResource(resource, "admin");
-    endGasReport();
-
-    assertEq(world.metadata__hasResourceTag(resource, "admin"), true);
-    assertEq(world.metadata__getResourceTag(resource, "admin"), new bytes(1));
-    assertEq(ResourceTag.get(resource, "admin"), new bytes(1));
-  }
-
-  function testTagResourceWithValue() public {
-    world.installModule(metadataModule, new bytes(0));
-    ResourceId resource = ResourceTag._tableId;
-
-    assertEq(world.metadata__hasResourceTag(resource, "label"), false);
     assertEq(world.metadata__getResourceTag(resource, "label"), "");
     assertEq(ResourceTag.get(resource, "label"), "");
 
-    startGasReport("tag resource with value");
-    world.metadata__tagResource(resource, "label", "ResourceTag");
+    startGasReport("set resource tag");
+    world.metadata__setResourceTag(resource, "label", "ResourceTag");
     endGasReport();
 
-    assertEq(world.metadata__hasResourceTag(resource, "label"), true);
     assertEq(world.metadata__getResourceTag(resource, "label"), "ResourceTag");
     assertEq(ResourceTag.get(resource, "label"), "ResourceTag");
 
     // metadata is mutable, so make sure we can mutate it
-    world.metadata__tagResource(resource, "label", "Resource");
-    assertEq(world.metadata__hasResourceTag(resource, "label"), true);
+    world.metadata__setResourceTag(resource, "label", "Resource");
     assertEq(world.metadata__getResourceTag(resource, "label"), "Resource");
     assertEq(ResourceTag.get(resource, "label"), "Resource");
   }
 
-  function testUntagResource() public {
+  function testDeleteResourceTag() public {
     world.installModule(metadataModule, new bytes(0));
     ResourceId resource = ResourceTag._tableId;
 
-    world.metadata__tagResource(resource, "label", "ResourceTag");
+    world.metadata__setResourceTag(resource, "label", "ResourceTag");
     assertEq(ResourceTag.get(resource, "label"), "ResourceTag");
-    assertEq(world.metadata__hasResourceTag(resource, "label"), true);
     assertEq(world.metadata__getResourceTag(resource, "label"), "ResourceTag");
 
-    startGasReport("untag resource");
-    world.metadata__untagResource(resource, "label");
+    startGasReport("delete resource tag");
+    world.metadata__deleteResourceTag(resource, "label");
     endGasReport();
 
-    assertEq(world.metadata__hasResourceTag(resource, "label"), false);
     assertEq(world.metadata__getResourceTag(resource, "label"), "");
     assertEq(ResourceTag.get(resource, "label"), "");
   }
@@ -111,12 +89,12 @@ contract MetadataModuleTest is Test, GasReporter {
     vm.expectRevert(
       abi.encodeWithSelector(IWorldErrors.World_ResourceNotFound.selector, resource, resource.toString())
     );
-    world.metadata__tagResource(resource, "label", "SomeTable");
+    world.metadata__setResourceTag(resource, "label", "SomeTable");
 
     vm.expectRevert(
       abi.encodeWithSelector(IWorldErrors.World_ResourceNotFound.selector, resource, resource.toString())
     );
-    world.metadata__untagResource(resource, "label");
+    world.metadata__deleteResourceTag(resource, "label");
   }
 
   function testTagUnownedResource(address caller) public {
@@ -129,9 +107,9 @@ contract MetadataModuleTest is Test, GasReporter {
     vm.startPrank(caller);
 
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, resource.toString(), caller));
-    world.metadata__tagResource(resource, "label", "NamespaceOwner");
+    world.metadata__setResourceTag(resource, "label", "NamespaceOwner");
 
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, resource.toString(), caller));
-    world.metadata__untagResource(resource, "label");
+    world.metadata__deleteResourceTag(resource, "label");
   }
 }

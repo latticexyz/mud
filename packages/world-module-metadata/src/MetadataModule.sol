@@ -47,11 +47,9 @@ contract MetadataModule is Module {
     // TODO: add support for upgrading system and registering new function selectors
     if (!ResourceIds.getExists(metadataSystemId)) {
       world.registerSystem(metadataSystemId, metadataSystem, true);
-      world.registerFunctionSelector(metadataSystemId, "hasResourceTag(bytes32,bytes32)");
       world.registerFunctionSelector(metadataSystemId, "getResourceTag(bytes32,bytes32)");
-      world.registerFunctionSelector(metadataSystemId, "tagResource(bytes32,bytes32)");
-      world.registerFunctionSelector(metadataSystemId, "tagResource(bytes32,bytes32,bytes)");
-      world.registerFunctionSelector(metadataSystemId, "untagResource(bytes32,bytes32)");
+      world.registerFunctionSelector(metadataSystemId, "setResourceTag(bytes32,bytes32,bytes)");
+      world.registerFunctionSelector(metadataSystemId, "deleteResourceTag(bytes32,bytes32)");
     }
 
     world.transferOwnership(namespace, _msgSender());
