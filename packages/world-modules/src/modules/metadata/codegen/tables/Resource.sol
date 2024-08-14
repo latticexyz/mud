@@ -19,9 +19,9 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 // Import user types
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-library Metadata {
-  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "metadata", name: "Metadata", typeId: RESOURCE_TABLE });`
-  ResourceId constant _tableId = ResourceId.wrap(0x74626d657461646174610000000000004d657461646174610000000000000000);
+library Resource {
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "metadata", name: "Resource", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x74626d657461646174610000000000005265736f757263650000000000000000);
 
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0000000100000000000000000000000000000000000000000000000000000000);
