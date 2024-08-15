@@ -7,14 +7,19 @@ If there is a dozer instance serving a blockchain, as there is for [Redstone](ht
 
 The query language is a subset of [the SQL `SELECT` command](<https://en.wikipedia.org/wiki/Select_(SQL)>).
 
+## Dozer URLs
+
+- [Redstone](https://redstone.xyz/) dozer `https://dozer.mud.redstonechain.com/q`
+- [Garnet](https://garnetchain.com/) dozer - `https://dozer.mud.garnetchain.com/q`
+
 ## Example `World`
 
 On Garnet there is a `World` at address [`0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e`](https://explorer.garnetchain.com/address/0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e) that runs a slightly modified version of [the React template](https://github.com/latticexyz/mud/tree/main/templates/react).
 You can see the data schema for the `World` [in the block explorer](https://explorer.garnetchain.com/address/0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e?tab=mud).
 
-## cUrl queries
+## Curl queries
 
-You can run dozer queries by communicating directly with the server's API.
+You can run dozer queries by communicating directly with the server's API, for example using [curl](https://curl.se/).
 
 ### Simple query
 
@@ -298,7 +303,137 @@ For example, this query gets you the different task creators.
 
 </details>
 
-## Using dozer from a MUD client
+## Typescript queries
+
+You can query dozer from [Typescript](https://www.typescriptlang.org/) without using MUD client synchronization.
+
+1. Create the project (in an empty directory) and install the software.
+
+   ```sh copy
+   pnpm create ts-node
+   pnpm install
+   ```
+
+1. Add the package that includes the dozer library.
+
+   ```sh copy
+   pnpm install @latticexyz/store-sync @latticexyz/store
+   ```
+
+1. Replace `src/main.ts` with this file.
+
+   ```ts filename="main.ts"
+   import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/dozer";
+   import { defineStore } from "@latticexyz/store";
+
+   const config = defineStore({
+     namespace: "app",
+     tables: {
+       Tasks: {
+         schema: {
+           id: "bytes32",
+           createdAt: "uint256",
+           completedAt: "uint256",
+           description: "string",
+         },
+         key: ["id"],
+       },
+       Creator: {
+         schema: {
+           id: "bytes32",
+           taskCreator: "address",
+         },
+         key: ["id"],
+       },
+     },
+   });
+
+   const queryUncompleted = selectFrom({
+     table: config.tables.app__Tasks,
+     where: "completedAt = 0",
+     limit: 2,
+   });
+
+   const queryResult = await fetchRecordsSql({
+     dozerUrl: "https://dozer.mud.garnetchain.com/q",
+     storeAddress: "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+     queries: [queryUncompleted],
+   });
+
+   console.log("\n\nTwo uncompleted tasks");
+   console.log(`SQL: ${queryUncompleted.sql}\nResult:`);
+   console.log(queryResult.result[0].records);
+   ```
+
+1. Compile and execute the application.
+
+   ```sh copy
+   pnpm build && pnpm start
+   ```
+
+<details>
+
+<summary>Explanation</summary>
+
+```ts
+import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/dozer";
+import { defineStore } from "@latticexyz/store";
+```
+
+Import the necessary definitions.
+
+```typescript
+const config = defineStore({
+  namespace: "app",
+  tables: {
+    ...
+  },
+})
+```
+
+Create the table configuration.
+The input to `defineStore` is the same as used in the [the `mud.config.ts` file](/config).
+
+```typescript
+const queryUncompleted = selectFrom({
+  table: config.tables.app__Tasks,
+  where: "completedAt = 0",
+  limit: 2,
+});
+```
+
+Create a query using [`selectFrom`](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/dozer/selectFrom.ts).
+The queries supported by `selectFrom` are a subset of those dozer supports.
+The results come from a single table, and only `WHERE` and `LIMIT` clauses are supported.
+
+```typescript
+const queryResult = await fetchRecordsSql({
+  dozerUrl: "https://dozer.mud.garnetchain.com/q",
+  storeAddress: "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+  queries: [queryUncompleted],
+});
+```
+
+Run the query.
+
+```typescript
+console.log("\n\nTwo uncompleted tasks");
+console.log(`SQL: ${queryUncompleted.sql}\nResult:`);
+```
+
+The SQL query that generated the resulting records.
+
+```typescript
+console.log(queryResult.result[0].records);
+```
+
+The actual records.
+
+</details>
+
+## Dozer with MUD synchronization
+
+Of course, you can also add dozer to a MUD client with synchronization.
 
 ### Create a client to access the `World`
 
@@ -351,8 +486,6 @@ These are the steps to create a client that can access the `World`.
    ```
 
    </CollapseCode>
-
-The Garnet dozer instance is at `https://dozer.mud.garnetchain.com`.
 
 ### Updating the client to use dozer
 
