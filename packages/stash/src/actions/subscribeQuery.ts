@@ -24,7 +24,6 @@ export type SubscribeQueryOptions<config extends StoreConfig = StoreConfig> = Co
   initialSubscribers?: QuerySubscriber<config>[];
 };
 
-// TODO: is it feasible to type the table updates based on the query?
 type QueryTableUpdates<config extends StoreConfig = StoreConfig> = {
   [namespace in getNamespaces<config>]: {
     [table in getNamespaceTables<config, namespace>]: TableUpdates<getTableConfig<config, namespace, table>>;
