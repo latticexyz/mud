@@ -1,5 +1,5 @@
 import { describe, it } from "vitest";
-import { createStore } from "../createStore";
+import { createStore } from "../createStash";
 import { defineStore } from "@latticexyz/store/config/v2";
 import { setRecord } from "./setRecord";
 import { encodeKey } from "./encodeKey";

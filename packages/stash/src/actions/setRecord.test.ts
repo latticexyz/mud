@@ -1,6 +1,6 @@
 import { defineStore } from "@latticexyz/store/config/v2";
 import { describe, it } from "vitest";
-import { createStore } from "../createStore";
+import { createStore } from "../createStash";
 import { attest } from "@ark/attest";
 import { setRecord } from "./setRecord";
 

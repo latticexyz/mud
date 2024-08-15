@@ -3,7 +3,7 @@ import { StoreApi, createStore as createZustandStore } from "zustand/vanilla";
 import { Component, Type, createEntity, createWorld, defineComponent, setComponent } from "@latticexyz/recs";
 import { mutative } from "zustand-mutative";
 import { defineStore } from "@latticexyz/store/config/v2";
-import { CreateStoreResult, createStore } from "./createStore";
+import { CreateStoreResult, createStore } from "./createStash";
 
 export function printDuration(description: string, fn: () => unknown) {
   const start = performance.now();

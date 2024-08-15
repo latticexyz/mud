@@ -6,7 +6,7 @@ import { In, MatchRecord } from "../queryFragments";
 import { deleteRecord } from "./deleteRecord";
 import { setRecord } from "./setRecord";
 import { Store } from "../common";
-import { createStore } from "../createStore";
+import { createStore } from "../createStash";
 
 describe("defineQuery", () => {
   let store: Store;

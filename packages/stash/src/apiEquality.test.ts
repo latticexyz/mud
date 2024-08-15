@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createStore } from "./createStore";
+import { createStore } from "./createStash";
 import { attest } from "@ark/attest";
 import { BoundTable } from "./actions/getTable";
 import { DefaultActions } from "./decorators/default";

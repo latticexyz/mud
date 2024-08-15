@@ -1,7 +1,7 @@
 import { attest } from "@ark/attest";
 import { defineStore } from "@latticexyz/store";
 import { describe, expect, it, vi } from "vitest";
-import { createStore } from "../createStore";
+import { createStore } from "../createStash";
 import { defineTable } from "@latticexyz/store/config/v2";
 import { In } from "../queryFragments";
 import { Hex } from "viem";

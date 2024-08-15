@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 import { attest } from "@ark/attest";
-import { createStore } from "../createStore";
+import { createStore } from "../createStash";
 import { extend } from "./extend";
 
 describe("extend", () => {

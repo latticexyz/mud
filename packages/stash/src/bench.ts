@@ -1,6 +1,6 @@
 import { bench } from "@ark/attest";
 import { defineStore } from "@latticexyz/store";
-import { createStore } from "./createStore";
+import { createStore } from "./createStash";
 import { In } from "./queryFragments";
 
 const config = defineStore({

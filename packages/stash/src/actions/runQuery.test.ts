@@ -1,6 +1,6 @@
 import { describe, beforeEach, it } from "vitest";
 import { attest } from "@arktype/attest";
-import { createStore } from "../createStore";
+import { createStore } from "../createStash";
 import { runQuery } from "./runQuery";
 import { defineStore } from "@latticexyz/store";
 import { Store, StoreRecords, getQueryConfig } from "../common";

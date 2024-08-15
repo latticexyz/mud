@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { renderHook, act } from "@testing-library/react-hooks";
 import { useSelector } from "./useSelector";
 import { defineStore } from "@latticexyz/store/config/v2";
-import { createStore } from "../createStore";
+import { createStore } from "../createStash";
 
 describe("useCustomHook", () => {
   it("checks the re-render behavior of the hook", async () => {

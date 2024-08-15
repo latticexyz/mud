@@ -1,7 +1,7 @@
 import { attest } from "@ark/attest";
 import { defineStore } from "@latticexyz/store";
 import { describe, it } from "vitest";
-import { createStore } from "../createStore";
+import { createStore } from "../createStash";
 import { setRecord } from "./setRecord";
 import { deleteRecord } from "./deleteRecord";
 

@@ -1,6 +1,6 @@
 import { defineStore } from "@latticexyz/store";
 import { describe, expect, it, vi } from "vitest";
-import { createStore } from "../createStore";
+import { createStore } from "../createStash";
 import { subscribeTable } from "./subscribeTable";
 import { setRecord } from "./setRecord";
 

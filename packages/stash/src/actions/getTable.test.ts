@@ -1,7 +1,7 @@
 import { attest } from "@ark/attest";
 import { defineTable } from "@latticexyz/store/config/v2";
 import { describe, it, expect, vi } from "vitest";
-import { createStore } from "../createStore";
+import { createStore } from "../createStash";
 import { getTable } from "./getTable";
 
 describe("getTable", () => {

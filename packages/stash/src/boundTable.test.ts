@@ -1,6 +1,6 @@
 import { describe, beforeEach, it } from "vitest";
 import { attest } from "@arktype/attest";
-import { createStore } from "./createStore";
+import { createStore } from "./createStash";
 import { BoundTable } from "./actions/getTable";
 import { Store } from "./common";
 import { DefaultActions } from "./decorators/default";
