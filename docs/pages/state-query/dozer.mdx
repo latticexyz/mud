@@ -12,61 +12,6 @@ The query language is a subset of [the SQL `SELECT` command](<https://en.wikiped
 On Garnet there is a `World` at address [`0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e`](https://explorer.garnetchain.com/address/0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e) that runs a slightly modified version of [the React template](https://github.com/latticexyz/mud/tree/main/templates/react).
 You can see the data schema for the `World` [in the block explorer](https://explorer.garnetchain.com/address/0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e?tab=mud).
 
-### Create a client to access the `World`
-
-These are the steps to create a client that can access the `World`.
-You do not need these steps to run `curl` queries, but you do need this client to see how to [modify a client to support dozer](#using-dozer-from-a-mud-client).
-
-1. Create and run a react template application.
-
-   ```sh copy
-   pnpm create mud@latest tasks --template react
-   cd tasks
-   pnpm dev
-   ```
-
-1. [Browse to the application](http://localhost:3000/?chainId=17069&worldAddress=0x95f5d049b014114e2feeb5d8d994358ce4ffd06e).
-   The URL specifies the `chainId` and `worldAddress` for the `World`.
-
-1. In Mud DevTools see your account address and [fund it on Garnet](https://garnetchain.com/faucet).
-   You may need to get test ETH for your own address, and then transfer it to the account address the application uses.
-
-1. You can now create, complete, and delete tasks.
-
-1. To see the content of the `app__Creator` table, edit `packages/contracts/mud.config.ts` to add the `Creator` table definition.
-
-   <CollapseCode>
-
-   ```typescript filename="mud.config.ts" copy showLineNumbers {15-21}
-   import { defineWorld } from "@latticexyz/world";
-
-   export default defineWorld({
-     namespace: "app",
-     tables: {
-       Tasks: {
-         schema: {
-           id: "bytes32",
-           createdAt: "uint256",
-           completedAt: "uint256",
-           description: "string",
-         },
-         key: ["id"],
-       },
-       Creator: {
-         schema: {
-           id: "bytes32",
-           taskCreator: "address",
-         },
-         key: ["id"],
-       },
-     },
-   });
-   ```
-
-   </CollapseCode>
-
-The Garnet dozer instance is at `https://dozer.mud.garnetchain.com`.
-
 ## cUrl queries
 
 You can run dozer queries by communicating directly with the server's API.
@@ -354,6 +299,62 @@ For example, this query gets you the different task creators.
 </details>
 
 ## Using dozer from a MUD client
+
+### Create a client to access the `World`
+
+These are the steps to create a client that can access the `World`.
+
+1. Create and run a react template application.
+
+   ```sh copy
+   pnpm create mud@latest tasks --template react
+   cd tasks
+   pnpm dev
+   ```
+
+1. [Browse to the application](http://localhost:3000/?chainId=17069&worldAddress=0x95f5d049b014114e2feeb5d8d994358ce4ffd06e).
+   The URL specifies the `chainId` and `worldAddress` for the `World`.
+
+1. In MUD DevTools see your account address and [fund it on Garnet](https://garnetchain.com/faucet).
+   You may need to get test ETH for your own address, and then transfer it to the account address the application uses.
+
+1. You can now create, complete, and delete tasks.
+
+1. To see the content of the `app__Creator` table, edit `packages/contracts/mud.config.ts` to add the `Creator` table definition.
+
+   <CollapseCode>
+
+   ```typescript filename="mud.config.ts" copy showLineNumbers {15-21}
+   import { defineWorld } from "@latticexyz/world";
+
+   export default defineWorld({
+     namespace: "app",
+     tables: {
+       Tasks: {
+         schema: {
+           id: "bytes32",
+           createdAt: "uint256",
+           completedAt: "uint256",
+           description: "string",
+         },
+         key: ["id"],
+       },
+       Creator: {
+         schema: {
+           id: "bytes32",
+           taskCreator: "address",
+         },
+         key: ["id"],
+       },
+     },
+   });
+   ```
+
+   </CollapseCode>
+
+The Garnet dozer instance is at `https://dozer.mud.garnetchain.com`.
+
+### Updating the client to use dozer
 
 The main purpose of dozer is to allow MUD clients to specify the subset of table records that a client needs, instead of synchronizing whole tables.
 
