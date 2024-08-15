@@ -1,10 +1,10 @@
 import { Lock } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/Select";
-import { NON_EDITABLE_TABLES } from "../../consts";
-import { useWorldAddress } from "../../hooks/useWorldAddress";
+import { useParams } from "next/navigation";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../components/ui/Select";
+import { NON_EDITABLE_TABLES } from "../../../../consts";
 
 export function TableSelector({ value, options }: { value: string | undefined; options: string[] }) {
-  const worldAddress = useWorldAddress();
+  const { worldAddress } = useParams();
   return (
     <div className="py-4">
       <Select

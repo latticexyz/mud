@@ -1,5 +1,7 @@
 import { Loader } from "lucide-react";
+import { useParams } from "next/navigation";
 import { toast } from "sonner";
+import { Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { useChainId } from "wagmi";
 import { ChangeEvent, useState } from "react";
@@ -8,14 +10,13 @@ import { SchemaAbiType } from "@latticexyz/schema-type/internal";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
-import { Checkbox } from "../../components/ui/Checkbox";
-import { ACCOUNT_PRIVATE_KEYS } from "../../consts";
-import { useWorldAddress } from "../../hooks/useWorldAddress";
-import { camelCase, cn } from "../../lib/utils";
-import { useStore } from "../../store";
-import { wagmiConfig } from "../Providers";
-import { TableConfig } from "../api/table/route";
-import { getFieldIndex } from "./utils/getFieldIndex";
+import { Checkbox } from "../../../../components/ui/Checkbox";
+import { ACCOUNT_PRIVATE_KEYS } from "../../../../consts";
+import { camelCase, cn } from "../../../../lib/utils";
+import { useStore } from "../../../../store";
+import { wagmiConfig } from "../../../Providers";
+import { TableConfig } from "../../../api/table/route";
+import { getFieldIndex } from "../utils/getFieldIndex";
 
 type Props = {
   name: string;
@@ -28,7 +29,7 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
   const queryClient = useQueryClient();
   const chainId = useChainId();
   const { account } = useStore();
-  const worldAddress = useWorldAddress();
+  const { worldAddress } = useParams();
 
   const [value, setValue] = useState<unknown>(defaultValue);
 
@@ -42,7 +43,7 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
       const txHash = await writeContract(wagmiConfig, {
         account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
         abi: IBaseWorldAbi,
-        address: worldAddress,
+        address: worldAddress as Hex,
         functionName: "setField",
         args: [tableId, keyTuple, fieldIndex, encodedField],
       });

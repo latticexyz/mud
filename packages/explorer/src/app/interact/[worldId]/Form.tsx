@@ -3,9 +3,9 @@
 import { Coins, Eye, Send } from "lucide-react";
 import { AbiFunction } from "viem";
 import { useDeferredValue, useState } from "react";
-import { Input } from "../../components/ui/Input";
-import { useHashState } from "../../hooks/useHashState";
-import { cn } from "../../lib/utils";
+import { Input } from "../../../../components/ui/Input";
+import { useHashState } from "../../../../hooks/useHashState";
+import { cn } from "../../../../lib/utils";
 import { FunctionField } from "./FunctionField";
 
 type Props = {

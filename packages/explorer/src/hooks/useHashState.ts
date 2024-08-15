@@ -5,7 +5,7 @@ import queryString from "query-string";
 import { useEffect, useMemo, useState } from "react";
 
 // source: https://github.com/vercel/next.js/discussions/49465
-export const useHashState = () => {
+export function useHashState() {
   const getCurrentHash = useMemo(
     () => () => (typeof window !== "undefined" ? window.location.hash.replace(/^#!?/, "") : ""),
     [],
@@ -45,4 +45,4 @@ export const useHashState = () => {
   }, []);
 
   return [hash, setHash] as const;
-};
+}
