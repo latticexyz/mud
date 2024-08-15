@@ -49,7 +49,7 @@ library SystemCall {
     if (systemAddress == address(0)) revert IWorldErrors.World_ResourceNotFound(systemId, systemId.toString());
 
     // Allow access if the system is public or the caller has access to the namespace or name
-    if (!publicAccess) AccessControl.requireAccess(systemId, caller);
+    if (!publicAccess) AccessControl._requireAccess(systemId, caller);
 
     // If the msg.value is non-zero, update the namespace's balance
     if (value > 0) {
