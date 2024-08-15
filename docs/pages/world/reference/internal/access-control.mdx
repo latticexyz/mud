@@ -29,6 +29,29 @@ function hasAccess(ResourceId resourceId, address caller) internal view returns 
 | -------- | ------ | ----------------------------------------------- |
 | `<none>` | `bool` | true if the caller has access, false otherwise. |
 
+#### \_hasAccess
+
+Checks if the caller has access to the given resource ID or its namespace.
+
+_This bypasses StoreSwitch and assumes its being called within the Store, saving gas for known call contexts._
+
+```solidity
+function _hasAccess(ResourceId resourceId, address caller) internal view returns (bool);
+```
+
+**Parameters**
+
+| Name         | Type         | Description                          |
+| ------------ | ------------ | ------------------------------------ |
+| `resourceId` | `ResourceId` | The resource ID to check access for. |
+| `caller`     | `address`    | The address of the caller.           |
+
+**Returns**
+
+| Name     | Type   | Description                                     |
+| -------- | ------ | ----------------------------------------------- |
+| `<none>` | `bool` | true if the caller has access, false otherwise. |
+
 #### requireAccess
 
 Check for access at the given namespace or resource.
@@ -37,6 +60,25 @@ _Reverts with IWorldErrors.World_AccessDenied if access is denied._
 
 ```solidity
 function requireAccess(ResourceId resourceId, address caller) internal view;
+```
+
+**Parameters**
+
+| Name         | Type         | Description                          |
+| ------------ | ------------ | ------------------------------------ |
+| `resourceId` | `ResourceId` | The resource ID to check access for. |
+| `caller`     | `address`    | The address of the caller.           |
+
+#### \_requireAccess
+
+Check for access at the given namespace or resource.
+
+_Reverts with IWorldErrors.World_AccessDenied if access is denied._
+
+_This bypasses StoreSwitch and assumes its being called within the Store, saving gas for known call contexts._
+
+```solidity
+function _requireAccess(ResourceId resourceId, address caller) internal view;
 ```
 
 **Parameters**
@@ -63,6 +105,25 @@ function requireOwner(ResourceId resourceId, address caller) internal view;
 | `resourceId` | `ResourceId` | The resource ID to check ownership for. |
 | `caller`     | `address`    | The address of the caller.              |
 
+#### \_requireOwner
+
+Check for ownership of the namespace of the given resource ID.
+
+_Reverts with IWorldErrors.World_AccessDenied if caller is not owner of the namespace of the resource._
+
+_This bypasses StoreSwitch and assumes its being called within the Store, saving gas for known call contexts._
+
+```solidity
+function _requireOwner(ResourceId resourceId, address caller) internal view;
+```
+
+**Parameters**
+
+| Name         | Type         | Description                             |
+| ------------ | ------------ | --------------------------------------- |
+| `resourceId` | `ResourceId` | The resource ID to check ownership for. |
+| `caller`     | `address`    | The address of the caller.              |
+
 #### requireExistence
 
 Check for existence of the given resource ID.
@@ -71,6 +132,24 @@ _Reverts with IWorldErrors.World_ResourceNotFound if the resource does not exist
 
 ```solidity
 function requireExistence(ResourceId resourceId) internal view;
+```
+
+**Parameters**
+
+| Name         | Type         | Description                             |
+| ------------ | ------------ | --------------------------------------- |
+| `resourceId` | `ResourceId` | The resource ID to check existence for. |
+
+#### \_requireExistence
+
+Check for existence of the given resource ID.
+
+_Reverts with IWorldErrors.World_ResourceNotFound if the resource does not exist._
+
+_This bypasses StoreSwitch and assumes its being called within the Store, saving gas for known call contexts._
+
+```solidity
+function _requireExistence(ResourceId resourceId) internal view;
 ```
 
 **Parameters**

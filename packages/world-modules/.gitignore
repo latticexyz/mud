@@ -7,4 +7,7 @@ artifacts
 yarn-error.log
 API
 
+# Each module in this package codegens its libraries to each module dir (see MUD config).
+# World interface 1) is combined for all modules and 2) doesn't make as much sense for some modules because they're installed to a specific namespace.
+# So ignore them for now. We ignore the entire base codegen dir because it includes the table index, which we don't want to propagate either.
 src/codegen

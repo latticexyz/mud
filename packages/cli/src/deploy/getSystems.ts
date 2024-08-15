@@ -27,7 +27,7 @@ export async function getSystems({
   ]);
   const systems = resourceIds.map(hexToResource).filter((resource) => resource.type === "system");
 
-  debug("looking up systems", systems.map(resourceToLabel).join(", "));
+  debug("looking up systems:", systems.map(resourceToLabel).join(", "));
   return await Promise.all(
     systems.map(async (system): Promise<DeployedSystem> => {
       const { system: address, publicAccess } = await getTableValue({

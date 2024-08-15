@@ -30,12 +30,12 @@ export async function ensureTables({
 
   const existingTables = tables.filter((table) => worldTableIds.includes(table.tableId));
   if (existingTables.length) {
-    debug("existing tables", existingTables.map(resourceToLabel).join(", "));
+    debug("existing tables:", existingTables.map(resourceToLabel).join(", "));
   }
 
   const missingTables = tables.filter((table) => !worldTableIds.includes(table.tableId));
   if (missingTables.length) {
-    debug("registering tables", missingTables.map(resourceToLabel).join(", "));
+    debug("registering tables:", missingTables.map(resourceToLabel).join(", "));
     return await Promise.all(
       missingTables.map((table) => {
         const keySchema = getSchemaTypes(getKeySchema(table));
