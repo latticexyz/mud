@@ -54,7 +54,7 @@ export async function ensureNamespaceOwner({
   // Register missing namespaces
   const missingNamespaces = desiredNamespaces.filter((namespace) => !existingNamespaces.has(namespace));
   if (missingNamespaces.length > 0) {
-    debug("registering namespaces", Array.from(missingNamespaces).join(", "));
+    debug("registering namespaces:", Array.from(missingNamespaces).join(", "));
   }
   const registrationTxs = Promise.all(
     missingNamespaces.map((namespace) =>

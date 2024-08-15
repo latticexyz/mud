@@ -82,7 +82,7 @@ export type Library = DeterministicContract & {
 };
 
 export type System = DeterministicContract & {
-  // TODO: add label
+  readonly label: string;
   readonly namespace: string;
   readonly name: string;
   readonly systemId: Hex;
@@ -92,7 +92,10 @@ export type System = DeterministicContract & {
   readonly worldFunctions: readonly WorldFunction[];
 };
 
-export type DeployedSystem = Omit<System, "abi" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"> & {
+export type DeployedSystem = Omit<
+  System,
+  "label" | "abi" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"
+> & {
   address: Address;
 };
 
