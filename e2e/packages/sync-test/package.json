@@ -23,7 +23,7 @@
     "@latticexyz/world": "link:../../../packages/world",
     "@latticexyz/world-modules": "link:../../../packages/world-modules",
     "@viem/anvil": "^0.0.6",
-    "abitype": "1.0.0",
+    "abitype": "1.0.5",
     "chalk": "^5.2.0",
     "dotenv": "^16.0.3",
     "drizzle-orm": "^0.28.5",
@@ -31,7 +31,7 @@
     "happy-dom": "^12.10.3",
     "postgres": "3.3.5",
     "typescript": "5.4.2",
-    "viem": "2.9.20",
+    "viem": "2.19.4",
     "vite": "^4.2.1",
     "vitest": "0.34.6",
     "zod": "3.23.8"
