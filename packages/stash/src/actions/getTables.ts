@@ -1,4 +1,4 @@
-import { Store, StoreConfig, getNamespaces, getTableConfig, getNamespaceTables } from "../common";
+import { Stash, StoreConfig, getNamespaces, getTableConfig, getNamespaceTables } from "../common";
 import { BoundTable, getTable } from "./getTable";
 
 type MutableBoundTables<config extends StoreConfig = StoreConfig> = {
@@ -14,7 +14,7 @@ export type BoundTables<config extends StoreConfig = StoreConfig> = {
 };
 
 export type GetTablesArgs<config extends StoreConfig = StoreConfig> = {
-  stash: Store<config>;
+  stash: Stash<config>;
 };
 
 export type GetTablesResult<config extends StoreConfig = StoreConfig> = BoundTables<config>;

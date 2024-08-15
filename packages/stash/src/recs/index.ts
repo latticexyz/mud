@@ -1,5 +1,5 @@
 import { In, MatchRecord, NotIn, NotMatchRecord } from "../queryFragments";
-import { Query, Store, TableRecord } from "../common";
+import { Query, Stash, TableRecord } from "../common";
 import { UpdateType as RecsUpdateType } from "@latticexyz/recs";
 import { BoundTable, getTable } from "../actions/getTable";
 import { runQuery as runQueryInternal } from "../actions/runQuery";
@@ -61,7 +61,7 @@ export function NotValue(t: BoundTable, partialRecord: TableRecord) {
   return NotMatchRecord(t.getConfig(), partialRecord);
 }
 
-export function runQuery(stash: Store, query: Query) {
+export function runQuery(stash: Stash, query: Query) {
   const result = runQueryInternal({ stash, query });
 
   return new Set(Object.keys(result.keys));
@@ -85,7 +85,7 @@ type SystemUpdate = {
   component: BoundTable;
 };
 
-function transformUpdate(s: Store, update: QueryUpdate, updateFilter?: "enter" | "update" | "exit"): SystemUpdate[] {
+function transformUpdate(s: Stash, update: QueryUpdate, updateFilter?: "enter" | "update" | "exit"): SystemUpdate[] {
   const transformedUpdates = [] as SystemUpdate[];
 
   const namespaces = Object.entries(update.records);
@@ -120,7 +120,7 @@ function transformUpdate(s: Store, update: QueryUpdate, updateFilter?: "enter" |
 }
 
 function defineSystemInternal(
-  stash: Store,
+  stash: Stash,
   query: Query,
   system: (update: SystemUpdate) => void,
   options: { runOnInit?: boolean } = { runOnInit: true },
@@ -144,7 +144,7 @@ function defineSystemInternal(
 }
 
 export function defineSystem(
-  stash: Store,
+  stash: Stash,
   query: Query,
   system: (update: SystemUpdate) => void,
   options: { runOnInit?: boolean } = { runOnInit: true },
@@ -153,7 +153,7 @@ export function defineSystem(
 }
 
 export function defineEnterSystem(
-  stash: Store,
+  stash: Stash,
   query: Query,
   system: (update: SystemUpdate) => void,
   options: { runOnInit?: boolean } = { runOnInit: true },
@@ -162,7 +162,7 @@ export function defineEnterSystem(
 }
 
 export function defineUpdateSystem(
-  stash: Store,
+  stash: Stash,
   query: Query,
   system: (update: SystemUpdate) => void,
   options: { runOnInit?: boolean } = { runOnInit: true },
@@ -171,7 +171,7 @@ export function defineUpdateSystem(
 }
 
 export function defineExitSystem(
-  stash: Store,
+  stash: Stash,
   query: Query,
   system: (update: SystemUpdate) => void,
   options: { runOnInit?: boolean } = { runOnInit: true },

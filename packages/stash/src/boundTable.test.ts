@@ -2,7 +2,7 @@ import { describe, beforeEach, it } from "vitest";
 import { attest } from "@arktype/attest";
 import { createStash } from "./createStash";
 import { BoundTable } from "./actions/getTable";
-import { Store } from "./common";
+import { Stash } from "./common";
 import { DefaultActions } from "./decorators/default";
 import { defineTable } from "@latticexyz/store/config/v2";
 
@@ -15,7 +15,7 @@ describe("BoundTable", () => {
   });
   let table: BoundTable<typeof tableConfig>;
 
-  let stash: Store & DefaultActions;
+  let stash: Stash & DefaultActions;
 
   beforeEach(() => {
     stash = createStash();

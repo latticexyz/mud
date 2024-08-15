@@ -1,7 +1,7 @@
-import { Store, StoreConfig, StoreUpdatesSubscriber, Unsubscribe } from "../common";
+import { Stash, StoreConfig, StoreUpdatesSubscriber, Unsubscribe } from "../common";
 
 export type SubscribeStoreArgs<config extends StoreConfig = StoreConfig> = {
-  stash: Store<config>;
+  stash: Stash<config>;
   subscriber: StoreUpdatesSubscriber<config>;
 };
 

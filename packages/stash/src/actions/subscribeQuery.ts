@@ -4,7 +4,7 @@ import {
   Keys,
   Unsubscribe,
   Query,
-  Store,
+  Stash,
   CommonQueryOptions,
   CommonQueryResult,
   StoreConfig,
@@ -40,7 +40,7 @@ export type QueryUpdate<config extends StoreConfig = StoreConfig> = {
 type QuerySubscriber<config extends StoreConfig = StoreConfig> = (update: QueryUpdate<config>) => void;
 
 export type SubscribeQueryArgs<query extends Query = Query> = {
-  stash: Store;
+  stash: Stash;
   query: query;
   options?: SubscribeQueryOptions<getQueryConfig<query>>;
 };

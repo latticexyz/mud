@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { State, Store, StoreConfig } from "../common";
+import { State, Stash, StoreConfig } from "../common";
 import { subscribeStore } from "../actions";
 
 export function useSelector<config extends StoreConfig, T>(
-  stash: Store<config>,
+  stash: Stash<config>,
   selector: (stash: State<config>) => T,
   equals: (a: T, b: T) => boolean = (a, b) => a === b,
 ): T {

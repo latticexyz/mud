@@ -1,11 +1,11 @@
-import { MutableState, Store, StoreConfig, StoreSubscribers, TableSubscribers } from "./common";
+import { MutableState, Stash, StoreConfig, StoreSubscribers, TableSubscribers } from "./common";
 import { DefaultActions, defaultActions } from "./decorators/default";
 import { extend } from "./actions/extend";
 import { Table } from "@latticexyz/store/config/v2";
 
 export type Config = StoreConfig;
 
-export type CreateStoreResult<config extends Config = Config> = Store<config> & DefaultActions<config>;
+export type CreateStoreResult<config extends Config = Config> = Stash<config> & DefaultActions<config>;
 
 /**
  * Initializes a Zustand stash based on the provided table configs.
@@ -49,7 +49,7 @@ export function createStash<config extends Config>(storeConfig?: config): Create
       tableSubscribers,
       storeSubscribers,
     },
-  } satisfies Store;
+  } satisfies Stash;
 
   return extend({ stash, actions: defaultActions(stash) }) as never;
 }

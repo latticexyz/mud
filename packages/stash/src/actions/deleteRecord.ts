@@ -1,10 +1,10 @@
 import { Table } from "@latticexyz/config";
-import { Key, Store } from "../common";
+import { Key, Stash } from "../common";
 import { encodeKey } from "./encodeKey";
 import { registerTable } from "./registerTable";
 
 export type DeleteRecordArgs<table extends Table = Table> = {
-  stash: Store;
+  stash: Stash;
   table: table;
   key: Key<table>;
 };

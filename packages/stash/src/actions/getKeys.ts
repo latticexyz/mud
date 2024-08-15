@@ -1,9 +1,9 @@
 import { Table } from "@latticexyz/config";
-import { Store, Keys } from "../common";
+import { Stash, Keys } from "../common";
 import { decodeKey } from "./decodeKey";
 
 export type GetKeysArgs<table extends Table = Table> = {
-  stash: Store;
+  stash: Stash;
   table: table;
 };
 

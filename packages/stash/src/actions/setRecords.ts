@@ -1,11 +1,11 @@
 import { dynamicAbiTypeToDefaultValue, staticAbiTypeToDefaultValue } from "@latticexyz/schema-type/internal";
-import { Store, TableRecord, TableUpdates } from "../common";
+import { Stash, TableRecord, TableUpdates } from "../common";
 import { encodeKey } from "./encodeKey";
 import { Table } from "@latticexyz/config";
 import { registerTable } from "./registerTable";
 
 export type SetRecordsArgs<table extends Table = Table> = {
-  stash: Store;
+  stash: Stash;
   table: table;
   records: TableRecord<table>[];
 };

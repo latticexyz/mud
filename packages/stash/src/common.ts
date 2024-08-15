@@ -149,7 +149,7 @@ export type StoreUpdatesSubscriber<config extends StoreConfig = StoreConfig> = (
 
 export type StoreSubscribers<config extends StoreConfig = StoreConfig> = Set<StoreUpdatesSubscriber<config>>;
 
-export type Store<config extends StoreConfig = StoreConfig> = {
+export type Stash<config extends StoreConfig = StoreConfig> = {
   /**
    * Get a readonly reference to the current state
    */

@@ -5,11 +5,11 @@ import { defineStore } from "@latticexyz/store";
 import { In, MatchRecord } from "../queryFragments";
 import { deleteRecord } from "./deleteRecord";
 import { setRecord } from "./setRecord";
-import { Store } from "../common";
+import { Stash } from "../common";
 import { createStash } from "../createStash";
 
 describe("defineQuery", () => {
-  let stash: Store;
+  let stash: Stash;
   const config = defineStore({
     namespace: "namespace1",
     tables: {

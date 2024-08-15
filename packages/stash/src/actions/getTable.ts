@@ -1,5 +1,5 @@
 import { Table } from "@latticexyz/config";
-import { Store } from "../common";
+import { Stash } from "../common";
 import { DecodeKeyArgs, DecodeKeyResult, decodeKey } from "./decodeKey";
 import { DeleteRecordArgs, DeleteRecordResult, deleteRecord } from "./deleteRecord";
 import { EncodeKeyArgs, EncodeKeyResult, encodeKey } from "./encodeKey";
@@ -38,7 +38,7 @@ export type BoundTable<table extends Table = Table> = {
 };
 
 export type GetTableArgs<table extends Table = Table> = {
-  stash: Store;
+  stash: Stash;
   table: table;
 };
 

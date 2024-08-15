@@ -1,9 +1,9 @@
-import { Key, TableRecord, Store } from "../common";
+import { Key, TableRecord, Stash } from "../common";
 import { setRecords } from "./setRecords";
 import { Table } from "@latticexyz/config";
 
 export type SetRecordArgs<table extends Table = Table> = {
-  stash: Store;
+  stash: Stash;
   table: table;
   key: Key<table>;
   record: Partial<TableRecord<table>>;

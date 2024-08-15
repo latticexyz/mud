@@ -1,8 +1,8 @@
 import { Table } from "@latticexyz/config";
-import { Store, TableUpdatesSubscriber, Unsubscribe } from "../common";
+import { Stash, TableUpdatesSubscriber, Unsubscribe } from "../common";
 
 export type SubscribeTableArgs<table extends Table = Table> = {
-  stash: Store;
+  stash: Stash;
   table: table;
   subscriber: TableUpdatesSubscriber<table>;
 };

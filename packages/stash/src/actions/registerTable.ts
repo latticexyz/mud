@@ -1,9 +1,9 @@
 import { Table } from "@latticexyz/config";
 import { getTable, BoundTable } from "./getTable";
-import { Store } from "../common";
+import { Stash } from "../common";
 
 export type RegisterTableArgs<table extends Table = Table> = {
-  stash: Store;
+  stash: Stash;
   table: table;
 };
 

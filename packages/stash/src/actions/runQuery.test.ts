@@ -3,13 +3,13 @@ import { attest } from "@arktype/attest";
 import { createStash } from "../createStash";
 import { runQuery } from "./runQuery";
 import { defineStore } from "@latticexyz/store";
-import { Store, StoreRecords, getQueryConfig } from "../common";
+import { Stash, StoreRecords, getQueryConfig } from "../common";
 import { setRecord } from "./setRecord";
 import { In, MatchRecord, NotIn, NotMatchRecord } from "../queryFragments";
 import { Hex } from "viem";
 
 describe("runQuery", () => {
-  let stash: Store;
+  let stash: Stash;
   const config = defineStore({
     namespaces: {
       namespace1: {

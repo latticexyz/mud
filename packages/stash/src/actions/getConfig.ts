@@ -1,8 +1,8 @@
 import { Table } from "@latticexyz/config";
-import { Store } from "../common";
+import { Stash } from "../common";
 
 export type GetConfigArgs = {
-  stash: Store;
+  stash: Stash;
   table: { label: string; namespaceLabel?: string };
 };
 

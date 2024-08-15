@@ -2,7 +2,7 @@ import { getKeySchema } from "@latticexyz/protocol-parser/internal";
 import {
   StoreRecords,
   Query,
-  Store,
+  Stash,
   MutableStoreRecords,
   CommonQueryOptions,
   CommonQueryResult,
@@ -17,7 +17,7 @@ export type RunQueryOptions = CommonQueryOptions & {
 
 // TODO: is it feasible to type the stash records return type based on the query?
 export type RunQueryArgs<query extends Query = Query, options extends RunQueryOptions = RunQueryOptions> = {
-  stash: Store;
+  stash: Stash;
   query: query;
   options?: options;
 };
