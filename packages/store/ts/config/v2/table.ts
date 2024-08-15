@@ -99,6 +99,18 @@ export function validateTable<input, scope extends Scope = AbiTypeScope>(
   if (hasOwnKey(input, "namespace") && typeof input.namespace === "string" && input.namespace.length > 14) {
     throw new Error(`Table \`namespace\` must fit into a \`bytes14\`, but "${input.namespace}" is too long.`);
   }
+
+  if (
+    hasOwnKey(input, "namespaceLabel") &&
+    typeof input.namespaceLabel === "string" &&
+    (!hasOwnKey(input, "namespace") || typeof input.namespace !== "string") &&
+    input.namespaceLabel.length > 14
+  ) {
+    throw new Error(
+      `Table \`namespace\` defaults to \`namespaceLabel\`, but must fit into a \`bytes14\` and "${input.namespaceLabel}" is too long. Provide explicit \`namespace\` override.`,
+    );
+  }
+
   if (hasOwnKey(input, "name") && typeof input.name === "string" && input.name.length > 16) {
     throw new Error(`Table \`name\` must fit into a \`bytes16\`, but "${input.name}" is too long.`);
   }
