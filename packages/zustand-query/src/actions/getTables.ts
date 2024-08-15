@@ -1,15 +1,15 @@
-import { Store, StoreConfig, getNamespaces, getTableConfig, getTables } from "../common";
+import { Store, StoreConfig, getNamespaces, getTableConfig, getNamespaceTables } from "../common";
 import { BoundTable, getTable } from "./getTable";
 
 type MutableBoundTables<config extends StoreConfig = StoreConfig> = {
   -readonly [namespace in getNamespaces<config>]: {
-    -readonly [table in getTables<config, namespace>]: BoundTable<getTableConfig<config, namespace, table>>;
+    -readonly [table in getNamespaceTables<config, namespace>]: BoundTable<getTableConfig<config, namespace, table>>;
   };
 };
 
 export type BoundTables<config extends StoreConfig = StoreConfig> = {
   [namespace in getNamespaces<config>]: {
-    [table in getTables<config, namespace>]: BoundTable<getTableConfig<config, namespace, table>>;
+    [table in getNamespaceTables<config, namespace>]: BoundTable<getTableConfig<config, namespace, table>>;
   };
 };
 

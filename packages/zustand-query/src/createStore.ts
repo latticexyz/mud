@@ -1,6 +1,7 @@
 import { MutableState, Store, StoreConfig, StoreSubscribers, TableSubscribers } from "./common";
 import { DefaultActions, defaultActions } from "./decorators/default";
 import { extend } from "./actions/extend";
+import { Table } from "@latticexyz/store/config/v2";
 
 export type Config = StoreConfig;
 
@@ -21,14 +22,14 @@ export function createStore<config extends Config>(storeConfig?: config): Create
   // Initialize the store
   if (storeConfig) {
     for (const [namespace, { tables }] of Object.entries(storeConfig.namespaces)) {
-      for (const [table, tableConfig] of Object.entries(tables)) {
-        // TODO: add option to resolveTables to not add codegen/deploy?
+      for (const [table, fullTableConfig] of Object.entries(tables)) {
+        // Remove unused artifacts from the store config
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { codegen, deploy, ...relevantConfig } = tableConfig;
+        const { deploy, codegen, ...tableConfig } = { ...(fullTableConfig as Table) };
 
         // Set config for tables
         state.config[namespace] ??= {};
-        state.config[namespace][table] = relevantConfig;
+        state.config[namespace][table] = tableConfig;
 
         // Init records map for tables
         state.records[namespace] ??= {};
@@ -50,5 +51,5 @@ export function createStore<config extends Config>(storeConfig?: config): Create
     },
   } satisfies Store;
 
-  return extend({ store, actions: defaultActions(store) });
+  return extend({ store, actions: defaultActions(store) }) as never;
 }

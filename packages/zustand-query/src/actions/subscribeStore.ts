@@ -11,6 +11,6 @@ export function subscribeStore<config extends StoreConfig>({
   store,
   subscriber,
 }: SubscribeStoreArgs<config>): SubscribeStoreResult {
-  store._.storeSubscribers.add(subscriber);
-  return () => store._.storeSubscribers.delete(subscriber);
+  store._.storeSubscribers.add(subscriber as StoreUpdatesSubscriber);
+  return () => store._.storeSubscribers.delete(subscriber as StoreUpdatesSubscriber);
 }

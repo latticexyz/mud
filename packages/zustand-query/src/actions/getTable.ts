@@ -48,14 +48,15 @@ export function getTable<table extends Table>({ store, table }: GetTableArgs<tab
     registerTable({ store, table });
   }
 
+  // TODO: type
   return {
     decodeKey: (args: TableBoundDecodeKeyArgs) => decodeKey({ store, table, ...args }),
-    deleteRecord: (args: TableBoundDeleteRecordArgs) => deleteRecord({ store, table, ...args }),
-    encodeKey: (args: TableBoundEncodeKeyArgs) => encodeKey({ store, table, ...args }),
+    deleteRecord: (args: TableBoundDeleteRecordArgs) => deleteRecord({ store, table, ...args } as never),
+    encodeKey: (args: TableBoundEncodeKeyArgs) => encodeKey({ store, table, ...args } as never),
     getConfig: () => getConfig({ store, table }),
     getKeys: () => getKeys({ store, table }),
-    getRecord: (args: TableBoundGetRecordArgs) => getRecord({ store, table, ...args }),
-    getRecords: (args?: TableBoundGetRecordsArgs) => getRecords({ store, table, ...args }),
+    getRecord: (args: TableBoundGetRecordArgs) => getRecord({ store, table, ...args } as never),
+    getRecords: (args?: TableBoundGetRecordsArgs) => getRecords({ store, table, ...args } as never),
     setRecord: (args: TableBoundSetRecordArgs<table>) => setRecord({ store, table, ...args }),
     setRecords: (args: TableBoundSetRecordsArgs<table>) => setRecords({ store, table, ...args }),
     subscribe: (args: TableBoundSubscribeTableArgs) => subscribeTable({ store, table, ...args }),
