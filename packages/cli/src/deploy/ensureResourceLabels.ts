@@ -19,7 +19,7 @@ export async function ensureResourceLabels({
   readonly worldDeploy: WorldDeploy;
   readonly resources: readonly LabeledResource[];
 }): Promise<readonly Hex[]> {
-  // TODO: check if `metadata__setResource` function exists
+  // TODO: check if `metadata__setResourceTag` function exists
   // TODO: filter already registered labels
 
   debug(`setting ${resources.length} resource labels`);

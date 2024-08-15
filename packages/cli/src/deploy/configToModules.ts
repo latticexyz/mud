@@ -85,7 +85,6 @@ export async function configToModules<config extends World>(
       }
 
       return {
-        optional: false,
         name,
         installAsRoot: mod.root,
         installData: installArgs.length === 0 ? "0x" : installArgs[0],
