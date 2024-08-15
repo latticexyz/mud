@@ -27,6 +27,8 @@ export async function configToModules<config extends World>(
   forgeOutDir: string,
 ): Promise<readonly Module[]> {
   const defaultModules: Module[] = [
+    // TODO: replace metadata install here with custom logic inside `ensureModules` or an`ensureDefaultModules` to check
+    //       if metadata namespace exists, if we own it, and if so transfer ownership to the module before reinstalling
     {
       optional: true,
       name: "MetadataModule",
