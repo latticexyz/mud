@@ -172,7 +172,7 @@ export function resolveTable<input extends TableInput, scope extends Scope = Abi
   scope: scope = AbiTypeScope as unknown as scope,
 ): resolveTable<input, scope> {
   const namespaceLabel = input.namespaceLabel ?? TABLE_DEFAULTS.namespace;
-  const namespace = input.namespace ?? namespaceLabel.slice(0, 14);
+  const namespace = input.namespace ?? namespaceLabel;
   const label = input.label;
   const name = input.name ?? label.slice(0, 16);
   const type = input.type ?? TABLE_DEFAULTS.type;
