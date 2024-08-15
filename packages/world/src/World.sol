@@ -95,7 +95,7 @@ contract World is StoreKernel, IWorldKernel {
    * @dev The caller must own the root namespace.
    */
   function installRootModule(IModule module, bytes memory encodedArgs) public prohibitDirectCallback {
-    AccessControl.requireOwner(ROOT_NAMESPACE_ID, msg.sender);
+    AccessControl._requireOwner(ROOT_NAMESPACE_ID, msg.sender);
     _installRootModule(module, encodedArgs);
   }
 
@@ -142,7 +142,7 @@ contract World is StoreKernel, IWorldKernel {
     bytes calldata dynamicData
   ) public virtual prohibitDirectCallback {
     // Require access to the namespace or name
-    AccessControl.requireAccess(tableId, msg.sender);
+    AccessControl._requireAccess(tableId, msg.sender);
 
     // Set the record
     StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
@@ -162,7 +162,7 @@ contract World is StoreKernel, IWorldKernel {
     bytes calldata data
   ) public virtual prohibitDirectCallback {
     // Require access to the namespace or name
-    AccessControl.requireAccess(tableId, msg.sender);
+    AccessControl._requireAccess(tableId, msg.sender);
 
     // Splice the static data
     StoreCore.spliceStaticData(tableId, keyTuple, start, data);
@@ -186,7 +186,7 @@ contract World is StoreKernel, IWorldKernel {
     bytes calldata data
   ) public virtual prohibitDirectCallback {
     // Require access to the namespace or name
-    AccessControl.requireAccess(tableId, msg.sender);
+    AccessControl._requireAccess(tableId, msg.sender);
 
     // Splice the dynamic data
     StoreCore.spliceDynamicData(tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
@@ -206,7 +206,7 @@ contract World is StoreKernel, IWorldKernel {
     bytes calldata data
   ) public virtual prohibitDirectCallback {
     // Require access to namespace or name
-    AccessControl.requireAccess(tableId, msg.sender);
+    AccessControl._requireAccess(tableId, msg.sender);
 
     // Set the field
     StoreCore.setField(tableId, keyTuple, fieldIndex, data);
@@ -228,7 +228,7 @@ contract World is StoreKernel, IWorldKernel {
     FieldLayout fieldLayout
   ) public virtual prohibitDirectCallback {
     // Require access to namespace or name
-    AccessControl.requireAccess(tableId, msg.sender);
+    AccessControl._requireAccess(tableId, msg.sender);
 
     // Set the field
     StoreCore.setField(tableId, keyTuple, fieldIndex, data, fieldLayout);
@@ -251,7 +251,7 @@ contract World is StoreKernel, IWorldKernel {
     FieldLayout fieldLayout
   ) public virtual prohibitDirectCallback {
     // Require access to namespace or name
-    AccessControl.requireAccess(tableId, msg.sender);
+    AccessControl._requireAccess(tableId, msg.sender);
 
     // Set the field
     StoreCore.setStaticField(tableId, keyTuple, fieldIndex, data, fieldLayout);
@@ -271,7 +271,7 @@ contract World is StoreKernel, IWorldKernel {
     bytes calldata data
   ) public virtual prohibitDirectCallback {
     // Require access to namespace or name
-    AccessControl.requireAccess(tableId, msg.sender);
+    AccessControl._requireAccess(tableId, msg.sender);
 
     // Set the field
     StoreCore.setDynamicField(tableId, keyTuple, dynamicFieldIndex, data);
@@ -291,7 +291,7 @@ contract World is StoreKernel, IWorldKernel {
     bytes calldata dataToPush
   ) public virtual prohibitDirectCallback {
     // Require access to namespace or name
-    AccessControl.requireAccess(tableId, msg.sender);
+    AccessControl._requireAccess(tableId, msg.sender);
 
     // Push to the field
     StoreCore.pushToDynamicField(tableId, keyTuple, dynamicFieldIndex, dataToPush);
@@ -311,7 +311,7 @@ contract World is StoreKernel, IWorldKernel {
     uint256 byteLengthToPop
   ) public virtual prohibitDirectCallback {
     // Require access to namespace or name
-    AccessControl.requireAccess(tableId, msg.sender);
+    AccessControl._requireAccess(tableId, msg.sender);
 
     // Push to the field
     StoreCore.popFromDynamicField(tableId, keyTuple, dynamicFieldIndex, byteLengthToPop);
@@ -325,7 +325,7 @@ contract World is StoreKernel, IWorldKernel {
    */
   function deleteRecord(ResourceId tableId, bytes32[] calldata keyTuple) public virtual prohibitDirectCallback {
     // Require access to namespace or name
-    AccessControl.requireAccess(tableId, msg.sender);
+    AccessControl._requireAccess(tableId, msg.sender);
 
     // Delete the record
     StoreCore.deleteRecord(tableId, keyTuple);
