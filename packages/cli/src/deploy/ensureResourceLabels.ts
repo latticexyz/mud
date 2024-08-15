@@ -38,7 +38,7 @@ export async function ensureResourceLabels({
     return [];
   }
 
-  debug(`setting ${resources.length} resource labels`);
+  debug("setting", resources.length, "resource labels");
   return (
     await Promise.all(
       resourcesToSet.map(async ({ resourceId, label }) => {
