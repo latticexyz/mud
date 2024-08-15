@@ -141,9 +141,7 @@ export type resolveTable<input, scope extends Scope = Scope> = input extends Tab
       readonly label: input["label"];
       readonly type: undefined extends input["type"] ? typeof TABLE_DEFAULTS.type : input["type"];
       readonly namespaceLabel: undefined extends input["namespaceLabel"]
-        ? undefined extends input["namespace"]
-          ? typeof TABLE_DEFAULTS.namespace
-          : input["namespace"]
+        ? typeof TABLE_DEFAULTS.namespace
         : input["namespaceLabel"];
       readonly namespace: string;
       readonly name: string;
@@ -161,11 +159,11 @@ export function resolveTable<input extends TableInput, scope extends Scope = Abi
   input: input,
   scope: scope = AbiTypeScope as unknown as scope,
 ): resolveTable<input, scope> {
+  const namespaceLabel = input.namespaceLabel ?? TABLE_DEFAULTS.namespace;
+  const namespace = input.namespace ?? namespaceLabel.slice(0, 14);
   const label = input.label;
-  const type = input.type ?? TABLE_DEFAULTS.type;
-  const namespace = input.namespace ?? TABLE_DEFAULTS.namespace;
-  const namespaceLabel = input.namespaceLabel ?? input.namespace ?? TABLE_DEFAULTS.namespace;
   const name = input.name ?? label.slice(0, 16);
+  const type = input.type ?? TABLE_DEFAULTS.type;
   const tableId = resourceToHex({ type, namespace, name });
 
   return {
