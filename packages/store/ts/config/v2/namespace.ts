@@ -36,7 +36,7 @@ export type resolveNamespace<input, scope extends Scope = AbiTypeScope> = input 
               {
                 readonly [label in keyof input["tables"]]: mergeIfUndefined<
                   expandTableShorthand<input["tables"][label]>,
-                  { readonly namespace: string }
+                  { readonly namespace: string; readonly namespaceLabel: input["label"] }
                 >;
               },
               scope
@@ -49,14 +49,14 @@ export function resolveNamespace<const input extends NamespaceInput, scope exten
   input: input,
   scope: scope = AbiTypeScope as never,
 ): resolveNamespace<input, scope> {
-  const label = input.label;
-  const namespace = input.namespace ?? label.slice(0, 14);
+  const namespaceLabel = input.label;
+  const namespace = input.namespace ?? namespaceLabel.slice(0, 14);
   return {
-    label,
+    label: namespaceLabel,
     namespace,
     tables: resolveTables(
       flatMorph(input.tables ?? {}, (label, table) => {
-        return [label, mergeIfUndefined(expandTableShorthand(table, scope), { namespace })];
+        return [label, mergeIfUndefined(expandTableShorthand(table, scope), { namespace, namespaceLabel })];
       }),
       scope,
     ),

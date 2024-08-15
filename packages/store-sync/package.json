@@ -12,12 +12,14 @@
   "exports": {
     ".": "./dist/index.js",
     "./indexer-client": "./dist/indexer-client/index.js",
+    "./dozer": "./dist/dozer/index.js",
     "./postgres": "./dist/postgres/index.js",
     "./postgres-decoded": "./dist/postgres-decoded/index.js",
     "./recs": "./dist/recs/index.js",
     "./sqlite": "./dist/sqlite/index.js",
     "./trpc-indexer": "./dist/trpc-indexer/index.js",
-    "./zustand": "./dist/zustand/index.js"
+    "./zustand": "./dist/zustand/index.js",
+    "./stash": "./dist/stash/index.js"
   },
   "typesVersions": {
     "*": {
@@ -26,6 +28,9 @@
       ],
       "indexer-client": [
         "./dist/indexer-client/index.d.ts"
+      ],
+      "dozer": [
+        "./dist/dozer/index.d.ts"
       ],
       "postgres": [
         "./dist/postgres/index.d.ts"
@@ -44,6 +49,9 @@
       ],
       "zustand": [
         "./dist/zustand/index.d.ts"
+      ],
+      "stash": [
+        "./src/stash/index.ts"
       ]
     }
   },
@@ -70,6 +78,7 @@
     "@latticexyz/query": "workspace:*",
     "@latticexyz/recs": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
+    "@latticexyz/stash": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/world": "workspace:*",
     "@trpc/client": "10.34.0",
