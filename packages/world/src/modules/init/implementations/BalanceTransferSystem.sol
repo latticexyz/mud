@@ -41,10 +41,10 @@ contract BalanceTransferSystem is System, IWorldErrors, LimitedCallContext {
     requireNamespace(toNamespaceId);
 
     // Require the namespace to exist
-    AccessControl._requireExistence(toNamespaceId);
+    AccessControl.requireExistence(toNamespaceId);
 
     // Require caller to have access to the namespace
-    AccessControl._requireAccess(fromNamespaceId, _msgSender());
+    AccessControl.requireAccess(fromNamespaceId, _msgSender());
 
     // Get current namespace balance
     uint256 balance = Balances._get(fromNamespaceId);
@@ -70,7 +70,7 @@ contract BalanceTransferSystem is System, IWorldErrors, LimitedCallContext {
     uint256 amount
   ) public virtual onlyDelegatecall {
     // Require caller to have access to the namespace
-    AccessControl._requireAccess(fromNamespaceId, _msgSender());
+    AccessControl.requireAccess(fromNamespaceId, _msgSender());
 
     // Get current namespace balance
     uint256 balance = Balances._get(fromNamespaceId);

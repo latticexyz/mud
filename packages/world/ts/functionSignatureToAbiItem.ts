@@ -1,12 +1,6 @@
-import { AbiFunction, parseAbiItem } from "viem";
+import { AbiItem, parseAbiItem } from "viem";
 
-export function functionSignatureToAbiItem(functionSignature: string): AbiFunction {
+export function functionSignatureToAbiItem(functionSignature: string): AbiItem {
   const formattedSignature = `function ${functionSignature}`;
-  const abiItem = parseAbiItem(formattedSignature);
-
-  if (abiItem.type !== "function") {
-    throw new Error(`Expected function signature, got ${abiItem.type}`);
-  }
-
-  return abiItem;
+  return parseAbiItem(formattedSignature);
 }

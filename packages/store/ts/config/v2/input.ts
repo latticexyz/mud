@@ -32,6 +32,11 @@ export type TableInput = {
    */
   readonly namespace?: string;
   /**
+   * Human-readable namespace label.
+   * Defaults to the nearest namespace in the config or root namespace if not set.
+   */
+  readonly namespaceLabel?: string;
+  /**
    * Table name used in table's resource ID.
    * Defaults to the first 16 characters of `label` if not set.
    */
@@ -47,7 +52,7 @@ export type TableShorthandInput = SchemaInput | string;
 export type TablesInput = {
   // remove label and namespace as these are set contextually
   // and allow defining a table using shorthand
-  readonly [label: string]: Omit<TableInput, "label" | "namespace"> | TableShorthandInput;
+  readonly [label: string]: Omit<TableInput, "label" | "namespace" | "namespaceLabel"> | TableShorthandInput;
 };
 
 export type CodegenInput = Partial<Codegen>;

@@ -88,13 +88,13 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     requireInterface(address(hookAddress), type(ISystemHook).interfaceId);
 
     // Require the system to exist
-    AccessControl._requireExistence(systemId);
+    AccessControl.requireExistence(systemId);
 
     // Require the system's namespace to exist
-    AccessControl._requireExistence(systemId.getNamespaceId());
+    AccessControl.requireExistence(systemId.getNamespaceId());
 
     // Require caller to own the namespace
-    AccessControl._requireOwner(systemId, _msgSender());
+    AccessControl.requireOwner(systemId, _msgSender());
 
     // Register the hook
     SystemHooks.push(systemId, Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap)));
@@ -108,7 +108,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    */
   function unregisterSystemHook(ResourceId systemId, ISystemHook hookAddress) public virtual onlyDelegatecall {
     // Require caller to own the namespace
-    AccessControl._requireOwner(systemId, _msgSender());
+    AccessControl.requireOwner(systemId, _msgSender());
 
     // Remove the hook from the list of hooks for this system in the system hooks table
     HookLib.filterListByAddress(SystemHooks._tableId, systemId, address(hookAddress));
@@ -135,10 +135,10 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
 
     // Require the system's namespace to exist
     ResourceId namespaceId = systemId.getNamespaceId();
-    AccessControl._requireExistence(namespaceId);
+    AccessControl.requireExistence(namespaceId);
 
     // Require the caller to own the namespace
-    AccessControl._requireOwner(namespaceId, _msgSender());
+    AccessControl.requireOwner(namespaceId, _msgSender());
 
     // Require the provided address to implement the WorldContextConsumer interface
     requireInterface(address(system), type(IWorldContextConsumer).interfaceId);
@@ -196,10 +196,10 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     }
 
     // Require the resource to exist
-    AccessControl._requireExistence(systemId);
+    AccessControl.requireExistence(systemId);
 
     // Require the caller to own the namespace
-    AccessControl._requireOwner(systemId, _msgSender());
+    AccessControl.requireOwner(systemId, _msgSender());
 
     // Compute global function selector
     string memory namespaceString = WorldResourceIdLib.toTrimmedString(systemId.getNamespace());
@@ -234,7 +234,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     string memory systemFunctionSignature
   ) public onlyDelegatecall returns (bytes4 worldFunctionSelector) {
     // Require the caller to own the root namespace
-    AccessControl._requireOwner(ROOT_NAMESPACE_ID, _msgSender());
+    AccessControl.requireOwner(ROOT_NAMESPACE_ID, _msgSender());
 
     // Compute the function selector from the provided signature
     worldFunctionSelector = bytes4(keccak256(bytes(worldFunctionSignature)));
@@ -299,7 +299,7 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     }
 
     // Require the caller to own the namespace
-    AccessControl._requireOwner(namespaceId, _msgSender());
+    AccessControl.requireOwner(namespaceId, _msgSender());
 
     // Require the delegationControl contract to implement the IDelegationControl interface
     address delegationControl = Systems._getSystem(delegationControlId);
@@ -329,10 +329,10 @@ contract WorldRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     requireNamespace(namespaceId);
 
     // Require the namespace to exist
-    AccessControl._requireExistence(namespaceId);
+    AccessControl.requireExistence(namespaceId);
 
     // Require the caller to own the namespace
-    AccessControl._requireOwner(namespaceId, _msgSender());
+    AccessControl.requireOwner(namespaceId, _msgSender());
 
     // Delete the delegation control
     NamespaceDelegationControl.deleteRecord(namespaceId);

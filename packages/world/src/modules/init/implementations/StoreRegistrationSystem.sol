@@ -53,10 +53,10 @@ contract StoreRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     }
 
     // Require the table's namespace to exist
-    AccessControl._requireExistence(tableId.getNamespaceId());
+    AccessControl.requireExistence(tableId.getNamespaceId());
 
     // Require the caller to own the table's namespace
-    AccessControl._requireOwner(tableId, _msgSender());
+    AccessControl.requireOwner(tableId, _msgSender());
 
     // Register the table
     StoreCore.registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
@@ -80,10 +80,10 @@ contract StoreRegistrationSystem is System, IWorldErrors, LimitedCallContext {
     requireInterface(address(hookAddress), type(IStoreHook).interfaceId);
 
     // Require the table's namespace to exist
-    AccessControl._requireExistence(tableId.getNamespaceId());
+    AccessControl.requireExistence(tableId.getNamespaceId());
 
     // Require caller to own the namespace
-    AccessControl._requireOwner(tableId, _msgSender());
+    AccessControl.requireOwner(tableId, _msgSender());
 
     // Register the hook
     StoreCore.registerStoreHook(tableId, hookAddress, enabledHooksBitmap);
@@ -97,7 +97,7 @@ contract StoreRegistrationSystem is System, IWorldErrors, LimitedCallContext {
    */
   function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) public virtual onlyDelegatecall {
     // Require caller to own the namespace
-    AccessControl._requireOwner(tableId, _msgSender());
+    AccessControl.requireOwner(tableId, _msgSender());
 
     // Unregister the hook
     StoreCore.unregisterStoreHook(tableId, hookAddress);

@@ -49,7 +49,7 @@ export async function worldgen({
 
   await Promise.all(
     systems.map(async (system) => {
-      const data = await fs.readFile(path.join(rootDir, system.sourcePath), "utf8");
+      const data = await fs.readFile(system.sourcePath, "utf8");
       // get external functions from a contract
       const { functions, errors, symbolImports } = contractToInterface(data, system.label);
       const imports = symbolImports.map(
