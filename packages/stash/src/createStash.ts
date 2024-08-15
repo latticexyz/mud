@@ -8,7 +8,7 @@ export type Config = StoreConfig;
 export type CreateStoreResult<config extends Config = Config> = Stash<config> & DefaultActions<config>;
 
 /**
- * Initializes a Zustand stash based on the provided table configs.
+ * Initializes a Stash based on the provided store config.
  */
 export function createStash<config extends Config>(storeConfig?: config): CreateStoreResult<config> {
   const tableSubscribers: TableSubscribers = {};
