@@ -12,6 +12,7 @@
 "@latticexyz/store-sync": patch
 "@latticexyz/store": patch
 "@latticexyz/world": patch
+"create-mud": patch
 ---
 
 Bumped viem to `2.19.4` and abitype to `1.0.5`.
