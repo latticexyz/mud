@@ -3,7 +3,7 @@ pragma solidity >=0.8.24;
 
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { Module } from "@latticexyz/world/src/Module.sol";
-import { requireOwner } from "./common.sol";
+import { AccessControl } from "@latticexyz/world/src/AccessControl.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
@@ -33,7 +33,7 @@ contract MetadataModule is Module {
     if (!ResourceIds.getExists(namespace)) {
       world.registerNamespace(namespace);
     }
-    requireOwner(namespace, address(this));
+    AccessControl.requireOwner(namespace, address(this));
 
     if (!ResourceIds.getExists(ResourceTag._tableId)) {
       ResourceTag.register();

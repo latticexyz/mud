@@ -6,8 +6,8 @@ import { System } from "@latticexyz/world/src/System.sol";
 import { WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
 import { SystemRegistry } from "@latticexyz/world/src/codegen/tables/SystemRegistry.sol";
+import { AccessControl } from "@latticexyz/world/src/AccessControl.sol";
 
-import { AccessControlLib } from "../../utils/AccessControlLib.sol";
 import { PuppetMaster } from "../puppet/PuppetMaster.sol";
 import { toTopic } from "../puppet/utils.sol";
 import { Balances } from "../tokens/tables/Balances.sol";
@@ -281,6 +281,6 @@ contract ERC20System is System, IERC20Mintable, PuppetMaster {
   }
 
   function _requireOwner() internal view {
-    AccessControlLib.requireOwner(SystemRegistry.get(address(this)), _msgSender());
+    AccessControl.requireOwner(SystemRegistry.get(address(this)), _msgSender());
   }
 }
