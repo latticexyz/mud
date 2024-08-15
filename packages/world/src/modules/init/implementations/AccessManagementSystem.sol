@@ -24,10 +24,10 @@ contract AccessManagementSystem is System, LimitedCallContext {
    */
   function grantAccess(ResourceId resourceId, address grantee) public virtual onlyDelegatecall {
     // Require the resource to exist
-    AccessControl.requireExistence(resourceId);
+    AccessControl._requireExistence(resourceId);
 
     // Require the caller to own the namespace
-    AccessControl.requireOwner(resourceId, _msgSender());
+    AccessControl._requireOwner(resourceId, _msgSender());
 
     // Grant access to the given resource
     ResourceAccess._set(resourceId, grantee, true);
@@ -41,7 +41,7 @@ contract AccessManagementSystem is System, LimitedCallContext {
    */
   function revokeAccess(ResourceId resourceId, address grantee) public virtual onlyDelegatecall {
     // Require the caller to own the namespace
-    AccessControl.requireOwner(resourceId, _msgSender());
+    AccessControl._requireOwner(resourceId, _msgSender());
 
     // Revoke access from the given resource
     ResourceAccess._deleteRecord(resourceId, grantee);
@@ -58,10 +58,10 @@ contract AccessManagementSystem is System, LimitedCallContext {
     requireNamespace(namespaceId);
 
     // Require the namespace to exist
-    AccessControl.requireExistence(namespaceId);
+    AccessControl._requireExistence(namespaceId);
 
     // Require the caller to own the namespace
-    AccessControl.requireOwner(namespaceId, _msgSender());
+    AccessControl._requireOwner(namespaceId, _msgSender());
 
     // Set namespace new owner
     NamespaceOwner._set(namespaceId, newOwner);
@@ -83,10 +83,10 @@ contract AccessManagementSystem is System, LimitedCallContext {
     requireNamespace(namespaceId);
 
     // Require the namespace to exist
-    AccessControl.requireExistence(namespaceId);
+    AccessControl._requireExistence(namespaceId);
 
     // Require the caller to own the namespace
-    AccessControl.requireOwner(namespaceId, _msgSender());
+    AccessControl._requireOwner(namespaceId, _msgSender());
 
     // Delete namespace owner
     NamespaceOwner._deleteRecord(namespaceId);

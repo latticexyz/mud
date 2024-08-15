@@ -63,13 +63,13 @@
     "file": "test/Factories.t.sol",
     "test": "testWorldFactoryGas",
     "name": "deploy world via WorldFactory",
-    "gasUsed": 12857199
+    "gasUsed": 12847807
   },
   {
     "file": "test/World.t.sol",
     "test": "testCall",
     "name": "call a system via the World",
-    "gasUsed": 42376
+    "gasUsed": 40081
   },
   {
     "file": "test/World.t.sol",
@@ -93,19 +93,19 @@
     "file": "test/World.t.sol",
     "test": "testDeleteRecord",
     "name": "Delete record",
-    "gasUsed": 39013
+    "gasUsed": 36718
   },
   {
     "file": "test/World.t.sol",
     "test": "testPushToDynamicField",
     "name": "Push data to the table",
-    "gasUsed": 113070
+    "gasUsed": 110775
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 119195
+    "gasUsed": 116605
   },
   {
     "file": "test/World.t.sol",
@@ -117,43 +117,43 @@
     "file": "test/World.t.sol",
     "test": "testRegisterRootFunctionSelector",
     "name": "Register a root function selector",
-    "gasUsed": 115988
+    "gasUsed": 113693
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterSystem",
     "name": "register a system",
-    "gasUsed": 187927
+    "gasUsed": 185337
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 575517
+    "gasUsed": 572927
   },
   {
     "file": "test/World.t.sol",
     "test": "testRenounceNamespace",
     "name": "Renounce namespace ownership",
-    "gasUsed": 64732
+    "gasUsed": 62190
   },
   {
     "file": "test/World.t.sol",
     "test": "testSetField",
     "name": "Write data to a table field",
-    "gasUsed": 63179
+    "gasUsed": 60884
   },
   {
     "file": "test/World.t.sol",
     "test": "testSetRecord",
     "name": "Write data to the table",
-    "gasUsed": 67038
+    "gasUsed": 64743
   },
   {
     "file": "test/World.t.sol",
     "test": "testUnregisterNamespaceDelegation",
     "name": "unregister a namespace delegation",
-    "gasUsed": 60918
+    "gasUsed": 60328
   },
   {
     "file": "test/World.t.sol",
@@ -165,31 +165,31 @@
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testPopFromDynamicField",
     "name": "pop 1 address (cold)",
-    "gasUsed": 53981
+    "gasUsed": 51686
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testPopFromDynamicField",
     "name": "pop 1 address (warm)",
-    "gasUsed": 47927
+    "gasUsed": 45632
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testSpliceDynamicData",
     "name": "update in field 1 item (cold)",
-    "gasUsed": 55117
+    "gasUsed": 52822
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testSpliceDynamicData",
     "name": "update in field 1 item (warm)",
-    "gasUsed": 46318
+    "gasUsed": 44023
   },
   {
     "file": "test/WorldProxy.t.sol",
     "test": "testCall",
     "name": "call a system via the World",
-    "gasUsed": 47299
+    "gasUsed": 45004
   },
   {
     "file": "test/WorldProxy.t.sol",
@@ -213,19 +213,19 @@
     "file": "test/WorldProxy.t.sol",
     "test": "testDeleteRecord",
     "name": "Delete record",
-    "gasUsed": 43921
+    "gasUsed": 41626
   },
   {
     "file": "test/WorldProxy.t.sol",
     "test": "testPushToDynamicField",
     "name": "Push data to the table",
-    "gasUsed": 118014
+    "gasUsed": 115719
   },
   {
     "file": "test/WorldProxy.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 124112
+    "gasUsed": 121522
   },
   {
     "file": "test/WorldProxy.t.sol",
@@ -237,43 +237,43 @@
     "file": "test/WorldProxy.t.sol",
     "test": "testRegisterRootFunctionSelector",
     "name": "Register a root function selector",
-    "gasUsed": 120923
+    "gasUsed": 118628
   },
   {
     "file": "test/WorldProxy.t.sol",
     "test": "testRegisterSystem",
     "name": "register a system",
-    "gasUsed": 192847
+    "gasUsed": 190257
   },
   {
     "file": "test/WorldProxy.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 580527
+    "gasUsed": 577937
   },
   {
     "file": "test/WorldProxy.t.sol",
     "test": "testRenounceNamespace",
     "name": "Renounce namespace ownership",
-    "gasUsed": 69631
+    "gasUsed": 67089
   },
   {
     "file": "test/WorldProxy.t.sol",
     "test": "testSetField",
     "name": "Write data to a table field",
-    "gasUsed": 68117
+    "gasUsed": 65822
   },
   {
     "file": "test/WorldProxy.t.sol",
     "test": "testSetRecord",
     "name": "Write data to the table",
-    "gasUsed": 71982
+    "gasUsed": 69687
   },
   {
     "file": "test/WorldProxy.t.sol",
     "test": "testUnregisterNamespaceDelegation",
     "name": "unregister a namespace delegation",
-    "gasUsed": 65817
+    "gasUsed": 65227
   },
   {
     "file": "test/WorldProxy.t.sol",
@@ -285,13 +285,13 @@
     "file": "test/WorldProxyFactory.t.sol",
     "test": "testWorldProxyFactoryGas",
     "name": "deploy world via WorldProxyFactory",
-    "gasUsed": 9230020
+    "gasUsed": 9143347
   },
   {
     "file": "test/WorldProxyFactory.t.sol",
     "test": "testWorldProxyFactoryGas",
     "name": "set WorldProxy implementation",
-    "gasUsed": 39811
+    "gasUsed": 37541
   },
   {
     "file": "test/WorldResourceId.t.sol",

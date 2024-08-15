@@ -48,7 +48,7 @@ contract WorldProxy is Proxy {
    * @dev Stores a new address in the EIP1967 implementation slot with access control checks.
    */
   function setImplementation(address newImplementation) public {
-    AccessControl.requireOwner(ROOT_NAMESPACE_ID, msg.sender);
+    AccessControl._requireOwner(ROOT_NAMESPACE_ID, msg.sender);
 
     _setImplementation(newImplementation);
   }
