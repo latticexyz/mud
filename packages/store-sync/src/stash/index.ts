@@ -1,2 +1,2 @@
 export * from "./createStorageAdapter";
-export * from "./syncToZustandQuery";
+export * from "./syncToStash";

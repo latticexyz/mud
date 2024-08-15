@@ -19,7 +19,7 @@
     "./sqlite": "./dist/sqlite/index.js",
     "./trpc-indexer": "./dist/trpc-indexer/index.js",
     "./zustand": "./dist/zustand/index.js",
-    "./zustand-query": "./dist/zustand-query/index.js"
+    "./stash": "./dist/stash/index.js"
   },
   "typesVersions": {
     "*": {
@@ -50,8 +50,8 @@
       "zustand": [
         "./dist/zustand/index.d.ts"
       ],
-      "zustand-query": [
-        "./src/zustand-query/index.ts"
+      "stash": [
+        "./src/stash/index.ts"
       ]
     }
   },
@@ -78,9 +78,9 @@
     "@latticexyz/query": "workspace:*",
     "@latticexyz/recs": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
+    "@latticexyz/stash": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/world": "workspace:*",
-    "@latticexyz/zustand-query": "workspace:*",
     "@trpc/client": "10.34.0",
     "@trpc/server": "10.34.0",
     "change-case": "^5.2.0",

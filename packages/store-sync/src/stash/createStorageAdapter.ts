@@ -12,8 +12,9 @@ import { size } from "viem";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
-import { Store, getConfig, getTable, registerTable } from "@latticexyz/zustand-query/internal";
+import { Store, getConfig, getTable, registerTable } from "@latticexyz/stash/internal";
 import { debug } from "./debug";
+import { defineTable } from "@latticexyz/store/config/v2";
 
 export type CreateStorageAdapterOptions = {
   store: Store;
@@ -39,14 +40,16 @@ export function createStorageAdapter({ store }: CreateStorageAdapterOptions): Cr
         });
       } else {
         // TODO: create util for converting table config
+        // TODO: add label and namespaceLabel once available
         registerTable({
           store,
-          table: {
+          table: defineTable({
             ...newTable,
-            key: newTable.key as string[],
+            key: newTable.key,
             label: newTable.name,
+            namespaceLabel: newTable.namespace,
             schema: Object.fromEntries(Object.entries(newTable.schema).map(([field, { type }]) => [field, type])),
-          },
+          } as never),
         });
       }
     }

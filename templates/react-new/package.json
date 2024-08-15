@@ -11,10 +11,10 @@
     "@latticexyz/common": "link:../../packages/common",
     "@latticexyz/config": "link:../../packages/config",
     "@latticexyz/protocol-parser": "link:../../packages/protocol-parser",
+    "@latticexyz/stash": "link:../../packages/stash",
     "@latticexyz/store": "link:../../packages/store",
     "@latticexyz/store-sync": "link:../../packages/store-sync",
     "@latticexyz/world": "link:../../packages/world",
-    "@latticexyz/zustand-query": "link:../../packages/zustand-query",
     "viem": "^2.18.6"
   },
   "devDependencies": {

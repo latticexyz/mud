@@ -1,7 +1,7 @@
 import { DozerSyncFilter, selectFrom } from "@latticexyz/store-sync/dozer";
 import mudConfig from "../mud.config";
 import { sync } from "./sync";
-import { createStore } from "@latticexyz/zustand-query/internal";
+import { createStore } from "@latticexyz/stash/internal";
 
 async function main() {
   const dozerUrl = "https://redstone2.dozer.skystrife.xyz/q";

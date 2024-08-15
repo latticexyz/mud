@@ -7,7 +7,7 @@ import { groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import { StoreEventsLog } from "../common";
 import { RpcLog, formatLog, decodeEventLog, Hex } from "viem";
 import { storeEventsAbi } from "@latticexyz/store";
-import { createStore, getTable } from "@latticexyz/zustand-query/internal";
+import { createStore, getTable } from "@latticexyz/stash/internal";
 
 // TODO: make test-data a proper package and export this
 const blocks = groupLogsByBlockNumber(

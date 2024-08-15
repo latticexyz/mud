@@ -1,7 +1,7 @@
 import { StorageAdapterBlock } from "@latticexyz/store-sync";
 import { DozerSyncFilter, fetchInitialBlockLogsDozer } from "@latticexyz/store-sync/dozer";
-import { createStorageAdapter } from "@latticexyz/store-sync/zustand-query";
-import { Store } from "@latticexyz/zustand-query/internal";
+import { createStorageAdapter } from "@latticexyz/store-sync/stash";
+import { Store } from "@latticexyz/stash/internal";
 import { Hex } from "viem";
 
 type SyncOptions = {

@@ -1,11 +1,11 @@
 {
-  "name": "@latticexyz/zustand-query",
+  "name": "@latticexyz/stash",
   "version": "2.0.12",
-  "description": "ECS compatible query engine for MUD tables powered by Zustand",
+  "description": "High performance client store and query engine for MUD",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/zustand-query"
+    "directory": "packages/stash"
   },
   "license": "MIT",
   "type": "module",
@@ -56,6 +56,7 @@
     "@testing-library/react": "^16.0.0",
     "@testing-library/react-hooks": "^8.0.1",
     "@types/react": "18.2.22",
+    "react-dom": "^18.2.0",
     "tsup": "^6.7.0",
     "vitest": "0.34.6"
   },

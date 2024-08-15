@@ -11,7 +11,7 @@ export default defineConfig({
     "src/trpc-indexer/index.ts",
     "src/indexer-client/index.ts",
     "src/zustand/index.ts",
-    "src/zustand-query/index.ts",
+    "src/stash/index.ts",
   ],
   target: "esnext",
   format: ["esm"],

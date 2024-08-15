@@ -1,7 +1,7 @@
 import { debug as parentDebug } from "../debug";
 
-export const debug = parentDebug.extend("zustant-query");
-export const error = parentDebug.extend("zustand-query");
+export const debug = parentDebug.extend("stash");
+export const error = parentDebug.extend("stash");
 
 // Pipe debug output to stdout instead of stderr
 debug.log = console.debug.bind(console);

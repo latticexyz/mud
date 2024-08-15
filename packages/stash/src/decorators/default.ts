@@ -71,7 +71,7 @@ export function defaultActions<config extends StoreConfig>(store: Store<config>)
     getRecords: <table extends Table>(args: StoreBoundGetRecordsArgs<table>) => getRecords({ store, ...args }),
     getTable: <table extends Table>(args: StoreBoundGetTableArgs<table>) => getTable({ store, ...args }),
     getTables: () => getTables({ store }),
-    registerTable: (args: StoreBoundRegisterTableArgs) => registerTable({ store, ...args }),
+    registerTable: <table extends Table>(args: StoreBoundRegisterTableArgs<table>) => registerTable({ store, ...args }),
     runQuery: <query extends Query, options extends RunQueryOptions>(args: StoreBoundRunQueryArgs<query, options>) =>
       runQuery({ store, ...args }),
     setRecord: <table extends Table>(args: StoreBoundSetRecordArgs<table>) => setRecord({ store, ...args }),

@@ -705,6 +705,64 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.4.2)
 
+  packages/stash:
+    dependencies:
+      '@arktype/util':
+        specifier: 0.0.40
+        version: 0.0.40
+      '@latticexyz/config':
+        specifier: workspace:*
+        version: link:../config
+      '@latticexyz/protocol-parser':
+        specifier: workspace:*
+        version: link:../protocol-parser
+      '@latticexyz/recs':
+        specifier: workspace:*
+        version: link:../recs
+      '@latticexyz/schema-type':
+        specifier: workspace:*
+        version: link:../schema-type
+      '@latticexyz/store':
+        specifier: workspace:*
+        version: link:../store
+      mutative:
+        specifier: ^1.0.6
+        version: 1.0.6
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      viem:
+        specifier: 2.9.20
+        version: 2.9.20(typescript@5.4.2)(zod@3.23.8)
+      zustand:
+        specifier: ^4.3.7
+        version: 4.3.7(react@18.2.0)
+      zustand-mutative:
+        specifier: ^1.0.1
+        version: 1.0.1(@types/react@18.2.22)(mutative@1.0.6)(react@18.2.0)(zustand@4.3.7(react@18.2.0))
+    devDependencies:
+      '@arktype/attest':
+        specifier: 0.7.5
+        version: 0.7.5(typescript@5.4.2)
+      '@testing-library/react':
+        specifier: ^16.0.0
+        version: 16.0.0(@testing-library/dom@10.4.0)(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@testing-library/react-hooks':
+        specifier: ^8.0.1
+        version: 8.0.1(@types/react@18.2.22)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@types/react':
+        specifier: 18.2.22
+        version: 18.2.22
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.2.0(react@18.2.0)
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.23)(typescript@5.4.2)
+      vitest:
+        specifier: 0.34.6
+        version: 0.34.6(jsdom@22.1.0)
+
   packages/store:
     dependencies:
       '@ark/util':
@@ -907,15 +965,15 @@ importers:
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
+      '@latticexyz/stash':
+        specifier: workspace:*
+        version: link:../stash
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../world
-      '@latticexyz/zustand-query':
-        specifier: workspace:*
-        version: link:../zustand-query
       '@trpc/client':
         specifier: 10.34.0
         version: 10.34.0(@trpc/server@10.34.0)
@@ -1139,61 +1197,6 @@ importers:
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
-      vitest:
-        specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)
-
-  packages/zustand-query:
-    dependencies:
-      '@arktype/util':
-        specifier: 0.0.40
-        version: 0.0.40
-      '@latticexyz/config':
-        specifier: workspace:*
-        version: link:../config
-      '@latticexyz/protocol-parser':
-        specifier: workspace:*
-        version: link:../protocol-parser
-      '@latticexyz/recs':
-        specifier: workspace:*
-        version: link:../recs
-      '@latticexyz/schema-type':
-        specifier: workspace:*
-        version: link:../schema-type
-      '@latticexyz/store':
-        specifier: workspace:*
-        version: link:../store
-      mutative:
-        specifier: ^1.0.6
-        version: 1.0.6
-      react:
-        specifier: ^18.2.0
-        version: 18.2.0
-      viem:
-        specifier: 2.9.20
-        version: 2.9.20(typescript@5.4.2)(zod@3.23.8)
-      zustand:
-        specifier: ^4.3.7
-        version: 4.3.7(react@18.2.0)
-      zustand-mutative:
-        specifier: ^1.0.1
-        version: 1.0.1(@types/react@18.2.22)(mutative@1.0.6)(react@18.2.0)(zustand@4.3.7(react@18.2.0))
-    devDependencies:
-      '@arktype/attest':
-        specifier: 0.7.5
-        version: 0.7.5(typescript@5.4.2)
-      '@testing-library/react':
-        specifier: ^16.0.0
-        version: 16.0.0(@testing-library/dom@10.4.0)(@types/react-dom@18.2.7)(@types/react@18.2.22)(react@18.2.0)
-      '@testing-library/react-hooks':
-        specifier: ^8.0.1
-        version: 8.0.1(@types/react@18.2.22)(react-test-renderer@18.2.0(react@18.2.0))(react@18.2.0)
-      '@types/react':
-        specifier: 18.2.22
-        version: 18.2.22
-      tsup:
-        specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0)
@@ -4162,9 +4165,6 @@ packages:
   get-caller-file@2.0.5:
     resolution: {integrity: sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==}
     engines: {node: 6.* || 8.* || >= 10.*}
-
-  get-func-name@2.0.0:
-    resolution: {integrity: sha512-Hm0ixYtaSZ/V7C8FJrtZIuBBI+iSgL+1Aq82zSu8VQNB4S3Gk8e7Qs3VwBDJAhmRZcFqkl3tQu36g/Foh5I5ig==}
 
   get-func-name@2.0.2:
     resolution: {integrity: sha512-8vXOvuE167CtIc3OyItco7N/dpRtBbYOsPsXCz7X/PMnlGjYjSGuZJgM1Y7mmew7BKf9BqvLX2tnOVy1BBUsxQ==}
@@ -8624,6 +8624,15 @@ snapshots:
       lz-string: 1.5.0
       pretty-format: 27.5.1
 
+  '@testing-library/react-hooks@8.0.1(@types/react@18.2.22)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+    dependencies:
+      '@babel/runtime': 7.21.0
+      react: 18.2.0
+      react-error-boundary: 3.1.4(react@18.2.0)
+    optionalDependencies:
+      '@types/react': 18.2.22
+      react-dom: 18.2.0(react@18.2.0)
+
   '@testing-library/react-hooks@8.0.1(@types/react@18.2.22)(react-test-renderer@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@babel/runtime': 7.21.0
@@ -8633,11 +8642,12 @@ snapshots:
       '@types/react': 18.2.22
       react-test-renderer: 18.2.0(react@18.2.0)
 
-  '@testing-library/react@16.0.0(@testing-library/dom@10.4.0)(@types/react-dom@18.2.7)(@types/react@18.2.22)(react@18.2.0)':
+  '@testing-library/react@16.0.0(@testing-library/dom@10.4.0)(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@babel/runtime': 7.21.0
       '@testing-library/dom': 10.4.0
       react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     optionalDependencies:
       '@types/react': 18.2.22
       '@types/react-dom': 18.2.7
@@ -10508,8 +10518,6 @@ snapshots:
 
   get-caller-file@2.0.5: {}
 
-  get-func-name@2.0.0: {}
-
   get-func-name@2.0.2: {}
 
   get-intrinsic@1.1.3:
@@ -11630,7 +11638,7 @@ snapshots:
 
   loupe@2.3.6:
     dependencies:
-      get-func-name: 2.0.0
+      get-func-name: 2.0.2
 
   lru-cache@10.4.3: {}
 

@@ -3,25 +3,39 @@ import { SyncOptions, SyncResult } from "../common";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { createStoreSync } from "../createStoreSync";
 import { SyncStep } from "../SyncStep";
-import { BoundTable, Store, registerTable } from "@latticexyz/zustand-query/internal";
+import { BoundTable, Store, registerTable } from "@latticexyz/stash/internal";
+import { defineTable } from "@latticexyz/store/config/v2";
 
-type SyncToZustandQueryOptions = SyncOptions & {
+type SyncToStashOptions = SyncOptions & {
   store: Store;
   config: StoreConfig;
   startSync?: boolean;
 };
 
-type SyncToZustandQueryResult = SyncResult & {
+const syncProgressConfig = defineTable({
+  namespace: "store_sync",
+  label: "SyncProgress",
+  schema: {
+    step: "string",
+    percentage: "uint32",
+    latestBlockNumber: "uint256",
+    lastBlockNumberProcessed: "uint256",
+    message: "string",
+  },
+  key: [],
+});
+
+type SyncToStashResult = SyncResult & {
   stopSync: () => void;
-  SyncProgress: BoundTable;
+  SyncProgress: BoundTable<typeof syncProgressConfig>;
 };
 
-export async function syncToZustandQuery({
+export async function syncToStash({
   store,
   config,
   startSync = true,
   ...syncOptions
-}: SyncToZustandQueryOptions): Promise<SyncToZustandQueryResult> {
+}: SyncToStashOptions): Promise<SyncToStashResult> {
   const { storageAdapter } = createStorageAdapter({
     store,
   });
@@ -29,18 +43,7 @@ export async function syncToZustandQuery({
   // Create SyncProgress table
   const SyncProgress = registerTable({
     store,
-    table: {
-      namespace: "store_sync",
-      label: "SyncProgress",
-      schema: {
-        step: "uint8",
-        percentage: "uint32",
-        latestBlockNumber: "uint256",
-        lastBlockNumberProcessed: "uint256",
-        message: "string",
-      },
-      key: [],
-    },
+    table: syncProgressConfig,
   });
 
   /**
