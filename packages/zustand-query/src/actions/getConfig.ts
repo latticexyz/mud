@@ -6,9 +6,9 @@ export type GetConfigArgs = {
   table: { label: string; namespaceLabel?: string };
 };
 
-export type GetConfigResult = Table;
+export type GetConfigResult<table extends Table = Table> = table;
 
-export function getConfig({ store, table }: GetConfigArgs): GetConfigResult {
+export function getConfig({ store, table }: GetConfigArgs): GetConfigResult<Table> {
   const { namespaceLabel, label } = table;
   return store.get().config[namespaceLabel ?? ""][label];
 }

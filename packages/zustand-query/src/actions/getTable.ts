@@ -12,26 +12,29 @@ import { SetRecordsArgs, SetRecordsResult, setRecords } from "./setRecords";
 import { SubscribeTableArgs, SubscribeTableResult, subscribeTable } from "./subscribeTable";
 import { registerTable } from "./registerTable";
 
-export type TableBoundDecodeKeyArgs = Omit<DecodeKeyArgs, "store" | "table">;
-export type TableBoundDeleteRecordArgs = Omit<DeleteRecordArgs, "store" | "table">;
-export type TableBoundEncodeKeyArgs = Omit<EncodeKeyArgs, "store" | "table">;
-export type TableBoundGetRecordArgs = Omit<GetRecordArgs, "store" | "table">;
-export type TableBoundGetRecordsArgs = Omit<GetRecordsArgs, "store" | "table">;
+export type TableBoundDecodeKeyArgs<table extends Table = Table> = Omit<DecodeKeyArgs<table>, "store" | "table">;
+export type TableBoundDeleteRecordArgs<table extends Table = Table> = Omit<DeleteRecordArgs<table>, "store" | "table">;
+export type TableBoundEncodeKeyArgs<table extends Table = Table> = Omit<EncodeKeyArgs<table>, "store" | "table">;
+export type TableBoundGetRecordArgs<table extends Table = Table> = Omit<GetRecordArgs<table>, "store" | "table">;
+export type TableBoundGetRecordsArgs<table extends Table = Table> = Omit<GetRecordsArgs<table>, "store" | "table">;
 export type TableBoundSetRecordArgs<table extends Table = Table> = Omit<SetRecordArgs<table>, "store" | "table">;
 export type TableBoundSetRecordsArgs<table extends Table = Table> = Omit<SetRecordsArgs<table>, "store" | "table">;
-export type TableBoundSubscribeTableArgs = Omit<SubscribeTableArgs, "store" | "table">;
+export type TableBoundSubscribeTableArgs<table extends Table = Table> = Omit<
+  SubscribeTableArgs<table>,
+  "store" | "table"
+>;
 
 export type BoundTable<table extends Table = Table> = {
-  decodeKey: (args: TableBoundDecodeKeyArgs) => DecodeKeyResult;
-  deleteRecord: (args: TableBoundDeleteRecordArgs) => DeleteRecordResult;
-  encodeKey: (args: TableBoundEncodeKeyArgs) => EncodeKeyResult;
-  getConfig: () => GetConfigResult;
-  getKeys: () => GetKeysResult;
-  getRecord: (args: TableBoundGetRecordArgs) => GetRecordResult;
-  getRecords: (args?: TableBoundGetRecordsArgs) => GetRecordsResult;
+  decodeKey: (args: TableBoundDecodeKeyArgs<table>) => DecodeKeyResult<table>;
+  deleteRecord: (args: TableBoundDeleteRecordArgs<table>) => DeleteRecordResult;
+  encodeKey: (args: TableBoundEncodeKeyArgs<table>) => EncodeKeyResult;
+  getConfig: () => GetConfigResult<table>;
+  getKeys: () => GetKeysResult<table>;
+  getRecord: (args: TableBoundGetRecordArgs<table>) => GetRecordResult<table>;
+  getRecords: (args?: TableBoundGetRecordsArgs<table>) => GetRecordsResult<table>;
   setRecord: (args: TableBoundSetRecordArgs<table>) => SetRecordResult;
   setRecords: (args: TableBoundSetRecordsArgs<table>) => SetRecordsResult;
-  subscribe: (args: TableBoundSubscribeTableArgs) => SubscribeTableResult;
+  subscribe: (args: TableBoundSubscribeTableArgs<table>) => SubscribeTableResult;
 };
 
 export type GetTableArgs<table extends Table = Table> = {
@@ -48,15 +51,14 @@ export function getTable<table extends Table>({ store, table }: GetTableArgs<tab
     registerTable({ store, table });
   }
 
-  // TODO: type
   return {
-    decodeKey: (args: TableBoundDecodeKeyArgs) => decodeKey({ store, table, ...args }),
-    deleteRecord: (args: TableBoundDeleteRecordArgs) => deleteRecord({ store, table, ...args } as never),
-    encodeKey: (args: TableBoundEncodeKeyArgs) => encodeKey({ store, table, ...args } as never),
-    getConfig: () => getConfig({ store, table }),
+    decodeKey: (args: TableBoundDecodeKeyArgs<table>) => decodeKey({ store, table, ...args }),
+    deleteRecord: (args: TableBoundDeleteRecordArgs<table>) => deleteRecord({ store, table, ...args }),
+    encodeKey: (args: TableBoundEncodeKeyArgs<table>) => encodeKey({ table, ...args }),
+    getConfig: () => getConfig({ store, table }) as table,
     getKeys: () => getKeys({ store, table }),
-    getRecord: (args: TableBoundGetRecordArgs) => getRecord({ store, table, ...args } as never),
-    getRecords: (args?: TableBoundGetRecordsArgs) => getRecords({ store, table, ...args } as never),
+    getRecord: (args: TableBoundGetRecordArgs<table>) => getRecord({ store, table, ...args }),
+    getRecords: (args?: TableBoundGetRecordsArgs<table>) => getRecords({ store, table, ...args }),
     setRecord: (args: TableBoundSetRecordArgs<table>) => setRecord({ store, table, ...args }),
     setRecords: (args: TableBoundSetRecordsArgs<table>) => setRecords({ store, table, ...args }),
     subscribe: (args: TableBoundSubscribeTableArgs) => subscribeTable({ store, table, ...args }),

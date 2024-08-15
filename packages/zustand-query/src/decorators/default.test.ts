@@ -150,7 +150,7 @@ describe("store with default actions", () => {
       store.setRecord({ table, key: { player: 1, match: 2 }, record: { x: 3, y: 4 } });
       store.setRecord({ table, key: { player: 5, match: 6 }, record: { x: 7, y: 8 } });
 
-      attest<{ [encodedKey: string]: { player: number; match: number } }>(store.getKeys({ store, table })).snap({
+      attest<{ [encodedKey: string]: { player: number; match: number } }>(store.getKeys({ table })).snap({
         "1|2": { player: 1, match: 2 },
         "5|6": { player: 5, match: 6 },
       });

@@ -44,7 +44,7 @@ export type DefaultActions<config extends StoreConfig = StoreConfig> = {
   deleteRecord: <table extends Table>(args: StoreBoundDeleteRecordArgs<table>) => DeleteRecordResult;
   encodeKey: <table extends Table>(args: StoreBoundEncodeKeyArgs<table>) => EncodeKeyResult;
   getConfig: (args: StoreBoundGetConfigArgs) => GetConfigResult;
-  getKeys: <table extends Table>(args: GetKeysArgs<table>) => GetKeysResult<table>;
+  getKeys: <table extends Table>(args: StoreBoundGetKeysArgs<table>) => GetKeysResult<table>;
   getRecord: <table extends Table>(args: StoreBoundGetRecordArgs<table>) => GetRecordResult<table>;
   getRecords: <table extends Table>(args: StoreBoundGetRecordsArgs<table>) => GetRecordsResult<table>;
   getTable: <table extends Table>(args: StoreBoundGetTableArgs<table>) => GetTableResult<table>;
