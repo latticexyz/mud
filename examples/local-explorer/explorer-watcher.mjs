@@ -1,8 +1,8 @@
+import { readFile, watch } from "fs/promises";
 import { spawn } from "child_process";
-import path from "path";
 import { fileURLToPath } from "url";
 import process from "process";
-import { readFile, watch } from "fs/promises";
+import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
