@@ -12,12 +12,12 @@ import { size } from "viem";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
-import { Store, getConfig, getTable, registerTable } from "@latticexyz/stash/internal";
+import { Stash, getConfig, getTable, registerTable } from "@latticexyz/stash/internal";
 import { debug } from "./debug";
 import { defineTable } from "@latticexyz/store/config/v2";
 
 export type CreateStorageAdapterOptions = {
-  stash: Store;
+  stash: Stash;
 };
 
 export type CreateStorageAdapterResult = {

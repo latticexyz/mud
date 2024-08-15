@@ -3,11 +3,11 @@ import { SyncOptions, SyncResult } from "../common";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { createStoreSync } from "../createStoreSync";
 import { SyncStep } from "../SyncStep";
-import { BoundTable, Store, registerTable } from "@latticexyz/stash/internal";
+import { BoundTable, Stash, registerTable } from "@latticexyz/stash/internal";
 import { defineTable } from "@latticexyz/store/config/v2";
 
 type SyncToStashOptions = SyncOptions & {
-  stash: Store;
+  stash: Stash;
   config: StoreConfig;
   startSync?: boolean;
 };
