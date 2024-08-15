@@ -1,6 +1,6 @@
 import { defineTable } from "@latticexyz/store/config/v2";
 import { describe, it } from "vitest";
-import { createStore } from "../createStash";
+import { createStash } from "../createStash";
 import { attest } from "@ark/attest";
 import { getConfig } from "./getConfig";
 import { registerTable } from "./registerTable";
@@ -32,11 +32,11 @@ describe("getConfig", () => {
       key: ["field1"],
     });
 
-    const store = createStore();
-    registerTable({ store, table: rootTable });
-    registerTable({ store, table: namespacedTable });
+    const stash = createStash();
+    registerTable({ stash: stash, table: rootTable });
+    registerTable({ stash: stash, table: namespacedTable });
 
-    attest(getConfig({ store, table: { label: "test" } })).equals(rootTable);
-    attest(getConfig({ store, table: { label: "test", namespaceLabel: "namespace" } })).equals(namespacedTable);
+    attest(getConfig({ stash: stash, table: { label: "test" } })).equals(rootTable);
+    attest(getConfig({ stash: stash, table: { label: "test", namespaceLabel: "namespace" } })).equals(namespacedTable);
   });
 });

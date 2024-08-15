@@ -8,9 +8,9 @@ export type Config = StoreConfig;
 export type CreateStoreResult<config extends Config = Config> = Store<config> & DefaultActions<config>;
 
 /**
- * Initializes a Zustand store based on the provided table configs.
+ * Initializes a Zustand stash based on the provided table configs.
  */
-export function createStore<config extends Config>(storeConfig?: config): CreateStoreResult<config> {
+export function createStash<config extends Config>(storeConfig?: config): CreateStoreResult<config> {
   const tableSubscribers: TableSubscribers = {};
   const storeSubscribers: StoreSubscribers = new Set();
 
@@ -19,11 +19,11 @@ export function createStore<config extends Config>(storeConfig?: config): Create
     records: {},
   };
 
-  // Initialize the store
+  // Initialize the stash
   if (storeConfig) {
     for (const [namespace, { tables }] of Object.entries(storeConfig.namespaces)) {
       for (const [table, fullTableConfig] of Object.entries(tables)) {
-        // Remove unused artifacts from the store config
+        // Remove unused artifacts from the stash config
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { deploy, codegen, ...tableConfig } = { ...(fullTableConfig as Table) };
 
@@ -42,7 +42,7 @@ export function createStore<config extends Config>(storeConfig?: config): Create
     }
   }
 
-  const store = {
+  const stash = {
     get: () => state,
     _: {
       state,
@@ -51,5 +51,5 @@ export function createStore<config extends Config>(storeConfig?: config): Create
     },
   } satisfies Store;
 
-  return extend({ store, actions: defaultActions(store) }) as never;
+  return extend({ stash, actions: defaultActions(stash) }) as never;
 }

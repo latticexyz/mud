@@ -17,7 +17,7 @@ import { debug } from "./debug";
 import { defineTable } from "@latticexyz/store/config/v2";
 
 export type CreateStorageAdapterOptions = {
-  store: Store;
+  stash: Store;
 };
 
 export type CreateStorageAdapterResult = {
@@ -26,13 +26,13 @@ export type CreateStorageAdapterResult = {
 
 const emptyValueArgs = { staticData: "0x", encodedLengths: "0x", dynamicData: "0x" } as const;
 
-export function createStorageAdapter({ store }: CreateStorageAdapterOptions): CreateStorageAdapterResult {
+export function createStorageAdapter({ stash }: CreateStorageAdapterOptions): CreateStorageAdapterResult {
   async function storageAdapter({ logs }: StorageAdapterBlock): Promise<void> {
     const newTables = logs.filter(isTableRegistrationLog).map(logToTable);
 
     for (const newTable of newTables) {
       // TODO: switch this to `newTable.label` once available
-      const existingTable = store.get().config[newTable.namespace]?.[newTable.name];
+      const existingTable = stash.get().config[newTable.namespace]?.[newTable.name];
       if (existingTable) {
         console.warn("table already registered, ignoring", {
           newTable,
@@ -42,7 +42,7 @@ export function createStorageAdapter({ store }: CreateStorageAdapterOptions): Cr
         // TODO: create util for converting table config
         // TODO: add label and namespaceLabel once available
         registerTable({
-          store,
+          stash,
           table: defineTable({
             ...newTable,
             key: newTable.key,
@@ -59,10 +59,10 @@ export function createStorageAdapter({ store }: CreateStorageAdapterOptions): Cr
       // TODO: find table config by table ID
       const { namespace, name } = hexToResource(log.args.tableId);
       // TODO: use label once available
-      const tableConfig = store.get().config[namespace][name];
+      const tableConfig = stash.get().config[namespace][name];
       const boundTable = getTable({
-        store,
-        table: getConfig({ store, table: { namespaceLabel: namespace, label: name } }),
+        stash,
+        table: getConfig({ stash, table: { namespaceLabel: namespace, label: name } }),
       });
 
       if (!tableConfig || !boundTable) {
@@ -89,7 +89,7 @@ export function createStorageAdapter({ store }: CreateStorageAdapterOptions): Cr
         // TODO: add tests that this works when no record had been set before
         const previousRecord = boundTable.getRecord({ key });
 
-        // TODO: maybe better to also store the static data than to re-encode here?
+        // TODO: maybe better to also stash the static data than to re-encode here?
         const {
           staticData: previousStaticData,
           encodedLengths,
@@ -117,7 +117,7 @@ export function createStorageAdapter({ store }: CreateStorageAdapterOptions): Cr
         // TODO: add tests that this works when no record had been set before
         const previousRecord = boundTable.getRecord({ key });
 
-        // TODO: maybe better to also store the dynamic data than to re-encode here?
+        // TODO: maybe better to also stash the dynamic data than to re-encode here?
         console.log("what's going on now", previousRecord, valueSchema);
         const { staticData, dynamicData: previousDynamicData } = previousRecord
           ? encodeValueArgs(valueSchema, previousRecord)

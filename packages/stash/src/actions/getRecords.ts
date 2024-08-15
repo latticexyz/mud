@@ -3,7 +3,7 @@ import { Key, Store, TableRecords } from "../common";
 import { encodeKey } from "./encodeKey";
 
 export type GetRecordsArgs<table extends Table = Table> = {
-  store: Store;
+  stash: Store;
   table: table;
   keys?: Key<table>[];
 };
@@ -11,12 +11,12 @@ export type GetRecordsArgs<table extends Table = Table> = {
 export type GetRecordsResult<table extends Table = Table> = TableRecords<table>;
 
 export function getRecords<table extends Table>({
-  store,
+  stash,
   table,
   keys,
 }: GetRecordsArgs<table>): GetRecordsResult<table> {
   const { namespaceLabel, label } = table;
-  const records = store.get().records[namespaceLabel][label];
+  const records = stash.get().records[namespaceLabel][label];
 
   if (!keys) {
     return records;

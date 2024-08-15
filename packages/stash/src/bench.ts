@@ -1,6 +1,6 @@
 import { bench } from "@ark/attest";
 import { defineStore } from "@latticexyz/store";
-import { createStore } from "./createStash";
+import { createStash } from "./createStash";
 import { In } from "./queryFragments";
 
 const config = defineStore({
@@ -11,10 +11,10 @@ const config = defineStore({
     },
   },
 });
-const store = createStore(config);
+const stash = createStash(config);
 
-bench("createStore", () => {
-  createStore(
+bench("createStash", () => {
+  createStash(
     defineStore({
       tables: {
         Position: {
@@ -27,16 +27,16 @@ bench("createStore", () => {
 }).types([1690, "instantiations"]);
 
 bench("boundTable", () => {
-  const table = store.getTable({ table: config.tables.Position });
+  const table = stash.getTable({ table: config.tables.Position });
   table.getRecord({ key: { player: "0x" } });
 }).types([108, "instantiations"]);
 
 bench("runQuery", () => {
   const { Position } = config.tables;
-  store.runQuery({ query: [In(Position)] });
+  stash.runQuery({ query: [In(Position)] });
 }).types([95, "instantiations"]);
 
-const filledStore = createStore(config);
+const filledStore = createStash(config);
 const numItems = 10_000;
 for (let i = 0; i < numItems; i++) {
   filledStore.setRecord({

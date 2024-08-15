@@ -57,14 +57,14 @@ describe.skip.each([
   { initialRecords: 1_000_000, newRecords: 10_000 },
   { initialRecords: 1_000_000, newRecords: 100_000 },
 ])(
-  "[zustand]: setting $newRecords records in a store with $initialRecords records",
+  "[zustand]: setting $newRecords records in a stash with $initialRecords records",
   ({ initialRecords, newRecords }) => {
-    let store: StoreApi<State & Actions>;
+    let stash: StoreApi<State & Actions>;
     let positions: Record<string, PositionSchema>;
 
     function setupStore(numRecords: number) {
-      // Create store
-      store = createStore<State & Actions>((set) => ({
+      // Create stash
+      stash = createStore<State & Actions>((set) => ({
         namespaces: {
           app: {
             Position: {
@@ -94,14 +94,14 @@ describe.skip.each([
           })),
       }));
 
-      // Initialize store with specified number of records
-      store.getState().setPositions(generatePositions(numRecords));
+      // Initialize stash with specified number of records
+      stash.getState().setPositions(generatePositions(numRecords));
     }
 
     bench(
       "bench",
       () => {
-        store.getState().setPositions(positions);
+        stash.getState().setPositions(positions);
       },
       {
         setup: () => {
@@ -127,14 +127,14 @@ describe.skip.each([
   { initialRecords: 1_000_000, newRecords: 10_000 },
   { initialRecords: 1_000_000, newRecords: 100_000 },
 ])(
-  "[zustand-mutative]: setting $newRecords records in a store with $initialRecords records",
+  "[zustand-mutative]: setting $newRecords records in a stash with $initialRecords records",
   ({ initialRecords, newRecords }) => {
-    let store: StoreApi<State & Actions>;
+    let stash: StoreApi<State & Actions>;
     let positions: Record<string, PositionSchema>;
 
     function setupStore(numRecords: number) {
-      // Create store
-      store = createStore<State & Actions>()(
+      // Create stash
+      stash = createStore<State & Actions>()(
         mutative((set) => ({
           namespaces: {
             app: {
@@ -160,14 +160,14 @@ describe.skip.each([
         })),
       );
 
-      // Initialize store with specified number of records
-      store.getState().setPositions(generatePositions(numRecords));
+      // Initialize stash with specified number of records
+      stash.getState().setPositions(generatePositions(numRecords));
     }
 
     bench(
       "bench",
       () => {
-        store.getState().setPositions(positions);
+        stash.getState().setPositions(positions);
       },
       {
         setup: () => {
@@ -192,7 +192,7 @@ describe.skip.each([
   { initialRecords: 1_000_000, newRecords: 1_000 },
   { initialRecords: 1_000_000, newRecords: 10_000 },
   // { initialRecords: 1_000_000, newRecords: 100_000 },
-])("[recs]: setting $newRecords records in a store with $initialRecords records", ({ initialRecords, newRecords }) => {
+])("[recs]: setting $newRecords records in a stash with $initialRecords records", ({ initialRecords, newRecords }) => {
   let world: ReturnType<typeof createWorld>;
   let positions: Record<string, PositionSchema>;
   let Position: Component<{ x: Type.Number; y: Type.Number }>;

@@ -5,25 +5,25 @@ import { Table } from "@latticexyz/config";
 import { registerTable } from "./registerTable";
 
 export type SetRecordsArgs<table extends Table = Table> = {
-  store: Store;
+  stash: Store;
   table: table;
   records: TableRecord<table>[];
 };
 
 export type SetRecordsResult = void;
 
-export function setRecords<table extends Table>({ store, table, records }: SetRecordsArgs<table>): SetRecordsResult {
+export function setRecords<table extends Table>({ stash, table, records }: SetRecordsArgs<table>): SetRecordsResult {
   const { namespaceLabel, label, schema } = table;
 
-  if (store.get().config[namespaceLabel]?.[label] == null) {
-    registerTable({ store, table });
+  if (stash.get().config[namespaceLabel]?.[label] == null) {
+    registerTable({ stash, table });
   }
 
   // Construct table updates
   const updates: TableUpdates = {};
   for (const record of records) {
     const encodedKey = encodeKey({ table, key: record as never });
-    const prevRecord = store.get().records[namespaceLabel][label][encodedKey];
+    const prevRecord = stash.get().records[namespaceLabel][label][encodedKey];
     const newRecord = Object.fromEntries(
       Object.keys(schema).map((fieldName) => [
         fieldName,
@@ -38,13 +38,13 @@ export function setRecords<table extends Table>({ store, table, records }: SetRe
 
   // Update records
   for (const [encodedKey, { current }] of Object.entries(updates)) {
-    store._.state.records[namespaceLabel][label][encodedKey] = current as never;
+    stash._.state.records[namespaceLabel][label][encodedKey] = current as never;
   }
 
   // Notify table subscribers
-  store._.tableSubscribers[namespaceLabel][label].forEach((subscriber) => subscriber(updates));
+  stash._.tableSubscribers[namespaceLabel][label].forEach((subscriber) => subscriber(updates));
 
-  // Notify store subscribers
+  // Notify stash subscribers
   const storeUpdate = { config: {}, records: { [namespaceLabel]: { [label]: updates } } };
-  store._.storeSubscribers.forEach((subscriber) => subscriber(storeUpdate));
+  stash._.storeSubscribers.forEach((subscriber) => subscriber(storeUpdate));
 }

@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 import { attest } from "@arktype/attest";
-import { CreateStoreResult, createStore } from "./createStash";
+import { CreateStoreResult, createStash } from "./createStash";
 import { defineStore, defineTable } from "@latticexyz/store/config/v2";
 import { Hex } from "viem";
 
-describe("createStore", () => {
-  it("should initialize the store", () => {
+describe("createStash", () => {
+  it("should initialize the stash", () => {
     const tablesConfig = defineStore({
       namespace: "namespace1",
       tables: {
@@ -18,9 +18,9 @@ describe("createStore", () => {
         },
       },
     });
-    const store = createStore(tablesConfig);
+    const stash = createStash(tablesConfig);
 
-    attest(store.get().config).snap({
+    attest(stash.get().config).snap({
       namespace1: {
         table1: {
           label: "table1",
@@ -37,7 +37,7 @@ describe("createStore", () => {
         },
       },
     });
-    attest(store.get().records).snap({ namespace1: { table1: {} } });
+    attest(stash.get().records).snap({ namespace1: { table1: {} } });
   });
 
   it("should be typed with the config tables", () => {
@@ -53,14 +53,14 @@ describe("createStore", () => {
         },
       },
     });
-    const store = createStore(config);
-    store.setRecord({
+    const stash = createStash(config);
+    stash.setRecord({
       table: config.namespaces.namespace1.tables.table1,
       key: { field2: 1 },
       record: { field1: "hello" },
     });
 
-    attest<CreateStoreResult<typeof config>>(store);
+    attest<CreateStoreResult<typeof config>>(stash);
     attest<{
       config: {
         namespace1: {
@@ -89,7 +89,7 @@ describe("createStore", () => {
           };
         };
       };
-    }>(store.get());
+    }>(stash.get());
   });
 
   describe("subscribeTable", () => {
@@ -109,16 +109,16 @@ describe("createStore", () => {
       });
 
       const table = config.namespaces.namespace1.tables.table1;
-      const store = createStore(config);
+      const stash = createStash(config);
 
       const listener = vi.fn();
 
-      store.subscribeTable({
+      stash.subscribeTable({
         table,
         subscriber: listener,
       });
 
-      store.setRecord({
+      stash.setRecord({
         table,
         key: { field2: 1, field3: 2 },
         record: { field1: "hello" },
@@ -131,7 +131,7 @@ describe("createStore", () => {
         },
       });
 
-      store.setRecord({
+      stash.setRecord({
         table,
         key: { field2: 1, field3: 2 },
         record: { field1: "world" },
@@ -144,7 +144,7 @@ describe("createStore", () => {
         },
       });
 
-      store.deleteRecord({
+      stash.deleteRecord({
         table,
         key: { field2: 1, field3: 2 },
       });
@@ -173,16 +173,16 @@ describe("createStore", () => {
       });
 
       const table = config.namespaces.namespace1.tables.table1;
-      const store = createStore(config);
+      const stash = createStash(config);
 
       const subscriber = vi.fn();
 
-      const unsubscribe = store.subscribeTable({
+      const unsubscribe = stash.subscribeTable({
         table,
         subscriber,
       });
 
-      store.setRecord({
+      stash.setRecord({
         table,
         key: { field2: 1, field3: 2 },
         record: { field1: "hello" },
@@ -197,7 +197,7 @@ describe("createStore", () => {
 
       unsubscribe();
 
-      store.setRecord({
+      stash.setRecord({
         table,
         key: { field2: 1, field3: 2 },
         record: { field1: "world" },
@@ -208,7 +208,7 @@ describe("createStore", () => {
   });
 
   describe("subscribeStore", () => {
-    it("should notify listeners on store updates", () => {
+    it("should notify listeners on stash updates", () => {
       const config = defineStore({
         namespace: "namespace1",
         tables: {
@@ -224,13 +224,13 @@ describe("createStore", () => {
       });
 
       const table = config.namespaces.namespace1.tables.table1;
-      const store = createStore(config);
+      const stash = createStash(config);
 
       const subscriber = vi.fn();
 
-      store.subscribeStore({ subscriber });
+      stash.subscribeStore({ subscriber });
 
-      store.setRecord({
+      stash.setRecord({
         table,
         key: { field2: 1, field3: 2 },
         record: { field1: "hello" },
@@ -250,7 +250,7 @@ describe("createStore", () => {
         },
       });
 
-      store.setRecord({
+      stash.setRecord({
         table,
         key: { field2: 1, field3: 2 },
         record: { field1: "world" },
@@ -270,7 +270,7 @@ describe("createStore", () => {
         },
       });
 
-      store.deleteRecord({
+      stash.deleteRecord({
         table,
         key: { field2: 1, field3: 2 },
       });
@@ -289,7 +289,7 @@ describe("createStore", () => {
         },
       });
 
-      store.registerTable({
+      stash.registerTable({
         table: defineTable({
           namespace: "namespace2",
           label: "table2",
@@ -345,15 +345,15 @@ describe("createStore", () => {
       });
 
       const table = config.namespaces.namespace1.tables.table1;
-      const store = createStore(config);
+      const stash = createStash(config);
 
       const subscriber = vi.fn();
 
-      const unsubscribe = store.subscribeStore({
+      const unsubscribe = stash.subscribeStore({
         subscriber,
       });
 
-      store.setRecord({
+      stash.setRecord({
         table,
         key: { field2: 1, field3: 2 },
         record: { field1: "hello" },
@@ -375,7 +375,7 @@ describe("createStore", () => {
 
       unsubscribe();
 
-      store.setRecord({
+      stash.setRecord({
         table,
         key: { field2: 1, field3: 2 },
         record: { field1: "world" },
@@ -386,9 +386,9 @@ describe("createStore", () => {
   });
 
   describe("getTables", () => {
-    it("should return an object of bound tables in the store", () => {
-      const store = createStore();
-      store.registerTable({
+    it("should return an object of bound tables in the stash", () => {
+      const stash = createStash();
+      stash.registerTable({
         table: defineTable({
           label: "table1",
           namespace: "namespace1",
@@ -396,7 +396,7 @@ describe("createStore", () => {
           key: ["field1"],
         }),
       });
-      store.registerTable({
+      stash.registerTable({
         table: defineTable({
           label: "table2",
           namespace: "namespace2",
@@ -404,7 +404,7 @@ describe("createStore", () => {
           key: ["field1"],
         }),
       });
-      const tables = store.getTables();
+      const tables = stash.getTables();
 
       expect(tables.namespace1.table1).toBeDefined();
       expect(tables.namespace2.table2).toBeDefined();

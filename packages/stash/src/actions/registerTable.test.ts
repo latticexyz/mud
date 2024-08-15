@@ -1,14 +1,14 @@
 import { attest } from "@ark/attest";
 import { defineTable } from "@latticexyz/store/config/v2";
 import { describe, it, expect } from "vitest";
-import { createStore } from "../createStash";
+import { createStash } from "../createStash";
 import { registerTable } from "./registerTable";
 
 describe("registerTable", () => {
-  it("should add a new table to the store and return a bound table", () => {
-    const store = createStore();
+  it("should add a new table to the stash and return a bound table", () => {
+    const stash = createStash();
     const table = registerTable({
-      store,
+      stash: stash,
       table: defineTable({
         label: "table1",
         namespace: "namespace1",
@@ -17,7 +17,7 @@ describe("registerTable", () => {
       }),
     });
 
-    attest(store.get().config).snap({
+    attest(stash.get().config).snap({
       namespace1: {
         table1: {
           label: "table1",
@@ -35,7 +35,7 @@ describe("registerTable", () => {
       },
     });
 
-    attest(store.get().records).snap({ namespace1: { table1: {} } });
+    attest(stash.get().records).snap({ namespace1: { table1: {} } });
     expect(table.setRecord).toBeDefined();
     expect(table.getRecord).toBeDefined();
   });

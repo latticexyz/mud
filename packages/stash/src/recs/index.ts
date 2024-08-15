@@ -61,8 +61,8 @@ export function NotValue(t: BoundTable, partialRecord: TableRecord) {
   return NotMatchRecord(t.getConfig(), partialRecord);
 }
 
-export function runQuery(store: Store, query: Query) {
-  const result = runQueryInternal({ store, query });
+export function runQuery(stash: Store, query: Query) {
+  const result = runQueryInternal({ stash, query });
 
   return new Set(Object.keys(result.keys));
 }
@@ -92,8 +92,8 @@ function transformUpdate(s: Store, update: QueryUpdate, updateFilter?: "enter" |
   for (const [namespaceLabel, tableUpdates] of namespaces) {
     for (const [tableLabel, updates] of Object.entries(tableUpdates)) {
       const table = getTable({
-        store: s,
-        table: getConfig({ store: s, table: { namespaceLabel, label: tableLabel } }),
+        stash: s,
+        table: getConfig({ stash: s, table: { namespaceLabel, label: tableLabel } }),
       });
       const updateList = Object.entries(updates);
 
@@ -120,20 +120,20 @@ function transformUpdate(s: Store, update: QueryUpdate, updateFilter?: "enter" |
 }
 
 function defineSystemInternal(
-  store: Store,
+  stash: Store,
   query: Query,
   system: (update: SystemUpdate) => void,
   options: { runOnInit?: boolean } = { runOnInit: true },
   updateFilter?: "enter" | "update" | "exit",
 ) {
   subscribeQuery({
-    store,
+    stash,
     query,
     options: {
       skipInitialRun: !options.runOnInit,
       initialSubscribers: [
         (update) => {
-          const updates = transformUpdate(store, update, updateFilter);
+          const updates = transformUpdate(stash, update, updateFilter);
           for (const update of updates) {
             system(update);
           }
@@ -144,37 +144,37 @@ function defineSystemInternal(
 }
 
 export function defineSystem(
-  store: Store,
+  stash: Store,
   query: Query,
   system: (update: SystemUpdate) => void,
   options: { runOnInit?: boolean } = { runOnInit: true },
 ) {
-  defineSystemInternal(store, query, system, options);
+  defineSystemInternal(stash, query, system, options);
 }
 
 export function defineEnterSystem(
-  store: Store,
+  stash: Store,
   query: Query,
   system: (update: SystemUpdate) => void,
   options: { runOnInit?: boolean } = { runOnInit: true },
 ) {
-  defineSystemInternal(store, query, system, options, "enter");
+  defineSystemInternal(stash, query, system, options, "enter");
 }
 
 export function defineUpdateSystem(
-  store: Store,
+  stash: Store,
   query: Query,
   system: (update: SystemUpdate) => void,
   options: { runOnInit?: boolean } = { runOnInit: true },
 ) {
-  defineSystemInternal(store, query, system, options, "update");
+  defineSystemInternal(stash, query, system, options, "update");
 }
 
 export function defineExitSystem(
-  store: Store,
+  stash: Store,
   query: Query,
   system: (update: SystemUpdate) => void,
   options: { runOnInit?: boolean } = { runOnInit: true },
 ) {
-  defineSystemInternal(store, query, system, options, "exit");
+  defineSystemInternal(stash, query, system, options, "exit");
 }

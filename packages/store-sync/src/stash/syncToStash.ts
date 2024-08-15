@@ -7,7 +7,7 @@ import { BoundTable, Store, registerTable } from "@latticexyz/stash/internal";
 import { defineTable } from "@latticexyz/store/config/v2";
 
 type SyncToStashOptions = SyncOptions & {
-  store: Store;
+  stash: Store;
   config: StoreConfig;
   startSync?: boolean;
 };
@@ -31,18 +31,18 @@ type SyncToStashResult = SyncResult & {
 };
 
 export async function syncToStash({
-  store,
+  stash,
   config,
   startSync = true,
   ...syncOptions
 }: SyncToStashOptions): Promise<SyncToStashResult> {
   const { storageAdapter } = createStorageAdapter({
-    store,
+    stash,
   });
 
   // Create SyncProgress table
   const SyncProgress = registerTable({
-    store,
+    stash,
     table: syncProgressConfig,
   });
 
@@ -58,11 +58,11 @@ export async function syncToStash({
    *
    * - Fetch initial state from dozer SQL, keep in temporary decoded structure
    * - Fetch logs from min to max from RPC, decode and apply to temporary structure
-   * - Write everything in one go to the store
+   * - Write everything in one go to the stash
    * - Skip fetching from indexer, continue syncing from RPC
    *
    * In both approaches we need the local tables to not send updates until the sync is done,
-   * then send an update with the entire store.
+   * then send an update with the entire stash.
    *
    * The first approach seems like a lot of processing overhead (encoding records) but would be
    * compatible with all state libs. The second approach would be specific to ZustandQuery.

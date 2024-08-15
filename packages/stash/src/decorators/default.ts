@@ -17,27 +17,27 @@ import { SubscribeStoreArgs, SubscribeStoreResult, subscribeStore } from "../act
 import { SubscribeTableArgs, SubscribeTableResult, subscribeTable } from "../actions/subscribeTable";
 import { Table } from "@latticexyz/config";
 
-export type StoreBoundDecodeKeyArgs<table extends Table = Table> = Omit<DecodeKeyArgs<table>, "store">;
-export type StoreBoundDeleteRecordArgs<table extends Table> = Omit<DeleteRecordArgs<table>, "store">;
+export type StoreBoundDecodeKeyArgs<table extends Table = Table> = Omit<DecodeKeyArgs<table>, "stash">;
+export type StoreBoundDeleteRecordArgs<table extends Table> = Omit<DeleteRecordArgs<table>, "stash">;
 export type StoreBoundEncodeKeyArgs<table extends Table = Table> = EncodeKeyArgs<table>;
-export type StoreBoundGetConfigArgs = Omit<GetConfigArgs, "store">;
-export type StoreBoundGetKeysArgs<table extends Table = Table> = Omit<GetKeysArgs<table>, "store">;
-export type StoreBoundGetRecordArgs<table extends Table = Table> = Omit<GetRecordArgs<table>, "store">;
-export type StoreBoundGetRecordsArgs<table extends Table = Table> = Omit<GetRecordsArgs<table>, "store">;
-export type StoreBoundGetTableArgs<table extends Table = Table> = Omit<GetTableArgs<table>, "store">;
-export type StoreBoundRegisterTableArgs<table extends Table = Table> = Omit<RegisterTableArgs<table>, "store">;
+export type StoreBoundGetConfigArgs = Omit<GetConfigArgs, "stash">;
+export type StoreBoundGetKeysArgs<table extends Table = Table> = Omit<GetKeysArgs<table>, "stash">;
+export type StoreBoundGetRecordArgs<table extends Table = Table> = Omit<GetRecordArgs<table>, "stash">;
+export type StoreBoundGetRecordsArgs<table extends Table = Table> = Omit<GetRecordsArgs<table>, "stash">;
+export type StoreBoundGetTableArgs<table extends Table = Table> = Omit<GetTableArgs<table>, "stash">;
+export type StoreBoundRegisterTableArgs<table extends Table = Table> = Omit<RegisterTableArgs<table>, "stash">;
 export type StoreBoundRunQueryArgs<
   query extends Query = Query,
   options extends RunQueryOptions = RunQueryOptions,
-> = Omit<RunQueryArgs<query, options>, "store">;
-export type StoreBoundSetRecordArgs<table extends Table = Table> = Omit<SetRecordArgs<table>, "store">;
-export type StoreBoundSetRecordsArgs<table extends Table = Table> = Omit<SetRecordsArgs<table>, "store">;
-export type StoreBoundSubscribeQueryArgs<query extends Query = Query> = Omit<SubscribeQueryArgs<query>, "store">;
+> = Omit<RunQueryArgs<query, options>, "stash">;
+export type StoreBoundSetRecordArgs<table extends Table = Table> = Omit<SetRecordArgs<table>, "stash">;
+export type StoreBoundSetRecordsArgs<table extends Table = Table> = Omit<SetRecordsArgs<table>, "stash">;
+export type StoreBoundSubscribeQueryArgs<query extends Query = Query> = Omit<SubscribeQueryArgs<query>, "stash">;
 export type StoreBoundSubscribeStoreArgs<config extends StoreConfig = StoreConfig> = Omit<
   SubscribeStoreArgs<config>,
-  "store"
+  "stash"
 >;
-export type StoreBoundSubscribeTableArgs<table extends Table = Table> = Omit<SubscribeTableArgs<table>, "store">;
+export type StoreBoundSubscribeTableArgs<table extends Table = Table> = Omit<SubscribeTableArgs<table>, "stash">;
 
 export type DefaultActions<config extends StoreConfig = StoreConfig> = {
   decodeKey: <table extends Table>(args: StoreBoundDecodeKeyArgs<table>) => DecodeKeyResult<table>;
@@ -60,27 +60,27 @@ export type DefaultActions<config extends StoreConfig = StoreConfig> = {
   subscribeTable: <table extends Table>(args: StoreBoundSubscribeTableArgs<table>) => SubscribeTableResult;
 };
 
-export function defaultActions<config extends StoreConfig>(store: Store<config>): DefaultActions<config> {
+export function defaultActions<config extends StoreConfig>(stash: Store<config>): DefaultActions<config> {
   return {
-    decodeKey: <table extends Table>(args: StoreBoundDecodeKeyArgs<table>) => decodeKey({ store, ...args }),
-    deleteRecord: <table extends Table>(args: StoreBoundDeleteRecordArgs<table>) => deleteRecord({ store, ...args }),
+    decodeKey: <table extends Table>(args: StoreBoundDecodeKeyArgs<table>) => decodeKey({ stash, ...args }),
+    deleteRecord: <table extends Table>(args: StoreBoundDeleteRecordArgs<table>) => deleteRecord({ stash, ...args }),
     encodeKey: <table extends Table>(args: StoreBoundEncodeKeyArgs<table>) => encodeKey(args),
-    getConfig: (args: StoreBoundGetConfigArgs) => getConfig({ store, ...args }),
-    getKeys: <table extends Table>(args: StoreBoundGetKeysArgs<table>) => getKeys({ store, ...args }),
-    getRecord: <table extends Table>(args: StoreBoundGetRecordArgs<table>) => getRecord({ store, ...args }),
-    getRecords: <table extends Table>(args: StoreBoundGetRecordsArgs<table>) => getRecords({ store, ...args }),
-    getTable: <table extends Table>(args: StoreBoundGetTableArgs<table>) => getTable({ store, ...args }),
-    getTables: () => getTables({ store }),
-    registerTable: <table extends Table>(args: StoreBoundRegisterTableArgs<table>) => registerTable({ store, ...args }),
+    getConfig: (args: StoreBoundGetConfigArgs) => getConfig({ stash, ...args }),
+    getKeys: <table extends Table>(args: StoreBoundGetKeysArgs<table>) => getKeys({ stash, ...args }),
+    getRecord: <table extends Table>(args: StoreBoundGetRecordArgs<table>) => getRecord({ stash, ...args }),
+    getRecords: <table extends Table>(args: StoreBoundGetRecordsArgs<table>) => getRecords({ stash, ...args }),
+    getTable: <table extends Table>(args: StoreBoundGetTableArgs<table>) => getTable({ stash, ...args }),
+    getTables: () => getTables({ stash }),
+    registerTable: <table extends Table>(args: StoreBoundRegisterTableArgs<table>) => registerTable({ stash, ...args }),
     runQuery: <query extends Query, options extends RunQueryOptions>(args: StoreBoundRunQueryArgs<query, options>) =>
-      runQuery({ store, ...args }),
-    setRecord: <table extends Table>(args: StoreBoundSetRecordArgs<table>) => setRecord({ store, ...args }),
-    setRecords: <table extends Table>(args: StoreBoundSetRecordsArgs<table>) => setRecords({ store, ...args }),
+      runQuery({ stash, ...args }),
+    setRecord: <table extends Table>(args: StoreBoundSetRecordArgs<table>) => setRecord({ stash, ...args }),
+    setRecords: <table extends Table>(args: StoreBoundSetRecordsArgs<table>) => setRecords({ stash, ...args }),
     subscribeQuery: <query extends Query>(args: StoreBoundSubscribeQueryArgs<query>) =>
-      subscribeQuery({ store, ...args }),
+      subscribeQuery({ stash, ...args }),
     subscribeStore: <config extends StoreConfig>(args: StoreBoundSubscribeStoreArgs<config>) =>
-      subscribeStore({ store, ...args }),
+      subscribeStore({ stash, ...args }),
     subscribeTable: <table extends Table>(args: StoreBoundSubscribeTableArgs<table>) =>
-      subscribeTable({ store, ...args }),
+      subscribeTable({ stash, ...args }),
   };
 }

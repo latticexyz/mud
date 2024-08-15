@@ -1,11 +1,11 @@
 import { defineStore } from "@latticexyz/store";
 import { describe, it } from "vitest";
-import { createStore } from "../createStash";
+import { createStash } from "../createStash";
 import { getTables } from "./getTables";
 import { attest } from "@ark/attest";
 
 describe("getTables", () => {
-  it("should return bound tables for each registered table in the store", () => {
+  it("should return bound tables for each registered table in the stash", () => {
     const config = defineStore({
       namespaces: {
         namespace1: {
@@ -26,8 +26,8 @@ describe("getTables", () => {
         },
       },
     });
-    const store = createStore(config);
-    const tables = getTables({ store });
+    const stash = createStash(config);
+    const tables = getTables({ stash });
 
     attest<"namespace1" | "namespace2", keyof typeof tables>();
 

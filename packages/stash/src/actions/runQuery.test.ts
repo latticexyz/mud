@@ -1,6 +1,6 @@
 import { describe, beforeEach, it } from "vitest";
 import { attest } from "@arktype/attest";
-import { createStore } from "../createStash";
+import { createStash } from "../createStash";
 import { runQuery } from "./runQuery";
 import { defineStore } from "@latticexyz/store";
 import { Store, StoreRecords, getQueryConfig } from "../common";
@@ -9,7 +9,7 @@ import { In, MatchRecord, NotIn, NotMatchRecord } from "../queryFragments";
 import { Hex } from "viem";
 
 describe("runQuery", () => {
-  let store: Store;
+  let stash: Store;
   const config = defineStore({
     namespaces: {
       namespace1: {
@@ -39,24 +39,24 @@ describe("runQuery", () => {
   const { Inventory, Health } = config.namespaces.namespace2.tables;
 
   beforeEach(() => {
-    store = createStore(config);
+    stash = createStash(config);
 
     // Add some mock data
     const items = ["0xgold", "0xsilver"] as const;
     const num = 5;
     for (let i = 0; i < num; i++) {
-      setRecord({ store, table: Position, key: { player: `0x${String(i)}` }, record: { x: i, y: num - i } });
+      setRecord({ stash, table: Position, key: { player: `0x${String(i)}` }, record: { x: i, y: num - i } });
       if (i > 2) {
-        setRecord({ store, table: Health, key: { player: `0x${String(i)}` }, record: { health: i } });
+        setRecord({ stash, table: Health, key: { player: `0x${String(i)}` }, record: { health: i } });
       }
       for (const item of items) {
-        setRecord({ store, table: Inventory, key: { player: `0x${String(i)}`, item }, record: { amount: i } });
+        setRecord({ stash, table: Inventory, key: { player: `0x${String(i)}`, item }, record: { amount: i } });
       }
     }
   });
 
   it("should return all keys in the Position table", () => {
-    const result = runQuery({ store, query: [In(Position)] });
+    const result = runQuery({ stash, query: [In(Position)] });
     attest(result).snap({
       keys: {
         "0x0": { player: "0x0" },
@@ -69,7 +69,7 @@ describe("runQuery", () => {
   });
 
   it("should return all keys that are in the Position and Health table", () => {
-    const result = runQuery({ store, query: [In(Position), In(Health)] });
+    const result = runQuery({ stash, query: [In(Position), In(Health)] });
     attest(result).snap({
       keys: {
         "0x3": { player: "0x3" },
@@ -79,12 +79,12 @@ describe("runQuery", () => {
   });
 
   it("should return all keys that have Position.x = 4 and are included in Health", () => {
-    const result = runQuery({ store, query: [MatchRecord(Position, { x: 4 }), In(Health)] });
+    const result = runQuery({ stash, query: [MatchRecord(Position, { x: 4 }), In(Health)] });
     attest(result).snap({ keys: { "0x4": { player: "0x4" } } });
   });
 
   it("should return all keys that are in Position but not Health", () => {
-    const result = runQuery({ store, query: [In(Position), NotIn(Health)] });
+    const result = runQuery({ stash, query: [In(Position), NotIn(Health)] });
     attest(result).snap({
       keys: {
         "0x0": { player: "0x0" },
@@ -95,7 +95,7 @@ describe("runQuery", () => {
   });
 
   it("should return all keys that don't include a gold item in the Inventory table", () => {
-    const result = runQuery({ store, query: [NotMatchRecord(Inventory, { item: "0xgold" })] });
+    const result = runQuery({ stash, query: [NotMatchRecord(Inventory, { item: "0xgold" })] });
     attest(result).snap({
       keys: {
         "0x0|0xsilver": { player: "0x0", item: "0xsilver" },
@@ -109,12 +109,12 @@ describe("runQuery", () => {
 
   it("should throw an error when tables with different key schemas are mixed", () => {
     attest(() =>
-      runQuery({ store, query: [In(Position), MatchRecord(Inventory, { item: "0xgold", amount: 2 })] }),
+      runQuery({ stash, query: [In(Position), MatchRecord(Inventory, { item: "0xgold", amount: 2 })] }),
     ).throws("All tables in a query must share the same key schema");
   });
 
   it("should include all matching records from the tables if includeRecords is set", () => {
-    const result = runQuery({ store, query: [In(Position), In(Health)], options: { includeRecords: true } });
+    const result = runQuery({ stash, query: [In(Position), In(Health)], options: { includeRecords: true } });
     attest(result).snap({
       keys: {
         "0x3": { player: "0x3" },
@@ -139,15 +139,15 @@ describe("runQuery", () => {
 
   it("should include `records` only if the `includeRecords` option is provided", () => {
     const query = [In(Position)] as const;
-    const resultWithoutRecords = runQuery({ store, query });
+    const resultWithoutRecords = runQuery({ stash, query });
     attest<never | undefined, (typeof resultWithoutRecords)["records"]>();
 
-    const resultWithRecords = runQuery({ store, query, options: { includeRecords: true } });
+    const resultWithRecords = runQuery({ stash, query, options: { includeRecords: true } });
     attest<StoreRecords<getQueryConfig<typeof query>>, (typeof resultWithRecords)["records"]>();
   });
 
   it("should type the `records` in the result based on tables in the query", () => {
-    const result = runQuery({ store, query: [In(Position), In(Health)], options: { includeRecords: true } });
+    const result = runQuery({ stash, query: [In(Position), In(Health)], options: { includeRecords: true } });
 
     attest<"namespace1" | "namespace2", keyof (typeof result)["records"]>();
     attest<"Position", keyof (typeof result)["records"]["namespace1"]>();

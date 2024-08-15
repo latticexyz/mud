@@ -1,6 +1,6 @@
 import { defineStore } from "@latticexyz/store";
 import { describe, expect, it, vi } from "vitest";
-import { createStore } from "../createStash";
+import { createStash } from "../createStash";
 import { subscribeTable } from "./subscribeTable";
 import { setRecord } from "./setRecord";
 
@@ -29,12 +29,12 @@ describe("subscribeTable", () => {
 
     const table1 = config.namespaces.namespace1.tables.table1;
     const table2 = config.namespaces.namespace2.tables.table2;
-    const store = createStore(config);
+    const stash = createStash(config);
     const subscriber = vi.fn();
 
-    subscribeTable({ store, table: table1, subscriber });
+    subscribeTable({ stash, table: table1, subscriber });
 
-    setRecord({ store, table: table1, key: { a: "0x00" }, record: { b: 1n, c: 2 } });
+    setRecord({ stash, table: table1, key: { a: "0x00" }, record: { b: 1n, c: 2 } });
 
     expect(subscriber).toHaveBeenCalledTimes(1);
     expect(subscriber).toHaveBeenNthCalledWith(1, {
@@ -45,10 +45,10 @@ describe("subscribeTable", () => {
     });
 
     // Expect unrelated updates to not notify subscribers
-    setRecord({ store, table: table2, key: { a: "0x01" }, record: { b: 1n, c: 2 } });
+    setRecord({ stash, table: table2, key: { a: "0x01" }, record: { b: 1n, c: 2 } });
     expect(subscriber).toHaveBeenCalledTimes(1);
 
-    setRecord({ store, table: table1, key: { a: "0x00" }, record: { b: 1n, c: 3 } });
+    setRecord({ stash, table: table1, key: { a: "0x00" }, record: { b: 1n, c: 3 } });
 
     expect(subscriber).toHaveBeenCalledTimes(2);
     expect(subscriber).toHaveBeenNthCalledWith(2, {

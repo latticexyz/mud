@@ -1,15 +1,15 @@
 import { describe, it } from "vitest";
 import { attest } from "@ark/attest";
-import { createStore } from "../createStash";
+import { createStash } from "../createStash";
 import { extend } from "./extend";
 
 describe("extend", () => {
-  it("should extend the store API", () => {
-    const store = createStore();
+  it("should extend the stash API", () => {
+    const stash = createStash();
     const actions = { additional: <T>(a: T): T => a };
-    const extended = extend({ store, actions });
+    const extended = extend({ stash: stash, actions });
 
-    attest<typeof store & typeof actions, typeof extended>();
-    attest(Object.keys(extended)).equals([...Object.keys(store), "additional"]);
+    attest<typeof stash & typeof actions, typeof extended>();
+    attest(Object.keys(extended)).equals([...Object.keys(stash), "additional"]);
   });
 });

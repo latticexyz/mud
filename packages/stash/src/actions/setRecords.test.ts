@@ -1,6 +1,6 @@
 import { defineStore } from "@latticexyz/store";
 import { describe, it } from "vitest";
-import { createStore } from "../createStash";
+import { createStash } from "../createStash";
 import { setRecords } from "./setRecords";
 import { attest } from "@ark/attest";
 
@@ -21,9 +21,9 @@ describe("setRecords", () => {
     });
 
     const table = config.namespaces.namespace1.tables.table1;
-    const store = createStore(config);
+    const stash = createStash(config);
     setRecords({
-      store,
+      stash,
       table,
       records: [
         { field1: "hello", field2: 1, field3: 2 },
@@ -31,7 +31,7 @@ describe("setRecords", () => {
       ],
     });
 
-    attest(store.get().records).snap({
+    attest(stash.get().records).snap({
       namespace1: {
         table1: {
           "1|2": { field1: "hello", field2: 1, field3: 2 },
@@ -57,11 +57,11 @@ describe("setRecords", () => {
     });
 
     const table = config.namespaces.namespace1.tables.table1;
-    const store = createStore(config);
+    const stash = createStash(config);
 
     attest(() =>
       setRecords({
-        store,
+        stash,
         table,
         // @ts-expect-error Type '{ field1: string; }' is missing the following properties from type
         records: [{ field1: "" }],
@@ -72,7 +72,7 @@ describe("setRecords", () => {
 
     attest(() =>
       setRecords({
-        store,
+        stash,
         table,
         // @ts-expect-error Type 'number' is not assignable to type 'string'.
         records: [{ field1: 1, field2: 1, field3: 2 }],

@@ -7,7 +7,7 @@ import { groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import { StoreEventsLog } from "../common";
 import { RpcLog, formatLog, decodeEventLog, Hex } from "viem";
 import { storeEventsAbi } from "@latticexyz/store";
-import { createStore, getTable } from "@latticexyz/stash/internal";
+import { createStash, getTable } from "@latticexyz/stash/internal";
 
 // TODO: make test-data a proper package and export this
 const blocks = groupLogsByBlockNumber(
@@ -25,14 +25,14 @@ const blocks = groupLogsByBlockNumber(
 
 describe("createStorageAdapter", () => {
   it("sets records from logs", async () => {
-    const store = createStore(mudConfig);
-    const { storageAdapter } = createStorageAdapter({ store });
+    const stash = createStash(mudConfig);
+    const { storageAdapter } = createStorageAdapter({ stash });
 
     for (const block of blocks) {
       await storageAdapter(block);
     }
 
-    const NumberList = getTable({ store, table: { namespace: "", label: "NumberList" } });
+    const NumberList = getTable({ stash, table: { namespace: "", label: "NumberList" } });
 
     expect(NumberList.getKeys()).toMatchInlineSnapshot(`
       {
@@ -51,7 +51,7 @@ describe("createStorageAdapter", () => {
       }
     `);
 
-    expect(store.get().records).toMatchInlineSnapshot(`
+    expect(stash.get().records).toMatchInlineSnapshot(`
       {
         "": {
           "DynamicArray": {},
@@ -100,7 +100,7 @@ describe("createStorageAdapter", () => {
           "StaticArray": {},
           "Vector": {},
         },
-        "store": {
+        "stash": {
           "ResourceIds": {
             "0x6e73000000000000000000000000000000000000000000000000000000000000": {
               "exists": true,

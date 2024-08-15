@@ -14,18 +14,18 @@ export type BoundTables<config extends StoreConfig = StoreConfig> = {
 };
 
 export type GetTablesArgs<config extends StoreConfig = StoreConfig> = {
-  store: Store<config>;
+  stash: Store<config>;
 };
 
 export type GetTablesResult<config extends StoreConfig = StoreConfig> = BoundTables<config>;
 
-export function getTables<config extends StoreConfig>({ store }: GetTablesArgs<config>): GetTablesResult<config> {
+export function getTables<config extends StoreConfig>({ stash }: GetTablesArgs<config>): GetTablesResult<config> {
   const boundTables: MutableBoundTables = {};
-  const config = store.get().config;
+  const config = stash.get().config;
   for (const namespace of Object.keys(config)) {
     boundTables[namespace] ??= {};
     for (const label of Object.keys(config[namespace])) {
-      boundTables[namespace][label] = getTable({ store, table: config[namespace][label] }) as never;
+      boundTables[namespace][label] = getTable({ stash, table: config[namespace][label] }) as never;
     }
   }
   return boundTables as never;

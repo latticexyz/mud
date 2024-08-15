@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { renderHook, act } from "@testing-library/react-hooks";
 import { useSelector } from "./useSelector";
 import { defineStore } from "@latticexyz/store/config/v2";
-import { createStore } from "../createStash";
+import { createStash } from "../createStash";
 
 describe("useCustomHook", () => {
   it("checks the re-render behavior of the hook", async () => {
@@ -19,14 +19,14 @@ describe("useCustomHook", () => {
       },
     });
     const Position = config.namespaces.game.tables.Position;
-    const store = createStore(config);
+    const stash = createStash(config);
     const player = "0x00";
 
-    const { result } = renderHook(() => useSelector(store, (state) => state.records["game"]["Position"][player]));
+    const { result } = renderHook(() => useSelector(stash, (state) => state.records["game"]["Position"][player]));
     expect(result.current).toBe(undefined);
 
     act(() => {
-      store.setRecord({ table: Position, key: { player }, record: { x: 1, y: 2 } });
+      stash.setRecord({ table: Position, key: { player }, record: { x: 1, y: 2 } });
     });
 
     // Expect update to have triggered rerender
@@ -35,7 +35,7 @@ describe("useCustomHook", () => {
     expect(result.current).toStrictEqual({ player, x: 1, y: 2 });
 
     act(() => {
-      store.setRecord({ table: Position, key: { player: "0x01" }, record: { x: 1, y: 2 } });
+      stash.setRecord({ table: Position, key: { player: "0x01" }, record: { x: 1, y: 2 } });
     });
 
     // Expect unrelated update to not have triggered rerender
@@ -45,7 +45,7 @@ describe("useCustomHook", () => {
 
     // Expect update to have triggered rerender
     act(() => {
-      store.setRecord({ table: Position, key: { player }, record: { x: 1, y: 3 } });
+      stash.setRecord({ table: Position, key: { player }, record: { x: 1, y: 3 } });
     });
 
     expect(result.all.length).toBe(3);

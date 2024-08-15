@@ -1,15 +1,15 @@
 import { Store } from "../common";
 
-export type ExtendArgs<store extends Store, actions> = {
-  store: store;
+export type ExtendArgs<stash extends Store, actions> = {
+  stash: stash;
   actions: actions;
 };
 
-export type ExtendResult<store extends Store, actions> = store & actions;
+export type ExtendResult<stash extends Store, actions> = stash & actions;
 
-export function extend<store extends Store, actions>({
-  store,
+export function extend<stash extends Store, actions>({
+  stash,
   actions,
-}: ExtendArgs<store, actions>): ExtendResult<store, actions> {
-  return { ...store, ...actions };
+}: ExtendArgs<stash, actions>): ExtendResult<stash, actions> {
+  return { ...stash, ...actions };
 }

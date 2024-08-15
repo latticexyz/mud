@@ -1,14 +1,14 @@
 import { attest } from "@ark/attest";
 import { defineStore } from "@latticexyz/store";
 import { describe, expect, it, vi } from "vitest";
-import { createStore } from "../createStash";
+import { createStash } from "../createStash";
 import { defineTable } from "@latticexyz/store/config/v2";
 import { In } from "../queryFragments";
 import { Hex } from "viem";
 import { runQuery } from "../actions";
 import { StoreRecords, getQueryConfig } from "../common";
 
-describe("store with default actions", () => {
+describe("stash with default actions", () => {
   describe("decodeKey", () => {
     it("should decode an encoded table key", () => {
       const config = defineStore({
@@ -20,13 +20,13 @@ describe("store with default actions", () => {
           },
         },
       });
-      const store = createStore(config);
+      const stash = createStash(config);
       const table = config.namespaces.namespace1.tables.table1;
       const key = { field2: 1, field3: 2n };
-      store.setRecord({ table, key, record: { field1: "hello" } });
+      stash.setRecord({ table, key, record: { field1: "hello" } });
 
-      const encodedKey = store.encodeKey({ table, key });
-      attest<typeof key>(store.decodeKey({ table, encodedKey })).equals({ field2: 1, field3: 2n });
+      const encodedKey = stash.encodeKey({ table, key });
+      attest<typeof key>(stash.decodeKey({ table, encodedKey })).equals({ field2: 1, field3: 2n });
     });
   });
 
@@ -48,10 +48,10 @@ describe("store with default actions", () => {
 
       const table = config.namespaces.namespace1.tables.table1;
 
-      const store = createStore(config);
+      const stash = createStash(config);
 
       attest(() =>
-        store.deleteRecord({
+        stash.deleteRecord({
           table,
           // @ts-expect-error Property 'field3' is missing in type '{ field2: number; }'
           key: { field2: 1 },
@@ -59,7 +59,7 @@ describe("store with default actions", () => {
       ).type.errors(`Property 'field3' is missing in type '{ field2: number; }'`);
 
       attest(() =>
-        store.deleteRecord({
+        stash.deleteRecord({
           table,
           // @ts-expect-error Type 'string' is not assignable to type 'number'
           key: { field2: 1, field3: "invalid" },
@@ -79,11 +79,11 @@ describe("store with default actions", () => {
         },
       });
 
-      const store = createStore(config);
+      const stash = createStash(config);
       const table = config.tables.test;
 
       attest(() =>
-        store.encodeKey({
+        stash.encodeKey({
           table,
           // @ts-expect-error Property 'field2' is missing in type '{ field1: number; }'
           key: {
@@ -95,7 +95,7 @@ describe("store with default actions", () => {
         .type.errors(`Property 'field2' is missing in type '{ field1: number; }'`);
 
       attest(
-        store.encodeKey({
+        stash.encodeKey({
           table,
           key: {
             field1: 1,
@@ -122,10 +122,10 @@ describe("store with default actions", () => {
         key: ["field1"],
       });
 
-      const store = createStore();
-      store.registerTable({ table });
+      const stash = createStash();
+      stash.registerTable({ table });
 
-      attest(store.getConfig({ table: { label: "test", namespaceLabel: "namespace" } })).equals(table);
+      attest(stash.getConfig({ table: { label: "test", namespaceLabel: "namespace" } })).equals(table);
     });
   });
 
@@ -145,12 +145,12 @@ describe("store with default actions", () => {
         },
       });
       const table = config.tables.test;
-      const store = createStore(config);
+      const stash = createStash(config);
 
-      store.setRecord({ table, key: { player: 1, match: 2 }, record: { x: 3, y: 4 } });
-      store.setRecord({ table, key: { player: 5, match: 6 }, record: { x: 7, y: 8 } });
+      stash.setRecord({ table, key: { player: 1, match: 2 }, record: { x: 3, y: 4 } });
+      stash.setRecord({ table, key: { player: 5, match: 6 }, record: { x: 7, y: 8 } });
 
-      attest<{ [encodedKey: string]: { player: number; match: number } }>(store.getKeys({ table })).snap({
+      attest<{ [encodedKey: string]: { player: number; match: number } }>(stash.getKeys({ table })).snap({
         "1|2": { player: 1, match: 2 },
         "5|6": { player: 5, match: 6 },
       });
@@ -175,16 +175,16 @@ describe("store with default actions", () => {
 
       const table = config.namespaces.namespace1.tables.table1;
 
-      const store = createStore(config);
+      const stash = createStash(config);
 
-      store.setRecord({
+      stash.setRecord({
         table,
         key: { field2: 2, field3: 1 },
         record: { field1: "world" },
       });
 
       attest<{ field1: string; field2: number; field3: number }>(
-        store.getRecord({
+        stash.getRecord({
           table,
           key: { field2: 2, field3: 1 },
         }),
@@ -208,10 +208,10 @@ describe("store with default actions", () => {
 
       const table = config.namespaces.namespace1.tables.table1;
 
-      const store = createStore(config);
+      const stash = createStash(config);
 
       attest(() =>
-        store.getRecord({
+        stash.getRecord({
           table,
           // @ts-expect-error Property 'field3' is missing in type '{ field2: number; }'
           key: { field2: 1 },
@@ -219,7 +219,7 @@ describe("store with default actions", () => {
       ).type.errors(`Property 'field3' is missing in type '{ field2: number; }'`);
 
       attest(() =>
-        store.getRecord({
+        stash.getRecord({
           table,
           // @ts-expect-error Type 'string' is not assignable to type 'number'
           key: { field2: 1, field3: "invalid" },
@@ -244,20 +244,20 @@ describe("store with default actions", () => {
         },
       });
       const table = config.tables.test;
-      const store = createStore(config);
+      const stash = createStash(config);
 
-      store.setRecord({ table, key: { player: 1, match: 2 }, record: { x: 3n, y: 4n } });
-      store.setRecord({ table, key: { player: 5, match: 6 }, record: { x: 7n, y: 8n } });
+      stash.setRecord({ table, key: { player: 1, match: 2 }, record: { x: 3n, y: 4n } });
+      stash.setRecord({ table, key: { player: 5, match: 6 }, record: { x: 7n, y: 8n } });
 
       attest<{ [encodedKey: string]: { player: number; match: number; x: bigint; y: bigint } }>(
-        store.getRecords({ table }),
+        stash.getRecords({ table }),
       ).equals({
         "1|2": { player: 1, match: 2, x: 3n, y: 4n },
         "5|6": { player: 5, match: 6, x: 7n, y: 8n },
       });
 
       attest<{ [encodedKey: string]: { player: number; match: number; x: bigint; y: bigint } }>(
-        store.getRecords({ table, keys: [{ player: 1, match: 2 }] }),
+        stash.getRecords({ table, keys: [{ player: 1, match: 2 }] }),
       ).equals({
         "1|2": { player: 1, match: 2, x: 3n, y: 4n },
       });
@@ -265,7 +265,7 @@ describe("store with default actions", () => {
   });
 
   describe("getTables", () => {
-    it("should return bound tables for each registered table in the store", () => {
+    it("should return bound tables for each registered table in the stash", () => {
       const config = defineStore({
         namespaces: {
           namespace1: {
@@ -286,8 +286,8 @@ describe("store with default actions", () => {
           },
         },
       });
-      const store = createStore(config);
-      const tables = store.getTables();
+      const stash = createStash(config);
+      const tables = stash.getTables();
 
       attest<"namespace1" | "namespace2", keyof typeof tables>();
 
@@ -347,21 +347,21 @@ describe("store with default actions", () => {
         },
       },
     });
-    const store = createStore(config);
+    const stash = createStash(config);
     const { Position } = config.namespaces.namespace1.tables;
     const { Health } = config.namespaces.namespace2.tables;
 
     it("should include `records` only if the `includeRecords` option is provided", () => {
       const query = [In(Position)] as const;
-      const resultWithoutRecords = store.runQuery({ query });
+      const resultWithoutRecords = stash.runQuery({ query });
       attest<never | undefined, (typeof resultWithoutRecords)["records"]>();
 
-      const resultWithRecords = store.runQuery({ query, options: { includeRecords: true } });
+      const resultWithRecords = stash.runQuery({ query, options: { includeRecords: true } });
       attest<StoreRecords<getQueryConfig<typeof query>>, (typeof resultWithRecords)["records"]>();
     });
 
     it("should type the `records` in the result based on tables in the query", () => {
-      const result = runQuery({ store, query: [In(Position), In(Health)], options: { includeRecords: true } });
+      const result = runQuery({ stash, query: [In(Position), In(Health)], options: { includeRecords: true } });
 
       attest<"namespace1" | "namespace2", keyof (typeof result)["records"]>();
       attest<"Position", keyof (typeof result)["records"]["namespace1"]>();
@@ -388,10 +388,10 @@ describe("store with default actions", () => {
       });
 
       const table = config.namespaces.namespace1.tables.table1;
-      const store = createStore(config);
+      const stash = createStash(config);
 
       attest(() =>
-        store.setRecord({
+        stash.setRecord({
           table,
           // @ts-expect-error Property 'field2' is missing in type '{ field3: number; }'
           key: { field3: 2 },
@@ -402,7 +402,7 @@ describe("store with default actions", () => {
         .type.errors(`Property 'field2' is missing in type '{ field3: number; }`);
 
       attest(() =>
-        store.setRecord({
+        stash.setRecord({
           table,
           // @ts-expect-error Type 'string' is not assignable to type 'number'.
           key: { field2: 1, field3: "invalid" },
@@ -411,7 +411,7 @@ describe("store with default actions", () => {
       ).type.errors(`Type 'string' is not assignable to type 'number'.`);
 
       attest(() =>
-        store.setRecord({
+        stash.setRecord({
           table,
           key: { field2: 1, field3: 2 },
           // @ts-expect-error Type 'number' is not assignable to type 'string'.
@@ -438,10 +438,10 @@ describe("store with default actions", () => {
       });
 
       const table = config.namespaces.namespace1.tables.table1;
-      const store = createStore(config);
+      const stash = createStash(config);
 
       attest(() =>
-        store.setRecords({
+        stash.setRecords({
           table,
           // @ts-expect-error Type '{ field1: string; }' is missing the following properties from type
           records: [{ field1: "" }],
@@ -451,7 +451,7 @@ describe("store with default actions", () => {
         .type.errors(`Type '{ field1: string; }' is missing the following properties from type`);
 
       attest(() =>
-        store.setRecords({
+        stash.setRecords({
           table,
           // @ts-expect-error Type 'number' is not assignable to type 'string'.
           records: [{ field1: 1, field2: 1, field3: 2 }],
@@ -461,7 +461,7 @@ describe("store with default actions", () => {
   });
 
   describe("subscribeStore", () => {
-    it("should notify subscriber of any store change", () => {
+    it("should notify subscriber of any stash change", () => {
       const config = defineStore({
         namespaces: {
           namespace1: {
@@ -475,12 +475,12 @@ describe("store with default actions", () => {
         },
       });
 
-      const store = createStore(config);
+      const stash = createStash(config);
       const subscriber = vi.fn();
 
-      store.subscribeStore({ subscriber });
+      stash.subscribeStore({ subscriber });
 
-      store.setRecord({ table: config.tables.namespace1__table1, key: { a: "0x00" }, record: { b: 1n, c: 2 } });
+      stash.setRecord({ table: config.tables.namespace1__table1, key: { a: "0x00" }, record: { b: 1n, c: 2 } });
 
       expect(subscriber).toHaveBeenCalledTimes(1);
       expect(subscriber).toHaveBeenNthCalledWith(1, {
@@ -524,12 +524,12 @@ describe("store with default actions", () => {
 
       const table1 = config.namespaces.namespace1.tables.table1;
       const table2 = config.namespaces.namespace2.tables.table2;
-      const store = createStore(config);
+      const stash = createStash(config);
       const subscriber = vi.fn();
 
-      store.subscribeTable({ table: table1, subscriber });
+      stash.subscribeTable({ table: table1, subscriber });
 
-      store.setRecord({ table: table1, key: { a: "0x00" }, record: { b: 1n, c: 2 } });
+      stash.setRecord({ table: table1, key: { a: "0x00" }, record: { b: 1n, c: 2 } });
 
       expect(subscriber).toHaveBeenCalledTimes(1);
       expect(subscriber).toHaveBeenNthCalledWith(1, {
@@ -540,10 +540,10 @@ describe("store with default actions", () => {
       });
 
       // Expect unrelated updates to not notify subscribers
-      store.setRecord({ table: table2, key: { a: "0x01" }, record: { b: 1n, c: 2 } });
+      stash.setRecord({ table: table2, key: { a: "0x01" }, record: { b: 1n, c: 2 } });
       expect(subscriber).toHaveBeenCalledTimes(1);
 
-      store.setRecord({ table: table1, key: { a: "0x00" }, record: { b: 1n, c: 3 } });
+      stash.setRecord({ table: table1, key: { a: "0x00" }, record: { b: 1n, c: 3 } });
 
       expect(subscriber).toHaveBeenCalledTimes(2);
       expect(subscriber).toHaveBeenNthCalledWith(2, {

@@ -40,7 +40,7 @@ export type QueryUpdate<config extends StoreConfig = StoreConfig> = {
 type QuerySubscriber<config extends StoreConfig = StoreConfig> = (update: QueryUpdate<config>) => void;
 
 export type SubscribeQueryArgs<query extends Query = Query> = {
-  store: Store;
+  stash: Store;
   query: query;
   options?: SubscribeQueryOptions<getQueryConfig<query>>;
 };
@@ -59,14 +59,14 @@ export type SubscribeQueryResult<query extends Query = Query> = CommonQueryResul
 };
 
 export function subscribeQuery<query extends Query>({
-  store,
+  stash,
   query,
   options,
 }: SubscribeQueryArgs<query>): SubscribeQueryResult<query> {
   const initialRun = options?.skipInitialRun
     ? undefined
     : runQuery({
-        store,
+        stash,
         query,
         options: {
           // Pass the initial keys
@@ -95,7 +95,7 @@ export function subscribeQuery<query extends Query>({
         update.keys[key] = matching[key];
         // If the key matched before, check if the relevant fragments (accessing this table) still match
         const relevantFragments = query.filter((f) => f.table.namespace === namespaceLabel && f.table.label === label);
-        const match = relevantFragments.every((f) => f.match(store, key));
+        const match = relevantFragments.every((f) => f.match(stash, key));
         if (match) {
           // If all relevant fragments still match, the key still matches the query.
           update.types[key] = "update";
@@ -106,10 +106,10 @@ export function subscribeQuery<query extends Query>({
         }
       } else {
         // If this key didn't match the query before, check all fragments
-        const match = query.every((f) => f.match(store, key));
+        const match = query.every((f) => f.match(stash, key));
         if (match) {
           // Since the key schema of query fragments has to match, we can pick any fragment to decode they key
-          const decodedKey = decodeKey({ store, table: query[0].table, encodedKey: key });
+          const decodedKey = decodeKey({ stash, table: query[0].table, encodedKey: key });
           matching[key] = decodedKey;
           update.keys[key] = decodedKey;
           update.types[key] = "enter";
@@ -121,9 +121,9 @@ export function subscribeQuery<query extends Query>({
     subscribers.forEach((subscriber) => subscriber(update));
   };
 
-  // Subscribe to each table's update stream and store the unsubscribers
+  // Subscribe to each table's update stream and stash the unsubscribers
   const unsubsribers = query.map((fragment) =>
-    getTable({ store, table: fragment.table }).subscribe({
+    getTable({ stash, table: fragment.table }).subscribe({
       subscriber: (updates) => updateQueryResult(fragment.table, updates),
     }),
   );

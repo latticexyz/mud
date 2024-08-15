@@ -1,12 +1,12 @@
 import { attest } from "@ark/attest";
 import { defineStore } from "@latticexyz/store";
 import { describe, it } from "vitest";
-import { createStore } from "../createStash";
+import { createStash } from "../createStash";
 import { setRecord } from "./setRecord";
 import { deleteRecord } from "./deleteRecord";
 
 describe("deleteRecord", () => {
-  it("should delete a record from the store", () => {
+  it("should delete a record from the stash", () => {
     const config = defineStore({
       namespace: "namespace1",
       tables: {
@@ -23,29 +23,29 @@ describe("deleteRecord", () => {
 
     const table = config.namespaces.namespace1.tables.table1;
 
-    const store = createStore(config);
+    const stash = createStash(config);
 
     setRecord({
-      store,
+      stash,
       table,
       key: { field2: 1, field3: 2 },
       record: { field1: "hello" },
     });
 
     setRecord({
-      store,
+      stash,
       table,
       key: { field2: 3, field3: 1 },
       record: { field1: "world" },
     });
 
     deleteRecord({
-      store,
+      stash,
       table,
       key: { field2: 1, field3: 2 },
     });
 
-    attest(store.get().records).snap({
+    attest(stash.get().records).snap({
       namespace1: {
         table1: {
           "3|1": {
@@ -75,11 +75,11 @@ describe("deleteRecord", () => {
 
     const table = config.namespaces.namespace1.tables.table1;
 
-    const store = createStore(config);
+    const stash = createStash(config);
 
     attest(() =>
       deleteRecord({
-        store,
+        stash,
         table,
         // @ts-expect-error Property 'field3' is missing in type '{ field2: number; }'
         key: { field2: 1 },
@@ -88,7 +88,7 @@ describe("deleteRecord", () => {
 
     attest(() =>
       deleteRecord({
-        store,
+        stash,
         table,
         // @ts-expect-error Type 'string' is not assignable to type 'number'
         key: { field2: 1, field3: "invalid" },

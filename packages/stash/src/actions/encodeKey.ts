@@ -9,7 +9,7 @@ export type EncodeKeyArgs<table extends Table = Table> = {
 export type EncodeKeyResult = string;
 
 /**
- * Encode a key object into a string that can be used as index in the store
+ * Encode a key object into a string that can be used as index in the stash
  * TODO: Benchmark performance of this function
  */
 export function encodeKey<table extends Table>({ table, key }: EncodeKeyArgs<table>): EncodeKeyResult {

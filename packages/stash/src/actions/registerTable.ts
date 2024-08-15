@@ -3,14 +3,14 @@ import { getTable, BoundTable } from "./getTable";
 import { Store } from "../common";
 
 export type RegisterTableArgs<table extends Table = Table> = {
-  store: Store;
+  stash: Store;
   table: table;
 };
 
 export type RegisterTableResult<table extends Table = Table> = BoundTable<table>;
 
 export function registerTable<table extends Table>({
-  store,
+  stash,
   table,
 }: RegisterTableArgs<table>): RegisterTableResult<table> {
   // Pick only relevant keys from the table config, ignore keys like `codegen`, `deploy`
@@ -18,23 +18,23 @@ export function registerTable<table extends Table>({
   const tableConfig = { namespace, namespaceLabel, name, label, key, schema, type, tableId };
 
   // Set config for table
-  store._.state.config[namespaceLabel] ??= {};
-  store._.state.config[namespaceLabel][label] = tableConfig;
+  stash._.state.config[namespaceLabel] ??= {};
+  stash._.state.config[namespaceLabel][label] = tableConfig;
 
   // Init records map for table
-  store._.state.records[namespaceLabel] ??= {};
-  store._.state.records[namespaceLabel][label] ??= {};
+  stash._.state.records[namespaceLabel] ??= {};
+  stash._.state.records[namespaceLabel][label] ??= {};
 
   // Init subscribers set for table
-  store._.tableSubscribers[namespaceLabel] ??= {};
-  store._.tableSubscribers[namespaceLabel][label] ??= new Set();
+  stash._.tableSubscribers[namespaceLabel] ??= {};
+  stash._.tableSubscribers[namespaceLabel][label] ??= new Set();
 
-  // Notify store subscribers
+  // Notify stash subscribers
   const storeUpdate = {
     config: { [namespaceLabel]: { [label]: { prev: undefined, current: tableConfig } } },
     records: {},
   };
-  store._.storeSubscribers.forEach((subscriber) => subscriber(storeUpdate));
+  stash._.storeSubscribers.forEach((subscriber) => subscriber(storeUpdate));
 
-  return getTable({ store, table });
+  return getTable({ stash, table });
 }

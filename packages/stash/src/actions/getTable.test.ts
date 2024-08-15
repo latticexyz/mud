@@ -1,14 +1,14 @@
 import { attest } from "@ark/attest";
 import { defineTable } from "@latticexyz/store/config/v2";
 import { describe, it, expect, vi } from "vitest";
-import { createStore } from "../createStash";
+import { createStash } from "../createStash";
 import { getTable } from "./getTable";
 
 describe("getTable", () => {
   it("should return a bound table", () => {
-    const store = createStore();
+    const stash = createStash();
     const table = getTable({
-      store,
+      stash: stash,
       table: defineTable({
         label: "table1",
         namespace: "namespace1",
@@ -17,7 +17,7 @@ describe("getTable", () => {
       }),
     });
 
-    attest(store.get().config).snap({
+    attest(stash.get().config).snap({
       namespace1: {
         table1: {
           label: "table1",
@@ -35,15 +35,15 @@ describe("getTable", () => {
       },
     });
 
-    attest(store.get().records).snap({ namespace1: { table1: {} } });
+    attest(stash.get().records).snap({ namespace1: { table1: {} } });
     expect(table.setRecord).toBeDefined();
     expect(table.getRecord).toBeDefined();
   });
 
   describe("decodeKey", () => {
     it("should decode an encoded table key", () => {
-      const store = createStore();
-      const table = store.getTable({
+      const stash = createStash();
+      const table = stash.getTable({
         table: defineTable({
           label: "test",
           schema: { field1: "string", field2: "uint32", field3: "uint256" },
@@ -61,8 +61,8 @@ describe("getTable", () => {
 
   describe("deleteRecord", () => {
     it("should throw a type error if an invalid key is provided", () => {
-      const store = createStore();
-      const table = store.getTable({
+      const stash = createStash();
+      const table = stash.getTable({
         table: defineTable({
           label: "test",
           schema: { field1: "string", field2: "uint32", field3: "uint256" },
@@ -88,8 +88,8 @@ describe("getTable", () => {
 
   describe("encodeKey", () => {
     it("should throw a type error if an invalid key is provided", () => {
-      const store = createStore();
-      const table = store.getTable({
+      const stash = createStash();
+      const table = stash.getTable({
         table: defineTable({
           label: "test",
           schema: { field1: "string", field2: "uint32", field3: "uint256" },
@@ -122,13 +122,13 @@ describe("getTable", () => {
 
   describe("getConfig", () => {
     it("should return the config type of the given table", () => {
-      const store = createStore();
+      const stash = createStash();
       const config = defineTable({
         label: "test",
         schema: { field1: "string", field2: "uint32", field3: "uint256" },
         key: ["field2", "field3"],
       });
-      const table = store.getTable({
+      const table = stash.getTable({
         table: config,
       });
       attest<typeof config, ReturnType<typeof table.getConfig>>();
@@ -137,8 +137,8 @@ describe("getTable", () => {
 
   describe("getKeys", () => {
     it("should return the key map of a table", () => {
-      const store = createStore();
-      const table = store.getTable({
+      const stash = createStash();
+      const table = stash.getTable({
         table: defineTable({
           label: "test",
           schema: {
@@ -163,8 +163,8 @@ describe("getTable", () => {
 
   describe("getRecord", () => {
     it("should throw a type error if the key type doesn't match", () => {
-      const store = createStore();
-      const table = store.getTable({
+      const stash = createStash();
+      const table = stash.getTable({
         table: defineTable({
           label: "test",
           schema: { field1: "string", field2: "uint32", field3: "int32" },
@@ -200,8 +200,8 @@ describe("getTable", () => {
         },
         key: ["player", "match"],
       });
-      const store = createStore();
-      const table = store.getTable({ table: config });
+      const stash = createStash();
+      const table = stash.getTable({ table: config });
 
       table.setRecord({ key: { player: 1, match: 2 }, record: { x: 3n, y: 4n } });
       table.setRecord({ key: { player: 5, match: 6 }, record: { x: 7n, y: 8n } });
@@ -232,8 +232,8 @@ describe("getTable", () => {
         },
         key: ["field2", "field3"],
       });
-      const store = createStore();
-      const table = store.getTable({ table: config });
+      const stash = createStash();
+      const table = stash.getTable({ table: config });
 
       attest(() =>
         table.setRecord({
@@ -274,8 +274,8 @@ describe("getTable", () => {
         },
         key: ["field2", "field3"],
       });
-      const store = createStore();
-      const table = store.getTable({ table: config });
+      const stash = createStash();
+      const table = stash.getTable({ table: config });
 
       attest(() =>
         table.setRecords({
@@ -307,9 +307,9 @@ describe("getTable", () => {
         schema: { a: "address", b: "uint256", c: "uint32" },
         key: ["a"],
       });
-      const store = createStore();
-      const table1 = store.getTable({ table: config1 });
-      const table2 = store.getTable({ table: config2 });
+      const stash = createStash();
+      const table1 = stash.getTable({ table: config1 });
+      const table2 = stash.getTable({ table: config2 });
       const subscriber = vi.fn();
 
       table1.subscribe({ subscriber });

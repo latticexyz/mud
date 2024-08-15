@@ -12,13 +12,13 @@ export type QueryFragment<table extends Table = Table> = {
   /**
    * Checking an individual table row for whether it matches the query fragment
    */
-  match: (store: Store, encodedKey: string) => boolean;
+  match: (stash: Store, encodedKey: string) => boolean;
   /**
    * The keys that should be included in the query result if this is the first fragment in the query.
    * This is to avoid having to iterate over each key in the first table if there is a more efficient
    * way to get to the initial result.
    */
-  getInitialKeys: (store: Store) => Keys;
+  getInitialKeys: (stash: Store) => Keys;
 };
 
 /**
@@ -26,8 +26,8 @@ export type QueryFragment<table extends Table = Table> = {
  * RECS equivalent: Has(Component)
  */
 export function In<table extends Table>(table: table): QueryFragment<table> {
-  const match = (store: Store, encodedKey: string) => encodedKey in getRecords({ store, table });
-  const getInitialKeys = (store: Store) => getKeys({ store, table });
+  const match = (stash: Store, encodedKey: string) => encodedKey in getRecords({ stash, table });
+  const getInitialKeys = (stash: Store) => getKeys({ stash, table });
   return { table, match, getInitialKeys };
 }
 
@@ -36,7 +36,7 @@ export function In<table extends Table>(table: table): QueryFragment<table> {
  * RECS equivalent: Not(Component)
  */
 export function NotIn<table extends Table>(table: table): QueryFragment<table> {
-  const match = (store: Store, encodedKey: string) => !(encodedKey in getRecords({ store, table }));
+  const match = (stash: Store, encodedKey: string) => !(encodedKey in getRecords({ stash, table }));
   const getInitialKeys = () => ({});
   return { table, match, getInitialKeys };
 }
@@ -50,13 +50,13 @@ export function MatchRecord<table extends Table>(
   table: table,
   partialRecord: Partial<TableRecord<table>>,
 ): QueryFragment<table> {
-  const match = (store: Store, encodedKey: string) => {
-    const record = getRecords({ store, table })[encodedKey];
+  const match = (stash: Store, encodedKey: string) => {
+    const record = getRecords({ stash, table })[encodedKey];
     return recordMatches(partialRecord, record);
   };
   // TODO: this is a very naive and inefficient implementation for large tables, can be optimized via indexer tables
-  const getInitialKeys = (store: Store) =>
-    Object.fromEntries(Object.entries(getKeys({ store, table })).filter(([key]) => match(store, key)));
+  const getInitialKeys = (stash: Store) =>
+    Object.fromEntries(Object.entries(getKeys({ stash, table })).filter(([key]) => match(stash, key)));
   return { table, match, getInitialKeys };
 }
 
@@ -71,12 +71,12 @@ export function NotMatchRecord<table extends Table>(
   table: table,
   partialRecord: Partial<TableRecord<table>>,
 ): QueryFragment<table> {
-  const match = (store: Store, encodedKey: string) => {
-    const record = getRecords({ store, table })[encodedKey];
+  const match = (stash: Store, encodedKey: string) => {
+    const record = getRecords({ stash, table })[encodedKey];
     return !recordMatches(partialRecord, record);
   };
   // TODO: this is a very naive and inefficient implementation for large tables, can be optimized via indexer tables
-  const getInitialKeys = (store: Store) =>
-    Object.fromEntries(Object.entries(getKeys({ store, table })).filter(([key]) => match(store, key)));
+  const getInitialKeys = (stash: Store) =>
+    Object.fromEntries(Object.entries(getKeys({ stash, table })).filter(([key]) => match(stash, key)));
   return { table, match, getInitialKeys };
 }

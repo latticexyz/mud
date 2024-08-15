@@ -1,11 +1,11 @@
 import { defineStore } from "@latticexyz/store";
 import { describe, expect, it, vi } from "vitest";
-import { createStore } from "../createStash";
+import { createStash } from "../createStash";
 import { subscribeStore } from "./subscribeStore";
 import { setRecord } from "./setRecord";
 
 describe("subscribeStore", () => {
-  it("should notify subscriber of any store change", () => {
+  it("should notify subscriber of any stash change", () => {
     const config = defineStore({
       namespaces: {
         namespace1: {
@@ -27,12 +27,12 @@ describe("subscribeStore", () => {
       },
     });
 
-    const store = createStore(config);
+    const stash = createStash(config);
     const subscriber = vi.fn();
 
-    subscribeStore({ store, subscriber });
+    subscribeStore({ stash, subscriber });
 
-    setRecord({ store, table: config.tables.namespace1__table1, key: { a: "0x00" }, record: { b: 1n, c: 2 } });
+    setRecord({ stash, table: config.tables.namespace1__table1, key: { a: "0x00" }, record: { b: 1n, c: 2 } });
 
     expect(subscriber).toHaveBeenCalledTimes(1);
     expect(subscriber).toHaveBeenNthCalledWith(1, {
@@ -49,7 +49,7 @@ describe("subscribeStore", () => {
       },
     });
 
-    setRecord({ store, table: config.tables.namespace2__table2, key: { a: "0x01" }, record: { b: 1n, c: 2 } });
+    setRecord({ stash, table: config.tables.namespace2__table2, key: { a: "0x01" }, record: { b: 1n, c: 2 } });
 
     expect(subscriber).toHaveBeenCalledTimes(2);
     expect(subscriber).toHaveBeenNthCalledWith(2, {
@@ -66,7 +66,7 @@ describe("subscribeStore", () => {
       },
     });
 
-    setRecord({ store, table: config.tables.namespace2__table2, key: { a: "0x01" }, record: { b: 1n, c: 3 } });
+    setRecord({ stash, table: config.tables.namespace2__table2, key: { a: "0x01" }, record: { b: 1n, c: 3 } });
 
     expect(subscriber).toHaveBeenCalledTimes(3);
     expect(subscriber).toHaveBeenNthCalledWith(3, {

@@ -1,5 +1,5 @@
 import { describe, it } from "vitest";
-import { createStore } from "../createStash";
+import { createStash } from "../createStash";
 import { defineStore } from "@latticexyz/store/config/v2";
 import { setRecord } from "./setRecord";
 import { encodeKey } from "./encodeKey";
@@ -17,12 +17,12 @@ describe("decodeKey", () => {
         },
       },
     });
-    const store = createStore(config);
+    const stash = createStash(config);
     const table = config.namespaces.namespace1.tables.table1;
     const key = { field2: 1, field3: 2n };
-    setRecord({ store, table, key, record: { field1: "hello" } });
+    setRecord({ stash, table, key, record: { field1: "hello" } });
 
     const encodedKey = encodeKey({ table, key });
-    attest<typeof key>(decodeKey({ store, table, encodedKey })).equals({ field2: 1, field3: 2n });
+    attest<typeof key>(decodeKey({ stash, table, encodedKey })).equals({ field2: 1, field3: 2n });
   });
 });
