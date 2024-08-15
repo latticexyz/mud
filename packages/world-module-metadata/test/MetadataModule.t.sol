@@ -8,6 +8,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
 import { IWorldErrors } from "@latticexyz/world/src/IWorldErrors.sol";
+import { IModuleErrors } from "@latticexyz/world/src/IModuleErrors.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
 
 import { MetadataModule } from "../src/MetadataModule.sol";
@@ -19,6 +20,7 @@ contract MetadataModuleTest is Test, GasReporter {
 
   IWorld world;
   MetadataModule metadataModule = new MetadataModule();
+  ResourceId namespace = ResourceTag._tableId.getNamespaceId();
 
   function setUp() public {
     world = IWorld(address(createWorld()));
@@ -30,16 +32,22 @@ contract MetadataModuleTest is Test, GasReporter {
     world.installModule(metadataModule, new bytes(0));
     endGasReport();
 
-    ResourceId namespace = ResourceTag._tableId.getNamespaceId();
     assertEq(NamespaceOwner.get(namespace), address(this));
 
-    // Installing again will revert because metadata namespace isn't owned by the module, so the module is unable to write to it.
+    vm.expectRevert(IModuleErrors.Module_AlreadyInstalled.selector);
+    world.installModule(metadataModule, new bytes(0));
+  }
+
+  function testInstallExistingNamespace() public {
+    world.registerNamespace(namespace);
+
+    // Installing will revert because metadata namespace isn't owned by the module, so the module is unable to write to it.
     vm.expectRevert(
       abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, namespace.toString(), address(metadataModule))
     );
     world.installModule(metadataModule, new bytes(0));
 
-    // Transferring the namespace to the module and installing should be a no-op/idempotent and the module will return namespace ownership.
+    // Transferring the namespace to the module and installing will return namespace ownership.
     world.transferOwnership(namespace, address(metadataModule));
     world.installModule(metadataModule, new bytes(0));
     assertEq(NamespaceOwner.get(namespace), address(this));

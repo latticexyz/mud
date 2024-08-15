@@ -26,7 +26,11 @@ contract MetadataModule is Module {
     revert Module_RootInstallNotSupported();
   }
 
-  function install(bytes memory) public {
+  function install(bytes memory args) public {
+    // naive check to ensure this is only installed once
+    // TODO: update this + deployer to be idempotent
+    requireNotInstalled(__self, args);
+
     IBaseWorld world = IBaseWorld(_world());
 
     ResourceId namespace = ResourceTag._tableId.getNamespaceId();
