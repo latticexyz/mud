@@ -31,6 +31,7 @@
     "dist"
   ],
   "scripts": {
+    "bench": "tsx src/bench.ts",
     "build": "tsup",
     "clean": "rimraf dist",
     "dev": "tsup --watch",

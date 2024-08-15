@@ -13,7 +13,7 @@ const config = defineStore({
 });
 const store = createStore(config);
 
-bench("defineStore", () => {
+bench("createStore", () => {
   createStore(
     defineStore({
       tables: {
@@ -24,17 +24,17 @@ bench("defineStore", () => {
       },
     }),
   );
-}).types([2119, "instantiations"]);
+}).types([1690, "instantiations"]);
 
 bench("boundTable", () => {
   const table = store.getTable({ table: config.tables.Position });
   table.getRecord({ key: { player: "0x" } });
-}).types([2, "instantiations"]);
+}).types([108, "instantiations"]);
 
 bench("runQuery", () => {
   const { Position } = config.tables;
   store.runQuery({ query: [In(Position)] });
-}).types([10, "instantiations"]);
+}).types([95, "instantiations"]);
 
 const filledStore = createStore(config);
 const numItems = 10_000;
@@ -51,7 +51,7 @@ bench("setRecord", () => {
     key: { player: `0x0` },
     record: { x: 1, y: 1 },
   });
-}).mark({ mean: [1340, "us"], median: [1400, "us"] });
+}).mark({ mean: [1.2, "us"], median: [1, "us"] });
 
 bench("10x setRecord", () => {
   for (let i = 0; i < 10; i++) {
@@ -61,4 +61,4 @@ bench("10x setRecord", () => {
       record: { x: i + 1, y: i + 1 },
     });
   }
-}).mark({ mean: [13400, "us"], median: [13400, "us"] });
+}).mark({ mean: [13, "us"], median: [12, "us"] });
