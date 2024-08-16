@@ -1,8 +1,12 @@
+"use client";
+
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../components/ui/Button";
+import { useLinkUrl } from "../hooks/useLinkUrl";
 
 export default function NotFound() {
+  const getUrl = useLinkUrl();
   return (
     <main className="py-24 px-6 text-center">
       <p className="text-3xl font-semibold text-orange-600">404</p>
@@ -10,7 +14,7 @@ export default function NotFound() {
       <p className="mt-6 text-base leading-7 text-white/70">Sorry, we couldn’t find the page you’re looking for.</p>
       <div className="mt-10 flex items-center justify-center gap-x-6">
         <Button asChild>
-          <Link href="/">Go back to explorer</Link>
+          <Link href={getUrl("explorer")}>Go back to explorer</Link>
         </Button>
 
         <Button variant="secondary" asChild>

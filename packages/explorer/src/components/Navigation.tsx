@@ -13,7 +13,7 @@ export function Navigation() {
   const getLinkUrl = useLinkUrl();
 
   return (
-    <div className="mb-8 sticky top-0 bg-background z-10">
+    <div className="mb-8">
       <div className="flex justify-between items-center">
         <div className="flex gap-x-6 py-4">
           <Link

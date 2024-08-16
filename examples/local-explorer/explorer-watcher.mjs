@@ -18,17 +18,6 @@ async function startExplorer() {
   process.env.INIT_PWD = process.cwd();
   process.env.NEXT_PUBLIC_CHAIN_ID = CHAIN_ID;
 
-  const currentWorldAddress = process.env.NEXT_PUBLIC_WORLD_ADDRESS;
-  const worldAddress = await readWorldsJson();
-  process.env.NEXT_PUBLIC_WORLD_ADDRESS = worldAddress;
-  if (currentWorldAddress) {
-    if (currentWorldAddress === worldAddress) {
-      return;
-    }
-
-    console.log("World address changed, restarting explorer...");
-  }
-
   let command, args, workingDir;
 
   if (MODE === "production") {
@@ -76,7 +65,15 @@ async function restartExplorer() {
 
 function watchWorldsJson() {
   watchFile(WORLDS_JSON_PATH, async () => {
-    await restartExplorer();
+    const currentWorldAddress = process.env.NEXT_PUBLIC_WORLD_ADDRESS;
+    const worldAddress = await readWorldsJson();
+
+    if (currentWorldAddress && currentWorldAddress !== worldAddress) {
+      console.log("World address changed, restarting explorer...");
+
+      process.env.NEXT_PUBLIC_WORLD_ADDRESS = worldAddress;
+      await restartExplorer();
+    }
   });
 }
 

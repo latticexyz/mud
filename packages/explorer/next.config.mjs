@@ -20,12 +20,7 @@ export default function config() {
         ...(worldAddress
           ? [
               {
-                source: "/worlds",
-                destination: `/worlds/${worldAddress}/explorer`,
-                permanent: false,
-              },
-              {
-                source: "/worlds/:id",
+                source: "/worlds/:id?",
                 destination: `/worlds/${worldAddress}/explorer`,
                 permanent: false,
               },
