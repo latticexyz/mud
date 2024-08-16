@@ -11,6 +11,8 @@ import {
   PublicClient,
   encodeFunctionData,
   EncodeFunctionDataParameters,
+  getContractError,
+  BaseError,
 } from "viem";
 import {
   prepareTransactionRequest as viem_prepareTransactionRequest,
@@ -123,20 +125,33 @@ export async function writeContract<
     () =>
       pRetry(
         async () => {
-          if (!nonceManager.hasNonce()) {
-            await nonceManager.resetNonce();
+          try {
+            if (!nonceManager.hasNonce()) {
+              await nonceManager.resetNonce();
+            }
+
+            // We estimate gas before increasing the local nonce to prevent nonce gaps.
+            // Invalid transactions fail the gas estimation step are never submitted
+            // to the network, so they should not increase the nonce.
+            const preparedRequest = await prepare();
+
+            const nonce = nonceManager.nextNonce();
+
+            const fullRequest = { ...preparedRequest, nonce, ...feeRef.fees };
+            debug("calling", fullRequest.functionName, "with nonce", nonce, "at", fullRequest.address);
+
+            return await getAction(client, viem_writeContract, "writeContract")(fullRequest as never);
+          } catch (error) {
+            // TODO: remove once viem handles this (https://github.com/wevm/viem/pull/2624)
+            throw getContractError(error as BaseError, {
+              abi: request.abi as Abi,
+              address: request.address,
+              args: request.args,
+              docsPath: "/docs/contract/writeContract",
+              functionName: request.functionName,
+              sender: account?.address,
+            });
           }
-
-          // We estimate gas before increasing the local nonce to prevent nonce gaps.
-          // Invalid transactions fail the gas estimation step are never submitted
-          // to the network, so they should not increase the nonce.
-          const preparedRequest = await prepare();
-
-          const nonce = nonceManager.nextNonce();
-
-          const fullRequest = { ...preparedRequest, nonce, ...feeRef.fees };
-          debug("calling", fullRequest.functionName, "with nonce", nonce, "at", fullRequest.address);
-          return await viem_writeContract(client, fullRequest as never);
         },
         {
           retries: 3,
