@@ -2,29 +2,70 @@
 "@latticexyz/explorer": patch
 ---
 
-Initial release of the @latticexyz/explorer package. Explorer is a standalone tool designed to explore and manage worlds. This initial release includes support for only local worlds, with support for any world in the near future.
+Initial release of the @latticexyz/explorer package. Explorer is a standalone tool designed to explore and manage worlds. This initial release supports local worlds, with plans to extend support to any world in the future.
 
-To set up and start using the Explorer, follow these steps:
+## Using explorer
 
-1. **Configure paths to SQLite indexer database**
-
-   Set up either a relative or an absolute path to the indexer's database using environment variables. You may use `@latticexyz/store-indexer` for indexing your world's data.
-
-   - `INDEXER_DB_PATH_ABSOLUTE` - Set the absolute path to the database.
-   - `INDEXER_DB_PATH` - Set the relative path to the database.
-
-2. **Install dependencies**
-
-   Run the following command to install the necessary dependencies:
+1. **Install the package**
 
    ```sh
-   pnpm install
+   pnpm add @latticexyz/explorer
    ```
 
-3. **Start the development server**
+2. **Start a local development chain**
+   Ensure you have a local development chain running.
 
-   Use the following command to start the development server:
+3. **Configure indexer database**
+   Set `INDEXER_DB_PATH` environment variable to point to your SQLite indexer database.
+   Note: You can use `@latticexyz/store-indexer` for indexing your world's data.
+
+4. **Run the explorer**
+   ```sh
+   npx @latticexyz/explorer
+   ```
+
+## Example setup
+
+An example setup is provided in the `examples/local-explorer` directory, demonstrating a full setup for using the explorer in a local development environment:
+
+1. **Setup**
+
+   ```sh
+   cd examples/local-explorer && pnpm install
+   ```
+
+2. **Run**
 
    ```sh
    pnpm dev
    ```
+
+   This command starts all necessary processes, including a local chain, indexer, and the Explorer.
+
+## Contributing
+
+To contribute to or modify the explorer, the easiest way is to run the example setup via `development` mode:
+
+1. **Setup the example**
+   Navigate to the `examples/local-explorer` directory and set the explorer mode to `development` in `mprocs.yaml`:
+
+   ```yaml
+   explorer:
+     shell: node explorer-watcher.mjs
+     env:
+       PORT: "13690"
+       CHAIN_ID: "31337"
+       MODE: "development"
+   ```
+
+   Then run the example setup:
+
+   ```sh
+   pnpm dev
+   ```
+
+2. **Make changes**
+   Edit files in the `packages/explorer` directory. Changes will be reflected in the running explorer instance.
+
+3. **Submit changes**
+   Commit the changes, and create a pull request with your improvements.
