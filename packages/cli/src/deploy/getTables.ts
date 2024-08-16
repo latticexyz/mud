@@ -15,8 +15,8 @@ import {
 import { Schema, Table } from "@latticexyz/config";
 import storeConfig from "@latticexyz/store/mud.config";
 
-// TODO: add label once we register it onchain
-type DeployedTable = Omit<Table, "label">;
+// TODO: add label and namespaceLabel once we register it onchain
+type DeployedTable = Omit<Table, "label" | "namespaceLabel">;
 
 export async function getTables({
   client,

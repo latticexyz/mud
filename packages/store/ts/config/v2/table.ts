@@ -99,6 +99,18 @@ export function validateTable<input, scope extends Scope = AbiTypeScope>(
   if (hasOwnKey(input, "namespace") && typeof input.namespace === "string" && input.namespace.length > 14) {
     throw new Error(`Table \`namespace\` must fit into a \`bytes14\`, but "${input.namespace}" is too long.`);
   }
+
+  if (
+    hasOwnKey(input, "namespaceLabel") &&
+    typeof input.namespaceLabel === "string" &&
+    (!hasOwnKey(input, "namespace") || typeof input.namespace !== "string") &&
+    input.namespaceLabel.length > 14
+  ) {
+    throw new Error(
+      `Table \`namespace\` defaults to \`namespaceLabel\`, but must fit into a \`bytes14\` and "${input.namespaceLabel}" is too long. Provide explicit \`namespace\` override.`,
+    );
+  }
+
   if (hasOwnKey(input, "name") && typeof input.name === "string" && input.name.length > 16) {
     throw new Error(`Table \`name\` must fit into a \`bytes16\`, but "${input.name}" is too long.`);
   }
@@ -140,6 +152,9 @@ export type resolveTable<input, scope extends Scope = Scope> = input extends Tab
   ? {
       readonly label: input["label"];
       readonly type: undefined extends input["type"] ? typeof TABLE_DEFAULTS.type : input["type"];
+      readonly namespaceLabel: undefined extends input["namespaceLabel"]
+        ? typeof TABLE_DEFAULTS.namespace
+        : input["namespaceLabel"];
       readonly namespace: string;
       readonly name: string;
       readonly tableId: Hex;
@@ -156,16 +171,18 @@ export function resolveTable<input extends TableInput, scope extends Scope = Abi
   input: input,
   scope: scope = AbiTypeScope as unknown as scope,
 ): resolveTable<input, scope> {
+  const namespaceLabel = input.namespaceLabel ?? TABLE_DEFAULTS.namespace;
+  const namespace = input.namespace ?? namespaceLabel;
   const label = input.label;
-  const type = input.type ?? TABLE_DEFAULTS.type;
-  const namespace = input.namespace ?? TABLE_DEFAULTS.namespace;
   const name = input.name ?? label.slice(0, 16);
+  const type = input.type ?? TABLE_DEFAULTS.type;
   const tableId = resourceToHex({ type, namespace, name });
 
   return {
     label,
     type,
     namespace,
+    namespaceLabel,
     name,
     tableId,
     schema: resolveSchema(input.schema, scope),
