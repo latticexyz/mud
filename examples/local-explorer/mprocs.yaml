@@ -14,8 +14,9 @@ procs:
       RPC_HTTP_URL: "http://127.0.0.1:8545"
       FOLLOW_BLOCK_TAG: "latest"
       SQLITE_FILENAME: "indexer.db"
-  explorer-watcher:
+  explorer:
     shell: node explorer-watcher.mjs
     env:
       PORT: "13690"
+      CHAIN_ID: "31337"
       MODE: "development"
