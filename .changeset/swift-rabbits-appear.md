@@ -13,13 +13,16 @@ Initial release of the @latticexyz/explorer package. Explorer is a standalone to
    ```
 
 2. **Start a local development chain**
+
    Ensure you have a local development chain running.
 
 3. **Configure indexer database**
+
    Set `INDEXER_DB_PATH` environment variable to point to your SQLite indexer database.
    Note: You can use `@latticexyz/store-indexer` for indexing your world's data.
 
 4. **Run the explorer**
+
    ```sh
    npx @latticexyz/explorer
    ```
@@ -47,6 +50,7 @@ An example setup is provided in the `examples/local-explorer` directory, demonst
 To contribute to or modify the explorer, the easiest way is to run the example setup in `development` mode:
 
 1. **Setup**
+
    Navigate to the `examples/local-explorer` directory and set the explorer mode to `development` in `mprocs.yaml`:
 
    ```yaml
