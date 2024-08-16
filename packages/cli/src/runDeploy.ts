@@ -2,7 +2,7 @@ import path from "node:path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { InferredOptionTypes, Options } from "yargs";
 import { deploy } from "./deploy/deploy";
-import { createWalletClient, http, Hex, isHex, nonceManager } from "viem";
+import { createWalletClient, http, Hex, isHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
@@ -16,6 +16,7 @@ import { WorldDeploy } from "./deploy/common";
 import { build } from "./build";
 import { kmsKeyToAccount } from "@latticexyz/common/kms";
 import { configToModules } from "./deploy/configToModules";
+import { nonceManager } from "@latticexyz/common";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the MUD config file" },

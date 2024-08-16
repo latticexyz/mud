@@ -1,5 +1,5 @@
 import { Client, Transport, Chain, Account, Hex } from "viem";
-import { resourceToLabel } from "@latticexyz/common";
+import { resourceToLabel, writeContract } from "@latticexyz/common";
 import { WorldDeploy, worldAbi } from "./common";
 import {
   valueSchemaToFieldLayoutHex,
@@ -15,7 +15,6 @@ import { getTables } from "./getTables";
 import pRetry from "p-retry";
 import { wait } from "@latticexyz/common/utils";
 import { Table } from "@latticexyz/config";
-import { writeContract } from "viem/actions";
 
 export async function ensureTables({
   client,

@@ -1,12 +1,11 @@
 import { Hex, Client, Transport, Chain, Account, stringToHex, BaseError, hexToString } from "viem";
 import { WorldDeploy } from "./common";
 import { debug } from "./debug";
-import { hexToResource } from "@latticexyz/common";
+import { hexToResource, writeContract } from "@latticexyz/common";
 import { isDefined } from "@latticexyz/common/utils";
 import metadataConfig from "@latticexyz/world-module-metadata/mud.config";
 import metadataAbi from "@latticexyz/world-module-metadata/out/IMetadataSystem.sol/IMetadataSystem.abi.json" assert { type: "json" };
 import { getTableValue } from "./getTableValue";
-import { writeContract } from "viem/actions";
 
 type LabeledResource = {
   readonly resourceId: Hex;

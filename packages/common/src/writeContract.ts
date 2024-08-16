@@ -9,21 +9,29 @@ import {
   ContractFunctionName,
   ContractFunctionArgs,
   PublicClient,
-  encodeFunctionData,
-  EncodeFunctionDataParameters,
+  getContractError,
+  BaseError,
+  NonceTooHighError,
+  NonceTooLowError,
 } from "viem";
-import {
-  prepareTransactionRequest as viem_prepareTransactionRequest,
-  writeContract as viem_writeContract,
-} from "viem/actions";
+import { getChainId, writeContract as viem_writeContract } from "viem/actions";
 import pRetry from "p-retry";
 import { debug as parentDebug } from "./debug";
-import { getNonceManager } from "./getNonceManager";
 import { parseAccount } from "viem/accounts";
-import { getFeeRef } from "./getFeeRef";
 import { getAction } from "viem/utils";
+import PQueue from "p-queue";
 
 const debug = parentDebug.extend("writeContract");
+
+// TODO: create map based on chain ID + address
+const mempoolQueue = new PQueue({ concurrency: 1 });
+
+function shouldRetry(error: unknown): boolean {
+  return (
+    error instanceof BaseError &&
+    error.walk((e) => e instanceof NonceTooLowError || e instanceof NonceTooHighError) != null
+  );
+}
 
 export type WriteContractExtraOptions<chain extends Chain | undefined> = {
   /**
@@ -53,102 +61,51 @@ export async function writeContract<
 >(
   client: Client<Transport, chain, account>,
   request: WriteContractParameters<abi, functionName, args, chain, account, chainOverride>,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   opts: WriteContractExtraOptions<chain> = {},
 ): Promise<WriteContractReturnType> {
   const rawAccount = request.account ?? client.account;
-  if (!rawAccount) {
-    // TODO: replace with viem AccountNotFoundError once its exported
-    throw new Error("No account provided");
-  }
-  const account = parseAccount(rawAccount);
-  const chain = client.chain;
+  const account = rawAccount ? parseAccount(rawAccount) : null;
 
-  const defaultParameters = {
-    chain,
-    ...(chain?.fees ? { type: "eip1559" } : {}),
-  } satisfies Omit<WriteContractParameters, "address" | "abi" | "account" | "functionName">;
-
-  const nonceManager = await getNonceManager({
-    client: opts.publicClient ?? client,
-    address: account.address,
-    blockTag: "pending",
-    queueConcurrency: opts.queueConcurrency,
-  });
-
-  const feeRef = await getFeeRef({
-    client: opts.publicClient ?? client,
-    refreshInterval: 10000,
-    args: { chain },
-  });
-
-  async function prepare(): Promise<WriteContractParameters<abi, functionName, args, chain, account, chainOverride>> {
-    if (request.gas) {
-      debug("gas provided, skipping preparation", request.functionName, request.address);
-      return request;
-    }
-
-    const { abi, address, args, dataSuffix, functionName } = request;
-    const data = encodeFunctionData({
-      abi,
-      args,
-      functionName,
-    } as EncodeFunctionDataParameters);
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { nonce, maxFeePerGas, maxPriorityFeePerGas, ...preparedTransaction } = await getAction(
-      client,
-      viem_prepareTransactionRequest,
-      "prepareTransactionRequest",
-    )({
-      // The fee values don't need to be accurate for gas estimation
-      // and we can save a couple rpc calls by providing stubs here.
-      // These are later overridden with accurate values from `feeRef`.
-      maxFeePerGas: 0n,
-      maxPriorityFeePerGas: 0n,
-      // Send the current nonce without increasing the stored value
-      nonce: nonceManager.getNonce(),
-      ...defaultParameters,
-      ...request,
-      blockTag: "pending",
-      account,
-      // From `viem/writeContract`
-      data: `${data}${dataSuffix ? dataSuffix.replace("0x", "") : ""}`,
-      to: address,
-    } as never);
-
-    return preparedTransaction as never;
-  }
-
-  return nonceManager.mempoolQueue.add(
+  return mempoolQueue.add(
     () =>
       pRetry(
         async () => {
-          if (!nonceManager.hasNonce()) {
-            await nonceManager.resetNonce();
+          debug("calling", request.functionName);
+          try {
+            return await getAction(client, viem_writeContract, "writeContract")(request);
+          } catch (error) {
+            // TODO: remove once viem handles this (https://github.com/wevm/viem/pull/2624)
+            throw getContractError(error as BaseError, {
+              abi: request.abi as Abi,
+              address: request.address,
+              args: request.args,
+              docsPath: "/docs/contract/writeContract",
+              functionName: request.functionName,
+              sender: account?.address,
+            });
           }
-
-          // We estimate gas before increasing the local nonce to prevent nonce gaps.
-          // Invalid transactions fail the gas estimation step are never submitted
-          // to the network, so they should not increase the nonce.
-          const preparedRequest = await prepare();
-
-          const nonce = nonceManager.nextNonce();
-
-          const fullRequest = { ...preparedRequest, nonce, ...feeRef.fees };
-          debug("calling", fullRequest.functionName, "with nonce", nonce, "at", fullRequest.address);
-          return await viem_writeContract(client, fullRequest as never);
         },
         {
           retries: 3,
           onFailedAttempt: async (error) => {
-            // On nonce errors, reset the nonce and retry
-            if (nonceManager.shouldResetNonce(error)) {
-              debug("got nonce error, retrying", error.message);
-              await nonceManager.resetNonce();
-              return;
+            // Always reset nonce on error because the nonce manager has already consumed the nonce.
+            // TODO: remove this once viem adjusts API to increment only after successful consume callback
+            if (account != null) {
+              // TODO: add chain ID cache
+              const chainId =
+                request.chain?.id ?? client.chain?.id ?? (await getAction(client, getChainId, "getChainId")(client));
+              if (account.nonceManager != null) {
+                debug("got error, resetting nonce");
+                account.nonceManager.reset({ address: account.address, chainId });
+              }
             }
-            // TODO: prepareWrite again if there are gas errors?
-            throw error;
+
+            // Check if we should retry (e.g. nonce errors), otherwise throw
+            // TODO: upgrade p-retry and move this to shouldRetry option
+            if (!shouldRetry(error)) {
+              throw error;
+            }
           },
         },
       ),
