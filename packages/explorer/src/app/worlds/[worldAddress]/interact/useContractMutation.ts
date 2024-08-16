@@ -51,13 +51,15 @@ export function useContractMutation({ abi, operationType }: UseContractMutationP
       }
     },
     onMutate: () => {
-      const toastId = toast.loading("Transaction submitted");
-      return { toastId };
+      if (operationType === FunctionType.WRITE) {
+        const toastId = toast.loading("Transaction submitted");
+        return { toastId };
+      }
     },
-    onSuccess: (data, _, { toastId }) => {
+    onSuccess: (data, _, context) => {
       if (operationType === FunctionType.WRITE && "txHash" in data) {
         toast.success(`Transaction successful with hash: ${data.txHash}`, {
-          id: toastId,
+          id: context?.toastId,
         });
       }
 
