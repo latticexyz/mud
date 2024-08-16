@@ -40,7 +40,7 @@ An example setup is provided in the `examples/local-explorer` directory, demonst
    pnpm dev
    ```
 
-   This command starts all necessary processes, including a local chain, indexer, and the Explorer.
+   This command starts all necessary processes, including a local chain, indexer, and the explorer.
 
 ## Contributing
 
