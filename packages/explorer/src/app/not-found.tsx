@@ -13,7 +13,7 @@ export default function NotFound() {
           <Link href="/">Go back to explorer</Link>
         </Button>
 
-        <Button variant="ghost" asChild>
+        <Button variant="secondary" asChild>
           <a href="https://lattice.xyz/discord" target="_blank" rel="noopener noreferrer">
             Contact on Discord <ExternalLink className="h-4 w-4 ml-2 -mt-0.5" />
           </a>

@@ -8,11 +8,13 @@ async function getABI(worldAddress: Hex) {
   const host = headersList.get("host");
 
   const res = await fetch(`${protocol}://${host}/api/world?address=${worldAddress}`);
+  const data = await res.json();
+
   if (!res.ok) {
-    throw new Error("Failed to fetch data");
+    throw new Error(data.error);
   }
 
-  return res.json();
+  return data;
 }
 
 export default async function InteractPage({ params }: { params: { worldAddress: Hex } }) {
