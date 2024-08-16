@@ -39,6 +39,15 @@ export async function configToModules<config extends World>(
       deployedBytecodeSize: metadataModuleArtifact.deployedBytecodeSize,
       abi: metadataModuleArtifact.abi,
     },
+    {
+      optional: true,
+      name: "MetadataModule",
+      installAsRoot: false,
+      installData: "0x",
+      prepareDeploy: createPrepareDeploy(metadataModuleArtifact.bytecode, metadataModuleArtifact.placeholders),
+      deployedBytecodeSize: metadataModuleArtifact.deployedBytecodeSize,
+      abi: metadataModuleArtifact.abi,
+    },
   ];
 
   const modules = await Promise.all(

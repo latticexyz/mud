@@ -1,10 +1,11 @@
 import { Client, Transport, Chain, Account, Hex } from "viem";
-import { hexToResource, writeContract } from "@latticexyz/common";
+import { hexToResource } from "@latticexyz/common";
 import { getFunctions } from "@latticexyz/world/internal";
 import { WorldDeploy, WorldFunction, worldAbi } from "./common";
 import { debug } from "./debug";
 import pRetry from "p-retry";
 import { wait } from "@latticexyz/common/utils";
+import { writeContract } from "viem/actions";
 
 export async function ensureFunctions({
   client,

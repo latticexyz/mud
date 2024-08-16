@@ -2,7 +2,7 @@ import path from "node:path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { InferredOptionTypes, Options } from "yargs";
 import { deploy } from "./deploy/deploy";
-import { createWalletClient, http, Hex, isHex } from "viem";
+import { createWalletClient, http, Hex, isHex, nonceManager } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
@@ -111,7 +111,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
         );
       }
 
-      return privateKeyToAccount(privateKey as Hex);
+      return privateKeyToAccount(privateKey as Hex, { nonceManager });
     }
   })();
 

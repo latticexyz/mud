@@ -1,8 +1,7 @@
 import { Account, Chain, Client, Hex, Transport } from "viem";
-import { waitForTransactionReceipt } from "viem/actions";
+import { waitForTransactionReceipt, writeContract } from "viem/actions";
 import { ensureWorldFactory } from "./ensureWorldFactory";
 import WorldFactoryAbi from "@latticexyz/world/out/WorldFactory.sol/WorldFactory.abi.json" assert { type: "json" };
-import { writeContract } from "@latticexyz/common";
 import { debug } from "./debug";
 import { logsToWorldDeploy } from "./logsToWorldDeploy";
 import { WorldDeploy } from "./common";
