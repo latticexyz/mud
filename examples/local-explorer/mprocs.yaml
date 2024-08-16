@@ -19,4 +19,4 @@ procs:
     env:
       PORT: "13690"
       CHAIN_ID: "31337"
-      MODE: "development"
+      MODE: "production"

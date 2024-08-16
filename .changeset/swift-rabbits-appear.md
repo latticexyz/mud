@@ -44,7 +44,7 @@ An example setup is provided in the `examples/local-explorer` directory, demonst
 
 ## Contributing
 
-To contribute to or modify the explorer, the easiest way is to run the example setup via `development` mode:
+To contribute to or modify the explorer, the easiest way is to run the example setup in `development` mode:
 
 1. **Setup the example**
    Navigate to the `examples/local-explorer` directory and set the explorer mode to `development` in `mprocs.yaml`:
@@ -65,7 +65,4 @@ To contribute to or modify the explorer, the easiest way is to run the example s
    ```
 
 2. **Make changes**
-   Edit files in the `packages/explorer` directory. Changes will be reflected in the running explorer instance.
-
-3. **Submit changes**
-   Commit the changes, and create a pull request with your improvements.
+   Files can now be edited in the `packages/explorer` directory, and changes will be reflected in the running explorer instance.
