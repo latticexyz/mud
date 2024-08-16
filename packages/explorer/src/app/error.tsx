@@ -3,7 +3,7 @@
 import { ExternalLink, RefreshCwIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../components/ui/Button";
-import { useLinkUrl } from "../hooks/useLinkUrl";
+import { useWorldUrl } from "../hooks/useWorldUrl";
 
 type Props = {
   error: Error & { digest?: string };
@@ -11,7 +11,7 @@ type Props = {
 };
 
 export default function Error({ reset }: Props) {
-  const getUrl = useLinkUrl();
+  const getUrl = useWorldUrl();
   return (
     <main className="py-24 px-6 text-center">
       <p className="text-3xl font-semibold text-orange-600">400</p>

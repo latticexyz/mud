@@ -4,13 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LatestBlock } from "../components/LatestBlock";
 import { Separator } from "../components/ui/Separator";
-import { useLinkUrl } from "../hooks/useLinkUrl";
+import { useWorldUrl } from "../hooks/useWorldUrl";
 import { cn } from "../lib/utils";
 import { AccountSelect } from "./AccountSelect";
 
 export function Navigation() {
   const pathname = usePathname();
-  const getLinkUrl = useLinkUrl();
+  const getLinkUrl = useWorldUrl();
 
   return (
     <div className="mb-8">

@@ -3,10 +3,10 @@
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../components/ui/Button";
-import { useLinkUrl } from "../hooks/useLinkUrl";
+import { useWorldUrl } from "../hooks/useWorldUrl";
 
 export default function NotFound() {
-  const getUrl = useLinkUrl();
+  const getUrl = useWorldUrl();
   return (
     <main className="py-24 px-6 text-center">
       <p className="text-3xl font-semibold text-orange-600">404</p>
