@@ -153,15 +153,15 @@ export type Stash<config extends StoreConfig = StoreConfig> = {
   /**
    * Get a readonly reference to the current state
    */
-  get: () => State<config>;
+  readonly get: () => State<config>;
   /**
    * Internal references for interacting with the state.
    * @internal
    * @deprecated Do not use this internal reference externally.
    */
-  _: {
-    tableSubscribers: TableSubscribers;
-    storeSubscribers: StoreSubscribers;
-    state: MutableState<config>;
+  readonly _: {
+    readonly tableSubscribers: TableSubscribers;
+    readonly storeSubscribers: StoreSubscribers;
+    readonly state: MutableState<config>;
   };
 };
