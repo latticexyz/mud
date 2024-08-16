@@ -9,6 +9,10 @@ export default {
     title: "Get started",
     theme: { breadcrumb: false },
   },
+  video: {
+    title: "Videos",
+    theme: { breadcrumb: false },
+  },  
   protocol: {
     title: "Protocol",
     type: "separator",
