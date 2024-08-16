@@ -46,7 +46,7 @@ An example setup is provided in the `examples/local-explorer` directory, demonst
 
 To contribute to or modify the explorer, the easiest way is to run the example setup in `development` mode:
 
-1. **Setup the example**
+1. **Setup**
    Navigate to the `examples/local-explorer` directory and set the explorer mode to `development` in `mprocs.yaml`:
 
    ```yaml
@@ -58,11 +58,10 @@ To contribute to or modify the explorer, the easiest way is to run the example s
        MODE: "development"
    ```
 
-   Then run the example setup:
+2. **Run**
 
    ```sh
    pnpm dev
    ```
 
-2. **Make changes**
    Files can now be edited in the `packages/explorer` directory, and changes will be reflected in the running explorer instance.
