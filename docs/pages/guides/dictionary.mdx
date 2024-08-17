@@ -1,0 +1,260 @@
+import { Callout } from "nextra/components";
+
+# MUD for Solidity Programmers
+
+To properly use MUD you need to do some things differently than the way you do them normally in Solidity.
+
+## State variables
+
+A `System` contract should not store any internal state, but only interact with `World` state via `Tables`.
+
+- By concentrating all the state information in a single contract (the `World`) we make it easier to apply [access control](/world/namespaces-access-control), [execute hooks when data changes](/store/store-hooks), etc.
+- It is a lot easier to [upgrade functionality](/cli/deploy#upgrading-a-world) when you do not need to deal with storage because the contract does not have a state.
+- The same `System` can be used by multiple `World`s.
+
+Instead of using [state variables](https://docs.soliditylang.org/en/latest/internals/layout_in_storage.html) you can achieve the same functionality with [tables](/store/tables).
+
+### Value-type (`string`, `uint`, etc.)
+
+[Value-type](https://docs.soliditylang.org/en/latest/types.html#value-types) state variables such as `bool`, `uint256`, and `string` are represented by a singleton table, a table with no key that only contains a single record.
+
+<details>
+
+<summary>Code example</summary>
+
+```solidity filename="Solidity" {2}
+contract Example {
+  string name;
+}
+```
+
+```typescript filename="MUD" {6-11}
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
+  namespace: "app",
+  tables: {
+    Name: {
+      schema: {
+        name: "string",
+      },
+      key: [],
+    },
+  },
+});
+```
+
+</details>
+
+### Structures
+
+A [`struct`](https://docs.soliditylang.org/en/latest/types.html#structs) state variable wraps multiple variables together. You can create a singleton table with multiple value fields.
+
+<details>
+
+<summary>Code example</summary>
+
+```solidity filename="Solidity" {2-7}
+contract Example {
+  struct Person {
+    string name;
+    address personalWallet;
+    uint balance;
+  }
+  Person deployer;
+}
+```
+
+```typescript filename="MUD" {6-13}
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
+  namespace: "app",
+  tables: {
+    Deployer: {
+      schema: {
+        personalWallet: "address",
+        balance: "uint256",
+        name: "string",
+      },
+      key: [],
+    },
+  },
+});
+```
+
+</details>
+
+### Mappings
+
+A [mapping type](https://docs.soliditylang.org/en/latest/types.html#mapping-types) maps between a key type and a value type, which is pretty much the same as what MUD tables do.
+
+<details>
+
+<summary>Single key mapping</summary>
+
+```solidity filename="Solidity" {2}
+contract Example {
+  mapping(address => uint) public balances;
+}
+```
+
+```typescript filename="MUD" {6-12}
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
+  namespace: "app",
+  tables: {
+    Balances: {
+      schema: {
+        owner: "address",
+        balance: "uint256",
+      },
+      key: ["owner"],
+    },
+  },
+});
+```
+
+</details>
+
+<details>
+
+<summary>Multiple key mapping</summary>
+
+```solidity filename="Solidity" {2}
+contract Example {
+  mapping(address => mapping(address => uint256)) public allowances;
+}
+```
+
+```typescript filename="MUD" {6-13}
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
+  namespace: "app",
+  tables: {
+    Allowances: {
+      schema: {
+        owner: "address",
+        spender: "address",
+        balance: "uint256",
+      },
+      key: ["owner", "spender"],
+    },
+  },
+});
+```
+
+</details>
+
+<Callout type="info" emoji="📝">
+  MUD key fields have to be fixed-length.
+  This means that some mappings, for example `mapping(string => uint) balances;`, cannot be directly translated to a MUD table.
+
+An easy workaround is to use the hash of the string as the key instead of the string itself (which is exactly what happens under the hood of vanilla Solidity with the keys of a mapping).
+
+</Callout>
+
+### Arrays
+
+There are two ways in which MUD supports arrays.
+
+1. Arrays of fixed-length value types, such as `uint24[]` or `address[]`, [are supported as table fields](https://github.com/latticexyz/mud/blob/main/packages/schema-type/src/solidity/SchemaType.sol#L108-L205).
+
+   <details>
+
+   <summary>Example</summary>
+
+   ```solidity filename="Solidity" {2}
+   contract Example {
+     bool[] listOfBooleans;
+   }
+   ```
+
+   ```typescript filename="MUD" {6-11}
+   import { defineWorld } from "@latticexyz/world";
+
+   export default defineWorld({
+     namespace: "app",
+     tables: {
+       ListOfBooleans: {
+         schema: {
+           values: "bool[]",
+         },
+         key: [],
+       },
+     },
+   });
+   ```
+
+   </details>
+
+1. An array is a mapping between an unsigned integer and the value type of the array.
+   We can use a table with `index` as the key. That way, we can get around the limitation that arrays of variable-length types such as `string` or `bytes` are not supported.
+
+    <details>
+
+   <summary>Example</summary>
+
+   ```solidity filename="Solidity" {2}
+   contract Example {
+     string[] listOfNames;
+   }
+   ```
+
+   ```typescript filename="MUD" {6-12}
+   import { defineWorld } from "@latticexyz/world";
+
+   export default defineWorld({
+     namespace: "app",
+     tables: {
+       ListOfNames: {
+         schema: {
+           index: "uint256",
+           name: "string",
+         },
+         key: ["index"],
+       },
+     },
+   });
+   ```
+
+    </details>
+
+{
+
+// ## Events
+
+// Normally we expect onchain-to-client communication to happen using [table synchronization](/guides/replicating-onchain-state), but sometimes it is useful to have a mechanism that is typical event handling, with events triggering code.
+
+// You shouldn't [`emit`](https://docs.soliditylang.org/en/latest/contracts.html#events) events from your `System`s.
+// Unless your `System` is in the [highly discouraged](/guides/best-practices/system-best-practices#avoid-the-root-namespace-if-possible) root namespace, events will come from the `System`'s address.
+// When you upgrade the `System` that address changes.
+// Instead, we recommend you use an offchain singleton table
+
+// To do this:
+
+// 1. In the `mud.config.ts` file create an [offchain](/store/tables#types-of-tables) singleton table.
+
+// `typescript
+//   Event: {
+//     schema: {
+//       id: "bytes32",
+//       message: "string",
+//     },
+//     key: [],
+//     type: "offchain",
+//   },
+//   `
+
+// 1. Add code to emit the event to any `System` call that needs it.
+
+// `solidity
+//   Event.set(id, "new task");
+//   `
+
+// 1. `Event` gets updated, same as all the other tables. However, here we cannot rely on these updates.
+// `Event` might end up being updated multiple times in the same block, and
+
+}
