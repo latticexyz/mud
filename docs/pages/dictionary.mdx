@@ -6,13 +6,13 @@ To properly use MUD you need to do some things differently than the way you do t
 
 ## State variables
 
-A `System` should be stateless, for several reasons:
+A `System` contract should not store any internal state, but only interact with `World` state via `Tables`.
 
 - By concentrating all the state information in a single contract (the `World`) we make it easier to apply [access control](/world/namespaces-access-control), [execute hooks when data changes](/store/store-hooks), etc.
 - It is a lot easier to [upgrade functionality](/cli/deploy#upgrading-a-world) when you do not need to deal with storage because the contract does not have a state.
 - The same `System` can be used by multiple `World`s.
 
-The functionality of [state variables](https://docs.soliditylang.org/en/latest/internals/layout_in_storage.html) is implemented using [tables](/store/tables).
+Instead of using [state variables](https://docs.soliditylang.org/en/latest/internals/layout_in_storage.html) you can achieve the same functionality with [tables](/store/tables).
 
 ### Value-type (`string`, `uint`, etc.)
 
@@ -152,7 +152,7 @@ export default defineWorld({
   MUD key fields have to be fixed-length.
   This means that some mappings, for example `mapping(string => uint) balances;`, cannot be directly translated to a MUD table.
 
-An easy workaround is to use the hash of the string as the key instead of the string itself.
+An easy workaround is to use the hash of the string as the key instead of the string itself (which is exactly what happens under the hood of vanilla Solidity with the keys of a mapping).
 
 </Callout>
 
@@ -195,7 +195,6 @@ There are two ways in which MUD supports arrays.
 
     <details>
 
-   {" "}
 
    <summary>Example</summary>
 
