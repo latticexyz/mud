@@ -7,6 +7,7 @@ export default defineConfig({
     internal: "ts/exports/internal.ts",
     codegen: "ts/codegen/index.ts",
     "config/v2": "ts/config/v2/index.ts",
+    tablegen: "ts/tablegen/index.ts",
   },
   target: "esnext",
   format: ["esm"],
