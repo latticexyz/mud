@@ -58,7 +58,7 @@
     "dev": "tsup --watch",
     "gas-report": "gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
-    "prepare": "mkdir -p ./dist && touch ./dist/bin.js",
+    "prepare": "mkdir -p ./dist && touch ./dist/worldgen.js",
     "test": "tsc --noEmit && vitest --run --passWithNoTests && forge test",
     "test:ci": "pnpm run test"
   },
