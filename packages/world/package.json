@@ -50,7 +50,7 @@
     "build:abi": "forge build",
     "build:abi-ts": "abi-ts",
     "build:js": "tsup",
-    "build:mud": "tablegen && tsx ./ts/worldgen/index.ts --config-path world.mud.config.ts",
+    "build:mud": "tablegen && tsx ./ts/worldgen/index.ts --config-path world.mud.config.ts && tsx ./ts/scripts/generate-test-tables.ts",
     "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud",
     "clean:abi": "forge clean",
     "clean:js": "rimraf dist",
