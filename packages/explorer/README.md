@@ -1,30 +1,69 @@
-### Explorer
+# Explorer
 
 Explorer is a GUI tool designed for visually exploring and manipulating the state of worlds.
 
-## Getting Started
+## Getting started
 
-To set up and start using the Explorer, follow these steps:
-
-1. **Configure Paths to Indexer's Database**
-
-   Set up either a relative or an absolute path to the indexer's database using environment variables. You may use `@latticexyz/store-indexer` for indexing your world's data.
-
-   - `INDEXER_DB_PATH_ABSOLUTE` - Set the absolute path to the database.
-   - `INDEXER_DB_PATH` - Set the relative path to the database.
-
-2. **Install Dependencies**
-
-   Run the following command to install the necessary dependencies:
+1. **Install the package**
 
    ```sh
-   pnpm install
+   pnpm add @latticexyz/explorer
    ```
 
-3. **Start the Development Server**
+2. **Start a local development chain**
 
-   Use the following command to start the development server:
+   Ensure you have a local development chain running.
+
+3. **Configure indexer database**
+
+   Set `INDEXER_DB_PATH` environment variable to point to your SQLite indexer database.
+   Note: You can use `@latticexyz/store-indexer` for indexing your world's data.
+
+4. **Run the explorer**
+
+   ```sh
+   npx @latticexyz/explorer
+   ```
+
+## Example setup
+
+An example setup is provided in the `examples/local-explorer` directory, demonstrating a full setup for using the explorer in a local development environment:
+
+1. **Setup**
+
+   ```sh
+   cd examples/local-explorer && pnpm install
+   ```
+
+2. **Run**
 
    ```sh
    pnpm dev
    ```
+
+   This command starts all necessary processes, including a local chain, indexer, and the explorer.
+
+## Contributing
+
+To contribute to or modify the explorer, the easiest way is to run the example setup in `development` mode:
+
+1. **Setup**
+
+   Navigate to the `examples/local-explorer` directory and set the explorer mode to `development` in `mprocs.yaml`:
+
+   ```yaml
+   explorer:
+     shell: node explorer-watcher.mjs
+     env:
+       PORT: "13690"
+       CHAIN_ID: "31337"
+       MODE: "development"
+   ```
+
+2. **Run**
+
+   ```sh
+   pnpm dev
+   ```
+
+   Files can now be edited in the `packages/explorer` directory, and changes will be reflected in the running explorer instance.
