@@ -1,11 +1,9 @@
+import { getTableName } from "drizzle-orm";
 import { blob, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { address, asHex, json } from "./columnTypes";
 import { PartialTable } from "./common";
 
-export const CHAIN_STATE_TABLE_NAME = "__chainState";
-export const MUD_STORE_TABLES_NAME = "__mudStoreTables";
-
-export const chainState = sqliteTable(CHAIN_STATE_TABLE_NAME, {
+export const chainState = sqliteTable("__chainState", {
   schemaVersion: integer("schema_version").notNull().primaryKey(),
   chainId: integer("chain_id").notNull().primaryKey(),
   lastUpdatedBlockNumber: blob("last_updated_block_number", { mode: "bigint" }),
@@ -13,7 +11,7 @@ export const chainState = sqliteTable(CHAIN_STATE_TABLE_NAME, {
   lastError: text("last_error"),
 });
 
-export const mudStoreTables = sqliteTable(MUD_STORE_TABLES_NAME, {
+export const mudStoreTables = sqliteTable("__mudStoreTables", {
   schemaVersion: integer("schema_version").primaryKey(),
   id: text("id").notNull().primaryKey(),
   address: address("address").notNull(),
@@ -26,3 +24,6 @@ export const mudStoreTables = sqliteTable(MUD_STORE_TABLES_NAME, {
   // TODO: last block hash?
   lastError: text("last_error"),
 });
+
+export const internalTables = [chainState, mudStoreTables];
+export const internalTableNames = internalTables.map(getTableName);
