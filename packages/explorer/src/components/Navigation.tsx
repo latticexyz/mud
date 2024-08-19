@@ -14,11 +14,11 @@ export function Navigation() {
 
   return (
     <div className="mb-8">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div className="flex gap-x-6 py-4">
           <Link
             href={getLinkUrl("explorer")}
-            className={cn("underline-offset-[16px] text-sm uppercase", {
+            className={cn("text-sm uppercase underline-offset-[16px]", {
               "font-semibold underline decoration-orange-500 decoration-4": pathname === getLinkUrl("explorer"),
             })}
           >
@@ -27,7 +27,7 @@ export function Navigation() {
 
           <Link
             href={getLinkUrl("interact")}
-            className={cn("underline-offset-[16px] text-sm uppercase", {
+            className={cn("text-sm uppercase underline-offset-[16px]", {
               "font-semibold underline decoration-orange-500 decoration-4": pathname === getLinkUrl("interact"),
             })}
           >
