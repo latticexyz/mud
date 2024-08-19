@@ -20,5 +20,5 @@ async function getABI(worldAddress: Hex) {
 export default async function InteractPage({ params }: { params: { worldAddress: Hex } }) {
   const { worldAddress } = params;
   const data = await getABI(worldAddress);
-  return <Form data={data} />;
+  return <Form abi={data.abi} />;
 }

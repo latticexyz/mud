@@ -9,18 +9,14 @@ import { cn } from "../../../../lib/utils";
 import { FunctionField } from "./FunctionField";
 
 type Props = {
-  data: {
-    abi: AbiFunction[];
-  };
+  abi: AbiFunction[];
 };
 
-export function Form({ data }: Props) {
+export function Form({ abi }: Props) {
   const [hash] = useHashState();
   const [filterValue, setFilterValue] = useState("");
   const deferredFilterValue = useDeferredValue(filterValue);
-  const filteredFunctions = data.abi.filter((item) =>
-    item.name.toLowerCase().includes(deferredFilterValue.toLowerCase()),
-  );
+  const filteredFunctions = abi.filter((item) => item.name.toLowerCase().includes(deferredFilterValue.toLowerCase()));
 
   return (
     <div className="flex">
