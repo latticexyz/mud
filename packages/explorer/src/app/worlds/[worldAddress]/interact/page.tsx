@@ -7,7 +7,7 @@ async function getABI(worldAddress: Hex) {
   const protocol = headersList.get("x-forwarded-proto");
   const host = headersList.get("host");
 
-  const res = await fetch(`${protocol}://${host}/api/world?address=${worldAddress}`);
+  const res = await fetch(`${protocol}://${host}/api/world?${new URLSearchParams({ address: worldAddress })}`);
   const data = await res.json();
 
   if (!res.ok) {
