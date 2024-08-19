@@ -4,7 +4,7 @@
   "private": true,
   "description": "Explorer is a tool for visually exploring and manipulating the state of worlds",
   "bin": {
-    "explorer": ".next/standalone/packages/explorer/server.js"
+    "explorer": "./explorer-runner.mjs"
   },
   "scripts": {
     "build": "next build && cp -r .next/static .next/standalone/packages/explorer/.next && pnpm link .",
@@ -35,6 +35,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.408.0",
+    "minimist": "^1.2.8",
     "next": "14.2.5",
     "query-string": "^9.1.0",
     "react": "^18",

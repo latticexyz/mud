@@ -1,56 +1,56 @@
 import { watchFile } from "fs";
 import { readFile } from "fs/promises";
-import { spawn } from "child_process";
-import { fileURLToPath } from "url";
-import process from "process";
+import minimist from "minimist";
 import path from "path";
+import process from "process";
+import { fileURLToPath } from "url";
+import { spawn } from "child_process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const EXPLORER_DIR = path.resolve(__dirname, "..", "..", "packages", "explorer");
-const WORLDS_JSON_PATH = path.resolve(__dirname, "packages", "contracts", "worlds.json");
 
-const MODE = process.env.MODE || "development";
-const CHAIN_ID = parseInt(process.env.CHAIN_ID || 31337);
+const argv = minimist(process.argv.slice(2));
+const port = argv.port || 13690;
+const env = argv.env || "production";
+const chainId = argv.chainId || 31337;
+const worldsConfigPath = argv.worldsConfigPath || null;
 
-let worldAddress;
+let worldAddress = argv.worldAddress || null;
 let explorerProcess;
 
 async function startExplorer() {
-  let command, args, workingDir;
+  let command, args;
 
-  if (MODE === "production") {
+  if (env === "production") {
     command = "pnpm";
-    args = ["explorer"];
-    workingDir = process.cwd();
+    args = ["start"];
   } else {
     command = "pnpm";
     args = ["dev"];
-    workingDir = EXPLORER_DIR;
   }
 
   explorerProcess = spawn(command, args, {
-    cwd: workingDir,
+    cwd: __dirname,
     stdio: "inherit",
     env: {
       ...process.env,
+      PORT: port,
       INIT_PWD: process.cwd(),
-      NEXT_PUBLIC_CHAIN_ID: CHAIN_ID,
-      NEXT_PUBLIC_WORLD_ADDRESS: worldAddress,
+      WORLD_ADDRESS: worldAddress,
     },
   });
 }
 
 async function readWorldsJson() {
   try {
-    const data = await readFile(WORLDS_JSON_PATH, "utf8");
+    const data = await readFile(worldsConfigPath, "utf8");
     if (data) {
       const worlds = JSON.parse(data);
-      const world = worlds[CHAIN_ID];
+      const world = worlds[chainId];
       if (world) {
         return world.address;
       } else {
-        console.error(`World not found for chain ID ${CHAIN_ID}`);
+        console.error(`World not found for chain ID ${chainId}`);
         return null;
       }
     }
@@ -68,11 +68,14 @@ async function restartExplorer() {
 }
 
 function watchWorldsJson() {
-  watchFile(WORLDS_JSON_PATH, async () => {
-    const newWorldAddress = await readWorldsJson();
+  if (!worldsConfigPath) {
+    return;
+  }
 
+  watchFile(worldsConfigPath, async () => {
+    const newWorldAddress = await readWorldsJson();
     if (worldAddress && worldAddress !== newWorldAddress) {
-      console.log("World address changed, restarting explorer...");
+      console.log("\nWorld address changed, restarting explorer...");
 
       worldAddress = newWorldAddress;
       await restartExplorer();
@@ -88,8 +91,16 @@ process.on("SIGINT", () => {
 });
 
 async function main() {
-  worldAddress = await readWorldsJson();
-  watchWorldsJson();
+  if (!worldsConfigPath && !worldAddress) {
+    throw new Error(
+      "Neither worldsConfigPath nor worldAddress provided. Use --worldsConfigPath or --worldAddress to specify a world.",
+    );
+  }
+
+  if (worldsConfigPath) {
+    worldAddress = await readWorldsJson();
+    watchWorldsJson();
+  }
 
   await startExplorer();
 }
