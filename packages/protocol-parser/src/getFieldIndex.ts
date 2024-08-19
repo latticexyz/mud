@@ -14,5 +14,5 @@ export function getFieldIndex<valueSchema extends ValueSchema>(
       .map(([fieldName]) => fieldName),
   ];
 
-  return fieldNames.findIndex((name) => name === fieldName);
+  return fieldNames.indexOf(fieldName.toString());
 }
