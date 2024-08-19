@@ -3,7 +3,7 @@ import { ValueSchema } from "./common";
 
 export function getFieldIndex<valueSchema extends ValueSchema>(
   valueSchema: valueSchema,
-  fieldName: keyof valueSchema,
+  fieldName: keyof valueSchema & string,
 ): number {
   const fieldNames = [
     ...Object.entries(valueSchema)
@@ -14,5 +14,5 @@ export function getFieldIndex<valueSchema extends ValueSchema>(
       .map(([fieldName]) => fieldName),
   ];
 
-  return fieldNames.indexOf(fieldName.toString());
+  return fieldNames.indexOf(fieldName);
 }
