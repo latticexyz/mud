@@ -1,5 +1,5 @@
 {
-  "name": "mud-template-react",
+  "name": "local-explorer",
   "private": true,
   "scripts": {
     "build": "pnpm recursive run build",
