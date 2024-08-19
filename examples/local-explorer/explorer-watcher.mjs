@@ -12,12 +12,11 @@ const WORLDS_JSON_PATH = path.resolve(__dirname, "packages", "contracts", "world
 
 const MODE = process.env.MODE || "development";
 const CHAIN_ID = parseInt(process.env.CHAIN_ID || 31337);
-let explorerProcess = null;
+
+let worldAddress;
+let explorerProcess;
 
 async function startExplorer() {
-  process.env.INIT_PWD = process.cwd();
-  process.env.NEXT_PUBLIC_CHAIN_ID = CHAIN_ID;
-
   let command, args, workingDir;
 
   if (MODE === "production") {
@@ -33,7 +32,12 @@ async function startExplorer() {
   explorerProcess = spawn(command, args, {
     cwd: workingDir,
     stdio: "inherit",
-    env: { ...process.env },
+    env: {
+      ...process.env,
+      INIT_PWD: process.cwd(),
+      NEXT_PUBLIC_CHAIN_ID: CHAIN_ID,
+      NEXT_PUBLIC_WORLD_ADDRESS: worldAddress,
+    },
   });
 }
 
@@ -65,13 +69,12 @@ async function restartExplorer() {
 
 function watchWorldsJson() {
   watchFile(WORLDS_JSON_PATH, async () => {
-    const currentWorldAddress = process.env.NEXT_PUBLIC_WORLD_ADDRESS;
-    const worldAddress = await readWorldsJson();
+    const newWorldAddress = await readWorldsJson();
 
-    if (currentWorldAddress && currentWorldAddress !== worldAddress) {
+    if (worldAddress && worldAddress !== newWorldAddress) {
       console.log("World address changed, restarting explorer...");
 
-      process.env.NEXT_PUBLIC_WORLD_ADDRESS = worldAddress;
+      worldAddress = newWorldAddress;
       await restartExplorer();
     }
   });
@@ -85,8 +88,10 @@ process.on("SIGINT", () => {
 });
 
 async function main() {
-  await startExplorer();
+  worldAddress = await readWorldsJson();
   watchWorldsJson();
+
+  await startExplorer();
 }
 
 main().catch(console.error);
