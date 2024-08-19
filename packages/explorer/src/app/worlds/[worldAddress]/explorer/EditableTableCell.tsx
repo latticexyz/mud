@@ -5,7 +5,7 @@ import { Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { useChainId } from "wagmi";
 import { ChangeEvent, useState } from "react";
-import { encodeField } from "@latticexyz/protocol-parser/internal";
+import { encodeField, getFieldIndex } from "@latticexyz/protocol-parser/internal";
 import { SchemaAbiType } from "@latticexyz/schema-type/internal";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -16,7 +16,6 @@ import { camelCase, cn } from "../../../../lib/utils";
 import { useStore } from "../../../../store";
 import { wagmiConfig } from "../../../Providers";
 import { TableConfig } from "../../../api/table/route";
-import { getFieldIndex } from "../utils/getFieldIndex";
 
 type Props = {
   name: string;
@@ -109,7 +108,7 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
   return (
     <div
       className={cn("w-full", {
-        "cursor-wait flex items-center gap-1": isPending,
+        "flex cursor-wait items-center gap-1": isPending,
       })}
     >
       {!isPending && (

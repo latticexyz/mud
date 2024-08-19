@@ -1,6 +1,6 @@
 import { isDynamicAbiType, isStaticAbiType } from "@latticexyz/schema-type/internal";
 
-export function getFieldIndex(valueSchema: Record<string, string>, fieldName: string) {
+export function getFieldIndex(valueSchema: Record<string, string>, fieldName: string): number {
   const fieldNames = [
     ...Object.entries(valueSchema)
       .filter(([, fieldType]) => isStaticAbiType(fieldType))
@@ -9,5 +9,6 @@ export function getFieldIndex(valueSchema: Record<string, string>, fieldName: st
       .filter(([, fieldType]) => isDynamicAbiType(fieldType))
       .map(([fieldName]) => fieldName),
   ];
+
   return fieldNames.indexOf(fieldName);
 }
