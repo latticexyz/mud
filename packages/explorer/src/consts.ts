@@ -2,7 +2,15 @@ import { Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { chainState, mudStoreTables } from "@latticexyz/store-sync/sqlite";
 
-export const NON_EDITABLE_TABLES = [chainState.name, mudStoreTables.name];
+type Table = {
+  [key: symbol]: string;
+};
+
+const TableName = Symbol.for("drizzle:Name");
+export const NON_EDITABLE_TABLES = [
+  (chainState as unknown as Table)[TableName],
+  (mudStoreTables as unknown as Table)[TableName],
+];
 
 // private keys for local development testnet (anvil)
 export const PRIVATE_KEYS: Hex[] = [
