@@ -143,6 +143,7 @@ describe("defineWorld", () => {
             Example: {
               label: "Example",
               type: "table",
+              namespaceLabel: "",
               namespace: "",
               name: "Example",
               tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
@@ -163,6 +164,7 @@ describe("defineWorld", () => {
         Example: {
           label: "Example",
           type: "table",
+          namespaceLabel: "",
           namespace: "",
           name: "Example",
           tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
@@ -205,6 +207,7 @@ describe("defineWorld", () => {
     readonly Example: {
       readonly label: "Example"
       readonly type: "table"
+      readonly namespaceLabel: ""
       readonly namespace: string
       readonly name: string
       readonly tableId: \`0x\${string}\`
@@ -255,6 +258,7 @@ describe("defineWorld", () => {
         readonly Example: {
           readonly label: "Example"
           readonly type: "table"
+          readonly namespaceLabel: ""
           readonly namespace: string
           readonly name: string
           readonly tableId: \`0x\${string}\`
@@ -324,6 +328,7 @@ describe("defineWorld", () => {
             Example: {
               label: "Example",
               type: "table",
+              namespaceLabel: "root",
               namespace: "",
               name: "Example",
               tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
@@ -344,6 +349,7 @@ describe("defineWorld", () => {
         root__Example: {
           label: "Example",
           type: "table",
+          namespaceLabel: "root",
           namespace: "",
           name: "Example",
           tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
@@ -386,6 +392,7 @@ describe("defineWorld", () => {
     readonly root__Example: {
       readonly label: "Example"
       readonly type: "table"
+      readonly namespaceLabel: "root"
       readonly namespace: string
       readonly name: string
       readonly tableId: \`0x\${string}\`
@@ -436,6 +443,7 @@ describe("defineWorld", () => {
         readonly Example: {
           readonly label: "Example"
           readonly type: "table"
+          readonly namespaceLabel: "root"
           readonly namespace: string
           readonly name: string
           readonly tableId: \`0x\${string}\`

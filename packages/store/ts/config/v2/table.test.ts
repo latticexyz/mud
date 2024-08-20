@@ -57,6 +57,7 @@ describe("resolveTable", () => {
       label: "",
       type: "table",
       namespace: "" as string,
+      namespaceLabel: "",
       name: "" as string,
       tableId: resourceToHex({ type: "table", namespace: "", name: "" }),
       schema: {
@@ -82,6 +83,7 @@ describe("resolveTable", () => {
       label: "",
       type: "table",
       namespace: "" as string,
+      namespaceLabel: "",
       name: "" as string,
       tableId: resourceToHex({ type: "table", namespace: "", name: "" }),
       schema: {
@@ -113,6 +115,7 @@ describe("resolveTable", () => {
       label: "",
       type: "table",
       namespace: "" as string,
+      namespaceLabel: "",
       name: "" as string,
       tableId: resourceToHex({ type: "table", namespace: "", name: "" }),
       schema: {
