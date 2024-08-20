@@ -15,10 +15,10 @@
 "create-mud": patch
 ---
 
-Bumped viem to `2.19.4` and abitype to `1.0.5`.
+Bumped viem to `2.19.8` and abitype to `1.0.5`.
 
 MUD projects using viem or abitype should do the same to ensure no type errors due to mismatched versions:
 
 ```
-pnpm recursive up viem@2.19.4 abitype@1.0.5
+pnpm recursive up viem@2.19.8 abitype@1.0.5
 ```
