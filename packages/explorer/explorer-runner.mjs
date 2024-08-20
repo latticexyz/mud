@@ -14,6 +14,7 @@ const port = argv.port || 13690;
 const env = argv.env || "production";
 const chainId = argv.chainId || 31337;
 const worldsConfigPath = argv.worldsConfigPath || null;
+const indexerDbPath = argv.indexerDbPath || null;
 
 let worldAddress = argv.worldAddress || null;
 let explorerProcess;
@@ -37,6 +38,7 @@ async function startExplorer() {
       PORT: port,
       INIT_PWD: process.cwd(),
       WORLD_ADDRESS: worldAddress,
+      INDEXER_DB_PATH: indexerDbPath,
     },
   });
 }

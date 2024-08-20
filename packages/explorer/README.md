@@ -14,16 +14,32 @@ Explorer is a GUI tool designed for visually exploring and manipulating the stat
 
    Ensure you have a local development chain running.
 
-3. **Configure indexer database**
-
-   Set `INDEXER_DB_PATH` environment variable to point to your SQLite indexer database.
-   Note: You can use `@latticexyz/store-indexer` for indexing your world's data.
-
-4. **Run the explorer**
+3. **Run the explorer**
 
    ```sh
-   npx @latticexyz/explorer
+   npx @latticexyz/explorer --worldAddress <YOUR_WORLD_ADDRESS> --chainId <YOUR_CHAIN_ID>
    ```
+
+   Alternatively, if you have a worlds configuration file:
+
+   ```sh
+   npx @latticexyz/explorer --worldsConfigPath <PATH_TO_WORLDS_CONFIG> --chainId <YOUR_CHAIN_ID>
+   ```
+
+   Note: You can use `@latticexyz/store-indexer` for indexing your world's data.
+
+## CLI Arguments
+
+The explorer accepts the following CLI arguments:
+
+| Argument           | Description                                                                | Default value |
+| ------------------ | -------------------------------------------------------------------------- | ------------- |
+| `worldAddress`     | The address of the world to explore                                        | None          |
+| `worldsConfigPath` | Path to a worlds configuration file (used to resolve world address)        | None          |
+| `chainId`          | The chain ID of the network                                                | 31337         |
+| `port`             | The port on which to run the explorer                                      | 13690         |
+| `env`              | The environment to run the explorer in (e.g., "development", "production") | "production"  |
+| `indexerDbPath`    | Path to your SQLite indexer database                                       | "indexer.db"  |
 
 ## Example setup
 
@@ -49,18 +65,18 @@ To contribute to or modify the explorer, the easiest way is to run the example s
 
 1. **Setup**
 
-   Navigate to the `examples/local-explorer` directory and set the explorer mode to `development` in `mprocs.yaml`:
+   Navigate to the `examples/local-explorer` directory and locate the `mprocs.yaml` file.
+
+2. **Configure**
+
+   In `mprocs.yaml`, ensure the explorer command is set up correctly. For example:
 
    ```yaml
    explorer:
-     shell: node explorer-watcher.mjs
-     env:
-       PORT: "13690"
-       CHAIN_ID: "31337"
-       MODE: "development"
+     shell: pnpm explorer --worldsConfigPath packages/contracts/worlds.json --env development
    ```
 
-2. **Run**
+3. **Run**
 
    ```sh
    pnpm dev
