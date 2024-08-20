@@ -65,10 +65,10 @@
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
-    "abitype": "1.0.0",
+    "abitype": "catalog:",
     "arktype": "1.0.29-alpha",
     "debug": "^4.3.4",
-    "viem": "2.9.20"
+    "viem": "catalog:"
   },
   "devDependencies": {
     "@latticexyz/abi-ts": "workspace:*",

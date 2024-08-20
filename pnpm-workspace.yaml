@@ -4,3 +4,5 @@ packages:
 
 catalog:
   "@ark/util": "0.1.2"
+  "abitype": "1.0.5"
+  "viem": "2.19.8"
