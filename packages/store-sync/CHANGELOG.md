@@ -1,5 +1,36 @@
 # @latticexyz/store-sync
 
+## 2.1.1
+
+### Patch Changes
+
+- 6435481: Upgrade `zod` to `3.23.8` to avoid issues with [excessively deep type instantiations](https://github.com/colinhacks/zod/issues/577).
+- 9e21e42: Bumped viem to `2.19.8` and abitype to `1.0.5`.
+
+  MUD projects using viem or abitype should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.19.8 abitype@1.0.5
+  ```
+
+- 57bf8c3: Add a strongly typed `namespaceLabel` to the table config output.
+  It corresponds to the `label` of the namespace the table belongs to and can't be set manually.
+- Updated dependencies [9e21e42]
+- Updated dependencies [6a66f57]
+- Updated dependencies [86a8104]
+- Updated dependencies [2daaab1]
+- Updated dependencies [542ea54]
+- Updated dependencies [57bf8c3]
+  - @latticexyz/block-logs-stream@2.1.1
+  - @latticexyz/common@2.1.1
+  - @latticexyz/config@2.1.1
+  - @latticexyz/protocol-parser@2.1.1
+  - @latticexyz/query@2.1.1
+  - @latticexyz/schema-type@2.1.1
+  - @latticexyz/store@2.1.1
+  - @latticexyz/world@2.1.1
+  - @latticexyz/recs@2.1.1
+
 ## 2.1.0
 
 ### Patch Changes
