@@ -1,5 +1,6 @@
 import { ArrowUpDown, Loader } from "lucide-react";
 import { useState } from "react";
+import { internalTableNames } from "@latticexyz/store-sync/sqlite";
 import { useQuery } from "@tanstack/react-query";
 import {
   ColumnDef,
@@ -17,7 +18,6 @@ import { Button } from "../../../../components/ui/Button";
 import { Checkbox } from "../../../../components/ui/Checkbox";
 import { Input } from "../../../../components/ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../components/ui/Table";
-import { NON_EDITABLE_TABLES } from "../../../../consts";
 import { bufferToBigInt } from "../utils/bufferToBigInt";
 import { EditableTableCell } from "./EditableTableCell";
 
@@ -122,7 +122,7 @@ export function TablesViewer({ table: selectedTable }: Props) {
         const keysSchema = Object.keys(mudTableConfig?.key_schema || {});
         const keyTuple = keysSchema.map((key) => row.getValue(key));
         const value = row.getValue(name);
-        if ((selectedTable && NON_EDITABLE_TABLES.includes(selectedTable)) || keysSchema.includes(name)) {
+        if ((selectedTable && (internalTableNames as string[]).includes(selectedTable)) || keysSchema.includes(name)) {
           return value?.toString();
         }
 
