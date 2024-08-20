@@ -1,3 +1,4 @@
+import { getTableName } from "drizzle-orm";
 import { blob, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { address, asHex, json } from "./columnTypes";
 import { PartialTable } from "./common";
@@ -23,3 +24,6 @@ export const mudStoreTables = sqliteTable("__mudStoreTables", {
   // TODO: last block hash?
   lastError: text("last_error"),
 });
+
+export const internalTables = [chainState, mudStoreTables];
+export const internalTableNames = internalTables.map(getTableName);

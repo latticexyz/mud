@@ -43,8 +43,8 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "abitype": "1.0.0",
-    "viem": "2.9.20"
+    "abitype": "catalog:",
+    "viem": "catalog:"
   },
   "devDependencies": {
     "@latticexyz/gas-report": "workspace:*",
