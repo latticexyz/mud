@@ -1,7 +1,7 @@
 import { Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
-export const NON_EDITABLE_TABLES = ["__chainState", "mudStoreTables"];
+export const NON_EDITABLE_TABLES = ["__chainState", "__mudStoreTables"];
 
 // private keys for local development testnet (anvil)
 export const PRIVATE_KEYS: Hex[] = [
