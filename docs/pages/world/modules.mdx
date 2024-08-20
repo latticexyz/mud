@@ -5,6 +5,24 @@ This is somewhat similar to one of the use cases for [foundry scripts](https://b
 
 ## Module installation
 
+The easiest way to install modules is to edit [the config file](/config).
+At the top level you specify `modules`, a list of modules to install.
+Every module is a struct with three parameters:
+
+- `artifactPath` - relative path to the module's compiled JSON artifact (usually in `out`) or an import path if using a module from an npm package.
+  This path is resolved using [Node's module `require` API](https://nodejs.org/api/modules.html#modulerequireid).
+- `root` - whether the module is to be installed with [root namespace privileges](/world/systems#root-systems).
+  The default is `false`.
+- `args` - a list of arguments to give the module's install function.
+  Each argument is a structure with two fields:
+  - `type` - the Solidity data type
+  - `value` - the value
+    To encode a complex data type, such as a structure or an array, you can use Viem's [`encodeAbiParameters`](https://viem.sh/docs/abi/encodeAbiParameters.html).
+
+You can see an example of this method [on the ERC-721 module page](/world/modules/erc721#deployment).
+
+### Installation by transaction
+
 Modules can be installed using [`World.installModule(address moduleAddress, bytes memory initData)`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/ModuleInstallationSystem.sol#L17-L37).
 When you do this, the `World` calls the module's `install` function with `initData` as the argument(s).
 Because this is a call, the module does not have any administrative permissions on the `World`.
