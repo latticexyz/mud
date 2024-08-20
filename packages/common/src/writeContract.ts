@@ -87,6 +87,8 @@ export async function writeContract<
         {
           retries: 3,
           onFailedAttempt: async (error) => {
+            // in case this tx failed before hitting the mempool (i.e. gas estimation error), reset nonce so we don't skip past the unused nonce
+            debug("failed, resetting nonce");
             await nonceManager.resetNonce();
             // retry nonce errors
             // TODO: upgrade p-retry and move this to shouldRetry
