@@ -5,6 +5,10 @@ import { renderSystemInterface } from "./renderSystemInterface";
 import { renderWorldInterface } from "./renderWorldInterface";
 import { World as WorldConfig } from "../../config/v2/output";
 import { resolveSystems } from "../resolveSystems";
+import { debug as parentDebug } from "../../debug";
+import { buildSystemManifest } from "../buildSystemManifest";
+
+const debug = parentDebug.extend("worldgen");
 
 export async function worldgen({
   rootDir,
@@ -49,9 +53,9 @@ export async function worldgen({
 
   await Promise.all(
     systems.map(async (system) => {
-      const data = await fs.readFile(path.join(rootDir, system.sourcePath), "utf8");
+      const source = await fs.readFile(path.join(rootDir, system.sourcePath), "utf8");
       // get external functions from a contract
-      const { functions, errors, symbolImports } = contractToInterface(data, system.label);
+      const { functions, errors, symbolImports } = contractToInterface(source, system.label);
       const imports = symbolImports.map(
         ({ symbol, path: importPath }): ImportDatum => ({
           symbol,
@@ -85,4 +89,7 @@ export async function worldgen({
   });
   // write to file
   await formatAndWriteSolidity(output, outputPath, "Generated world interface");
+
+  debug("Building system manifest");
+  await buildSystemManifest({ rootDir, config });
 }
