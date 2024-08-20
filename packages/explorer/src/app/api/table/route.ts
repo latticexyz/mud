@@ -1,4 +1,5 @@
 import { Hex } from "viem";
+import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser/internal";
 import { getDatabase } from "../utils/getDatabase";
 
 export const dynamic = "force-dynamic";
@@ -6,13 +7,13 @@ export const dynamic = "force-dynamic";
 export type TableConfig = {
   address: Hex;
   id: string;
-  key_schema: Record<string, string>;
+  key_schema: KeySchema;
   last_error: string | null;
   name: string;
   namespace: string;
   schema_version: number;
   table_id: Hex;
-  value_schema: Record<string, string>;
+  value_schema: ValueSchema;
 };
 
 export async function GET(req: Request) {
