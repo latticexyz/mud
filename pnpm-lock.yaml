@@ -6,12 +6,18 @@ settings:
 
 catalogs:
   default:
+    '@ark/attest':
+      specifier: 0.12.1
+      version: 0.12.1
     '@ark/util':
-      specifier: 0.1.2
-      version: 0.1.2
+      specifier: 0.2.2
+      version: 0.2.2
     abitype:
       specifier: 1.0.5
       version: 1.0.5
+    arktype:
+      specifier: 2.0.0-beta.6
+      version: 2.0.0-beta.6
     viem:
       specifier: 2.19.8
       version: 2.19.8
@@ -21,8 +27,8 @@ importers:
   .:
     devDependencies:
       '@ark/attest':
-        specifier: 0.11.0
-        version: 0.11.0(typescript@5.4.2)
+        specifier: 'catalog:'
+        version: 0.12.1(typescript@5.4.2)
       '@changesets/cli':
         specifier: ^2.27.7
         version: 2.27.7
@@ -329,7 +335,7 @@ importers:
     dependencies:
       '@ark/util':
         specifier: 'catalog:'
-        version: 0.1.2
+        version: 0.2.2
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -560,7 +566,7 @@ importers:
     dependencies:
       '@ark/util':
         specifier: 'catalog:'
-        version: 0.1.2
+        version: 0.2.2
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -718,7 +724,7 @@ importers:
     dependencies:
       '@ark/util':
         specifier: 'catalog:'
-        version: 0.1.2
+        version: 0.2.2
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -735,8 +741,8 @@ importers:
         specifier: 'catalog:'
         version: 1.0.5(typescript@5.4.2)(zod@3.23.8)
       arktype:
-        specifier: 1.0.29-alpha
-        version: 1.0.29-alpha
+        specifier: 'catalog:'
+        version: 2.0.0-beta.6
       viem:
         specifier: 'catalog:'
         version: 2.19.8(typescript@5.4.2)(zod@3.23.8)
@@ -894,7 +900,7 @@ importers:
     dependencies:
       '@ark/util':
         specifier: 'catalog:'
-        version: 0.1.2
+        version: 0.2.2
       '@latticexyz/block-logs-stream':
         specifier: workspace:*
         version: link:../block-logs-stream
@@ -1016,7 +1022,7 @@ importers:
     dependencies:
       '@ark/util':
         specifier: 'catalog:'
-        version: 0.1.2
+        version: 0.2.2
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -1036,8 +1042,8 @@ importers:
         specifier: 'catalog:'
         version: 1.0.5(typescript@5.4.2)(zod@3.23.8)
       arktype:
-        specifier: 1.0.29-alpha
-        version: 1.0.29-alpha
+        specifier: 'catalog:'
+        version: 2.0.0-beta.6
       debug:
         specifier: ^4.3.4
         version: 4.3.4
@@ -1254,23 +1260,20 @@ packages:
     resolution: {integrity: sha512-lFMjJTrFL3j7L9yBxwYfCq2k6qqwHyzuUl/XBnif78PWTJYyL/dfowQHWE3sp6U6ZzqWiiIZnpTMO96zhkjwtg==}
     engines: {node: '>=6.0.0'}
 
-  '@ark/attest@0.11.0':
-    resolution: {integrity: sha512-KTLvnB8mjH967z9ktzlXd3q/nVLddenjR7cWJR+u2DJh9NPSSQzwoDf30ab+5VtKf0abVzRxLfqRk80T3uGD3Q==}
+  '@ark/attest@0.12.1':
+    resolution: {integrity: sha512-cx6oSOJU6WiADVV9xB6CPwTP2XeFsnS4jBEqOKOkSZoA+tvTHBlVCVzCGtF+RFNx8/HS1Suxpafcd0xRWCynIQ==}
     hasBin: true
     peerDependencies:
       typescript: '*'
 
-  '@ark/fs@0.2.0':
-    resolution: {integrity: sha512-nmrCG9XPHbz5Vg4wqxro1UMksPCZk4crxVa/XbWQuHfxFa6e9H+BNPhcehNEl5ePVK3Wzv/Y4aoy4vNqYZ4Ajg==}
+  '@ark/fs@0.2.2':
+    resolution: {integrity: sha512-t0mCeAB5agypidgxeUhMjOkql8R5wt6EWJKQRWAX7WMI7ET7icSJQDAgWbwkfNHW1dclWLajTjhwfyG00LPkZg==}
 
-  '@ark/schema@0.3.0':
-    resolution: {integrity: sha512-Xw6MkotVCgmmZ/OYFIXZ4DIbchNI0Okl20xrF7aZGouODZ75bED0EVyYsLDVrQ3PSKr0G4WOQbGCfM1FuN5oJw==}
+  '@ark/schema@0.3.3':
+    resolution: {integrity: sha512-SA4QggzaKHxkNB+faWmhSJbCPMHmGBCpb6dNG3VIt5VOMZhZJJSD76/tOUzQvvJNzztHkTakrTZea+iKsEDcRQ==}
 
-  '@ark/util@0.1.2':
-    resolution: {integrity: sha512-JhcPZhF8T8Eb9UxJqh3X8tOwZpnuW89azKlPnRhFXymhy/wBFPRC9+J+Vu+iUc/kplW3uloZb9n5R3EVVWUBgw==}
-
-  '@ark/util@0.2.0':
-    resolution: {integrity: sha512-L38ALnAR1wXxYQN9pn0ir+9ybPKA0O1+hl8PKZOvT9JSbTues4kEB8lgo80DeE0X1Jw+qoHe4lxgSwaHNa3xyg==}
+  '@ark/util@0.2.2':
+    resolution: {integrity: sha512-ryZ4+f3SlReQRH9nTFLK5EeU1Pan5ZfS+ACPSk0ir5uujJouFmvOdnkVfeAJAgeOb3kKmUM9kjelv1cwH2ScZg==}
 
   '@aws-crypto/ie11-detection@3.0.0':
     resolution: {integrity: sha512-341lBBkiY1DfDNKai/wXM3aujNBkXR7tq1URPQDL9wi3AUbI80NR74uF1TXHMm7po1AcnFk8iu2S2IeU/+/A+Q==}
@@ -2776,8 +2779,8 @@ packages:
     resolution: {integrity: sha512-RnlSOPh14QbopGCApgkSx5UBgGda5MX1cHqp2fsqfiDyCwGL/m1jaeB9fzu7didVS81LQqGZZuxFBcg8YU8EVw==}
     hasBin: true
 
-  '@typescript/vfs@1.5.3':
-    resolution: {integrity: sha512-OSZ/o3wwD5VPZVdGGsXWk7sRGRtwrGnqA4zwmb33FTs7Wxmad0QTkQCbaNyqWA8hL09TCwAthdp8yjFA5G1lvw==}
+  '@typescript/vfs@1.6.0':
+    resolution: {integrity: sha512-hvJUjNVeBMp77qPINuUvYXj4FyWeeMMKZkxEATEU3hqBAQ7qdTBCUFT7Sp0Zu0faeEtFf+ldXxMEDr/bk73ISg==}
     peerDependencies:
       typescript: '*'
 
@@ -2991,11 +2994,8 @@ packages:
     resolution: {integrity: sha512-XLWeRTNBJRzQkbMweLIxdtnvpE7iYUBraPwrIJX57FjL4D1RHLMJRM1AyEP6KZHgvjW7TSnxF8MpGic7YdTGOA==}
     engines: {node: '>=8', npm: '>=5'}
 
-  arktype@1.0.29-alpha:
-    resolution: {integrity: sha512-glMLgVhIQRSkR3tymiS+POAcWVJH09sfrgic0jHnyFL8BlhHAJZX2BzdImU9zYr1y9NBqy+U93ZNrRTHXsKRDw==}
-
-  arktype@2.0.0-beta.3:
-    resolution: {integrity: sha512-a08Q7Mj+5hes+UvV9CdqWoXPc/qdYpCIANcg8Bhs+iYyIdKGxMpj976oevd19uRkx0qtqMwS/O4QeyvHT0/oRQ==}
+  arktype@2.0.0-beta.6:
+    resolution: {integrity: sha512-tbH5/h0z371sgrJIAhZhH2BcrErWv8uQIPVcLmknJ8ffov5/ZbMNufrQ3hG9avGKTcVnVmdQoPhl1WuKuagqXA==}
 
   array-includes@3.1.6:
     resolution: {integrity: sha512-sgTbLvL6cNnw24FnbaDyjmvddQ2ML8arZsgaJhoABMoplz/4QRhtrYS+alr1BUM1Bwp6dhx8vVCBSLG+StwOFw==}
@@ -6828,28 +6828,26 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.3
       '@jridgewell/trace-mapping': 0.3.18
 
-  '@ark/attest@0.11.0(typescript@5.4.2)':
+  '@ark/attest@0.12.1(typescript@5.4.2)':
     dependencies:
-      '@ark/fs': 0.2.0
-      '@ark/util': 0.2.0
+      '@ark/fs': 0.2.2
+      '@ark/util': 0.2.2
       '@prettier/sync': 0.5.2(prettier@3.3.3)
       '@typescript/analyze-trace': 0.10.1
-      '@typescript/vfs': 1.5.3(typescript@5.4.2)
-      arktype: 2.0.0-beta.3
+      '@typescript/vfs': 1.6.0(typescript@5.4.2)
+      arktype: 2.0.0-beta.6
       prettier: 3.3.3
       typescript: 5.4.2
     transitivePeerDependencies:
       - supports-color
 
-  '@ark/fs@0.2.0': {}
+  '@ark/fs@0.2.2': {}
 
-  '@ark/schema@0.3.0':
+  '@ark/schema@0.3.3':
     dependencies:
-      '@ark/util': 0.2.0
+      '@ark/util': 0.2.2
 
-  '@ark/util@0.1.2': {}
-
-  '@ark/util@0.2.0': {}
+  '@ark/util@0.2.2': {}
 
   '@aws-crypto/ie11-detection@3.0.0':
     dependencies:
@@ -8851,7 +8849,7 @@ snapshots:
       treeify: 1.1.0
       yargs: 16.2.0
 
-  '@typescript/vfs@1.5.3(typescript@5.4.2)':
+  '@typescript/vfs@1.6.0(typescript@5.4.2)':
     dependencies:
       debug: 4.3.4
       typescript: 5.4.2
@@ -9050,12 +9048,10 @@ snapshots:
     dependencies:
       iftype: 4.0.9
 
-  arktype@1.0.29-alpha: {}
-
-  arktype@2.0.0-beta.3:
+  arktype@2.0.0-beta.6:
     dependencies:
-      '@ark/schema': 0.3.0
-      '@ark/util': 0.2.0
+      '@ark/schema': 0.3.3
+      '@ark/util': 0.2.2
 
   array-includes@3.1.6:
     dependencies:
@@ -13385,7 +13381,7 @@ snapshots:
   yargs@17.7.2:
     dependencies:
       cliui: 8.0.1
-      escalade: 3.1.1
+      escalade: 3.1.2
       get-caller-file: 2.0.5
       require-directory: 2.1.1
       string-width: 4.2.3
