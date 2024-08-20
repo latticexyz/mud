@@ -11,10 +11,10 @@ const __dirname = path.dirname(__filename);
 
 const argv = minimist(process.argv.slice(2));
 const port = argv.port || 13690;
-const env = argv.env || "production";
 const chainId = argv.chainId || 31337;
+const env = argv.env || "production";
+const indexerDbPath = argv.indexerDbPath || "indexer.db";
 const worldsConfigPath = argv.worldsConfigPath || null;
-const indexerDbPath = argv.indexerDbPath || null;
 
 let worldAddress = argv.worldAddress || null;
 let explorerProcess;
