@@ -45,6 +45,8 @@ export async function buildSystemsManifest(opts: { rootDir: string; config: Worl
 
   const manifest = {
     systems: systems.map((system) => {
+      // TODO: extract this from AST so we can get it before compile time and use it to generate system interfaces?
+      //       we'll may need an extended ABI function definition to include things like visibility? but maybe not needed for interface?
       const artifact = getSystemArtifact(system);
       const abi = artifact.abi.filter((item) => !excludedAbi.includes(formatAbiItem(item)));
       const worldAbi = system.deploy.registerWorldFunctions
