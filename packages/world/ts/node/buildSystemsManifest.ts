@@ -6,15 +6,27 @@ import { findContractArtifacts } from "./findContractArtifacts";
 import { getOutDirectory as getForgeOutDirectory } from "@latticexyz/common/foundry";
 import path from "node:path";
 import { Hex, Abi } from "viem";
+import { formatAbi, formatAbiItem } from "abitype";
+import IBaseWorldAbi from "../../out/IBaseWorld.sol/IBaseWorld.abi.json";
+import SystemAbi from "../../out/System.sol/System.abi.json";
 
-export type SystemManifest = {
+const excludedAbi = formatAbi([
+  ...IBaseWorldAbi.filter((item) => item.type === "event" || item.type === "error"),
+  ...SystemAbi,
+] as Abi);
+
+export type SystemsManifest = {
   readonly systems: readonly {
+    readonly namespaceLabel: string;
+    readonly label: string;
+    readonly namespace: string;
+    readonly name: string;
     readonly systemId: Hex;
-    readonly abi: Abi;
+    readonly abi: string[];
   }[];
 };
 
-export async function buildSystemManifest(opts: { rootDir: string; config: World }): Promise<void> {
+export async function buildSystemsManifest(opts: { rootDir: string; config: World }): Promise<void> {
   const systems = await resolveSystems(opts);
 
   // TODO: expose a `cwd` option to make sure this runs relative to `rootDir`
@@ -34,14 +46,26 @@ export async function buildSystemManifest(opts: { rootDir: string; config: World
   const manifest = {
     systems: systems.map((system) => {
       const artifact = getSystemArtifact(system);
+      const abi = artifact.abi.filter((item) => !excludedAbi.includes(formatAbiItem(item)));
+      const worldAbi = system.deploy.registerWorldFunctions
+        ? abi.map((item) => (item.type === "function" ? { ...item, name: `${system.namespace}__${item.name}` } : item))
+        : [];
       return {
+        // labels
+        namespaceLabel: system.namespaceLabel,
+        label: system.label,
+        // resource ID
+        namespace: system.namespace,
+        name: system.name,
         systemId: system.systemId,
-        abi: artifact.abi,
+        // abi
+        abi: formatAbi(abi).sort((a, b) => a.localeCompare(b)),
+        worldAbi: formatAbi(worldAbi).sort((a, b) => a.localeCompare(b)),
       };
     }),
-  } satisfies SystemManifest;
+  } satisfies SystemsManifest;
 
   const outFile = path.join(opts.rootDir, ".mud/local/systems.json");
   await mkdir(path.dirname(outFile), { recursive: true });
-  await writeFile(outFile, JSON.stringify(manifest, null, 2));
+  await writeFile(outFile, JSON.stringify(manifest, null, 2) + "\n");
 }

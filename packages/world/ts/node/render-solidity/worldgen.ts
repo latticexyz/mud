@@ -6,7 +6,7 @@ import { renderWorldInterface } from "./renderWorldInterface";
 import { World as WorldConfig } from "../../config/v2/output";
 import { resolveSystems } from "../resolveSystems";
 import { debug as parentDebug } from "../../debug";
-import { buildSystemManifest } from "../buildSystemManifest";
+import { buildSystemsManifest } from "../buildSystemsManifest";
 
 const debug = parentDebug.extend("worldgen");
 
@@ -91,5 +91,5 @@ export async function worldgen({
   await formatAndWriteSolidity(output, outputPath, "Generated world interface");
 
   debug("Building system manifest");
-  await buildSystemManifest({ rootDir, config });
+  await buildSystemsManifest({ rootDir, config });
 }

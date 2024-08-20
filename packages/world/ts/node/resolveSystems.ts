@@ -5,6 +5,8 @@ import { resolveNamespace } from "../config/v2/namespace";
 import { resourceToLabel } from "@latticexyz/common";
 
 export type ResolvedSystem = System & {
+  // TODO: move to config output
+  readonly namespaceLabel: string;
   readonly sourcePath: string;
 };
 
@@ -46,6 +48,8 @@ export async function resolveSystems({
         }).systems[contract.systemLabel];
       return {
         ...systemConfig,
+        // TODO: move to config output
+        namespaceLabel: contract.namespaceLabel,
         sourcePath: contract.sourcePath,
       };
     })
