@@ -2,4 +2,4 @@
 "@latticexyz/common": patch
 ---
 
-Improved error decoding in `writeContract` action for reverts with custom errors.
+Refactored `writeContract` and `sendTransaction` actions for simplicity and better error messages.
