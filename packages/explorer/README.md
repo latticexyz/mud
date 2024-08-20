@@ -17,13 +17,13 @@ Explorer is a GUI tool designed for visually exploring and manipulating the stat
 3. **Run the explorer**
 
    ```sh
-   npx @latticexyz/explorer --worldAddress <YOUR_WORLD_ADDRESS> --chainId <YOUR_CHAIN_ID>
+   npx @latticexyz/explorer --worldAddress <YOUR_WORLD_ADDRESS>
    ```
 
    Alternatively, if you have a worlds configuration file:
 
    ```sh
-   npx @latticexyz/explorer --worldsConfigPath <PATH_TO_WORLDS_CONFIG> --chainId <YOUR_CHAIN_ID>
+   npx @latticexyz/explorer --worldsConfigPath <PATH_TO_WORLDS_CONFIG>
    ```
 
    Note: You can use `@latticexyz/store-indexer` for indexing your world's data.
