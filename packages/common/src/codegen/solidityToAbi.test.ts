@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { describe, expect, it } from "vitest";
 import { formatAbi } from "abitype";
 import { solidityToAbi } from "./solidityToAbi";
@@ -6,7 +7,6 @@ const visibility = ["public", "external", "private", "internal"] as const;
 const mutability = [null, "view", "pure", "payable", "nonpayable"] as const;
 
 const types = {
-  empty: null,
   uint256: "uint256",
   uint: "uint",
   string: "string",
@@ -20,12 +20,18 @@ const types = {
 
 describe("solidityToAbi", () => {
   it("parses error params", () => {
-    const errors = Object.entries(types).map(([name, type]) => `error param_${name}(${type ? `${type} value` : ""});`);
+    const errors = [
+      "error noParam();",
+      ...Object.entries(types).map(([name, type]) => `error param_${name}(${type} value);`),
+      `error allParams(${Object.entries(types)
+        .map(([name, type]) => `${type} _${name}`)
+        .join(", ")});`,
+    ];
     const source = `contract MyContract {\n  ${errors.join("\n  ")}\n}`;
 
     expect(source).toMatchInlineSnapshot(`
       "contract MyContract {
-        error param_empty();
+        error noParam();
         error param_uint256(uint256 value);
         error param_uint(uint value);
         error param_string(string value);
@@ -35,6 +41,7 @@ describe("solidityToAbi", () => {
         error param_fixedArray(bool[2] value);
         error param_mixedArray(bool[2][] value);
         error param_deepArray(bool[][2][4][8][] value);
+        error allParams(uint256 _uint256, uint _uint, string _string, uint[] _uintArray, string[] _stringArray, bytes32[][] _keyTuples, bool[2] _fixedArray, bool[2][] _mixedArray, bool[][2][4][8][] _deepArray);
       }"
     `);
 
@@ -43,7 +50,7 @@ describe("solidityToAbi", () => {
     ).toMatchInlineSnapshot(
       `
       [
-        "error param_empty()",
+        "error noParam()",
         "error param_uint256(uint256 value)",
         "error param_uint(uint value)",
         "error param_string(string value)",
@@ -53,6 +60,7 @@ describe("solidityToAbi", () => {
         "error param_fixedArray(bool[2] value)",
         "error param_mixedArray(bool[2][] value)",
         "error param_deepArray(bool[][2][4][8][] value)",
+        "error allParams(uint256 _uint256, uint _uint, string _string, uint[] _uintArray, string[] _stringArray, bytes32[][] _keyTuples, bool[2] _fixedArray, bool[2][] _mixedArray, bool[][2][4][8][] _deepArray)",
       ]
     `,
     );
