@@ -5,27 +5,36 @@ import { ContractArtifact } from "./common";
 import { findContractArtifacts } from "./findContractArtifacts";
 import { getOutDirectory as getForgeOutDirectory } from "@latticexyz/common/foundry";
 import path from "node:path";
-import { Hex, Abi } from "viem";
+import { Abi, Hex, isHex } from "viem";
 import { formatAbi, formatAbiItem } from "abitype";
 import IBaseWorldAbi from "../../out/IBaseWorld.sol/IBaseWorld.abi.json";
 import SystemAbi from "../../out/System.sol/System.abi.json";
 import { debug } from "./debug";
+import { type } from "arktype";
 
 const excludedAbi = formatAbi([
   ...IBaseWorldAbi.filter((item) => item.type === "event" || item.type === "error"),
   ...SystemAbi,
 ] as Abi);
 
-export type SystemsManifest = {
-  readonly systems: readonly {
-    readonly namespaceLabel: string;
-    readonly label: string;
-    readonly namespace: string;
-    readonly name: string;
-    readonly systemId: Hex;
-    readonly abi: string[];
-  }[];
-};
+export const SystemsManifest = type({
+  systems: [
+    {
+      // labels
+      namespaceLabel: "string",
+      label: "string",
+      // resource ID
+      namespace: "string",
+      name: "string",
+      systemId: ["string", ":", (s): s is Hex => isHex(s, { strict: false })],
+      // abi
+      abi: "string[]",
+      worldAbi: "string[]",
+    },
+    "[]",
+  ],
+  createdAt: "number",
+});
 
 export async function buildSystemsManifest(opts: { rootDir: string; config: World }): Promise<void> {
   const systems = await resolveSystems(opts);
@@ -45,9 +54,7 @@ export async function buildSystemsManifest(opts: { rootDir: string; config: Worl
   }
 
   const manifest = {
-    systems: systems.map((system) => {
-      // TODO: extract this from AST so we can get it before compile time and use it to generate system interfaces?
-      //       we'll may need an extended ABI function definition to include things like visibility? but maybe not needed for interface?
+    systems: systems.map((system): (typeof SystemsManifest)["infer"]["systems"][number] => {
       const artifact = getSystemArtifact(system);
       const abi = artifact.abi.filter((item) => !excludedAbi.includes(formatAbiItem(item)));
       const worldAbi = system.deploy.registerWorldFunctions
@@ -66,7 +73,8 @@ export async function buildSystemsManifest(opts: { rootDir: string; config: Worl
         worldAbi: formatAbi(worldAbi).sort((a, b) => a.localeCompare(b)),
       };
     }),
-  } satisfies SystemsManifest;
+    createdAt: Date.now(),
+  } satisfies typeof SystemsManifest.infer;
 
   const manifestFilename = ".mud/local/systems.json";
   const outFile = path.join(opts.rootDir, manifestFilename);
