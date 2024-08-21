@@ -1,4 +1,2 @@
-.env*.local
 indexer.db
-
 node_modules
