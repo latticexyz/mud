@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const argv = minimist(process.argv.slice(2));
-const port = argv.port || 13690;
+const port = argv.port || process.env.PORT || 13690;
 const chainId = argv.chainId || 31337;
 const env = argv.env || "production";
 const indexerDbPath = argv.indexerDbPath || process.env.INDEXER_DB_PATH || "indexer.db";
