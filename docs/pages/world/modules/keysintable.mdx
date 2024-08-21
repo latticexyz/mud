@@ -226,7 +226,8 @@ The first dimension is the keys in the table.
 The second dimension is the different key fields (in this case there is only one).
 
 ```solidity
-    console.log("\n\nTask descriptions");
+    console.log("\n\n");
+    console.log("Task descriptions:");
     for(uint i=0; i<keys.length; i++) {
        TasksData memory task = Tasks.get(keys[i][0]);
        console.log(task.description);
