@@ -24,12 +24,15 @@ export type Schema = {
 };
 
 export type Table = {
+  // labels
   readonly namespaceLabel: string;
   readonly label: string;
+  // resource ID
   readonly type: satisfy<ResourceType, "table" | "offchainTable">;
   readonly namespace: string;
   readonly name: string;
   readonly tableId: Hex;
+  // key/value schema
   readonly schema: Schema;
   readonly key: readonly string[];
 };

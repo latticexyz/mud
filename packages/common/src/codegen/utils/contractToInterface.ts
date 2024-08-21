@@ -106,8 +106,8 @@ export function contractToInterface(
   };
 }
 
-function findContractNode(ast: SourceUnit, contractName: string): ContractDefinition | undefined {
-  let contract = undefined;
+export function findContractNode(ast: SourceUnit, contractName: string): ContractDefinition | undefined {
+  let contract: ContractDefinition | undefined = undefined;
 
   visit(ast, {
     ContractDefinition(node) {
