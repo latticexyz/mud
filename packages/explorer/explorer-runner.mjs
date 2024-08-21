@@ -13,7 +13,7 @@ const argv = minimist(process.argv.slice(2));
 const port = argv.port || 13690;
 const chainId = argv.chainId || 31337;
 const env = argv.env || "production";
-const indexerDbPath = argv.indexerDbPath || "indexer.db";
+const indexerDbPath = argv.indexerDbPath || process.env.INDEXER_DB_PATH || "indexer.db";
 const worldsConfigPath = argv.worldsConfigPath || null;
 
 let worldAddress = argv.worldAddress || null;
