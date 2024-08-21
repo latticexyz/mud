@@ -22,7 +22,7 @@ export const types = scope({
     deployedBytecode: "ArtifactBytecode",
     // TODO: improve narrowing with `isAbi` or import arktype type from abitype (when either are available)
     abi: type("unknown[]").pipe((input) => input as Abi),
-    metadata: {
+    "metadata?": {
       settings: {
         compilationTarget: {
           // key is source filename name like `src/WorldResourceId.sol`

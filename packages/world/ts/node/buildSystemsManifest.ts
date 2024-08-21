@@ -9,6 +9,7 @@ import { Hex, Abi } from "viem";
 import { formatAbi, formatAbiItem } from "abitype";
 import IBaseWorldAbi from "../../out/IBaseWorld.sol/IBaseWorld.abi.json";
 import SystemAbi from "../../out/System.sol/System.abi.json";
+import { debug } from "./debug";
 
 const excludedAbi = formatAbi([
   ...IBaseWorldAbi.filter((item) => item.type === "event" || item.type === "error"),
@@ -67,7 +68,9 @@ export async function buildSystemsManifest(opts: { rootDir: string; config: Worl
     }),
   } satisfies SystemsManifest;
 
-  const outFile = path.join(opts.rootDir, ".mud/local/systems.json");
+  const manifestFilename = ".mud/local/systems.json";
+  const outFile = path.join(opts.rootDir, manifestFilename);
   await mkdir(path.dirname(outFile), { recursive: true });
   await writeFile(outFile, JSON.stringify(manifest, null, 2) + "\n");
+  debug("Wrote systems manifest to", manifestFilename);
 }

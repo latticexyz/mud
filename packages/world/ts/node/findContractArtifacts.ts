@@ -6,6 +6,7 @@ import { indent, isDefined } from "@latticexyz/common/utils";
 import { Hex, size, sliceHex } from "viem";
 import { ContractArtifact, ReferenceIdentifier, contractSizeLimit } from "./common";
 import { types } from "./types";
+import { debug } from "./debug";
 
 export type Input = {
   readonly forgeOutDir: string;
@@ -28,13 +29,13 @@ export async function findContractArtifacts({ forgeOutDir }: Input): Promise<Out
     .map(({ filename, json }) => {
       const artifact = parseArtifact(json);
       if (artifact instanceof type.errors) {
-        // TODO: replace with debug
-        console.warn(`Skipping invalid artifact at \`${filename}\`:\n\n${indent(artifact.message)}\n`);
+        debug(`Skipping invalid artifact at "${filename}":\n${indent(artifact.message)}`);
         return;
       }
       return artifact;
     })
     .filter(isDefined)
+    .filter(type({ metadata: "object" }).allows)
     .map((artifact) => {
       const sourcePath = Object.keys(artifact.metadata.settings.compilationTarget)[0];
       const name = artifact.metadata.settings.compilationTarget[sourcePath];
