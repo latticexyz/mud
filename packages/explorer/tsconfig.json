@@ -1,7 +1,6 @@
 {
   "extends": ["../../packages/common/tsconfig.base.json"],
   "compilerOptions": {
-    "lib": ["DOM", "ESNext"],
     "allowJs": true,
     "incremental": true,
     "isolatedModules": true,
