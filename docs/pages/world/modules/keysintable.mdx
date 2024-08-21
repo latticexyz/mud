@@ -160,13 +160,15 @@ contract UseGetKeysInTable is Script {
 
     console.log("Number of keys:", keys.length);
     for (uint i = 0; i < keys.length; i++) {
-      console.log("\nKey #", i, ":");
+      console.log("\n");
+      console.log("Key #", i, ":");
       for (uint j = 0; j < keys[i].length; j++) {
         console.logBytes32(keys[i][j]);
       }
     }
 
-    console.log("\n\nTask descriptions");
+    console.log("\n\n");
+    console.log("Task descriptions");
     for (uint i = 0; i < keys.length; i++) {
       TasksData memory task = Tasks.get(keys[i][0]);
       console.log(task.description);
