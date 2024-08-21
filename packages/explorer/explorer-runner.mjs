@@ -16,7 +16,7 @@ const env = argv.env || "production";
 const indexerDbPath = argv.indexerDbPath || process.env.INDEXER_DB_PATH || "indexer.db";
 const worldsConfigPath = argv.worldsConfigPath || null;
 
-let worldAddress = argv.worldAddress || null;
+let worldAddress = argv.worldAddress || process.env.WORLD_ADDRESS || null;
 let explorerProcess;
 
 async function startExplorer() {
