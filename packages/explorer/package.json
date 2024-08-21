@@ -1,13 +1,18 @@
 {
   "name": "@latticexyz/explorer",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "private": true,
   "description": "Explorer is a tool for visually exploring and manipulating the state of worlds",
   "bin": {
-    "explorer": "./explorer-runner.mjs"
+    "explorer": "./dist/explorer.mjs"
   },
   "scripts": {
-    "build": "next build && cp -r .next/static .next/standalone/packages/explorer/.next && pnpm link .",
+    "build": "pnpm run build:explorer && pnpm run build:bin",
+    "build:bin": "tsup && pnpm link .",
+    "build:explorer": "next build && cp -r .next/static .next/standalone/packages/explorer/.next",
+    "clean": "pnpm run clean:explorer && pnpm run clean:bin",
+    "clean:bin": "rimraf dist",
+    "clean:explorer": "rimraf .next .turbo",
     "dev": "next dev",
     "lint": "next lint",
     "start": "node .next/standalone/packages/explorer/server.js"
@@ -44,6 +49,7 @@
     "sonner": "^1.5.0",
     "tailwind-merge": "^1.12.0",
     "tailwindcss-animate": "^1.0.7",
+    "tsup": "^6.7.0",
     "viem": "catalog:",
     "wagmi": "^2.11.1",
     "zod": "3.23.8",
@@ -52,6 +58,7 @@
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/better-sqlite3": "^7.6.4",
+    "@types/minimist": "^1.2.5",
     "@types/node": "^18.15.11",
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
