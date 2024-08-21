@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "pnpm run build:explorer && pnpm run build:bin",
-    "build:bin": "tsup && pnpm link .",
+    "build:bin": "tsup",
     "build:explorer": "next build && cp -r .next/static .next/standalone/packages/explorer/.next",
     "clean": "pnpm run clean:explorer && pnpm run clean:bin",
     "clean:bin": "rimraf dist",
