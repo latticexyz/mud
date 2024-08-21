@@ -3,13 +3,15 @@ import { describe, expect, it } from "vitest";
 import { formatAbi } from "abitype";
 import { solidityToAbi } from "./solidityToAbi";
 
-const visibility = ["public", "external", "private", "internal"] as const;
-const mutability = [null, "view", "pure", "payable", "nonpayable"] as const;
+const functionVisibility = ["public", "external", "private", "internal"] as const;
+const functionMutability = [null, "view", "pure", "payable", "nonpayable"] as const;
 
 const types = {
   uint256: "uint256",
   uint: "uint",
-  string: "string",
+  payable: "address payable",
+  stringMemory: "string memory",
+  stringCalldata: "string calldata",
   uintArray: "uint[]",
   stringArray: "string[]",
   keyTuples: "bytes32[][]",
@@ -22,7 +24,7 @@ describe("solidityToAbi", () => {
   it("parses error params", () => {
     const errors = [
       "error noParam();",
-      ...Object.entries(types).map(([name, type]) => `error param_${name}(${type} value);`),
+      ...Object.entries(types).map(([name, type]) => `error param_${name}(${type} _${name});`),
       `error allParams(${Object.entries(types)
         .map(([name, type]) => `${type} _${name}`)
         .join(", ")});`,
@@ -32,16 +34,18 @@ describe("solidityToAbi", () => {
     expect(source).toMatchInlineSnapshot(`
       "contract MyContract {
         error noParam();
-        error param_uint256(uint256 value);
-        error param_uint(uint value);
-        error param_string(string value);
-        error param_uintArray(uint[] value);
-        error param_stringArray(string[] value);
-        error param_keyTuples(bytes32[][] value);
-        error param_fixedArray(bool[2] value);
-        error param_mixedArray(bool[2][] value);
-        error param_deepArray(bool[][2][4][8][] value);
-        error allParams(uint256 _uint256, uint _uint, string _string, uint[] _uintArray, string[] _stringArray, bytes32[][] _keyTuples, bool[2] _fixedArray, bool[2][] _mixedArray, bool[][2][4][8][] _deepArray);
+        error param_uint256(uint256 _uint256);
+        error param_uint(uint _uint);
+        error param_payable(address payable _payable);
+        error param_stringMemory(string memory _stringMemory);
+        error param_stringCalldata(string calldata _stringCalldata);
+        error param_uintArray(uint[] _uintArray);
+        error param_stringArray(string[] _stringArray);
+        error param_keyTuples(bytes32[][] _keyTuples);
+        error param_fixedArray(bool[2] _fixedArray);
+        error param_mixedArray(bool[2][] _mixedArray);
+        error param_deepArray(bool[][2][4][8][] _deepArray);
+        error allParams(uint256 _uint256, uint _uint, address payable _payable, string memory _stringMemory, string calldata _stringCalldata, uint[] _uintArray, string[] _stringArray, bytes32[][] _keyTuples, bool[2] _fixedArray, bool[2][] _mixedArray, bool[][2][4][8][] _deepArray);
       }"
     `);
 
@@ -51,23 +55,73 @@ describe("solidityToAbi", () => {
       `
       [
         "error noParam()",
-        "error param_uint256(uint256 value)",
-        "error param_uint(uint value)",
-        "error param_string(string value)",
-        "error param_uintArray(uint[] value)",
-        "error param_stringArray(string[] value)",
-        "error param_keyTuples(bytes32[][] value)",
-        "error param_fixedArray(bool[2] value)",
-        "error param_mixedArray(bool[2][] value)",
-        "error param_deepArray(bool[][2][4][8][] value)",
-        "error allParams(uint256 _uint256, uint _uint, string _string, uint[] _uintArray, string[] _stringArray, bytes32[][] _keyTuples, bool[2] _fixedArray, bool[2][] _mixedArray, bool[][2][4][8][] _deepArray)",
+        "error param_uint256(uint256 _uint256)",
+        "error param_uint(uint _uint)",
+        "error param_payable(address _payable)",
+        "error param_stringMemory(string _stringMemory)",
+        "error param_stringCalldata(string _stringCalldata)",
+        "error param_uintArray(uint[] _uintArray)",
+        "error param_stringArray(string[] _stringArray)",
+        "error param_keyTuples(bytes32[][] _keyTuples)",
+        "error param_fixedArray(bool[2] _fixedArray)",
+        "error param_mixedArray(bool[2][] _mixedArray)",
+        "error param_deepArray(bool[][2][4][8][] _deepArray)",
+        "error allParams(uint256 _uint256, uint _uint, address _payable, string _stringMemory, string _stringCalldata, uint[] _uintArray, string[] _stringArray, bytes32[][] _keyTuples, bool[2] _fixedArray, bool[2][] _mixedArray, bool[][2][4][8][] _deepArray)",
       ]
     `,
     );
   });
 
+  it("parses function params", () => {
+    const functions = [
+      "function noParams() public {}",
+      ...Object.entries(types).map(([name, type]) => `function param_${name}(${type} value) public {}`),
+      `function allParams(${Object.entries(types)
+        .map(([name, type]) => `${type} _${name}`)
+        .join(", ")}) public {}`,
+    ];
+    const source = `contract MyContract {\n  ${functions.join("\n  ")}\n}`;
+
+    expect(source).toMatchInlineSnapshot(`
+      "contract MyContract {
+        function noParams() public {}
+        function param_uint256(uint256 value) public {}
+        function param_uint(uint value) public {}
+        function param_payable(address payable value) public {}
+        function param_stringMemory(string memory value) public {}
+        function param_stringCalldata(string calldata value) public {}
+        function param_uintArray(uint[] value) public {}
+        function param_stringArray(string[] value) public {}
+        function param_keyTuples(bytes32[][] value) public {}
+        function param_fixedArray(bool[2] value) public {}
+        function param_mixedArray(bool[2][] value) public {}
+        function param_deepArray(bool[][2][4][8][] value) public {}
+        function allParams(uint256 _uint256, uint _uint, address payable _payable, string memory _stringMemory, string calldata _stringCalldata, uint[] _uintArray, string[] _stringArray, bytes32[][] _keyTuples, bool[2] _fixedArray, bool[2][] _mixedArray, bool[][2][4][8][] _deepArray) public {}
+      }"
+    `);
+
+    expect(formatAbi(solidityToAbi({ sourcePath: "test/Test.sol", source, contractName: "MyContract" })))
+      .toMatchInlineSnapshot(`
+        [
+          "function noParams()",
+          "function param_uint256(uint256 value)",
+          "function param_uint(uint value)",
+          "function param_payable(address value)",
+          "function param_stringMemory(string value)",
+          "function param_stringCalldata(string value)",
+          "function param_uintArray(uint[] value)",
+          "function param_stringArray(string[] value)",
+          "function param_keyTuples(bytes32[][] value)",
+          "function param_fixedArray(bool[2] value)",
+          "function param_mixedArray(bool[2][] value)",
+          "function param_deepArray(bool[][2][4][8][] value)",
+          "function allParams(uint256 _uint256, uint _uint, address _payable, string _stringMemory, string _stringCalldata, uint[] _uintArray, string[] _stringArray, bytes32[][] _keyTuples, bool[2] _fixedArray, bool[2][] _mixedArray, bool[][2][4][8][] _deepArray)",
+        ]
+      `);
+  });
+
   it("parses public/external functions", () => {
-    const modifiers = visibility.flatMap((vis) => mutability.map((mut) => [vis, mut] as const));
+    const modifiers = functionVisibility.flatMap((vis) => functionMutability.map((mut) => [vis, mut] as const));
 
     const functions = modifiers.map(([vis, mut]) => `function modifier_${vis}_${mut}() ${vis} ${mut ?? ""} {}`);
     const source = `contract MyContract {\n  ${functions.join("\n  ")}\n}`;
