@@ -15,6 +15,13 @@ export type Input = {
 export type Output = readonly ContractArtifact[];
 
 const parseArtifact = type("parse.json").to(types.Artifact);
+type Artifact = typeof types.Artifact.infer;
+
+function hasMetadata(
+  artifact: Artifact,
+): artifact is Artifact & { [k in "metadata"]-?: Exclude<Artifact["metadata"], undefined> } {
+  return artifact.metadata !== undefined;
+}
 
 export async function findContractArtifacts({ forgeOutDir }: Input): Promise<Output> {
   const files = (await glob("**/*.sol/*.json", { ignore: "**/*.abi.json", cwd: forgeOutDir })).sort();
@@ -35,8 +42,9 @@ export async function findContractArtifacts({ forgeOutDir }: Input): Promise<Out
       return artifact;
     })
     .filter(isDefined)
-    .filter(type({ metadata: "object" }).allows)
+    .filter(hasMetadata)
     .map((artifact) => {
+      artifact;
       const sourcePath = Object.keys(artifact.metadata.settings.compilationTarget)[0];
       const name = artifact.metadata.settings.compilationTarget[sourcePath];
       const deployedBytecodeSize = size(artifact.deployedBytecode.object);
