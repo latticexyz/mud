@@ -15,4 +15,4 @@ procs:
       FOLLOW_BLOCK_TAG: "latest"
       SQLITE_FILENAME: "indexer.db"
   explorer:
-    shell: pnpm explorer --worldsConfigPath packages/contracts/worlds.json
+    shell: pnpm explorer --worldsFile packages/contracts/worlds.json --env development

@@ -32,14 +32,14 @@ Explorer is a GUI tool designed for visually exploring and manipulating the stat
 
 The explorer accepts the following CLI arguments:
 
-| Argument           | Description                                                                | Default value |
-| ------------------ | -------------------------------------------------------------------------- | ------------- |
-| `worldAddress`     | The address of the world to explore                                        | None          |
-| `worldsConfigPath` | Path to a worlds configuration file (used to resolve world address)        | None          |
-| `indexerDbPath`    | Path to your SQLite indexer database                                       | "indexer.db"  |
-| `chainId`          | The chain ID of the network                                                | 31337         |
-| `port`             | The port on which to run the explorer                                      | 13690         |
-| `env`              | The environment to run the explorer in (e.g., "development", "production") | "production"  |
+| Argument          | Description                                                                | Default value |
+| ----------------- | -------------------------------------------------------------------------- | ------------- |
+| `worldAddress`    | The address of the world to explore                                        | None          |
+| `worldsFile`      | Path to a worlds configuration file (used to resolve world address)        | None          |
+| `indexerDatabase` | Path to your SQLite indexer database                                       | "indexer.db"  |
+| `chainId`         | The chain ID of the network                                                | 31337         |
+| `port`            | The port on which to run the explorer                                      | 13690         |
+| `env`             | The environment to run the explorer in (e.g., "development", "production") | "production"  |
 
 ## Example setup
 

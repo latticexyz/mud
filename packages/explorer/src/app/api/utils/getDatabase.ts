@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 
 export function getDatabase(): Database | null {
-  const dbPath = path.join(process.env.INIT_PWD as string, process.env.INDEXER_DB_PATH as string);
+  const dbPath = path.join(process.env.INIT_PWD as string, process.env.INDEXER_DATABASE as string);
 
   console.log("dbPath", dbPath);
 

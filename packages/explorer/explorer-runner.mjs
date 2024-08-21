@@ -11,10 +11,10 @@ const __dirname = path.dirname(__filename);
 
 const argv = minimist(process.argv.slice(2));
 const port = argv.port || process.env.PORT || 13690;
-const chainId = argv.chainId || 31337;
-const env = argv.env || "production";
-const indexerDbPath = argv.indexerDbPath || process.env.INDEXER_DB_PATH || "indexer.db";
-const worldsConfigPath = argv.worldsConfigPath || null;
+const chainId = argv.chainId || process.env.CHAIN_ID || 31337;
+const mode = argv.mode || process.env.MODE || "production";
+const indexerDatabase = argv.indexerDatabase || process.env.INDEXER_DATABASE || "indexer.db";
+const worldsFile = argv.worldsFile || process.env.WORLDS_FILE || null;
 
 let worldAddress = argv.worldAddress || process.env.WORLD_ADDRESS || null;
 let explorerProcess;
@@ -22,7 +22,7 @@ let explorerProcess;
 async function startExplorer() {
   let command, args;
 
-  if (env === "production") {
+  if (mode === "production") {
     command = "pnpm";
     args = ["start"];
   } else {
@@ -38,14 +38,14 @@ async function startExplorer() {
       PORT: port,
       INIT_PWD: process.cwd(),
       WORLD_ADDRESS: worldAddress,
-      INDEXER_DB_PATH: indexerDbPath,
+      INDEXER_DATABASE: indexerDatabase,
     },
   });
 }
 
 async function readWorldsJson() {
   try {
-    const data = await readFile(worldsConfigPath, "utf8");
+    const data = await readFile(worldsFile, "utf8");
     if (data) {
       const worlds = JSON.parse(data);
       const world = worlds[chainId];
@@ -70,11 +70,11 @@ async function restartExplorer() {
 }
 
 function watchWorldsJson() {
-  if (!worldsConfigPath) {
+  if (!worldsFile) {
     return;
   }
 
-  watchFile(worldsConfigPath, async () => {
+  watchFile(worldsFile, async () => {
     const newWorldAddress = await readWorldsJson();
     if (worldAddress && worldAddress !== newWorldAddress) {
       console.log("\nWorld address changed, restarting explorer...");
@@ -93,13 +93,13 @@ process.on("SIGINT", () => {
 });
 
 async function main() {
-  if (!worldsConfigPath && !worldAddress) {
+  if (!worldsFile && !worldAddress) {
     throw new Error(
-      "Neither worldsConfigPath nor worldAddress provided. Use --worldsConfigPath or --worldAddress to specify a world.",
+      "Neither worldsFile nor worldAddress provided. Use --worldsFile or --worldAddress to specify a world.",
     );
   }
 
-  if (worldsConfigPath) {
+  if (worldsFile) {
     worldAddress = await readWorldsJson();
     watchWorldsJson();
   }
