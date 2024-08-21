@@ -1,12 +1,8 @@
 import sqliteDB, { Database } from "better-sqlite3";
 import fs from "fs";
-import path from "path";
 
 export function getDatabase(): Database | null {
-  const dbPath = path.join(process.env.INIT_PWD as string, process.env.INDEXER_DATABASE as string);
-
-  console.log("dbPath", dbPath);
-
+  const dbPath = process.env.INDEXER_DATABASE as string;
   if (!fs.existsSync(dbPath)) {
     return null;
   }
