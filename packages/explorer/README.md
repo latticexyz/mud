@@ -28,7 +28,7 @@ Explorer is a GUI tool designed for visually exploring and manipulating the stat
 
    Note: You can use `@latticexyz/store-indexer` for indexing your world's data.
 
-## CLI Arguments
+## CLI arguments
 
 The explorer accepts the following CLI arguments:
 
