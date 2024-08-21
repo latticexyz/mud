@@ -101,11 +101,11 @@ Each structure has two fields:
 - `value`, the value
 
 ```typescript
-resourceToHex({
-  type: "table",
-  namespace: "app",
-  name: "Tasks",
-}); // end of value
+            resourceToHex({
+              type: "table",
+              namespace: "app",
+              name: "Tasks",
+            })
 ```
 
 [This function](https://github.com/latticexyz/mud/blob/main/packages/common/src/resourceToHex.ts) creates the [resourceID](/world/resource-ids) for us from the table's data.
