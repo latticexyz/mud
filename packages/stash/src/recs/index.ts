@@ -1,10 +1,10 @@
 import { In, MatchRecord, NotIn, NotMatchRecord } from "../queryFragments";
 import { Query, Stash, TableRecord } from "../common";
-import { UpdateType as RecsUpdateType } from "@latticexyz/recs";
 import { BoundTable, getTable } from "../actions/getTable";
 import { runQuery as runQueryInternal } from "../actions/runQuery";
 import { QueryUpdate, subscribeQuery } from "../actions/subscribeQuery";
 import { getConfig } from "../actions";
+import { Subject } from "rxjs";
 
 export type Entity = string;
 export const singletonEntity = "";
@@ -67,25 +67,14 @@ export function runQuery(stash: Stash, query: Query) {
   return new Set(Object.keys(result.keys));
 }
 
-function transformUpdateType(type: "enter" | "update" | "exit") {
-  switch (type) {
-    case "enter":
-      return RecsUpdateType.Enter;
-    case "update":
-      return RecsUpdateType.Update;
-    case "exit":
-      return RecsUpdateType.Exit;
-  }
-}
-
-type SystemUpdate = {
+type SystemUpdate<T extends BoundTable = BoundTable> = {
   entity: string;
   value: [TableRecord | undefined, TableRecord | undefined];
-  type: RecsUpdateType;
-  component: BoundTable;
+  type: UpdateType;
+  component: T;
 };
 
-function transformUpdate(s: Stash, update: QueryUpdate, updateFilter?: "enter" | "update" | "exit"): SystemUpdate[] {
+function transformUpdate(s: Stash, update: QueryUpdate, updateFilter?: UpdateType): SystemUpdate[] {
   const transformedUpdates = [] as SystemUpdate[];
 
   const namespaces = Object.entries(update.records);
@@ -110,7 +99,7 @@ function transformUpdate(s: Stash, update: QueryUpdate, updateFilter?: "enter" |
           component: table,
           entity: key,
           value: [recordUpdate.current, recordUpdate.prev],
-          type: transformUpdateType(update.types[key]),
+          type: update.types[key] as UpdateType,
         });
       }
     }
@@ -119,12 +108,79 @@ function transformUpdate(s: Stash, update: QueryUpdate, updateFilter?: "enter" |
   return transformedUpdates;
 }
 
+export function componentValueEquals(value1: TableRecord, value2: TableRecord): boolean {
+  return JSON.stringify(value1) === JSON.stringify(value2);
+}
+
+export function defineSyncSystem(
+  stash: Stash,
+  query: Query,
+  component: (entity: Entity) => BoundTable,
+  value: (entity: Entity) => TableRecord,
+  options: { update?: boolean; runOnInit?: boolean } = { update: false, runOnInit: true },
+) {
+  defineSystemInternal(
+    stash,
+    query,
+    ({ entity, type }) => {
+      if (type === UpdateType.Enter) setComponent(component(entity), entity, value(entity));
+      if (type === UpdateType.Exit) removeComponent(component(entity), entity);
+      if (options?.update && type === UpdateType.Update) setComponent(component(entity), entity, value(entity));
+    },
+    options,
+  );
+}
+
+export function defineComponentSystem(stash: Stash, table: BoundTable, system: (update: SystemUpdate) => void) {
+  table.subscribe({
+    subscriber: (updates) => {
+      for (const [key, update] of Object.entries(updates)) {
+        let updateType = UpdateType.Update;
+        if (update.prev === undefined) {
+          updateType = UpdateType.Enter;
+        } else if (update.current === undefined) {
+          updateType = UpdateType.Exit;
+        }
+
+        system({ entity: key, value: [update.current, update.prev], type: updateType, component: table });
+      }
+    },
+  });
+}
+
+export function isComponentUpdate<T extends BoundTable>(update: SystemUpdate, table: T): update is SystemUpdate<T> {
+  return update.component.getConfig().tableId === table.getConfig().tableId;
+}
+
+export function getComponentEntities(table: BoundTable) {
+  return Object.keys(table.getKeys());
+}
+
+export function defineExitQuery(stash: Stash, query: Query) {
+  const update$ = new Subject<SystemUpdate>();
+
+  subscribeQuery({
+    stash,
+    query,
+    options: {
+      skipInitialRun: true,
+    },
+  }).subscribe((update) => {
+    const updates = transformUpdate(stash, update);
+    for (const update of updates) {
+      update$.next(update);
+    }
+  });
+
+  return update$;
+}
+
 function defineSystemInternal(
   stash: Stash,
   query: Query,
   system: (update: SystemUpdate) => void,
   options: { runOnInit?: boolean } = { runOnInit: true },
-  updateFilter?: "enter" | "update" | "exit",
+  updateFilter?: UpdateType,
 ) {
   subscribeQuery({
     stash,
@@ -158,7 +214,7 @@ export function defineEnterSystem(
   system: (update: SystemUpdate) => void,
   options: { runOnInit?: boolean } = { runOnInit: true },
 ) {
-  defineSystemInternal(stash, query, system, options, "enter");
+  defineSystemInternal(stash, query, system, options, UpdateType.Enter);
 }
 
 export function defineUpdateSystem(
@@ -167,7 +223,7 @@ export function defineUpdateSystem(
   system: (update: SystemUpdate) => void,
   options: { runOnInit?: boolean } = { runOnInit: true },
 ) {
-  defineSystemInternal(stash, query, system, options, "update");
+  defineSystemInternal(stash, query, system, options, UpdateType.Update);
 }
 
 export function defineExitSystem(
@@ -176,5 +232,28 @@ export function defineExitSystem(
   system: (update: SystemUpdate) => void,
   options: { runOnInit?: boolean } = { runOnInit: true },
 ) {
-  defineSystemInternal(stash, query, system, options, "exit");
+  defineSystemInternal(stash, query, system, options, UpdateType.Exit);
+}
+
+export function update$Wrapper(table: BoundTable) {
+  const update$ = new Subject<SystemUpdate>();
+
+  table.subscribe({
+    subscriber: (updates) => {
+      for (const [key, update] of Object.entries(updates)) {
+        const transformedUpdate = {
+          entity: key,
+          value: [update.current, update.prev] as [TableRecord | undefined, TableRecord | undefined],
+          type: UpdateType.Update,
+          component: table,
+        };
+        update$.next(transformedUpdate);
+      }
+    },
+  });
+
+  return {
+    ...table,
+    update$,
+  };
 }
