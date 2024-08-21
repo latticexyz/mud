@@ -1,10 +1,10 @@
 {
   "name": "@latticexyz/explorer",
   "version": "2.1.1",
-  "private": true,
   "description": "Explorer is a tool for visually exploring and manipulating the state of worlds",
+  "type": "module",
   "bin": {
-    "explorer": "./dist/explorer.mjs"
+    "explorer": "./dist/explorer.js"
   },
   "scripts": {
     "build": "pnpm run build:explorer && pnpm run build:bin",
