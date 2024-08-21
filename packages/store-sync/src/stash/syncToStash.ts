@@ -76,7 +76,7 @@ export async function syncToStash({
     ...syncOptions,
     onProgress: ({ step, percentage, latestBlockNumber, lastBlockNumberProcessed, message }) => {
       // already live, no need for more progress updates
-      if (SyncProgress.getRecord({ key: {} }).step === SyncStep.LIVE) return;
+      if (SyncProgress.getRecord({ key: {} })?.step === SyncStep.LIVE) return;
 
       SyncProgress.setRecord({
         key: {},
