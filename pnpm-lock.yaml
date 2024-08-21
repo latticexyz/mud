@@ -6,12 +6,18 @@ settings:
 
 catalogs:
   default:
+    '@ark/attest':
+      specifier: 0.12.1
+      version: 0.12.1
     '@ark/util':
-      specifier: 0.1.2
-      version: 0.1.2
+      specifier: 0.2.2
+      version: 0.2.2
     abitype:
       specifier: 1.0.5
       version: 1.0.5
+    arktype:
+      specifier: 2.0.0-beta.6
+      version: 2.0.0-beta.6
     viem:
       specifier: 2.19.8
       version: 2.19.8
@@ -21,8 +27,8 @@ importers:
   .:
     devDependencies:
       '@ark/attest':
-        specifier: 0.11.0
-        version: 0.11.0(typescript@5.4.2)
+        specifier: 'catalog:'
+        version: 0.12.1(typescript@5.4.2)
       '@changesets/cli':
         specifier: ^2.27.7
         version: 2.27.7
@@ -107,7 +113,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
 
   packages/block-logs-stream:
     dependencies:
@@ -135,7 +141,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
 
   packages/cli:
     dependencies:
@@ -271,7 +277,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
 
   packages/common:
     dependencies:
@@ -323,13 +329,13 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
 
   packages/config:
     dependencies:
       '@ark/util':
         specifier: 'catalog:'
-        version: 0.1.2
+        version: 0.2.2
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -437,7 +443,7 @@ importers:
         version: 6.7.0(postcss@8.4.23)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
 
   packages/explorer:
     dependencies:
@@ -628,7 +634,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
 
   packages/gas-report:
     dependencies:
@@ -674,7 +680,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
 
   packages/protocol-parser:
     dependencies:
@@ -699,13 +705,13 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
 
   packages/query:
     dependencies:
       '@ark/util':
         specifier: 'catalog:'
-        version: 0.1.2
+        version: 0.2.2
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -727,7 +733,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
 
   packages/react:
     dependencies:
@@ -779,7 +785,7 @@ importers:
         version: 4.3.6(@types/node@20.12.12)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
 
   packages/recs:
     dependencies:
@@ -838,7 +844,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
 
   packages/solhint-config-mud:
     devDependencies:
@@ -863,7 +869,7 @@ importers:
     dependencies:
       '@ark/util':
         specifier: 'catalog:'
-        version: 0.1.2
+        version: 0.2.2
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -880,8 +886,8 @@ importers:
         specifier: 'catalog:'
         version: 1.0.5(typescript@5.4.2)(zod@3.23.8)
       arktype:
-        specifier: 1.0.29-alpha
-        version: 1.0.29-alpha
+        specifier: 'catalog:'
+        version: 2.0.0-beta.6
       viem:
         specifier: 'catalog:'
         version: 2.19.8(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
@@ -918,7 +924,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
 
   packages/store-indexer:
     dependencies:
@@ -1033,13 +1039,13 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
 
   packages/store-sync:
     dependencies:
       '@ark/util':
         specifier: 'catalog:'
-        version: 0.1.2
+        version: 0.2.2
       '@latticexyz/block-logs-stream':
         specifier: workspace:*
         version: link:../block-logs-stream
@@ -1130,7 +1136,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
 
   packages/utils:
     dependencies:
@@ -1161,7 +1167,7 @@ importers:
     dependencies:
       '@ark/util':
         specifier: 'catalog:'
-        version: 0.1.2
+        version: 0.2.2
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -1181,8 +1187,8 @@ importers:
         specifier: 'catalog:'
         version: 1.0.5(typescript@5.4.2)(zod@3.23.8)
       arktype:
-        specifier: 1.0.29-alpha
-        version: 1.0.29-alpha
+        specifier: 'catalog:'
+        version: 2.0.0-beta.6
       debug:
         specifier: ^4.3.4
         version: 4.3.4
@@ -1231,7 +1237,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
 
   packages/world-module-metadata:
     dependencies:
@@ -1271,7 +1277,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
 
   packages/world-modules:
     dependencies:
@@ -1332,7 +1338,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
 
   test/mock-game-contracts:
     devDependencies:
@@ -1399,23 +1405,20 @@ packages:
     resolution: {integrity: sha512-lFMjJTrFL3j7L9yBxwYfCq2k6qqwHyzuUl/XBnif78PWTJYyL/dfowQHWE3sp6U6ZzqWiiIZnpTMO96zhkjwtg==}
     engines: {node: '>=6.0.0'}
 
-  '@ark/attest@0.11.0':
-    resolution: {integrity: sha512-KTLvnB8mjH967z9ktzlXd3q/nVLddenjR7cWJR+u2DJh9NPSSQzwoDf30ab+5VtKf0abVzRxLfqRk80T3uGD3Q==}
+  '@ark/attest@0.12.1':
+    resolution: {integrity: sha512-cx6oSOJU6WiADVV9xB6CPwTP2XeFsnS4jBEqOKOkSZoA+tvTHBlVCVzCGtF+RFNx8/HS1Suxpafcd0xRWCynIQ==}
     hasBin: true
     peerDependencies:
       typescript: '*'
 
-  '@ark/fs@0.2.0':
-    resolution: {integrity: sha512-nmrCG9XPHbz5Vg4wqxro1UMksPCZk4crxVa/XbWQuHfxFa6e9H+BNPhcehNEl5ePVK3Wzv/Y4aoy4vNqYZ4Ajg==}
+  '@ark/fs@0.2.2':
+    resolution: {integrity: sha512-t0mCeAB5agypidgxeUhMjOkql8R5wt6EWJKQRWAX7WMI7ET7icSJQDAgWbwkfNHW1dclWLajTjhwfyG00LPkZg==}
 
-  '@ark/schema@0.3.0':
-    resolution: {integrity: sha512-Xw6MkotVCgmmZ/OYFIXZ4DIbchNI0Okl20xrF7aZGouODZ75bED0EVyYsLDVrQ3PSKr0G4WOQbGCfM1FuN5oJw==}
+  '@ark/schema@0.3.3':
+    resolution: {integrity: sha512-SA4QggzaKHxkNB+faWmhSJbCPMHmGBCpb6dNG3VIt5VOMZhZJJSD76/tOUzQvvJNzztHkTakrTZea+iKsEDcRQ==}
 
-  '@ark/util@0.1.2':
-    resolution: {integrity: sha512-JhcPZhF8T8Eb9UxJqh3X8tOwZpnuW89azKlPnRhFXymhy/wBFPRC9+J+Vu+iUc/kplW3uloZb9n5R3EVVWUBgw==}
-
-  '@ark/util@0.2.0':
-    resolution: {integrity: sha512-L38ALnAR1wXxYQN9pn0ir+9ybPKA0O1+hl8PKZOvT9JSbTues4kEB8lgo80DeE0X1Jw+qoHe4lxgSwaHNa3xyg==}
+  '@ark/util@0.2.2':
+    resolution: {integrity: sha512-ryZ4+f3SlReQRH9nTFLK5EeU1Pan5ZfS+ACPSk0ir5uujJouFmvOdnkVfeAJAgeOb3kKmUM9kjelv1cwH2ScZg==}
 
   '@aws-crypto/ie11-detection@3.0.0':
     resolution: {integrity: sha512-341lBBkiY1DfDNKai/wXM3aujNBkXR7tq1URPQDL9wi3AUbI80NR74uF1TXHMm7po1AcnFk8iu2S2IeU/+/A+Q==}
@@ -4775,8 +4778,8 @@ packages:
     resolution: {integrity: sha512-RnlSOPh14QbopGCApgkSx5UBgGda5MX1cHqp2fsqfiDyCwGL/m1jaeB9fzu7didVS81LQqGZZuxFBcg8YU8EVw==}
     hasBin: true
 
-  '@typescript/vfs@1.5.3':
-    resolution: {integrity: sha512-OSZ/o3wwD5VPZVdGGsXWk7sRGRtwrGnqA4zwmb33FTs7Wxmad0QTkQCbaNyqWA8hL09TCwAthdp8yjFA5G1lvw==}
+  '@typescript/vfs@1.6.0':
+    resolution: {integrity: sha512-hvJUjNVeBMp77qPINuUvYXj4FyWeeMMKZkxEATEU3hqBAQ7qdTBCUFT7Sp0Zu0faeEtFf+ldXxMEDr/bk73ISg==}
     peerDependencies:
       typescript: '*'
 
@@ -5109,11 +5112,8 @@ packages:
   aria-query@5.1.3:
     resolution: {integrity: sha512-R5iJ5lkuHybztUfuOAznmboyjWq8O6sqNqtK7CLOqdydi54VNbORp49mb14KbWgG1QD3JFO9hJdZ+y4KutfdOQ==}
 
-  arktype@1.0.29-alpha:
-    resolution: {integrity: sha512-glMLgVhIQRSkR3tymiS+POAcWVJH09sfrgic0jHnyFL8BlhHAJZX2BzdImU9zYr1y9NBqy+U93ZNrRTHXsKRDw==}
-
-  arktype@2.0.0-beta.3:
-    resolution: {integrity: sha512-a08Q7Mj+5hes+UvV9CdqWoXPc/qdYpCIANcg8Bhs+iYyIdKGxMpj976oevd19uRkx0qtqMwS/O4QeyvHT0/oRQ==}
+  arktype@2.0.0-beta.6:
+    resolution: {integrity: sha512-tbH5/h0z371sgrJIAhZhH2BcrErWv8uQIPVcLmknJ8ffov5/ZbMNufrQ3hG9avGKTcVnVmdQoPhl1WuKuagqXA==}
 
   array-buffer-byte-length@1.0.1:
     resolution: {integrity: sha512-ahC5W1xgou+KTXix4sAO8Ki12Q+jf4i0+tmk3sC+zgcynshkHxzpXdImBehiUYKKKDwvfFiJl1tZt6ewscS1Mg==}
@@ -10758,28 +10758,26 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.3
       '@jridgewell/trace-mapping': 0.3.18
 
-  '@ark/attest@0.11.0(typescript@5.4.2)':
+  '@ark/attest@0.12.1(typescript@5.4.2)':
     dependencies:
-      '@ark/fs': 0.2.0
-      '@ark/util': 0.2.0
+      '@ark/fs': 0.2.2
+      '@ark/util': 0.2.2
       '@prettier/sync': 0.5.2(prettier@3.3.3)
       '@typescript/analyze-trace': 0.10.1
-      '@typescript/vfs': 1.5.3(typescript@5.4.2)
-      arktype: 2.0.0-beta.3
+      '@typescript/vfs': 1.6.0(typescript@5.4.2)
+      arktype: 2.0.0-beta.6
       prettier: 3.3.3
       typescript: 5.4.2
     transitivePeerDependencies:
       - supports-color
 
-  '@ark/fs@0.2.0': {}
+  '@ark/fs@0.2.2': {}
 
-  '@ark/schema@0.3.0':
+  '@ark/schema@0.3.3':
     dependencies:
-      '@ark/util': 0.2.0
+      '@ark/util': 0.2.2
 
-  '@ark/util@0.1.2': {}
-
-  '@ark/util@0.2.0': {}
+  '@ark/util@0.2.2': {}
 
   '@aws-crypto/ie11-detection@3.0.0':
     dependencies:
@@ -15237,7 +15235,7 @@ snapshots:
       treeify: 1.1.0
       yargs: 16.2.0
 
-  '@typescript/vfs@1.5.3(typescript@5.4.2)':
+  '@typescript/vfs@1.6.0(typescript@5.4.2)':
     dependencies:
       debug: 4.3.4
       typescript: 5.4.2
@@ -15822,12 +15820,10 @@ snapshots:
     dependencies:
       deep-equal: 2.2.3
 
-  arktype@1.0.29-alpha: {}
-
-  arktype@2.0.0-beta.3:
+  arktype@2.0.0-beta.6:
     dependencies:
-      '@ark/schema': 0.3.0
-      '@ark/util': 0.2.0
+      '@ark/schema': 0.3.3
+      '@ark/util': 0.2.2
 
   array-buffer-byte-length@1.0.1:
     dependencies:
@@ -18342,7 +18338,7 @@ snapshots:
 
   is-arguments@1.1.1:
     dependencies:
-      call-bind: 1.0.7
+      call-bind: 1.0.2
       has-tostringtag: 1.0.0
 
   is-array-buffer@3.0.4:
@@ -22198,7 +22194,7 @@ snapshots:
       '@types/node': 20.12.12
       fsevents: 2.3.3
 
-  vitest@0.34.6(jsdom@22.1.0):
+  vitest@0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)):
     dependencies:
       '@types/chai': 4.3.5
       '@types/chai-subset': 1.3.3
