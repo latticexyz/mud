@@ -22,7 +22,7 @@ export function solidityToAbi(opts: { sourcePath: string; source: string; contra
     return [];
   }
 
-  // TODO: extract more types
+  // TODO: extract more types (we don't support em in interfaces yet so leaving em out for now)
   const abi: (AbiFunction | AbiError)[] = [];
 
   visit(contract, {
@@ -98,10 +98,10 @@ function typeNameToAbiType(typeName: TypeName): AbiType {
   if (typeName.type === "ElementaryTypeName") {
     return typeName.name as AbiType;
   }
-  if (typeName.type === "UserDefinedTypeName") {
-    // TODO: resolve this to underlying abi type
-    return typeName.namePath as AbiType;
-  }
+  // if (typeName.type === "UserDefinedTypeName") {
+  //   // TODO: resolve this to underlying abi type
+  //   return typeName.namePath as AbiType;
+  // }
   if (typeName.type === "ArrayTypeName") {
     const length = ((): string => {
       if (!typeName.length) return "";
