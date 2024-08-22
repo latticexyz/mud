@@ -81,8 +81,8 @@ describe("defineStore", () => {
       readonly tables: {
         readonly Example: {
           readonly label: "Example"
-          readonly type: "table"
           readonly namespaceLabel: ""
+          readonly type: "table"
           readonly namespace: string
           readonly name: string
           readonly tableId: \`0x\${string}\`
@@ -115,8 +115,8 @@ describe("defineStore", () => {
   readonly tables: {
     readonly Example: {
       readonly label: "Example"
-      readonly type: "table"
       readonly namespaceLabel: ""
+      readonly type: "table"
       readonly namespace: string
       readonly name: string
       readonly tableId: \`0x\${string}\`
@@ -237,8 +237,8 @@ describe("defineStore", () => {
       readonly tables: {
         readonly Example: {
           readonly label: "Example"
-          readonly type: "table"
           readonly namespaceLabel: "root"
+          readonly type: "table"
           readonly namespace: string
           readonly name: string
           readonly tableId: \`0x\${string}\`
@@ -271,8 +271,8 @@ describe("defineStore", () => {
   readonly tables: {
     readonly root__Example: {
       readonly label: "Example"
-      readonly type: "table"
       readonly namespaceLabel: "root"
+      readonly type: "table"
       readonly namespace: string
       readonly name: string
       readonly tableId: \`0x\${string}\`
