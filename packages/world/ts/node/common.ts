@@ -3,6 +3,9 @@ import { Abi, Hex } from "viem";
 // https://eips.ethereum.org/EIPS/eip-170
 export const contractSizeLimit = parseInt("6000", 16);
 
+// relative to project root dir (`rootDir`)
+export const systemsManifestFilename = ".mud/local/systems.json";
+
 export type ReferenceIdentifier = {
   /**
    * Path to source file, e.g. `src/SomeLib.sol`

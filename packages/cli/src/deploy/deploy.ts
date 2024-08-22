@@ -90,14 +90,10 @@ export async function deploy({
     throw new Error(`Unsupported World version: ${worldDeploy.worldVersion}`);
   }
 
-  const resources = [
-    ...tables.map((table) => ({ resourceId: table.tableId, label: table.label })),
-    ...systems.map((system) => ({ resourceId: system.systemId, label: system.label })),
-  ];
   const namespaceTxs = await ensureNamespaceOwner({
     client,
     worldDeploy,
-    resourceIds: resources.map(({ resourceId }) => resourceId),
+    resourceIds: [...tables.map(({ tableId }) => tableId), ...systems.map(({ systemId }) => systemId)],
   });
 
   debug("waiting for all namespace registration transactions to confirm");
@@ -130,18 +126,21 @@ export async function deploy({
     modules,
   });
 
-  const labelTxs = await ensureResourceTags({
+  const tableTags = tables.map(({ tableId: resourceId, label }) => ({ resourceId, tag: "label", value: label }));
+  const systemTags = systems.flatMap(({ systemId: resourceId, label, abi, worldAbi }) => [
+    { resourceId, tag: "label", value: label },
+    { resourceId, tag: "abi", value: abi.join("\n") },
+    { resourceId, tag: "worldAbi", value: worldAbi.join("\n") },
+  ]);
+
+  const tagTxs = await ensureResourceTags({
     client,
     worldDeploy,
-    tags: resources.map((resource) => ({
-      resourceId: resource.resourceId,
-      tag: "label",
-      value: resource.label,
-    })),
+    tags: [...tableTags, ...systemTags],
     valueToHex: stringToHex,
   });
 
-  const txs = [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs, ...labelTxs];
+  const txs = [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs, ...tagTxs];
 
   // wait for each tx separately/serially, because parallelizing results in RPC errors
   debug("waiting for all transactions to confirm");

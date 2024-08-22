@@ -49,7 +49,7 @@ export async function ensureResourceTags<const value>({
         const resource = hexToResource(tag.resourceId);
         // TODO: move to resourceToDebugString
         const resourceString = `${resource.type}:${resource.namespace}:${resource.name}`;
-        debug(`setting resource tag for ${resourceString}`, { [tag.tag]: tag.value });
+        debug(`tagging ${resourceString} with ${tag.tag}: ${JSON.stringify(tag.value)}`);
         try {
           return await writeContract(client, {
             chain: client.chain ?? null,

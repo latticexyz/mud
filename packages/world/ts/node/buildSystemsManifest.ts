@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { ResolvedSystem, resolveSystems } from "./resolveSystems";
 import { World } from "../config/v2";
-import { ContractArtifact } from "./common";
+import { ContractArtifact, systemsManifestFilename } from "./common";
 import { findContractArtifacts } from "./findContractArtifacts";
 import { getOutDirectory as getForgeOutDirectory } from "@latticexyz/common/foundry";
 import path from "node:path";
@@ -76,9 +76,8 @@ export async function buildSystemsManifest(opts: { rootDir: string; config: Worl
     createdAt: Date.now(),
   } satisfies typeof SystemsManifest.infer;
 
-  const manifestFilename = ".mud/local/systems.json";
-  const outFile = path.join(opts.rootDir, manifestFilename);
+  const outFile = path.join(opts.rootDir, systemsManifestFilename);
   await mkdir(path.dirname(outFile), { recursive: true });
   await writeFile(outFile, JSON.stringify(manifest, null, 2) + "\n");
-  debug("Wrote systems manifest to", manifestFilename);
+  debug("Wrote systems manifest to", systemsManifestFilename);
 }

@@ -89,7 +89,11 @@ export type System = DeterministicContract & {
   readonly allowAll: boolean;
   readonly allowedAddresses: readonly Hex[];
   readonly allowedSystemIds: readonly Hex[];
+  // TODO: replace this with system manifest data
   readonly worldFunctions: readonly WorldFunction[];
+  // human readable ABIs to register onchain
+  readonly abi: readonly string[];
+  readonly worldAbi: readonly string[];
 };
 
 export type DeployedSystem = Omit<
