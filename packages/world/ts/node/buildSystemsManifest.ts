@@ -7,15 +7,8 @@ import { getOutDirectory as getForgeOutDirectory } from "@latticexyz/common/foun
 import path from "node:path";
 import { Abi, Hex, isHex } from "viem";
 import { formatAbi, formatAbiItem } from "abitype";
-import IBaseWorldAbi from "../../out/IBaseWorld.sol/IBaseWorld.abi.json";
-import SystemAbi from "../../out/System.sol/System.abi.json";
 import { debug } from "./debug";
 import { type } from "arktype";
-
-const excludedAbi = formatAbi([
-  ...IBaseWorldAbi.filter((item) => item.type === "event" || item.type === "error"),
-  ...SystemAbi,
-] as Abi);
 
 export const SystemsManifest = type({
   systems: [
@@ -37,6 +30,14 @@ export const SystemsManifest = type({
 });
 
 export async function buildSystemsManifest(opts: { rootDir: string; config: World }): Promise<void> {
+  // we have to import these at runtime because they may not yet exist at build time
+  const { default: IBaseWorldAbi } = await import("../../out/IBaseWorld.sol/IBaseWorld.abi.json");
+  const { default: SystemAbi } = await import("../../out/System.sol/System.abi.json");
+  const excludedAbi = formatAbi([
+    ...IBaseWorldAbi.filter((item) => item.type === "event" || item.type === "error"),
+    ...SystemAbi,
+  ] as Abi);
+
   const systems = await resolveSystems(opts);
 
   // TODO: expose a `cwd` option to make sure this runs relative to `rootDir`
