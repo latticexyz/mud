@@ -1,4 +1,4 @@
-import { Account, Address, Chain, Client, Hex, Transport } from "viem";
+import { Account, Address, Chain, Client, Hex, Transport, stringToHex } from "viem";
 import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
@@ -15,7 +15,7 @@ import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";
 import { ensureWorldFactory } from "./ensureWorldFactory";
 import { Table } from "@latticexyz/config";
-import { ensureResourceLabels } from "./ensureResourceLabels";
+import { ensureResourceTags } from "./ensureResourceTags";
 
 type DeployOptions = {
   client: Client<Transport, Chain | undefined, Account>;
@@ -129,10 +129,16 @@ export async function deploy({
     worldDeploy,
     modules,
   });
-  const labelTxs = await ensureResourceLabels({
+
+  const labelTxs = await ensureResourceTags({
     client,
     worldDeploy,
-    resources,
+    tags: resources.map((resource) => ({
+      resourceId: resource.resourceId,
+      tag: "label",
+      value: resource.label,
+    })),
+    valueToHex: stringToHex,
   });
 
   const txs = [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs, ...labelTxs];

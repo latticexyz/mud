@@ -37,6 +37,7 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
+    "@ark/util": "catalog:",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",

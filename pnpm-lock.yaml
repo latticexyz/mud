@@ -145,6 +145,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@ark/util':
+        specifier: 'catalog:'
+        version: 0.2.2
       '@aws-sdk/client-kms':
         specifier: ^3.556.0
         version: 3.556.0
@@ -542,6 +545,9 @@ importers:
 
   packages/protocol-parser:
     dependencies:
+      '@ark/util':
+        specifier: 'catalog:'
+        version: 0.2.2
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
