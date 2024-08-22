@@ -25,14 +25,14 @@ export type Schema = {
 
 export type Table = {
   /**
-   * Human-readable label for this table's namespace. Used for namespace config keys and directory names.
-   */
-  readonly namespaceLabel: string;
-  /**
    * Human-readable label for this table. Used as config keys, library names, and filenames.
    * Labels are not length constrained like resource names, but special characters should be avoided to be compatible with the filesystem, Solidity compiler, etc.
    */
   readonly label: string;
+  /**
+   * Human-readable label for this table's namespace. Used for namespace config keys and directory names.
+   */
+  readonly namespaceLabel: string;
   /**
    * Table type used in table's resource ID and determines how storage and events are used by this table.
    */
@@ -42,7 +42,7 @@ export type Table = {
    */
   readonly namespace: string;
   /**
-   * Table name used in system's resource ID.
+   * Table name used in table's resource ID.
    */
   readonly name: string;
   /**

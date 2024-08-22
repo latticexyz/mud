@@ -156,10 +156,10 @@ export function resolveTableCodegen<input extends TableInput>(input: input): res
 export type resolveTable<input, scope extends Scope = Scope> = input extends TableInput
   ? {
       readonly label: input["label"];
-      readonly type: undefined extends input["type"] ? typeof TABLE_DEFAULTS.type : input["type"];
       readonly namespaceLabel: undefined extends input["namespaceLabel"]
         ? typeof TABLE_DEFAULTS.namespace
         : input["namespaceLabel"];
+      readonly type: undefined extends input["type"] ? typeof TABLE_DEFAULTS.type : input["type"];
       readonly namespace: string;
       readonly name: string;
       readonly tableId: Hex;
@@ -177,7 +177,9 @@ export function resolveTable<input extends TableInput, scope extends Scope = Abi
   scope: scope = AbiTypeScope as unknown as scope,
 ): resolveTable<input, scope> {
   const namespaceLabel = input.namespaceLabel ?? TABLE_DEFAULTS.namespace;
+  // validate ensures this is length constrained
   const namespace = input.namespace ?? namespaceLabel;
+
   const label = input.label;
   const name = input.name ?? label.slice(0, 16);
   const type = input.type ?? TABLE_DEFAULTS.type;

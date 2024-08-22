@@ -9,12 +9,12 @@ export type ValidateSystemOptions = { readonly inNamespace?: true };
 
 export type requiredSystemKey<inNamespace extends true | undefined> = Exclude<
   requiredKeyOf<SystemInput>,
-  inNamespace extends true ? "label" | "namespace" : never
+  inNamespace extends true ? "label" | "namespaceLabel" | "namespace" : never
 >;
 
 export type validateSystem<input, options extends ValidateSystemOptions = {}> = {
   [key in keyof input | requiredSystemKey<options["inNamespace"]>]: key extends keyof SystemInput
-    ? key extends "label" | "namespace"
+    ? key extends "label" | "namespaceLabel" | "namespace"
       ? options["inNamespace"] extends true
         ? ErrorMessage<"Overrides of `label` and `namespace` are not allowed for systems in this context.">
         : key extends keyof input
@@ -32,8 +32,24 @@ export function validateSystem<input>(
     throw new Error(`Expected full system config, got \`${JSON.stringify(input)}\``);
   }
 
-  if (options.inNamespace && (hasOwnKey(input, "label") || hasOwnKey(input, "namespace"))) {
-    throw new Error("Overrides of `label` and `namespace` are not allowed for systems in this context.");
+  if (
+    options.inNamespace &&
+    (hasOwnKey(input, "label") || hasOwnKey(input, "namespaceLabel") || hasOwnKey(input, "namespace"))
+  ) {
+    throw new Error(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for systems in this context.",
+    );
+  }
+
+  if (
+    hasOwnKey(input, "namespaceLabel") &&
+    typeof input.namespaceLabel === "string" &&
+    (!hasOwnKey(input, "namespace") || typeof input.namespace !== "string") &&
+    input.namespaceLabel.length > 14
+  ) {
+    throw new Error(
+      `System \`namespace\` defaults to \`namespaceLabel\`, but must fit into a \`bytes14\` and "${input.namespaceLabel}" is too long. Provide explicit \`namespace\` override.`,
+    );
   }
 
   if (hasOwnKey(input, "namespace") && typeof input.namespace === "string" && input.namespace.length > 14) {
@@ -47,7 +63,10 @@ export function validateSystem<input>(
 export type resolveSystem<input> = input extends SystemInput
   ? {
       readonly label: input["label"];
-      readonly namespace: undefined extends input["namespace"] ? SYSTEM_DEFAULTS["namespace"] : input["namespace"];
+      readonly namespaceLabel: undefined extends input["namespaceLabel"]
+        ? typeof SYSTEM_DEFAULTS.namespace
+        : input["namespaceLabel"];
+      readonly namespace: string;
       readonly name: string;
       readonly systemId: Hex;
       readonly openAccess: undefined extends input["openAccess"] ? SYSTEM_DEFAULTS["openAccess"] : input["openAccess"];
@@ -59,8 +78,11 @@ export type resolveSystem<input> = input extends SystemInput
   : never;
 
 export function resolveSystem<input extends SystemInput>(input: input): resolveSystem<input> {
+  const namespaceLabel = input.namespaceLabel ?? SYSTEM_DEFAULTS.namespace;
+  // validate ensures this is length constrained
+  const namespace = input.namespace ?? namespaceLabel;
+
   const label = input.label;
-  const namespace = input.namespace ?? SYSTEM_DEFAULTS.namespace;
   const name = input.name ?? label.slice(0, 16);
   const systemId = resourceToHex({ type: "system", namespace, name });
 
@@ -68,6 +90,7 @@ export function resolveSystem<input extends SystemInput>(input: input): resolveS
     {
       ...input,
       label,
+      namespaceLabel,
       namespace,
       name,
       systemId,
