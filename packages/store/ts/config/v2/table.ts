@@ -47,7 +47,7 @@ export type ValidateTableOptions = { inStoreContext: boolean };
 
 export type requiredTableKey<inStoreContext extends boolean> = Exclude<
   requiredKeyOf<TableInput>,
-  inStoreContext extends true ? "label" | "namespace" : ""
+  inStoreContext extends true ? "label" | "namespaceLabel" | "namespace" : never
 >;
 
 export type validateTable<
@@ -59,9 +59,9 @@ export type validateTable<
     ? validateKeys<getStaticAbiTypeKeys<conform<get<input, "schema">, SchemaInput>, scope>, get<input, key>>
     : key extends "schema"
       ? validateSchema<get<input, key>, scope>
-      : key extends "label" | "namespace"
+      : key extends "label" | "namespaceLabel" | "namespace"
         ? options["inStoreContext"] extends true
-          ? ErrorMessage<"Overrides of `label` and `namespace` are not allowed for tables in this context">
+          ? ErrorMessage<"Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context">
           : key extends keyof input
             ? narrow<input[key]>
             : never
@@ -115,8 +115,13 @@ export function validateTable<input, scope extends Scope = AbiTypeScope>(
     throw new Error(`Table \`name\` must fit into a \`bytes16\`, but "${input.name}" is too long.`);
   }
 
-  if (options.inStoreContext && (hasOwnKey(input, "label") || hasOwnKey(input, "namespace"))) {
-    throw new Error("Overrides of `label` and `namespace` are not allowed for tables in this context.");
+  if (
+    options.inStoreContext &&
+    (hasOwnKey(input, "label") || hasOwnKey(input, "namespaceLabel") || hasOwnKey(input, "namespace"))
+  ) {
+    throw new Error(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context.",
+    );
   }
 }
 

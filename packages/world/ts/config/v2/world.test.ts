@@ -517,28 +517,32 @@ describe("defineWorld", () => {
         namespace: "CustomNS",
         tables: {
           Example: {
-            // @ts-expect-error "Overrides of `label` and `namespace` are not allowed for tables in this context"
+            // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
             label: "NotAllowed",
             schema: { id: "address" },
             key: ["id"],
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in this context");
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
 
     attest(() =>
       defineWorld({
         namespace: "CustomNS",
         tables: {
           Example: {
-            // @ts-expect-error "Overrides of `label` and `namespace` are not allowed for tables in this context"
+            // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
             namespace: "NotAllowed",
             schema: { id: "address" },
             key: ["id"],
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in this context");
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
 
     attest(() =>
       defineWorld({
@@ -546,7 +550,7 @@ describe("defineWorld", () => {
           CustomNS: {
             tables: {
               Example: {
-                // @ts-expect-error "Overrides of `label` and `namespace` are not allowed for tables in this context"
+                // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
                 label: "NotAllowed",
                 schema: { id: "address" },
                 key: ["id"],
@@ -555,7 +559,9 @@ describe("defineWorld", () => {
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in this context");
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
 
     attest(() =>
       defineWorld({
@@ -563,7 +569,7 @@ describe("defineWorld", () => {
           CustomNS: {
             tables: {
               Example: {
-                // @ts-expect-error "Overrides of `label` and `namespace` are not allowed for tables in this context"
+                // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
                 namespace: "NotAllowed",
                 schema: { id: "address" },
                 key: ["id"],
@@ -572,7 +578,9 @@ describe("defineWorld", () => {
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in this context");
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
   });
 
   it("should expand systems config", () => {
