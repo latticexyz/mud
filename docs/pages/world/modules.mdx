@@ -1,3 +1,5 @@
+import { CollapseCode } from "../../components/CollapseCode";
+
 # Modules
 
 Modules are onchain installation scripts that create resources and their associated configuration when called by a `World`.
@@ -5,23 +7,10 @@ This is somewhat similar to one of the use cases for [foundry scripts](https://b
 
 ## Module installation
 
-The easiest way to install modules is to edit [the config file](/config).
-At the top level you specify `modules`, a list of modules to install.
-Every module is a struct with three parameters:
-
-- `artifactPath` - relative path to the module's compiled JSON artifact (usually in `out`) or an import path if using a module from an npm package.
-  This path is resolved using [Node's module `require` API](https://nodejs.org/api/modules.html#modulerequireid).
-- `root` - whether the module is to be installed with [root namespace privileges](/world/systems#root-systems).
-  The default is `false`.
-- `args` - a list of arguments to give the module's install function.
-  Each argument is a structure with two fields:
-  - `type` - the Solidity data type
-  - `value` - the value
-    To encode a complex data type, such as a structure or an array, you can use Viem's [`encodeAbiParameters`](https://viem.sh/docs/abi/encodeAbiParameters.html).
-
+The easiest way to install modules is to edit [the config file](/config/reference#modules).
 You can see an example of this method [on the ERC-721 module page](/world/modules/erc721#deployment).
 
-### Installation by transaction
+### Installation by script
 
 Modules can be installed using [`World.installModule(address moduleAddress, bytes memory initData)`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/ModuleInstallationSystem.sol#L17-L37).
 When you do this, the `World` calls the module's `install` function with `initData` as the argument(s).
@@ -29,6 +18,69 @@ Because this is a call, the module does not have any administrative permissions 
 
 Alternatively, the owner of the root namespace can install modules using [`World.installRootModule(address moduleAddress, bytes memory initData)`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L90-L119).
 In this case, the `World` uses delegatecall and module has all the permissions of a `System` in the root namespace.
+
+For example, here is an installation script for [the `KeysWithValue` module](/world/modules/keyswithvalue).
+
+<CollapseCode>
+
+```solidity filename="DeployKeyWithValueModule.s.sol" copy showLineNumbers {8-11,22-24}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_TABLE } from "@latticexyz/world/src/worldResourceTypes.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { KeysWithValueModule } from "@latticexyz/world-modules/src/modules/keyswithvalue/KeysWithValueModule.sol";
+
+contract DeployKeyWithValueModule is Script {
+  function run() external {
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    address worldAddress = 0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1;
+
+    vm.startBroadcast(deployerPrivateKey);
+    IWorld world = IWorld(worldAddress);
+
+    // Deploy the module
+    KeysWithValueModule keysWithValueModule = new KeysWithValueModule();
+    ResourceId sourceTableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "", name: "Tasks" });
+    world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```solidity
+    KeysWithValueModule keysWithValueModule = new KeysWithValueModule();
+```
+
+Deploy the module.
+Modules are stateless, so if there is already a copy of the contract on the blockchain you can just use that.
+
+```solidity
+    ResourceId sourceTableId =
+       WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "", name: "Tasks" });
+```
+
+Get the resourceID for the table that needs a reverse index.
+
+```solidity
+    world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
+```
+
+Actually install the module in the `World`.
+
+</details>
 
 ## Writing modules
 
