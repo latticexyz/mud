@@ -14,7 +14,7 @@ export type Input = {
 
 export type Output = readonly ContractArtifact[];
 
-const parseArtifact = type("parse.json").to(types.Artifact);
+const parseArtifact = type("string").pipe.try((s) => JSON.parse(s), types.Artifact);
 type Artifact = typeof types.Artifact.infer;
 
 function hasMetadata(

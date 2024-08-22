@@ -6,7 +6,7 @@ import { systemsManifestFilename } from "./common";
 import { SystemsManifest } from "./buildSystemsManifest";
 import { indent } from "@latticexyz/common/utils";
 
-const parseManifest = type("parse.json").to(SystemsManifest);
+const parseManifest = type("string").pipe.try((s) => JSON.parse(s), SystemsManifest);
 
 export async function loadSystemsManifest(opts: {
   rootDir: string;
