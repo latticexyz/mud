@@ -157,7 +157,7 @@ export type resolveTable<input, scope extends Scope = Scope> = input extends Tab
   ? {
       readonly label: input["label"];
       readonly namespaceLabel: undefined extends input["namespaceLabel"]
-        ? typeof TABLE_DEFAULTS.namespace
+        ? typeof TABLE_DEFAULTS.namespaceLabel
         : input["namespaceLabel"];
       readonly type: undefined extends input["type"] ? typeof TABLE_DEFAULTS.type : input["type"];
       readonly namespace: string;
@@ -176,7 +176,7 @@ export function resolveTable<input extends TableInput, scope extends Scope = Abi
   input: input,
   scope: scope = AbiTypeScope as unknown as scope,
 ): resolveTable<input, scope> {
-  const namespaceLabel = input.namespaceLabel ?? TABLE_DEFAULTS.namespace;
+  const namespaceLabel = input.namespaceLabel ?? TABLE_DEFAULTS.namespaceLabel;
   // validate ensures this is length constrained
   const namespace = input.namespace ?? namespaceLabel;
 

@@ -16,7 +16,7 @@ export type validateSystem<input, options extends ValidateSystemOptions = {}> = 
   [key in keyof input | requiredSystemKey<options["inNamespace"]>]: key extends keyof SystemInput
     ? key extends "label" | "namespaceLabel" | "namespace"
       ? options["inNamespace"] extends true
-        ? ErrorMessage<"Overrides of `label` and `namespace` are not allowed for systems in this context.">
+        ? ErrorMessage<"Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for systems in this context.">
         : key extends keyof input
           ? narrow<input[key]>
           : never
@@ -64,7 +64,7 @@ export type resolveSystem<input> = input extends SystemInput
   ? {
       readonly label: input["label"];
       readonly namespaceLabel: undefined extends input["namespaceLabel"]
-        ? typeof SYSTEM_DEFAULTS.namespace
+        ? typeof SYSTEM_DEFAULTS.namespaceLabel
         : input["namespaceLabel"];
       readonly namespace: string;
       readonly name: string;
@@ -78,7 +78,7 @@ export type resolveSystem<input> = input extends SystemInput
   : never;
 
 export function resolveSystem<input extends SystemInput>(input: input): resolveSystem<input> {
-  const namespaceLabel = input.namespaceLabel ?? SYSTEM_DEFAULTS.namespace;
+  const namespaceLabel = input.namespaceLabel ?? SYSTEM_DEFAULTS.namespaceLabel;
   // validate ensures this is length constrained
   const namespace = input.namespace ?? namespaceLabel;
 
