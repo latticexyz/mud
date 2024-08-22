@@ -24,7 +24,12 @@ function hasMetadata(
 }
 
 export async function findContractArtifacts({ forgeOutDir }: Input): Promise<Output> {
-  const files = (await glob("**/*.sol/*.json", { ignore: "**/*.abi.json", cwd: forgeOutDir })).sort();
+  const files = (
+    await glob("**/*.sol/*.json", {
+      ignore: ["**/*.abi.json", "**/*.t.sol/*.json", "**/*.s.sol/*.json"],
+      cwd: forgeOutDir,
+    })
+  ).sort();
   const artifactsJson = await Promise.all(
     files.map(async (filename) => ({
       filename,
