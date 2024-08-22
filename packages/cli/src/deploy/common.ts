@@ -98,7 +98,7 @@ export type System = DeterministicContract & {
 
 export type DeployedSystem = Omit<
   System,
-  "label" | "abi" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"
+  "label" | "abi" | "worldAbi" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"
 > & {
   address: Address;
 };
