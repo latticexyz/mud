@@ -100,7 +100,7 @@ async function main() {
     // If world address is still not found, throw an error
     if (!worldAddress) {
       throw new Error(
-        "World address not provided and not found in worlds.json. Use --worldAddress to specify a world, or set different path for worlds configuration file with --worldsFile.",
+        "World address not provided and not found in worlds.json. Use --worldAddress to specify a world, or set different path for worlds file with --worldsFile.",
       );
     }
   }
