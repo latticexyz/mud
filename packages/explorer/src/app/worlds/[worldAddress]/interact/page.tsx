@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { Hex } from "viem";
 import { Form } from "./Form";
 
-async function getABI(worldAddress: Hex) {
+export async function getAbi(worldAddress: Hex) {
   const headersList = headers();
   const protocol = headersList.get("x-forwarded-proto");
   const host = headersList.get("host");
@@ -19,6 +19,6 @@ async function getABI(worldAddress: Hex) {
 
 export default async function InteractPage({ params }: { params: { worldAddress: Hex } }) {
   const { worldAddress } = params;
-  const data = await getABI(worldAddress);
+  const data = await getAbi(worldAddress);
   return <Form abi={data.abi} />;
 }
