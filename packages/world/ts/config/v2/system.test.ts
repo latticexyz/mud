@@ -13,7 +13,7 @@ describe("resolveSystem", () => {
     const expected = {
       ...SYSTEM_DEFAULTS,
       label: "ExampleSystem",
-      namespace: "",
+      namespace: "" as string,
       name: "ExampleSystem" as string,
       systemId: resourceToHex({ type: "system", namespace: "", name: "ExampleSystem" }),
       deploy: {
@@ -34,7 +34,7 @@ describe("resolveSystem", () => {
     const expected = {
       ...SYSTEM_DEFAULTS,
       label: "ExampleSystem",
-      namespace: "",
+      namespace: "" as string,
       name: "ExampleSystem" as string,
       systemId: resourceToHex({ type: "system", namespace: "", name: "ExampleSystem" }),
       deploy: {
@@ -55,7 +55,7 @@ describe("resolveSystem", () => {
     const expected = {
       ...SYSTEM_DEFAULTS,
       label: "ExampleSystem",
-      namespace: "",
+      namespace: "" as string,
       name: "ExampleSystem" as string,
       systemId: resourceToHex({ type: "system", namespace: "", name: "ExampleSystem" }),
       openAccess: false,
