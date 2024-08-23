@@ -81,8 +81,8 @@ describe("defineStore", () => {
       readonly tables: {
         readonly Example: {
           readonly label: "Example"
-          readonly type: "table"
           readonly namespaceLabel: ""
+          readonly type: "table"
           readonly namespace: string
           readonly name: string
           readonly tableId: \`0x\${string}\`
@@ -115,8 +115,8 @@ describe("defineStore", () => {
   readonly tables: {
     readonly Example: {
       readonly label: "Example"
-      readonly type: "table"
       readonly namespaceLabel: ""
+      readonly type: "table"
       readonly namespace: string
       readonly name: string
       readonly tableId: \`0x\${string}\`
@@ -237,8 +237,8 @@ describe("defineStore", () => {
       readonly tables: {
         readonly Example: {
           readonly label: "Example"
-          readonly type: "table"
           readonly namespaceLabel: "root"
+          readonly type: "table"
           readonly namespace: string
           readonly name: string
           readonly tableId: \`0x\${string}\`
@@ -271,8 +271,8 @@ describe("defineStore", () => {
   readonly tables: {
     readonly root__Example: {
       readonly label: "Example"
-      readonly type: "table"
       readonly namespaceLabel: "root"
+      readonly type: "table"
       readonly namespace: string
       readonly name: string
       readonly tableId: \`0x\${string}\`
@@ -651,28 +651,48 @@ describe("defineStore", () => {
         namespace: "CustomNS",
         tables: {
           Example: {
-            // @ts-expect-error "Overrides of `label` and `namespace` are not allowed for tables in this context"
+            // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
             label: "NotAllowed",
             schema: { id: "address" },
             key: ["id"],
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in this context");
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
 
     attest(() =>
       defineStore({
         namespace: "CustomNS",
         tables: {
           Example: {
-            // @ts-expect-error "Overrides of `label` and `namespace` are not allowed for tables in this context"
+            // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
+            namespaceLabel: "NotAllowed",
+            schema: { id: "address" },
+            key: ["id"],
+          },
+        },
+      }),
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
+
+    attest(() =>
+      defineStore({
+        namespace: "CustomNS",
+        tables: {
+          Example: {
+            // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
             namespace: "NotAllowed",
             schema: { id: "address" },
             key: ["id"],
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in this context");
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
 
     attest(() =>
       defineStore({
@@ -680,7 +700,7 @@ describe("defineStore", () => {
           CustomNS: {
             tables: {
               Example: {
-                // @ts-expect-error "Overrides of `label` and `namespace` are not allowed for tables in this context"
+                // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
                 label: "NotAllowed",
                 schema: { id: "address" },
                 key: ["id"],
@@ -689,7 +709,9 @@ describe("defineStore", () => {
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in this context");
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
 
     attest(() =>
       defineStore({
@@ -697,7 +719,26 @@ describe("defineStore", () => {
           CustomNS: {
             tables: {
               Example: {
-                // @ts-expect-error "Overrides of `label` and `namespace` are not allowed for tables in this context"
+                // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
+                namespaceLabel: "NotAllowed",
+                schema: { id: "address" },
+                key: ["id"],
+              },
+            },
+          },
+        },
+      }),
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
+
+    attest(() =>
+      defineStore({
+        namespaces: {
+          CustomNS: {
+            tables: {
+              Example: {
+                // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
                 namespace: "NotAllowed",
                 schema: { id: "address" },
                 key: ["id"],
@@ -706,7 +747,9 @@ describe("defineStore", () => {
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in this context");
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
   });
 
   it("should allow const enum as input", () => {
