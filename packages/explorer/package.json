@@ -6,6 +6,10 @@
   "bin": {
     "explorer": "./dist/explorer.js"
   },
+  "files": [
+    "dist",
+    ".next/standalone/packages/explorer"
+  ],
   "scripts": {
     "build": "pnpm run build:explorer && pnpm run build:bin",
     "build:bin": "tsup",
