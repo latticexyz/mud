@@ -112,7 +112,7 @@ export function resolveWorld<const input extends WorldInput>(input: input): reso
       // TODO: flatten systems from namespaces
       systems:
         !store.multipleNamespaces && input.systems
-          ? resolveSystems(input.systems, store.namespace)
+          ? resolveSystems(input.systems, store.namespace, store.namespace)
           : CONFIG_DEFAULTS.systems,
       excludeSystems: get(input, "excludeSystems"),
       codegen: mergeIfUndefined(store.codegen, resolveCodegen(input.codegen)),
