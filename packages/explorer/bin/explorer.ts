@@ -100,7 +100,7 @@ async function main() {
     // If world address is still not found, throw an error
     if (!worldAddress) {
       throw new Error(
-        "World address not found. Specify with --worldAddress or ensure it's in worlds.json. Use --worldsFile to set a custom path for worlds.json.",
+        `No world address found in "${worldsFile}" file. Either run \`mud deploy\` to create one or provide one with \`--worldAddress\`.`,
       );
     }
   }
