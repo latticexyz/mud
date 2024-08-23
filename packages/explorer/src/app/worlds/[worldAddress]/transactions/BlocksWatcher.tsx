@@ -24,16 +24,20 @@ type Props = {
 const columnHelper = createColumnHelper<TransactionReceipt>();
 
 const columns = [
+  columnHelper.accessor("blockNumber", {
+    header: "#",
+    cell: (row) => row.getValue().toString(),
+  }),
   columnHelper.accessor("transactionHash", {
-    header: "Hash",
+    header: "hash",
     cell: (row) => <TruncatedHex hex={row.getValue()} />,
   }),
   columnHelper.accessor("from", {
-    header: "From",
+    header: "from",
     cell: (row) => <TruncatedHex hex={row.getValue()} />,
   }),
   columnHelper.accessor("to", {
-    header: "To",
+    header: "to",
     cell: (row) => {
       const value = row.getValue();
       if (!value) {
@@ -44,11 +48,11 @@ const columns = [
     },
   }),
   columnHelper.accessor("gasUsed", {
-    header: "Gas used",
+    header: "gas used",
     cell: (row) => row.getValue().toString(),
   }),
   columnHelper.accessor("status", {
-    header: "Status",
+    header: "status",
     cell: (row) => row.getValue(),
   }),
 ];
@@ -61,8 +65,6 @@ export function BlocksWatcher({ abi }: Props) {
 
   console.log(worldAddres, abi);
 
-  console.log(expanded);
-
   const table = useReactTable({
     data: transactions,
     columns,
@@ -71,25 +73,29 @@ export function BlocksWatcher({ abi }: Props) {
     getExpandedRowModel: getExpandedRowModel(),
   });
 
-  const addTransaction = (tx: TransactionReceipt) => {
-    setTransactions([...transactions, tx]);
+  const addTransactions = (txs: TransactionReceipt[]) => {
+    setTransactions([...transactions, ...txs]);
+  };
+
+  const waitForReceipts = async (txHashes: string[]) => {
+    try {
+      const receipts = await Promise.all(
+        txHashes.map((txHash) => waitForTransactionReceipt(wagmiConfig, { hash: txHash })),
+      );
+
+      console.log(receipts);
+
+      addTransactions(receipts);
+    } catch (error) {
+      console.error("Error getting transaction:", error);
+    }
   };
 
   useWatchPendingTransactions({
     onTransactions: async (txHashes) => {
       console.log("new transactions:", txHashes);
 
-      for (const txHash of txHashes) {
-        try {
-          const receipt = await waitForTransactionReceipt(wagmiConfig, {
-            hash: txHash,
-          });
-
-          addTransaction(receipt);
-        } catch (error) {
-          console.error("Error getting transaction:", error);
-        }
-      }
+      await waitForReceipts(txHashes);
     },
   });
 
