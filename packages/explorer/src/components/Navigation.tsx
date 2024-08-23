@@ -8,31 +8,30 @@ import { useWorldUrl } from "../hooks/useWorldUrl";
 import { cn } from "../lib/utils";
 import { AccountSelect } from "./AccountSelect";
 
-export function Navigation() {
+function NavigationLink({ href, children }: { href: string; children: React.ReactNode }) {
   const pathname = usePathname();
   const getLinkUrl = useWorldUrl();
 
   return (
+    <Link
+      href={getLinkUrl(href)}
+      className={cn("text-sm uppercase underline-offset-[16px]", {
+        "font-semibold underline decoration-orange-500 decoration-4": pathname === getLinkUrl(href),
+      })}
+    >
+      {children}
+    </Link>
+  );
+}
+
+export function Navigation() {
+  return (
     <div className="mb-8">
       <div className="flex items-center justify-between">
         <div className="flex gap-x-6 py-4">
-          <Link
-            href={getLinkUrl("explorer")}
-            className={cn("text-sm uppercase underline-offset-[16px]", {
-              "font-semibold underline decoration-orange-500 decoration-4": pathname === getLinkUrl("explorer"),
-            })}
-          >
-            Data explorer
-          </Link>
-
-          <Link
-            href={getLinkUrl("interact")}
-            className={cn("text-sm uppercase underline-offset-[16px]", {
-              "font-semibold underline decoration-orange-500 decoration-4": pathname === getLinkUrl("interact"),
-            })}
-          >
-            Interact
-          </Link>
+          <NavigationLink href="/explorer">Data Explorer</NavigationLink>
+          <NavigationLink href="/interact">Interact</NavigationLink>
+          <NavigationLink href="/transactions">Transactions</NavigationLink>
         </div>
 
         <div className="flex items-center gap-x-4">
