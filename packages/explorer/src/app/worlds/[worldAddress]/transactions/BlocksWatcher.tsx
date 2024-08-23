@@ -4,7 +4,14 @@ import { useSearchParams } from "next/navigation";
 import { Abi, TransactionReceipt } from "viem";
 import { useWatchPendingTransactions } from "wagmi";
 import React, { useState } from "react";
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import {
+  ExpandedState,
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getExpandedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../components/ui/Table";
 import { TruncatedHex } from "../../../../components/ui/TruncatedHex";
@@ -50,13 +57,18 @@ export function BlocksWatcher({ abi }: Props) {
   const searchParams = useSearchParams();
   const worldAddres = searchParams.get("worldAddress");
   const [transactions, setTransactions] = useState<TransactionReceipt[]>([]);
+  const [expanded, setExpanded] = useState<ExpandedState>({});
 
   console.log(worldAddres, abi);
+
+  console.log(expanded);
 
   const table = useReactTable({
     data: transactions,
     columns,
+    onExpandedChange: setExpanded,
     getCoreRowModel: getCoreRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
   });
 
   const addTransaction = (tx: TransactionReceipt) => {
@@ -81,8 +93,6 @@ export function BlocksWatcher({ abi }: Props) {
     },
   });
 
-  console.log(transactions);
-
   return (
     <Table>
       <TableHeader>
@@ -101,11 +111,31 @@ export function BlocksWatcher({ abi }: Props) {
       <TableBody>
         {table.getRowModel().rows?.length ? (
           table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-              ))}
-            </TableRow>
+            <React.Fragment key={row.id}>
+              <TableRow
+                onClick={() => {
+                  row.toggleExpanded();
+                }}
+                style={{ cursor: "pointer" }}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                ))}
+              </TableRow>
+
+              {/* TODO: {row.getIsExpanded() && ( */}
+              {expanded[row.id] && (
+                <TableRow>
+                  <TableCell colSpan={columns.length}>
+                    <h3>Additional Information</h3>
+                    <p>
+                      This is some random expanded content for the transaction. You can replace this with actual
+                      transaction details or any other relevant information.
+                    </p>
+                  </TableCell>
+                </TableRow>
+              )}
+            </React.Fragment>
           ))
         ) : (
           <TableRow>
