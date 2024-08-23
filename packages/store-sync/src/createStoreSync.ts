@@ -1,5 +1,5 @@
 import { storeEventsAbi } from "@latticexyz/store";
-import { Hex, TransactionReceiptNotFoundError } from "viem";
+import { Hex, TransactionReceiptNotFoundError, formatLog, parseEventLogs } from "viem";
 import {
   StorageAdapter,
   StorageAdapterBlock,
@@ -267,6 +267,26 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
 
   // TODO: move to its own file so we can test it, have its own debug instance, etc.
   async function waitForTransaction(tx: Hex): Promise<WaitForTransactionResult> {
+    console.log("fetching receipt in hopes of it being in wiresaw");
+    const receipt = await publicClient.getTransactionReceipt({ hash: tx });
+    console.log("got receipt", receipt.status);
+
+    console.log("raw logs", receipt.logs);
+    const logs = parseEventLogs({
+      abi: storeEventsAbi,
+      logs: receipt.logs.map((log) => formatLog(log)),
+    });
+    console.log("parsed logs", logs);
+    if (logs.length > 0 && (lastBlockNumberProcessed == null || lastBlockNumberProcessed < receipt.blockNumber)) {
+      await storageAdapter({
+        blockNumber: receipt.blockNumber,
+        logs,
+      });
+    } else {
+      console.log("skipping logs already seen");
+    }
+    return receipt;
+
     debug("waiting for tx", tx);
 
     // This currently blocks for async call on each block processed
