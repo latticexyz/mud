@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Abi, TransactionReceipt } from "viem";
+import { Abi, TransactionReceipt, decodeFunctionData } from "viem";
 import { useWatchPendingTransactions } from "wagmi";
 import React, { useState } from "react";
 import {
@@ -12,7 +12,7 @@ import {
   getExpandedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { waitForTransactionReceipt } from "@wagmi/core";
+import { getTransaction, waitForTransactionReceipt } from "@wagmi/core";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../components/ui/Table";
 import { TruncatedHex } from "../../../../components/ui/TruncatedHex";
 import { wagmiConfig } from "../../../Providers";
@@ -29,7 +29,7 @@ const columns = [
     cell: (row) => row.getValue().toString(),
   }),
   columnHelper.accessor("transactionHash", {
-    header: "hash",
+    header: "tx hash",
     cell: (row) => <TruncatedHex hex={row.getValue()} />,
   }),
   columnHelper.accessor("from", {
@@ -50,10 +50,6 @@ const columns = [
   columnHelper.accessor("gasUsed", {
     header: "gas used",
     cell: (row) => row.getValue().toString(),
-  }),
-  columnHelper.accessor("status", {
-    header: "status",
-    cell: (row) => row.getValue(),
   }),
 ];
 
@@ -94,6 +90,15 @@ export function BlocksWatcher({ abi }: Props) {
   useWatchPendingTransactions({
     onTransactions: async (txHashes) => {
       console.log("new transactions:", txHashes);
+
+      const tx = await getTransaction(wagmiConfig, { hash: txHashes[0] });
+      console.log("transaction:", tx);
+
+      const parsedTx = decodeFunctionData({
+        abi,
+        data: tx.input,
+      });
+      console.log("parsedTx:", parsedTx);
 
       await waitForReceipts(txHashes);
     },
