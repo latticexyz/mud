@@ -11,11 +11,5 @@ type Props = {
 export default async function TransactionsPage({ params }: Props) {
   const { worldAddress } = params;
   const data = await getAbi(worldAddress);
-
-  return (
-    <div>
-      <h1>Transactions</h1>
-      <BlocksWatcher abi={data.abi} />
-    </div>
-  );
+  return <BlocksWatcher abi={data.abi} />;
 }
