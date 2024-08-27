@@ -1,30 +1,41 @@
 import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
-  namespace: "erc20",
+  namespace: "erc20-own-store",
   tables: {
     MUDERC20: {
       schema: {
         totalSupply: "uint256",
         id: "bytes32",
-        _name: "string",
-        _symbol: "string",
+        name: "string",
+        symbol: "string",
       },
       key: ["id"],
+      codegen: {
+        outputDirectory: "./tables",
+        tableIdArgument: true,
+      },
     },
-    BALANCES: {
+    Balances: {
       schema: {
         account: "address",
         balance: "uint256",
       },
       key: ["account"],
+      codegen: {
+        outputDirectory: "./tables",
+      },
     },
-    APPROVALS: {
+    Allowances: {
       schema: {
         account: "address",
+        spender: "address",
         approval: "uint256",
       },
-      key: ["account"],
+      key: ["account", "spender"],
+      codegen: {
+        outputDirectory: "./tables",
+      },
     },
   },
 });
