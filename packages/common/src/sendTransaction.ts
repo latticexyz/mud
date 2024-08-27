@@ -13,6 +13,7 @@ import { debug as parentDebug } from "./debug";
 import { getNonceManager } from "./getNonceManager";
 import { parseAccount } from "viem/accounts";
 import { getFeeRef } from "./getFeeRef";
+import { getAction } from "viem/utils";
 
 const debug = parentDebug.extend("sendTransaction");
 
@@ -75,7 +76,7 @@ export async function sendTransaction<
             ...feeRef.fees,
           };
           debug("sending tx to", request.to, "with nonce", nonce);
-          return await viem_sendTransaction(client, params);
+          return await getAction(client, viem_sendTransaction, "sendTransaction")(params);
         },
         {
           retries: 3,
