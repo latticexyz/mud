@@ -127,11 +127,16 @@ export async function deploy({
   });
 
   const tableTags = tables.map(({ tableId: resourceId, label }) => ({ resourceId, tag: "label", value: label }));
+  const systemTags = systems.flatMap(({ systemId: resourceId, label, abi, worldAbi }) => [
+    { resourceId, tag: "label", value: label },
+    { resourceId, tag: "abi", value: abi.join("\n") },
+    { resourceId, tag: "worldAbi", value: worldAbi.join("\n") },
+  ]);
 
   const tagTxs = await ensureResourceTags({
     client,
     worldDeploy,
-    tags: tableTags,
+    tags: [...tableTags, ...systemTags],
     valueToHex: stringToHex,
   });
 
