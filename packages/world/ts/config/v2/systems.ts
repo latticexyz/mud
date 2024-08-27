@@ -21,17 +21,20 @@ export function validateSystems(input: unknown): asserts input is SystemsInput {
   throw new Error(`Expected system config, received ${JSON.stringify(input)}`);
 }
 
-export type resolveSystems<systems extends SystemsInput, namespace extends string> = {
-  [label in keyof systems]: resolveSystem<systems[label] & { label: label; namespace: namespace }>;
+export type resolveSystems<systems extends SystemsInput, namespaceLabel extends string> = {
+  [label in keyof systems]: resolveSystem<
+    systems[label] & { label: label; namespaceLabel: namespaceLabel; namespace: string }
+  >;
 };
 
-export function resolveSystems<systems extends SystemsInput, namespace extends string>(
+export function resolveSystems<systems extends SystemsInput, namespaceLabel extends string>(
   systems: systems,
-  namespace: namespace,
-): resolveSystems<systems, namespace> {
+  namespaceLabel: namespaceLabel,
+  namespace: string,
+): resolveSystems<systems, namespaceLabel> {
   return Object.fromEntries(
     Object.entries(systems).map(([label, system]) => {
-      return [label, resolveSystem({ ...system, label, namespace })];
+      return [label, resolveSystem({ ...system, label, namespaceLabel, namespace })];
     }),
   ) as never;
 }

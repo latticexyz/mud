@@ -24,16 +24,39 @@ export type Schema = {
 };
 
 export type Table = {
-  // labels
-  readonly namespaceLabel: string;
+  /**
+   * Human-readable label for this table. Used as config keys, library names, and filenames.
+   * Labels are not length constrained like resource names, but special characters should be avoided to be compatible with the filesystem, Solidity compiler, etc.
+   */
   readonly label: string;
-  // resource ID
+  /**
+   * Human-readable label for this table's namespace. Used for namespace config keys and directory names.
+   */
+  readonly namespaceLabel: string;
+  /**
+   * Table type used in table's resource ID and determines how storage and events are used by this table.
+   */
   readonly type: satisfy<ResourceType, "table" | "offchainTable">;
+  /**
+   * Table namespace used in table's resource ID and determines access control.
+   */
   readonly namespace: string;
+  /**
+   * Table name used in table's resource ID.
+   */
   readonly name: string;
+  /**
+   * Table's resource ID.
+   */
   readonly tableId: Hex;
-  // key/value schema
+  /**
+   * Schema definition for this table's records.
+   */
   readonly schema: Schema;
+  /**
+   * Primary key for records of this table. An array of zero or more schema field names.
+   * Using an empty array acts like a singleton, where only one record can exist for this table.
+   */
   readonly key: readonly string[];
 };
 

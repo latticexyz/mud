@@ -11,6 +11,11 @@ export type SystemInput = {
    */
   readonly label: string;
   /**
+   * Human-readable label for this system's namespace. Used for namespace config keys and directory names.
+   * Defaults to the nearest namespace in the config or root namespace if not set.
+   */
+  readonly namespaceLabel?: string;
+  /**
    * System namespace used in systems's resource ID and determines access control.
    * Defaults to the nearest namespace in the config or root namespace if not set.
    */
@@ -28,7 +33,7 @@ export type SystemInput = {
 };
 
 export type SystemsInput = {
-  readonly [label: string]: Omit<SystemInput, "label" | "namespace">;
+  readonly [label: string]: Omit<SystemInput, "label" | "namespaceLabel" | "namespace">;
 };
 
 export type NamespaceInput = StoreNamespaceInput & {

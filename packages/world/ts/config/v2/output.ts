@@ -41,10 +41,14 @@ export type SystemDeploy = {
 
 export type System = {
   /**
-   * Human-readable system label. Used as config keys, interface names, and filenames.
+   * Human-readable label for this system. Used as config keys, interface names, and filenames.
    * Labels are not length constrained like resource names, but special characters should be avoided to be compatible with the filesystem, Solidity compiler, etc.
    */
   readonly label: string;
+  /**
+   * Human-readable label for this system's namespace. Used for namespace config keys and directory names.
+   */
+  readonly namespaceLabel: string;
   /**
    * System namespace used in system's resource ID and determines access control.
    */

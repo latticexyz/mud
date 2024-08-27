@@ -27,7 +27,7 @@ export type resolveNamespace<input, scope extends Scope = AbiTypeScope> = input 
   ? show<
       resolveStoreNamespace<input, scope> & {
         readonly systems: input["systems"] extends SystemsInput
-          ? show<resolveSystems<input["systems"], resolveStoreNamespace<input, scope>["namespace"]>>
+          ? show<resolveSystems<input["systems"], resolveStoreNamespace<input, scope>["label"]>>
           : {};
       }
     >
@@ -38,7 +38,7 @@ export function resolveNamespace<const input extends NamespaceInput, scope exten
   scope: scope = AbiTypeScope as never,
 ): resolveNamespace<input, scope> {
   const namespace = resolveStoreNamespace(input, scope);
-  const systems = resolveSystems(input.systems ?? {}, namespace.namespace);
+  const systems = resolveSystems(input.systems ?? {}, namespace.label, namespace.namespace);
   return {
     ...namespace,
     systems,
