@@ -687,9 +687,6 @@ importers:
 
   packages/protocol-parser:
     dependencies:
-      '@ark/util':
-        specifier: 'catalog:'
-        version: 0.2.2
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
