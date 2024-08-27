@@ -1,63 +1,88 @@
+import { CollapseCode } from "../components/CollapseCode";
+
 # World Explorer
 
 World Explorer is a GUI tool designed for visually exploring and manipulating the state of worlds.
+It is available in the MUD TypeScript templates starting with version 2.2.
 
-## Getting started
+## Installation (for earlier MUD versions)
 
-##### 1. **Install the package**
+These are the steps to install World Explorer into a MUD template:
 
-```sh
-pnpm add @latticexyz/explorer
-```
+1. Install the Indexer and World Explorer.
 
-##### 2. **Start a local development chain**
+   ```sh copy
+   pnpm install @latticexyz/explorer @latticexyz/store-indexer -w
+   ```
 
-Ensure you have a local development chain running.
+1. Edit `mprocs.yaml`.
 
-##### 3. **Run the World Explorer**
+   <CollapseCode>
 
-```sh
-npx @latticexyz/explorer --worldAddress <YOUR_WORLD_ADDRESS>
-```
+   ```yaml filename="mproces.yaml" showLineNumbers {11-20}
+   procs:
+     client:
+       cwd: packages/client
+       shell: pnpm run dev
+     contracts:
+       cwd: packages/contracts
+       shell: pnpm mud dev-contracts --rpc http://127.0.0.1:8545
+     anvil:
+       cwd: packages/contracts
+       shell: anvil --base-fee 0 --block-time 2
+     indexer:
+       cwd: packages/contracts
+       shell: rimraf $SQLITE_FILENAME && pnpm sqlite-indexer
+       env:
+         RPC_HTTP_URL: "http://127.0.0.1:8545"
+         FOLLOW_BLOCK_TAG: "latest"
+         SQLITE_FILENAME: "indexer.db"
+     explorer:
+       cwd: packages/contracts
+       shell: pnpm explorer
+   ```
 
-Alternatively, if you have a worlds configuration file:
+   </CollapseCode>
 
-```sh
-npx @latticexyz/explorer --worldsConfigPath <PATH_TO_WORLDS_CONFIG>
-```
+## Usage
 
-Note: You can use `@latticexyz/store-indexer` for indexing your world's data.
+<iframe
+  width="761"
+  height="523"
+  src="https://www.youtube.com/embed/9u-T5MiBynM"
+  title="Using the MUD Data Explorer"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  referrerpolicy="strict-origin-when-cross-origin"
+  allowfullscreen
+></iframe>
 
-## CLI arguments
+### CLI options
 
-The World Explorer accepts the following CLI arguments:
+To use the explorer with different command-line options, use this process:
 
-| Argument          | Description                                                                      | Default value |
-| ----------------- | -------------------------------------------------------------------------------- | ------------- |
-| `worldAddress`    | The address of the world to explore                                              | None          |
-| `worldsFile`      | Path to a worlds configuration file (used to resolve world address)              | None          |
-| `indexerDatabase` | Path to your SQLite indexer database                                             | "indexer.db"  |
-| `chainId`         | The chain ID of the network                                                      | 31337         |
-| `port`            | The port on which to run the World Explorer                                      | 13690         |
-| `env`             | The environment to run the World Explorer in (e.g., "development", "production") | "production"  |
+1. In the mprocs screen, go down to the **explorer** process.
+
+1. Type `x` to stop the default explorer.
+
+1. In a different command-line window, go to `packages/contract`.
+
+1. Run the explorer using `pnpm explorer <options>`.
+
+The World Explorer accepts the following CLI options:
+
+| Option              | Description                                                                      | Default value |
+| ------------------- | -------------------------------------------------------------------------------- | ------------- |
+| `--worldAddress`    | The address of the world to explore                                              | None          |
+| `--worldsFile`      | Path to a worlds configuration file (used to resolve world address)              | None          |
+| `--indexerDatabase` | Path to your SQLite indexer database                                             | indexer.db    |
+| `--chainId`         | The chain ID of the network                                                      | 31337         |
+| `--port`            | The port on which to run the World Explorer                                      | 13690         |
+| `--env`             | The environment to run the World Explorer in (e.g., "development", "production") | production    |
 
 ## Example setup
 
 An example setup is provided in the `examples/local-explorer` directory, demonstrating a full setup for using the World Explorer in a local development environment:
-
-##### 1. **Setup**
-
-```sh
-cd examples/local-explorer && pnpm install
-```
-
-##### 2. **Run**
-
-```sh
-pnpm dev
-```
-
-This command starts all necessary processes, including a local chain, indexer, and the explorer.
 
 ## Contributing
 
