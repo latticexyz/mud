@@ -132,11 +132,14 @@ The following options are available in both single- and multiple-namespace modes
       <Param name="root">Whether or not to install this as a root module. Defaults to `false`.</Param>
 
       <Param name="args">
-        A list of arguments used to call the module's install function.
-        Each argument is a structure with two fields:
-        - **type** - Solidity data type.
-        - **value** - the value.
-          To encode a complex data type, such as a structure or an array, you can use Viem's [`encodeAbiParameters`](https://viem.sh/docs/abi/encodeAbiParameters.html).
+        A list of arguments used to call the module's install function. Each argument is a structure with two fields:
+        <Params title="Structure in each argument">
+          <Param name="type">Solidity data type.</Param>
+          <Param name="value">
+            The value.
+            To encode a complex data type, such as a structure or an array, you can use Viem's [`encodeAbiParameters`](https://viem.sh/docs/abi/encodeAbiParameters.html).
+          </Param>
+        </Params>
       </Param>
     </Params>
 
