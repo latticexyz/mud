@@ -1,6 +1,6 @@
-# Explorer
+# World Explorer
 
-Explorer is a GUI tool designed for visually exploring and manipulating the state of worlds.
+World Explorer is a GUI tool designed for visually exploring and manipulating the state of worlds.
 
 ## Getting started
 
@@ -14,7 +14,7 @@ Explorer is a GUI tool designed for visually exploring and manipulating the stat
 
    Ensure you have a local development chain running.
 
-3. **Run the explorer**
+3. **Run the World Explorer**
 
    ```sh
    npx @latticexyz/explorer --worldAddress <YOUR_WORLD_ADDRESS>
@@ -30,20 +30,20 @@ Explorer is a GUI tool designed for visually exploring and manipulating the stat
 
 ## CLI arguments
 
-The explorer accepts the following CLI arguments:
+The World Explorer accepts the following CLI arguments:
 
-| Argument          | Description                                                                | Default value |
-| ----------------- | -------------------------------------------------------------------------- | ------------- |
-| `worldAddress`    | The address of the world to explore                                        | None          |
-| `worldsFile`      | Path to a worlds configuration file (used to resolve world address)        | None          |
-| `indexerDatabase` | Path to your SQLite indexer database                                       | "indexer.db"  |
-| `chainId`         | The chain ID of the network                                                | 31337         |
-| `port`            | The port on which to run the explorer                                      | 13690         |
-| `env`             | The environment to run the explorer in (e.g., "development", "production") | "production"  |
+| Argument          | Description                                                                      | Default value |
+| ----------------- | -------------------------------------------------------------------------------- | ------------- |
+| `worldAddress`    | The address of the world to explore                                              | None          |
+| `worldsFile`      | Path to a worlds configuration file (used to resolve world address)              | None          |
+| `indexerDatabase` | Path to your SQLite indexer database                                             | "indexer.db"  |
+| `chainId`         | The chain ID of the network                                                      | 31337         |
+| `port`            | The port on which to run the World Explorer                                      | 13690         |
+| `env`             | The environment to run the World Explorer in (e.g., "development", "production") | "production"  |
 
 ## Example setup
 
-An example setup is provided in the `examples/local-explorer` directory, demonstrating a full setup for using the explorer in a local development environment:
+An example setup is provided in the `examples/local-explorer` directory, demonstrating a full setup for using the World Explorer in a local development environment:
 
 1. **Setup**
 
@@ -61,7 +61,7 @@ An example setup is provided in the `examples/local-explorer` directory, demonst
 
 ## Contributing
 
-To contribute to or modify the explorer, the easiest way is to run the example setup in `development` mode:
+To contribute to or modify the World Explorer, the easiest way is to run the example setup in `development` mode:
 
 1. **Setup**
 
@@ -69,7 +69,7 @@ To contribute to or modify the explorer, the easiest way is to run the example s
 
 2. **Configure**
 
-   In `mprocs.yaml`, ensure the explorer command is set up correctly. For example:
+   In `mprocs.yaml`, ensure the `explorer` command is set up correctly. For example:
 
    ```yaml
    explorer:
@@ -82,4 +82,4 @@ To contribute to or modify the explorer, the easiest way is to run the example s
    pnpm dev
    ```
 
-   Files can now be edited in the `packages/explorer` directory, and changes will be reflected in the running explorer instance.
+   Files can now be edited in the `packages/explorer` directory, and changes will be reflected in the running World Explorer instance.
