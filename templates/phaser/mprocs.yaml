@@ -8,3 +8,13 @@ procs:
   anvil:
     cwd: packages/contracts
     shell: anvil --base-fee 0 --block-time 2
+  indexer:
+    cwd: packages/contracts
+    shell: rimraf $SQLITE_FILENAME && pnpm sqlite-indexer
+    env:
+      RPC_HTTP_URL: "http://127.0.0.1:8545"
+      FOLLOW_BLOCK_TAG: "latest"
+      SQLITE_FILENAME: "indexer.db"
+  explorer:
+    cwd: packages/contracts
+    shell: pnpm explorer
