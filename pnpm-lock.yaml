@@ -15800,7 +15800,7 @@ snapshots:
   are-we-there-yet@3.0.1:
     dependencies:
       delegates: 1.0.0
-      readable-stream: 3.6.0
+      readable-stream: 3.6.2
 
   arg@5.0.2: {}
 

@@ -31,6 +31,7 @@ export async function getRecord<table extends Table>({
     functionName: "getRecord",
     args: [table.tableId, getKeyTuple(table, key)],
     // TODO: remove cast once https://github.com/wevm/viem/issues/2125 is resolved
+    //       has something to do function overloads and TS having a hard time inferring which args to use
   })) as [Hex, Hex, Hex];
   const record = {
     ...key,
