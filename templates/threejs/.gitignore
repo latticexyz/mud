@@ -1,1 +1,4 @@
 node_modules
+
+# mud sqlite indexer data
+indexer.db
