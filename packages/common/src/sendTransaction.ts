@@ -43,7 +43,7 @@ export async function sendTransaction<
   chainOverride extends Chain | undefined = undefined,
 >(
   client: Client<Transport, chain, account>,
-  request: SendTransactionParameters<chain, account, chainOverride>,
+  request: SendTransactionParameters<chain, account, chainOverride, request>,
   opts: SendTransactionExtraOptions<chain> = {},
 ): Promise<SendTransactionReturnType> {
   const rawAccount = request.account ?? client.account;
@@ -80,7 +80,7 @@ export async function sendTransaction<
             ...feeRef.fees,
           } as const satisfies SendTransactionParameters<chain, account, chainOverride, request>;
           debug("sending tx to", request.to, "with nonce", nonce);
-          return await getAction(client, viem_sendTransaction, "sendTransaction")(params);
+          return await getAction(client, viem_sendTransaction, "sendTransaction")(params as never);
         },
         {
           retries: 3,
