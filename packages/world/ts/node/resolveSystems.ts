@@ -5,8 +5,6 @@ import { resolveNamespace } from "../config/v2/namespace";
 import { resourceToLabel } from "@latticexyz/common";
 
 export type ResolvedSystem = System & {
-  // TODO: move to config output
-  readonly namespaceLabel: string;
   readonly sourcePath: string;
 };
 
@@ -20,13 +18,7 @@ export async function resolveSystems({
   const systemContracts = await getSystemContracts({ rootDir, config });
 
   // validate every system in config refers to an existing system contract
-  const configSystems = Object.values(config.namespaces).flatMap((namespace) =>
-    Object.values(namespace.systems).map((system) => ({
-      ...system,
-      // TODO: remove this once config outputs namespace labels of resources
-      namespaceLabel: namespace.label,
-    })),
-  );
+  const configSystems = Object.values(config.namespaces).flatMap((namespace) => Object.values(namespace.systems));
   const missingSystems = configSystems.filter(
     (system) => !systemContracts.some((s) => s.namespaceLabel === system.namespace && s.systemLabel === system.label),
   );
@@ -48,8 +40,6 @@ export async function resolveSystems({
         }).systems[contract.systemLabel];
       return {
         ...systemConfig,
-        // TODO: move to config output
-        namespaceLabel: contract.namespaceLabel,
         sourcePath: contract.sourcePath,
       };
     })
