@@ -1,11 +1,11 @@
 {
-  "name": "@latticexyz/world-module-metadata",
+  "name": "@latticexyz/world-module-erc20-own-store",
   "version": "2.1.1",
-  "description": "Metadata world module",
+  "description": "ERC20 World Module with Own Store",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/world-module-metadata"
+    "directory": "packages/world-module-erc20-own-store"
   },
   "license": "MIT",
   "type": "module",
