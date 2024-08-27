@@ -1,0 +1,105 @@
+import { Callout } from "nextra/components";
+import { CollapseCode } from "../../components/CollapseCode";
+
+# Dozer
+
+Dozer is an offchain indexer for onchain applications built with MUD.
+
+## Why an offchain indexer?
+
+Reads with onchain apps can be tricky.
+What does it mean to be able to query the Ethereum network?
+Technically, given a node with a fully synced state, we can explore just about everything using the EVM, but the “exploring” would be looking at raw storage slots for accounts corresponding to smart contracts.
+A way around this exists by providing view functions on smart contracts: these effectively are just wrappers around raw storage and expose a more friendly API.
+Instead of having to figure out where the balances for an account are stored in the storage tree, we now can call a function that does the lookup via Solidity via an RPC endpoint.
+
+The issue with view functions is that for any sophisticated application the calls needed to get the “full picture” of the state from the chain are very complex.
+Servicing so many view function calls also creates the need to run a set of dedicated nodes instead of relying on a third-party provider's free tier.
+
+The MUD indexer solves this problem by listening to the MUD store events to automatically replicate the entire onchain state in a relational database.
+Having such a database allows clients to quickly and efficiently query the onchain data.
+
+[See here how to integrate the indexer with your MUD application](./indexer/using-indexer).
+
+## Which indexer to use?
+
+If you use our blockchains, either production [(Redstone)](https://redstone.xyz/docs/network-info) or testing [(Garnet)](https://garnetchain.com/docs/network-info), we provide an indexer you can use.
+
+- Redstone: `https://indexer.mud.redstonechain.com/`
+- Garnet: `https://indexer.mud.garnetchain.com/`
+
+Note that those indexers are still experimental, and there might be downtime.
+If you need production-level reliability, [contact us on Discord](https://lattice.xyz/discord).
+
+## Hosting your own indexer
+
+If you use a different blockchain, you need to host dozer on your own.
+
+### Installation
+
+1. Install [the PostgreSQL database](https://www.postgresql.org/download/).
+
+1. Run the database CLI.
+
+   ```sh copy
+   sudo -u postgres psql
+   ```
+
+1. Create a user and a database for the dozer service
+
+   ```sql copy
+   CREATE USER dozer WITH PASSWORD 'unsafe' SUPERUSER;
+   CREATE DATABASE dozer WITH OWNER = dozer;
+   \q
+   ```
+
+   <Callout type="warning" emoji="⚠️">
+     This is *not* a secure password. On a production system you must either change the password to something safer, or
+     block the PostgreSQL port (5432/tcp) in the firewall. Preferably, do both.
+   </Callout>
+
+1. Install the system dependencies.
+   This is the command to use under Debian and Ubuntu Linux, other operating systems may be slightly different.
+
+   ```sh copy
+   sudo apt install -y build-essential pkg-config libssl-dev
+   ```
+
+1. Install [the Rust toolchain](https://www.rust-lang.org/) if you don't have it yet.
+
+   ```sh copy
+   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+   ```
+
+1. Download and build dozer.
+
+   ```sh copy
+   git clone https://github.com/latticexyz/dozer.git
+   cd dozer
+   cargo build
+   ```
+
+1. Specify the environment variables.
+
+   | Variable | Meaning               | Sample Value                            |
+   | -------- | --------------------- | --------------------------------------- |
+   | ETH_URL  | Blockchain access URL | http://localhost:8545                   |
+   | PG_URL   | Postgres access URL   | postgres://dozer:unsafe@localhost/dozer |
+
+1. Start the dozer server.
+
+   ```sh copy
+   cd target/debug
+   ./dozer server
+   ```
+
+### Using Dozer
+
+### Clearing the information
+
+If you restart the blockchain, you need to clear all the information stored by the indexer otherwise you'll have an inconsistent state.
+Dozer uses the `public` schema.
+
+```sql copy
+DROP SCHEMA public CASCADE;
+```
