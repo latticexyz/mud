@@ -2,8 +2,6 @@ name: Changeset
 
 on:
   pull_request:
-    paths:
-      - ".changeset/**"
 
 jobs:
   changeset:
