@@ -1,4 +1,4 @@
-import { Account, Address, Chain, Client, Hex, Transport } from "viem";
+import { Account, Address, Chain, Client, Hex, Transport, stringToHex } from "viem";
 import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
@@ -15,7 +15,7 @@ import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";
 import { ensureWorldFactory } from "./ensureWorldFactory";
 import { Table } from "@latticexyz/config";
-import { ensureResourceLabels } from "./ensureResourceLabels";
+import { ensureResourceTags } from "./ensureResourceTags";
 
 type DeployOptions = {
   client: Client<Transport, Chain | undefined, Account>;
@@ -90,14 +90,10 @@ export async function deploy({
     throw new Error(`Unsupported World version: ${worldDeploy.worldVersion}`);
   }
 
-  const resources = [
-    ...tables.map((table) => ({ resourceId: table.tableId, label: table.label })),
-    ...systems.map((system) => ({ resourceId: system.systemId, label: system.label })),
-  ];
   const namespaceTxs = await ensureNamespaceOwner({
     client,
     worldDeploy,
-    resourceIds: resources.map(({ resourceId }) => resourceId),
+    resourceIds: [...tables.map(({ tableId }) => tableId), ...systems.map(({ systemId }) => systemId)],
   });
 
   debug("waiting for all namespace registration transactions to confirm");
@@ -129,13 +125,17 @@ export async function deploy({
     worldDeploy,
     modules,
   });
-  const labelTxs = await ensureResourceLabels({
+
+  const tableTags = tables.map(({ tableId: resourceId, label }) => ({ resourceId, tag: "label", value: label }));
+
+  const tagTxs = await ensureResourceTags({
     client,
     worldDeploy,
-    resources,
+    tags: tableTags,
+    valueToHex: stringToHex,
   });
 
-  const txs = [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs, ...labelTxs];
+  const txs = [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs, ...tagTxs];
 
   // wait for each tx separately/serially, because parallelizing results in RPC errors
   debug("waiting for all transactions to confirm");

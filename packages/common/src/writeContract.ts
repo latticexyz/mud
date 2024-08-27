@@ -82,7 +82,7 @@ export async function writeContract<
             ...feeRef.fees,
           };
           debug("calling", params.functionName, "at", params.address, "with nonce", nonce);
-          return await getAction(client, viem_writeContract, "writeContract")(params);
+          return await getAction(client, viem_writeContract, "writeContract")({ ...params });
         },
         {
           retries: 3,

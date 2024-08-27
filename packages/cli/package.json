@@ -39,6 +39,7 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
+    "@ark/util": "catalog:",
     "@aws-sdk/client-kms": "^3.556.0",
     "@latticexyz/abi-ts": "workspace:*",
     "@latticexyz/common": "workspace:*",

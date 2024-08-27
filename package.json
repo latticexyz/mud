@@ -14,7 +14,7 @@
     "build": "turbo run build",
     "changelog:generate": "bun scripts/changelog.ts",
     "clean": "turbo run clean",
-    "dev": "TSUP_SKIP_DTS=true turbo run dev --concurrency 100",
+    "dev": "TSUP_SKIP_DTS=true turbo run dev --concurrency 100 --filter=!@latticexyz/explorer",
     "dist-tag-rm": "pnpm recursive exec -- sh -c 'npm dist-tag rm $(cat package.json | jq -r \".name\") $TAG || true'",
     "docs:generate:api": "bun scripts/render-api-docs.ts",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
