@@ -27,21 +27,20 @@ interface SymbolImport {
 /**
  * Parse the contract data to get the functions necessary to generate an interface,
  * and symbols to import from the original contract.
- * @param data contents of a file with the solidity contract
+ * @param source contents of a file with the solidity contract
  * @param contractName name of the contract
  * @returns interface data
  */
 export function contractToInterface(
-  data: string,
+  source: string,
   contractName: string,
 ): {
   functions: ContractInterfaceFunction[];
   errors: ContractInterfaceError[];
   symbolImports: SymbolImport[];
 } {
-  const ast = parse(data);
-
-  const contractNode = findContractNode(parse(data), contractName);
+  const ast = parse(source);
+  const contractNode = findContractNode(ast, contractName);
   let symbolImports: SymbolImport[] = [];
   const functions: ContractInterfaceFunction[] = [];
   const errors: ContractInterfaceError[] = [];
@@ -107,8 +106,8 @@ export function contractToInterface(
   };
 }
 
-function findContractNode(ast: SourceUnit, contractName: string): ContractDefinition | undefined {
-  let contract = undefined;
+export function findContractNode(ast: SourceUnit, contractName: string): ContractDefinition | undefined {
+  let contract: ContractDefinition | undefined = undefined;
 
   visit(ast, {
     ContractDefinition(node) {

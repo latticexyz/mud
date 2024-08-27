@@ -18,13 +18,7 @@ export async function resolveSystems({
   const systemContracts = await getSystemContracts({ rootDir, config });
 
   // validate every system in config refers to an existing system contract
-  const configSystems = Object.values(config.namespaces).flatMap((namespace) =>
-    Object.values(namespace.systems).map((system) => ({
-      ...system,
-      // TODO: remove this once config outputs namespace labels of resources
-      namespaceLabel: namespace.label,
-    })),
-  );
+  const configSystems = Object.values(config.namespaces).flatMap((namespace) => Object.values(namespace.systems));
   const missingSystems = configSystems.filter(
     (system) => !systemContracts.some((s) => s.namespaceLabel === system.namespace && s.systemLabel === system.label),
   );
