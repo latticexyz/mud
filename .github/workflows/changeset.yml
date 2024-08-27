@@ -1,7 +1,14 @@
 name: Changeset
 
 on:
+  push:
+    branches:
+      - "main"
+    paths-ignore:
+      - ".changeset/**"
   pull_request:
+    paths:
+      - ".changeset/**"
 
 jobs:
   changeset:
