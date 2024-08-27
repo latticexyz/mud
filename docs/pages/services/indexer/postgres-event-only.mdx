@@ -1,0 +1,151 @@
+import { Callout } from "nextra/components";
+import { CollapseCode } from "../../../components/CollapseCode";
+
+# Postgres for Events Only
+
+## Installation
+
+### Environment variables
+
+These environment variables need to be provided to the indexer to work:
+
+| Type     | Variable      | Meaning                                                                                                  | Sample value (using `anvil` running on the host)          |
+| -------- | ------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| Required | RPC_HTTP_URL  | The URL to access the blockchain using HTTP                                                              | http://host.docker.internal:8545 (when running in Docker) |
+| Optional | RPC_WS_URL    | The URL to access the blockchain using WebSocket                                                         |
+| Optional | START_BLOCK   | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. | 1                                                         |
+| Optional | DEBUG=mud:\*  | Turn on debugging                                                                                        |                                                           |
+| Optional | STORE_ADDRESS | Only index tables from this `World`                                                                      |
+| Required | DATABASE_URL  | URL for the database, of the form `postgres://<host>/<database>`                                         |
+
+### Using npx
+
+The schemaless indexer stores MUD event records into a single monolithic table.
+The main purpose of this variant of the indexer is to efficiently hydrate a MUD client, which decodes the data from the events.
+
+1. Start a `World` to index.
+   An easy way to do this is to [use a TypeScript template](/templates/typescript/getting-started) in a separate command line window.
+
+1. Set the environment variables.
+
+   ```bash copy
+   export RPC_HTTP_URL=http://127.0.0.1:8545
+   export DATABASE_URL=postgres://127.0.0.1/postgres
+   ```
+
+1. Run the indexer.
+   Install it first if necessary.
+
+   ```bash copy
+   npx -y -p @latticexyz/store-indexer postgres-indexer
+   ```
+
+1. Open a separate command line.
+   In it, specify the database and run the indexer frontend, which is responsible for serving the data to the client.
+
+   ```bash copy
+   export DATABASE_URL=postgres://127.0.0.1/postgres
+   npx -y -p @latticexyz/store-indexer postgres-frontend
+   ```
+
+### Docker
+
+The indexer Docker image is available [on github](https://github.com/latticexyz/mud/pkgs/container/store-indexer).
+
+There are several ways to provide the environment variables to `docker run`:
+
+- On the command line you can specify `-e <variable>=<value>`.
+  You specify this after the `docker run`, but before the name of the image.
+- You can also write all the environment variables in a file and specify it using `--env-file`.
+  You specify this after the `docker run`, but before the name of the image.
+- Both [Docker Compose](https://docs.docker.com/compose/) and [Kubernetes](https://kubernetes.io/) have their own mechanisms for starting docker containers with environment variables.
+
+The easiest way to test the indexer is to [run the template as a world](/templates/typescript/getting-started) in a separate command-line window.
+
+The command to start the indexer in event-only PostgreSQL mode is `pnpm start:postgres`.
+This command starts both the indexer and query frontends.
+
+1. The docker instance identifies itself to PostgreSQL as `root`.
+   To give this user permissions on the database, enter `psql` and run this command.
+
+   ```sql copy
+   CREATE ROLE root SUPERUSER LOGIN;
+   ```
+
+   **Note:** This is assuming a database that is isolated from the internet and only used by trusted entities.
+   In a production system you will use at least a password as authentication, and limit the user's authority.
+
+1. Start the docker container.
+   For example, to index an `anvil` instance running to the host to the database `postgres` on the host, use.
+
+   ```sh copy
+   docker run \
+     --platform linux/amd64 \
+     -e RPC_HTTP_URL=http://host.docker.internal:8545 \
+     -e DATABASE_URL=postgres://host.docker.internal/postgres \
+     -p 3001:3001  \
+     ghcr.io/latticexyz/store-indexer:latest  \
+     pnpm start:postgres
+   ```
+
+   If you want to create additional query frontends (for reliability and load balancing), use these commands:
+
+   ```sh copy
+   HOST_PORT=3002
+   docker run \
+     --platform linux/amd64 \
+     -e DATABASE_URL=postgres://host.docker.internal/postgres \
+     -p $HOST_PORT:3001  \
+     ghcr.io/latticexyz/store-indexer:latest  \
+     node dist/bin/postgres-frontend.js
+   ```
+
+## Using the indexer
+
+[See here how to use the indexer with a MUD client](using-indexer).
+
+### Viewing events
+
+You can run this command to verify the indexer is working correctly.
+
+```sh copy
+curl 'http://localhost:3001/api/logs?input=%7B%22chainId%22%3A31337%2C%22address%22%3A%220x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b%22%2C%22filters%22%3A%5B%5D%7D' | jq
+```
+
+The result should be nicely formatted (and long) JSON output with all the data change events that happened in that `World`.
+
+<details>
+
+<summary>Where does this URL come from?</summary>
+
+The URL has these parameters:
+
+| Parameter | Value                 | Explanation                                 |
+| --------- | --------------------- | ------------------------------------------- |
+| Server    | http://localhost:3001 | By default the indexer listens on port 3001 |
+| Path      | /api/logs             | Read log events                             |
+| `input`   | `%7B%22 ... %5D%7D`   | See below                                   |
+
+The input is the JSON filter that tells the server what we need.
+It is [URL encoded](https://en.wikipedia.org/wiki/Percent-encoding), you can decode it [using an online calculator](https://www.urldecoder.org/).
+
+```json
+{
+  "chainId": 31337,
+  "address": "0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b",
+  "filters": []
+}
+```
+
+Meaning that the query is for all events in the `World` at address `0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b`, on the chain with chain ID `31337`.
+
+</details>
+
+### Clearing the information
+
+If you restart the blockchain, you need to clear all the information stored by the indexer otherwise you'll have an inconsistent state.
+The events are all in the `mud` schema:
+
+```sql copy
+DROP SCHEMA "mud" CASCADE;
+```

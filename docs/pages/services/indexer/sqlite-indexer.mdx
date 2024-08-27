@@ -1,0 +1,190 @@
+import { Callout } from "nextra/components";
+import { CollapseCode } from "../../../components/CollapseCode";
+
+# SQLite indexer
+
+## Installation
+
+### Environment variables
+
+These environment variables need to be provided to the indexer to work:
+
+| Type     | Variable        | Meaning                                                                                                  | Sample value (using `anvil` running on the host)          |
+| -------- | --------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| Required | RPC_HTTP_URL    | The URL to access the blockchain using HTTP                                                              | http://host.docker.internal:8545 (when running in Docker) |
+| Optional | RPC_WS_URL      | The URL to access the blockchain using WebSocket                                                         |
+| Optional | START_BLOCK     | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. | 1                                                         |
+| Optional | DEBUG=mud:\*    | Turn on debugging                                                                                        |                                                           |
+| Optional | STORE_ADDRESS   | Only index tables from this `World`                                                                      |
+| Optional | SQLITE_FILENAME | Name of database                                                                                         | `indexer.db`                                              |
+
+### Using npx
+
+To run the indexer directly on your computer using SQLite:
+
+1. Start a `World` to index.
+   An easy way to do this is to [use a TypeScript template](/templates/typescript/getting-started) in a separate command line window.
+
+1. Set `RPC_HTTP_URL`.
+
+   ```bash copy
+   export RPC_HTTP_URL=http://127.0.0.1:8545
+   ```
+
+1. Run the indexer.
+   If necessary, install it first.
+
+   ```bash copy
+   npx -y -p @latticexyz/store-indexer sqlite-indexer
+   ```
+
+**Note:** The `indexer.db` is persistent if you stop and restart the indexer.
+If that is not the desired behavior (for example, because you restarted the blockchain itself), delete it before starting the indexer.
+
+### Docker
+
+The indexer Docker image is available [on github](https://github.com/latticexyz/mud/pkgs/container/store-indexer).
+
+There are several ways to provide the environment variables to `docker run`:
+
+- On the command line you can specify `-e <variable>=<value>`.
+  You specify this after the `docker run`, but before the name of the image.
+- You can also write all the environment variables in a file and specify it using `--env-file`.
+  You specify this after the `docker run`, but before the name of the image.
+- Both [Docker Compose](https://docs.docker.com/compose/) and [Kubernetes](https://kubernetes.io/) have their own mechanisms for starting docker containers with environment variables.
+
+The easiest way to test the indexer is to [run the template as a world](/templates/typescript/getting-started) in a separate command-line window.
+
+The command to start the indexer in SQLite mode is `pnpm start:sqlite`.
+To index an `anvil` instance running to the host you can use this command.
+
+```sh copy
+docker run \
+  --platform linux/amd64 \
+  -e RPC_HTTP_URL=http://host.docker.internal:8545 \
+  -p 3001:3001  \
+  ghcr.io/latticexyz/store-indexer:latest  \
+  pnpm start:sqlite
+```
+
+However, this creates a docker container with a state, the SQLite database file.
+If we start a new container with the same image and parameters, it is going to have to go back to the start of the blockchain, which depending on how long the blockchain has been in use may be a problem.
+We can solve this with [volumes](https://docs.docker.com/storage/volumes/):
+
+1. Create a docker volume for the SQLite database file.
+
+   ```sh copy
+   docker volume create sqlite-db-file
+   ```
+
+1. Run the indexer container using the volume.
+
+   ```sh copy
+   docker run \
+      --platform linux/amd64 \
+      -e RPC_HTTP_URL=http://host.docker.internal:8545 \
+      -e SQLITE_FILENAME=/dbase/indexer.db \
+      -v sqlite-db-file:/dbase \
+      -p 3001:3001  \
+      ghcr.io/latticexyz/store-indexer:latest  \
+      pnpm start:sqlite
+   ```
+
+1. You can stop the docker container and restart it, or start a separate container using the same database.
+
+1. When you are done, you have to delete the docker containers that used it before you can delete the volume.
+   You can use these commands:
+
+   ```sh copy
+   docker rm `docker ps -a --filter volume=sqlite-db-file -q`
+   docker volume rm sqlite-db-file
+   ```
+
+   **Note:** You should do this every time you restart the blockchain.
+   Otherwise your index will include data from multiple blockchains, and make no sense.
+
+## Using the indexer
+
+[See here how to use the indexer with a MUD client](using-indexer).
+
+### Viewing events
+
+You can run this command to verify the indexer is working correctly.
+
+```sh copy
+curl 'http://localhost:3001/api/logs?input=%7B%22chainId%22%3A31337%2C%22address%22%3A%220x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b%22%2C%22filters%22%3A%5B%5D%7D' | jq
+```
+
+The result should be nicely formatted (and long) JSON output with all the data change events that happened in that `World`.
+
+<details>
+
+<summary>Where does this URL come from?</summary>
+
+The URL has these parameters:
+
+| Parameter | Value                 | Explanation                                 |
+| --------- | --------------------- | ------------------------------------------- |
+| Server    | http://localhost:3001 | By default the indexer listens on port 3001 |
+| Path      | /api/logs             | Read log events                             |
+| `input`   | `%7B%22 ... %5D%7D`   | See below                                   |
+
+The input is the JSON filter that tells the server what we need.
+It is [URL encoded](https://en.wikipedia.org/wiki/Percent-encoding), you can decode it [using an online calculator](https://www.urldecoder.org/).
+
+```json
+{
+  "chainId": 31337,
+  "address": "0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b",
+  "filters": []
+}
+```
+
+Meaning that the query is for all events in the `World` at address `0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b`, on the chain with chain ID `31337`.
+
+</details>
+
+### Reading database information
+
+If you want to use the indexer database for other purposes, you can use [`sqlite3`](https://sqlite.org/cli.html).
+
+1. Start `sqlite3` in read-only mode.
+
+   ```sh copy
+   sqlite3 -readonly indexer.db
+   ```
+
+1. Get the list of available tables.
+
+   ```sql copy
+   .tables
+   ```
+
+1. In SQLite tables are named `<world address>__<namespace>__<name of table>`.
+   For example, this is how you get the task descriptions when using [the React template](https://github.com/latticexyz/mud/tree/main/templates/react).
+
+   ```sql copy
+   select description from '0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b__app__tasks';
+   ```
+
+1. Exit from the command line interface.
+
+   ```sql copy
+   .exit
+   ```
+
+### Clearing the information
+
+If you restart the blockchain, you need to clear all the information stored by the indexer otherwise you'll have an inconsistent state.
+
+#### When using npx
+
+Remove the database file (by default `indexer.db`).
+
+#### When using docker
+
+Remove the docker volume:
+
+```sh copy
+docker volume rm sqlite-db-file
+```

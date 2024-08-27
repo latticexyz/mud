@@ -35,11 +35,11 @@ export async function syncToZustand<config extends StoreConfig, extraTables exte
   startSync = true,
   ...syncOptions
 }: SyncToZustandOptions<config, extraTables>): Promise<SyncToZustandResult<config, extraTables>> {
-  const tables: merge<merge<configToTables<config>, extraTables>, mudTables> = {
+  const tables = {
     ...configToTables(config),
     ...extraTables,
     ...mudTables,
-  };
+  } as unknown as merge<merge<configToTables<config>, extraTables>, mudTables>;
   const useStore = store ?? createStore({ tables });
   const storageAdapter = createStorageAdapter({ store: useStore });
 

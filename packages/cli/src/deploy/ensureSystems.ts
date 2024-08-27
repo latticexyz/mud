@@ -38,7 +38,7 @@ export async function ensureSystems({
     ),
   );
   if (existingSystems.length) {
-    debug("existing systems", existingSystems.map(resourceToLabel).join(", "));
+    debug("existing systems:", existingSystems.map(resourceToLabel).join(", "));
   }
   const existingSystemIds = existingSystems.map((system) => system.systemId);
 
@@ -53,14 +53,14 @@ export async function ensureSystems({
     ),
   );
   if (systemsToUpgrade.length) {
-    debug("upgrading systems", systemsToUpgrade.map(resourceToLabel).join(", "));
+    debug("upgrading systems:", systemsToUpgrade.map(resourceToLabel).join(", "));
   }
 
   const systemsToAdd = missingSystems.filter(
     (system) => !worldSystems.some((worldSystem) => worldSystem.systemId === system.systemId),
   );
   if (systemsToAdd.length) {
-    debug("registering new systems", systemsToAdd.map(resourceToLabel).join(", "));
+    debug("registering new systems:", systemsToAdd.map(resourceToLabel).join(", "));
   }
 
   await ensureContractsDeployed({

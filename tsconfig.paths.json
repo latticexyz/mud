@@ -40,6 +40,8 @@
       "@latticexyz/world/node": ["./packages/world/ts/node/index.ts"],
       "@latticexyz/world/out/*": ["./packages/world/out/*"],
       "@latticexyz/world/*": ["./packages/world/ts/exports/*.ts"],
+      "@latticexyz/world-module-metadata/mud.config": ["./packages/world-module-metadata/mud.config.ts"],
+      "@latticexyz/world-module-metadata/out/*": ["./packages/world-module-metadata/out/*"],
       "@latticexyz/world-modules/internal/mud.config": ["./packages/world-modules/mud.config.ts"],
       "@latticexyz/world-modules/out/*": ["./packages/world-modules/out/*"]
     }

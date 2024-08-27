@@ -63,6 +63,11 @@ export async function ensureModules({
                 debug(`module ${mod.name} already installed`);
                 return;
               }
+              if (mod.optional) {
+                debug(`optional module ${mod.name} install failed, skipping`);
+                debug(error);
+                return;
+              }
               throw error;
             }
           },

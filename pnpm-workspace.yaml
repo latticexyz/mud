@@ -3,5 +3,9 @@ packages:
   - test/*
 
 catalog:
-  "@ark/util": "0.1.2"
-  "arktype": "2.0.0-beta.5"
+  "@ark/attest": "0.12.1"
+  "@ark/util": "0.2.2"
+  "abitype": "1.0.5"
+  "arktype": "2.0.0-beta.6"
+  "viem": "2.19.8"
+  "wagmi": "2.12.6"

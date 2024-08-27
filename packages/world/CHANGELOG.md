@@ -1,5 +1,49 @@
 # Change Log
 
+## 2.1.1
+
+### Patch Changes
+
+- 9e21e42: Bumped viem to `2.19.8` and abitype to `1.0.5`.
+
+  MUD projects using viem or abitype should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.19.8 abitype@1.0.5
+  ```
+
+- 6a66f57: Refactored `AccessControl` library exported from `@latticexyz/world` to be usable outside of the world package and updated module packages to use it.
+- 86a8104: Added `deploy` config options to systems in the MUD config:
+
+  - `disabled` to toggle deploying the system (defaults to `false`)
+  - `registerWorldFunctions` to toggle registering namespace-prefixed system functions on the world (defaults to `true`)
+
+  ```ts
+  import { defineWorld } from "@latticexyz/world";
+
+  export default defineWorld({
+    systems: {
+      HiddenSystem: {
+        deploy: {
+          registerWorldFunctions: false,
+        },
+      },
+    },
+  });
+  ```
+
+- 542ea54: Fixed an issue with worldgen when using a different `rootDir` from the current working directory, where worldgen would read system source files from the wrong place.
+- 57bf8c3: Add a strongly typed `namespaceLabel` to the table config output.
+  It corresponds to the `label` of the namespace the table belongs to and can't be set manually.
+- Updated dependencies [9e21e42]
+- Updated dependencies [2daaab1]
+- Updated dependencies [57bf8c3]
+  - @latticexyz/common@2.1.1
+  - @latticexyz/config@2.1.1
+  - @latticexyz/protocol-parser@2.1.1
+  - @latticexyz/schema-type@2.1.1
+  - @latticexyz/store@2.1.1
+
 ## 2.1.0
 
 ### Minor Changes

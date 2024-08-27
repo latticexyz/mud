@@ -1,5 +1,33 @@
 # @latticexyz/dev-tools
 
+## 2.1.1
+
+### Patch Changes
+
+- 9e21e42: Bumped viem to `2.19.8` and abitype to `1.0.5`.
+
+  MUD projects using viem or abitype should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.19.8 abitype@1.0.5
+  ```
+
+- Updated dependencies [6435481]
+- Updated dependencies [9e21e42]
+- Updated dependencies [6a66f57]
+- Updated dependencies [86a8104]
+- Updated dependencies [2daaab1]
+- Updated dependencies [542ea54]
+- Updated dependencies [57bf8c3]
+  - @latticexyz/store-sync@2.1.1
+  - @latticexyz/common@2.1.1
+  - @latticexyz/schema-type@2.1.1
+  - @latticexyz/store@2.1.1
+  - @latticexyz/world@2.1.1
+  - @latticexyz/recs@2.1.1
+  - @latticexyz/react@2.1.1
+  - @latticexyz/utils@2.1.1
+
 ## 2.1.0
 
 ### Patch Changes

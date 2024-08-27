@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/dev-tools",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "MUD developer tools",
   "repository": {
     "type": "git",
@@ -46,7 +46,7 @@
     "rxjs": "7.5.5",
     "tailwind-merge": "^1.12.0",
     "use-local-storage-state": "^18.3.2",
-    "viem": "2.9.20",
+    "viem": "catalog:",
     "zustand": "^4.3.7"
   },
   "devDependencies": {

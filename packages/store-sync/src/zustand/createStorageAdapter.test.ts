@@ -62,6 +62,7 @@ describe("createStorageAdapter", async () => {
             "label": "Position",
             "name": "Position",
             "namespace": "",
+            "namespaceLabel": "",
             "schema": {
               "player": {
                 "internalType": "address",
@@ -113,6 +114,7 @@ describe("createStorageAdapter", async () => {
             "label": "Position",
             "name": "Position",
             "namespace": "",
+            "namespaceLabel": "",
             "schema": {
               "player": {
                 "internalType": "address",
@@ -164,6 +166,7 @@ describe("createStorageAdapter", async () => {
             "label": "Position",
             "name": "Position",
             "namespace": "",
+            "namespaceLabel": "",
             "schema": {
               "player": {
                 "internalType": "address",
@@ -215,6 +218,7 @@ describe("createStorageAdapter", async () => {
             "label": "Position",
             "name": "Position",
             "namespace": "",
+            "namespaceLabel": "",
             "schema": {
               "player": {
                 "internalType": "address",

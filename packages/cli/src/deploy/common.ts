@@ -82,17 +82,25 @@ export type Library = DeterministicContract & {
 };
 
 export type System = DeterministicContract & {
-  // TODO: add label
+  // labels
+  readonly label: string;
+  readonly namespaceLabel: string;
+  // resource ID
   readonly namespace: string;
   readonly name: string;
   readonly systemId: Hex;
+  // access
   readonly allowAll: boolean;
   readonly allowedAddresses: readonly Hex[];
   readonly allowedSystemIds: readonly Hex[];
+  // world registration
   readonly worldFunctions: readonly WorldFunction[];
 };
 
-export type DeployedSystem = Omit<System, "abi" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"> & {
+export type DeployedSystem = Omit<
+  System,
+  "label" | "namespaceLabel" | "abi" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"
+> & {
   address: Address;
 };
 
@@ -100,4 +108,9 @@ export type Module = DeterministicContract & {
   readonly name: string;
   readonly installAsRoot: boolean;
   readonly installData: Hex; // TODO: figure out better naming for this
+  /**
+   * @internal
+   * Optional modules warn instead of throw if they revert while being installed.
+   */
+  readonly optional?: boolean;
 };

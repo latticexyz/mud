@@ -25,8 +25,8 @@ export const internalTableIds = Object.values(mudTables).map((table) => table.ta
 export type ChainId = number;
 export type WorldId = `${ChainId}:${Address}`;
 
-// TODO: add label once we register it onchain
-export type DeployedTable = Omit<ConfigTable, "label">;
+// TODO: add label and namespaceLabel once we register it onchain
+export type DeployedTable = Omit<ConfigTable, "label" | "namespaceLabel">;
 
 export type TableRecord<table extends DeployedTable = DeployedTable> = {
   readonly key: getSchemaPrimitives<getKeySchema<table>>;

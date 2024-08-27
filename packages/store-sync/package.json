@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store-sync",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Utilities to sync MUD Store events with a client or cache",
   "repository": {
     "type": "git",
@@ -83,7 +83,7 @@
     "rxjs": "7.5.5",
     "sql.js": "^1.8.0",
     "superjson": "^1.12.4",
-    "viem": "2.9.20",
+    "viem": "catalog:",
     "zod": "3.23.8",
     "zustand": "^4.3.7"
   },
