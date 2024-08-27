@@ -5,6 +5,7 @@ export default defineWorld({
   tables: {
     MUDERC20: {
       schema: {
+        decimals: "uint8",
         totalSupply: "uint256",
         id: "bytes32",
         name: "string",
