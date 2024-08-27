@@ -18,4 +18,4 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Changeset
-        run: pnpm changeset
+        run: pnpm changeset status
