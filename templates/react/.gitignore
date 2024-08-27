@@ -1,4 +1,7 @@
 node_modules
 
-# mud sqlite indexer data
-indexer.db
+# mud artifacts
+.mud
+# sqlite indexer data
+*.db
+*.db-journal

@@ -11,16 +11,22 @@ yarn.lock
 lerna-debug.log
 yarn-error.log
 .turbo
+.attest
+.tstrace
+
+.env*
 
 # We don't want projects created from templates to ignore their lockfiles, but we don't
 # want to check them in here, so we'll ignore them from the root.
 templates/*/pnpm-lock.yaml
 
-.env
-
+# mud test data
 test-data/world-logs-bulk-*.json
 test-data/world-logs-query.json
 
-.attest
-.tstrace
+# mud artifacts
 .mud
+
+# sqlite indexer data
+*.db
+*.db-journal
