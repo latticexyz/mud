@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["bin/explorer.ts"],
+  entry: ["src/index.ts"],
   target: "esnext",
   format: ["esm"],
   sourcemap: true,
