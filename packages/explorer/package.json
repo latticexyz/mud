@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/explorer",
   "version": "2.1.1",
-  "description": "Explorer is a tool for visually exploring and manipulating the state of worlds",
+  "description": "Explorer is a tool for visually exploring and manipulating the state of worlds.",
   "type": "module",
   "bin": {
     "explorer": "./dist/explorer.js"
