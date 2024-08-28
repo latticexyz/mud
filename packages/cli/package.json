@@ -34,7 +34,7 @@
     "clean:test-tables": "rimraf src/codegen",
     "dev": "tsup --watch",
     "lint": "eslint . --ext .ts",
-    "prepare": "mkdir -p ./dist && touch ./dist/mud.js",
+    "prepare": "mkdirp ./dist && touch ./dist/mud.js",
     "test": "tsc --noEmit && forge test",
     "test:ci": "pnpm run test"
   },
