@@ -110,12 +110,12 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
    *
    * NOTE: This function is not virtual, {_update} should be overridden instead.
    */
-   function _transfer(address from, address to, uint256 value) internal {
+  function _transfer(address from, address to, uint256 value) internal {
     if (from == address(0)) {
-        revert ERC20InvalidSender(address(0));
+      revert ERC20InvalidSender(address(0));
     }
     if (to == address(0)) {
-        revert ERC20InvalidReceiver(address(0));
+      revert ERC20InvalidReceiver(address(0));
     }
     _update(from, to, value);
   }
@@ -129,32 +129,34 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
    */
   function _update(address from, address to, uint256 value) internal {
     if (from == address(0)) {
-        // Overflow check required: The rest of the code assumes that totalSupply never overflows
-        Token.setTotalSupply(Token.getTotalSupply() + value);
+      // Overflow check required: The rest of the code assumes that totalSupply never overflows
+      Token.setTotalSupply(Token.getTotalSupply() + value);
     } else {
-        uint256 fromBalance = Balances.get(from);
-        if (fromBalance < value) {
-            revert ERC20InsufficientBalance(from, fromBalance, value);
-        }
+      uint256 fromBalance = Balances.get(from);
+      if (fromBalance < value) {
+        revert ERC20InsufficientBalance(from, fromBalance, value);
+      }
+      unchecked {
+        // Overflow not possible: value <= fromBalance <= totalSupply.
+        Balances.setBalance(from, fromBalance - value);
+      }
+
+      if (to == address(0)) {
         unchecked {
-            // Overflow not possible: value <= fromBalance <= totalSupply.
-            Token.setBalance(from) = fromBalance - value;
+          // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
+          Token.setTotalSupply(Token.getTotalSupply() + value);
         }
-    
-    if (to == address(0)) {
+      } else {
         unchecked {
-            // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
-            Token.setTotalSupply(Token.getTotalSupply() + value);
+          // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
+          uint256 balancePrior = Balances.get(to);
+          Token.setBalance(to, balancePrior - value);
         }
-    } else {
-        unchecked {
-            // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
-            Token.setBalance(to) = Token.getBalance(to) - value;
-        }
-    
-    emit Transfer(from, to, value);
+
+        emit Transfer(from, to, value);
+      }
     }
-  }}
+  }
 
   /**
    * ToDo: Natspec
@@ -194,14 +196,14 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
    */
   function _approve(address owner, address spender, uint256 value, bool emitEvent) internal {
     if (owner == address(0)) {
-        revert ERC20InvalidApprover(address(0));
+      revert ERC20InvalidApprover(address(0));
     }
     if (spender == address(0)) {
-        revert ERC20InvalidSpender(address(0));
+      revert ERC20InvalidSpender(address(0));
     }
     Token.setAllowance(owner, spender, value);
     if (emitEvent) {
-        emit Approval(owner, spender, value);
+      emit Approval(owner, spender, value);
     }
   }
 
@@ -216,12 +218,12 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
   function _spendAllowance(address owner, address spender, uint256 value) internal {
     uint256 currentAllowance = Token.getAllowance(owner, spender);
     if (currentAllowance != type(uint256).max) {
-        if (currentAllowance < value) {
-            revert ERC20InsufficientAllowance(spender, currentAllowance, value);
-        }
-        unchecked {
-            _approve(owner, spender, currentAllowance - value, false);
-        }
+      if (currentAllowance < value) {
+        revert ERC20InsufficientAllowance(spender, currentAllowance, value);
+      }
+      unchecked {
+        _approve(owner, spender, currentAllowance - value, false);
+      }
     }
   }
 
@@ -237,12 +239,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
   }
 
   // Splice data in the static part of the record
-  function spliceStaticData(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    uint48 start,
-    bytes calldata data
-  ) public {
+  function spliceStaticData(ResourceId tableId, bytes32[] calldata keyTuple, uint48 start, bytes calldata data) public {
     StoreCore.spliceStaticData(tableId, keyTuple, start, data);
   }
 
@@ -259,12 +256,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
   }
 
   // Set partial data at field index
-  function setField(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    uint8 fieldIndex,
-    bytes calldata data
-  ) public {
+  function setField(ResourceId tableId, bytes32[] calldata keyTuple, uint8 fieldIndex, bytes calldata data) public {
     StoreCore.setField(tableId, keyTuple, fieldIndex, data);
   }
 
