@@ -173,7 +173,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
    * Emits a {Transfer} event with `from` set to the zero address.
    *
    */
-  function _mint(address account, uint256 value) internal {
+  function mint(address account, uint256 value) external {
     if (account == address(0)) {
       revert ERC20InvalidReceiver(address(0));
     }
@@ -187,7 +187,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
    * Emits a {Transfer} event with `to` set to the zero address.
    *
    */
-  function _burn(address account, uint256 value) internal {
+  function burn(address account, uint256 value) external {
     if (account == address(0)) {
       revert ERC20InvalidSender(address(0));
     }
