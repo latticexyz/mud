@@ -28,6 +28,7 @@ export async function findContractArtifacts({ forgeOutDir }: Input): Promise<Out
     await glob("**/*.sol/*.json", {
       ignore: ["**/*.abi.json", "**/*.t.sol/*.json", "**/*.s.sol/*.json"],
       cwd: forgeOutDir,
+      windowsPathsNoEscape: true,
     })
   ).sort();
   const artifactsJson = await Promise.all(
