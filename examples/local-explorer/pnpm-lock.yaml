@@ -35,9 +35,6 @@ importers:
       mprocs:
         specifier: ^0.6.4
         version: 0.6.4
-      rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
       typescript:
         specifier: 5.4.2
         version: 5.4.2

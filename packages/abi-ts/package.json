@@ -27,9 +27,9 @@
   ],
   "scripts": {
     "build": "tsup",
-    "clean": "rimraf dist",
+    "clean": "npx shx rm -rf dist",
     "dev": "tsup --watch",
-    "prepare": "mkdir -p ./dist && touch ./dist/abi-ts.js",
+    "prepare": "npx shx mkdir -p ./dist && npx shx touch ./dist/abi-ts.js",
     "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests",
     "test:ci": "pnpm run test"
   },

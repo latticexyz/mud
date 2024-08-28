@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "clean": "rimraf dist",
+    "clean": "npx shx rm -rf dist",
     "dev": "vite"
   },
   "dependencies": {
@@ -30,7 +30,6 @@
     "viem": "2.19.8"
   },
   "devDependencies": {
-    "rimraf": "^3.0.2",
     "vite": "^4.2.1",
     "vitest": "0.34.6"
   }
