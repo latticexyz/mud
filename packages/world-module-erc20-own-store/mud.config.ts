@@ -7,11 +7,10 @@ export default defineWorld({
       schema: {
         decimals: "uint8",
         totalSupply: "uint256",
-        id: "bytes32",
         name: "string",
         symbol: "string",
       },
-      key: ["id"],
+      key: [], // Singleton table
       codegen: {
         outputDirectory: "./tables",
       },
