@@ -15,6 +15,11 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
 
+/**
+ * @title ERC20 Module with own Store
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ * @dev Implementation of EIP-20 that has on instance of `Store` which enables built in indexing and storage packing.
+ */
 contract MUDERC20 is Store, IERC20Errors, IERC20Events {
   constructor(string memory _name, string memory _symbol, uint8 _decimals) {
     StoreCore.initialize();
