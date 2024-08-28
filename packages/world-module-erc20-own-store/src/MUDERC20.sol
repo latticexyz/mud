@@ -150,7 +150,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
         unchecked {
           // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
           uint256 balancePrior = Balances.get(to);
-          Token.setBalance(to, balancePrior - value);
+          Balances.setBalance(to, balancePrior - value);
         }
 
         emit Transfer(from, to, value);
@@ -201,7 +201,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
     if (spender == address(0)) {
       revert ERC20InvalidSpender(address(0));
     }
-    Token.setAllowance(owner, spender, value);
+    Allowances.setAllowance(owner, spender, value);
     if (emitEvent) {
       emit Approval(owner, spender, value);
     }
@@ -216,7 +216,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
    * Does not emit an {Approval} event.
    */
   function _spendAllowance(address owner, address spender, uint256 value) internal {
-    uint256 currentAllowance = Token.getAllowance(owner, spender);
+    uint256 currentAllowance = Allowances.getAllowance(owner, spender);
     if (currentAllowance != type(uint256).max) {
       if (currentAllowance < value) {
         revert ERC20InsufficientAllowance(spender, currentAllowance, value);
