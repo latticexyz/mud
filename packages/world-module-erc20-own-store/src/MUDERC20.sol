@@ -8,6 +8,7 @@ import { Balances } from "./codegen/tables/Balances.sol";
 import { Allowances } from "./codegen/tables/Allowances.sol";
 
 import { Store } from "@latticexyz/store/src/Store.sol";
+import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 
 contract MUDERC20 is Store, IERC20Errors, IERC20Events {
   constructor(string memory _name, string memory _symbol, uint8 _decimals) {
@@ -18,7 +19,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
     Balances.register();
     Allowances.register();
 
-    Token.set(_name, _symbol, _decimals);
+    Token.set( _decimals, 0, _name, _symbol);
   }
 
   /// VIEW FUNCTIONS ///
@@ -41,7 +42,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
   /**
    * @dev Returns the decimals of the token.
    */
-  function decimals() public view returns (string memory) {
+  function decimals() public view returns (uint8) {
     return Token.getDecimals();
   }
 
@@ -50,5 +51,19 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
    */
   function totalSupply() public view returns (uint256) {
     return Token.getTotalSupply();
+  }
+
+  /**
+   * @dev Returns the balance of the `account`.
+   */
+  function balanceOf(address account) public view returns (uint256) {
+    return Balances.get(account);
+  }
+
+  /**
+   * @dev Returns the allowance of `spender` for `owner`.
+   */
+  function allowance(address owner, address spender) public view returns (uint256) {
+    return Allowances.get(owner, spender);
   }
 }
