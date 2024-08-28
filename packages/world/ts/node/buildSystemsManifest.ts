@@ -47,6 +47,10 @@ export async function buildSystemsManifest(opts: { rootDir: string; config: Worl
   function getSystemArtifact(system: ResolvedSystem): ContractArtifact {
     const artifact = contractArtifacts.find((a) => a.sourcePath === system.sourcePath && a.name === system.label);
     if (!artifact) {
+      console.log(
+        "artifacts",
+        contractArtifacts.map(({ sourcePath, name }) => ({ sourcePath, name })),
+      );
       throw new Error(
         `Could not find build artifact for system \`${system.label}\` at \`${system.sourcePath}\`. Did \`forge build\` run successfully?`,
       );
