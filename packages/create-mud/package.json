@@ -4,13 +4,14 @@
   "description": "Create a new MUD project",
   "license": "MIT",
   "author": "Lattice <mud@lattice.xyz>",
+  "type": "module",
   "bin": "dist/cli.js",
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "pnpm run build:js",
-    "build:js": "tsup && ./scripts/copy-templates.sh",
+    "build:js": "tsup && tsx ./scripts/copy-templates.ts",
     "clean": "pnpm run clean:js",
     "clean:js": "npx shx rm -rf dist",
     "dev": "tsup --watch",
