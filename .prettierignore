@@ -3,3 +3,5 @@ dist
 templates/phaser/packages/art
 CODEOWNERS
 out
+
+packages/*/docs
