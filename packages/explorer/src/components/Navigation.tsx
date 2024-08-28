@@ -37,7 +37,7 @@ export function Navigation() {
           </Link>
         </div>
 
-        {(!isFetched || !data?.worldLoaded) && <h4 className="font-mono text-sm">Loading world ...</h4>}
+        {(!isFetched || !data?.worldLoaded) && <h4 className="font-mono text-xs">Loading world ...</h4>}
 
         <div className="flex items-center gap-x-4">
           <LatestBlock />
