@@ -31,7 +31,7 @@
     "build": "tsup",
     "clean": "npx shx rm -rf dist",
     "dev": "tsup --watch",
-    "prepare": "npx shx mkdir -p ./dist && npx shx touch ./dist/gas-report.js",
+    "postinstall": "npx shx mkdir -p ./dist && npx shx touch ./dist/gas-report.js",
     "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests && forge test",
     "test:ci": "pnpm run test"
   },
