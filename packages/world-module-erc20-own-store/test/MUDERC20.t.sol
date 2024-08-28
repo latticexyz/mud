@@ -14,10 +14,10 @@ contract MUDERC20Test is Test, GasReporter {
   address alice = address(0x123);
 
   function setUp() public {
-    muderc20 = new MUDERC20();
+    muderc20 = new MUDERC20("MUDERC20", "MUD", 18);
   }
 
-  function testMUDERC20Constructor() public {
+  function testMUDERC20SetUp() public {
     startGasReport("MUDERC20 constructor");
 
     assertEq(muderc20.decimals(), 18);
@@ -62,7 +62,7 @@ contract MUDERC20Test is Test, GasReporter {
     startGasReport("MUDERC20 transfer");
 
     muderc20.mint(address(this), 1000);
-    muderc20.transfer(alice, address(0), 500);
+    muderc20.transfer(alice, 500);
 
     assertEq(Balances.getBalance(address(this)), 500);
     assertEq(Balances.getBalance(alice), 500);
