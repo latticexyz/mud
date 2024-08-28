@@ -83,6 +83,128 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
     return Allowances.get(owner, spender);
   }
 
+  /**
+   * ToDo: Natspec
+   */
+  function transfer(address to, uint256 value) public returns (bool) {
+    _transfer(msg.sender, to, value);
+    return true;
+  }
+
+  /**
+   * ToDo: Natspec
+   */
+  function transferFrom(address from, address to, uint256 value) public returns (bool) {
+    _spendAllowance(from, msg.sender, value);
+    _transfer(from, to, value);
+    return true;
+  }
+
+  /**
+   * @dev Moves a `value` amount of tokens from `from` to `to`.
+   *
+   * This internal function is equivalent to {transfer}, and can be used to
+   * e.g. implement automatic token fees, slashing mechanisms, etc.
+   *
+   * Emits a {Transfer} event.
+   *
+   * NOTE: This function is not virtual, {_update} should be overridden instead.
+   */
+   function _transfer(address from, address to, uint256 value) internal {
+    if (from == address(0)) {
+        revert ERC20InvalidSender(address(0));
+    }
+    if (to == address(0)) {
+        revert ERC20InvalidReceiver(address(0));
+    }
+    _update(from, to, value);
+  }
+
+  /**
+   * @dev Transfers a `value` amount of tokens from `from` to `to`, or alternatively mints (or burns) if `from`
+   * (or `to`) is the zero address. All customizations to transfers, mints, and burns should be done by overriding
+   * this function.
+   *
+   * Emits a {Transfer} event.
+   */
+  function _update(address from, address to, uint256 value) internal {
+    if (from == address(0)) {
+        // Overflow check required: The rest of the code assumes that totalSupply never overflows
+        Token.setTotalSupply(Token.getTotalSupply() + value);
+    } else {
+        uint256 fromBalance = getBalance(from);
+        if (fromBalance < value) {
+            revert ERC20InsufficientBalance(from, fromBalance, value);
+        }
+        unchecked {
+            // Overflow not possible: value <= fromBalance <= totalSupply.
+            Token.setBalance(from) = fromBalance - value;
+        }
+    
+    if (to == address(0)) {
+        unchecked {
+            // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
+            Token.setTotalSupply(Token.getTotalSupply() + value)
+        }
+    } else {
+        unchecked {
+            // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
+            Token.setBalance(to) = Token.getBalance(to) - value;
+        }
+    
+    emit Transfer(from, to, value);
+    }
+  }
+
+  // function approve(address spender, uint256 value) public returns (bool) {
+  //   address owner = ;
+  //   _approve(msg.sender, spender, value);
+  //   return true;
+  // }
+
+  /**
+     * @dev Sets `value` as the allowance of `spender` over the `owner`'s tokens.
+     *
+     * This internal function is equivalent to `approve`, and can be used to
+     * e.g. set automatic allowances for certain subsystems, etc.
+     *
+     * Emits an {Approval} event.
+     *
+     * Requirements:
+     *
+     * - `owner` cannot be the zero address.
+     * - `spender` cannot be the zero address.
+     *
+     */
+    function _approve(address owner, address spender, uint256 value) internal {
+        _approve(owner, spender, value, true);
+    }
+
+    /**
+     * @dev Variant of {_approve} with an optional flag to enable or disable the {Approval} event.
+     *
+     * By default (when calling {_approve}) the flag is set to true. On the other hand, approval changes made by
+     * `_spendAllowance` during the `transferFrom` operation set the flag to false. This saves gas by not emitting any
+     * `Approval` event during `transferFrom` operations.
+     *
+     *
+     * Requirements are the same as {_approve}.
+     */
+    function _approve(address owner, address spender, uint256 value, bool emitEvent) internal {
+        if (owner == address(0)) {
+            revert ERC20InvalidApprover(address(0));
+        }
+        if (spender == address(0)) {
+            revert ERC20InvalidSpender(address(0));
+        }
+        Token.setAllowance(owner, spender, value);
+        if (emitEvent) {
+            emit Approval(owner, spender, value);
+        }
+    }
+
+
+
   // Set full record (including full dynamic data)
   function setRecord(
     ResourceId tableId,
