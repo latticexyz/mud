@@ -1,16 +1,21 @@
 "use client";
 
+import { Loader } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LatestBlock } from "../components/LatestBlock";
 import { Separator } from "../components/ui/Separator";
 import { useWorldUrl } from "../hooks/useWorldUrl";
 import { cn } from "../lib/utils";
+import { useAbiQuery } from "../queries/useAbiQuery";
 import { AccountSelect } from "./AccountSelect";
 
 export function Navigation() {
   const pathname = usePathname();
   const getLinkUrl = useWorldUrl();
+  const { data, isFetched } = useAbiQuery();
+
+  console.log(isFetched, data?.isWorldRegistered);
 
   return (
     <div className="mb-8">
@@ -34,6 +39,12 @@ export function Navigation() {
             Interact
           </Link>
         </div>
+
+        {isFetched && !data?.isWorldRegistered && (
+          <h4 className="font-mono text-sm font-bold uppercase opacity-70">
+            Registering world <Loader className="inline-block h-4 w-4 animate-spin" />
+          </h4>
+        )}
 
         <div className="flex items-center gap-x-4">
           <LatestBlock />
