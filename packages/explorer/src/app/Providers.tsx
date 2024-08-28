@@ -6,6 +6,7 @@ import { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createConfig, http } from "@wagmi/core";
 import { localhost } from "@wagmi/core/chains";
+import { AppStoreProvider } from "../store";
 
 const queryClient = new QueryClient();
 
@@ -28,7 +29,9 @@ export const wagmiConfig = createConfig({
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <WagmiProvider config={wagmiConfig}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <AppStoreProvider>{children}</AppStoreProvider>
+      </QueryClientProvider>
     </WagmiProvider>
   );
 }
