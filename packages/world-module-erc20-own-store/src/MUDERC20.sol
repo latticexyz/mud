@@ -121,6 +121,20 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
   }
 
   /**
+   * @dev Destroys a `value` amount of tokens from `account`, lowering the total supply.
+   * Relies on the `_update` mechanism.
+   *
+   * Emits a {Transfer} event with `to` set to the zero address.
+   *
+   */
+  function _burn(address account, uint256 value) internal {
+    if (account == address(0)) {
+        revert ERC20InvalidSender(address(0));
+    }
+    _update(account, address(0), value);
+  }
+
+  /**
    * @dev Transfers a `value` amount of tokens from `from` to `to`, or alternatively mints (or burns) if `from`
    * (or `to`) is the zero address. All customizations to transfers, mints, and burns should be done by overriding
    * this function.
