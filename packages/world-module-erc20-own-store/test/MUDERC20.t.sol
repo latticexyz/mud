@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import { Test } from "forge-std/Test.sol";
-import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";";
+import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { MUDERC20 } from "../src/MUDERC20.sol";
 import { Token } from "../src/codegen/tables/Token.sol";
