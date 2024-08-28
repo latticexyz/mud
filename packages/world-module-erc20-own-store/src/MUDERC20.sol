@@ -19,13 +19,14 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
     Balances.register();
     Allowances.register();
 
-    Token.set( _decimals, 0, _name, _symbol);
+    Token.set(_decimals, 0, _name, _symbol);
   }
 
   /// VIEW FUNCTIONS ///
 
   /**
    * @dev Returns the name of the token.
+   * @return The name of the token.
    */
   function name() public view returns (string memory) {
     return Token.getName();
@@ -34,6 +35,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
   /**
    * @dev Returns the symbol of the token, usually a shorter version of the
    * name.
+   * @return The symbol of the token.
    */
   function symbol() public view returns (string memory) {
     return Token.getSymbol();
@@ -41,6 +43,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
 
   /**
    * @dev Returns the decimals of the token.
+   * @return The number of decimals of the token.
    */
   function decimals() public view returns (uint8) {
     return Token.getDecimals();
@@ -48,6 +51,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
 
   /**
    * @dev Returns the total supply of the token.
+   * @return The total supply of the token.
    */
   function totalSupply() public view returns (uint256) {
     return Token.getTotalSupply();
@@ -55,6 +59,8 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
 
   /**
    * @dev Returns the balance of the `account`.
+   * @param account The address of the account to get the balance of.
+   * @return The balance of the `account`.
    */
   function balanceOf(address account) public view returns (uint256) {
     return Balances.get(account);
@@ -62,6 +68,8 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
 
   /**
    * @dev Returns the allowance of `spender` for `owner`.
+   * @param owner The address of the owner.
+   * @param spender The address of the spender.
    */
   function allowance(address owner, address spender) public view returns (uint256) {
     return Allowances.get(owner, spender);
