@@ -31,6 +31,7 @@ export async function findContractArtifacts({ forgeOutDir }: Input): Promise<Out
       windowsPathsNoEscape: true,
     })
   ).sort();
+  console.log("found", files.length, "in", forgeOutDir);
   const artifactsJson = await Promise.all(
     files.map(async (filename) => ({
       filename,
