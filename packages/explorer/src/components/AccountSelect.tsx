@@ -1,11 +1,16 @@
 import { Address, formatEther } from "viem";
 import { useBalance } from "wagmi";
 import { ACCOUNTS } from "../consts";
-import { useStore } from "../store";
+import { useAppStore } from "../store";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
 import { TruncatedHex } from "./ui/TruncatedHex";
 
-function AccountSelectItem({ address, name }: { address: Address; name: string }) {
+type Props = {
+  address: Address;
+  name: string;
+};
+
+function AccountSelectItem({ address, name }: Props) {
   const balance = useBalance({
     address,
     query: {
@@ -25,7 +30,7 @@ function AccountSelectItem({ address, name }: { address: Address; name: string }
 }
 
 export function AccountSelect() {
-  const { account, setAccount } = useStore();
+  const { account, setAccount } = useAppStore();
   return (
     <Select value={account} onValueChange={setAccount}>
       <SelectTrigger className="w-[300px] text-left">

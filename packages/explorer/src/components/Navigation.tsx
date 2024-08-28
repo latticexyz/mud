@@ -6,11 +6,13 @@ import { LatestBlock } from "../components/LatestBlock";
 import { Separator } from "../components/ui/Separator";
 import { useWorldUrl } from "../hooks/useWorldUrl";
 import { cn } from "../lib/utils";
+import { useAbiQuery } from "../queries/useAbiQuery";
 import { AccountSelect } from "./AccountSelect";
 
 export function Navigation() {
   const pathname = usePathname();
   const getLinkUrl = useWorldUrl();
+  const { isFetched } = useAbiQuery();
 
   return (
     <div className="mb-8">
@@ -34,6 +36,8 @@ export function Navigation() {
             Interact
           </Link>
         </div>
+
+        {!isFetched && <h4 className="font-mono text-sm">Loading world ...</h4>}
 
         <div className="flex items-center gap-x-4">
           <LatestBlock />
