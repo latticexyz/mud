@@ -1,11 +1,11 @@
 {
-  "name": "@latticexyz/world-module-metadata",
+  "name": "@latticexyz/world-module-erc20-own-store",
   "version": "2.1.1",
-  "description": "Metadata world module",
+  "description": "ERC20 World Module with Own Store",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/world-module-metadata"
+    "directory": "packages/world-module-erc20-own-store"
   },
   "license": "MIT",
   "type": "module",
@@ -33,8 +33,8 @@
     "build:mud": "tsx ./ts/build.ts",
     "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud",
     "clean:abi": "forge clean",
-    "clean:js": "shx  rm -rf dist",
-    "clean:mud": "shx  rm -rf src/**/codegen",
+    "clean:js": "rimraf dist",
+    "clean:mud": "rimraf src/**/codegen",
     "dev": "tsup --watch",
     "gas-report": "gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
