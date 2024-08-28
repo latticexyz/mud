@@ -1,11 +1,7 @@
 #!/usr/bin/env node
 import { create } from "create-create-app";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import packageJson from "../package.json";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const templateRoot = path.resolve(__dirname, "..", "dist", "templates");
 
