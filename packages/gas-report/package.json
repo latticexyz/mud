@@ -20,9 +20,10 @@
     }
   },
   "bin": {
-    "gas-report": "./dist/gas-report.js"
+    "gas-report": "./bin/gas-report.js"
   },
   "files": [
+    "bin",
     "dist",
     "out",
     "src"
@@ -31,7 +32,6 @@
     "build": "tsup",
     "clean": "npx shx rm -rf dist",
     "dev": "tsup --watch",
-    "prepare": "npx shx mkdir -p ./dist && npx shx touch ./dist/gas-report.js",
     "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests && forge test",
     "test:ci": "pnpm run test"
   },

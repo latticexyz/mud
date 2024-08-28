@@ -20,16 +20,16 @@
     }
   },
   "bin": {
-    "abi-ts": "./dist/abi-ts.js"
+    "abi-ts": "./bin/abi-ts.js"
   },
   "files": [
+    "bin",
     "dist"
   ],
   "scripts": {
     "build": "tsup",
     "clean": "npx shx rm -rf dist",
     "dev": "tsup --watch",
-    "prepare": "npx shx mkdir -p ./dist && npx shx touch ./dist/abi-ts.js",
     "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests",
     "test:ci": "pnpm run test"
   },
