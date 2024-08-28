@@ -175,11 +175,10 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
    */
   function _mint(address account, uint256 value) internal {
     if (account == address(0)) {
-        revert ERC20InvalidReceiver(address(0));
+      revert ERC20InvalidReceiver(address(0));
     }
     _update(address(0), account, value);
   }
-
 
   /**
    * @dev Destroys a `value` amount of tokens from `account`, lowering the total supply.
@@ -190,7 +189,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
    */
   function _burn(address account, uint256 value) internal {
     if (account == address(0)) {
-        revert ERC20InvalidSender(address(0));
+      revert ERC20InvalidSender(address(0));
     }
     _update(account, address(0), value);
   }
