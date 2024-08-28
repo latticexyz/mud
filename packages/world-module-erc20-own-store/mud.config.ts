@@ -1,9 +1,9 @@
 import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
-  namespace: "erc20-own-store",
+  namespace: "erc20-store",
   tables: {
-    MUDERC20: {
+    Token: {
       schema: {
         decimals: "uint8",
         totalSupply: "uint256",
@@ -14,7 +14,6 @@ export default defineWorld({
       key: ["id"],
       codegen: {
         outputDirectory: "./tables",
-        tableIdArgument: true,
       },
     },
     Balances: {
