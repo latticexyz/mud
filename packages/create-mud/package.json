@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "build": "pnpm run build:js",
-    "build:js": "tsup && ./scripts/copy-templates.sh",
+    "build:js": "tsup && tsx ./scripts/copy-templates.ts",
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
