@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import path from "node:path";
+import path from "node:path/posix";
 import { fileURLToPath } from "node:url";
 import { startProxy } from "@viem/anvil";
 import { generateLogs } from "./generateLogs";

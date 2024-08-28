@@ -1,4 +1,4 @@
-import path from "node:path";
+import path from "node:path/posix";
 import { readFile } from "node:fs/promises";
 import { glob } from "glob";
 import { type } from "arktype";
@@ -28,7 +28,7 @@ export async function findContractArtifacts({ forgeOutDir }: Input): Promise<Out
     await glob("**/*.sol/*.json", {
       ignore: ["**/*.abi.json", "**/*.t.sol/*.json", "**/*.s.sol/*.json"],
       cwd: forgeOutDir,
-      windowsPathsNoEscape: true,
+      posix: true,
     })
   ).sort();
   console.log("found", files.length, "in", forgeOutDir);

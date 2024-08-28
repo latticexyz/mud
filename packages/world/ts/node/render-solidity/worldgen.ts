@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import path from "node:path";
+import path from "node:path/posix";
 import { formatAndWriteSolidity, contractToInterface, type ImportDatum } from "@latticexyz/common/codegen";
 import { renderSystemInterface } from "./renderSystemInterface";
 import { renderWorldInterface } from "./renderWorldInterface";

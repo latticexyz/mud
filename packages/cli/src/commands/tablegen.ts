@@ -2,7 +2,7 @@ import type { CommandModule } from "yargs";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { Store as StoreConfig } from "@latticexyz/store";
 import { tablegen } from "@latticexyz/store/codegen";
-import path from "node:path";
+import path from "node:path/posix";
 
 type Options = {
   configPath?: string;

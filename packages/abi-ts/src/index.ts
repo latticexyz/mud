@@ -24,7 +24,7 @@ const commandModule: CommandModule<Options, Options> = {
   },
 
   handler({ input }) {
-    const files = globSync(input).sort();
+    const files = globSync(input, { posix: true }).sort();
 
     if (!files.length) {
       console.error(`No files found for glob: ${input}`);

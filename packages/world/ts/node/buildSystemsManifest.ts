@@ -4,7 +4,7 @@ import { World } from "../config/v2";
 import { ContractArtifact, systemsManifestFilename } from "./common";
 import { findContractArtifacts } from "./findContractArtifacts";
 import { getOutDirectory as getForgeOutDirectory } from "@latticexyz/common/foundry";
-import path from "node:path";
+import path from "node:path/posix";
 import { Abi, Hex, isHex } from "viem";
 import { formatAbi, formatAbiItem } from "abitype";
 import { debug } from "./debug";

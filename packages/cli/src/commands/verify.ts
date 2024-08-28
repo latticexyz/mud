@@ -8,7 +8,7 @@ import { getContractData } from "../utils/getContractData";
 import { Hex, createWalletClient, http } from "viem";
 import chalk from "chalk";
 import { configToModules } from "../deploy/configToModules";
-import path from "node:path";
+import path from "node:path/posix";
 
 const verifyOptions = {
   deployerAddress: {

@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import path from "node:path";
+import path from "node:path/posix";
 import { formatSolidity, formatTypescript } from "./format";
 import { debug } from "../debug";
 

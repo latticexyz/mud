@@ -1,4 +1,4 @@
-import path from "node:path";
+import path from "node:path/posix";
 import { describe, expect, it } from "vitest";
 
 describe("getUserTypes", () => {

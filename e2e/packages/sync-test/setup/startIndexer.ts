@@ -4,7 +4,7 @@ import { rmSync } from "node:fs";
 import { cleanDatabase } from "@latticexyz/store-sync/postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import path from "node:path";
+import path from "node:path/posix";
 
 type IndexerOptions =
   | {

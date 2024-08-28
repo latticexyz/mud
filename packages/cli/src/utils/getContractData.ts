@@ -1,5 +1,5 @@
 import { readFileSync } from "fs";
-import path from "path";
+import path from "node:path/posix";
 import { MUDError } from "@latticexyz/common/errors";
 import { Abi, Hex, size } from "viem";
 import { LibraryPlaceholder } from "../deploy/common";

@@ -1,4 +1,4 @@
-import path from "node:path";
+import path from "node:path/posix";
 import fs from "node:fs";
 import type { CommandModule } from "yargs";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";

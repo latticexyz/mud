@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path/posix";
 import { visit } from "@solidity-parser/parser";
 import type { ContractDefinition, SourceUnit } from "@solidity-parser/parser/dist/src/ast-types";
 import { SolhintRule } from "../solhintTypes";

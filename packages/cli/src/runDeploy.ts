@@ -1,4 +1,4 @@
-import path from "node:path";
+import path from "node:path/posix";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { InferredOptionTypes, Options } from "yargs";
 import { deploy } from "./deploy/deploy";

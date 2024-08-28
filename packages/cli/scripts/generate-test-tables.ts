@@ -1,7 +1,7 @@
 import { tablegen } from "@latticexyz/store/codegen";
 import { defineStore } from "@latticexyz/store";
 import { fileURLToPath } from "node:url";
-import path from "node:path";
+import path from "node:path/posix";
 
 const configPath = fileURLToPath(import.meta.url);
 

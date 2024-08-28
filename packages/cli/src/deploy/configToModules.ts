@@ -1,4 +1,4 @@
-import path from "node:path";
+import path from "node:path/posix";
 import { Module } from "./common";
 import { encodeField } from "@latticexyz/protocol-parser/internal";
 import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type/internal";

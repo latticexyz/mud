@@ -1,5 +1,5 @@
 import { findUp } from "find-up";
-import path from "path";
+import path from "node:path/posix";
 import esbuild from "esbuild";
 import { rmSync } from "fs";
 import { pathToFileURL } from "url";

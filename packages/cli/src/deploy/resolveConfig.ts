@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path/posix";
 import { loadSystemsManifest, resolveSystems } from "@latticexyz/world/node";
 import { Library, System, WorldFunction } from "./common";
 import { Hex, isHex, toFunctionSelector, toFunctionSignature } from "viem";

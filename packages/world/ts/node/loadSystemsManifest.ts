@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import path from "node:path";
+import path from "node:path/posix";
 import { type } from "arktype";
 import { World } from "../config/v2";
 import { systemsManifestFilename } from "./common";

@@ -1,4 +1,4 @@
-import path from "node:path";
+import path from "node:path/posix";
 import { fileURLToPath } from "node:url";
 import { tablegen } from "@latticexyz/store/codegen";
 import { worldgen } from "@latticexyz/world/node";

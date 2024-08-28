@@ -5,7 +5,7 @@
 
 import { execa } from "execa";
 import { readFileSync, writeFileSync } from "node:fs";
-import path from "path";
+import path from "node:path/posix";
 import { globSync } from "glob";
 
 //--------- CONSTANTS
@@ -120,7 +120,7 @@ async function getChanges(include: "diff" | "all") {
     );
   } else if (include === "all") {
     // Load all current changesets from the .changeset dir
-    const changesetsToInclude = globSync(".changeset/*.md").sort();
+    const changesetsToInclude = globSync(".changeset/*.md", { posix: true }).sort();
 
     // Load the contents of each changeset from file and metadata from git
     changesetContents = await Promise.all(

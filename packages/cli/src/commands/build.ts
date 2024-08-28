@@ -2,7 +2,7 @@ import type { CommandModule } from "yargs";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
 import { build } from "../build";
-import path from "node:path";
+import path from "node:path/posix";
 
 type Options = {
   configPath?: string;

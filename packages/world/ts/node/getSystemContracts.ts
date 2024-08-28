@@ -1,4 +1,4 @@
-import path from "node:path";
+import path from "node:path/posix";
 import { World } from "../config/v2/output";
 import { findSolidityFiles } from "./findSolidityFiles";
 

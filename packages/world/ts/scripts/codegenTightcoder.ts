@@ -1,6 +1,6 @@
 import { renderFile } from "ejs";
 import { writeFileSync } from "fs";
-import { extname, basename, join, dirname } from "path";
+import { extname, basename, join, dirname } from "node:path/posix";
 
 function renderEjsToSol(file: string, data: object) {
   renderFile(file, data, {}, (err, str) => {
