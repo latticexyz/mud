@@ -12,16 +12,16 @@
     "build": "pnpm run build:js",
     "build:js": "tsup && ./scripts/copy-templates.sh",
     "clean": "pnpm run clean:js",
-    "clean:js": "rimraf dist",
+    "clean:js": "npx shx rm -rf dist",
     "dev": "tsup --watch",
     "prepublishOnly": "npm run clean && npm run build",
     "test": "pnpm run test:vanilla && pnpm run test:react && pnpm run test:react-ecs && pnpm run test:phaser && pnpm run test:threejs",
     "test:ci": "pnpm run test",
-    "test:phaser": "dist/cli.js test-project --template phaser && rimraf test-project",
-    "test:react": "dist/cli.js test-project --template react && rimraf test-project",
-    "test:react-ecs": "dist/cli.js test-project --template react-ecs && rimraf test-project",
-    "test:threejs": "dist/cli.js test-project --template threejs && rimraf test-project",
-    "test:vanilla": "dist/cli.js test-project --template vanilla && rimraf test-project"
+    "test:phaser": "dist/cli.js test-project --template phaser && npx shx rm -rf test-project",
+    "test:react": "dist/cli.js test-project --template react && npx shx rm -rf test-project",
+    "test:react-ecs": "dist/cli.js test-project --template react-ecs && npx shx rm -rf test-project",
+    "test:threejs": "dist/cli.js test-project --template threejs && npx shx rm -rf test-project",
+    "test:vanilla": "dist/cli.js test-project --template vanilla && npx shx rm -rf test-project"
   },
   "dependencies": {
     "create-create-app": "git+https://github.com/holic/create-create-app#74376c59b48a04aabbe94d9cacfe9cb1cecccd63"
