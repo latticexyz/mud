@@ -36,7 +36,7 @@
     "build": "pnpm run build:js",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
-    "clean:js": "npx shx rm -rf dist/typescript",
+    "clean:js": "shx  rm -rf dist/typescript",
     "dev": "tsup --watch",
     "gas-report": "gas-report --save gas-report.json",
     "test": "vitest typecheck --run && vitest --run && forge test",
