@@ -11,6 +11,7 @@ import { Allowances } from "../src/codegen/tables/Allowances.sol";
 
 contract MUDERC20Test is Test, GasReporter {
   MUDERC20 muderc20;
+  address alice = address(0x123);
 
   function setUp() public {
     muderc20 = new MUDERC20();
@@ -56,4 +57,16 @@ contract MUDERC20Test is Test, GasReporter {
 
   // ToDo: Add test for invalid burning
   // ToDo: Add fuzz test for burning
+
+  function testMUEDERC20Transfer() public {
+    startGasReport("MUDERC20 transfer");
+
+    muderc20.mint(address(this), 1000);
+    muderc20.transfer(alice, address(0), 500);
+
+    assertEq(Balances.getBalance(address(this)), 500);
+    assertEq(Balances.getBalance(alice), 500);
+
+    endGasReport();
+  }
 }
