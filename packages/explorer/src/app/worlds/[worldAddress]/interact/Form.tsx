@@ -4,23 +4,25 @@ import { Coins, Eye, Send } from "lucide-react";
 import { AbiFunction } from "viem";
 import { useDeferredValue, useState } from "react";
 import { Input } from "../../../../components/ui/Input";
+import { Separator } from "../../../../components/ui/Separator";
+import { Skeleton } from "../../../../components/ui/Skeleton";
 import { useHashState } from "../../../../hooks/useHashState";
 import { cn } from "../../../../lib/utils";
+import { useAbiQuery } from "../../../../queries/useAbiQuery";
 import { FunctionField } from "./FunctionField";
 
-type Props = {
-  abi: AbiFunction[];
-};
-
-export function Form({ abi }: Props) {
+export function Form() {
   const [hash] = useHashState();
+  const { data, isFetched } = useAbiQuery();
   const [filterValue, setFilterValue] = useState("");
   const deferredFilterValue = useDeferredValue(filterValue);
-  const filteredFunctions = abi.filter((item) => item.name.toLowerCase().includes(deferredFilterValue.toLowerCase()));
+  const filteredFunctions = data?.abi?.filter((item) =>
+    item.name.toLowerCase().includes(deferredFilterValue.toLowerCase()),
+  );
 
   return (
-    <div className="flex">
-      <div className="w-[350px]">
+    <div className="flex min-h-full">
+      <div className="w-[320px] flex-shrink-0">
         <div className="sticky top-2 pr-4">
           <h4 className="py-4 text-xs font-semibold uppercase opacity-70">Jump to:</h4>
 
@@ -39,11 +41,16 @@ export function Form({ abi }: Props) {
               maxHeight: "calc(100vh - 160px)",
             }}
           >
-            {filteredFunctions.map((abi, index) => {
-              if ((abi as AbiFunction).type !== "function") {
-                return null;
-              }
+            {!isFetched &&
+              Array.from({ length: 10 }).map((_, index) => {
+                return (
+                  <li key={index} className="pt-2">
+                    <Skeleton className="h-[25px]" />
+                  </li>
+                );
+              })}
 
+            {filteredFunctions?.map((abi, index) => {
               return (
                 <li key={index}>
                   <a
@@ -71,8 +78,20 @@ export function Form({ abi }: Props) {
         </div>
       </div>
 
-      <div className="border-l pl-4">
-        {filteredFunctions.map((abi) => {
+      <div className="min-h-full w-full border-l pl-4">
+        {!isFetched && (
+          <>
+            <Skeleton className="h-[100px]" />
+            <Separator className="my-4" />
+            <Skeleton className="h-[100px]" />
+            <Separator className="my-4" />
+            <Skeleton className="h-[100px]" />
+            <Separator className="my-4" />
+            <Skeleton className="h-[100px]" />
+          </>
+        )}
+
+        {filteredFunctions?.map((abi) => {
           return <FunctionField key={JSON.stringify(abi)} abi={abi as AbiFunction} />;
         })}
       </div>
