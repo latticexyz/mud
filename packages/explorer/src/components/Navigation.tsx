@@ -12,7 +12,7 @@ import { AccountSelect } from "./AccountSelect";
 export function Navigation() {
   const pathname = usePathname();
   const getLinkUrl = useWorldUrl();
-  const { isFetched } = useAbiQuery();
+  const { data, isFetched } = useAbiQuery();
 
   return (
     <div className="mb-8">
@@ -37,7 +37,7 @@ export function Navigation() {
           </Link>
         </div>
 
-        {!isFetched && <h4 className="font-mono text-sm">Loading world ...</h4>}
+        {(!isFetched || !data?.worldLoaded) && <h4 className="font-mono text-sm">Loading world ...</h4>}
 
         <div className="flex items-center gap-x-4">
           <LatestBlock />

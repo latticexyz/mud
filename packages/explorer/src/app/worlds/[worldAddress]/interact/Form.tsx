@@ -13,10 +13,12 @@ import { FunctionField } from "./FunctionField";
 
 export function Form() {
   const [hash] = useHashState();
-  const { data: abi, isFetched } = useAbiQuery();
+  const { data, isFetched } = useAbiQuery();
   const [filterValue, setFilterValue] = useState("");
   const deferredFilterValue = useDeferredValue(filterValue);
-  const filteredFunctions = abi?.filter((item) => item.name.toLowerCase().includes(deferredFilterValue.toLowerCase()));
+  const filteredFunctions = data?.abi?.filter((item) =>
+    item.name.toLowerCase().includes(deferredFilterValue.toLowerCase()),
+  );
 
   return (
     <div className="flex min-h-full">

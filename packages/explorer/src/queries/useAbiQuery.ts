@@ -13,12 +13,22 @@ export async function getAbi(worldAddress: Hex) {
   return data;
 }
 
-export const useAbiQuery = (): UseQueryResult<AbiFunction[]> => {
+type AbiQueryResult = {
+  abi: AbiFunction[];
+  worldLoaded: boolean;
+};
+
+export const useAbiQuery = (): UseQueryResult<AbiQueryResult> => {
   const { worldAddress } = useParams();
   return useQuery({
     queryKey: ["abi", worldAddress],
     queryFn: () => getAbi(worldAddress as Hex),
-    select: (data) => data.abi || [],
+    select: (data) => {
+      return {
+        abi: data.abi || [],
+        worldLoaded: data.worldLoaded,
+      };
+    },
     refetchInterval: 15000,
   });
 };
