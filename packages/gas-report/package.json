@@ -29,9 +29,9 @@
   ],
   "scripts": {
     "build": "tsup",
-    "clean": "rimraf dist",
+    "clean": "npx shx rm -rf dist",
     "dev": "tsup --watch",
-    "prepare": "mkdir -p ./dist && touch ./dist/gas-report.js",
+    "prepare": "npx shx mkdir -p ./dist && npx shx touch ./dist/gas-report.js",
     "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests && forge test",
     "test:ci": "pnpm run test"
   },

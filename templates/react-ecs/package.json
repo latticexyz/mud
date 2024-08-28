@@ -21,7 +21,6 @@
     "@typescript-eslint/parser": "7.1.1",
     "eslint": "8.57.0",
     "mprocs": "^0.6.4",
-    "rimraf": "^3.0.2",
     "typescript": "5.4.2"
   },
   "engines": {

@@ -13,10 +13,10 @@
   "scripts": {
     "build": "pnpm run build:explorer && pnpm run build:bin",
     "build:bin": "tsup",
-    "build:explorer": "next build && cp -r .next/static .next/standalone/packages/explorer/.next",
+    "build:explorer": "next build && npx shx cp -r .next/static .next/standalone/packages/explorer/.next",
     "clean": "pnpm run clean:explorer && pnpm run clean:bin",
-    "clean:bin": "rimraf dist",
-    "clean:explorer": "rimraf .next .turbo",
+    "clean:bin": "npx shx rm -rf dist",
+    "clean:explorer": "npx shx rm -rf .next .turbo",
     "dev": "next dev",
     "lint": "next lint",
     "start": "node .next/standalone/packages/explorer/server.js"
