@@ -15,7 +15,7 @@ export async function getAbi(worldAddress: Hex) {
 
 type AbiQueryResult = {
   abi: AbiFunction[];
-  isWorldRegistered: boolean;
+  isWorldDeployed: boolean;
 };
 
 export const useAbiQuery = (): UseQueryResult<AbiQueryResult> => {
@@ -26,7 +26,7 @@ export const useAbiQuery = (): UseQueryResult<AbiQueryResult> => {
     select: (data) => {
       return {
         abi: data.abi || [],
-        isWorldRegistered: data.isWorldRegistered,
+        isWorldDeployed: data.isWorldDeployed,
       };
     },
     refetchInterval: 15000,

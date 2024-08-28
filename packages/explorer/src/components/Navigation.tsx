@@ -15,7 +15,6 @@ export function Navigation() {
   const getLinkUrl = useWorldUrl();
   const { data, isFetched } = useAbiQuery();
 
-
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between">
@@ -39,7 +38,7 @@ export function Navigation() {
           </Link>
         </div>
 
-        {isFetched && !data?.isWorldRegistered && (
+        {isFetched && !data?.isWorldDeployed && (
           <h4 className="font-mono text-sm font-bold uppercase opacity-70">
             Waiting for world deploy <Loader className="inline-block h-4 w-4 animate-spin" />
           </h4>
