@@ -20,9 +20,10 @@
     }
   },
   "bin": {
-    "mud": "./dist/mud.js"
+    "mud": "./bin/mud.js"
   },
   "files": [
+    "bin",
     "dist"
   ],
   "scripts": {
@@ -34,7 +35,6 @@
     "clean:test-tables": "shx  rm -rf src/codegen",
     "dev": "tsup --watch",
     "lint": "eslint . --ext .ts",
-    "prepare": "npx shx mkdir -p ./dist && npx shx touch ./dist/mud.js",
     "test": "tsc --noEmit && forge test",
     "test:ci": "pnpm run test"
   },
