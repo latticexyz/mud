@@ -12,7 +12,12 @@ env:
 jobs:
   build:
     name: Build and validate artifacts
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [depot-ubuntu-22.04-16, windows-latest]
+
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
