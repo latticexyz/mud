@@ -3,3 +3,6 @@ dist
 templates/phaser/packages/art
 CODEOWNERS
 out
+
+# forge docs output (gitignored anyway)
+packages/*/docs
