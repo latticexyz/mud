@@ -30,7 +30,6 @@
     "solhint": "^3.4.1",
     "solhint-config-mud": "file:../../../../packages/solhint-config-mud",
     "solhint-plugin-mud": "file:../../../../packages/solhint-plugin-mud",
-    "ts-node": "^10.9.1",
     "typescript": "5.4.2"
   }
 }
