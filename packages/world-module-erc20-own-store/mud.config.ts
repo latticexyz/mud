@@ -1,18 +1,40 @@
 import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
-  namespace: "metadata",
-  userTypes: {
-    ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", type: "bytes32" },
-  },
+  namespace: "erc20-store",
   tables: {
-    ResourceTag: {
+    Token: {
       schema: {
-        resource: "ResourceId",
-        tag: "bytes32",
-        value: "bytes",
+        decimals: "uint8",
+        totalSupply: "uint256",
+        name: "string",
+        symbol: "string",
       },
-      key: ["resource", "tag"],
+      key: [], // Singleton table
+      codegen: {
+        outputDirectory: "./tables",
+      },
+    },
+    Balances: {
+      schema: {
+        account: "address",
+        balance: "uint256",
+      },
+      key: ["account"],
+      codegen: {
+        outputDirectory: "./tables",
+      },
+    },
+    Allowances: {
+      schema: {
+        account: "address",
+        spender: "address",
+        approval: "uint256",
+      },
+      key: ["account", "spender"],
+      codegen: {
+        outputDirectory: "./tables",
+      },
     },
   },
 });
