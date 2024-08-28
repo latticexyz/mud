@@ -34,13 +34,14 @@ import { glob } from "glob";
       const source = await fs.readFile(sourcePath, "utf-8");
       await fs.writeFile(
         destPath,
-        source.replace(/"(.+?)":\s*"(link|file):.+?"/g, (match, packageName) =>
+        source.replace(/"([^"]+)":\s*"(link|file):[^"]+"/g, (match, packageName) =>
           mudPackageNames.includes(packageName) ? `"${packageName}": "{{mud-version}}"` : match,
         ),
       );
-    } else if (/templates\/.*\/tsconfig.json/.test(destPath)) {
-      // Replace template workspace root `tsconfig.json` files (which have paths relative to monorepo)
-      // with one that inherits our base tsconfig.
+    }
+    // Replace template workspace root `tsconfig.json` files (which have paths relative to monorepo)
+    // with one that inherits our base tsconfig.
+    else if (/templates\/[^/]+\/tsconfig.json/.test(destPath)) {
       await fs.copyFile(path.join(__dirname, "tsconfig.base.json"), destPath);
     } else {
       await fs.copyFile(sourcePath, destPath);
