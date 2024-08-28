@@ -9,12 +9,7 @@ on:
 jobs:
   test:
     name: Run tests
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [depot-ubuntu-22.04-16, windows-latest]
-
-    runs-on: ${{ matrix.os }}
+    runs-on: depot-ubuntu-22.04-16
     services:
       postgres:
         image: postgres:12.1-alpine
