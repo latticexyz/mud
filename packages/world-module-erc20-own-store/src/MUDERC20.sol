@@ -8,7 +8,6 @@ import { Balances } from "./codegen/tables/Balances.sol";
 import { Allowances } from "./codegen/tables/Allowances.sol";
 
 import { Store } from "@latticexyz/store/src/Store.sol";
-import { ResourceId, ResourceIdLib } from "@latticexyz/store/src/ResourceId.sol";
 
 contract MUDERC20 is Store, IERC20Errors, IERC20Events {
   constructor(string memory _name, string memory _symbol, uint8 _decimals) {
