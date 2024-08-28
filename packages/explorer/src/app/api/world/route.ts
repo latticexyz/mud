@@ -27,7 +27,7 @@ async function getParameters(worldAddress: Address) {
     fromBlock: "earliest",
     toBlock,
   });
-  const fromBlock = logs[0].blockNumber;
+  const fromBlock = logs[0]?.blockNumber ?? 0n;
 
   return { fromBlock, toBlock };
 }
