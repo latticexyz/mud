@@ -41,7 +41,7 @@ export function Navigation() {
 
         {isFetched && !data?.isWorldRegistered && (
           <h4 className="font-mono text-sm font-bold uppercase opacity-70">
-            Registering world <Loader className="inline-block h-4 w-4 animate-spin" />
+            Waiting for world deploy <Loader className="inline-block h-4 w-4 animate-spin" />
           </h4>
         )}
 
