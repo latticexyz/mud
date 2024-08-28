@@ -229,7 +229,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
     if (spender == address(0)) {
       revert ERC20InvalidSpender(address(0));
     }
-    Allowances.setAllowance(owner, spender, value);
+    Allowances.setApproval(owner, spender, value);
     if (emitEvent) {
       emit Approval(owner, spender, value);
     }
@@ -244,7 +244,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
    * Does not emit an {Approval} event.
    */
   function _spendAllowance(address owner, address spender, uint256 value) internal {
-    uint256 currentAllowance = Allowances.getAllowance(owner, spender);
+    uint256 currentAllowance = Allowances.get(owner, spender);
     if (currentAllowance != type(uint256).max) {
       if (currentAllowance < value) {
         revert ERC20InsufficientAllowance(spender, currentAllowance, value);
