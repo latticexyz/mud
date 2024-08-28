@@ -1,3 +1,4 @@
+import { Tabs, Tab } from "nextra/components";
 import { CollapseCode } from "../components/CollapseCode";
 
 # World Explorer
@@ -46,16 +47,32 @@ These are the steps to install World Explorer into a MUD template:
 
 ## Usage
 
-<iframe
-  width="761"
-  height="523"
-  src="https://www.youtube.com/embed/9u-T5MiBynM"
-  title="Using the MUD Data Explorer"
-  frameborder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-  referrerpolicy="strict-origin-when-cross-origin"
-  allowfullscreen
-></iframe>
+<Tabs items={["Data Explorer", "Interact"]}>
+  <Tab>
+    <iframe
+      width="761"
+      height="523"
+      src="https://www.youtube.com/embed/9u-T5MiBynM"
+      title="Using the MUD Data Explorer"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      referrerpolicy="strict-origin-when-cross-origin"
+      allowfullscreen
+    ></iframe>
+  </Tab>
+  <Tab>
+    <iframe
+      width="761"
+      height="523"
+      src="https://www.youtube.com/embed/ZJWvODGl8uU"
+      title="Using the MUD Data Explorer's Interact tab"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      referrerpolicy="strict-origin-when-cross-origin"
+      allowfullscreen
+    ></iframe>
+  </Tab>
+</Tabs>
 
 ### CLI options
 
