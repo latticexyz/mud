@@ -3,16 +3,16 @@
 import { type ReactNode, createContext, useRef } from "react";
 import { createAppStore } from "./createAppStore";
 
-export type AppStoreApi = ReturnType<typeof createAppStore>;
+export type AppStore = ReturnType<typeof createAppStore>;
 
-export const AppStoreContext = createContext<AppStoreApi | undefined>(undefined);
+export const AppStoreContext = createContext<AppStore | undefined>(undefined);
 
 type Props = {
   children: ReactNode;
 };
 
 export const AppStoreProvider = ({ children }: Props) => {
-  const storeRef = useRef<AppStoreApi>();
+  const storeRef = useRef<AppStore>();
   if (!storeRef.current) {
     storeRef.current = createAppStore();
   }
