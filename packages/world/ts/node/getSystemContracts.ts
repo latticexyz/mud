@@ -21,6 +21,7 @@ export async function getSystemContracts({
     cwd: rootDir,
     pattern: path.join(config.sourceDirectory, "**"),
   });
+  console.log("got solidity files", solidityFiles);
 
   return solidityFiles
     .filter(
