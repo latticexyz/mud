@@ -86,6 +86,14 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
   /**
    * ToDo: Natspec
    */
+  function approve(address spender, uint256 value) public returns (bool) {
+    _approve(msg.sender, spender, value);
+    return true;
+  }
+
+  /**
+   * ToDo: Natspec
+   */
   function transfer(address to, uint256 value) public returns (bool) {
     _transfer(msg.sender, to, value);
     return true;
@@ -118,35 +126,6 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
       revert ERC20InvalidReceiver(address(0));
     }
     _update(from, to, value);
-  }
-
-  /**
-   * @dev Creates a `value` amount of tokens and assigns them to `account`, by transferring it from address(0).
-   * Relies on the `_update` mechanism
-   *
-   * Emits a {Transfer} event with `from` set to the zero address.
-   *
-   */
-  function _mint(address account, uint256 value) internal {
-    if (account == address(0)) {
-        revert ERC20InvalidReceiver(address(0));
-    }
-    _update(address(0), account, value);
-  }
-
-
-  /**
-   * @dev Destroys a `value` amount of tokens from `account`, lowering the total supply.
-   * Relies on the `_update` mechanism.
-   *
-   * Emits a {Transfer} event with `to` set to the zero address.
-   *
-   */
-  function _burn(address account, uint256 value) internal {
-    if (account == address(0)) {
-        revert ERC20InvalidSender(address(0));
-    }
-    _update(account, address(0), value);
   }
 
   /**
@@ -188,11 +167,32 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
   }
 
   /**
-   * ToDo: Natspec
+   * @dev Creates a `value` amount of tokens and assigns them to `account`, by transferring it from address(0).
+   * Relies on the `_update` mechanism
+   *
+   * Emits a {Transfer} event with `from` set to the zero address.
+   *
    */
-  function approve(address spender, uint256 value) public returns (bool) {
-    _approve(msg.sender, spender, value);
-    return true;
+  function _mint(address account, uint256 value) internal {
+    if (account == address(0)) {
+        revert ERC20InvalidReceiver(address(0));
+    }
+    _update(address(0), account, value);
+  }
+
+
+  /**
+   * @dev Destroys a `value` amount of tokens from `account`, lowering the total supply.
+   * Relies on the `_update` mechanism.
+   *
+   * Emits a {Transfer} event with `to` set to the zero address.
+   *
+   */
+  function _burn(address account, uint256 value) internal {
+    if (account == address(0)) {
+        revert ERC20InvalidSender(address(0));
+    }
+    _update(account, address(0), value);
   }
 
   /**
@@ -255,6 +255,10 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
       }
     }
   }
+
+  /**
+   * ToDo: Update natspec to match above
+   */
 
   // Set full record (including full dynamic data)
   function setRecord(
