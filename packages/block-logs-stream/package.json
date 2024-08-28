@@ -26,7 +26,7 @@
     "build": "pnpm run build:js",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
-    "clean:js": "npx shx rm -rf dist",
+    "clean:js": "shx  rm -rf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
     "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests",
