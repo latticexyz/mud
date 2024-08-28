@@ -132,7 +132,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
         // Overflow check required: The rest of the code assumes that totalSupply never overflows
         Token.setTotalSupply(Token.getTotalSupply() + value);
     } else {
-        uint256 fromBalance = getBalance(from);
+        uint256 fromBalance = Balances.get(from);
         if (fromBalance < value) {
             revert ERC20InsufficientBalance(from, fromBalance, value);
         }
@@ -144,7 +144,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
     if (to == address(0)) {
         unchecked {
             // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
-            Token.setTotalSupply(Token.getTotalSupply() + value)
+            Token.setTotalSupply(Token.getTotalSupply() + value);
         }
     } else {
         unchecked {
@@ -154,56 +154,76 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
     
     emit Transfer(from, to, value);
     }
-  }
-
-  // function approve(address spender, uint256 value) public returns (bool) {
-  //   address owner = ;
-  //   _approve(msg.sender, spender, value);
-  //   return true;
-  // }
+  }}
 
   /**
-     * @dev Sets `value` as the allowance of `spender` over the `owner`'s tokens.
-     *
-     * This internal function is equivalent to `approve`, and can be used to
-     * e.g. set automatic allowances for certain subsystems, etc.
-     *
-     * Emits an {Approval} event.
-     *
-     * Requirements:
-     *
-     * - `owner` cannot be the zero address.
-     * - `spender` cannot be the zero address.
-     *
-     */
-    function _approve(address owner, address spender, uint256 value) internal {
-        _approve(owner, spender, value, true);
+   * ToDo: Natspec
+   */
+  function approve(address spender, uint256 value) public returns (bool) {
+    _approve(msg.sender, spender, value);
+    return true;
+  }
+
+  /**
+   * @dev Sets `value` as the allowance of `spender` over the `owner`'s tokens.
+   *
+   * This internal function is equivalent to `approve`, and can be used to
+   * e.g. set automatic allowances for certain subsystems, etc.
+   *
+   * Emits an {Approval} event.
+   *
+   * Requirements:
+   *
+   * - `owner` cannot be the zero address.
+   * - `spender` cannot be the zero address.
+   *
+   */
+  function _approve(address owner, address spender, uint256 value) internal {
+    _approve(owner, spender, value, true);
+  }
+
+  /**
+   * @dev Variant of {_approve} with an optional flag to enable or disable the {Approval} event.
+   *
+   * By default (when calling {_approve}) the flag is set to true. On the other hand, approval changes made by
+   * `_spendAllowance` during the `transferFrom` operation set the flag to false. This saves gas by not emitting any
+   * `Approval` event during `transferFrom` operations.
+   *
+   *
+   * Requirements are the same as {_approve}.
+   */
+  function _approve(address owner, address spender, uint256 value, bool emitEvent) internal {
+    if (owner == address(0)) {
+        revert ERC20InvalidApprover(address(0));
     }
+    if (spender == address(0)) {
+        revert ERC20InvalidSpender(address(0));
+    }
+    Token.setAllowance(owner, spender, value);
+    if (emitEvent) {
+        emit Approval(owner, spender, value);
+    }
+  }
 
-    /**
-     * @dev Variant of {_approve} with an optional flag to enable or disable the {Approval} event.
-     *
-     * By default (when calling {_approve}) the flag is set to true. On the other hand, approval changes made by
-     * `_spendAllowance` during the `transferFrom` operation set the flag to false. This saves gas by not emitting any
-     * `Approval` event during `transferFrom` operations.
-     *
-     *
-     * Requirements are the same as {_approve}.
-     */
-    function _approve(address owner, address spender, uint256 value, bool emitEvent) internal {
-        if (owner == address(0)) {
-            revert ERC20InvalidApprover(address(0));
+  /**
+   * @dev Updates `owner` s allowance for `spender` based on spent `value`.
+   *
+   * Does not update the allowance value in case of infinite allowance.
+   * Revert if not enough allowance is available.
+   *
+   * Does not emit an {Approval} event.
+   */
+  function _spendAllowance(address owner, address spender, uint256 value) internal {
+    uint256 currentAllowance = Token.getAllowance(owner, spender);
+    if (currentAllowance != type(uint256).max) {
+        if (currentAllowance < value) {
+            revert ERC20InsufficientAllowance(spender, currentAllowance, value);
         }
-        if (spender == address(0)) {
-            revert ERC20InvalidSpender(address(0));
-        }
-        Token.setAllowance(owner, spender, value);
-        if (emitEvent) {
-            emit Approval(owner, spender, value);
+        unchecked {
+            _approve(owner, spender, currentAllowance - value, false);
         }
     }
-
-
+  }
 
   // Set full record (including full dynamic data)
   function setRecord(
@@ -222,7 +242,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
     bytes32[] calldata keyTuple,
     uint48 start,
     bytes calldata data
-  ) public virtual {
+  ) public {
     StoreCore.spliceStaticData(tableId, keyTuple, start, data);
   }
 
@@ -234,7 +254,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
     uint40 startWithinField,
     uint40 deleteCount,
     bytes calldata data
-  ) public virtual {
+  ) public {
     StoreCore.spliceDynamicData(tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
   }
 
@@ -244,7 +264,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     bytes calldata data
-  ) public virtual {
+  ) public {
     StoreCore.setField(tableId, keyTuple, fieldIndex, data);
   }
 
@@ -255,7 +275,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
     uint8 fieldIndex,
     bytes calldata data,
     FieldLayout fieldLayout
-  ) public virtual {
+  ) public {
     StoreCore.setField(tableId, keyTuple, fieldIndex, data, fieldLayout);
   }
 
@@ -266,7 +286,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
     uint8 fieldIndex,
     bytes calldata data,
     FieldLayout fieldLayout
-  ) public virtual {
+  ) public {
     StoreCore.setStaticField(tableId, keyTuple, fieldIndex, data, fieldLayout);
   }
 
@@ -276,7 +296,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
     bytes32[] calldata keyTuple,
     uint8 dynamicFieldIndex,
     bytes calldata data
-  ) public virtual {
+  ) public {
     StoreCore.setDynamicField(tableId, keyTuple, dynamicFieldIndex, data);
   }
 
@@ -286,7 +306,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
     bytes32[] calldata keyTuple,
     uint8 dynamicFieldIndex,
     bytes calldata dataToPush
-  ) public virtual {
+  ) public {
     StoreCore.pushToDynamicField(tableId, keyTuple, dynamicFieldIndex, dataToPush);
   }
 
@@ -296,12 +316,12 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
     bytes32[] calldata keyTuple,
     uint8 dynamicFieldIndex,
     uint256 byteLengthToPop
-  ) public virtual {
+  ) public {
     StoreCore.popFromDynamicField(tableId, keyTuple, dynamicFieldIndex, byteLengthToPop);
   }
 
   // Set full record (including full dynamic data)
-  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple) public virtual {
+  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple) public {
     StoreCore.deleteRecord(tableId, keyTuple);
   }
 
@@ -312,17 +332,17 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
     Schema valueSchema,
     string[] calldata keyNames,
     string[] calldata fieldNames
-  ) public virtual {
+  ) public {
     StoreCore.registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
   }
 
   // Register hook to be called when a record or field is set or deleted
-  function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) public virtual {
+  function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) public {
     StoreCore.registerStoreHook(tableId, hookAddress, enabledHooksBitmap);
   }
 
   // Unregister hook to be called when a record or field is set or deleted
-  function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) public virtual {
+  function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) public {
     StoreCore.unregisterStoreHook(tableId, hookAddress);
   }
 }
