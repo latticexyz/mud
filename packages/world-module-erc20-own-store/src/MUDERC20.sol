@@ -28,10 +28,6 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
   }
 
   /**
-   * VIEW FUNCTIONS
-   */
-
-  /**
    * @dev Returns the name of the token.
    * @return The name of the token.
    */
@@ -81,10 +77,6 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
   function allowance(address owner, address spender) public view returns (uint256) {
     return Allowances.get(owner, spender);
   }
-
-  /**
-   * STORE FUNCTIONS
-   */
 
   // Set full record (including full dynamic data)
   function setRecord(
