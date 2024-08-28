@@ -109,6 +109,34 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
   }
 
   /**
+   * @dev Creates a `value` amount of tokens and assigns them to `account`, by transferring it from address(0).
+   * Relies on the `_update` mechanism
+   *
+   * Emits a {Transfer} event with `from` set to the zero address.
+   *
+   */
+  function mint(address account, uint256 value) external {
+    if (account == address(0)) {
+      revert ERC20InvalidReceiver(address(0));
+    }
+    _update(address(0), account, value);
+  }
+
+  /**
+   * @dev Destroys a `value` amount of tokens from `account`, lowering the total supply.
+   * Relies on the `_update` mechanism.
+   *
+   * Emits a {Transfer} event with `to` set to the zero address.
+   *
+   */
+  function burn(address account, uint256 value) external {
+    if (account == address(0)) {
+      revert ERC20InvalidSender(address(0));
+    }
+    _update(account, address(0), value);
+  }
+
+  /**
    * @dev Moves a `value` amount of tokens from `from` to `to`.
    *
    * This internal function is equivalent to {transfer}, and can be used to
@@ -138,60 +166,34 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
   function _update(address from, address to, uint256 value) internal {
     if (from == address(0)) {
       // Overflow check required: The rest of the code assumes that totalSupply never overflows
-      Token.setTotalSupply(Token.getTotalSupply() + value);
+      uint256 supplyBefore = Token.getTotalSupply();
+      Token.setTotalSupply(supplyBefore + value);
     } else {
-      uint256 fromBalance = Balances.get(from);
-      if (fromBalance < value) {
-        revert ERC20InsufficientBalance(from, fromBalance, value);
+      uint256 fromBalancePrior = Balances.get(from);
+      if (fromBalancePrior < value) {
+        revert ERC20InsufficientBalance(from, fromBalancePrior, value);
       }
       unchecked {
         // Overflow not possible: value <= fromBalance <= totalSupply.
-        Balances.setBalance(from, fromBalance - value);
-      }
-
-      if (to == address(0)) {
-        unchecked {
-          // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
-          Token.setTotalSupply(Token.getTotalSupply() + value);
-        }
-      } else {
-        unchecked {
-          // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
-          uint256 balancePrior = Balances.get(to);
-          Balances.setBalance(to, balancePrior - value);
-        }
-
-        emit Transfer(from, to, value);
+        Balances.setBalance(from, fromBalancePrior - value);
       }
     }
-  }
 
-  /**
-   * @dev Creates a `value` amount of tokens and assigns them to `account`, by transferring it from address(0).
-   * Relies on the `_update` mechanism
-   *
-   * Emits a {Transfer} event with `from` set to the zero address.
-   *
-   */
-  function mint(address account, uint256 value) external {
-    if (account == address(0)) {
-      revert ERC20InvalidReceiver(address(0));
+    if (to == address(0)) {
+      unchecked {
+        // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
+        uint256 supplyBefore = Token.getTotalSupply();
+        Token.setTotalSupply(supplyBefore - value);
+      }
+    } else {
+      unchecked {
+        // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
+        uint256 balanceToPrior = Balances.get(to);
+        Balances.setBalance(to, balanceToPrior + value);
+      }
     }
-    _update(address(0), account, value);
-  }
 
-  /**
-   * @dev Destroys a `value` amount of tokens from `account`, lowering the total supply.
-   * Relies on the `_update` mechanism.
-   *
-   * Emits a {Transfer} event with `to` set to the zero address.
-   *
-   */
-  function burn(address account, uint256 value) external {
-    if (account == address(0)) {
-      revert ERC20InvalidSender(address(0));
-    }
-    _update(account, address(0), value);
+    emit Transfer(from, to, value);
   }
 
   /**
