@@ -158,9 +158,14 @@ const PUBLIC_APIS: PublicApis = {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
-      return content
-        .replaceAll("{IERC165}", "[IERC165](./erc165-external#ierc165)")
-        .replaceAll("{IERC165-supportsInterface}", "[IERC165.supportsInterface](./erc165-external#supportsinterface)");
+      return (
+        content
+          // fix bad placeholder
+          .replaceAll(/\[IERC165-supportsInterface\]\(.+?\)/g, "{IERC165-supportsInterface}")
+          // replace placeholders
+          .replaceAll("{IERC165}", "[IERC165](./erc165-external#ierc165)")
+          .replaceAll("{IERC165-supportsInterface}", "[IERC165.supportsInterface](./erc165-external#supportsinterface)")
+      );
     },
   },
   "world/reference/internal/erc165-external.mdx": {
