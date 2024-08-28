@@ -121,6 +121,21 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
   }
 
   /**
+   * @dev Creates a `value` amount of tokens and assigns them to `account`, by transferring it from address(0).
+   * Relies on the `_update` mechanism
+   *
+   * Emits a {Transfer} event with `from` set to the zero address.
+   *
+   */
+  function _mint(address account, uint256 value) internal {
+    if (account == address(0)) {
+        revert ERC20InvalidReceiver(address(0));
+    }
+    _update(address(0), account, value);
+  }
+
+
+  /**
    * @dev Destroys a `value` amount of tokens from `account`, lowering the total supply.
    * Relies on the `_update` mechanism.
    *
