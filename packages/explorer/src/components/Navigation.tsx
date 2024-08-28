@@ -15,7 +15,6 @@ export function Navigation() {
   const getLinkUrl = useWorldUrl();
   const { data, isFetched } = useAbiQuery();
 
-  console.log(isFetched, data?.isWorldRegistered);
 
   return (
     <div className="mb-8">
