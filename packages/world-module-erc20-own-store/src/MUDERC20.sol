@@ -22,8 +22,6 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
     Token.set(_decimals, 0, _name, _symbol);
   }
 
-  /// VIEW FUNCTIONS ///
-
   /**
    * @dev Returns the name of the token.
    * @return The name of the token.
