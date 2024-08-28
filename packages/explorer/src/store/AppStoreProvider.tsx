@@ -7,11 +7,11 @@ export type AppStoreApi = ReturnType<typeof createAppStore>;
 
 export const AppStoreContext = createContext<AppStoreApi | undefined>(undefined);
 
-export interface AppStoreProviderProps {
+type Props = {
   children: ReactNode;
-}
+};
 
-export const AppStoreProvider = ({ children }: AppStoreProviderProps) => {
+export const AppStoreProvider = ({ children }: Props) => {
   const storeRef = useRef<AppStoreApi>();
   if (!storeRef.current) {
     storeRef.current = createAppStore();
