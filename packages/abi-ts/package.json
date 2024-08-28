@@ -27,7 +27,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "clean": "npx shx rm -rf dist",
+    "clean": "shx  rm -rf dist",
     "dev": "tsup --watch",
     "prepare": "npx shx mkdir -p ./dist && npx shx touch ./dist/abi-ts.js",
     "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests",
