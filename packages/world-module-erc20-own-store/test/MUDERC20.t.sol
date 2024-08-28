@@ -38,6 +38,10 @@ contract MUDERC20Test is Test, GasReporter {
     endGasReport();
   }
 
+  // ToDo: Add test for invalid minting
+  // ToDo: Add test for minting to address(0)
+  // ToDo: Add fuzz test for minting
+
   function testMUDERC20Burn() public {
     startGasReport("MUDERC20 burn");
 
@@ -49,4 +53,7 @@ contract MUDERC20Test is Test, GasReporter {
 
     endGasReport();
   }
+
+  // ToDo: Add test for invalid burning
+  // ToDo: Add fuzz test for burning
 }
