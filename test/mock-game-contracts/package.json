@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "mud build",
-    "clean": "forge clean && shx rm -rf src/codegen",
+    "clean": "forge clean && shx rm -rf src/**/codegen",
     "deploy:local": "DEBUG=mud:* mud deploy"
   },
   "devDependencies": {
