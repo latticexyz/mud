@@ -1,7 +1,7 @@
 # World Explorer
 
 World Explorer is a GUI tool designed for visually exploring and manipulating the state of worlds.
-For the full information about it, [see the docs](http://mud.dev/world-explorer).
+For the full information about it, [see the official docs](http://mud.dev/world-explorer).
 
 ## Getting started
 
