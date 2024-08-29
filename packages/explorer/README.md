@@ -5,9 +5,9 @@ For the full information about it, [see the docs](http://mud.dev/world-explorer)
 
 ## Installation
 
-Starting with MUD 2.2, the MUD templates come with the World Explorer installed. See [Getting started](https://mud.dev/quickstart) guide for MUD for more information. These instructions are how to use World Explorer on earlier versions of MUD.
+Starting with MUD 2.2, the MUD templates come with the World Explorer installed. See [Getting started](https://mud.dev/quickstart) guide for MUD for more information. 
 
-The easiest way to get World Explorer for earlier MUD versions is to create a project with the new template.
+If you have an existing MUD project you'd like to use World Explorer for, you can create a project with the new template and then use World Explorer from that project with your existing one:
 
 1. Create a project with the new template, which has World Explorer. Then, delete the files you no longer need.
 
