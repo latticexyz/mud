@@ -71,8 +71,9 @@ export async function resolveConfigPath(configPath?: string) {
   return (
     upath
       .normalize(configPath)
-      // make absolute windows paths more posix friendly
-      .replace(/^(\w+:\/)/, "/$1")
+      // discard drive letter to make it easier to work with
+      // this means working with files across drives in windows won't work
+      .replace(/^\w+:\//, "/")
   );
 }
 
