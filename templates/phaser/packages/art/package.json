@@ -6,7 +6,7 @@
   "scripts": {
     "compile-extensions": "tsc ./tiled/extensions/*.ts --outDir ./tiled/extensions/",
     "export": "yarn generate-multiatlas-sprites && yarn export-tiled-types",
-    "export-tiled-types": "ts-node ./scripts/export-tiled-types.ts && shx  cp tilesets/images/* ../client/public/assets/tilesets/",
+    "export-tiled-types": "ts-node ./scripts/export-tiled-types.ts && shx cp tilesets/images/* ../client/public/assets/tilesets/",
     "generate-multiatlas-sprites": "node ./scripts/cli.mjs --project ./config-sprites.json"
   },
   "devDependencies": {
