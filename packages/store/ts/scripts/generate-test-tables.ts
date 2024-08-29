@@ -1,9 +1,9 @@
 import { tablegen } from "../codegen";
 import { defineStore } from "../config/v2/store";
 import { fileURLToPath } from "node:url";
-import path from "node:path/posix";
+import path from "node:path";
 
-const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const rootDir = path.posix.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 const config = defineStore({
   sourceDirectory: "test",
