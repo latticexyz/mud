@@ -1,12 +1,12 @@
 import { tablegen } from "@latticexyz/store/codegen";
 import { defineStore } from "@latticexyz/store";
 import { fileURLToPath } from "node:url";
-import path from "node:path/posix";
+import path from "node:path";
 
 console.log("import.meta.url", import.meta.url);
 console.log("fileURLToPath", fileURLToPath(import.meta.url));
 console.log("dirname", path.dirname(fileURLToPath(import.meta.url)));
-const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../contracts");
+const rootDir = path.posix.resolve(path.dirname(fileURLToPath(import.meta.url)), "../contracts");
 console.log("rootDir", rootDir);
 
 // This config is used only for tests.
