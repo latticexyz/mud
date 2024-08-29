@@ -49,7 +49,10 @@ export async function resolveConfigPath(configPath?: string, toFileURL?: boolean
       configPath = path.normalize(configPath);
     }
   }
-  configPath = upath.normalize(configPath);
+  configPath = upath
+    .normalize(configPath)
+    // make absolute windows paths more posix friendly with unc prefix
+    .replace(/^\w+:\//, "//?/$&");
 
   // Add `file:///` for Windows support
   // (see https://github.com/nodejs/node/issues/31710)
