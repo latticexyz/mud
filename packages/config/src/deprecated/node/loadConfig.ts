@@ -38,7 +38,7 @@ export async function loadConfig(configPath?: string): Promise<unknown> {
   console.log("import+rm", prepareWindowsPath(outputPath));
   try {
     await esbuild.build({
-      absWorkingDir: prepareWindowsPath(path.dirname(inputPath)),
+      absWorkingDir: prepareWindowsPath(path.dirname(inputPath)).replace(/^file:\/\/\//, ""),
       entryPoints: [path.basename(inputPath)],
       format: "esm",
       outfile: path.basename(outputPath),
