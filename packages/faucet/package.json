@@ -29,7 +29,7 @@
     "build": "pnpm run build:js",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
-    "clean:js": "shx  rm -rf dist",
+    "clean:js": "shx rm -rf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
     "start": "tsx bin/faucet-server",
