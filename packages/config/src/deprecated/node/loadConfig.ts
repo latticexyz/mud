@@ -29,18 +29,26 @@ export async function loadConfig(configPath?: string): Promise<unknown> {
       // avoid bundling external imports (it's unnecessary and esbuild can't handle all node features)
       packages: "external",
     });
-    configPath = await resolveConfigPath(TEMP_CONFIG, true);
+    let importPath = await resolveConfigPath(TEMP_CONFIG);
+    // Add `file:///` for Windows support
+    // (see https://github.com/nodejs/node/issues/31710)
+    if (os.platform() === "win32") {
+      importPath = pathToFileURL(
+        // undo unc prefix we added in `resolveConfigPath`
+        importPath.replace(/^\/\/\?\//, ""),
+      ).href;
+    }
     // Node.js caches dynamic imports, so without appending a cache breaking
     // param like `?update={Date.now()}` this import always returns the same config
     // if called multiple times in a single process, like the `dev-contracts` cli
-    return (await import(configPath + `?update=${Date.now()}`)).default;
+    return (await import(`${importPath}?update=${Date.now()}`)).default;
   } finally {
     rmSync(TEMP_CONFIG, { force: true });
   }
 }
 
 /** @deprecated */
-export async function resolveConfigPath(configPath?: string, toFileURL?: boolean) {
+export async function resolveConfigPath(configPath?: string) {
   if (configPath === undefined) {
     configPath = await getUserConfigPath();
   } else {
@@ -49,14 +57,12 @@ export async function resolveConfigPath(configPath?: string, toFileURL?: boolean
       configPath = path.normalize(configPath);
     }
   }
-  configPath = upath
-    .normalize(configPath)
-    // make absolute windows paths more posix friendly with unc prefix
-    .replace(/^\w+:\//, "//?/$&");
-
-  // Add `file:///` for Windows support
-  // (see https://github.com/nodejs/node/issues/31710)
-  return toFileURL && os.platform() === "win32" ? pathToFileURL(configPath).href : configPath;
+  return (
+    upath
+      .normalize(configPath)
+      // make absolute windows paths more posix friendly with unc prefix
+      .replace(/^\w+:\//, "//?/$&")
+  );
 }
 
 /** @deprecated */
