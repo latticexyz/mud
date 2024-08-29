@@ -32,13 +32,13 @@ export async function loadConfig(configPath?: string): Promise<unknown> {
   const outputPath = path.join(path.dirname(inputPath), TEMP_CONFIG);
   console.log("inputPath", inputPath);
   console.log("outputPath", outputPath);
-  console.log("absWorkingDir", path.dirname(inputPath));
+  console.log("absWorkingDir", prepareWindowsPath(path.dirname(inputPath)));
   console.log("entryPoint", path.basename(inputPath));
   console.log("outfile", path.basename(outputPath));
   console.log("import+rm", prepareWindowsPath(outputPath));
   try {
     await esbuild.build({
-      absWorkingDir: path.dirname(inputPath),
+      absWorkingDir: prepareWindowsPath(path.dirname(inputPath)),
       entryPoints: [path.basename(inputPath)],
       format: "esm",
       outfile: path.basename(outputPath),
