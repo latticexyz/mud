@@ -1239,7 +1239,7 @@ importers:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
 
-  packages/world-module-erc20-own-store:
+  packages/world-module-erc20-external-store:
     dependencies:
       '@latticexyz/schema-type':
         specifier: workspace:*
