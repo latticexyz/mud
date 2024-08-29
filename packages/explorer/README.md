@@ -5,7 +5,7 @@ For the full information about it, [see the docs](http://mud.dev/world-explorer)
 
 ## Installation
 
-Starting with MUD 2.2, the MUD templates come with the World Explorer installed.
+Starting with MUD 2.2, the MUD templates come with the World Explorer installed. See [Getting started](https://mud.dev/quickstart) guide for MUD for more information.
 
 These instructions are how to use World Explorer on earlier versions of MUD.
 
