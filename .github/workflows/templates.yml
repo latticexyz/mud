@@ -19,7 +19,6 @@ jobs:
   build:
     name: Build template
     strategy:
-      fail-fast: false
       matrix:
         os: [depot-ubuntu-22.04-16, windows-latest]
         template: [vanilla, react, react-ecs, phaser, threejs]
