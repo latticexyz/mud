@@ -18,7 +18,7 @@ contract tokenTest is Test, GasReporter {
   address charlie = address(0x456);
 
   function setUp() public {
-    token = new MUDERC20("token", "MUD", 18);
+    token = new MUDERC20("token", "MUD", address(this), 18);
     StoreSwitch.setStoreAddress(address(token));
   }
 
