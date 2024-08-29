@@ -6,19 +6,19 @@ import { console2 } from "forge-std/Console2.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
-import { MUDERC20 } from "../src/MUDERC20.sol";
+import { ERC20 } from "../src/ERC20.sol";
 import { Token } from "../src/codegen/tables/Token.sol";
 import { Balances } from "../src/codegen/tables/Balances.sol";
 import { Allowances } from "../src/codegen/tables/Allowances.sol";
 
 contract tokenTest is Test, GasReporter {
-  MUDERC20 token;
+  ERC20 token;
 
   address alice = address(0x123);
   address charlie = address(0x456);
 
   function setUp() public {
-    token = new MUDERC20("token", "MUD", address(this), 18);
+    token = new ERC20("token", "MUD", address(this), 18);
     StoreSwitch.setStoreAddress(address(token));
   }
 
