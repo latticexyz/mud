@@ -21,15 +21,14 @@ import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
  * @dev Implementation of EIP-20 that has on instance of `Store` which enables built in indexing and storage packing.
  */
 contract MUDERC20 is Store, IERC20Errors, IERC20Events {
-  constructor(string memory _name, string memory _symbol, uint8 _decimals) {
-    StoreCore.initialize();
+  constructor(string memory _name, string memory _symbol, address _owner, uint8 _decimals) {
     StoreCore.registerInternalTables();
 
     Token.register();
     Balances.register();
     Allowances.register();
 
-    Token.set(_decimals, 0, _name, _symbol);
+    Token.set(_decimals, 0, _owner, _name, _symbol);
   }
 
   /**
@@ -116,6 +115,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
    *
    */
   function mint(address account, uint256 value) external {
+    assert(Token.getOwner() == msg.sender);
     if (account == address(0)) {
       revert ERC20InvalidReceiver(address(0));
     }
@@ -130,6 +130,7 @@ contract MUDERC20 is Store, IERC20Errors, IERC20Events {
    *
    */
   function burn(address account, uint256 value) external {
+    assert(Token.getOwner() == msg.sender);
     if (account == address(0)) {
       revert ERC20InvalidSender(address(0));
     }
