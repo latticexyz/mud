@@ -10,7 +10,7 @@ These instructions are how to use World Explorer on earlier versions of MUD.
 
 The easiest way to get World Explorer for earlier MUD versions is to create a project with the new template.
 
-1. Create a project with the new template, which has World Explorer.
+1. [Create a project with the new template](https://mud.dev/quickstart), which has World Explorer.
    Then, delete the files you no longer need.
 
    ```sh copy
@@ -51,3 +51,26 @@ The easiest way to get World Explorer for earlier MUD versions is to create a pr
    ```
 
 1. Browse to [World Explorer](http://localhost:13690).
+
+### CLI arguments
+
+To use the explorer with different command-line options, use this process:
+
+1. In the mprocs screen, go down to the **explorer** process.
+
+1. Type `x` to stop the default explorer.
+
+1. In a different command-line window, go to `packages/contract`.
+
+1. Run the explorer using `pnpm explorer <options>`.
+
+The World Explorer accepts the following CLI options:
+
+| Option              | Description                                                                      | Default value |
+| ------------------- | -------------------------------------------------------------------------------- | ------------- |
+| `--worldAddress`    | The address of the world to explore                                              | None          |
+| `--worldsFile`      | Path to a worlds configuration file (used to resolve world address)              | None          |
+| `--indexerDatabase` | Path to your SQLite indexer database                                             | indexer.db    |
+| `--chainId`         | The chain ID of the network                                                      | 31337         |
+| `--port`            | The port on which to run the World Explorer                                      | 13690         |
+| `--env`             | The environment to run the World Explorer in (e.g., "development", "production") | production    |
