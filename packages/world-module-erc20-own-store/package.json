@@ -26,15 +26,8 @@
     "src"
   ],
   "scripts": {
-    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts && pnpm run build:js",
-    "build:abi": "forge build",
-    "build:abi-ts": "abi-ts",
-    "build:js": "tsup",
-    "build:mud": "tsx ./ts/build.ts",
-    "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud",
-    "clean:abi": "forge clean",
-    "clean:js": "rimraf dist",
-    "clean:mud": "rimraf src/**/codegen",
+    "build": "mud build",
+    "clean": "forge clean && shx rm -rf src/**/codegen",
     "gas-report": "gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "test": "forge test",
