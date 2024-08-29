@@ -30,10 +30,6 @@ export const SystemsManifest = type({
 });
 
 export async function buildSystemsManifest(opts: { rootDir: string; config: World }): Promise<void> {
-  if (!path.isAbsolute(opts.rootDir)) {
-    throw new Error(`Expected \`rootDir\` to be an absolute path but got "${opts.rootDir}"`);
-  }
-
   // we have to import these at runtime because they may not yet exist at build time
   const { default: IBaseWorldAbi } = await import("../../out/IBaseWorld.sol/IBaseWorld.abi.json");
   const { default: SystemAbi } = await import("../../out/System.sol/System.abi.json");

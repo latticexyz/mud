@@ -15,10 +15,6 @@ export async function worldgen({
   config: WorldConfig;
   clean?: boolean;
 }) {
-  if (!path.isAbsolute(rootDir)) {
-    throw new Error(`Expected \`rootDir\` to be an absolute path but got "${rootDir}"`);
-  }
-
   const outDir = path.join(
     rootDir,
     config.sourceDirectory,

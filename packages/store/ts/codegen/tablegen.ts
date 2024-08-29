@@ -18,10 +18,6 @@ export type TablegenOptions = {
 };
 
 export async function tablegen({ rootDir, config }: TablegenOptions) {
-  if (!path.isAbsolute(rootDir)) {
-    throw new Error(`Expected \`rootDir\` to be an absolute path but got "${rootDir}"`);
-  }
-
   console.log("tablegen rootDir", rootDir);
   const userTypes = getUserTypes({ config });
 
