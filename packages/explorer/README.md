@@ -30,9 +30,9 @@ Note: `worlds.json` is the default file used to configure the world. If you're u
 
 ### Example setup
 
-For a full working setup, check out the [`local-explorer`](https://github.com/latticexyz/mud/tree/main/examples/local-explorer) example.
+For a full working setup, check out the [local-explorer](https://github.com/latticexyz/mud/tree/main/examples/local-explorer) example.
 
-You may also want to check out the MUD [Quickstart guide](https://mud.dev/quickstart) to set up a new MUD project that already comes with the World Explorer included.
+You may also want to check out the MUD [Quickstart guide](https://mud.dev/quickstart) to set up a new MUD template project that already comes with the World Explorer included, along with all the prerequisites.
 
 ## CLI arguments
 
