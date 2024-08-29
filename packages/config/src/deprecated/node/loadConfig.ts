@@ -19,8 +19,8 @@ function prepareWindowsPath(fullPath: string): string {
     // Add `file:///` for Windows support
     // (see https://github.com/nodejs/node/issues/31710)
     return pathToFileURL(
-      // undo unc prefix we added in `resolveConfigPath`
-      fullPath.replace(/^\/\/\?\//, ""),
+      // undo prefix we added in `resolveConfigPath`
+      fullPath.replace(/^\/(\w+:\/)/, "$1"),
     ).href;
   }
   return fullPath;
@@ -71,8 +71,8 @@ export async function resolveConfigPath(configPath?: string) {
   return (
     upath
       .normalize(configPath)
-      // make absolute windows paths more posix friendly with unc prefix
-      .replace(/^\w+:\//, "//?/$&")
+      // make absolute windows paths more posix friendly
+      .replace(/^(\w+:\/)/, "/$1")
   );
 }
 
