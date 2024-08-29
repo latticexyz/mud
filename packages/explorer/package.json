@@ -17,7 +17,7 @@
     "clean": "pnpm run clean:explorer && pnpm run clean:bin",
     "clean:bin": "shx rm -rf dist",
     "clean:explorer": "shx rm -rf .next .turbo",
-    "dev": "next dev",
+    "dev": "next dev --port 13690",
     "lint": "next lint",
     "start": "node .next/standalone/packages/explorer/server.js"
   },
