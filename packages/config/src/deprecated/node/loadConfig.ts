@@ -14,14 +14,27 @@ const configFiles = ["mud.config.js", "mud.config.mjs", "mud.config.ts", "mud.co
 /** @deprecated */
 const TEMP_CONFIG = "mud.config.temp.mjs";
 
+function prepareWindowsPath(fullPath: string): string {
+  if (os.platform() === "win32") {
+    // Add `file:///` for Windows support
+    // (see https://github.com/nodejs/node/issues/31710)
+    return pathToFileURL(
+      // undo unc prefix we added in `resolveConfigPath`
+      fullPath.replace(/^\/\/\?\//, ""),
+    ).href;
+  }
+  return fullPath;
+}
+
 /** @deprecated */
 export async function loadConfig(configPath?: string): Promise<unknown> {
-  configPath = await resolveConfigPath(configPath);
+  const inputPath = await resolveConfigPath(configPath);
+  const outputPath = path.join(path.dirname(inputPath), TEMP_CONFIG);
   try {
     await esbuild.build({
-      entryPoints: [configPath],
+      entryPoints: [prepareWindowsPath(inputPath)],
       format: "esm",
-      outfile: TEMP_CONFIG,
+      outfile: prepareWindowsPath(outputPath),
       // https://esbuild.github.io/getting-started/#bundling-for-node
       platform: "node",
       // bundle local imports (otherwise it may error, js can't import ts)
@@ -29,21 +42,12 @@ export async function loadConfig(configPath?: string): Promise<unknown> {
       // avoid bundling external imports (it's unnecessary and esbuild can't handle all node features)
       packages: "external",
     });
-    let importPath = await resolveConfigPath(TEMP_CONFIG);
-    // Add `file:///` for Windows support
-    // (see https://github.com/nodejs/node/issues/31710)
-    if (os.platform() === "win32") {
-      importPath = pathToFileURL(
-        // undo unc prefix we added in `resolveConfigPath`
-        importPath.replace(/^\/\/\?\//, ""),
-      ).href;
-    }
     // Node.js caches dynamic imports, so without appending a cache breaking
     // param like `?update={Date.now()}` this import always returns the same config
     // if called multiple times in a single process, like the `dev-contracts` cli
-    return (await import(`${importPath}?update=${Date.now()}`)).default;
+    return (await import(`${prepareWindowsPath(outputPath)}?update=${Date.now()}`)).default;
   } finally {
-    rmSync(TEMP_CONFIG, { force: true });
+    rmSync(prepareWindowsPath(outputPath), { force: true });
   }
 }
 
