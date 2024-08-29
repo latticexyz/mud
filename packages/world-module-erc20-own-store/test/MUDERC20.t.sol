@@ -2,6 +2,7 @@
 pragma solidity ^0.8.20;
 
 import { Test } from "forge-std/Test.sol";
+import { console2 } from "forge-std/Console2.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { MUDERC20 } from "../src/MUDERC20.sol";
@@ -20,10 +21,12 @@ contract MUDERC20Test is Test, GasReporter {
   function testMUDERC20SetUp() public {
     startGasReport("MUDERC20 constructor");
 
-    assertEq(muderc20.decimals(), 18);
-    assertEq(muderc20.totalSupply(), 0);
-    assertEq(muderc20.name(), "MUDERC20");
-    assertEq(muderc20.symbol(), "MUD");
+    assertTrue(address(muderc20) != address(0));
+
+    assertEq(Token.getDecimals(), 18);
+    assertEq(Token.getTotalSupply(), 0);
+    assertEq(Token.getName(), "MUDERC20");
+    assertEq(Token.getSymbol(), "MUD");
 
     endGasReport();
   }
