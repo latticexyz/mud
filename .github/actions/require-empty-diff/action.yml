@@ -7,6 +7,7 @@ runs:
       shell: bash
       run: |
         if [[ -n "$(git status --porcelain)" ]]; then
+          pwd
           git status -u
           git --no-pager diff
           exit 1

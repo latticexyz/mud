@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url";
 import path from "node:path/posix";
 
 const configPath = fileURLToPath(import.meta.url);
+console.log("import.meta.url", import.meta.url);
+console.log("configPath", configPath);
 
 // This config is used only for tests.
 // Aside from avoiding `mud.config.ts` in cli package (could cause issues),

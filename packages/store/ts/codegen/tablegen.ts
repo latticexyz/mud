@@ -18,6 +18,7 @@ export type TablegenOptions = {
 };
 
 export async function tablegen({ rootDir, config }: TablegenOptions) {
+  console.log("tablegen rootDir", rootDir);
   const userTypes = getUserTypes({ config });
 
   // Write enums to user types file

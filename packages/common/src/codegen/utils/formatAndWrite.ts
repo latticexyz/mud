@@ -13,7 +13,6 @@ export async function formatAndWriteSolidity(output: string, fullOutputPath: str
   const formattedOutput = await formatSolidity(output);
 
   await fs.mkdir(path.dirname(fullOutputPath), { recursive: true });
-
   await fs.writeFile(fullOutputPath, formattedOutput);
   debug(`${logPrefix}: ${fullOutputPath}`);
 }
