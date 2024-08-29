@@ -3,9 +3,9 @@ pragma solidity >=0.8.24;
 
 import { IERC20Errors } from "./IERC20Errors.sol";
 import { IERC20Events } from "./IERC20Events.sol";
-import { Token } from "./codegen/tables/Token.sol";
-import { Balances } from "./codegen/tables/Balances.sol";
-import { Allowances } from "./codegen/tables/Allowances.sol";
+//import { Token } from "./codegen/tables/Token.sol";
+//import { Balances } from "./codegen/tables/Balances.sol";
+//import { Allowances } from "./codegen/tables/Allowances.sol";
 
 import { Store } from "@latticexyz/store/src/Store.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
@@ -16,19 +16,17 @@ import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
 
 /**
- * @title ERC20 Module with own Store
+ * @title ERC20 Module with external Store
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev Implementation of EIP-20 that has on instance of `Store` which enables built in indexing and storage packing.
  */
-contract ERC20 is Store, IERC20Errors, IERC20Events {
+contract ERC20 is IERC20Errors, IERC20Events {
   constructor(string memory _name, string memory _symbol, address _owner, uint8 _decimals) {
-    StoreCore.registerInternalTables();
-
-    Token.register();
-    Balances.register();
-    Allowances.register();
-
-    Token.set(_decimals, 0, _owner, _name, _symbol);
+    // StoreCore.registerInternalTables();
+    // Token.register();
+    // Balances.register();
+    // Allowances.register();
+    // Token.set(_decimals, 0, _owner, _name, _symbol);
   }
 
   /**
