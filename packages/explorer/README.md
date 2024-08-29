@@ -5,9 +5,7 @@ For the full information about it, [see the docs](http://mud.dev/world-explorer)
 
 ## Installation
 
-Starting with MUD 2.2, the MUD templates come with the World Explorer installed. See [Getting started](https://mud.dev/quickstart) guide for MUD for more information.
-
-These instructions are how to use World Explorer on earlier versions of MUD.
+Starting with MUD 2.2, the MUD templates come with the World Explorer installed. See [Getting started](https://mud.dev/quickstart) guide for MUD for more information. These instructions are how to use World Explorer on earlier versions of MUD.
 
 The easiest way to get World Explorer for earlier MUD versions is to create a project with the new template.
 
@@ -16,7 +14,7 @@ The easiest way to get World Explorer for earlier MUD versions is to create a pr
    ```sh copy
    pnpm create mud@main explorer --template vanilla
    cd explorer
-   rm -rf packages/client packages/contracts/[st]*
+   rm -rf packages/client packages/contracts
    ```
 
 2. Edit `mprocs.yaml` to remove the definitions for `client`, `contracts`, and `anvil`.
