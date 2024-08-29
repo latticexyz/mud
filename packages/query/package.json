@@ -28,7 +28,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "clean": "rimraf dist",
+    "clean": "shx rm -rf dist",
     "dev": "tsup --watch",
     "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests",
     "test:ci": "pnpm run test"

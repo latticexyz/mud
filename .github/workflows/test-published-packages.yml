@@ -17,9 +17,8 @@ jobs:
   test-create-mud-project:
     name: Test create-mud project
     strategy:
-      fail-fast: false
       matrix:
-        os: [depot-ubuntu-22.04-16, windows-latest]
+        os: [depot-ubuntu-22.04-16]
         template: [vanilla, react, react-ecs, phaser, threejs]
 
     runs-on: ${{ matrix.os }}

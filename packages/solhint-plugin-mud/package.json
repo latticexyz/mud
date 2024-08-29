@@ -24,7 +24,7 @@
     "build": "pnpm run build:js",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
-    "clean:js": "rimraf dist"
+    "clean:js": "shx rm -rf dist"
   },
   "dependencies": {
     "@solidity-parser/parser": "^0.16.0"

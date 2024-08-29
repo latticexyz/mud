@@ -6,7 +6,7 @@ import { useChainId } from "wagmi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { readContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { ACCOUNT_PRIVATE_KEYS } from "../../../../consts";
-import { useStore } from "../../../../store";
+import { useAppStore } from "../../../../store";
 import { wagmiConfig } from "../../../Providers";
 import { FunctionType } from "./FunctionField";
 
@@ -18,7 +18,7 @@ type UseContractMutationProps = {
 export function useContractMutation({ abi, operationType }: UseContractMutationProps) {
   const queryClient = useQueryClient();
   const chainId = useChainId();
-  const { account } = useStore();
+  const { account } = useAppStore();
   const { worldAddress } = useParams();
 
   return useMutation({

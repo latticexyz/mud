@@ -27,9 +27,11 @@ async function getParameters(worldAddress: Address) {
     fromBlock: "earliest",
     toBlock,
   });
-  const fromBlock = logs[0].blockNumber;
+  const fromBlock = logs[0]?.blockNumber ?? 0n;
+  // world is considered loaded when both events are emitted
+  const isWorldDeployed = logs.length === 2;
 
-  return { fromBlock, toBlock };
+  return { fromBlock, toBlock, isWorldDeployed };
 }
 
 export async function GET(req: Request) {
@@ -42,7 +44,7 @@ export async function GET(req: Request) {
 
   try {
     const client = await getClient();
-    const { fromBlock, toBlock } = await getParameters(worldAddress);
+    const { fromBlock, toBlock, isWorldDeployed } = await getParameters(worldAddress);
     const worldAbiResponse = await getWorldAbi({
       client,
       worldAddress,
@@ -53,7 +55,7 @@ export async function GET(req: Request) {
       .filter((entry): entry is AbiFunction => entry.type === "function")
       .sort((a, b) => a.name.localeCompare(b.name));
 
-    return Response.json({ abi });
+    return Response.json({ abi, isWorldDeployed });
   } catch (error: unknown) {
     if (error instanceof Error) {
       return Response.json({ error: error.message }, { status: 400 });
