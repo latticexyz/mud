@@ -12,9 +12,6 @@ export default defineWorld({
         symbol: "string",
       },
       key: [], // Singleton table
-      codegen: {
-        outputDirectory: "./tables",
-      },
     },
     Balances: {
       schema: {
@@ -22,9 +19,6 @@ export default defineWorld({
         balance: "uint256",
       },
       key: ["account"],
-      codegen: {
-        outputDirectory: "./tables",
-      },
     },
     Allowances: {
       schema: {
@@ -33,9 +27,6 @@ export default defineWorld({
         approval: "uint256",
       },
       key: ["account", "spender"],
-      codegen: {
-        outputDirectory: "./tables",
-      },
     },
   },
 });
