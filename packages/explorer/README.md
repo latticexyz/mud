@@ -23,7 +23,7 @@ World Explorer is a GUI tool designed for visually exploring and manipulating th
    Alternatively, if you have a worlds configuration file:
 
    ```sh
-   npx @latticexyz/explorer --worldsConfigPath <PATH_TO_WORLDS_CONFIG>
+   npx @latticexyz/explorer --worldsFile <PATH_TO_WORLDS_CONFIG>
    ```
 
    Note: You can use `@latticexyz/store-indexer` for indexing your world's data.
@@ -35,7 +35,7 @@ The World Explorer accepts the following CLI arguments:
 | Argument          | Description                                                                      | Default value |
 | ----------------- | -------------------------------------------------------------------------------- | ------------- |
 | `worldAddress`    | The address of the world to explore                                              | None          |
-| `worldsFile`      | Path to a worlds configuration file (used to resolve world address)              | None          |
+| `worldsFile`      | Path to a worlds configuration file (used to resolve world address)              | "worlds.json  |
 | `indexerDatabase` | Path to your SQLite indexer database                                             | "indexer.db"  |
 | `chainId`         | The chain ID of the network                                                      | 31337         |
 | `port`            | The port on which to run the World Explorer                                      | 13690         |
@@ -73,7 +73,7 @@ To contribute to or modify the World Explorer, the easiest way is to run the exa
 
    ```yaml
    explorer:
-     shell: pnpm explorer --worldsConfigPath packages/contracts/worlds.json --env development
+     shell: pnpm explorer --env development
    ```
 
 3. **Run**
