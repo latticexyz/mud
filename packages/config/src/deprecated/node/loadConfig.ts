@@ -30,6 +30,12 @@ function prepareWindowsPath(fullPath: string): string {
 export async function loadConfig(configPath?: string): Promise<unknown> {
   const inputPath = await resolveConfigPath(configPath);
   const outputPath = path.join(path.dirname(inputPath), TEMP_CONFIG);
+  console.log("inputPath", inputPath);
+  console.log("outputPath", outputPath);
+  console.log("absWorkingDir", path.dirname(inputPath));
+  console.log("entryPoint", path.basename(inputPath));
+  console.log("outfile", path.basename(outputPath));
+  console.log("import+rm", prepareWindowsPath(outputPath));
   try {
     await esbuild.build({
       absWorkingDir: path.dirname(inputPath),
