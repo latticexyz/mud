@@ -1,76 +1,85 @@
 # World Explorer
 
 World Explorer is a GUI tool designed for visually exploring and manipulating the state of worlds.
-For the full information about it, [see the docs](http://mud.dev/world-explorer).
 
-## Installation
+## Getting started
 
-Starting with MUD 2.2, the MUD templates come with the World Explorer installed.
-These instructions are how to use World Explorer on earlier versions of MUD.
+1. **Install the package**
 
-The easiest way to get World Explorer for earlier MUD versions is to create a project with the new template.
-
-1. [Create a project with the new template](https://mud.dev/quickstart), which has World Explorer.
-   Then, delete the files you no longer need.
-
-   ```sh copy
-   pnpm create mud@main explorer --template vanilla
-   cd explorer
-   rm -rf packages/client packages/contracts/[st]*
+   ```sh
+   pnpm add @latticexyz/explorer
    ```
 
-1. Edit `mprocs.yaml` to remove the definitions for `client`, `contracts`, and `anvil`.
+2. **Start a local development chain**
 
-   ```yaml filename="mprocs.yaml" copy
-   procs:
-     indexer:
-       cwd: packages/contracts
-       shell: rimraf $SQLITE_FILENAME && pnpm sqlite-indexer
-       env:
-         RPC_HTTP_URL: "http://127.0.0.1:8545"
-         FOLLOW_BLOCK_TAG: "latest"
-         SQLITE_FILENAME: "indexer.db"
-     explorer:
-       cwd: packages/contracts
-       shell: pnpm explorer
+   Ensure you have a local development chain running.
+
+3. **Run the World Explorer**
+
+   ```sh
+   npx @latticexyz/explorer --worldAddress <YOUR_WORLD_ADDRESS>
    ```
 
-1. Replace `packages/contracts/worlds.json` with a link to the original project's `worlds.json`.
+   Alternatively, if you have a worlds configuration file:
 
-   ```sh copy
-   cp packages/contracts
-   rm worlds.json
-   ln -s <the original project>/packages/contracts/worlds.json .
-   cd ../..
+   ```sh
+   npx @latticexyz/explorer --worldsConfigPath <PATH_TO_WORLDS_CONFIG>
    ```
 
-1. Run the new project.
+   Note: You can use `@latticexyz/store-indexer` for indexing your world's data.
 
-   ```sh copy
+## CLI arguments
+
+The World Explorer accepts the following CLI arguments:
+
+| Argument          | Description                                                                      | Default value |
+| ----------------- | -------------------------------------------------------------------------------- | ------------- |
+| `worldAddress`    | The address of the world to explore                                              | None          |
+| `worldsFile`      | Path to a worlds configuration file (used to resolve world address)              | None          |
+| `indexerDatabase` | Path to your SQLite indexer database                                             | "indexer.db"  |
+| `chainId`         | The chain ID of the network                                                      | 31337         |
+| `port`            | The port on which to run the World Explorer                                      | 13690         |
+| `env`             | The environment to run the World Explorer in (e.g., "development", "production") | "production"  |
+
+## Example setup
+
+An example setup is provided in the `examples/local-explorer` directory, demonstrating a full setup for using the World Explorer in a local development environment:
+
+1. **Setup**
+
+   ```sh
+   cd examples/local-explorer && pnpm install
+   ```
+
+2. **Run**
+
+   ```sh
    pnpm dev
    ```
 
-1. Browse to [World Explorer](http://localhost:13690).
+   This command starts all necessary processes, including a local chain, indexer, and the explorer.
 
-### CLI arguments
+## Contributing
 
-To use the explorer with different command-line options, use this process:
+To contribute to or modify the World Explorer, the easiest way is to run the example setup in `development` mode:
 
-1. In the mprocs screen, go down to the **explorer** process.
+1. **Setup**
 
-1. Type `x` to stop the default explorer.
+   Navigate to the `examples/local-explorer` directory and locate the `mprocs.yaml` file.
 
-1. In a different command-line window, go to `packages/contract`.
+2. **Configure**
 
-1. Run the explorer using `pnpm explorer <options>`.
+   In `mprocs.yaml`, ensure the `explorer` command is set up correctly. For example:
 
-The World Explorer accepts the following CLI options:
+   ```yaml
+   explorer:
+     shell: pnpm explorer --worldsConfigPath packages/contracts/worlds.json --env development
+   ```
 
-| Option              | Description                                                                      | Default value |
-| ------------------- | -------------------------------------------------------------------------------- | ------------- |
-| `--worldAddress`    | The address of the world to explore                                              | None          |
-| `--worldsFile`      | Path to a worlds configuration file (used to resolve world address)              | None          |
-| `--indexerDatabase` | Path to your SQLite indexer database                                             | indexer.db    |
-| `--chainId`         | The chain ID of the network                                                      | 31337         |
-| `--port`            | The port on which to run the World Explorer                                      | 13690         |
-| `--env`             | The environment to run the World Explorer in (e.g., "development", "production") | production    |
+3. **Run**
+
+   ```sh
+   pnpm dev
+   ```
+
+   Files can now be edited in the `packages/explorer` directory, and changes will be reflected in the running World Explorer instance.
