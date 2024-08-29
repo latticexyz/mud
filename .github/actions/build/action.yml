@@ -15,6 +15,8 @@ runs:
 
     - name: Build
       shell: bash
+      env:
+        DEBUG: mud:*
       run: pnpm turbo run build --cache-dir=.turbo --concurrency 10
 
     - name: Outdated files, run `pnpm build` and commit them

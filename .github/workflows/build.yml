@@ -40,6 +40,8 @@ jobs:
       - name: Build
         if: steps.check_changes.outputs.changes_outside_docs
         shell: bash
+        env:
+          DEBUG: mud:*
         run: pnpm turbo run build --concurrency 10
 
       - name: Outdated files, run `pnpm build` and commit them
