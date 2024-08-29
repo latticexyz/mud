@@ -3,6 +3,7 @@ pragma solidity ^0.8.20;
 
 import { Test } from "forge-std/Test.sol";
 import { console2 } from "forge-std/Console2.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { MUDERC20 } from "../src/MUDERC20.sol";
@@ -10,32 +11,34 @@ import { Token } from "../src/codegen/tables/Token.sol";
 import { Balances } from "../src/codegen/tables/Balances.sol";
 import { Allowances } from "../src/codegen/tables/Allowances.sol";
 
-contract MUDERC20Test is Test, GasReporter {
-  MUDERC20 muderc20;
+contract tokenTest is Test, GasReporter {
+  MUDERC20 token;
+
   address alice = address(0x123);
   address charlie = address(0x456);
 
   function setUp() public {
-    muderc20 = new MUDERC20("MUDERC20", "MUD", 18);
+    token = new MUDERC20("token", "MUD", 18);
+    StoreSwitch.setStoreAddress(address(token));
   }
 
-  function testMUDERC20SetUp() public {
-    startGasReport("MUDERC20 constructor");
+  function testTokenSetUp() public {
+    startGasReport("token constructor");
 
-    assertTrue(address(muderc20) != address(0));
+    assertTrue(address(token) != address(0));
 
     assertEq(Token.getDecimals(), 18);
     assertEq(Token.getTotalSupply(), 0);
-    assertEq(Token.getName(), "MUDERC20");
+    assertEq(Token.getName(), "token");
     assertEq(Token.getSymbol(), "MUD");
 
     endGasReport();
   }
 
-  function testMUDERC20Mint() public {
-    startGasReport("MUDERC20 mint");
+  function testTokenMint() public {
+    startGasReport("token mint");
 
-    muderc20.mint(address(this), 1000);
+    token.mint(address(this), 1000);
 
     assertEq(Balances.getBalance(address(this)), 1000);
     assertEq(Token.getTotalSupply(), 1000);
@@ -43,15 +46,31 @@ contract MUDERC20Test is Test, GasReporter {
     endGasReport();
   }
 
-  // ToDo: Add test for invalid minting
+  function testTokenMintInvalidCaller() public {
+    startGasReport("token mint invalid caller");
+    vm.expectRevert();
+    vm.prank(alice);
+    token.mint(address(alice), 1000);
+
+    endGasReport();
+  }
+
+  function testTokenMintToZeroAddress() public {
+    startGasReport("token mint to zero address");
+    vm.expectRevert();
+    token.mint(address(0), 1000);
+
+    endGasReport();
+  }
+
   // ToDo: Add test for minting to address(0)
   // ToDo: Add fuzz test for minting
 
-  function testMUDERC20Burn() public {
-    startGasReport("MUDERC20 burn");
+  function testTokenBurn() public {
+    startGasReport("token burn");
 
-    muderc20.mint(address(this), 1000);
-    muderc20.burn(address(this), 500);
+    token.mint(address(this), 1000);
+    token.burn(address(this), 500);
 
     assertEq(Balances.getBalance(address(this)), 500);
     assertEq(Token.getTotalSupply(), 500);
@@ -63,10 +82,10 @@ contract MUDERC20Test is Test, GasReporter {
   // ToDo: Add fuzz test for burning
 
   function testMUEDERC20Transfer() public {
-    startGasReport("MUDERC20 transfer");
+    startGasReport("token transfer");
 
-    muderc20.mint(address(this), 1000);
-    muderc20.transfer(alice, 500);
+    token.mint(address(this), 1000);
+    token.transfer(alice, 500);
 
     assertEq(Balances.getBalance(address(this)), 500);
     assertEq(Balances.getBalance(alice), 500);
