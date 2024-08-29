@@ -32,9 +32,10 @@ export async function loadConfig(configPath?: string): Promise<unknown> {
   const outputPath = path.join(path.dirname(inputPath), TEMP_CONFIG);
   try {
     await esbuild.build({
-      entryPoints: [prepareWindowsPath(inputPath)],
+      absWorkingDir: path.dirname(inputPath),
+      entryPoints: [path.basename(inputPath)],
       format: "esm",
-      outfile: prepareWindowsPath(outputPath),
+      outfile: path.basename(outputPath),
       // https://esbuild.github.io/getting-started/#bundling-for-node
       platform: "node",
       // bundle local imports (otherwise it may error, js can't import ts)
