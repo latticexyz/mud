@@ -2,8 +2,6 @@ import { findUp } from "find-up";
 import path from "node:path/posix";
 import esbuild from "esbuild";
 import { rmSync } from "fs";
-import { pathToFileURL } from "url";
-import os from "os";
 import upath from "upath";
 
 // TODO: explore using https://www.npmjs.com/package/ts-import instead
@@ -14,31 +12,19 @@ const configFiles = ["mud.config.js", "mud.config.mjs", "mud.config.ts", "mud.co
 /** @deprecated */
 const TEMP_CONFIG = "mud.config.temp.mjs";
 
-function prepareWindowsPath(fullPath: string): string {
-  if (os.platform() === "win32") {
-    // Add `file:///` for Windows support
-    // (see https://github.com/nodejs/node/issues/31710)
-    return pathToFileURL(
-      // undo prefix we added in `resolveConfigPath`
-      fullPath.replace(/^\/(\w+:\/)/, "$1"),
-    ).href;
-  }
-  return fullPath;
-}
-
 /** @deprecated */
 export async function loadConfig(configPath?: string): Promise<unknown> {
   const inputPath = await resolveConfigPath(configPath);
   const outputPath = path.join(path.dirname(inputPath), TEMP_CONFIG);
   console.log("inputPath", inputPath);
   console.log("outputPath", outputPath);
-  console.log("absWorkingDir", prepareWindowsPath(path.dirname(inputPath)));
+  console.log("absWorkingDir", path.dirname(inputPath));
   console.log("entryPoint", path.basename(inputPath));
   console.log("outfile", path.basename(outputPath));
-  console.log("import+rm", prepareWindowsPath(outputPath));
+  console.log("import+rm", outputPath);
   try {
     await esbuild.build({
-      absWorkingDir: prepareWindowsPath(path.dirname(inputPath)).replace(/^file:\/\/\//, ""),
+      absWorkingDir: path.dirname(inputPath),
       entryPoints: [path.basename(inputPath)],
       format: "esm",
       outfile: path.basename(outputPath),
@@ -52,9 +38,9 @@ export async function loadConfig(configPath?: string): Promise<unknown> {
     // Node.js caches dynamic imports, so without appending a cache breaking
     // param like `?update={Date.now()}` this import always returns the same config
     // if called multiple times in a single process, like the `dev-contracts` cli
-    return (await import(`${prepareWindowsPath(outputPath)}?update=${Date.now()}`)).default;
+    return (await import(`${outputPath}?update=${Date.now()}`)).default;
   } finally {
-    rmSync(prepareWindowsPath(outputPath), { force: true });
+    rmSync(outputPath, { force: true });
   }
 }
 
