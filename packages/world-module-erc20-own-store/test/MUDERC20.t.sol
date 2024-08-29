@@ -13,6 +13,7 @@ import { Allowances } from "../src/codegen/tables/Allowances.sol";
 contract MUDERC20Test is Test, GasReporter {
   MUDERC20 muderc20;
   address alice = address(0x123);
+  address charlie = address(0x456);
 
   function setUp() public {
     muderc20 = new MUDERC20("MUDERC20", "MUD", 18);
