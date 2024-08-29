@@ -7,6 +7,7 @@ export default defineWorld({
       schema: {
         decimals: "uint8",
         totalSupply: "uint256",
+        owner: "address",
         name: "string",
         symbol: "string",
       },
