@@ -28,7 +28,9 @@ npx @latticexyz/explorer
 
 ### Example setup
 
-For a full working setup, check out the [`local-explorer` example](https://github.com/latticexyz/mud/tree/main/examples/local-explorer).
+For a full working setup, check out the [`local-explorer`](https://github.com/latticexyz/mud/tree/main/examples/local-explorer) example.
+
+You may also want to check out the MUD [Quickstart guide](https://mud.dev/quickstart) to set up a new MUD project that already comes with the World Explorer.
 
 ## CLI arguments
 
