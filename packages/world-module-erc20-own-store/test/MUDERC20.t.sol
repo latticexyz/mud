@@ -63,8 +63,16 @@ contract tokenTest is Test, GasReporter {
     endGasReport();
   }
 
-  // ToDo: Add test for minting to address(0)
-  // ToDo: Add fuzz test for minting
+  function testFuzzTokenMint(uint256 mintAmount) public {
+    startGasReport("fuzz token mint");
+
+    token.mint(address(this), mintAmount);
+
+    assertEq(Balances.getBalance(address(this)), mintAmount);
+    assertEq(Token.getTotalSupply(), mintAmount);
+
+    endGasReport();
+  }
 
   function testTokenBurn() public {
     startGasReport("token burn");
@@ -78,10 +86,36 @@ contract tokenTest is Test, GasReporter {
     endGasReport();
   }
 
-  // ToDo: Add test for invalid burning
-  // ToDo: Add fuzz test for burning
+  function testTokenBurnInvalidCaller() public {
+    startGasReport("token burn invalid caller");
+    vm.expectRevert();
+    vm.prank(alice);
+    token.burn(address(alice), 1000);
 
-  function testMUEDERC20Transfer() public {
+    endGasReport();
+  }
+
+  function testTokenBurnZeroAddress() public {
+    startGasReport("token burn zero address");
+    vm.expectRevert();
+    token.burn(address(0), 1000);
+    endGasReport();
+  }
+
+  function testFuzzTokenBurn(uint256 burnAmount) public {
+    startGasReport("fuzz token burn");
+    burnAmount = bound(burnAmount, 1, 1000000000);
+    token.mint(address(this), 1000000000);
+
+    token.burn(address(this), burnAmount);
+
+    assertEq(Balances.getBalance(address(this)), 1000000000 - burnAmount);
+    assertEq(Token.getTotalSupply(), 1000000000 - burnAmount);
+
+    endGasReport();
+  }
+
+  function testTokenTransfer() public {
     startGasReport("token transfer");
 
     token.mint(address(this), 1000);
@@ -89,6 +123,89 @@ contract tokenTest is Test, GasReporter {
 
     assertEq(Balances.getBalance(address(this)), 500);
     assertEq(Balances.getBalance(alice), 500);
+
+    endGasReport();
+  }
+
+  function testTokenTransferInsufficientBalance() public {
+    startGasReport("token transfer insufficient balance");
+    token.mint(address(this), 1000);
+    vm.expectRevert();
+    token.transfer(alice, 1001);
+
+    endGasReport();
+  }
+
+  function testFuzzTransfer(uint256 transferAmount) public {
+    startGasReport("fuzz transfer");
+    transferAmount = bound(transferAmount, 1, 1000000);
+    token.mint(address(this), 1000000);
+    token.transfer(alice, transferAmount);
+
+    assertEq(Balances.getBalance(address(this)), 1000000 - transferAmount);
+    assertEq(Balances.getBalance(alice), transferAmount);
+
+    endGasReport();
+  }
+
+  function testApprove() public {
+    startGasReport("token approve");
+
+    token.approve(charlie, 1000);
+    assertEq(Allowances.getApproval(address(this), charlie), 1000);
+
+    endGasReport();
+  }
+
+  function testTransferFrom() public {
+    startGasReport("token transferFrom");
+
+    token.mint(alice, 1000);
+
+    vm.prank(alice);
+    token.approve(address(this), 500);
+
+    token.transferFrom(alice, charlie, 500);
+
+    assertEq(Balances.getBalance(alice), 500);
+    assertEq(Balances.getBalance(charlie), 500);
+    assertEq(Allowances.getApproval(address(this), alice), 0);
+
+    endGasReport();
+  }
+
+  function testTransferFromInsufficientAllowance() public {
+    startGasReport("token transferFrom insufficient allowance");
+    token.mint(address(this), 1000);
+    vm.expectRevert();
+    token.transferFrom(charlie, alice, 1000);
+
+    endGasReport();
+  }
+
+  function testFuzzTransferFrom(uint256 transferAmount) public {
+    startGasReport("fuzz transferFrom");
+    transferAmount = bound(transferAmount, 1, 1000000);
+    token.mint(alice, 1000000);
+
+    vm.prank(alice);
+    token.approve(address(this), transferAmount);
+
+    token.transferFrom(alice, charlie, transferAmount);
+
+    assertEq(Balances.getBalance(alice), 1000000 - transferAmount);
+    assertEq(Balances.getBalance(charlie), transferAmount);
+    assertEq(Allowances.getApproval(address(this), alice), 0);
+
+    endGasReport();
+  }
+
+  function testBalanceOf() public {
+    startGasReport("token balanceOf");
+
+    token.mint(address(this), 1000);
+
+    assertEq(token.balanceOf(address(this)), 1000);
 
     endGasReport();
   }
