@@ -45,6 +45,7 @@
     "@latticexyz/schema-type": "workspace:*",
     "esbuild": "^0.17.15",
     "find-up": "^6.3.0",
+    "upath": "^2.0.1",
     "viem": "catalog:"
   },
   "devDependencies": {

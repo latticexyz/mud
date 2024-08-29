@@ -4,6 +4,7 @@ import esbuild from "esbuild";
 import { rmSync } from "fs";
 import { pathToFileURL } from "url";
 import os from "os";
+import upath from "upath";
 
 // TODO: explore using https://www.npmjs.com/package/ts-import instead
 
@@ -48,6 +49,7 @@ export async function resolveConfigPath(configPath?: string, toFileURL?: boolean
       configPath = path.normalize(configPath);
     }
   }
+  configPath = upath.normalize(configPath);
 
   // Add `file:///` for Windows support
   // (see https://github.com/nodejs/node/issues/31710)
