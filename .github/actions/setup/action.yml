@@ -1,10 +1,17 @@
 name: Setup
 description: Common setup steps used by our workflows
+inputs:
+ node-version:
+    description: 'Node.js version to install'
+    required: true
+    default: 18
 runs:
   using: composite
   steps:
     - name: Setup prerequisites
       uses: ./.github/actions/setup-prerequisites
+      with:
+          node-version: ${{ inputs.node-version }}
 
     - name: Install node dependencies
       shell: bash

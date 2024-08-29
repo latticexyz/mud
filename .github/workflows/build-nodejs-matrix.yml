@@ -1,0 +1,18 @@
+name: Build a matrix of Node.js versions used by other workflows
+
+on:
+  workflow_call:
+    outputs:
+      node-version:
+        description: "Matrix of Node.js versions"
+        value: ${{ jobs.build_matrix.outputs.node-version }}
+
+jobs:
+  build_matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - id: set_matrix
+        # update node-version with versions of node that will be run by the workflow
+        run: echo "node-version=[18,20]" >> $GITHUB_OUTPUT
+    outputs:
+      node-version: ${{ steps.set_matrix.outputs.node-version }}
