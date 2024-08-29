@@ -26,7 +26,7 @@ Or, can be executed with a package bin directly:
 npx @latticexyz/explorer
 ```
 
-Note: `worlds.json` is the default file used to configure the world. If you're using a different file or if the file is located in a different path than where you're running the command, you can specify it with the `--worldsFile` flag, or use `--worldAddress` to point to the world address directly. Accordingly, `indexer.db` is the default database file used to index the world state. If you're using a different database file or if the file is located in a different path than where you're running the command, you can specify it with the `--indexerDatabase` flag.
+**Note:** `worlds.json` is the default file used to configure the world. If you're using a different file or if the file is located in a different path than where you're running the command, you can specify it with the `--worldsFile` flag, or use `--worldAddress` to point to the world address directly. Accordingly, `indexer.db` is the default database file used to index the world state. If you're using a different database file or if the file is located in a different path than where you're running the command, you can specify it with the `--indexerDatabase` flag.
 
 ### Example setup
 
