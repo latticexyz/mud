@@ -72,11 +72,18 @@ To contribute to World Explorer, first get familiar with the [MUD contribution g
    ```sh
    git clone git@github.com:latticexyz/mud.git
    cd mud
+   pnpm install
+   pnpm build
    ```
 
 2. **Setup**
 
-   Navigate to the `examples/local-explorer` directory and locate the `mprocs.yaml` file.
+   Navigate to the `examples/local-explorer` and install dependencies.
+
+   ```sh
+   cd examples/local-explorer
+   pnpm install
+   ```
 
 3. **Configure**
 
