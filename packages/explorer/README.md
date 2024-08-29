@@ -67,7 +67,7 @@ The World Explorer accepts the following CLI arguments:
 
 ## Contributing
 
-To contribute to World Explorer, first get familiar with the [MUD contribution guidelines](https://mud.dev/contribute). Then, the best way to edit the World Explorer is to run the example setup with World Explorer set to `development` mode:
+To contribute to World Explorer, first get familiar with the [MUD contribution guidelines](https://mud.dev/contribute). Then, set up the development environment for World Explorer:
 
 1. **Clone MUD**
 
