@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "build": "pnpm run build:explorer && pnpm run build:bin",
-    "build:bin": "tsup",
+    "build:bin": "NODE_ENV=production tsup",
     "build:explorer": "next build && shx cp -r .next/static .next/standalone/packages/explorer/.next",
     "clean": "pnpm run clean:explorer && pnpm run clean:bin",
     "clean:bin": "shx rm -rf dist",

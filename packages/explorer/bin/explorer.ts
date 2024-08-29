@@ -13,12 +13,17 @@ const __dirname = path.dirname(__filename);
 const argv = minimist(process.argv.slice(2));
 const port = argv.port || process.env.PORT || 13690;
 const chainId = argv.chainId || process.env.CHAIN_ID || 31337;
-const env = argv.env || process.env.NODE_ENV || "production";
 const indexerDatabase = argv.indexerDatabase || process.env.INDEXER_DATABASE || "indexer.db";
 const worldsFile = argv.worldsFile || process.env.WORLDS_FILE || "worlds.json";
 
 let worldAddress = argv.worldAddress || process.env.WORLD_ADDRESS || null;
 let explorerProcess: ChildProcess;
+
+// make sure only "production" is allowed in build
+let env = "production";
+if (process.env.NODE_ENV !== "development") {
+  env = argv.env || process.env.NODE_ENV;
+}
 
 async function startExplorer() {
   let command, args;
