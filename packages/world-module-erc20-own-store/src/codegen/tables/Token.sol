@@ -19,6 +19,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 struct TokenData {
   uint8 decimals;
   uint256 totalSupply;
+  address owner;
   string name;
   string symbol;
 }
@@ -28,12 +29,12 @@ library Token {
   ResourceId constant _tableId = ResourceId.wrap(0x746265726332302d73746f7265000000546f6b656e0000000000000000000000);
 
   FieldLayout constant _fieldLayout =
-    FieldLayout.wrap(0x0021020201200000000000000000000000000000000000000000000000000000);
+    FieldLayout.wrap(0x0035030201201400000000000000000000000000000000000000000000000000);
 
   // Hex-encoded key schema of ()
   Schema constant _keySchema = Schema.wrap(0x0000000000000000000000000000000000000000000000000000000000000000);
-  // Hex-encoded value schema of (uint8, uint256, string, string)
-  Schema constant _valueSchema = Schema.wrap(0x00210202001fc5c5000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint8, uint256, address, string, string)
+  Schema constant _valueSchema = Schema.wrap(0x00350302001f61c5c50000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
@@ -48,11 +49,12 @@ library Token {
    * @return fieldNames An array of strings with the names of value fields.
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
-    fieldNames = new string[](4);
+    fieldNames = new string[](5);
     fieldNames[0] = "decimals";
     fieldNames[1] = "totalSupply";
-    fieldNames[2] = "name";
-    fieldNames[3] = "symbol";
+    fieldNames[2] = "owner";
+    fieldNames[3] = "name";
+    fieldNames[4] = "symbol";
   }
 
   /**
@@ -143,6 +145,44 @@ library Token {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((totalSupply)), _fieldLayout);
+  }
+
+  /**
+   * @notice Get owner.
+   */
+  function getOwner() internal view returns (address owner) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Get owner.
+   */
+  function _getOwner() internal view returns (address owner) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /**
+   * @notice Set owner.
+   */
+  function setOwner(address owner) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((owner)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set owner.
+   */
+  function _setOwner(address owner) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((owner)), _fieldLayout);
   }
 
   /**
@@ -472,8 +512,8 @@ library Token {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(uint8 decimals, uint256 totalSupply, string memory name, string memory symbol) internal {
-    bytes memory _staticData = encodeStatic(decimals, totalSupply);
+  function set(uint8 decimals, uint256 totalSupply, address owner, string memory name, string memory symbol) internal {
+    bytes memory _staticData = encodeStatic(decimals, totalSupply, owner);
 
     EncodedLengths _encodedLengths = encodeLengths(name, symbol);
     bytes memory _dynamicData = encodeDynamic(name, symbol);
@@ -486,8 +526,8 @@ library Token {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(uint8 decimals, uint256 totalSupply, string memory name, string memory symbol) internal {
-    bytes memory _staticData = encodeStatic(decimals, totalSupply);
+  function _set(uint8 decimals, uint256 totalSupply, address owner, string memory name, string memory symbol) internal {
+    bytes memory _staticData = encodeStatic(decimals, totalSupply, owner);
 
     EncodedLengths _encodedLengths = encodeLengths(name, symbol);
     bytes memory _dynamicData = encodeDynamic(name, symbol);
@@ -501,7 +541,7 @@ library Token {
    * @notice Set the full data using the data struct.
    */
   function set(TokenData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.decimals, _table.totalSupply);
+    bytes memory _staticData = encodeStatic(_table.decimals, _table.totalSupply, _table.owner);
 
     EncodedLengths _encodedLengths = encodeLengths(_table.name, _table.symbol);
     bytes memory _dynamicData = encodeDynamic(_table.name, _table.symbol);
@@ -515,7 +555,7 @@ library Token {
    * @notice Set the full data using the data struct.
    */
   function _set(TokenData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.decimals, _table.totalSupply);
+    bytes memory _staticData = encodeStatic(_table.decimals, _table.totalSupply, _table.owner);
 
     EncodedLengths _encodedLengths = encodeLengths(_table.name, _table.symbol);
     bytes memory _dynamicData = encodeDynamic(_table.name, _table.symbol);
@@ -528,10 +568,12 @@ library Token {
   /**
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
-  function decodeStatic(bytes memory _blob) internal pure returns (uint8 decimals, uint256 totalSupply) {
+  function decodeStatic(bytes memory _blob) internal pure returns (uint8 decimals, uint256 totalSupply, address owner) {
     decimals = (uint8(Bytes.getBytes1(_blob, 0)));
 
     totalSupply = (uint256(Bytes.getBytes32(_blob, 1)));
+
+    owner = (address(Bytes.getBytes20(_blob, 33)));
   }
 
   /**
@@ -566,7 +608,7 @@ library Token {
     EncodedLengths _encodedLengths,
     bytes memory _dynamicData
   ) internal pure returns (TokenData memory _table) {
-    (_table.decimals, _table.totalSupply) = decodeStatic(_staticData);
+    (_table.decimals, _table.totalSupply, _table.owner) = decodeStatic(_staticData);
 
     (_table.name, _table.symbol) = decodeDynamic(_encodedLengths, _dynamicData);
   }
@@ -593,8 +635,8 @@ library Token {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(uint8 decimals, uint256 totalSupply) internal pure returns (bytes memory) {
-    return abi.encodePacked(decimals, totalSupply);
+  function encodeStatic(uint8 decimals, uint256 totalSupply, address owner) internal pure returns (bytes memory) {
+    return abi.encodePacked(decimals, totalSupply, owner);
   }
 
   /**
@@ -628,10 +670,11 @@ library Token {
   function encode(
     uint8 decimals,
     uint256 totalSupply,
+    address owner,
     string memory name,
     string memory symbol
   ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
-    bytes memory _staticData = encodeStatic(decimals, totalSupply);
+    bytes memory _staticData = encodeStatic(decimals, totalSupply, owner);
 
     EncodedLengths _encodedLengths = encodeLengths(name, symbol);
     bytes memory _dynamicData = encodeDynamic(name, symbol);
