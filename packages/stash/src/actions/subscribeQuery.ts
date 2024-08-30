@@ -94,7 +94,7 @@ export function subscribeQuery<query extends Query>({
         update.keys[key] = matching[key];
         // If the key matched before, check if the relevant fragments (accessing this table) still match
         const relevantFragments = query.filter((f) => f.table.namespace === namespaceLabel && f.table.label === label);
-        const match = relevantFragments.every((f) => f.match(stash, key));
+        const match = relevantFragments.every((f) => f.pass(stash, key));
         if (match) {
           // If all relevant fragments still match, the key still matches the query.
           update.types[key] = "update";
@@ -105,7 +105,7 @@ export function subscribeQuery<query extends Query>({
         }
       } else {
         // If this key didn't match the query before, check all fragments
-        const match = query.every((f) => f.match(stash, key));
+        const match = query.every((f) => f.pass(stash, key));
         if (match) {
           // Since the key schema of query fragments has to match, we can pick any fragment to decode they key
           const decodedKey = decodeKey({ stash, table: query[0].table, encodedKey: key });

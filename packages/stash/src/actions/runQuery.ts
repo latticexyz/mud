@@ -62,7 +62,7 @@ export function runQuery<query extends Query, options extends RunQueryOptions>({
   for (const fragment of query) {
     // TODO: this might be more efficient if we would use a Map() instead of an object
     for (const encodedKey of Object.keys(keys)) {
-      if (!fragment.match(stash, encodedKey)) {
+      if (!fragment.pass(stash, encodedKey)) {
         delete keys[encodedKey];
       }
     }

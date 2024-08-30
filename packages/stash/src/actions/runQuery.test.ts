@@ -5,7 +5,7 @@ import { runQuery } from "./runQuery";
 import { defineStore } from "@latticexyz/store";
 import { Stash, StoreRecords, getQueryConfig } from "../common";
 import { setRecord } from "./setRecord";
-import { In, MatchRecord, NotIn, NotMatchRecord } from "../queryFragments";
+import { In, Matches, NotIn, NotMatches } from "../queryFragments";
 import { Hex } from "viem";
 
 describe("runQuery", () => {
@@ -79,7 +79,7 @@ describe("runQuery", () => {
   });
 
   it("should return all keys that have Position.x = 4 and are included in Health", () => {
-    const result = runQuery({ stash, query: [MatchRecord(Position, { x: 4 }), In(Health)] });
+    const result = runQuery({ stash, query: [Matches(Position, { x: 4 }), In(Health)] });
     attest(result).snap({ keys: { "0x4": { player: "0x4" } } });
   });
 
@@ -95,7 +95,7 @@ describe("runQuery", () => {
   });
 
   it("should return all keys that don't include a gold item in the Inventory table", () => {
-    const result = runQuery({ stash, query: [NotMatchRecord(Inventory, { item: "0xgold" })] });
+    const result = runQuery({ stash, query: [NotMatches(Inventory, { item: "0xgold" })] });
     attest(result).snap({
       keys: {
         "0x0|0xsilver": { player: "0x0", item: "0xsilver" },
@@ -108,9 +108,9 @@ describe("runQuery", () => {
   });
 
   it("should throw an error when tables with different key schemas are mixed", () => {
-    attest(() =>
-      runQuery({ stash, query: [In(Position), MatchRecord(Inventory, { item: "0xgold", amount: 2 })] }),
-    ).throws("All tables in a query must share the same key schema");
+    attest(() => runQuery({ stash, query: [In(Position), Matches(Inventory, { item: "0xgold", amount: 2 })] })).throws(
+      "All tables in a query must share the same key schema",
+    );
   });
 
   it("should include all matching records from the tables if includeRecords is set", () => {

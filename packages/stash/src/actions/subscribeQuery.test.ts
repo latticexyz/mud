@@ -2,7 +2,7 @@ import { beforeEach, describe, it, vi, expect } from "vitest";
 import { QueryUpdate, subscribeQuery } from "./subscribeQuery";
 import { attest } from "@arktype/attest";
 import { defineStore } from "@latticexyz/store";
-import { In, MatchRecord } from "../queryFragments";
+import { In, Matches } from "../queryFragments";
 import { deleteRecord } from "./deleteRecord";
 import { setRecord } from "./setRecord";
 import { Stash } from "../common";
@@ -66,7 +66,7 @@ describe("defineQuery", () => {
   it("should notify subscribers when a matching key is updated", () => {
     let lastUpdate: unknown;
     const subscriber = vi.fn((update: QueryUpdate) => (lastUpdate = update));
-    const result = subscribeQuery({ stash, query: [MatchRecord(Position, { x: 4 }), In(Health)] });
+    const result = subscribeQuery({ stash, query: [Matches(Position, { x: 4 }), In(Health)] });
     result.subscribe(subscriber);
 
     setRecord({ stash, table: Position, key: { player: "0x4" }, record: { y: 2 } });
