@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.2.0
+
+### Patch Changes
+
+- 69cd0a1: Updated all custom Viem actions to properly call other actions via `getAction` so they can be composed.
+  - @latticexyz/schema-type@2.2.0
+
 ## 2.1.1
 
 ### Patch Changes

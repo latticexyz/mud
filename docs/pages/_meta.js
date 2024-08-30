@@ -23,6 +23,10 @@ export default {
   cli: "CLI",
   "state-query": "State Query",
   services: "Services",
+  "world-explorer": {
+    title: "World Explorer",
+    theme: { breadcrumb: false },
+  },
   "---": {
     title: "", // no title renders as a line
     type: "separator",
