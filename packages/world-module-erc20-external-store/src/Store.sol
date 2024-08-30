@@ -84,20 +84,20 @@ contract Store {
   }
 
   /**
-   * @dev Retrieves a specific static (fixed length) field from a record with a given layout.
-   * @param tableId The ID of the table to which the record belongs.
-   * @param keyTuple An array representing the key for the record.
-   * @param fieldIndex The index of the static field to retrieve.
-   * @param fieldLayout The layout of the static field being retrieved.
-   * @return Returns the data of the specified static field.
+   * @notice Retrieves data for a specific static (fixed length) field in a record.
+   * @param tableId The ID of the table.
+   * @param keyTuple The tuple used as a key to fetch the static field.
+   * @param fieldIndex Index of the static field to retrieve.
+   * @param fieldLayout The layout of fields for the retrieval.
+   * @return data The static data of the specified field.
    */
   function getStaticField(
     ResourceId tableId,
-    bytes32[] memory keyTuple,
+    bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
-  ) internal view returns (bytes32) {
-    return StoreCore.getStaticField(tableId, keyTuple, fieldIndex, fieldLayout);
+  ) public view virtual returns (bytes32 data) {
+    data = StoreCore.getStaticField(tableId, keyTuple, fieldIndex, fieldLayout);
   }
 
   // Set partial data at dynamic field index
@@ -108,6 +108,90 @@ contract Store {
     bytes calldata data
   ) public virtual {
     StoreCore.setDynamicField(tableId, keyTuple, dynamicFieldIndex, data);
+  }
+
+  /**
+   * @notice Retrieves data for a specific dynamic (variable length) field in a record.
+   * @param tableId The ID of the table.
+   * @param keyTuple The tuple used as a key to fetch the dynamic field.
+   * @param dynamicFieldIndex Index of the dynamic field to retrieve.
+   * @return data The dynamic data of the specified field.
+   */
+  function getDynamicField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex
+  ) public view virtual returns (bytes memory data) {
+    data = StoreCore.getDynamicField(tableId, keyTuple, dynamicFieldIndex);
+  }
+
+  /**
+   * @notice Calculates the length of a specified field in a record.
+   * @dev This overload loads the FieldLayout from storage. If the table's FieldLayout is known
+   * to the caller, it should be passed in to the other overload to avoid the storage read.
+   * @param tableId The ID of the table.
+   * @param keyTuple The tuple used as a key.
+   * @param fieldIndex Index of the field to measure.
+   * @return The length of the specified field.
+   */
+  function getFieldLength(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex
+  ) public view virtual returns (uint256) {
+    return StoreCore.getFieldLength(tableId, keyTuple, fieldIndex);
+  }
+
+  /**
+   * @notice Calculates the length of a specified field in a record.
+   * @param tableId The ID of the table.
+   * @param keyTuple The tuple used as a key.
+   * @param fieldIndex Index of the field to measure.
+   * @param fieldLayout The layout of fields for measurement.
+   * @return The length of the specified field.
+   */
+  function getFieldLength(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex,
+    FieldLayout fieldLayout
+  ) public view virtual returns (uint256) {
+    return StoreCore.getFieldLength(tableId, keyTuple, fieldIndex, fieldLayout);
+  }
+
+  /**
+   * @notice Calculates the length of a specified dynamic (variable length) field in a record.
+   * @param tableId The ID of the table.
+   * @param keyTuple The tuple used as a key.
+   * @param dynamicFieldIndex Index of the dynamic field to measure.
+   * @return The length of the specified dynamic field.
+   */
+  function getDynamicFieldLength(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex
+  ) public view virtual returns (uint256) {
+    return StoreCore.getDynamicFieldLength(tableId, keyTuple, dynamicFieldIndex);
+  }
+
+  /**
+   * @notice Retrieves a slice of a dynamic (variable length) field.
+   * @param tableId The ID of the table.
+   * @param keyTuple The tuple used as a key to fetch the dynamic field slice.
+   * @param dynamicFieldIndex Index of the dynamic field to slice.
+   * @param start The starting position of the slice.
+   * @param end The ending position of the slice.
+   * @return The sliced data from the specified dynamic field.
+   */
+
+  function getDynamicFieldSlice(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint256 start,
+    uint256 end
+  ) public view virtual returns (bytes memory) {
+    return StoreCore.getDynamicFieldSlice(tableId, keyTuple, dynamicFieldIndex, start, end);
   }
 
   // Push encoded items to the dynamic field at field index
