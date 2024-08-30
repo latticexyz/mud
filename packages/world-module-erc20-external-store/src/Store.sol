@@ -83,6 +83,23 @@ contract Store {
     StoreCore.setStaticField(tableId, keyTuple, fieldIndex, data, fieldLayout);
   }
 
+  /**
+   * @dev Retrieves a specific static (fixed length) field from a record with a given layout.
+   * @param tableId The ID of the table to which the record belongs.
+   * @param keyTuple An array representing the key for the record.
+   * @param fieldIndex The index of the static field to retrieve.
+   * @param fieldLayout The layout of the static field being retrieved.
+   * @return Returns the data of the specified static field.
+   */
+  function getStaticField(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex,
+    FieldLayout fieldLayout
+  ) internal view returns (bytes32) {
+    return StoreCore.getStaticField(tableId, keyTuple, fieldIndex, fieldLayout);
+  }
+
   // Set partial data at dynamic field index
   function setDynamicField(
     ResourceId tableId,
