@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
-import { IStore } from "@latticexyz/store/src/IStore.sol";
-import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
-import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
-import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
+import { IStore } from "@latticexyz/store/src/IStore.sol";
+import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreRead } from "@latticexyz/store/src/StoreRead.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
+import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
 
 contract Store {
   constructor() {
