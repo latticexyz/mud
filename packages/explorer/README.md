@@ -38,14 +38,14 @@ You may also want to check out the MUD [Quickstart guide](https://mud.dev/quicks
 
 The World Explorer accepts the following CLI arguments:
 
-| Argument          | Description                                                                      | Default value |
-| ----------------- | -------------------------------------------------------------------------------- | ------------- |
-| `worldAddress`    | The address of the world to explore                                              | None          |
-| `worldsFile`      | Path to a worlds configuration file (used to resolve world address)              | "worlds.json" |
-| `indexerDatabase` | Path to your SQLite indexer database                                             | "indexer.db"  |
-| `chainId`         | The chain ID of the network                                                      | 31337         |
-| `port`            | The port on which to run the World Explorer                                      | 13690         |
-| `env`             | The environment to run the World Explorer in (e.g., "development", "production") | "production"  |
+| Argument          | Description                                                         | Default value      |
+| ----------------- | ------------------------------------------------------------------- | ------------------ |
+| `worldAddress`    | The address of the world to explore                                 | None               |
+| `worldsFile`      | Path to a worlds configuration file (used to resolve world address) | "worlds.json"      |
+| `indexerDatabase` | Path to your SQLite indexer database                                | "indexer.db"       |
+| `chainId`         | The chain ID of the network                                         | 31337              |
+| `port`            | The port on which to run the World Explorer                         | 13690              |
+| `dev`             | Flag to run the World Explorer in development mode                  | false (production) |
 
 ## Contributing
 
@@ -71,11 +71,11 @@ To contribute to World Explorer, first get familiar with the [MUD contribution g
 
 3. **Configure**
 
-   In `mprocs.yaml`, ensure the `explorer` command is set to run the World Explorer in `development` mode.
+   In `mprocs.yaml`, ensure the `explorer` command is set to run the World Explorer in `development` mode by passing the `--dev` flag.
 
    ```yaml
    explorer:
-     shell: pnpm explorer --env development
+     shell: pnpm explorer --dev
    ```
 
 4. **Run**
