@@ -62,21 +62,28 @@ The World Explorer accepts the following CLI options:
 
 ## Installation (pre-2.2 MUD)
 
-The easiest way to get World Explorer for earlier MUD versions is to create a project with the new template.
-
-1. [Create a project with the new template](/quickstart), which has World Explorer.
-   Then, delete the files you no longer need.
+1. Install the Indexer and World Explorer packages in the project root.
 
    ```sh copy
-   pnpm create mud@main explorer --template vanilla
-   cd explorer
-   rm -rf packages/client packages/contracts/[st]*
+   pnpm install @latticexyz/store-indexer@latest -w
+   pnpm install @latticexyz/explorer@latest -w
    ```
 
-1. Edit `mprocs.yaml` to remove the definitions for `client`, `contracts`, and `anvil`.
+1. Edit `mprocs.yaml` to add the `indexer` and `explorer` processes.
 
-   ```yaml filename="mprocs.yaml" copy
+   <CollapseCode>
+
+   ```yaml filename="mprocs.yaml" copy showLineNumbers {11-20}
    procs:
+     client:
+       cwd: packages/client
+       shell: pnpm run dev
+     contracts:
+       cwd: packages/contracts
+       shell: pnpm mud dev-contracts --rpc http://127.0.0.1:8545
+     anvil:
+       cwd: packages/contracts
+       shell: anvil --base-fee 0 --block-time 2
      indexer:
        cwd: packages/contracts
        shell: rimraf $SQLITE_FILENAME && pnpm sqlite-indexer
@@ -89,20 +96,9 @@ The easiest way to get World Explorer for earlier MUD versions is to create a pr
        shell: pnpm explorer
    ```
 
-1. Replace `packages/contracts/worlds.json` with a link to the original project's `worlds.json`.
+   </CollapseCode>
 
-   ```sh copy
-   cp packages/contracts
-   rm worlds.json
-   ln -s <the original project>/packages/contracts/worlds.json .
-   cd ../..
-   ```
-
-1. Run the new project.
-
-   ```sh copy
-   pnpm dev
-   ```
+1. Restart `pnpm dev`.
 
 1. Browse to [World Explorer](http://localhost:13690).
 
