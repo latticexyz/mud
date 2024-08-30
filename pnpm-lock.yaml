@@ -4,6 +4,24 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@ark/attest':
+      specifier: 0.12.1
+      version: 0.12.1
+    '@ark/util':
+      specifier: 0.2.2
+      version: 0.2.2
+    abitype:
+      specifier: 1.0.5
+      version: 1.0.5
+    arktype:
+      specifier: 2.0.0-beta.6
+      version: 2.0.0-beta.6
+    viem:
+      specifier: 2.19.8
+      version: 2.19.8
+
 patchedDependencies:
   minimist@1.2.8:
     hash: tkbpkgnnti52zmnvbq3uwanedm
@@ -97,7 +115,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.31.6)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
 
   packages/block-logs-stream:
     dependencies:
@@ -125,7 +143,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.31.6)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
 
   packages/cli:
     dependencies:
@@ -264,7 +282,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.31.6)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
 
   packages/common:
     dependencies:
@@ -316,7 +334,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.31.6)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
 
   packages/config:
     dependencies:
@@ -430,7 +448,7 @@ importers:
         version: 6.7.0(postcss@8.4.23)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.31.6)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
 
   packages/explorer:
     dependencies:
@@ -524,9 +542,6 @@ importers:
       tailwind-merge:
         specifier: ^1.12.0
         version: 1.12.0
-      tailwindcss-animate:
-        specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.10)
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.4.2)
@@ -576,6 +591,9 @@ importers:
       tailwindcss:
         specifier: ^3.4.1
         version: 3.4.10
+      tailwindcss-animate:
+        specifier: ^1.0.7
+        version: 1.0.7(tailwindcss@3.4.10)
 
   packages/faucet:
     dependencies:
@@ -621,7 +639,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.31.6)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
 
   packages/gas-report:
     dependencies:
@@ -667,7 +685,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.31.6)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
 
   packages/protocol-parser:
     dependencies:
@@ -692,7 +710,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.31.6)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
 
   packages/query:
     dependencies:
@@ -720,7 +738,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.31.6)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
 
   packages/react:
     dependencies:
@@ -772,7 +790,7 @@ importers:
         version: 4.3.6(@types/node@20.12.12)(terser@5.31.6)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.31.6)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
 
   packages/recs:
     dependencies:
@@ -797,10 +815,10 @@ importers:
         version: 8.3.4
       jest:
         specifier: ^29.3.1
-        version: 29.5.0(@types/node@20.12.12)
+        version: 29.5.0(@types/node@18.15.11)
       ts-jest:
         specifier: ^29.0.5
-        version: 29.0.5(@babel/core@7.21.4)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.21.4))(jest@29.5.0(@types/node@20.12.12))(typescript@5.4.2)
+        version: 29.0.5(@babel/core@7.21.4)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.21.4))(jest@29.5.0(@types/node@18.15.11))(typescript@5.4.2)
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
@@ -831,7 +849,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.31.6)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
 
   packages/solhint-config-mud:
     devDependencies:
@@ -957,7 +975,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.31.6)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
 
   packages/store-indexer:
     dependencies:
@@ -1072,7 +1090,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.31.6)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
 
   packages/store-sync:
     dependencies:
@@ -1169,7 +1187,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.31.6)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
 
   packages/utils:
     dependencies:
@@ -1188,10 +1206,10 @@ importers:
         version: 27.4.1
       jest:
         specifier: ^29.3.1
-        version: 29.5.0(@types/node@18.15.11)
+        version: 29.5.0(@types/node@20.12.12)
       ts-jest:
         specifier: ^29.0.5
-        version: 29.0.5(@babel/core@7.21.4)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.21.4))(jest@29.5.0(@types/node@18.15.11))(typescript@5.4.2)
+        version: 29.0.5(@babel/core@7.21.4)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.21.4))(jest@29.5.0(@types/node@20.12.12))(typescript@5.4.2)
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
@@ -1270,7 +1288,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.31.6)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
 
   packages/world-module-metadata:
     dependencies:
@@ -1310,7 +1328,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.31.6)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
 
   packages/world-modules:
     dependencies:
@@ -1371,7 +1389,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.31.6)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
 
   test/mock-game-contracts:
     devDependencies:
@@ -9225,10 +9243,6 @@ packages:
   readable-stream@2.3.8:
     resolution: {integrity: sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA==}
 
-  readable-stream@3.6.0:
-    resolution: {integrity: sha512-BViHy7LKeTz4oNnkcLJ+lVSL6vpiFeX6/d3oSH8zCW7UxP2onchk+vTGB143xuFjHS3deTgkKoXXymXqymiIdA==}
-    engines: {node: '>= 6'}
-
   readable-stream@3.6.2:
     resolution: {integrity: sha512-9u/sniCrY3D5WdsERHzHE4G2YCXqoG5FTHUiCC4SIbr6XcLZBY05ya9EKjYek9O5xOAwjGq+1JdGBAS7Q9ScoA==}
     engines: {node: '>= 6'}
@@ -17011,7 +17025,7 @@ snapshots:
     dependencies:
       end-of-stream: 1.4.4
       inherits: 2.0.4
-      readable-stream: 3.6.0
+      readable-stream: 3.6.2
       stream-shift: 1.0.1
 
   eastasianwidth@0.2.0: {}
@@ -20982,12 +20996,6 @@ snapshots:
       string_decoder: 1.1.1
       util-deprecate: 1.0.2
 
-  readable-stream@3.6.0:
-    dependencies:
-      inherits: 2.0.4
-      string_decoder: 1.3.0
-      util-deprecate: 1.0.2
-
   readable-stream@3.6.2:
     dependencies:
       inherits: 2.0.4
@@ -21827,7 +21835,7 @@ snapshots:
       end-of-stream: 1.4.4
       fs-constants: 1.0.0
       inherits: 2.0.4
-      readable-stream: 3.6.0
+      readable-stream: 3.6.2
 
   tar@6.2.0:
     dependencies:
@@ -22393,42 +22401,6 @@ snapshots:
       terser: 5.31.6
 
   vitest@0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6):
-    dependencies:
-      '@types/chai': 4.3.5
-      '@types/chai-subset': 1.3.3
-      '@types/node': 18.15.11
-      '@vitest/expect': 0.34.6
-      '@vitest/runner': 0.34.6
-      '@vitest/snapshot': 0.34.6
-      '@vitest/spy': 0.34.6
-      '@vitest/utils': 0.34.6
-      acorn: 8.11.3
-      acorn-walk: 8.3.2
-      cac: 6.7.14
-      chai: 4.4.1
-      debug: 4.3.4
-      local-pkg: 0.4.3
-      magic-string: 0.30.5
-      pathe: 1.1.2
-      picocolors: 1.0.1
-      std-env: 3.7.0
-      strip-literal: 1.3.0
-      tinybench: 2.6.0
-      tinypool: 0.7.0
-      vite: 4.3.6(@types/node@18.15.11)(terser@5.31.6)
-      vite-node: 0.34.6(@types/node@18.15.11)(terser@5.31.6)
-      why-is-node-running: 2.2.2
-    optionalDependencies:
-      jsdom: 22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-    transitivePeerDependencies:
-      - less
-      - sass
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-
-  vitest@0.34.6(jsdom@22.1.0)(terser@5.31.6):
     dependencies:
       '@types/chai': 4.3.5
       '@types/chai-subset': 1.3.3
