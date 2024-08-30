@@ -10,7 +10,7 @@ import { Allowances } from "./codegen/tables/Allowances.sol";
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
-import { ResourceId, ResourceIdLib } from "@latticexyz/Store/src/ResourceId.sol";
+import { ResourceId, ResourceIdLib } from "@latticexyz/store/src/ResourceId.sol";
 
 /**
  * @title ERC20 Module with external Store
