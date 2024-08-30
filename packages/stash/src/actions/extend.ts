@@ -5,7 +5,7 @@ export type ExtendArgs<stash extends Stash, actions> = {
   actions: actions;
 };
 
-export type ExtendResult<stash extends Stash, actions> = stash & actions;
+export type ExtendResult<stash extends Stash, actions> = Omit<stash, keyof actions> & actions;
 
 export function extend<stash extends Stash, actions>({
   stash,

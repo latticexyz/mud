@@ -12,4 +12,11 @@ describe("extend", () => {
     attest<typeof stash & typeof actions, typeof extended>();
     attest(Object.keys(extended)).equals([...Object.keys(stash), "additional"]);
   });
+
+  it("should allow overriding existing keys", () => {
+    const stash = createStash();
+    const actions = { deleteKey: () => true };
+    const extended = extend({ stash: stash, actions });
+    attest<(typeof extended)["deleteKey"], (typeof actions)["deleteKey"]>();
+  });
 });
