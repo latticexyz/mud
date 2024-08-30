@@ -116,7 +116,7 @@ describe("stash with default actions", () => {
         deploy: __,
         ...table
       } = defineTable({
-        namespace: "namespace",
+        namespaceLabel: "namespace",
         label: "test",
         schema: { field1: "address", field2: "string" },
         key: ["field1"],

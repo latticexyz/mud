@@ -9,7 +9,7 @@ import { defineTable } from "@latticexyz/store/config/v2";
 describe("BoundTable", () => {
   const tableConfig = defineTable({
     label: "table1",
-    namespace: "namespace1",
+    namespaceLabel: "namespace1",
     schema: { field1: "uint32", field2: "address" },
     key: ["field1"],
   });

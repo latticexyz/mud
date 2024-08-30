@@ -291,7 +291,7 @@ describe("createStash", () => {
 
       stash.registerTable({
         table: defineTable({
-          namespace: "namespace2",
+          namespaceLabel: "namespace2",
           label: "table2",
           schema: { field1: "uint256", value: "uint256" },
           key: ["field1"],
@@ -391,7 +391,7 @@ describe("createStash", () => {
       stash.registerTable({
         table: defineTable({
           label: "table1",
-          namespace: "namespace1",
+          namespaceLabel: "namespace1",
           schema: { field1: "uint32", field2: "address" },
           key: ["field1"],
         }),
@@ -399,7 +399,7 @@ describe("createStash", () => {
       stash.registerTable({
         table: defineTable({
           label: "table2",
-          namespace: "namespace2",
+          namespaceLabel: "namespace2",
           schema: { field1: "uint32", field2: "address" },
           key: ["field1"],
         }),

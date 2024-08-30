@@ -11,7 +11,7 @@ describe("getTable", () => {
       stash: stash,
       table: defineTable({
         label: "table1",
-        namespace: "namespace1",
+        namespaceLabel: "namespace1",
         schema: { field1: "uint32", field2: "address" },
         key: ["field1"],
       }),
