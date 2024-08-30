@@ -7,6 +7,7 @@ import { Token } from "./codegen/tables/Token.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
 import { Allowances } from "./codegen/tables/Allowances.sol";
 
+import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 import { ResourceId, ResourceIdLib } from "@latticexyz/store/src/ResourceId.sol";
@@ -18,9 +19,11 @@ import { ResourceId, ResourceIdLib } from "@latticexyz/store/src/ResourceId.sol"
  */
 contract ERC20 is IERC20Errors, IERC20Events {
   ResourceId tokenTableId;
+  IStore store;
 
   constructor(string memory _name, string memory _symbol, address _owner, address _store, uint8 _decimals) {
     StoreSwitch.setStoreAddress(_store);
+    store = IStore(_store);
 
     bytes memory symbolAsBytes = bytes(_symbol);
     require(symbolAsBytes.length > 0 && symbolAsBytes.length <= 30, "ERC20: symbol length too long");
@@ -35,7 +38,10 @@ contract ERC20 is IERC20Errors, IERC20Events {
     Balances.register();
     Allowances.register();
 
-    Token.set(tokenTableId, _decimals, 0, _owner, _name, _symbol);
+    //IStore(_store).registerTable(tokenTableId, Token._fieldLayout, Token._keySchema, Token._valueSchema, Token.getKeyNames(), Token.getFieldNames());
+    //IStore(_store).setRecord(tokenTableId, bytes32(uint256(0)), Token._keySchema, Token._valueSchema);
+
+    Token.set(store, tokenTableId, _decimals, 0, _owner, _name, _symbol);
   }
 
   /**
@@ -43,7 +49,7 @@ contract ERC20 is IERC20Errors, IERC20Events {
    * @return The name of the token.
    */
   function name() public view returns (string memory) {
-    return Token.getName(tokenTableId);
+    return Token.getName(store, tokenTableId);
   }
 
   /**
@@ -52,7 +58,7 @@ contract ERC20 is IERC20Errors, IERC20Events {
    * @return The symbol of the token.
    */
   function symbol() public view returns (string memory) {
-    return Token.getSymbol(tokenTableId);
+    return Token.getSymbol(store, tokenTableId);
   }
 
   /**
@@ -60,7 +66,7 @@ contract ERC20 is IERC20Errors, IERC20Events {
    * @return The number of decimals of the token.
    */
   function decimals() public view returns (uint8) {
-    return Token.getDecimals(tokenTableId);
+    return Token.getDecimals(store, tokenTableId);
   }
 
   /**
@@ -68,7 +74,7 @@ contract ERC20 is IERC20Errors, IERC20Events {
    * @return The total supply of the token.
    */
   function totalSupply() public view returns (uint256) {
-    return Token.getTotalSupply(tokenTableId);
+    return Token.getTotalSupply(store, tokenTableId);
   }
 
   /**
@@ -197,7 +203,7 @@ contract ERC20 is IERC20Errors, IERC20Events {
     if (from == address(0)) {
       // Overflow check required: The rest of the code assumes that totalSupply never overflows
       uint256 supplyBefore = Token.getTotalSupply(tokenTableId);
-      Token.setTotalSupply(tokenTableId, supplyBefore + value);
+      Token.setTotalSupply(store, tokenTableId, supplyBefore + value);
     } else {
       uint256 fromBalancePrior = Balances.get(address(this), from);
       if (fromBalancePrior < value) {
@@ -213,7 +219,7 @@ contract ERC20 is IERC20Errors, IERC20Events {
       unchecked {
         // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
         uint256 supplyBefore = Token.getTotalSupply(tokenTableId);
-        Token.setTotalSupply(tokenTableId, supplyBefore - value);
+        Token.setTotalSupply(store, tokenTableId, supplyBefore - value);
       }
     } else {
       unchecked {
