@@ -27,14 +27,14 @@ describe("setRecord", () => {
       stash,
       table,
       key: { field2: 1, field3: 2 },
-      record: { field1: "hello" },
+      value: { field1: "hello" },
     });
 
     setRecord({
       stash,
       table,
       key: { field2: 2, field3: 1 },
-      record: { field1: "world" },
+      value: { field1: "world" },
     });
 
     attest(stash.get().records).snap({
@@ -71,7 +71,7 @@ describe("setRecord", () => {
         table,
         // @ts-expect-error Property 'field2' is missing in type '{ field3: number; }'
         key: { field3: 2 },
-        record: { field1: "" },
+        value: { field1: "" },
       }),
     )
       .throws("Provided key is missing field field2.")
@@ -83,7 +83,7 @@ describe("setRecord", () => {
         table,
         // @ts-expect-error Type 'string' is not assignable to type 'number'.
         key: { field2: 1, field3: "invalid" },
-        record: { field1: "" },
+        value: { field1: "" },
       }),
     ).type.errors(`Type 'string' is not assignable to type 'number'.`);
 
@@ -93,7 +93,7 @@ describe("setRecord", () => {
         table,
         key: { field2: 1, field3: 2 },
         // @ts-expect-error Type 'number' is not assignable to type 'string'.
-        record: { field1: 1 },
+        value: { field1: 1 },
       }),
     ).type.errors(`Type 'number' is not assignable to type 'string'.`);
   });

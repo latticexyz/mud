@@ -20,7 +20,7 @@ describe("decodeKey", () => {
     const stash = createStash(config);
     const table = config.namespaces.namespace1.tables.table1;
     const key = { field2: 1, field3: 2n };
-    setRecord({ stash, table, key, record: { field1: "hello" } });
+    setRecord({ stash, table, key, value: { field1: "hello" } });
 
     const encodedKey = encodeKey({ table, key });
     attest<typeof key>(decodeKey({ stash, table, encodedKey })).equals({ field2: 1, field3: 2n });

@@ -37,12 +37,12 @@ describe("defineQuery", () => {
     const items = ["0xgold", "0xsilver"] as const;
     const num = 5;
     for (let i = 0; i < num; i++) {
-      setRecord({ stash, table: Position, key: { player: `0x${String(i)}` }, record: { x: i, y: num - i } });
+      setRecord({ stash, table: Position, key: { player: `0x${String(i)}` }, value: { x: i, y: num - i } });
       if (i > 2) {
-        setRecord({ stash, table: Health, key: { player: `0x${String(i)}` }, record: { health: i } });
+        setRecord({ stash, table: Health, key: { player: `0x${String(i)}` }, value: { health: i } });
       }
       for (const item of items) {
-        setRecord({ stash, table: Inventory, key: { player: `0x${String(i)}`, item }, record: { amount: i } });
+        setRecord({ stash, table: Inventory, key: { player: `0x${String(i)}`, item }, value: { amount: i } });
       }
     }
   });
@@ -54,7 +54,7 @@ describe("defineQuery", () => {
       "0x4": { player: "0x4" },
     });
 
-    setRecord({ stash, table: Health, key: { player: `0x2` }, record: { health: 2 } });
+    setRecord({ stash, table: Health, key: { player: `0x2` }, value: { health: 2 } });
 
     attest(result.keys).snap({
       "0x2": { player: "0x2" },
@@ -69,7 +69,7 @@ describe("defineQuery", () => {
     const result = subscribeQuery({ stash, query: [Matches(Position, { x: 4 }), In(Health)] });
     result.subscribe(subscriber);
 
-    setRecord({ stash, table: Position, key: { player: "0x4" }, record: { y: 2 } });
+    setRecord({ stash, table: Position, key: { player: "0x4" }, value: { y: 2 } });
 
     expect(subscriber).toBeCalledTimes(1);
     attest(lastUpdate).snap({
@@ -94,7 +94,7 @@ describe("defineQuery", () => {
     const result = subscribeQuery({ stash, query: [In(Position), In(Health)] });
     result.subscribe(subscriber);
 
-    setRecord({ stash, table: Health, key: { player: `0x2` }, record: { health: 2 } });
+    setRecord({ stash, table: Health, key: { player: `0x2` }, value: { health: 2 } });
 
     expect(subscriber).toBeCalledTimes(1);
     attest(lastUpdate).snap({

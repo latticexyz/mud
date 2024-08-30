@@ -45,12 +45,12 @@ describe("runQuery", () => {
     const items = ["0xgold", "0xsilver"] as const;
     const num = 5;
     for (let i = 0; i < num; i++) {
-      setRecord({ stash, table: Position, key: { player: `0x${String(i)}` }, record: { x: i, y: num - i } });
+      setRecord({ stash, table: Position, key: { player: `0x${String(i)}` }, value: { x: i, y: num - i } });
       if (i > 2) {
-        setRecord({ stash, table: Health, key: { player: `0x${String(i)}` }, record: { health: i } });
+        setRecord({ stash, table: Health, key: { player: `0x${String(i)}` }, value: { health: i } });
       }
       for (const item of items) {
-        setRecord({ stash, table: Inventory, key: { player: `0x${String(i)}`, item }, record: { amount: i } });
+        setRecord({ stash, table: Inventory, key: { player: `0x${String(i)}`, item }, value: { amount: i } });
       }
     }
   });

@@ -23,8 +23,8 @@ describe("getKeys", () => {
     const table = config.tables.test;
     const stash = createStash(config);
 
-    setRecord({ stash, table, key: { player: 1, match: 2 }, record: { x: 3, y: 4 } });
-    setRecord({ stash, table, key: { player: 5, match: 6 }, record: { x: 7, y: 8 } });
+    setRecord({ stash, table, key: { player: 1, match: 2 }, value: { x: 3, y: 4 } });
+    setRecord({ stash, table, key: { player: 5, match: 6 }, value: { x: 7, y: 8 } });
 
     attest<{ [encodedKey: string]: { player: number; match: number } }>(getKeys({ stash, table })).snap({
       "1|2": { player: 1, match: 2 },

@@ -34,7 +34,7 @@ describe("subscribeTable", () => {
 
     subscribeTable({ stash, table: table1, subscriber });
 
-    setRecord({ stash, table: table1, key: { a: "0x00" }, record: { b: 1n, c: 2 } });
+    setRecord({ stash, table: table1, key: { a: "0x00" }, value: { b: 1n, c: 2 } });
 
     expect(subscriber).toHaveBeenCalledTimes(1);
     expect(subscriber).toHaveBeenNthCalledWith(1, {
@@ -45,10 +45,10 @@ describe("subscribeTable", () => {
     });
 
     // Expect unrelated updates to not notify subscribers
-    setRecord({ stash, table: table2, key: { a: "0x01" }, record: { b: 1n, c: 2 } });
+    setRecord({ stash, table: table2, key: { a: "0x01" }, value: { b: 1n, c: 2 } });
     expect(subscriber).toHaveBeenCalledTimes(1);
 
-    setRecord({ stash, table: table1, key: { a: "0x00" }, record: { b: 1n, c: 3 } });
+    setRecord({ stash, table: table1, key: { a: "0x00" }, value: { b: 1n, c: 3 } });
 
     expect(subscriber).toHaveBeenCalledTimes(2);
     expect(subscriber).toHaveBeenNthCalledWith(2, {

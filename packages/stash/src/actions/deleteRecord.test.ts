@@ -29,14 +29,14 @@ describe("deleteRecord", () => {
       stash,
       table,
       key: { field2: 1, field3: 2 },
-      record: { field1: "hello" },
+      value: { field1: "hello" },
     });
 
     setRecord({
       stash,
       table,
       key: { field2: 3, field3: 1 },
-      record: { field1: "world" },
+      value: { field1: "world" },
     });
 
     deleteRecord({

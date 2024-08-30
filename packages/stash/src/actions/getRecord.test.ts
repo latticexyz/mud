@@ -29,14 +29,14 @@ describe("getRecord", () => {
       stash,
       table,
       key: { field2: 1, field3: 2 },
-      record: { field1: "hello" },
+      value: { field1: "hello" },
     });
 
     setRecord({
       stash,
       table,
       key: { field2: 2, field3: 1 },
-      record: { field1: "world" },
+      value: { field1: "world" },
     });
 
     attest(

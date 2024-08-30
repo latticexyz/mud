@@ -23,8 +23,8 @@ describe("getRecords", () => {
     const table = config.tables.test;
     const stash = createStash(config);
 
-    setRecord({ stash, table, key: { player: 1, match: 2 }, record: { x: 3n, y: 4n } });
-    setRecord({ stash, table, key: { player: 5, match: 6 }, record: { x: 7n, y: 8n } });
+    setRecord({ stash, table, key: { player: 1, match: 2 }, value: { x: 3n, y: 4n } });
+    setRecord({ stash, table, key: { player: 5, match: 6 }, value: { x: 7n, y: 8n } });
 
     attest<{ [encodedKey: string]: { player: number; match: number; x: bigint; y: bigint } }>(
       getRecords({ stash, table }),

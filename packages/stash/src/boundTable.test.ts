@@ -24,7 +24,7 @@ describe("BoundTable", () => {
 
   describe("setRecord", () => {
     it("should set a record in the table", () => {
-      table.setRecord({ key: { field1: 1 }, record: { field2: "0x00" } });
+      table.setRecord({ key: { field1: 1 }, value: { field2: "0x00" } });
       attest(stash.get().records).snap({ namespace1: { table1: { "1": { field1: 1, field2: "0x00" } } } });
     });
 
@@ -33,7 +33,7 @@ describe("BoundTable", () => {
         table.setRecord({
           key: { field1: 1 },
           // @ts-expect-error Type '"world"' is not assignable to type '`0x${string}`'
-          record: { field2: "world" },
+          value: { field2: "world" },
         }),
       ).type.errors("Type '\"world\"' is not assignable to type '`0x${string}`'");
     });
@@ -41,7 +41,7 @@ describe("BoundTable", () => {
 
   describe("getRecord", () => {
     it("should get a record from the table", () => {
-      table.setRecord({ key: { field1: 2 }, record: { field2: "0x01" } });
+      table.setRecord({ key: { field1: 2 }, value: { field2: "0x01" } });
       attest(table.getRecord({ key: { field1: 2 } })).snap({ field1: 2, field2: "0x01" });
     });
   });

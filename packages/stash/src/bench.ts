@@ -42,14 +42,14 @@ for (let i = 0; i < numItems; i++) {
   filledStore.setRecord({
     table: config.tables.Position,
     key: { player: `0x${i}` },
-    record: { x: i, y: i },
+    value: { x: i, y: i },
   });
 }
 bench("setRecord", () => {
   filledStore.setRecord({
     table: config.tables.Position,
     key: { player: `0x0` },
-    record: { x: 1, y: 1 },
+    value: { x: 1, y: 1 },
   });
 }).mark({ mean: [1.2, "us"], median: [1, "us"] });
 
@@ -58,7 +58,7 @@ bench("10x setRecord", () => {
     filledStore.setRecord({
       table: config.tables.Position,
       key: { player: `0x${i}` },
-      record: { x: i + 1, y: i + 1 },
+      value: { x: i + 1, y: i + 1 },
     });
   }
 }).mark({ mean: [13, "us"], median: [12, "us"] });

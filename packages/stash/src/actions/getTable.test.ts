@@ -52,7 +52,7 @@ describe("getTable", () => {
       });
 
       const key = { field2: 1, field3: 2n };
-      table.setRecord({ key, record: { field1: "hello" } });
+      table.setRecord({ key, value: { field1: "hello" } });
 
       const encodedKey = table.encodeKey({ key });
       attest<typeof key>(table.decodeKey({ encodedKey })).equals({ field2: 1, field3: 2n });
@@ -151,8 +151,8 @@ describe("getTable", () => {
         }),
       });
 
-      table.setRecord({ key: { player: 1, match: 2 }, record: { x: 3, y: 4 } });
-      table.setRecord({ key: { player: 5, match: 6 }, record: { x: 7, y: 8 } });
+      table.setRecord({ key: { player: 1, match: 2 }, value: { x: 3, y: 4 } });
+      table.setRecord({ key: { player: 5, match: 6 }, value: { x: 7, y: 8 } });
 
       attest<{ [encodedKey: string]: { player: number; match: number } }>(table.getKeys()).snap({
         "1|2": { player: 1, match: 2 },
@@ -203,8 +203,8 @@ describe("getTable", () => {
       const stash = createStash();
       const table = stash.getTable({ table: config });
 
-      table.setRecord({ key: { player: 1, match: 2 }, record: { x: 3n, y: 4n } });
-      table.setRecord({ key: { player: 5, match: 6 }, record: { x: 7n, y: 8n } });
+      table.setRecord({ key: { player: 1, match: 2 }, value: { x: 3n, y: 4n } });
+      table.setRecord({ key: { player: 5, match: 6 }, value: { x: 7n, y: 8n } });
 
       attest<{ [encodedKey: string]: { player: number; match: number; x: bigint; y: bigint } }>(
         table.getRecords(),
@@ -239,7 +239,7 @@ describe("getTable", () => {
         table.setRecord({
           // @ts-expect-error Property 'field2' is missing in type '{ field3: number; }'
           key: { field3: 2 },
-          record: { field1: "" },
+          value: { field1: "" },
         }),
       )
         .throws("Provided key is missing field field2.")
@@ -249,7 +249,7 @@ describe("getTable", () => {
         table.setRecord({
           // @ts-expect-error Type 'string' is not assignable to type 'number'.
           key: { field2: 1, field3: "invalid" },
-          record: { field1: "" },
+          value: { field1: "" },
         }),
       ).type.errors(`Type 'string' is not assignable to type 'number'.`);
 
@@ -257,7 +257,7 @@ describe("getTable", () => {
         table.setRecord({
           key: { field2: 1, field3: 2 },
           // @ts-expect-error Type 'number' is not assignable to type 'string'.
-          record: { field1: 1 },
+          value: { field1: 1 },
         }),
       ).type.errors(`Type 'number' is not assignable to type 'string'.`);
     });
@@ -314,7 +314,7 @@ describe("getTable", () => {
 
       table1.subscribe({ subscriber });
 
-      table1.setRecord({ key: { a: "0x00" }, record: { b: 1n, c: 2 } });
+      table1.setRecord({ key: { a: "0x00" }, value: { b: 1n, c: 2 } });
 
       expect(subscriber).toHaveBeenCalledTimes(1);
       expect(subscriber).toHaveBeenNthCalledWith(1, {
@@ -325,10 +325,10 @@ describe("getTable", () => {
       });
 
       // Expect unrelated updates to not notify subscribers
-      table2.setRecord({ key: { a: "0x01" }, record: { b: 1n, c: 2 } });
+      table2.setRecord({ key: { a: "0x01" }, value: { b: 1n, c: 2 } });
       expect(subscriber).toHaveBeenCalledTimes(1);
 
-      table1.setRecord({ key: { a: "0x00" }, record: { b: 1n, c: 3 } });
+      table1.setRecord({ key: { a: "0x00" }, value: { b: 1n, c: 3 } });
 
       expect(subscriber).toHaveBeenCalledTimes(2);
       expect(subscriber).toHaveBeenNthCalledWith(2, {

@@ -23,7 +23,7 @@ describe("stash with default actions", () => {
       const stash = createStash(config);
       const table = config.namespaces.namespace1.tables.table1;
       const key = { field2: 1, field3: 2n };
-      stash.setRecord({ table, key, record: { field1: "hello" } });
+      stash.setRecord({ table, key, value: { field1: "hello" } });
 
       const encodedKey = stash.encodeKey({ table, key });
       attest<typeof key>(stash.decodeKey({ table, encodedKey })).equals({ field2: 1, field3: 2n });
@@ -147,8 +147,8 @@ describe("stash with default actions", () => {
       const table = config.tables.test;
       const stash = createStash(config);
 
-      stash.setRecord({ table, key: { player: 1, match: 2 }, record: { x: 3, y: 4 } });
-      stash.setRecord({ table, key: { player: 5, match: 6 }, record: { x: 7, y: 8 } });
+      stash.setRecord({ table, key: { player: 1, match: 2 }, value: { x: 3, y: 4 } });
+      stash.setRecord({ table, key: { player: 5, match: 6 }, value: { x: 7, y: 8 } });
 
       attest<{ [encodedKey: string]: { player: number; match: number } }>(stash.getKeys({ table })).snap({
         "1|2": { player: 1, match: 2 },
@@ -180,7 +180,7 @@ describe("stash with default actions", () => {
       stash.setRecord({
         table,
         key: { field2: 2, field3: 1 },
-        record: { field1: "world" },
+        value: { field1: "world" },
       });
 
       attest<{ field1: string; field2: number; field3: number }>(
@@ -246,8 +246,8 @@ describe("stash with default actions", () => {
       const table = config.tables.test;
       const stash = createStash(config);
 
-      stash.setRecord({ table, key: { player: 1, match: 2 }, record: { x: 3n, y: 4n } });
-      stash.setRecord({ table, key: { player: 5, match: 6 }, record: { x: 7n, y: 8n } });
+      stash.setRecord({ table, key: { player: 1, match: 2 }, value: { x: 3n, y: 4n } });
+      stash.setRecord({ table, key: { player: 5, match: 6 }, value: { x: 7n, y: 8n } });
 
       attest<{ [encodedKey: string]: { player: number; match: number; x: bigint; y: bigint } }>(
         stash.getRecords({ table }),
@@ -395,7 +395,7 @@ describe("stash with default actions", () => {
           table,
           // @ts-expect-error Property 'field2' is missing in type '{ field3: number; }'
           key: { field3: 2 },
-          record: { field1: "" },
+          value: { field1: "" },
         }),
       )
         .throws("Provided key is missing field field2.")
@@ -406,7 +406,7 @@ describe("stash with default actions", () => {
           table,
           // @ts-expect-error Type 'string' is not assignable to type 'number'.
           key: { field2: 1, field3: "invalid" },
-          record: { field1: "" },
+          value: { field1: "" },
         }),
       ).type.errors(`Type 'string' is not assignable to type 'number'.`);
 
@@ -415,7 +415,7 @@ describe("stash with default actions", () => {
           table,
           key: { field2: 1, field3: 2 },
           // @ts-expect-error Type 'number' is not assignable to type 'string'.
-          record: { field1: 1 },
+          value: { field1: 1 },
         }),
       ).type.errors(`Type 'number' is not assignable to type 'string'.`);
     });
@@ -480,7 +480,7 @@ describe("stash with default actions", () => {
 
       stash.subscribeStore({ subscriber });
 
-      stash.setRecord({ table: config.tables.namespace1__table1, key: { a: "0x00" }, record: { b: 1n, c: 2 } });
+      stash.setRecord({ table: config.tables.namespace1__table1, key: { a: "0x00" }, value: { b: 1n, c: 2 } });
 
       expect(subscriber).toHaveBeenCalledTimes(1);
       expect(subscriber).toHaveBeenNthCalledWith(1, {
@@ -529,7 +529,7 @@ describe("stash with default actions", () => {
 
       stash.subscribeTable({ table: table1, subscriber });
 
-      stash.setRecord({ table: table1, key: { a: "0x00" }, record: { b: 1n, c: 2 } });
+      stash.setRecord({ table: table1, key: { a: "0x00" }, value: { b: 1n, c: 2 } });
 
       expect(subscriber).toHaveBeenCalledTimes(1);
       expect(subscriber).toHaveBeenNthCalledWith(1, {
@@ -540,10 +540,10 @@ describe("stash with default actions", () => {
       });
 
       // Expect unrelated updates to not notify subscribers
-      stash.setRecord({ table: table2, key: { a: "0x01" }, record: { b: 1n, c: 2 } });
+      stash.setRecord({ table: table2, key: { a: "0x01" }, value: { b: 1n, c: 2 } });
       expect(subscriber).toHaveBeenCalledTimes(1);
 
-      stash.setRecord({ table: table1, key: { a: "0x00" }, record: { b: 1n, c: 3 } });
+      stash.setRecord({ table: table1, key: { a: "0x00" }, value: { b: 1n, c: 3 } });
 
       expect(subscriber).toHaveBeenCalledTimes(2);
       expect(subscriber).toHaveBeenNthCalledWith(2, {

@@ -6,18 +6,18 @@ export type SetRecordArgs<table extends Table = Table> = {
   stash: Stash;
   table: table;
   key: Key<table>;
-  record: Partial<TableRecord<table>>;
+  value: Partial<TableRecord<table>>;
 };
 
 export type SetRecordResult = void;
 
-export function setRecord<table extends Table>({ stash, table, key, record }: SetRecordArgs<table>): SetRecordResult {
+export function setRecord<table extends Table>({ stash, table, key, value }: SetRecordArgs<table>): SetRecordResult {
   setRecords({
     stash,
     table,
     records: [
       // Stored record should include key
-      { ...record, ...key },
+      { ...value, ...key },
     ],
   });
 }

@@ -57,7 +57,7 @@ describe("createStash", () => {
     stash.setRecord({
       table: config.namespaces.namespace1.tables.table1,
       key: { field2: 1 },
-      record: { field1: "hello" },
+      value: { field1: "hello" },
     });
 
     attest<CreateStoreResult<typeof config>>(stash);
@@ -121,7 +121,7 @@ describe("createStash", () => {
       stash.setRecord({
         table,
         key: { field2: 1, field3: 2 },
-        record: { field1: "hello" },
+        value: { field1: "hello" },
       });
 
       expect(listener).toHaveBeenNthCalledWith(1, {
@@ -134,7 +134,7 @@ describe("createStash", () => {
       stash.setRecord({
         table,
         key: { field2: 1, field3: 2 },
-        record: { field1: "world" },
+        value: { field1: "world" },
       });
 
       expect(listener).toHaveBeenNthCalledWith(2, {
@@ -185,7 +185,7 @@ describe("createStash", () => {
       stash.setRecord({
         table,
         key: { field2: 1, field3: 2 },
-        record: { field1: "hello" },
+        value: { field1: "hello" },
       });
 
       expect(subscriber).toHaveBeenNthCalledWith(1, {
@@ -200,7 +200,7 @@ describe("createStash", () => {
       stash.setRecord({
         table,
         key: { field2: 1, field3: 2 },
-        record: { field1: "world" },
+        value: { field1: "world" },
       });
 
       expect(subscriber).toBeCalledTimes(1);
@@ -233,7 +233,7 @@ describe("createStash", () => {
       stash.setRecord({
         table,
         key: { field2: 1, field3: 2 },
-        record: { field1: "hello" },
+        value: { field1: "hello" },
       });
 
       expect(subscriber).toHaveBeenNthCalledWith(1, {
@@ -253,7 +253,7 @@ describe("createStash", () => {
       stash.setRecord({
         table,
         key: { field2: 1, field3: 2 },
-        record: { field1: "world" },
+        value: { field1: "world" },
       });
 
       expect(subscriber).toHaveBeenNthCalledWith(2, {
@@ -356,7 +356,7 @@ describe("createStash", () => {
       stash.setRecord({
         table,
         key: { field2: 1, field3: 2 },
-        record: { field1: "hello" },
+        value: { field1: "hello" },
       });
 
       expect(subscriber).toHaveBeenNthCalledWith(1, {
@@ -378,7 +378,7 @@ describe("createStash", () => {
       stash.setRecord({
         table,
         key: { field2: 1, field3: 2 },
-        record: { field1: "world" },
+        value: { field1: "world" },
       });
 
       expect(subscriber).toBeCalledTimes(1);
