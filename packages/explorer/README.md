@@ -7,10 +7,10 @@ For the full information about it, [see the official docs](http://mud.dev/world-
 
 ### Prerequisites
 
-World Explorer is not intended to be used alone, and includes the following prerequisites to be set up and running:
+World Explorer is not intended to be used alone, and includes the following prerequisites:
 
 - MUD project
-- Development chain (e.g. Hardhat, Foundry)
+- Development chain ([anvil](https://book.getfoundry.sh/anvil/))
 - [@latticexyz/store-indexer](https://www.npmjs.com/package/@latticexyz/store-indexer)
 
 ### Install and run
