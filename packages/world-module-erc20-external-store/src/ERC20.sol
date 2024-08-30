@@ -3,11 +3,13 @@ pragma solidity >=0.8.24;
 
 import { IERC20Errors } from "./IERC20Errors.sol";
 import { IERC20Events } from "./IERC20Events.sol";
-//import { Token } from "./codegen/tables/Token.sol";
-//import { Balances } from "./codegen/tables/Balances.sol";
-//import { Allowances } from "./codegen/tables/Allowances.sol";
+import { Token } from "./codegen/tables/Token.sol";
+import { Balances } from "./codegen/tables/Balances.sol";
+import { Allowances } from "./codegen/tables/Allowances.sol";
 
 import { IStore } from "@latticexyz/store/src/IStore.sol";
+import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
+import { ResourceId, ResourceIdLib } from "@latticexyz/Store/src/ResourceId.sol";
 
 /**
  * @title ERC20 Module with external Store
@@ -15,11 +17,21 @@ import { IStore } from "@latticexyz/store/src/IStore.sol";
  * @dev Implementation of EIP-20 that has on instance of `Store` which enables built in indexing and storage packing.
  */
 contract ERC20 is IERC20Errors, IERC20Events {
-  constructor(string memory _name, string memory _symbol, address _owner, uint8 _decimals) {
-    // StoreCore.registerInternalTables();
-    // Token.register();
-    // Balances.register();
-    // Allowances.register();
+  constructor(string memory _name, string memory _symbol, address _owner, address _store, uint8 _decimals) {
+    IStore store = IStore(_store);
+
+    bytes memory symbolAsBytes = bytes(_symbol);
+    require(symbolAsBytes.length > 0 && symbolAsBytes.length <= 30, "ERC20: symbol length too long");
+    bytes30 symbolAsBytes30 = bytes30(symbolAsBytes);
+
+    ResourceId tableId = ResourceIdLib.encode({
+      typeId: RESOURCE_TABLE, // onchain table
+      name: symbolAsBytes30
+    });
+
+    Token.register(tableId);
+    Balances.register();
+    Allowances.register();
     // Token.set(_decimals, 0, _owner, _name, _symbol);
   }
 
