@@ -8,25 +8,32 @@ export default defineWorld({
         decimals: "uint8",
         totalSupply: "uint256",
         owner: "address",
+        id: "bytes32",
         name: "string",
         symbol: "string",
       },
-      key: [], // Singleton table
+      key: ["id"],
+      codegen: {
+        tableIdArgument: true,
+        storeArgument: true,
+      },
     },
     Balances: {
       schema: {
+        tokenAddress: "address",
         account: "address",
         balance: "uint256",
       },
-      key: ["account"],
+      key: ["tokenAddress", "account"],
     },
     Allowances: {
       schema: {
+        tokenAddress: "address",
         account: "address",
         spender: "address",
         approval: "uint256",
       },
-      key: ["account", "spender"],
+      key: ["tokenAddress", "account", "spender"],
     },
   },
 });
