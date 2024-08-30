@@ -49,15 +49,16 @@ To use the explorer with different command-line options, use this process:
 
 1. Run the explorer using `pnpm explorer <options>`.
 
-The World Explorer accepts the following CLI options:
+The World Explorer accepts the following CLI arguments:
 
-| Option              | Description                                                         | Default value |
-| ------------------- | ------------------------------------------------------------------- | ------------- |
-| `--worldAddress`    | The address of the world to explore                                 | None          |
-| `--worldsFile`      | Path to a worlds configuration file (used to resolve world address) | worlds.json   |
-| `--indexerDatabase` | Path to your SQLite indexer database                                | indexer.db    |
-| `--chainId`         | The chain ID of the network                                         | 31337         |
-| `--port`            | The port on which to run the World Explorer                         | 13690         |
+| Argument          | Description                                                         | Default value |
+| ----------------- | ------------------------------------------------------------------- | ------------- |
+| `worldAddress`    | The address of the world to explore                                 | None          |
+| `worldsFile`      | Path to a worlds configuration file (used to resolve world address) | "worlds.json" |
+| `indexerDatabase` | Path to your SQLite indexer database                                | "indexer.db"  |
+| `chainId`         | The chain ID of the network                                         | 31337         |
+| `port`            | The port on which to run the World Explorer                         | 13690         |
+| `dev`             | Run the World Explorer in development mode                          | false         |
 
 ## Installation
 
