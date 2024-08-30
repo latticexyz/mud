@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
-// import { STORE_VERSION } from "./version.sol";
-// import { IStore } from "./IStore.sol";
-// import { StoreKernel } from "./StoreKernel.sol";
-// import { StoreRead } from "./StoreRead.sol";
-// import { StoreCore } from "./StoreCore.sol";
-// import { IStoreEvents } from "./IStoreEvents.sol";
+import { IStore } from "@latticexyz/Store/src/IStore.sol";
+import { StoreRead } from "@latticexyz/Store/src/StoreRead.sol";
+import { StoreCore } from "@latticexyz/Store/src/StoreCore.sol";
+import { STORE_VERSION } from "@latticexyz/Store/src/version.sol";
+import { StoreKernel } from "@latticexyz/Store/src/StoreKernel.sol";
+import { IStoreEvents } from "@latticexyz/Store/src/IStoreEvents.sol";
 
 /**
  * @title Store Contract
