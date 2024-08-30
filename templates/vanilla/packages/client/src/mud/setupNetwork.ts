@@ -50,7 +50,7 @@ export type SetupNetworkResult = {
   write$: Observable<ContractWrite>;
 };
 
-export async function setupNetwork() {
+export async function setupNetwork(): Promise<SetupNetworkResult> {
   const networkConfig = await getNetworkConfig();
 
   /*
