@@ -45,11 +45,6 @@ contract TokenTest is Test, GasReporter {
     assertEq(token.totalSupply(), 0);
     assertEq(token.name(), "token");
     assertEq(token.symbol(), "MUD");
-
-    //assertEq(Token.getDecimals(tokenTableId), 18);
-    //assertEq(Token.getTotalSupply(tokenTableId), 0);
-    //assertEq(Token.getName(tokenTableId), "token");
-    //assertEq(Token.getSymbol(tokenTableId), "MUD");
   }
 
   function testTokenMint() public {
