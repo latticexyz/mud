@@ -145,7 +145,7 @@ bench("setup react template", async () => {
 
 bench("setup vanilla template", async () => {
   return await setupTemplateVanilla();
-}).types([785145, "instantiations"]);
+}).types([1, "instantiations"]);
 
 bench("setup phaser template", async () => {
   return await setupTemplatePhaser();

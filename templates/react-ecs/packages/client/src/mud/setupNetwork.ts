@@ -19,15 +19,13 @@ import {
 } from "viem";
 import { encodeEntity, syncToRecs, tablesToComponents } from "@latticexyz/store-sync/recs";
 import { StorageAdapterBlock, WaitForTransactionResult, configToTables } from "@latticexyz/store-sync";
-
 import { getNetworkConfig } from "./getNetworkConfig";
 import { world } from "./world";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 import { createBurnerAccount, transportObserver, ContractWrite } from "@latticexyz/common";
 import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
-import config from "contracts/mud.config";
-
 import { Observable, Subject, share } from "rxjs";
+import { Entity, World } from "@latticexyz/recs";
 
 /*
  * Import our MUD config, which includes strong types for
@@ -38,10 +36,9 @@ import { Observable, Subject, share } from "rxjs";
  * for the source of this information.
  */
 import mudConfig from "contracts/mud.config";
-import { Entity, World } from "@latticexyz/recs";
 
 export type SetupNetworkResult = {
-  components: tablesToComponents<configToTables<typeof config>>;
+  components: tablesToComponents<configToTables<typeof mudConfig>>;
   world: World;
   playerEntity: Entity;
   publicClient: PublicClient;

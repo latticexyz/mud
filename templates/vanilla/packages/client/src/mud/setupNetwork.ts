@@ -12,16 +12,20 @@ import {
   Hex,
   ClientConfig,
   getContract,
+  PublicClient,
+  WalletClient,
+  Block,
+  GetContractReturnType,
 } from "viem";
-import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
-
+import { encodeEntity, syncToRecs, tablesToComponents } from "@latticexyz/store-sync/recs";
+import { StorageAdapterBlock, WaitForTransactionResult, configToTables } from "@latticexyz/store-sync";
 import { getNetworkConfig } from "./getNetworkConfig";
 import { world } from "./world";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 import { createBurnerAccount, transportObserver, ContractWrite } from "@latticexyz/common";
 import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
-
-import { Subject, share } from "rxjs";
+import { Observable, Subject, share } from "rxjs";
+import { Entity, World } from "@latticexyz/recs";
 
 /*
  * Import our MUD config, which includes strong types for
@@ -33,7 +37,18 @@ import { Subject, share } from "rxjs";
  */
 import mudConfig from "contracts/mud.config";
 
-export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
+export type SetupNetworkResult = {
+  components: tablesToComponents<configToTables<typeof mudConfig>>;
+  world: World;
+  playerEntity: Entity;
+  publicClient: PublicClient;
+  walletClient: WalletClient;
+  latestBlock$: Observable<Block>;
+  storedBlockLogs$: Observable<StorageAdapterBlock>;
+  waitForTransaction: (tx: `0x${string}`) => Promise<WaitForTransactionResult>;
+  worldContract: GetContractReturnType<typeof IWorldAbi, WalletClient, Hex>;
+  write$: Observable<ContractWrite>;
+};
 
 export async function setupNetwork() {
   const networkConfig = await getNetworkConfig();
