@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/config",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Config for Store and World",
   "repository": {
     "type": "git",
