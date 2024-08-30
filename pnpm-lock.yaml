@@ -25,7 +25,7 @@ catalogs:
 patchedDependencies:
   minimist@1.2.8:
     hash: tkbpkgnnti52zmnvbq3uwanedm
-    path: patches/minimist@1.2.8.patch
+    path: patches/minimist@1.2.8-allow-hex-values.patch
 
 importers:
 
