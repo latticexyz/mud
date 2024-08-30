@@ -18,6 +18,8 @@ import { ResourceId, ResourceIdLib } from "@latticexyz/store/src/ResourceId.sol"
  * @dev Implementation of EIP-20 that has on instance of `Store` which enables built in indexing and storage packing.
  */
 contract ERC20 is IERC20Errors, IERC20Events {
+  ResourceId tokenTableId;
+
   constructor(string memory _name, string memory _symbol, address _owner, address _store, uint8 _decimals) {
     IStore store = IStore(_store);
     StoreSwitch.setStoreAddress(_store);
@@ -26,18 +28,16 @@ contract ERC20 is IERC20Errors, IERC20Events {
     require(symbolAsBytes.length > 0 && symbolAsBytes.length <= 30, "ERC20: symbol length too long");
     bytes30 symbolAsBytes30 = bytes30(symbolAsBytes);
 
-    ResourceId tokenTableId = ResourceIdLib.encode({
+    tokenTableId = ResourceIdLib.encode({
       typeId: RESOURCE_TABLE, // onchain table
       name: symbolAsBytes30
     });
 
-    //store.registerTable(tokenTableId, Token._fieldLayout, Token._keySchema, Token._valueSchema, Token.getKeyNames(), Token.getFieldNames());
     Token.register(tokenTableId);
     Balances.register();
     Allowances.register();
 
-    //store.setRecord(tokenTableId, Token.getKey);
-    //Token.set(_decimals, 0, _owner, _name, _symbol);
+    Token.set(tokenTableId, _decimals, 0, _owner, _name, _symbol);
   }
 
   /**
@@ -45,7 +45,7 @@ contract ERC20 is IERC20Errors, IERC20Events {
    * @return The name of the token.
    */
   function name() public view returns (string memory) {
-    return Token.getName();
+    return Token.getName(tokenTableId);
   }
 
   /**
@@ -54,7 +54,7 @@ contract ERC20 is IERC20Errors, IERC20Events {
    * @return The symbol of the token.
    */
   function symbol() public view returns (string memory) {
-    return Token.getSymbol();
+    return Token.getSymbol(tokenTableId);
   }
 
   /**
@@ -62,7 +62,7 @@ contract ERC20 is IERC20Errors, IERC20Events {
    * @return The number of decimals of the token.
    */
   function decimals() public view returns (uint8) {
-    return Token.getDecimals();
+    return Token.getDecimals(tokenTableId);
   }
 
   /**
@@ -70,7 +70,7 @@ contract ERC20 is IERC20Errors, IERC20Events {
    * @return The total supply of the token.
    */
   function totalSupply() public view returns (uint256) {
-    return Token.getTotalSupply();
+    return Token.getTotalSupply(tokenTableId);
   }
 
   /**
@@ -79,7 +79,7 @@ contract ERC20 is IERC20Errors, IERC20Events {
    * @return The balance of the `account`.
    */
   function balanceOf(address account) public view returns (uint256) {
-    return Balances.get(account);
+    return Balances.get(address(this), account);
   }
 
   /**
@@ -88,7 +88,7 @@ contract ERC20 is IERC20Errors, IERC20Events {
    * @param spender The address of the spender.
    */
   function allowance(address owner, address spender) public view returns (uint256) {
-    return Allowances.get(owner, spender);
+    return Allowances.get(address(this), owner, spender);
   }
 
   /**
@@ -146,7 +146,7 @@ contract ERC20 is IERC20Errors, IERC20Events {
    *
    */
   function mint(address account, uint256 value) external {
-    assert(Token.getOwner() == msg.sender);
+    assert(Token.getOwner(tokenTableId) == msg.sender);
     if (account == address(0)) {
       revert ERC20InvalidReceiver(address(0));
     }
@@ -161,7 +161,7 @@ contract ERC20 is IERC20Errors, IERC20Events {
    *
    */
   function burn(address account, uint256 value) external {
-    assert(Token.getOwner() == msg.sender);
+    assert(Token.getOwner(tokenTableId) == msg.sender);
     if (account == address(0)) {
       revert ERC20InvalidSender(address(0));
     }
@@ -198,30 +198,30 @@ contract ERC20 is IERC20Errors, IERC20Events {
   function _update(address from, address to, uint256 value) internal {
     if (from == address(0)) {
       // Overflow check required: The rest of the code assumes that totalSupply never overflows
-      uint256 supplyBefore = Token.getTotalSupply();
-      Token.setTotalSupply(supplyBefore + value);
+      uint256 supplyBefore = Token.getTotalSupply(tokenTableId);
+      Token.setTotalSupply(tokenTableId, supplyBefore + value);
     } else {
-      uint256 fromBalancePrior = Balances.get(from);
+      uint256 fromBalancePrior = Balances.get(address(this), from);
       if (fromBalancePrior < value) {
         revert ERC20InsufficientBalance(from, fromBalancePrior, value);
       }
       unchecked {
         // Overflow not possible: value <= fromBalance <= totalSupply.
-        Balances.setBalance(from, fromBalancePrior - value);
+        Balances.setBalance(address(this), from, fromBalancePrior - value);
       }
     }
 
     if (to == address(0)) {
       unchecked {
         // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
-        uint256 supplyBefore = Token.getTotalSupply();
-        Token.setTotalSupply(supplyBefore - value);
+        uint256 supplyBefore = Token.getTotalSupply(tokenTableId);
+        Token.setTotalSupply(tokenTableId, supplyBefore - value);
       }
     } else {
       unchecked {
         // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
-        uint256 balanceToPrior = Balances.get(to);
-        Balances.setBalance(to, balanceToPrior + value);
+        uint256 balanceToPrior = Balances.get(address(this), to);
+        Balances.setBalance(address(this), to, balanceToPrior + value);
       }
     }
 
@@ -263,7 +263,7 @@ contract ERC20 is IERC20Errors, IERC20Events {
     if (spender == address(0)) {
       revert ERC20InvalidSpender(address(0));
     }
-    Allowances.setApproval(owner, spender, value);
+    Allowances.setApproval(address(this), owner, spender, value);
     if (emitEvent) {
       emit Approval(owner, spender, value);
     }
@@ -278,7 +278,7 @@ contract ERC20 is IERC20Errors, IERC20Events {
    * Does not emit an {Approval} event.
    */
   function _spendAllowance(address owner, address spender, uint256 value) internal {
-    uint256 currentAllowance = Allowances.get(owner, spender);
+    uint256 currentAllowance = Allowances.get(address(this), owner, spender);
     if (currentAllowance != type(uint256).max) {
       if (currentAllowance < value) {
         revert ERC20InsufficientAllowance(spender, currentAllowance, value);
