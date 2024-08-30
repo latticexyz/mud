@@ -8,11 +8,10 @@ export default defineWorld({
         decimals: "uint8",
         totalSupply: "uint256",
         owner: "address",
-        id: "bytes32",
         name: "string",
         symbol: "string",
       },
-      key: ["id"],
+      key: [],
       codegen: {
         tableIdArgument: true,
         storeArgument: true,
