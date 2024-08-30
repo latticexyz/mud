@@ -1,16 +1,17 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const DOZER_URL = "https://redstone2.dozer.skystrife.xyz";
-const DOZER_ADDRESS = "0xf75b1b7bdb6932e487c4aa8d210f4a682abeacf0";
 
 const SSEListener = () => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<unknown[]>([]);
+  const { worldAddress } = useParams();
 
   useEffect(() => {
     const eventSource = new EventSource(
-      `${DOZER_URL}/q-live?address=${DOZER_ADDRESS}&query=select+entityId+from+Position+limit+10`,
+      `${DOZER_URL}/q-live?address=${worldAddress}&query=select+entityId+from+Position+limit+10`,
     );
 
     eventSource.onmessage = (event) => {
