@@ -1,0 +1,170 @@
+[
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testApprove",
+    "name": "token constructor",
+    "gasUsed": 8474513
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testApprove",
+    "name": "token approve",
+    "gasUsed": 70155
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testBalanceOf",
+    "name": "token constructor",
+    "gasUsed": 8474513
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testBalanceOf",
+    "name": "token constructor",
+    "gasUsed": 8474513
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testBalanceOf",
+    "name": "token constructor",
+    "gasUsed": 8474513
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testBalanceOf",
+    "name": "token constructor",
+    "gasUsed": 8474513
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testBalanceOf",
+    "name": "token constructor",
+    "gasUsed": 8474513
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTokenBurn",
+    "name": "token constructor",
+    "gasUsed": 8474513
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTokenBurn",
+    "name": "token burn",
+    "gasUsed": 79906
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTokenBurnInvalidCaller",
+    "name": "token constructor",
+    "gasUsed": 8474513
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTokenBurnInvalidCaller",
+    "name": "token burn invalid caller",
+    "gasUsed": 38433
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTokenBurnZeroAddress",
+    "name": "token constructor",
+    "gasUsed": 8474513
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTokenBurnZeroAddress",
+    "name": "token burn zero address",
+    "gasUsed": 38348
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTokenMint",
+    "name": "token constructor",
+    "gasUsed": 8474513
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTokenMint",
+    "name": "token mint",
+    "gasUsed": 101554
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTokenMintInvalidCaller",
+    "name": "token constructor",
+    "gasUsed": 8474513
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTokenMintInvalidCaller",
+    "name": "token mint invalid caller",
+    "gasUsed": 38434
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTokenMintToZeroAddress",
+    "name": "token constructor",
+    "gasUsed": 8474513
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTokenMintToZeroAddress",
+    "name": "token mint to zero address",
+    "gasUsed": 38349
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTokenSetUp",
+    "name": "token constructor",
+    "gasUsed": 8474513
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTokenTransfer",
+    "name": "token constructor",
+    "gasUsed": 8474513
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTokenTransfer",
+    "name": "token transfer",
+    "gasUsed": 86103
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTokenTransferInsufficientBalance",
+    "name": "token constructor",
+    "gasUsed": 8474513
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTokenTransferInsufficientBalance",
+    "name": "token transfer insufficient balance",
+    "gasUsed": 34297
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTransferFrom",
+    "name": "token constructor",
+    "gasUsed": 8474513
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTransferFrom",
+    "name": "token transferFrom",
+    "gasUsed": 102755
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTransferFromInsufficientAllowance",
+    "name": "token constructor",
+    "gasUsed": 8474513
+  },
+  {
+    "file": "test/ERC20.t.sol",
+    "test": "testTransferFromInsufficientAllowance",
+    "name": "token transferFrom insufficient allowance",
+    "gasUsed": 36861
+  }
+]
