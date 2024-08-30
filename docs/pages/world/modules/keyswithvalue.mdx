@@ -7,11 +7,8 @@ import { CollapseCode } from "../../../components/CollapseCode";
 This is useful if you need the ability to lookup keys based on the data onchain.
 
 <Callout type="warning" emoji="💰">
-It costs additional gas for every write to the table affected.
-If you just need this functionality offchain it is best to look at the data offchain instead.
-
-Also, this is a _generic_ solution.
-You can usually save gas by implementing a solution that uses your own `System` logic instead.
+Using this module will add gas overhead to every write in the table it's used with.
+You can reduce this overhead by implementing your own "onchain index" pattern.
 
 </Callout>
 
