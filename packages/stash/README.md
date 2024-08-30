@@ -2,7 +2,7 @@
 
 Stash is a client state library optimized for the MUD data model.
 It uses the MUD store config to define local tables, which support writing, reading and subscribing to table updates.
-It comes with a query engine optimized for "ECS-style" queries (similar to `@latticexyz/recs`) but with native support for composite keys.
+It comes with a query engine optimized for ["ECS-style"](https://mud.dev/ecs) queries (similar to `@latticexyz/recs`) but with native support for composite keys.
 
 ## Getting started
 
