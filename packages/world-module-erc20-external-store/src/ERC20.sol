@@ -7,7 +7,6 @@ import { Token } from "./codegen/tables/Token.sol";
 import { Balances } from "./codegen/tables/Balances.sol";
 import { Allowances } from "./codegen/tables/Allowances.sol";
 
-import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 import { ResourceId, ResourceIdLib } from "@latticexyz/store/src/ResourceId.sol";
@@ -21,7 +20,6 @@ contract ERC20 is IERC20Errors, IERC20Events {
   ResourceId tokenTableId;
 
   constructor(string memory _name, string memory _symbol, address _owner, address _store, uint8 _decimals) {
-    IStore store = IStore(_store);
     StoreSwitch.setStoreAddress(_store);
 
     bytes memory symbolAsBytes = bytes(_symbol);
