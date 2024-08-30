@@ -4,6 +4,8 @@ import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import type { Hex, PublicClient } from "viem";
 import { defineWorld } from "@latticexyz/world";
 import { createWorld } from "@latticexyz/recs";
+import { setup as setupTemplateReactEcs } from "../../templates/react-ecs/packages/client/src/mud/setup";
+import { setup as setupTemplateReact } from "../../templates/react/packages/client/src/mud/setup";
 
 const mockOpts = { address: {} as Hex, publicClient: {} as PublicClient } as const satisfies Partial<SyncToRecsOptions>;
 
@@ -129,3 +131,15 @@ bench("syncToZustand", async () => {
 
   return t;
 }).types([4098, "instantiations"]);
+
+bench("setup react-ecs template", async () => {
+  return await setupTemplateReactEcs();
+}).types([1, "instantiations"]);
+
+bench("setup react template", async () => {
+  return await setupTemplateReact();
+}).types([785145, "instantiations"]);
+
+bench("setup vanilla template", async () => {
+  return await setupTemplateReact();
+}).types([785145, "instantiations"]);
