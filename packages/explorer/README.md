@@ -69,16 +69,7 @@ To contribute to World Explorer, first get familiar with the [MUD contribution g
    pnpm install
    ```
 
-3. **Configure**
-
-   In `mprocs.yaml`, ensure the `explorer` command is set to run the World Explorer in `development` mode by passing the `--dev` flag.
-
-   ```yaml
-   explorer:
-     shell: pnpm explorer --dev
-   ```
-
-4. **Run**
+3. **Run**
 
    ```sh
    pnpm dev
