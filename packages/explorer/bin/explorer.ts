@@ -108,9 +108,11 @@ async function main() {
         `No world address found in "${worldsFile}" file. Either run \`mud deploy\` to create one or provide one with \`--worldAddress\`.`,
       );
     }
+
+    // only watch worlds.json if world address was not provided with --worldAddress
+    watchWorldsJson();
   }
 
-  watchWorldsJson();
   await startExplorer();
 }
 
