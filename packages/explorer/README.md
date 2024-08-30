@@ -9,7 +9,7 @@ For the full information about it, [see the official docs](http://mud.dev/world-
 
 World Explorer is not intended to be used alone, and includes the following prerequisites:
 
-- MUD project
+- [MUD project](https://mud.dev/introduction)
 - [anvil](https://book.getfoundry.sh/anvil/) development chain
 - [@latticexyz/store-indexer](https://www.npmjs.com/package/@latticexyz/store-indexer)
 
