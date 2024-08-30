@@ -1,7 +1,7 @@
 {
-  "private": true,
   "name": "@latticexyz/stash",
   "version": "2.1.0",
+  "private": true,
   "description": "High performance client store and query engine for MUD",
   "repository": {
     "type": "git",
