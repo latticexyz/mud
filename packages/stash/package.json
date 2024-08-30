@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "@latticexyz/stash",
   "version": "2.1.0",
   "description": "High performance client store and query engine for MUD",
