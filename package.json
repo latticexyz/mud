@@ -58,5 +58,10 @@
   "engines": {
     "node": "^18.20.1",
     "pnpm": "^9.6.0"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "minimist@1.2.8": "patches/minimist@1.2.8.patch"
+    }
   }
 }
