@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createStash } from "./createStash";
 import { attest } from "@ark/attest";
 import { BoundTable } from "./actions/getTable";
-import { DefaultActions } from "./decorators/default";
+import { DefaultActions } from "./decorators/defaultActions";
 import { defineTable } from "@latticexyz/store/config/v2";
 
 describe("stash actions, bound table", () => {

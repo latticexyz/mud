@@ -102,3 +102,17 @@ export function NotMatches<table extends Table>(
     Object.fromEntries(Object.entries(getKeys({ stash, table })).filter(([key]) => pass(stash, key)));
   return { table, pass, getInitialKeys };
 }
+
+/**
+ * Inverses a given query fragment (`In` becomes `NotIn`, `Matches` becomes `NotMatches` etc.)
+ * @param queryFragment
+ */
+export function Not<table extends Table>(queryFragment: QueryFragment<table>): QueryFragment<table> {
+  const pass = (stash: Stash, encodedKey: string) => !queryFragment.pass(stash, encodedKey);
+  const getInitialKeys = (stash: Stash) => {
+    const allKeys = getKeys({ stash, table: queryFragment.table });
+    const notInitialKeys = queryFragment.getInitialKeys(stash);
+    return Object.fromEntries(Object.entries(allKeys).filter(([key]) => !(key in notInitialKeys)));
+  };
+  return { table: queryFragment.table, pass, getInitialKeys };
+}

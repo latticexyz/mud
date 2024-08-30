@@ -5,7 +5,7 @@ import { runQuery } from "./runQuery";
 import { defineStore } from "@latticexyz/store";
 import { Stash, StoreRecords, getQueryConfig } from "../common";
 import { setRecord } from "./setRecord";
-import { In, Matches, NotIn, NotMatches } from "../queryFragments";
+import { In, Matches, Not } from "../queryFragments";
 import { Hex } from "viem";
 
 describe("runQuery", () => {
@@ -84,7 +84,7 @@ describe("runQuery", () => {
   });
 
   it("should return all keys that are in Position but not Health", () => {
-    const result = runQuery({ stash, query: [In(Position), NotIn(Health)] });
+    const result = runQuery({ stash, query: [In(Position), Not(In(Health))] });
     attest(result).snap({
       keys: {
         "0x0": { player: "0x0" },
@@ -95,7 +95,7 @@ describe("runQuery", () => {
   });
 
   it("should return all keys that don't include a gold item in the Inventory table", () => {
-    const result = runQuery({ stash, query: [NotMatches(Inventory, { item: "0xgold" })] });
+    const result = runQuery({ stash, query: [Not(Matches(Inventory, { item: "0xgold" }))] });
     attest(result).snap({
       keys: {
         "0x0|0xsilver": { player: "0x0", item: "0xsilver" },
