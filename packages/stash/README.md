@@ -36,7 +36,7 @@ const config = defineStore(
 const stash = createStash(config);
 
 // Write to a table
-const Position = config.tables;
+const { Position } = config.tables;
 const alice = "0xc0F21fa55169feF83aC5f059ad2432a16F06dD44";
 stash.setRecord({
   table: Position,
