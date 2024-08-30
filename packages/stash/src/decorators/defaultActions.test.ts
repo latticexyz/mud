@@ -125,7 +125,7 @@ describe("stash with default actions", () => {
       const stash = createStash();
       stash.registerTable({ table });
 
-      attest(stash.getConfig({ table: { label: "test", namespaceLabel: "namespace" } })).equals(table);
+      attest(stash.getTableConfig({ table: { label: "test", namespaceLabel: "namespace" } })).equals(table);
     });
   });
 
@@ -299,7 +299,7 @@ describe("stash with default actions", () => {
             decodeKey: "Function(decodeKey)",
             deleteRecord: "Function(deleteRecord)",
             encodeKey: "Function(encodeKey)",
-            getConfig: "Function(getConfig)",
+            getTableConfig: "Function(getTableConfig)",
             getKeys: "Function(getKeys)",
             getRecord: "Function(getRecord)",
             getRecords: "Function(getRecords)",
@@ -313,7 +313,7 @@ describe("stash with default actions", () => {
             decodeKey: "Function(decodeKey1)",
             deleteRecord: "Function(deleteRecord1)",
             encodeKey: "Function(encodeKey1)",
-            getConfig: "Function(getConfig1)",
+            getTableConfig: "Function(getTableConfig1)",
             getKeys: "Function(getKeys1)",
             getRecord: "Function(getRecord1)",
             getRecords: "Function(getRecords1)",

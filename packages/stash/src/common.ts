@@ -19,7 +19,7 @@ export type getNamespaceTables<
   namespace extends keyof config["namespaces"],
 > = keyof config["namespaces"][namespace]["tables"];
 
-export type getTableConfig<
+export type getConfig<
   config extends StoreConfig,
   namespace extends keyof config["namespaces"] | undefined,
   table extends keyof config["namespaces"][namespace extends undefined ? "" : namespace]["tables"],
@@ -81,14 +81,14 @@ export type MutableTableRecords<table extends Table = Table> = { [key: string]: 
 
 export type StoreRecords<config extends StoreConfig = StoreConfig> = {
   readonly [namespace in getNamespaces<config>]: {
-    readonly [table in getNamespaceTables<config, namespace>]: TableRecords<getTableConfig<config, namespace, table>>;
+    readonly [table in getNamespaceTables<config, namespace>]: TableRecords<getConfig<config, namespace, table>>;
   };
 };
 
 export type MutableStoreRecords<config extends StoreConfig = StoreConfig> = {
   -readonly [namespace in getNamespaces<config>]: {
     -readonly [table in getNamespaceTables<config, namespace>]: MutableTableRecords<
-      getTableConfig<config, namespace, table>
+      getConfig<config, namespace, table>
     >;
   };
 };
@@ -96,7 +96,7 @@ export type MutableStoreRecords<config extends StoreConfig = StoreConfig> = {
 export type State<config extends StoreConfig = StoreConfig> = {
   readonly config: {
     readonly [namespace in getNamespaces<config>]: {
-      readonly [table in getNamespaceTables<config, namespace>]: getTableConfig<config, namespace, table>;
+      readonly [table in getNamespaceTables<config, namespace>]: getConfig<config, namespace, table>;
     };
   };
   readonly records: StoreRecords<config>;
@@ -105,7 +105,7 @@ export type State<config extends StoreConfig = StoreConfig> = {
 export type MutableState<config extends StoreConfig = StoreConfig> = {
   config: {
     -readonly [namespace in getNamespaces<config>]: {
-      -readonly [table in getNamespaceTables<config, namespace>]: getTableConfig<config, namespace, table>;
+      -readonly [table in getNamespaceTables<config, namespace>]: getConfig<config, namespace, table>;
     };
   };
   records: MutableStoreRecords<config>;
@@ -136,7 +136,7 @@ export type StoreUpdates<config extends StoreConfig = StoreConfig> = {
   };
   records: {
     [namespace in getNamespaces<config>]: {
-      [table in getNamespaceTables<config, namespace>]: TableUpdates<getTableConfig<config, namespace, table>>;
+      [table in getNamespaceTables<config, namespace>]: TableUpdates<getConfig<config, namespace, table>>;
     };
   } & {
     [namespace: string]: {

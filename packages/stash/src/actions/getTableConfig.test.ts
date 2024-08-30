@@ -2,7 +2,7 @@ import { defineTable } from "@latticexyz/store/config/v2";
 import { describe, it } from "vitest";
 import { createStash } from "../createStash";
 import { attest } from "@ark/attest";
-import { getConfig } from "./getConfig";
+import { getTableConfig } from "./getTableConfig";
 import { registerTable } from "./registerTable";
 
 describe("getConfig", () => {
@@ -36,7 +36,9 @@ describe("getConfig", () => {
     registerTable({ stash: stash, table: rootTable });
     registerTable({ stash: stash, table: namespacedTable });
 
-    attest(getConfig({ stash: stash, table: { label: "test" } })).equals(rootTable);
-    attest(getConfig({ stash: stash, table: { label: "test", namespaceLabel: "namespace" } })).equals(namespacedTable);
+    attest(getTableConfig({ stash: stash, table: { label: "test" } })).equals(rootTable);
+    attest(getTableConfig({ stash: stash, table: { label: "test", namespaceLabel: "namespace" } })).equals(
+      namespacedTable,
+    );
   });
 });

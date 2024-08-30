@@ -2,7 +2,7 @@ import { Query, Stash, StoreConfig } from "../common";
 import { DecodeKeyArgs, DecodeKeyResult, decodeKey } from "../actions/decodeKey";
 import { DeleteRecordArgs, DeleteRecordResult, deleteRecord } from "../actions/deleteRecord";
 import { EncodeKeyArgs, EncodeKeyResult, encodeKey } from "../actions/encodeKey";
-import { GetConfigArgs, GetConfigResult, getConfig } from "../actions/getConfig";
+import { GetTableConfigArgs, GetTableConfigResult, getTableConfig } from "../actions/getTableConfig";
 import { GetKeysArgs, GetKeysResult, getKeys } from "../actions/getKeys";
 import { GetRecordArgs, GetRecordResult, getRecord } from "../actions/getRecord";
 import { GetRecordsArgs, GetRecordsResult, getRecords } from "../actions/getRecords";
@@ -20,7 +20,7 @@ import { Table } from "@latticexyz/config";
 export type StashBoundDecodeKeyArgs<table extends Table = Table> = Omit<DecodeKeyArgs<table>, "stash">;
 export type StashBoundDeleteRecordArgs<table extends Table> = Omit<DeleteRecordArgs<table>, "stash">;
 export type StashBoundEncodeKeyArgs<table extends Table = Table> = EncodeKeyArgs<table>;
-export type StashBoundGetConfigArgs = Omit<GetConfigArgs, "stash">;
+export type StashBoundGetTableConfigArgs = Omit<GetTableConfigArgs, "stash">;
 export type StashBoundGetKeysArgs<table extends Table = Table> = Omit<GetKeysArgs<table>, "stash">;
 export type StashBoundGetRecordArgs<table extends Table = Table> = Omit<GetRecordArgs<table>, "stash">;
 export type StashBoundGetRecordsArgs<table extends Table = Table> = Omit<GetRecordsArgs<table>, "stash">;
@@ -43,7 +43,7 @@ export type DefaultActions<config extends StoreConfig = StoreConfig> = {
   decodeKey: <table extends Table>(args: StashBoundDecodeKeyArgs<table>) => DecodeKeyResult<table>;
   deleteRecord: <table extends Table>(args: StashBoundDeleteRecordArgs<table>) => DeleteRecordResult;
   encodeKey: <table extends Table>(args: StashBoundEncodeKeyArgs<table>) => EncodeKeyResult;
-  getConfig: (args: StashBoundGetConfigArgs) => GetConfigResult;
+  getTableConfig: (args: StashBoundGetTableConfigArgs) => GetTableConfigResult;
   getKeys: <table extends Table>(args: StashBoundGetKeysArgs<table>) => GetKeysResult<table>;
   getRecord: <table extends Table>(args: StashBoundGetRecordArgs<table>) => GetRecordResult<table>;
   getRecords: <table extends Table>(args: StashBoundGetRecordsArgs<table>) => GetRecordsResult<table>;
@@ -65,7 +65,7 @@ export function defaultActions<config extends StoreConfig>(stash: Stash<config>)
     decodeKey: <table extends Table>(args: StashBoundDecodeKeyArgs<table>) => decodeKey({ stash, ...args }),
     deleteRecord: <table extends Table>(args: StashBoundDeleteRecordArgs<table>) => deleteRecord({ stash, ...args }),
     encodeKey: <table extends Table>(args: StashBoundEncodeKeyArgs<table>) => encodeKey(args),
-    getConfig: (args: StashBoundGetConfigArgs) => getConfig({ stash, ...args }),
+    getTableConfig: (args: StashBoundGetTableConfigArgs) => getTableConfig({ stash, ...args }),
     getKeys: <table extends Table>(args: StashBoundGetKeysArgs<table>) => getKeys({ stash, ...args }),
     getRecord: <table extends Table>(args: StashBoundGetRecordArgs<table>) => getRecord({ stash, ...args }),
     getRecords: <table extends Table>(args: StashBoundGetRecordsArgs<table>) => getRecords({ stash, ...args }),

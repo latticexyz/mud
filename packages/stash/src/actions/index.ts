@@ -2,7 +2,7 @@ export * from "./decodeKey";
 export * from "./deleteRecord";
 export * from "./encodeKey";
 export * from "./extend";
-export * from "./getConfig";
+export * from "./getTableConfig";
 export * from "./getKeys";
 export * from "./getRecord";
 export * from "./getRecords";

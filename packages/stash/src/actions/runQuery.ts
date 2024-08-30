@@ -8,7 +8,7 @@ import {
   CommonQueryResult,
   getQueryConfig,
 } from "../common";
-import { getConfig } from "./getConfig";
+import { getTableConfig } from "./getTableConfig";
 import { getRecords } from "./getRecords";
 
 export type RunQueryOptions = CommonQueryOptions & {
@@ -41,11 +41,11 @@ export function runQuery<query extends Query, options extends RunQueryOptions>({
 }: RunQueryArgs<query, options>): RunQueryResult<query, options> {
   // Only allow fragments with matching table keys for now
   // TODO: we might be able to enable this if we add something like a `keySelector`
-  const expectedKeySchema = getKeySchema(getConfig({ stash, table: query[0].table }));
+  const expectedKeySchema = getKeySchema(getTableConfig({ stash, table: query[0].table }));
   for (const fragment of query) {
     if (
       Object.values(expectedKeySchema).join("|") !==
-      Object.values(getKeySchema(getConfig({ stash, table: fragment.table }))).join("|")
+      Object.values(getKeySchema(getTableConfig({ stash, table: fragment.table }))).join("|")
     ) {
       throw new Error(
         "All tables in a query must share the same key schema. Found mismatch when comparing tables: " +

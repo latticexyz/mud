@@ -131,7 +131,7 @@ describe("getTable", () => {
       const table = stash.getTable({
         table: config,
       });
-      attest<typeof config, ReturnType<typeof table.getConfig>>();
+      attest<typeof config, ReturnType<typeof table.getTableConfig>>();
     });
   });
 

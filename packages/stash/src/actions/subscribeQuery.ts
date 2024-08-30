@@ -10,7 +10,7 @@ import {
   StoreConfig,
   getNamespaces,
   getNamespaceTables,
-  getTableConfig,
+  getConfig,
   getQueryConfig,
 } from "../common";
 import { decodeKey } from "./decodeKey";
@@ -26,7 +26,7 @@ export type SubscribeQueryOptions<config extends StoreConfig = StoreConfig> = Co
 
 type QueryTableUpdates<config extends StoreConfig = StoreConfig> = {
   [namespace in getNamespaces<config>]: {
-    [table in getNamespaceTables<config, namespace>]: TableUpdates<getTableConfig<config, namespace, table>>;
+    [table in getNamespaceTables<config, namespace>]: TableUpdates<getConfig<config, namespace, table>>;
   };
 };
 

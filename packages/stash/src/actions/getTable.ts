@@ -3,7 +3,7 @@ import { Stash } from "../common";
 import { DecodeKeyArgs, DecodeKeyResult, decodeKey } from "./decodeKey";
 import { DeleteRecordArgs, DeleteRecordResult, deleteRecord } from "./deleteRecord";
 import { EncodeKeyArgs, EncodeKeyResult, encodeKey } from "./encodeKey";
-import { GetConfigResult, getConfig } from "./getConfig";
+import { GetTableConfigResult, getTableConfig } from "./getTableConfig";
 import { GetKeysResult, getKeys } from "./getKeys";
 import { GetRecordArgs, GetRecordResult, getRecord } from "./getRecord";
 import { GetRecordsArgs, GetRecordsResult, getRecords } from "./getRecords";
@@ -28,7 +28,7 @@ export type BoundTable<table extends Table = Table> = {
   decodeKey: (args: TableBoundDecodeKeyArgs<table>) => DecodeKeyResult<table>;
   deleteRecord: (args: TableBoundDeleteRecordArgs<table>) => DeleteRecordResult;
   encodeKey: (args: TableBoundEncodeKeyArgs<table>) => EncodeKeyResult;
-  getConfig: () => GetConfigResult<table>;
+  getTableConfig: () => GetTableConfigResult<table>;
   getKeys: () => GetKeysResult<table>;
   getRecord: (args: TableBoundGetRecordArgs<table>) => GetRecordResult<table>;
   getRecords: (args?: TableBoundGetRecordsArgs<table>) => GetRecordsResult<table>;
@@ -55,7 +55,7 @@ export function getTable<table extends Table>({ stash, table }: GetTableArgs<tab
     decodeKey: (args: TableBoundDecodeKeyArgs<table>) => decodeKey({ stash, table, ...args }),
     deleteRecord: (args: TableBoundDeleteRecordArgs<table>) => deleteRecord({ stash, table, ...args }),
     encodeKey: (args: TableBoundEncodeKeyArgs<table>) => encodeKey({ table, ...args }),
-    getConfig: () => getConfig({ stash, table }) as table,
+    getTableConfig: () => getTableConfig({ stash, table }) as table,
     getKeys: () => getKeys({ stash, table }),
     getRecord: (args: TableBoundGetRecordArgs<table>) => getRecord({ stash, table, ...args }),
     getRecords: (args?: TableBoundGetRecordsArgs<table>) => getRecords({ stash, table, ...args }),
