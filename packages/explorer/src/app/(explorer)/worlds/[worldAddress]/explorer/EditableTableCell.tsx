@@ -10,12 +10,12 @@ import { SchemaAbiType } from "@latticexyz/schema-type/internal";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
-import { Checkbox } from "../../../../components/ui/Checkbox";
-import { ACCOUNT_PRIVATE_KEYS } from "../../../../consts";
-import { camelCase, cn } from "../../../../lib/utils";
-import { useAppStore } from "../../../../store";
+import { Checkbox } from "../../../../../components/ui/Checkbox";
+import { ACCOUNT_PRIVATE_KEYS } from "../../../../../consts";
+import { camelCase, cn } from "../../../../../lib/utils";
+import { useAppStore } from "../../../../../store";
+import { TableConfig } from "../../../../api/table/route";
 import { wagmiConfig } from "../../../Providers";
-import { TableConfig } from "../../../api/table/route";
 
 type Props = {
   name: string;
