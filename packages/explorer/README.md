@@ -45,7 +45,7 @@ The World Explorer accepts the following CLI arguments:
 | `indexerDatabase` | Path to your SQLite indexer database                                | "indexer.db"       |
 | `chainId`         | The chain ID of the network                                         | 31337              |
 | `port`            | The port on which to run the World Explorer                         | 13690              |
-| `dev`             | Flag to run the World Explorer in development mode                  | false (production) |
+| `dev`             | Run the World Explorer in development mode                  | false |
 
 ## Contributing
 
