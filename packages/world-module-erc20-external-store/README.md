@@ -1,4 +1,4 @@
-# Standalone ERC20 Module with own Store
+# Standalone ERC20 Module with external Store
 
 This is an `ERC20` token template that is compatible with the MUD framework. The logic of the token contract is near native and resides within the token contract, while its storage makes use of `Store` and is reflected in corresponding tables.
 
