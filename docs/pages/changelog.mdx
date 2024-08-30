@@ -1,3 +1,44 @@
+## Version 2.2.0
+
+Release date: Fri Aug 30 2024
+
+### Minor changes
+
+**[chore(explorer): update world explorer naming (#3069)](https://github.com/latticexyz/mud/commit/0eb25560cfc78354a5e6845c3244375759b71f4c)** (@latticexyz/explorer)
+
+Initial release of the `@latticexyz/explorer` package. World Explorer is a standalone tool designed to explore and manage worlds. This initial release supports local worlds, with plans to extend support to any world in the future.
+
+Read more on how to get started or contribute in the [World Explorer README](https://github.com/latticexyz/mud/blob/main/packages/explorer/README.md).
+
+### Patch changes
+
+**[fix(common): route all actions through viem client (#3071)](https://github.com/latticexyz/mud/commit/69cd0a1ba0450f3407ec5865334079653503fa86)** (@latticexyz/common)
+
+Updated all custom Viem actions to properly call other actions via `getAction` so they can be composed.
+
+**[build: use shx from dev deps (#3085)](https://github.com/latticexyz/mud/commit/c0bb0da58966b49c51570de9e3e031bee78b8473)** (create-mud)
+
+Templates now use `shx` to run shell commands in scripts for better Windows compatibility.
+
+**[feat(world): add namespaceLabel to system config (#3057)](https://github.com/latticexyz/mud/commit/04c675c946a0707956f38daad3fe516fde4a33a2)** (@latticexyz/config, @latticexyz/store)
+
+Fixed a few type issues with `namespaceLabel` in tables and added/clarified TSDoc for config input/output objects.
+
+**[fix(create-mud): update changeset package name + description (#3066)](https://github.com/latticexyz/mud/commit/bd4dffcabd6c6715df213e6c0c8b0631c9afc0b7)** (create-mud)
+
+New projects created with `pnpm create mud` now include the World Explorer and SQLite indexer running as additional services.
+
+**[feat(world): add namespaceLabel to system config (#3057)](https://github.com/latticexyz/mud/commit/04c675c946a0707956f38daad3fe516fde4a33a2)** (@latticexyz/cli, @latticexyz/world)
+
+Add a strongly typed `namespaceLabel` to the system config output.
+It corresponds to the `label` of the namespace the system belongs to and can't be set manually.
+
+**[feat(cli,world): register system ABI onchain (#3050)](https://github.com/latticexyz/mud/commit/31caecc95be72fe94efd1df8cba2b5435fa39bb4)** (@latticexyz/cli)
+
+In addition to table labels, system labels and ABIs are now registered onchain during deploy.
+
+---
+
 ## Version 2.1.1
 
 Release date: Tue Aug 20 2024
