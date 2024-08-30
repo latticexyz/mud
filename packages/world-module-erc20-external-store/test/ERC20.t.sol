@@ -9,7 +9,7 @@ import { ResourceId, ResourceIdLib } from "@latticexyz/store/src/ResourceId.sol"
 
 import { Store } from "../src/Store.sol";
 import { ERC20 } from "../src/ERC20.sol";
-//import { Token } from "../src/codegen/tables/Token.sol";
+import { Token } from "../src/codegen/tables/Token.sol";
 import { Balances } from "../src/codegen/tables/Balances.sol";
 import { Allowances } from "../src/codegen/tables/Allowances.sol";
 
@@ -45,6 +45,11 @@ contract TokenTest is Test, GasReporter {
     assertEq(token.totalSupply(), 0);
     assertEq(token.name(), "token");
     assertEq(token.symbol(), "MUD");
+
+    //assertEq(Token.getDecimals(tokenTableId), 18);
+    //assertEq(Token.getTotalSupply(tokenTableId), 0);
+    //assertEq(Token.getName(tokenTableId), "token");
+    //assertEq(Token.getSymbol(tokenTableId), "MUD");
   }
 
   function testTokenMint() public {
