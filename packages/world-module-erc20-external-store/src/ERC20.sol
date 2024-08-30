@@ -7,7 +7,7 @@ import { IERC20Events } from "./IERC20Events.sol";
 //import { Balances } from "./codegen/tables/Balances.sol";
 //import { Allowances } from "./codegen/tables/Allowances.sol";
 
-import { Store } from "@latticexyz/store/src/Store.sol";
+import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
