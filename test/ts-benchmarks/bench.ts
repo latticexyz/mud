@@ -6,6 +6,9 @@ import { defineWorld } from "@latticexyz/world";
 import { createWorld } from "@latticexyz/recs";
 import { setup as setupTemplateReactEcs } from "../../templates/react-ecs/packages/client/src/mud/setup";
 import { setup as setupTemplateReact } from "../../templates/react/packages/client/src/mud/setup";
+import { setup as setupTemplateVanilla } from "../../templates/vanilla/packages/client/src/mud/setup";
+import { setup as setupTemplateThreejs } from "../../templates/threejs/packages/client/src/mud/setup";
+import { setup as setupTemplatePhaser } from "../../templates/phaser/packages/client/src/mud/setup";
 
 const mockOpts = { address: {} as Hex, publicClient: {} as PublicClient } as const satisfies Partial<SyncToRecsOptions>;
 
@@ -141,5 +144,13 @@ bench("setup react template", async () => {
 }).types([785145, "instantiations"]);
 
 bench("setup vanilla template", async () => {
-  return await setupTemplateReact();
+  return await setupTemplateVanilla();
+}).types([785145, "instantiations"]);
+
+bench("setup phaser template", async () => {
+  return await setupTemplatePhaser();
+}).types([785145, "instantiations"]);
+
+bench("setup threejs template", async () => {
+  return await setupTemplateThreejs();
 }).types([785145, "instantiations"]);
