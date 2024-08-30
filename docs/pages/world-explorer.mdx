@@ -64,8 +64,7 @@ The World Explorer accepts the following CLI options:
 1. Install the Indexer and World Explorer packages in the project root.
 
    ```sh copy
-   pnpm install @latticexyz/store-indexer@latest -w
-   pnpm install @latticexyz/explorer@latest -w
+   pnpm add -w @latticexyz/explorer @latticexyz/store-indexer
    ```
 
 1. Edit `mprocs.yaml` to add the `indexer` and `explorer` processes.
@@ -85,7 +84,7 @@ The World Explorer accepts the following CLI options:
        shell: anvil --base-fee 0 --block-time 2
      indexer:
        cwd: packages/contracts
-       shell: rimraf $SQLITE_FILENAME && pnpm sqlite-indexer
+       shell: rm -rf $SQLITE_FILENAME && pnpm sqlite-indexer
        env:
          RPC_HTTP_URL: "http://127.0.0.1:8545"
          FOLLOW_BLOCK_TAG: "latest"
