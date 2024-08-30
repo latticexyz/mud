@@ -1,7 +1,7 @@
 {
-  "name": "@latticexyz/world-module-erc20-own-store",
+  "name": "@latticexyz/world-module-erc20-external-store",
   "version": "2.1.1",
-  "description": "ERC20 World Module with Own Store",
+  "description": "ERC20 World Module with External Store",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
