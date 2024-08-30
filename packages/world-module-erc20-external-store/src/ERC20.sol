@@ -8,6 +8,7 @@ import { Balances } from "./codegen/tables/Balances.sol";
 import { Allowances } from "./codegen/tables/Allowances.sol";
 
 import { IStore } from "@latticexyz/store/src/IStore.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 import { ResourceId, ResourceIdLib } from "@latticexyz/Store/src/ResourceId.sol";
 
@@ -19,20 +20,24 @@ import { ResourceId, ResourceIdLib } from "@latticexyz/Store/src/ResourceId.sol"
 contract ERC20 is IERC20Errors, IERC20Events {
   constructor(string memory _name, string memory _symbol, address _owner, address _store, uint8 _decimals) {
     IStore store = IStore(_store);
+    StoreSwitch.setStoreAddress(_store);
 
     bytes memory symbolAsBytes = bytes(_symbol);
     require(symbolAsBytes.length > 0 && symbolAsBytes.length <= 30, "ERC20: symbol length too long");
     bytes30 symbolAsBytes30 = bytes30(symbolAsBytes);
 
-    ResourceId tableId = ResourceIdLib.encode({
+    ResourceId tokenTableId = ResourceIdLib.encode({
       typeId: RESOURCE_TABLE, // onchain table
       name: symbolAsBytes30
     });
 
-    Token.register(tableId);
+    //store.registerTable(tokenTableId, Token._fieldLayout, Token._keySchema, Token._valueSchema, Token.getKeyNames(), Token.getFieldNames());
+    Token.register(tokenTableId);
     Balances.register();
     Allowances.register();
-    // Token.set(_decimals, 0, _owner, _name, _symbol);
+
+    //store.setRecord(tokenTableId, Token.getKey);
+    //Token.set(_decimals, 0, _owner, _name, _symbol);
   }
 
   /**
