@@ -3,7 +3,6 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
-import { Navigation } from "../components/Navigation";
 import { Providers } from "./Providers";
 import "./globals.css";
 
@@ -19,8 +18,8 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Explorer",
-  description: "Explorer is a tool for visually exploring and manipulating the state of worlds",
+  title: "World Explorer",
+  description: "World Explorer is a tool for visually exploring and manipulating the state of worlds",
 };
 
 export default function RootLayout({
@@ -39,7 +38,6 @@ export default function RootLayout({
                 fontFamily: "var(--font-jetbrains-mono)",
               }}
             >
-              <Navigation />
               {children}
             </div>
             <Toaster richColors />

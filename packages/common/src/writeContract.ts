@@ -41,7 +41,7 @@ export type WriteContractExtraOptions<chain extends Chain | undefined> = {
 export async function writeContract<
   chain extends Chain | undefined,
   account extends Account | undefined,
-  abi extends Abi | readonly unknown[],
+  const abi extends Abi | readonly unknown[],
   functionName extends ContractFunctionName<abi, "nonpayable" | "payable">,
   args extends ContractFunctionArgs<abi, "nonpayable" | "payable", functionName>,
   chainOverride extends Chain | undefined,
@@ -58,10 +58,11 @@ export async function writeContract<
   const account = parseAccount(rawAccount);
   const chain = client.chain;
 
+  const blockTag = "pending";
   const nonceManager = await getNonceManager({
     client: opts.publicClient ?? client,
     address: account.address,
-    blockTag: "pending",
+    blockTag,
     queueConcurrency: opts.queueConcurrency,
   });
 
@@ -76,13 +77,14 @@ export async function writeContract<
       pRetry(
         async () => {
           const nonce = nonceManager.nextNonce();
-          const params: WriteContractParameters<abi, functionName, args, chain, account, chainOverride> = {
+          const params = {
+            blockTag,
             ...request,
             nonce,
             ...feeRef.fees,
-          };
+          } as const satisfies WriteContractParameters<abi, functionName, args, chain, account, chainOverride>;
           debug("calling", params.functionName, "at", params.address, "with nonce", nonce);
-          return await getAction(client, viem_writeContract, "writeContract")(params);
+          return await getAction(client, viem_writeContract, "writeContract")(params as never);
         },
         {
           retries: 3,

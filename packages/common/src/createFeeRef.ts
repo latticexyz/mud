@@ -1,5 +1,6 @@
 import { EstimateFeesPerGasParameters, Client, EstimateFeesPerGasReturnType } from "viem";
 import { estimateFeesPerGas } from "viem/actions";
+import { getAction } from "viem/utils";
 
 export type CreateFeeRefOptions = {
   client: Client;
@@ -17,7 +18,7 @@ export async function createFeeRef({ client, args, refreshInterval }: CreateFeeR
   const feeRef: FeeRef = { fees: {}, lastUpdatedTimestamp: 0 };
 
   async function updateFees(): Promise<void> {
-    const fees = await estimateFeesPerGas(client, args);
+    const fees = await getAction(client, estimateFeesPerGas, "estimateFeesPerGas")(args);
     feeRef.fees = fees;
     feeRef.lastUpdatedTimestamp = Date.now();
   }

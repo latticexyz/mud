@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.2.0
+
+### Patch Changes
+
+- 28fd732: Templates now use `shx` to run shell commands in scripts for better Windows compatibility.
+- 1a96544: New projects created with `pnpm create mud` now include the World Explorer and SQLite indexer running as additional services.
+
 ## 2.1.1
 
 ### Patch Changes

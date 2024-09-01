@@ -13,9 +13,9 @@ const __dirname = path.dirname(__filename);
 const argv = minimist(process.argv.slice(2));
 const port = argv.port || process.env.PORT || 13690;
 const chainId = argv.chainId || process.env.CHAIN_ID || 31337;
-const env = argv.env || process.env.NODE_ENV || "production";
 const indexerDatabase = argv.indexerDatabase || process.env.INDEXER_DATABASE || "indexer.db";
 const worldsFile = argv.worldsFile || process.env.WORLDS_FILE || "worlds.json";
+const isDev = !!argv.dev;
 
 let worldAddress = argv.worldAddress || process.env.WORLD_ADDRESS || null;
 let explorerProcess: ChildProcess;
@@ -23,12 +23,12 @@ let explorerProcess: ChildProcess;
 async function startExplorer() {
   let command, args;
 
-  if (env === "production") {
-    command = "pnpm";
-    args = ["start"];
-  } else {
+  if (isDev) {
     command = "pnpm";
     args = ["dev"];
+  } else {
+    command = "pnpm";
+    args = ["start"];
   }
 
   explorerProcess = spawn(command, args, {
@@ -103,9 +103,11 @@ async function main() {
         `No world address found in "${worldsFile}" file. Either run \`mud deploy\` to create one or provide one with \`--worldAddress\`.`,
       );
     }
+
+    // only watch worlds.json if world address was not provided with --worldAddress
+    watchWorldsJson();
   }
 
-  watchWorldsJson();
   await startExplorer();
 }
 

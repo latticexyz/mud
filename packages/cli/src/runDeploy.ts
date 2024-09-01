@@ -91,6 +91,10 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   });
   const modules = await configToModules(config, outDir);
 
+  const tables = Object.values(config.namespaces)
+    .flatMap((namespace) => Object.values(namespace.tables))
+    .filter((table) => !table.deploy.disabled);
+
   const account = await (async () => {
     if (opts.kms) {
       const keyId = process.env.AWS_KMS_KEY_ID;
@@ -128,10 +132,6 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   });
 
   console.log("Deploying from", client.account.address);
-
-  const tables = Object.values(config.namespaces)
-    .flatMap((namespace) => Object.values(namespace.tables))
-    .filter((table) => !table.deploy.disabled);
 
   const startTime = Date.now();
   const worldDeploy = await deploy({

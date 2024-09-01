@@ -4,7 +4,6 @@ import { contractSizeLimit, salt } from "./common";
 import { sendTransaction } from "@latticexyz/common";
 import { debug } from "./debug";
 import pRetry from "p-retry";
-import { wait } from "@latticexyz/common/utils";
 
 export type Contract = {
   bytecode: Hex;
@@ -56,11 +55,7 @@ export async function ensureContract({
         }),
       {
         retries: 3,
-        onFailedAttempt: async (error) => {
-          const delay = error.attemptNumber * 500;
-          debug(`failed to deploy ${debugLabel}, retrying in ${delay}ms...`);
-          await wait(delay);
-        },
+        onFailedAttempt: () => debug(`failed to deploy ${debugLabel}, retrying...`),
       },
     ),
   ];

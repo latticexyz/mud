@@ -9,10 +9,13 @@ procs:
     cwd: packages/contracts
     shell: anvil --base-fee 0 --block-time 2
   indexer:
-    shell: rimraf $SQLITE_FILENAME && pnpm sqlite-indexer
+    cwd: packages/contracts
+    shell: shx rm -rf $SQLITE_FILENAME && pnpm sqlite-indexer
     env:
+      DEBUG: mud:*
       RPC_HTTP_URL: "http://127.0.0.1:8545"
       FOLLOW_BLOCK_TAG: "latest"
       SQLITE_FILENAME: "indexer.db"
   explorer:
-    shell: pnpm explorer --worldsFile packages/contracts/worlds.json
+    cwd: packages/contracts
+    shell: pnpm explorer --dev

@@ -1,3 +1,5 @@
+import { CollapseCode } from "../../components/CollapseCode";
+
 # Modules
 
 Modules are onchain installation scripts that create resources and their associated configuration when called by a `World`.
@@ -5,12 +7,239 @@ This is somewhat similar to one of the use cases for [foundry scripts](https://b
 
 ## Module installation
 
+The easiest way to install modules is to edit [the config file](/config/reference#modules).
+
+For example, here is a modified config file that installs [the ERC-721 module](/world/modules/erc721).
+Note that you also need to install the `viem` package in `packages/contracts` to use it.
+
+<CollapseCode>
+
+```typescript filename="mud.config.ts" showLineNumbers copy {2,4-13,25-41}
+import { defineWorld } from "@latticexyz/world";
+import { encodeAbiParameters } from "viem";
+
+const erc721ModuleArgs = encodeAbiParameters(
+  [
+    { type: "bytes14" },
+    {
+      type: "tuple",
+      components: [{ type: "string" }, { type: "string" }, { type: "string" }],
+    },
+  ],
+  ["0x44444444".padEnd(30, "0"), ["No Valuable Token", "NVT", "http://www.example.com/base/uri/goes/here"]],
+);
+
+export default defineWorld({
+  namespace: "app",
+  tables: {
+    Counter: {
+      schema: {
+        value: "uint32",
+      },
+      key: [],
+    },
+  },
+  modules: [
+    {
+      artifactPath: "@latticexyz/world-modules/out/PuppetModule.sol/PuppetModule.json",
+      root: false,
+      args: [],
+    },
+    {
+      artifactPath: "@latticexyz/world-modules/out/ERC721Module.sol/ERC721Module.json",
+      root: false,
+      args: [
+        {
+          type: "bytes",
+          value: erc721ModuleArgs,
+        },
+      ],
+    },
+  ],
+});
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```typescript
+import { encodeAbiParameters } from "viem";
+```
+
+In simple cases it is enough to use the config parser to specify the module arguments.
+However, the NFT module requires a `struct` as [one of the arguments](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/erc721-puppet/ERC721Module.sol#L37).
+We use [`encodeAbiParameters`](https://viem.sh/docs/abi/encodeAbiParameters.html) to encode the `struct` data.
+
+Note that this means we need to issue `pnpm install viem` in `packages/contracts` to be able to use the library here.
+
+```typescript
+const erc721ModuleArgs = encodeAbiParameters(
+```
+
+You can see the arguments for the ERC-721 module [here](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/erc721-puppet/ERC721Module.sol#L37).
+There are two arguments:
+
+- A 14-byte identifier for the namespace.
+- An `ERC721MetadataData` for the ERC-721 parameters, [defined here](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/erc721-puppet/tables/ERC721Metadata.sol#L19-L23).
+
+However, the arguments for a module are [ABI encoded](https://docs.soliditylang.org/en/develop/abi-spec.html) to a single value of type `bytes`.
+So we use `encodeAbiParameters` from the viem library to create this argument.
+The first parameter of this function is a list of argument types.
+
+```typescript
+  [
+    { type: "bytes14" },
+```
+
+The first parameter is simple, a 14 byte value for the namespace.
+
+```typescript
+    {
+      type: "tuple",
+      components: [{ type: "string" }, { type: "string" }, { type: "string" }],
+    },
+  ],
+```
+
+The second value is more complicated, it's a struct, or as it is called in ABI, a tuple.
+It consists of three strings (the token name, symbol, and [base URI](https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721-baseURI--)).
+
+```typescript
+  [
+    "0x44444444".padEnd(30, "0"),
+```
+
+The second `encodeAbiParameters` parameter is a list of the values, of the types declared in the first list.
+
+The first parameter for the module is `bytes14`, which is expected to be a hexadecimal value with twenty-eight hexadecimal digits, for a total length of thirty.
+Here we use `0x4...40....0` with eight 4's followed by twenty 0's.
+This gives us the namespace `DDDD`, which is easy to recognize both as hex and as text.
+
+```typescript
+    ["No Valuable Token", "NVT", "http://www.example.com/base/uri/goes/here"],
+  ],
+);
+```
+
+The second parameter for the module is a structure of three strings, so here we provide the three strings.
+Then we close all the definitions.
+
+```typesceript
+  modules: [
+    {
+      artifactPath: "@latticexyz/world-modules/out/PuppetModule.sol/PuppetModule.json",
+      root: false,
+      args: [],
+    },
+```
+
+A module declaration requires three parameters:
+
+- `artifactPath`, a link to the compiled JSON file for the module.
+- `root`, whether to install the module with [root namespace permissions](/world/systems#root-systems) or not.
+- `args` the module arguments.
+
+Here we install [the `puppet` module](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/puppet).
+We need this module because a `System` is supposed to be stateless, and easily upgradeable to a contract in a different address.
+However, both the [ERC-20 standard](https://ethereum.org/en/developers/docs/standards/tokens/erc-20/) and the [ERC-721 standard](https://ethereum.org/en/developers/docs/standards/tokens/erc-721/) require the token contract to emit events.
+The solution is to put the `System` in one contract and have another contract, the puppet, which receives requests and emits events according to the ERC.
+
+```typescript
+    {
+      artifactPath: "@latticexyz/world-modules/out/ERC721Module.sol/ERC721Module.json",
+      root: false,
+      args: [
+        {
+          type: "bytes",
+```
+
+The data type for this parameter is `bytes`, because it is treated as opaque bytes by the `World` and only gets parsed by the module after it is transferred.
+
+```typescript
+          value: erc721ModuleArgs,
+        },
+      ],
+    },
+```
+
+The module arguments, stored in `erc721ModuleArgs`.
+
+</details>
+
+### Installation by script
+
 Modules can be installed using [`World.installModule(address moduleAddress, bytes memory initData)`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/ModuleInstallationSystem.sol#L17-L37).
 When you do this, the `World` calls the module's `install` function with `initData` as the argument(s).
 Because this is a call, the module does not have any administrative permissions on the `World`.
 
 Alternatively, the owner of the root namespace can install modules using [`World.installRootModule(address moduleAddress, bytes memory initData)`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L90-L119).
 In this case, the `World` uses delegatecall and module has all the permissions of a `System` in the root namespace.
+
+For example, here is an installation script for [the `KeysWithValue` module](/world/modules/keyswithvalue).
+
+<CollapseCode>
+
+```solidity filename="DeployKeyWithValueModule.s.sol" copy showLineNumbers {22-24}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_TABLE } from "@latticexyz/world/src/worldResourceTypes.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { KeysWithValueModule } from "@latticexyz/world-modules/src/modules/keyswithvalue/KeysWithValueModule.sol";
+
+contract DeployKeyWithValueModule is Script {
+  function run() external {
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    address worldAddress = 0xC14fBdb7808D9e2a37c1a45b635C8C3fF64a1cc1;
+
+    vm.startBroadcast(deployerPrivateKey);
+    IWorld world = IWorld(worldAddress);
+
+    // Deploy the module
+    KeysWithValueModule keysWithValueModule = new KeysWithValueModule();
+    ResourceId sourceTableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "", name: "Tasks" });
+    world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```solidity
+    KeysWithValueModule keysWithValueModule = new KeysWithValueModule();
+```
+
+Deploy the module.
+Modules are stateless, so if there is already a copy of the contract on the blockchain you can just use that.
+
+```solidity
+    ResourceId sourceTableId =
+       WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: "", name: "Tasks" });
+```
+
+Get the resourceID for the table that needs a reverse index.
+
+```solidity
+    world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
+```
+
+Actually install the module in the `World`.
+
+</details>
 
 ## Writing modules
 

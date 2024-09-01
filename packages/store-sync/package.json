@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store-sync",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Utilities to sync MUD Store events with a client or cache",
   "repository": {
     "type": "git",
@@ -55,7 +55,7 @@
     "build": "pnpm run build:js",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
-    "clean:js": "rimraf dist",
+    "clean:js": "shx rm -rf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
     "test": "DATABASE_URL=http://127.0.0.1:5432/postgres vitest",
