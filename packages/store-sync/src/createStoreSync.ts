@@ -1,5 +1,5 @@
 import { storeEventsAbi } from "@latticexyz/store";
-import { Hex } from "viem";
+import { GetTransactionReceiptErrorType, Hex } from "viem";
 import {
   StorageAdapter,
   StorageAdapterBlock,
@@ -34,7 +34,6 @@ import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/uti
 import { getSnapshot } from "./getSnapshot";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 import { Store as StoreConfig } from "@latticexyz/store";
-import { isViemTransactionReceiptNotFoundError } from "@latticexyz/store-sync/isViemTransactionReceiptNotFoundError";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -291,10 +290,13 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
           if (lastBlock.blockNumber >= blockNumber) {
             return { status, blockNumber, transactionHash };
           }
-        } catch (error) {
-          if (isViemTransactionReceiptNotFoundError(error)) {
+        } catch (e) {
+          const error = e as GetTransactionReceiptErrorType;
+
+          if (error.name === "TransactionReceiptNotFoundError") {
             return;
           }
+
           throw error;
         }
       }),
