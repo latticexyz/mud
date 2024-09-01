@@ -10,7 +10,7 @@ import { ensureModules } from "./ensureModules";
 import metadataModule from "@latticexyz/world-module-metadata/out/MetadataModule.sol/MetadataModule.json" assert { type: "json" };
 import { getContractArtifact } from "../utils/getContractArtifact";
 import { createPrepareDeploy } from "./createPrepareDeploy";
-import { waitForTransactionReceipt } from "viem/actions";
+import { waitForTransactions } from "./waitForTransactions";
 
 const metadataModuleArtifact = getContractArtifact(metadataModule);
 
@@ -72,15 +72,14 @@ export async function ensureResourceTags<const value>({
       },
     ],
   });
+
   // Wait for metadata module to be available, otherwise calling the metadata system below may fail.
   // This is only here because OPStack chains don't let us estimate gas with pending block tag.
-  debug("waiting for metadata module installation to confirm");
-  for (const tx of moduleTxs) {
-    const receipt = await waitForTransactionReceipt(client, { hash: tx });
-    if (receipt.status === "reverted") {
-      throw new Error(`Transaction reverted: ${tx}`);
-    }
-  }
+  await waitForTransactions({
+    client,
+    hashes: moduleTxs,
+    debugLabel: "metadata module installation",
+  });
 
   debug("setting", pendingTags.length, "resource tags");
   return (
