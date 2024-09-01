@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/explorer",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "World Explorer is a tool for visually exploring and manipulating the state of worlds",
   "type": "module",
   "bin": {
@@ -13,11 +13,11 @@
   "scripts": {
     "build": "pnpm run build:explorer && pnpm run build:bin",
     "build:bin": "tsup",
-    "build:explorer": "next build && cp -r .next/static .next/standalone/packages/explorer/.next",
+    "build:explorer": "next build && shx cp -r .next/static .next/standalone/packages/explorer/.next",
     "clean": "pnpm run clean:explorer && pnpm run clean:bin",
-    "clean:bin": "rimraf dist",
-    "clean:explorer": "rimraf .next .turbo",
-    "dev": "next dev",
+    "clean:bin": "shx rm -rf dist",
+    "clean:explorer": "shx rm -rf .next .turbo",
+    "dev": "next dev --port 13690",
     "lint": "next lint",
     "start": "node .next/standalone/packages/explorer/server.js"
   },
@@ -52,7 +52,6 @@
     "react-hook-form": "^7.52.1",
     "sonner": "^1.5.0",
     "tailwind-merge": "^1.12.0",
-    "tailwindcss-animate": "^1.0.7",
     "tsup": "^6.7.0",
     "viem": "catalog:",
     "wagmi": "^2.11.1",
@@ -70,6 +69,7 @@
     "postcss": "^8",
     "prettier": "3.2.5",
     "prettier-plugin-tailwindcss": "^0.6.5",
-    "tailwindcss": "^3.4.1"
+    "tailwindcss": "^3.4.1",
+    "tailwindcss-animate": "^1.0.7"
   }
 }
