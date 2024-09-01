@@ -4,7 +4,6 @@ import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
 import { Library, Module, System, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
 import { ensureSystems } from "./ensureSystems";
-import { waitForTransactionReceipt } from "viem/actions";
 import { getWorldDeploy } from "./getWorldDeploy";
 import { ensureFunctions } from "./ensureFunctions";
 import { ensureModules } from "./ensureModules";
@@ -16,6 +15,7 @@ import { randomBytes } from "crypto";
 import { ensureWorldFactory } from "./ensureWorldFactory";
 import { Table } from "@latticexyz/config";
 import { ensureResourceTags } from "./ensureResourceTags";
+import { waitForTransactions } from "./waitForTransactions";
 
 type DeployOptions = {
   client: Client<Transport, Chain | undefined, Account>;
@@ -95,11 +95,9 @@ export async function deploy({
     worldDeploy,
     resourceIds: [...tables.map(({ tableId }) => tableId), ...systems.map(({ systemId }) => systemId)],
   });
-
-  debug("waiting for all namespace registration transactions to confirm");
-  for (const tx of namespaceTxs) {
-    await waitForTransactionReceipt(client, { hash: tx });
-  }
+  // Wait for namespaces to be available, otherwise referencing them below may fail.
+  // This is only here because OPStack chains don't let us estimate gas with pending block tag.
+  await waitForTransactions({ client, hashes: namespaceTxs, debugLabel: "namespace registrations" });
 
   const tableTxs = await ensureTables({
     client,
@@ -113,6 +111,14 @@ export async function deploy({
     worldDeploy,
     systems,
   });
+  // Wait for tables and systems to be available, otherwise referencing their resource IDs below may fail.
+  // This is only here because OPStack chains don't let us estimate gas with pending block tag.
+  await waitForTransactions({
+    client,
+    hashes: [...tableTxs, ...systemTxs],
+    debugLabel: "table and system registrations",
+  });
+
   const functionTxs = await ensureFunctions({
     client,
     worldDeploy,
@@ -135,19 +141,18 @@ export async function deploy({
 
   const tagTxs = await ensureResourceTags({
     client,
+    deployerAddress,
+    libraries,
     worldDeploy,
     tags: [...tableTags, ...systemTags],
     valueToHex: stringToHex,
   });
 
-  const txs = [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs, ...tagTxs];
-
-  // wait for each tx separately/serially, because parallelizing results in RPC errors
-  debug("waiting for all transactions to confirm");
-  for (const tx of txs) {
-    await waitForTransactionReceipt(client, { hash: tx });
-    // TODO: throw if there was a revert?
-  }
+  await waitForTransactions({
+    client,
+    hashes: [...functionTxs, ...moduleTxs, ...tagTxs],
+    debugLabel: "remaining transactions",
+  });
 
   debug("deploy complete");
   return worldDeploy;
