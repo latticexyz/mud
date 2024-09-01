@@ -1,11 +1,18 @@
 import { Hex, Client, Transport, Chain, Account, stringToHex, BaseError } from "viem";
-import { WorldDeploy } from "./common";
+import { Library, WorldDeploy } from "./common";
 import { debug } from "./debug";
 import { hexToResource, writeContract } from "@latticexyz/common";
 import { identity, isDefined } from "@latticexyz/common/utils";
 import metadataConfig from "@latticexyz/world-module-metadata/mud.config";
 import metadataAbi from "@latticexyz/world-module-metadata/out/IMetadataSystem.sol/IMetadataSystem.abi.json" assert { type: "json" };
 import { getRecord } from "./getRecord";
+import { ensureModules } from "./ensureModules";
+import metadataModule from "@latticexyz/world-module-metadata/out/MetadataModule.sol/MetadataModule.json" assert { type: "json" };
+import { getContractArtifact } from "../utils/getContractArtifact";
+import { createPrepareDeploy } from "./createPrepareDeploy";
+import { waitForTransactionReceipt } from "viem/actions";
+
+const metadataModuleArtifact = getContractArtifact(metadataModule);
 
 export type ResourceTag<value> = {
   resourceId: Hex;
@@ -15,11 +22,15 @@ export type ResourceTag<value> = {
 
 export async function ensureResourceTags<const value>({
   client,
+  deployerAddress,
+  libraries,
   worldDeploy,
   tags,
   valueToHex = identity,
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
+  readonly deployerAddress: Hex;
+  readonly libraries: readonly Library[];
   readonly worldDeploy: WorldDeploy;
   readonly tags: readonly ResourceTag<value>[];
 } & (value extends Hex
@@ -41,6 +52,35 @@ export async function ensureResourceTags<const value>({
   ).filter(isDefined);
 
   if (pendingTags.length === 0) return [];
+
+  // TODO: check if metadata namespace exists, if we own it, and if so transfer ownership to the module before reinstalling
+  //       (https://github.com/latticexyz/mud/issues/3035)
+  const moduleTxs = await ensureModules({
+    client,
+    deployerAddress,
+    worldDeploy,
+    libraries,
+    modules: [
+      {
+        optional: true,
+        name: "MetadataModule",
+        installAsRoot: false,
+        installData: "0x",
+        prepareDeploy: createPrepareDeploy(metadataModuleArtifact.bytecode, metadataModuleArtifact.placeholders),
+        deployedBytecodeSize: metadataModuleArtifact.deployedBytecodeSize,
+        abi: metadataModuleArtifact.abi,
+      },
+    ],
+  });
+  // Wait for metadata module to be available, otherwise calling the metadata system below may fail.
+  // This is only here because OPStack chains don't let us estimate gas with pending block tag.
+  debug("waiting for metadata module installation to confirm");
+  for (const tx of moduleTxs) {
+    const receipt = await waitForTransactionReceipt(client, { hash: tx });
+    if (receipt.status === "reverted") {
+      throw new Error(`Transaction reverted: ${tx}`);
+    }
+  }
 
   debug("setting", pendingTags.length, "resource tags");
   return (

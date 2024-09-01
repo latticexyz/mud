@@ -96,9 +96,12 @@ export async function deploy({
     resourceIds: [...tables.map(({ tableId }) => tableId), ...systems.map(({ systemId }) => systemId)],
   });
 
-  debug("waiting for all namespace registration transactions to confirm");
+  debug("waiting for namespace registrations to confirm");
   for (const tx of namespaceTxs) {
-    await waitForTransactionReceipt(client, { hash: tx });
+    const receipt = await waitForTransactionReceipt(client, { hash: tx });
+    if (receipt.status === "reverted") {
+      throw new Error(`Transaction reverted: ${tx}`);
+    }
   }
 
   const tableTxs = await ensureTables({
@@ -113,6 +116,16 @@ export async function deploy({
     worldDeploy,
     systems,
   });
+  // Wait for tables and systems to be available, otherwise referencing their resource IDs below may fail.
+  // This is only here because OPStack chains don't let us estimate gas with pending block tag.
+  debug("waiting for table and system registrations to confirm");
+  for (const tx of [...tableTxs, ...systemTxs]) {
+    const receipt = await waitForTransactionReceipt(client, { hash: tx });
+    if (receipt.status === "reverted") {
+      throw new Error(`Transaction reverted: ${tx}`);
+    }
+  }
+
   const functionTxs = await ensureFunctions({
     client,
     worldDeploy,
@@ -135,6 +148,8 @@ export async function deploy({
 
   const tagTxs = await ensureResourceTags({
     client,
+    deployerAddress,
+    libraries,
     worldDeploy,
     tags: [...tableTags, ...systemTags],
     valueToHex: stringToHex,
@@ -143,10 +158,12 @@ export async function deploy({
   const txs = [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs, ...tagTxs];
 
   // wait for each tx separately/serially, because parallelizing results in RPC errors
-  debug("waiting for all transactions to confirm");
+  debug("waiting for remaining transactions to confirm");
   for (const tx of txs) {
-    await waitForTransactionReceipt(client, { hash: tx });
-    // TODO: throw if there was a revert?
+    const receipt = await waitForTransactionReceipt(client, { hash: tx });
+    if (receipt.status === "reverted") {
+      throw new Error(`Transaction reverted: ${tx}`);
+    }
   }
 
   debug("deploy complete");
