@@ -1,5 +1,5 @@
 import { storeEventsAbi } from "@latticexyz/store";
-import { Hex, TransactionReceiptNotFoundError, formatLog, parseEventLogs } from "viem";
+import { Hex, TransactionReceiptNotFoundError, parseEventLogs } from "viem";
 import {
   StorageAdapter,
   StorageAdapterBlock,
@@ -274,7 +274,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
     console.log("raw logs", receipt.logs);
     const logs = parseEventLogs({
       abi: storeEventsAbi,
-      logs: receipt.logs.map((log) => formatLog(log)),
+      logs: receipt.logs,
     });
     console.log("parsed logs", logs);
     if (logs.length > 0 && (lastBlockNumberProcessed == null || lastBlockNumberProcessed < receipt.blockNumber)) {
