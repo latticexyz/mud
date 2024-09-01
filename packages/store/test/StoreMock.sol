@@ -1,16 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
+import { Store } from "../src/Store.sol";
+import { Schema } from "../src/Schema.sol";
 import { IStore } from "../src/IStore.sol";
+import { StoreRead } from "../src/StoreRead.sol";
+import { StoreCore } from "../src/StoreCore.sol";
+import { IStoreRead } from "../src/IStoreRead.sol";
+import { ResourceId } from "../src/ResourceId.sol";
 import { IStoreHook } from "../src/IStoreHook.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
-import { Store } from "../src/Store.sol";
-import { EncodedLengths } from "../src/EncodedLengths.sol";
-import { StoreCore } from "../src/StoreCore.sol";
-import { Schema } from "../src/Schema.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
-import { StoreRead } from "../src/StoreRead.sol";
-import { ResourceId } from "../src/ResourceId.sol";
+import { EncodedLengths } from "../src/EncodedLengths.sol";
 
 /**
  * StoreMock is a contract wrapper around the StoreCore library for testing purposes.
@@ -115,6 +116,21 @@ contract StoreMock is Store {
     uint256 byteLengthToPop
   ) public virtual {
     StoreCore.popFromDynamicField(tableId, keyTuple, dynamicFieldIndex, byteLengthToPop);
+  }
+
+  /**
+   * @notice Retrieves data for a specific dynamic (variable length) field in a record.
+   * @param tableId The ID of the table.
+   * @param keyTuple The tuple used as a key to fetch the dynamic field.
+   * @param dynamicFieldIndex Index of the dynamic field to retrieve.
+   * @return data The dynamic data of the specified field.
+   */
+  function getDynamicField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex
+  ) public view virtual override(IStoreRead, StoreRead) returns (bytes memory data) {
+    data = StoreCore.getDynamicField(tableId, keyTuple, dynamicFieldIndex);
   }
 
   // Set full record (including full dynamic data)
