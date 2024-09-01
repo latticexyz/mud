@@ -5,7 +5,7 @@ type PartialLog = { blockNumber: bigint; logIndex: number };
 
 export type GroupLogsByBlockNumberResult<TLog extends PartialLog> = {
   blockNumber: TLog["blockNumber"];
-  logs: TLog[];
+  logs: readonly TLog[];
 }[];
 
 /**

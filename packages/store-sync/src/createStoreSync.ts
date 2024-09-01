@@ -10,7 +10,7 @@ import {
   internalTableIds,
   WaitForTransactionResult,
 } from "./common";
-import { createBlockStream } from "@latticexyz/block-logs-stream";
+import { createBlockStream, groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import {
   filter,
   map,
@@ -199,6 +199,19 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
   let startBlock: bigint | null = null;
   let endBlock: bigint | null = null;
   let lastBlockNumberProcessed: bigint | null = null;
+  let optimisticLogs: readonly StoreEventsLog[] = [];
+
+  async function applyOptimisticLogs(): Promise<readonly StorageAdapterBlock[]> {
+    const blocks = groupLogsByBlockNumber(optimisticLogs).filter(
+      (block) =>
+        block.logs.length > 0 && (lastBlockNumberProcessed == null || block.blockNumber > lastBlockNumberProcessed),
+    );
+    for (const block of blocks) {
+      await storageAdapter(block);
+    }
+    optimisticLogs = blocks.flatMap((block) => block.logs);
+    return blocks;
+  }
 
   const storedBlock$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
@@ -219,8 +232,11 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
         storageAdapter,
         logFilter,
       });
-
       return from(storedBlocks);
+    }),
+    concatMap(async (block) => {
+      await applyOptimisticLogs();
+      return block;
     }),
     tap(({ blockNumber, logs }) => {
       debug("stored", logs.length, "logs for block", blockNumber);
@@ -267,24 +283,12 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
 
   // TODO: move to its own file so we can test it, have its own debug instance, etc.
   async function waitForTransaction(tx: Hex): Promise<WaitForTransactionResult> {
-    console.log("fetching receipt in hopes of it being in wiresaw");
     const receipt = await publicClient.getTransactionReceipt({ hash: tx });
-    console.log("got receipt", receipt.status);
 
-    console.log("raw logs", receipt.logs);
-    const logs = parseEventLogs({
-      abi: storeEventsAbi,
-      logs: receipt.logs,
-    });
-    console.log("parsed logs", logs);
-    if (logs.length > 0 && (lastBlockNumberProcessed == null || lastBlockNumberProcessed < receipt.blockNumber)) {
-      await storageAdapter({
-        blockNumber: receipt.blockNumber,
-        logs,
-      });
-    } else {
-      console.log("skipping logs already seen");
-    }
+    const logs = parseEventLogs({ abi: storeEventsAbi, logs: receipt.logs });
+    optimisticLogs = [...optimisticLogs, ...logs];
+    await applyOptimisticLogs();
+
     return receipt;
 
     debug("waiting for tx", tx);
