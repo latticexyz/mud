@@ -61,7 +61,7 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "minimist@1.2.8": "patches/minimist@1.2.8.patch"
+      "minimist@1.2.8": "patches/minimist@1.2.8-allow-hex-values.patch"
     }
   }
 }

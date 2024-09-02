@@ -1,5 +1,19 @@
 # Change Log
 
+## 2.2.0
+
+### Patch Changes
+
+- 04c675c: Add a strongly typed `namespaceLabel` to the system config output.
+  It corresponds to the `label` of the namespace the system belongs to and can't be set manually.
+- Updated dependencies [69cd0a1]
+- Updated dependencies [04c675c]
+  - @latticexyz/common@2.2.0
+  - @latticexyz/config@2.2.0
+  - @latticexyz/store@2.2.0
+  - @latticexyz/protocol-parser@2.2.0
+  - @latticexyz/schema-type@2.2.0
+
 ## 2.1.1
 
 ### Patch Changes

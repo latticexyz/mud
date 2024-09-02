@@ -13,7 +13,6 @@ import {
 import { debug } from "./debug";
 import { getTables } from "./getTables";
 import pRetry from "p-retry";
-import { wait } from "@latticexyz/common/utils";
 import { Table } from "@latticexyz/config";
 
 export async function ensureTables({
@@ -59,11 +58,7 @@ export async function ensureTables({
             }),
           {
             retries: 3,
-            onFailedAttempt: async (error) => {
-              const delay = error.attemptNumber * 500;
-              debug(`failed to register table ${resourceToLabel(table)}, retrying in ${delay}ms...`);
-              await wait(delay);
-            },
+            onFailedAttempt: () => debug(`failed to register table ${resourceToLabel(table)}, retrying...`),
           },
         );
       }),

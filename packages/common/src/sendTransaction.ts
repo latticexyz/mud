@@ -6,6 +6,7 @@ import {
   Transport,
   SendTransactionReturnType,
   PublicClient,
+  SendTransactionRequest,
 } from "viem";
 import { sendTransaction as viem_sendTransaction } from "viem/actions";
 import pRetry from "p-retry";
@@ -38,10 +39,11 @@ export type SendTransactionExtraOptions<chain extends Chain | undefined> = {
 export async function sendTransaction<
   chain extends Chain | undefined,
   account extends Account | undefined,
-  chainOverride extends Chain | undefined,
+  const request extends SendTransactionRequest<chain, chainOverride>,
+  chainOverride extends Chain | undefined = undefined,
 >(
   client: Client<Transport, chain, account>,
-  request: SendTransactionParameters<chain, account, chainOverride>,
+  request: SendTransactionParameters<chain, account, chainOverride, request>,
   opts: SendTransactionExtraOptions<chain> = {},
 ): Promise<SendTransactionReturnType> {
   const rawAccount = request.account ?? client.account;
@@ -52,10 +54,11 @@ export async function sendTransaction<
   const account = parseAccount(rawAccount);
   const chain = client.chain;
 
+  const blockTag = "pending";
   const nonceManager = await getNonceManager({
     client: opts.publicClient ?? client,
     address: account.address,
-    blockTag: "pending",
+    blockTag,
     queueConcurrency: opts.queueConcurrency,
   });
 
@@ -70,13 +73,14 @@ export async function sendTransaction<
       pRetry(
         async () => {
           const nonce = nonceManager.nextNonce();
-          const params: SendTransactionParameters<chain, account, chainOverride> = {
+          const params = {
+            blockTag,
             ...request,
             nonce,
             ...feeRef.fees,
-          };
+          } as const satisfies SendTransactionParameters<chain, account, chainOverride, request>;
           debug("sending tx to", request.to, "with nonce", nonce);
-          return await getAction(client, viem_sendTransaction, "sendTransaction")(params);
+          return await getAction(client, viem_sendTransaction, "sendTransaction")(params as never);
         },
         {
           retries: 3,
