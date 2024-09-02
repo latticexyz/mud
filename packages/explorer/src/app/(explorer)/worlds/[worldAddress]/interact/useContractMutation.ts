@@ -5,8 +5,8 @@ import { privateKeyToAccount } from "viem/accounts";
 import { useChainId } from "wagmi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { readContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
-import { ACCOUNT_PRIVATE_KEYS } from "../../../../consts";
-import { useAppStore } from "../../../../store";
+import { ACCOUNT_PRIVATE_KEYS } from "../../../../../consts";
+import { useAppStore } from "../../../../../store";
 import { wagmiConfig } from "../../../Providers";
 import { FunctionType } from "./FunctionField";
 
