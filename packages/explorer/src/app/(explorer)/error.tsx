@@ -2,8 +2,8 @@
 
 import { ExternalLink, RefreshCwIcon } from "lucide-react";
 import Link from "next/link";
-import { Button } from "../components/ui/Button";
-import { useWorldUrl } from "../hooks/useWorldUrl";
+import { Button } from "../../components/ui/Button";
+import { useWorldUrl } from "../../hooks/useWorldUrl";
 
 type Props = {
   error: Error & { digest?: string };

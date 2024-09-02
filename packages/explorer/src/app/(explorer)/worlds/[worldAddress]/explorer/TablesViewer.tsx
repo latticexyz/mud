@@ -14,10 +14,10 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Button } from "../../../../components/ui/Button";
-import { Checkbox } from "../../../../components/ui/Checkbox";
-import { Input } from "../../../../components/ui/Input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../components/ui/Table";
+import { Button } from "../../../../../components/ui/Button";
+import { Checkbox } from "../../../../../components/ui/Checkbox";
+import { Input } from "../../../../../components/ui/Input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../components/ui/Table";
 import { bufferToBigInt } from "../utils/bufferToBigInt";
 import { EditableTableCell } from "./EditableTableCell";
 
