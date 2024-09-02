@@ -1,5 +1,5 @@
 import { storeEventsAbi } from "@latticexyz/store";
-import { GetTransactionReceiptErrorType, Hex } from "viem";
+import { GetTransactionReceiptErrorType, Hex, parseEventLogs } from "viem";
 import {
   StorageAdapter,
   StorageAdapterBlock,

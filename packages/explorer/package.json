@@ -25,6 +25,7 @@
     "@hookform/resolvers": "^3.9.0",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
+    "@latticexyz/react": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/store-sync": "workspace:*",
