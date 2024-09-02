@@ -1,3 +1,23 @@
+## Version 2.2.1
+
+Release date: Sun Sep 01 2024
+
+### Patch changes
+
+**[fix(store-sync): handle TransactionReceiptNotFoundError (#3115)](https://github.com/latticexyz/mud/commit/603b2ab6631c4f38fca0d9092d255578061987aa)** (@latticexyz/store-sync)
+
+Improved error handling of `TransactionReceiptNotFoundError` in `waitForTransaction` when Viem versions aren't aligned.
+
+**[fix(cli): deployer should wait for prereq txs (#3113)](https://github.com/latticexyz/mud/commit/0738d295f802be28524d517d75efe3b5837f10c1)** (@latticexyz/cli)
+
+Deployer now waits for prerequisite transactions before continuing.
+
+**[fix(common): use pending block tag in tx queue (#3073)](https://github.com/latticexyz/mud/commit/c0764a5e7d3a6a5291198dfe802fe060a0b54da9)** (@latticexyz/common)
+
+`writeContract` and `sendTransaction` actions now use `pending` block tag when estimating gas. This aligns with previous behavior before changes in the last version.
+
+---
+
 ## Version 2.2.0
 
 Release date: Fri Aug 30 2024

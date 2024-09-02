@@ -1,5 +1,22 @@
 # Change Log
 
+## 2.2.1
+
+### Patch Changes
+
+- 0738d29: Deployer now waits for prerequisite transactions before continuing.
+- Updated dependencies [c0764a5]
+  - @latticexyz/common@2.2.1
+  - @latticexyz/config@2.2.1
+  - @latticexyz/protocol-parser@2.2.1
+  - @latticexyz/store@2.2.1
+  - @latticexyz/world@2.2.1
+  - @latticexyz/world-module-metadata@2.2.1
+  - @latticexyz/abi-ts@2.2.1
+  - @latticexyz/gas-report@2.2.1
+  - @latticexyz/schema-type@2.2.1
+  - @latticexyz/utils@2.2.1
+
 ## 2.2.0
 
 ### Patch Changes
