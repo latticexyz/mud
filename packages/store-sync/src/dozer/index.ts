@@ -1,4 +1,4 @@
 export * from "./common";
-export * from "./fetchRecordsSql";
+export * from "./fetchRecords";
 export * from "./selectFrom";
 export * from "./getSnapshot";

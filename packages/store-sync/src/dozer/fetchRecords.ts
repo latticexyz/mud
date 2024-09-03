@@ -32,7 +32,7 @@ type FetchRecordsSqlResult =
     }
   | undefined;
 
-export async function fetchRecordsSql({
+export async function fetchRecords({
   dozerUrl,
   queries,
   storeAddress,

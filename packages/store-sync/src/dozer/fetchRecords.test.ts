@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { fetchRecordsSql } from "./fetchRecordsSql";
+import { fetchRecords } from "./fetchRecords";
 import mudConfig from "@latticexyz/world/mud.config";
 import { selectFrom } from "./selectFrom";
 
-describe("fetchRecordsSql", () => {
+describe("fetchRecords", () => {
   // TODO: set up CI test case for this (requires setting up dozer in CI)
   it.skip("should fetch dozer sql", async () => {
-    const result = await fetchRecordsSql({
+    const result = await fetchRecords({
       dozerUrl: "https://redstone2.dozer.skystrife.xyz/q",
       storeAddress: "0x9d05cc196c87104a7196fcca41280729b505dbbf",
       queries: [

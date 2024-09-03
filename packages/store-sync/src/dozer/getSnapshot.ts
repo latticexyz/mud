@@ -1,7 +1,7 @@
 import { LogFilter, SyncFilter, TableQuery } from "./common";
 import { Hex } from "viem";
 import { StorageAdapterBlock, SyncFilter as LegacyLogFilter } from "../common";
-import { fetchRecordsSql } from "./fetchRecordsSql";
+import { fetchRecords } from "./fetchRecords";
 import { recordToLog } from "../recordToLog";
 import { getSnapshot as getSnapshotLogs } from "../getSnapshot";
 import { bigIntMin, isDefined } from "@latticexyz/common/utils";
@@ -61,7 +61,7 @@ export async function getSnapshot({
 
   const fetchSql = (): Promise<StorageAdapterBlock | undefined>[] => {
     return sqlFilters.map(async (filter) => {
-      const result = await fetchRecordsSql({ dozerUrl, storeAddress, queries: [filter] });
+      const result = await fetchRecords({ dozerUrl, storeAddress, queries: [filter] });
       return (
         result && {
           blockNumber: result.blockHeight,

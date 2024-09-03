@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { decodeRecords } from "./decodeRecords";
 
-describe("decodeDozerRecord", () => {
+describe("decodeRecord", () => {
   const schema = {
     address: { type: "address", internalType: "address" },
     uint256: { type: "uint256", internalType: "uint256" },
