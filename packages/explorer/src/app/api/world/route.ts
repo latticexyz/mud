@@ -9,8 +9,9 @@ import { ChainId } from "../../../hooks/useChainId";
 export const dynamic = "force-dynamic";
 
 async function getClient() {
+  const chain = CHAINS[Number(process.env.NEXT_PUBLIC_CHAIN_ID) as ChainId];
   const client = createWalletClient({
-    chain: CHAINS[Number(process.env.NEXT_PUBLIC_CHAIN_ID) as ChainId],
+    chain,
     transport: http(),
   });
 
@@ -30,6 +31,8 @@ async function getParameters(worldAddress: Address) {
   const fromBlock = logs[0]?.blockNumber ?? 0n;
   // world is considered loaded when both events are emitted
   const isWorldDeployed = logs.length === 2;
+
+  console.log("logs", logs);
 
   return { fromBlock, toBlock, isWorldDeployed };
 }
