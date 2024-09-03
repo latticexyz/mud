@@ -8,9 +8,8 @@ export function DozerListener() {
   const { worldAddress } = useParams();
 
   useEffect(() => {
-    const eventSource = new EventSource(
-      `${process.env.NEXT_PUBLIC_DOZER_URL}/q-live?address=${worldAddress}&query=select+entityId+from+Position+limit+10`,
-    );
+    const dozerUrl = `${process.env.NEXT_PUBLIC_DOZER_URL}/q-live?address=${worldAddress}&query=select+entityId+from+Position+limit+10`;
+    const eventSource = new EventSource(dozerUrl);
 
     eventSource.onmessage = (event) => {
       const newData = JSON.parse(event.data);
