@@ -1,6 +1,7 @@
-import { Address, formatEther } from "viem";
+import { Address } from "viem";
 import { useBalance } from "wagmi";
 import { ACCOUNTS } from "../consts";
+import { formatBalance } from "../lib/utils";
 import { useAppStore } from "../store";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
 import { TruncatedHex } from "./ui/TruncatedHex";
@@ -16,7 +17,7 @@ function AccountSelectItem({ address, name }: { address: Address; name: string }
   return (
     <SelectItem key={address} value={address} className="font-mono">
       {name}
-      {balanceValue !== undefined && ` (${formatEther(balanceValue)} ETH)`}{" "}
+      {balanceValue !== undefined && ` (${formatBalance(balanceValue)} ETH)`}{" "}
       <span className="opacity-70">
         (<TruncatedHex hex={address} />)
       </span>
