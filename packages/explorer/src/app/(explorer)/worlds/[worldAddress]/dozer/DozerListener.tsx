@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
-const SSEListener = () => {
+export function DozerListener() {
   const [data, setData] = useState<unknown[]>([]);
   const { worldAddress } = useParams();
 
@@ -37,6 +37,4 @@ const SSEListener = () => {
       </ul>
     </div>
   );
-};
-
-export default SSEListener;
+}

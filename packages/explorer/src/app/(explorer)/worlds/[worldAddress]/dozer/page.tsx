@@ -1,11 +1,7 @@
-import SSEListener from "./SSEListener";
+import { DozerListener } from "./DozerListener";
 
 function DozerPage() {
-  return (
-    <div>
-      <SSEListener />
-    </div>
-  );
+  return <DozerListener />;
 }
 
 export default DozerPage;
