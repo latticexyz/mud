@@ -1,5 +1,43 @@
 # Change Log
 
+## 2.2.1
+
+### Patch Changes
+
+- 0738d29: Deployer now waits for prerequisite transactions before continuing.
+- Updated dependencies [c0764a5]
+  - @latticexyz/common@2.2.1
+  - @latticexyz/config@2.2.1
+  - @latticexyz/protocol-parser@2.2.1
+  - @latticexyz/store@2.2.1
+  - @latticexyz/world@2.2.1
+  - @latticexyz/world-module-metadata@2.2.1
+  - @latticexyz/abi-ts@2.2.1
+  - @latticexyz/gas-report@2.2.1
+  - @latticexyz/schema-type@2.2.1
+  - @latticexyz/utils@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- 04c675c: Add a strongly typed `namespaceLabel` to the system config output.
+  It corresponds to the `label` of the namespace the system belongs to and can't be set manually.
+- 31caecc: In addition to table labels, system labels and ABIs are now registered onchain during deploy.
+- Updated dependencies [69cd0a1]
+- Updated dependencies [04c675c]
+- Updated dependencies [04c675c]
+  - @latticexyz/common@2.2.0
+  - @latticexyz/config@2.2.0
+  - @latticexyz/store@2.2.0
+  - @latticexyz/world@2.2.0
+  - @latticexyz/protocol-parser@2.2.0
+  - @latticexyz/world-module-metadata@2.2.0
+  - @latticexyz/abi-ts@2.2.0
+  - @latticexyz/gas-report@2.2.0
+  - @latticexyz/schema-type@2.2.0
+  - @latticexyz/utils@2.2.0
+
 ## 2.1.1
 
 ### Patch Changes

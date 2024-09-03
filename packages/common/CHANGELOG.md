@@ -1,5 +1,19 @@
 # Change Log
 
+## 2.2.1
+
+### Patch Changes
+
+- c0764a5: `writeContract` and `sendTransaction` actions now use `pending` block tag when estimating gas. This aligns with previous behavior before changes in the last version.
+  - @latticexyz/schema-type@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- 69cd0a1: Updated all custom Viem actions to properly call other actions via `getAction` so they can be composed.
+  - @latticexyz/schema-type@2.2.0
+
 ## 2.1.1
 
 ### Patch Changes

@@ -4,7 +4,6 @@ import { Library, System, WorldDeploy, worldAbi } from "./common";
 import { debug } from "./debug";
 import { getSystems } from "./getSystems";
 import { getResourceAccess } from "./getResourceAccess";
-import { wait } from "@latticexyz/common/utils";
 import pRetry from "p-retry";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 
@@ -87,11 +86,7 @@ export async function ensureSystems({
           }),
         {
           retries: 3,
-          onFailedAttempt: async (error) => {
-            const delay = error.attemptNumber * 500;
-            debug(`failed to register system ${resourceToLabel(system)}, retrying in ${delay}ms...`);
-            await wait(delay);
-          },
+          onFailedAttempt: () => debug(`failed to register system ${resourceToLabel(system)}, retrying...`),
         },
       ),
     ),
@@ -153,11 +148,7 @@ export async function ensureSystems({
           }),
         {
           retries: 3,
-          onFailedAttempt: async (error) => {
-            const delay = error.attemptNumber * 500;
-            debug(`failed to revoke access, retrying in ${delay}ms...`);
-            await wait(delay);
-          },
+          onFailedAttempt: () => debug("failed to revoke access, retrying..."),
         },
       ),
     ),
@@ -173,11 +164,7 @@ export async function ensureSystems({
           }),
         {
           retries: 3,
-          onFailedAttempt: async (error) => {
-            const delay = error.attemptNumber * 500;
-            debug(`failed to grant access, retrying in ${delay}ms...`);
-            await wait(delay);
-          },
+          onFailedAttempt: () => debug("failed to grant access, retrying..."),
         },
       ),
     ),

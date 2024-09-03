@@ -1,5 +1,22 @@
 # Change Log
 
+## 2.2.1
+
+### Patch Changes
+
+- Updated dependencies [c0764a5]
+  - @latticexyz/common@2.2.1
+  - @latticexyz/schema-type@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- 04c675c: Fixed a few type issues with `namespaceLabel` in tables and added/clarified TSDoc for config input/output objects.
+- Updated dependencies [69cd0a1]
+  - @latticexyz/common@2.2.0
+  - @latticexyz/schema-type@2.2.0
+
 ## 2.1.1
 
 ### Patch Changes
