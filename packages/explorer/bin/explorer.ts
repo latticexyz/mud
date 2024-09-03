@@ -37,6 +37,7 @@ async function startExplorer() {
     env: {
       ...process.env,
       PORT: port,
+      CHAIN_ID: chainId,
       WORLD_ADDRESS: worldAddress,
       INDEXER_DATABASE: path.join(process.cwd(), indexerDatabase),
     },
