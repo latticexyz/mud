@@ -60,22 +60,20 @@ export async function getSnapshot({
       });
     };
 
-    const fetchSql = (): Promise<StorageAdapterBlock | undefined>[] => {
-      return sqlFilters.map(async (filter) => {
-        const result = await fetchRecords({ dozerUrl, storeAddress, queries: [filter] });
-        return {
-          blockNumber: result.blockHeight,
-          logs: result.result.flatMap(({ table, records }) =>
-            records.map((record) => recordToLog({ table, record, address: storeAddress })),
-          ),
-        };
-      });
+    const fetchSql = async (query: TableQuery): Promise<StorageAdapterBlock | undefined> => {
+      const result = await fetchRecords({ dozerUrl, storeAddress, queries: [query] });
+      return {
+        blockNumber: result.blockHeight,
+        logs: result.result.flatMap(({ table, records }) =>
+          records.map((record) => recordToLog({ table, record, address: storeAddress })),
+        ),
+      };
     };
 
     // Execute individual SQL queries as separate requests to parallelize on the backend.
     // Each individual request is expected to be executed against the same db state so it
     // can't be parallelized.
-    const results = (await Promise.all([fetchLogs(), ...fetchSql()])).filter(isDefined);
+    const results = (await Promise.all([fetchLogs(), ...sqlFilters.map(fetchSql)])).filter(isDefined);
     // The block number passed in the overall result will be the min of all queries and the logs.
     const initialBlockLogs = {
       blockNumber: results.length > 0 ? bigIntMin(...results.map((result) => result.blockNumber)) : startBlock,
