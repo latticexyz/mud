@@ -31,15 +31,15 @@ type FetchRecordsResult = {
 };
 
 export async function fetchRecords({ dozerUrl, queries, storeAddress }: FetchRecordsArgs): Promise<FetchRecordsResult> {
-  const response: DozerResponse = await (
-    await fetch(new URL("/q", dozerUrl), {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(queries.map((query) => ({ address: storeAddress, query: query.sql }))),
-    })
-  ).json();
+  const query = JSON.stringify(queries.map((query) => ({ address: storeAddress, query: query.sql })));
+
+  const response: DozerResponse = await fetch(dozerUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: query,
+  }).then((res) => res.json());
 
   if (isDozerResponseFail(response)) {
     throw new Error(`Dozer response: ${response.msg}\n\nTry reproducing via cURL:
@@ -47,7 +47,7 @@ export async function fetchRecords({ dozerUrl, queries, storeAddress }: FetchRec
     --compressed \\
     -H 'Accept-Encoding: gzip' \\
     -H 'Content-Type: application/json' \\
-    -d '[${queries.map((query) => `{"address": "${storeAddress}", "query": "${query.sql.replaceAll('"', '\\"')}"}`).join(",")}]'`);
+    -d '${query.replaceAll("'", "\\'")}'`);
   }
 
   const result: FetchRecordsResult = {
