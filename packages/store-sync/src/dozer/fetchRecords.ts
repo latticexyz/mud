@@ -16,13 +16,13 @@ function isDozerResponseFail(response: DozerResponse): response is DozerResponse
   return "msg" in response;
 }
 
-type FetchRecordsSqlArgs = {
+type FetchRecordsArgs = {
   dozerUrl: string;
   storeAddress: Hex;
   queries: TableQuery[];
 };
 
-type FetchRecordsSqlResult =
+type FetchRecordsResult =
   | {
       blockHeight: bigint;
       result: {
@@ -32,13 +32,9 @@ type FetchRecordsSqlResult =
     }
   | undefined;
 
-export async function fetchRecords({
-  dozerUrl,
-  queries,
-  storeAddress,
-}: FetchRecordsSqlArgs): Promise<FetchRecordsSqlResult> {
+export async function fetchRecords({ dozerUrl, queries, storeAddress }: FetchRecordsArgs): Promise<FetchRecordsResult> {
   const response: DozerResponse = await (
-    await fetch(dozerUrl, {
+    await fetch(new URL("/q", dozerUrl), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -57,7 +53,7 @@ export async function fetchRecords({
     return;
   }
 
-  const result: FetchRecordsSqlResult = {
+  const result: FetchRecordsResult = {
     blockHeight: BigInt(response.block_height),
     result: response.result.map((records, index) => ({
       table: queries[index].table,
