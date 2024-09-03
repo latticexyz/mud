@@ -45,7 +45,7 @@ export async function ensureModules({
               const params = mod.installAsRoot
                 ? ({ functionName: "installRootModule", args: [moduleAddress, mod.installData] } as const)
                 : ({ functionName: "installModule", args: [moduleAddress, mod.installData] } as const);
-              return writeContract(client, {
+              return await writeContract(client, {
                 chain: client.chain ?? null,
                 address: worldDeploy.address,
                 abi,
