@@ -4,6 +4,7 @@ import { Skeleton } from "./ui/Skeleton";
 export function LatestBlock() {
   const { data: block } = useBlockNumber({
     watch: true,
+    chainId: Number(process.env.NEXT_PUBLIC_CHAIN_ID),
   });
 
   return (
