@@ -1,5 +1,19 @@
 # @latticexyz/store-sync
 
+## 2.2.2
+
+### Patch Changes
+
+- @latticexyz/block-logs-stream@2.2.2
+- @latticexyz/common@2.2.2
+- @latticexyz/config@2.2.2
+- @latticexyz/protocol-parser@2.2.2
+- @latticexyz/query@2.2.2
+- @latticexyz/recs@2.2.2
+- @latticexyz/schema-type@2.2.2
+- @latticexyz/store@2.2.2
+- @latticexyz/world@2.2.2
+
 ## 2.2.1
 
 ### Patch Changes
