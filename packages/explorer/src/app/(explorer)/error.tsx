@@ -18,7 +18,7 @@ export default function Error({ reset, error }: Props) {
       <h1 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-5xl">Something went wrong :(</h1>
 
       {error.message && (
-        <pre className="mt-8 inline-block w-[580px] whitespace-normal rounded-md border border-red-500 bg-red-50 p-4 text-left font-mono text-sm leading-6 text-red-500">
+        <pre className="mt-8 inline-block w-[580px] whitespace-normal rounded-md border border-white/15 bg-secondary p-4 text-left font-mono text-sm leading-6 text-white">
           {error.message}
         </pre>
       )}
