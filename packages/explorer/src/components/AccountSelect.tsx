@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { ACCOUNTS } from "../consts";
 import { usePrevious } from "../hooks/usePrevious";
+import { formatBalance } from "../lib/utils";
 import { useAppStore } from "../store";
 import { Button } from "./ui/Button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
