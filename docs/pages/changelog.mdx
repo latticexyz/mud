@@ -1,3 +1,23 @@
+## Version 2.2.2
+
+Release date: Tue Sep 03 2024
+
+### Patch changes
+
+**[style(explorer): format account balances (#3117)](https://github.com/latticexyz/mud/commit/fb9def83ddb128387b70edb6fe88064e234366ce)** (@latticexyz/explorer)
+
+Format account balances with comma-separated thousands and trimmed decimal places for better readability.
+
+**[feat(explorer): show error message in error page (#3121)](https://github.com/latticexyz/mud/commit/4b86c04dc703faf3bf12f6143781b5940b62cb17)** (@latticexyz/explorer)
+
+Added error messages to error page to facilitate easier troubleshooting.
+
+**[fix(cli): add missing await (#3119)](https://github.com/latticexyz/mud/commit/ef6f7c0c6afcc46e7463d18c00fa99c7cafcae65)** (@latticexyz/cli)
+
+Fixed regression in 2.2.1 where deployment of modules already installed would throw an error instead of skipping.
+
+---
+
 ## Version 2.2.1
 
 Release date: Sun Sep 01 2024
