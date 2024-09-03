@@ -10,12 +10,18 @@ type Props = {
   reset: () => void;
 };
 
-export default function Error({ reset }: Props) {
+export default function Error({ reset, error }: Props) {
   const getUrl = useWorldUrl();
   return (
     <main className="px-6 py-24 text-center">
       <p className="text-3xl font-semibold text-orange-600">400</p>
       <h1 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-5xl">Something went wrong :(</h1>
+
+      {error.message && (
+        <pre className="mt-8 inline-block w-[580px] whitespace-normal rounded-md border border-white/15 bg-secondary p-4 text-left font-mono text-sm leading-6 text-white">
+          {error.message}
+        </pre>
+      )}
 
       <div className="mt-10 flex items-center justify-center gap-x-6">
         <Button asChild>
