@@ -32,10 +32,10 @@ function AccountSelectItem({ address, name }: { address: Address; name: string }
 
 export function AccountSelect() {
   const [open, setOpen] = useState(false);
-  const { isConnected, address: connectedAddress } = useAccount();
-  const previousIsConnected = usePrevious(isConnected);
   const { openConnectModal } = useConnectModal();
   const { disconnect } = useDisconnect();
+  const { isConnected, address: connectedAddress } = useAccount();
+  const previousIsConnected = usePrevious(isConnected);
   const { account, setAccount } = useAppStore();
   const accounts = [...ACCOUNTS, connectedAddress as Address].filter(Boolean);
 

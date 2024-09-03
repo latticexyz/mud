@@ -2,10 +2,10 @@ import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Abi, AbiFunction, Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { useChainId } from "wagmi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { readContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { ACCOUNT_PRIVATE_KEYS } from "../../../../../consts";
+import { useChainId } from "../../../../../hooks/useChainId";
 import { useAppStore } from "../../../../../store";
 import { wagmiConfig } from "../../../Providers";
 import { FunctionType } from "./FunctionField";
@@ -29,7 +29,7 @@ export function useContractMutation({ abi, operationType }: UseContractMutationP
           address: worldAddress as Hex,
           functionName: abi.name,
           args: inputs,
-          chainId: Number(process.env.NEXT_PUBLIC_CHAIN_ID),
+          chainId,
         });
 
         return { result };
@@ -41,7 +41,7 @@ export function useContractMutation({ abi, operationType }: UseContractMutationP
           functionName: abi.name,
           args: inputs,
           ...(value && { value: BigInt(value) }),
-          chainId: Number(process.env.NEXT_PUBLIC_CHAIN_ID),
+          chainId,
         });
 
         const receipt = await waitForTransactionReceipt(wagmiConfig, {

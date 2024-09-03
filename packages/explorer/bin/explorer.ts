@@ -15,6 +15,7 @@ const port = argv.port || process.env.PORT || 13690;
 const chainId = argv.chainId || process.env.CHAIN_ID || 31337;
 const indexerDatabase = argv.indexerDatabase || process.env.INDEXER_DATABASE || "indexer.db";
 const worldsFile = argv.worldsFile || process.env.WORLDS_FILE || "worlds.json";
+const dozerUrl = argv.dozerUrl || process.env.DOZER_URL || "https://redstone2.dozer.skystrife.xyz";
 const isDev = !!argv.dev;
 
 let worldAddress = argv.worldAddress || process.env.WORLD_ADDRESS || null;
@@ -37,9 +38,10 @@ async function startExplorer() {
     env: {
       ...process.env,
       PORT: port,
+      INDEXER_DATABASE: path.join(process.cwd(), indexerDatabase),
       NEXT_PUBLIC_CHAIN_ID: chainId,
       NEXT_PUBLIC_WORLD_ADDRESS: worldAddress,
-      INDEXER_DATABASE: path.join(process.cwd(), indexerDatabase),
+      NEXT_PUBLIC_DOZER_URL: dozerUrl,
     },
   });
 }
