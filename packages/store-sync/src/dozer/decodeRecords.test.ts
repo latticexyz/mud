@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { decodeDozerRecords } from "./decodeDozerRecords";
+import { decodeRecords } from "./decodeRecords";
 
 describe("decodeDozerRecord", () => {
   const schema = {
@@ -34,7 +34,7 @@ describe("decodeDozerRecord", () => {
       uint32Arr: [1234, 5678],
     };
 
-    const decoded = decodeDozerRecords({ schema, records: [dozerHeader, dozerRecord] });
+    const decoded = decodeRecords({ schema, records: [dozerHeader, dozerRecord] });
     expect(decoded).toStrictEqual([decodedRecord]);
   });
 });

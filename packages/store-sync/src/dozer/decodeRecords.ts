@@ -1,6 +1,6 @@
 import { Schema } from "@latticexyz/config";
 import { getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
-import { decodeDozerField } from "./decodeDozerField";
+import { decodeField } from "./decodeField";
 
 type DozerQueryHeader = string[];
 type DozerQueryRecord = (string | boolean | string[])[];
@@ -22,7 +22,7 @@ function trimHeader(result: DozerQueryResult): DozerQueryRecord[] {
 
 export type DecodeDozerRecordsResult<schema extends Schema = Schema> = getSchemaPrimitives<schema>[];
 
-export function decodeDozerRecords<schema extends Schema>({
+export function decodeRecords<schema extends Schema>({
   schema,
   records,
 }: DecodeDozerRecordsArgs): DecodeDozerRecordsResult<schema> {
@@ -35,10 +35,7 @@ export function decodeDozerRecords<schema extends Schema>({
 
   return trimHeader(records).map((record) =>
     Object.fromEntries(
-      Object.keys(schema).map((fieldName, index) => [
-        fieldName,
-        decodeDozerField(schema[fieldName].type, record[index]),
-      ]),
+      Object.keys(schema).map((fieldName, index) => [fieldName, decodeField(schema[fieldName].type, record[index])]),
     ),
   ) as never;
 }

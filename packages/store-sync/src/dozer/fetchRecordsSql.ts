@@ -1,4 +1,4 @@
-import { DecodeDozerRecordsResult, DozerQueryResult, decodeDozerRecords } from "./decodeDozerRecords";
+import { DecodeDozerRecordsResult, DozerQueryResult, decodeRecords } from "./decodeRecords";
 import { Hex } from "viem";
 import { TableQuery } from "./common";
 import { Table } from "@latticexyz/config";
@@ -61,7 +61,7 @@ export async function fetchRecordsSql({
     blockHeight: BigInt(response.block_height),
     result: response.result.map((records, index) => ({
       table: queries[index].table,
-      records: decodeDozerRecords({ schema: queries[index].table.schema, records }),
+      records: decodeRecords({ schema: queries[index].table.schema, records }),
     })),
   };
 
