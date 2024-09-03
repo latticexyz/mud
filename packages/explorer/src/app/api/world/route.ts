@@ -1,15 +1,16 @@
 import { AbiFunction, Address, Hex, createWalletClient, http, parseAbi } from "viem";
 import { getBlockNumber, getLogs } from "viem/actions";
-import { redstone } from "viem/chains";
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
 import { getWorldAbi } from "@latticexyz/world/internal";
+import { CHAINS } from "../../../consts";
+import { ChainId } from "../../../hooks/useChainId";
 
 export const dynamic = "force-dynamic";
 
 async function getClient() {
   const client = createWalletClient({
-    chain: redstone,
+    chain: CHAINS[Number(process.env.NEXT_PUBLIC_CHAIN_ID) as ChainId],
     transport: http(),
   });
 

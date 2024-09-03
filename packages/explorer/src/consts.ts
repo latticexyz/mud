@@ -1,5 +1,6 @@
 import { Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+import { anvil, redstone } from "viem/chains";
 
 // private keys for local development testnet (anvil)
 export const PRIVATE_KEYS: Hex[] = [
@@ -25,3 +26,8 @@ export const ACCOUNT_PRIVATE_KEYS: Record<Hex, Hex> = PRIVATE_KEYS.reduce(
   },
   {} as Record<Hex, Hex>,
 );
+
+export const CHAINS = {
+  [redstone.id]: redstone,
+  [anvil.id]: anvil,
+};

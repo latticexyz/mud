@@ -36,6 +36,15 @@ export function Navigation() {
           >
             Interact
           </Link>
+
+          <Link
+            href={getLinkUrl("dozer")}
+            className={cn("text-sm uppercase underline-offset-[16px]", {
+              "font-semibold underline decoration-orange-500 decoration-4": pathname === getLinkUrl("dozer"),
+            })}
+          >
+            Dozer
+          </Link>
         </div>
 
         {isFetched && !data?.isWorldDeployed && (
