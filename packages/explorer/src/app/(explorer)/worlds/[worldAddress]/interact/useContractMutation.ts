@@ -29,6 +29,7 @@ export function useContractMutation({ abi, operationType }: UseContractMutationP
           address: worldAddress as Hex,
           functionName: abi.name,
           args: inputs,
+          chainId: process.env.CHAIN_ID,
         });
 
         return { result };
@@ -40,6 +41,7 @@ export function useContractMutation({ abi, operationType }: UseContractMutationP
           functionName: abi.name,
           args: inputs,
           ...(value && { value: BigInt(value) }),
+          chainId: process.env.CHAIN_ID,
         });
 
         const receipt = await waitForTransactionReceipt(wagmiConfig, {
