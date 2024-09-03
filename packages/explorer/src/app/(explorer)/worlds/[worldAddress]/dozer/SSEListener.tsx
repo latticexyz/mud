@@ -27,7 +27,7 @@ const SSEListener = () => {
     return () => {
       eventSource.close();
     };
-  }, []);
+  }, [worldAddress]);
 
   return (
     <div>
