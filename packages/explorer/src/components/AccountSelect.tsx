@@ -1,5 +1,5 @@
 import { CircleMinusIcon, CirclePlusIcon } from "lucide-react";
-import { Address, formatEther } from "viem";
+import { Address } from "viem";
 import { useAccount, useBalance, useDisconnect } from "wagmi";
 import { useEffect, useState } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
@@ -22,7 +22,7 @@ function AccountSelectItem({ address, name }: { address: Address; name: string }
   return (
     <SelectItem key={address} value={address} className="font-mono">
       {name}
-      {balanceValue !== undefined && ` (${formatEther(balanceValue)} ETH)`}{" "}
+      {balanceValue !== undefined && ` (${formatBalance(balanceValue)} ETH)`}{" "}
       <span className="opacity-70">
         (<TruncatedHex hex={address} />)
       </span>
