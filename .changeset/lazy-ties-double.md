@@ -2,4 +2,4 @@
 "@latticexyz/explorer": patch
 ---
 
-Added optional error messages to error pages to facilitate easier troubleshooting.
+Added error messages to error page to facilitate easier troubleshooting.
