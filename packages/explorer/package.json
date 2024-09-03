@@ -37,6 +37,7 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-toast": "^1.2.1",
     "@radix-ui/themes": "^3.0.5",
+    "@rainbow-me/rainbowkit": "^2.1.5",
     "@tanstack/react-query": "^5.51.3",
     "@tanstack/react-table": "^8.19.3",
     "@wagmi/core": "^2.12.1",

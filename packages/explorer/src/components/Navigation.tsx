@@ -3,6 +3,7 @@
 import { Loader } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { LatestBlock } from "../components/LatestBlock";
 import { Separator } from "../components/ui/Separator";
 import { useWorldUrl } from "../hooks/useWorldUrl";
@@ -47,6 +48,7 @@ export function Navigation() {
         <div className="flex items-center gap-x-4">
           <LatestBlock />
           <AccountSelect />
+          <ConnectButton />
         </div>
       </div>
 
