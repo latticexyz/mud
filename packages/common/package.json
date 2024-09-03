@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/common",
-  "version": "2.1.0",
+  "version": "2.2.1",
   "description": "Common low level logic shared between packages",
   "repository": {
     "type": "git",
@@ -60,7 +60,7 @@
     "build": "pnpm run build:js",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
-    "clean:js": "rimraf dist",
+    "clean:js": "shx rm -rf dist",
     "dev": "tsup --watch",
     "test": "vitest typecheck --run --passWithNoTests && vitest --run",
     "test:ci": "pnpm run test"
@@ -74,7 +74,7 @@
     "p-retry": "^5.1.2",
     "prettier": "3.2.5",
     "prettier-plugin-solidity": "1.3.1",
-    "viem": "2.9.20"
+    "viem": "catalog:"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",

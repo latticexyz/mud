@@ -1,0 +1,60 @@
+{
+  "name": "@latticexyz/stash",
+  "version": "2.2.1",
+  "private": true,
+  "description": "High performance client store and query engine for MUD",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git",
+    "directory": "packages/stash"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./internal": "./dist/internal.js",
+    "./recs": "./dist/recs.js"
+  },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ],
+      "internal": [
+        "./dist/internal.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "bench": "tsx src/bench.ts",
+    "build": "tsup",
+    "clean": "shx rm -rf dist",
+    "dev": "tsup --watch",
+    "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests",
+    "test:ci": "pnpm run test"
+  },
+  "dependencies": {
+    "@arktype/util": "0.0.40",
+    "@latticexyz/config": "workspace:*",
+    "@latticexyz/protocol-parser": "workspace:*",
+    "@latticexyz/schema-type": "workspace:*",
+    "@latticexyz/store": "workspace:*",
+    "react": "^18.2.0",
+    "viem": "2.9.20"
+  },
+  "devDependencies": {
+    "@arktype/attest": "0.7.5",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/react-hooks": "^8.0.1",
+    "@types/react": "18.2.22",
+    "react-dom": "^18.2.0",
+    "tsup": "^6.7.0",
+    "vitest": "0.34.6"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

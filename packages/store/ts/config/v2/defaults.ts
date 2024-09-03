@@ -24,9 +24,9 @@ export const TABLE_DEPLOY_DEFAULTS = {
 export type TABLE_DEPLOY_DEFAULTS = typeof TABLE_DEPLOY_DEFAULTS;
 
 export const TABLE_DEFAULTS = {
-  namespace: "",
+  namespaceLabel: "",
   type: "table",
-} as const satisfies Pick<TableInput, "namespace" | "type">;
+} as const satisfies Pick<TableInput, "namespaceLabel" | "type">;
 
 export type TABLE_DEFAULTS = typeof TABLE_DEFAULTS;
 

@@ -1,5 +1,5 @@
 import path from "path";
-import { resolveSystems } from "@latticexyz/world/node";
+import { loadSystemsManifest, resolveSystems } from "@latticexyz/world/node";
 import { Library, System, WorldFunction } from "./common";
 import { Hex, isHex, toFunctionSelector, toFunctionSignature } from "viem";
 import { getContractData } from "../utils/getContractData";
@@ -40,12 +40,21 @@ export async function resolveConfig({
     .map(toFunctionSignature);
 
   const configSystems = await resolveSystems({ rootDir, config });
+  const systemsManifest = await loadSystemsManifest({ rootDir, config });
 
   const systems = configSystems
     .filter((system) => !system.deploy.disabled)
     .map((system): System => {
+      const manifest = systemsManifest.systems.find(({ systemId }) => systemId === system.systemId);
+      if (!manifest) {
+        throw new Error(
+          `System "${system.label}" not found in systems manifest. Run \`mud build\` before trying again.`,
+        );
+      }
+
       const contractData = getContractData(`${system.label}.sol`, system.label, forgeOutDir);
 
+      // TODO: replace this with manifest
       const worldFunctions = system.deploy.registerWorldFunctions
         ? contractData.abi
             .filter((item): item is typeof item & { type: "function" } => item.type === "function")
@@ -64,7 +73,7 @@ export async function resolveConfig({
             })
         : [];
 
-      // TODO: move to resolveSystems?
+      // TODO: move to resolveSystems? or system manifest?
       const allowedAddresses = system.accessList.filter((target): target is Hex => isHex(target));
       const allowedSystemIds = system.accessList
         .filter((target) => !isHex(target))
@@ -80,8 +89,9 @@ export async function resolveConfig({
         allowedSystemIds,
         prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
         deployedBytecodeSize: contractData.deployedBytecodeSize,
-        abi: contractData.abi,
         worldFunctions,
+        abi: manifest.abi,
+        worldAbi: manifest.worldAbi,
       };
     });
 

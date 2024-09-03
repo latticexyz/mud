@@ -1,0 +1,12 @@
+diff --git a/index.js b/index.js
+index f020f3940e129c361dc89226efaf8775a4af8752..b36b76708f93042f46e7de501d832635016a4931 100644
+--- a/index.js
++++ b/index.js
+@@ -12,7 +12,6 @@ function hasKey(obj, keys) {
+ 
+ function isNumber(x) {
+ 	if (typeof x === 'number') { return true; }
+-	if ((/^0x[0-9a-f]+$/i).test(x)) { return true; }
+ 	return (/^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(e[-+]?\d+)?$/).test(x);
+ }
+ 

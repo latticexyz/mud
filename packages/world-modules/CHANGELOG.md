@@ -1,5 +1,47 @@
 # Change Log
 
+## 2.2.1
+
+### Patch Changes
+
+- Updated dependencies [c0764a5]
+  - @latticexyz/common@2.2.1
+  - @latticexyz/config@2.2.1
+  - @latticexyz/store@2.2.1
+  - @latticexyz/world@2.2.1
+  - @latticexyz/schema-type@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- Updated dependencies [69cd0a1]
+- Updated dependencies [04c675c]
+- Updated dependencies [04c675c]
+  - @latticexyz/common@2.2.0
+  - @latticexyz/config@2.2.0
+  - @latticexyz/store@2.2.0
+  - @latticexyz/world@2.2.0
+  - @latticexyz/schema-type@2.2.0
+
+## 2.1.1
+
+### Patch Changes
+
+- 6435481: Upgrade `zod` to `3.23.8` to avoid issues with [excessively deep type instantiations](https://github.com/colinhacks/zod/issues/577).
+- 6a66f57: Refactored `AccessControl` library exported from `@latticexyz/world` to be usable outside of the world package and updated module packages to use it.
+- Updated dependencies [9e21e42]
+- Updated dependencies [6a66f57]
+- Updated dependencies [86a8104]
+- Updated dependencies [2daaab1]
+- Updated dependencies [542ea54]
+- Updated dependencies [57bf8c3]
+  - @latticexyz/common@2.1.1
+  - @latticexyz/config@2.1.1
+  - @latticexyz/schema-type@2.1.1
+  - @latticexyz/store@2.1.1
+  - @latticexyz/world@2.1.1
+
 ## 2.1.0
 
 ### Patch Changes

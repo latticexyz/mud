@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/world-module-metadata",
-  "version": "2.1.0",
+  "version": "2.2.1",
   "description": "Metadata world module",
   "repository": {
     "type": "git",
@@ -33,8 +33,8 @@
     "build:mud": "tsx ./ts/build.ts",
     "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud",
     "clean:abi": "forge clean",
-    "clean:js": "rimraf dist",
-    "clean:mud": "rimraf src/**/codegen",
+    "clean:js": "shx rm -rf dist",
+    "clean:mud": "shx rm -rf src/**/codegen",
     "dev": "tsup --watch",
     "gas-report": "gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",

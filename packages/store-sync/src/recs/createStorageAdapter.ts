@@ -35,7 +35,7 @@ export function createStorageAdapter<tables extends Tables>({
   const components = {
     ...tablesToComponents(world, tables),
     ...defineInternalComponents(world),
-  };
+  } as CreateStorageAdapterResult<tables>["components"];
 
   async function recsStorageAdapter({ logs }: StorageAdapterBlock): Promise<void> {
     const newTables = logs.filter(isTableRegistrationLog).map(logToTable);

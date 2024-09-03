@@ -18,11 +18,17 @@ export type TableDeployInput = Partial<TableDeploy>;
 
 export type TableInput = {
   /**
-   * Human-readable table label. Used as config keys, table library names, and filenames.
+   * Human-readable label for this table. Used as config keys, library names, and filenames.
    * Labels are not length constrained like resource names, but special characters should be avoided to be compatible with the filesystem, Solidity compiler, etc.
    */
   readonly label: string;
   /**
+   * Human-readable label for this table's namespace. Used for namespace config keys and directory names.
+   * Defaults to the nearest namespace in the config or root namespace if not set.
+   */
+  readonly namespaceLabel?: string;
+  /**
+   * Table type used in table's resource ID and determines how storage and events are used by this table.
    * Defaults to `table` if not set.
    */
   readonly type?: "table" | "offchainTable";
@@ -36,7 +42,14 @@ export type TableInput = {
    * Defaults to the first 16 characters of `label` if not set.
    */
   readonly name?: string;
+  /**
+   * Schema definition for this table's records.
+   */
   readonly schema: SchemaInput;
+  /**
+   * Primary key for records of this table. An array of zero or more schema field names.
+   * Using an empty array acts like a singleton, where only one record can exist for this table.
+   */
   readonly key: readonly string[];
   readonly codegen?: TableCodegenInput;
   readonly deploy?: TableDeployInput;
@@ -47,7 +60,7 @@ export type TableShorthandInput = SchemaInput | string;
 export type TablesInput = {
   // remove label and namespace as these are set contextually
   // and allow defining a table using shorthand
-  readonly [label: string]: Omit<TableInput, "label" | "namespace"> | TableShorthandInput;
+  readonly [label: string]: Omit<TableInput, "label" | "namespaceLabel" | "namespace"> | TableShorthandInput;
 };
 
 export type CodegenInput = Partial<Codegen>;

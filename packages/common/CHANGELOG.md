@@ -1,5 +1,35 @@
 # Change Log
 
+## 2.2.1
+
+### Patch Changes
+
+- c0764a5: `writeContract` and `sendTransaction` actions now use `pending` block tag when estimating gas. This aligns with previous behavior before changes in the last version.
+  - @latticexyz/schema-type@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- 69cd0a1: Updated all custom Viem actions to properly call other actions via `getAction` so they can be composed.
+  - @latticexyz/schema-type@2.2.0
+
+## 2.1.1
+
+### Patch Changes
+
+- 9e21e42: Bumped viem to `2.19.8` and abitype to `1.0.5`.
+
+  MUD projects using viem or abitype should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.19.8 abitype@1.0.5
+  ```
+
+- 2daaab1: Refactored `writeContract` and `sendTransaction` actions for simplicity and better error messages.
+- Updated dependencies [9e21e42]
+  - @latticexyz/schema-type@2.1.1
+
 ## 2.1.0
 
 ### Patch Changes

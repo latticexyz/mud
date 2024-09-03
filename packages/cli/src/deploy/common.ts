@@ -82,19 +82,28 @@ export type Library = DeterministicContract & {
 };
 
 export type System = DeterministicContract & {
+  // labels
   readonly label: string;
+  readonly namespaceLabel: string;
+  // resource ID
   readonly namespace: string;
   readonly name: string;
   readonly systemId: Hex;
+  // access
   readonly allowAll: boolean;
   readonly allowedAddresses: readonly Hex[];
   readonly allowedSystemIds: readonly Hex[];
+  // world registration
+  // TODO: replace this with system manifest data
   readonly worldFunctions: readonly WorldFunction[];
+  // human readable ABIs to register onchain
+  readonly abi: readonly string[];
+  readonly worldAbi: readonly string[];
 };
 
 export type DeployedSystem = Omit<
   System,
-  "label" | "abi" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"
+  "label" | "namespaceLabel" | "abi" | "worldAbi" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"
 > & {
   address: Address;
 };
