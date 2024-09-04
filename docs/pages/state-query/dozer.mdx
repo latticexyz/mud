@@ -17,7 +17,7 @@ The query language is a subset of [the SQL `SELECT` command](<https://en.wikiped
 On Garnet there is a `World` at address [`0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e`](https://explorer.garnetchain.com/address/0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e) that runs a slightly modified version of [the React template](https://github.com/latticexyz/mud/tree/main/templates/react).
 You can see the data schema for the `World` [in the block explorer](https://explorer.garnetchain.com/address/0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e?tab=mud).
 
-## Curl queries
+## Queries using curl
 
 You can run dozer queries by communicating directly with the server's API, for example using [curl](https://curl.se/).
 
@@ -303,6 +303,51 @@ For example, this query gets you the different task creators.
 
 </details>
 
+### Live queries
+
+The queries above give us a snapshot, the situation at a specific block.
+For synchronization we want to get a continuous flow of information with the changes, and for that you use _live queries_.
+
+The syntax is slightly different. The request needs to use [the `GET` method](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods), so the parameters (address and query) are provided on the URL. The easiest way to do this is with the `--data-urlencode` parameter.
+
+```sh copy
+curl https://dozer.mud.garnetchain.com/q-live -G --compressed  \
+  --data-urlencode "address=0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e" \
+  --data-urlencode "query=SELECT description, createdAt FROM app__Tasks ORDER BY createdAt"  \
+  -H 'Accept-Encoding: gzip' \
+  -H 'Content-Type: application/json'
+```
+
+<details>
+
+<summary>Results</summary>
+
+```
+data: {"block_height":6652149,"result":[[["description","createdat"],["","0"],["Walk the dog","1723495628"],["Take out the trash","1723495640"],["Do the dishes","1723495642"],["Learn Elvish","1723688332"],["Invade Narnia","1723688340"]]]}
+
+data: {"block_height":6652150,"result":[[]]}
+
+data: {"block_height":6652151,"result":[[]]}
+
+data: {"block_height":6652152,"result":[[]]}
+
+data: {"block_height":6652153,"result":[[]]}
+
+data: {"block_height":6652154,"result":[[]]}
+
+data: {"block_height":6652155,"result":[[["description","createdat"],["Create a todo list","1725474162"]]]}
+
+data: {"block_height":6652156,"result":[[]]}
+
+data: {"block_height":6652157,"result":[[]]}
+
+data: {"block_height":6652158,"result":[[]]}
+
+data: {"block_height":6652159,"result":[[]]}
+```
+
+</details>
+
 ## Typescript queries
 
 You can query dozer from [Typescript](https://www.typescriptlang.org/) without using MUD client synchronization.
@@ -495,7 +540,7 @@ To update the client, you change `packages/client/src/mud/setupNetwork.ts` to:
 
 <CollapseCode>
 
-```typescript filename="setupNetwork.ts" copy showLineNumbers {17-21, 84-101, 111-112}
+```typescript filename="setupNetwork.ts" copy showLineNumbers {17, 80-97, 106-107}
 /*
  * The MUD client code is built on top of viem
  * (https://viem.sh/docs/getting-started.html).
