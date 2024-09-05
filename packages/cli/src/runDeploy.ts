@@ -163,6 +163,8 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   // Reset mining mode after deploy
   resetMiningMode();
 
+  console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
+
   const deploymentInfo = {
     worldAddress: worldDeploy.address,
     blockNumber: Number(worldDeploy.deployBlock),
