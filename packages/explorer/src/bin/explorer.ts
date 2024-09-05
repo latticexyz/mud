@@ -25,10 +25,10 @@ async function startExplorer() {
 
   if (isDev) {
     command = "pnpm";
-    args = ["dev"];
+    args = ["explorer:dev"];
   } else {
     command = "pnpm";
-    args = ["start"];
+    args = ["explorer:start"];
   }
 
   explorerProcess = spawn(command, args, {

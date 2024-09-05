@@ -15,7 +15,6 @@ export async function* fetchAndStoreLogs({
   for await (const { logs, toBlock } of fetchLogs(fetchLogsOptions)) {
     const blocks = groupLogsByBlockNumber(logFilter ? logs.filter(logFilter) : logs, toBlock);
     for (const block of blocks) {
-      console.log("applying state update", block.blockNumber);
       await storageAdapter(block);
       yield block;
     }

@@ -2,7 +2,7 @@
 
 import { useStore } from "zustand";
 import { KeepInView } from "../../../../../components/KeepInView";
-import { store } from "../../../../../transactions/store";
+import { store } from "../../../../../monitor/store";
 import { Timing } from "./Timing";
 
 export function Writes() {

@@ -2,7 +2,7 @@ import { useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
 import { useEffect } from "react";
 import { usePromise } from "@latticexyz/react";
-import { TimingPromise } from "../../../../../transactions/store";
+import { TimingPromise } from "../../../../../monitor/store";
 
 export type Props = {
   label: string;
