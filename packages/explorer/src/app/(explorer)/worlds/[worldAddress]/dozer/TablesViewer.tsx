@@ -17,7 +17,7 @@ import { Checkbox } from "../../../../../components/ui/Checkbox";
 import { Input } from "../../../../../components/ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../components/ui/Table";
 import { useDozerQuery } from "../../../../../queries/useDozerQuery";
-import { Table as TableType } from "./DozerListener2";
+import { Table as TableType } from "./DozerListener";
 import { EditableTableCell } from "./EditableTableCell";
 
 type Props = {

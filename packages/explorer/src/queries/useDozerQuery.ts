@@ -1,16 +1,29 @@
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Table } from "../app/(explorer)/worlds/[worldAddress]/dozer/DozerListener2";
+import { Table } from "../app/(explorer)/worlds/[worldAddress]/dozer/DozerListener";
+import { garnetHolesky } from "../chains";
+import { ChainId } from "../hooks/useChainId";
 
 function useDozerUrl(query: string | undefined) {
   const { worldAddress } = useParams();
-  return `${process.env.NEXT_PUBLIC_DOZER_URL}/q-live?address=${worldAddress}&query=${query}`;
+
+  let dozerUrl;
+  const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID) as ChainId;
+  if (chainId === garnetHolesky.id) {
+    dozerUrl = "https://dozer.mud.garnetchain.com";
+  } else {
+    dozerUrl = "https://redstone2.dozer.skystrife.xyz";
+  }
+
+  return `${dozerUrl}/q-live?address=${worldAddress}&query=${query}`;
 }
 
 export function useDozerQuery(queryKey: string[], query: string | undefined) {
   const queryClient = useQueryClient();
   const dozerUrl = useDozerUrl(query);
+
+  console.log("dozerUrl", dozerUrl);
 
   useEffect(() => {
     if (!query) return;
