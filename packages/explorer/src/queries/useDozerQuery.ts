@@ -45,7 +45,7 @@ export function useDozerQuery(queryKey: string[], query: string | undefined) {
           if (columns.length > 0 || rows.length > 0) {
             return {
               columns,
-              rows,
+              rows: [...oldData.rows, ...rows],
             };
           }
 

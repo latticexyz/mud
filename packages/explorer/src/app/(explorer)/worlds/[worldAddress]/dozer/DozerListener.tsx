@@ -59,7 +59,7 @@ export function DozerListener() {
     const schema = tableData?.schema;
     const keys = Object.keys(schema);
 
-    return `SELECT ${keys.join(", ")} FROM ${tableData.name} LIMIT 100`;
+    return `SELECT ${keys.join(", ")} FROM ${tableData?.namespace ? `${tableData.namespace}__` : ""}${tableData.name} LIMIT 100`;
   }, [tableData]);
 
   useEffect(() => {

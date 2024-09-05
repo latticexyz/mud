@@ -88,7 +88,7 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
 
           // return <EditableTableCell config={mudTableConfig} keyTuple={keyTuple} name={name} value={value?.toString()} />;
 
-          return <div>{value}</div>;
+          return <div className="animate-fade-in opacity-0">{value}</div>;
         },
       };
     });
@@ -105,15 +105,10 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
     });
 
     return data?.rows?.map((row) => {
-      console.log(row[0]);
-
       const formattedRow = {};
-
       for (const [index, column] of formattedSchema.entries()) {
         formattedRow[column.name] = row[index];
       }
-
-      console.log(formattedRow);
 
       return formattedRow;
     });
