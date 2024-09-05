@@ -1,5 +1,18 @@
 # @latticexyz/explorer
 
+## 2.2.2
+
+### Patch Changes
+
+- fb9def8: Format account balances with comma-separated thousands and trimmed decimal places for better readability.
+- 4b86c04: Added error messages to error page to facilitate easier troubleshooting.
+  - @latticexyz/common@2.2.2
+  - @latticexyz/protocol-parser@2.2.2
+  - @latticexyz/schema-type@2.2.2
+  - @latticexyz/store@2.2.2
+  - @latticexyz/store-sync@2.2.2
+  - @latticexyz/world@2.2.2
+
 ## 2.2.1
 
 ### Patch Changes

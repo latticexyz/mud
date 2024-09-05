@@ -1,5 +1,13 @@
 # @latticexyz/protocol-parser
 
+## 2.2.2
+
+### Patch Changes
+
+- @latticexyz/common@2.2.2
+- @latticexyz/config@2.2.2
+- @latticexyz/schema-type@2.2.2
+
 ## 2.2.1
 
 ### Patch Changes

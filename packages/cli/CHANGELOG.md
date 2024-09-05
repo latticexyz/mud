@@ -1,5 +1,21 @@
 # Change Log
 
+## 2.2.2
+
+### Patch Changes
+
+- ef6f7c0: Fixed regression in 2.2.1 where deployment of modules already installed would throw an error instead of skipping.
+  - @latticexyz/abi-ts@2.2.2
+  - @latticexyz/common@2.2.2
+  - @latticexyz/config@2.2.2
+  - @latticexyz/gas-report@2.2.2
+  - @latticexyz/protocol-parser@2.2.2
+  - @latticexyz/schema-type@2.2.2
+  - @latticexyz/store@2.2.2
+  - @latticexyz/utils@2.2.2
+  - @latticexyz/world@2.2.2
+  - @latticexyz/world-module-metadata@2.2.2
+
 ## 2.2.1
 
 ### Patch Changes
