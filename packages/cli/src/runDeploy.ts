@@ -132,10 +132,11 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     account,
   });
 
+  console.log("Deploying from", client.account.address);
+
   // Attempt to enable automine for the duration of the deploy. Noop if automine is not available.
   const { reset: resetMiningMode } = await enableAutomine(rpc);
 
-  console.log("Deploying from", client.account.address);
   const startTime = Date.now();
   const worldDeploy = await deploy({
     deployerAddress: opts.deployerAddress as Hex | undefined,
@@ -158,7 +159,6 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
       opts.kms ? true : false,
     );
   }
-  console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
 
   // Reset mining mode after deploy
   resetMiningMode();
