@@ -7,12 +7,13 @@ import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { anvil, redstone } from "@wagmi/core/chains";
+import { garnetHolesky } from "../../chains";
 import { AppStoreProvider } from "../../store";
 
 const queryClient = new QueryClient();
 
 export const wagmiConfig = createConfig({
-  chains: [redstone, anvil],
+  chains: [redstone, anvil, garnetHolesky],
   connectors: [
     injected(),
     metaMask({
@@ -25,6 +26,7 @@ export const wagmiConfig = createConfig({
   transports: {
     [redstone.id]: http(),
     [anvil.id]: http(),
+    [garnetHolesky.id]: http(),
   },
   ssr: true,
 });

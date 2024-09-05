@@ -9,6 +9,7 @@ import { ChainId } from "../../../hooks/useChainId";
 export const dynamic = "force-dynamic";
 
 async function getClient() {
+  // TODO: resolve ts error
   const chain = CHAINS[Number(process.env.NEXT_PUBLIC_CHAIN_ID) as ChainId];
   const client = createWalletClient({
     chain,
