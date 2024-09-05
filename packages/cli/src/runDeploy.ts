@@ -16,8 +16,7 @@ import { WorldDeploy } from "./deploy/common";
 import { build } from "./build";
 import { kmsKeyToAccount } from "@latticexyz/common/kms";
 import { configToModules } from "./deploy/configToModules";
-import { anvil } from "viem/chains";
-import { MiningMode, getMiningMode, setMiningMode } from "./utils/miningMode";
+import { enableAutomine } from "./utils/enableAutomine";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the MUD config file" },
@@ -133,17 +132,10 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     account,
   });
 
-  // If we're on a local anvil chain, attempt to enable automine for the duration of the deploy to speed up
-  const chainId = await getChainId(client);
-  let prevMiningMode: MiningMode | undefined = undefined;
-  if (chainId === anvil.id) {
-    console.log("Enabling automine during deploy");
-    prevMiningMode = await getMiningMode(rpc);
-    await setMiningMode(rpc, { type: "automine" });
-  }
+  // Attempt to enable automine for the duration of the deploy. Noop if automine is not available.
+  const { reset: resetMiningMode } = await enableAutomine(rpc);
 
   console.log("Deploying from", client.account.address);
-
   const startTime = Date.now();
   const worldDeploy = await deploy({
     deployerAddress: opts.deployerAddress as Hex | undefined,
@@ -169,10 +161,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
 
   // Reset mining mode after deploy
-  if (chainId === anvil.id && prevMiningMode?.type === "interval") {
-    await setMiningMode(rpc, prevMiningMode);
-    console.log("Mining mode reset to previous state");
-  }
+  resetMiningMode();
 
   const deploymentInfo = {
     worldAddress: worldDeploy.address,
@@ -180,6 +169,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   };
 
   if (opts.saveDeployment) {
+    const chainId = await getChainId(client);
     const deploysDir = path.join(config.deploy.deploysDirectory, chainId.toString());
     mkdirSync(deploysDir, { recursive: true });
     writeFileSync(path.join(deploysDir, "latest.json"), JSON.stringify(deploymentInfo, null, 2));
