@@ -2,7 +2,7 @@ import { useParams } from "next/navigation";
 import { AbiFunction, Hex } from "viem";
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
 
-export async function getAbi(worldAddress: Hex) {
+async function getAbi(worldAddress: Hex) {
   const res = await fetch(`/api/world?${new URLSearchParams({ address: worldAddress })}`);
   const data = await res.json();
 
@@ -18,7 +18,7 @@ type AbiQueryResult = {
   isWorldDeployed: boolean;
 };
 
-export const useAbiQuery = (): UseQueryResult<AbiQueryResult> => {
+export function useAbiQuery(): UseQueryResult<AbiQueryResult> {
   const { worldAddress } = useParams();
   return useQuery({
     queryKey: ["abi", worldAddress],
@@ -31,4 +31,4 @@ export const useAbiQuery = (): UseQueryResult<AbiQueryResult> => {
     },
     refetchInterval: 15000,
   });
-};
+}
