@@ -1,8 +1,5 @@
-import { ArrowUpDown, Loader } from "lucide-react";
-import { Hex } from "viem";
+import { ArrowUpDown } from "lucide-react";
 import { useMemo, useState } from "react";
-import { internalTableNames } from "@latticexyz/store-sync/sqlite";
-import { useQuery } from "@tanstack/react-query";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -20,7 +17,6 @@ import { Checkbox } from "../../../../../components/ui/Checkbox";
 import { Input } from "../../../../../components/ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../components/ui/Table";
 import { useDozerQuery } from "../../../../../queries/useDozerQuery";
-import { bufferToBigInt } from "../utils/bufferToBigInt";
 import { Table as TableType } from "./DozerListener2";
 import { EditableTableCell } from "./EditableTableCell";
 
@@ -71,9 +67,7 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
               onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             >
               <span className="text-orange-500">{name}</span>
-              <span className="ml-1 opacity-70">
-                {/* ({mudTableConfig?.key_schema[name] || mudTableConfig?.value_schema[name] || type.toLowerCase()}) */}
-              </span>
+              <span className="ml-1 opacity-70">({type.toLowerCase()})</span>
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
           );
@@ -156,7 +150,7 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
     <>
       <div className="flex items-center justify-between gap-4 pb-4">
         <Input
-          placeholder="Filter all columns..."
+          placeholder="Filter columns..."
           value={globalFilter ?? ""}
           onChange={(event) => table.setGlobalFilter(event.target.value)}
           className="max-w-sm rounded border px-2 py-1"
@@ -215,30 +209,22 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
           </TableBody>
         </Table>
       </div>
+
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+            Next
+          </Button>
+        </div>
+      </div>
     </>
   );
-
-  // return (
-  //   <>
-  //     <div className="flex items-center justify-between gap-4 pb-4">
-  // ....
-  //     </div>
-
-  //     {/* <div className="flex items-center justify-end space-x-2 py-4">
-  //       <div className="space-x-2">
-  //         <Button
-  //           variant="outline"
-  //           size="sm"
-  //           onClick={() => table.previousPage()}
-  //           disabled={!table.getCanPreviousPage()}
-  //         >
-  //           Previous
-  //         </Button>
-  //         <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-  //           Next
-  //         </Button>
-  //       </div>
-  //     </div> */}
-  //   </>
-  // );
 }

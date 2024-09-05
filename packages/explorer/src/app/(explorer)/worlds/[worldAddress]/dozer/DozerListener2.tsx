@@ -3,7 +3,7 @@
 import { Link2Icon, Link2OffIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Hex } from "viem";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDozerQuery } from "../../../../../queries/useDozerQuery";
 import { SQLEditor } from "./SQLEditor";
 import { TableSelector } from "./TableSelector";
@@ -33,6 +33,7 @@ export type Table = {
 };
 
 export function DozerListener2() {
+  const [query, setQuery] = useState();
   const { data } = useDozerQuery([TABLE], QUERY);
   const { columns, rows: encodedTables } = data || {};
   const tables = encodedTables?.map((table: Table) => decode(table));
@@ -58,14 +59,20 @@ export function DozerListener2() {
     const schema = tableData?.schema;
     const keys = Object.keys(schema);
 
-    return `SELECT ${keys.join(", ")} FROM ${tableData.name} LIMIT 10`;
+    return `SELECT ${keys.join(", ")} FROM ${tableData.name} LIMIT 100`;
   }, [tableData]);
+
+  useEffect(() => {
+    if (dynamicQuery) {
+      setQuery(dynamicQuery);
+    }
+  }, [dynamicQuery]);
 
   return (
     <div>
-      <SQLEditor query={dynamicQuery} />
+      <SQLEditor query={query} setQuery={setQuery} />
       <TableSelector value={selectedTableId} options={tablesOptions} />
-      <TablesViewer table={tableData} query={dynamicQuery} />
+      <TablesViewer table={tableData} query={query} />
     </div>
   );
 }

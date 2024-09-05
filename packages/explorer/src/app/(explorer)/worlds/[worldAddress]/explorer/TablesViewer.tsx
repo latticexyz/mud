@@ -170,7 +170,7 @@ export function TablesViewer({ table: selectedTable }: Props) {
     <>
       <div className="flex items-center justify-between gap-4 pb-4">
         <Input
-          placeholder="Filter all columns..."
+          placeholder="Filter columns..."
           value={globalFilter ?? ""}
           onChange={(event) => table.setGlobalFilter(event.target.value)}
           className="max-w-sm rounded border px-2 py-1"

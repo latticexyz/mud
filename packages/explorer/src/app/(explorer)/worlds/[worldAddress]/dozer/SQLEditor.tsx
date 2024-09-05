@@ -1,19 +1,42 @@
-import { useEffect, useState } from "react";
 // import { Form, FormControl, FormField, FormItem, FormLabel } from "../../../../../components/ui/Form";
+import { PlayIcon } from "lucide-react";
+import { set } from "zod";
+import { useEffect, useState } from "react";
+import { Button } from "../../../../../components/ui/Button";
 import { Input } from "../../../../../components/ui/Input";
 
 type Props = {
   query: string | undefined;
+  setQuery: (query: string) => void;
 };
 
-export function SQLEditor({ query: initialQuery }: Props) {
-  const [query, setQuery] = useState(initialQuery);
+export function SQLEditor({ query, setQuery }: Props) {
+  const [intermediateQuery, setIntermediateQuery] = useState<string | undefined>(query);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setQuery(intermediateQuery || "");
+  };
 
   useEffect(() => {
-    setQuery(initialQuery);
-  }, [initialQuery]);
+    setIntermediateQuery(query);
+  }, [query]);
 
-  return <Input value={query || ""} onChange={(e) => setQuery(e.target.value)} />;
+  return (
+    <form onSubmit={handleSubmit}>
+      <div className="relative">
+        <Input
+          value={intermediateQuery || ""}
+          onChange={(e) => setIntermediateQuery(e.target.value)}
+          className="pr-[90px]"
+        />
+
+        <Button className="absolute right-1 top-1 h-8 px-4" type="submit">
+          <PlayIcon className="mr-1.5 h-3 w-3" /> Run
+        </Button>
+      </div>
+    </form>
+  );
 
   // TODO: make it a form?
   // <Form>
