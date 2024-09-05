@@ -2,7 +2,7 @@ import { StaticAbiType, Table } from "@latticexyz/config";
 
 type PartialTable = Pick<Table, "schema" | "key">;
 
-type KeySchema = {
+export type KeySchema = {
   readonly [fieldName: string]: {
     /** the Solidity primitive ABI type */
     readonly type: StaticAbiType;

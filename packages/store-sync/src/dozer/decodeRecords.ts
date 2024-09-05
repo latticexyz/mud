@@ -8,7 +8,7 @@ type DozerQueryRecord = (string | boolean | string[])[];
 // First item in the result is the header
 export type DozerQueryResult = [DozerQueryHeader, ...DozerQueryRecord[]];
 
-export type DecodeDozerRecordsArgs = {
+export type DecodeRecordsArgs = {
   schema: Schema;
   records: DozerQueryResult;
 };
@@ -20,12 +20,12 @@ function trimHeader(result: DozerQueryResult): DozerQueryRecord[] {
   return result.slice(1);
 }
 
-export type DecodeDozerRecordsResult<schema extends Schema = Schema> = getSchemaPrimitives<schema>[];
+export type DecodeRecordsResult<schema extends Schema = Schema> = getSchemaPrimitives<schema>[];
 
 export function decodeRecords<schema extends Schema>({
   schema,
   records,
-}: DecodeDozerRecordsArgs): DecodeDozerRecordsResult<schema> {
+}: DecodeRecordsArgs): DecodeRecordsResult<schema> {
   const fieldNames = Object.keys(schema);
   if (records.length > 0 && fieldNames.length !== records[0].length) {
     throw new Error(

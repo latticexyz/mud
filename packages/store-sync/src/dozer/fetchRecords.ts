@@ -1,4 +1,4 @@
-import { DecodeDozerRecordsResult, DozerQueryResult, decodeRecords } from "./decodeRecords";
+import { DecodeRecordsResult, DozerQueryResult, decodeRecords } from "./decodeRecords";
 import { Hex } from "viem";
 import { TableQuery } from "./common";
 import { Table } from "@latticexyz/config";
@@ -26,7 +26,7 @@ type FetchRecordsResult = {
   blockHeight: bigint;
   result: {
     table: Table;
-    records: DecodeDozerRecordsResult;
+    records: DecodeRecordsResult;
   }[];
 };
 
