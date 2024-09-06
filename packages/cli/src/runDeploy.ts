@@ -16,6 +16,7 @@ import { WorldDeploy } from "./deploy/common";
 import { build } from "./build";
 import { kmsKeyToAccount } from "@latticexyz/common/kms";
 import { configToModules } from "./deploy/configToModules";
+import { enableAutomine } from "./utils/enableAutomine";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the MUD config file" },
@@ -133,6 +134,9 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   console.log("Deploying from", client.account.address);
 
+  // Attempt to enable automine for the duration of the deploy. Noop if automine is not available.
+  const { reset: resetMiningMode } = await enableAutomine(client);
+
   const startTime = Date.now();
   const worldDeploy = await deploy({
     deployerAddress: opts.deployerAddress as Hex | undefined,
@@ -155,6 +159,10 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
       opts.kms ? true : false,
     );
   }
+
+  // Reset mining mode after deploy
+  await resetMiningMode();
+
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
 
   const deploymentInfo = {
