@@ -77,9 +77,6 @@ export type ModuleInput = ModuleInputArtifactPath & {
 };
 
 export type DeployInput = {
-  /** The name of a custom World contract to deploy. If no name is provided, a default MUD World is deployed. */
-  // TODO: implement
-  readonly customWorldContract?: never;
   /**
    * Script to execute after the deployment is complete (Default "PostDeploy").
    * Script must be placed in the forge scripts directory (see foundry.toml) and have a ".s.sol" extension.
@@ -91,6 +88,12 @@ export type DeployInput = {
   readonly worldsFile?: string;
   /** Deploy the World as an upgradeable proxy */
   readonly upgradeableWorldImplementation?: boolean;
+  /** Deploy the World using a custom implementation. This world must implement the same interface as World.sol so that can initialize core modules, etc. */
+  readonly customWorld?: {
+    sourcePath: string;
+    name: string;
+    // TODO: constructor calldata
+  };
 };
 
 export type CodegenInput = Partial<Codegen>;

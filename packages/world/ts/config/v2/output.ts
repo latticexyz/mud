@@ -93,6 +93,12 @@ export type Deploy = {
   readonly worldsFile: string;
   /** Deploy the World as an upgradeable proxy */
   readonly upgradeableWorldImplementation: boolean;
+  /** Deploy the World using a custom implementation. This world must implement the same interface as World.sol so that can initialize core modules, etc. */
+  readonly customWorld?: {
+    sourcePath: string;
+    name: string;
+    // TODO: constructor calldata
+  };
 };
 
 export type Codegen = {

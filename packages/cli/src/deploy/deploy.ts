@@ -16,13 +16,18 @@ import { ensureWorldFactory } from "./ensureWorldFactory";
 import { Table } from "@latticexyz/config";
 import { ensureResourceTags } from "./ensureResourceTags";
 import { waitForTransactions } from "./waitForTransactions";
+import { ContractArtifact } from "@latticexyz/world/node";
+import { World } from "@latticexyz/world";
+import { deployCustomWorld } from "./deployCustomWorld";
 
 type DeployOptions = {
+  config: World;
   client: Client<Transport, Chain | undefined, Account>;
   tables: readonly Table[];
   systems: readonly System[];
   libraries: readonly Library[];
   modules?: readonly Module[];
+  artifacts: readonly ContractArtifact[];
   salt?: Hex;
   worldAddress?: Address;
   /**
@@ -42,19 +47,20 @@ type DeployOptions = {
  * replace systems, etc.)
  */
 export async function deploy({
+  config,
   client,
   tables,
   systems,
   libraries,
   modules = [],
+  artifacts,
   salt,
   worldAddress: existingWorldAddress,
   deployerAddress: initialDeployerAddress,
-  withWorldProxy,
 }: DeployOptions): Promise<WorldDeploy> {
   const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
 
-  await ensureWorldFactory(client, deployerAddress, withWorldProxy);
+  await ensureWorldFactory(client, deployerAddress, config.deploy.upgradeableWorldImplementation);
 
   // deploy all dependent contracts, because system registration, module install, etc. all expect these contracts to be callable.
   await ensureContractsDeployed({
@@ -81,7 +87,19 @@ export async function deploy({
 
   const worldDeploy = existingWorldAddress
     ? await getWorldDeploy(client, existingWorldAddress)
-    : await deployWorld(client, deployerAddress, salt ?? `0x${randomBytes(32).toString("hex")}`, withWorldProxy);
+    : config.deploy.customWorld
+      ? await deployCustomWorld({
+          client,
+          deployerAddress,
+          artifacts,
+          customWorld: config.deploy.customWorld,
+        })
+      : await deployWorld(
+          client,
+          deployerAddress,
+          salt ?? `0x${randomBytes(32).toString("hex")}`,
+          config.deploy.upgradeableWorldImplementation,
+        );
 
   if (!supportedStoreVersions.includes(worldDeploy.storeVersion)) {
     throw new Error(`Unsupported Store version: ${worldDeploy.storeVersion}`);
