@@ -40,6 +40,8 @@ export function FunctionField({ abi }: Props) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
+
     const mutationResult = await mutation.mutateAsync({
       inputs: values.inputs,
       value: values.value,

@@ -54,8 +54,13 @@ export function Navigation() {
         )}
 
         <div className="flex items-center gap-x-4">
-          <LatestBlock />
-          <AccountSelect />
+          <div className="hidden md:block">
+            <LatestBlock />
+          </div>
+
+          <div className="hidden md:block">
+            <AccountSelect />
+          </div>
         </div>
       </div>
 

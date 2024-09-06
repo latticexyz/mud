@@ -8,7 +8,7 @@ export function LatestBlock() {
   });
 
   return (
-    <div className="inline-block w-[50px]">
+    <div className="w-[50px]">
       {block ? (
         <div className="flex items-center justify-end text-xs font-extrabold text-green-600">
           <span

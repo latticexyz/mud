@@ -3,6 +3,7 @@ import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+import { useWalletClient } from "wagmi";
 import { ChangeEvent, useState } from "react";
 import { encodeField, getFieldIndex } from "@latticexyz/protocol-parser/internal";
 import { SchemaAbiType } from "@latticexyz/schema-type/internal";
@@ -29,8 +30,8 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
   const chainId = useChainId();
   const { account } = useAppStore();
   const { worldAddress } = useParams();
-
   const [value, setValue] = useState<unknown>(defaultValue);
+  const { data: connectedAccount } = useWalletClient();
 
   const tableId = config?.table_id;
   const fieldType = config?.value_schema[camelCase(name)] as SchemaAbiType;
@@ -40,7 +41,10 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
       const fieldIndex = getFieldIndex(config?.value_schema, camelCase(name));
       const encodedField = encodeField(fieldType, newValue);
       const txHash = await writeContract(wagmiConfig, {
-        account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
+        // TODO: detect connected account better
+        account: connectedAccount?.account
+          ? connectedAccount.account
+          : privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
         abi: IBaseWorldAbi,
         address: worldAddress as Hex,
         functionName: "setField",

@@ -2,7 +2,7 @@ import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Abi, AbiFunction, Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { useAccount, useClient, useWalletClient } from "wagmi";
+import { useWalletClient } from "wagmi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { readContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { ACCOUNT_PRIVATE_KEYS } from "../../../../../consts";

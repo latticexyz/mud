@@ -4,6 +4,7 @@ import { Link2Icon, Link2OffIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Hex } from "viem";
 import React, { useEffect, useMemo, useState } from "react";
+import { SchemaAbiType } from "@latticexyz/schema-type/internal";
 import { useDozerQuery } from "../../../../../queries/useDozerQuery";
 import { SQLEditor } from "./SQLEditor";
 import { TableSelector } from "./TableSelector";
@@ -24,18 +25,18 @@ const QUERY = `select ${QUERY_COLUMNS.join(", ")} from ${TABLE}`;
 
 export type Table = {
   key: string[];
-  keySchema: Record<string, any>;
+  keySchema: Record<string, SchemaAbiType>;
   name: string;
   namespace: string;
-  schema: Record<string, any>;
+  valueSchema: Record<string, SchemaAbiType>;
   tableId: Hex;
   type: "offchainTable" | "table";
 };
 
-export function DozerListener() {
+export function DozerExplorer() {
   const [query, setQuery] = useState();
   const { data } = useDozerQuery([TABLE], QUERY);
-  const { columns, rows: encodedTables } = data || {};
+  const { rows: encodedTables } = data || {};
   const tables = encodedTables?.map((table: Table) => decode(table));
 
   const tablesOptions = tables?.map((table: Table) => ({
@@ -56,8 +57,8 @@ export function DozerListener() {
   const dynamicQuery = useMemo(() => {
     if (!tableData) return;
 
-    const schema = tableData?.schema;
-    const keys = Object.keys(schema);
+    const valueSchema = tableData?.valueSchema;
+    const keys = Object.keys(valueSchema);
 
     return `SELECT ${keys.join(", ")} FROM ${tableData?.namespace ? `${tableData.namespace}__` : ""}${tableData.name} LIMIT 100`;
   }, [tableData]);

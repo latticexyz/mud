@@ -1,15 +1,15 @@
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Table } from "../app/(explorer)/worlds/[worldAddress]/dozer/DozerListener";
+import { Table } from "../app/(explorer)/worlds/[worldAddress]/dozer/DozerExplorer";
 import { garnetHolesky } from "../chains";
 import { ChainId } from "../hooks/useChainId";
 
 function useDozerUrl(query: string | undefined) {
   const { worldAddress } = useParams();
-
-  let dozerUrl;
   const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID) as ChainId;
+  let dozerUrl;
+
   if (chainId === garnetHolesky.id) {
     dozerUrl = "https://dozer.mud.garnetchain.com";
   } else {
@@ -22,8 +22,6 @@ function useDozerUrl(query: string | undefined) {
 export function useDozerQuery(queryKey: string[], query: string | undefined) {
   const queryClient = useQueryClient();
   const dozerUrl = useDozerUrl(query);
-
-  console.log("dozerUrl", dozerUrl);
 
   useEffect(() => {
     if (!query) return;
@@ -39,9 +37,7 @@ export function useDozerQuery(queryKey: string[], query: string | undefined) {
         const rows = data.slice(1) || [];
 
         queryClient.setQueryData(queryKey, (oldData: { columns: string[]; rows: Table[] }) => {
-          // TODO: add proper updater
-          // const update = (entity) => (entity.id === data.id ? { ...entity, ...data.payload } : entity);
-
+          // TODO: can this be done better?
           if (columns.length > 0 || rows.length > 0) {
             return {
               columns,

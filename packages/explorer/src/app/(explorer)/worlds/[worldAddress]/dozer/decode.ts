@@ -5,12 +5,8 @@ import { hexToResource } from "@latticexyz/common";
 import { Schema } from "@latticexyz/config";
 import { hexToSchema } from "@latticexyz/protocol-parser/internal";
 
+// TODO: improve this
 export const decode = (row) => {
-  // const { tableId } = decodeKey(
-  //   getSchemaTypes(getKeySchema(storeConfig.namespaces.store.tables.Tables)),
-  //   "0x6f740000000000000000000000000000506c61796572416374696f6e4e6f7469",
-  // );
-
   const tableId = row[0];
   const fieldLayout = row[1];
   const keySchema = row[2];
@@ -36,11 +32,11 @@ export const decode = (row) => {
   ) satisfies Schema;
 
   return {
-    type: type as never,
+    type,
     namespace,
     name,
     tableId,
-    schema: { ...keySchema2, ...valueSchema2 },
+    valueSchema: valueSchema2,
     keySchema: keySchema2,
     key: Object.keys(keySchema),
   };

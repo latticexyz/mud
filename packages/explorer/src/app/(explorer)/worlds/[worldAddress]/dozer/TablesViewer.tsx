@@ -1,4 +1,4 @@
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Loader } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
   ColumnDef,
@@ -17,7 +17,7 @@ import { Checkbox } from "../../../../../components/ui/Checkbox";
 import { Input } from "../../../../../components/ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../components/ui/Table";
 import { useDozerQuery } from "../../../../../queries/useDozerQuery";
-import { Table as TableType } from "./DozerListener";
+import { Table as TableType } from "./DozerExplorer";
 import { EditableTableCell } from "./EditableTableCell";
 
 type Props = {
@@ -34,18 +34,16 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
   const [showAllColumns, setShowAllColumns] = useState(false);
 
   // TODO: set proper query key
-  const { data } = useDozerQuery([selectedTable?.name], query);
-
-  const keySchema = selectedTable?.schema;
-  const schema = selectedTable?.schema;
+  const { data, isFetched } = useDozerQuery([selectedTable?.name], query);
+  const valueSchema = selectedTable?.valueSchema;
 
   const columns: ColumnDef<{}>[] = useMemo(() => {
-    if (!schema) return [];
+    if (!valueSchema) return [];
 
-    const formattedSchema = Object.keys(schema).map(function (key) {
+    const formattedSchema = Object.keys(valueSchema).map(function (key) {
       return {
         name: key,
-        type: schema[key].type,
+        type: valueSchema[key].type,
       };
     });
 
@@ -79,28 +77,43 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
             getValue: (name: string) => string;
           };
         }) => {
-          // const keysSchema = Object.keys(mudTableConfig?.key_schema || {});
-          // const keyTuple = keysSchema.map((key) => row.getValue(key));
           const value = row.getValue(name);
-          // if ((selectedTable && (internalTableNames as string[]).includes(selectedTable)) || keysSchema.includes(name)) {
-          //   return value?.toString();
-          // }
 
-          // return <EditableTableCell config={mudTableConfig} keyTuple={keyTuple} name={name} value={value?.toString()} />;
+          // TODO: conform to sqlite config
+          const valuesSchema = {};
+          for (const [key, value] of Object.entries(selectedTable?.valueSchema)) {
+            valuesSchema[key] = value.type;
+          }
 
-          return <div className="animate-fade-in opacity-0">{value}</div>;
+          const mudTableConfig = {
+            table_id: selectedTable?.tableId,
+            key_schema: selectedTable?.keySchema,
+            value_schema: valuesSchema,
+          };
+
+          const keysSchema = Object.keys(selectedTable?.keySchema);
+          const keyTuple = keysSchema?.map((key) => row.getValue(key));
+
+          return (
+            <div className="animate-fade-in opacity-0">
+              {selectedTable && (
+                <EditableTableCell config={mudTableConfig} keyTuple={keyTuple} name={name} value={value?.toString()} />
+              )}
+              {!selectedTable && value}
+            </div>
+          );
         },
       };
     });
-  }, [schema]);
+  }, [selectedTable, valueSchema]);
 
   const formattedData = useMemo(() => {
-    if (!schema) return [];
+    if (!valueSchema) return [];
 
-    const formattedSchema = Object.keys(schema).map(function (key) {
+    const formattedSchema = Object.keys(valueSchema).map(function (key) {
       return {
         name: key,
-        type: schema[key].type,
+        type: valueSchema[key].type,
       };
     });
 
@@ -112,7 +125,7 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
 
       return formattedRow;
     });
-  }, [schema, data?.rows]);
+  }, [valueSchema, data?.rows]);
 
   const table = useReactTable({
     data: formattedData,
@@ -140,6 +153,14 @@ export function TablesViewer({ table: selectedTable, query }: Props) {
       globalFilter,
     },
   });
+
+  if (!isFetched) {
+    return (
+      <div className="rounded-md border p-4">
+        <Loader className="animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <>
