@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        example: [minimal, multiple-namespaces]
+        example: [minimal, multiple-namespaces, custom-world]
 
     steps:
       - name: Checkout
