@@ -1,4 +1,7 @@
-import { debug } from "../debug";
+import { getAutomine, getBlock, setAutomine, setIntervalMining } from "viem/actions";
+import { debug, error } from "../debug";
+import { Client } from "viem";
+import { getAction } from "viem/utils";
 
 type MiningMode =
   | {
@@ -11,97 +14,46 @@ type MiningMode =
 
 export type EnableAutomineResult = { reset: () => Promise<void> };
 
-export async function enableAutomine(rpcUrl: string): Promise<EnableAutomineResult> {
+export async function enableAutomine(client: Client): Promise<EnableAutomineResult> {
   try {
     debug("Enabling automine");
-    const prevMiningMode = await getMiningMode(rpcUrl);
-    await setMiningMode(rpcUrl, { type: "automine" });
+    const prevMiningMode = await getMiningMode(client);
+    await setMiningMode(client, { type: "automine" });
     return {
       reset: () => {
         debug("Disabling automine");
-        return setMiningMode(rpcUrl, prevMiningMode);
+        return setMiningMode(client, prevMiningMode);
       },
     };
   } catch (e) {
     debug("Skipping automine");
+    error(e);
     return { reset: async () => void 0 };
   }
 }
 
-async function getMiningMode(rpcUrl: string): Promise<MiningMode> {
-  const { result: isAutomine } = await fetch(rpcUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      method: "anvil_getAutomine",
-      params: [],
-      id: 1,
-    }),
-  }).then((res) => res.json());
-
+async function getMiningMode(client: Client): Promise<MiningMode> {
+  const localClient = { mode: "anvil", ...client }; // set default mode to "anvil", potential error is caught by enableAutomine
+  const isAutomine = await getAction(localClient, getAutomine, "getAutomine")({});
   if (isAutomine) {
     return { type: "automine" };
   }
 
-  const blockTime = await getBlockTime(rpcUrl);
+  const blockTime = await getBlockTime(client);
   return { type: "interval", blockTime };
 }
 
-async function setMiningMode(rpcUrl: string, miningMode: MiningMode): Promise<void> {
-  const payload =
-    miningMode.type === "automine"
-      ? {
-          jsonrpc: "2.0",
-          method: "evm_setAutomine",
-          params: [true],
-          id: 1,
-        }
-      : {
-          jsonrpc: "2.0",
-          method: "evm_setIntervalMining",
-          params: [miningMode.blockTime],
-          id: 1,
-        };
-
-  await fetch(rpcUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
+async function setMiningMode(client: Client, miningMode: MiningMode): Promise<void> {
+  if (miningMode.type === "automine") {
+    await getAction(client, setAutomine, "setAutomine")(true);
+  } else {
+    await getAction(client, setIntervalMining, "setIntervalMining")({ interval: miningMode.blockTime });
+  }
 }
 
-async function getBlockTime(rpc: string): Promise<number> {
-  async function getBlock(blockNumber: number | string) {
-    const response = await fetch(rpc, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        method: "eth_getBlockByNumber",
-        params: [blockNumber, false],
-        id: 1,
-      }),
-    });
-    const data = await response.json();
-    return data.result;
-  }
-
-  // Get the latest block
-  const latestBlock = await getBlock("latest");
-  const latestBlockNumber = parseInt(latestBlock.number, 16);
-  const latestBlockTimestamp = parseInt(latestBlock.timestamp, 16);
-
-  // Get the previous block
-  const previousBlock = await getBlock(latestBlockNumber - 1);
-  const previousBlockTimestamp = parseInt(previousBlock.timestamp, 16);
-
-  // Calculate the block time
-  const blockTime = latestBlockTimestamp - previousBlockTimestamp;
-
-  return blockTime;
+async function getBlockTime(client: Client): Promise<number> {
+  const latestBlock = await getAction(client, getBlock, "getBlock")({ blockTag: "latest" });
+  const previousBlock = await getAction(client, getBlock, "getBlock")({ blockNumber: latestBlock.number - 1n });
+  const blockTime = latestBlock.timestamp - previousBlock.timestamp;
+  return Number(blockTime);
 }
