@@ -1,6 +1,6 @@
 import { rmSync } from "fs";
 import { homedir } from "os";
-import path from "path";
+import path from "node:path/posix";
 import type { CommandModule } from "yargs";
 import { execa } from "execa";
 

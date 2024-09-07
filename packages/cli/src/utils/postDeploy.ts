@@ -1,5 +1,5 @@
 import { existsSync } from "fs";
-import path from "path";
+import path from "node:path/posix";
 import chalk from "chalk";
 import { getScriptDirectory, forge } from "@latticexyz/common/foundry";
 

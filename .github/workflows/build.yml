@@ -12,7 +12,11 @@ env:
 jobs:
   build:
     name: Build and validate artifacts
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [depot-ubuntu-22.04-16, windows-latest]
+
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -36,6 +40,8 @@ jobs:
       - name: Build
         if: steps.check_changes.outputs.changes_outside_docs
         shell: bash
+        env:
+          DEBUG: mud:*
         run: pnpm turbo run build --concurrency 10
 
       - name: Outdated files, run `pnpm build` and commit them

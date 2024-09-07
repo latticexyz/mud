@@ -1,4 +1,4 @@
-import path from "node:path";
+import path from "node:path/posix";
 import { World } from "../config/v2/output";
 import { findSolidityFiles } from "./findSolidityFiles";
 
@@ -21,6 +21,7 @@ export async function getSystemContracts({
     cwd: rootDir,
     pattern: path.join(config.sourceDirectory, "**"),
   });
+  console.log("got solidity files", solidityFiles);
 
   return solidityFiles
     .filter(

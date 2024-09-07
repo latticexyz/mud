@@ -1,9 +1,10 @@
 import { findUp } from "find-up";
-import path from "path";
+import path from "node:path/posix";
 import esbuild from "esbuild";
 import { rmSync } from "fs";
 import { pathToFileURL } from "url";
 import os from "os";
+import upath from "upath";
 
 // TODO: explore using https://www.npmjs.com/package/ts-import instead
 
@@ -13,14 +14,28 @@ const configFiles = ["mud.config.js", "mud.config.mjs", "mud.config.ts", "mud.co
 /** @deprecated */
 const TEMP_CONFIG = "mud.config.temp.mjs";
 
+function prepareWindowsPath(fullPath: string): string {
+  // Add `file:///` for Windows support
+  // (see https://github.com/nodejs/node/issues/31710)
+  return os.platform() === "win32" ? pathToFileURL(fullPath).href.replace(/^file:\/\/\//, "") : fullPath;
+}
+
 /** @deprecated */
 export async function loadConfig(configPath?: string): Promise<unknown> {
-  configPath = await resolveConfigPath(configPath);
+  const inputPath = await resolveConfigPath(configPath);
+  const outputPath = path.join(path.dirname(inputPath), TEMP_CONFIG);
+  console.log("inputPath", inputPath);
+  console.log("outputPath", outputPath);
+  console.log("absWorkingDir", prepareWindowsPath(path.dirname(inputPath)));
+  console.log("entryPoint", path.basename(inputPath));
+  console.log("outfile", path.basename(outputPath));
+  // console.log("import+rm", prepareWindowsPath(outputPath));
   try {
     await esbuild.build({
-      entryPoints: [configPath],
+      absWorkingDir: prepareWindowsPath(path.dirname(inputPath)),
+      entryPoints: [path.basename(inputPath)],
       format: "esm",
-      outfile: TEMP_CONFIG,
+      outfile: path.basename(outputPath),
       // https://esbuild.github.io/getting-started/#bundling-for-node
       platform: "node",
       // bundle local imports (otherwise it may error, js can't import ts)
@@ -28,18 +43,17 @@ export async function loadConfig(configPath?: string): Promise<unknown> {
       // avoid bundling external imports (it's unnecessary and esbuild can't handle all node features)
       packages: "external",
     });
-    configPath = await resolveConfigPath(TEMP_CONFIG, true);
     // Node.js caches dynamic imports, so without appending a cache breaking
     // param like `?update={Date.now()}` this import always returns the same config
     // if called multiple times in a single process, like the `dev-contracts` cli
-    return (await import(configPath + `?update=${Date.now()}`)).default;
+    return (await import(`${outputPath}?update=${Date.now()}`)).default;
   } finally {
-    rmSync(TEMP_CONFIG, { force: true });
+    rmSync(outputPath, { force: true });
   }
 }
 
 /** @deprecated */
-export async function resolveConfigPath(configPath?: string, toFileURL?: boolean) {
+export async function resolveConfigPath(configPath?: string) {
   if (configPath === undefined) {
     configPath = await getUserConfigPath();
   } else {
@@ -48,10 +62,13 @@ export async function resolveConfigPath(configPath?: string, toFileURL?: boolean
       configPath = path.normalize(configPath);
     }
   }
-
-  // Add `file:///` for Windows support
-  // (see https://github.com/nodejs/node/issues/31710)
-  return toFileURL && os.platform() === "win32" ? pathToFileURL(configPath).href : configPath;
+  return (
+    upath
+      .normalize(configPath)
+      // discard drive letter to make it easier to work with
+      // this means working with files across drives in windows won't work
+      .replace(/^\w+:\//, "/")
+  );
 }
 
 /** @deprecated */

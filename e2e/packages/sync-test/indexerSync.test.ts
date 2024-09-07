@@ -10,7 +10,7 @@ import {
   openClientWithRootAccount,
 } from "./setup";
 import { range } from "@latticexyz/utils";
-import path from "node:path";
+import path from "node:path/posix";
 import { rpcHttpUrl } from "./setup/constants";
 import { z } from "zod";
 import { callPageFunction } from "./data/callPageFunction";

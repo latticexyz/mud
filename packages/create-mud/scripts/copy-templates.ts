@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import path from "node:path";
+import path from "node:path/posix";
 import { execa } from "execa";
 import { glob } from "glob";
 
@@ -8,7 +8,7 @@ import { glob } from "glob";
   const rootDir = path.resolve(packageDir, "../..");
 
   const mudPackageNames = await (async () => {
-    const files = await glob("packages/*/package.json", { cwd: rootDir });
+    const files = await glob("packages/*/package.json", { cwd: rootDir, posix: true });
     const packages = await Promise.all(
       files.map(async (file) => JSON.parse(await fs.readFile(path.join(rootDir, file), "utf-8"))),
     );

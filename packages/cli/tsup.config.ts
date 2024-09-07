@@ -1,13 +1,13 @@
 import { defineConfig } from "tsup";
 import { globSync } from "glob";
 import { readFileSync } from "node:fs";
-import path from "node:path";
+import path from "node:path/posix";
 import { MudPackages } from "./src/common";
 
 const mudWorkspace = path.normalize(`${__dirname}/../..`);
 
 const mudPackages: MudPackages = Object.fromEntries(
-  globSync(path.join(mudWorkspace, `packages/*/package.json`))
+  globSync(path.join(mudWorkspace, `packages/*/package.json`), { posix: true })
     .sort()
     .map((filename) => [
       path.relative(mudWorkspace, path.dirname(filename)),

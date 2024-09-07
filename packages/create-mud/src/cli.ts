@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { create } from "create-create-app";
-import path from "node:path";
+import path from "node:path/posix";
 import packageJson from "../package.json";
 
 const templateRoot = path.resolve(__dirname, "..", "dist", "templates");

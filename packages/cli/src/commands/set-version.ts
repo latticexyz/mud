@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import { readFileSync, writeFileSync } from "fs";
-import path from "path";
+import path from "node:path/posix";
 import type { CommandModule } from "yargs";
 import { MUDError } from "@latticexyz/common/errors";
 import { logError } from "../utils/errors";
@@ -63,7 +63,7 @@ const commandModule: CommandModule<Options, Options> = {
       }
 
       // Update all package.json below the current working directory (except in node_modules)
-      const packageJsons = globSync("**/package.json")
+      const packageJsons = globSync("**/package.json", { posix: true })
         .sort()
         .filter((p) => !p.includes("node_modules"));
 

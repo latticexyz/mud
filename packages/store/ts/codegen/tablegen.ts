@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import path from "node:path";
+import path from "node:path/posix";
 import { formatAndWriteSolidity, renderEnums } from "@latticexyz/common/codegen";
 import { renderTable } from "./renderTable";
 import { renderTableIndex } from "./renderTableIndex";
@@ -18,6 +18,7 @@ export type TablegenOptions = {
 };
 
 export async function tablegen({ rootDir, config }: TablegenOptions) {
+  console.log("tablegen rootDir", rootDir);
   const userTypes = getUserTypes({ config });
 
   // Write enums to user types file

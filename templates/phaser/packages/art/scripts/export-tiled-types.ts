@@ -2,9 +2,9 @@ import xlmJs from "xml-js";
 import fs from "fs";
 import { globSync } from "glob";
 import ejs from "ejs";
-import path from "path";
+import path from "node:path/posix";
 
-const tilemaps = globSync("./tilesets/*.tsx").sort();
+const tilemaps = globSync("./tilesets/*.tsx", { posix:true }).sort();
 
 enum PropertyName {
   Name = "name",

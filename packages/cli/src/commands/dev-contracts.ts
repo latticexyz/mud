@@ -3,7 +3,7 @@ import { anvil, getScriptDirectory, getSrcDirectory } from "@latticexyz/common/f
 import chalk from "chalk";
 import chokidar from "chokidar";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
-import path from "path";
+import path from "node:path/posix";
 import { World as WorldConfig } from "@latticexyz/world";
 import { homedir } from "os";
 import { rmSync } from "fs";

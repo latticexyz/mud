@@ -3,7 +3,7 @@ import { defineWorld } from "../config/v2/world";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
-const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const rootDir = path.posix.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 const config = defineWorld({
   sourceDirectory: "test",

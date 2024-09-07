@@ -1,4 +1,4 @@
-import path from "node:path";
+import path from "node:path/posix";
 import { resolveConfigPath } from "@latticexyz/config/node";
 import { tablegen } from "@latticexyz/store/codegen";
 import { defineWorld } from "../config/v2";

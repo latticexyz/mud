@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path/posix";
 import { SchemaTypeArrayToElement } from "@latticexyz/schema-type/deprecated";
 import { RenderDynamicField, RenderField, RenderKeyTuple, RenderStaticField } from "@latticexyz/common/codegen";
 import { RenderTableOptions } from "./types";

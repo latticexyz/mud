@@ -3,22 +3,25 @@ import { defineStore } from "@latticexyz/store";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
-const configPath = fileURLToPath(import.meta.url);
+console.log("import.meta.url", import.meta.url);
+console.log("fileURLToPath", fileURLToPath(import.meta.url));
+console.log("dirname", path.dirname(fileURLToPath(import.meta.url)));
+const rootDir = path.posix.resolve(path.dirname(fileURLToPath(import.meta.url)), "../contracts");
+console.log("rootDir", rootDir);
 
 // This config is used only for tests.
 // Aside from avoiding `mud.config.ts` in cli package (could cause issues),
 // this also tests that mudConfig and tablegen can work as standalone functions
 const config = defineStore({
-  sourceDirectory: "../contracts/src",
   enums: {
     Enum1: ["E1", "E2", "E3"],
     Enum2: ["E1"],
   },
   userTypes: {
-    TestTypeAddress: { filePath: "../contracts/src/types.sol", type: "address" },
-    TestTypeInt64: { filePath: "../contracts/src/types.sol", type: "int64" },
-    "TestTypeLibrary.TestTypeBool": { filePath: "../contracts/src/types.sol", type: "bool" },
-    "TestTypeLibrary.TestTypeUint128": { filePath: "../contracts/src/types.sol", type: "uint128" },
+    TestTypeAddress: { filePath: "./src/types.sol", type: "address" },
+    TestTypeInt64: { filePath: "./src/types.sol", type: "int64" },
+    "TestTypeLibrary.TestTypeBool": { filePath: "./src/types.sol", type: "bool" },
+    "TestTypeLibrary.TestTypeUint128": { filePath: "./src/types.sol", type: "uint128" },
     ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", type: "bytes32" },
   },
   tables: {
@@ -95,4 +98,4 @@ const config = defineStore({
   },
 });
 
-await tablegen({ rootDir: path.dirname(configPath), config });
+await tablegen({ rootDir, config });

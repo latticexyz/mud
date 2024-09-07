@@ -1,5 +1,5 @@
 import { existsSync, statSync, readdirSync, readFileSync, readFile, writeFileSync } from "fs";
-import { resolve, dirname } from "path";
+import { resolve, dirname } from "node:path/posix";
 import optimist from "optimist";
 import chalk from "chalk";
 const { yellowBright, redBright, white, magentaBright, greenBright } = chalk;

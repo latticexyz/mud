@@ -2,7 +2,7 @@
 import { watchFile } from "fs";
 import { readFile } from "fs/promises";
 import minimist from "minimist";
-import path from "path";
+import path from "node:path/posix";
 import process from "process";
 import { fileURLToPath } from "url";
 import { ChildProcess, spawn } from "child_process";

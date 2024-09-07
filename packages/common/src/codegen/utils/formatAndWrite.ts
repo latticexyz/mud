@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import path from "node:path";
+import path from "node:path/posix";
 import { formatSolidity, formatTypescript } from "./format";
 import { debug } from "../debug";
 
@@ -13,7 +13,6 @@ export async function formatAndWriteSolidity(output: string, fullOutputPath: str
   const formattedOutput = await formatSolidity(output);
 
   await fs.mkdir(path.dirname(fullOutputPath), { recursive: true });
-
   await fs.writeFile(fullOutputPath, formattedOutput);
   debug(`${logPrefix}: ${fullOutputPath}`);
 }

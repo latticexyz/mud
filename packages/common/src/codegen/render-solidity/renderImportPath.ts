@@ -1,4 +1,4 @@
-import path from "node:path";
+import path from "node:path/posix";
 
 // This will probably break for backslash-escaped POSIX paths,
 // but we'll worry about that later.

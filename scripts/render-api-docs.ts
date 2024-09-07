@@ -5,7 +5,7 @@
 import { execa } from "execa";
 import prettier from "prettier";
 import { readFileSync, readdirSync, writeFileSync } from "fs";
-import path from "path";
+import path from "node:path/posix";
 import prettierOptions from "../.prettierrc.cjs";
 
 const DOCS_ROOT = "docs/pages";
