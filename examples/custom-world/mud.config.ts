@@ -15,7 +15,7 @@ export default defineWorld({
   },
   deploy: {
     customWorld: {
-      sourcePath: "CustomWorld.sol",
+      sourcePath: "src/CustomWorld.sol",
       name: "CustomWorld",
     },
   },

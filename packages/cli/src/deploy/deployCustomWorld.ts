@@ -1,4 +1,4 @@
-import { Account, Chain, Client, Hex, Transport, concatHex, getCreate2Address, isHex } from "viem";
+import { Account, Chain, Client, Hex, Transport, concatHex, encodeDeployData, getCreate2Address, isHex } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
 import { sendTransaction } from "@latticexyz/common";
 import { debug } from "./debug";
@@ -78,8 +78,11 @@ export async function deployCustomWorld({
   debug("deploying custom world");
   const tx = await sendTransaction(client, {
     chain: client.chain ?? null,
-    to: deployerAddress,
-    data: getDeployable(deployerAddress, worldArtifact, artifacts),
+    data: encodeDeployData({
+      abi: worldArtifact.abi,
+      args: [], // TODO
+      bytecode: getDeployable(deployerAddress, worldArtifact, artifacts),
+    }),
   });
 
   debug("waiting for custom world deploy");
