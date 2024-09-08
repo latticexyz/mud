@@ -60,6 +60,7 @@ export async function deployCustomWorld({
   });
 
   const worldArtifact = findArtifact(customWorld, artifacts);
+  // TODO: check that world ABI still satisfies the protocol
 
   // Find and deploy dependencies (i.e. public libraries)
   const deps = getDependencies(worldArtifact, artifacts);
