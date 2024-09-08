@@ -80,8 +80,6 @@ export type Namespaces = {
 };
 
 export type Deploy = {
-  /** The name of a custom World contract to deploy. If no name is provided, a default MUD World is deployed */
-  readonly customWorldContract: string | undefined;
   /**
    * Script to execute after the deployment is complete (Default "PostDeploy").
    * Script must be placed in the forge scripts directory (see foundry.toml) and have a ".s.sol" extension.
