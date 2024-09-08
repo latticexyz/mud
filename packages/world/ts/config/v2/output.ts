@@ -92,7 +92,7 @@ export type Deploy = {
   /** Deploy the World as an upgradeable proxy */
   readonly upgradeableWorldImplementation: boolean;
   /**
-   * Deploy the World using a custom implementation. This world must implement the same interface as World.sol so that it can initialize core modules, etc.
+   * Deploy the World using a custom implementation. This world must implement the same interface as `World.sol` so that it can initialize core modules, etc.
    * If you want to extend the world with new functions or override existing registered functions, we recommend using [root systems](https://mud.dev/world/systems#root-systems).
    * However, there are rare cases where this may not be enough to modify the native/internal World behavior.
    * Note that deploying a custom World opts out of the world factory, deterministic world deploys, and upgradeable implementation proxy.
