@@ -1,13 +1,14 @@
 import { Account, Chain, Client, Hex, Transport, concatHex, encodeDeployData, getCreate2Address, isHex } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
-import { sendTransaction } from "@latticexyz/common";
+import { resourceToHex, sendTransaction, writeContract } from "@latticexyz/common";
 import { debug } from "./debug";
 import { logsToWorldDeploy } from "./logsToWorldDeploy";
-import { WorldDeploy, salt } from "./common";
+import { WorldDeploy, salt, worldAbi } from "./common";
 import { getWorldContracts } from "./getWorldContracts";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { ContractArtifact, ReferenceIdentifier } from "@latticexyz/world/node";
 import { World } from "@latticexyz/world";
+import { waitForTransactions } from "./waitForTransactions";
 
 function findArtifact(ref: ReferenceIdentifier, artifacts: readonly ContractArtifact[]): ContractArtifact {
   const artifact = artifacts.find((a) => a.sourcePath === ref.sourcePath && a.name === ref.name);
@@ -76,7 +77,7 @@ export async function deployCustomWorld({
 
   // Deploy custom world without deterministic deployer for now
   debug("deploying custom world");
-  const tx = await sendTransaction(client, {
+  const deployTx = await sendTransaction(client, {
     chain: client.chain ?? null,
     data: encodeDeployData({
       abi: worldArtifact.abi,
@@ -86,7 +87,7 @@ export async function deployCustomWorld({
   });
 
   debug("waiting for custom world deploy");
-  const receipt = await waitForTransactionReceipt(client, { hash: tx });
+  const receipt = await waitForTransactionReceipt(client, { hash: deployTx });
   if (receipt.status !== "success") {
     console.error("world deploy failed", receipt);
     throw new Error("world deploy failed");
@@ -94,6 +95,27 @@ export async function deployCustomWorld({
 
   const deploy = logsToWorldDeploy(receipt.logs);
   debug("deployed custom world to", deploy.address, "at block", deploy.deployBlock);
+
+  const initTxs = await Promise.all([
+    // initialize world via init module
+    writeContract(client, {
+      chain: client.chain ?? null,
+      address: deploy.address,
+      abi: worldAbi,
+      functionName: "initialize",
+      args: [contracts.InitModule.address],
+    }),
+    // transfer root namespace to deployer
+    writeContract(client, {
+      chain: client.chain ?? null,
+      address: deploy.address,
+      abi: worldAbi,
+      functionName: "transferOwnership",
+      args: [resourceToHex({ type: "namespace", namespace: "", name: "" }), client.account.address],
+    }),
+  ]);
+
+  await waitForTransactions({ client, hashes: initTxs, debugLabel: "world init" });
 
   return { ...deploy, stateBlock: deploy.deployBlock };
 }

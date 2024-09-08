@@ -9,3 +9,4 @@ pnpm-lock.yaml
 
 # Ignore MUD deploy artifacts
 deploys/**/*.json
+worlds.json
