@@ -162,7 +162,18 @@ The following options are available in both single- and multiple-namespace modes
       <Param name="deploysDirectory">Directory, relative to project root, to write the deployment artifacts to. Defaults to `"deploys"`.</Param>
       <Param name="postDeployScript">Script name to execute after the deployment is complete. Defaults to `"PostDeploy"`.</Param>
       <Param name="worldsFile">JSON filename, relative to project root, to write per-chain world deployment addresses. Defaults to `"worlds.json"`.</Param>
-      <Param name="upgradeableWorldImplementation">Wheter or not to deploy the world with an upgradeable proxy, allowing for the core implementation to be upgraded. Defaults to `false`, but [we recommend `true`](/guides/best-practices/deployment-settings).</Param>
+      <Param name="upgradeableWorldImplementation">Whether or not to deploy the world with an upgradeable proxy, allowing for the core implementation to be upgraded. Defaults to `false`, but [we recommend `true`](/guides/best-practices/deployment-settings).</Param>
+      <Param name="customWorld">
+        Deploy the World using a custom implementation. This world must implement the same interface as World.sol so that it can initialize core modules, etc.
+        If you want to extend the world with new functions or override existing registered functions, we recommend using [root systems](/world/systems#root-systems).
+        However, there are rare cases where this may not be enough to modify the native/internal World behavior.
+        Note that deploying a custom World opts out of the world factory, deterministic world deploys, and upgradeable implementation proxy.
+
+        <Params>
+          <Param name="sourcePath">Path to custom world source file relative to project root dir.</Param>
+          <Param name="name">Contract name in custom world source file.</Param>
+        </Params>
+      </Param>
     </Params>
 
   </Param>
