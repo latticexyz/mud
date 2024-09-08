@@ -96,7 +96,9 @@ export type DeployInput = {
    */
   // TODO: enforce that this can't be used with `upgradeableWorldImplementation`
   readonly customWorld?: {
+    /** Path to custom world source file relative to project root dir. */
     sourcePath: string;
+    /** Contract name in custom world source file. */
     name: string;
     // TODO: constructor calldata
   };

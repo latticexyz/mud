@@ -98,7 +98,9 @@ export type Deploy = {
    * Note that deploying a custom World opts out of the world factory, deterministic world deploys, and upgradeable implementation proxy.
    */
   readonly customWorld?: {
+    /** Path to custom world source file relative to project root dir. */
     sourcePath: string;
+    /** Contract name in custom world source file. */
     name: string;
     // TODO: constructor calldata
   };
