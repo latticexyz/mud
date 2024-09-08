@@ -13,7 +13,7 @@ Note that deploying a custom World opts out of the world factory, deterministic 
 ```ts
 import { defineWorld } from "@latticexyz/world";
 
-defineWorld({
+export default defineWorld({
   customWorld: {
     // path to custom world source from project root
     sourcePath: "src/CustomWorld.sol",
