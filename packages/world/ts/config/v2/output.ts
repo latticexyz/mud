@@ -102,7 +102,6 @@ export type Deploy = {
     sourcePath: string;
     /** Contract name in custom world source file. */
     name: string;
-    // TODO: constructor calldata
   };
 };
 

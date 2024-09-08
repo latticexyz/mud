@@ -94,13 +94,13 @@ export type DeployInput = {
    * However, there are rare cases where this may not be enough to modify the native/internal World behavior.
    * Note that deploying a custom World opts out of the world factory, deterministic world deploys, and upgradeable implementation proxy.
    */
-  // TODO: enforce that this can't be used with `upgradeableWorldImplementation`
+  // TODO: enforce that this can't be used with `upgradeableWorldImplementation` (https://github.com/latticexyz/mud/issues/3151)
   readonly customWorld?: {
     /** Path to custom world source file relative to project root dir. */
     sourcePath: string;
     /** Contract name in custom world source file. */
     name: string;
-    // TODO: constructor calldata
+    // TODO: constructor calldata (https://github.com/latticexyz/mud/issues/3150)
   };
 };
 

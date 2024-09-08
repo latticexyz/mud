@@ -60,7 +60,7 @@ export async function deployCustomWorld({
   });
 
   const worldArtifact = findArtifact(customWorld, artifacts);
-  // TODO: check that world ABI still satisfies the protocol
+  // TODO: check that world ABI still satisfies the protocol (https://github.com/latticexyz/mud/issues/3152)
 
   // Find and deploy dependencies (i.e. public libraries)
   const deps = getDependencies(worldArtifact, artifacts);
@@ -82,7 +82,7 @@ export async function deployCustomWorld({
     chain: client.chain ?? null,
     data: encodeDeployData({
       abi: worldArtifact.abi,
-      args: [], // TODO
+      args: [], // TODO (https://github.com/latticexyz/mud/issues/3150)
       bytecode: getDeployable(deployerAddress, worldArtifact, artifacts),
     }),
   });
