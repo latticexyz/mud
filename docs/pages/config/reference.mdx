@@ -128,18 +128,18 @@ The following options are available in both single- and multiple-namespace modes
 
     <Params title="Module config options">
       <Param name="artifactPath">Relative path to the module's compiled JSON artifact (usually in `out`) or an import path if using a module from an npm package. This path is resolved using [Node's module `require` API](https://nodejs.org/api/modules.html#modulerequireid).</Param>
-
       <Param name="root">Whether or not to install this as a root module. Defaults to `false`.</Param>
-
       <Param name="args">
         A list of arguments used to call the module's install function. Each argument is a structure with two fields:
-        <Params title="Structure in each argument">
+
+        <Params>
           <Param name="type">Solidity data type.</Param>
           <Param name="value">
             The value.
             To encode a complex data type, such as a structure or an array, you can use Viem's [`encodeAbiParameters`](https://viem.sh/docs/abi/encodeAbiParameters.html).
           </Param>
         </Params>
+
       </Param>
     </Params>
 
@@ -173,6 +173,7 @@ The following options are available in both single- and multiple-namespace modes
           <Param name="sourcePath">Path to custom world source file relative to project root dir.</Param>
           <Param name="name">Contract name in custom world source file.</Param>
         </Params>
+
       </Param>
     </Params>
 
