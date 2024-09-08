@@ -5,5 +5,7 @@ bindings/
 artifacts/
 broadcast/
 
+pnpm-lock.yaml
+
 # Ignore MUD deploy artifacts
 deploys/**/*.json

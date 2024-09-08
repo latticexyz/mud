@@ -51,11 +51,11 @@ importers:
         specifier: ^3.4.1
         version: 3.6.2(typescript@5.4.2)
       solhint-config-mud:
-        specifier: file:../../packages/solhint-config-mud
-        version: file:../../packages/solhint-config-mud
+        specifier: link:../../packages/solhint-config-mud
+        version: link:../../packages/solhint-config-mud
       solhint-plugin-mud:
-        specifier: file:../../packages/solhint-plugin-mud
-        version: file:../../packages/solhint-plugin-mud
+        specifier: link:../../packages/solhint-plugin-mud
+        version: link:../../packages/solhint-plugin-mud
       typescript:
         specifier: 5.4.2
         version: 5.4.2
@@ -373,12 +373,6 @@ packages:
   slice-ansi@4.0.0:
     resolution: {integrity: sha512-qMCMfhY040cVHT43K9BFygqYbUPFZKHOg7K73mtTWJRb8pyP3fzf4Ixd5SzdEJQ6MRUg/WBnOLxghZtKKurENQ==}
     engines: {node: '>=10'}
-
-  solhint-config-mud@file:../../packages/solhint-config-mud:
-    resolution: {directory: ../../packages/solhint-config-mud, type: directory}
-
-  solhint-plugin-mud@file:../../packages/solhint-plugin-mud:
-    resolution: {directory: ../../packages/solhint-plugin-mud, type: directory}
 
   solhint@3.6.2:
     resolution: {integrity: sha512-85EeLbmkcPwD+3JR7aEMKsVC9YrRSxd4qkXuMzrlf7+z2Eqdfm1wHWq1ffTuo5aDhoZxp2I9yF3QkxZOxOL7aQ==}
@@ -709,12 +703,6 @@ snapshots:
       ansi-styles: 4.3.0
       astral-regex: 2.0.0
       is-fullwidth-code-point: 3.0.0
-
-  solhint-config-mud@file:../../packages/solhint-config-mud: {}
-
-  solhint-plugin-mud@file:../../packages/solhint-plugin-mud:
-    dependencies:
-      '@solidity-parser/parser': 0.16.2
 
   solhint@3.6.2(typescript@5.4.2):
     dependencies:
