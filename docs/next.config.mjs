@@ -256,6 +256,26 @@ export default withNextra({
         destination: "/store/store-hooks",
         permanent: false,
       },      
+      {
+        source: "/guides/best-practices/dividing-into-systems",
+        destination: "/best-practices/dividing-into-systems",
+        permanent: false,
+      },
+      {
+        source: "/guides/best-practices/system-best-practices",
+        destination: "/best-practices/system-best-practices",
+        permanent: false,
+      }, 
+      {
+        source: "/guides/best-practices/deployment-settings",
+        destination: "/best-practices/deployment-settings",
+        permanent: false,
+      },
+      {
+        source: "/guides/best-practices/kms",
+        destination: "/best-practices/kms",
+        permanent: false,
+      },                 
     ];
   },
 });

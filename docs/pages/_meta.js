@@ -33,6 +33,7 @@ export default {
   },
   guides: "Guides",
   templates: "Templates",
+  "best-practices": "Best Practices",
   contribute: {
     title: "Contribute",
     theme: { breadcrumb: false },
