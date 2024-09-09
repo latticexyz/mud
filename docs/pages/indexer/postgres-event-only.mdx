@@ -1,7 +1,7 @@
 import { Callout } from "nextra/components";
-import { CollapseCode } from "../../../components/CollapseCode";
+import { CollapseCode } from "../../components/CollapseCode";
 
-# Postgres for Data and Events
+# Postgres for Events Only
 
 ## Installation
 
@@ -20,19 +20,24 @@ These environment variables need to be provided to the indexer to work:
 
 ### Using npx
 
-This indexer dynamically creates a PostgreSQL table every time it encounters a new MUD table.
-It then decodes the MUD events and stores them in the PostgreSQL table with a matching schema.
-This approach doesn't scale well to all tables of a chain, but it is a convenient way to index the tables of a particular MUD World and have access to powerful SQL queries on its data.
+The schemaless indexer stores MUD event records into a single monolithic table.
+The main purpose of this variant of the indexer is to efficiently hydrate a MUD client, which decodes the data from the events.
 
 1. Start a `World` to index.
    An easy way to do this is to [use a TypeScript template](/templates/typescript/getting-started) in a separate command line window.
 
-1. Set the environment variables and start the indexer, installing it if necessary.
+1. Set the environment variables.
 
    ```bash copy
    export RPC_HTTP_URL=http://127.0.0.1:8545
    export DATABASE_URL=postgres://127.0.0.1/postgres
-   npx -y -p @latticexyz/store-indexer postgres-decoded-indexer
+   ```
+
+1. Run the indexer.
+   Install it first if necessary.
+
+   ```bash copy
+   npx -y -p @latticexyz/store-indexer postgres-indexer
    ```
 
 1. Open a separate command line.
@@ -57,8 +62,8 @@ There are several ways to provide the environment variables to `docker run`:
 
 The easiest way to test the indexer is to [run the template as a world](/templates/typescript/getting-started) in a separate command-line window.
 
-The command to start the indexer in data and events PostgreSQL mode is `pnpm start:postgres-decoded`.
-This command starts both the indexer and the query frontend.
+The command to start the indexer in event-only PostgreSQL mode is `pnpm start:postgres`.
+This command starts both the indexer and query frontends.
 
 1. The docker instance identifies itself to PostgreSQL as `root`.
    To give this user permissions on the database, enter `psql` and run this command.
@@ -80,7 +85,19 @@ This command starts both the indexer and the query frontend.
      -e DATABASE_URL=postgres://host.docker.internal/postgres \
      -p 3001:3001  \
      ghcr.io/latticexyz/store-indexer:latest  \
-     pnpm start:postgres-decoded
+     pnpm start:postgres
+   ```
+
+   If you want to create additional query frontends (for reliability and load balancing), use these commands:
+
+   ```sh copy
+   HOST_PORT=3002
+   docker run \
+     --platform linux/amd64 \
+     -e DATABASE_URL=postgres://host.docker.internal/postgres \
+     -p $HOST_PORT:3001  \
+     ghcr.io/latticexyz/store-indexer:latest  \
+     node dist/bin/postgres-frontend.js
    ```
 
 ## Using the indexer
@@ -124,100 +141,11 @@ Meaning that the query is for all events in the `World` at address `0x8d8b6b8414
 
 </details>
 
-### Reading the data
-
-1. Run `psql`.
-
-1. List the schemas.
-
-   ```sql copy
-   \dn
-   ```
-
-   Result:
-
-   ```
-                     List of schemas
-                     Name                    | Owner
-   --------------------------------------------+-------
-   0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b | qbzzt
-   mud                                        | qbzzt
-   (2 rows)
-   ```
-
-1. Connect to the schema for your world.
-
-   ```sql copy
-   SET search_path TO "0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b";
-   ```
-
-1. Get the list of tables.
-
-   ```sql copy
-   \dt
-   ```
-
-   Result (When using the React template):
-
-   ```
-                                    List of relations
-                     Schema                   |           Name            | Type  | Owner
-   --------------------------------------------+---------------------------+-------+-------
-   0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b | app__tasks                | table | qbzzt
-   0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b | store__resource_ids       | table | qbzzt
-   0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b | store__store_hooks        | table | qbzzt
-   0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b | store__tables             | table | qbzzt
-   0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b | world__balances           | table | qbzzt
-   0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b | world__function_selector  | table | qbzzt
-   0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b | world__function_signatur  | table | qbzzt
-   0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b | world__init_module_addres | table | qbzzt
-   0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b | world__installed_modules  | table | qbzzt
-   0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b | world__namespace_delegat  | table | qbzzt
-   0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b | world__namespace_owner    | table | qbzzt
-   0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b | world__resource_access    | table | qbzzt
-   0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b | world__system_hooks       | table | qbzzt
-   0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b | world__system_registry    | table | qbzzt
-   0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b | world__systems            | table | qbzzt
-   0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b | world__user_delegation_co | table | qbzzt
-   (16 rows)
-   ```
-
-1. Read actual data.
-
-   ```sql copy
-   SELECT description FROM app__tasks;
-   ```
-
-   Result:
-
-   ```
-       description
-   --------------------
-   Walk the dog
-   Take out the trash
-   Do the dishes
-   (3 rows)
-   ```
-
 ### Clearing the information
 
 If you restart the blockchain, you need to clear all the information stored by the indexer otherwise you'll have an inconsistent state.
+The events are all in the `mud` schema:
 
-1. Get the list of `World`s using this command:
-
-   ```sql copy
-   SELECT DISTINCT address FROM mud.records;
-   ```
-
-1. Delete those schemas.
-   For example, if you use one of the TypeScript templates, run this command:
-
-   ```sql copy
-   DROP SCHEMA "0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b" CASCADE;
-   ```
-
-1. Drop the `mud` schema.
-
-   ```sql copy
-   DROP SCHEMA mud CASCADE;
-   ```
+```sql copy
+DROP SCHEMA "mud" CASCADE;
+```

@@ -22,7 +22,7 @@ export default {
   config: "Config",
   cli: "CLI",
   "state-query": "State Query",
-  services: "Services",
+  indexer: "Indexer",
   "world-explorer": {
     title: "World Explorer",
     theme: { breadcrumb: false },
