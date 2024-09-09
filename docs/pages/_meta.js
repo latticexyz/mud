@@ -55,12 +55,6 @@ export default {
       },
     },
   },
-  status: {
-    title: "Status",
-    type: "page",
-    href: "https://status.mud.dev",
-    newWindow: true,
-  },
   community: {
     title: "Community",
     type: "page",
