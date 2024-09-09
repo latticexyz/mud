@@ -263,7 +263,7 @@ export default withNextra({
       },
       {
         source: "/guides/best-practices/system-best-practices",
-        destination: "/best-practices/system-best-practices",
+        destination: "/best-practices/system",
         permanent: false,
       }, 
       {
@@ -273,7 +273,7 @@ export default withNextra({
       },
       {
         source: "/guides/best-practices/kms",
-        destination: "/best-practices/kms",
+        destination: "/best-practices/aws-kms",
         permanent: false,
       },                 
     ];
