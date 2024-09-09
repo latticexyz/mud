@@ -458,9 +458,6 @@ importers:
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
-      '@latticexyz/config':
-        specifier: workspace:*
-        version: link:../config
       '@latticexyz/protocol-parser':
         specifier: workspace:*
         version: link:../protocol-parser
