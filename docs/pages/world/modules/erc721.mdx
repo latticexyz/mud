@@ -15,12 +15,15 @@ The advantage of doing this, rather than creating a separate [NFT contract](http
 ## Deployment
 
 The easiest way to deploy this module is to edit `mud.config.ts`.
+This is a modified version of the [vanilla](/templates/typescript/contracts) template.
+
+Note that before you use this file you need to run `pnpm add viem` (see explanation below).
 
 <CollapseCode>
 
-```typescript filename="mud.config.ts" showLineNumbers copy {2-16,28-44}
+```typescript filename="mud.config.ts" showLineNumbers copy {2-13,25-41}
 import { defineWorld } from "@latticexyz/world";
-import { encodeAbiParameters } from "viem";
+import { encodeAbiParameters, stringToHex } from "viem";
 
 const erc721ModuleArgs = encodeAbiParameters(
   [
@@ -30,7 +33,7 @@ const erc721ModuleArgs = encodeAbiParameters(
       components: [{ type: "string" }, { type: "string" }, { type: "string" }],
     },
   ],
-  ["0x44444444".padEnd(30, "0"), ["No Valuable Token", "NVT", "http://www.example.com/base/uri/goes/here"]],
+  [stringToHex("MyNFT", { size: 14 }), ["No Valuable Token", "NVT", "http://www.example.com/base/uri/goes/here"]],
 );
 
 export default defineWorld({
@@ -70,14 +73,15 @@ export default defineWorld({
 <summary>Explanation</summary>
 
 ```typescript
-import { encodeAbiParameters } from "viem";
+import { encodeAbiParameters, stringToHex } from "viem";
 ```
 
 In simple cases it is enough to use the config parser to specify the module arguments.
 However, the NFT module requires a `struct` as [one of the arguments](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/erc721-puppet/ERC721Module.sol#L37).
 We use [`encodeAbiParameters`](https://viem.sh/docs/abi/encodeAbiParameters.html) to encode the `struct` data.
+The [`stringToHex`](https://viem.sh/docs/utilities/toHex.html#stringtohex) function is used to specify the namespace the token uses.
 
-Note that this means we need to issue `pnpm install viem` in `packages/contracts` to be able to use the library here.
+This is the reason we need to issue `pnpm install viem` in `packages/contracts` to be able to use the library here.
 
 ```typescript
 const erc721ModuleArgs = encodeAbiParameters(
@@ -113,14 +117,13 @@ It consists of three strings (the token name, symbol, and [base URI](https://doc
 
 ```typescript
   [
-    "0x44444444".padEnd(30, "0"),
+    stringToHex("MyNFT", { size: 14 }),
 ```
 
 The second `encodeAbiParameters` parameter is a list of the values, of the types declared in the first list.
 
-The first parameter for the module is `bytes14`, which is expected to be a hexadecimal value with twenty-eight hexadecimal digits, for a total length of thirty.
-Here we use `0x4...40....0` with eight 4's followed by twenty 0's.
-This gives us the namespace `DDDD`, which is easy to recognize both as hex and as text.
+The first parameter for the module is `bytes14`, the namespace of the ERC-721 token.
+We use [`stringToHex`](https://viem.sh/docs/utilities/toHex.html#stringtohex) to convert it from the text form that is easy for us to use, to the hexadecimal number that Viem expects for `bytes14` parameter.
 
 ```typescript
     ["No Valuable Token", "NVT", "http://www.example.com/base/uri/goes/here"],
@@ -180,7 +183,7 @@ For example, run this script.
 
 <CollapseCode>
 
-```solidity filename="ManageERC721.s.sol" copy {29-34, 42-58}
+```solidity filename="ManageERC721.s.sol" copy {29-33, 41-57}
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
@@ -210,7 +213,7 @@ contract ManageERC721 is Script {
     vm.startBroadcast(deployerPrivateKey);
 
     // Get the ERC-721 token address
-    ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("DDDD"));
+    ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("MyNFT"));
     ResourceId erc721RegistryResource = WorldResourceIdLib.encode(RESOURCE_TABLE, "erc721-puppet", "ERC721Registry");
     address tokenAddress = ERC721Registry.getTokenAddress(erc721RegistryResource, namespaceResource);
     console.log("Token address", tokenAddress);
@@ -254,7 +257,7 @@ contract ManageERC721 is Script {
 
 ```solidity
     // Get the ERC-721 token address
-    ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("DDDD"));
+    ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("MyNFT"));
     ResourceId erc721RegistryResource =
       WorldResourceIdLib.encode(RESOURCE_TABLE, "erc721-puppet", "ERC721Registry");
     address tokenAddress = ERC721Registry.getTokenAddress(erc721RegistryResource, namespaceResource);
@@ -263,7 +266,7 @@ contract ManageERC721 is Script {
 
 This is the process to get the address of our token contract (the puppet).
 First, we get the [`resourceId` values](/world/resource-ids) for the `erc721-puppet__ERC721Registry` table and the namespace we are interested in (each namespace can only have one ERC721 token).
-Then we use `ERC721Registry` to get the token address.
+Then we use that table to get the token address.
 
 ```solidity
     // Use the token
