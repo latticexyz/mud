@@ -12,44 +12,45 @@ const __dirname = path.dirname(__filename);
 
 // Define command-line options with yargs
 const argv = yargs(process.argv.slice(2))
-  .option("port", {
-    alias: "p",
-    description: "Port number for the server",
-    type: "number",
-    default: process.env.PORT || 13690,
+  .options({
+    port: {
+      alias: "p",
+      description: "Port number for the server",
+      type: "number",
+      default: process.env.PORT || 13690,
+    },
+    chainId: {
+      alias: "c",
+      description: "Chain ID",
+      type: "number",
+      default: process.env.CHAIN_ID || 31337,
+    },
+    indexerDatabase: {
+      alias: "i",
+      description: "Path to the indexer database",
+      type: "string",
+      default: process.env.INDEXER_DATABASE || "indexer.db",
+    },
+    worldsFile: {
+      alias: "w",
+      description: "Path to the worlds.json file",
+      type: "string",
+      default: process.env.WORLDS_FILE || "worlds.json",
+    },
+    dev: {
+      alias: "d",
+      description: "Run in development mode",
+      type: "boolean",
+      default: false,
+    },
+    worldAddress: {
+      alias: "a",
+      description: "World address",
+      type: "string",
+      default: process.env.WORLD_ADDRESS || null,
+    },
   })
-  .option("chainId", {
-    alias: "c",
-    description: "Chain ID",
-    type: "number",
-    default: process.env.CHAIN_ID || 31337,
-  })
-  .option("indexerDatabase", {
-    alias: "i",
-    description: "Path to the indexer database",
-    type: "string",
-    default: process.env.INDEXER_DATABASE || "indexer.db",
-  })
-  .option("worldsFile", {
-    alias: "w",
-    description: "Path to the worlds.json file",
-    type: "string",
-    default: process.env.WORLDS_FILE || "worlds.json",
-  })
-  .option("dev", {
-    alias: "d",
-    description: "Run in development mode",
-    type: "boolean",
-    default: false,
-  })
-  .option("worldAddress", {
-    alias: "a",
-    description: "World address",
-    type: "string",
-    default: process.env.WORLD_ADDRESS || null,
-  })
-  .help()
-  .alias("help", "h").argv;
+  .parseSync();
 
 const port = argv.port;
 const chainId = argv.chainId;
@@ -75,8 +76,8 @@ async function startExplorer() {
     stdio: "inherit",
     env: {
       ...process.env,
-      PORT: port,
-      WORLD_ADDRESS: worldAddress,
+      PORT: port.toString(),
+      WORLD_ADDRESS: worldAddress?.toString(),
       INDEXER_DATABASE: path.join(process.cwd(), indexerDatabase),
     },
   });

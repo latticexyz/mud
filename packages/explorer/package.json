@@ -72,10 +72,5 @@
     "prettier-plugin-tailwindcss": "^0.6.5",
     "tailwindcss": "^3.4.1",
     "tailwindcss-animate": "^1.0.7"
-  },
-  "pnpm": {
-    "patchedDependencies": {
-      "minimist@1.2.8": "patches/minimist@1.2.8-allow-hex-values.patch"
-    }
   }
 }
