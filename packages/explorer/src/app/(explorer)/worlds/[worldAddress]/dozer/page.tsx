@@ -1,7 +1,7 @@
-import { DozerListener } from "./DozerExplorer";
+import { DozerExplorer } from "./DozerExplorer";
 
 function DozerPage() {
-  return <DozerListener />;
+  return <DozerExplorer />;
 }
 
 export default DozerPage;
