@@ -120,7 +120,7 @@ The second `encodeAbiParameters` parameter is a list of the values, of the types
 
 The first parameter for the module is `bytes14`, which is expected to be a hexadecimal value with twenty-eight hexadecimal digits, for a total length of thirty.
 Here we use `0x4...40....0` with eight 4's followed by twenty 0's.
-This gives us the namespace `DDDD`, which is easy to recognize both as hex and as text.
+This gives us the namespace `DDDD`, which is easy to recognize both as hex and as text, because `0x44` is the [ASCII representation](https://en.wikipedia.org/wiki/ASCII#Character_set) of the letter `D`.
 
 ```typescript
     ["No Valuable Token", "NVT", "http://www.example.com/base/uri/goes/here"],
