@@ -12,7 +12,7 @@ export type MonitorOptions = {
 };
 
 export function monitor<transport extends Transport, chain extends Chain, account extends Account>({
-  explorerUrl = "http://127.0.0.1:13690",
+  explorerUrl = "http://localhost:13690",
   waitForStateChange,
 }: MonitorOptions): (
   client: Client<transport, chain, account>,
