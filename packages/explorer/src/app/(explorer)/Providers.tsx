@@ -7,7 +7,7 @@ import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { anvil as anvilChain } from "@wagmi/core/chains";
-import { anvil } from "../../connectors/anvil";
+import { anvil, defaultAnvilAccounts } from "../../connectors/anvil";
 import { AppStoreProvider } from "../../store";
 
 const queryClient = new QueryClient();
@@ -22,7 +22,9 @@ export const wagmiConfig = createConfig({
       },
     }),
     safe(),
-    anvil(),
+    // We can't programmatically switch accounts within a connector, but we can switch between connectors,
+    // so we'll create one anvil connector per default anvil account so users can switch between default anvil accounts.
+    ...defaultAnvilAccounts.map((account, i) => anvil({ name: `Anvil #${i + 1}`, accounts: [account] })),
   ],
   transports: {
     [anvilChain.id]: http(),
