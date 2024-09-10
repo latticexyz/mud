@@ -19,8 +19,8 @@ const argv = yargs(process.argv.slice(2))
       type: "number",
       default: process.env.PORT || 13690,
     },
-    host: {
-      alias: ["H", "hostname"],
+    hostname: {
+      alias: "H",
       description: "Host for the server",
       type: "string",
       default: process.env.HOST || "0.0.0.0",
@@ -58,7 +58,7 @@ const argv = yargs(process.argv.slice(2))
   })
   .parseSync();
 
-const { port, host, chainId, indexerDatabase, worldsFile, dev } = argv;
+const { port, hostname, chainId, indexerDatabase, worldsFile, dev } = argv;
 let worldAddress = argv.worldAddress;
 let explorerProcess: ChildProcess;
 
@@ -67,10 +67,10 @@ async function startExplorer() {
 
   if (dev) {
     command = "pnpm";
-    args = ["dev", "--hostname", host];
+    args = ["dev", "--hostname", hostname];
   } else {
     command = "pnpm";
-    args = ["start", "--hostname", host];
+    args = ["start", "--hostname", hostname];
   }
 
   explorerProcess = spawn(command, args, {
