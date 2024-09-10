@@ -1,46 +1,93 @@
 #!/usr/bin/env node
 import { watchFile } from "fs";
 import { readFile } from "fs/promises";
-import minimist from "minimist";
 import path from "path";
 import process from "process";
 import { fileURLToPath } from "url";
+import yargs from "yargs";
 import { ChildProcess, spawn } from "child_process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const argv = minimist(process.argv.slice(2));
-const port = argv.port || process.env.PORT || 13690;
-const chainId = argv.chainId || process.env.CHAIN_ID || 31337;
-const indexerDatabase = argv.indexerDatabase || process.env.INDEXER_DATABASE || "indexer.db";
-const worldsFile = argv.worldsFile || process.env.WORLDS_FILE || "worlds.json";
-const isDev = !!argv.dev;
+const argv = yargs(process.argv.slice(2))
+  .options({
+    port: {
+      alias: "p",
+      description: "Port number for the server",
+      type: "number",
+      default: process.env.PORT || 13690,
+    },
+    hostname: {
+      alias: "H",
+      description: "Host for the server",
+      type: "string",
+    },
+    chainId: {
+      alias: "c",
+      description: "Chain ID",
+      type: "number",
+      default: process.env.CHAIN_ID || 31337,
+    },
+    indexerDatabase: {
+      alias: "i",
+      description: "Path to the indexer database",
+      type: "string",
+      default: process.env.INDEXER_DATABASE || "indexer.db",
+    },
+    worldsFile: {
+      alias: "w",
+      description: "Path to the worlds.json file",
+      type: "string",
+      default: process.env.WORLDS_FILE || "worlds.json",
+    },
+    dev: {
+      alias: "D",
+      description: "Run in development mode",
+      type: "boolean",
+      default: false,
+    },
+    worldAddress: {
+      alias: "a",
+      description: "World address",
+      type: "string",
+      default: process.env.WORLD_ADDRESS,
+    },
+  })
+  .parseSync();
 
-let worldAddress = argv.worldAddress || process.env.WORLD_ADDRESS || null;
+const { port, hostname, chainId, indexerDatabase, worldsFile, dev } = argv;
+let worldAddress = argv.worldAddress;
 let explorerProcess: ChildProcess;
 
 async function startExplorer() {
-  let command, args;
+  const env = {
+    ...process.env,
+    WORLD_ADDRESS: worldAddress?.toString(),
+    INDEXER_DATABASE: path.join(process.cwd(), indexerDatabase),
+  };
 
-  if (isDev) {
-    command = "pnpm";
-    args = ["dev"];
+  if (dev) {
+    explorerProcess = spawn(
+      "node_modules/.bin/next",
+      ["dev", "--port", port.toString(), ...(hostname ? ["--hostname", hostname] : [])],
+      {
+        cwd: path.join(__dirname, ".."),
+        stdio: "inherit",
+        env,
+      },
+    );
   } else {
-    command = "pnpm";
-    args = ["start"];
+    explorerProcess = spawn("node", [".next/standalone/packages/explorer/server.js"], {
+      cwd: path.join(__dirname, ".."),
+      stdio: "inherit",
+      env: {
+        ...env,
+        PORT: port.toString(),
+        HOSTNAME: hostname,
+      },
+    });
   }
-
-  explorerProcess = spawn(command, args, {
-    cwd: __dirname,
-    stdio: "inherit",
-    env: {
-      ...process.env,
-      PORT: port,
-      WORLD_ADDRESS: worldAddress,
-      INDEXER_DATABASE: path.join(process.cwd(), indexerDatabase),
-    },
-  });
 }
 
 async function readWorldsJson() {
