@@ -19,6 +19,12 @@ const argv = yargs(process.argv.slice(2))
       type: "number",
       default: process.env.PORT || 13690,
     },
+    host: {
+      alias: "h",
+      description: "Host for the server",
+      type: "string",
+      default: process.env.HOST || "0.0.0.0",
+    },
     chainId: {
       alias: "c",
       description: "Chain ID",
@@ -47,23 +53,19 @@ const argv = yargs(process.argv.slice(2))
       alias: "a",
       description: "World address",
       type: "string",
-      default: process.env.WORLD_ADDRESS || null,
+      default: process.env.WORLD_ADDRESS,
     },
   })
   .parseSync();
 
-const port = argv.port;
-const chainId = argv.chainId;
-const indexerDatabase = argv.indexerDatabase;
-const worldsFile = argv.worldsFile;
-const isDev = argv.dev;
-let worldAddress = argv.worldAddress || null;
+const { port, host, chainId, indexerDatabase, worldsFile, dev } = argv;
+let worldAddress = argv.worldAddress;
 let explorerProcess: ChildProcess;
 
 async function startExplorer() {
   let command, args;
 
-  if (isDev) {
+  if (dev) {
     command = "pnpm";
     args = ["dev"];
   } else {
@@ -77,6 +79,7 @@ async function startExplorer() {
     env: {
       ...process.env,
       PORT: port.toString(),
+      HOST: host,
       WORLD_ADDRESS: worldAddress?.toString(),
       INDEXER_DATABASE: path.join(process.cwd(), indexerDatabase),
     },
