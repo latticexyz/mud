@@ -10,7 +10,6 @@ import { ChildProcess, spawn } from "child_process";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Define command-line options with yargs
 const argv = yargs(process.argv.slice(2))
   .options({
     port: {
@@ -65,11 +64,15 @@ async function startExplorer() {
   let command, args;
 
   if (dev) {
-    command = "pnpm";
+    command = "node_modules/.bin/next";
     args = ["dev"];
   } else {
-    command = "pnpm";
-    args = ["start"];
+    command = "node";
+    args = [".next/standalone/packages/explorer/server.js"];
+  }
+
+  if (port) {
+    args.push("--port", port.toString());
   }
 
   if (hostname) {
@@ -77,11 +80,12 @@ async function startExplorer() {
   }
 
   explorerProcess = spawn(command, args, {
-    cwd: __dirname,
+    cwd: path.join(__dirname, ".."),
     stdio: "inherit",
     env: {
       ...process.env,
       PORT: port.toString(),
+      HOSTNAME: hostname,
       WORLD_ADDRESS: worldAddress?.toString(),
       INDEXER_DATABASE: path.join(process.cwd(), indexerDatabase),
     },
