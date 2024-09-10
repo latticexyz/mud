@@ -61,35 +61,33 @@ let worldAddress = argv.worldAddress;
 let explorerProcess: ChildProcess;
 
 async function startExplorer() {
-  let command, args;
+  const env = {
+    ...process.env,
+    WORLD_ADDRESS: worldAddress?.toString(),
+    INDEXER_DATABASE: path.join(process.cwd(), indexerDatabase),
+  };
 
   if (dev) {
-    command = "node_modules/.bin/next";
-    args = ["dev"];
+    explorerProcess = spawn(
+      "node_modules/.bin/next",
+      ["dev", "--port", port.toString(), ...(hostname ? ["--hostname", hostname] : [])],
+      {
+        cwd: path.join(__dirname, ".."),
+        stdio: "inherit",
+        env,
+      },
+    );
   } else {
-    command = "node";
-    args = [".next/standalone/packages/explorer/server.js"];
+    explorerProcess = spawn("node", [".next/standalone/packages/explorer/server.js"], {
+      cwd: path.join(__dirname, ".."),
+      stdio: "inherit",
+      env: {
+        ...env,
+        PORT: port.toString(),
+        HOSTNAME: hostname,
+      },
+    });
   }
-
-  if (port) {
-    args.push("--port", port.toString());
-  }
-
-  if (hostname) {
-    args.push("--hostname", hostname);
-  }
-
-  explorerProcess = spawn(command, args, {
-    cwd: path.join(__dirname, ".."),
-    stdio: "inherit",
-    env: {
-      ...process.env,
-      PORT: port.toString(),
-      HOSTNAME: hostname,
-      WORLD_ADDRESS: worldAddress?.toString(),
-      INDEXER_DATABASE: path.join(process.cwd(), indexerDatabase),
-    },
-  });
 }
 
 async function readWorldsJson() {
