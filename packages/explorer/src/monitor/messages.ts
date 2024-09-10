@@ -1,15 +1,15 @@
-import { Hex } from "viem";
+import { Address, Hash } from "viem";
 import { ReceiptSummary } from "./common";
 
 export type Messages = {
-  ping: null;
+  ping: {};
   write: {
     writeId: string;
-    address: Hex;
+    address: Address;
     functionSignature: string;
     args: unknown[];
   };
-  "write:result": PromiseSettledResult<Hex> & {
+  "write:result": PromiseSettledResult<Hash> & {
     writeId: string;
   };
   waitForTransactionReceipt: {
@@ -27,6 +27,9 @@ export type Messages = {
 };
 
 export type MessageType = keyof Messages;
+export type Message<messageType extends MessageType = MessageType> = {
+  [k in MessageType]: Omit<Messages[k], "type" | "time"> & { type: k; time: number };
+}[messageType];
 
 export type EmitMessage = <const messageType extends MessageType>(
   type: messageType,

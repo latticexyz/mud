@@ -3,24 +3,27 @@ import { ReactNode, useRef } from "react";
 export type Props = {
   className?: string;
   children: ReactNode;
+  enabled?: boolean;
 };
 
-export function KeepInView({ className, children }: Props) {
+export function KeepInView({ className, children, enabled = true }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const hoveredRef = useRef(false);
   const scrollBehaviorRef = useRef<ScrollBehavior>("auto");
 
   // Intentionally not in a `useEffect` so this triggers on every render.
-  if (!hoveredRef.current) {
+  if (!hoveredRef.current && enabled) {
     containerRef.current?.scrollIntoView({
       behavior: scrollBehaviorRef.current,
-      block: "end",
+      block: "center",
+      inline: "end",
     });
   }
   scrollBehaviorRef.current = "smooth";
 
   return (
     <div
+      data-enabled={enabled}
       ref={containerRef}
       onMouseEnter={() => {
         hoveredRef.current = true;

@@ -37,8 +37,9 @@ export function createBridge({ url, timeout = 10_000 }: CreateBridgeOpts): EmitM
       debug("monitor iframe ready", iframe.src);
       // TODO: throw if `iframe.contentWindow` is `null`?
       emit.resolve((type, data) => {
-        debug("posting message to bridge", wrapMessage({ ...data, type }));
-        iframe.contentWindow!.postMessage(wrapMessage({ ...data, type }), "*");
+        const message = wrapMessage({ ...data, type, time: Date.now() });
+        debug("posting message to bridge", message);
+        iframe.contentWindow!.postMessage(message, "*");
       });
     },
     { once: true },

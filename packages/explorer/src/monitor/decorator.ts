@@ -20,7 +20,7 @@ export function monitor<transport extends Transport, chain extends Chain, accoun
   const emit = createBridge({ url: `${explorerUrl}/internal/monitor-relay` });
 
   setInterval(() => {
-    emit("ping", null);
+    emit("ping", {});
   }, 2000);
 
   return (client) => {
