@@ -713,34 +713,6 @@ importers:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
 
-  packages/query:
-    dependencies:
-      '@ark/util':
-        specifier: 'catalog:'
-        version: 0.2.2
-      '@latticexyz/common':
-        specifier: workspace:*
-        version: link:../common
-      '@latticexyz/config':
-        specifier: workspace:*
-        version: link:../config
-      '@latticexyz/schema-type':
-        specifier: workspace:*
-        version: link:../schema-type
-      '@latticexyz/store':
-        specifier: workspace:*
-        version: link:../store
-      viem:
-        specifier: 'catalog:'
-        version: 2.19.8(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
-    devDependencies:
-      tsup:
-        specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
-      vitest:
-        specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.6)
-
   packages/react:
     dependencies:
       '@latticexyz/recs':
@@ -1110,9 +1082,6 @@ importers:
       '@latticexyz/protocol-parser':
         specifier: workspace:*
         version: link:../protocol-parser
-      '@latticexyz/query':
-        specifier: workspace:*
-        version: link:../query
       '@latticexyz/recs':
         specifier: workspace:*
         version: link:../recs
