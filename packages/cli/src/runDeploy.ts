@@ -16,6 +16,7 @@ import { WorldDeploy } from "./deploy/common";
 import { build } from "./build";
 import { kmsKeyToAccount } from "@latticexyz/common/kms";
 import { configToModules } from "./deploy/configToModules";
+import { findContractArtifacts } from "@latticexyz/world/node";
 import { enableAutomine } from "./utils/enableAutomine";
 
 export const deployOptions = {
@@ -90,6 +91,8 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     config,
     forgeOutDir: outDir,
   });
+  const artifacts = await findContractArtifacts({ forgeOutDir: outDir });
+  // TODO: pass artifacts into configToModules (https://github.com/latticexyz/mud/issues/3153)
   const modules = await configToModules(config, outDir);
 
   const tables = Object.values(config.namespaces)
@@ -139,6 +142,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   const startTime = Date.now();
   const worldDeploy = await deploy({
+    config,
     deployerAddress: opts.deployerAddress as Hex | undefined,
     salt,
     worldAddress: opts.worldAddress as Hex | undefined,
@@ -147,7 +151,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     systems,
     libraries,
     modules,
-    withWorldProxy: config.deploy.upgradeableWorldImplementation,
+    artifacts,
   });
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
     await postDeploy(
