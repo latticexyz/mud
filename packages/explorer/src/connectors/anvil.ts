@@ -18,18 +18,19 @@ export const defaultAnvilAccounts = (
   ] as const
 ).map((pk) => privateKeyToAccount(pk));
 
-export type AnvilOptions = {
-  name?: string;
-  accounts?: readonly Account[];
+export type AnvilConnectorOptions = {
+  id: string;
+  name: string;
+  accounts: readonly Account[];
 };
 
-export function anvil({ name = "Anvil", accounts = defaultAnvilAccounts }: AnvilOptions = {}) {
+export function anvil({ id, name, accounts }: AnvilConnectorOptions) {
   if (!accounts.length) throw new Error("missing accounts");
 
   type Provider = ReturnType<Transport<"http", unknown, EIP1193RequestFn<WalletRpcSchema>>>;
 
   return createConnector<Provider>(() => ({
-    id: "anvil",
+    id,
     name,
     type: "anvil",
     async connect() {

@@ -1,12 +1,9 @@
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Abi, AbiFunction, Hex } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
-import { useChainId } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { readContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
-import { ACCOUNT_PRIVATE_KEYS } from "../../../../../consts";
-import { useAppStore } from "../../../../../store";
 import { wagmiConfig } from "../../../Providers";
 import { FunctionType } from "./FunctionField";
 
@@ -17,9 +14,9 @@ type UseContractMutationProps = {
 
 export function useContractMutation({ abi, operationType }: UseContractMutationProps) {
   const queryClient = useQueryClient();
-  const chainId = useChainId();
-  const { account } = useAppStore();
   const { worldAddress } = useParams();
+  const account = useAccount();
+  const chainId = useChainId();
 
   return useMutation({
     mutationFn: async ({ inputs, value }: { inputs: unknown[]; value?: string }) => {
@@ -34,7 +31,6 @@ export function useContractMutation({ abi, operationType }: UseContractMutationP
         return { result };
       } else {
         const txHash = await writeContract(wagmiConfig, {
-          account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
           abi: [abi] as Abi,
           address: worldAddress as Hex,
           functionName: abi.name,

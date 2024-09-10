@@ -1,6 +1,5 @@
-import { Connection, useBalance, useConnections } from "wagmi";
+import { Connection, useAccount, useBalance, useConnections, useSwitchAccount } from "wagmi";
 import { formatBalance } from "../lib/utils";
-import { useAppStore } from "../store";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
 import { TruncatedHex } from "./ui/TruncatedHex";
 
@@ -14,7 +13,7 @@ function AccountSelectItem({ connection }: { connection: Connection }) {
   });
   const balanceValue = balance.data?.value;
   return (
-    <SelectItem key={address} value={address} className="font-mono">
+    <SelectItem key={address} value={connection.connector.id} className="font-mono">
       {connection.connector.name}
       {balanceValue !== undefined && ` (${formatBalance(balanceValue)} ETH)`}{" "}
       <span className="opacity-70">
@@ -25,17 +24,27 @@ function AccountSelectItem({ connection }: { connection: Connection }) {
 }
 
 export function AccountSelect() {
-  const { account, setAccount } = useAppStore();
+  const account = useAccount();
   const connections = useConnections();
+  const { switchAccount, connectors } = useSwitchAccount();
+
   return (
-    <Select value={account} onValueChange={setAccount}>
-      <SelectTrigger className="w-[300px] text-left">
-        <SelectValue placeholder="Account" />
+    <Select
+      value={account.connector?.id}
+      onValueChange={(value) => {
+        const connectorIdx = connectors.findIndex((connector) => connector.id === value);
+        switchAccount({ connector: connectors[connectorIdx] });
+      }}
+    >
+      <SelectTrigger className="w-[300px] text-left" disabled={!connections.length}>
+        <SelectValue placeholder="Select acccount ..." />
       </SelectTrigger>
       <SelectContent>
-        {connections.map((connection) => {
-          return <AccountSelectItem key={connection.connector.id} connection={connection} />;
-        })}
+        {[...connections]
+          .sort((a, b) => a.connector.id.localeCompare(b.connector.id))
+          .map((connection) => {
+            return <AccountSelectItem key={connection.connector.id} connection={connection} />;
+          })}
       </SelectContent>
     </Select>
   );
