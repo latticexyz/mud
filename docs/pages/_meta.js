@@ -22,7 +22,7 @@ export default {
   config: "Config",
   cli: "CLI",
   "state-query": "State Query",
-  services: "Services",
+  indexer: "Indexer",
   "world-explorer": {
     title: "World Explorer",
     theme: { breadcrumb: false },
@@ -33,6 +33,7 @@ export default {
   },
   guides: "Guides",
   templates: "Templates",
+  "best-practices": "Best Practices",
   contribute: {
     title: "Contribute",
     theme: { breadcrumb: false },
@@ -54,12 +55,6 @@ export default {
         href: "/contribute",
       },
     },
-  },
-  status: {
-    title: "Status",
-    type: "page",
-    href: "https://status.mud.dev",
-    newWindow: true,
   },
   community: {
     title: "Community",

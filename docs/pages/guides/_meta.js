@@ -6,5 +6,4 @@ export default {
   "modules": "Writing MUD Modules",
   emojimon: "Emojimon",
   testing: "Testing",
-  "best-practices": "Best Practices",
 };
