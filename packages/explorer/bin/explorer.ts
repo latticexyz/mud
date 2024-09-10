@@ -20,7 +20,7 @@ const argv = yargs(process.argv.slice(2))
       default: process.env.PORT || 13690,
     },
     host: {
-      alias: "h",
+      alias: ["H", "hostname"],
       description: "Host for the server",
       type: "string",
       default: process.env.HOST || "0.0.0.0",
@@ -44,7 +44,7 @@ const argv = yargs(process.argv.slice(2))
       default: process.env.WORLDS_FILE || "worlds.json",
     },
     dev: {
-      alias: "d",
+      alias: "D",
       description: "Run in development mode",
       type: "boolean",
       default: false,
@@ -67,10 +67,10 @@ async function startExplorer() {
 
   if (dev) {
     command = "pnpm";
-    args = ["dev"];
+    args = ["dev", "--hostname", host];
   } else {
     command = "pnpm";
-    args = ["start"];
+    args = ["start", "--hostname", host];
   }
 
   explorerProcess = spawn(command, args, {
@@ -79,7 +79,6 @@ async function startExplorer() {
     env: {
       ...process.env,
       PORT: port.toString(),
-      HOST: host,
       WORLD_ADDRESS: worldAddress?.toString(),
       INDEXER_DATABASE: path.join(process.cwd(), indexerDatabase),
     },
