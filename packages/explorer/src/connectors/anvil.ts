@@ -45,7 +45,7 @@ export function anvil({ accounts = defaultAnvilAccounts }: AnvilOptions = {}) {
       return anvilChain.id;
     },
     async getProvider() {
-      return http(anvilChain.rpcUrls.default.http[0])({ chain: anvilChain });
+      return http()({ chain: anvilChain });
     },
     async isAuthorized() {
       return true;
