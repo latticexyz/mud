@@ -6,13 +6,14 @@ import { ReactNode } from "react";
 import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { anvil } from "@wagmi/core/chains";
+import { anvil as anvilChain } from "@wagmi/core/chains";
+import { anvil } from "../../connectors/anvil";
 import { AppStoreProvider } from "../../store";
 
 const queryClient = new QueryClient();
 
 export const wagmiConfig = createConfig({
-  chains: [anvil],
+  chains: [anvilChain],
   connectors: [
     injected(),
     metaMask({
@@ -21,9 +22,10 @@ export const wagmiConfig = createConfig({
       },
     }),
     safe(),
+    anvil(),
   ],
   transports: {
-    [anvil.id]: http(),
+    [anvilChain.id]: http(),
   },
   ssr: true,
 });
