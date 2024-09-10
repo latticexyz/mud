@@ -11,7 +11,7 @@ import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.j
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Checkbox } from "../../../../../components/ui/Checkbox";
-import { ACCOUNT_PRIVATE_KEYS } from "../../../../../consts";
+import { ANVIL_ACCOUNTS_PRIVATE_KEYS } from "../../../../../consts";
 import { camelCase, cn } from "../../../../../lib/utils";
 import { useAppStore } from "../../../../../store";
 import { TableConfig } from "../../../../api/table/route";
@@ -40,7 +40,7 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
       const fieldIndex = getFieldIndex(config?.value_schema, camelCase(name));
       const encodedField = encodeField(fieldType, newValue);
       const txHash = await writeContract(wagmiConfig, {
-        account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
+        account: privateKeyToAccount(ANVIL_ACCOUNTS_PRIVATE_KEYS[account]),
         abi: IBaseWorldAbi,
         address: worldAddress as Hex,
         functionName: "setField",

@@ -5,7 +5,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { useChainId } from "wagmi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { readContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
-import { ACCOUNT_PRIVATE_KEYS } from "../../../../../consts";
+import { ANVIL_ACCOUNTS_PRIVATE_KEYS } from "../../../../../consts";
 import { useAppStore } from "../../../../../store";
 import { wagmiConfig } from "../../../Providers";
 import { FunctionType } from "./FunctionField";
@@ -34,7 +34,7 @@ export function useContractMutation({ abi, operationType }: UseContractMutationP
         return { result };
       } else {
         const txHash = await writeContract(wagmiConfig, {
-          account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
+          account: privateKeyToAccount(ANVIL_ACCOUNTS_PRIVATE_KEYS[account]),
           abi: [abi] as Abi,
           address: worldAddress as Hex,
           functionName: abi.name,

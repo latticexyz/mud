@@ -2,7 +2,7 @@ import { Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
 // private keys for local development testnet (anvil)
-export const PRIVATE_KEYS: Hex[] = [
+export const ANVIL_PRIVATE_KEYS: Hex[] = [
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
   "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d",
   "0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a",
@@ -15,9 +15,9 @@ export const PRIVATE_KEYS: Hex[] = [
   "0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6",
 ];
 
-export const ACCOUNTS: Hex[] = PRIVATE_KEYS.map((key) => privateKeyToAccount(key).address);
+export const ANVIL_ACCOUNTS: Hex[] = ANVIL_PRIVATE_KEYS.map((key) => privateKeyToAccount(key).address);
 
-export const ACCOUNT_PRIVATE_KEYS: Record<Hex, Hex> = PRIVATE_KEYS.reduce(
+export const ANVIL_ACCOUNTS_PRIVATE_KEYS: Record<Hex, Hex> = ANVIL_PRIVATE_KEYS.reduce(
   (acc, key) => {
     const account = privateKeyToAccount(key).address;
     acc[account] = key;

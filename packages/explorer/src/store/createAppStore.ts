@@ -1,6 +1,6 @@
 import { Hex } from "viem";
 import { createStore } from "zustand";
-import { ACCOUNTS } from "../consts";
+import { ANVIL_ACCOUNTS } from "../consts";
 
 export type AppStoreData = {
   account: Hex;
@@ -9,7 +9,7 @@ export type AppStoreData = {
 
 export const createAppStore = () => {
   return createStore<AppStoreData>()((set) => ({
-    account: ACCOUNTS[0],
+    account: ANVIL_ACCOUNTS[0],
     setAccount: (account) => set({ account }),
   }));
 };
