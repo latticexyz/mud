@@ -23,7 +23,6 @@ const argv = yargs(process.argv.slice(2))
       alias: "H",
       description: "Host for the server",
       type: "string",
-      default: process.env.HOST || "0.0.0.0",
     },
     chainId: {
       alias: "c",
@@ -67,10 +66,14 @@ async function startExplorer() {
 
   if (dev) {
     command = "pnpm";
-    args = ["dev", "--hostname", hostname];
+    args = ["dev"];
   } else {
     command = "pnpm";
-    args = ["start", "--hostname", hostname];
+    args = ["start"];
+  }
+
+  if (hostname) {
+    args.push("--hostname", hostname);
   }
 
   explorerProcess = spawn(command, args, {
