@@ -11,15 +11,6 @@ import { TruncatedHex } from "./ui/TruncatedHex";
 function AccountSelectItem({ connector }: { connector: Connector }) {
   const [accounts, setAccounts] = useState<readonly Address[]>([]);
   const address = accounts[0];
-
-  useEffect(() => {
-    async function getAccounts() {
-      const accounts = await connector.getAccounts();
-      setAccounts(accounts);
-    }
-    getAccounts();
-  }, [connector]);
-
   const { data: balance } = useBalance({
     address,
     query: {
@@ -30,6 +21,14 @@ function AccountSelectItem({ connector }: { connector: Connector }) {
       enabled: !!address,
     },
   });
+
+  useEffect(() => {
+    async function getAccounts() {
+      const accounts = await connector.getAccounts();
+      setAccounts(accounts);
+    }
+    getAccounts();
+  }, [connector]);
 
   return (
     <SelectItem key={address} value={connector.id} className="font-mono">
