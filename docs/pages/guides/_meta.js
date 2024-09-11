@@ -6,6 +6,6 @@ export default {
   "modules": "Writing MUD Modules",
   emojimon: "Emojimon",
   testing: "Testing",
-  solidity-patterns: "MUD for Solidity Programmers",
+  "solidity-patterns": "MUD for Solidity Programmers",
   "best-practices": "Best Practices",
 };

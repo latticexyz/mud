@@ -160,67 +160,82 @@ An easy workaround is to use the hash of the string as the key instead of the st
 
 There are two ways in which MUD supports arrays.
 
-1. Arrays of fixed-length value types, such as `uint24[]` or `address[]`, [are supported as table fields](https://github.com/latticexyz/mud/blob/main/packages/schema-type/src/solidity/SchemaType.sol#L108-L205).
+- Arrays of fixed-length value types, such as `uint24[]` or `address[]`, [are supported as table fields](https://github.com/latticexyz/mud/blob/main/packages/schema-type/src/solidity/SchemaType.sol#L108-L205).
 
    <details>
 
-   <summary>Example</summary>
+  {" "}
 
-   ```solidity filename="Solidity" {2}
-   contract Example {
-     bool[] listOfBooleans;
-   }
-   ```
+  <summary>Example</summary>
 
-   ```typescript filename="MUD" {6-11}
-   import { defineWorld } from "@latticexyz/world";
+  ```solidity filename="Solidity" {2}
+  contract Example {
+    bool[] listOfBooleans;
+  }
+  ```
 
-   export default defineWorld({
-     namespace: "app",
-     tables: {
-       ListOfBooleans: {
-         schema: {
-           values: "bool[]",
-         },
-         key: [],
-       },
-     },
-   });
-   ```
+  ```typescript filename="MUD" {6-11}
+  import { defineWorld } from "@latticexyz/world";
+
+  export default defineWorld({
+    namespace: "app",
+    tables: {
+      ListOfBooleans: {
+        schema: {
+          values: "bool[]",
+        },
+        key: [],
+      },
+    },
+  });
+  ```
 
    </details>
 
-1. An array is a mapping between an unsigned integer and the value type of the array.
-   We can use a table with `index` as the key. That way, we can get around the limitation that arrays of variable-length types such as `string` or `bytes` are not supported.
+- An array is a mapping between an unsigned integer and the value type of the array.
+  We can use a table with `index` as the key. That way, we can get around the limitation that arrays of variable-length types such as `string` or `bytes` are not supported.
 
     <details>
 
-   <summary>Example</summary>
+  {" "}
 
-   ```solidity filename="Solidity" {2}
-   contract Example {
-     string[] listOfNames;
-   }
-   ```
+  <summary>Example</summary>
 
-   ```typescript filename="MUD" {6-12}
-   import { defineWorld } from "@latticexyz/world";
+  ```solidity filename="Solidity" {2}
+  contract Example {
+    string[] listOfNames;
+  }
+  ```
 
-   export default defineWorld({
-     namespace: "app",
-     tables: {
-       ListOfNames: {
-         schema: {
-           index: "uint256",
-           name: "string",
-         },
-         key: ["index"],
-       },
-     },
-   });
-   ```
+  ```typescript filename="MUD" {6-12}
+  import { defineWorld } from "@latticexyz/world";
+
+  export default defineWorld({
+    namespace: "app",
+    tables: {
+      ListOfNames: {
+        schema: {
+          index: "uint256",
+          name: "string",
+        },
+        key: ["index"],
+      },
+    },
+  });
+  ```
 
     </details>
+
+## Special variables
+
+Applications never call a `System` directly.
+All calls go through a `World` for state, access control, [balance management](/world/balance), etc.
+As a result, some of the [Solidity special variables](https://docs.soliditylang.org/en/latest/units-and-global-variables.html#special-variables-and-functions) have to replaced with functions that obtain the relevant information.
+
+| Meaning                  | Solidity     | MUD            |
+| ------------------------ | ------------ | -------------- |
+| Caller                   | `msg.sender` | `_msgSender()` |
+| Value sent with the call | `msg.value`  | `_msgValue()`  |
 
 {
 
