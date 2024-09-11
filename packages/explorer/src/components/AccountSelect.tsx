@@ -1,50 +1,91 @@
-import { Connection, useAccount, useBalance, useConnections, useSwitchAccount } from "wagmi";
+import { CirclePlusIcon, PlugIcon } from "lucide-react";
+import { Address } from "viem";
+import { Connector, useAccount, useBalance, useConnect, useConnectors } from "wagmi";
+import { useEffect, useState } from "react";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { formatBalance } from "../lib/utils";
+import { StyledConnectButton } from "./ConnectButton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
 import { TruncatedHex } from "./ui/TruncatedHex";
 
-function AccountSelectItem({ connection }: { connection: Connection }) {
-  const address = connection.accounts[0];
-  const balance = useBalance({
+function AccountSelectItem({ connector }: { connector: Connector }) {
+  const [accounts, setAccounts] = useState<readonly Address[]>([]);
+  const address = accounts[0];
+
+  useEffect(() => {
+    async function getAccounts() {
+      const accounts = await connector.getAccounts();
+      setAccounts(accounts);
+    }
+    getAccounts();
+  }, [connector]);
+
+  const { data: balance } = useBalance({
     address,
     query: {
       refetchInterval: 15000,
+      select: (data) => {
+        return data?.value;
+      },
+      enabled: !!address,
     },
   });
-  const balanceValue = balance.data?.value;
+
   return (
-    <SelectItem key={address} value={connection.connector.id} className="font-mono">
-      {connection.connector.name}
-      {balanceValue !== undefined && ` (${formatBalance(balanceValue)} ETH)`}{" "}
-      <span className="opacity-70">
-        (<TruncatedHex hex={address} />)
-      </span>
+    <SelectItem key={address} value={connector.id} className="font-mono">
+      {connector.name}
+      {balance !== undefined && ` (${formatBalance(balance)} ETH)`}{" "}
+      {address && (
+        <span className="opacity-70">
+          (<TruncatedHex hex={address} />)
+        </span>
+      )}
     </SelectItem>
   );
 }
 
 export function AccountSelect() {
-  const account = useAccount();
-  const connections = useConnections();
-  const { switchAccount, connectors } = useSwitchAccount();
+  const [open, setOpen] = useState(false);
+  const { connector } = useAccount();
+  const { connect } = useConnect();
+  const { openConnectModal } = useConnectModal();
+  const configuredConnectors = useConnectors();
+  const connectors = [...configuredConnectors.filter((connector) => connector.type === "anvil")];
 
   return (
     <Select
-      value={account.connector?.id}
-      onValueChange={(value) => {
-        const connectorIdx = connectors.findIndex((connector) => connector.id === value);
-        switchAccount({ connector: connectors[connectorIdx] });
+      open={open}
+      onOpenChange={setOpen}
+      value={connector?.id}
+      onValueChange={(connectorId: string) => {
+        const connector = connectors.find((connector) => connector.id === connectorId);
+        if (connector) {
+          connect({ connector });
+        }
       }}
     >
-      <SelectTrigger className="w-[300px] text-left" disabled={!connections.length}>
-        <SelectValue placeholder="Select acccount ..." />
-      </SelectTrigger>
+      <StyledConnectButton asChild>
+        <SelectTrigger showIcon={false}>
+          <PlugIcon className="mr-2 inline-block h-4 w-4" />
+          <SelectValue placeholder="Connect" />
+        </SelectTrigger>
+      </StyledConnectButton>
+
       <SelectContent>
-        {[...connections]
-          .sort((a, b) => a.connector.id.localeCompare(b.connector.id))
-          .map((connection) => {
-            return <AccountSelectItem key={connection.connector.id} connection={connection} />;
-          })}
+        {connectors.map((connector) => {
+          return <AccountSelectItem key={connector.id} connector={connector} />;
+        })}
+
+        <StyledConnectButton
+          className="mt-2 w-full font-mono"
+          onClick={() => {
+            setOpen(false);
+            openConnectModal?.();
+          }}
+        >
+          <CirclePlusIcon className="mr-2 inline-block h-4 w-4" />
+          Add wallet
+        </StyledConnectButton>
       </SelectContent>
     </Select>
   );

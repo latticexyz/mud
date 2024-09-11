@@ -24,22 +24,28 @@ export type AnvilConnectorOptions = {
   accounts: readonly Account[];
 };
 
+const isAnvil = Number(process.env.NEXT_PUBLIC_CHAIN_ID) === anvilChain.id;
+
 export function anvil({ id, name, accounts }: AnvilConnectorOptions) {
   if (!accounts.length) throw new Error("missing accounts");
 
   type Provider = ReturnType<Transport<"http", unknown, EIP1193RequestFn<WalletRpcSchema>>>;
 
+  let connected = false;
   return createConnector<Provider>(() => ({
     id,
     name,
     type: "anvil",
     async connect() {
+      connected = true;
       return {
         accounts: accounts.map((a) => a.address),
         chainId: anvilChain.id,
       };
     },
-    async disconnect() {},
+    async disconnect() {
+      connected = false;
+    },
     async getAccounts() {
       return accounts.map((a) => a.address);
     },
@@ -50,11 +56,14 @@ export function anvil({ id, name, accounts }: AnvilConnectorOptions) {
       return http()({ chain: anvilChain });
     },
     async isAuthorized() {
-      return true;
+      if (!isAnvil) return false;
+      if (!connected) return false;
+
+      const accounts = await this.getAccounts();
+      return !!accounts.length;
     },
     async onAccountsChanged() {},
     async onDisconnect() {},
-    async onConnect() {},
-    async onChainChanged() {},
+    onChainChanged() {},
   }));
 }
