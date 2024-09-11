@@ -65,7 +65,7 @@ export function AccountSelect() {
       }}
     >
       <StyledConnectButton asChild>
-        <SelectTrigger showIcon={false}>
+        <SelectTrigger>
           <PlugIcon className="mr-2 inline-block h-4 w-4" />
           <SelectValue placeholder="Connect" />
         </SelectTrigger>
