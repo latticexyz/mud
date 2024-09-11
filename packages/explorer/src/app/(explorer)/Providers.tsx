@@ -12,7 +12,7 @@ import { anvil as anvilConnector, defaultAnvilAccounts } from "../../connectors/
 import { AppStoreProvider } from "../../store";
 
 const queryClient = new QueryClient();
-const chain = [anvil, garnet, redstone].find((chain) => chain.id === Number(process.env.CHAIN_ID)) as Chain;
+const chain = [anvil, garnet, redstone].find((chain) => chain.id === Number(process.env.NEXT_PUBLIC_CHAIN_ID)) as Chain;
 
 export const wagmiConfig = createConfig({
   chains: [chain],
@@ -26,9 +26,11 @@ export const wagmiConfig = createConfig({
     safe(),
     // We can't programmatically switch accounts within a connector, but we can switch between connectors,
     // so we'll create one anvil connector per default anvil account so users can switch between default anvil accounts.
-    ...defaultAnvilAccounts.map((account, i) =>
-      anvilConnector({ id: `anvil-${i}`, name: `Anvil #${i + 1}`, accounts: [account] }),
-    ),
+    ...(chain.id === anvil.id
+      ? defaultAnvilAccounts.map((account, i) =>
+          anvilConnector({ id: `anvil-${i}`, name: `Anvil #${i + 1}`, accounts: [account] }),
+        )
+      : []),
   ],
   transports: {
     [chain.id]: http(),
