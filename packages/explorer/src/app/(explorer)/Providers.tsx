@@ -3,17 +3,19 @@
 import { WagmiProvider, createConfig, http } from "wagmi";
 import { injected, metaMask, safe } from "wagmi/connectors";
 import { ReactNode } from "react";
+import { garnet } from "@latticexyz/common/chains";
 import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { anvil, redstone } from "@wagmi/core/chains";
+import { Chain, anvil, redstone } from "@wagmi/core/chains";
 import { anvil as anvilConnector, defaultAnvilAccounts } from "../../connectors/anvil";
 import { AppStoreProvider } from "../../store";
 
 const queryClient = new QueryClient();
+const chain = [anvil, garnet, redstone].find((chain) => chain.id === Number(process.env.CHAIN_ID)) as Chain;
 
 export const wagmiConfig = createConfig({
-  chains: [anvil, redstone],
+  chains: [chain],
   connectors: [
     injected(),
     metaMask({
@@ -29,8 +31,7 @@ export const wagmiConfig = createConfig({
     ),
   ],
   transports: {
-    [anvil.id]: http(),
-    [redstone.id]: http(),
+    [chain.id]: http(),
   },
   ssr: true,
 });
