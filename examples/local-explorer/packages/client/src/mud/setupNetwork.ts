@@ -16,9 +16,9 @@ import {
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import { getNetworkConfig } from "./getNetworkConfig";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
-import { createBurnerAccount, transportObserver, ContractWrite } from "@latticexyz/common";
-import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
-import { Subject, share } from "rxjs";
+import { createBurnerAccount, transportObserver } from "@latticexyz/common";
+import { transactionQueue } from "@latticexyz/common/actions";
+import { observer, type WaitForStateChange } from "@latticexyz/explorer/observer";
 
 /*
  * Import our MUD config, which includes strong types for
@@ -34,6 +34,7 @@ export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
 export async function setupNetwork() {
   const networkConfig = await getNetworkConfig();
+  const waitForStateChange = Promise.withResolvers<WaitForStateChange>();
 
   /*
    * Create a viem public (read only) client
@@ -48,12 +49,6 @@ export async function setupNetwork() {
   const publicClient = createPublicClient(clientOptions);
 
   /*
-   * Create an observable for contract writes that we can
-   * pass into MUD dev tools for transaction observability.
-   */
-  const write$ = new Subject<ContractWrite>();
-
-  /*
    * Create a temporary wallet and a viem client for it
    * (see https://viem.sh/docs/clients/wallet.html).
    */
@@ -63,7 +58,11 @@ export async function setupNetwork() {
     account: burnerAccount,
   })
     .extend(transactionQueue())
-    .extend(writeObserver({ onWrite: (write) => write$.next(write) }));
+    .extend(
+      observer({
+        waitForStateChange: (hash) => waitForStateChange.promise.then((fn) => fn(hash)),
+      }),
+    );
 
   /*
    * Create an object for communicating with the deployed World.
@@ -86,6 +85,7 @@ export async function setupNetwork() {
     publicClient,
     startBlock: BigInt(networkConfig.initialBlockNumber),
   });
+  waitForStateChange.resolve(waitForTransaction);
 
   return {
     tables,
@@ -96,6 +96,5 @@ export async function setupNetwork() {
     storedBlockLogs$,
     waitForTransaction,
     worldContract,
-    write$: write$.asObservable().pipe(share()),
   };
 }
