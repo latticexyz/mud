@@ -5,17 +5,20 @@ import { TruncatedHex } from "./ui/TruncatedHex";
 
 function AccountSelectItem({ connection }: { connection: Connection }) {
   const address = connection.accounts[0];
-  const balance = useBalance({
+  const { data: balance } = useBalance({
     address,
     query: {
       refetchInterval: 15000,
+      select: (data) => {
+        return data?.value;
+      },
     },
   });
-  const balanceValue = balance.data?.value;
+
   return (
     <SelectItem key={address} value={connection.connector.id} className="font-mono">
       {connection.connector.name}
-      {balanceValue !== undefined && ` (${formatBalance(balanceValue)} ETH)`}{" "}
+      {balance !== undefined && ` (${formatBalance(balance)} ETH)`}{" "}
       <span className="opacity-70">
         (<TruncatedHex hex={address} />)
       </span>
