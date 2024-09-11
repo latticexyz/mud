@@ -54,6 +54,13 @@ const argv = yargs(process.argv.slice(2))
       default: process.env.WORLD_ADDRESS,
     },
   })
+  .check((argv) => {
+    const supportedChainIds = [31337, 690, 17069];
+    if (!supportedChainIds.includes(argv.chainId as number)) {
+      throw new Error(`Invalid chain ID. Supported chains are: ${supportedChainIds.join(", ")}`);
+    }
+    return true;
+  })
   .parseSync();
 
 const { port, hostname, chainId, indexerDatabase, worldsFile, dev } = argv;
@@ -63,6 +70,7 @@ let explorerProcess: ChildProcess;
 async function startExplorer() {
   const env = {
     ...process.env,
+    CHAIN_ID: chainId.toString(),
     WORLD_ADDRESS: worldAddress?.toString(),
     INDEXER_DATABASE: path.join(process.cwd(), indexerDatabase),
   };
