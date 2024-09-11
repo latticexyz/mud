@@ -64,6 +64,7 @@
     "p-queue": "^7.4.1",
     "p-retry": "^5.1.2",
     "path": "^0.12.7",
+    "prettier": "3.2.5",
     "rxjs": "7.5.5",
     "throttle-debounce": "^5.0.0",
     "toposort": "^2.0.2",
