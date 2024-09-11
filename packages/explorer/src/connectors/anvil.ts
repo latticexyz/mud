@@ -24,6 +24,8 @@ export type AnvilConnectorOptions = {
   accounts: readonly Account[];
 };
 
+const isAnvil = Number(process.env.NEXT_PUBLIC_CHAIN_ID) === anvilChain.id;
+
 export function anvil({ id, name, accounts }: AnvilConnectorOptions) {
   if (!accounts.length) throw new Error("missing accounts");
 
@@ -54,12 +56,11 @@ export function anvil({ id, name, accounts }: AnvilConnectorOptions) {
       return http()({ chain: anvilChain });
     },
     async isAuthorized() {
+      if (!isAnvil) return false;
       if (!connected) return false;
 
       const accounts = await this.getAccounts();
-      if (!accounts.length) return false;
-
-      return Number(process.env.NEXT_PUBLIC_CHAIN_ID) === anvilChain.id;
+      return !!accounts.length;
     },
     async onAccountsChanged() {
       if (accounts.length === 0) this.onDisconnect();
