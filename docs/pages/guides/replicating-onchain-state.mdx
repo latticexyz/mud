@@ -1,6 +1,16 @@
+import { Callout } from "nextra/components";
+
 # Replicating onchain state
 
 This guide walks through how you might recreate onchain state from MUD's Store events. We use this pattern in our sync stack to hydrate a client or indexer from blockchain logs fetched from an RPC.
+
+<Callout type="info" emoji="ⓘ">
+  In most cases, you would use a pre-written [template](/templates), which includes code to synchronize information.
+  If that is not an option, you might be able to use [an indexer](/indexer) to retrieve the onchain data.
+
+This guide is mostly provided as an illustration, and to simplify the writing of future clients.
+
+</Callout>
 
 ## Store: MUD's onchain storage
 
