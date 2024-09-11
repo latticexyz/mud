@@ -65,6 +65,7 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
                       ...(table.type !== "table" ? { type: table.type } : null),
                       schema: getSchemaTypes(table.schema),
                       key: table.key,
+                      deploy: { disabled: true },
                     },
                   ];
                 }),
