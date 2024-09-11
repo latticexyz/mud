@@ -1,4 +1,4 @@
-import { EIP1193RequestFn, Transport, WalletRpcSchema, http } from "viem";
+import { EIP1193RequestFn, Transport, WalletRpcSchema, getAddress, http } from "viem";
 import { Account, privateKeyToAccount } from "viem/accounts";
 import { anvil as anvilChain } from "viem/chains";
 import { createConnector } from "wagmi";
@@ -29,17 +29,21 @@ export function anvil({ id, name, accounts }: AnvilConnectorOptions) {
 
   type Provider = ReturnType<Transport<"http", unknown, EIP1193RequestFn<WalletRpcSchema>>>;
 
-  return createConnector<Provider>(() => ({
+  let connected = false;
+  return createConnector<Provider>((config) => ({
     id,
     name,
     type: "anvil",
     async connect() {
+      connected = true;
       return {
         accounts: accounts.map((a) => a.address),
         chainId: anvilChain.id,
       };
     },
-    async disconnect() {},
+    async disconnect() {
+      connected = false;
+    },
     async getAccounts() {
       return accounts.map((a) => a.address);
     },
@@ -50,11 +54,27 @@ export function anvil({ id, name, accounts }: AnvilConnectorOptions) {
       return http()({ chain: anvilChain });
     },
     async isAuthorized() {
-      return true;
+      if (!connected) return false;
+
+      const accounts = await this.getAccounts();
+      if (!accounts.length) return false;
+
+      return Number(process.env.NEXT_PUBLIC_CHAIN_ID) === anvilChain.id;
     },
-    async onAccountsChanged() {},
-    async onDisconnect() {},
-    async onConnect() {},
-    async onChainChanged() {},
+    async onAccountsChanged() {
+      if (accounts.length === 0) this.onDisconnect();
+      else
+        config.emitter.emit("change", {
+          accounts: accounts.map((x) => getAddress(x.address)),
+        });
+    },
+    async onDisconnect() {
+      config.emitter.emit("disconnect");
+      connected = false;
+    },
+    onChainChanged(chain) {
+      const chainId = Number(chain);
+      config.emitter.emit("change", { chainId });
+    },
   }));
 }

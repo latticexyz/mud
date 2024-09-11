@@ -16,6 +16,7 @@ const chain = [anvil, garnet, redstone].find((chain) => chain.id === Number(proc
 
 export const wagmiConfig = createConfig({
   chains: [chain],
+  // connectors,
   connectors: [
     injected(),
     metaMask({
@@ -25,12 +26,10 @@ export const wagmiConfig = createConfig({
     }),
     safe(),
     // We can't programmatically switch accounts within a connector, but we can switch between connectors,
-    // so we'll create one anvil connector per default anvil account so users can switch between default anvil accounts.
-    ...(chain.id === anvil.id
-      ? defaultAnvilAccounts.map((account, i) =>
-          anvilConnector({ id: `anvil-${i}`, name: `Anvil #${i + 1}`, accounts: [account] }),
-        )
-      : []),
+    // so create one anvil connector per default anvil account so users can switch between default anvil accounts.
+    ...defaultAnvilAccounts.map((account, i) =>
+      anvilConnector({ id: `anvil-${i}`, name: `Anvil #${i + 1}`, accounts: [account] }),
+    ),
   ],
   transports: {
     [chain.id]: http(),

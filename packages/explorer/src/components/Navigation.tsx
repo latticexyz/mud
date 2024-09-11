@@ -8,7 +8,7 @@ import { Separator } from "../components/ui/Separator";
 import { useWorldUrl } from "../hooks/useWorldUrl";
 import { cn } from "../lib/utils";
 import { useAbiQuery } from "../queries/useAbiQuery";
-import { AccountSelect } from "./AccountSelect";
+import { ConnectButton } from "./ConnectButton";
 
 export function Navigation() {
   const pathname = usePathname();
@@ -46,7 +46,7 @@ export function Navigation() {
 
         <div className="flex items-center gap-x-4">
           <LatestBlock />
-          <AccountSelect />
+          <ConnectButton />
         </div>
       </div>
 

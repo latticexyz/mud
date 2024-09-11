@@ -55,7 +55,7 @@ const argv = yargs(process.argv.slice(2))
     },
   })
   .check((argv) => {
-    const supportedChainIds = [31337, 690, 17069];
+    const supportedChainIds = [31337, 690, 17069]; // [anvil, garnet, redstone]
     if (!supportedChainIds.includes(argv.chainId as number)) {
       throw new Error(`Invalid chain ID. Supported chains are: ${supportedChainIds.join(", ")}`);
     }
@@ -70,7 +70,7 @@ let explorerProcess: ChildProcess;
 async function startExplorer() {
   const env = {
     ...process.env,
-    CHAIN_ID: chainId.toString(),
+    NEXT_PUBLIC_CHAIN_ID: chainId.toString(),
     WORLD_ADDRESS: worldAddress?.toString(),
     INDEXER_DATABASE: path.join(process.cwd(), indexerDatabase),
   };
