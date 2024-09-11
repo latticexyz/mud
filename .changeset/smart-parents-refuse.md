@@ -19,7 +19,7 @@ By default, the `observer` action assumes the World Explorer is running at `http
 ```ts
 observer({
   explorerUrl: "http://localhost:4444",
-})
+});
 ```
 
 If you want to measure the timing of transaction-to-state-change, you can also pass in a `waitForStateChange` function that takes a transaction hash and returns a partial [`TransactionReceipt`](https://viem.sh/docs/glossary/types#transactionreceipt) with `blockNumber`, `status`, and `transactionHash`. This mirrors the `waitForTransaction` function signature returned by `syncTo...` helper in `@latticexyz/store-sync`.
@@ -29,5 +29,5 @@ observer({
   async waitForStateChange(hash) {
     return await waitForTransaction(hash);
   },
-})
+});
 ```
