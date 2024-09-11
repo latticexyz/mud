@@ -5,6 +5,7 @@ bindings/
 artifacts/
 broadcast/
 
-# Ignore all MUD deploy artifacts
+# mud build artifacts
+.mud
 deploys
 worlds.json*

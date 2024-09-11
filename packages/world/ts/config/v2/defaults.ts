@@ -8,10 +8,10 @@ export const SYSTEM_DEPLOY_DEFAULTS = {
 export type SYSTEM_DEPLOY_DEFAULTS = typeof SYSTEM_DEPLOY_DEFAULTS;
 
 export const SYSTEM_DEFAULTS = {
-  namespace: "",
+  namespaceLabel: "",
   openAccess: true,
   accessList: [],
-} as const satisfies Omit<Required<SystemInput>, "label" | "name" | "deploy">;
+} as const satisfies Omit<Required<SystemInput>, "label" | "namespace" | "name" | "deploy">;
 
 export type SYSTEM_DEFAULTS = typeof SYSTEM_DEFAULTS;
 
@@ -32,7 +32,6 @@ export const CODEGEN_DEFAULTS = {
 export type CODEGEN_DEFAULTS = typeof CODEGEN_DEFAULTS;
 
 export const DEPLOY_DEFAULTS = {
-  customWorldContract: undefined,
   postDeployScript: "PostDeploy",
   deploysDirectory: "./deploys",
   worldsFile: "./worlds.json",

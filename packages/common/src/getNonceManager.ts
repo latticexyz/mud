@@ -11,12 +11,14 @@ export async function getNonceManager({
 }: CreateNonceManagerOptions): Promise<CreateNonceManagerResult> {
   const id = await getNonceManagerId({ client, address, blockTag });
 
-  const existingNonceManager = nonceManagers.get(id);
-  if (existingNonceManager) {
-    return existingNonceManager;
+  const nonceManager = nonceManagers.get(id) ?? createNonceManager({ client, address, blockTag, ...opts });
+  if (!nonceManagers.has(id)) {
+    nonceManagers.set(id, nonceManager);
   }
 
-  const nonceManager = createNonceManager({ client, address, blockTag, ...opts });
-  nonceManagers.set(id, nonceManager);
+  if (!nonceManager.hasNonce()) {
+    await nonceManager.resetNonce();
+  }
+
   return nonceManager;
 }

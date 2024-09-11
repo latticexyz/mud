@@ -121,13 +121,26 @@ The following options are available in both single- and multiple-namespace modes
     </Params>
 
   </Param>
+
   <Param name="modules">
+    <a id="modules" />  
     A list of modules to install into the world during the deploy step.
 
     <Params title="Module config options">
       <Param name="artifactPath">Relative path to the module's compiled JSON artifact (usually in `out`) or an import path if using a module from an npm package. This path is resolved using [Node's module `require` API](https://nodejs.org/api/modules.html#modulerequireid).</Param>
       <Param name="root">Whether or not to install this as a root module. Defaults to `false`.</Param>
-      <Param name="args">A list of arguments used to call the module's install function.</Param>
+      <Param name="args">
+        A list of arguments used to call the module's install function. Each argument is a structure with two fields:
+
+        <Params>
+          <Param name="type">Solidity data type.</Param>
+          <Param name="value">
+            The value.
+            To encode a complex data type, such as a structure or an array, you can use Viem's [`encodeAbiParameters`](https://viem.sh/docs/abi/encodeAbiParameters.html).
+          </Param>
+        </Params>
+
+      </Param>
     </Params>
 
   </Param>
@@ -141,15 +154,28 @@ The following options are available in both single- and multiple-namespace modes
       <Param name="userTypesFilename">Filename relative to `outputDirectory` to codegen enums into. Defaults to `"common.sol"`.</Param>
       <Param name="worldgenDirectory">Output directory of world interfaces relative to `outputDirectory`. Defaults to `"world"`.</Param>
     </Params>
+
   </Param>
   <Param name="deploy">
-    Customize how to deploy this table.
+    Customize how to deploy the world.
 
     <Params>
       <Param name="deploysDirectory">Directory, relative to project root, to write the deployment artifacts to. Defaults to `"deploys"`.</Param>
       <Param name="postDeployScript">Script name to execute after the deployment is complete. Defaults to `"PostDeploy"`.</Param>
       <Param name="worldsFile">JSON filename, relative to project root, to write per-chain world deployment addresses. Defaults to `"worlds.json"`.</Param>
-      <Param name="upgradeableWorldImplementation">Wheter or not to deploy the world with an upgradeable proxy, allowing for the core implementation to be upgraded. Defaults to `false`, but [we recommend `true`](/guides/best-practices/deployment-settings).</Param>
+      <Param name="upgradeableWorldImplementation">Whether or not to deploy the world with an upgradeable proxy, allowing for the core implementation to be upgraded. Defaults to `false`, but [we recommend `true`](/guides/best-practices/deployment-settings).</Param>
+      <Param name="customWorld">
+        Deploy the World using a custom implementation. This world must implement the same interface as `World.sol` so that it can initialize core modules, etc.
+        If you want to extend the world with new functions or override existing registered functions, we recommend using [root systems](/world/systems#root-systems).
+        However, there are rare cases where this may not be enough to modify the native/internal World behavior.
+        Note that deploying a custom World opts out of the world factory, deterministic world deploys, and upgradeable implementation proxy.
+
+        <Params>
+          <Param name="sourcePath">Path to custom world source file relative to project root dir.</Param>
+          <Param name="name">Contract name in custom world source file.</Param>
+        </Params>
+
+      </Param>
     </Params>
 
   </Param>

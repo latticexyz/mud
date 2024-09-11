@@ -1,5 +1,30 @@
 # Change Log
 
+## 2.2.3
+
+## 2.2.2
+
+## 2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- 28fd732: Templates now use `shx` to run shell commands in scripts for better Windows compatibility.
+- 1a96544: New projects created with `pnpm create mud` now include the World Explorer and SQLite indexer running as additional services.
+
+## 2.1.1
+
+### Patch Changes
+
+- 9e21e42: Bumped viem to `2.19.8` and abitype to `1.0.5`.
+
+  MUD projects using viem or abitype should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.19.8 abitype@1.0.5
+  ```
+
 ## 2.1.0
 
 ### Patch Changes

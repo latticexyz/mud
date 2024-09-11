@@ -1,3 +1,186 @@
+## Version 2.2.3
+
+Release date: Tue Sep 10 2024
+
+### Patch changes
+
+**[feat(cli): deploy custom world (#3131)](https://github.com/latticexyz/mud/commit/854645260c41eaa89cdadad30bf8e70d5d2fd109)** (@latticexyz/cli, @latticexyz/world)
+
+MUD config now supports a `deploy.customWorld` option that, when used with the CLI, will deploy the specified custom World implementation.
+Custom implementations must still follow [the World protocol](https://github.com/latticexyz/mud/tree/main/packages/world/ts/protocol-snapshots).
+
+If you want to extend the world with new functions or override existing registered functions, we recommend using [root systems](https://mud.dev/world/systems#root-systems).
+However, there are rare cases where this may not be enough to modify the native/internal World behavior.
+Note that deploying a custom World opts out of the world factory, deterministic world deploys, and upgradeable implementation proxy.
+
+```ts
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
+  customWorld: {
+    // path to custom world source from project root
+    sourcePath: "src/CustomWorld.sol",
+    // custom world contract name
+    name: "CustomWorld",
+  },
+});
+```
+
+**[fix(explorer): world address cli option as hex (#3155)](https://github.com/latticexyz/mud/commit/b9c61a96082e62c4f1bec3a8ebb358ea30c315f0)** (@latticexyz/explorer)
+
+Fixed an issue with `--worldAddress` CLI flag being incorrectly interpreted as a number rather a hex string. Additionally, added `--hostname` option for specifying the hostname on which to start the application.
+
+**[feat(cli): speed up dev deploy with temporary automine during deploy (#3130)](https://github.com/latticexyz/mud/commit/d3ab5c3783265b3e82b76157bccedeae6b0445e1)** (@latticexyz/cli)
+
+Speed up deployment in development by temporarily enabling automine mode for the duration of the deployment.
+
+---
+
+## Version 2.2.2
+
+Release date: Tue Sep 03 2024
+
+### Patch changes
+
+**[style(explorer): format account balances (#3117)](https://github.com/latticexyz/mud/commit/fb9def83ddb128387b70edb6fe88064e234366ce)** (@latticexyz/explorer)
+
+Format account balances with comma-separated thousands and trimmed decimal places for better readability.
+
+**[feat(explorer): show error message in error page (#3121)](https://github.com/latticexyz/mud/commit/4b86c04dc703faf3bf12f6143781b5940b62cb17)** (@latticexyz/explorer)
+
+Added error messages to error page to facilitate easier troubleshooting.
+
+**[fix(cli): add missing await (#3119)](https://github.com/latticexyz/mud/commit/ef6f7c0c6afcc46e7463d18c00fa99c7cafcae65)** (@latticexyz/cli)
+
+Fixed regression in 2.2.1 where deployment of modules already installed would throw an error instead of skipping.
+
+---
+
+## Version 2.2.1
+
+Release date: Sun Sep 01 2024
+
+### Patch changes
+
+**[fix(store-sync): handle TransactionReceiptNotFoundError (#3115)](https://github.com/latticexyz/mud/commit/603b2ab6631c4f38fca0d9092d255578061987aa)** (@latticexyz/store-sync)
+
+Improved error handling of `TransactionReceiptNotFoundError` in `waitForTransaction` when Viem versions aren't aligned.
+
+**[fix(cli): deployer should wait for prereq txs (#3113)](https://github.com/latticexyz/mud/commit/0738d295f802be28524d517d75efe3b5837f10c1)** (@latticexyz/cli)
+
+Deployer now waits for prerequisite transactions before continuing.
+
+**[fix(common): use pending block tag in tx queue (#3073)](https://github.com/latticexyz/mud/commit/c0764a5e7d3a6a5291198dfe802fe060a0b54da9)** (@latticexyz/common)
+
+`writeContract` and `sendTransaction` actions now use `pending` block tag when estimating gas. This aligns with previous behavior before changes in the last version.
+
+---
+
+## Version 2.2.0
+
+Release date: Fri Aug 30 2024
+
+### Minor changes
+
+**[chore(explorer): update world explorer naming (#3069)](https://github.com/latticexyz/mud/commit/0eb25560cfc78354a5e6845c3244375759b71f4c)** (@latticexyz/explorer)
+
+Initial release of the `@latticexyz/explorer` package. World Explorer is a standalone tool designed to explore and manage worlds. This initial release supports local worlds, with plans to extend support to any world in the future.
+
+Read more on how to get started or contribute in the [World Explorer README](https://github.com/latticexyz/mud/blob/main/packages/explorer/README.md).
+
+### Patch changes
+
+**[fix(common): route all actions through viem client (#3071)](https://github.com/latticexyz/mud/commit/69cd0a1ba0450f3407ec5865334079653503fa86)** (@latticexyz/common)
+
+Updated all custom Viem actions to properly call other actions via `getAction` so they can be composed.
+
+**[build: use shx from dev deps (#3085)](https://github.com/latticexyz/mud/commit/c0bb0da58966b49c51570de9e3e031bee78b8473)** (create-mud)
+
+Templates now use `shx` to run shell commands in scripts for better Windows compatibility.
+
+**[feat(world): add namespaceLabel to system config (#3057)](https://github.com/latticexyz/mud/commit/04c675c946a0707956f38daad3fe516fde4a33a2)** (@latticexyz/config, @latticexyz/store)
+
+Fixed a few type issues with `namespaceLabel` in tables and added/clarified TSDoc for config input/output objects.
+
+**[fix(create-mud): update changeset package name + description (#3066)](https://github.com/latticexyz/mud/commit/bd4dffcabd6c6715df213e6c0c8b0631c9afc0b7)** (create-mud)
+
+New projects created with `pnpm create mud` now include the World Explorer and SQLite indexer running as additional services.
+
+**[feat(world): add namespaceLabel to system config (#3057)](https://github.com/latticexyz/mud/commit/04c675c946a0707956f38daad3fe516fde4a33a2)** (@latticexyz/cli, @latticexyz/world)
+
+Add a strongly typed `namespaceLabel` to the system config output.
+It corresponds to the `label` of the namespace the system belongs to and can't be set manually.
+
+**[feat(cli,world): register system ABI onchain (#3050)](https://github.com/latticexyz/mud/commit/31caecc95be72fe94efd1df8cba2b5435fa39bb4)** (@latticexyz/cli)
+
+In addition to table labels, system labels and ABIs are now registered onchain during deploy.
+
+---
+
+## Version 2.1.1
+
+Release date: Tue Aug 20 2024
+
+### Patch changes
+
+**[chore: upgrade zod to latest (#3020)](https://github.com/latticexyz/mud/commit/64354814ed325cefd1066282944408de7c40b4a7)** (@latticexyz/cli, @latticexyz/faucet, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/world-modules)
+
+Upgrade `zod` to `3.23.8` to avoid issues with [excessively deep type instantiations](https://github.com/colinhacks/zod/issues/577).
+
+**[chore: bump viem, abitype (#3038)](https://github.com/latticexyz/mud/commit/9e21e42c7e510cc595acddfbd3c9006f42fcf81e)** (@latticexyz/block-logs-stream, @latticexyz/cli, @latticexyz/common, @latticexyz/config, @latticexyz/dev-tools, @latticexyz/faucet, @latticexyz/protocol-parser, @latticexyz/query, @latticexyz/schema-type, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world, create-mud)
+
+Bumped viem to `2.19.8` and abitype to `1.0.5`.
+
+MUD projects using viem or abitype should do the same to ensure no type errors due to mismatched versions:
+
+```
+pnpm recursive up viem@2.19.8 abitype@1.0.5
+```
+
+**[refactor(world): make AccessControl lib usable outside of world package (#3034)](https://github.com/latticexyz/mud/commit/6a66f572039ea9193b2c4882943ab3a94ed3f844)** (@latticexyz/world-module-metadata, @latticexyz/world-modules, @latticexyz/world)
+
+Refactored `AccessControl` library exported from `@latticexyz/world` to be usable outside of the world package and updated module packages to use it.
+
+**[feat(world,cli): add system deploy config (#3011)](https://github.com/latticexyz/mud/commit/86a810488f7ffb481534062c9c3ff170a1120982)** (@latticexyz/world)
+
+Added `deploy` config options to systems in the MUD config:
+
+- `disabled` to toggle deploying the system (defaults to `false`)
+- `registerWorldFunctions` to toggle registering namespace-prefixed system functions on the world (defaults to `true`)
+
+```ts
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
+  systems: {
+    HiddenSystem: {
+      deploy: {
+        registerWorldFunctions: false,
+      },
+    },
+  },
+});
+```
+
+**[feat(world-module-metadata): add metadata module (#3026)](https://github.com/latticexyz/mud/commit/fad4e85853d9ee80753ae1b0b161b60bf9874846)** (@latticexyz/cli, @latticexyz/world-module-metadata)
+
+Added metadata module to be automatically installed during world deploy. This module allows for tagging any resource with arbitrary metadata. Internally, we'll use this to tag resources with labels onchain so that we can use labels to create a MUD project from an existing world.
+
+**[refactor(common): simplify writeContract/sendTransaction actions (#3043)](https://github.com/latticexyz/mud/commit/2daaab13a9387e661475aef9bafb938fa12f5eb9)** (@latticexyz/common)
+
+Refactored `writeContract` and `sendTransaction` actions for simplicity and better error messages.
+
+**[fix(world): worldgen should read system source from root dir (#3027)](https://github.com/latticexyz/mud/commit/542ea540329fce74d85c74368e26386682e39cce)** (@latticexyz/world)
+
+Fixed an issue with worldgen when using a different `rootDir` from the current working directory, where worldgen would read system source files from the wrong place.
+
+**[feat(config,store,world): add namespaceLabel to table config (#3039)](https://github.com/latticexyz/mud/commit/57bf8c361999c7210622466dadcba037d4fe1238)** (@latticexyz/config, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world)
+
+Add a strongly typed `namespaceLabel` to the table config output.
+It corresponds to the `label` of the namespace the table belongs to and can't be set manually.
+
+---
+
 ## Version 2.1.0
 
 Release date: Mon Aug 05 2024

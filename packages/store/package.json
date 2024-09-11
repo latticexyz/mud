@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store",
-  "version": "2.1.0",
+  "version": "2.2.3",
   "description": "Store",
   "repository": {
     "type": "git",
@@ -50,8 +50,8 @@
     "build:tightcoder": "tsx ./ts/scripts/generate-tightcoder.ts",
     "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud",
     "clean:abi": "forge clean",
-    "clean:js": "rimraf dist",
-    "clean:mud": "rimraf src/codegen && rimraf test/codegen",
+    "clean:js": "shx rm -rf dist",
+    "clean:mud": "shx rm -rf src/**/codegen test/**/codegen",
     "dev": "tsup --watch",
     "gas-report": "gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
@@ -64,9 +64,9 @@
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "abitype": "1.0.0",
-    "arktype": "1.0.29-alpha",
-    "viem": "2.9.20"
+    "abitype": "catalog:",
+    "arktype": "catalog:",
+    "viem": "catalog:"
   },
   "devDependencies": {
     "@latticexyz/abi-ts": "workspace:*",

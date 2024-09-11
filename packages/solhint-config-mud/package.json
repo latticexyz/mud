@@ -1,6 +1,6 @@
 {
   "name": "solhint-config-mud",
-  "version": "2.1.0",
+  "version": "2.2.3",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
@@ -24,7 +24,7 @@
     "build": "pnpm run build:js",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
-    "clean:js": "rimraf dist"
+    "clean:js": "shx rm -rf dist"
   },
   "devDependencies": {
     "tsup": "^6.7.0"

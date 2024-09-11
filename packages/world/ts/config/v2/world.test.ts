@@ -194,7 +194,6 @@ describe("defineWorld", () => {
       systems: {},
       excludeSystems: [],
       deploy: {
-        customWorldContract: "(undefined)",
         postDeployScript: "PostDeploy",
         deploysDirectory: "./deploys",
         worldsFile: "./worlds.json",
@@ -206,8 +205,8 @@ describe("defineWorld", () => {
   readonly tables: {
     readonly Example: {
       readonly label: "Example"
-      readonly type: "table"
       readonly namespaceLabel: ""
+      readonly type: "table"
       readonly namespace: string
       readonly name: string
       readonly tableId: \`0x\${string}\`
@@ -257,8 +256,8 @@ describe("defineWorld", () => {
       readonly tables: {
         readonly Example: {
           readonly label: "Example"
-          readonly type: "table"
           readonly namespaceLabel: ""
+          readonly type: "table"
           readonly namespace: string
           readonly name: string
           readonly tableId: \`0x\${string}\`
@@ -293,7 +292,6 @@ describe("defineWorld", () => {
   readonly excludeSystems: readonly []
   readonly modules: readonly []
   readonly deploy: {
-    readonly customWorldContract: undefined
     readonly postDeployScript: "PostDeploy"
     readonly deploysDirectory: "./deploys"
     readonly worldsFile: "./worlds.json"
@@ -379,7 +377,6 @@ describe("defineWorld", () => {
       systems: {},
       excludeSystems: [],
       deploy: {
-        customWorldContract: "(undefined)",
         postDeployScript: "PostDeploy",
         deploysDirectory: "./deploys",
         worldsFile: "./worlds.json",
@@ -391,8 +388,8 @@ describe("defineWorld", () => {
   readonly tables: {
     readonly root__Example: {
       readonly label: "Example"
-      readonly type: "table"
       readonly namespaceLabel: "root"
+      readonly type: "table"
       readonly namespace: string
       readonly name: string
       readonly tableId: \`0x\${string}\`
@@ -442,8 +439,8 @@ describe("defineWorld", () => {
       readonly tables: {
         readonly Example: {
           readonly label: "Example"
-          readonly type: "table"
           readonly namespaceLabel: "root"
+          readonly type: "table"
           readonly namespace: string
           readonly name: string
           readonly tableId: \`0x\${string}\`
@@ -478,7 +475,6 @@ describe("defineWorld", () => {
   readonly excludeSystems: readonly []
   readonly modules: readonly []
   readonly deploy: {
-    readonly customWorldContract: undefined
     readonly postDeployScript: "PostDeploy"
     readonly deploysDirectory: "./deploys"
     readonly worldsFile: "./worlds.json"
@@ -517,28 +513,48 @@ describe("defineWorld", () => {
         namespace: "CustomNS",
         tables: {
           Example: {
-            // @ts-expect-error "Overrides of `label` and `namespace` are not allowed for tables in this context"
+            // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
             label: "NotAllowed",
             schema: { id: "address" },
             key: ["id"],
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in this context");
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
 
     attest(() =>
       defineWorld({
         namespace: "CustomNS",
         tables: {
           Example: {
-            // @ts-expect-error "Overrides of `label` and `namespace` are not allowed for tables in this context"
+            // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
+            namespaceLabel: "NotAllowed",
+            schema: { id: "address" },
+            key: ["id"],
+          },
+        },
+      }),
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
+
+    attest(() =>
+      defineWorld({
+        namespace: "CustomNS",
+        tables: {
+          Example: {
+            // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
             namespace: "NotAllowed",
             schema: { id: "address" },
             key: ["id"],
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in this context");
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
 
     attest(() =>
       defineWorld({
@@ -546,7 +562,7 @@ describe("defineWorld", () => {
           CustomNS: {
             tables: {
               Example: {
-                // @ts-expect-error "Overrides of `label` and `namespace` are not allowed for tables in this context"
+                // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
                 label: "NotAllowed",
                 schema: { id: "address" },
                 key: ["id"],
@@ -555,7 +571,9 @@ describe("defineWorld", () => {
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in this context");
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
 
     attest(() =>
       defineWorld({
@@ -563,7 +581,26 @@ describe("defineWorld", () => {
           CustomNS: {
             tables: {
               Example: {
-                // @ts-expect-error "Overrides of `label` and `namespace` are not allowed for tables in this context"
+                // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
+                namespaceLabel: "NotAllowed",
+                schema: { id: "address" },
+                key: ["id"],
+              },
+            },
+          },
+        },
+      }),
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
+
+    attest(() =>
+      defineWorld({
+        namespaces: {
+          CustomNS: {
+            tables: {
+              Example: {
+                // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
                 namespace: "NotAllowed",
                 schema: { id: "address" },
                 key: ["id"],
@@ -572,7 +609,9 @@ describe("defineWorld", () => {
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `label` and `namespace` are not allowed for tables in this context");
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
   });
 
   it("should expand systems config", () => {
@@ -586,6 +625,7 @@ describe("defineWorld", () => {
     attest(config.systems).snap({
       Example: {
         label: "Example",
+        namespaceLabel: "app",
         namespace: "app",
         name: "Example",
         systemId: "0x737961707000000000000000000000004578616d706c65000000000000000000",
@@ -596,6 +636,7 @@ describe("defineWorld", () => {
     }).type.toString.snap(`{
   readonly Example: {
     readonly label: "Example"
+    readonly namespaceLabel: string
     readonly namespace: string
     readonly name: string
     readonly systemId: \`0x\${string}\`
@@ -619,6 +660,98 @@ describe("defineWorld", () => {
     });
 
     attest<false>(config.systems.Example.openAccess).equals(false);
+  });
+
+  it("should throw if system label/namespace is overridden in namespace context", () => {
+    attest(() =>
+      defineWorld({
+        systems: {
+          Example: {
+            // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for systems in this context"
+            label: "",
+          },
+        },
+      }),
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for systems in this context",
+    );
+
+    attest(() =>
+      defineWorld({
+        systems: {
+          Example: {
+            // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for systems in this context"
+            namespaceLabel: "",
+          },
+        },
+      }),
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for systems in this context",
+    );
+
+    attest(() =>
+      defineWorld({
+        systems: {
+          Example: {
+            // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for systems in this context"
+            namespace: "",
+          },
+        },
+      }),
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for systems in this context",
+    );
+
+    attest(() =>
+      defineWorld({
+        namespaces: {
+          CustomNS: {
+            systems: {
+              Example: {
+                // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for systems in this context"
+                label: "",
+              },
+            },
+          },
+        },
+      }),
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for systems in this context",
+    );
+
+    attest(() =>
+      defineWorld({
+        namespaces: {
+          CustomNS: {
+            systems: {
+              Example: {
+                // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for systems in this context"
+                namespaceLabel: "",
+              },
+            },
+          },
+        },
+      }),
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for systems in this context",
+    );
+
+    attest(() =>
+      defineWorld({
+        namespaces: {
+          CustomNS: {
+            systems: {
+              Example: {
+                // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for systems in this context"
+                namespace: "",
+              },
+            },
+          },
+        },
+      }),
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for systems in this context",
+    );
   });
 
   it("should allow a const config as input", () => {

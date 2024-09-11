@@ -1,5 +1,128 @@
 # Change Log
 
+## 2.2.3
+
+### Patch Changes
+
+- 8546452: MUD config now supports a `deploy.customWorld` option that, when used with the CLI, will deploy the specified custom World implementation.
+  Custom implementations must still follow [the World protocol](https://github.com/latticexyz/mud/tree/main/packages/world/ts/protocol-snapshots).
+
+  If you want to extend the world with new functions or override existing registered functions, we recommend using [root systems](https://mud.dev/world/systems#root-systems).
+  However, there are rare cases where this may not be enough to modify the native/internal World behavior.
+  Note that deploying a custom World opts out of the world factory, deterministic world deploys, and upgradeable implementation proxy.
+
+  ```ts
+  import { defineWorld } from "@latticexyz/world";
+
+  export default defineWorld({
+    customWorld: {
+      // path to custom world source from project root
+      sourcePath: "src/CustomWorld.sol",
+      // custom world contract name
+      name: "CustomWorld",
+    },
+  });
+  ```
+
+- d3ab5c3: Speed up deployment in development by temporarily enabling automine mode for the duration of the deployment.
+- Updated dependencies [8546452]
+  - @latticexyz/world@2.2.3
+  - @latticexyz/world-module-metadata@2.2.3
+  - @latticexyz/abi-ts@2.2.3
+  - @latticexyz/common@2.2.3
+  - @latticexyz/config@2.2.3
+  - @latticexyz/gas-report@2.2.3
+  - @latticexyz/protocol-parser@2.2.3
+  - @latticexyz/schema-type@2.2.3
+  - @latticexyz/store@2.2.3
+  - @latticexyz/utils@2.2.3
+
+## 2.2.2
+
+### Patch Changes
+
+- ef6f7c0: Fixed regression in 2.2.1 where deployment of modules already installed would throw an error instead of skipping.
+  - @latticexyz/abi-ts@2.2.2
+  - @latticexyz/common@2.2.2
+  - @latticexyz/config@2.2.2
+  - @latticexyz/gas-report@2.2.2
+  - @latticexyz/protocol-parser@2.2.2
+  - @latticexyz/schema-type@2.2.2
+  - @latticexyz/store@2.2.2
+  - @latticexyz/utils@2.2.2
+  - @latticexyz/world@2.2.2
+  - @latticexyz/world-module-metadata@2.2.2
+
+## 2.2.1
+
+### Patch Changes
+
+- 0738d29: Deployer now waits for prerequisite transactions before continuing.
+- Updated dependencies [c0764a5]
+  - @latticexyz/common@2.2.1
+  - @latticexyz/config@2.2.1
+  - @latticexyz/protocol-parser@2.2.1
+  - @latticexyz/store@2.2.1
+  - @latticexyz/world@2.2.1
+  - @latticexyz/world-module-metadata@2.2.1
+  - @latticexyz/abi-ts@2.2.1
+  - @latticexyz/gas-report@2.2.1
+  - @latticexyz/schema-type@2.2.1
+  - @latticexyz/utils@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- 04c675c: Add a strongly typed `namespaceLabel` to the system config output.
+  It corresponds to the `label` of the namespace the system belongs to and can't be set manually.
+- 31caecc: In addition to table labels, system labels and ABIs are now registered onchain during deploy.
+- Updated dependencies [69cd0a1]
+- Updated dependencies [04c675c]
+- Updated dependencies [04c675c]
+  - @latticexyz/common@2.2.0
+  - @latticexyz/config@2.2.0
+  - @latticexyz/store@2.2.0
+  - @latticexyz/world@2.2.0
+  - @latticexyz/protocol-parser@2.2.0
+  - @latticexyz/world-module-metadata@2.2.0
+  - @latticexyz/abi-ts@2.2.0
+  - @latticexyz/gas-report@2.2.0
+  - @latticexyz/schema-type@2.2.0
+  - @latticexyz/utils@2.2.0
+
+## 2.1.1
+
+### Patch Changes
+
+- 6435481: Upgrade `zod` to `3.23.8` to avoid issues with [excessively deep type instantiations](https://github.com/colinhacks/zod/issues/577).
+- 9e21e42: Bumped viem to `2.19.8` and abitype to `1.0.5`.
+
+  MUD projects using viem or abitype should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.19.8 abitype@1.0.5
+  ```
+
+- fad4e85: Added metadata module to be automatically installed during world deploy. This module allows for tagging any resource with arbitrary metadata. Internally, we'll use this to tag resources with labels onchain so that we can use labels to create a MUD project from an existing world.
+- Updated dependencies [9e21e42]
+- Updated dependencies [6a66f57]
+- Updated dependencies [86a8104]
+- Updated dependencies [fad4e85]
+- Updated dependencies [2daaab1]
+- Updated dependencies [542ea54]
+- Updated dependencies [57bf8c3]
+  - @latticexyz/common@2.1.1
+  - @latticexyz/config@2.1.1
+  - @latticexyz/protocol-parser@2.1.1
+  - @latticexyz/schema-type@2.1.1
+  - @latticexyz/store@2.1.1
+  - @latticexyz/world@2.1.1
+  - @latticexyz/world-module-metadata@2.1.1
+  - @latticexyz/abi-ts@2.1.1
+  - @latticexyz/gas-report@2.1.1
+  - @latticexyz/utils@2.1.1
+
 ## 2.1.0
 
 ### Minor Changes

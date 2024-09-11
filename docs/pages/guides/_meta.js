@@ -7,5 +7,4 @@ export default {
   emojimon: "Emojimon",
   testing: "Testing",
   "solidity-patterns": "MUD for Solidity Programmers",
-  "best-practices": "Best Practices",
 };

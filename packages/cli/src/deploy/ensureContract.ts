@@ -4,11 +4,10 @@ import { contractSizeLimit, salt } from "./common";
 import { sendTransaction } from "@latticexyz/common";
 import { debug } from "./debug";
 import pRetry from "p-retry";
-import { wait } from "@latticexyz/common/utils";
 
 export type Contract = {
   bytecode: Hex;
-  deployedBytecodeSize: number;
+  deployedBytecodeSize?: number;
   debugLabel?: string;
 };
 
@@ -34,15 +33,17 @@ export async function ensureContract({
     return [];
   }
 
-  if (deployedBytecodeSize > contractSizeLimit) {
-    console.warn(
-      `\nBytecode for ${debugLabel} (${deployedBytecodeSize} bytes) is over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`,
-    );
-  } else if (deployedBytecodeSize > contractSizeLimit * 0.95) {
-    console.warn(
-      // eslint-disable-next-line max-len
-      `\nBytecode for ${debugLabel} (${deployedBytecodeSize} bytes) is almost over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`,
-    );
+  if (deployedBytecodeSize != null) {
+    if (deployedBytecodeSize > contractSizeLimit) {
+      console.warn(
+        `\nBytecode for ${debugLabel} (${deployedBytecodeSize} bytes) is over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`,
+      );
+    } else if (deployedBytecodeSize > contractSizeLimit * 0.95) {
+      console.warn(
+        // eslint-disable-next-line max-len
+        `\nBytecode for ${debugLabel} (${deployedBytecodeSize} bytes) is almost over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`,
+      );
+    }
   }
 
   debug("deploying", debugLabel, "at", address);
@@ -56,11 +57,7 @@ export async function ensureContract({
         }),
       {
         retries: 3,
-        onFailedAttempt: async (error) => {
-          const delay = error.attemptNumber * 500;
-          debug(`failed to deploy ${debugLabel}, retrying in ${delay}ms...`);
-          await wait(delay);
-        },
+        onFailedAttempt: () => debug(`failed to deploy ${debugLabel}, retrying...`),
       },
     ),
   ];

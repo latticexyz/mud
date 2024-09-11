@@ -41,10 +41,14 @@ export type SystemDeploy = {
 
 export type System = {
   /**
-   * Human-readable system label. Used as config keys, interface names, and filenames.
+   * Human-readable label for this system. Used as config keys, interface names, and filenames.
    * Labels are not length constrained like resource names, but special characters should be avoided to be compatible with the filesystem, Solidity compiler, etc.
    */
   readonly label: string;
+  /**
+   * Human-readable label for this system's namespace. Used for namespace config keys and directory names.
+   */
+  readonly namespaceLabel: string;
   /**
    * System namespace used in system's resource ID and determines access control.
    */
@@ -76,8 +80,6 @@ export type Namespaces = {
 };
 
 export type Deploy = {
-  /** The name of a custom World contract to deploy. If no name is provided, a default MUD World is deployed */
-  readonly customWorldContract: string | undefined;
   /**
    * Script to execute after the deployment is complete (Default "PostDeploy").
    * Script must be placed in the forge scripts directory (see foundry.toml) and have a ".s.sol" extension.
@@ -89,6 +91,18 @@ export type Deploy = {
   readonly worldsFile: string;
   /** Deploy the World as an upgradeable proxy */
   readonly upgradeableWorldImplementation: boolean;
+  /**
+   * Deploy the World using a custom implementation. This world must implement the same interface as `World.sol` so that it can initialize core modules, etc.
+   * If you want to extend the world with new functions or override existing registered functions, we recommend using [root systems](https://mud.dev/world/systems#root-systems).
+   * However, there are rare cases where this may not be enough to modify the native/internal World behavior.
+   * Note that deploying a custom World opts out of the world factory, deterministic world deploys, and upgradeable implementation proxy.
+   */
+  readonly customWorld?: {
+    /** Path to custom world source file relative to project root dir. */
+    sourcePath: string;
+    /** Contract name in custom world source file. */
+    name: string;
+  };
 };
 
 export type Codegen = {

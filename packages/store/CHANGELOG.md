@@ -1,5 +1,67 @@
 # Change Log
 
+## 2.2.3
+
+### Patch Changes
+
+- @latticexyz/common@2.2.3
+- @latticexyz/config@2.2.3
+- @latticexyz/protocol-parser@2.2.3
+- @latticexyz/schema-type@2.2.3
+
+## 2.2.2
+
+### Patch Changes
+
+- @latticexyz/common@2.2.2
+- @latticexyz/config@2.2.2
+- @latticexyz/protocol-parser@2.2.2
+- @latticexyz/schema-type@2.2.2
+
+## 2.2.1
+
+### Patch Changes
+
+- Updated dependencies [c0764a5]
+  - @latticexyz/common@2.2.1
+  - @latticexyz/config@2.2.1
+  - @latticexyz/protocol-parser@2.2.1
+  - @latticexyz/schema-type@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- 04c675c: Fixed a few type issues with `namespaceLabel` in tables and added/clarified TSDoc for config input/output objects.
+- Updated dependencies [69cd0a1]
+- Updated dependencies [04c675c]
+  - @latticexyz/common@2.2.0
+  - @latticexyz/config@2.2.0
+  - @latticexyz/protocol-parser@2.2.0
+  - @latticexyz/schema-type@2.2.0
+
+## 2.1.1
+
+### Patch Changes
+
+- 9e21e42: Bumped viem to `2.19.8` and abitype to `1.0.5`.
+
+  MUD projects using viem or abitype should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.19.8 abitype@1.0.5
+  ```
+
+- 57bf8c3: Add a strongly typed `namespaceLabel` to the table config output.
+  It corresponds to the `label` of the namespace the table belongs to and can't be set manually.
+- Updated dependencies [9e21e42]
+- Updated dependencies [2daaab1]
+- Updated dependencies [57bf8c3]
+  - @latticexyz/common@2.1.1
+  - @latticexyz/config@2.1.1
+  - @latticexyz/protocol-parser@2.1.1
+  - @latticexyz/schema-type@2.1.1
+
 ## 2.1.0
 
 ### Minor Changes

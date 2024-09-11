@@ -11,6 +11,11 @@ export type SystemInput = {
    */
   readonly label: string;
   /**
+   * Human-readable label for this system's namespace. Used for namespace config keys and directory names.
+   * Defaults to the nearest namespace in the config or root namespace if not set.
+   */
+  readonly namespaceLabel?: string;
+  /**
    * System namespace used in systems's resource ID and determines access control.
    * Defaults to the nearest namespace in the config or root namespace if not set.
    */
@@ -28,7 +33,7 @@ export type SystemInput = {
 };
 
 export type SystemsInput = {
-  readonly [label: string]: Omit<SystemInput, "label" | "namespace">;
+  readonly [label: string]: Omit<SystemInput, "label" | "namespaceLabel" | "namespace">;
 };
 
 export type NamespaceInput = StoreNamespaceInput & {
@@ -64,7 +69,7 @@ export type ModuleInput = ModuleInputArtifactPath & {
   /**
    * Should this module be installed as a root module?
    * @default false
-   * */
+   */
   readonly root?: boolean;
   /** Arguments to be passed to the module's install method */
   // TODO: make more strongly typed by taking in tables input
@@ -72,9 +77,6 @@ export type ModuleInput = ModuleInputArtifactPath & {
 };
 
 export type DeployInput = {
-  /** The name of a custom World contract to deploy. If no name is provided, a default MUD World is deployed. */
-  // TODO: implement
-  readonly customWorldContract?: never;
   /**
    * Script to execute after the deployment is complete (Default "PostDeploy").
    * Script must be placed in the forge scripts directory (see foundry.toml) and have a ".s.sol" extension.
@@ -86,6 +88,20 @@ export type DeployInput = {
   readonly worldsFile?: string;
   /** Deploy the World as an upgradeable proxy */
   readonly upgradeableWorldImplementation?: boolean;
+  /**
+   * Deploy the World using a custom implementation. This world must implement the same interface as `World.sol` so that it can initialize core modules, etc.
+   * If you want to extend the world with new functions or override existing registered functions, we recommend using [root systems](https://mud.dev/world/systems#root-systems).
+   * However, there are rare cases where this may not be enough to modify the native/internal World behavior.
+   * Note that deploying a custom World opts out of the world factory, deterministic world deploys, and upgradeable implementation proxy.
+   */
+  // TODO: enforce that this can't be used with `upgradeableWorldImplementation` (https://github.com/latticexyz/mud/issues/3151)
+  readonly customWorld?: {
+    /** Path to custom world source file relative to project root dir. */
+    sourcePath: string;
+    /** Contract name in custom world source file. */
+    name: string;
+    // TODO: constructor calldata (https://github.com/latticexyz/mud/issues/3150)
+  };
 };
 
 export type CodegenInput = Partial<Codegen>;
