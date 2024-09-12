@@ -43,7 +43,7 @@
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "react": "^18.2.0",
-    "viem": "2.9.20"
+    "viem": "2.21.6"
   },
   "devDependencies": {
     "@arktype/attest": "0.7.5",
