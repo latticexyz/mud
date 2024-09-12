@@ -9,6 +9,7 @@ import { ChildProcess, spawn } from "child_process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const packageRoot = path.join(__dirname, "..", "..");
 
 const argv = yargs(process.argv.slice(2))
   .options({
@@ -72,14 +73,14 @@ async function startExplorer() {
       "node_modules/.bin/next",
       ["dev", "--port", port.toString(), ...(hostname ? ["--hostname", hostname] : [])],
       {
-        cwd: path.join(__dirname, ".."),
+        cwd: packageRoot,
         stdio: "inherit",
         env,
       },
     );
   } else {
     explorerProcess = spawn("node", [".next/standalone/packages/explorer/server.js"], {
-      cwd: path.join(__dirname, ".."),
+      cwd: packageRoot,
       stdio: "inherit",
       env: {
         ...env,

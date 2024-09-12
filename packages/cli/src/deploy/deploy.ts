@@ -9,7 +9,7 @@ import { ensureFunctions } from "./ensureFunctions";
 import { ensureModules } from "./ensureModules";
 import { ensureNamespaceOwner } from "./ensureNamespaceOwner";
 import { debug } from "./debug";
-import { resourceToLabel } from "@latticexyz/common";
+import { resourceToHex, resourceToLabel } from "@latticexyz/common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";
 import { ensureWorldFactory } from "./ensureWorldFactory";
@@ -19,6 +19,7 @@ import { waitForTransactions } from "./waitForTransactions";
 import { ContractArtifact } from "@latticexyz/world/node";
 import { World } from "@latticexyz/world";
 import { deployCustomWorld } from "./deployCustomWorld";
+import { uniqueBy } from "@latticexyz/common/utils";
 
 type DeployOptions = {
   config: World;
@@ -150,9 +151,26 @@ export async function deploy({
     modules,
   });
 
-  const tableTags = tables.map(({ tableId: resourceId, label }) => ({ resourceId, tag: "label", value: label }));
-  const systemTags = systems.flatMap(({ systemId: resourceId, label, abi, worldAbi }) => [
-    { resourceId, tag: "label", value: label },
+  const namespaceTags = uniqueBy(
+    [...tables, ...systems]
+      // only register labels if they differ from the resource ID
+      .filter(({ namespace, namespaceLabel }) => namespaceLabel !== namespace)
+      .map(({ namespace, namespaceLabel }) => ({
+        resourceId: resourceToHex({ type: "namespace", namespace, name: "" }),
+        tag: "label",
+        value: namespaceLabel,
+      })),
+    (tag) => tag.resourceId,
+  );
+
+  const tableTags = tables
+    // only register labels if they differ from the resource ID
+    .filter((table) => table.label !== table.name)
+    .map(({ tableId: resourceId, label }) => ({ resourceId, tag: "label", value: label }));
+
+  const systemTags = systems.flatMap(({ name, systemId: resourceId, label, abi, worldAbi }) => [
+    // only register labels if they differ from the resource ID
+    ...(label !== name ? [{ resourceId, tag: "label", value: label }] : []),
     { resourceId, tag: "abi", value: abi.join("\n") },
     { resourceId, tag: "worldAbi", value: worldAbi.join("\n") },
   ]);
@@ -162,7 +180,7 @@ export async function deploy({
     deployerAddress,
     libraries,
     worldDeploy,
-    tags: [...tableTags, ...systemTags],
+    tags: [...namespaceTags, ...tableTags, ...systemTags],
     valueToHex: stringToHex,
   });
 
