@@ -1,14 +1,18 @@
-import { Address, Client, hexToString, stringToHex } from "viem";
+import { Address, Client, hexToString, parseAbi, stringToHex } from "viem";
 import { getTables } from "../deploy/getTables";
 import { getWorldDeploy } from "../deploy/getWorldDeploy";
-import { unique } from "@latticexyz/common/utils";
 import { getSchemaTypes } from "@latticexyz/protocol-parser/internal";
-import prettier from "prettier";
-import { resourceToHex } from "@latticexyz/common";
+import { hexToResource, resourceToHex } from "@latticexyz/common";
 import metadataConfig from "@latticexyz/world-module-metadata/mud.config";
 import { getRecord } from "../deploy/getRecord";
 import path from "node:path";
 import fs from "node:fs/promises";
+import { getResourceIds } from "../deploy/getResourceIds";
+import { getFunctions } from "@latticexyz/world/internal";
+import { formatTypescript } from "@latticexyz/common/codegen";
+import { execa } from "execa";
+
+const ignoredNamespaces = new Set(["store", "world", "metadata"]);
 
 export type PullOptions = {
   rootDir: string;
@@ -18,17 +22,9 @@ export type PullOptions = {
 
 export async function pull({ rootDir, client, worldAddress }: PullOptions) {
   const worldDeploy = await getWorldDeploy(client, worldAddress);
+  const resourceIds = await getResourceIds({ client, worldDeploy });
+  const resources = resourceIds.map(hexToResource).filter((resource) => !ignoredNamespaces.has(resource.namespace));
   const tables = await getTables({ client, worldDeploy });
-
-  const ignoredNamespaces = new Set(["store", "world"]);
-  const namespaces = unique(tables.map((table) => table.namespace))
-    .filter((namespace) => !ignoredNamespaces.has(namespace))
-    .map((namespace) => ({ namespace, namespaceId: resourceToHex({ type: "namespace", namespace, name: "" }) }));
-
-  const resourceIds = [
-    ...namespaces.map((namespace) => namespace.namespaceId),
-    ...tables.map((table) => table.tableId),
-  ];
 
   const labels = Object.fromEntries(
     await Promise.all(
@@ -45,9 +41,59 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
     ),
   );
 
+  const namespaces = resources.filter((resource) => resource.type === "namespace");
+
+  const worldFunctions = await getFunctions({
+    client,
+    worldAddress: worldDeploy.address,
+    fromBlock: worldDeploy.deployBlock,
+    toBlock: worldDeploy.stateBlock,
+  });
+
+  const systems = await Promise.all(
+    resources
+      .filter((resource) => resource.type === "system")
+      .map(async ({ namespace, name, resourceId: systemId }) => {
+        const [abi, worldAbi] = await Promise.all([
+          getRecord({
+            client,
+            worldDeploy,
+            table: metadataConfig.tables.metadata__ResourceTag,
+            key: { resource: systemId, tag: stringToHex("abi", { size: 32 }) },
+          })
+            .then((record) => hexToString(record.value))
+            .then((value) => (value !== "" ? value.split("\n") : [])),
+          getRecord({
+            client,
+            worldDeploy,
+            table: metadataConfig.tables.metadata__ResourceTag,
+            key: { resource: systemId, tag: stringToHex("worldAbi", { size: 32 }) },
+          })
+            .then((record) => hexToString(record.value))
+            .then((value) => (value !== "" ? value.split("\n") : [])),
+        ]);
+
+        const functions = worldFunctions.filter((func) => func.systemId === systemId);
+
+        const namespaceId = resourceToHex({ type: "namespace", namespace, name });
+        return {
+          namespaceId,
+          namespaceLabel: labels[namespaceId] ?? namespace,
+          label: labels[systemId] ?? name,
+          systemId,
+          namespace,
+          name,
+          // If empty or unset ABI in metadata table, backfill with world functions.
+          // These don't have parameter names or return values, but better than nothing?
+          abi: parseAbi(abi.length ? abi : functions.map((func) => `function ${func.systemFunctionSignature}`)),
+          worldAbi: parseAbi(worldAbi.length ? worldAbi : functions.map((func) => `function ${func.signature}`)),
+        };
+      }),
+  );
+
   const config = {
     namespaces: Object.fromEntries(
-      namespaces.map(({ namespace, namespaceId }) => {
+      namespaces.map(({ namespace, resourceId: namespaceId }) => {
         const namespaceLabel = labels[namespaceId] ?? namespace;
         return [
           namespaceLabel,
@@ -76,15 +122,40 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
     ),
   };
 
-  const configSource = `
-    import { defineWorld } from "@latticexyz/world";
+  await writeFile(
+    path.join(rootDir, "tmp/mud.config.ts"),
+    await formatTypescript(`
+      import { defineWorld } from "@latticexyz/world";
 
-    export default defineWorld(${JSON.stringify(config)});
-  `;
+      export default defineWorld(${JSON.stringify(config)});
+    `),
+  );
 
-  const formattedConfig = await prettier.format(configSource, {
-    parser: "typescript",
-  });
+  await Promise.all(
+    systems
+      .filter((system) => system.abi.length)
+      .map(async (system) => {
+        const interfaceName = `I${system.label}`;
+        const systemAbi = path.join(rootDir, `.mud/systems/${system.systemId}.abi.json`);
+        const systemInterface = path.join(rootDir, `tmp/namespaces/${system.namespaceLabel}/${interfaceName}.sol`);
 
-  await fs.writeFile(path.join(rootDir, "mud.config.ts"), formattedConfig);
+        await writeFile(systemAbi, JSON.stringify(system.abi));
+
+        await execa("cast", [
+          "interface",
+          "--name",
+          interfaceName,
+          "--pragma",
+          ">=0.8.24",
+          "-o",
+          systemInterface,
+          systemAbi,
+        ]);
+      }),
+  );
+}
+
+async function writeFile(filename: string, contents: string) {
+  await fs.mkdir(path.dirname(filename), { recursive: true });
+  await fs.writeFile(filename, contents);
 }
