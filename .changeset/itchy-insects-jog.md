@@ -3,7 +3,7 @@
 "@latticexyz/stash": patch
 ---
 
-Bumped viem to 2.21.6, wagmi to 2.12.11, @wagmi/core to 2.13.5, and abitype to 1.0.6.
+Bumped viem, wagmi, and abitype packages to their latest release.
 
 MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
 
