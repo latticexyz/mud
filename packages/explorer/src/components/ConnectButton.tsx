@@ -4,7 +4,6 @@ import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
 import { cn } from "../lib/utils";
 import { AccountSelect } from "./AccountSelect";
 import { Button, ButtonProps } from "./ui/Button";
-import { SelectValue } from "./ui/Select";
 
 export function StyledConnectButton({ children, ...props }: ButtonProps) {
   return (
@@ -35,8 +34,7 @@ export function ConnectButton() {
 
                 return (
                   <StyledConnectButton onClick={openConnectModal}>
-                    <PlugIcon className="mr-2 inline-block h-4 w-4" />
-                    <SelectValue placeholder="Connect" />
+                    <PlugIcon className="mr-2 inline-block h-4 w-4" /> Connect
                   </StyledConnectButton>
                 );
               }
