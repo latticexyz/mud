@@ -2,6 +2,7 @@ import { Loader } from "lucide-react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Hex } from "viem";
+import { anvil } from "viem/chains";
 import { useAccount, useChainId } from "wagmi";
 import { ChangeEvent, useState } from "react";
 import { encodeField, getFieldIndex } from "@latticexyz/protocol-parser/internal";
@@ -41,6 +42,8 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
         address: worldAddress as Hex,
         functionName: "setField",
         args: [tableId, keyTuple, fieldIndex, encodedField],
+        // TODO: make configurable
+        chainId: anvil.id,
       });
 
       const receipt = await waitForTransactionReceipt(wagmiConfig, {

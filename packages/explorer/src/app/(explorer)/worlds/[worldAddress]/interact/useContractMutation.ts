@@ -1,6 +1,7 @@
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Abi, AbiFunction, Hex } from "viem";
+import { anvil } from "viem/chains";
 import { useAccount, useChainId } from "wagmi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { readContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
@@ -26,6 +27,8 @@ export function useContractMutation({ abi, operationType }: UseContractMutationP
           address: worldAddress as Hex,
           functionName: abi.name,
           args: inputs,
+          // TODO: make configurable
+          chainId: anvil.id,
         });
 
         return { result };
@@ -36,6 +39,8 @@ export function useContractMutation({ abi, operationType }: UseContractMutationP
           functionName: abi.name,
           args: inputs,
           ...(value && { value: BigInt(value) }),
+          // TODO: make configurable
+          chainId: anvil.id,
         });
 
         const receipt = await waitForTransactionReceipt(wagmiConfig, {
