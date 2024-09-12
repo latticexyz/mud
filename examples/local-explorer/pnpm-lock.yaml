@@ -47,9 +47,9 @@ importers:
       '@latticexyz/common':
         specifier: link:../../../../packages/common
         version: link:../../../../packages/common
-      '@latticexyz/dev-tools':
-        specifier: link:../../../../packages/dev-tools
-        version: link:../../../../packages/dev-tools
+      '@latticexyz/explorer':
+        specifier: link:../../../../packages/explorer
+        version: link:../../../../packages/explorer
       '@latticexyz/react':
         specifier: link:../../../../packages/react
         version: link:../../../../packages/react

@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@latticexyz/common": "link:../../../../packages/common",
-    "@latticexyz/dev-tools": "link:../../../../packages/dev-tools",
+    "@latticexyz/explorer": "link:../../../../packages/explorer",
     "@latticexyz/react": "link:../../../../packages/react",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
     "@latticexyz/store-sync": "link:../../../../packages/store-sync",
