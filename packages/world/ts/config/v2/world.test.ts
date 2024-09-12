@@ -194,7 +194,6 @@ describe("defineWorld", () => {
       systems: {},
       excludeSystems: [],
       deploy: {
-        customWorldContract: "(undefined)",
         postDeployScript: "PostDeploy",
         deploysDirectory: "./deploys",
         worldsFile: "./worlds.json",
@@ -293,7 +292,6 @@ describe("defineWorld", () => {
   readonly excludeSystems: readonly []
   readonly modules: readonly []
   readonly deploy: {
-    readonly customWorldContract: undefined
     readonly postDeployScript: "PostDeploy"
     readonly deploysDirectory: "./deploys"
     readonly worldsFile: "./worlds.json"
@@ -379,7 +377,6 @@ describe("defineWorld", () => {
       systems: {},
       excludeSystems: [],
       deploy: {
-        customWorldContract: "(undefined)",
         postDeployScript: "PostDeploy",
         deploysDirectory: "./deploys",
         worldsFile: "./worlds.json",
@@ -478,7 +475,6 @@ describe("defineWorld", () => {
   readonly excludeSystems: readonly []
   readonly modules: readonly []
   readonly deploy: {
-    readonly customWorldContract: undefined
     readonly postDeployScript: "PostDeploy"
     readonly deploysDirectory: "./deploys"
     readonly worldsFile: "./worlds.json"
