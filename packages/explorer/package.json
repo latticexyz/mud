@@ -52,7 +52,7 @@
     "@rainbow-me/rainbowkit": "^2.1.5",
     "@tanstack/react-query": "^5.51.3",
     "@tanstack/react-table": "^8.19.3",
-    "@wagmi/core": "^2.12.1",
+    "@wagmi/core": "catalog:",
     "better-sqlite3": "^8.6.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -67,7 +67,7 @@
     "tailwind-merge": "^1.12.0",
     "tsup": "^6.7.0",
     "viem": "catalog:",
-    "wagmi": "^2.11.1",
+    "wagmi": "catalog:",
     "yargs": "^17.7.1",
     "zod": "3.23.8",
     "zustand": "^4.3.7"
