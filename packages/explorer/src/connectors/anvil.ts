@@ -1,7 +1,7 @@
 import { EIP1193RequestFn, Transport, WalletRpcSchema, http } from "viem";
 import { Account, privateKeyToAccount } from "viem/accounts";
 import { anvil as anvilChain } from "viem/chains";
-import { createConnector } from "wagmi";
+import { Connector, createConnector } from "wagmi";
 
 export const defaultAnvilAccounts = (
   [
@@ -18,6 +18,10 @@ export const defaultAnvilAccounts = (
   ] as const
 ).map((pk) => privateKeyToAccount(pk));
 
+export type AnvilConnector = Connector & {
+  accounts: readonly Account[];
+};
+
 export type AnvilConnectorOptions = {
   id: string;
   name: string;
@@ -32,6 +36,10 @@ export const defaultAnvilConnectors = defaultAnvilAccounts.map((account, i) =>
   anvil({ id: `anvil-${i}`, name: `Anvil #${i + 1}`, accounts: [account] }),
 );
 
+export function isAnvilConnector(connector: Connector): connector is AnvilConnector {
+  return connector.type === "anvil";
+}
+
 export function anvil({ id, name, accounts }: AnvilConnectorOptions) {
   if (!accounts.length) throw new Error("missing accounts");
 
@@ -42,6 +50,7 @@ export function anvil({ id, name, accounts }: AnvilConnectorOptions) {
     id,
     name,
     type: "anvil",
+    accounts,
     async connect() {
       connected = true;
       return {

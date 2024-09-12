@@ -1,16 +1,15 @@
 import { CirclePlusIcon, PlugIcon } from "lucide-react";
-import { Address } from "viem";
-import { Connector, useAccount, useBalance, useConnect, useConnectors } from "wagmi";
-import { useEffect, useState } from "react";
+import { useAccount, useBalance, useConnect, useConnectors } from "wagmi";
+import { useState } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { AnvilConnector, isAnvilConnector } from "../connectors/anvil";
 import { formatBalance } from "../lib/utils";
 import { StyledConnectButton } from "./ConnectButton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
 import { TruncatedHex } from "./ui/TruncatedHex";
 
-function AccountSelectItem({ connector }: { connector: Connector }) {
-  const [accounts, setAccounts] = useState<readonly Address[]>([]);
-  const address = accounts[0];
+function AccountSelectItem({ connector }: { connector: AnvilConnector }) {
+  const address = connector.accounts[0].address;
   const { data: balance } = useBalance({
     address,
     query: {
@@ -21,14 +20,6 @@ function AccountSelectItem({ connector }: { connector: Connector }) {
       enabled: !!address,
     },
   });
-
-  useEffect(() => {
-    async function getAccounts() {
-      const accounts = await connector.getAccounts();
-      setAccounts(accounts);
-    }
-    getAccounts();
-  }, [connector]);
 
   return (
     <SelectItem key={address} value={connector.id} className="font-mono">
@@ -49,7 +40,7 @@ export function AccountSelect() {
   const { connect } = useConnect();
   const { openConnectModal } = useConnectModal();
   const configuredConnectors = useConnectors();
-  const connectors = [...configuredConnectors.filter((connector) => connector.type === "anvil")];
+  const connectors = [...configuredConnectors.filter(isAnvilConnector)];
 
   return (
     <Select
