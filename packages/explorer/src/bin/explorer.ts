@@ -58,7 +58,7 @@ const argv = yargs(process.argv.slice(2))
   })
   .check((argv) => {
     if (!chains[Number(argv.chainId)]) {
-      throw new Error(`Invalid chain ID. Supported chains are: ${Object.keys(chains).join(", ")}`);
+      throw new Error(`Invalid chain ID. Supported chains are: ${Object.keys(chains).join(", ")}.`);
     }
     return true;
   })
