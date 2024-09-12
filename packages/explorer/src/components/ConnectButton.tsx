@@ -1,24 +1,15 @@
 import { PlugIcon, ZapIcon } from "lucide-react";
-import { anvil } from "viem/chains";
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
+import { isAnvil } from "../common";
 import { cn } from "../lib/utils";
 import { AccountSelect } from "./AccountSelect";
-import { Button, ButtonProps } from "./ui/Button";
-
-export function StyledConnectButton({ children, ...props }: ButtonProps) {
-  return (
-    <Button type="button" size="sm" {...props}>
-      {children}
-    </Button>
-  );
-}
+import { Button } from "./ui/Button";
 
 export function ConnectButton() {
   return (
     <RainbowConnectButton.Custom>
       {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
         const connected = mounted && account && chain;
-        const isAnvil = Number(process.env.NEXT_PUBLIC_CHAIN_ID) === anvil.id;
 
         return (
           <div
@@ -33,30 +24,30 @@ export function ConnectButton() {
                 }
 
                 return (
-                  <StyledConnectButton onClick={openConnectModal}>
+                  <Button type="button" size="sm" onClick={openConnectModal}>
                     <PlugIcon className="mr-2 inline-block h-4 w-4" /> Connect
-                  </StyledConnectButton>
+                  </Button>
                 );
               }
 
               if (chain.unsupported) {
                 return (
-                  <StyledConnectButton onClick={openChainModal}>
+                  <Button type="button" size="sm" onClick={openChainModal}>
                     <ZapIcon className="mr-2 inline-block h-4 w-4" />
                     Wrong network
-                  </StyledConnectButton>
+                  </Button>
                 );
               }
 
               return (
                 <div className="flex-wrap gap-2">
-                  <StyledConnectButton onClick={openAccountModal} variant="secondary">
+                  <Button type="button" size="sm" onClick={openAccountModal} variant="secondary">
                     <PlugIcon className="mr-2 inline-block h-4 w-4" />
                     {account.displayName}
                     <span className="ml-2 font-normal opacity-70">
                       {account.displayBalance ? ` (${account.displayBalance})` : ""}
                     </span>
-                  </StyledConnectButton>
+                  </Button>
                 </div>
               );
             })()}
