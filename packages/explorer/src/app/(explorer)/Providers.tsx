@@ -1,18 +1,26 @@
 "use client";
 
+import { Chain, anvil, redstone } from "viem/chains";
 import { WagmiProvider, createConfig, http } from "wagmi";
 import { injected, metaMask, safe } from "wagmi/connectors";
 import { ReactNode } from "react";
+import { garnet } from "@latticexyz/common/chains";
 import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { anvil } from "@wagmi/core/chains";
 import { defaultAnvilConnectors } from "../../connectors/anvil";
 
 const queryClient = new QueryClient();
 
+const chains = {
+  [anvil.id]: anvil,
+  [redstone.id]: redstone,
+  [garnet.id]: garnet,
+};
+const chain = chains[Number(process.env.NEXT_PUBLIC_CHAIN_ID) as keyof typeof chains] as Chain;
+
 export const wagmiConfig = createConfig({
-  chains: [anvil],
+  chains: [chain],
   connectors: [
     injected(),
     metaMask({
@@ -24,7 +32,7 @@ export const wagmiConfig = createConfig({
     ...defaultAnvilConnectors,
   ],
   transports: {
-    [anvil.id]: http(),
+    [chain.id]: http(),
   },
   ssr: true,
 });

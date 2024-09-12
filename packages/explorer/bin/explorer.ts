@@ -4,8 +4,10 @@ import { readFile } from "fs/promises";
 import path from "path";
 import process from "process";
 import { fileURLToPath } from "url";
+import { anvil, redstone } from "viem/chains";
 import yargs from "yargs";
 import { ChildProcess, spawn } from "child_process";
+import { garnet } from "@latticexyz/common/chains";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -53,6 +55,13 @@ const argv = yargs(process.argv.slice(2))
       type: "string",
       default: process.env.WORLD_ADDRESS,
     },
+  })
+  .check((argv) => {
+    const supportedChainIds: number[] = [anvil.id, redstone.id, garnet.id];
+    if (!supportedChainIds.includes(argv.chainId as number)) {
+      throw new Error(`Invalid chain ID. Supported chains are: ${supportedChainIds.join(", ")}`);
+    }
+    return true;
   })
   .parseSync();
 
