@@ -58,7 +58,7 @@ const argv = yargs(process.argv.slice(2))
   })
   .check((argv) => {
     const supportedChainIds: number[] = [anvil.id, redstone.id, garnet.id];
-    if (!supportedChainIds.includes(argv.chainId as number)) {
+    if (!supportedChainIds.includes(Number(argv.chainId))) {
       throw new Error(`Invalid chain ID. Supported chains are: ${supportedChainIds.join(", ")}`);
     }
     return true;

@@ -17,7 +17,8 @@ const chains = {
   [redstone.id]: redstone,
   [garnet.id]: garnet,
 };
-const chain = chains[Number(process.env.NEXT_PUBLIC_CHAIN_ID) as keyof typeof chains] as Chain;
+export const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
+const chain = chains[chainId as keyof typeof chains] as Chain;
 
 export const wagmiConfig = createConfig({
   chains: [chain],

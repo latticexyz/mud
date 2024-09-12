@@ -2,8 +2,7 @@ import { Loader } from "lucide-react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Hex } from "viem";
-import { anvil } from "viem/chains";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount } from "wagmi";
 import { ChangeEvent, useState } from "react";
 import { encodeField, getFieldIndex } from "@latticexyz/protocol-parser/internal";
 import { SchemaAbiType } from "@latticexyz/schema-type/internal";
@@ -13,7 +12,7 @@ import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Checkbox } from "../../../../../components/ui/Checkbox";
 import { camelCase, cn } from "../../../../../lib/utils";
 import { TableConfig } from "../../../../api/table/route";
-import { wagmiConfig } from "../../../Providers";
+import { chainId, wagmiConfig } from "../../../Providers";
 
 type Props = {
   name: string;
@@ -26,7 +25,6 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
   const queryClient = useQueryClient();
   const { worldAddress } = useParams();
   const account = useAccount();
-  const chainId = useChainId();
 
   const [value, setValue] = useState<unknown>(defaultValue);
 
@@ -42,8 +40,7 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
         address: worldAddress as Hex,
         functionName: "setField",
         args: [tableId, keyTuple, fieldIndex, encodedField],
-        // TODO: make configurable
-        chainId: anvil.id,
+        chainId,
       });
 
       const receipt = await waitForTransactionReceipt(wagmiConfig, {
