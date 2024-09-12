@@ -1,4 +1,4 @@
-import { Address, Client, hexToString, parseAbi, stringToHex } from "viem";
+import { AbiItem, Address, Client, hexToString, parseAbi, stringToHex } from "viem";
 import { getTables } from "../deploy/getTables";
 import { getWorldDeploy } from "../deploy/getWorldDeploy";
 import { getSchemaTypes } from "@latticexyz/protocol-parser/internal";
@@ -11,8 +11,19 @@ import { getResourceIds } from "../deploy/getResourceIds";
 import { getFunctions } from "@latticexyz/world/internal";
 import { formatTypescript } from "@latticexyz/common/codegen";
 import { execa } from "execa";
+import { debug } from "./debug";
 
 const ignoredNamespaces = new Set(["store", "world", "metadata"]);
+
+function excludeFunctionsWithTuples(item: AbiItem) {
+  if (
+    item.type === "function" &&
+    [...item.inputs, ...item.outputs].some((param) => param.type === "tuple" || param.type === "tuple[]")
+  ) {
+    return false;
+  }
+  return true;
+}
 
 export type PullOptions = {
   rootDir: string;
@@ -54,7 +65,7 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
     resources
       .filter((resource) => resource.type === "system")
       .map(async ({ namespace, name, resourceId: systemId }) => {
-        const [abi, worldAbi] = await Promise.all([
+        const [metadataAbi, metadataWorldAbi] = await Promise.all([
           getRecord({
             client,
             worldDeploy,
@@ -75,6 +86,30 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
 
         const functions = worldFunctions.filter((func) => func.systemId === systemId);
 
+        console.log(
+          "system",
+          `${namespace}:${name}`,
+          JSON.stringify(parseAbi(functions.map((func) => `function ${func.signature}`)), null, 2),
+        );
+
+        // If empty or unset ABI in metadata table, backfill with world functions.
+        // These don't have parameter names or return values, but better than nothing?
+        const abi = parseAbi(
+          metadataAbi.length ? metadataAbi : functions.map((func) => `function ${func.systemFunctionSignature}`),
+        )
+          // skip functions that use tuples for now, because they can't compile unless they're represented as structs
+          // but if we hoist tuples into structs, you have to use the interface's specific struct rather any struct
+          // of the same shape
+          .filter(excludeFunctionsWithTuples);
+
+        const worldAbi = parseAbi(
+          metadataWorldAbi.length ? metadataWorldAbi : functions.map((func) => `function ${func.signature}`),
+        )
+          // skip functions that use tuples for now, because they can't compile unless they're represented as structs
+          // but if we hoist tuples into structs, you have to use the interface's specific struct rather any struct
+          // of the same shape
+          .filter(excludeFunctionsWithTuples);
+
         const namespaceId = resourceToHex({ type: "namespace", namespace, name });
         return {
           namespaceId,
@@ -83,10 +118,8 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
           systemId,
           namespace,
           name,
-          // If empty or unset ABI in metadata table, backfill with world functions.
-          // These don't have parameter names or return values, but better than nothing?
-          abi: parseAbi(abi.length ? abi : functions.map((func) => `function ${func.systemFunctionSignature}`)),
-          worldAbi: parseAbi(worldAbi.length ? worldAbi : functions.map((func) => `function ${func.signature}`)),
+          abi,
+          worldAbi,
         };
       }),
   );
@@ -139,8 +172,10 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
         const systemAbi = path.join(rootDir, `.mud/systems/${system.systemId}.abi.json`);
         const systemInterface = path.join(rootDir, `tmp/namespaces/${system.namespaceLabel}/${interfaceName}.sol`);
 
+        debug("writing system ABI for", interfaceName, "to", systemAbi);
         await writeFile(systemAbi, JSON.stringify(system.abi));
 
+        debug("generating system interface", interfaceName, "to", systemInterface);
         await execa("cast", [
           "interface",
           "--name",
