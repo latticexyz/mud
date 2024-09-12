@@ -15,5 +15,6 @@ export function createRelay(): () => void {
   window.addEventListener("message", relay);
   return () => {
     window.removeEventListener("message", relay);
+    channel.close();
   };
 }
