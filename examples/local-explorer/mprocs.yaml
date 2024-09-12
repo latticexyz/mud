@@ -18,4 +18,4 @@ procs:
       SQLITE_FILENAME: "indexer.db"
   explorer:
     cwd: packages/contracts
-    shell: pnpm explorer --dev --chainId 123123
+    shell: pnpm explorer --dev
