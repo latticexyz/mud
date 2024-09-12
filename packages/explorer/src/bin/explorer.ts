@@ -4,9 +4,9 @@ import { readFile } from "fs/promises";
 import path from "path";
 import process from "process";
 import { fileURLToPath } from "url";
-import { anvil, garnet, redstone } from "viem/chains";
 import yargs from "yargs";
 import { ChildProcess, spawn } from "child_process";
+import { chains } from "../common";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -57,9 +57,8 @@ const argv = yargs(process.argv.slice(2))
     },
   })
   .check((argv) => {
-    const supportedChainIds: number[] = [anvil.id, redstone.id, garnet.id];
-    if (!supportedChainIds.includes(Number(argv.chainId))) {
-      throw new Error(`Invalid chain ID. Supported chains are: ${supportedChainIds.join(", ")}`);
+    if (!chains[Number(argv.chainId)]) {
+      throw new Error(`Invalid chain ID. Supported chains are: ${Object.keys(chains).join(", ")}`);
     }
     return true;
   })
