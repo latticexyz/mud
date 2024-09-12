@@ -1,6 +1,19 @@
 ---
+"@latticexyz/block-logs-stream": patch
+"@latticexyz/cli": patch
+"@latticexyz/common": patch
+"@latticexyz/config": patch
+"@latticexyz/dev-tools": patch
 "@latticexyz/explorer": patch
+"@latticexyz/faucet": patch
+"@latticexyz/protocol-parser": patch
+"@latticexyz/schema-type": patch
 "@latticexyz/stash": patch
+"@latticexyz/store-indexer": patch
+"@latticexyz/store-sync": patch
+"@latticexyz/store": patch
+"@latticexyz/world": patch
+"create-mud": patch
 ---
 
 Bumped viem, wagmi, and abitype packages to their latest release.
