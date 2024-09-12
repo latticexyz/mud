@@ -7,7 +7,7 @@ import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { anvil } from "@wagmi/core/chains";
-import { getAnvilConnectors } from "../../connectors/anvil";
+import { defaultAnvilConnectors } from "../../connectors/anvil";
 
 const queryClient = new QueryClient();
 
@@ -21,7 +21,7 @@ export const wagmiConfig = createConfig({
       },
     }),
     safe(),
-    ...getAnvilConnectors(),
+    ...defaultAnvilConnectors,
   ],
   transports: {
     [anvil.id]: http(),

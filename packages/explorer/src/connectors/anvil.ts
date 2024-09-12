@@ -26,13 +26,11 @@ export type AnvilConnectorOptions = {
 
 const isAnvil = Number(process.env.NEXT_PUBLIC_CHAIN_ID) === anvilChain.id;
 
-export function getAnvilConnectors() {
-  // We can't programmatically switch accounts within a connector, but we can switch between connectors,
-  // so create one anvil connector per default anvil account so users can switch between default anvil accounts.
-  return defaultAnvilAccounts.map((account, i) =>
-    anvil({ id: `anvil-${i}`, name: `Anvil #${i + 1}`, accounts: [account] }),
-  );
-}
+// We can't programmatically switch accounts within a connector, but we can switch between connectors,
+// so create one anvil connector per default anvil account so users can switch between default anvil accounts.
+export const defaultAnvilConnectors = defaultAnvilAccounts.map((account, i) =>
+  anvil({ id: `anvil-${i}`, name: `Anvil #${i + 1}`, accounts: [account] }),
+);
 
 export function anvil({ id, name, accounts }: AnvilConnectorOptions) {
   if (!accounts.length) throw new Error("missing accounts");
