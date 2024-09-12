@@ -4,10 +4,9 @@ import { readFile } from "fs/promises";
 import path from "path";
 import process from "process";
 import { fileURLToPath } from "url";
-import { anvil, redstone } from "viem/chains";
+import { anvil, garnet, redstone } from "viem/chains";
 import yargs from "yargs";
 import { ChildProcess, spawn } from "child_process";
-import { garnet } from "@latticexyz/common/chains";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
