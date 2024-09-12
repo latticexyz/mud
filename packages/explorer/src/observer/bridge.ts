@@ -17,7 +17,7 @@ export function isBridgeEnvelope(input: unknown): input is BridgeEnvelope {
 }
 
 export function wrapMessage(data: unknown): BridgeEnvelope {
-  return { mud: "explorer/observer", data: data };
+  return { mud: "explorer/observer", data };
 }
 
 export type CreateBridgeOpts = {
