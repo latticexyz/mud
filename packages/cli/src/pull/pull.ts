@@ -12,17 +12,12 @@ import { getFunctions } from "@latticexyz/world/internal";
 import { formatTypescript } from "@latticexyz/common/codegen";
 import { execa } from "execa";
 import { debug } from "./debug";
+import { formatAbiItem } from "abitype";
 
 const ignoredNamespaces = new Set(["store", "world", "metadata"]);
 
-function excludeFunctionsWithTuples(item: AbiItem) {
-  if (
-    item.type === "function" &&
-    [...item.inputs, ...item.outputs].some((param) => param.type === "tuple" || param.type === "tuple[]")
-  ) {
-    return false;
-  }
-  return true;
+function namespaceToHex(namespace: string) {
+  return resourceToHex({ type: "namespace", namespace, name: "" });
 }
 
 export type PullOptions = {
@@ -38,20 +33,25 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
   const tables = await getTables({ client, worldDeploy });
 
   const labels = Object.fromEntries(
-    await Promise.all(
-      resourceIds.map(async (resourceId) => {
-        const { value: bytesValue } = await getRecord({
-          client,
-          worldDeploy,
-          table: metadataConfig.tables.metadata__ResourceTag,
-          key: { resource: resourceId, tag: stringToHex("label", { size: 32 }) },
-        });
-        const value = hexToString(bytesValue);
-        return [resourceId, value === "" ? null : value];
-      }),
-    ),
+    (
+      await Promise.all(
+        resourceIds.map(async (resourceId) => {
+          const { value: bytesValue } = await getRecord({
+            client,
+            worldDeploy,
+            table: metadataConfig.tables.metadata__ResourceTag,
+            key: { resource: resourceId, tag: stringToHex("label", { size: 32 }) },
+          });
+          const value = hexToString(bytesValue);
+          return [resourceId, value === "" ? null : value];
+        }),
+      )
+    ).filter(([, label]) => label != null),
   );
+  // ensure we always have a root namespace label
+  labels[namespaceToHex("")] ??= "root";
 
+  console.log(labels);
   const namespaces = resources.filter((resource) => resource.type === "namespace");
 
   const worldFunctions = await getFunctions({
@@ -65,6 +65,12 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
     resources
       .filter((resource) => resource.type === "system")
       .map(async ({ namespace, name, resourceId: systemId }) => {
+        const namespaceId = namespaceToHex(namespace);
+        // the system name from the system ID can be potentially truncated, so we'll strip off
+        // any partial "System" suffix and replace it with a full "System" suffix so that it
+        // matches our criteria for system names
+        const label = labels[systemId] ?? name.replace(/(S(y(s(t(e(m)?)?)?)?)?)?$/, "System");
+
         const [metadataAbi, metadataWorldAbi] = await Promise.all([
           getRecord({
             client,
@@ -86,35 +92,36 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
 
         const functions = worldFunctions.filter((func) => func.systemId === systemId);
 
-        console.log(
-          "system",
-          `${namespace}:${name}`,
-          JSON.stringify(parseAbi(functions.map((func) => `function ${func.signature}`)), null, 2),
-        );
+        // skip functions that use tuples for now, because they can't compile unless they're represented as structs
+        // but if we hoist tuples into structs, you have to use the interface's specific struct rather any struct
+        // of the same shape
+        function excludeFunctionsWithTuples(item: AbiItem) {
+          if (
+            item.type === "function" &&
+            [...item.inputs, ...item.outputs].some((param) => param.type === "tuple" || param.type === "tuple[]")
+          ) {
+            debug(
+              `System function \`${label}.${item.name}\` is using a tuple argument or return type, which is not yet supported by interface generation. Skipping...`,
+            );
+            return false;
+          }
+          return true;
+        }
 
         // If empty or unset ABI in metadata table, backfill with world functions.
         // These don't have parameter names or return values, but better than nothing?
         const abi = parseAbi(
           metadataAbi.length ? metadataAbi : functions.map((func) => `function ${func.systemFunctionSignature}`),
-        )
-          // skip functions that use tuples for now, because they can't compile unless they're represented as structs
-          // but if we hoist tuples into structs, you have to use the interface's specific struct rather any struct
-          // of the same shape
-          .filter(excludeFunctionsWithTuples);
+        ).filter(excludeFunctionsWithTuples);
 
         const worldAbi = parseAbi(
           metadataWorldAbi.length ? metadataWorldAbi : functions.map((func) => `function ${func.signature}`),
-        )
-          // skip functions that use tuples for now, because they can't compile unless they're represented as structs
-          // but if we hoist tuples into structs, you have to use the interface's specific struct rather any struct
-          // of the same shape
-          .filter(excludeFunctionsWithTuples);
+        ).filter(excludeFunctionsWithTuples);
 
-        const namespaceId = resourceToHex({ type: "namespace", namespace, name });
         return {
           namespaceId,
           namespaceLabel: labels[namespaceId] ?? namespace,
-          label: labels[systemId] ?? name,
+          label,
           systemId,
           namespace,
           name,
@@ -156,7 +163,7 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
   };
 
   await writeFile(
-    path.join(rootDir, "tmp/mud.config.ts"),
+    path.join(rootDir, "mud.config.ts"),
     await formatTypescript(`
       import { defineWorld } from "@latticexyz/world";
 
@@ -170,12 +177,12 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
       .map(async (system) => {
         const interfaceName = `I${system.label}`;
         const systemAbi = path.join(rootDir, `.mud/systems/${system.systemId}.abi.json`);
-        const systemInterface = path.join(rootDir, `tmp/namespaces/${system.namespaceLabel}/${interfaceName}.sol`);
+        const systemInterface = path.join(rootDir, `src/namespaces/${system.namespaceLabel}/${interfaceName}.sol`);
 
-        debug("writing system ABI for", interfaceName, "to", systemAbi);
+        debug("writing system ABI for", interfaceName, "to", path.relative(rootDir, systemAbi));
         await writeFile(systemAbi, JSON.stringify(system.abi));
 
-        debug("generating system interface", interfaceName, "to", systemInterface);
+        debug("generating system interface", interfaceName, "to", path.relative(rootDir, systemInterface));
         await execa("cast", [
           "interface",
           "--name",
@@ -188,6 +195,10 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
         ]);
       }),
   );
+
+  // const abi = systems.flatMap((system) => system.worldAbi);
+  // const worldAbi = path.join(rootDir, `.mud/systems/world.abi.json`);
+  // const worldInterface = path.join(rootDir, `tmp/`)
 }
 
 async function writeFile(filename: string, contents: string) {
