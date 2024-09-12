@@ -9,7 +9,7 @@ import { SchemaAbiType } from "@latticexyz/schema-type/internal";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
-import { chainId } from "../../../../../common";
+import { getChain } from "../../../../../common";
 import { Checkbox } from "../../../../../components/ui/Checkbox";
 import { camelCase, cn } from "../../../../../lib/utils";
 import { TableConfig } from "../../../../api/table/route";
@@ -21,6 +21,9 @@ type Props = {
   keyTuple: string[];
   config: TableConfig;
 };
+
+const chain = getChain();
+const chainId = chain.id;
 
 export function EditableTableCell({ name, config, keyTuple, value: defaultValue }: Props) {
   const queryClient = useQueryClient();

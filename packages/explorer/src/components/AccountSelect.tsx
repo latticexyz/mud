@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { AnvilConnector, isAnvilConnector } from "../connectors/anvil";
 import { formatBalance } from "../lib/utils";
-import { StyledConnectButton } from "./ConnectButton";
+import { Button } from "./ui/Button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
 import { TruncatedHex } from "./ui/TruncatedHex";
 
@@ -54,19 +54,20 @@ export function AccountSelect() {
         }
       }}
     >
-      <StyledConnectButton asChild>
+      <Button size="sm" asChild>
         <SelectTrigger>
           <PlugIcon className="mr-2 inline-block h-4 w-4" />
           <SelectValue placeholder="Connect" />
         </SelectTrigger>
-      </StyledConnectButton>
+      </Button>
 
       <SelectContent>
         {connectors.map((connector) => {
           return <AccountSelectItem key={connector.id} connector={connector} />;
         })}
 
-        <StyledConnectButton
+        <Button
+          size="sm"
           className="mt-2 w-full font-mono"
           onClick={() => {
             setOpen(false);
@@ -75,7 +76,7 @@ export function AccountSelect() {
         >
           <CirclePlusIcon className="mr-2 inline-block h-4 w-4" />
           Add wallet
-        </StyledConnectButton>
+        </Button>
       </SelectContent>
     </Select>
   );

@@ -6,11 +6,12 @@ import { ReactNode } from "react";
 import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { chain } from "../../common";
+import { getChain } from "../../common";
 import { defaultAnvilConnectors } from "../../connectors/anvil";
 
 const queryClient = new QueryClient();
 
+const chain = getChain();
 export const wagmiConfig = createConfig({
   chains: [chain],
   connectors: [

@@ -19,7 +19,7 @@ export function ConnectButton() {
           >
             {(() => {
               if (!connected) {
-                if (isAnvil) {
+                if (isAnvil()) {
                   return <AccountSelect />;
                 }
 

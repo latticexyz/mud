@@ -5,6 +5,18 @@ export const chains: Record<number, Chain> = {
   [redstone.id]: redstone,
   [garnet.id]: garnet,
 };
-export const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID || anvil.id);
-export const isAnvil = chainId === anvil.id;
-export const chain = chains[chainId as keyof typeof chains] as Chain;
+
+export function getChain() {
+  const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID || anvil.id);
+  const chain = chains[chainId];
+  if (!chain) {
+    throw new Error(`Chain ID ${chainId} not supported. Supported chains are: ${Object.keys(chains).join(", ")}.`);
+  }
+
+  return chain;
+}
+
+export function isAnvil() {
+  const chain = getChain();
+  return chain.id === anvil.id;
+}

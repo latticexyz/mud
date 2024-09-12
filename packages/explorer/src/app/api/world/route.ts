@@ -3,13 +3,13 @@ import { getBlockNumber, getLogs } from "viem/actions";
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
 import { getWorldAbi } from "@latticexyz/world/internal";
-import { chain } from "../../../common";
+import { getChain } from "../../../common";
 
 export const dynamic = "force-dynamic";
 
 async function getClient() {
   const client = createWalletClient({
-    chain,
+    chain: getChain(),
     transport: http(),
   });
 
