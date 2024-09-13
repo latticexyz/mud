@@ -4,6 +4,7 @@ import { Address, createClient, http } from "viem";
 import chalk from "chalk";
 import { WriteFileExistsError, pull } from "../pull/pull";
 import path from "node:path";
+import { build } from "../build";
 
 const options = {
   worldAddress: { type: "string", required: true, desc: "Remote world address" },
@@ -48,12 +49,13 @@ const commandModule: CommandModule<Options, Options> = {
     const rootDir = process.cwd();
 
     try {
-      await pull({
+      const { config } = await pull({
         rootDir,
         client,
         worldAddress: opts.worldAddress as Address,
         replace: opts.replace,
       });
+      await build({ rootDir, config, foundryProfile: profile });
     } catch (error) {
       if (error instanceof WriteFileExistsError) {
         console.log();

@@ -197,6 +197,8 @@ export async function pull({ rootDir, client, worldAddress, replace }: PullOptio
     const source = abiToInterface({ name: interfaceName, abi: worldAbi });
     await writeFile(path.join(rootDir, interfaceFile), await formatSolidity(source), { overwrite: replaceFiles });
   }
+
+  return { config };
 }
 
 export async function exists(filename: string) {
