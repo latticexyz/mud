@@ -8,7 +8,7 @@ import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { namedChains } from "../../common";
-import { defaultAnvilConnectors } from "../../connectors/anvil";
+import { getDefaultAnvilConnectors } from "../../connectors/anvil";
 
 const queryClient = new QueryClient();
 
@@ -29,15 +29,13 @@ export function Providers({ children }: { children: ReactNode }) {
         },
       }),
       safe(),
-      ...defaultAnvilConnectors,
+      ...getDefaultAnvilConnectors(chain.id),
     ],
     transports: {
       [chain.id]: http(),
     },
     ssr: true,
   });
-
-  console.log(chain);
 
   return (
     <WagmiProvider config={wagmiConfig}>

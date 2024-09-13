@@ -3,21 +3,21 @@ import { getBlockNumber, getLogs } from "viem/actions";
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
 import { getWorldAbi } from "@latticexyz/world/internal";
-import { getChain } from "../../../common";
+import { chains } from "../../../common";
 
 export const dynamic = "force-dynamic";
 
-async function getClient() {
+async function getClient(chainId: number) {
   const client = createWalletClient({
-    chain: getChain(),
+    chain: chains[chainId],
     transport: http(),
   });
 
   return client;
 }
 
-async function getParameters(worldAddress: Address) {
-  const client = await getClient();
+async function getParameters(chainId: number, worldAddress: Address) {
+  const client = await getClient(chainId);
   const toBlock = await getBlockNumber(client);
   const logs = await getLogs(client, {
     strict: true,
@@ -35,15 +35,16 @@ async function getParameters(worldAddress: Address) {
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const worldAddress = searchParams.get("address") as Hex;
+  const worldAddress = searchParams.get("worldAddress") as Hex;
+  const chainId = Number(searchParams.get("chainId"));
 
   if (!worldAddress) {
     return Response.json({ error: "address is required" }, { status: 400 });
   }
 
   try {
-    const client = await getClient();
-    const { fromBlock, toBlock, isWorldDeployed } = await getParameters(worldAddress);
+    const client = await getClient(chainId);
+    const { fromBlock, toBlock, isWorldDeployed } = await getParameters(chainId, worldAddress);
     const worldAbiResponse = await getWorldAbi({
       client,
       worldAddress,
