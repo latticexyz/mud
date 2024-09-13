@@ -2,18 +2,16 @@ import { Loader } from "lucide-react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Hex } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
-import { useChainId } from "wagmi";
+import { useAccount } from "wagmi";
 import { ChangeEvent, useState } from "react";
 import { encodeField, getFieldIndex } from "@latticexyz/protocol-parser/internal";
 import { SchemaAbiType } from "@latticexyz/schema-type/internal";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
+import { getChain } from "../../../../../common";
 import { Checkbox } from "../../../../../components/ui/Checkbox";
-import { ACCOUNT_PRIVATE_KEYS } from "../../../../../consts";
 import { camelCase, cn } from "../../../../../lib/utils";
-import { useAppStore } from "../../../../../store";
 import { TableConfig } from "../../../../api/table/route";
 import { wagmiConfig } from "../../../Providers";
 
@@ -24,11 +22,13 @@ type Props = {
   config: TableConfig;
 };
 
+const chain = getChain();
+const chainId = chain.id;
+
 export function EditableTableCell({ name, config, keyTuple, value: defaultValue }: Props) {
   const queryClient = useQueryClient();
-  const chainId = useChainId();
-  const { account } = useAppStore();
   const { worldAddress } = useParams();
+  const account = useAccount();
 
   const [value, setValue] = useState<unknown>(defaultValue);
 
@@ -40,11 +40,11 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
       const fieldIndex = getFieldIndex(config?.value_schema, camelCase(name));
       const encodedField = encodeField(fieldType, newValue);
       const txHash = await writeContract(wagmiConfig, {
-        account: privateKeyToAccount(ACCOUNT_PRIVATE_KEYS[account]),
         abi: IBaseWorldAbi,
         address: worldAddress as Hex,
         functionName: "setField",
         args: [tableId, keyTuple, fieldIndex, encodedField],
+        chainId,
       });
 
       const receipt = await waitForTransactionReceipt(wagmiConfig, {
@@ -67,7 +67,7 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
         queryKey: [
           "balance",
           {
-            address: account,
+            address: account.address,
             chainId,
           },
         ],

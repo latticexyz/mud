@@ -1,17 +1,16 @@
 import { AbiFunction, Address, Hex, createWalletClient, http, parseAbi } from "viem";
 import { getBlockNumber, getLogs } from "viem/actions";
-import { getRpcUrl } from "@latticexyz/common/foundry";
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
 import { getWorldAbi } from "@latticexyz/world/internal";
+import { getChain } from "../../../common";
 
 export const dynamic = "force-dynamic";
 
 async function getClient() {
-  const profile = process.env.FOUNDRY_PROFILE;
-  const rpc = await getRpcUrl(profile);
   const client = createWalletClient({
-    transport: http(rpc),
+    chain: getChain(),
+    transport: http(),
   });
 
   return client;

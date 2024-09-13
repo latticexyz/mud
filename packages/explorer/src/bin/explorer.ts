@@ -6,6 +6,7 @@ import process from "process";
 import { fileURLToPath } from "url";
 import yargs from "yargs";
 import { ChildProcess, spawn } from "child_process";
+import { chains } from "../common";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -55,6 +56,12 @@ const argv = yargs(process.argv.slice(2))
       default: process.env.WORLD_ADDRESS,
     },
   })
+  .check((argv) => {
+    if (!chains[Number(argv.chainId)]) {
+      throw new Error(`Invalid chain ID. Supported chains are: ${Object.keys(chains).join(", ")}.`);
+    }
+    return true;
+  })
   .parseSync();
 
 const { port, hostname, chainId, indexerDatabase, worldsFile, dev } = argv;
@@ -64,6 +71,7 @@ let explorerProcess: ChildProcess;
 async function startExplorer() {
   const env = {
     ...process.env,
+    NEXT_PUBLIC_CHAIN_ID: chainId.toString(),
     WORLD_ADDRESS: worldAddress?.toString(),
     INDEXER_DATABASE: path.join(process.cwd(), indexerDatabase),
   };
