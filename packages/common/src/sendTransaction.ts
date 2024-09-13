@@ -54,11 +54,9 @@ export async function sendTransaction<
   const account = parseAccount(rawAccount);
   const chain = client.chain;
 
-  const blockTag = "pending";
   const nonceManager = await getNonceManager({
     client: opts.publicClient ?? client,
     address: account.address,
-    blockTag,
     queueConcurrency: opts.queueConcurrency,
   });
 
@@ -74,7 +72,8 @@ export async function sendTransaction<
         async () => {
           const nonce = nonceManager.nextNonce();
           const params = {
-            blockTag,
+            // viem_sendTransaction internally estimates gas, which we want to happen on the pending block
+            blockTag: "pending",
             ...request,
             nonce,
             ...feeRef.fees,
@@ -94,6 +93,12 @@ export async function sendTransaction<
               debug("got nonce error, retrying", error.message);
               return;
             }
+
+            if (String(error).includes("transaction underpriced")) {
+              debug("got transaction underpriced error, retrying", error.message);
+              return;
+            }
+
             throw error;
           },
         },
