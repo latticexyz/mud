@@ -2,18 +2,16 @@ import { Loader } from "lucide-react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Hex } from "viem";
-import { useAccount } from "wagmi";
+import { useAccount, useConfig } from "wagmi";
 import { ChangeEvent, useState } from "react";
 import { encodeField, getFieldIndex } from "@latticexyz/protocol-parser/internal";
 import { SchemaAbiType } from "@latticexyz/schema-type/internal";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
-import { getChain } from "../../../../../../common";
 import { Checkbox } from "../../../../../../components/ui/Checkbox";
 import { camelCase, cn } from "../../../../../../lib/utils";
 import { TableConfig } from "../../../../../api/table/route";
-import { wagmiConfig } from "../../../../Providers";
 
 type Props = {
   name: string;
@@ -22,10 +20,8 @@ type Props = {
   config: TableConfig;
 };
 
-const chain = getChain();
-const chainId = chain.id;
-
 export function EditableTableCell({ name, config, keyTuple, value: defaultValue }: Props) {
+  const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
   const { worldAddress } = useParams();
   const account = useAccount();
@@ -44,7 +40,7 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
         address: worldAddress as Hex,
         functionName: "setField",
         args: [tableId, keyTuple, fieldIndex, encodedField],
-        chainId,
+        chainId: 31337, // TODO: change
       });
 
       const receipt = await waitForTransactionReceipt(wagmiConfig, {
@@ -68,7 +64,7 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
           "balance",
           {
             address: account.address,
-            chainId,
+            chainId: 31337, // TODO: change
           },
         ],
       });

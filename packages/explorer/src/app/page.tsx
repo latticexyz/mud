@@ -5,11 +5,8 @@ export const dynamic = "force-dynamic";
 
 export default function IndexPage() {
   const chainId = Number(process.env.CHAIN_ID);
-  const chainName = chainsNamesMap[chainId];
+  const chainName = chainsNamesMap[chainId]; // TODO: TS
 
-  if (chainName) {
-    // TODO: improve
-    return redirect(`/${chainName}/worlds`);
-  }
+  if (chainName) return redirect(`/${chainName}/worlds`);
   return notFound();
 }

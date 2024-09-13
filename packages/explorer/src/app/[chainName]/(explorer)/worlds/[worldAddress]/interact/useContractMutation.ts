@@ -1,11 +1,9 @@
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Abi, AbiFunction, Hex } from "viem";
-import { useAccount } from "wagmi";
+import { useAccount, useConfig } from "wagmi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { readContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
-import { getChain } from "../../../../../../common";
-import { wagmiConfig } from "../../../../Providers";
 import { FunctionType } from "./FunctionField";
 
 type UseContractMutationProps = {
@@ -13,12 +11,10 @@ type UseContractMutationProps = {
   operationType: FunctionType;
 };
 
-const chain = getChain();
-const chainId = chain.id;
-
 export function useContractMutation({ abi, operationType }: UseContractMutationProps) {
   const { worldAddress } = useParams();
   const queryClient = useQueryClient();
+  const wagmiConfig = useConfig();
   const account = useAccount();
 
   return useMutation({
@@ -29,7 +25,7 @@ export function useContractMutation({ abi, operationType }: UseContractMutationP
           address: worldAddress as Hex,
           functionName: abi.name,
           args: inputs,
-          chainId,
+          chainId: 31337, // TODO: change
         });
 
         return { result };
@@ -40,7 +36,7 @@ export function useContractMutation({ abi, operationType }: UseContractMutationP
           functionName: abi.name,
           args: inputs,
           ...(value && { value: BigInt(value) }),
-          chainId,
+          chainId: 31337, // TODO: change
         });
 
         const receipt = await waitForTransactionReceipt(wagmiConfig, {
@@ -69,7 +65,7 @@ export function useContractMutation({ abi, operationType }: UseContractMutationP
           "balance",
           {
             address: account,
-            chainId,
+            chainId: 31337, // TODO: change
           },
         ],
       });
