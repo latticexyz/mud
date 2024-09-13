@@ -12,6 +12,7 @@ import { getFunctions } from "@latticexyz/world/internal";
 import { abiToInterface, formatSolidity, formatTypescript } from "@latticexyz/common/codegen";
 import { debug } from "./debug";
 import { defineWorld } from "@latticexyz/world";
+import { findUp } from "find-up";
 
 const ignoredNamespaces = new Set(["store", "world", "metadata"]);
 
@@ -19,13 +20,27 @@ function namespaceToHex(namespace: string) {
   return resourceToHex({ type: "namespace", namespace, name: "" });
 }
 
+export class WriteFileExistsError extends Error {
+  name = "WriteFileExistsError";
+  constructor(public filename: string) {
+    super(`Attempted to write file at "${filename}", but it already exists.`);
+  }
+}
+
 export type PullOptions = {
   rootDir: string;
   client: Client;
   worldAddress: Address;
+  /**
+   * Replace existing files and directories with data from remote world.
+   * Defaults to `true` if `rootDir` is within a git repo, otherwise `false`.
+   * */
+  replace?: boolean;
 };
 
-export async function pull({ rootDir, client, worldAddress }: PullOptions) {
+export async function pull({ rootDir, client, worldAddress, replace }: PullOptions) {
+  const replaceFiles = replace ?? (await findUp(".git", { cwd: rootDir })) != null;
+
   const worldDeploy = await getWorldDeploy(client, worldAddress);
   const resourceIds = await getResourceIds({ client, worldDeploy });
   const resources = resourceIds.map(hexToResource).filter((resource) => !ignoredNamespaces.has(resource.namespace));
@@ -156,34 +171,45 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
 
       export default defineWorld(${JSON.stringify(configInput)});
     `),
+    { overwrite: replaceFiles },
   );
+
+  const remoteDir = path.join(config.sourceDirectory, "remote");
+  if (replaceFiles) {
+    await fs.rm(remoteDir, { recursive: true, force: true });
+  }
 
   for (const system of systems.filter((system) => system.abi.length)) {
     const interfaceName = `I${system.label}`;
-    const interfaceFile = path.join(
-      config.sourceDirectory,
-      "namespaces",
-      system.namespaceLabel,
-      `${interfaceName}.sol`,
-    );
+    const interfaceFile = path.join(remoteDir, "namespaces", system.namespaceLabel, `${interfaceName}.sol`);
 
     debug("writing system interface", interfaceName, "to", interfaceFile);
     const source = abiToInterface({ name: interfaceName, systemId: system.systemId, abi: system.abi });
-    await writeFile(path.join(rootDir, interfaceFile), await formatSolidity(source));
+    await writeFile(path.join(rootDir, interfaceFile), await formatSolidity(source), { overwrite: replaceFiles });
   }
 
   const worldAbi = systems.flatMap((system) => system.worldAbi);
   if (worldAbi.length) {
     const interfaceName = "IWorldSystems";
-    const interfaceFile = path.join(config.sourceDirectory, `${interfaceName}.sol`);
+    const interfaceFile = path.join(remoteDir, `${interfaceName}.sol`);
 
     debug("writing world systems interface to", interfaceFile);
     const source = abiToInterface({ name: interfaceName, abi: worldAbi });
-    await writeFile(path.join(rootDir, interfaceFile), await formatSolidity(source));
+    await writeFile(path.join(rootDir, interfaceFile), await formatSolidity(source), { overwrite: replaceFiles });
   }
 }
 
-async function writeFile(filename: string, contents: string) {
+export async function exists(filename: string) {
+  return fs.access(filename).then(
+    () => true,
+    () => false,
+  );
+}
+
+export async function writeFile(filename: string, contents: string, opts: { overwrite?: boolean } = {}) {
+  if (!opts.overwrite && (await exists(filename))) {
+    throw new WriteFileExistsError(filename);
+  }
   await fs.mkdir(path.dirname(filename), { recursive: true });
   await fs.writeFile(filename, contents);
 }
