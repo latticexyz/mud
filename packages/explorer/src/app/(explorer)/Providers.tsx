@@ -6,13 +6,14 @@ import { ReactNode } from "react";
 import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { anvil } from "@wagmi/core/chains";
-import { AppStoreProvider } from "../../store";
+import { getChain } from "../../common";
+import { defaultAnvilConnectors } from "../../connectors/anvil";
 
 const queryClient = new QueryClient();
 
+const chain = getChain();
 export const wagmiConfig = createConfig({
-  chains: [anvil],
+  chains: [chain],
   connectors: [
     injected(),
     metaMask({
@@ -21,9 +22,10 @@ export const wagmiConfig = createConfig({
       },
     }),
     safe(),
+    ...defaultAnvilConnectors,
   ],
   transports: {
-    [anvil.id]: http(),
+    [chain.id]: http(),
   },
   ssr: true,
 });
@@ -32,9 +34,7 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider theme={darkTheme()}>
-          <AppStoreProvider>{children}</AppStoreProvider>
-        </RainbowKitProvider>
+        <RainbowKitProvider theme={darkTheme()}>{children}</RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

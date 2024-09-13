@@ -1,41 +1,82 @@
-import { Address } from "viem";
-import { useBalance } from "wagmi";
-import { ACCOUNTS } from "../consts";
+import { CirclePlusIcon, PlugIcon } from "lucide-react";
+import { useAccount, useBalance, useConnect, useConnectors } from "wagmi";
+import { useState } from "react";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { AnvilConnector, isAnvilConnector } from "../connectors/anvil";
 import { formatBalance } from "../lib/utils";
-import { useAppStore } from "../store";
+import { Button } from "./ui/Button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
 import { TruncatedHex } from "./ui/TruncatedHex";
 
-function AccountSelectItem({ address, name }: { address: Address; name: string }) {
-  const balance = useBalance({
+function AccountSelectItem({ connector }: { connector: AnvilConnector }) {
+  const address = connector.accounts[0].address;
+  const { data: balance } = useBalance({
     address,
     query: {
       refetchInterval: 15000,
+      select: (data) => {
+        return data?.value;
+      },
+      enabled: !!address,
     },
   });
-  const balanceValue = balance.data?.value;
+
   return (
-    <SelectItem key={address} value={address} className="font-mono">
-      {name}
-      {balanceValue !== undefined && ` (${formatBalance(balanceValue)} ETH)`}{" "}
-      <span className="opacity-70">
-        (<TruncatedHex hex={address} />)
-      </span>
+    <SelectItem key={address} value={connector.id} className="font-mono">
+      {connector.name}
+      {balance !== undefined && ` (${formatBalance(balance)} ETH)`}{" "}
+      {address && (
+        <span className="opacity-70">
+          (<TruncatedHex hex={address} />)
+        </span>
+      )}
     </SelectItem>
   );
 }
 
 export function AccountSelect() {
-  const { account, setAccount } = useAppStore();
+  const [open, setOpen] = useState(false);
+  const { connector } = useAccount();
+  const { connect } = useConnect();
+  const { openConnectModal } = useConnectModal();
+  const configuredConnectors = useConnectors();
+  const connectors = [...configuredConnectors.filter(isAnvilConnector)];
+
   return (
-    <Select value={account} onValueChange={setAccount}>
-      <SelectTrigger className="w-[300px] text-left">
-        <SelectValue placeholder="Account" />
-      </SelectTrigger>
+    <Select
+      open={open}
+      onOpenChange={setOpen}
+      value={connector?.id}
+      onValueChange={(connectorId: string) => {
+        const connector = connectors.find((connector) => connector.id === connectorId);
+        if (connector) {
+          connect({ connector });
+        }
+      }}
+    >
+      <Button size="sm" asChild>
+        <SelectTrigger>
+          <PlugIcon className="mr-2 inline-block h-4 w-4" />
+          <SelectValue placeholder="Connect" />
+        </SelectTrigger>
+      </Button>
+
       <SelectContent>
-        {ACCOUNTS.map((address, index) => {
-          return <AccountSelectItem key={address} address={address} name={`Account ${index + 1}`} />;
+        {connectors.map((connector) => {
+          return <AccountSelectItem key={connector.id} connector={connector} />;
         })}
+
+        <Button
+          size="sm"
+          className="mt-2 w-full font-mono"
+          onClick={() => {
+            setOpen(false);
+            openConnectModal?.();
+          }}
+        >
+          <CirclePlusIcon className="mr-2 inline-block h-4 w-4" />
+          Add wallet
+        </Button>
       </SelectContent>
     </Select>
   );
