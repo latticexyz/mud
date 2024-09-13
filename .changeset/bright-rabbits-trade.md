@@ -9,3 +9,5 @@ If an account submits a transaction with a nonce higher than the next valid nonc
 This means if an account has gapped transactions "stuck in the mempool", the `eth_getTransactionCount` method with `pending` block tag can't be used to get the next valid nonce
 (since it includes the number of transactions stuck in the mempool).
 Since the nonce manager only resets the nonce on reload or in case of a nonce error, using the `latest` block tag by default is the safer choice to be able to recover from nonce gaps.
+
+Note that this change may reveal more "transaction underpriced" errors than before. These errors will now be retried automatically and should go through after the next block is mined.
