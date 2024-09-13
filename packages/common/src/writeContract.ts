@@ -76,6 +76,7 @@ export async function writeContract<
         async () => {
           const nonce = nonceManager.nextNonce();
           const params = {
+            // viem_writeContract internally estimates gas, which we want to happen on the pending block
             blockTag: "pending",
             ...request,
             nonce,

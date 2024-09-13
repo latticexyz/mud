@@ -72,6 +72,7 @@ export async function sendTransaction<
         async () => {
           const nonce = nonceManager.nextNonce();
           const params = {
+            // viem_sendTransaction internally estimates gas, which we want to happen on the pending block
             blockTag: "pending",
             ...request,
             nonce,
