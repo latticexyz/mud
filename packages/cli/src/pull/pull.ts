@@ -1,4 +1,4 @@
-import { Address, Client, hexToString, parseAbi, stringToHex } from "viem";
+import { Address, Client, hexToString, parseAbi, stringToHex, zeroAddress } from "viem";
 import { getTables } from "../deploy/getTables";
 import { getWorldDeploy } from "../deploy/getWorldDeploy";
 import { getSchemaTypes } from "@latticexyz/protocol-parser/internal";
@@ -12,8 +12,10 @@ import { getFunctions } from "@latticexyz/world/internal";
 import { abiToInterface, formatSolidity, formatTypescript } from "@latticexyz/common/codegen";
 import { debug } from "./debug";
 import { defineWorld } from "@latticexyz/world";
+import { getWorldContracts } from "../deploy/getWorldContracts";
 
 const ignoredNamespaces = new Set(["store", "world", "metadata"]);
+const ignoredSystems = new Set(Object.keys(getWorldContracts(zeroAddress)).filter((name) => name.endsWith("System")));
 
 function namespaceToHex(namespace: string) {
   return resourceToHex({ type: "namespace", namespace, name: "" });
@@ -58,58 +60,62 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
   });
 
   const namespaces = resources.filter((resource) => resource.type === "namespace");
-  const systems = await Promise.all(
-    resources
-      .filter((resource) => resource.type === "system")
-      .map(async ({ namespace, name, resourceId: systemId }) => {
-        const namespaceId = namespaceToHex(namespace);
-        // the system name from the system ID can be potentially truncated, so we'll strip off
-        // any partial "System" suffix and replace it with a full "System" suffix so that it
-        // matches our criteria for system names
-        const systemLabel = labels[systemId] ?? name.replace(/(S(y(s(t(e(m)?)?)?)?)?)?$/, "System");
+  const systems = (
+    await Promise.all(
+      resources
+        .filter((resource) => resource.type === "system")
+        .map(async ({ namespace, name, resourceId: systemId }) => {
+          const namespaceId = namespaceToHex(namespace);
+          // the system name from the system ID can be potentially truncated, so we'll strip off
+          // any partial "System" suffix and replace it with a full "System" suffix so that it
+          // matches our criteria for system names
+          const systemLabel = labels[systemId] ?? name.replace(/(S(y(s(t(e(m)?)?)?)?)?)?$/, "System");
 
-        const [metadataAbi, metadataWorldAbi] = await Promise.all([
-          getRecord({
-            client,
-            worldDeploy,
-            table: metadataConfig.tables.metadata__ResourceTag,
-            key: { resource: systemId, tag: stringToHex("abi", { size: 32 }) },
-          })
-            .then((record) => hexToString(record.value))
-            .then((value) => (value !== "" ? value.split("\n") : [])),
-          getRecord({
-            client,
-            worldDeploy,
-            table: metadataConfig.tables.metadata__ResourceTag,
-            key: { resource: systemId, tag: stringToHex("worldAbi", { size: 32 }) },
-          })
-            .then((record) => hexToString(record.value))
-            .then((value) => (value !== "" ? value.split("\n") : [])),
-        ]);
+          const [metadataAbi, metadataWorldAbi] = await Promise.all([
+            getRecord({
+              client,
+              worldDeploy,
+              table: metadataConfig.tables.metadata__ResourceTag,
+              key: { resource: systemId, tag: stringToHex("abi", { size: 32 }) },
+            })
+              .then((record) => hexToString(record.value))
+              .then((value) => (value !== "" ? value.split("\n") : [])),
+            getRecord({
+              client,
+              worldDeploy,
+              table: metadataConfig.tables.metadata__ResourceTag,
+              key: { resource: systemId, tag: stringToHex("worldAbi", { size: 32 }) },
+            })
+              .then((record) => hexToString(record.value))
+              .then((value) => (value !== "" ? value.split("\n") : [])),
+          ]);
 
-        const functions = worldFunctions.filter((func) => func.systemId === systemId);
+          const functions = worldFunctions.filter((func) => func.systemId === systemId);
 
-        // If empty or unset ABI in metadata table, backfill with world functions.
-        // These don't have parameter names or return values, but better than nothing?
-        const abi = parseAbi(
-          metadataAbi.length ? metadataAbi : functions.map((func) => `function ${func.systemFunctionSignature}`),
-        );
-        const worldAbi = parseAbi(
-          metadataWorldAbi.length ? metadataWorldAbi : functions.map((func) => `function ${func.signature}`),
-        );
+          // If empty or unset ABI in metadata table, backfill with world functions.
+          // These don't have parameter names or return values, but better than nothing?
+          const abi = parseAbi(
+            metadataAbi.length ? metadataAbi : functions.map((func) => `function ${func.systemFunctionSignature}`),
+          );
+          const worldAbi = parseAbi(
+            metadataWorldAbi.length ? metadataWorldAbi : functions.map((func) => `function ${func.signature}`),
+          );
 
-        return {
-          namespaceId,
-          namespaceLabel: labels[namespaceId] ?? namespace,
-          label: systemLabel,
-          systemId,
-          namespace,
-          name,
-          abi,
-          worldAbi,
-        };
-      }),
-  );
+          return {
+            namespaceId,
+            namespaceLabel: labels[namespaceId] ?? namespace,
+            label: systemLabel,
+            systemId,
+            namespace,
+            name,
+            abi,
+            worldAbi,
+          };
+        }),
+    )
+  )
+    .filter((system) => !ignoredSystems.has(system.label))
+    .filter((system) => system.abi.length);
 
   debug("generating config");
   const configInput = {
@@ -137,6 +143,17 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
                   ];
                 }),
             ),
+            systems: Object.fromEntries(
+              systems
+                .filter((system) => system.namespace === namespace)
+                .map((system) => [
+                  system.label,
+                  {
+                    ...(system.label !== system.name ? { name: system.name } : null),
+                    deploy: { disabled: true },
+                  },
+                ]),
+            ),
           },
         ];
       }),
@@ -158,7 +175,7 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
     `),
   );
 
-  for (const system of systems.filter((system) => system.abi.length)) {
+  for (const system of systems) {
     const interfaceName = `I${system.label}`;
     const interfaceFile = path.join(
       config.sourceDirectory,
@@ -169,16 +186,6 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
 
     debug("writing system interface", interfaceName, "to", interfaceFile);
     const source = abiToInterface({ name: interfaceName, systemId: system.systemId, abi: system.abi });
-    await writeFile(path.join(rootDir, interfaceFile), await formatSolidity(source));
-  }
-
-  const worldAbi = systems.flatMap((system) => system.worldAbi);
-  if (worldAbi.length) {
-    const interfaceName = "IWorldSystems";
-    const interfaceFile = path.join(config.sourceDirectory, `${interfaceName}.sol`);
-
-    debug("writing world systems interface to", interfaceFile);
-    const source = abiToInterface({ name: interfaceName, abi: worldAbi });
     await writeFile(path.join(rootDir, interfaceFile), await formatSolidity(source));
   }
 }

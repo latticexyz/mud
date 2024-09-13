@@ -6,6 +6,7 @@ import { resourceToLabel } from "@latticexyz/common";
 
 export type ResolvedSystem = System & {
   readonly sourcePath: string;
+  readonly sourceName: string;
 };
 
 export async function resolveSystems({
@@ -16,11 +17,14 @@ export async function resolveSystems({
   config: World;
 }): Promise<readonly ResolvedSystem[]> {
   const systemContracts = await getSystemContracts({ rootDir, config });
+  console.log("system contracts", systemContracts);
 
   // validate every system in config refers to an existing system contract
   const configSystems = Object.values(config.namespaces).flatMap((namespace) => Object.values(namespace.systems));
+  console.log("config sysmtes", configSystems);
   const missingSystems = configSystems.filter(
-    (system) => !systemContracts.some((s) => s.namespaceLabel === system.namespace && s.systemLabel === system.label),
+    (system) =>
+      !systemContracts.some((s) => s.namespaceLabel === system.namespaceLabel && s.systemLabel === system.label),
   );
   if (missingSystems.length > 0) {
     throw new Error(
@@ -41,6 +45,7 @@ export async function resolveSystems({
       return {
         ...systemConfig,
         sourcePath: contract.sourcePath,
+        sourceName: contract.sourceName,
       };
     })
     // TODO: replace `excludeSystems` with `deploy.disabled` or `codegen.disabled`
