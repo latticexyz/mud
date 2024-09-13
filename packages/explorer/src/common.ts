@@ -1,5 +1,12 @@
 import { Chain, anvil, garnet, redstone } from "viem/chains";
 
+// TODO: improve
+export const namedChains: Partial<Record<string, Chain>> = {
+  anvil: anvil,
+  redstone: redstone,
+  garnet: garnet,
+};
+
 export const chains: Partial<Record<number, Chain>> = {
   [anvil.id]: anvil,
   [redstone.id]: redstone,

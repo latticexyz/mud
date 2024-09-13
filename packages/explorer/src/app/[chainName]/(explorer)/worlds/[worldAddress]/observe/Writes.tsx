@@ -1,8 +1,8 @@
 "use client";
 
 import { useStore } from "zustand";
-import { KeepInView } from "../../../../../components/KeepInView";
-import { store } from "../../../../../observer/store";
+import { KeepInView } from "../../../../../../components/KeepInView";
+import { store } from "../../../../../../observer/store";
 import { Write } from "./Write";
 
 export function Writes() {
