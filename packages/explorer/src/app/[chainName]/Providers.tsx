@@ -1,23 +1,18 @@
 "use client";
 
-import { useParams } from "next/navigation";
 import { WagmiProvider, createConfig, http } from "wagmi";
 import { injected, metaMask, safe } from "wagmi/connectors";
 import { ReactNode } from "react";
 import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { namedChains } from "../../common";
 import { getDefaultAnvilConnectors } from "../../connectors/anvil";
+import { useChain } from "../../hooks/useChain";
 
 const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: ReactNode }) {
-  const { chainName } = useParams();
-  const chain = namedChains[chainName as string];
-  if (!chain) {
-    throw new Error(`Chain ${chainName} not supported`);
-  }
+  const chain = useChain();
 
   const wagmiConfig = createConfig({
     chains: [chain],
@@ -29,6 +24,7 @@ export function Providers({ children }: { children: ReactNode }) {
         },
       }),
       safe(),
+      // TODO: needs to be a function?
       ...getDefaultAnvilConnectors(chain.id),
     ],
     transports: {

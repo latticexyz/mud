@@ -4,7 +4,7 @@ import { Abi, AbiFunction, Hex } from "viem";
 import { useAccount, useConfig } from "wagmi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { readContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
-import { useChainId } from "../../../../../../hooks/useChainId";
+import { useChainId } from "../../../../../../hooks/useChain";
 import { FunctionType } from "./FunctionField";
 
 type UseContractMutationProps = {

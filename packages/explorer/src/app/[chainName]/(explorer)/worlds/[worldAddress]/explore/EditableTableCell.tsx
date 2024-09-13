@@ -10,7 +10,7 @@ import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.j
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Checkbox } from "../../../../../../components/ui/Checkbox";
-import { useChainId } from "../../../../../../hooks/useChainId";
+import { useChainId } from "../../../../../../hooks/useChain";
 import { camelCase, cn } from "../../../../../../lib/utils";
 import { TableConfig } from "../../../../../api/table/route";
 

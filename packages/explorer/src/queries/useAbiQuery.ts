@@ -1,7 +1,7 @@
 import { useParams } from "next/navigation";
 import { AbiFunction, Hex } from "viem";
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
-import { useChainId } from "../hooks/useChainId";
+import { useChainId } from "../hooks/useChain";
 
 export async function getAbi(chainId: number, worldAddress: Hex) {
   const res = await fetch(`/api/world?${new URLSearchParams({ chainId: String(chainId), worldAddress })}`);
