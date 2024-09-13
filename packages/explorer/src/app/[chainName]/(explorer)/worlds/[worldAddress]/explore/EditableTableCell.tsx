@@ -10,6 +10,7 @@ import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.j
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Checkbox } from "../../../../../../components/ui/Checkbox";
+import { useChainId } from "../../../../../../hooks/useChainId";
 import { camelCase, cn } from "../../../../../../lib/utils";
 import { TableConfig } from "../../../../../api/table/route";
 
@@ -24,6 +25,7 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
   const { worldAddress } = useParams();
+  const chainId = useChainId();
   const account = useAccount();
 
   const [value, setValue] = useState<unknown>(defaultValue);
@@ -40,7 +42,7 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
         address: worldAddress as Hex,
         functionName: "setField",
         args: [tableId, keyTuple, fieldIndex, encodedField],
-        chainId: 31337, // TODO: change
+        chainId,
       });
 
       const receipt = await waitForTransactionReceipt(wagmiConfig, {
@@ -64,7 +66,7 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
           "balance",
           {
             address: account.address,
-            chainId: 31337, // TODO: change
+            chainId,
           },
         ],
       });
