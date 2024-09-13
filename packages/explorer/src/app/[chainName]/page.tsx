@@ -1,5 +1,12 @@
 import { redirect } from "next/navigation";
 
-export default async function IndexPage() {
-  redirect("/worlds");
+// TODO: can params be dynamically extracted
+type Props = {
+  params: {
+    chainName: string;
+  };
+};
+
+export default async function ChainPage({ params }: Props) {
+  return redirect(`/${params.chainName}/worlds`);
 }

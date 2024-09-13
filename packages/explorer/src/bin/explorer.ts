@@ -71,7 +71,7 @@ let explorerProcess: ChildProcess;
 async function startExplorer() {
   const env = {
     ...process.env,
-    NEXT_PUBLIC_CHAIN_ID: chainId.toString(),
+    CHAIN_ID: chainId.toString(),
     WORLD_ADDRESS: worldAddress?.toString(),
     INDEXER_DATABASE: path.join(process.cwd(), indexerDatabase),
   };
