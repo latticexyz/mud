@@ -2,29 +2,25 @@
 
 import { useStore } from "zustand";
 import { KeepInView } from "../../../../../components/KeepInView";
-import { store } from "../../../../../transactions/store";
-import { Timing } from "./Timing";
+import { store } from "../../../../../observer/store";
+import { Write } from "./Write";
 
 export function Writes() {
   const writes = useStore(store, (state) => Object.values(state.writes));
+
   return (
-    <KeepInView>
-      <div className="pb-40 text-xs leading-tight">
-        {Object.values(writes).map((write, i) => (
-          <div key={write.id} className="py-1">
-            <div className="p-1 font-bold">
-              <span className="opacity-50">{i + 1}.</span> {write.functionSignature}
+    // TODO: replace with h-full once container is stretched to full height
+    <div className="relative h-[80vh] overflow-auto">
+      <KeepInView>
+        <div className="flex flex-col gap-4 pb-10 text-xs leading-tight">
+          {writes.length === 0 ? <>Waiting for transactions…</> : null}
+          {writes.map((write) => (
+            <div key={write.writeId} className="group/write flex gap-2">
+              <Write {...write} />
             </div>
-            <div className="ml-2">
-              {Object.entries(write.timings).map(([label, promise]) => (
-                <div key={label} className="whitespace-nowrap indent-1 text-white/50 hover:text-white">
-                  <Timing label={label} promise={promise} />
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </KeepInView>
+          ))}
+        </div>
+      </KeepInView>
+    </div>
   );
 }

@@ -20,12 +20,12 @@ export function Navigation() {
       <div className="flex items-center justify-between">
         <div className="flex gap-x-6 py-4">
           <Link
-            href={getLinkUrl("explorer")}
+            href={getLinkUrl("explore")}
             className={cn("text-sm uppercase underline-offset-[16px]", {
-              "font-semibold underline decoration-orange-500 decoration-4": pathname === getLinkUrl("explorer"),
+              "font-semibold underline decoration-orange-500 decoration-4": pathname === getLinkUrl("explore"),
             })}
           >
-            Data explorer
+            Explore
           </Link>
 
           <Link
