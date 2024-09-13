@@ -9,8 +9,7 @@ import path from "node:path";
 import fs from "node:fs/promises";
 import { getResourceIds } from "../deploy/getResourceIds";
 import { getFunctions } from "@latticexyz/world/internal";
-import { formatTypescript } from "@latticexyz/common/codegen";
-import { execa } from "execa";
+import { abiToInterface, formatSolidity, formatTypescript } from "@latticexyz/common/codegen";
 import { debug } from "./debug";
 
 const ignoredNamespaces = new Set(["store", "world", "metadata"]);
@@ -50,9 +49,6 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
   // ensure we always have a root namespace label
   labels[namespaceToHex("")] ??= "root";
 
-  console.log(labels);
-  const namespaces = resources.filter((resource) => resource.type === "namespace");
-
   const worldFunctions = await getFunctions({
     client,
     worldAddress: worldDeploy.address,
@@ -60,6 +56,7 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
     toBlock: worldDeploy.stateBlock,
   });
 
+  const namespaces = resources.filter((resource) => resource.type === "namespace");
   const systems = await Promise.all(
     resources
       .filter((resource) => resource.type === "system")
@@ -153,88 +150,23 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
     `),
   );
 
-  await Promise.all(
-    systems
-      .map((system) => ({
-        ...system,
-        // skip functions that use tuples for now, because they can't compile unless they're represented as structs
-        // but if we hoist tuples into structs, you have to use the interface's specific struct rather any struct
-        // of the same shape
-        abi: system.abi.filter((item) => {
-          if (
-            item.type === "function" &&
-            [...item.inputs, ...item.outputs].some((param) => param.type === "tuple" || param.type === "tuple[]")
-          ) {
-            debug(
-              `System function \`${system.label}.${item.name}\` is using a tuple argument or return type, which is not yet supported by interface generation. Skipping...`,
-            );
-            return false;
-          }
-          return true;
-        }),
-      }))
-      .filter((system) => system.abi.length)
-      .map(async (system) => {
-        const interfaceName = `I${system.label}`;
-        const systemAbi = path.join(rootDir, `.mud/systems/${system.systemId}.abi.json`);
-        const systemInterface = path.join(rootDir, `src/namespaces/${system.namespaceLabel}/${interfaceName}.sol`);
+  for (const system of systems.filter((system) => system.abi.length)) {
+    const interfaceName = `I${system.label}`;
+    const interfaceFile = `src/namespaces/${system.namespaceLabel}/${interfaceName}.sol`;
+    const source = abiToInterface({ name: interfaceName, systemId: system.systemId, abi: system.abi });
 
-        debug("writing system ABI for", interfaceName, "to", path.relative(rootDir, systemAbi));
-        await writeFile(systemAbi, JSON.stringify(system.abi));
+    debug("generating system interface", interfaceName, "to", interfaceFile);
+    await writeFile(path.join(rootDir, interfaceFile), await formatSolidity(source));
+  }
 
-        debug("generating system interface", interfaceName, "to", path.relative(rootDir, systemInterface));
-        await execa("cast", [
-          "interface",
-          "--name",
-          interfaceName,
-          "--pragma",
-          ">=0.8.24",
-          "-o",
-          systemInterface,
-          systemAbi,
-        ]);
-      }),
-  );
+  const worldAbi = systems.flatMap((system) => system.worldAbi);
+  if (worldAbi.length) {
+    const interfaceName = "IWorldSystems";
+    const interfaceFile = `src/${interfaceName}.sol`;
+    const source = abiToInterface({ name: interfaceName, abi: worldAbi });
 
-  const abi = systems
-    .map((system) => ({
-      ...system,
-      // skip functions that use tuples for now, because they can't compile unless they're represented as structs
-      // but if we hoist tuples into structs, you have to use the interface's specific struct rather any struct
-      // of the same shape
-      worldAbi: system.worldAbi.filter((item) => {
-        if (
-          item.type === "function" &&
-          [...item.inputs, ...item.outputs].some((param) => param.type === "tuple" || param.type === "tuple[]")
-        ) {
-          debug(
-            `World function \`${item.name}\` (from ${system.label}) is using a tuple argument or return type, which is not yet supported by interface generation. Skipping...`,
-          );
-          return false;
-        }
-        return true;
-      }),
-    }))
-    .flatMap((system) => system.worldAbi);
-
-  if (abi.length) {
-    const worldAbi = path.join(rootDir, `.mud/systems/world.abi.json`);
-    const worldInterface = path.join(rootDir, `src/IWorldSystems.sol`);
-
-    debug("writing world systems ABI to", path.relative(rootDir, worldAbi));
-    await writeFile(worldAbi, JSON.stringify(abi));
-
-    debug("generating world systems interface to", path.relative(rootDir, worldInterface));
-    await execa("cast", [
-      "interface",
-      "--name",
-      "IWorldSystems",
-      "--pragma",
-      ">=0.8.24",
-      "-o",
-      worldInterface,
-      worldAbi,
-    ]);
+    debug("generating world systems interface to", interfaceFile);
+    await writeFile(path.join(rootDir, interfaceFile), await formatSolidity(source));
   }
 }
 
