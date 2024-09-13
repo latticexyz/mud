@@ -97,6 +97,12 @@ export async function writeContract<
               debug("got nonce error, retrying", error.message);
               return;
             }
+
+            if (String(error).includes("transaction underpriced")) {
+              debug("got transaction underpriced error, retrying", error.message);
+              return;
+            }
+
             throw error;
           },
         },
