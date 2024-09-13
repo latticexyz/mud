@@ -54,11 +54,9 @@ export async function sendTransaction<
   const account = parseAccount(rawAccount);
   const chain = client.chain;
 
-  const blockTag = "pending";
   const nonceManager = await getNonceManager({
     client: opts.publicClient ?? client,
     address: account.address,
-    blockTag,
     queueConcurrency: opts.queueConcurrency,
   });
 
@@ -74,7 +72,7 @@ export async function sendTransaction<
         async () => {
           const nonce = nonceManager.nextNonce();
           const params = {
-            blockTag,
+            blockTag: "pending",
             ...request,
             nonce,
             ...feeRef.fees,
