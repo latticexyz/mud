@@ -1,11 +1,16 @@
 import { PlugIcon, ZapIcon } from "lucide-react";
+import { anvil } from "viem/chains";
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
-import { isAnvil } from "../common";
+import { useChainId } from "../hooks/useChainId";
 import { cn } from "../lib/utils";
 import { AccountSelect } from "./AccountSelect";
 import { Button } from "./ui/Button";
 
 export function ConnectButton() {
+  const chainId = useChainId();
+  // TODO: can be improved?
+  const isAnvil = chainId === anvil.id;
+
   return (
     <RainbowConnectButton.Custom>
       {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
@@ -19,7 +24,7 @@ export function ConnectButton() {
           >
             {(() => {
               if (!connected) {
-                if (isAnvil()) {
+                if (isAnvil) {
                   return <AccountSelect />;
                 }
 
