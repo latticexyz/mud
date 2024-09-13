@@ -111,7 +111,7 @@ export function findContractNode(ast: SourceUnit, contractName: string): Contrac
 
   visit(ast, {
     ContractDefinition(node) {
-      if (node.name === contractName || node.name === `I${contractName}`) {
+      if (node.name === contractName) {
         contract = node;
       }
     },

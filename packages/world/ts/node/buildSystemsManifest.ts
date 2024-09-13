@@ -45,10 +45,10 @@ export async function buildSystemsManifest(opts: { rootDir: string; config: Worl
   const contractArtifacts = await findContractArtifacts({ forgeOutDir });
 
   function getSystemArtifact(system: ResolvedSystem): ContractArtifact {
-    const artifact = contractArtifacts.find((a) => a.sourcePath === system.sourcePath && a.name === system.sourceName);
+    const artifact = contractArtifacts.find((a) => a.sourcePath === system.sourcePath && a.name === system.label);
     if (!artifact) {
       throw new Error(
-        `Could not find build artifact for system \`${system.label}\` at \`${system.sourcePath}:${system.sourceName}\`. Did \`forge build\` run successfully?`,
+        `Could not find build artifact for system \`${system.label}\` at \`${system.sourcePath}\`. Did \`forge build\` run successfully?`,
       );
     }
     return artifact;
@@ -58,15 +58,9 @@ export async function buildSystemsManifest(opts: { rootDir: string; config: Worl
     systems: systems.map((system): (typeof SystemsManifest)["infer"]["systems"][number] => {
       const artifact = getSystemArtifact(system);
       const abi = artifact.abi.filter((item) => !excludedAbi.includes(formatAbiItem(item)));
-      const worldAbi =
-        // TODO: normalize this so `disabled: true` sets `registerWorldFunctions: false`
-        !system.deploy.disabled && system.deploy.registerWorldFunctions
-          ? abi.map((item) =>
-              item.type === "function"
-                ? { ...item, name: system.namespace === "" ? item.name : `${system.namespace}__${item.name}` }
-                : item,
-            )
-          : [];
+      const worldAbi = system.deploy.registerWorldFunctions
+        ? abi.map((item) => (item.type === "function" ? { ...item, name: `${system.namespace}__${item.name}` } : item))
+        : [];
       return {
         // labels
         namespaceLabel: system.namespaceLabel,

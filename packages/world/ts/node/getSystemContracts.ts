@@ -4,7 +4,6 @@ import { findSolidityFiles } from "./findSolidityFiles";
 
 export type SystemContract = {
   readonly sourcePath: string;
-  readonly sourceName: string;
   readonly namespaceLabel: string;
   readonly systemLabel: string;
 };
@@ -28,7 +27,9 @@ export async function getSystemContracts({
       (file) =>
         file.basename.endsWith("System") &&
         // exclude the base System contract
-        file.basename !== "System",
+        file.basename !== "System" &&
+        // exclude interfaces
+        !/^I[A-Z]/.test(file.basename),
     )
     .map((file) => {
       const namespaceLabel = (() => {
@@ -49,9 +50,8 @@ export async function getSystemContracts({
 
       return {
         sourcePath: file.filename,
-        sourceName: file.basename,
         namespaceLabel,
-        systemLabel: file.basename.replace(/^I/, ""),
+        systemLabel: file.basename,
       };
     });
 }
