@@ -11,6 +11,7 @@ import { getResourceIds } from "../deploy/getResourceIds";
 import { getFunctions } from "@latticexyz/world/internal";
 import { abiToInterface, formatSolidity, formatTypescript } from "@latticexyz/common/codegen";
 import { debug } from "./debug";
+import { defineWorld } from "@latticexyz/world";
 
 const ignoredNamespaces = new Set(["store", "world", "metadata"]);
 
@@ -110,7 +111,8 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
       }),
   );
 
-  const config = {
+  debug("generating config");
+  const configInput = {
     namespaces: Object.fromEntries(
       namespaces.map(({ namespace, resourceId: namespaceId }) => {
         const namespaceLabel = labels[namespaceId] ?? namespace;
@@ -141,31 +143,42 @@ export async function pull({ rootDir, client, worldAddress }: PullOptions) {
     ),
   };
 
+  // use the config before writing it so we make sure its valid
+  // and because we'll use the default paths to write interfaces
+  debug("validating config");
+  const config = defineWorld(configInput);
+
+  debug("writing config");
   await writeFile(
     path.join(rootDir, "mud.config.ts"),
     await formatTypescript(`
       import { defineWorld } from "@latticexyz/world";
 
-      export default defineWorld(${JSON.stringify(config)});
+      export default defineWorld(${JSON.stringify(configInput)});
     `),
   );
 
   for (const system of systems.filter((system) => system.abi.length)) {
     const interfaceName = `I${system.label}`;
-    const interfaceFile = `src/namespaces/${system.namespaceLabel}/${interfaceName}.sol`;
-    const source = abiToInterface({ name: interfaceName, systemId: system.systemId, abi: system.abi });
+    const interfaceFile = path.join(
+      config.sourceDirectory,
+      "namespaces",
+      system.namespaceLabel,
+      `${interfaceName}.sol`,
+    );
 
-    debug("generating system interface", interfaceName, "to", interfaceFile);
+    debug("writing system interface", interfaceName, "to", interfaceFile);
+    const source = abiToInterface({ name: interfaceName, systemId: system.systemId, abi: system.abi });
     await writeFile(path.join(rootDir, interfaceFile), await formatSolidity(source));
   }
 
   const worldAbi = systems.flatMap((system) => system.worldAbi);
   if (worldAbi.length) {
     const interfaceName = "IWorldSystems";
-    const interfaceFile = `src/${interfaceName}.sol`;
-    const source = abiToInterface({ name: interfaceName, abi: worldAbi });
+    const interfaceFile = path.join(config.sourceDirectory, `${interfaceName}.sol`);
 
-    debug("generating world systems interface to", interfaceFile);
+    debug("writing world systems interface to", interfaceFile);
+    const source = abiToInterface({ name: interfaceName, abi: worldAbi });
     await writeFile(path.join(rootDir, interfaceFile), await formatSolidity(source));
   }
 }
