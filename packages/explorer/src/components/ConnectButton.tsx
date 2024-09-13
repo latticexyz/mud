@@ -8,9 +8,6 @@ import { Button } from "./ui/Button";
 
 export function ConnectButton() {
   const chainId = useChainId();
-  // TODO: can be improved?
-  const isAnvil = chainId === anvil.id;
-
   return (
     <RainbowConnectButton.Custom>
       {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
@@ -24,7 +21,7 @@ export function ConnectButton() {
           >
             {(() => {
               if (!connected) {
-                if (isAnvil) {
+                if (chainId === anvil.id) {
                   return <AccountSelect />;
                 }
 
