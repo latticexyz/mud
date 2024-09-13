@@ -1,3 +1,61 @@
+## Version 2.2.3
+
+Release date: Tue Sep 10 2024
+
+### Patch changes
+
+**[feat(cli): deploy custom world (#3131)](https://github.com/latticexyz/mud/commit/854645260c41eaa89cdadad30bf8e70d5d2fd109)** (@latticexyz/cli, @latticexyz/world)
+
+MUD config now supports a `deploy.customWorld` option that, when used with the CLI, will deploy the specified custom World implementation.
+Custom implementations must still follow [the World protocol](https://github.com/latticexyz/mud/tree/main/packages/world/ts/protocol-snapshots).
+
+If you want to extend the world with new functions or override existing registered functions, we recommend using [root systems](https://mud.dev/world/systems#root-systems).
+However, there are rare cases where this may not be enough to modify the native/internal World behavior.
+Note that deploying a custom World opts out of the world factory, deterministic world deploys, and upgradeable implementation proxy.
+
+```ts
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
+  customWorld: {
+    // path to custom world source from project root
+    sourcePath: "src/CustomWorld.sol",
+    // custom world contract name
+    name: "CustomWorld",
+  },
+});
+```
+
+**[fix(explorer): world address cli option as hex (#3155)](https://github.com/latticexyz/mud/commit/b9c61a96082e62c4f1bec3a8ebb358ea30c315f0)** (@latticexyz/explorer)
+
+Fixed an issue with `--worldAddress` CLI flag being incorrectly interpreted as a number rather a hex string. Additionally, added `--hostname` option for specifying the hostname on which to start the application.
+
+**[feat(cli): speed up dev deploy with temporary automine during deploy (#3130)](https://github.com/latticexyz/mud/commit/d3ab5c3783265b3e82b76157bccedeae6b0445e1)** (@latticexyz/cli)
+
+Speed up deployment in development by temporarily enabling automine mode for the duration of the deployment.
+
+---
+
+## Version 2.2.2
+
+Release date: Tue Sep 03 2024
+
+### Patch changes
+
+**[style(explorer): format account balances (#3117)](https://github.com/latticexyz/mud/commit/fb9def83ddb128387b70edb6fe88064e234366ce)** (@latticexyz/explorer)
+
+Format account balances with comma-separated thousands and trimmed decimal places for better readability.
+
+**[feat(explorer): show error message in error page (#3121)](https://github.com/latticexyz/mud/commit/4b86c04dc703faf3bf12f6143781b5940b62cb17)** (@latticexyz/explorer)
+
+Added error messages to error page to facilitate easier troubleshooting.
+
+**[fix(cli): add missing await (#3119)](https://github.com/latticexyz/mud/commit/ef6f7c0c6afcc46e7463d18c00fa99c7cafcae65)** (@latticexyz/cli)
+
+Fixed regression in 2.2.1 where deployment of modules already installed would throw an error instead of skipping.
+
+---
+
 ## Version 2.2.1
 
 Release date: Sun Sep 01 2024

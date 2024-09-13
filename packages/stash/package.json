@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/stash",
-  "version": "2.2.1",
+  "version": "2.2.3",
   "private": true,
   "description": "High performance client store and query engine for MUD",
   "repository": {
@@ -43,7 +43,7 @@
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "react": "^18.2.0",
-    "viem": "2.9.20"
+    "viem": "2.21.6"
   },
   "devDependencies": {
     "@arktype/attest": "0.7.5",

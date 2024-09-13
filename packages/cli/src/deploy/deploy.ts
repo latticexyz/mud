@@ -9,20 +9,26 @@ import { ensureFunctions } from "./ensureFunctions";
 import { ensureModules } from "./ensureModules";
 import { ensureNamespaceOwner } from "./ensureNamespaceOwner";
 import { debug } from "./debug";
-import { resourceToLabel } from "@latticexyz/common";
+import { resourceToHex, resourceToLabel } from "@latticexyz/common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";
 import { ensureWorldFactory } from "./ensureWorldFactory";
 import { Table } from "@latticexyz/config";
 import { ensureResourceTags } from "./ensureResourceTags";
 import { waitForTransactions } from "./waitForTransactions";
+import { ContractArtifact } from "@latticexyz/world/node";
+import { World } from "@latticexyz/world";
+import { deployCustomWorld } from "./deployCustomWorld";
+import { uniqueBy } from "@latticexyz/common/utils";
 
 type DeployOptions = {
+  config: World;
   client: Client<Transport, Chain | undefined, Account>;
   tables: readonly Table[];
   systems: readonly System[];
   libraries: readonly Library[];
   modules?: readonly Module[];
+  artifacts: readonly ContractArtifact[];
   salt?: Hex;
   worldAddress?: Address;
   /**
@@ -42,19 +48,20 @@ type DeployOptions = {
  * replace systems, etc.)
  */
 export async function deploy({
+  config,
   client,
   tables,
   systems,
   libraries,
   modules = [],
+  artifacts,
   salt,
   worldAddress: existingWorldAddress,
   deployerAddress: initialDeployerAddress,
-  withWorldProxy,
 }: DeployOptions): Promise<WorldDeploy> {
   const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
 
-  await ensureWorldFactory(client, deployerAddress, withWorldProxy);
+  await ensureWorldFactory(client, deployerAddress, config.deploy.upgradeableWorldImplementation);
 
   // deploy all dependent contracts, because system registration, module install, etc. all expect these contracts to be callable.
   await ensureContractsDeployed({
@@ -81,7 +88,19 @@ export async function deploy({
 
   const worldDeploy = existingWorldAddress
     ? await getWorldDeploy(client, existingWorldAddress)
-    : await deployWorld(client, deployerAddress, salt ?? `0x${randomBytes(32).toString("hex")}`, withWorldProxy);
+    : config.deploy.customWorld
+      ? await deployCustomWorld({
+          client,
+          deployerAddress,
+          artifacts,
+          customWorld: config.deploy.customWorld,
+        })
+      : await deployWorld(
+          client,
+          deployerAddress,
+          salt ?? `0x${randomBytes(32).toString("hex")}`,
+          config.deploy.upgradeableWorldImplementation,
+        );
 
   if (!supportedStoreVersions.includes(worldDeploy.storeVersion)) {
     throw new Error(`Unsupported Store version: ${worldDeploy.storeVersion}`);
@@ -132,9 +151,26 @@ export async function deploy({
     modules,
   });
 
-  const tableTags = tables.map(({ tableId: resourceId, label }) => ({ resourceId, tag: "label", value: label }));
-  const systemTags = systems.flatMap(({ systemId: resourceId, label, abi, worldAbi }) => [
-    { resourceId, tag: "label", value: label },
+  const namespaceTags = uniqueBy(
+    [...tables, ...systems]
+      // only register labels if they differ from the resource ID
+      .filter(({ namespace, namespaceLabel }) => namespaceLabel !== namespace)
+      .map(({ namespace, namespaceLabel }) => ({
+        resourceId: resourceToHex({ type: "namespace", namespace, name: "" }),
+        tag: "label",
+        value: namespaceLabel,
+      })),
+    (tag) => tag.resourceId,
+  );
+
+  const tableTags = tables
+    // only register labels if they differ from the resource ID
+    .filter((table) => table.label !== table.name)
+    .map(({ tableId: resourceId, label }) => ({ resourceId, tag: "label", value: label }));
+
+  const systemTags = systems.flatMap(({ name, systemId: resourceId, label, abi, worldAbi }) => [
+    // only register labels if they differ from the resource ID
+    ...(label !== name ? [{ resourceId, tag: "label", value: label }] : []),
     { resourceId, tag: "abi", value: abi.join("\n") },
     { resourceId, tag: "worldAbi", value: worldAbi.join("\n") },
   ]);
@@ -144,7 +180,7 @@ export async function deploy({
     deployerAddress,
     libraries,
     worldDeploy,
-    tags: [...tableTags, ...systemTags],
+    tags: [...namespaceTags, ...tableTags, ...systemTags],
     valueToHex: stringToHex,
   });
 
