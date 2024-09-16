@@ -14,7 +14,7 @@ type UseContractMutationProps = {
 
 export function useContractMutation({ abi, operationType }: UseContractMutationProps) {
   const { worldAddress } = useParams();
-  const chainId = useChainId();
+  const chainId = useChainId("use-contract-mutation");
   const queryClient = useQueryClient();
   const wagmiConfig = useConfig();
   const account = useAccount();

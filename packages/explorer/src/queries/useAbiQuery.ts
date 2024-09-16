@@ -20,7 +20,7 @@ type AbiQueryResult = {
 
 export const useAbiQuery = (): UseQueryResult<AbiQueryResult> => {
   const { worldAddress } = useParams();
-  const chainId = useChainId();
+  const chainId = useChainId("use-abi-query");
 
   return useQuery({
     queryKey: ["abi", chainId, worldAddress],

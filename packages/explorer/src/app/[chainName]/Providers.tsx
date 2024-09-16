@@ -12,8 +12,7 @@ import { useChain } from "../../hooks/useChain";
 const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: ReactNode }) {
-  const chain = useChain();
-
+  const chain = useChain("providers");
   const wagmiConfig = createConfig({
     chains: [chain],
     connectors: [
@@ -24,7 +23,6 @@ export function Providers({ children }: { children: ReactNode }) {
         },
       }),
       safe(),
-      // TODO: needs to be a function?
       ...getDefaultAnvilConnectors(chain.id),
     ],
     transports: {

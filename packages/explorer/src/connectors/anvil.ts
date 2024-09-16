@@ -32,6 +32,7 @@ export type AnvilConnectorOptions = {
 // We can't programmatically switch accounts within a connector, but we can switch between connectors,
 // so create one anvil connector per default anvil account so users can switch between default anvil accounts.
 export const getDefaultAnvilConnectors = (chainId: number) => {
+  // disable anvil connector if chainId is not anvil
   const disabled = chainId !== anvilChain.id;
   return defaultAnvilAccounts.map((account, i) =>
     anvil({ id: `anvil-${i}`, name: `Anvil #${i + 1}`, accounts: [account], disabled }),

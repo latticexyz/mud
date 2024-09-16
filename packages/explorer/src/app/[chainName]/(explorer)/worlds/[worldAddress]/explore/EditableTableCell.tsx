@@ -25,7 +25,7 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
   const { worldAddress } = useParams();
-  const chainId = useChainId();
+  const chainId = useChainId("editable-table-cell");
   const account = useAccount();
 
   const [value, setValue] = useState<unknown>(defaultValue);
