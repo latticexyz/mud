@@ -23,14 +23,14 @@ export const chains: Record<SupportedChainIds, Chain> = {
   [redstone.id]: redstone,
 };
 
-export function isValidChainId(chainId: number): chainId is SupportedChainIds {
-  return chainId in chainIdName;
+export function isValidChainId(chainId: number): asserts chainId is SupportedChainIds {
+  if (!(chainId in chainIdName)) {
+    throw new Error(`Invalid chain id. Supported chains are: ${Object.keys(chainIdName).join(", ")}.`);
+  }
 }
 
-export function isValidChainName(name: string | string[] | undefined): name is SupportedChainNames {
-  if (Array.isArray(name)) {
-    return false;
+export function isValidChainName(name: string | string[] | undefined): asserts name is SupportedChainNames {
+  if (Array.isArray(name) || typeof name !== "string" || !(name in chainNameId)) {
+    throw new Error(`Invalid chain name. Supported chains are: ${Object.keys(chainNameId).join(", ")}.`);
   }
-
-  return typeof name === "string" && name in chainNameId;
 }
