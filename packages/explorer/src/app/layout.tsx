@@ -19,6 +19,9 @@ const jetbrains = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "World Explorer",
   description: "World Explorer is a tool for visually exploring and manipulating the state of worlds",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
