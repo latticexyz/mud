@@ -16,9 +16,7 @@ async function getClient(chainId: SupportedChainIds) {
   return client;
 }
 
-async function getParameters(chainId: number, worldAddress: Address) {
-  isValidChainId(chainId);
-
+async function getParameters(chainId: SupportedChainIds, worldAddress: Address) {
   const client = await getClient(chainId);
   const toBlock = await getBlockNumber(client);
   const logs = await getLogs(client, {
@@ -39,6 +37,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const worldAddress = searchParams.get("worldAddress") as Hex;
   const chainId = Number(searchParams.get("chainId"));
+  isValidChainId(chainId);
 
   if (!worldAddress) {
     return Response.json({ error: "address is required" }, { status: 400 });
