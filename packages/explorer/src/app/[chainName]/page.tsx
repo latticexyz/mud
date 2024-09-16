@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 
-// TODO: can params be dynamically extracted
 type Props = {
   params: {
     chainName: string;

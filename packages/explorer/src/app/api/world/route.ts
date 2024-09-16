@@ -3,13 +3,13 @@ import { getBlockNumber, getLogs } from "viem/actions";
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
 import { getWorldAbi } from "@latticexyz/world/internal";
-import { SupportedChainIds, chains } from "../../../common";
+import { SupportedChainIds, chains, isValidChainId } from "../../../common";
 
 export const dynamic = "force-dynamic";
 
-async function getClient(chainId: number) {
+async function getClient(chainId: SupportedChainIds) {
   const client = createWalletClient({
-    chain: chains[chainId as SupportedChainIds], // TODO: type-check better
+    chain: chains[chainId],
     transport: http(),
   });
 
@@ -17,6 +17,8 @@ async function getClient(chainId: number) {
 }
 
 async function getParameters(chainId: number, worldAddress: Address) {
+  isValidChainId(chainId);
+
   const client = await getClient(chainId);
   const toBlock = await getBlockNumber(client);
   const logs = await getLogs(client, {

@@ -1,13 +1,10 @@
 import { redirect } from "next/navigation";
 
-// TODO: move to common?
-type ParamsProps = {
-  chainName: string;
-  worldAddress: string;
-};
-
 type Props = {
-  params: ParamsProps;
+  params: {
+    chainName: string;
+    worldAddress: string;
+  };
 };
 
 export default async function WorldPage({ params }: Props) {

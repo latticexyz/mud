@@ -6,7 +6,7 @@ import process from "process";
 import { fileURLToPath } from "url";
 import yargs from "yargs";
 import { ChildProcess, spawn } from "child_process";
-import { SupportedChainIds, chains } from "../common";
+import { isValidChainId } from "../common";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -57,10 +57,7 @@ const argv = yargs(process.argv.slice(2))
     },
   })
   .check((argv) => {
-    // TODO: typecheck better
-    if (!chains[Number(argv.chainId) as SupportedChainIds]) {
-      throw new Error(`Invalid chain ID. Supported chains are: ${Object.keys(chains).join(", ")}.`);
-    }
+    isValidChainId(Number(argv.chainId));
     return true;
   })
   .parseSync();
