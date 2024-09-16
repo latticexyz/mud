@@ -23,8 +23,3 @@ export const chains: Record<SupportedChainIds, Chain> = {
   [garnet.id]: garnet,
   [redstone.id]: redstone,
 };
-
-// TODO: remove entirely?
-export function isAnvil(chainId: number) {
-  return chainId === anvil.id;
-}
