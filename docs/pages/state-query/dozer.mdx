@@ -6,13 +6,17 @@ import { Callout } from "nextra/components";
 
 <FilterTypes />
 
-If there is a dozer instance serving a blockchain, as there is for [Redstone](https://redstone.xyz/) and [Garnet](https://garnetchain.com/docs/what-is-redstone), you can use it to run queries on the data of any `World` on that blockchain.
+If there is a dozer instance serving a blockchain, as there is for [Redstone](https://redstone.xyz/) and [Garnet](https://garnetchain.com/docs/what-is-redstone), you can use it to:
+
+- Run queries on the data of any `World` on that blockchain.
+- [Speed up the initial hydration](#dozer-with-mud-synchronization) by reducing the amount of data that needs to be synchronized.
+  This is important for the user experience, because until the initial hydration is done the client is typically unusable.
 
 The query language is a subset of [the SQL `SELECT` command](<https://en.wikipedia.org/wiki/Select_(SQL)>).
 
 ## Dozer URLs
 
-- [Redstone](https://redstone.xyz/) dozer `https://dozer.mud.redstonechain.com/q`
+- [Redstone](https://redstone.xyz/) dozer - `https://dozer.mud.redstonechain.com/q`
 - [Garnet](https://garnetchain.com/) dozer - `https://dozer.mud.garnetchain.com/q`
 
 ## Example `World`
@@ -436,7 +440,7 @@ The actual records.
 
 ## Dozer with MUD synchronization
 
-Of course, you can also add dozer to a MUD client with synchronization.
+You can also add dozer to a MUD client to speed up the initial hydration.
 
 ### Create a client to access the `World`
 
@@ -498,7 +502,7 @@ To update the client, you change `packages/client/src/mud/setupNetwork.ts` to:
 
 <CollapseCode>
 
-```typescript filename="setupNetwork.ts" copy showLineNumbers {17-21, 84-101, 111-112}
+```typescript filename="setupNetwork.ts" copy showLineNumbers {17, 80-97, 106-107}
 /*
  * The MUD client code is built on top of viem
  * (https://viem.sh/docs/getting-started.html).

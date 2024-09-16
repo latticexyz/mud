@@ -8,6 +8,18 @@ Filtering information this way allows you to reduce the use of network resources
 
 <FilterTypes />
 
+<details>
+
+<summary>Why are only the first two key fields available for filtering?</summary>
+
+Ethereum log entries can have [up to four indexed fields](https://www.evm.codes/?fork=cancun#a4).
+However, Solidity only supports [three indexed fields](https://www.alchemy.com/overviews/solidity-events) because the first indexed field is used for the event name and type.
+In MUD, [this field](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreEvents.sol) specifies whether [a new record is created](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreEvents.sol#L26-L32), a record is changed (either [static fields](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreEvents.sol#L43) or [dynamic fields](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreEvents.sol#L56-L64)), or [a record is deleted](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreEvents.sol#L71).
+The second indexed fields is always the table's [resource ID](/world/resource-ids).
+This leaves two fields for key fields.
+
+</details>
+
 ## Setup
 
 To see the effects of filtering we need a table with entries to filter. To get such a table:
