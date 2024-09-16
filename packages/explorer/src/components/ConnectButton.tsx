@@ -12,7 +12,6 @@ export function ConnectButton() {
     <RainbowConnectButton.Custom>
       {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
         const connected = mounted && account && chain;
-
         return (
           <div
             className={cn({
