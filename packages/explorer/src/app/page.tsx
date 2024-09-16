@@ -1,12 +1,14 @@
 import { notFound, redirect } from "next/navigation";
-import { SupportedChainIds, chainIdName } from "../common";
+import { SupportedChainIds, chainIdName, isValidChainId } from "../common";
 
 export const dynamic = "force-dynamic";
 
 export default function IndexPage() {
   const chainId = Number(process.env.CHAIN_ID);
-  const chainName = chainIdName[chainId as SupportedChainIds]; // TODO: type-check
+  if (!isValidChainId(chainId)) {
+    return notFound();
+  }
 
-  if (chainName) return redirect(`/${chainName}/worlds`);
-  return notFound();
+  const chainName = chainIdName[chainId as SupportedChainIds];
+  return redirect(`/${chainName}/worlds`);
 }

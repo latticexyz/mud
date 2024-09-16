@@ -12,7 +12,7 @@ import { useChain } from "../../hooks/useChain";
 const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: ReactNode }) {
-  const chain = useChain("providers");
+  const chain = useChain();
   const wagmiConfig = createConfig({
     chains: [chain],
     connectors: [

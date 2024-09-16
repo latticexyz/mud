@@ -1,15 +1,13 @@
 import { useParams } from "next/navigation";
-import { SupportedChainNames, chainNameId, chains } from "../common";
+import { chainNameId, chains, isValidChainName } from "../common";
 
 export function useChain() {
   const { chainName } = useParams();
-
-  // TODO: validate chainName TS
-  const chainId = chainNameId[chainName as SupportedChainNames];
-  if (!chainId) {
-    throw new Error(`Invalid chain ID. Supported chains are: ${Object.keys(chains).join(", ")}.`);
+  if (!isValidChainName(chainName)) {
+    throw new Error(`Invalid chain name. Supported chains are: ${Object.keys(chainNameId).join(", ")}.`);
   }
 
+  const chainId = chainNameId[chainName];
   const chain = chains[chainId];
   return chain;
 }
