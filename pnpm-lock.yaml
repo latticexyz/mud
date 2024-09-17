@@ -459,12 +459,18 @@ importers:
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
+      '@latticexyz/config':
+        specifier: workspace:*
+        version: link:../config
       '@latticexyz/protocol-parser':
         specifier: workspace:*
         version: link:../protocol-parser
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
+      '@latticexyz/stash':
+        specifier: workspace:*
+        version: link:../stash
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store

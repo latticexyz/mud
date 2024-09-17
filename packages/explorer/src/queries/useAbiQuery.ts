@@ -18,7 +18,7 @@ type AbiQueryResult = {
   isWorldDeployed: boolean;
 };
 
-export const useAbiQuery = (): UseQueryResult<AbiQueryResult> => {
+export function useAbiQuery(): UseQueryResult<AbiQueryResult> {
   const { worldAddress } = useParams();
   const chainId = useChainId();
 
@@ -33,4 +33,4 @@ export const useAbiQuery = (): UseQueryResult<AbiQueryResult> => {
     },
     refetchInterval: 15000,
   });
-};
+}

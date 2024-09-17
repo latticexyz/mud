@@ -21,7 +21,7 @@ export async function GET(request: Request) {
 
   try {
     if (!table || !doesTableExist(table)) {
-      return Response.json({ error: "table does not exist" }, { status: 400 });
+      return Response.json({ error: "Table does not exist" }, { status: 400 });
     }
 
     const db = getDatabase();

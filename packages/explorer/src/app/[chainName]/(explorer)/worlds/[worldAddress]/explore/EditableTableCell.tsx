@@ -5,43 +5,40 @@ import { Hex } from "viem";
 import { useAccount, useConfig } from "wagmi";
 import { ChangeEvent, useState } from "react";
 import { encodeField, getFieldIndex } from "@latticexyz/protocol-parser/internal";
-import { SchemaAbiType } from "@latticexyz/schema-type/internal";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Checkbox } from "../../../../../../components/ui/Checkbox";
 import { useChainId } from "../../../../../../hooks/useChain";
-import { camelCase, cn } from "../../../../../../lib/utils";
-import { TableConfig } from "../../../../../api/table/route";
+import { cn } from "../../../../../../lib/utils";
+import { Table } from "../../../../../../queries/dozer/useTablesQuery";
 
 type Props = {
   name: string;
   value: string;
-  keyTuple: string[];
-  config: TableConfig;
+  config: Table;
+  keysTuple: string[];
 };
 
-export function EditableTableCell({ name, config, keyTuple, value: defaultValue }: Props) {
+export function EditableTableCell({ name, config, keysTuple, value: defaultValue }: Props) {
+  const [value, setValue] = useState<unknown>(defaultValue);
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
   const { worldAddress } = useParams();
   const chainId = useChainId();
   const account = useAccount();
-
-  const [value, setValue] = useState<unknown>(defaultValue);
-
-  const tableId = config?.table_id;
-  const fieldType = config?.value_schema[camelCase(name)] as SchemaAbiType;
+  const tableId = config?.tableId;
+  const type = config?.valueSchema[name];
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (newValue: unknown) => {
-      const fieldIndex = getFieldIndex(config?.value_schema, camelCase(name));
-      const encodedField = encodeField(fieldType, newValue);
+      const fieldIndex = getFieldIndex(config?.valueSchema, name);
+      const encodedField = encodeField(type, newValue);
       const txHash = await writeContract(wagmiConfig, {
         abi: IBaseWorldAbi,
         address: worldAddress as Hex,
         functionName: "setField",
-        args: [tableId, keyTuple, fieldIndex, encodedField],
+        args: [tableId, keysTuple, fieldIndex, encodedField],
         chainId,
       });
 
@@ -86,7 +83,7 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
     }
   };
 
-  if (fieldType === "bool") {
+  if (type === "bool") {
     return (
       <>
         <Checkbox

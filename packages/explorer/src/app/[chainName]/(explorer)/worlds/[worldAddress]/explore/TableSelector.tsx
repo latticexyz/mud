@@ -1,15 +1,18 @@
 import { Lock } from "lucide-react";
-import { useParams } from "next/navigation";
 import { internalTableNames } from "@latticexyz/store-sync/sqlite";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../../../components/ui/Select";
 
+type Option = {
+  label: React.ReactNode;
+  value: string;
+};
+
 type Props = {
   value: string | undefined;
-  options: string[];
+  options: Option[];
 };
 
 export function TableSelector({ value, options }: Props) {
-  const { worldAddress } = useParams();
   return (
     <div className="py-4">
       <Select
@@ -24,14 +27,15 @@ export function TableSelector({ value, options }: Props) {
         <SelectTrigger>
           <SelectValue placeholder="Select a table ..." />
         </SelectTrigger>
+
         <SelectContent>
           {options?.map((option) => {
             return (
-              <SelectItem key={option} value={option} className="font-mono">
-                {(internalTableNames as string[]).includes(option) && (
+              <SelectItem key={option.value} value={option.value} className="font-mono">
+                {(internalTableNames as string[]).includes(option.value) && (
                   <Lock className="mr-2 inline-block opacity-70" size={14} />
                 )}
-                {option.replace(`${worldAddress}__`, "")}
+                {option.label}
               </SelectItem>
             );
           })}

@@ -1,12 +1,17 @@
-import { Suspense } from "react";
-import { DataExplorer } from "./DataExplorer";
+import { DataExplorerLocal } from "./DataExplorerLocal";
+import { DataExplorerRemote } from "./DataExplorerRemote";
 
-export default function ExplorerPage() {
-  return (
-    <div className="w-full">
-      <Suspense>
-        <DataExplorer />
-      </Suspense>
-    </div>
-  );
+type Props = {
+  params: {
+    worldAddress: string;
+    chainName: string;
+  };
+};
+
+export default function ExplorerPage({ params }: Props) {
+  if (params.chainName === "anvil") {
+    return <DataExplorerLocal />;
+  }
+
+  return <DataExplorerRemote />;
 }
