@@ -39,7 +39,6 @@
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "@latticexyz/stash": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/store-sync": "workspace:*",
     "@latticexyz/world": "workspace:*",
