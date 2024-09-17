@@ -10,7 +10,7 @@ import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.j
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Checkbox } from "../../../../../../components/ui/Checkbox";
-import { useChainId } from "../../../../../../hooks/useChain";
+import { useChain } from "../../../../../../hooks/useChain";
 import { camelCase, cn } from "../../../../../../lib/utils";
 import { TableConfig } from "../../../../../api/table/route";
 
@@ -25,7 +25,7 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
   const { worldAddress } = useParams();
-  const chainId = useChainId();
+  const { id: chainId } = useChain();
   const account = useAccount();
 
   const [value, setValue] = useState<unknown>(defaultValue);

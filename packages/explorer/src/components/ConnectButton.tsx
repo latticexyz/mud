@@ -1,13 +1,13 @@
 import { PlugIcon, ZapIcon } from "lucide-react";
 import { anvil } from "viem/chains";
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
-import { useChainId } from "../hooks/useChain";
+import { useChain } from "../hooks/useChain";
 import { cn } from "../lib/utils";
 import { AccountSelect } from "./AccountSelect";
 import { Button } from "./ui/Button";
 
 export function ConnectButton() {
-  const chainId = useChainId();
+  const { id: chainId } = useChain();
   return (
     <RainbowConnectButton.Custom>
       {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {

@@ -1,12 +1,12 @@
 import { redirect } from "next/navigation";
-import { SupportedChainIds, chainIdName, isValidChainId } from "../common";
+import { supportedChainsById, validateChainId } from "../common";
 
 export const dynamic = "force-dynamic";
 
 export default function IndexPage() {
   const chainId = Number(process.env.CHAIN_ID);
-  isValidChainId(chainId);
+  validateChainId(chainId);
 
-  const chainName = chainIdName[chainId as SupportedChainIds];
+  const chainName = supportedChainsById[chainId];
   return redirect(`/${chainName}/worlds`);
 }

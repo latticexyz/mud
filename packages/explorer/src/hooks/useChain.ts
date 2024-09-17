@@ -1,16 +1,10 @@
 import { useParams } from "next/navigation";
-import { chainNameId, chains, isValidChainName } from "../common";
+import { supportedChains, validateChainName } from "../common";
 
 export function useChain() {
   const { chainName } = useParams();
-  isValidChainName(chainName);
+  validateChainName(chainName);
 
-  const chainId = chainNameId[chainName];
-  const chain = chains[chainId];
+  const chain = supportedChains[chainName];
   return chain;
-}
-
-export function useChainId() {
-  const chain = useChain();
-  return chain.id;
 }
