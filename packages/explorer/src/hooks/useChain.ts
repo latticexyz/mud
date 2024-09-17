@@ -1,16 +1,11 @@
 import { useParams } from "next/navigation";
-import { chainNameId, chains, isValidChainName } from "../common";
+import { Chain } from "viem";
+import { supportedChains, validateChainName } from "../common";
 
-export function useChain() {
+export function useChain(): Chain {
   const { chainName } = useParams();
-  isValidChainName(chainName);
+  validateChainName(chainName);
 
-  const chainId = chainNameId[chainName];
-  const chain = chains[chainId];
+  const chain = supportedChains[chainName];
   return chain;
-}
-
-export function useChainId() {
-  const chain = useChain();
-  return chain.id;
 }

@@ -4,7 +4,7 @@ import { Abi, AbiFunction, Hex } from "viem";
 import { useAccount, useConfig } from "wagmi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { readContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
-import { useChainId } from "../../../../../../hooks/useChain";
+import { useChain } from "../../../../../../hooks/useChain";
 import { FunctionType } from "./FunctionField";
 
 type UseContractMutationProps = {
@@ -14,7 +14,7 @@ type UseContractMutationProps = {
 
 export function useContractMutation({ abi, operationType }: UseContractMutationProps) {
   const { worldAddress } = useParams();
-  const chainId = useChainId();
+  const { id: chainId } = useChain();
   const queryClient = useQueryClient();
   const wagmiConfig = useConfig();
   const account = useAccount();

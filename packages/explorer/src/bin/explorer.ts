@@ -6,7 +6,7 @@ import process from "process";
 import { fileURLToPath } from "url";
 import yargs from "yargs";
 import { ChildProcess, spawn } from "child_process";
-import { isValidChainId } from "../common";
+import { validateChainId } from "../common";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -57,7 +57,7 @@ const argv = yargs(process.argv.slice(2))
     },
   })
   .check((argv) => {
-    isValidChainId(Number(argv.chainId));
+    validateChainId(Number(argv.chainId));
     return true;
   })
   .parseSync();

@@ -1,6 +1,6 @@
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { bufferToBigInt } from "../../app/[chainName]/(explorer)/worlds/[worldAddress]/utils/bufferToBigInt";
+import { bufferToBigInt } from "../../app/(explorer)/[chainName]/worlds/[worldAddress]/utils/bufferToBigInt";
 
 export function useRowsQuery(table?: string) {
   const { chainName, worldAddress } = useParams();

@@ -3,13 +3,14 @@ import { getBlockNumber, getLogs } from "viem/actions";
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
 import { getWorldAbi } from "@latticexyz/world/internal";
-import { SupportedChainIds, chains, isValidChainId } from "../../../common";
+import { SupportedChainIds, supportedChainsById, validateChainId } from "../../../common";
 
 export const dynamic = "force-dynamic";
 
 async function getClient(chainId: SupportedChainIds) {
+  const chain = supportedChainsById[chainId];
   const client = createWalletClient({
-    chain: chains[chainId],
+    chain,
     transport: http(),
   });
 
@@ -37,7 +38,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const worldAddress = searchParams.get("worldAddress") as Hex;
   const chainId = Number(searchParams.get("chainId"));
-  isValidChainId(chainId);
+  validateChainId(chainId);
 
   if (!worldAddress) {
     return Response.json({ error: "address is required" }, { status: 400 });

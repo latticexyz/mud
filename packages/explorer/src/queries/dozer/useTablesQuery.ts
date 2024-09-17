@@ -2,7 +2,7 @@ import { useParams } from "next/navigation";
 import { Hex } from "viem";
 import { SchemaAbiType } from "@latticexyz/schema-type/internal";
 import { useQuery } from "@tanstack/react-query";
-import { decodeTable } from "../../app/[chainName]/(explorer)/worlds/[worldAddress]/explore/decodeTable";
+import { decodeTable } from "../../app/(explorer)/[chainName]/worlds/[worldAddress]/explore/decodeTable";
 import { useDozerUrl } from "../../hooks/useDozerUrl";
 
 export type DozerResponse = {
