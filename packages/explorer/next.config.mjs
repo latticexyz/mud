@@ -12,7 +12,7 @@ export default function config() {
       return [
         {
           source: "/:chainName/worlds/:worldAddress/explorer",
-          destination: "/:chainName/worlds/:worldAddress/explorer",
+          destination: "/:chainName/worlds/:worldAddress/explore",
           permanent: true,
         },
       ];
