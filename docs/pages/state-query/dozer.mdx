@@ -310,6 +310,197 @@ For example, this query gets you the different task creators.
 
 </details>
 
+### Metadata
+
+You can use the `/tables` path to get the list of either all tables, or all tables that match a string.
+As per the SQL standard, the wildcard is `%`.
+
+1. Create a file, `tables.json`.
+
+   ```json filename="tables.json"
+   {
+     "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+     "query": {
+       "name": "%"
+     }
+   }
+   ```
+
+1. Run this command.
+
+   ```sh copy
+   curl https://dozer.mud.garnetchain.com/tables --compressed \
+       -H 'Accept-Encoding: gzip'  \
+       -H 'Content-Type: application/json' \
+       -d @tables.json | jq
+   ```
+
+<details>
+
+<summary>Results</summary>
+
+```json
+[
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x746273746f72650000000000000000005461626c657300000000000000000000",
+    "key_names": ["tableId"],
+    "val_names": ["fieldLayout", "keySchema", "valueSchema", "abiEncodedKeyNames", "abiEncodedFieldNames"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x006003025f5f5fc4c40000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x746273746f72650000000000000000005265736f757263654964730000000000",
+    "key_names": ["resourceId"],
+    "val_names": ["exists"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x0001010060000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x746273746f726500000000000000000053746f7265486f6f6b73000000000000",
+    "key_names": ["tableId"],
+    "val_names": ["hooks"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x00000001b6000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c640000000000000000004e616d6573706163654f776e65720000",
+    "key_names": ["namespaceId"],
+    "val_names": ["owner"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x0014010061000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c6400000000000000000042616c616e6365730000000000000000",
+    "key_names": ["namespaceId"],
+    "val_names": ["balance"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x002001001f000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c64000000000000000000496e7374616c6c65644d6f64756c6573",
+    "key_names": ["moduleAddress", "argumentsHash"],
+    "val_names": ["isInstalled"],
+    "key_schema": "0x00340200615f0000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x0001010060000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c640000000000000000005573657244656c65676174696f6e436f",
+    "key_names": ["delegator", "delegatee"],
+    "val_names": ["delegationControlId"],
+    "key_schema": "0x0028020061610000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c640000000000000000004e616d65737061636544656c65676174",
+    "key_names": ["namespaceId"],
+    "val_names": ["delegationControlId"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c640000000000000000005265736f757263654163636573730000",
+    "key_names": ["resourceId", "caller"],
+    "val_names": ["access"],
+    "key_schema": "0x003402005f610000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x0001010060000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c6400000000000000000053797374656d73000000000000000000",
+    "key_names": ["systemId"],
+    "val_names": ["system", "publicAccess"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x0015020061600000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c6400000000000000000046756e6374696f6e53656c6563746f72",
+    "key_names": ["worldFunctionSelector"],
+    "val_names": ["systemId", "systemFunctionSelector"],
+    "key_schema": "0x0004010043000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x002402005f430000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x6f74776f726c6400000000000000000046756e6374696f6e5369676e61747572",
+    "key_names": ["functionSelector"],
+    "val_names": ["functionSignature"],
+    "key_schema": "0x0004010043000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x00000001c5000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c6400000000000000000053797374656d486f6f6b730000000000",
+    "key_names": ["systemId"],
+    "val_names": ["value"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x00000001b6000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c6400000000000000000053797374656d52656769737472790000",
+    "key_names": ["system"],
+    "val_names": ["systemId"],
+    "key_schema": "0x0014010061000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c64000000000000000000496e69744d6f64756c65416464726573",
+    "key_names": [],
+    "val_names": ["value"],
+    "key_schema": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x0014010061000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462617070000000000000000000000043726561746f72000000000000000000",
+    "key_names": ["id"],
+    "val_names": ["taskCreator"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x0014010061000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x746261707000000000000000000000005461736b730000000000000000000000",
+    "key_names": ["id"],
+    "val_names": ["createdAt", "completedAt", "description"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x004002011f1fc500000000000000000000000000000000000000000000000000",
+    "query_name": null
+  }
+]
+```
+
+</details>
+
+To interpret the results, [see the table documentation](/store/tables#advanced).
+
 ## Typescript queries
 
 You can query dozer from [Typescript](https://www.typescriptlang.org/) without using MUD client synchronization.
