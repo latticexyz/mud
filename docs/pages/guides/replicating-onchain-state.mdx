@@ -2,6 +2,8 @@
 
 This guide walks through how you might recreate onchain state from MUD's Store events. We use this pattern in our sync stack to hydrate a client or indexer from blockchain logs fetched from an RPC.
 
+If you are using a MUD template, one of our sync packages, or indexers, all of this is already done for you. This guide is meant to demonstrate how the Store protocol works and show how you might implement a sync strategy or indexer of your own.
+
 ## Store: MUD's onchain storage
 
 Before we get started, it's helpful to understand [how MUD stores its data on chain](/store/introduction). MUD introduces [a few new concepts](/store/data-model): tables, records, key tuples, and fields.
