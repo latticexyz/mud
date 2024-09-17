@@ -155,7 +155,7 @@ export function TablesViewer({ table: selectedTable, config, rows, columns }: Pr
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell colSpan={columns?.length || 0} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
