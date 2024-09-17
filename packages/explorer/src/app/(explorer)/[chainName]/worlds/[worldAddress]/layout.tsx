@@ -1,12 +1,13 @@
 "use client";
 
-import { Navigation } from "../../../../components/Navigation";
+import { Navigation } from "../../../../../components/Navigation";
+import { Providers } from "./Providers";
 
 export default function WorldLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div>
+    <Providers>
       <Navigation />
       {children}
-    </div>
+    </Providers>
   );
 }

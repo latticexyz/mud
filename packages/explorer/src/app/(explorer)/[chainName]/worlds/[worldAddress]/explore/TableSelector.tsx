@@ -1,7 +1,7 @@
 import { Lock } from "lucide-react";
 import { useParams } from "next/navigation";
 import { internalTableNames } from "@latticexyz/store-sync/sqlite";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../../components/ui/Select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../../../components/ui/Select";
 
 type Props = {
   value: string | undefined;

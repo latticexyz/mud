@@ -2,7 +2,6 @@ import { EIP1193RequestFn, Transport, WalletRpcSchema, http } from "viem";
 import { Account, privateKeyToAccount } from "viem/accounts";
 import { anvil as anvilChain } from "viem/chains";
 import { Connector, createConnector } from "wagmi";
-import { isAnvil } from "../common";
 
 export const defaultAnvilAccounts = (
   [
@@ -27,19 +26,24 @@ export type AnvilConnectorOptions = {
   id: string;
   name: string;
   accounts: readonly Account[];
+  disabled: boolean;
 };
 
 // We can't programmatically switch accounts within a connector, but we can switch between connectors,
 // so create one anvil connector per default anvil account so users can switch between default anvil accounts.
-export const defaultAnvilConnectors = defaultAnvilAccounts.map((account, i) =>
-  anvil({ id: `anvil-${i}`, name: `Anvil #${i + 1}`, accounts: [account] }),
-);
+export const getDefaultAnvilConnectors = (chainId: number) => {
+  // disable anvil connector if chainId is not anvil
+  const disabled = chainId !== anvilChain.id;
+  return defaultAnvilAccounts.map((account, i) =>
+    anvil({ id: `anvil-${i}`, name: `Anvil #${i + 1}`, accounts: [account], disabled }),
+  );
+};
 
 export function isAnvilConnector(connector: Connector): connector is AnvilConnector {
   return connector.type === "anvil";
 }
 
-export function anvil({ id, name, accounts }: AnvilConnectorOptions) {
+export function anvil({ id, name, accounts, disabled }: AnvilConnectorOptions) {
   if (!accounts.length) throw new Error("missing accounts");
 
   type Provider = ReturnType<Transport<"http", unknown, EIP1193RequestFn<WalletRpcSchema>>>;
@@ -70,7 +74,7 @@ export function anvil({ id, name, accounts }: AnvilConnectorOptions) {
       return http()({ chain: anvilChain });
     },
     async isAuthorized() {
-      if (!isAnvil()) return false;
+      if (disabled) return false;
       if (!connected) return false;
 
       const accounts = await this.getAccounts();
