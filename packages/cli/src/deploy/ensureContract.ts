@@ -7,7 +7,7 @@ import pRetry from "p-retry";
 
 export type Contract = {
   bytecode: Hex;
-  deployedBytecodeSize: number;
+  deployedBytecodeSize?: number;
   debugLabel?: string;
 };
 
@@ -33,15 +33,17 @@ export async function ensureContract({
     return [];
   }
 
-  if (deployedBytecodeSize > contractSizeLimit) {
-    console.warn(
-      `\nBytecode for ${debugLabel} (${deployedBytecodeSize} bytes) is over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`,
-    );
-  } else if (deployedBytecodeSize > contractSizeLimit * 0.95) {
-    console.warn(
-      // eslint-disable-next-line max-len
-      `\nBytecode for ${debugLabel} (${deployedBytecodeSize} bytes) is almost over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`,
-    );
+  if (deployedBytecodeSize != null) {
+    if (deployedBytecodeSize > contractSizeLimit) {
+      console.warn(
+        `\nBytecode for ${debugLabel} (${deployedBytecodeSize} bytes) is over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`,
+      );
+    } else if (deployedBytecodeSize > contractSizeLimit * 0.95) {
+      console.warn(
+        // eslint-disable-next-line max-len
+        `\nBytecode for ${debugLabel} (${deployedBytecodeSize} bytes) is almost over the contract size limit (${contractSizeLimit} bytes). Run \`forge build --sizes\` for more info.\n`,
+      );
+    }
   }
 
   debug("deploying", debugLabel, "at", address);

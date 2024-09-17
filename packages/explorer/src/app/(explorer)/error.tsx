@@ -25,7 +25,7 @@ export default function Error({ reset, error }: Props) {
 
       <div className="mt-10 flex items-center justify-center gap-x-6">
         <Button asChild>
-          <Link href={getUrl("explorer")}>Go back to explorer</Link>
+          <Link href={getUrl("explore")}>Go back to explorer</Link>
         </Button>
 
         <Button variant="secondary" onClick={reset}>
