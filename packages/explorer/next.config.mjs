@@ -8,6 +8,15 @@ export default function config() {
       config.externals.push("pino-pretty", "lokijs", "encoding");
       return config;
     },
+    redirects: async () => {
+      return [
+        {
+          source: "/:chainName/worlds/:worldAddress/explorer",
+          destination: "/:chainName/worlds/:worldAddress/explorer",
+          permanent: true,
+        },
+      ];
+    },
   };
 
   return nextConfig;
