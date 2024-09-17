@@ -225,7 +225,8 @@ This is the timestamp 24 hours ago.
   const filters: DozerSyncFilter[] = [
 ```
 
-We create the filters for the tables we're interested in.
+We create the dozer filter for the tables we're interested in.
+This is the _dozer_ filter, so it is only used for the initial hydration of the client.
 
 ```typescript
     selectFrom({
@@ -242,7 +243,7 @@ To verify that the filter works as expected you can later change the code to onl
   ];
 ```
 
-We also want the `app__Counter` table.
+We also want the entire `app__Counter` table.
 
 ```typescript
 const { initialBlockLogs } = await getSnapshot({
@@ -262,8 +263,8 @@ const liveSyncFilters = filters.map((filter) => ({
 }));
 ```
 
-The synchronization filters are a lot more limited.
-[You can read the description of these filters here](/guides/hello-world/filter-sync#filtering).
+The live synchronization filters are used after the initial hydration, and keep up with changes on the blockchain.
+These synchronization filters are a lot more limited, [you can read the description of these filters here](/guides/hello-world/filter-sync#filtering).
 
 ```typescript
   const { ... } = await syncToZustand({
