@@ -2,7 +2,7 @@ import { anvil, garnet, redstone } from "viem/chains";
 
 export const supportedChains = { anvil, garnet, redstone } as const;
 export const supportedChainsById = Object.fromEntries(
-  Object.entries(supportedChains).map(([name, chain]) => [chain.id, name]),
+  Object.entries(supportedChains).map(([, chain]) => [chain.id, chain]),
 );
 
 export type SupportedChainIds = (typeof supportedChains)[keyof typeof supportedChains]["id"];
