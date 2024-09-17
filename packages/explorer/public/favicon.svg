@@ -1,55 +1,50 @@
-<svg shape-rendering="crisp" width="2918" height="2918" viewBox="0 0 2918 2918" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <g clip-path="url(#clip0_1265_936)">
-    <rect width="2918" height="2918" fill="#FF7612" />
-    <g clip-path="url(#clip1_1265_936)">
-      <rect x="669" y="669" width="197.5" height="197.5" fill="white" />
-      <rect x="669" y="866.5" width="197.5" height="197.5" fill="white" />
-      <rect x="669" y="1064" width="197.5" height="197.5" fill="white" />
-      <rect x="669" y="1261.5" width="197.5" height="197.5" fill="white" />
-      <rect x="669" y="1459" width="197.5" height="197.5" fill="white" />
-      <rect x="669" y="1656.5" width="197.5" height="197.5" fill="white" />
-      <rect x="669" y="1854" width="197.5" height="197.5" fill="white" />
-      <rect x="669" y="2051.5" width="197.5" height="197.5" fill="white" />
-      <rect x="866.5" y="2051.5" width="197.5" height="197.5" fill="white" />
-      <rect x="1064" y="2051.5" width="197.5" height="197.5" fill="white" />
-      <rect x="1261.5" y="2051.5" width="197.5" height="197.5" fill="white" />
-      <rect x="1459" y="2051.5" width="197.5" height="197.5" fill="white" />
-      <rect x="1656.5" y="2051.5" width="197.5" height="197.5" fill="white" />
-      <rect x="2051.5" y="1854" width="197.5" height="197.5" fill="white" />
-      <rect x="2051.5" y="2051.5" width="197.5" height="197.5" fill="white" />
-      <rect x="1854" y="2051.5" width="197.5" height="197.5" fill="white" />
-      <rect x="2051.5" y="1656.5" width="197.5" height="197.5" fill="white" />
-      <rect x="2051.5" y="1459" width="197.5" height="197.5" fill="white" />
-      <rect x="2051.5" y="1261.5" width="197.5" height="197.5" fill="white" />
-      <rect opacity="0.5" x="1064" y="1064" width="197.5" height="197.5" fill="white" />
-      <rect opacity="0.5" x="1064" y="1261.5" width="197.5" height="197.5" fill="white" />
-      <rect opacity="0.5" x="1064" y="1459" width="197.5" height="197.5" fill="white" />
-      <rect opacity="0.5" x="1064" y="1656.5" width="197.5" height="197.5" fill="white" />
-      <rect opacity="0.5" x="1261.5" y="1064" width="197.5" height="197.5" fill="white" />
-      <rect opacity="0.5" x="1459" y="1064" width="197.5" height="197.5" fill="white" />
-      <rect opacity="0.5" x="1656.5" y="1064" width="197.5" height="197.5" fill="white" />
-      <rect opacity="0.5" x="1656.5" y="1261.5" width="197.5" height="197.5" fill="white" />
-      <rect opacity="0.5" x="1656.5" y="1459" width="197.5" height="197.5" fill="white" />
-      <rect opacity="0.5" x="1656.5" y="1656.5" width="197.5" height="197.5" fill="white" />
-      <rect opacity="0.5" x="1459" y="1656.5" width="197.5" height="197.5" fill="white" />
-      <rect opacity="0.5" x="1261.5" y="1656.5" width="197.5" height="197.5" fill="white" />
-      <rect x="2051.5" y="1064" width="197.5" height="197.5" fill="white" />
-      <rect x="2051.5" y="866.5" width="197.5" height="197.5" fill="white" />
-      <rect x="866.5" y="669" width="197.5" height="197.5" fill="white" />
-      <rect x="1064" y="669" width="197.5" height="197.5" fill="white" />
-      <rect x="1261.5" y="669" width="197.5" height="197.5" fill="white" />
-      <rect x="1459" y="669" width="197.5" height="197.5" fill="white" />
-      <rect x="1656.5" y="669" width="197.5" height="197.5" fill="white" />
-      <rect x="1854" y="669" width="197.5" height="197.5" fill="white" />
-      <rect x="2051.5" y="669" width="197.5" height="197.5" fill="white" />
-    </g>
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" fill="#FF7612" />
+  <g clip-path="url(#clip0_1_292)">
+    <path d="M52 36H36V52H52V36Z" fill="white" />
+    <path d="M52 52H36V68H52V52Z" fill="white" />
+    <path d="M52 68H36V84H52V68Z" fill="white" />
+    <path d="M52 84H36V100H52V84Z" fill="white" />
+    <path d="M52 100H36V116H52V100Z" fill="white" />
+    <path d="M52 116H36V132H52V116Z" fill="white" />
+    <path d="M52 132H36V148H52V132Z" fill="white" />
+    <path d="M52 148H36V164H52V148Z" fill="white" />
+    <path d="M68 148H52V164H68V148Z" fill="white" />
+    <path d="M84 148H68V164H84V148Z" fill="white" />
+    <path d="M100 148H84V164H100V148Z" fill="white" />
+    <path d="M116 148H100V164H116V148Z" fill="white" />
+    <path d="M132 148H116V164H132V148Z" fill="white" />
+    <path d="M164 132H148V148H164V132Z" fill="white" />
+    <path d="M164 148H148V164H164V148Z" fill="white" />
+    <path d="M148 148H132V164H148V148Z" fill="white" />
+    <path d="M164 116H148V132H164V116Z" fill="white" />
+    <path d="M164 100H148V116H164V100Z" fill="white" />
+    <path d="M164 84H148V100H164V84Z" fill="white" />
+    <path opacity="0.5" d="M84 68H68V84H84V68Z" fill="white" />
+    <path opacity="0.5" d="M84 84H68V100H84V84Z" fill="white" />
+    <path opacity="0.5" d="M84 100H68V116H84V100Z" fill="white" />
+    <path opacity="0.5" d="M84 116H68V132H84V116Z" fill="white" />
+    <path opacity="0.5" d="M100 68H84V84H100V68Z" fill="white" />
+    <path opacity="0.5" d="M116 68H100V84H116V68Z" fill="white" />
+    <path opacity="0.5" d="M132 68H116V84H132V68Z" fill="white" />
+    <path opacity="0.5" d="M132 84H116V100H132V84Z" fill="white" />
+    <path opacity="0.5" d="M132 100H116V116H132V100Z" fill="white" />
+    <path opacity="0.5" d="M132 116H116V132H132V116Z" fill="white" />
+    <path opacity="0.5" d="M116 116H100V132H116V116Z" fill="white" />
+    <path opacity="0.5" d="M100 116H84V132H100V116Z" fill="white" />
+    <path d="M164 68H148V84H164V68Z" fill="white" />
+    <path d="M164 52H148V68H164V52Z" fill="white" />
+    <path d="M68 36H52V52H68V36Z" fill="white" />
+    <path d="M84 36H68V52H84V36Z" fill="white" />
+    <path d="M100 36H84V52H100V36Z" fill="white" />
+    <path d="M116 36H100V52H116V36Z" fill="white" />
+    <path d="M132 36H116V52H132V36Z" fill="white" />
+    <path d="M148 36H132V52H148V36Z" fill="white" />
+    <path d="M164 36H148V52H164V36Z" fill="white" />
   </g>
   <defs>
-    <clipPath id="clip0_1265_936">
-      <rect width="2918" height="2918" rx="1459" fill="white" />
-    </clipPath>
-    <clipPath id="clip1_1265_936">
-      <rect width="1580" height="1580" fill="white" transform="translate(669 669)" />
+    <clipPath id="clip0_1_292">
+      <rect width="128" height="128" fill="white" transform="translate(36 36)" />
     </clipPath>
   </defs>
 </svg>
