@@ -69,7 +69,6 @@ export function TablesViewer({ deployedTable, rows, columns }: Props) {
               if (keysSchema.includes(name)) {
                 return value;
               }
-
               return <EditableTableCell name={name} deployedTable={deployedTable} keyTuple={keyTuple} value={value} />;
             },
           };
