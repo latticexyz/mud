@@ -1,21 +1,24 @@
 import { useParams } from "next/navigation";
+import { Schema } from "@latticexyz/config";
 import { useQuery } from "@tanstack/react-query";
 import { useDozerUrl } from "../../hooks/useDozerUrl";
-import { Table } from "./useTablesQuery";
-
-type Schema = Table["keySchema"] & Table["valueSchema"];
 
 type DozerResponse = {
   block_height: number;
   result: [string[][]];
 };
 
-export function useRowsQuery(schema: Schema, query?: string) {
+type Props = {
+  schema?: Schema;
+  query?: string;
+};
+
+export function useTableDataQuery({ schema, query }: Props) {
   const { worldAddress, chainName } = useParams();
   const dozerUrl = useDozerUrl();
 
   return useQuery({
-    queryKey: ["rows", worldAddress, chainName, query],
+    queryKey: ["tableData", worldAddress, chainName, query],
     queryFn: async () => {
       const response = await fetch(dozerUrl, {
         method: "POST",
@@ -26,7 +29,13 @@ export function useRowsQuery(schema: Schema, query?: string) {
       });
       return response.json();
     },
+    initialData: {
+      block_height: 0,
+      result: [[]],
+    },
     select: (data: DozerResponse) => {
+      if (!data || !schema) return { rows: [], columns: [] };
+
       const result = data.result[0];
       const columns = result[0];
       const schemaKeys = Object.keys(schema);
@@ -39,6 +48,6 @@ export function useRowsQuery(schema: Schema, query?: string) {
         columns,
       };
     },
-    enabled: !!query,
+    enabled: !!query && !!schema,
   });
 }

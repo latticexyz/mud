@@ -11,28 +11,32 @@ import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Checkbox } from "../../../../../../components/ui/Checkbox";
 import { useChain } from "../../../../../../hooks/useChain";
 import { cn } from "../../../../../../lib/utils";
-import { Table } from "../../../../../../queries/dozer/useTablesQuery";
+import { DeployedTable } from "./utils/decodeTable";
 
 type Props = {
   name: string;
   value: string;
-  config: Table;
   keysTuple: string[];
+  deployedTable: DeployedTable;
 };
 
-export function EditableTableCell({ name, config, keysTuple, value: defaultValue }: Props) {
+export function EditableTableCell({ name, deployedTable, keysTuple, value: defaultValue }: Props) {
   const [value, setValue] = useState<unknown>(defaultValue);
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
   const account = useAccount();
-  const tableId = config?.tableId;
-  const type = config?.valueSchema[name];
+  const tableId = deployedTable?.tableId;
+  const valueSchema = deployedTable?.valueSchema;
+  const type = valueSchema[name].type;
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (newValue: unknown) => {
-      const fieldIndex = getFieldIndex(config?.valueSchema, name);
+      const fieldIndex = getFieldIndex(
+        Object.fromEntries(Object.entries(valueSchema).map(([key, value]) => [key, value.type])),
+        name,
+      );
       const encodedField = encodeField(type, newValue);
       const txHash = await writeContract(wagmiConfig, {
         abi: IBaseWorldAbi,

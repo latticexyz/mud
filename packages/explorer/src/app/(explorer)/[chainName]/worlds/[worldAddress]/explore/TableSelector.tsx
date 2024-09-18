@@ -1,18 +1,13 @@
-import { Lock } from "lucide-react";
-import { internalTableNames } from "@latticexyz/store-sync/sqlite";
+import { Link2Icon, Link2OffIcon } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../../../components/ui/Select";
-
-type Option = {
-  label: React.ReactNode;
-  value: string;
-};
+import { DeployedTable } from "./utils/decodeTable";
 
 type Props = {
   value: string | undefined;
-  options: Option[];
+  deployedTables: DeployedTable[] | undefined;
 };
 
-export function TableSelector({ value, options }: Props) {
+export function TableSelector({ value, deployedTables }: Props) {
   return (
     <div className="py-4">
       <Select
@@ -24,18 +19,17 @@ export function TableSelector({ value, options }: Props) {
           window.history.pushState({}, "", `${window.location.pathname}?${searchParams}`);
         }}
       >
-        <SelectTrigger>
+        <SelectTrigger disabled={!deployedTables}>
           <SelectValue placeholder="Select a table ..." />
         </SelectTrigger>
 
         <SelectContent>
-          {options?.map((option) => {
+          {deployedTables?.map(({ tableId, name, type, namespace }) => {
             return (
-              <SelectItem key={option.value} value={option.value} className="font-mono">
-                {(internalTableNames as string[]).includes(option.value) && (
-                  <Lock className="mr-2 inline-block opacity-70" size={14} />
-                )}
-                {option.label}
+              <SelectItem key={tableId} value={tableId} className="font-mono">
+                {type === "offchainTable" && <Link2OffIcon className="mr-2 inline-block opacity-70" size={14} />}
+                {type === "table" && <Link2Icon className="mr-2 inline-block opacity-70" size={14} />}
+                {name} {namespace && <span className="opacity-70">({namespace})</span>}
               </SelectItem>
             );
           })}

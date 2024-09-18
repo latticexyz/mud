@@ -8,24 +8,24 @@ type Row = {
 
 type RowsResponse = Row[] | undefined;
 
-function doesTableExist(table: string) {
+function doesTableExist(tableId: string) {
   const db = getDatabase();
-  const result = db?.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ?").get(table);
+  const result = db?.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ?").get(tableId);
 
   return Boolean(result);
 }
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const table = searchParams.get("table");
+  const tableId = searchParams.get("tableId");
 
   try {
-    if (!table || !doesTableExist(table)) {
+    if (!tableId || !doesTableExist(tableId)) {
       return Response.json({ error: "Table does not exist" }, { status: 400 });
     }
 
     const db = getDatabase();
-    const query = `SELECT * FROM "${table}" LIMIT 30`;
+    const query = `SELECT * FROM "${tableId}" LIMIT 50`;
     const rows = db?.prepare(query).all() as RowsResponse;
 
     return Response.json({ rows });

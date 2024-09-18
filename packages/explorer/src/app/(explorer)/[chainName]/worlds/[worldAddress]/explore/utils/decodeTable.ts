@@ -1,25 +1,14 @@
 import { Hex, decodeAbiParameters, parseAbiParameters } from "viem";
 import { hexToResource } from "@latticexyz/common";
-import { Schema } from "@latticexyz/config";
+import { Schema, Table } from "@latticexyz/config";
 import { hexToSchema } from "@latticexyz/protocol-parser/internal";
-import { SchemaAbiType } from "@latticexyz/schema-type/internal";
-import { TableType } from "../../../../../../queries/dozer/useTablesQuery";
 
-type SchemaFieldType = {
-  type: SchemaAbiType;
-  internalType: SchemaAbiType;
+export type DeployedTable = Omit<Table, "label" | "namespaceLabel"> & {
+  valueSchema: Schema;
+  keySchema: Schema;
 };
 
-type DecodedTable = {
-  type: TableType;
-  tableId: Hex;
-  name: string;
-  namespace: string;
-  keySchema: Record<string, SchemaFieldType>;
-  valueSchema: Record<string, SchemaFieldType>;
-};
-
-export const decodeTable = (row: Hex[]): DecodedTable => {
+export const decodeTable = (row: Hex[]): DeployedTable => {
   const tableId = row[0];
   const encodedKeySchema = row[2];
   const encodedValueSchema = row[3];
@@ -33,11 +22,9 @@ export const decodeTable = (row: Hex[]): DecodedTable => {
   const fieldNames = decodeAbiParameters(parseAbiParameters("string[]"), abiEncodedFieldNames)[0];
 
   const valueAbiTypes = [...solidityValueSchema.staticFields, ...solidityValueSchema.dynamicFields];
-
   const keySchema = Object.fromEntries(
     solidityKeySchema.staticFields.map((abiType, i) => [keyNames[i], { type: abiType, internalType: abiType }]),
   ) satisfies Schema;
-
   const valueSchema = Object.fromEntries(
     valueAbiTypes.map((abiType, i) => [fieldNames[i], { type: abiType, internalType: abiType }]),
   ) satisfies Schema;
@@ -46,8 +33,13 @@ export const decodeTable = (row: Hex[]): DecodedTable => {
     tableId,
     name,
     namespace,
-    type,
+    type: type as DeployedTable["type"],
+    schema: {
+      ...keySchema,
+      ...valueSchema,
+    },
     valueSchema,
     keySchema,
+    key: Object.keys(keySchema),
   };
 };

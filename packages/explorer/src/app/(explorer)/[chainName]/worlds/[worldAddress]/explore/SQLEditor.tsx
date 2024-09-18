@@ -34,7 +34,7 @@ export function SQLEditor({ query, setQuery }: Props) {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input {...field} className="pr-[90px]" />
+                  <Input {...field} className="pr-[90px]" disabled={!query} />
                 </FormControl>
               </FormItem>
             )}

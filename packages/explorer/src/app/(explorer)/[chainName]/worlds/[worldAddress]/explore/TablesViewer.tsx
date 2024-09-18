@@ -1,6 +1,5 @@
 import { ArrowUpDown, Loader } from "lucide-react";
 import { useMemo, useState } from "react";
-import { internalTableNames } from "@latticexyz/store-sync/sqlite";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -16,17 +15,16 @@ import {
 import { Button } from "../../../../../../components/ui/Button";
 import { Input } from "../../../../../../components/ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
-import { Table as TableType } from "../../../../../../queries/dozer/useTablesQuery";
 import { EditableTableCell } from "./EditableTableCell";
+import { DeployedTable } from "./utils/decodeTable";
 
 type Props = {
-  config: TableType | undefined;
-  table: string | undefined;
+  deployedTable: DeployedTable | undefined;
   rows: Record<string, string>[] | undefined;
   columns: string[] | undefined;
 };
 
-export function TablesViewer({ table: selectedTable, config, rows, columns }: Props) {
+export function TablesViewer({ deployedTable, rows, columns }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -34,14 +32,14 @@ export function TablesViewer({ table: selectedTable, config, rows, columns }: Pr
   const [globalFilter, setGlobalFilter] = useState("");
 
   const tableColumns: ColumnDef<Record<string, string>>[] = useMemo(() => {
-    if (!config) return [];
+    if (!deployedTable) return [];
 
     return (
-      Object.keys(config.schema)
+      Object.keys(deployedTable.schema)
         // Filter by query columns. Note: columns fetched from dozer are lowercase.
-        .filter((name) => columns?.includes(name.toLowerCase()))
+        .filter((name) => columns?.includes(name) || columns?.includes(name.toLowerCase()))
         .map((name) => {
-          const type = config.schema[name];
+          const type = deployedTable.schema[name].type;
           return {
             accessorKey: name,
             header: ({ column }) => {
@@ -64,24 +62,22 @@ export function TablesViewer({ table: selectedTable, config, rows, columns }: Pr
                 getValue: (name: string) => string;
               };
             }) => {
-              const keysSchema = Object.keys(config?.keySchema || {});
+              const keysSchema = Object.keys(deployedTable?.keySchema || {});
               const keysTuple = keysSchema?.map((key) => row.getValue(key));
               const value = row.getValue(name)?.toString();
 
-              if (
-                (selectedTable && (internalTableNames as string[]).includes(selectedTable)) ||
-                keysSchema.includes(name)
-              ) {
+              if (keysSchema.includes(name)) {
                 return value;
               }
 
-              // TODO: add `animate-fade-in`
-              return <EditableTableCell config={config} keysTuple={keysTuple} name={name} value={value} />;
+              return (
+                <EditableTableCell name={name} deployedTable={deployedTable} keysTuple={keysTuple} value={value} />
+              );
             },
           };
         })
     );
-  }, [columns, config, selectedTable]);
+  }, [columns, deployedTable]);
 
   const table = useReactTable({
     data: rows || [],
@@ -110,7 +106,7 @@ export function TablesViewer({ table: selectedTable, config, rows, columns }: Pr
     },
   });
 
-  if (!config || !rows) {
+  if (!deployedTable || !rows) {
     return (
       <div className="rounded-md border p-4">
         <Loader className="animate-spin" />
