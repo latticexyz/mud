@@ -8,9 +8,9 @@ It is two bytes of resource type followed by 14 bytes of namespace and then 16 b
 Currently, MUD supports these resource types:
 
 - [Table (`tb`)](https://github.com/latticexyz/mud/blob/main/packages/store/src/storeResourceTypes.sol#L12).
-  An onchain table whose information is available both onchain (through calls to `view` functions) and offchain (either through calls to `view` functions, events, or an [indexer](/services/indexer)).
+  An onchain table whose information is available both onchain (through calls to `view` functions) and offchain (either through calls to `view` functions, events, or an [indexer](/indexer)).
 - [Offchain table (`ot`)](https://github.com/latticexyz/mud/blob/main/packages/store/src/storeResourceTypes.sol#L15).
-  An offchain table whose information is only available offchain (either through events, or through an [indexer](/services/indexer)).
+  An offchain table whose information is only available offchain (either through events, or through an [indexer](/indexer)).
 - [Namespace (`ns`)](https://github.com/latticexyz/mud/blob/main/packages/world/src/worldResourceTypes.sol#L13).
   A namespace is a container for tables, offchain tables, and systems.
   Namespaces are used for [access control](/world/namespaces-access-control).
