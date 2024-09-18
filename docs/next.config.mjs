@@ -291,6 +291,11 @@ export default withNextra({
         destination: "/indexer/using",
         permanent: false,
       },
+      {
+        source: "/services/indexer",
+        destination: "/indexer",
+        permanent: false,
+      },      
     ];
   },
 });
