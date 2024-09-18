@@ -1,23 +1,23 @@
-import { DecodeRecordsResult, DozerQueryResult, decodeRecords } from "./decodeRecords";
+import { DecodeRecordsResult, QueryResult, decodeRecords } from "./decodeRecords";
 import { Hex } from "viem";
 import { TableQuery } from "./common";
 import { Table } from "@latticexyz/config";
 
-type DozerResponseSuccess = {
+type ResponseSuccess = {
   block_height: string;
-  result: DozerQueryResult[];
+  result: QueryResult[];
 };
 
-type DozerResponseFail = { msg: string };
+type ResponseFail = { msg: string };
 
-type DozerResponse = DozerResponseSuccess | DozerResponseFail;
+type Response = ResponseSuccess | ResponseFail;
 
-function isDozerResponseFail(response: DozerResponse): response is DozerResponseFail {
+function isResponseFail(response: Response): response is ResponseFail {
   return "msg" in response;
 }
 
 type FetchRecordsArgs = {
-  dozerUrl: string;
+  indexerUrl: string;
   storeAddress: Hex;
   queries: TableQuery[];
 };
@@ -30,10 +30,14 @@ type FetchRecordsResult = {
   }[];
 };
 
-export async function fetchRecords({ dozerUrl, queries, storeAddress }: FetchRecordsArgs): Promise<FetchRecordsResult> {
+export async function fetchRecords({
+  indexerUrl,
+  queries,
+  storeAddress,
+}: FetchRecordsArgs): Promise<FetchRecordsResult> {
   const query = JSON.stringify(queries.map((query) => ({ address: storeAddress, query: query.sql })));
 
-  const response: DozerResponse = await fetch(dozerUrl, {
+  const response: Response = await fetch(indexerUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -41,9 +45,9 @@ export async function fetchRecords({ dozerUrl, queries, storeAddress }: FetchRec
     body: query,
   }).then((res) => res.json());
 
-  if (isDozerResponseFail(response)) {
+  if (isResponseFail(response)) {
     throw new Error(`Dozer response: ${response.msg}\n\nTry reproducing via cURL:
-    curl ${dozerUrl} \\
+    curl ${indexerUrl} \\
     --compressed \\
     -H 'Accept-Encoding: gzip' \\
     -H 'Content-Type: application/json' \\

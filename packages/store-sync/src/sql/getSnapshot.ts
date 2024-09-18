@@ -7,7 +7,7 @@ import { getSnapshot as getSnapshotLogs } from "../getSnapshot";
 import { bigIntMin, isDefined } from "@latticexyz/common/utils";
 
 export type GetSnapshotArgs = {
-  dozerUrl: string;
+  indexerUrl: string;
   storeAddress: Hex;
   filters?: SyncFilter[];
   startBlock?: bigint;
@@ -19,7 +19,7 @@ export type GetSnapshotResult = {
 };
 
 export async function getSnapshot({
-  dozerUrl,
+  indexerUrl,
   storeAddress,
   filters,
   startBlock = 0n,
@@ -56,12 +56,12 @@ export async function getSnapshot({
         chainId,
         address: storeAddress,
         filters: logsFilters,
-        indexerUrl: dozerUrl,
+        indexerUrl,
       });
     };
 
     const fetchSql = async (query: TableQuery): Promise<StorageAdapterBlock | undefined> => {
-      const result = await fetchRecords({ dozerUrl, storeAddress, queries: [query] });
+      const result = await fetchRecords({ indexerUrl, storeAddress, queries: [query] });
       return {
         blockNumber: result.blockHeight,
         logs: result.result.flatMap(({ table, records }) =>

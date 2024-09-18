@@ -2,23 +2,23 @@ import { Schema } from "@latticexyz/config";
 import { getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
 import { decodeField } from "./decodeField";
 
-type DozerQueryHeader = string[];
-type DozerQueryRecord = (string | boolean | string[])[];
+type QueryHeader = string[];
+type QueryRecord = (string | boolean | string[])[];
 
 // First item in the result is the header
-export type DozerQueryResult = [DozerQueryHeader, ...DozerQueryRecord[]];
-
-export type DecodeRecordsArgs = {
-  schema: Schema;
-  records: DozerQueryResult;
-};
+export type QueryResult = [QueryHeader, ...QueryRecord[]];
 
 /**
  * Trim the header row from the query result
  */
-function trimHeader(result: DozerQueryResult): DozerQueryRecord[] {
+function trimHeader(result: QueryResult): QueryRecord[] {
   return result.slice(1);
 }
+
+export type DecodeRecordsArgs = {
+  schema: Schema;
+  records: QueryResult;
+};
 
 export type DecodeRecordsResult<schema extends Schema = Schema> = getSchemaPrimitives<schema>[];
 

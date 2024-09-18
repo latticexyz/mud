@@ -1,5 +1,5 @@
+import { Table } from "@latticexyz/config";
 import {
-  PartialTable,
   SchemaToPrimitives,
   decodeKey,
   decodeValueArgs,
@@ -8,6 +8,8 @@ import {
   getValueSchema,
 } from "@latticexyz/protocol-parser/internal";
 import { StorageAdapterLog } from "./common";
+
+type PartialTable = Pick<Table, "schema" | "key">;
 
 type LogToRecordArgs<table extends PartialTable> = {
   table: table;
