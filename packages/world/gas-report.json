@@ -123,7 +123,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterSystem",
     "name": "register a system",
-    "gasUsed": 185337
+    "gasUsed": 185349
   },
   {
     "file": "test/World.t.sol",
@@ -291,7 +291,7 @@
     "file": "test/WorldProxyFactory.t.sol",
     "test": "testWorldProxyFactoryGas",
     "name": "set WorldProxy implementation",
-    "gasUsed": 37541
+    "gasUsed": 37553
   },
   {
     "file": "test/WorldResourceId.t.sol",
