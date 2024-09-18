@@ -14,7 +14,7 @@ import { size } from "viem";
 
 export type CreateStorageAdapterOptions<config extends World> = {
   config: config;
-  stash: CreateStoreResult;
+  stash: CreateStoreResult<config>;
 };
 
 const emptyValueArgs = {
