@@ -1,6 +1,6 @@
 import { CollapseCode } from "../../components/CollapseCode";
 import FilterTypes from "../../components/common-text/FilterTypes.mdx";
-import { Callout } from "nextra/components";
+import { Callout, Tabs, Tab } from "nextra/components";
 
 # Dozer
 
@@ -24,39 +24,175 @@ The query language is a subset of [the SQL `SELECT` command](<https://en.wikiped
 On Garnet there is a `World` at address [`0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e`](https://explorer.garnetchain.com/address/0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e) that runs a slightly modified version of [the React template](https://github.com/latticexyz/mud/tree/main/templates/react).
 You can see the data schema for the `World` [in the block explorer](https://explorer.garnetchain.com/address/0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e?tab=mud).
 
-## Curl queries
+## Queries
 
-You can run dozer queries by communicating directly with the server's API, for example using [curl](https://curl.se/).
+<Tabs items={["curl queries", "Typescript selectFrom"]}>
+  <Tab>
+    You can run dozer queries by communicating directly with the server's API, for example using [curl](https://curl.se/).
+    To do so: 
+    
+    1. Create a file, `query.json`, which includes the `World` address and query.
+       For example, you can use this file:
+
+        ```json filename="query.json" copy
+        [
+          {
+            "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+            "query": "SELECT id, description FROM app__Tasks"
+          }
+        ]
+        ```
+
+    1. Run this command (assuming you query from the Garnet chain). Install `curl` and `jq` first if necessary.
+
+        ```sh copy
+        curl https://dozer.mud.garnetchain.com/q --compressed \
+              -H 'Accept-Encoding: gzip'  \
+              -H 'Content-Type: application/json' \
+              -d @query.json | jq
+        ```
+
+  </Tab>
+  <Tab>
+    You can query dozer from [Typescript](https://www.typescriptlang.org/) without using MUD client synchronization.
+
+    1. Create the project (in an empty directory) and install the software.
+
+        ```sh copy
+        pnpm create ts-node
+        pnpm install
+        ```
+
+    1. Add the package that includes the dozer library.
+
+        ```sh copy
+        pnpm install @latticexyz/store-sync @latticexyz/store
+        ```
+
+    1. Replace `src/main.ts` with this file.
+
+        ```ts filename="main.ts"
+        import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/dozer";
+        import { defineStore } from "@latticexyz/store";
+
+        const config = defineStore({
+          namespace: "app",
+          tables: {
+            Tasks: {
+              schema: {
+                id: "bytes32",
+                createdAt: "uint256",
+                completedAt: "uint256",
+                description: "string",
+              },
+              key: ["id"],
+            },
+            Creator: {
+              schema: {
+                id: "bytes32",
+                taskCreator: "address",
+              },
+              key: ["id"],
+            },
+          },
+        });
+
+        const queryUncompleted = selectFrom({
+          table: config.tables.app__Tasks,
+          where: "completedAt = 0",
+          limit: 2,
+        });
+
+        const queryResult = await fetchRecordsSql({
+          dozerUrl: "https://dozer.mud.garnetchain.com/q",
+          storeAddress: "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+          queries: [queryUncompleted],
+        });
+
+        console.log("\n\nTwo uncompleted tasks");
+        console.log(`SQL: ${queryUncompleted.sql}\nResult:`);
+        console.log(queryResult.result[0].records);
+        ```
+
+    1. Compile and execute the application.
+
+        ```sh copy
+        pnpm build && pnpm start
+        ```
+
+
+    <details>
+
+    <summary>Explanation</summary>
+
+    ```ts
+    import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/dozer";
+    import { defineStore } from "@latticexyz/store";
+    ```
+
+    Import the necessary definitions.
+
+    ```typescript
+    const config = defineStore({
+      namespace: "app",
+      tables: {
+        ...
+      },
+    })
+    ```
+
+    Create the table configuration.
+    The input to `defineStore` is the same as used in the [the `mud.config.ts` file](/config).
+
+    ```typescript
+    const queryUncompleted = selectFrom({
+      table: config.tables.app__Tasks,
+      where: "completedAt = 0",
+      limit: 2,
+    });
+    ```
+
+    Create a query using [`selectFrom`](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/dozer/selectFrom.ts).
+    The queries supported by `selectFrom` are a subset of those dozer supports.
+    The results come from a single table, and only `WHERE` and `LIMIT` clauses are supported.
+
+    ```typescript
+    const queryResult = await fetchRecordsSql({
+      dozerUrl: "https://dozer.mud.garnetchain.com/q",
+      storeAddress: "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+      queries: [queryUncompleted],
+    });
+    ```
+
+    Run the query.
+
+    ```typescript
+    console.log("\n\nTwo uncompleted tasks");
+    console.log(`SQL: ${queryUncompleted.sql}\nResult:`);
+    ```
+
+    The SQL query that generated the resulting records.
+
+    ```typescript
+    console.log(queryResult.result[0].records);
+    ```
+
+    The actual records.
+
+    </details>
+
+  </Tab>
+</Tabs>
 
 ### Simple query
 
 This query looks for some fields from a single table.
 
-1. Create a file, `query.json`, with this content.
-
-   ```json filename="query.json" copy
-   [
-     {
-       "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
-       "query": "SELECT id, description FROM app__Tasks"
-     }
-   ]
-   ```
-
    <Callout type="info" emoji="ℹ️">
 
-   Dozer does not support `SELECT * FROM <table>`, you have to specify column names.
+Dozer does not support `SELECT * FROM <table>`, you have to specify column names.
 
    </Callout>
-
-1. Run this command. Install `curl` and `jq` first if necessary.
-
-   ```sh copy
-   curl https://dozer.mud.garnetchain.com/q --compressed \
-        -H 'Accept-Encoding: gzip'  \
-        -H 'Content-Type: application/json' \
-        -d @query.json | jq
-   ```
 
 The output is a mapping with two fields, the block height for which the result is valid, and the result itself.
 The result is a list of query responses, here it contains just one item because we only submitted a single query.
@@ -500,134 +636,6 @@ As per the SQL standard, the wildcard is `%`.
 </details>
 
 To interpret the results, [see the table documentation](/store/tables#advanced).
-
-## Typescript queries
-
-You can query dozer from [Typescript](https://www.typescriptlang.org/) without using MUD client synchronization.
-
-1. Create the project (in an empty directory) and install the software.
-
-   ```sh copy
-   pnpm create ts-node
-   pnpm install
-   ```
-
-1. Add the package that includes the dozer library.
-
-   ```sh copy
-   pnpm install @latticexyz/store-sync @latticexyz/store
-   ```
-
-1. Replace `src/main.ts` with this file.
-
-   ```ts filename="main.ts"
-   import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/dozer";
-   import { defineStore } from "@latticexyz/store";
-
-   const config = defineStore({
-     namespace: "app",
-     tables: {
-       Tasks: {
-         schema: {
-           id: "bytes32",
-           createdAt: "uint256",
-           completedAt: "uint256",
-           description: "string",
-         },
-         key: ["id"],
-       },
-       Creator: {
-         schema: {
-           id: "bytes32",
-           taskCreator: "address",
-         },
-         key: ["id"],
-       },
-     },
-   });
-
-   const queryUncompleted = selectFrom({
-     table: config.tables.app__Tasks,
-     where: "completedAt = 0",
-     limit: 2,
-   });
-
-   const queryResult = await fetchRecordsSql({
-     dozerUrl: "https://dozer.mud.garnetchain.com/q",
-     storeAddress: "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
-     queries: [queryUncompleted],
-   });
-
-   console.log("\n\nTwo uncompleted tasks");
-   console.log(`SQL: ${queryUncompleted.sql}\nResult:`);
-   console.log(queryResult.result[0].records);
-   ```
-
-1. Compile and execute the application.
-
-   ```sh copy
-   pnpm build && pnpm start
-   ```
-
-<details>
-
-<summary>Explanation</summary>
-
-```ts
-import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/dozer";
-import { defineStore } from "@latticexyz/store";
-```
-
-Import the necessary definitions.
-
-```typescript
-const config = defineStore({
-  namespace: "app",
-  tables: {
-    ...
-  },
-})
-```
-
-Create the table configuration.
-The input to `defineStore` is the same as used in the [the `mud.config.ts` file](/config).
-
-```typescript
-const queryUncompleted = selectFrom({
-  table: config.tables.app__Tasks,
-  where: "completedAt = 0",
-  limit: 2,
-});
-```
-
-Create a query using [`selectFrom`](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/dozer/selectFrom.ts).
-The queries supported by `selectFrom` are a subset of those dozer supports.
-The results come from a single table, and only `WHERE` and `LIMIT` clauses are supported.
-
-```typescript
-const queryResult = await fetchRecordsSql({
-  dozerUrl: "https://dozer.mud.garnetchain.com/q",
-  storeAddress: "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
-  queries: [queryUncompleted],
-});
-```
-
-Run the query.
-
-```typescript
-console.log("\n\nTwo uncompleted tasks");
-console.log(`SQL: ${queryUncompleted.sql}\nResult:`);
-```
-
-The SQL query that generated the resulting records.
-
-```typescript
-console.log(queryResult.result[0].records);
-```
-
-The actual records.
-
-</details>
 
 ## Dozer with MUD synchronization
 
