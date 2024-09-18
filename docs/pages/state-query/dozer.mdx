@@ -1,6 +1,5 @@
 import { CollapseCode } from "../../components/CollapseCode";
 import FilterTypes from "../../components/common-text/FilterTypes.mdx";
-import NoSelectFromSupport from "../../components/common-text/NoSelectFromSupport.mdx";
 import { Callout, Tabs, Tab } from "nextra/components";
 
 # Dozer
@@ -589,9 +588,7 @@ If you only want to see a few results, you can use a `LIMIT` clause.
 You can use `OFFSET` to get a paging effect.
 For example, if you use this query you'll get the last result from the previous query and another one.
 
-<NoSelectFromSupport />
-
-<Tabs items={["SQL", "curl query"]}>
+<Tabs items={["SQL", "curl query", "Typescript selectFrom"]}>
   <Tab>
 
     ```sql
@@ -622,6 +619,67 @@ For example, if you use this query you'll get the last result from the previous 
         ```
 
   </Tab>
+  <Tab>
+
+    This feature is not officially supported by `selectFrom`.
+    However, because `selectFrom` creates an SQL query we can put the clause in the `where` fields as a workaround.
+
+    1. Create the Typescript application [shown above](#queries).
+
+    1. Replace `src/main.ts`.
+
+        <CollapseCode>
+
+          ```ts filename="main.ts" copy showLineNumbers {26-29}
+          import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/dozer";
+          import { defineStore } from "@latticexyz/store";
+
+          const config = defineStore({
+            namespace: "app",
+            tables: {
+              Tasks: {
+                schema: {
+                  id: "bytes32",
+                  createdAt: "uint256",
+                  completedAt: "uint256",
+                  description: "string",
+                },
+                key: ["id"],
+              },
+              Creator: {
+                schema: {
+                  id: "bytes32",
+                  taskCreator: "address",
+                },
+                key: ["id"],
+              },
+            },
+          });
+
+          const query = selectFrom({
+            table: config.tables.app__Tasks,
+            where: "true limit 2 offset 2"
+          });
+
+          const queryResult = await fetchRecordsSql({
+            dozerUrl: "https://dozer.mud.garnetchain.com/q",
+            storeAddress: "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+            queries: [query],
+          });
+
+          console.log(`SQL: ${query.sql}\nResult:`);
+          console.log(JSON.stringify(queryResult, (_, v) => typeof v === 'bigint' ? v.toString() : v, 2));
+          ```
+
+        </CollapseCode>
+
+    1. Run the application.
+
+        ```sh copy
+        pnpm build && pnpm start
+        ```
+
+  </Tab>
 
 </Tabs>
 
@@ -629,9 +687,7 @@ For example, if you use this query you'll get the last result from the previous 
 
 If you want to control the order in which you get results, you can use an `ORDER BY` clause.
 
-<NoSelectFromSupport />
-
-<Tabs items={["SQL", "curl query"]}>
+<Tabs items={["SQL", "curl query", "Typescript selectFrom"]}>
   <Tab>
 
     ```sql
@@ -663,13 +719,75 @@ If you want to control the order in which you get results, you can use an `ORDER
 
   </Tab>
 
+  <Tab>
+
+    This feature is not officially supported by `selectFrom`.
+    However, because `selectFrom` creates an SQL query we can put the clause in the `where` fields as a workaround.
+
+    1. Create the Typescript application [shown above](#queries).
+
+    1. Replace `src/main.ts`.
+
+        <CollapseCode>
+
+          ```ts filename="main.ts" copy showLineNumbers {26-29}
+          import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/dozer";
+          import { defineStore } from "@latticexyz/store";
+
+          const config = defineStore({
+            namespace: "app",
+            tables: {
+              Tasks: {
+                schema: {
+                  id: "bytes32",
+                  createdAt: "uint256",
+                  completedAt: "uint256",
+                  description: "string",
+                },
+                key: ["id"],
+              },
+              Creator: {
+                schema: {
+                  id: "bytes32",
+                  taskCreator: "address",
+                },
+                key: ["id"],
+              },
+            },
+          });
+
+          const query = selectFrom({
+            table: config.tables.app__Tasks,
+            where: "true ORDER BY \"createdAt\""
+          });
+
+          const queryResult = await fetchRecordsSql({
+            dozerUrl: "https://dozer.mud.garnetchain.com/q",
+            storeAddress: "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+            queries: [query],
+          });
+
+          console.log(`SQL: ${query.sql}\nResult:`);
+          console.log(JSON.stringify(queryResult, (_, v) => typeof v === 'bigint' ? v.toString() : v, 2));
+          ```
+
+        </CollapseCode>
+
+    1. Run the application.
+
+        ```sh copy
+        pnpm build && pnpm start
+        ```
+
+  </Tab>
+
 </Tabs>
 
 ### Multiple tables
 
 You can join multiple tables, using the same syntax SQL uses.
 
-<NoSelectFromSupport />
+This feature is not yet supported by `selectFrom`.
 
 <Tabs items={["SQL", "curl query"]}>
   <Tab>
@@ -710,7 +828,7 @@ You can join multiple tables, using the same syntax SQL uses.
 You can use `GROUP BY` to identify different groups.
 For example, this query gets you the different task creators.
 
-<NoSelectFromSupport />
+This feature is not yet supported by `selectFrom`.
 
 <Tabs items={["SQL", "curl query"]}>
   <Tab>
