@@ -1,9 +1,11 @@
-import { createStoreSync, SyncResult, SyncStep } from "@latticexyz/store-sync";
 import { World } from "@latticexyz/world";
 import { Address, Client, publicActions } from "viem";
 import { defineTable } from "@latticexyz/store/config/v2";
 import { CreateStoreResult } from "@latticexyz/stash/internal";
 import { createStorageAdapter } from "./createStorageAdapter";
+import { SyncResult } from "../common";
+import { createStoreSync } from "../createStoreSync";
+import { SyncStep } from "../SyncStep";
 
 export const SyncProgress = defineTable({
   label: "SyncProgress",
