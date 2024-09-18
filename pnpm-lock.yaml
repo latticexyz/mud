@@ -1100,6 +1100,9 @@ importers:
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
+      '@latticexyz/stash':
+        specifier: workspace:*
+        version: link:../stash
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
