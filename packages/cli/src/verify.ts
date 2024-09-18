@@ -105,7 +105,7 @@ export async function verify({
     );
 
     modules.map(({ name, prepareDeploy }) => {
-      const { address } = prepareDeploy(deployerAddress, []);
+      const { address } = prepareDeploy(deployerAddress, {});
       return verifyQueue.add(() =>
         verifyContract({
           // TODO: figure out dir from artifactPath via import.meta.resolve?
