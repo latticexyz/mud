@@ -1,5 +1,5 @@
-import { DataExplorerLocal } from "./DataExplorerLocal";
-import { DataExplorerRemote } from "./DataExplorerRemote";
+import { DataExplorerDozer } from "./DataExplorerDozer";
+import { DataExplorerSqlite } from "./DataExplorerSqlite";
 
 type Props = {
   params: {
@@ -10,8 +10,8 @@ type Props = {
 
 export default function ExplorerPage({ params }: Props) {
   if (params.chainName === "anvil") {
-    return <DataExplorerLocal />;
+    return <DataExplorerSqlite />;
   }
 
-  return <DataExplorerRemote />;
+  return <DataExplorerDozer />;
 }

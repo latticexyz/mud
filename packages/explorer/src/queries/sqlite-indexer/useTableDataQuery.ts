@@ -20,13 +20,13 @@ export function useTableDataQuery({ deployedTable }: Props) {
   const tableId = getSqliteTableId(worldAddress as Hex, deployedTable);
 
   return useQuery({
-    queryKey: ["rows", chainName, worldAddress, tableId],
+    queryKey: ["table", chainName, worldAddress, tableId],
     queryFn: async () => {
-      const response = await fetch(`/api/rows?tableId=${tableId}`);
+      const response = await fetch(`/api/table?tableId=${tableId}`);
       return response.json();
     },
     select: (data) => {
-      return data.rows.map((row: object) => {
+      return data.table.map((row: object) => {
         return Object.fromEntries(
           Object.entries(row).map(([key, value]) => {
             if (value?.type === "Buffer") {

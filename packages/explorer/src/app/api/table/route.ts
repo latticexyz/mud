@@ -6,7 +6,7 @@ type Row = {
   [key: string]: string;
 };
 
-type RowsResponse = Row[] | undefined;
+type Table = Row[] | undefined;
 
 function doesTableExist(tableId: string) {
   const db = getDatabase();
@@ -26,9 +26,9 @@ export async function GET(request: Request) {
 
     const db = getDatabase();
     const query = `SELECT * FROM "${tableId}" LIMIT 50`;
-    const rows = db?.prepare(query).all() as RowsResponse;
+    const table = db?.prepare(query).all() as Table;
 
-    return Response.json({ rows });
+    return Response.json({ table });
   } catch (error: unknown) {
     if (error instanceof Error) {
       return Response.json({ error: error.message }, { status: 400 });

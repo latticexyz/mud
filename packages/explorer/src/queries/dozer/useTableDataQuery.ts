@@ -18,7 +18,7 @@ export function useTableDataQuery({ schema, query }: Props) {
   const dozerUrl = useDozerUrl();
 
   return useQuery({
-    queryKey: ["tableData", worldAddress, chainName, query],
+    queryKey: ["table", worldAddress, chainName, query],
     queryFn: async () => {
       const response = await fetch(dozerUrl, {
         method: "POST",

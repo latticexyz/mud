@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { decodeTable } from "../../app/(explorer)/[chainName]/worlds/[worldAddress]/explore/utils/decodeTable";
 
 type ApiResponse = {
-  rows: {
+  table: {
     table_id: Hex;
     field_layout: Hex;
     key_schema: Hex;
@@ -21,11 +21,11 @@ export function useDeployedTablesQuery() {
   return useQuery({
     queryKey: ["rows", TABLES_QUERY_TABLE],
     queryFn: async () => {
-      const response = await fetch(`/api/rows?tableId=${TABLES_QUERY_TABLE}`);
+      const response = await fetch(`/api/table?tableId=${TABLES_QUERY_TABLE}`);
       return response.json();
     },
     select: (data: ApiResponse) => {
-      return data.rows.map((row) => {
+      return data.table.map((row) => {
         return decodeTable([
           row.table_id,
           row.field_layout,

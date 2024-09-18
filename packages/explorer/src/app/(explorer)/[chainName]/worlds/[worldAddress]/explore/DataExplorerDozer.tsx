@@ -8,7 +8,7 @@ import { SQLEditor } from "./SQLEditor";
 import { TableSelector } from "./TableSelector";
 import { TablesViewer } from "./TablesViewer";
 
-export function DataExplorerRemote() {
+export function DataExplorerDozer() {
   const [query, setQuery] = useState<string | undefined>(undefined);
   const searchParams = useSearchParams();
   const { data: deployedTables } = useDeployedTablesQuery();

@@ -6,7 +6,7 @@ import { useTableDataQuery } from "../../../../../../queries/sqlite-indexer/useT
 import { TableSelector } from "./TableSelector";
 import { TablesViewer } from "./TablesViewer";
 
-export function DataExplorerLocal() {
+export function DataExplorerSqlite() {
   const searchParams = useSearchParams();
   const { data: deployedTables } = useDeployedTablesQuery();
   const selectedTableId = searchParams.get("table") ?? deployedTables?.[0]?.tableId;
