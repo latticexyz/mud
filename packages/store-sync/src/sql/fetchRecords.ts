@@ -46,7 +46,7 @@ export async function fetchRecords({
   }).then((res) => res.json());
 
   if (isResponseFail(response)) {
-    throw new Error(`Dozer response: ${response.msg}\n\nTry reproducing via cURL:
+    throw new Error(`Response: ${response.msg}\n\nTry reproducing via cURL:
     curl ${indexerUrl} \\
     --compressed \\
     -H 'Accept-Encoding: gzip' \\

@@ -7,7 +7,7 @@ export type TableQuery = {
    * SQL to filter the records of this table.
    * The SQL result is expected to be of the same culumn shape as the table.
    * Use the `selectFrom` helper to ensure the expected column shape.
-   * Note: requires an indexer with SQL API (ie. Dozer).
+   * Note: requires an indexer with SQL API
    */
   sql: string;
 };

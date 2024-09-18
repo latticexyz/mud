@@ -2,22 +2,22 @@ import { CollapseCode } from "../../components/CollapseCode";
 import FilterTypes from "../../components/common-text/FilterTypes.mdx";
 import { Callout } from "nextra/components";
 
-# Dozer
+# SQL API
 
 <FilterTypes />
 
-If there is a dozer instance serving a blockchain, as there is for [Redstone](https://redstone.xyz/) and [Garnet](https://garnetchain.com/docs/what-is-redstone), you can use it to:
+If there is a SQL-enabled indexer instance serving a blockchain, as there is for [Redstone](https://redstone.xyz/) and [Garnet](https://garnetchain.com/docs/what-is-redstone), you can use it to:
 
 - Run queries on the data of any `World` on that blockchain.
-- [Speed up the initial hydration](#dozer-with-mud-synchronization) by reducing the amount of data that needs to be synchronized.
+- [Speed up the initial hydration](#mud-state-hydration-via-sql-api) by reducing the amount of data that needs to be synchronized.
   This is important for the user experience, because until the initial hydration is done the client is typically unusable.
 
 The query language is a subset of [the SQL `SELECT` command](<https://en.wikipedia.org/wiki/Select_(SQL)>).
 
-## Dozer URLs
+## SQL-enabled indexer URLs
 
-- [Redstone](https://redstone.xyz/) dozer - `https://dozer.mud.redstonechain.com/q`
-- [Garnet](https://garnetchain.com/) dozer - `https://dozer.mud.garnetchain.com/q`
+- [Redstone](https://redstone.xyz/) - `https://indexer.mud.redstonechain.com/q`
+- [Garnet](https://garnetchain.com/) - `https://indexer.mud.garnetchain.com/q`
 
 ## Example `World`
 
@@ -26,7 +26,7 @@ You can see the data schema for the `World` [in the block explorer](https://expl
 
 ## Curl queries
 
-You can run dozer queries by communicating directly with the server's API, for example using [curl](https://curl.se/).
+You can run SQL queries by communicating directly with the server's API, for example using [curl](https://curl.se/).
 
 ### Simple query
 
@@ -45,14 +45,14 @@ This query looks for some fields from a single table.
 
    <Callout type="info" emoji="ℹ️">
 
-   Dozer does not support `SELECT * FROM <table>`, you have to specify column names.
+   The API does not support `SELECT * FROM <table>`, you have to specify column names.
 
    </Callout>
 
 1. Run this command. Install `curl` and `jq` first if necessary.
 
    ```sh copy
-   curl https://dozer.mud.garnetchain.com/q --compressed \
+   curl https://indexer.mud.garnetchain.com/q --compressed \
         -H 'Accept-Encoding: gzip'  \
         -H 'Content-Type: application/json' \
         -d @query.json | jq
@@ -88,7 +88,7 @@ The first entry is the field names, and all the other entries are rows returned 
 Here we only care about the first result, so from now on we use this command line to tell `jq` to only show us that information.
 
 ```sh copy
-curl https://dozer.mud.garnetchain.com/q --compressed  \
+curl https://indexer.mud.garnetchain.com/q --compressed  \
     -H 'Accept-Encoding: gzip' \
     -H 'Content-Type: application/json' \
     -d @query.json | jq '.result[0]'
@@ -171,7 +171,7 @@ For example, if you use this `query.json` you get two results, and the last row 
 Use this command to see the results of both queries.
 
 ```sh copy
-curl https://dozer.mud.garnetchain.com/q --compressed  \
+curl https://indexer.mud.garnetchain.com/q --compressed  \
   -H 'Accept-Encoding: gzip' \
   -H 'Content-Type: application/json' -d @query.json \
   | jq '.result'
@@ -329,7 +329,7 @@ As per the SQL standard, the wildcard is `%`.
 1. Run this command.
 
    ```sh copy
-   curl https://dozer.mud.garnetchain.com/tables --compressed \
+   curl https://indexer.mud.garnetchain.com/tables --compressed \
        -H 'Accept-Encoding: gzip'  \
        -H 'Content-Type: application/json' \
        -d @tables.json | jq
@@ -503,7 +503,7 @@ To interpret the results, [see the table documentation](/store/tables#advanced).
 
 ## Typescript queries
 
-You can query dozer from [Typescript](https://www.typescriptlang.org/) without using MUD client synchronization.
+You can query the SQL API from [Typescript](https://www.typescriptlang.org/) without using MUD client synchronization.
 
 1. Create the project (in an empty directory) and install the software.
 
@@ -512,7 +512,7 @@ You can query dozer from [Typescript](https://www.typescriptlang.org/) without u
    pnpm install
    ```
 
-1. Add the package that includes the dozer library.
+1. Add the package that includes the library.
 
    ```sh copy
    pnpm install @latticexyz/store-sync @latticexyz/store
@@ -521,7 +521,7 @@ You can query dozer from [Typescript](https://www.typescriptlang.org/) without u
 1. Replace `src/main.ts` with this file.
 
    ```ts filename="main.ts"
-   import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/dozer";
+   import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/internal";
    import { defineStore } from "@latticexyz/store";
 
    const config = defineStore({
@@ -553,7 +553,7 @@ You can query dozer from [Typescript](https://www.typescriptlang.org/) without u
    });
 
    const queryResult = await fetchRecordsSql({
-     dozerUrl: "https://dozer.mud.garnetchain.com/q",
+     indexerUrl: "https://indexer.mud.garnetchain.com/q",
      storeAddress: "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
      queries: [queryUncompleted],
    });
@@ -574,7 +574,7 @@ You can query dozer from [Typescript](https://www.typescriptlang.org/) without u
 <summary>Explanation</summary>
 
 ```ts
-import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/dozer";
+import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/internal";
 import { defineStore } from "@latticexyz/store";
 ```
 
@@ -600,13 +600,13 @@ const queryUncompleted = selectFrom({
 });
 ```
 
-Create a query using [`selectFrom`](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/dozer/selectFrom.ts).
-The queries supported by `selectFrom` are a subset of those dozer supports.
+Create a query using [`selectFrom`](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/sql/selectFrom.ts).
+The queries supported by `selectFrom` are a subset of those the SQL API supports.
 The results come from a single table, and only `WHERE` and `LIMIT` clauses are supported.
 
 ```typescript
 const queryResult = await fetchRecordsSql({
-  dozerUrl: "https://dozer.mud.garnetchain.com/q",
+  indexrUrl: "https://indexer.mud.garnetchain.com/q",
   storeAddress: "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
   queries: [queryUncompleted],
 });
@@ -629,9 +629,9 @@ The actual records.
 
 </details>
 
-## Dozer with MUD synchronization
+## MUD state hydration via SQL API
 
-You can also add dozer to a MUD client to speed up the initial hydration.
+You can also use the SQL API in a MUD client to speed up the initial hydration.
 
 ### Create a client to access the `World`
 
@@ -685,9 +685,9 @@ These are the steps to create a client that can access the `World`.
 
    </CollapseCode>
 
-### Updating the client to use dozer
+### Updating the client to use the SQL API
 
-The main purpose of dozer is to allow MUD clients to specify the subset of table records that a client needs, instead of synchronizing whole tables.
+The main purpose of the SQL API is to allow MUD clients to specify the subset of table records that a client needs, instead of synchronizing whole tables.
 
 To update the client, you change `packages/client/src/mud/setupNetwork.ts` to:
 
@@ -710,7 +710,7 @@ import {
   getContract,
 } from "viem";
 
-import { DozerSyncFilter, getSnapshot, selectFrom } from "@latticexyz/store-sync/dozer";
+import { SyncFilter, getSnapshot, selectFrom } from "@latticexyz/store-sync/internal";
 
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import { getNetworkConfig } from "./getNetworkConfig";
@@ -773,9 +773,9 @@ export async function setupNetwork() {
     client: { public: publicClient, wallet: burnerWalletClient },
   });
 
-  const dozerUrl = "https://dozer.mud.garnetchain.com/q";
+  const indexerUrl = "https://indexer.mud.garnetchain.com/q";
   const yesterday = Date.now() / 1000 - 24 * 60 * 60;
-  const filters: DozerSyncFilter[] = [
+  const filters: SyncFilter[] = [
     selectFrom({
       table: mudConfig.tables.app__Tasks,
       where: `"createdAt" > ${yesterday}`,
@@ -783,7 +783,7 @@ export async function setupNetwork() {
     { table: mudConfig.tables.app__Creator },
   ];
   const { initialBlockLogs } = await getSnapshot({
-    dozerUrl,
+    indexerUrl,
     storeAddress: networkConfig.worldAddress as Hex,
     filters,
     chainId: networkConfig.chainId,
@@ -828,16 +828,16 @@ export async function setupNetwork() {
 <summary>Explanation</summary>
 
 ```typescript
-import { DozerSyncFilter, getSnapshot, selectFrom } from "@latticexyz/store-sync/dozer";
+import { SyncFilter, getSnapshot, selectFrom } from "@latticexyz/store-sync/internal";
 ```
 
-Import the dozer definitions we need.
+Import the definitions we need.
 
 ```typescript
-const dozerUrl = "https://dozer.mud.garnetchain.com/q";
+const indexerUrl = "https://indexer.mud.garnetchain.com/q";
 ```
 
-The URL for the dozer service.
+The URL for the SQL-enabled indexer.
 This is simplified testing code, on a production system this will probably be a lookup table based on the chainId.
 
 ```typescript
@@ -849,7 +849,7 @@ In UNIX, and therefore in Ethereum, time is stored as seconds since that same po
 This is the timestamp 24 hours ago.
 
 ```typescript
-  const filters: DozerSyncFilter[] = [
+  const filters: SyncFilter[] = [
 ```
 
 We create the filters for the tables we're interested in.
@@ -873,7 +873,7 @@ We also want the `app__Counter` table.
 
 ```typescript
 const { initialBlockLogs } = await getSnapshot({
-  dozerUrl,
+  indexerUrl,
   storeAddress: networkConfig.worldAddress as Hex,
   filters,
   chainId: networkConfig.chainId,

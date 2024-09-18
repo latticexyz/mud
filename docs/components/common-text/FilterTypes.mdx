@@ -1,13 +1,13 @@
 import { Callout } from "nextra/components";
 
 <Callout type="info">
-MUD initial data hydration, and therefore filtering, comes in two flavors: [Dozer](/state-query/dozer) and [generic](/guides/hello-world/filter-sync).
+MUD initial data hydration, and therefore filtering, comes in two flavors: [SQL](/indexer/sql) and [generic](/guides/hello-world/filter-sync).
 Note that this is for the initial hydration, currently limits on on-going synchronization are limited to [the generic method](/guides/hello-world/filter-sync).
 
-|                      | Dozer                                                                                                                                              | Generic                                                                                                                                                   |
+|                      | SQL                                                                                                                                                | Generic                                                                                                                                                   |
 | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Filtering            | Can filter on most SQL functions                                                                                                                   | Can only filter on tables and the first two key fields (limited by [`eth_getLogs`](https://ethereum.github.io/execution-apis/api-documentation/) filters) |
 | Availability         | [Redstone](https://redstone.xyz/docs/network-info), [Garnet](https://garnetchain.com/docs/network-info), or elsewhere if you run your own instance | Any EVM chain                                                                                                                                             |
-| Security assumptions | The Dozer instance returns accurate information                                                                                                    | The endpoint returns accurate information (same assumption as any other blockchain app)                                                                   |
+| Security assumptions | The indexer instance returns accurate information                                                                                                  | The endpoint returns accurate information (same assumption as any other blockchain app)                                                                   |
 
 </Callout>
