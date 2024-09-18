@@ -1,5 +1,6 @@
 import { CollapseCode } from "../../components/CollapseCode";
 import FilterTypes from "../../components/common-text/FilterTypes.mdx";
+import NoSelectFromSupport from "../../components/common-text/NoSelectFromSupport.mdx";
 import { Callout, Tabs, Tab } from "nextra/components";
 
 # Dozer
@@ -38,7 +39,7 @@ You can see the data schema for the `World` [in the block explorer](https://expl
         [
           {
             "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
-            "query": "SELECT id, description FROM app__Tasks"
+            "query": "SELECT id, description FROM app__Tasks WHERE completedAt = 0 limit 2"
           }
         ]
         ```
@@ -51,6 +52,42 @@ You can see the data schema for the `World` [in the block explorer](https://expl
               -H 'Content-Type: application/json' \
               -d @query.json | jq
         ```
+
+      The output is a mapping with two fields, the block height for which the result is valid, and the result itself.
+      The result is a list of query responses, here it contains just one item because we only submitted a single query.
+      The query response is also a list.
+      The first entry is the field names, and all the other entries are rows returned by `SELECT`.
+
+      ```
+      {
+        "block_height": 5699682,
+        "result": [
+          [
+            [
+              "id",
+              "description"
+            ],
+            [
+              "0x3100000000000000000000000000000000000000000000000000000000000000",
+              "Walk the dog"
+            ],
+            [
+              "0x3e0a112aadc5e02927fb4a91649bea565fd1baa1175aae4cb4957d6348f165cf",
+              "Test"
+            ],
+          ]
+        ]
+      }
+      ```
+
+      Here we only care about the first result, so from now on we use this command line to tell `jq` to only show us that information.
+
+      ```sh copy
+      curl https://dozer.mud.garnetchain.com/q --compressed  \
+          -H 'Accept-Encoding: gzip' \
+          -H 'Content-Type: application/json' \
+          -d @query.json | jq '.result[0]'
+      ```
 
   </Tab>
   <Tab>
@@ -71,7 +108,7 @@ You can see the data schema for the `World` [in the block explorer](https://expl
 
     1. Replace `src/main.ts` with this file.
 
-        ```ts filename="main.ts"
+        ```ts filename="main.ts" copy
         import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/dozer";
         import { defineStore } from "@latticexyz/store";
 
@@ -109,10 +146,78 @@ You can see the data schema for the `World` [in the block explorer](https://expl
           queries: [queryUncompleted],
         });
 
+        console.log(`SQL: ${queryUncompleted.sql}\nResult:`);
+        console.log(JSON.stringify(
+                queryResult,
+                (_, v) => typeof v === 'bigint' ? v.toString() : v,
+                2
+        ))
+        ```
+
+        <details>
+
+        <summary>Explanation</summary>
+
+        ```ts
+        import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/dozer";
+        import { defineStore } from "@latticexyz/store";
+        ```
+
+        Import the necessary definitions.
+
+        ```typescript
+        const config = defineStore({
+          namespace: "app",
+          tables: {
+            ...
+          },
+        })
+        ```
+
+        Create the table configuration.
+        The input to `defineStore` is the same as used in the [the `mud.config.ts` file](/config).
+
+        ```typescript
+        const queryUncompleted = selectFrom({
+          table: config.tables.app__Tasks,
+          where: "completedAt = 0",
+          limit: 2,
+        });
+        ```
+
+        Create a query using [`selectFrom`](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/dozer/selectFrom.ts).
+        The queries supported by `selectFrom` are a subset of those dozer supports.
+        The results come from a single table, and only `WHERE` and `LIMIT` clauses are supported.
+
+        ```typescript
+        const queryResult = await fetchRecordsSql({
+          dozerUrl: "https://dozer.mud.garnetchain.com/q",
+          storeAddress: "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+          queries: [queryUncompleted],
+        });
+        ```
+
+        Run the query.
+
+        ```typescript
         console.log("\n\nTwo uncompleted tasks");
         console.log(`SQL: ${queryUncompleted.sql}\nResult:`);
-        console.log(queryResult.result[0].records);
         ```
+
+        The SQL query that generated the resulting records.
+
+        ```typescript
+        console.log(`SQL: ${queryUncompleted.sql}\nResult:`);
+        console.log(JSON.stringify(
+                queryResult,
+                (_, v) => typeof v === 'bigint' ? v.toString() : v,
+                2
+        ))
+        ```
+
+        The actual records.
+
+        </details>
 
     1. Compile and execute the application.
 
@@ -120,66 +225,72 @@ You can see the data schema for the `World` [in the block explorer](https://expl
         pnpm build && pnpm start
         ```
 
+    The output is a mapping with two fields, the block height for which the result is valid, and the result itself.
+    The result is a list of query responses, here it contains just one item because we only submitted a single query.
+    The query result itself is a mapping, with two fields: `table` which is the table information. including the schema, and `records` with the results.
 
-    <details>
-
-    <summary>Explanation</summary>
-
-    ```ts
-    import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/dozer";
-    import { defineStore } from "@latticexyz/store";
+    ```json
+    SQL: select "id", "createdAt", "completedAt", "description" from app__Tasks where completedAt = 0 limit 2
+    Result:
+    {
+      "blockHeight": "7256696",
+      "result": [
+        {
+          "table": {
+            "label": "Tasks",
+            "type": "table",
+            "namespace": "app",
+            "name": "Tasks",
+            "tableId": "0x746261707000000000000000000000005461736b730000000000000000000000",
+            "schema": {
+              "id": {
+                "type": "bytes32",
+                "internalType": "bytes32"
+              },
+              "createdAt": {
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              "completedAt": {
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              "description": {
+                "type": "string",
+                "internalType": "string"
+              }
+            },
+            "key": [
+              "id"
+            ],
+            "codegen": {
+              "outputDirectory": "tables",
+              "tableIdArgument": false,
+              "storeArgument": false,
+              "dataStruct": true
+            },
+            "deploy": {
+              "disabled": false
+            }
+          },
+          "records": [
+            {
+              "id": "0x3100000000000000000000000000000000000000000000000000000000000000",
+              "createdAt": "1723495628",
+              "completedAt": "0",
+              "description": "Walk the dog"
+            },
+            {
+              "id": "0x574e6dc7dfad7c446782c889ddc3a0d3d511494de75d0e79bd6f98373bc9e82c",
+              "createdAt": "1725474162",
+              "completedAt": "0",
+              "description": "Create a todo list"
+            }
+          ]
+        }
+      ]
+    }
     ```
-
-    Import the necessary definitions.
-
-    ```typescript
-    const config = defineStore({
-      namespace: "app",
-      tables: {
-        ...
-      },
-    })
-    ```
-
-    Create the table configuration.
-    The input to `defineStore` is the same as used in the [the `mud.config.ts` file](/config).
-
-    ```typescript
-    const queryUncompleted = selectFrom({
-      table: config.tables.app__Tasks,
-      where: "completedAt = 0",
-      limit: 2,
-    });
-    ```
-
-    Create a query using [`selectFrom`](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/dozer/selectFrom.ts).
-    The queries supported by `selectFrom` are a subset of those dozer supports.
-    The results come from a single table, and only `WHERE` and `LIMIT` clauses are supported.
-
-    ```typescript
-    const queryResult = await fetchRecordsSql({
-      dozerUrl: "https://dozer.mud.garnetchain.com/q",
-      storeAddress: "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
-      queries: [queryUncompleted],
-    });
-    ```
-
-    Run the query.
-
-    ```typescript
-    console.log("\n\nTwo uncompleted tasks");
-    console.log(`SQL: ${queryUncompleted.sql}\nResult:`);
-    ```
-
-    The SQL query that generated the resulting records.
-
-    ```typescript
-    console.log(queryResult.result[0].records);
-    ```
-
-    The actual records.
-
-    </details>
 
   </Tab>
 </Tabs>
@@ -190,263 +301,452 @@ This query looks for some fields from a single table.
 
    <Callout type="info" emoji="ℹ️">
 
-Dozer does not support `SELECT * FROM <table>`, you have to specify column names.
+Dozer does not support `SELECT * FROM <table>`, you _have_ to specify column names.
+In the case of Typescript `selectFrom`, the Typescript code specifies all the columns for you.
 
    </Callout>
 
-The output is a mapping with two fields, the block height for which the result is valid, and the result itself.
-The result is a list of query responses, here it contains just one item because we only submitted a single query.
-The query response is also a list.
-The first entry is the field names, and all the other entries are rows returned by `SELECT`.
+<Tabs items={["SQL", "curl query", "Typescript selectFrom"]}>
+  <Tab>
 
-```
-{
-  "block_height": 5699682,
-  "result": [
-    [
-      [
-        "id",
-        "description"
-      ],
-      [
-        "0x3100000000000000000000000000000000000000000000000000000000000000",
-        "Walk the dog"
-      ],
-      [
-        "0x3e0a112aadc5e02927fb4a91649bea565fd1baa1175aae4cb4957d6348f165cf",
-        "Test"
-      ],
-    ]
-  ]
-}
-```
+    ```sql
+    SELECT id, description FROM app_Tasks
+    ```
 
-Here we only care about the first result, so from now on we use this command line to tell `jq` to only show us that information.
+  </Tab>
+  <Tab>
 
-```sh copy
-curl https://dozer.mud.garnetchain.com/q --compressed  \
-    -H 'Accept-Encoding: gzip' \
-    -H 'Content-Type: application/json' \
-    -d @query.json | jq '.result[0]'
-```
+    1. Replace `query.json`.
+
+        ```json filename="query.json" copy
+        [
+          {
+            "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+            "query": "SELECT id, description FROM app__Tasks"
+          }
+        ]
+        ```
+
+    1. Run the query.
+
+        ```sh copy
+        curl https://dozer.mud.garnetchain.com/q --compressed \
+          -H 'Accept-Encoding: gzip'  \
+          -H 'Content-Type: application/json' \
+          -d @query.json | jq
+        ```
+
+  </Tab>  
+  <Tab>
+
+    1. Create the Typescript application [shown above](#queries).
+
+    1. Replace `src/main.ts`.
+
+        <CollapseCode>
+
+          ```ts filename="main.ts" copy showLineNumbers {26-28}
+          import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/dozer";
+          import { defineStore } from "@latticexyz/store";
+
+          const config = defineStore({
+            namespace: "app",
+            tables: {
+              Tasks: {
+                schema: {
+                  id: "bytes32",
+                  createdAt: "uint256",
+                  completedAt: "uint256",
+                  description: "string",
+                },
+                key: ["id"],
+              },
+              Creator: {
+                schema: {
+                  id: "bytes32",
+                  taskCreator: "address",
+                },
+                key: ["id"],
+              },
+            },
+          });
+
+          const query = selectFrom({
+            table: config.tables.app__Tasks,
+          });
+
+          const queryResult = await fetchRecordsSql({
+            dozerUrl: "https://dozer.mud.garnetchain.com/q",
+            storeAddress: "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+            queries: [query],
+          });
+
+          console.log(`SQL: ${query.sql}\nResult:`);
+          console.log(JSON.stringify(queryResult, (_, v) => typeof v === 'bigint' ? v.toString() : v, 2));
+          ```
+
+        </CollapseCode>
+
+    1. Run the application.
+
+        ```sh copy
+        pnpm build && pnpm start
+        ```
+
+  </Tab>
+</Tabs>
 
 ### Conditions
 
 If we want to see only those tasks that haven't been completed we can use a `WHERE` clause.
 
-```json filename="query.json" copy
-[
-  {
-    "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
-    "query": "SELECT id, description FROM app__Tasks WHERE completedAt=0"
-  }
-]
-```
+<Tabs items={["SQL", "curl query", "Typescript selectFrom"]}>
+  <Tab>
 
-<details>
+    ```sql
+    SELECT id, description FROM app__Tasks WHERE completedAt=0
+    ```
 
-<summary>Results</summary>
+  </Tab>
+  <Tab>
 
-```json
-[
-  ["id", "description"],
-  ["0x3100000000000000000000000000000000000000000000000000000000000000", "Walk the dog"],
-  ["0x3e0a112aadc5e02927fb4a91649bea565fd1baa1175aae4cb4957d6348f165cf", "Test"]
-]
-```
+    1. Replace `query.json`.
 
-</details>
+        ```json filename="query.json" copy
+        [
+          {
+            "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+            "query": "SELECT id, description FROM app__Tasks WHERE completedAt=0"
+          }
+        ]
+        ```
+
+    1. Run the query.
+
+        ```sh copy
+        curl https://dozer.mud.garnetchain.com/q --compressed \
+          -H 'Accept-Encoding: gzip'  \
+          -H 'Content-Type: application/json' \
+          -d @query.json | jq
+        ```
+
+  </Tab>  
+  <Tab>
+
+    1. Create the Typescript application [shown above](#queries).
+
+    1. Replace `src/main.ts`.
+
+        <CollapseCode>
+
+          ```ts filename="main.ts" copy showLineNumbers {26-29}
+          import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/dozer";
+          import { defineStore } from "@latticexyz/store";
+
+          const config = defineStore({
+            namespace: "app",
+            tables: {
+              Tasks: {
+                schema: {
+                  id: "bytes32",
+                  createdAt: "uint256",
+                  completedAt: "uint256",
+                  description: "string",
+                },
+                key: ["id"],
+              },
+              Creator: {
+                schema: {
+                  id: "bytes32",
+                  taskCreator: "address",
+                },
+                key: ["id"],
+              },
+            },
+          });
+
+          const query = selectFrom({
+            table: config.tables.app__Tasks,
+            where: "completedAt=0"
+          });
+
+          const queryResult = await fetchRecordsSql({
+            dozerUrl: "https://dozer.mud.garnetchain.com/q",
+            storeAddress: "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+            queries: [query],
+          });
+
+          console.log(`SQL: ${query.sql}\nResult:`);
+          console.log(JSON.stringify(queryResult, (_, v) => typeof v === 'bigint' ? v.toString() : v, 2));
+          ```
+
+        </CollapseCode>
+
+    1. Run the application.
+
+        ```sh copy
+        pnpm build && pnpm start
+        ```
+
+  </Tab>
+</Tabs>
 
 ### Limited results
 
 If you only want to see a few results, you can use a `LIMIT` clause.
 
-```json filename="query.json" copy
-[
-  {
-    "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
-    "query": "SELECT id, description FROM app__Tasks LIMIT 2"
-  }
-]
-```
+<Tabs items={["SQL", "curl query", "Typescript selectFrom"]}>
+  <Tab>
 
-<details>
+    ```sql
+    SELECT id, description FROM app__Tasks LIMIT 3
+    ```
 
-<summary>Results</summary>
+  </Tab>
+  <Tab>
 
-```json
-[
-  ["id", "description"],
-  ["0x3100000000000000000000000000000000000000000000000000000000000000", "Walk the dog"],
-  ["0x3e0a112aadc5e02927fb4a91649bea565fd1baa1175aae4cb4957d6348f165cf", "Test"]
-]
-```
+    1. Replace `query.json`.
 
-</details>
+        ```json filename="query.json" copy
+        [
+          {
+            "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+            "query": "SELECT id, description FROM app__Tasks"
+          }
+        ]
+        ```
+
+    1. Run the query.
+
+        ```sh copy
+        curl https://dozer.mud.garnetchain.com/q --compressed \
+          -H 'Accept-Encoding: gzip'  \
+          -H 'Content-Type: application/json' \
+          -d @query.json | jq
+        ```
+
+  </Tab>  
+  <Tab>
+
+    1. Create the Typescript application [shown above](#queries).
+
+    1. Replace `src/main.ts`.
+
+        <CollapseCode>
+
+          ```ts filename="main.ts" copy showLineNumbers {26-29}
+          import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/dozer";
+          import { defineStore } from "@latticexyz/store";
+
+          const config = defineStore({
+            namespace: "app",
+            tables: {
+              Tasks: {
+                schema: {
+                  id: "bytes32",
+                  createdAt: "uint256",
+                  completedAt: "uint256",
+                  description: "string",
+                },
+                key: ["id"],
+              },
+              Creator: {
+                schema: {
+                  id: "bytes32",
+                  taskCreator: "address",
+                },
+                key: ["id"],
+              },
+            },
+          });
+
+          const query = selectFrom({
+            table: config.tables.app__Tasks,
+            limit: 3
+          });
+
+          const queryResult = await fetchRecordsSql({
+            dozerUrl: "https://dozer.mud.garnetchain.com/q",
+            storeAddress: "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+            queries: [query],
+          });
+
+          console.log(`SQL: ${query.sql}\nResult:`);
+          console.log(JSON.stringify(queryResult, (_, v) => typeof v === 'bigint' ? v.toString() : v, 2));
+          ```
+
+        </CollapseCode>
+
+    1. Run the application.
+
+        ```sh copy
+        pnpm build && pnpm start
+        ```
+
+  </Tab>
+</Tabs>
 
 You can use `OFFSET` to get a paging effect.
-For example, if you use this `query.json` you get two results, and the last row of the first one is repeated as the first row of the second one.
+For example, if you use this query you'll get the last result from the previous query and another one.
 
-```json filename="query.json" copy
-[
-  {
-    "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
-    "query": "SELECT id, description FROM app__Tasks LIMIT 3"
-  },
-  {
-    "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
-    "query": "SELECT id, description FROM app__Tasks LIMIT 3 OFFSET 2"
-  }
-]
-```
+<NoSelectFromSupport />
 
-<details>
+<Tabs items={["SQL", "curl query"]}>
+  <Tab>
 
-<summary>Results</summary>
+    ```sql
+    SELECT id, description FROM app__Tasks LIMIT 2 OFFSET 2
+    ```
 
-Use this command to see the results of both queries.
+  </Tab>
+  <Tab>
 
-```sh copy
-curl https://dozer.mud.garnetchain.com/q --compressed  \
-  -H 'Accept-Encoding: gzip' \
-  -H 'Content-Type: application/json' -d @query.json \
-  | jq '.result'
-```
+    1. Replace `query.json`.
 
-The result is:
+        ```json filename="query.json" copy
+        [
+          {
+            "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+            "query": "SELECT id, description FROM app__Tasks LIMIT 2 OFFSET 2"
+          }
+        ]
+        ```
 
-```json
-[
-  [
-    ["id", "description"],
-    ["0x3100000000000000000000000000000000000000000000000000000000000000", "Walk the dog"],
-    ["0x3e0a112aadc5e02927fb4a91649bea565fd1baa1175aae4cb4957d6348f165cf", "Test"],
-    ["0xb15fd0e41ab0bb6eb992e0a3d4f30fce6ee24a5fc9c30f725fdfc96d9d16ed95", "Do the dishes"]
-  ],
-  [
-    ["id", "description"],
-    ["0xb15fd0e41ab0bb6eb992e0a3d4f30fce6ee24a5fc9c30f725fdfc96d9d16ed95", "Do the dishes"],
-    ["0xb81d5036d0b62e0f2536635cbd5d7cec1d1f0706c0c6c1a9fa74293d7b0888eb", "Take out the trash"]
-  ]
-]
-```
+    1. Run the query.
 
-</details>
+        ```sh copy
+        curl https://dozer.mud.garnetchain.com/q --compressed \
+          -H 'Accept-Encoding: gzip'  \
+          -H 'Content-Type: application/json' \
+          -d @query.json | jq
+        ```
+
+  </Tab>
+
+</Tabs>
 
 ### Sorted results
 
 If you want to control the order in which you get results, you can use an `ORDER BY` clause.
 
-```json filename="query.json" copy
-[
-  {
-    "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
-    "query": "SELECT description, createdAt FROM app__Tasks ORDER BY createdAt"
-  }
-]
-```
+<NoSelectFromSupport />
 
-Note that the sort field(s) need to be part of the selected columns.
+<Tabs items={["SQL", "curl query"]}>
+  <Tab>
 
-<details>
+    ```sql
+    SELECT description, createdAt FROM app__Tasks ORDER BY createdAt
+    ```
 
-<summary>Results</summary>
+  </Tab>
+  <Tab>
 
-```json
-[
-  ["description", "createdat"],
-  ["Walk the dog", "1723495628"],
-  ["Take out the trash", "1723495640"],
-  ["Do the dishes", "1723495642"],
-  ["Test", "1723495964"],
-  ["Test from a different account", "1723576522"],
-  ["Another test", "1723576522"],
-  ["Yet another test", "1723646440"]
-]
-```
+    1. Replace `query.json`.
 
-</details>
+        ```json filename="query.json" copy
+        [
+          {
+            "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+            "query": "SELECT description, createdAt FROM app__Tasks ORDER BY createdAt"
+          }
+        ]
+        ```
+
+    1. Run the query.
+
+        ```sh copy
+        curl https://dozer.mud.garnetchain.com/q --compressed \
+          -H 'Accept-Encoding: gzip'  \
+          -H 'Content-Type: application/json' \
+          -d @query.json | jq
+        ```
+
+  </Tab>
+
+</Tabs>
 
 ### Multiple tables
 
 You can join multiple tables, using the same syntax SQL uses.
 
-```json filename="query.json" copy
-[
-  {
-    "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
-    "query": "SELECT app__Creator.id, description, taskCreator FROM app__Tasks, app__Creator WHERE app__Creator.id=app__Tasks.id"
-  }
-]
-```
+<NoSelectFromSupport />
 
-<details>
+<Tabs items={["SQL", "curl query"]}>
+  <Tab>
 
-<summary>Results</summary>
+    ```sql
+    SELECT app__Creator.id, description, taskCreator FROM app__Tasks, app__Creator WHERE app__Creator.id=app__Tasks.id
+    ```
 
-```json
-[
-  ["id", "description", "taskcreator"],
-  [
-    "0x3e0a112aadc5e02927fb4a91649bea565fd1baa1175aae4cb4957d6348f165cf",
-    "Test",
-    "0x735b2f2c662ebedffa94027a7196f0559f7f18a4"
-  ],
-  [
-    "0x727d7bfe00b6db638c69595059dc10e21c52a7912d090905a7c7dc8659efd3b8",
-    "Test from a different account",
-    "0x428b1853e5ec29d35c84a218ec5170efc7621b58"
-  ],
-  [
-    "0xb15fd0e41ab0bb6eb992e0a3d4f30fce6ee24a5fc9c30f725fdfc96d9d16ed95",
-    "Do the dishes",
-    "0x8225d72f2c39f3729d7f3fc03c6aa8731eaeef48"
-  ],
-  [
-    "0xb81d5036d0b62e0f2536635cbd5d7cec1d1f0706c0c6c1a9fa74293d7b0888eb",
-    "Take out the trash",
-    "0x8225d72f2c39f3729d7f3fc03c6aa8731eaeef48"
-  ],
-  [
-    "0xd43394ecf79077f65cd83b534dd44d3b4e9e2aa553e95aafecd14b8529543cda",
-    "Another test",
-    "0x428b1853e5ec29d35c84a218ec5170efc7621b58"
-  ]
-]
-```
+  </Tab>
+  <Tab>
 
-</details>
+    1. Replace `query.json`.
+
+        ```json filename="query.json" copy
+        [
+          {
+            "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+            "query": "SELECT app__Creator.id, description, taskCreator FROM app__Tasks, app__Creator WHERE app__Creator.id=app__Tasks.id"
+          }
+        ]
+        ```
+
+    1. Run the query.
+
+        ```sh copy
+        curl https://dozer.mud.garnetchain.com/q --compressed \
+          -H 'Accept-Encoding: gzip'  \
+          -H 'Content-Type: application/json' \
+          -d @query.json | jq
+        ```
+
+  </Tab>
+
+</Tabs>
 
 ### Grouping results
 
 You can use `GROUP BY` to identify different groups.
 For example, this query gets you the different task creators.
 
-```json filename="query.json" copy
-[
-  {
-    "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
-    "query": "SELECT taskCreator FROM app__Creator GROUP BY taskCreator"
-  }
-]
-```
+<NoSelectFromSupport />
 
-<details>
+<Tabs items={["SQL", "curl query"]}>
+  <Tab>
 
-<summary>Results</summary>
+    ```sql
+    SELECT taskCreator FROM app__Creator GROUP BY taskCreator
+    ```
 
-```json
-[
-  ["taskcreator"],
-  ["0x428b1853e5ec29d35c84a218ec5170efc7621b58"],
-  ["0x735b2f2c662ebedffa94027a7196f0559f7f18a4"],
-  ["0x8225d72f2c39f3729d7f3fc03c6aa8731eaeef48"]
-]
-```
+  </Tab>
+  <Tab>
 
-</details>
+    1. Replace `query.json`.
 
-### Metadata
+        ```json filename="query.json" copy
+        [
+          {
+            "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+            "query": "SELECT taskCreator FROM app__Creator GROUP BY taskCreator"
+          }
+        ]
+        ```
+
+    1. Run the query.
+
+        ```sh copy
+        curl https://dozer.mud.garnetchain.com/q --compressed \
+          -H 'Accept-Encoding: gzip'  \
+          -H 'Content-Type: application/json' \
+          -d @query.json | jq
+        ```
+
+  </Tab>
+
+</Tabs>
+
+## Metadata
 
 You can use the `/tables` path to get the list of either all tables, or all tables that match a string.
 As per the SQL standard, the wildcard is `%`.
