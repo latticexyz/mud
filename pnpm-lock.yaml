@@ -471,9 +471,6 @@ importers:
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
-      '@latticexyz/store-sync':
-        specifier: workspace:*
-        version: link:../store-sync
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../world
