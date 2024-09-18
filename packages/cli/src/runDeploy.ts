@@ -133,7 +133,6 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
         : undefined,
     }),
     account,
-    pollingInterval: 100,
   });
 
   console.log("Deploying from", client.account.address);
