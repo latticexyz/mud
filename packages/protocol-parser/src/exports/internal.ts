@@ -25,7 +25,8 @@ export * from "../schemaToHex";
 export * from "../staticDataLength";
 export * from "../valueSchemaToFieldLayoutHex";
 export * from "../valueSchemaToHex";
-
+export * from "../getKey";
+export * from "../getValue";
 export * from "../getFieldIndex";
 export * from "../getKeySchema";
 export * from "../getKeyTuple";
