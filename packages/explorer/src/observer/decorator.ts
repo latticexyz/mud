@@ -14,7 +14,7 @@ export type ObserverOptions = {
 export function observer<transport extends Transport, chain extends Chain, account extends Account>({
   explorerUrl = "http://localhost:13690",
   waitForStateChange,
-}: ObserverOptions): (
+}: ObserverOptions = {}): (
   client: Client<transport, chain, account>,
 ) => Pick<WalletActions<chain, account>, "writeContract"> {
   const emit = createBridge({ url: `${explorerUrl}/internal/observer-relay` });
