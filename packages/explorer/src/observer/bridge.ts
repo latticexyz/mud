@@ -20,13 +20,18 @@ export function wrapMessage(data: unknown): BridgeEnvelope {
   return { mud: "explorer/observer", data };
 }
 
+const emits = new Map<string, EmitMessage>();
+
 export type CreateBridgeOpts = {
   url: string;
   timeout?: number;
 };
 
 export function createBridge({ url, timeout = 10_000 }: CreateBridgeOpts): EmitMessage {
-  const emit = Promise.withResolvers<EmitMessage>();
+  const priorEmit = emits.get(url);
+  if (priorEmit) return priorEmit;
+
+  const deferredEmit = Promise.withResolvers<EmitMessage>();
   const iframe = document.createElement("iframe");
   iframe.tabIndex = -1;
   iframe.ariaHidden = "true";
@@ -40,7 +45,7 @@ export function createBridge({ url, timeout = 10_000 }: CreateBridgeOpts): EmitM
     () => {
       debug("observer iframe ready", iframe.src);
       // TODO: throw if `iframe.contentWindow` is `null`?
-      emit.resolve((type, data) => {
+      deferredEmit.resolve((type, data) => {
         const message = wrapMessage({ ...data, type, time: Date.now() });
         debug("posting message to bridge", message);
         iframe.contentWindow!.postMessage(message, "*");
@@ -53,29 +58,31 @@ export function createBridge({ url, timeout = 10_000 }: CreateBridgeOpts): EmitM
     "error",
     (error) => {
       debug("observer iframe error", error);
-      emit.reject(error);
+      deferredEmit.reject(error);
     },
     { once: true },
   );
 
   // TODO: should we let the caller handle this with their own promise timeout or race?
   wait(timeout).then(() => {
-    emit.reject(new Error("Timed out waiting for observer iframe to load."));
+    deferredEmit.reject(new Error("Timed out waiting for observer iframe to load."));
   });
 
   debug("mounting observer iframe", url);
   iframe.src = url;
   parent.document.body.appendChild(iframe);
 
-  emit.promise.catch(() => {
+  deferredEmit.promise.catch(() => {
     iframe.remove();
   });
 
-  return (messageType, message) => {
+  const emit: EmitMessage = (messageType, message) => {
     debug("got message for bridge", messageType, message);
-    emit.promise.then(
+    deferredEmit.promise.then(
       (fn) => fn(messageType, message),
       (error) => debug("could not deliver message", message, error),
     );
   };
+  emits.set(url, emit);
+  return emit;
 }
