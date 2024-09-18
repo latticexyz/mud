@@ -2,6 +2,6 @@ import { useParams } from "next/navigation";
 
 export function useWorldUrl() {
   const params = useParams();
-  const { worldAddress } = params;
-  return (page: string) => `/worlds/${worldAddress}/${page}`;
+  const { chainName, worldAddress } = params;
+  return (page: string) => `/${chainName}/worlds/${worldAddress}/${page}`;
 }

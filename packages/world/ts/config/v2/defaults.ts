@@ -32,7 +32,6 @@ export const CODEGEN_DEFAULTS = {
 export type CODEGEN_DEFAULTS = typeof CODEGEN_DEFAULTS;
 
 export const DEPLOY_DEFAULTS = {
-  customWorldContract: undefined,
   postDeployScript: "PostDeploy",
   deploysDirectory: "./deploys",
   worldsFile: "./worlds.json",

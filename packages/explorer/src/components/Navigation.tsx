@@ -8,7 +8,7 @@ import { Separator } from "../components/ui/Separator";
 import { useWorldUrl } from "../hooks/useWorldUrl";
 import { cn } from "../lib/utils";
 import { useAbiQuery } from "../queries/useAbiQuery";
-import { AccountSelect } from "./AccountSelect";
+import { ConnectButton } from "./ConnectButton";
 
 export function Navigation() {
   const pathname = usePathname();
@@ -20,12 +20,12 @@ export function Navigation() {
       <div className="flex items-center justify-between">
         <div className="flex gap-x-6 py-4">
           <Link
-            href={getLinkUrl("explorer")}
+            href={getLinkUrl("explore")}
             className={cn("text-sm uppercase underline-offset-[16px]", {
-              "font-semibold underline decoration-orange-500 decoration-4": pathname === getLinkUrl("explorer"),
+              "font-semibold underline decoration-orange-500 decoration-4": pathname === getLinkUrl("explore"),
             })}
           >
-            Data explorer
+            Explore
           </Link>
 
           <Link
@@ -35,6 +35,15 @@ export function Navigation() {
             })}
           >
             Interact
+          </Link>
+
+          <Link
+            href={getLinkUrl("observe")}
+            className={cn("text-sm uppercase underline-offset-[16px]", {
+              "font-semibold underline decoration-orange-500 decoration-4": pathname === getLinkUrl("observe"),
+            })}
+          >
+            Observe
           </Link>
         </div>
 
@@ -46,7 +55,7 @@ export function Navigation() {
 
         <div className="flex items-center gap-x-4">
           <LatestBlock />
-          <AccountSelect />
+          <ConnectButton />
         </div>
       </div>
 
