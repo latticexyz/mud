@@ -16,11 +16,11 @@ import { DeployedTable } from "./utils/decodeTable";
 type Props = {
   name: string;
   value: string;
-  keysTuple: string[];
+  keyTuple: string[];
   deployedTable: DeployedTable;
 };
 
-export function EditableTableCell({ name, deployedTable, keysTuple, value: defaultValue }: Props) {
+export function EditableTableCell({ name, deployedTable, keyTuple, value: defaultValue }: Props) {
   const [value, setValue] = useState<unknown>(defaultValue);
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
@@ -42,7 +42,7 @@ export function EditableTableCell({ name, deployedTable, keysTuple, value: defau
         abi: IBaseWorldAbi,
         address: worldAddress as Hex,
         functionName: "setField",
-        args: [tableId, keysTuple, fieldIndex, encodedField],
+        args: [tableId, keyTuple, fieldIndex, encodedField],
         chainId,
       });
 

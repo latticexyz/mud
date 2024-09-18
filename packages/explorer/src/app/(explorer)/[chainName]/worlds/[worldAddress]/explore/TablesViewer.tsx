@@ -63,16 +63,14 @@ export function TablesViewer({ deployedTable, rows, columns }: Props) {
               };
             }) => {
               const keysSchema = Object.keys(deployedTable?.keySchema || {});
-              const keysTuple = keysSchema?.map((key) => row.getValue(key));
+              const keyTuple = keysSchema?.map((key) => row.getValue(key));
               const value = row.getValue(name)?.toString();
 
               if (keysSchema.includes(name)) {
                 return value;
               }
 
-              return (
-                <EditableTableCell name={name} deployedTable={deployedTable} keysTuple={keysTuple} value={value} />
-              );
+              return <EditableTableCell name={name} deployedTable={deployedTable} keyTuple={keyTuple} value={value} />;
             },
           };
         })
