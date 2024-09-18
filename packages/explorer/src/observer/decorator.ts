@@ -11,6 +11,8 @@ export type ObserverOptions = {
   waitForStateChange?: WaitForStateChange;
 };
 
+let writeCounter = 0;
+
 export function observer<transport extends Transport, chain extends Chain, account extends Account>({
   explorerUrl = "http://localhost:13690",
   waitForStateChange,
@@ -19,54 +21,47 @@ export function observer<transport extends Transport, chain extends Chain, accou
 ) => Pick<WalletActions<chain, account>, "writeContract"> {
   const emit = createBridge({ url: `${explorerUrl}/internal/observer-relay` });
 
-  setInterval(() => {
-    emit("ping", {});
-  }, 2000);
+  return (client) => ({
+    async writeContract(args) {
+      const writeId = `${client.uid}-${++writeCounter}`;
+      const write = getAction(client, writeContract, "writeContract")(args);
 
-  return (client) => {
-    let counter = 0;
-    return {
-      async writeContract(args) {
-        const writeId = `${client.uid}-${++counter}`;
-        const write = getAction(client, writeContract, "writeContract")(args);
+      // `writeContract` above will throw if this isn't present
+      const functionAbiItem = getAbiItem({
+        abi: args.abi,
+        name: args.functionName,
+        args: args.args,
+      } as never)!;
 
-        // `writeContract` above will throw if this isn't present
-        const functionAbiItem = getAbiItem({
-          abi: args.abi,
-          name: args.functionName,
-          args: args.args,
-        } as never)!;
+      emit("write", {
+        writeId,
+        address: args.address,
+        functionSignature: formatAbiItem(functionAbiItem),
+        args: (args.args ?? []) as never,
+      });
+      Promise.allSettled([write]).then(([result]) => {
+        emit("write:result", { ...result, writeId });
+      });
 
-        emit("write", {
-          writeId,
-          address: args.address,
-          functionSignature: formatAbiItem(functionAbiItem),
-          args: (args.args ?? []) as never,
+      write.then((hash) => {
+        const receipt = getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });
+        emit("waitForTransactionReceipt", { writeId });
+        Promise.allSettled([receipt]).then(([result]) => {
+          emit("waitForTransactionReceipt:result", { ...result, writeId });
         });
-        Promise.allSettled([write]).then(([result]) => {
-          emit("write:result", { ...result, writeId });
-        });
+      });
 
+      if (waitForStateChange) {
         write.then((hash) => {
-          const receipt = getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });
-          emit("waitForTransactionReceipt", { writeId });
+          const receipt = waitForStateChange(hash);
+          emit("waitForStateChange", { writeId });
           Promise.allSettled([receipt]).then(([result]) => {
-            emit("waitForTransactionReceipt:result", { ...result, writeId });
+            emit("waitForStateChange:result", { ...result, writeId });
           });
         });
+      }
 
-        if (waitForStateChange) {
-          write.then((hash) => {
-            const receipt = waitForStateChange(hash);
-            emit("waitForStateChange", { writeId });
-            Promise.allSettled([receipt]).then(([result]) => {
-              emit("waitForStateChange:result", { ...result, writeId });
-            });
-          });
-        }
-
-        return write;
-      },
-    };
-  };
+      return write;
+    },
+  });
 }
