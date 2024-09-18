@@ -1,0 +1,282 @@
+import { CollapseCode } from "../../../components/CollapseCode";
+import FilterTypes from "../../../components/common-text/FilterTypes.mdx";
+
+# Add dozer hydration
+
+<FilterTypes />
+
+In this tutorial you learn how to add dozer hydration to an existing MUD application, such as the ones created by the template.
+To avoid running dozer locally, we use a `World` on Garnet at address [`0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e`](https://explorer.garnetchain.com/address/0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e) that runs a slightly modified version of [the React template](https://github.com/latticexyz/mud/tree/main/templates/react).
+You can see the data schema for the `World` [in the block explorer](https://explorer.garnetchain.com/address/0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e?tab=mud).
+
+## Create a client to access the `World`
+
+These are the steps to create a client that can access the `World`.
+
+1. Create and run a react template application.
+
+   ```sh copy
+   pnpm create mud@latest tasks --template react
+   cd tasks
+   pnpm dev
+   ```
+
+1. [Browse to the application](http://localhost:3000/?chainId=17069&worldAddress=0x95f5d049b014114e2feeb5d8d994358ce4ffd06e).
+   The URL specifies the `chainId` and `worldAddress` for the `World`.
+
+1. In MUD DevTools see your account address and [fund it on Garnet](https://garnetchain.com/faucet).
+   You may need to get test ETH for your own address, and then transfer it to the account address the application uses.
+
+1. You can now create, complete, and delete tasks.
+
+1. To see the content of the `app__Creator` table, edit `packages/contracts/mud.config.ts` to add the `Creator` table definition.
+
+   <CollapseCode>
+
+   ```typescript filename="mud.config.ts" copy showLineNumbers {15-21}
+   import { defineWorld } from "@latticexyz/world";
+
+   export default defineWorld({
+     namespace: "app",
+     tables: {
+       Tasks: {
+         schema: {
+           id: "bytes32",
+           createdAt: "uint256",
+           completedAt: "uint256",
+           description: "string",
+         },
+         key: ["id"],
+       },
+       Creator: {
+         schema: {
+           id: "bytes32",
+           taskCreator: "address",
+         },
+         key: ["id"],
+       },
+     },
+   });
+   ```
+
+   </CollapseCode>
+
+### Updating the client to use dozer
+
+The main purpose of dozer is to allow MUD clients to specify the subset of table records that a client needs, instead of synchronizing whole tables.
+
+To update the client, you change `packages/client/src/mud/setupNetwork.ts` to:
+
+<CollapseCode>
+
+```typescript filename="setupNetwork.ts" copy showLineNumbers {17, 80-97, 106-107}
+/*
+ * The MUD client code is built on top of viem
+ * (https://viem.sh/docs/getting-started.html).
+ * This line imports the functions we need from it.
+ */
+import {
+  createPublicClient,
+  fallback,
+  webSocket,
+  http,
+  createWalletClient,
+  Hex,
+  ClientConfig,
+  getContract,
+} from "viem";
+
+import { DozerSyncFilter, getSnapshot, selectFrom } from "@latticexyz/store-sync/dozer";
+
+import { syncToZustand } from "@latticexyz/store-sync/zustand";
+import { getNetworkConfig } from "./getNetworkConfig";
+import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
+import { createBurnerAccount, transportObserver, ContractWrite } from "@latticexyz/common";
+import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
+import { Subject, share } from "rxjs";
+
+/*
+ * Import our MUD config, which includes strong types for
+ * our tables and other config options. We use this to generate
+ * things like RECS components and get back strong types for them.
+ *
+ * See https://mud.dev/templates/typescript/contracts#mudconfigts
+ * for the source of this information.
+ */
+import mudConfig from "contracts/mud.config";
+
+export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
+
+export async function setupNetwork() {
+  const networkConfig = await getNetworkConfig();
+
+  /*
+   * Create a viem public (read only) client
+   * (https://viem.sh/docs/clients/public.html)
+   */
+  const clientOptions = {
+    chain: networkConfig.chain,
+    transport: transportObserver(fallback([webSocket(), http()])),
+    pollingInterval: 1000,
+  } as const satisfies ClientConfig;
+
+  const publicClient = createPublicClient(clientOptions);
+
+  /*
+   * Create an observable for contract writes that we can
+   * pass into MUD dev tools for transaction observability.
+   */
+  const write$ = new Subject<ContractWrite>();
+
+  /*
+   * Create a temporary wallet and a viem client for it
+   * (see https://viem.sh/docs/clients/wallet.html).
+   */
+  const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
+  const burnerWalletClient = createWalletClient({
+    ...clientOptions,
+    account: burnerAccount,
+  })
+    .extend(transactionQueue())
+    .extend(writeObserver({ onWrite: (write) => write$.next(write) }));
+
+  /*
+   * Create an object for communicating with the deployed World.
+   */
+  const worldContract = getContract({
+    address: networkConfig.worldAddress as Hex,
+    abi: IWorldAbi,
+    client: { public: publicClient, wallet: burnerWalletClient },
+  });
+
+  const dozerUrl = "https://dozer.mud.garnetchain.com/q";
+  const yesterday = Date.now() / 1000 - 24 * 60 * 60;
+  const filters: DozerSyncFilter[] = [
+    selectFrom({
+      table: mudConfig.tables.app__Tasks,
+      where: `"createdAt" > ${yesterday}`,
+    }),
+    { table: mudConfig.tables.app__Creator },
+  ];
+  const { initialBlockLogs } = await getSnapshot({
+    dozerUrl,
+    storeAddress: networkConfig.worldAddress as Hex,
+    filters,
+    chainId: networkConfig.chainId,
+  });
+  const liveSyncFilters = filters.map((filter) => ({
+    tableId: filter.table.tableId,
+  }));
+
+  /*
+   * Sync on-chain state into RECS and keeps our client in sync.
+   * Uses the MUD indexer if available, otherwise falls back
+   * to the viem publicClient to make RPC calls to fetch MUD
+   * events from the chain.
+   */
+  const { tables, useStore, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToZustand({
+    initialBlockLogs,
+    filters: liveSyncFilters,
+    config: mudConfig,
+    address: networkConfig.worldAddress as Hex,
+    publicClient,
+    startBlock: BigInt(networkConfig.initialBlockNumber),
+  });
+
+  return {
+    tables,
+    useStore,
+    publicClient,
+    walletClient: burnerWalletClient,
+    latestBlock$,
+    storedBlockLogs$,
+    waitForTransaction,
+    worldContract,
+    write$: write$.asObservable().pipe(share()),
+  };
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```typescript
+import { DozerSyncFilter, getSnapshot, selectFrom } from "@latticexyz/store-sync/dozer";
+```
+
+Import the dozer definitions we need.
+
+```typescript
+const dozerUrl = "https://dozer.mud.garnetchain.com/q";
+```
+
+The URL for the dozer service.
+This is simplified testing code, on a production system this will probably be a lookup table based on the chainId.
+
+```typescript
+const yesterday = Date.now() / 1000 - 24 * 60 * 60;
+```
+
+In JavaScript (and therefore TypeScript), time is stored as milliseconds since [the beginning of the epoch](https://en.wikipedia.org/wiki/Unix_time).
+In UNIX, and therefore in Ethereum, time is stored as seconds since that same point.
+This is the timestamp 24 hours ago.
+
+```typescript
+  const filters: DozerSyncFilter[] = [
+```
+
+We create the dozer filter for the tables we're interested in.
+This is the _dozer_ filter, so it is only used for the initial hydration of the client.
+
+```typescript
+    selectFrom({
+      table: mudConfig.tables.app__Tasks,
+      where: `"createdAt" > ${yesterday}`,
+    }),
+```
+
+From the `app__Tasks` table we only want entries created in the last 24 hours.
+To verify that the filter works as expected you can later change the code to only look for entries older than 24 hours.
+
+```typescript
+    { table: mudConfig.tables.app__Creator },
+  ];
+```
+
+We also want the entire `app__Counter` table.
+
+```typescript
+const { initialBlockLogs } = await getSnapshot({
+  dozerUrl,
+  storeAddress: networkConfig.worldAddress as Hex,
+  filters,
+  chainId: networkConfig.chainId,
+});
+```
+
+Get the initial snapshot to hydrate (fill with initial information) the data store.
+Note that this snapshot does not have the actual data, but the events that created it.
+
+```typescript
+const liveSyncFilters = filters.map((filter) => ({
+  tableId: filter.table.tableId,
+}));
+```
+
+The live synchronization filters are used after the initial hydration, and keep up with changes on the blockchain.
+These synchronization filters are a lot more limited, [you can read the description of these filters here](/guides/hello-world/filter-sync#filtering).
+
+```typescript
+  const { ... } = await syncToZustand({
+    initialBlockLogs,
+    filters: liveSyncFilters,
+      ...
+  });
+```
+
+Finally, we provide `initialBlockLogs` for the hydration and `filters` for the updates to the synchronization function (either `syncToRecs` or `syncToZustand`).
+
+</details>
