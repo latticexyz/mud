@@ -1,6 +1,5 @@
 import { Lock } from "lucide-react";
 import { useParams } from "next/navigation";
-import { internalTableNames } from "@latticexyz/store-sync/sqlite";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../../../components/ui/Select";
 
 type Props = {
@@ -28,9 +27,7 @@ export function TableSelector({ value, options }: Props) {
           {options?.map((option) => {
             return (
               <SelectItem key={option} value={option} className="font-mono">
-                {(internalTableNames as string[]).includes(option) && (
-                  <Lock className="mr-2 inline-block opacity-70" size={14} />
-                )}
+                {<Lock className="mr-2 inline-block opacity-70" size={14} />}
                 {option.replace(`${worldAddress}__`, "")}
               </SelectItem>
             );
