@@ -54,6 +54,7 @@
     "@tanstack/react-table": "^8.19.3",
     "@wagmi/core": "catalog:",
     "better-sqlite3": "^8.6.0",
+    "burner-connector": "^0.0.8",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "debug": "^4.3.4",
