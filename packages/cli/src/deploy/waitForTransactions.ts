@@ -21,6 +21,7 @@ export async function waitForTransactions({
       hash,
       pollingInterval: 100,
       retryDelay: ({ count }) => 2 ** count * 200,
+      retryCount: 8,
     });
     if (receipt.status === "reverted") {
       throw new Error(`Transaction reverted: ${hash}`);
