@@ -1,5 +1,30 @@
 # Change Log
 
+## 2.2.4
+
+### Patch Changes
+
+- 2f935cf: To reset an account's nonce, the nonce manager uses the [`eth_getTransactionCount`](https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_gettransactioncount) RPC method,
+  which returns the number of transactions sent from the account.
+  When using the `pending` block tag, this includes transactions in the mempool that have not been included in a block yet.
+  If an account submits a transaction with a nonce higher than the next valid nonce, this transaction will stay in the mempool until the nonce gap is closed and the transactions nonce is the next valid nonce.
+  This means if an account has gapped transactions "stuck in the mempool", the `eth_getTransactionCount` method with `pending` block tag can't be used to get the next valid nonce
+  (since it includes the number of transactions stuck in the mempool).
+  Since the nonce manager only resets the nonce on reload or in case of a nonce error, using the `latest` block tag by default is the safer choice to be able to recover from nonce gaps.
+
+  Note that this change may reveal more "transaction underpriced" errors than before. These errors will now be retried automatically and should go through after the next block is mined.
+
+- 50010fb: Bumped viem, wagmi, and abitype packages to their latest release.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.6 wagmi@2.12.11 @wagmi/core@2.13.5 abitype@1.0.6
+  ```
+
+- Updated dependencies [50010fb]
+  - @latticexyz/schema-type@2.2.4
+
 ## 2.2.3
 
 ### Patch Changes
