@@ -19,12 +19,12 @@ export function DataExplorerDozer() {
   } = useTableDataQuery({ schema: deployedTable?.schema, query });
 
   useEffect(() => {
-    if (!deployedTable) return;
-
-    const columns = Object.keys(deployedTable?.schema);
-    const fullTableName = `${deployedTable.namespace}__${deployedTable.name}`;
-    const newQuery = `select ${columns.join(", ")} from ${fullTableName}`;
-    setQuery(newQuery);
+    if (deployedTable) {
+      const columns = Object.keys(deployedTable?.schema);
+      const fullTableName = `${deployedTable.namespace}__${deployedTable.name}`;
+      const newQuery = `select ${columns.join(", ")} from ${fullTableName}`;
+      setQuery(newQuery);
+    }
   }, [deployedTable, selectedTableId]);
 
   return (
