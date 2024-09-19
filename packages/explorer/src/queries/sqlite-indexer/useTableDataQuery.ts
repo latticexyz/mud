@@ -3,7 +3,7 @@ import { Hex } from "viem";
 import { useQuery } from "@tanstack/react-query";
 import { DeployedTable } from "../../app/(explorer)/[chainName]/worlds/[worldAddress]/explore/utils/decodeTable";
 import { bufferToBigInt } from "../../app/(explorer)/[chainName]/worlds/[worldAddress]/utils/bufferToBigInt";
-import { camelCase } from "../../lib/utils";
+import { camelCase, snakeCase } from "../../lib/utils";
 
 type Props = {
   deployedTable: DeployedTable | undefined;
@@ -11,8 +11,10 @@ type Props = {
 
 function getSqliteTableId(worldAddress: Hex, deployedTable?: DeployedTable) {
   if (!deployedTable) return undefined;
-  if (!deployedTable.namespace) return `${worldAddress}__${deployedTable.name}`.toLowerCase();
-  return `${worldAddress}__${deployedTable.namespace}__${deployedTable.name}`.toLowerCase();
+  const sqliteTableName = snakeCase(deployedTable.name);
+
+  if (!deployedTable.namespace) return `${worldAddress}_${sqliteTableName}`.toLowerCase();
+  return `${worldAddress}__${deployedTable.namespace}_${sqliteTableName}`.toLowerCase();
 }
 
 export function useTableDataQuery({ deployedTable }: Props) {

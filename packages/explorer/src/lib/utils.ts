@@ -11,6 +11,10 @@ export function camelCase(str: string) {
   return a.substring(0, 1).toLowerCase() + a.substring(1);
 }
 
+export function snakeCase(str: string) {
+  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+}
+
 export function formatBalance(wei: bigint) {
   const formatted = formatEther(wei);
   const magnitude = Math.floor(parseFloat(formatted)).toString().length;
