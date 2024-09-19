@@ -1,4 +1,4 @@
-import { CreateStoreResult, getTable, StoreConfig } from "@latticexyz/stash/internal";
+import { CreateStoreResult, deleteRecord, getRecord, setRecord, StoreConfig } from "@latticexyz/stash/internal";
 import {
   decodeKey,
   decodeValueArgs,
@@ -27,21 +27,18 @@ export function createStorageAdapter<const config extends StoreConfig>({
 
   return async function storageAdapter({ logs }: StorageAdapterBlock): Promise<void> {
     for (const log of logs) {
-      const tableConfig = tablesById[log.args.tableId];
-      if (!tableConfig) continue;
+      const table = tablesById[log.args.tableId];
+      if (!table) continue;
 
-      // TODO: this should probably return `| undefined`?
-      const table = getTable({ stash, table: tableConfig });
-
-      const valueSchema = getSchemaTypes(getValueSchema(tableConfig));
-      const keySchema = getSchemaTypes(getKeySchema(tableConfig));
+      const valueSchema = getSchemaTypes(getValueSchema(table));
+      const keySchema = getSchemaTypes(getKeySchema(table));
       const key = decodeKey(keySchema, log.args.keyTuple);
 
       if (log.eventName === "Store_SetRecord") {
         const value = decodeValueArgs(valueSchema, log.args);
-        table.setRecord({ key, value });
+        setRecord({ stash, table, key, value });
       } else if (log.eventName === "Store_SpliceStaticData") {
-        const previousValue = table.getRecord({ key });
+        const previousValue = getRecord({ stash, table, key });
 
         const {
           staticData: previousStaticData,
@@ -56,9 +53,9 @@ export function createStorageAdapter<const config extends StoreConfig>({
           dynamicData,
         });
 
-        table.setRecord({ key, value });
+        setRecord({ stash, table, key, value });
       } else if (log.eventName === "Store_SpliceDynamicData") {
-        const previousValue = table.getRecord({ key });
+        const previousValue = getRecord({ stash, table, key });
 
         const { staticData, dynamicData: previousDynamicData } = previousValue
           ? encodeValueArgs(valueSchema, previousValue)
@@ -71,9 +68,9 @@ export function createStorageAdapter<const config extends StoreConfig>({
           dynamicData,
         });
 
-        table.setRecord({ key, value });
+        setRecord({ stash, table, key, value });
       } else if (log.eventName === "Store_DeleteRecord") {
-        table.deleteRecord({ key });
+        deleteRecord({ stash, table, key });
       }
     }
   };
