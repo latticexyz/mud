@@ -3,22 +3,21 @@
 "@latticexyz/world": patch
 ---
 
-Added a `syncToStash` util to hydrate a `stash` client store from MUD contract state.
+Added a `syncToStash` util to hydrate a `stash` client store from MUD contract state. This is currently exported from `@latticexyz/store-sync/internal` while Stash package is unstable/experimental.
 
 ```ts
 import config from "mud.config";
-import { createStash } from "@latticexyz/stash/internal";
 import { createClient, http } from "viem";
 import { anvil } from "viem/chains";
+import { createStash } from "@latticexyz/stash/internal";
+import { syncToStash } from "@latticexyz/store-sync/internal";
 
 const address = "0x...";
-const stash = createStash(config);
 const client = createClient({
   chain: anvil,
   transport: http(),
 });
 
-const sync = await syncToStash({ config, stash, client, address });
-// subscribe to start the sync
-sync.storedBlockLogs$.subscribe();
+const stash = createStash(config);
+const sync = await syncToStash({ stash, client, address });
 ```
