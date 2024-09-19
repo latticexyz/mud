@@ -11,8 +11,7 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
-    "./internal": "./dist/internal.js",
-    "./recs": "./dist/recs.js"
+    "./internal": "./dist/internal.js"
   },
   "typesVersions": {
     "*": {
