@@ -1,5 +1,25 @@
 # @latticexyz/explorer
 
+## 2.2.5
+
+### Patch Changes
+
+- 55ae822: Refactored `observer` initialization to reuse bridge iframes with the same `url`.
+- 55ae822: Fixed favicon paths and fixed a few issues where we were incorrectly redirecting based on the chain name or ID.
+- 55ae822: Fixed an issue where the `observer` Viem client decorator required an empty object arg when no options are used.
+
+  ```diff
+  -client.extend(observer({}));
+  +client.extend(observer());
+  ```
+
+  - @latticexyz/common@2.2.5
+  - @latticexyz/protocol-parser@2.2.5
+  - @latticexyz/schema-type@2.2.5
+  - @latticexyz/store@2.2.5
+  - @latticexyz/store-sync@2.2.5
+  - @latticexyz/world@2.2.5
+
 ## 2.2.4
 
 ### Patch Changes

@@ -1,3 +1,28 @@
+## Version 2.2.5
+
+Release date: Thu Sep 19 2024
+
+### Patch changes
+
+**[fix(explorer): various fixes (#3195)](https://github.com/latticexyz/mud/commit/55ae82299985fd927cb45cf0d262c7fded156763)** (@latticexyz/explorer)
+
+Refactored `observer` initialization to reuse bridge iframes with the same `url`.
+
+**[fix(explorer): various fixes (#3195)](https://github.com/latticexyz/mud/commit/55ae82299985fd927cb45cf0d262c7fded156763)** (@latticexyz/explorer)
+
+Fixed favicon paths and fixed a few issues where we were incorrectly redirecting based on the chain name or ID.
+
+**[fix(explorer): various fixes (#3195)](https://github.com/latticexyz/mud/commit/55ae82299985fd927cb45cf0d262c7fded156763)** (@latticexyz/explorer)
+
+Fixed an issue where the `observer` Viem client decorator required an empty object arg when no options are used.
+
+```diff
+-client.extend(observer({}));
++client.extend(observer());
+```
+
+---
+
 ## Version 2.2.4
 
 Release date: Wed Sep 18 2024
