@@ -1,5 +1,20 @@
 # Change Log
 
+## 2.2.5
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.5
+- @latticexyz/utils@2.2.5
+
+## 2.2.4
+
+### Patch Changes
+
+- Updated dependencies [50010fb]
+  - @latticexyz/schema-type@2.2.4
+  - @latticexyz/utils@2.2.4
+
 ## 2.2.3
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store-sync",
-  "version": "2.2.3",
+  "version": "2.2.5",
   "description": "Utilities to sync MUD Store events with a client or cache",
   "repository": {
     "type": "git",
@@ -12,6 +12,7 @@
   "exports": {
     ".": "./dist/index.js",
     "./indexer-client": "./dist/indexer-client/index.js",
+    "./internal": "./dist/exports/internal.js",
     "./postgres": "./dist/postgres/index.js",
     "./postgres-decoded": "./dist/postgres-decoded/index.js",
     "./recs": "./dist/recs/index.js",
@@ -26,6 +27,9 @@
       ],
       "indexer-client": [
         "./dist/indexer-client/index.d.ts"
+      ],
+      "internal": [
+        "./dist/exports/internal.d.ts"
       ],
       "postgres": [
         "./dist/postgres/index.d.ts"

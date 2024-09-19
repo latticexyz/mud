@@ -1,11 +1,22 @@
-import { Schema, Table } from "@latticexyz/config";
+import { StaticAbiType, Table } from "@latticexyz/config";
 
 type PartialTable = Pick<Table, "schema" | "key">;
 
+export type ResolvedKeySchema = {
+  readonly [fieldName: string]: {
+    /** the Solidity primitive ABI type */
+    readonly type: StaticAbiType;
+    /** the user defined type or Solidity primitive ABI type */
+    readonly internalType: string;
+  };
+};
+
 export type getKeySchema<table extends PartialTable> = PartialTable extends table
-  ? Schema
+  ? ResolvedKeySchema
   : {
-      readonly [fieldName in Extract<keyof table["schema"], table["key"][number]>]: table["schema"][fieldName];
+      readonly [fieldName in Extract<keyof table["schema"], table["key"][number]>]: table["schema"][fieldName] & {
+        type: StaticAbiType;
+      };
     };
 
 export function getKeySchema<table extends PartialTable>(table: table): getKeySchema<table> {
