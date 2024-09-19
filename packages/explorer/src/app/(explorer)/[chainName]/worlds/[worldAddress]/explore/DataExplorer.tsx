@@ -24,7 +24,7 @@ export function DataExplorer() {
     throwOnError: true,
     retry: false,
   });
-  const selectedTable = searchParams.get("table") || (tables?.length > 0 ? tables[0] : null);
+  const selectedTable = searchParams.get("tableId") || (tables?.length > 0 ? tables[0] : null);
 
   if (isLoading) {
     return <Loader className="animate-spin" />;
