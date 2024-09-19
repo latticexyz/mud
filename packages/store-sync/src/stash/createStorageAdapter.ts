@@ -6,7 +6,6 @@ import {
   getKeySchema,
   getSchemaTypes,
   getValueSchema,
-  KeySchema,
 } from "@latticexyz/protocol-parser/internal";
 import { spliceHex } from "@latticexyz/common";
 import { size } from "viem";
@@ -20,18 +19,22 @@ export type CreateStorageAdapter<config extends StoreConfig> = {
 export function createStorageAdapter<const config extends StoreConfig>({
   stash,
 }: CreateStorageAdapter<config>): StorageAdapter {
-  const tables = Object.values(stash.get().config).flatMap((namespace) => Object.values(namespace)) as readonly Table[];
+  const tablesById = Object.fromEntries(
+    Object.values(stash.get().config)
+      .flatMap((namespace) => Object.values(namespace) as readonly Table[])
+      .map((table) => [table.tableId, table]),
+  );
 
   return async function storageAdapter({ logs }: StorageAdapterBlock): Promise<void> {
     for (const log of logs) {
-      const tableConfig = tables.find((t) => t.tableId === log.args.tableId);
+      const tableConfig = tablesById[log.args.tableId];
       if (!tableConfig) continue;
 
       // TODO: this should probably return `| undefined`?
       const table = getTable({ stash, table: tableConfig });
 
       const valueSchema = getSchemaTypes(getValueSchema(tableConfig));
-      const keySchema = getSchemaTypes(getKeySchema(tableConfig)) as KeySchema;
+      const keySchema = getSchemaTypes(getKeySchema(tableConfig));
       const key = decodeKey(keySchema, log.args.keyTuple);
 
       if (log.eventName === "Store_SetRecord") {
