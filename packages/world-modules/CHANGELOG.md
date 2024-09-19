@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.2.5
+
+### Patch Changes
+
+- @latticexyz/common@2.2.5
+- @latticexyz/config@2.2.5
+- @latticexyz/schema-type@2.2.5
+- @latticexyz/store@2.2.5
+- @latticexyz/world@2.2.5
+
 ## 2.2.4
 
 ### Patch Changes
