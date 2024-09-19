@@ -59,7 +59,7 @@ export function TableSelector({
           <Command>
             <CommandInput placeholder="Search tables..." className="font-mono" />
             <CommandList>
-              <CommandEmpty>No table found.</CommandEmpty>
+              <CommandEmpty className="py-4 text-center font-mono text-sm">No table found.</CommandEmpty>
               <CommandGroup>
                 {deployedTables?.map((table) => {
                   return (
