@@ -1,4 +1,4 @@
-import { CreateStoreResult, deleteRecord, getRecord, setRecord, StoreConfig } from "@latticexyz/stash/internal";
+import { CreateStashResult, deleteRecord, getRecord, setRecord, StoreConfig } from "@latticexyz/stash/internal";
 import {
   decodeKey,
   decodeValueArgs,
@@ -13,7 +13,7 @@ import { Table } from "@latticexyz/config";
 import { StorageAdapter, StorageAdapterBlock, emptyValueArgs } from "../common";
 
 export type CreateStorageAdapter<config extends StoreConfig> = {
-  stash: CreateStoreResult<config>;
+  stash: CreateStashResult<config>;
 };
 
 export function createStorageAdapter<const config extends StoreConfig>({

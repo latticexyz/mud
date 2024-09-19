@@ -5,12 +5,12 @@ import { Table } from "@latticexyz/store/config/v2";
 
 export type Config = StoreConfig;
 
-export type CreateStoreResult<config extends Config = Config> = Stash<config> & DefaultActions<config>;
+export type CreateStashResult<config extends Config = Config> = Stash<config> & DefaultActions<config>;
 
 /**
  * Initializes a Stash based on the provided store config.
  */
-export function createStash<config extends Config>(storeConfig?: config): CreateStoreResult<config> {
+export function createStash<config extends Config>(storeConfig?: config): CreateStashResult<config> {
   const tableSubscribers: TableSubscribers = {};
   const storeSubscribers: StoreSubscribers = new Set();
 

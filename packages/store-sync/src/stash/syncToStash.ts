@@ -1,4 +1,4 @@
-import { CreateStoreResult, StoreConfig, getRecord, setRecord, registerTable } from "@latticexyz/stash/internal";
+import { CreateStashResult, StoreConfig, getRecord, setRecord, registerTable } from "@latticexyz/stash/internal";
 import { Address, Client, publicActions } from "viem";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { defineTable } from "@latticexyz/store/config/v2";
@@ -29,7 +29,7 @@ export const initialProgress = {
 } satisfies getSchemaPrimitives<getValueSchema<typeof SyncProgress>>;
 
 export type SyncToStashOptions<config extends StoreConfig> = {
-  stash: CreateStoreResult<config>;
+  stash: CreateStashResult<config>;
   client: Client;
   address: Address;
   startSync?: boolean;
