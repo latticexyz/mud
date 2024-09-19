@@ -22,7 +22,7 @@ export function DataExplorerDozer() {
     if (deployedTable) {
       const columns = Object.keys(deployedTable?.schema);
       const fullTableName = `${deployedTable.namespace}__${deployedTable.name}`;
-      const newQuery = `select ${columns.join(", ")} from ${fullTableName} limit 100`;
+      const newQuery = `SELECT ${columns.join(", ")} FROM ${fullTableName} LIMIT 100`;
       setQuery(newQuery);
     }
   }, [deployedTable, selectedTableId]);
