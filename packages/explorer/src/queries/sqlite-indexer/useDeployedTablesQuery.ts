@@ -20,7 +20,7 @@ export function useDeployedTablesQuery() {
   const TABLES_QUERY_TABLE = `${worldAddress}__store__tables`;
 
   return useQuery({
-    queryKey: ["rows", TABLES_QUERY_TABLE],
+    queryKey: ["deployedTables", TABLES_QUERY_TABLE],
     queryFn: async () => {
       const response = await fetch(`/api/table?tableId=${TABLES_QUERY_TABLE}`);
       return response.json();

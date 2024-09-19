@@ -12,7 +12,7 @@ export function DataExplorerDozer() {
   const [query, setQuery] = useState<string | undefined>(undefined);
   const searchParams = useSearchParams();
   const { data: deployedTables } = useDeployedTablesQuery();
-  const selectedTableId = searchParams.get("table") ?? deployedTables?.[0]?.tableId;
+  const selectedTableId = searchParams.get("tableId") ?? deployedTables?.[0]?.tableId;
   const deployedTable = deployedTables?.find(({ tableId }) => tableId === selectedTableId);
   const {
     data: { rows, columns },
@@ -22,7 +22,7 @@ export function DataExplorerDozer() {
     if (deployedTable) {
       const columns = Object.keys(deployedTable?.schema);
       const fullTableName = `${deployedTable.namespace}__${deployedTable.name}`;
-      const newQuery = `select ${columns.join(", ")} from ${fullTableName}`;
+      const newQuery = `select ${columns.join(", ")} from ${fullTableName} limit 100`;
       setQuery(newQuery);
     }
   }, [deployedTable, selectedTableId]);
