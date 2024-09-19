@@ -62,7 +62,7 @@ export type LibraryPlaceholder = {
 export type DeterministicContract = {
   readonly prepareDeploy: (
     deployer: Address,
-    libraryMap: LibraryMap,
+    libraryMap?: LibraryMap,
   ) => {
     readonly address: Address;
     readonly bytecode: Hex;

@@ -1,5 +1,37 @@
 # Change Log
 
+## 2.2.6
+
+### Patch Changes
+
+- 22c37c3: Significantly improved the deployment performance for large projects with public libraries by implementing a more efficient algorithm to resolve public libraries during deployment.
+  The local deployment time on a large reference project was reduced from over 10 minutes to 4 seconds.
+  - @latticexyz/abi-ts@2.2.6
+  - @latticexyz/common@2.2.6
+  - @latticexyz/config@2.2.6
+  - @latticexyz/gas-report@2.2.6
+  - @latticexyz/protocol-parser@2.2.6
+  - @latticexyz/schema-type@2.2.6
+  - @latticexyz/store@2.2.6
+  - @latticexyz/utils@2.2.6
+  - @latticexyz/world@2.2.6
+  - @latticexyz/world-module-metadata@2.2.6
+
+## 2.2.5
+
+### Patch Changes
+
+- @latticexyz/abi-ts@2.2.5
+- @latticexyz/common@2.2.5
+- @latticexyz/config@2.2.5
+- @latticexyz/gas-report@2.2.5
+- @latticexyz/protocol-parser@2.2.5
+- @latticexyz/schema-type@2.2.5
+- @latticexyz/store@2.2.5
+- @latticexyz/utils@2.2.5
+- @latticexyz/world@2.2.5
+- @latticexyz/world-module-metadata@2.2.5
+
 ## 2.2.4
 
 ### Patch Changes

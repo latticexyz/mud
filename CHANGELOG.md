@@ -1,3 +1,73 @@
+## Version 2.2.6
+
+Release date: Thu Sep 19 2024
+
+### Patch changes
+
+**[feat(stash): release package to npm (#3184)](https://github.com/latticexyz/mud/commit/20fac30f2fb1e026f195ffe42c014cfaf9877376)** (@latticexyz/stash)
+
+Added `@latticexyz/stash` package, a TypeScript client state library optimized for the MUD Store data model.
+It uses the MUD store config to define local tables, which support writing, reading and subscribing to table updates.
+It comes with a query engine optimized for "ECS-style" queries (similar to `@latticexyz/recs`) but with native support for composite keys.
+
+You can find usage examples in the [`@latticexyz/stash` README.md](https://github.com/latticexyz/mud/blob/main/packages/stash/README.md).
+
+This package is experimental and will have breaking changes while we refine its APIs and implementation. All of its exports are temporarily under `@latticexyz/stash/internal` until we consider it stable.
+
+**[fix(cli): improve performance of linked library resolution during deployment (#3197)](https://github.com/latticexyz/mud/commit/22c37c3dbec5726f52055ed61c4e5f0e52ed30c1)** (@latticexyz/cli)
+
+Significantly improved the deployment performance for large projects with public libraries by implementing a more efficient algorithm to resolve public libraries during deployment.
+The local deployment time on a large reference project was reduced from over 10 minutes to 4 seconds.
+
+**[feat(store-sync): add syncToStash util (#3192)](https://github.com/latticexyz/mud/commit/8dc588918c488f98603cbb7e183c88129942debe)** (@latticexyz/store-sync)
+
+Added a `syncToStash` util to hydrate a `stash` client store from MUD contract state. This is currently exported from `@latticexyz/store-sync/internal` while Stash package is unstable/experimental.
+
+```ts
+import { createClient, http } from "viem";
+import { anvil } from "viem/chains";
+import { createStash } from "@latticexyz/stash/internal";
+import { syncToStash } from "@latticexyz/store-sync/internal";
+import config from "../mud.config";
+
+const client = createClient({
+  chain: anvil,
+  transport: http(),
+});
+
+const address = "0x...";
+
+const stash = createStash(config);
+const sync = await syncToStash({ stash, client, address });
+```
+
+---
+
+## Version 2.2.5
+
+Release date: Thu Sep 19 2024
+
+### Patch changes
+
+**[fix(explorer): various fixes (#3195)](https://github.com/latticexyz/mud/commit/55ae82299985fd927cb45cf0d262c7fded156763)** (@latticexyz/explorer)
+
+Refactored `observer` initialization to reuse bridge iframes with the same `url`.
+
+**[fix(explorer): various fixes (#3195)](https://github.com/latticexyz/mud/commit/55ae82299985fd927cb45cf0d262c7fded156763)** (@latticexyz/explorer)
+
+Fixed favicon paths and fixed a few issues where we were incorrectly redirecting based on the chain name or ID.
+
+**[fix(explorer): various fixes (#3195)](https://github.com/latticexyz/mud/commit/55ae82299985fd927cb45cf0d262c7fded156763)** (@latticexyz/explorer)
+
+Fixed an issue where the `observer` Viem client decorator required an empty object arg when no options are used.
+
+```diff
+-client.extend(observer({}));
++client.extend(observer());
+```
+
+---
+
 ## Version 2.2.4
 
 Release date: Wed Sep 18 2024

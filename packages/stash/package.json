@@ -1,7 +1,6 @@
 {
   "name": "@latticexyz/stash",
-  "version": "2.2.4",
-  "private": true,
+  "version": "2.2.6",
   "description": "High performance client store and query engine for MUD",
   "repository": {
     "type": "git",
@@ -12,8 +11,7 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
-    "./internal": "./dist/internal.js",
-    "./recs": "./dist/recs.js"
+    "./internal": "./dist/internal.js"
   },
   "typesVersions": {
     "*": {

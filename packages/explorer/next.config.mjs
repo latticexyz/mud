@@ -11,9 +11,14 @@ export default function config() {
     redirects: async () => {
       return [
         {
+          source: "/worlds/:path*",
+          destination: "/anvil/worlds/:path*",
+          permanent: false,
+        },
+        {
           source: "/:chainName/worlds/:worldAddress/explorer",
           destination: "/:chainName/worlds/:worldAddress/explore",
-          permanent: true,
+          permanent: false,
         },
       ];
     },
