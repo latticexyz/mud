@@ -9,7 +9,7 @@ import { TablesViewer } from "./TablesViewer";
 export function DataExplorerSqlite() {
   const searchParams = useSearchParams();
   const { data: deployedTables } = useDeployedTablesQuery();
-  const selectedTableId = searchParams.get("table") ?? deployedTables?.[0]?.tableId;
+  const selectedTableId = searchParams.get("tableId") ?? deployedTables?.[0]?.tableId;
   const deployedTable = deployedTables?.find(({ tableId }) => tableId === selectedTableId);
   const columns = Object.keys(deployedTable?.schema ?? {});
   const { data: rows } = useTableDataQuery({ deployedTable });
