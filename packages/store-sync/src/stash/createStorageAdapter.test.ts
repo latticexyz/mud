@@ -14,7 +14,7 @@ describe("createStorageAdapter", async () => {
 
   it("sets component values from logs", async () => {
     const stash = createStash(config);
-    const storageAdapter = createStorageAdapter({ config, stash });
+    const storageAdapter = createStorageAdapter({ stash });
 
     console.log("fetching blocks");
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
