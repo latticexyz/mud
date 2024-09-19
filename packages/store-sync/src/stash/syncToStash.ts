@@ -1,4 +1,4 @@
-import { CreateStashResult, StoreConfig, getRecord, setRecord, registerTable } from "@latticexyz/stash/internal";
+import { getRecord, setRecord, registerTable, Stash } from "@latticexyz/stash/internal";
 import { Address, Client, publicActions } from "viem";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { defineTable } from "@latticexyz/store/config/v2";
@@ -28,8 +28,8 @@ export const initialProgress = {
   message: "Connecting",
 } satisfies getSchemaPrimitives<getValueSchema<typeof SyncProgress>>;
 
-export type SyncToStashOptions<config extends StoreConfig> = {
-  stash: CreateStashResult<config>;
+export type SyncToStashOptions = {
+  stash: Stash;
   client: Client;
   address: Address;
   startSync?: boolean;
@@ -40,12 +40,12 @@ export type SyncToStashResult = Omit<SyncResult, "waitForTransaction"> & {
   stopSync: () => void;
 };
 
-export async function syncToStash<const config extends StoreConfig>({
+export async function syncToStash({
   stash,
   client,
   address,
   startSync = true,
-}: SyncToStashOptions<config>): Promise<SyncToStashResult> {
+}: SyncToStashOptions): Promise<SyncToStashResult> {
   registerTable({ stash, table: SyncProgress });
 
   const storageAdapter = createStorageAdapter({ stash });

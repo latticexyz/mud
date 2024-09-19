@@ -1,4 +1,4 @@
-import { CreateStashResult, deleteRecord, getRecord, setRecord, StoreConfig } from "@latticexyz/stash/internal";
+import { Stash, deleteRecord, getRecord, setRecord } from "@latticexyz/stash/internal";
 import {
   decodeKey,
   decodeValueArgs,
@@ -12,13 +12,11 @@ import { size } from "viem";
 import { Table } from "@latticexyz/config";
 import { StorageAdapter, StorageAdapterBlock, emptyValueArgs } from "../common";
 
-export type CreateStorageAdapter<config extends StoreConfig> = {
-  stash: CreateStashResult<config>;
+export type CreateStorageAdapter = {
+  stash: Stash;
 };
 
-export function createStorageAdapter<const config extends StoreConfig>({
-  stash,
-}: CreateStorageAdapter<config>): StorageAdapter {
+export function createStorageAdapter({ stash }: CreateStorageAdapter): StorageAdapter {
   const tablesById = Object.fromEntries(
     Object.values(stash.get().config)
       .flatMap((namespace) => Object.values(namespace) as readonly Table[])
