@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/abi-ts",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "description": "Create TypeScript type declaration files (`.d.ts`) for your ABI JSON files.",
   "repository": {
     "type": "git",
