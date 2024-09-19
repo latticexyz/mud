@@ -3,6 +3,7 @@ import { StoreEventsAbiItem, StoreEventsAbi } from "@latticexyz/store";
 import { Observable } from "rxjs";
 import { UnionPick } from "@latticexyz/common/type-utils";
 import {
+  ValueArgs,
   getKeySchema,
   getSchemaPrimitives,
   getSchemaTypes,
@@ -140,3 +141,9 @@ export const schemasTable = {
   keySchema: getSchemaTypes(getKeySchema(mudTables.Tables)),
   valueSchema: getSchemaTypes(getValueSchema(mudTables.Tables)),
 };
+
+export const emptyValueArgs = {
+  staticData: "0x",
+  encodedLengths: "0x",
+  dynamicData: "0x",
+} as const satisfies ValueArgs;

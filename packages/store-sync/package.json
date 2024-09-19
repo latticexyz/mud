@@ -73,6 +73,7 @@
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/recs": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
+    "@latticexyz/stash": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/world": "workspace:*",
     "@trpc/client": "10.34.0",
