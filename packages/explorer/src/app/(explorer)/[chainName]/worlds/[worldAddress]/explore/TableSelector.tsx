@@ -14,11 +14,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "../../../../../../compo
 import { cn } from "../../../../../../lib/utils";
 import { DeployedTable } from "./utils/decodeTable";
 
-type Props = {
-  value: string | undefined;
-  deployedTables: DeployedTable[] | undefined;
-};
-
 function TableSelectorItem({
   table,
   selected,
@@ -39,7 +34,13 @@ function TableSelectorItem({
   );
 }
 
-export function TableSelector({ value, deployedTables }: Props) {
+export function TableSelector({
+  value,
+  deployedTables,
+}: {
+  value: string | undefined;
+  deployedTables: DeployedTable[] | undefined;
+}) {
   const [open, setOpen] = useState(false);
   const selectedTable = deployedTables?.find(({ tableId }) => tableId === value);
 
@@ -58,7 +59,7 @@ export function TableSelector({ value, deployedTables }: Props) {
           <Command>
             <CommandInput placeholder="Search tables..." className="font-mono" />
             <CommandList>
-              <CommandEmpty>No framework found.</CommandEmpty>
+              <CommandEmpty>No table found.</CommandEmpty>
               <CommandGroup>
                 {deployedTables?.map((table) => {
                   return (

@@ -2,6 +2,7 @@ import { useParams } from "next/navigation";
 import { Hex } from "viem";
 import { useQuery } from "@tanstack/react-query";
 import { decodeTable } from "../../app/(explorer)/[chainName]/worlds/[worldAddress]/explore/utils/decodeTable";
+import { internalMUDNamespaces } from "../../common";
 
 type ApiResponse = {
   table: {
@@ -25,16 +26,18 @@ export function useDeployedTablesQuery() {
       return response.json();
     },
     select: (data: ApiResponse) => {
-      return data.table.map((row) => {
-        return decodeTable([
-          row.table_id,
-          row.field_layout,
-          row.key_schema,
-          row.value_schema,
-          row.abi_encoded_key_names,
-          row.abi_encoded_field_names,
-        ]);
-      });
+      return data.table
+        .map((row) => {
+          return decodeTable([
+            row.table_id,
+            row.field_layout,
+            row.key_schema,
+            row.value_schema,
+            row.abi_encoded_key_names,
+            row.abi_encoded_field_names,
+          ]);
+        })
+        .sort(({ namespace }) => (internalMUDNamespaces.includes(namespace) ? 1 : -1));
     },
     refetchInterval: 15_000,
   });
