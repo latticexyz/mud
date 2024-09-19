@@ -17,12 +17,7 @@ export async function waitForTransactions({
   const receipts: TransactionReceipt[] = [];
   // wait for each tx separately/serially, because parallelizing results in RPC errors
   for (const hash of hashes) {
-    const receipt = await waitForTransactionReceipt(client, {
-      hash,
-      pollingInterval: 100,
-      retryDelay: ({ count }) => 2 ** count * 200,
-      retryCount: 8,
-    });
+    const receipt = await waitForTransactionReceipt(client, { hash });
     if (receipt.status === "reverted") {
       throw new Error(`Transaction reverted: ${hash}`);
     }
