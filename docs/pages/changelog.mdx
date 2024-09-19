@@ -1,3 +1,85 @@
+## Version 2.2.4
+
+Release date: Wed Sep 18 2024
+
+### Patch changes
+
+**[feat(explorer): anvil connector, connect external wallets (#3164)](https://github.com/latticexyz/mud/commit/e6147b2a9c92369d2ca26c60275c766da1a7d0d5)** (@latticexyz/explorer)
+
+World Explorer now supports connecting external wallets.
+
+**[fix(common): use latest block tag in nonce manager (#3180)](https://github.com/latticexyz/mud/commit/2f935cfd3fbc62f3c304e470751a26189523fcd2)** (@latticexyz/common)
+
+To reset an account's nonce, the nonce manager uses the [`eth_getTransactionCount`](https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_gettransactioncount) RPC method,
+which returns the number of transactions sent from the account.
+When using the `pending` block tag, this includes transactions in the mempool that have not been included in a block yet.
+If an account submits a transaction with a nonce higher than the next valid nonce, this transaction will stay in the mempool until the nonce gap is closed and the transactions nonce is the next valid nonce.
+This means if an account has gapped transactions "stuck in the mempool", the `eth_getTransactionCount` method with `pending` block tag can't be used to get the next valid nonce
+(since it includes the number of transactions stuck in the mempool).
+Since the nonce manager only resets the nonce on reload or in case of a nonce error, using the `latest` block tag by default is the safer choice to be able to recover from nonce gaps.
+
+Note that this change may reveal more "transaction underpriced" errors than before. These errors will now be retried automatically and should go through after the next block is mined.
+
+**[feat: bump wevm packages (#3178)](https://github.com/latticexyz/mud/commit/50010fb9fb6d21f69ba23c1eae14f4203919183d)** (@latticexyz/block-logs-stream, @latticexyz/cli, @latticexyz/common, @latticexyz/config, @latticexyz/dev-tools, @latticexyz/explorer, @latticexyz/faucet, @latticexyz/protocol-parser, @latticexyz/schema-type, @latticexyz/stash, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world, create-mud)
+
+Bumped viem, wagmi, and abitype packages to their latest release.
+
+MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+```
+pnpm recursive up viem@2.21.6 wagmi@2.12.11 @wagmi/core@2.13.5 abitype@1.0.6
+```
+
+**[feat(cli): register namespace labels (#3172)](https://github.com/latticexyz/mud/commit/d3acd9242da44d201ea99e04c1631ed687d30a80)** (@latticexyz/cli)
+
+Along with table and system labels, the MUD deployer now registers namespace labels. Additionally, labels will only be registered if they differ from the underlying resource name.
+
+**[feat(explorer): active chain as dynamic param (#3181)](https://github.com/latticexyz/mud/commit/20604952d33419f18ab93fcc048db564b56a54b4)** (@latticexyz/explorer)
+
+Added ability to connect World Explorer to Redstone and Garnet chains. The active chain is now passed as a dynamic route parameter.
+
+**[feat(explorer): write observer (#3169)](https://github.com/latticexyz/mud/commit/784e5a98e679388ad6bc941cd1bc9b6486cf276d)** (@latticexyz/explorer)
+
+World Explorer package now exports an `observer` Viem decorator that can be used to get visibility into contract writes initiated from your app. You can watch these writes stream in on the new "Observe" tab of the World Explorer.
+
+```ts
+import { createClient, publicActions, walletActions } from "viem";
+import { observer } from "@latticexyz/explorer/observer";
+
+const client = createClient({ ... })
+  .extend(publicActions)
+  .extend(walletActions)
+  .extend(observer());
+```
+
+By default, the `observer` action assumes the World Explorer is running at `http://localhost:13690`, but this can be customized with the `explorerUrl` option.
+
+```ts
+observer({
+  explorerUrl: "http://localhost:4444",
+});
+```
+
+If you want to measure the timing of transaction-to-state-change, you can also pass in a `waitForStateChange` function that takes a transaction hash and returns a partial [`TransactionReceipt`](https://viem.sh/docs/glossary/types#transactionreceipt) with `blockNumber`, `status`, and `transactionHash`. This mirrors the `waitForTransaction` function signature returned by `syncTo...` helper in `@latticexyz/store-sync`.
+
+```ts
+observer({
+  async waitForStateChange(hash) {
+    return await waitForTransaction(hash);
+  },
+});
+```
+
+**[fix(world): resolve module config (#3193)](https://github.com/latticexyz/mud/commit/1f24978894725dca13c2adfee384e12f53f05c26)** (@latticexyz/world)
+
+Added a config resolver to add default values for `modules` in the world config.
+
+**[feat(store-sync): add util to fetch snapshot from indexer with SQL API (#2996)](https://github.com/latticexyz/mud/commit/8b4110e5d9ca2b7a6553a2c4078b7a8b82c6f211)** (@latticexyz/protocol-parser, @latticexyz/store-sync)
+
+Added `store-sync` helper libraries to interact with the indexer's experimental SQL API endpoint. Documentation is available at [https://mud.dev/indexer/sql](https://mud.dev/indexer/sql).
+
+---
+
 ## Version 2.2.3
 
 Release date: Tue Sep 10 2024

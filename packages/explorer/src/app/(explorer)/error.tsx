@@ -14,7 +14,7 @@ export default function Error({ reset, error }: Props) {
   const getUrl = useWorldUrl();
   return (
     <main className="px-6 py-24 text-center">
-      <p className="text-3xl font-semibold text-orange-600">400</p>
+      <p className="text-3xl font-semibold text-orange-600">500</p>
       <h1 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-5xl">Something went wrong :(</h1>
 
       {error.message && (

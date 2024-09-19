@@ -1,5 +1,33 @@
 # Change Log
 
+## 2.2.4
+
+### Patch Changes
+
+- 50010fb: Bumped viem, wagmi, and abitype packages to their latest release.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.6 wagmi@2.12.11 @wagmi/core@2.13.5 abitype@1.0.6
+  ```
+
+- d3acd92: Along with table and system labels, the MUD deployer now registers namespace labels. Additionally, labels will only be registered if they differ from the underlying resource name.
+- Updated dependencies [2f935cf]
+- Updated dependencies [50010fb]
+- Updated dependencies [1f24978]
+- Updated dependencies [8b4110e]
+  - @latticexyz/common@2.2.4
+  - @latticexyz/config@2.2.4
+  - @latticexyz/protocol-parser@2.2.4
+  - @latticexyz/schema-type@2.2.4
+  - @latticexyz/store@2.2.4
+  - @latticexyz/world@2.2.4
+  - @latticexyz/world-module-metadata@2.2.4
+  - @latticexyz/abi-ts@2.2.4
+  - @latticexyz/gas-report@2.2.4
+  - @latticexyz/utils@2.2.4
+
 ## 2.2.3
 
 ### Patch Changes
