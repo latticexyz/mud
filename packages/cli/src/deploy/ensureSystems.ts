@@ -1,24 +1,25 @@
 import { Client, Transport, Chain, Account, Hex, getAddress, Address } from "viem";
 import { writeContract, resourceToLabel } from "@latticexyz/common";
-import { Library, System, WorldDeploy, worldAbi } from "./common";
+import { System, WorldDeploy, worldAbi } from "./common";
 import { debug } from "./debug";
 import { getSystems } from "./getSystems";
 import { getResourceAccess } from "./getResourceAccess";
 import pRetry from "p-retry";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
+import { LibraryMap } from "./getLibraryMap";
 
 // TODO: move each system registration+access to batch call to be atomic
 
 export async function ensureSystems({
   client,
   deployerAddress,
-  libraries,
+  libraryMap,
   worldDeploy,
   systems,
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
   readonly deployerAddress: Hex;
-  readonly libraries: readonly Library[];
+  readonly libraryMap: LibraryMap;
   readonly worldDeploy: WorldDeploy;
   readonly systems: readonly System[];
 }): Promise<readonly Hex[]> {
@@ -33,7 +34,7 @@ export async function ensureSystems({
     worldSystems.some(
       (worldSystem) =>
         worldSystem.systemId === system.systemId &&
-        getAddress(worldSystem.address) === getAddress(system.prepareDeploy(deployerAddress, libraries).address),
+        getAddress(worldSystem.address) === getAddress(system.prepareDeploy(deployerAddress, libraryMap).address),
     ),
   );
   if (existingSystems.length) {
@@ -48,7 +49,7 @@ export async function ensureSystems({
     worldSystems.some(
       (worldSystem) =>
         worldSystem.systemId === system.systemId &&
-        getAddress(worldSystem.address) !== getAddress(system.prepareDeploy(deployerAddress, libraries).address),
+        getAddress(worldSystem.address) !== getAddress(system.prepareDeploy(deployerAddress, libraryMap).address),
     ),
   );
   if (systemsToUpgrade.length) {
@@ -66,7 +67,7 @@ export async function ensureSystems({
     client,
     deployerAddress,
     contracts: missingSystems.map((system) => ({
-      bytecode: system.prepareDeploy(deployerAddress, libraries).bytecode,
+      bytecode: system.prepareDeploy(deployerAddress, libraryMap).bytecode,
       deployedBytecodeSize: system.deployedBytecodeSize,
       debugLabel: `${resourceToLabel(system)} system`,
     })),
@@ -82,7 +83,7 @@ export async function ensureSystems({
             abi: worldAbi,
             // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
             functionName: "registerSystem",
-            args: [system.systemId, system.prepareDeploy(deployerAddress, libraries).address, system.allowAll],
+            args: [system.systemId, system.prepareDeploy(deployerAddress, libraryMap).address, system.allowAll],
           }),
         {
           retries: 3,
@@ -106,7 +107,7 @@ export async function ensureSystems({
           resourceId: system.systemId,
           address:
             worldSystems.find((s) => s.systemId === systemId)?.address ??
-            systems.find((s) => s.systemId === systemId)?.prepareDeploy(deployerAddress, libraries).address,
+            systems.find((s) => s.systemId === systemId)?.prepareDeploy(deployerAddress, libraryMap).address,
         }))
         .filter((access): access is typeof access & { address: Address } => access.address != null),
     ),

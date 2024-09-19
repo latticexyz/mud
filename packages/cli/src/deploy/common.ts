@@ -2,6 +2,7 @@ import { Abi, Address, Hex, padHex } from "viem";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
+import { LibraryMap } from "./getLibraryMap";
 
 export const salt = padHex("0x", { size: 32 });
 
@@ -61,7 +62,7 @@ export type LibraryPlaceholder = {
 export type DeterministicContract = {
   readonly prepareDeploy: (
     deployer: Address,
-    libraries: readonly Library[],
+    libraryMap?: LibraryMap,
   ) => {
     readonly address: Address;
     readonly bytecode: Hex;
