@@ -5,14 +5,11 @@ import { config, deployMockGame } from "../../test/mockGame";
 import { fetchAndStoreLogs } from "../fetchAndStoreLogs";
 import { testClient } from "../../test/common";
 import { getBlockNumber } from "viem/actions";
-import { Address } from "viem";
 import { createStash } from "@latticexyz/stash/internal";
 
 describe("createStorageAdapter", async () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let worldAddress: Address;
   beforeAll(async () => {
-    worldAddress = await deployMockGame();
+    await deployMockGame();
   });
 
   it("sets component values from logs", async () => {
@@ -28,7 +25,7 @@ describe("createStorageAdapter", async () => {
       fromBlock: 0n,
       toBlock: await getBlockNumber(testClient),
     })) {
-      // console.log("got block", block.blockNumber);
+      //
     }
 
     expect(stash.get().records).toMatchInlineSnapshot(`
