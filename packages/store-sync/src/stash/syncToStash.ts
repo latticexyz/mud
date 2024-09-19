@@ -1,4 +1,4 @@
-import { CreateStoreResult, StoreConfig } from "@latticexyz/stash/internal";
+import { CreateStoreResult, StoreConfig, getRecord, setRecord, registerTable } from "@latticexyz/stash/internal";
 import { Address, Client, publicActions } from "viem";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { defineTable } from "@latticexyz/store/config/v2";
@@ -46,7 +46,7 @@ export async function syncToStash<const config extends StoreConfig>({
   address,
   startSync = true,
 }: SyncToStashOptions<config>): Promise<SyncToStashResult> {
-  stash.registerTable({ table: SyncProgress });
+  registerTable({ stash, table: SyncProgress });
 
   const storageAdapter = createStorageAdapter({ stash });
 
@@ -55,10 +55,10 @@ export async function syncToStash<const config extends StoreConfig>({
     publicClient: client.extend(publicActions) as never,
     address,
     onProgress: (nextValue) => {
-      const currentValue = stash.getRecord({ table: SyncProgress, key: {} });
+      const currentValue = getRecord({ stash, table: SyncProgress, key: {} });
       // update sync progress until we're caught up and live
       if (currentValue?.step !== SyncStep.LIVE) {
-        stash.setRecord({ table: SyncProgress, key: {}, value: nextValue });
+        setRecord({ stash, table: SyncProgress, key: {}, value: nextValue });
       }
     },
   });
