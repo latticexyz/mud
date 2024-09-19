@@ -1,6 +1,5 @@
 ---
 "@latticexyz/store-sync": patch
-"@latticexyz/world": patch
 ---
 
 Added a `syncToStash` util to hydrate a `stash` client store from MUD contract state. This is currently exported from `@latticexyz/store-sync/internal` while Stash package is unstable/experimental.
