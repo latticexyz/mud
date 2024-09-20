@@ -1,5 +1,5 @@
 import { storeEventsAbi } from "@latticexyz/store";
-import { GetTransactionReceiptErrorType, Hex } from "viem";
+import { GetTransactionReceiptErrorType, Hex, parseEventLogs } from "viem";
 import {
   StorageAdapter,
   StorageAdapterBlock,
@@ -10,7 +10,7 @@ import {
   internalTableIds,
   WaitForTransactionResult,
 } from "./common";
-import { createBlockStream } from "@latticexyz/block-logs-stream";
+import { createBlockStream, groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import {
   filter,
   map,
@@ -198,6 +198,23 @@ export async function createStoreSync({
   let startBlock: bigint | null = null;
   let endBlock: bigint | null = null;
   let lastBlockNumberProcessed: bigint | null = null;
+  let optimisticLogs: readonly StoreEventsLog[] = [];
+
+  // For chains that provide guaranteed receipts ahead of block mining, we can apply the logs immediately.
+  // This works because, once the block is mined, the same logs will be applied. Store events are defined in
+  // such a way that reapplying the same logs, even if the order changes, will mean that the storage adapter
+  // is kept up to date.
+  async function applyOptimisticLogs(): Promise<readonly StorageAdapterBlock[]> {
+    const blocks = groupLogsByBlockNumber(optimisticLogs).filter(
+      (block) =>
+        block.logs.length > 0 && (lastBlockNumberProcessed == null || block.blockNumber > lastBlockNumberProcessed),
+    );
+    for (const block of blocks) {
+      await storageAdapter(block);
+    }
+    optimisticLogs = blocks.flatMap((block) => block.logs);
+    return blocks;
+  }
 
   const storedBlock$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
@@ -247,6 +264,10 @@ export async function createStoreSync({
         }
       }
     }),
+    concatMap(async (block) => {
+      await applyOptimisticLogs();
+      return block;
+    }),
     share(),
   );
 
@@ -283,9 +304,18 @@ export async function createStoreSync({
         try {
           const lastBlock = blocks[0];
           debug("fetching tx receipt after seeing block", lastBlock.blockNumber);
-          const { status, blockNumber, transactionHash } = await publicClient.getTransactionReceipt({ hash: tx });
-          if (lastBlock.blockNumber >= blockNumber) {
-            return { status, blockNumber, transactionHash };
+          const receipt = await publicClient.getTransactionReceipt({ hash: tx });
+          if (receipt.status === "success") {
+            const logs = parseEventLogs({ abi: storeEventsAbi, logs: receipt.logs });
+            optimisticLogs = [...optimisticLogs, ...logs];
+            await applyOptimisticLogs();
+          }
+          if (lastBlock.blockNumber >= receipt.blockNumber) {
+            return {
+              status: receipt.status,
+              blockNumber: receipt.blockNumber,
+              transactionHash: receipt.transactionHash,
+            };
           }
         } catch (e) {
           const error = e as GetTransactionReceiptErrorType;
