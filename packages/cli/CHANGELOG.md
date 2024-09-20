@@ -1,5 +1,22 @@
 # Change Log
 
+## 2.2.7
+
+### Patch Changes
+
+- 58f101e: Reduced the log noise from enabling/disabling automine on non-Anvil chains.
+- Updated dependencies [a08ba5e]
+  - @latticexyz/store@2.2.7
+  - @latticexyz/world@2.2.7
+  - @latticexyz/world-module-metadata@2.2.7
+  - @latticexyz/abi-ts@2.2.7
+  - @latticexyz/common@2.2.7
+  - @latticexyz/config@2.2.7
+  - @latticexyz/gas-report@2.2.7
+  - @latticexyz/protocol-parser@2.2.7
+  - @latticexyz/schema-type@2.2.7
+  - @latticexyz/utils@2.2.7
+
 ## 2.2.6
 
 ### Patch Changes
