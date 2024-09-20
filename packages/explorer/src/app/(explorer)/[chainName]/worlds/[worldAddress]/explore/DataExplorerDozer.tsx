@@ -14,9 +14,7 @@ export function DataExplorerDozer() {
   const { data: deployedTables } = useDeployedTablesQuery();
   const selectedTableId = searchParams.get("tableId") ?? deployedTables?.[0]?.tableId;
   const deployedTable = deployedTables?.find(({ tableId }) => tableId === selectedTableId);
-  const {
-    data: { rows, columns },
-  } = useTableDataQuery({ schema: deployedTable?.schema, query });
+  const { data: tableData } = useTableDataQuery({ deployedTable, query });
 
   useEffect(() => {
     if (deployedTable) {
@@ -31,7 +29,7 @@ export function DataExplorerDozer() {
     <>
       <SQLEditor query={query} setQuery={setQuery} />
       <TableSelector value={selectedTableId} deployedTables={deployedTables} />
-      <TablesViewer deployedTable={deployedTable} rows={rows} columns={columns} />
+      <TablesViewer deployedTable={deployedTable} data={tableData} />
     </>
   );
 }

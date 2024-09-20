@@ -1,25 +1,26 @@
 import { Hex, decodeAbiParameters, parseAbiParameters } from "viem";
 import { hexToResource } from "@latticexyz/common";
 import { Schema, Table } from "@latticexyz/config";
-import { hexToSchema } from "@latticexyz/protocol-parser/internal";
+import { getSchemaPrimitives, hexToSchema } from "@latticexyz/protocol-parser/internal";
 
-export type DeployedTable = Omit<Table, "label" | "namespaceLabel"> & {
+export type DeployedTable = Table & {
   valueSchema: Schema;
   keySchema: Schema;
 };
 
-export const decodeTable = (row: Hex[]): DeployedTable => {
-  const tableId = row[0];
-  const encodedKeySchema = row[2];
-  const encodedValueSchema = row[3];
-  const abiEncodedKeyNames = row[4];
-  const abiEncodedFieldNames = row[5];
-  const { type, namespace, name } = hexToResource(tableId);
+export const decodeTable = ({
+  tableId,
+  keySchema: encodedKeySchema,
+  valueSchema: encodedValueSchema,
+  abiEncodedKeyNames,
+  abiEncodedFieldNames,
+}: getSchemaPrimitives<Schema>): DeployedTable => {
+  const { type, namespace, name } = hexToResource(tableId as Hex);
 
-  const solidityKeySchema = hexToSchema(encodedKeySchema);
-  const solidityValueSchema = hexToSchema(encodedValueSchema);
-  const keyNames = decodeAbiParameters(parseAbiParameters("string[]"), abiEncodedKeyNames)[0];
-  const fieldNames = decodeAbiParameters(parseAbiParameters("string[]"), abiEncodedFieldNames)[0];
+  const solidityKeySchema = hexToSchema(encodedKeySchema as Hex);
+  const solidityValueSchema = hexToSchema(encodedValueSchema as Hex);
+  const keyNames = decodeAbiParameters(parseAbiParameters("string[]"), abiEncodedKeyNames as Hex)[0];
+  const fieldNames = decodeAbiParameters(parseAbiParameters("string[]"), abiEncodedFieldNames as Hex)[0];
 
   const valueAbiTypes = [...solidityValueSchema.staticFields, ...solidityValueSchema.dynamicFields];
   const keySchema = Object.fromEntries(
@@ -30,9 +31,11 @@ export const decodeTable = (row: Hex[]): DeployedTable => {
   ) satisfies Schema;
 
   return {
-    tableId,
+    tableId: tableId as Hex,
     name,
     namespace,
+    label: namespace,
+    namespaceLabel: namespace,
     type: type as DeployedTable["type"],
     schema: {
       ...keySchema,

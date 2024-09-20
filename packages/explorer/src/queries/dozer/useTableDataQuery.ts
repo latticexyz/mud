@@ -1,53 +1,33 @@
 import { useParams } from "next/navigation";
-import { Schema } from "@latticexyz/config";
+import { Hex } from "viem";
+import { fetchRecords, selectFrom } from "@latticexyz/store-sync/internal";
 import { useQuery } from "@tanstack/react-query";
+import { DeployedTable } from "../../app/(explorer)/[chainName]/worlds/[worldAddress]/explore/utils/decodeTable";
 import { useDozerUrl } from "../../hooks/useDozerUrl";
 
-type DozerResponse = {
-  block_height: number;
-  result: [string[][]];
-};
-
 type Props = {
-  schema?: Schema;
+  deployedTable?: DeployedTable;
   query?: string;
 };
 
-export function useTableDataQuery({ schema, query }: Props) {
+export function useTableDataQuery({ deployedTable, query }: Props) {
   const { worldAddress, chainName } = useParams();
   const dozerUrl = useDozerUrl();
 
   return useQuery({
     queryKey: ["table", worldAddress, chainName, query],
-    queryFn: async () => {
-      const response = await fetch(dozerUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify([{ address: worldAddress, query }]),
+    queryFn: () => {
+      return fetchRecords({
+        indexerUrl: dozerUrl,
+        storeAddress: worldAddress as Hex,
+        queries: [
+          selectFrom({
+            table: deployedTable!,
+          }),
+        ],
       });
-      return response.json();
     },
-    initialData: {
-      block_height: 0,
-      result: [[]],
-    },
-    select: (data: DozerResponse) => {
-      if (!data || !schema) return { rows: [], columns: [] };
-
-      const result = data.result[0];
-      const columns = result[0];
-      const schemaKeys = Object.keys(schema);
-      const rows = data.result[0]
-        .slice(1)
-        .map((row) => Object.fromEntries(schemaKeys.map((key, index) => [key, row[index]])));
-
-      return {
-        rows,
-        columns,
-      };
-    },
-    enabled: !!query && !!schema,
+    select: (data) => data.result[0].records,
+    enabled: !!deployedTable,
   });
 }

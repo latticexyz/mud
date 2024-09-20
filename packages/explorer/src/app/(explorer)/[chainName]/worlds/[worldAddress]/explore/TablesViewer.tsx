@@ -1,5 +1,7 @@
 import { ArrowUpDown, Loader } from "lucide-react";
 import { useMemo, useState } from "react";
+import { Schema } from "@latticexyz/config";
+import { getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -16,29 +18,30 @@ import { internalNamespaces } from "../../../../../../common";
 import { Button } from "../../../../../../components/ui/Button";
 import { Input } from "../../../../../../components/ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
+import { useTableDataQuery } from "../../../../../../queries/dozer/useTableDataQuery";
 import { EditableTableCell } from "./EditableTableCell";
 import { DeployedTable } from "./utils/decodeTable";
 
 type Props = {
+  data: ReturnType<typeof useTableDataQuery>["data"] | undefined;
   deployedTable: DeployedTable | undefined;
-  rows: Record<string, string>[] | undefined;
-  columns: string[] | undefined;
 };
 
-export function TablesViewer({ deployedTable, rows, columns }: Props) {
+export function TablesViewer({ data, deployedTable }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
 
-  const tableColumns: ColumnDef<Record<string, string>>[] = useMemo(() => {
+  const tableColumns: ColumnDef<getSchemaPrimitives<Schema>>[] = useMemo(() => {
     if (!deployedTable) return [];
 
+    const columns = Object.keys(deployedTable.schema);
     return (
-      Object.keys(deployedTable.schema)
+      columns
         // Filter by query columns. Note: columns fetched from dozer are lowercase.
-        .filter((name) => columns?.includes(name) || columns?.includes(name.toLowerCase()))
+        .filter((name) => columns.includes(name) || columns.includes(name.toLowerCase()))
         .map((name) => {
           const type = deployedTable.schema[name].type;
           return {
@@ -76,10 +79,10 @@ export function TablesViewer({ deployedTable, rows, columns }: Props) {
           };
         })
     );
-  }, [columns, deployedTable]);
+  }, [deployedTable]);
 
   const table = useReactTable({
-    data: rows || [],
+    data: data || [],
     columns: tableColumns,
     initialState: {
       pagination: {
@@ -105,7 +108,7 @@ export function TablesViewer({ deployedTable, rows, columns }: Props) {
     },
   });
 
-  if (!deployedTable || !rows) {
+  if (!deployedTable || !data) {
     return (
       <div className="rounded-md border p-4">
         <Loader className="animate-spin" />
@@ -150,7 +153,7 @@ export function TablesViewer({ deployedTable, rows, columns }: Props) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns?.length || 0} className="h-24 text-center">
+                <TableCell colSpan={tableColumns.length} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>

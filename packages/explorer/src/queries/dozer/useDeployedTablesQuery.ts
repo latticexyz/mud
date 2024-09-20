@@ -1,14 +1,11 @@
 import { useParams } from "next/navigation";
 import { Hex } from "viem";
+import { fetchRecords, selectFrom } from "@latticexyz/store-sync/internal";
+import mudConfig from "@latticexyz/store/mud.config";
 import { useQuery } from "@tanstack/react-query";
 import { decodeTable } from "../../app/(explorer)/[chainName]/worlds/[worldAddress]/explore/utils/decodeTable";
 import { internalNamespaces } from "../../common";
 import { useDozerUrl } from "../../hooks/useDozerUrl";
-
-export type DozerResponse = {
-  block_height: number;
-  result: [Hex[][]];
-};
 
 export function useDeployedTablesQuery() {
   const { worldAddress, chainName } = useParams();
@@ -16,34 +13,20 @@ export function useDeployedTablesQuery() {
 
   return useQuery({
     queryKey: ["deployedTables", worldAddress, chainName],
-    queryFn: async () => {
-      const response = await fetch(dozerUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify([
-          {
-            address: worldAddress,
-            query: `select ${[
-              "tableId",
-              "fieldLayout",
-              "keySchema",
-              "valueSchema",
-              "abiEncodedKeyNames",
-              "abiEncodedFieldNames",
-            ].join(", ")} from store__Tables`,
-          },
-        ]),
+    queryFn: () => {
+      return fetchRecords({
+        indexerUrl: dozerUrl,
+        storeAddress: worldAddress as Hex,
+        queries: [
+          selectFrom({
+            table: mudConfig.tables.store__Tables,
+          }),
+        ],
       });
-      return response.json();
     },
-    select: (data: DozerResponse) => {
-      return data.result[0]
-        .slice(1)
-        .map((row) => {
-          return decodeTable(row);
-        })
+    select: (data) => {
+      return data.result[0].records
+        .map((row) => decodeTable(row))
         .sort(({ namespace }) => (internalNamespaces.includes(namespace) ? 1 : -1));
     },
   });
