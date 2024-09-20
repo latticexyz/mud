@@ -66,11 +66,11 @@ export type SyncFilter = {
   key1?: Hex;
 };
 
-export type SyncOptions<config extends StoreConfig = StoreConfig> = {
+export type SyncOptions = {
   /**
    * MUD config
    */
-  config?: config;
+  config?: StoreConfig;
   /**
    * [viem `PublicClient`][0] used for fetching logs from the RPC.
    *

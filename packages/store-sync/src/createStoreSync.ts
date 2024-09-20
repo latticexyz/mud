@@ -25,21 +25,20 @@ import {
   catchError,
   shareReplay,
   combineLatest,
-  scan,
   mergeMap,
+  BehaviorSubject,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
 import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/utils";
 import { getSnapshot } from "./getSnapshot";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
-import { Store as StoreConfig } from "@latticexyz/store";
 
 const debug = parentDebug.extend("createStoreSync");
 
 const defaultFilters: SyncFilter[] = internalTableIds.map((tableId) => ({ tableId }));
 
-type CreateStoreSyncOptions<config extends StoreConfig = StoreConfig> = SyncOptions<config> & {
+type CreateStoreSyncOptions = SyncOptions & {
   storageAdapter: StorageAdapter;
   onProgress?: (opts: {
     step: SyncStep;
@@ -50,7 +49,7 @@ type CreateStoreSyncOptions<config extends StoreConfig = StoreConfig> = SyncOpti
   }) => void;
 };
 
-export async function createStoreSync<config extends StoreConfig = StoreConfig>({
+export async function createStoreSync({
   storageAdapter,
   onProgress,
   publicClient,
@@ -63,7 +62,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
   initialState,
   initialBlockLogs,
   indexerUrl,
-}: CreateStoreSyncOptions<config>): Promise<SyncResult> {
+}: CreateStoreSyncOptions): Promise<SyncResult> {
   const filters: SyncFilter[] =
     initialFilters.length || tableIds.length
       ? [...initialFilters, ...tableIds.map((tableId) => ({ tableId })), ...defaultFilters]
@@ -251,18 +250,16 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
     share(),
   );
 
-  const storedBlockLogs$ = concat(storedInitialBlockLogs$, storedBlock$).pipe(share());
-
   // keep 10 blocks worth processed transactions in memory
   const recentBlocksWindow = 10;
-  // most recent block first, for ease of pulling the first one off the array
-  const recentBlocks$ = storedBlockLogs$.pipe(
-    scan<StorageAdapterBlock, StorageAdapterBlock[]>(
-      (recentBlocks, block) => [block, ...recentBlocks].slice(0, recentBlocksWindow),
-      [],
-    ),
-    filter((recentBlocks) => recentBlocks.length > 0),
-    shareReplay(1),
+  const recentBlocks$ = new BehaviorSubject<StorageAdapterBlock[]>([]);
+
+  const storedBlockLogs$ = concat(storedInitialBlockLogs$, storedBlock$).pipe(
+    tap((block) => {
+      // most recent block first, for ease of pulling the first one off the array
+      recentBlocks$.next([block, ...recentBlocks$.value].slice(0, recentBlocksWindow));
+    }),
+    share(),
   );
 
   // TODO: move to its own file so we can test it, have its own debug instance, etc.
@@ -285,18 +282,16 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
 
         try {
           const lastBlock = blocks[0];
-          debug("fetching tx receipt for block", lastBlock.blockNumber);
+          debug("fetching tx receipt after seeing block", lastBlock.blockNumber);
           const { status, blockNumber, transactionHash } = await publicClient.getTransactionReceipt({ hash: tx });
           if (lastBlock.blockNumber >= blockNumber) {
             return { status, blockNumber, transactionHash };
           }
         } catch (e) {
           const error = e as GetTransactionReceiptErrorType;
-
           if (error.name === "TransactionReceiptNotFoundError") {
             return;
           }
-
           throw error;
         }
       }),
