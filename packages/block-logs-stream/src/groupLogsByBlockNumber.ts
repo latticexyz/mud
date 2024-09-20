@@ -3,9 +3,9 @@ import { bigIntSort, isDefined } from "@latticexyz/common/utils";
 
 type PartialLog = { blockNumber: bigint; logIndex: number };
 
-export type GroupLogsByBlockNumberResult<TLog extends PartialLog> = {
-  blockNumber: TLog["blockNumber"];
-  logs: TLog[];
+export type GroupLogsByBlockNumberResult<log extends PartialLog> = {
+  blockNumber: log["blockNumber"];
+  logs: readonly log[];
 }[];
 
 /**
@@ -22,10 +22,10 @@ export type GroupLogsByBlockNumberResult<TLog extends PartialLog> = {
  * @returns An array of objects where each object represents a distinct block and includes the block number,
  * the block hash, and an array of logs for that block.
  */
-export function groupLogsByBlockNumber<TLog extends PartialLog>(
-  logs: readonly TLog[],
+export function groupLogsByBlockNumber<log extends PartialLog>(
+  logs: readonly log[],
   toBlock?: BlockNumber,
-): GroupLogsByBlockNumberResult<TLog> {
+): GroupLogsByBlockNumberResult<log> {
   const blockNumbers = Array.from(new Set(logs.map((log) => log.blockNumber)));
   blockNumbers.sort(bigIntSort);
 
