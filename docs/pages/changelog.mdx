@@ -1,3 +1,37 @@
+## Version 2.2.7
+
+Release date: Fri Sep 20 2024
+
+### Patch changes
+
+**[feat(cli): quieter automine (#3212)](https://github.com/latticexyz/mud/commit/58f101e45ad50e064779cbc441246a22b70efa07)** (@latticexyz/cli)
+
+Reduced the log noise from enabling/disabling automine on non-Anvil chains.
+
+**[fix(explorer): better observer decorator types (#3206)](https://github.com/latticexyz/mud/commit/5a6c03c6bc02c980ca051dadd8e20560ac25c771)** (@latticexyz/explorer)
+
+Fixed `observer` decorator types so it can be used in more places.
+
+**[feat(explorer): filterable tables selector (#3203)](https://github.com/latticexyz/mud/commit/7ac2a0d5ffd3f65d89318fc5778121ddf45bb5e1)** (@latticexyz/explorer)
+
+Table selector of the Explore tab now has an input for searching/filtering tables by name.
+
+**[fix(store): better enumValues type (#3211)](https://github.com/latticexyz/mud/commit/a08ba5e31e90bf3208919bc1d5e08c1ba9524130)** (@latticexyz/store)
+
+Improved config output type of `enumValues`.
+
+**[refactor: waitForStateChange -> waitForTransaction (#3210)](https://github.com/latticexyz/mud/commit/d21c1d1817ec2394007b28c90fec5a81f1fdd3d0)** (@latticexyz/explorer)
+
+Renamed optional `waitForStateChange` param in `observer()` decorator to `waitForTransaction` to better align with `@latticexyz/store-sync` packages.
+
+```diff
+ const { waitForTransaction } = syncToZustand(...);
+-observer({ waitForStateChange: waitForTransaction });
++observer({ waitForTransaction });
+```
+
+---
+
 ## Version 2.2.6
 
 Release date: Thu Sep 19 2024
