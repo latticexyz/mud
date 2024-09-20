@@ -28,14 +28,14 @@ export function useDeployedTablesQuery() {
     select: (data: ApiResponse) => {
       return data.table
         .map((row) => {
-          return decodeTable([
-            row.table_id,
-            row.field_layout,
-            row.key_schema,
-            row.value_schema,
-            row.abi_encoded_key_names,
-            row.abi_encoded_field_names,
-          ]);
+          return decodeTable({
+            tableId: row.table_id,
+            fieldLayout: row.field_layout,
+            keySchema: row.key_schema,
+            valueSchema: row.value_schema,
+            abiEncodedKeyNames: row.abi_encoded_key_names,
+            abiEncodedFieldNames: row.abi_encoded_field_names,
+          });
         })
         .sort(({ namespace }) => (internalNamespaces.includes(namespace) ? 1 : -1));
     },
