@@ -766,7 +766,12 @@ describe("defineStore", () => {
         First: 0,
         Second: 1,
       },
-    });
+    }).type.toString.snap(`{
+  readonly Example: {
+    readonly First: 0
+    readonly Second: 1
+  }
+}`);
   });
 
   it("should allow a const config as input", () => {
