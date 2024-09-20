@@ -12,7 +12,7 @@ type MiningMode =
       blockTime: number;
     };
 
-export type EnableAutomineResult = undefined | (() => Promise<void>);
+export type EnableAutomineResult = undefined | { reset: () => Promise<void> };
 
 export async function enableAutomine(client: Client): Promise<EnableAutomineResult> {
   const miningMode = await getMiningMode(client).catch(() => undefined);
@@ -21,9 +21,11 @@ export async function enableAutomine(client: Client): Promise<EnableAutomineResu
 
   debug("Enabling automine");
   await setMiningMode(client, { type: "automine" });
-  return () => {
-    debug("Disabling automine");
-    return setMiningMode(client, miningMode);
+  return {
+    reset: () => {
+      debug("Disabling automine");
+      return setMiningMode(client, miningMode);
+    },
   };
 }
 
