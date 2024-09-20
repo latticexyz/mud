@@ -18,7 +18,7 @@ import { getNetworkConfig } from "./getNetworkConfig";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 import { createBurnerAccount, transportObserver } from "@latticexyz/common";
 import { transactionQueue } from "@latticexyz/common/actions";
-import { observer, type WaitForStateChange } from "@latticexyz/explorer/observer";
+import { observer, type WaitForTransaction } from "@latticexyz/explorer/observer";
 
 /*
  * Import our MUD config, which includes strong types for
@@ -34,7 +34,7 @@ export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
 export async function setupNetwork() {
   const networkConfig = await getNetworkConfig();
-  const waitForStateChange = Promise.withResolvers<WaitForStateChange>();
+  const waitForTx = Promise.withResolvers<WaitForTransaction>();
 
   /*
    * Create a viem public (read only) client
@@ -60,7 +60,7 @@ export async function setupNetwork() {
     .extend(transactionQueue())
     .extend(
       observer({
-        waitForStateChange: (hash) => waitForStateChange.promise.then((fn) => fn(hash)),
+        waitForTransaction: (hash) => waitForTx.promise.then((fn) => fn(hash)),
       }),
     );
 
@@ -85,7 +85,7 @@ export async function setupNetwork() {
     publicClient,
     startBlock: BigInt(networkConfig.initialBlockNumber),
   });
-  waitForStateChange.resolve(waitForTransaction);
+  waitForTx.resolve(waitForTransaction);
 
   return {
     tables,

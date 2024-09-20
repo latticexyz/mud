@@ -35,8 +35,7 @@ export type SyncToStashOptions = {
   startSync?: boolean;
 };
 
-export type SyncToStashResult = Omit<SyncResult, "waitForTransaction"> & {
-  waitForStateChange: SyncResult["waitForTransaction"];
+export type SyncToStashResult = SyncResult & {
   stopSync: () => void;
 };
 
@@ -50,7 +49,7 @@ export async function syncToStash({
 
   const storageAdapter = createStorageAdapter({ stash });
 
-  const { waitForTransaction: waitForStateChange, ...sync } = await createStoreSync({
+  const sync = await createStoreSync({
     storageAdapter,
     publicClient: client.extend(publicActions) as never,
     address,
@@ -70,7 +69,6 @@ export async function syncToStash({
 
   return {
     ...sync,
-    waitForStateChange,
     stopSync,
   };
 }

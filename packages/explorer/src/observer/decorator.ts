@@ -4,16 +4,16 @@ import { formatAbiItem, getAction } from "viem/utils";
 import { createBridge } from "./bridge";
 import { ReceiptSummary } from "./common";
 
-export type WaitForStateChange = (hash: Hex) => Promise<ReceiptSummary>;
+export type WaitForTransaction = (hash: Hex) => Promise<ReceiptSummary>;
 
 export type ObserverOptions = {
   explorerUrl?: string;
-  waitForStateChange?: WaitForStateChange;
+  waitForTransaction?: WaitForTransaction;
 };
 
 let writeCounter = 0;
 
-export function observer({ explorerUrl = "http://localhost:13690", waitForStateChange }: ObserverOptions = {}): <
+export function observer({ explorerUrl = "http://localhost:13690", waitForTransaction }: ObserverOptions = {}): <
   transport extends Transport,
   chain extends Chain | undefined = Chain | undefined,
   account extends Account | undefined = Account | undefined,
@@ -52,12 +52,12 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForStateC
         });
       });
 
-      if (waitForStateChange) {
+      if (waitForTransaction) {
         write.then((hash) => {
-          const receipt = waitForStateChange(hash);
-          emit("waitForStateChange", { writeId });
+          const receipt = waitForTransaction(hash);
+          emit("waitForTransaction", { writeId });
           Promise.allSettled([receipt]).then(([result]) => {
-            emit("waitForStateChange:result", { ...result, writeId });
+            emit("waitForTransaction:result", { ...result, writeId });
           });
         });
       }
