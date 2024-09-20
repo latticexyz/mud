@@ -165,7 +165,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   }
 
   // Reset mining mode after deploy
-  await resetMiningMode();
+  await resetMiningMode?.();
 
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
 
