@@ -18,10 +18,10 @@ export type Messages = {
   "waitForTransactionReceipt:result": PromiseSettledResult<ReceiptSummary> & {
     writeId: string;
   };
-  waitForStateChange: {
+  waitForTransaction: {
     writeId: string;
   };
-  "waitForStateChange:result": PromiseSettledResult<ReceiptSummary> & {
+  "waitForTransaction:result": PromiseSettledResult<ReceiptSummary> & {
     writeId: string;
   };
 };
