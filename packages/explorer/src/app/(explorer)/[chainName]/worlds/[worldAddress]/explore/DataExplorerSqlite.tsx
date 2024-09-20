@@ -11,13 +11,12 @@ export function DataExplorerSqlite() {
   const { data: deployedTables } = useDeployedTablesQuery();
   const selectedTableId = searchParams.get("tableId") ?? deployedTables?.[0]?.tableId;
   const deployedTable = deployedTables?.find(({ tableId }) => tableId === selectedTableId);
-  const columns = Object.keys(deployedTable?.schema ?? {});
-  const { data: rows } = useTableDataQuery({ deployedTable });
+  const { data } = useTableDataQuery({ deployedTable });
 
   return (
     <>
       <TableSelector value={selectedTableId} deployedTables={deployedTables} />
-      <TablesViewer deployedTable={deployedTable} rows={rows} columns={columns} />
+      <TablesViewer deployedTable={deployedTable} data={data} />
     </>
   );
 }
