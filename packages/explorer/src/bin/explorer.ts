@@ -4,6 +4,7 @@ import { readFile } from "fs/promises";
 import path from "path";
 import process from "process";
 import { fileURLToPath } from "url";
+import { anvil } from "viem/chains";
 import yargs from "yargs";
 import { ChildProcess, spawn } from "child_process";
 import { validateChainId } from "../common";
@@ -65,6 +66,7 @@ const argv = yargs(process.argv.slice(2))
 const { port, hostname, chainId, indexerDatabase, worldsFile, dev } = argv;
 let worldAddress = argv.worldAddress;
 let explorerProcess: ChildProcess;
+let indexerProcess: ChildProcess;
 
 async function startExplorer() {
   const env = {
@@ -95,6 +97,16 @@ async function startExplorer() {
       },
     });
   }
+}
+
+async function startSQLiteIndexer() {
+  console.log("Running SQLite indexer for anvil...");
+  indexerProcess = spawn("node_modules/@latticexyz/store-indexer/dist/bin/sqlite-indexer.js", [], {
+    cwd: packageRoot,
+    stdio: "inherit",
+    shell: true,
+    env: { ...process.env, SQLITE_FILENAME: indexerDatabase },
+  });
 }
 
 async function readWorldsJson() {
@@ -143,6 +155,9 @@ process.on("SIGINT", () => {
   if (explorerProcess) {
     explorerProcess.kill();
   }
+  if (indexerProcess) {
+    indexerProcess.kill();
+  }
   process.exit();
 });
 
@@ -162,6 +177,10 @@ async function main() {
     watchWorldsJson();
   }
 
+  // only start SQLite indexer if chainId is anvil
+  if (chainId === anvil.id) {
+    await startSQLiteIndexer();
+  }
   await startExplorer();
 }
 

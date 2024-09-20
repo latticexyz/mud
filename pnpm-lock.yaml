@@ -468,6 +468,9 @@ importers:
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
+      '@latticexyz/store-indexer':
+        specifier: workspace:*
+        version: link:../store-indexer
       '@latticexyz/store-sync':
         specifier: workspace:*
         version: link:../store-sync
