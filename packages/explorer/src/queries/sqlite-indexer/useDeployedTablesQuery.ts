@@ -22,7 +22,7 @@ export function useDeployedTablesQuery() {
   return useQuery({
     queryKey: ["deployedTables", TABLES_QUERY_TABLE],
     queryFn: async () => {
-      const response = await fetch(`/api/table?tableId=${TABLES_QUERY_TABLE}`);
+      const response = await fetch(`/api/table/sqlite-indexer?tableId=${TABLES_QUERY_TABLE}`);
       return response.json();
     },
     select: (data: ApiResponse) => {

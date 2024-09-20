@@ -6,21 +6,19 @@ import { useTableDataQuery } from "../../../../../../queries/useTableDataQuery";
 import { TableSelector } from "./TableSelector";
 import { TablesViewer } from "./TablesViewer";
 
-export function DataExplorerSqlite() {
+export function DataExplorer() {
   const searchParams = useSearchParams();
   const { data: deployedTables } = useDeployedTablesQuery();
-
-  console.log("DEPLOYED TABLES:", deployedTables);
-
   const selectedTableId = searchParams.get("tableId") ?? deployedTables?.[0]?.tableId;
   const deployedTable = deployedTables?.find(({ tableId }) => tableId === selectedTableId);
+  const { data: tableData } = useTableDataQuery(deployedTable);
 
-  const { data } = useTableDataQuery({ deployedTable });
+  console.log("table data", tableData);
 
   return (
     <>
       <TableSelector value={selectedTableId} deployedTables={deployedTables} />
-      <TablesViewer deployedTable={deployedTable} data={data} />
+      <TablesViewer deployedTable={deployedTable} data={tableData} />
     </>
   );
 }

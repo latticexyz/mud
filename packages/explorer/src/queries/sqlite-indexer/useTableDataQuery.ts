@@ -24,7 +24,8 @@ export function useTableDataQuery({ deployedTable }: Props) {
   return useQuery({
     queryKey: ["table", chainName, worldAddress, tableId],
     queryFn: async () => {
-      const response = await fetch(`/api/table?tableId=${tableId}`);
+      // TODO: add proper URL
+      const response = await fetch(`/api/table/sqlite-indexer?tableId=${tableId}`);
       return response.json();
     },
     select: (data) => {
