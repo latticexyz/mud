@@ -138,7 +138,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   console.log("Deploying from", client.account.address);
 
   // Attempt to enable automine for the duration of the deploy. Noop if automine is not available.
-  const { reset: resetMiningMode } = await enableAutomine(client);
+  const resetMiningMode = await enableAutomine(client);
 
   const startTime = Date.now();
   const worldDeploy = await deploy({

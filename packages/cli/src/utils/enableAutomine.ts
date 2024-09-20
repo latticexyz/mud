@@ -1,5 +1,5 @@
 import { getAutomine, getBlock, setAutomine, setIntervalMining } from "viem/actions";
-import { debug, error } from "../debug";
+import { debug } from "../debug";
 import { Client } from "viem";
 import { getAction } from "viem/utils";
 
@@ -12,24 +12,21 @@ type MiningMode =
       blockTime: number;
     };
 
-export type EnableAutomineResult = { reset: () => Promise<void> };
+export type EnableAutomineResult = () => Promise<void>;
 
 export async function enableAutomine(client: Client): Promise<EnableAutomineResult> {
-  try {
-    debug("Enabling automine");
-    const prevMiningMode = await getMiningMode(client);
-    await setMiningMode(client, { type: "automine" });
-    return {
-      reset: () => {
-        debug("Disabling automine");
-        return setMiningMode(client, prevMiningMode);
-      },
-    };
-  } catch (e) {
-    debug("Skipping automine");
-    error(e);
-    return { reset: async () => void 0 };
+  const miningMode = await getMiningMode(client).catch(() => undefined);
+  // doesn't support automine or is already in automine
+  if (!miningMode || miningMode.type === "automine") {
+    return async () => {};
   }
+
+  debug("Enabling automine");
+  await setMiningMode(client, { type: "automine" });
+  return () => {
+    debug("Disabling automine");
+    return setMiningMode(client, miningMode);
+  };
 }
 
 async function getMiningMode(client: Client): Promise<MiningMode> {
