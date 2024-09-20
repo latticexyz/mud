@@ -205,11 +205,13 @@ export async function createStoreSync({
   // such a way that reapplying the same logs, even if the order changes, will mean that the storage adapter
   // is kept up to date.
   async function applyOptimisticLogs(): Promise<readonly StorageAdapterBlock[]> {
+    // order logs and group by block
     const blocks = groupLogsByBlockNumber(optimisticLogs).filter(
       (block) =>
         block.logs.length > 0 && (lastBlockNumberProcessed == null || block.blockNumber > lastBlockNumberProcessed),
     );
     for (const block of blocks) {
+      debug("applying optimistic logs for block", block.blockNumber);
       await storageAdapter(block);
     }
     optimisticLogs = blocks.flatMap((block) => block.logs);
@@ -305,18 +307,20 @@ export async function createStoreSync({
           const lastBlock = blocks[0];
           debug("fetching tx receipt after seeing block", lastBlock.blockNumber);
           const receipt = await publicClient.getTransactionReceipt({ hash: tx });
+          debug("got receipt", receipt.status);
           if (receipt.status === "success") {
             const logs = parseEventLogs({ abi: storeEventsAbi, logs: receipt.logs });
-            optimisticLogs = [...optimisticLogs, ...logs];
-            await applyOptimisticLogs();
+            if (logs.length) {
+              debug("applying", logs.length, "optimistic logs");
+              optimisticLogs = [...optimisticLogs, ...logs];
+              await applyOptimisticLogs();
+            }
           }
-          if (lastBlock.blockNumber >= receipt.blockNumber) {
-            return {
-              status: receipt.status,
-              blockNumber: receipt.blockNumber,
-              transactionHash: receipt.transactionHash,
-            };
-          }
+          return {
+            status: receipt.status,
+            blockNumber: receipt.blockNumber,
+            transactionHash: receipt.transactionHash,
+          };
         } catch (e) {
           const error = e as GetTransactionReceiptErrorType;
           if (error.name === "TransactionReceiptNotFoundError") {
