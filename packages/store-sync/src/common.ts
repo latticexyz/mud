@@ -11,7 +11,6 @@ import {
 } from "@latticexyz/protocol-parser/internal";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
-import { Store as StoreConfig } from "@latticexyz/store";
 import { Table as ConfigTable, Schema } from "@latticexyz/config";
 import { configToTables } from "./configToTables";
 
@@ -67,10 +66,6 @@ export type SyncFilter = {
 };
 
 export type SyncOptions = {
-  /**
-   * MUD config
-   */
-  config?: StoreConfig;
   /**
    * [viem `PublicClient`][0] used for fetching logs from the RPC.
    *
