@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { internalMUDNamespaces } from "../../../../../../common";
+import { internalNamespaces } from "../../../../../../common";
 import { Button } from "../../../../../../components/ui/Button";
 import { Input } from "../../../../../../components/ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
@@ -68,7 +68,7 @@ export function TablesViewer({ deployedTable, rows, columns }: Props) {
               const keyTuple = keysSchema?.map((key) => row.getValue(key));
               const value = row.getValue(name)?.toString();
 
-              if (keysSchema.includes(name) || internalMUDNamespaces.includes(namespace)) {
+              if (keysSchema.includes(name) || internalNamespaces.includes(namespace)) {
                 return value;
               }
               return <EditableTableCell name={name} deployedTable={deployedTable} keyTuple={keyTuple} value={value} />;

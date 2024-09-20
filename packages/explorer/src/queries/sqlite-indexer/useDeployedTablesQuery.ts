@@ -2,7 +2,7 @@ import { useParams } from "next/navigation";
 import { Hex } from "viem";
 import { useQuery } from "@tanstack/react-query";
 import { decodeTable } from "../../app/(explorer)/[chainName]/worlds/[worldAddress]/explore/utils/decodeTable";
-import { internalMUDNamespaces } from "../../common";
+import { internalNamespaces } from "../../common";
 
 type ApiResponse = {
   table: {
@@ -37,7 +37,7 @@ export function useDeployedTablesQuery() {
             row.abi_encoded_field_names,
           ]);
         })
-        .sort(({ namespace }) => (internalMUDNamespaces.includes(namespace) ? 1 : -1));
+        .sort(({ namespace }) => (internalNamespaces.includes(namespace) ? 1 : -1));
     },
     refetchInterval: 15_000,
   });

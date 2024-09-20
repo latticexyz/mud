@@ -2,7 +2,7 @@ import { useParams } from "next/navigation";
 import { Hex } from "viem";
 import { useQuery } from "@tanstack/react-query";
 import { decodeTable } from "../../app/(explorer)/[chainName]/worlds/[worldAddress]/explore/utils/decodeTable";
-import { internalMUDNamespaces } from "../../common";
+import { internalNamespaces } from "../../common";
 import { useDozerUrl } from "../../hooks/useDozerUrl";
 
 export type DozerResponse = {
@@ -44,7 +44,7 @@ export function useDeployedTablesQuery() {
         .map((row) => {
           return decodeTable(row);
         })
-        .sort(({ namespace }) => (internalMUDNamespaces.includes(namespace) ? 1 : -1));
+        .sort(({ namespace }) => (internalNamespaces.includes(namespace) ? 1 : -1));
     },
   });
 }
