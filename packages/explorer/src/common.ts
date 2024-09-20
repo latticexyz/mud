@@ -1,6 +1,6 @@
 import { anvil, garnet, redstone } from "viem/chains";
 
-export const internalMUDNamespaces = ["world", "store", "metadata"];
+export const internalNamespaces = ["world", "store", "metadata"];
 
 export const supportedChains = { anvil, garnet, redstone } as const;
 export type supportedChains = typeof supportedChains;
