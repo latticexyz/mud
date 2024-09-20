@@ -610,9 +610,6 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.10)
-      typescript:
-        specifier: 5.4.2
-        version: 5.4.2
 
   packages/faucet:
     dependencies:
