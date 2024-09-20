@@ -157,6 +157,9 @@ importers:
       '@latticexyz/abi-ts':
         specifier: workspace:*
         version: link:../abi-ts
+      '@latticexyz/block-logs-stream':
+        specifier: workspace:*
+        version: link:../block-logs-stream
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
