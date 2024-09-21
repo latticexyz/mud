@@ -187,18 +187,21 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
     tap((startBlock) => debug("starting sync from block", startBlock)),
   );
 
+  let startBlock: bigint | null = null;
+  let endBlock: bigint | null = null;
+  let lastBlockNumberProcessed: bigint | null = null;
+
   const latestBlock$ = createBlockStream({ publicClient, blockTag: followBlockTag }).pipe(shareReplay(1));
   const latestBlockNumber$ = latestBlock$.pipe(
     map((block) => block.number),
     tap((blockNumber) => {
       debug("on block number", blockNumber, "for", followBlockTag, "block tag");
     }),
+    filter((blockNumber) => {
+      return lastBlockNumberProcessed == null || blockNumber > lastBlockNumberProcessed;
+    }),
     shareReplay(1),
   );
-
-  let startBlock: bigint | null = null;
-  let endBlock: bigint | null = null;
-  let lastBlockNumberProcessed: bigint | null = null;
 
   const storedBlock$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
@@ -207,15 +210,20 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
       endBlock = range.endBlock;
     }),
     concatMap((range) => {
+      const fromBlock = lastBlockNumberProcessed
+        ? bigIntMax(range.startBlock, lastBlockNumberProcessed + 1n)
+        : range.startBlock;
+      const toBlock = range.endBlock;
+      if (toBlock < fromBlock) {
+        throw new Error(`toBlock ${toBlock} is less than fromBlock ${fromBlock}`);
+      }
       const storedBlocks = fetchAndStoreLogs({
         publicClient,
         address,
         events: storeEventsAbi,
         maxBlockRange,
-        fromBlock: lastBlockNumberProcessed
-          ? bigIntMax(range.startBlock, lastBlockNumberProcessed + 1n)
-          : range.startBlock,
-        toBlock: range.endBlock,
+        fromBlock: fromBlock,
+        toBlock: toBlock,
         storageAdapter,
         logFilter,
       });

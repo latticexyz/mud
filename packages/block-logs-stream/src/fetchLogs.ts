@@ -90,7 +90,18 @@ export async function* fetchLogs<TAbiEvents extends readonly AbiEvent[]>({
     try {
       const toBlock = fromBlock + blockRange;
       debug("getting logs", { fromBlock, toBlock });
-      const logs = await publicClient.getLogs({ ...getLogsOpts, fromBlock, toBlock, strict: true });
+
+      const [latestBlockNumber, logs] = await Promise.all([
+        publicClient.getBlockNumber({ cacheTime: 0 }),
+        publicClient.getLogs({ ...getLogsOpts, fromBlock, toBlock, strict: true }),
+      ]);
+      if (latestBlockNumber < toBlock) {
+        const blockTimeInSeconds = 2;
+        const seconds = Number(toBlock - latestBlockNumber) * blockTimeInSeconds;
+        debug(`latest block number ${latestBlockNumber} is less than toBlock ${toBlock}, retrying in ${seconds}s`);
+        await wait(1000 * seconds);
+        continue;
+      }
       yield { fromBlock, toBlock, logs };
       fromBlock = toBlock + 1n;
       blockRange = bigIntMin(maxBlockRange, getLogsOpts.toBlock - fromBlock);
