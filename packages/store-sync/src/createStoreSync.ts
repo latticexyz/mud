@@ -218,8 +218,15 @@ export async function createStoreSync({
     return blocks;
   }
 
+  let applyingOptimisticLogs: Promise<readonly StorageAdapterBlock[]> | undefined;
+
   const storedBlock$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
+    concatMap(async (range) => {
+      // wait for any prior pending optimistic logs, so we don't have data conflicts
+      await applyingOptimisticLogs;
+      return range;
+    }),
     tap((range) => {
       startBlock = range.startBlock;
       endBlock = range.endBlock;
@@ -243,6 +250,7 @@ export async function createStoreSync({
     tap(({ blockNumber, logs }) => {
       debug("stored", logs.length, "logs for block", blockNumber);
       lastBlockNumberProcessed = blockNumber;
+      applyingOptimisticLogs = applyOptimisticLogs();
 
       if (startBlock != null && endBlock != null) {
         if (blockNumber < endBlock) {
@@ -265,10 +273,6 @@ export async function createStoreSync({
           });
         }
       }
-    }),
-    concatMap(async (block) => {
-      await applyOptimisticLogs();
-      return block;
     }),
     share(),
   );
@@ -313,7 +317,8 @@ export async function createStoreSync({
             if (logs.length) {
               debug("applying", logs.length, "optimistic logs");
               optimisticLogs = [...optimisticLogs, ...logs];
-              await applyOptimisticLogs();
+              applyingOptimisticLogs = applyOptimisticLogs();
+              await applyingOptimisticLogs;
             }
           }
           return {
