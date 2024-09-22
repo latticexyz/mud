@@ -52,17 +52,26 @@ const RATE_LIMIT_ERRORS = [
   "sender is over rate limit",
 ];
 
-const BLOCK_RANGE_TOO_LARGE_ERRORS = [
+// These errors will reduce the max block range for all remaining iterations.
+const MAX_BLOCK_RANGE_ERRORS = [
   "block range exceeded",
-  // https://github.com/ethereum-optimism/optimism/blob/4fb534ab3d924ac87383e1e70ae4872340d68d9d/proxyd/backend.go#L110
-  "backend response too large",
   // https://github.com/ethereum-optimism/optimism/blob/4fb534ab3d924ac87383e1e70ae4872340d68d9d/proxyd/rewriter.go#L36
   "block range is too large",
+  // https://github.com/ethereum-optimism/optimism/blob/4fb534ab3d924ac87383e1e70ae4872340d68d9d/proxyd/backend.go#L750
+  "block range greater than",
+  // https://github.com/paradigmxyz/reth/blob/b5adf24a65e83bc48da16fd722d369a28d12f644/crates/rpc/rpc-eth-types/src/logs_utils.rs#L25
+  "query exceeds max block range",
+  // https://github.com/latticexyz/mud/issues/1522#issuecomment-2105435114
+  "exceed maximum block range",
+];
+
+// These errors will temporarily reduce the block range for the current request until it succeeds, then revert back to max block range.
+const BLOCK_RANGE_ERRORS = [
   // https://github.com/ethereum-optimism/optimism/blob/4fb534ab3d924ac87383e1e70ae4872340d68d9d/proxyd/backend.go#L98
   // https://github.com/ethereum-optimism/optimism/blob/4fb534ab3d924ac87383e1e70ae4872340d68d9d/proxyd/rewriter.go#L35
   "block is out of range",
-  // https://github.com/paradigmxyz/reth/blob/b5adf24a65e83bc48da16fd722d369a28d12f644/crates/rpc/rpc-eth-types/src/logs_utils.rs#L25
-  "query exceeds max block range",
+  // https://github.com/ethereum-optimism/optimism/blob/4fb534ab3d924ac87383e1e70ae4872340d68d9d/proxyd/backend.go#L110
+  "backend response too large",
   // https://github.com/paradigmxyz/reth/blob/b5adf24a65e83bc48da16fd722d369a28d12f644/crates/rpc/rpc-eth-types/src/logs_utils.rs#L28
   "query exceeds max results",
 ];
@@ -95,7 +104,7 @@ export async function* fetchLogs<abiEvents extends readonly AbiEvent[]>({
   while (fromBlock <= getLogsOpts.toBlock) {
     try {
       const toBlock = fromBlock + blockRange;
-      debug("getting logs", { fromBlock, toBlock });
+      debug("getting logs", { fromBlock, toBlock, blockRange });
       const logs = await getAction(
         publicClient,
         getLogs,
@@ -104,8 +113,8 @@ export async function* fetchLogs<abiEvents extends readonly AbiEvent[]>({
       yield { fromBlock, toBlock, logs };
       fromBlock = toBlock + 1n;
       blockRange = bigIntMin(maxBlockRange, getLogsOpts.toBlock - fromBlock);
+      retryCount = 0;
     } catch (error: unknown) {
-      debug("error getting logs:", String(error));
       if (!(error instanceof Error)) throw error;
 
       if (retryCount < maxRetryCount && RATE_LIMIT_ERRORS.some((e) => error.message.includes(e))) {
@@ -116,13 +125,17 @@ export async function* fetchLogs<abiEvents extends readonly AbiEvent[]>({
         continue;
       }
 
-      if (BLOCK_RANGE_TOO_LARGE_ERRORS.some((e) => error.message.includes(e))) {
+      const isMaxBlockRangeError = MAX_BLOCK_RANGE_ERRORS.some((e) => error.message.includes(e));
+      const isBlockRangeError = BLOCK_RANGE_ERRORS.some((e) => error.message.includes(e));
+      if (isMaxBlockRangeError || isBlockRangeError) {
         blockRange /= 2n;
         if (blockRange <= 0n) {
           throw new Error("can't reduce block range any further");
         }
-        debug("block range exceeded or too many logs in range, trying a smaller block range", error);
-        // TODO: adjust maxBlockRange down if we consistently hit this for a given block range size
+        if (isMaxBlockRangeError) {
+          maxBlockRange = blockRange;
+        }
+        debug(`got block range error, trying a block range of ${blockRange} (max ${maxBlockRange})`);
         continue;
       }
 
