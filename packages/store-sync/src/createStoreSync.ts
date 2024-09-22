@@ -25,8 +25,8 @@ import {
   catchError,
   shareReplay,
   combineLatest,
+  scan,
   mergeMap,
-  BehaviorSubject,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
@@ -250,16 +250,18 @@ export async function createStoreSync({
     share(),
   );
 
+  const storedBlockLogs$ = concat(storedInitialBlockLogs$, storedBlock$).pipe(share());
+
   // keep 10 blocks worth processed transactions in memory
   const recentBlocksWindow = 10;
-  const recentBlocks$ = new BehaviorSubject<StorageAdapterBlock[]>([]);
-
-  const storedBlockLogs$ = concat(storedInitialBlockLogs$, storedBlock$).pipe(
-    tap((block) => {
-      // most recent block first, for ease of pulling the first one off the array
-      recentBlocks$.next([block, ...recentBlocks$.value].slice(0, recentBlocksWindow));
-    }),
-    share(),
+  // most recent block first, for ease of pulling the first one off the array
+  const recentBlocks$ = storedBlockLogs$.pipe(
+    scan<StorageAdapterBlock, StorageAdapterBlock[]>(
+      (recentBlocks, block) => [block, ...recentBlocks].slice(0, recentBlocksWindow),
+      [],
+    ),
+    filter((recentBlocks) => recentBlocks.length > 0),
+    shareReplay(1),
   );
 
   // TODO: move to its own file so we can test it, have its own debug instance, etc.
