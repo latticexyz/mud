@@ -45,6 +45,7 @@ export type FetchLogsResult<abiEvents extends readonly AbiEvent[]> = {
 };
 
 const RATE_LIMIT_ERRORS = [
+  // tests
   "rate limit exceeded",
   // https://github.com/ethereum-optimism/optimism/blob/4fb534ab3d924ac87383e1e70ae4872340d68d9d/proxyd/backend.go#L83
   "over rate limit",
@@ -54,6 +55,7 @@ const RATE_LIMIT_ERRORS = [
 
 // These errors will reduce the max block range for all remaining iterations.
 const MAX_BLOCK_RANGE_ERRORS = [
+  // tests
   "block range exceeded",
   // https://github.com/ethereum-optimism/optimism/blob/4fb534ab3d924ac87383e1e70ae4872340d68d9d/proxyd/rewriter.go#L36
   "block range is too large",
@@ -104,7 +106,7 @@ export async function* fetchLogs<abiEvents extends readonly AbiEvent[]>({
   while (fromBlock <= getLogsOpts.toBlock) {
     try {
       const toBlock = fromBlock + blockRange;
-      debug("getting logs", { fromBlock, toBlock, blockRange });
+      debug(`getting logs for blocks ${fromBlock}-${toBlock} (${blockRange} blocks, ${maxBlockRange} max)`);
       const logs = await getAction(
         publicClient,
         getLogs,
@@ -119,7 +121,7 @@ export async function* fetchLogs<abiEvents extends readonly AbiEvent[]>({
 
       if (retryCount < maxRetryCount && RATE_LIMIT_ERRORS.some((e) => error.message.includes(e))) {
         const seconds = 2 * retryCount;
-        debug(`too many requests, retrying in ${seconds}s`, error);
+        debug(`too many requests, retrying in ${seconds}s`);
         await wait(1000 * seconds);
         retryCount += 1;
         continue;
@@ -135,7 +137,7 @@ export async function* fetchLogs<abiEvents extends readonly AbiEvent[]>({
         if (isMaxBlockRangeError) {
           maxBlockRange = blockRange;
         }
-        debug(`got block range error, trying a block range of ${blockRange} (max ${maxBlockRange})`);
+        debug(`got block range error, retrying with ${blockRange} blocks, ${maxBlockRange} max`);
         continue;
       }
 
