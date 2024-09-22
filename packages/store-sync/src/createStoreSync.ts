@@ -27,6 +27,8 @@ import {
   combineLatest,
   mergeMap,
   BehaviorSubject,
+  switchMap,
+  ignoreElements,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
@@ -198,33 +200,53 @@ export async function createStoreSync({
   let startBlock: bigint | null = null;
   let endBlock: bigint | null = null;
   let lastBlockNumberProcessed: bigint | null = null;
-  let optimisticLogs: readonly StoreEventsLog[] = [];
 
   // For chains that provide guaranteed receipts ahead of block mining, we can apply the logs immediately.
   // This works because, once the block is mined, the same logs will be applied. Store events are defined in
   // such a way that reapplying the same logs, even if the order changes, will mean that the storage adapter
   // is kept up to date.
-  async function applyOptimisticLogs(): Promise<readonly StorageAdapterBlock[]> {
-    // order logs and group by block
-    const blocks = groupLogsByBlockNumber(optimisticLogs).filter(
-      (block) =>
-        block.logs.length > 0 && (lastBlockNumberProcessed == null || block.blockNumber > lastBlockNumberProcessed),
+
+  const optimisticLogs$ = new BehaviorSubject<readonly StoreEventsLog[]>([]);
+  function pushOptimisticLogs(logs: readonly StoreEventsLog[]): void {
+    optimisticLogs$.next(
+      [...optimisticLogs$.value, ...logs].filter(
+        (log) => lastBlockNumberProcessed == null || log.blockNumber > lastBlockNumberProcessed,
+      ),
     );
-    for (const block of blocks) {
-      debug("applying optimistic logs for block", block.blockNumber);
-      await storageAdapter(block);
-    }
-    optimisticLogs = blocks.flatMap((block) => block.logs);
-    return blocks;
   }
 
-  let applyingOptimisticLogs: Promise<readonly StorageAdapterBlock[]> | undefined;
+  const isStoringOptimisticLogs$ = optimisticLogs$.pipe(
+    switchMap((logs) =>
+      concat(
+        of(true),
+        of(logs).pipe(
+          concatMap(async (logs) => {
+            if (!logs.length) return;
+            debug("applying", logs.length, "optimistic logs");
+            const blocks = groupLogsByBlockNumber(
+              logs.filter((log) => lastBlockNumberProcessed == null || log.blockNumber > lastBlockNumberProcessed),
+            ).filter((block) => block.logs.length);
+            for (const block of blocks) {
+              debug("applying optimistic logs for block", block.blockNumber);
+              await storageAdapter(block);
+            }
+          }),
+          ignoreElements(),
+        ),
+        of(false),
+      ),
+    ),
+  );
+  const isOptimisticIdle$ = isStoringOptimisticLogs$.pipe(
+    filter((isStoring) => isStoring === false),
+    shareReplay(1),
+  );
 
   const storedBlock$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
     concatMap(async (range) => {
       // wait for any prior pending optimistic logs, so we don't have data conflicts
-      await applyingOptimisticLogs;
+      await firstValueFrom(isOptimisticIdle$);
       return range;
     }),
     tap((range) => {
@@ -250,7 +272,6 @@ export async function createStoreSync({
     tap(({ blockNumber, logs }) => {
       debug("stored", logs.length, "logs for block", blockNumber);
       lastBlockNumberProcessed = blockNumber;
-      applyingOptimisticLogs = applyOptimisticLogs();
 
       if (startBlock != null && endBlock != null) {
         if (blockNumber < endBlock) {
@@ -273,6 +294,12 @@ export async function createStoreSync({
           });
         }
       }
+    }),
+    concatMap(async (block) => {
+      // reapply optimistic logs
+      pushOptimisticLogs([]);
+      await firstValueFrom(isOptimisticIdle$);
+      return block;
     }),
     share(),
   );
@@ -316,9 +343,9 @@ export async function createStoreSync({
             const logs = parseEventLogs({ abi: storeEventsAbi, logs: receipt.logs });
             if (logs.length) {
               debug("applying", logs.length, "optimistic logs");
-              optimisticLogs = [...optimisticLogs, ...logs];
-              applyingOptimisticLogs = applyOptimisticLogs();
-              await applyingOptimisticLogs;
+              await firstValueFrom(isOptimisticIdle$);
+              pushOptimisticLogs(logs);
+              await firstValueFrom(isOptimisticIdle$);
             }
           }
           return {
@@ -334,7 +361,6 @@ export async function createStoreSync({
           throw error;
         }
       }),
-      tap((result) => debug("has tx?", tx, result)),
     );
 
     return await firstValueFrom(hasTransaction$.pipe(filter(isDefined)));
