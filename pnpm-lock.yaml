@@ -157,6 +157,9 @@ importers:
       '@latticexyz/abi-ts':
         specifier: workspace:*
         version: link:../abi-ts
+      '@latticexyz/block-logs-stream':
+        specifier: workspace:*
+        version: link:../block-logs-stream
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -13930,7 +13933,7 @@ snapshots:
       '@motionone/easing': 10.18.0
       '@motionone/types': 10.17.1
       '@motionone/utils': 10.18.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@motionone/dom@10.18.0':
     dependencies:
@@ -13939,23 +13942,23 @@ snapshots:
       '@motionone/types': 10.17.1
       '@motionone/utils': 10.18.0
       hey-listen: 1.0.8
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@motionone/easing@10.18.0':
     dependencies:
       '@motionone/utils': 10.18.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@motionone/generators@10.18.0':
     dependencies:
       '@motionone/types': 10.17.1
       '@motionone/utils': 10.18.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@motionone/svelte@10.16.4':
     dependencies:
       '@motionone/dom': 10.18.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@motionone/types@10.17.1': {}
 
@@ -13963,12 +13966,12 @@ snapshots:
     dependencies:
       '@motionone/types': 10.17.1
       hey-listen: 1.0.8
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@motionone/vue@10.16.4':
     dependencies:
       '@motionone/dom': 10.18.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@next/env@14.2.5': {}
 

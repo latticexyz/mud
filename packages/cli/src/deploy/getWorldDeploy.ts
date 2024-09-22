@@ -1,5 +1,6 @@
 import { Client, Address, getAddress, parseAbi } from "viem";
-import { getBlockNumber, getLogs } from "viem/actions";
+import { getBlock } from "viem/actions";
+import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
 import { WorldDeploy, worldDeployEvents } from "./common";
 import { debug } from "./debug";
 import { logsToWorldDeploy } from "./logsToWorldDeploy";
@@ -16,20 +17,22 @@ export async function getWorldDeploy(client: Client, worldAddress: Address): Pro
 
   debug("looking up world deploy for", address);
 
-  const stateBlock = await getBlockNumber(client);
-  const logs = await getLogs(client, {
-    strict: true,
+  const [fromBlock, toBlock] = await Promise.all([
+    getBlock(client, { blockTag: "earliest" }),
+    getBlock(client, { blockTag: "latest" }),
+  ]);
+
+  const blockLogs = await fetchBlockLogs({
+    publicClient: client,
     address,
     events: parseAbi(worldDeployEvents),
-    // this may fail for certain RPC providers with block range limits
-    // if so, could potentially use our fetchLogs helper (which does pagination)
-    fromBlock: "earliest",
-    toBlock: stateBlock,
+    fromBlock: fromBlock.number,
+    toBlock: toBlock.number,
   });
 
   deploy = {
-    ...logsToWorldDeploy(logs),
-    stateBlock,
+    ...logsToWorldDeploy(blockLogs.flatMap((block) => block.logs)),
+    stateBlock: toBlock.number,
   };
   deploys.set(address, deploy);
 

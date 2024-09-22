@@ -1,15 +1,17 @@
 import { AbiEvent } from "abitype";
-import { Address, PublicClient, BlockNumber, GetLogsReturnType } from "viem";
+import { Address, Client, BlockNumber, GetLogsReturnType } from "viem";
 import { bigIntMin, wait } from "@latticexyz/common/utils";
 import { debug } from "./debug";
+import { getAction } from "viem/utils";
+import { getLogs } from "viem/actions";
 
-export type FetchLogsOptions<TAbiEvents extends readonly AbiEvent[]> = {
+export type FetchLogsOptions<abiEvents extends readonly AbiEvent[]> = {
   /**
-   * [viem `PublicClient`][0] used for fetching logs from the RPC.
+   * [viem `Client`][0] used for fetching logs from the RPC.
    *
    * [0]: https://viem.sh/docs/clients/public.html
    */
-  publicClient: PublicClient;
+  publicClient: Client;
   /**
    * Optional contract address(es) to fetch logs for.
    */
@@ -17,7 +19,7 @@ export type FetchLogsOptions<TAbiEvents extends readonly AbiEvent[]> = {
   /**
    * Events to fetch logs for.
    */
-  events: TAbiEvents;
+  events: abiEvents;
   /**
    * The block number to start fetching logs from (inclusive).
    */
@@ -36,10 +38,10 @@ export type FetchLogsOptions<TAbiEvents extends readonly AbiEvent[]> = {
   maxRetryCount?: number;
 };
 
-export type FetchLogsResult<TAbiEvents extends readonly AbiEvent[]> = {
+export type FetchLogsResult<abiEvents extends readonly AbiEvent[]> = {
   fromBlock: BlockNumber;
   toBlock: BlockNumber;
-  logs: GetLogsReturnType<undefined, TAbiEvents, true, BlockNumber, BlockNumber>;
+  logs: GetLogsReturnType<undefined, abiEvents, true, BlockNumber, BlockNumber>;
 };
 
 const RATE_LIMIT_ERRORS = [
@@ -59,6 +61,10 @@ const BLOCK_RANGE_TOO_LARGE_ERRORS = [
   // https://github.com/ethereum-optimism/optimism/blob/4fb534ab3d924ac87383e1e70ae4872340d68d9d/proxyd/backend.go#L98
   // https://github.com/ethereum-optimism/optimism/blob/4fb534ab3d924ac87383e1e70ae4872340d68d9d/proxyd/rewriter.go#L35
   "block is out of range",
+  // https://github.com/paradigmxyz/reth/blob/b5adf24a65e83bc48da16fd722d369a28d12f644/crates/rpc/rpc-eth-types/src/logs_utils.rs#L25
+  "query exceeds max block range",
+  // https://github.com/paradigmxyz/reth/blob/b5adf24a65e83bc48da16fd722d369a28d12f644/crates/rpc/rpc-eth-types/src/logs_utils.rs#L28
+  "query exceeds max results",
 ];
 
 /**
@@ -76,12 +82,12 @@ const BLOCK_RANGE_TOO_LARGE_ERRORS = [
  *
  * @throws Will throw an error if the block range can't be reduced any further.
  */
-export async function* fetchLogs<TAbiEvents extends readonly AbiEvent[]>({
+export async function* fetchLogs<abiEvents extends readonly AbiEvent[]>({
   maxBlockRange = 1000n,
   maxRetryCount = 3,
   publicClient,
   ...getLogsOpts
-}: FetchLogsOptions<TAbiEvents>): AsyncGenerator<FetchLogsResult<TAbiEvents>> {
+}: FetchLogsOptions<abiEvents>): AsyncGenerator<FetchLogsResult<abiEvents>> {
   let fromBlock = getLogsOpts.fromBlock;
   let blockRange = bigIntMin(maxBlockRange, getLogsOpts.toBlock - fromBlock);
   let retryCount = 0;
@@ -90,7 +96,11 @@ export async function* fetchLogs<TAbiEvents extends readonly AbiEvent[]>({
     try {
       const toBlock = fromBlock + blockRange;
       debug("getting logs", { fromBlock, toBlock });
-      const logs = await publicClient.getLogs({ ...getLogsOpts, fromBlock, toBlock, strict: true });
+      const logs = await getAction(
+        publicClient,
+        getLogs,
+        "getLogs",
+      )({ ...getLogsOpts, fromBlock, toBlock, strict: true });
       yield { fromBlock, toBlock, logs };
       fromBlock = toBlock + 1n;
       blockRange = bigIntMin(maxBlockRange, getLogsOpts.toBlock - fromBlock);
