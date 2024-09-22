@@ -1,11 +1,11 @@
 import { BlockNumber } from "viem";
 import { bigIntSort, isDefined } from "@latticexyz/common/utils";
 
-type PartialLog = { blockNumber: bigint; logIndex: number };
+type PartialLog = { readonly blockNumber: bigint; readonly logIndex: number };
 
 export type GroupLogsByBlockNumberResult<log extends PartialLog> = {
-  blockNumber: log["blockNumber"];
-  logs: readonly log[];
+  readonly blockNumber: log["blockNumber"];
+  readonly logs: readonly log[];
 }[];
 
 /**
