@@ -11,7 +11,7 @@ import { SQLEditor } from "./SQLEditor";
 import { TableSelector } from "./TableSelector";
 import { TablesViewer } from "./TablesViewer";
 
-export function DataExplorer() {
+export function Explorer() {
   const { id: chainId } = useChain();
   const [query, setQuery] = useState("");
   const searchParams = useSearchParams();

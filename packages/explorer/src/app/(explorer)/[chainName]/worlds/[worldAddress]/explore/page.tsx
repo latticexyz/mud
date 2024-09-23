@@ -1,5 +1,5 @@
-import { DataExplorer } from "./DataExplorer";
+import { Explorer } from "./Explorer";
 
-export default function ExplorerPage() {
-  return <DataExplorer />;
+export default function ExplorePage() {
+  return <Explorer />;
 }
