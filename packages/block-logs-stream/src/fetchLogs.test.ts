@@ -5,7 +5,7 @@ import {
   RpcLog,
   RpcRequestError,
   Transport,
-  createPublicClient,
+  createClient,
   createTransport,
   hexToNumber,
 } from "viem";
@@ -19,9 +19,10 @@ const mockTransport: Transport = () =>
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     request: mockedTransportRequest as any,
     type: "mock",
+    retryCount: 0,
   });
 
-const publicClient = createPublicClient({
+const publicClient = createClient({
   transport: mockTransport,
 });
 
@@ -189,77 +190,7 @@ describe("fetchLogs", () => {
           {
             "address": "0x",
             "fromBlock": "0x0",
-            "toBlock": "0x3e8",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x0",
-            "toBlock": "0x3e8",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x0",
-            "toBlock": "0x3e8",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x0",
             "toBlock": "0x1f4",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x1f5",
-            "toBlock": "0x5dd",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x1f5",
-            "toBlock": "0x5dd",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x1f5",
-            "toBlock": "0x5dd",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x1f5",
-            "toBlock": "0x5dd",
             "topics": [
               [],
             ],
@@ -279,7 +210,7 @@ describe("fetchLogs", () => {
           {
             "address": "0x",
             "fromBlock": "0x3ea",
-            "toBlock": "0x7d0",
+            "toBlock": "0x5de",
             "topics": [
               [],
             ],
@@ -288,47 +219,7 @@ describe("fetchLogs", () => {
         [
           {
             "address": "0x",
-            "fromBlock": "0x3ea",
-            "toBlock": "0x7d0",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x3ea",
-            "toBlock": "0x7d0",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x3ea",
-            "toBlock": "0x7d0",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x3ea",
-            "toBlock": "0x5dd",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x5de",
+            "fromBlock": "0x5df",
             "toBlock": "0x7d0",
             "topics": [
               [],
@@ -353,10 +244,10 @@ describe("fetchLogs", () => {
         {
           "fromBlock": 1002n,
           "logs": [],
-          "toBlock": 1501n,
+          "toBlock": 1502n,
         },
         {
-          "fromBlock": 1502n,
+          "fromBlock": 1503n,
           "logs": [],
           "toBlock": 2000n,
         },

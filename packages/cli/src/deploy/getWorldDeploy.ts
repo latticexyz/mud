@@ -28,6 +28,7 @@ export async function getWorldDeploy(client: Client, worldAddress: Address): Pro
     events: parseAbi(worldDeployEvents),
     fromBlock: fromBlock.number,
     toBlock: toBlock.number,
+    maxBlockRange: 100_000n,
   });
 
   deploy = {

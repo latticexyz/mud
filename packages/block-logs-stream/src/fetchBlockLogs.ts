@@ -1,6 +1,7 @@
-import { AbiEvent, Log } from "viem";
+import { AbiEvent } from "viem";
 import { GroupLogsByBlockNumberResult, groupLogsByBlockNumber } from "./groupLogsByBlockNumber";
 import { FetchLogsOptions, FetchLogsResult, fetchLogs } from "./fetchLogs";
+import { iteratorToArray } from "@latticexyz/common/utils";
 
 /**
  * Fetches all logs from the blockchain for the given range, grouped by block number.
@@ -12,14 +13,14 @@ import { FetchLogsOptions, FetchLogsResult, fetchLogs } from "./fetchLogs";
  *
  * @param {FetchLogsOptions<AbiEvent[]>} options See `FetchLogsOptions`.
  *
+ * @returns {GroupLogsByBlockNumberResult} See `GroupLogsByBlockNumberResult`.
+ *
  * @throws Will throw an error if the block range can't be reduced any further.
  */
 export async function fetchBlockLogs<abiEvents extends readonly AbiEvent[]>(
   opts: FetchLogsOptions<abiEvents>,
-): Promise<GroupLogsByBlockNumberResult<Log<bigint, number, false, undefined, true, abiEvents, undefined>>> {
-  const results: FetchLogsResult<abiEvents>[] = [];
-  for await (const result of fetchLogs(opts)) {
-    results.push(result);
-  }
-  return groupLogsByBlockNumber(results.flatMap((result) => result.logs));
+): Promise<GroupLogsByBlockNumberResult<FetchLogsResult<abiEvents>["logs"][number]>> {
+  const fetchedLogs = await iteratorToArray(fetchLogs(opts));
+  const logs = fetchedLogs.flatMap(({ logs }) => logs);
+  return groupLogsByBlockNumber(logs);
 }

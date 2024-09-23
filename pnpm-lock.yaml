@@ -9908,10 +9908,6 @@ packages:
     resolution: {integrity: sha512-th5B4L2U+eGLq1TVh7zNRGBapioSORUeymIydxgFpwww9d2qyKvtuPU2jJuHvYAwwqi2Y596QBL3eEqcPEYL8Q==}
     engines: {node: '>=10'}
 
-  semver@5.7.1:
-    resolution: {integrity: sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==}
-    hasBin: true
-
   semver@5.7.2:
     resolution: {integrity: sha512-cBznnQ9KjJqU67B52RMC65CMarK2600WFnbkcaiwWq3xy/5haFJlshgnpjovMVJ+Hff49d8GEn0b87C5pDQ10g==}
     hasBin: true
@@ -13553,7 +13549,7 @@ snapshots:
       jest-util: 29.5.0
       jest-validate: 29.5.0
       jest-watcher: 29.5.0
-      micromatch: 4.0.5
+      micromatch: 4.0.8
       pretty-format: 29.5.0
       slash: 3.0.0
       strip-ansi: 6.0.1
@@ -13687,7 +13683,7 @@ snapshots:
       jest-haste-map: 29.5.0
       jest-regex-util: 29.4.3
       jest-util: 29.5.0
-      micromatch: 4.0.5
+      micromatch: 4.0.8
       pirates: 4.0.5
       slash: 3.0.0
       write-file-atomic: 4.0.2
@@ -13970,7 +13966,7 @@ snapshots:
       '@motionone/easing': 10.18.0
       '@motionone/types': 10.17.1
       '@motionone/utils': 10.18.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@motionone/dom@10.18.0':
     dependencies:
@@ -13979,23 +13975,23 @@ snapshots:
       '@motionone/types': 10.17.1
       '@motionone/utils': 10.18.0
       hey-listen: 1.0.8
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@motionone/easing@10.18.0':
     dependencies:
       '@motionone/utils': 10.18.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@motionone/generators@10.18.0':
     dependencies:
       '@motionone/types': 10.17.1
       '@motionone/utils': 10.18.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@motionone/svelte@10.16.4':
     dependencies:
       '@motionone/dom': 10.18.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@motionone/types@10.17.1': {}
 
@@ -14003,12 +13999,12 @@ snapshots:
     dependencies:
       '@motionone/types': 10.17.1
       hey-listen: 1.0.8
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@motionone/vue@10.16.4':
     dependencies:
       '@motionone/dom': 10.18.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@next/env@14.2.5': {}
 
@@ -18491,7 +18487,7 @@ snapshots:
       path-is-inside: 1.0.2
       progress: 2.0.3
       regexpp: 2.0.1
-      semver: 5.7.1
+      semver: 5.7.2
       strip-ansi: 4.0.0
       strip-json-comments: 2.0.1
       table: 5.4.6
@@ -18732,7 +18728,7 @@ snapshots:
       '@nodelib/fs.walk': 1.2.8
       glob-parent: 5.1.2
       merge2: 1.4.1
-      micromatch: 4.0.5
+      micromatch: 4.0.8
 
   fast-json-stable-stringify@2.1.0: {}
 
@@ -19765,7 +19761,7 @@ snapshots:
       jest-runner: 29.5.0
       jest-util: 29.5.0
       jest-validate: 29.5.0
-      micromatch: 4.0.5
+      micromatch: 4.0.8
       parse-json: 5.2.0
       pretty-format: 29.5.0
       slash: 3.0.0
@@ -19794,7 +19790,7 @@ snapshots:
       jest-runner: 29.5.0
       jest-util: 29.5.0
       jest-validate: 29.5.0
-      micromatch: 4.0.5
+      micromatch: 4.0.8
       parse-json: 5.2.0
       pretty-format: 29.5.0
       slash: 3.0.0
@@ -19865,7 +19861,7 @@ snapshots:
       jest-regex-util: 29.4.3
       jest-util: 29.5.0
       jest-worker: 29.5.0
-      micromatch: 4.0.5
+      micromatch: 4.0.8
       walker: 1.0.8
     optionalDependencies:
       fsevents: 2.3.3
@@ -19896,7 +19892,7 @@ snapshots:
       '@types/stack-utils': 2.0.1
       chalk: 4.1.2
       graceful-fs: 4.2.11
-      micromatch: 4.0.5
+      micromatch: 4.0.8
       pretty-format: 29.5.0
       slash: 3.0.0
       stack-utils: 2.0.6
@@ -22189,8 +22185,6 @@ snapshots:
     dependencies:
       '@types/node-forge': 1.3.11
       node-forge: 1.3.1
-
-  semver@5.7.1: {}
 
   semver@5.7.2: {}
 
