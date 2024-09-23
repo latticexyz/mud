@@ -1,6 +1,7 @@
-import { FetchLogsOptions, fetchLogs, groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
+import { FetchLogsOptions } from "@latticexyz/block-logs-stream";
 import { StoreEventsAbi } from "@latticexyz/store";
 import { StorageAdapter, StorageAdapterBlock, StoreEventsLog } from "./common";
+import { fetchAndFilterLogs } from "./fetchAndFilterLogs";
 
 type FetchAndStoreLogsOptions = FetchLogsOptions<StoreEventsAbi> & {
   storageAdapter: StorageAdapter;
@@ -9,14 +10,10 @@ type FetchAndStoreLogsOptions = FetchLogsOptions<StoreEventsAbi> & {
 
 export async function* fetchAndStoreLogs({
   storageAdapter,
-  logFilter,
-  ...fetchLogsOptions
+  ...fetchAndFilterLogsOptions
 }: FetchAndStoreLogsOptions): AsyncGenerator<StorageAdapterBlock> {
-  for await (const { logs, toBlock } of fetchLogs(fetchLogsOptions)) {
-    const blocks = groupLogsByBlockNumber(logFilter ? logs.filter(logFilter) : logs, toBlock);
-    for (const block of blocks) {
-      await storageAdapter(block);
-      yield block;
-    }
+  for await (const block of fetchAndFilterLogs(fetchAndFilterLogsOptions)) {
+    await storageAdapter(block);
+    yield block;
   }
 }

@@ -33,7 +33,7 @@ import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
 import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/utils";
 import { getSnapshot } from "./getSnapshot";
-import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
+import { fetchAndFilterLogs } from "./fetchAndFilterLogs";
 import { Store as StoreConfig } from "@latticexyz/store";
 import { eventSource } from "./eventSource";
 
@@ -217,20 +217,19 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
                 logs: logs.map((log: { txHash: string }) => ({ ...log, transactionHash: log.txHash })),
               } as StorageAdapterBlock;
             }),
-            tap(storageAdapter),
           );
         }),
       )
     : throwError(() => new Error("No indexer URL provided"));
 
-  const ethLogs$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
+  const rpcLogs$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
     tap((range) => {
       startBlock = range.startBlock;
       endBlock = range.endBlock;
     }),
     concatMap((range) => {
-      const storedBlocks = fetchAndStoreLogs({
+      const storedBlocks = fetchAndFilterLogs({
         publicClient,
         address,
         events: storeEventsAbi,
@@ -239,7 +238,6 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
           ? bigIntMax(range.startBlock, lastBlockNumberProcessed + 1n)
           : range.startBlock,
         toBlock: range.endBlock,
-        storageAdapter,
         logFilter,
       });
 
@@ -251,17 +249,19 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
     catchError((e) => {
       debug("error streaming logs from indexer:", e);
       debug("falling back to streaming logs from RPC");
-      return ethLogs$;
+      return rpcLogs$;
     }),
   );
 
   const storedBlock$ = logs$.pipe(
-    tap(({ blockNumber, logs }) => {
-      debug("stored", logs.length, "logs for block", blockNumber);
-      lastBlockNumberProcessed = blockNumber;
+    tap(async (block) => {
+      await storageAdapter(block);
+
+      debug("stored", block.logs.length, "logs for block", block.blockNumber);
+      lastBlockNumberProcessed = block.blockNumber;
 
       if (startBlock != null && endBlock != null) {
-        if (blockNumber < endBlock) {
+        if (block.blockNumber < endBlock) {
           const totalBlocks = endBlock - startBlock;
           const processedBlocks = lastBlockNumberProcessed - startBlock;
           onProgress?.({
