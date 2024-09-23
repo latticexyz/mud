@@ -1,12 +1,11 @@
 import { ArrowUpDown, Loader } from "lucide-react";
+import { parseAsBoolean, useQueryState } from "nuqs";
 import { useState } from "react";
 import { internalTableNames } from "@latticexyz/store-sync/sqlite";
 import { useQuery } from "@tanstack/react-query";
 import {
   ColumnDef,
-  ColumnFiltersState,
   SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -21,22 +20,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { bufferToBigInt } from "../utils/bufferToBigInt";
 import { EditableTableCell } from "./EditableTableCell";
 
-type Props = {
-  table: string | undefined;
-};
-
-export function TablesViewer({ table: selectedTable }: Props) {
+export function TablesViewer() {
+  const [selectedTableId] = useQueryState("tableId");
+  const [globalFilter, setGlobalFilter] = useQueryState("globalFilter");
+  const [showAllColumns, setShowAllColumns] = useQueryState("showAllColumns", parseAsBoolean);
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [showAllColumns, setShowAllColumns] = useState(false);
 
   const { data: schema } = useQuery({
-    queryKey: ["schema", { table: selectedTable }],
+    queryKey: ["schema", { table: selectedTableId }],
     queryFn: async () => {
-      const response = await fetch(`/api/schema?table=${selectedTable}`);
+      const response = await fetch(`/api/schema?table=${selectedTableId}`);
       return response.json();
     },
     select: (data) => {
@@ -50,9 +43,9 @@ export function TablesViewer({ table: selectedTable }: Props) {
   });
 
   const { data: rows } = useQuery({
-    queryKey: ["rows", { table: selectedTable }],
+    queryKey: ["rows", { table: selectedTableId }],
     queryFn: async () => {
-      const response = await fetch(`/api/rows?table=${selectedTable}`);
+      const response = await fetch(`/api/rows?table=${selectedTableId}`);
       return response.json();
     },
     select: (data) => {
@@ -67,14 +60,14 @@ export function TablesViewer({ table: selectedTable }: Props) {
         );
       });
     },
-    enabled: Boolean(selectedTable),
+    enabled: Boolean(selectedTableId),
     refetchInterval: 1000,
   });
 
   const { data: mudTableConfig } = useQuery({
-    queryKey: ["table", { selectedTable }],
+    queryKey: ["table", { selectedTableId }],
     queryFn: async () => {
-      const response = await fetch(`/api/table?table=${selectedTable}`);
+      const response = await fetch(`/api/table?table=${selectedTableId}`);
       return response.json();
     },
     select: (data) => {
@@ -84,7 +77,7 @@ export function TablesViewer({ table: selectedTable }: Props) {
         value_schema: JSON.parse(data.table.value_schema).json,
       };
     },
-    enabled: Boolean(selectedTable),
+    enabled: Boolean(selectedTableId),
   });
 
   const columns: ColumnDef<{}>[] = schema?.map(({ name, type }: { name: string; type: string }) => {
@@ -122,7 +115,10 @@ export function TablesViewer({ table: selectedTable }: Props) {
         const keysSchema = Object.keys(mudTableConfig?.key_schema || {});
         const keyTuple = keysSchema.map((key) => row.getValue(key));
         const value = row.getValue(name);
-        if ((selectedTable && (internalTableNames as string[]).includes(selectedTable)) || keysSchema.includes(name)) {
+        if (
+          (selectedTableId && (internalTableNames as string[]).includes(selectedTableId)) ||
+          keysSchema.includes(name)
+        ) {
           return value?.toString();
         }
 
@@ -140,20 +136,14 @@ export function TablesViewer({ table: selectedTable }: Props) {
       },
     },
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: "includesString",
     state: {
       sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
       globalFilter,
     },
   });
