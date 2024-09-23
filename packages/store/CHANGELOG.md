@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.2.7
+
+### Patch Changes
+
+- a08ba5e: Improved config output type of `enumValues`.
+  - @latticexyz/common@2.2.7
+  - @latticexyz/config@2.2.7
+  - @latticexyz/protocol-parser@2.2.7
+  - @latticexyz/schema-type@2.2.7
+
 ## 2.2.6
 
 ### Patch Changes

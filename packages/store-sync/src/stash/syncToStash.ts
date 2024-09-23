@@ -1,9 +1,8 @@
 import { getRecord, setRecord, registerTable, Stash } from "@latticexyz/stash/internal";
-import { Address, Client, publicActions } from "viem";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { defineTable } from "@latticexyz/store/config/v2";
 import { SyncStep } from "../SyncStep";
-import { SyncResult } from "../common";
+import { SyncOptions, SyncResult } from "../common";
 import { createStoreSync } from "../createStoreSync";
 import { getSchemaPrimitives, getValueSchema } from "@latticexyz/protocol-parser/internal";
 
@@ -28,32 +27,27 @@ export const initialProgress = {
   message: "Connecting",
 } satisfies getSchemaPrimitives<getValueSchema<typeof SyncProgress>>;
 
-export type SyncToStashOptions = {
+export type SyncToStashOptions = Omit<SyncOptions, "config"> & {
   stash: Stash;
-  client: Client;
-  address: Address;
   startSync?: boolean;
 };
 
-export type SyncToStashResult = Omit<SyncResult, "waitForTransaction"> & {
-  waitForStateChange: SyncResult["waitForTransaction"];
+export type SyncToStashResult = SyncResult & {
   stopSync: () => void;
 };
 
 export async function syncToStash({
   stash,
-  client,
-  address,
   startSync = true,
+  ...opts
 }: SyncToStashOptions): Promise<SyncToStashResult> {
   registerTable({ stash, table: SyncProgress });
 
   const storageAdapter = createStorageAdapter({ stash });
 
-  const { waitForTransaction: waitForStateChange, ...sync } = await createStoreSync({
+  const sync = await createStoreSync({
+    ...opts,
     storageAdapter,
-    publicClient: client.extend(publicActions) as never,
-    address,
     onProgress: (nextValue) => {
       const currentValue = getRecord({ stash, table: SyncProgress, key: {} });
       // update sync progress until we're caught up and live
@@ -70,7 +64,6 @@ export async function syncToStash({
 
   return {
     ...sync,
-    waitForStateChange,
     stopSync,
   };
 }
