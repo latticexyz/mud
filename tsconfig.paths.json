@@ -3,8 +3,6 @@
     "paths": {
       "@latticexyz/abi-ts": ["./packages/abi-ts/src/index.ts"],
       "@latticexyz/block-logs-stream": ["./packages/block-logs-stream/src/index.ts"],
-      "@latticexyz/account-kit": ["./packages/account-kit/src/exports/index.ts"],
-      "@latticexyz/account-kit/internal": ["./packages/account-kit/src/exports/internal.ts"],
       "@latticexyz/cli": ["./packages/cli/src/index.ts"],
       "@latticexyz/common": ["./packages/common/src/index.ts"],
       "@latticexyz/common/actions": ["./packages/common/src/actions/index.ts"],
@@ -19,6 +17,8 @@
       "@latticexyz/config/*": ["./packages/config/src/exports/*.ts"],
       "@latticexyz/config/node": ["./packages/config/src/deprecated/node"],
       "@latticexyz/dev-tools": ["./packages/dev-tools/src/index.ts"],
+      "@latticexyz/entry": ["./packages/entry/src/exports/index.ts"],
+      "@latticexyz/entry/internal": ["./packages/entry/src/exports/internal.ts"],
       "@latticexyz/explorer/observer": ["./packages/explorer/src/exports/observer.ts"],
       "@latticexyz/gas-report": ["./packages/gas-report/ts/index.ts"],
       "@latticexyz/protocol-parser": ["./packages/protocol-parser/src/index.ts"],

@@ -8,8 +8,6 @@ import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { PendingIcon } from "./icons/PendingIcon";
 import { CashIcon } from "./icons/CashIcon";
-import { CopyIcon } from "./icons/CopyIcon";
-import { GlobeIcon } from "./icons/GlobeIcon";
 import { LogoutIcon } from "./icons/LogoutIcon";
 import { MoreIcon } from "./icons/MoreIcon";
 import { ChevronUpIcon } from "./icons/ChevronUpIcon";

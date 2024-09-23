@@ -1,11 +1,11 @@
 {
-  "name": "@latticexyz/account-kit",
-  "version": "2.0.4",
-  "description": "MUD account kit for easy user onboarding",
+  "name": "@latticexyz/entry",
+  "version": "2.2.8",
+  "description": "User onboarding flows for MUD projects",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/account-kit"
+    "directory": "packages/entry"
   },
   "license": "MIT",
   "type": "module",

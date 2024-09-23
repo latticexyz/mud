@@ -119,140 +119,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.33.0)
-
-  packages/account-kit:
-    dependencies:
-      '@latticexyz/common':
-        specifier: workspace:*
-        version: link:../common
-      '@latticexyz/config':
-        specifier: workspace:*
-        version: link:../config
-      '@latticexyz/protocol-parser':
-        specifier: workspace:*
-        version: link:../protocol-parser
-      '@latticexyz/store':
-        specifier: workspace:*
-        version: link:../store
-      '@latticexyz/world':
-        specifier: workspace:*
-        version: link:../world
-      '@latticexyz/world-modules':
-        specifier: workspace:*
-        version: link:../world-modules
-      '@radix-ui/react-dialog':
-        specifier: ^1.0.5
-        version: 1.1.1(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@radix-ui/react-dropdown-menu':
-        specifier: ^2.0.6
-        version: 2.1.1(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@radix-ui/react-select':
-        specifier: ^2.0.0
-        version: 2.1.1(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@radix-ui/react-slot':
-        specifier: ^1.0.2
-        version: 1.1.0(@types/react@18.2.22)(react@18.2.0)
-      '@rainbow-me/rainbowkit':
-        specifier: ^2.0.2
-        version: 2.1.6(@tanstack/react-query@5.52.0(react@18.2.0))(@types/react@18.2.22)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(viem@2.9.20(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8))(wagmi@2.12.11(@tanstack/query-core@5.52.0)(@tanstack/react-query@5.52.0(react@18.2.0))(@types/react@18.2.22)(bufferutil@4.0.8)(encoding@0.1.13)(react-dom@18.2.0(react@18.2.0))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.22)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.2.0)(typescript@5.4.2)(utf-8-validate@5.0.10))(react@18.2.0)(rollup@3.29.4)(typescript@5.4.2)(utf-8-validate@5.0.10)(viem@2.9.20(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8))(zod@3.23.8))
-      '@reservoir0x/relay-sdk':
-        specifier: ^0.4.0
-        version: 0.4.0(debug@4.3.7)(typescript@5.4.2)(viem@2.9.20(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8))
-      '@tanstack/react-query':
-        specifier: ^5.28.8
-        version: 5.52.0(react@18.2.0)
-      abitype:
-        specifier: 1.0.0
-        version: 1.0.0(typescript@5.4.2)(zod@3.23.8)
-      debug:
-        specifier: ^4.3.4
-        version: 4.3.7
-      execa:
-        specifier: ^7.0.0
-        version: 7.2.0
-      p-retry:
-        specifier: ^5.1.2
-        version: 5.1.2
-      permissionless:
-        specifier: ^0.1.17
-        version: 0.1.45(viem@2.9.20(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8))
-      react:
-        specifier: ^18.2.0
-        version: 18.2.0
-      react-dom:
-        specifier: ^18.2.0
-        version: 18.2.0(react@18.2.0)
-      react-error-boundary:
-        specifier: ^4.0.13
-        version: 4.0.13(react@18.2.0)
-      react-merge-refs:
-        specifier: ^2.1.1
-        version: 2.1.1
-      react-router-dom:
-        specifier: ^6.11.0
-        version: 6.11.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      tailwind-merge:
-        specifier: ^1.12.0
-        version: 1.12.0
-      usehooks-ts:
-        specifier: ^3.0.2
-        version: 3.1.0(react@18.2.0)
-      viem:
-        specifier: 2.9.20
-        version: 2.9.20(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
-      wagmi:
-        specifier: ^2.8.0
-        version: 2.12.11(@tanstack/query-core@5.52.0)(@tanstack/react-query@5.52.0(react@18.2.0))(@types/react@18.2.22)(bufferutil@4.0.8)(encoding@0.1.13)(react-dom@18.2.0(react@18.2.0))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.22)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.2.0)(typescript@5.4.2)(utf-8-validate@5.0.10))(react@18.2.0)(rollup@3.29.4)(typescript@5.4.2)(utf-8-validate@5.0.10)(viem@2.9.20(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8))(zod@3.23.8)
-      zustand:
-        specifier: ^4.5.2
-        version: 4.5.5(@types/react@18.2.22)(react@18.2.0)
-    devDependencies:
-      '@types/debug':
-        specifier: ^4.1.7
-        version: 4.1.7
-      '@types/react':
-        specifier: 18.2.22
-        version: 18.2.22
-      '@types/react-dom':
-        specifier: 18.2.7
-        version: 18.2.7
-      '@types/ws':
-        specifier: ^8.5.4
-        version: 8.5.4
-      '@vitejs/plugin-react':
-        specifier: ^4.0.0
-        version: 4.3.1(vite@4.5.5(@types/node@18.19.50)(terser@5.33.0))
-      autoprefixer:
-        specifier: ^10.4.14
-        version: 10.4.14(postcss@8.4.31)
-      eslint-plugin-react:
-        specifier: 7.31.11
-        version: 7.31.11(eslint@8.57.0)
-      eslint-plugin-react-hooks:
-        specifier: 4.6.0
-        version: 4.6.0(eslint@8.57.0)
-      mprocs:
-        specifier: ^0.6.4
-        version: 0.6.4
-      postcss:
-        specifier: ^8.4.23
-        version: 8.4.31
-      tailwindcss:
-        specifier: ^3.4.3
-        version: 3.4.10
-      tsup:
-        specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
-      vite:
-        specifier: ^4.3.6
-        version: 4.5.5(@types/node@18.19.50)(terser@5.33.0)
-      vite-plugin-dts:
-        specifier: ^3.8.3
-        version: 3.9.1(@types/node@18.19.50)(rollup@3.29.4)(typescript@5.4.2)(vite@4.5.5(@types/node@18.19.50)(terser@5.33.0))
-      vitest:
-        specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.33.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
 
   packages/block-logs-stream:
     dependencies:
@@ -280,7 +147,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.33.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
 
   packages/cli:
     dependencies:
@@ -422,7 +289,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.33.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
 
   packages/common:
     dependencies:
@@ -474,7 +341,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.33.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
 
   packages/config:
     dependencies:
@@ -588,7 +455,140 @@ importers:
         version: 6.7.0(postcss@8.4.23)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.33.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
+
+  packages/entry:
+    dependencies:
+      '@latticexyz/common':
+        specifier: workspace:*
+        version: link:../common
+      '@latticexyz/config':
+        specifier: workspace:*
+        version: link:../config
+      '@latticexyz/protocol-parser':
+        specifier: workspace:*
+        version: link:../protocol-parser
+      '@latticexyz/store':
+        specifier: workspace:*
+        version: link:../store
+      '@latticexyz/world':
+        specifier: workspace:*
+        version: link:../world
+      '@latticexyz/world-modules':
+        specifier: workspace:*
+        version: link:../world-modules
+      '@radix-ui/react-dialog':
+        specifier: ^1.0.5
+        version: 1.1.1(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@radix-ui/react-dropdown-menu':
+        specifier: ^2.0.6
+        version: 2.1.1(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@radix-ui/react-select':
+        specifier: ^2.0.0
+        version: 2.1.1(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@radix-ui/react-slot':
+        specifier: ^1.0.2
+        version: 1.1.0(@types/react@18.2.22)(react@18.2.0)
+      '@rainbow-me/rainbowkit':
+        specifier: ^2.0.2
+        version: 2.1.6(@tanstack/react-query@5.52.0(react@18.2.0))(@types/react@18.2.22)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(viem@2.9.20(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8))(wagmi@2.12.11(@tanstack/query-core@5.52.0)(@tanstack/react-query@5.52.0(react@18.2.0))(@types/react@18.2.22)(bufferutil@4.0.8)(encoding@0.1.13)(react-dom@18.2.0(react@18.2.0))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.22)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.2.0)(typescript@5.4.2)(utf-8-validate@5.0.10))(react@18.2.0)(rollup@3.29.4)(typescript@5.4.2)(utf-8-validate@5.0.10)(viem@2.9.20(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8))(zod@3.23.8))
+      '@reservoir0x/relay-sdk':
+        specifier: ^0.4.0
+        version: 0.4.0(debug@4.3.7)(typescript@5.4.2)(viem@2.9.20(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8))
+      '@tanstack/react-query':
+        specifier: ^5.28.8
+        version: 5.52.0(react@18.2.0)
+      abitype:
+        specifier: 1.0.0
+        version: 1.0.0(typescript@5.4.2)(zod@3.23.8)
+      debug:
+        specifier: ^4.3.4
+        version: 4.3.7
+      execa:
+        specifier: ^7.0.0
+        version: 7.2.0
+      p-retry:
+        specifier: ^5.1.2
+        version: 5.1.2
+      permissionless:
+        specifier: ^0.1.17
+        version: 0.1.45(viem@2.9.20(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8))
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.2.0(react@18.2.0)
+      react-error-boundary:
+        specifier: ^4.0.13
+        version: 4.0.13(react@18.2.0)
+      react-merge-refs:
+        specifier: ^2.1.1
+        version: 2.1.1
+      react-router-dom:
+        specifier: ^6.11.0
+        version: 6.11.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      tailwind-merge:
+        specifier: ^1.12.0
+        version: 1.12.0
+      usehooks-ts:
+        specifier: ^3.0.2
+        version: 3.1.0(react@18.2.0)
+      viem:
+        specifier: 2.9.20
+        version: 2.9.20(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
+      wagmi:
+        specifier: ^2.8.0
+        version: 2.12.11(@tanstack/query-core@5.52.0)(@tanstack/react-query@5.52.0(react@18.2.0))(@types/react@18.2.22)(bufferutil@4.0.8)(encoding@0.1.13)(react-dom@18.2.0(react@18.2.0))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.22)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.2.0)(typescript@5.4.2)(utf-8-validate@5.0.10))(react@18.2.0)(rollup@3.29.4)(typescript@5.4.2)(utf-8-validate@5.0.10)(viem@2.9.20(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8))(zod@3.23.8)
+      zustand:
+        specifier: ^4.5.2
+        version: 4.5.5(@types/react@18.2.22)(react@18.2.0)
+    devDependencies:
+      '@types/debug':
+        specifier: ^4.1.7
+        version: 4.1.7
+      '@types/react':
+        specifier: 18.2.22
+        version: 18.2.22
+      '@types/react-dom':
+        specifier: 18.2.7
+        version: 18.2.7
+      '@types/ws':
+        specifier: ^8.5.4
+        version: 8.5.4
+      '@vitejs/plugin-react':
+        specifier: ^4.0.0
+        version: 4.3.1(vite@4.5.5(@types/node@18.19.50)(terser@5.33.0))
+      autoprefixer:
+        specifier: ^10.4.14
+        version: 10.4.14(postcss@8.4.31)
+      eslint-plugin-react:
+        specifier: 7.31.11
+        version: 7.31.11(eslint@8.57.0)
+      eslint-plugin-react-hooks:
+        specifier: 4.6.0
+        version: 4.6.0(eslint@8.57.0)
+      mprocs:
+        specifier: ^0.6.4
+        version: 0.6.4
+      postcss:
+        specifier: ^8.4.23
+        version: 8.4.31
+      tailwindcss:
+        specifier: ^3.4.3
+        version: 3.4.10
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
+      vite:
+        specifier: ^4.3.6
+        version: 4.5.5(@types/node@18.19.50)(terser@5.33.0)
+      vite-plugin-dts:
+        specifier: ^3.8.3
+        version: 3.9.1(@types/node@18.19.50)(rollup@3.29.4)(typescript@5.4.2)(vite@4.5.5(@types/node@18.19.50)(terser@5.33.0))
+      vitest:
+        specifier: 0.34.6
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
 
   packages/explorer:
     dependencies:
@@ -794,7 +794,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.33.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
 
   packages/gas-report:
     dependencies:
@@ -840,7 +840,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.33.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
 
   packages/protocol-parser:
     dependencies:
@@ -865,7 +865,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.33.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
 
   packages/react:
     dependencies:
@@ -917,7 +917,7 @@ importers:
         version: 4.5.5(@types/node@20.12.12)(terser@5.33.0)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.33.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
 
   packages/recs:
     dependencies:
@@ -976,7 +976,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.33.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
 
   packages/solhint-config-mud:
     devDependencies:
@@ -1041,7 +1041,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.33.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
 
   packages/store:
     dependencies:
@@ -1102,7 +1102,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.33.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
 
   packages/store-indexer:
     dependencies:
@@ -1217,7 +1217,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.33.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
 
   packages/store-sync:
     dependencies:
@@ -1314,7 +1314,7 @@ importers:
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.33.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
 
   packages/utils:
     dependencies:
@@ -1415,7 +1415,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.33.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
 
   packages/world-module-metadata:
     dependencies:
@@ -1455,7 +1455,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.33.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
 
   packages/world-modules:
     dependencies:
@@ -1516,7 +1516,7 @@ importers:
         version: 3.12.6
       vitest:
         specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0)(terser@5.33.0)
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
 
   test/mock-game-contracts:
     devDependencies:
@@ -21771,7 +21771,7 @@ snapshots:
     dependencies:
       nanoid: 3.3.6
       picocolors: 1.0.1
-      source-map-js: 1.0.2
+      source-map-js: 1.2.1
 
   postgres@3.3.5: {}
 
@@ -23616,7 +23616,7 @@ snapshots:
       fsevents: 2.3.3
       terser: 5.33.0
 
-  vitest@0.34.6(jsdom@22.1.0)(terser@5.33.0):
+  vitest@0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0):
     dependencies:
       '@types/chai': 4.3.19
       '@types/chai-subset': 1.3.5
