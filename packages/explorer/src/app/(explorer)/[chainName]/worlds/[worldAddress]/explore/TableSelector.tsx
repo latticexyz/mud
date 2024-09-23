@@ -12,7 +12,7 @@ import {
 } from "../../../../../../components/ui/Command";
 import { Popover, PopoverContent, PopoverTrigger } from "../../../../../../components/ui/Popover";
 import { cn } from "../../../../../../lib/utils";
-import { DeployedTable } from "./utils/decodeTable";
+import { DeployedTable } from "../api/utils/decodeTable";
 
 function TableSelectorItem({
   table,

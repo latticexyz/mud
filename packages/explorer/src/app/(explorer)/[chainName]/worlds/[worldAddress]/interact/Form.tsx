@@ -8,7 +8,7 @@ import { Separator } from "../../../../../../components/ui/Separator";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
 import { useHashState } from "../../../../../../hooks/useHashState";
 import { cn } from "../../../../../../lib/utils";
-import { useAbiQuery } from "../../../../../../queries/useAbiQuery";
+import { useAbiQuery } from "../queries/useAbiQuery";
 import { FunctionField } from "./FunctionField";
 
 export function Form() {

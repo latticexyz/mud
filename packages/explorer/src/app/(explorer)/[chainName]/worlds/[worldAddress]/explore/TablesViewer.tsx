@@ -18,9 +18,9 @@ import { internalNamespaces } from "../../../../../../common";
 import { Button } from "../../../../../../components/ui/Button";
 import { Input } from "../../../../../../components/ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
-import { useTableDataQuery } from "../../../../../../queries/dozer/useTableDataQuery";
+import { DeployedTable } from "../api/utils/decodeTable";
+import { useTableDataQuery } from "../queries/useTableDataQuery";
 import { EditableTableCell } from "./EditableTableCell";
-import { DeployedTable } from "./utils/decodeTable";
 
 type Props = {
   data: ReturnType<typeof useTableDataQuery>["data"] | undefined;
