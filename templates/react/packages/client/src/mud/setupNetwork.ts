@@ -85,6 +85,7 @@ export async function setupNetwork() {
     address: networkConfig.worldAddress as Hex,
     publicClient,
     startBlock: BigInt(networkConfig.initialBlockNumber),
+    indexerUrl: "http://localhost:4321",
   });
 
   return {

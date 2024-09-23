@@ -27,6 +27,7 @@ import {
   combineLatest,
   scan,
   mergeMap,
+  throwError,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
@@ -34,6 +35,7 @@ import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/uti
 import { getSnapshot } from "./getSnapshot";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 import { Store as StoreConfig } from "@latticexyz/store";
+import { eventSource } from "./eventSource";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -62,7 +64,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
   maxBlockRange,
   initialState,
   initialBlockLogs,
-  indexerUrl,
+  indexerUrl: indexerUrlInput,
 }: CreateStoreSyncOptions<config>): Promise<SyncResult> {
   const filters: SyncFilter[] =
     initialFilters.length || tableIds.length
@@ -79,9 +81,17 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
         )
     : undefined;
 
-  const initialBlockLogs$ = defer(async (): Promise<StorageAdapterBlock | undefined> => {
-    const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+  const indexerUrl =
+    indexerUrlInput !== false
+      ? indexerUrlInput ??
+        (publicClient.chain && "indexerUrl" in publicClient.chain && typeof publicClient.chain.indexerUrl === "string"
+          ? publicClient.chain.indexerUrl
+          : undefined)
+      : undefined;
 
+  const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+
+  const initialBlockLogs$ = defer(async (): Promise<StorageAdapterBlock | undefined> => {
     onProgress?.({
       step: SyncStep.SNAPSHOT,
       percentage: 0,
@@ -96,15 +106,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
       filters,
       initialState,
       initialBlockLogs,
-      indexerUrl:
-        indexerUrl !== false
-          ? indexerUrl ??
-            (publicClient.chain &&
-            "indexerUrl" in publicClient.chain &&
-            typeof publicClient.chain.indexerUrl === "string"
-              ? publicClient.chain.indexerUrl
-              : undefined)
-          : undefined,
+      indexerUrl,
     });
 
     onProgress?.({
@@ -200,7 +202,25 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
   let endBlock: bigint | null = null;
   let lastBlockNumberProcessed: bigint | null = null;
 
-  const storedBlock$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
+  const indexerLogs$ = indexerUrl
+    ? eventSource<string>(
+        new URL(
+          `/api/logs-live?input=${encodeURIComponent(JSON.stringify({ chainId, address, filters }))}&block_num=${}&include_tx_hash=true`,
+          indexerUrl,
+        ),
+      ).pipe(
+        map((messageEvent) => {
+          const { blockNumber, logs } = JSON.parse(messageEvent.data);
+          return {
+            blockNumber,
+            // TODO: change API to return `transactionHash` instead of `txHash`
+            logs: logs.map((log: { txHash: string }) => ({ ...log, transactionHash: log.txHash })),
+          } satisfies StorageAdapterBlock;
+        }),
+      )
+    : throwError(() => new Error("No indexer URL provided"));
+
+  const rpcLogs$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
     tap((range) => {
       startBlock = range.startBlock;
@@ -222,6 +242,17 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
 
       return from(storedBlocks);
     }),
+  );
+
+  const logs$ = indexerLogs$.pipe(
+    catchError((e) => {
+      debug("error streaming logs from indexer:", e);
+      debug("falling back to streaming logs from ETH RPC");
+      return rpcLogs$;
+    }),
+  );
+
+  const storedBlock$ = logs$.pipe(
     tap(({ blockNumber, logs }) => {
       debug("stored", logs.length, "logs for block", blockNumber);
       lastBlockNumberProcessed = blockNumber;
