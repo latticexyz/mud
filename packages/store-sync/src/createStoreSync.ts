@@ -35,7 +35,7 @@ import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/uti
 import { getSnapshot } from "./getSnapshot";
 import { fetchAndFilterLogs } from "./fetchAndFilterLogs";
 import { Store as StoreConfig } from "@latticexyz/store";
-import { eventSource } from "./eventSource";
+import { fromEventSource } from "./fromEventSource";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -206,7 +206,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
     ? startBlock$.pipe(
         mergeMap((startBlock) => {
           const input = encodeURIComponent(JSON.stringify({ chainId, address, filters }));
-          return eventSource<string>(
+          return fromEventSource<string>(
             new URL(`/api/logs-live?input=${input}&block_num=${startBlock}&include_tx_hash=true`, indexerUrl),
           ).pipe(
             map((messageEvent) => {
