@@ -17,7 +17,7 @@ export async function registerDelegationWithSignature({
   userAddress: Hex;
   signature: Hex;
 }) {
-  console.log("calling registerDelegation");
+  console.log("calling registerDelegation with signature");
   return await getAction(
     appAccountClient,
     writeContract,

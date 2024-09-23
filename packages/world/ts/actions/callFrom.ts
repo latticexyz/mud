@@ -6,13 +6,12 @@ import {
   type Account,
   type Hex,
   type WalletActions,
-  type WriteContractReturnType,
   type EncodeFunctionDataParameters,
   Client,
   PublicActions,
 } from "viem";
 import { getAction, encodeFunctionData } from "viem/utils";
-import { readContract, writeContract } from "viem/actions";
+import { readContract, writeContract as viem_writeContract } from "viem/actions";
 import { readHex } from "@latticexyz/common";
 import {
   getKeySchema,
@@ -42,13 +41,15 @@ type SystemFunction = { systemId: Hex; systemFunctionSelector: Hex };
 // If `publicClient` is provided instead, this function retrieves the corresponding system function from the World contract.
 //
 // The function mapping is cached to avoid redundant retrievals for the same World function.
-export function callFrom<TChain extends Chain, TAccount extends Account>(
+export function callFrom(
   params: CallFromParameters,
-): (client: Client<Transport, TChain, TAccount>) => Pick<WalletActions<TChain, TAccount>, "writeContract"> {
+): <chain extends Chain, account extends Account | undefined>(
+  client: Client<Transport, chain, account>,
+) => Pick<WalletActions<chain, account>, "writeContract"> {
   return (client) => ({
     // Applies to: `client.writeContract`, `getContract(client, ...).write`
-    writeContract: async (writeArgs): Promise<WriteContractReturnType> => {
-      const _writeContract = getAction(client, writeContract, "writeContract");
+    async writeContract(writeArgs) {
+      const _writeContract = getAction(client, viem_writeContract, "writeContract");
 
       // Skip if the contract isn't the World or the function called should not be redirected through `callFrom`.
       if (
@@ -129,7 +130,7 @@ async function retrieveSystemFunctionFromContract(
   const keySchema = getSchemaTypes(getKeySchema(table));
   const valueSchema = getSchemaTypes(getValueSchema(table));
 
-  const _readContract = getAction(publicClient, readContract as never, "readContract") as PublicActions["readContract"];
+  const _readContract = getAction(publicClient, readContract, "readContract") as PublicActions["readContract"];
 
   const [staticData, encodedLengths, dynamicData] = await _readContract({
     address: worldAddress,
