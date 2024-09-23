@@ -1,4 +1,4 @@
-import { bufferToBigInt, camelCase } from "../../../../../../../../lib/utils";
+import { camelCase } from "../../../../../../../../lib/utils";
 import { fetchSqliteTable } from "../../utils/fetchSqlite";
 import { getDatabase } from "../../utils/getDatabase";
 
@@ -18,13 +18,12 @@ export async function GET(request: Request) {
     if (!tableId || !doesTableExist(tableId)) {
       return Response.json({ error: "Table does not exist" }, { status: 400 });
     }
-
     const data = await fetchSqliteTable(tableId);
     const formattedData = data?.map((row: object) => {
       return Object.fromEntries(
         Object.entries(row).map(([key, value]) => {
-          if (value?.type === "Buffer") {
-            return [camelCase(key), bufferToBigInt(value?.data)];
+          if (Buffer.isBuffer(value)) {
+            return [camelCase(key), value.toString()];
           }
           return [camelCase(key), value];
         }),

@@ -6,21 +6,9 @@ settings:
 
 catalogs:
   default:
-    '@ark/attest':
-      specifier: 0.12.1
-      version: 0.12.1
-    '@ark/util':
-      specifier: 0.2.2
-      version: 0.2.2
     '@wagmi/core':
       specifier: 2.13.5
       version: 2.13.5
-    abitype:
-      specifier: 1.0.6
-      version: 1.0.6
-    arktype:
-      specifier: 2.0.0-beta.6
-      version: 2.0.0-beta.6
     viem:
       specifier: 2.21.6
       version: 2.21.6
@@ -555,9 +543,6 @@ importers:
       sonner:
         specifier: ^1.5.0
         version: 1.5.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      superjson:
-        specifier: ^1.12.4
-        version: 1.12.4
       tailwind-merge:
         specifier: ^1.12.0
         version: 1.12.0
