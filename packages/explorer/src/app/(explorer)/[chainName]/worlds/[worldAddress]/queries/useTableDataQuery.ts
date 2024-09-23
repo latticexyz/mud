@@ -15,7 +15,7 @@ export function useTableDataQuery({ deployedTable, query }: Props) {
   const apiTablesUrl = useApiTablesUrl();
 
   return useQuery({
-    queryKey: ["table", chainName, worldAddress, tableId, query],
+    queryKey: ["table", chainName, worldAddress, query],
     queryFn: async () => {
       if (!tableId || !deployedTable || !query) {
         throw new Error("Table name and query are required");
