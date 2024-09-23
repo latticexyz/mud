@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.2.8
+
+### Patch Changes
+
+- 4fffb79: Fixed types in threejs template after dependency bump.
+
 ## 2.2.7
 
 ## 2.2.6

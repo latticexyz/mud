@@ -97,26 +97,25 @@ export async function deployCustomWorld({
   const deploy = logsToWorldDeploy(receipt.logs);
   debug("deployed custom world to", deploy.address, "at block", deploy.deployBlock);
 
-  const initTxs = await Promise.all([
-    // initialize world via init module
-    writeContract(client, {
-      chain: client.chain ?? null,
-      address: deploy.address,
-      abi: worldAbi,
-      functionName: "initialize",
-      args: [contracts.InitModule.address],
-    }),
-    // transfer root namespace to deployer
-    writeContract(client, {
-      chain: client.chain ?? null,
-      address: deploy.address,
-      abi: worldAbi,
-      functionName: "transferOwnership",
-      args: [resourceToHex({ type: "namespace", namespace: "", name: "" }), client.account.address],
-    }),
-  ]);
+  // initialize world via init module
+  const initTx = await writeContract(client, {
+    chain: client.chain ?? null,
+    address: deploy.address,
+    abi: worldAbi,
+    functionName: "initialize",
+    args: [contracts.InitModule.address],
+  });
+  await waitForTransactions({ client, hashes: [initTx], debugLabel: "world init" });
 
-  await waitForTransactions({ client, hashes: initTxs, debugLabel: "world init" });
+  // transfer root namespace to deployer after init module is installed so `transferOwnership` method is available
+  const transferOwnershipTx = await writeContract(client, {
+    chain: client.chain ?? null,
+    address: deploy.address,
+    abi: worldAbi,
+    functionName: "transferOwnership",
+    args: [resourceToHex({ type: "namespace", namespace: "", name: "" }), client.account.address],
+  });
+  await waitForTransactions({ client, hashes: [transferOwnershipTx], debugLabel: "world ownership transfer" });
 
   return { ...deploy, stateBlock: deploy.deployBlock };
 }
