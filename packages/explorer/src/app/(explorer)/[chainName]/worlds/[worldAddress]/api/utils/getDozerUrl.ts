@@ -1,7 +1,7 @@
 import { garnet, redstone } from "viem/chains";
 import { supportedChains, validateChainName } from "../../../../../../../common";
 
-export const dozerUrl = {
+const dozerUrl = {
   [garnet.id]: "https://dozer.mud.garnetchain.com/q",
   [redstone.id]: "https://dozer.redstone.xyz/q",
 } as const;

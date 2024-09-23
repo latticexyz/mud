@@ -1,8 +1,8 @@
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { internalNamespaces } from "../../../../../../common";
+import { useApiTablesUrl } from "../../../../../../hooks/useApiUrl";
 import { DeployedTable } from "../api/utils/decodeTable";
-import { useApiTablesUrl } from "./utils/useApiUrl";
 
 export function useDeployedTablesQuery() {
   const { worldAddress, chainName } = useParams();
@@ -18,7 +18,8 @@ export function useDeployedTablesQuery() {
       }
       return data;
     },
-    select: (data: { data: DeployedTable[] }) =>
-      data.data.sort(({ namespace }) => (internalNamespaces.includes(namespace) ? 1 : -1)),
+    select: (data: { data: DeployedTable[] }) => {
+      return data.data.sort(({ namespace }) => (internalNamespaces.includes(namespace) ? 1 : -1));
+    },
   });
 }

@@ -6,9 +6,8 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request: Request, { params }: { params: { worldAddress: Hex } }) {
   const { worldAddress } = params;
-
   try {
-    const data = await fetchSqliteTable(`${worldAddress}__store__tables`);
+    const data = await fetchSqliteTable(`SELECT * FROM "${worldAddress}__store__Tables"`);
     const decodedData = data?.map((row) => {
       return decodeTable({
         tableId: row.table_id,

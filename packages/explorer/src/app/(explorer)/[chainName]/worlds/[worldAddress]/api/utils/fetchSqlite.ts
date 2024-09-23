@@ -6,8 +6,7 @@ type Row = {
 
 type SqliteTable = Row[] | undefined;
 
-export async function fetchSqliteTable(tableId: string): Promise<SqliteTable> {
+export async function fetchSqliteTable(query: string): Promise<SqliteTable> {
   const db = getDatabase();
-  const query = `SELECT * FROM "${tableId}"`;
   return db?.prepare(query).all() as SqliteTable;
 }

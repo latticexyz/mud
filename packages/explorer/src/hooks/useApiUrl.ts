@@ -1,6 +1,6 @@
 import { useParams } from "next/navigation";
 import { anvil } from "viem/chains";
-import { supportedChains, validateChainName } from "../../../../../../../common";
+import { supportedChains, validateChainName } from "../common";
 
 export function useApiBaseUrl() {
   const { chainName, worldAddress } = useParams();

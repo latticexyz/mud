@@ -1,7 +1,7 @@
 import { useParams } from "next/navigation";
 import { AbiFunction } from "viem";
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
-import { useApiBaseUrl } from "./utils/useApiUrl";
+import { useApiBaseUrl } from "../../../../../../hooks/useApiUrl";
 
 type AbiQueryResult = {
   abi: AbiFunction[];

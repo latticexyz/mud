@@ -1,9 +1,9 @@
 import { Hex } from "viem";
 import { getDozerUrl } from "./getDozerUrl";
 
-export type DozerResponse = {
+type DozerResponse = {
   block_height: number;
-  result: [Hex[][]];
+  result: [string[][]];
 };
 
 export async function fetchDozer(

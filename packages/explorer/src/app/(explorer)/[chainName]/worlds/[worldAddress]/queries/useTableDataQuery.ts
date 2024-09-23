@@ -1,23 +1,28 @@
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { useApiTablesUrl } from "../../../../../../hooks/useApiUrl";
+import { useTableId } from "../../../../../../hooks/useTableId";
 import { DeployedTable } from "../api/utils/decodeTable";
-import { useApiTablesUrl } from "./utils/useApiUrl";
-import { useTableName } from "./utils/useTableName";
 
-export function useTableDataQuery(deployedTable: DeployedTable | undefined) {
+type Props = {
+  deployedTable: DeployedTable | undefined;
+  query: string | undefined;
+};
+
+export function useTableDataQuery({ deployedTable, query }: Props) {
   const { chainName, worldAddress } = useParams();
-  const tableId = useTableName(deployedTable);
+  const tableId = useTableId(deployedTable);
   const apiTablesUrl = useApiTablesUrl();
 
   return useQuery({
-    queryKey: ["table", chainName, worldAddress, tableId],
+    queryKey: ["table", chainName, worldAddress, tableId, query],
     queryFn: async () => {
-      const columns = deployedTable?.schema ? Object.keys(deployedTable.schema).join(",") : "";
-      if (!tableId || !columns) {
-        throw new Error("Table ID and columns are required");
+      if (!tableId || !deployedTable || !query) {
+        throw new Error("Table name and query are required");
       }
 
-      const params = new URLSearchParams({ tableId, columns });
+      const columnNames = Object.keys(deployedTable.schema).join(",");
+      const params = new URLSearchParams({ tableId, query, columnNames });
       const res = await fetch(`${apiTablesUrl}/table?${params.toString()}`);
       const data = await res.json();
       if (!res.ok) {
@@ -27,7 +32,7 @@ export function useTableDataQuery(deployedTable: DeployedTable | undefined) {
       return data;
     },
     select: (data) => data.data,
-    enabled: !!deployedTable,
+    enabled: !!deployedTable && !!query,
     refetchInterval: 1000,
   });
 }

@@ -6,24 +6,24 @@ export const dynamic = "force-dynamic";
 export async function GET(request: Request, { params }: { params: { chainName: string; worldAddress: Hex } }) {
   const { chainName, worldAddress } = params;
   const { searchParams } = new URL(request.url);
-  const tableId = searchParams.get("tableId");
-  const columns = searchParams.get("columns");
+  const query = searchParams.get("query");
+  const columnNames = searchParams.get("columnNames");
 
-  if (!tableId) {
-    return Response.json({ error: "tableId is required" }, { status: 400 });
-  } else if (!columns) {
-    return Response.json({ error: "columns are required" }, { status: 400 });
+  if (!query) {
+    return Response.json({ error: "query is required" }, { status: 400 });
+  } else if (!columnNames) {
+    return Response.json({ error: "columnNames is required" }, { status: 400 });
   }
 
   try {
     const data = await fetchDozer(chainName, {
       address: worldAddress,
-      query: `select ${columns} from ${tableId}`,
+      query,
     });
-    const schemaKeys = columns.split(",");
+    const columns = columnNames.split(",");
     const formattedData = data.result[0]
       .slice(1)
-      .map((row) => Object.fromEntries(schemaKeys.map((key, index) => [key, row[index]])));
+      .map((row) => Object.fromEntries(columns.map((key, index) => [key, row[index]])));
 
     return Response.json({ data: formattedData });
   } catch (error) {

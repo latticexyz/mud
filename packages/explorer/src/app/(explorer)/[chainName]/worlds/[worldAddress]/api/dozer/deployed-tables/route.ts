@@ -8,9 +8,10 @@ export const dynamic = "force-dynamic";
 export async function GET(request: Request, { params }: { params: { chainName: string; worldAddress: Hex } }) {
   const { chainName, worldAddress } = params;
   try {
+    const storeTablesKey = "store__Tables";
     const data = await fetchDozer(chainName, {
       address: worldAddress,
-      query: `SELECT ${Object.keys(mudConfig.tables.store__Tables.schema).join(", ")} FROM store__Tables`,
+      query: `SELECT ${Object.keys(mudConfig.tables[storeTablesKey].schema).join(", ")} FROM ${storeTablesKey}`,
     });
     const decodedData = data.result[0].slice(1).map((row: Hex[]) => {
       return decodeTable({

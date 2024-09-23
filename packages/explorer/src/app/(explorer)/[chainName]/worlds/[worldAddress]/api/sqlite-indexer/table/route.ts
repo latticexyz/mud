@@ -1,24 +1,18 @@
 import { camelCase } from "../../../../../../../../lib/utils";
 import { fetchSqliteTable } from "../../utils/fetchSqlite";
-import { getDatabase } from "../../utils/getDatabase";
 
 export const dynamic = "force-dynamic";
 
-function doesTableExist(tableId: string) {
-  const db = getDatabase();
-  const result = db?.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name = ?").get(tableId);
-  return Boolean(result);
-}
-
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const tableId = searchParams.get("tableId");
+  const query = searchParams.get("query");
+
+  if (!query) {
+    return Response.json({ error: "query is required" }, { status: 400 });
+  }
 
   try {
-    if (!tableId || !doesTableExist(tableId)) {
-      return Response.json({ error: "Table does not exist" }, { status: 400 });
-    }
-    const data = await fetchSqliteTable(tableId);
+    const data = await fetchSqliteTable(query);
     const formattedData = data?.map((row: object) => {
       return Object.fromEntries(
         Object.entries(row).map(([key, value]) => {
