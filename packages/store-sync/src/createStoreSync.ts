@@ -27,8 +27,10 @@ import {
   combineLatest,
   mergeMap,
   BehaviorSubject,
-  switchMap,
   ignoreElements,
+  last,
+  first,
+  defaultIfEmpty,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
@@ -206,49 +208,24 @@ export async function createStoreSync({
   // such a way that reapplying the same logs, even if the order changes, will mean that the storage adapter
   // is kept up to date.
 
-  const optimisticLogs$ = new BehaviorSubject<readonly StoreEventsLog[]>([]);
-  function pushOptimisticLogs(logs: readonly StoreEventsLog[]): void {
-    optimisticLogs$.next(
-      [...optimisticLogs$.value, ...logs].filter(
-        (log) => lastBlockNumberProcessed == null || log.blockNumber > lastBlockNumberProcessed,
-      ),
-    );
+  let optimisticLogs: readonly StoreEventsLog[] = [];
+  async function applyOptimisticLogs(blockNumber: bigint): Promise<void> {
+    const logs = optimisticLogs.filter((log) => log.blockNumber > blockNumber);
+    if (logs.length) {
+      debug("applying", logs.length, "optimistic logs");
+      const blocks = groupLogsByBlockNumber(logs).filter((block) => block.logs.length);
+      for (const block of blocks) {
+        debug("applying optimistic logs for block", block.blockNumber);
+        await storageAdapter(block);
+      }
+    }
+    optimisticLogs = logs;
   }
 
-  const isStoringOptimisticLogs$ = optimisticLogs$.pipe(
-    switchMap((logs) =>
-      concat(
-        of(true),
-        of(logs).pipe(
-          concatMap(async (logs) => {
-            if (!logs.length) return;
-            debug("applying", logs.length, "optimistic logs");
-            const blocks = groupLogsByBlockNumber(
-              logs.filter((log) => lastBlockNumberProcessed == null || log.blockNumber > lastBlockNumberProcessed),
-            ).filter((block) => block.logs.length);
-            for (const block of blocks) {
-              debug("applying optimistic logs for block", block.blockNumber);
-              await storageAdapter(block);
-            }
-          }),
-          ignoreElements(),
-        ),
-        of(false),
-      ),
-    ),
-  );
-  const isOptimisticIdle$ = isStoringOptimisticLogs$.pipe(
-    filter((isStoring) => isStoring === false),
-    shareReplay(1),
-  );
+  const storageAdapterLock$ = new BehaviorSubject(false);
 
   const storedBlock$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
-    concatMap(async (range) => {
-      // wait for any prior pending optimistic logs, so we don't have data conflicts
-      await firstValueFrom(isOptimisticIdle$);
-      return range;
-    }),
     tap((range) => {
       startBlock = range.startBlock;
       endBlock = range.endBlock;
@@ -266,8 +243,26 @@ export async function createStoreSync({
         storageAdapter,
         logFilter,
       });
+      const storedBlock$ = from(storedBlocks);
 
-      return from(storedBlocks);
+      return concat(
+        storageAdapterLock$.pipe(
+          first((lock) => lock === false),
+          tap(() => storageAdapterLock$.next(true)),
+          ignoreElements(),
+        ),
+        storedBlock$,
+        storedBlock$.pipe(
+          defaultIfEmpty(null),
+          last(),
+          concatMap(async (block) => {
+            if (block == null) return;
+            await applyOptimisticLogs(block.blockNumber);
+          }),
+          tap(() => storageAdapterLock$.next(false)),
+          ignoreElements(),
+        ),
+      );
     }),
     tap(({ blockNumber, logs }) => {
       debug("stored", logs.length, "logs for block", blockNumber);
@@ -294,12 +289,6 @@ export async function createStoreSync({
           });
         }
       }
-    }),
-    concatMap(async (block) => {
-      // reapply optimistic logs
-      pushOptimisticLogs([]);
-      await firstValueFrom(isOptimisticIdle$);
-      return block;
     }),
     share(),
   );
@@ -343,9 +332,13 @@ export async function createStoreSync({
             const logs = parseEventLogs({ abi: storeEventsAbi, logs: receipt.logs });
             if (logs.length) {
               debug("applying", logs.length, "optimistic logs");
-              await firstValueFrom(isOptimisticIdle$);
-              pushOptimisticLogs(logs);
-              await firstValueFrom(isOptimisticIdle$);
+              // wait for lock to clear
+              await firstValueFrom(storageAdapterLock$.pipe(filter((lock) => lock === false)));
+
+              storageAdapterLock$.next(true);
+              optimisticLogs = [...optimisticLogs, ...logs];
+              await applyOptimisticLogs(lastBlock.blockNumber);
+              storageAdapterLock$.next(false);
             }
           }
           return {
