@@ -203,24 +203,27 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
   let lastBlockNumberProcessed: bigint | null = null;
 
   const indexerLogs$ = indexerUrl
-    ? eventSource<string>(
-        new URL(
-          `/api/logs-live?input=${encodeURIComponent(JSON.stringify({ chainId, address, filters }))}&block_num=${}&include_tx_hash=true`,
-          indexerUrl,
-        ),
-      ).pipe(
-        map((messageEvent) => {
-          const { blockNumber, logs } = JSON.parse(messageEvent.data);
-          return {
-            blockNumber,
-            // TODO: change API to return `transactionHash` instead of `txHash`
-            logs: logs.map((log: { txHash: string }) => ({ ...log, transactionHash: log.txHash })),
-          } satisfies StorageAdapterBlock;
+    ? startBlock$.pipe(
+        mergeMap((startBlock) => {
+          const input = encodeURIComponent(JSON.stringify({ chainId, address, filters }));
+          return eventSource<string>(
+            new URL(`/api/logs-live?input=${input}&block_num=${startBlock}&include_tx_hash=true`, indexerUrl),
+          ).pipe(
+            map((messageEvent) => {
+              const { blockNumber, logs } = JSON.parse(messageEvent.data);
+              return {
+                blockNumber,
+                // TODO: change API to return `transactionHash` instead of `txHash`
+                logs: logs.map((log: { txHash: string }) => ({ ...log, transactionHash: log.txHash })),
+              } as StorageAdapterBlock;
+            }),
+            tap(storageAdapter),
+          );
         }),
       )
     : throwError(() => new Error("No indexer URL provided"));
 
-  const rpcLogs$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
+  const ethLogs$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
     tap((range) => {
       startBlock = range.startBlock;
@@ -247,8 +250,8 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
   const logs$ = indexerLogs$.pipe(
     catchError((e) => {
       debug("error streaming logs from indexer:", e);
-      debug("falling back to streaming logs from ETH RPC");
-      return rpcLogs$;
+      debug("falling back to streaming logs from RPC");
+      return ethLogs$;
     }),
   );
 
