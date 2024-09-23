@@ -7,3 +7,4 @@ export * from "./logToTable";
 export * from "./tablesWithRecordsToLogs";
 export * from "./tableToLog";
 export * from "./recordToLog";
+export * from "./logToRecord";
