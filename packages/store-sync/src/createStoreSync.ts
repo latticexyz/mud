@@ -37,6 +37,7 @@ import { SyncStep } from "./SyncStep";
 import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/utils";
 import { getSnapshot } from "./getSnapshot";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
+import { LruMap } from "@latticexyz/common";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -306,12 +307,14 @@ export async function createStoreSync({
   );
 
   // TODO: move to its own file so we can test it, have its own debug instance, etc.
-  async function waitForTransaction(tx: Hex): Promise<WaitForTransactionResult> {
-    debug("waiting for tx", tx);
+  const waitPromises = new LruMap<Hex, Promise<WaitForTransactionResult>>(1024);
+  function waitForTransaction(tx: Hex): Promise<WaitForTransactionResult> {
+    const existingPromise = waitPromises.get(tx);
+    if (existingPromise) return existingPromise;
 
     // This currently blocks for async call on each block processed
     // We could potentially speed this up a tiny bit by racing to see if 1) tx exists in processed block or 2) fetch tx receipt for latest block processed
-    const hasTransaction$ = recentBlocks$.pipe(
+    const receipt$ = recentBlocks$.pipe(
       // We use `mergeMap` instead of `concatMap` here to send the fetch request immediately when a new block range appears,
       // instead of sending the next request only when the previous one completed.
       mergeMap(async (blocks) => {
@@ -354,9 +357,13 @@ export async function createStoreSync({
           throw error;
         }
       }),
+      filter(isDefined),
     );
 
-    return await firstValueFrom(hasTransaction$.pipe(filter(isDefined)));
+    debug("waiting for tx", tx);
+    const promise = firstValueFrom(receipt$);
+    waitPromises.set(tx, promise);
+    return promise;
   }
 
   return {
