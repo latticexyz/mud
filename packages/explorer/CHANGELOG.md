@@ -1,5 +1,17 @@
 # @latticexyz/explorer
 
+## 2.2.8
+
+### Patch Changes
+
+- Updated dependencies [7c7bdb2]
+  - @latticexyz/common@2.2.8
+  - @latticexyz/store-sync@2.2.8
+  - @latticexyz/protocol-parser@2.2.8
+  - @latticexyz/store@2.2.8
+  - @latticexyz/world@2.2.8
+  - @latticexyz/schema-type@2.2.8
+
 ## 2.2.7
 
 ### Patch Changes
