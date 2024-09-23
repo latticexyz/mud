@@ -14,12 +14,25 @@
     "./internal": "./dist/tsup/internal.js",
     "./bundle": "./dist/vite/bundle.js"
   },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/tsup/index.d.ts"
+      ],
+      "internal": [
+        "./dist/tsup/internal.d.ts"
+      ],
+      "bundle": [
+        "./dist/vite/bundle.d.ts"
+      ]
+    }
+  },
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "pnpm run build:js",
-    "build:js": "tsup & vite build",
+    "build:js": "tsup && vite build",
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch & vite build --watch",
@@ -58,6 +71,7 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@ark/util": "catalog:",
     "@types/debug": "^4.1.7",
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",

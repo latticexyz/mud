@@ -1,5 +1,5 @@
 import { useWalletClient } from "wagmi";
-import { useConfig } from "./AccountKitConfigProvider";
+import { useConfig } from "./EntryConfigProvider";
 import { useRecord } from "./useRecord";
 import modulesConfig from "@latticexyz/world-modules/internal/mud.config";
 

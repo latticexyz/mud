@@ -1,10 +1,10 @@
 procs:
   client:
-    shell: pnpm vite dev playground
+    shell: pnpm vite --port 3477 dev playground
   anvil:
     # To hydrate `anvil-state.json`, swap the command below and then deploy a MUD world to it.
     # shell: anvil --dump-state playground/anvil-state.json
-    shell: anvil --block-time 2 --load-state playground/anvil-state.json
-  mud:
-    cwd: ../..
-    shell: pnpm run dev --filter=!@latticexyz/account-kit
+    shell: anvil --port 3478 --block-time 2 --load-state playground/anvil-state.json
+  # mud:
+  #   cwd: ../..
+  #   shell: pnpm run dev --filter=!@latticexyz/entry

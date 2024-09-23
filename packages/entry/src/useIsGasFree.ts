@@ -1,5 +1,5 @@
 import { useBlock } from "wagmi";
-import { useConfig } from "./AccountKitConfigProvider";
+import { useConfig } from "./EntryConfigProvider";
 
 // TODO: figure out a better name
 export function useIsGasFree() {

@@ -4,7 +4,7 @@ import { AccountModalTitle } from "../../AccoutModalTitle";
 import { AppInfo } from "./AppInfo";
 import { useSignRegisterDelegation } from "./useSignRegisterDelegation";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
-import { useConfig } from "../../AccountKitConfigProvider";
+import { useConfig } from "../../EntryConfigProvider";
 import { Join } from "../../ui/Join";
 import { TruncatedHex } from "../../ui/TruncatedHex";
 import { useAccount } from "wagmi";

@@ -1,7 +1,7 @@
 import { http } from "wagmi";
 import { assert } from "@latticexyz/common/utils";
 import { Erc4337Config } from "./config";
-import { useConfig } from "./AccountKitConfigProvider";
+import { useConfig } from "./EntryConfigProvider";
 import { useAppChain } from "./useAppChain";
 
 export function useErc4337Config(): Erc4337Config | undefined {

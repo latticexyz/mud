@@ -38,7 +38,7 @@ export function mount({
     const { WagmiProvider } = await import("wagmi");
     const { QueryClientProvider, QueryClient } = await import("@tanstack/react-query");
     const { RainbowKitProvider, lightTheme, midnightTheme } = await import("@rainbow-me/rainbowkit");
-    const { AccountKitProvider } = await import("../AccountKitProvider");
+    const { EntryProvider } = await import("../EntryProvider");
     const { SyncStore } = await import("./SyncStore");
 
     const queryClient = new QueryClient();
@@ -64,11 +64,11 @@ export function mount({
                       }
               }
             >
-              <AccountKitProvider config={accountKitConfig}>
+              <EntryProvider config={accountKitConfig}>
                 <SyncStore store={store} />
                 <Buttons />
                 <style dangerouslySetInnerHTML={{ __html: rainbowKitCss }} />
-              </AccountKitProvider>
+              </EntryProvider>
             </RainbowKitProvider>
           </QueryClientProvider>
         </WagmiProvider>

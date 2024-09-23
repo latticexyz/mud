@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider, lightTheme, midnightTheme } from "@rainbow-me/rainbowkit";
 import { garnet, mudFoundry, redstone } from "@latticexyz/common/chains";
 import { AccountModal } from "../src/AccountModal";
-import { AccountKitConfigProvider } from "../src/AccountKitConfigProvider";
+import { EntryConfigProvider } from "../src/EntryConfigProvider";
 import { App } from "./App";
 import { Hex, createClient, http } from "viem";
 import { chains } from "../src/exports/chains";
@@ -22,7 +22,7 @@ const wagmiConfig = createConfig({
       // We intentionally don't use fallback+webSocket here because if a chain's RPC config
       // doesn't include a `webSocket` entry, it doesn't seem to fallback and instead just
       // ~never makes any requests and all queries seem to sit idle.
-      transport: http(),
+      transport: chain.id === 31337 ? http("http://127.0.0.1:3478") : http(),
     }),
 });
 
@@ -60,10 +60,10 @@ root.render(
             darkMode: midnightTheme({ borderRadius: "none" }),
           }}
         >
-          <AccountKitConfigProvider config={accountKitConfig}>
+          <EntryConfigProvider config={accountKitConfig}>
             <App />
             <AccountModal />
-          </AccountKitConfigProvider>
+          </EntryConfigProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

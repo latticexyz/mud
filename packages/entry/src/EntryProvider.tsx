@@ -1,10 +1,10 @@
 import { type ReactNode } from "react";
 import { AccountModal } from "./AccountModal";
 import { Config } from "./config";
-import { AccountKitConfigProvider } from "./AccountKitConfigProvider";
+import { EntryConfigProvider } from "./EntryConfigProvider";
 
 // We separate the config provider and wrap it here to always include the modal.
-// We could do this in AccountKitConfigProvider directly, but it mucks with hot
+// We could do this in EntryConfigProvider directly, but it mucks with hot
 // reloading in development and this approach lets us work around it more easily.
 
 export type Props = {
@@ -12,11 +12,11 @@ export type Props = {
   children?: ReactNode;
 };
 
-export function AccountKitProvider({ config, children }: Props) {
+export function EntryProvider({ config, children }: Props) {
   return (
-    <AccountKitConfigProvider config={config}>
+    <EntryConfigProvider config={config}>
       {children}
       <AccountModal />
-    </AccountKitConfigProvider>
+    </EntryConfigProvider>
   );
 }

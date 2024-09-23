@@ -1,5 +1,5 @@
 import { useChains } from "wagmi";
-import { useConfig } from "./AccountKitConfigProvider";
+import { useConfig } from "./EntryConfigProvider";
 import { MUDChain } from "@latticexyz/common/chains";
 
 export function useAppChain(): MUDChain {
@@ -11,5 +11,5 @@ export function useAppChain(): MUDChain {
       `MUD Entry is configured to use chain ${chainId}, but the corresponding chain was not found in wagmi's configured chains.`,
     );
   }
-  return chain;
+  return chain as never;
 }

@@ -544,6 +544,9 @@ importers:
         specifier: ^4.5.2
         version: 4.5.5(@types/react@18.2.22)(react@18.2.0)
     devDependencies:
+      '@ark/util':
+        specifier: 'catalog:'
+        version: 0.2.2
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.7

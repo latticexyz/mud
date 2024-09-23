@@ -1,4 +1,4 @@
-import { useConfig } from "../../AccountKitConfigProvider";
+import { useConfig } from "../../EntryConfigProvider";
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { useAppAccountClient } from "../../useAppAccountClient";
 import { getGasPrice } from "viem/actions";

@@ -1,5 +1,5 @@
 import { useMediaQuery } from "usehooks-ts";
-import { useConfig } from "./AccountKitConfigProvider";
+import { useConfig } from "./EntryConfigProvider";
 
 export function useTheme() {
   const { theme: initialTheme } = useConfig();

@@ -1,5 +1,5 @@
 import { useAccount } from "wagmi";
-import { useConfig } from "./AccountKitConfigProvider";
+import { useConfig } from "./EntryConfigProvider";
 import { unlimitedDelegationControlId } from "./common";
 import worldConfig from "@latticexyz/world/mud.config";
 import { useRecord } from "./useRecord";

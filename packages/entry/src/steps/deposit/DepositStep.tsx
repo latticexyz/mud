@@ -4,7 +4,7 @@ import { GasBalanceSection } from "./GasBalanceSection";
 import { useState } from "react";
 import { DepositMethod } from "./common";
 import { useSourceChains } from "./useSourceChains";
-import { useConfig } from "../../AccountKitConfigProvider";
+import { useConfig } from "../../EntryConfigProvider";
 import { DepositMethodForm } from "./DepositMethodForm";
 import { useDebounceValue } from "usehooks-ts";
 import { Deposits } from "./Deposits";

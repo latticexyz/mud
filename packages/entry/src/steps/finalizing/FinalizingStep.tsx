@@ -5,7 +5,7 @@ import { useSignRegisterDelegation } from "../app-account/useSignRegisterDelegat
 import { useAccount } from "wagmi";
 import { useAppAccountClient } from "../../useAppAccountClient";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
-import { useConfig } from "../../AccountKitConfigProvider";
+import { useConfig } from "../../EntryConfigProvider";
 import { registerDelegationWithSignature } from "../app-account/registerDelegationWithSignature";
 import { waitForTransactionReceipt } from "viem/actions";
 import { useAccountModal } from "../../useAccountModal";

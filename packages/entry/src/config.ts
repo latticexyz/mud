@@ -1,4 +1,4 @@
-import { satisfy } from "@latticexyz/common/type-utils";
+import { satisfy } from "@ark/util";
 import { Transport } from "viem";
 import { Address } from "viem/accounts";
 

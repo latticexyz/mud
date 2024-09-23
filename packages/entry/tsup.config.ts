@@ -8,7 +8,7 @@ export default defineConfig({
   },
   target: "esnext",
   format: ["esm"],
-  dts: false, // TODO: figure out how to reenable
+  dts: !process.env.TSUP_SKIP_DTS,
   sourcemap: true,
   clean: true,
   minify: true,
