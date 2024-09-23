@@ -208,16 +208,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
           const input = encodeURIComponent(JSON.stringify({ chainId, address, filters }));
           return fromEventSource<string>(
             new URL(`/api/logs-live?input=${input}&block_num=${startBlock}&include_tx_hash=true`, indexerUrl),
-          ).pipe(
-            map((messageEvent) => {
-              const { blockNumber, logs } = JSON.parse(messageEvent.data);
-              return {
-                blockNumber,
-                // TODO: change API to return `transactionHash` instead of `txHash`
-                logs: logs.map((log: { txHash: string }) => ({ ...log, transactionHash: log.txHash })),
-              } as StorageAdapterBlock;
-            }),
-          );
+          ).pipe(map((messageEvent) => JSON.parse(messageEvent.data) as StorageAdapterBlock));
         }),
       )
     : throwError(() => new Error("No indexer URL provided"));
