@@ -13,9 +13,6 @@ export function useDeployedTablesQuery() {
     queryFn: async () => {
       const res = await fetch(`${apiTablesUrl}/deployed-tables`);
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error);
-      }
       return data;
     },
     select: (data: { data: DeployedTable[] }) => {

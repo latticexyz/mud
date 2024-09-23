@@ -25,9 +25,6 @@ export function useTableDataQuery({ deployedTable, query }: Props) {
       const params = new URLSearchParams({ tableId, query, columnNames });
       const res = await fetch(`${apiTablesUrl}/table?${params.toString()}`);
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error);
-      }
 
       return data;
     },

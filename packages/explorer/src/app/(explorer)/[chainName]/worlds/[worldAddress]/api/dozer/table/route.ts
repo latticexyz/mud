@@ -21,11 +21,11 @@ export async function GET(request: Request, { params }: { params: { chainName: s
       query,
     });
     const columns = columnNames.split(",");
-    const formattedData = data.result[0]
+    const formattedData = data?.result?.[0]
       .slice(1)
       .map((row) => Object.fromEntries(columns.map((key, index) => [key, row[index]])));
 
-    return Response.json({ data: formattedData });
+    return Response.json({ data: formattedData || [] });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
     return Response.json({ error: errorMessage }, { status: 400 });

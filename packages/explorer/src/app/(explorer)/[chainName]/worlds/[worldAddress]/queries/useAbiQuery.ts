@@ -17,10 +17,6 @@ export function useAbiQuery(): UseQueryResult<AbiQueryResult> {
     queryFn: async () => {
       const res = await fetch(`${apiBaseUrl}/world-abi`);
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error);
-      }
-
       return data;
     },
     select: (data) => {
