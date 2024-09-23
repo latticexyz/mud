@@ -3,7 +3,7 @@ import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.j
 import { Account, Chain, Client, Hex, Transport, encodeFunctionData } from "viem";
 import { writeContract } from "viem/actions";
 import { unlimitedDelegationControlId } from "../../common";
-import CallWithSignatureAbi from "@latticexyz/world-modules/out/IUnstable_CallWithSignatureSystem.sol/IUnstable_CallWithSignatureSystem.abi.json";
+import CallWithSignatureAbi from "@latticexyz/world-modules/out/Unstable_CallWithSignatureSystem.sol/Unstable_CallWithSignatureSystem.abi.json";
 import { getAction } from "viem/utils";
 
 export async function registerDelegationWithSignature({

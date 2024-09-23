@@ -8,7 +8,7 @@ export function useAppChain(): MUDChain {
   const chain = chains.find((c) => c.id === chainId);
   if (!chain) {
     throw new Error(
-      `Account Kit is configured to use chain ${chainId}, but the corresponding chain was not found in wagmi's configured chains.`,
+      `MUD Entry is configured to use chain ${chainId}, but the corresponding chain was not found in wagmi's configured chains.`,
     );
   }
   return chain;

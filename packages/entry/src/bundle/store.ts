@@ -10,7 +10,7 @@ export type State = {
   /**
    * Viem client bound to the app account (app signer or smart account) and app chain.
    * It is extended with all public and wallet actions and includes some MUD's custom actions for ease of use with account delegation and smart accounts.
-   * This will only be set when all Account Kit requirements are met (has signing key, account delegation, gas balance).
+   * This will only be set when all MUD Entry requirements are met (has signing key, account delegation, gas balance).
    */
   appAccountClient: undefined | AppAccountClient;
   /**

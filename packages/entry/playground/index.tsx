@@ -36,7 +36,7 @@ const searchParams = new URLSearchParams(window.location.search);
 const chainId = parseInt(searchParams.get("chainId") ?? "") || mudFoundry.id;
 const worldAddress = testWorlds[chainId];
 if (!worldAddress) {
-  throw new Error(`Account Kit playground is not configured with a test world address for chain ID ${chainId}`);
+  throw new Error(`MUD Entry playground is not configured with a test world address for chain ID ${chainId}`);
 }
 
 const accountKitConfig = {

@@ -1,11 +1,11 @@
-# MUD Account Kit
+# MUD Entry
 
 UI kit to streamline signing in to MUD apps.
 
 ## Installation
 
 ```
-npm install @latticexyz/account-kit
+npm install @latticexyz/entry
 ```
 
 ## Usage

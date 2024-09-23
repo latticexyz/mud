@@ -3,7 +3,7 @@ import { internalStore } from "./internalStore";
 export function mountButton(container: Element): () => void {
   if (!internalStore.getState().rootContainer) {
     console.warn(
-      "MUD Account Kit `mountButton` was called before `mount`. You will not see buttons rendered until `mount` is called.",
+      "MUD Entry `mountButton` was called before `mount`. You will not see buttons rendered until `mount` is called.",
     );
   }
 

@@ -16,7 +16,7 @@ export type MountOptions = {
 
 if (typeof window === "undefined" || typeof document === "undefined") {
   // TODO: should we throw inside `mount()` instead of at import time?
-  throw new Error("MUD Account Kit should only be used in browser bundles.");
+  throw new Error("MUD Entry should only be used in browser bundles.");
 }
 
 export function mount({
@@ -25,7 +25,7 @@ export function mount({
   accountKitConfig,
 }: MountOptions): () => void {
   if (internalStore.getState().rootContainer) {
-    throw new Error("MUD Account Kit is already mounted and only one instance is allowed on the page at a time.");
+    throw new Error("MUD Entry is already mounted and only one instance is allowed on the page at a time.");
   }
 
   const rootContainer = initialRootContainer ?? document.body.appendChild(document.createElement("div"));
@@ -81,7 +81,7 @@ export function mount({
   }
 
   const setupPromise = setup().catch((error) => {
-    console.error("Failed to mount MUD Account Kit.", error);
+    console.error("Failed to mount MUD Entry.", error);
   });
 
   return () => {

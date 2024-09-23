@@ -7,7 +7,7 @@ export default defineConfig({
     sourcemap: true,
     lib: {
       entry: "src/exports/bundle.ts",
-      name: "MUD Account Kit",
+      name: "MUD Entry",
       fileName: "bundle",
       // TODO: more formats?
       formats: ["es"],

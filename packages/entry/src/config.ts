@@ -38,7 +38,7 @@ export type Config = {
   /**
    * The chain ID where the world is deployed.
    * There must be a matching chain entry in wagmi's configured chains.
-   * The app account client returned by Account Kit will be tied to this chain.
+   * The app account client returned by MUD Entry will be tied to this chain.
    */
   readonly chainId: number;
   /*
@@ -47,7 +47,7 @@ export type Config = {
   readonly worldAddress: Address;
 
   /**
-   * Account Kit UI theme.
+   * MUD Entry UI theme.
    *
    * If not set, defaults to OS' light or dark mode.
    */
