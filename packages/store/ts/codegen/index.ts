@@ -3,7 +3,7 @@ export * from "./record";
 export * from "./renderTable";
 export * from "./renderTypesFromConfig";
 export * from "./tablegen";
-export * from "./tableOptions";
+export * from "./getTableOptions";
 export * from "./tightcoder";
 export * from "./types";
 export * from "./userType";

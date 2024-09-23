@@ -9,7 +9,6 @@ export const resourceTypeIds = {
   offchainTable: "ot",
   // keep these in sync with worldResourceTypes.sol
   namespace: "ns",
-  module: "md",
   system: "sy",
 } as const satisfies Record<ResourceType, string>;
 

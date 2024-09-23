@@ -1,10 +1,10 @@
 import { defineStore } from "./ts/config/v2/store";
 
 export default defineStore({
-  codegen: {
-    storeImportPath: "../../",
-  },
   namespace: "store",
+  codegen: {
+    storeImportPath: "./src",
+  },
   userTypes: {
     ResourceId: { filePath: "./src/ResourceId.sol", type: "bytes32" },
     FieldLayout: { filePath: "./src/FieldLayout.sol", type: "bytes32" },
@@ -36,7 +36,7 @@ export default defineStore({
       },
       key: ["resourceId"],
     },
-    // The Hooks table is a generic table used by the `filterFromList` util in `Hook.sol`
+    // This is generic, codegen-only table used by `filterFromList` in `Hook.sol`
     Hooks: {
       schema: {
         resourceId: "ResourceId",
@@ -45,6 +45,9 @@ export default defineStore({
       key: ["resourceId"],
       codegen: {
         tableIdArgument: true,
+      },
+      deploy: {
+        disabled: true,
       },
     },
   },

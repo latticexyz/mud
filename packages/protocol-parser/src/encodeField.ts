@@ -16,5 +16,5 @@ export function encodeField<TSchemaAbiType extends SchemaAbiType>(
           value,
         );
   }
-  return encodePacked([fieldType], [value]);
+  return encodePacked([fieldType], [value as never]);
 }

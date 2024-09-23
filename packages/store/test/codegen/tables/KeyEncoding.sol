@@ -17,7 +17,7 @@ import { EncodedLengths, EncodedLengthsLib } from "../../../src/EncodedLengths.s
 import { ResourceId } from "../../../src/ResourceId.sol";
 
 // Import user types
-import { ExampleEnum } from "./../common.sol";
+import { ExampleEnum } from "../common.sol";
 
 library KeyEncoding {
   // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "KeyEncoding", typeId: RESOURCE_TABLE });`

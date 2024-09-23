@@ -1,11 +1,22 @@
 import { Client, parseAbiItem, decodeAbiParameters, parseAbiParameters } from "viem";
-import { Table } from "./configToTables";
 import { hexToResource } from "@latticexyz/common";
-import { WorldDeploy, storeTables } from "./common";
+import { WorldDeploy } from "./common";
 import { debug } from "./debug";
 import { storeSetRecordEvent } from "@latticexyz/store";
 import { getLogs } from "viem/actions";
-import { KeySchema, ValueSchema, decodeKey, decodeValueArgs, hexToSchema } from "@latticexyz/protocol-parser/internal";
+import {
+  decodeKey,
+  decodeValueArgs,
+  getKeySchema,
+  getSchemaTypes,
+  getValueSchema,
+  hexToSchema,
+} from "@latticexyz/protocol-parser/internal";
+import { Schema, Table } from "@latticexyz/config";
+import storeConfig from "@latticexyz/store/mud.config";
+
+// TODO: add label and namespaceLabel once we register it onchain
+type DeployedTable = Omit<Table, "label" | "namespaceLabel">;
 
 export async function getTables({
   client,
@@ -13,7 +24,7 @@ export async function getTables({
 }: {
   readonly client: Client;
   readonly worldDeploy: WorldDeploy;
-}): Promise<readonly Table[]> {
+}): Promise<readonly Omit<DeployedTable, "label">[]> {
   // This assumes we only use `Tables._set(...)`, which is true as of this writing.
   // TODO: PR to viem's getLogs to accept topics array so we can filter on all store events and quickly recreate this table's current state
   // TODO: consider moving this to a batched getRecord for Tables table
@@ -27,30 +38,43 @@ export async function getTables({
     toBlock: worldDeploy.stateBlock,
     address: worldDeploy.address,
     event: parseAbiItem(storeSetRecordEvent),
-    args: { tableId: storeTables.store_Tables.tableId },
+    args: { tableId: storeConfig.namespaces.store.tables.Tables.tableId },
   });
 
   // TODO: combine with store-sync logToTable and export from somewhere
-  const tables = logs.map((log) => {
-    const { tableId } = decodeKey(storeTables.store_Tables.keySchema, log.args.keyTuple);
-    const { namespace, name } = hexToResource(tableId);
-    const value = decodeValueArgs(storeTables.store_Tables.valueSchema, log.args);
+  const tables = logs.map((log): DeployedTable => {
+    const { tableId } = decodeKey(
+      getSchemaTypes(getKeySchema(storeConfig.namespaces.store.tables.Tables)),
+      log.args.keyTuple,
+    );
+    const { type, namespace, name } = hexToResource(tableId);
+    const value = decodeValueArgs(getSchemaTypes(getValueSchema(storeConfig.namespaces.store.tables.Tables)), log.args);
 
-    // TODO: migrate to better helper
-    const keySchemaFields = hexToSchema(value.keySchema);
-    const valueSchemaFields = hexToSchema(value.valueSchema);
+    const solidityKeySchema = hexToSchema(value.keySchema);
+    const solidityValueSchema = hexToSchema(value.valueSchema);
     const keyNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedKeyNames)[0];
     const fieldNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedFieldNames)[0];
 
-    const valueAbiTypes = [...valueSchemaFields.staticFields, ...valueSchemaFields.dynamicFields];
+    const valueAbiTypes = [...solidityValueSchema.staticFields, ...solidityValueSchema.dynamicFields];
 
     const keySchema = Object.fromEntries(
-      keySchemaFields.staticFields.map((abiType, i) => [keyNames[i], abiType]),
-    ) as KeySchema;
-    const valueSchema = Object.fromEntries(valueAbiTypes.map((abiType, i) => [fieldNames[i], abiType])) as ValueSchema;
+      solidityKeySchema.staticFields.map((abiType, i) => [keyNames[i], { type: abiType, internalType: abiType }]),
+    ) satisfies Schema;
 
-    return { namespace, name, tableId, keySchema, valueSchema } as const;
+    const valueSchema = Object.fromEntries(
+      valueAbiTypes.map((abiType, i) => [fieldNames[i], { type: abiType, internalType: abiType }]),
+    ) satisfies Schema;
+
+    return {
+      type: type as never,
+      namespace,
+      name,
+      tableId,
+      schema: { ...keySchema, ...valueSchema },
+      key: Object.keys(keySchema),
+    };
   });
+
   // TODO: filter/detect duplicates?
 
   debug("found", tables.length, "tables for", worldDeploy.address);

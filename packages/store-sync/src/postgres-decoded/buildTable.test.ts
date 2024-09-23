@@ -3,11 +3,13 @@ import { buildTable } from "./buildTable";
 import { getTableColumns } from "drizzle-orm";
 import { getTableConfig } from "drizzle-orm/pg-core";
 import { mapObject } from "@latticexyz/common/utils";
+import { resourceToHex } from "@latticexyz/common";
 
 describe("buildTable", () => {
   it("should create table from schema", async () => {
     const table = buildTable({
       address: "0xffffffffffffffffffffffffffffffffffffffff",
+      tableId: resourceToHex({ type: "table", namespace: "testNS", name: "UsersTable" }),
       namespace: "testNS",
       name: "UsersTable",
       keySchema: { x: "uint32", y: "uint32" },
@@ -68,6 +70,7 @@ describe("buildTable", () => {
   it("can create a singleton table", async () => {
     const table = buildTable({
       address: "0xffffffffffffffffffffffffffffffffffffffff",
+      tableId: resourceToHex({ type: "table", namespace: "testNS", name: "UsersTable" }),
       namespace: "testNS",
       name: "UsersTable",
       keySchema: {},

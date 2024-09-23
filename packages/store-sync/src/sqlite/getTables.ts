@@ -1,13 +1,13 @@
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { asc, inArray } from "drizzle-orm";
-import { Table } from "../common";
 import { getTableName } from "./getTableName";
 import { mudStoreTables } from "./internalTables";
+import { PartialTable } from "./common";
 
 export function getTables(
   db: BaseSQLiteDatabase<"sync", void>,
-  conditions: Pick<Table, "address" | "namespace" | "name">[] = [],
-): Table[] {
+  conditions: Pick<PartialTable, "address" | "namespace" | "name">[] = [],
+): PartialTable[] {
   const ids = Array.from(
     new Set(conditions.map((condition) => getTableName(condition.address, condition.namespace, condition.name))),
   );

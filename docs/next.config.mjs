@@ -117,11 +117,6 @@ export default withNextra({
         permanent: false,
       },
       {
-        source: "/indexer",
-        destination: "/services/indexer",
-        permanent: false,
-      },
-      {
         source: "/cli",
         destination: "/cli/tablegen",
         permanent: false,
@@ -254,6 +249,51 @@ export default withNextra({
       {
         source: "/store/table-hooks",
         destination: "/store/store-hooks",
+        permanent: false,
+      },      
+      {
+        source: "/guides/best-practices/dividing-into-systems",
+        destination: "/best-practices/dividing-into-systems",
+        permanent: false,
+      },
+      {
+        source: "/guides/best-practices/system-best-practices",
+        destination: "/best-practices/system",
+        permanent: false,
+      }, 
+      {
+        source: "/guides/best-practices/deployment-settings",
+        destination: "/best-practices/deployment-settings",
+        permanent: false,
+      },
+      {
+        source: "/guides/best-practices/kms",
+        destination: "/best-practices/aws-kms",
+        permanent: false,
+      },
+      {
+        source: "/services/indexer/postgres-decoded",
+        destination: "/indexer/postgres-decoded",
+        permanent: false,
+      },
+      {
+        source: "/services/indexer/postgres-event-only",
+        destination: "/indexer/postgres-event-only",
+        permanent: false,
+      },
+      {
+        source: "/services/indexer/sqlite-indexer",
+        destination: "/indexer/sqlite",
+        permanent: false,
+      },            
+      {
+        source: "/services/indexer/using-indexer",
+        destination: "/indexer/using",
+        permanent: false,
+      },
+      {
+        source: "/services/indexer",
+        destination: "/indexer",
         permanent: false,
       },      
     ];

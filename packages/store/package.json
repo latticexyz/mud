@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store",
-  "version": "2.0.12",
+  "version": "2.2.8",
   "description": "Store",
   "repository": {
     "type": "git",
@@ -14,9 +14,7 @@
     "./internal": "./dist/internal.js",
     "./mud.config": "./dist/mud.config.js",
     "./codegen": "./dist/codegen.js",
-    "./config": "./dist/config.js",
     "./config/v2": "./dist/config/v2.js",
-    "./register": "./dist/register.js",
     "./out/*": "./out/*"
   },
   "typesVersions": {
@@ -33,14 +31,8 @@
       "codegen": [
         "./dist/codegen.d.ts"
       ],
-      "config": [
-        "./dist/config.d.ts"
-      ],
       "config/v2": [
         "./dist/config/v2.d.ts"
-      ],
-      "register": [
-        "./dist/register.d.ts"
       ]
     }
   },
@@ -58,8 +50,8 @@
     "build:tightcoder": "tsx ./ts/scripts/generate-tightcoder.ts",
     "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud",
     "clean:abi": "forge clean",
-    "clean:js": "rimraf dist",
-    "clean:mud": "rimraf src/codegen && rimraf test/codegen",
+    "clean:js": "shx rm -rf dist",
+    "clean:mud": "shx rm -rf src/**/codegen test/**/codegen",
     "dev": "tsup --watch",
     "gas-report": "gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
@@ -67,18 +59,16 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@arktype/util": "0.0.40",
+    "@ark/util": "catalog:",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "abitype": "1.0.0",
-    "arktype": "1.0.29-alpha",
-    "viem": "2.9.20",
-    "zod": "^3.22.2"
+    "abitype": "catalog:",
+    "arktype": "catalog:",
+    "viem": "catalog:"
   },
   "devDependencies": {
-    "@arktype/attest": "0.7.5",
     "@latticexyz/abi-ts": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
     "@types/ejs": "^3.1.1",

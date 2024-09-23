@@ -1,55 +1,36 @@
 import { PgColumnBuilderBase, PgTableWithColumns, pgSchema } from "drizzle-orm/pg-core";
-import { Address } from "viem";
 import { snakeCase } from "change-case";
-import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser/internal";
 import { asBigInt, asHex } from "../postgres/columnTypes";
 import { transformSchemaName } from "../postgres/transformSchemaName";
 import { buildColumn } from "./buildColumn";
+import { PartialTable } from "./common";
 
 export const metaColumns = {
   __keyBytes: asHex("__key_bytes").primaryKey(),
   __lastUpdatedBlockNumber: asBigInt("__last_updated_block_number", "numeric"),
 } as const satisfies Record<string, PgColumnBuilderBase>;
 
-type PgTableFromSchema<TKeySchema extends KeySchema, TValueSchema extends ValueSchema> = PgTableWithColumns<{
+type PgTableFromSchema<table extends PartialTable> = PgTableWithColumns<{
   dialect: "pg";
   name: string;
   schema: string;
   columns: {
     // TODO: figure out column types
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [metaColumn in keyof typeof metaColumns]: any;
-  } & {
-    // TODO: figure out column types
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [keyColumn in keyof TKeySchema]: any;
-  } & {
-    // TODO: figure out column types
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [valueColumn in keyof TValueSchema]: any;
+    [metaColumn in keyof typeof metaColumns | keyof table["keySchema"] | keyof table["valueSchema"]]: any;
   };
 }>;
 
-type BuildTableOptions<TKeySchema extends KeySchema, TValueSchema extends ValueSchema> = {
-  address: Address;
-  namespace: string;
-  name: string;
-  keySchema: TKeySchema;
-  valueSchema: TValueSchema;
-};
+type BuildTableOptions<table extends PartialTable> = table;
+type BuildTableResult<table extends PartialTable> = PgTableFromSchema<table>;
 
-type BuildTableResult<TKeySchema extends KeySchema, TValueSchema extends ValueSchema> = PgTableFromSchema<
-  TKeySchema,
-  TValueSchema
->;
-
-export function buildTable<TKeySchema extends KeySchema, TValueSchema extends ValueSchema>({
+export function buildTable<table extends PartialTable>({
   address,
   namespace,
   name,
   keySchema,
   valueSchema,
-}: BuildTableOptions<TKeySchema, TValueSchema>): BuildTableResult<TKeySchema, TValueSchema> {
+}: BuildTableOptions<table>): BuildTableResult<table> {
   // We intentionally do not snake case the namespace due to potential conflicts
   // with namespaces of a similar name (e.g. `MyNamespace` vs. `my_namespace`).
   // TODO: consider snake case when we resolve https://github.com/latticexyz/mud/issues/1991
@@ -75,5 +56,5 @@ export function buildTable<TKeySchema extends KeySchema, TValueSchema extends Va
 
   const table = pgSchema(schemaName).table(tableName, columns);
 
-  return table as PgTableFromSchema<TKeySchema, TValueSchema>;
+  return table as never;
 }

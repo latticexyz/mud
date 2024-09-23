@@ -1,26 +1,27 @@
 import path from "path";
-import { resolveWorldConfig } from "@latticexyz/world/internal";
-import { Config, ConfigInput, Library, System, WorldFunction } from "./common";
-import { resourceToHex } from "@latticexyz/common";
-import { Hex, toFunctionSelector, toFunctionSignature } from "viem";
-import { getExistingContracts } from "../utils/getExistingContracts";
+import { loadSystemsManifest, resolveSystems } from "@latticexyz/world/node";
+import { Library, System, WorldFunction } from "./common";
+import { Hex, isHex, toFunctionSelector, toFunctionSignature } from "viem";
 import { getContractData } from "../utils/getContractData";
-import { configToTables } from "./configToTables";
 import { groupBy } from "@latticexyz/common/utils";
 import { findLibraries } from "./findLibraries";
 import { createPrepareDeploy } from "./createPrepareDeploy";
+import { World } from "@latticexyz/world";
 
-// TODO: this should be replaced by https://github.com/latticexyz/mud/issues/1668
+// TODO: replace this with a manifest/combined config output
 
-export function resolveConfig<config extends ConfigInput>({
+export async function resolveConfig({
+  rootDir,
   config,
-  forgeSourceDir,
   forgeOutDir,
 }: {
-  config: config;
-  forgeSourceDir: string;
+  rootDir: string;
+  config: World;
   forgeOutDir: string;
-}): Config<config> {
+}): Promise<{
+  readonly systems: readonly System[];
+  readonly libraries: readonly Library[];
+}> {
   const libraries = findLibraries(forgeOutDir).map((library): Library => {
     // foundry/solc flattens artifacts, so we just use the path basename
     const contractData = getContractData(path.basename(library.path), library.name, forgeOutDir);
@@ -33,53 +34,66 @@ export function resolveConfig<config extends ConfigInput>({
     };
   });
 
-  const tables = configToTables(config);
-
-  // TODO: should the config parser/loader help with resolving systems?
-  const contractNames = getExistingContracts(forgeSourceDir).map(({ basename }) => basename);
-  const resolvedConfig = resolveWorldConfig(config, contractNames);
   const baseSystemContractData = getContractData("System.sol", "System", forgeOutDir);
   const baseSystemFunctions = baseSystemContractData.abi
     .filter((item): item is typeof item & { type: "function" } => item.type === "function")
     .map(toFunctionSignature);
 
-  const systems = Object.entries(resolvedConfig.systems).map(([systemName, system]): System => {
-    const namespace = config.namespace;
-    const name = system.name;
-    const systemId = resourceToHex({ type: "system", namespace, name });
-    const contractData = getContractData(`${systemName}.sol`, systemName, forgeOutDir);
+  const configSystems = await resolveSystems({ rootDir, config });
+  const systemsManifest = await loadSystemsManifest({ rootDir, config });
 
-    const systemFunctions = contractData.abi
-      .filter((item): item is typeof item & { type: "function" } => item.type === "function")
-      .map(toFunctionSignature)
-      .filter((sig) => !baseSystemFunctions.includes(sig))
-      .map((sig): WorldFunction => {
-        // TODO: figure out how to not duplicate contract behavior (https://github.com/latticexyz/mud/issues/1708)
-        const worldSignature = namespace === "" ? sig : `${namespace}__${sig}`;
-        return {
-          signature: worldSignature,
-          selector: toFunctionSelector(worldSignature),
-          systemId,
-          systemFunctionSignature: sig,
-          systemFunctionSelector: toFunctionSelector(sig),
-        };
-      });
+  const systems = configSystems
+    .filter((system) => !system.deploy.disabled)
+    .map((system): System => {
+      const manifest = systemsManifest.systems.find(({ systemId }) => systemId === system.systemId);
+      if (!manifest) {
+        throw new Error(
+          `System "${system.label}" not found in systems manifest. Run \`mud build\` before trying again.`,
+        );
+      }
 
-    return {
-      namespace,
-      name,
-      systemId,
-      allowAll: system.openAccess,
-      allowedAddresses: system.accessListAddresses as Hex[],
-      allowedSystemIds: system.accessListSystems.map((name) =>
-        resourceToHex({ type: "system", namespace, name: resolvedConfig.systems[name].name }),
-      ),
-      prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
-      deployedBytecodeSize: contractData.deployedBytecodeSize,
-      abi: contractData.abi,
-      functions: systemFunctions,
-    };
-  });
+      const contractData = getContractData(`${system.label}.sol`, system.label, forgeOutDir);
+
+      // TODO: replace this with manifest
+      const worldFunctions = system.deploy.registerWorldFunctions
+        ? contractData.abi
+            .filter((item): item is typeof item & { type: "function" } => item.type === "function")
+            .map(toFunctionSignature)
+            .filter((sig) => !baseSystemFunctions.includes(sig))
+            .map((sig): WorldFunction => {
+              // TODO: figure out how to not duplicate contract behavior (https://github.com/latticexyz/mud/issues/1708)
+              const worldSignature = system.namespace === "" ? sig : `${system.namespace}__${sig}`;
+              return {
+                signature: worldSignature,
+                selector: toFunctionSelector(worldSignature),
+                systemId: system.systemId,
+                systemFunctionSignature: sig,
+                systemFunctionSelector: toFunctionSelector(sig),
+              };
+            })
+        : [];
+
+      // TODO: move to resolveSystems? or system manifest?
+      const allowedAddresses = system.accessList.filter((target): target is Hex => isHex(target));
+      const allowedSystemIds = system.accessList
+        .filter((target) => !isHex(target))
+        .map((label) => {
+          const system = configSystems.find((s) => s.label === label)!;
+          return system.systemId;
+        });
+
+      return {
+        ...system,
+        allowAll: system.openAccess,
+        allowedAddresses,
+        allowedSystemIds,
+        prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
+        deployedBytecodeSize: contractData.deployedBytecodeSize,
+        worldFunctions,
+        abi: manifest.abi,
+        worldAbi: manifest.worldAbi,
+      };
+    });
 
   // Check for overlapping system IDs (since names get truncated when turning into IDs)
   // TODO: move this into the world config resolve step once it resolves system IDs
@@ -97,7 +111,6 @@ export function resolveConfig<config extends ConfigInput>({
   }
 
   return {
-    tables,
     systems,
     libraries,
   };

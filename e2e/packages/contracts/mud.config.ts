@@ -58,6 +58,13 @@ export default defineWorld({
       key: [],
     },
   },
+  systems: {
+    HiddenSystem: {
+      deploy: {
+        registerWorldFunctions: false,
+      },
+    },
+  },
   modules: [
     {
       artifactPath:

@@ -1,12 +1,13 @@
-import { posixPath, renderList, renderedSolidityHeader } from "@latticexyz/common/codegen";
-import { TableOptions } from "./tableOptions";
+import { renderImportPath, renderList, renderedSolidityHeader } from "@latticexyz/common/codegen";
+import { TableOptions } from "./getTableOptions";
+import path from "node:path";
 
 /**
  * Returns Solidity code for table index file that imports all codegen tables
  * @param options table definitions
  * @returns string of Solidity code
  */
-export function renderTableIndex(options: TableOptions[]) {
+export function renderTableIndex(codegenIndexPath: string, options: TableOptions[]) {
   return `
     ${renderedSolidityHeader}
 
@@ -14,7 +15,7 @@ export function renderTableIndex(options: TableOptions[]) {
       const imports = [tableName];
       if (structName) imports.push(structName);
 
-      return `import { ${imports.join(", ")} } from "./${posixPath(outputPath)}";`;
+      return `import { ${imports.join(", ")} } from "${renderImportPath("./" + path.relative(path.dirname(codegenIndexPath), outputPath))}";`;
     })}
   `;
 }

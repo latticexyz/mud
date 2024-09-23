@@ -1,6 +1,5 @@
 import { findUp } from "find-up";
 import path from "path";
-import { NotInsideProjectError } from "../library/errors";
 import esbuild from "esbuild";
 import { rmSync } from "fs";
 import { pathToFileURL } from "url";
@@ -59,7 +58,7 @@ export async function resolveConfigPath(configPath?: string, toFileURL?: boolean
 async function getUserConfigPath() {
   const tsConfigPath = await findUp(configFiles);
   if (tsConfigPath === undefined) {
-    throw new NotInsideProjectError();
+    throw new Error("Did not find a `mud.config.ts` file. Are you inside a MUD project?");
   }
   return tsConfigPath;
 }

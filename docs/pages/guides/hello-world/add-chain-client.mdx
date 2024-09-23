@@ -1,0 +1,66 @@
+import { CollapseCode } from "../../../components/CollapseCode";
+
+# Add chains to the client
+
+In this tutorial you modify a template application to use a public blockchain instead of [`anvil`](https://book.getfoundry.sh/anvil/).
+Note that this is not required if you are going to use Lattice chains, [redstone](https://redstone.xyz/) and [garnet](https://garnetchain.com/)
+
+## Setup
+
+[Create a new MUD application from the template](../../templates/typescript/getting-started).
+Use the vanilla template.
+
+```sh copy
+pnpm create mud@latest tutorial --template vanilla
+cd tutorial
+```
+
+You can also use the `react-ecs` or `threejs` templates without any changes to the tutorial.
+If you wish to use the `react` template you'll need to modify a bit to account for the use of Zustand instead of RECs.
+
+## File changes
+
+You need to edit `supportedChains.ts`, and possibly also `setupNetwork.ts`.
+
+- Edit the file `packages/client/src/mud/supportedChains.ts` to add the chain definition from Viem.
+  You can see [the list of chains supported by Viem](https://github.com/wevm/viem/blob/main/src/chains/index.ts).
+  If you need a different chain you can use [`defineChain`](https://viem.sh/docs/chains/introduction#custom-chains).
+
+  ```ts filename="supportedChains.ts" copy showLineNumbers {2,4}
+  import { MUDChain, mudFoundry, redstone, garnet } from "@latticexyz/common/chains";
+  import { holesky } from "viem/chains";
+
+  export const supportedChains: MUDChain[] = [mudFoundry, redstone, garnet, holesky];
+  ```
+
+- If the chain object in Viem doesn't have a webSocket endpoint, only an HTTP one, you need to edit [`packages/client/src/mud/setupNetwork.ts`](https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/client/src/mud/setupNetwork.ts#L47) to only use a webSocket endpoint when one is defined.
+  You might also wish to deal with the possibility you only have a webSocket endpoint defined, depending on the chains you support.
+
+## Use the application
+
+When you run the client, set two parameters:
+
+- `chainId`, the chain ID. You can set this information in the URL, or in the vite environment as `VITE_CHAIN_ID`.
+- `initialBlockNumber`, the block number where the `World` contract was first deployed.
+  Without this value, the client will try to synchronize from the beginning of the blockchain, which could take a long time.
+  You can set this value either in the URL, or the `worlds.json` file (as `blockNumber`).
+
+For example, to connect to the Holesky `World` at address [`0x78900cc99939b24a95b2892961ad0c701df97993`](https://eth-holesky.blockscout.com/address/0x78900cc99939b24a95b2892961ad0c701df97993?tab=contract_code), which contains [the standard contract code](/templates/typescript/contracts), you use this URL:
+
+```url
+http://localhost:3000/?chainid=17000
+```
+
+And this file in `packages/contracts/worlds.json`:
+
+```json
+{
+  "31337": {
+    "address": "0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b"
+  },
+  "17000": {
+    "address": "0x78900cc99939b24a95b2892961ad0c701df97993",
+    "blockNumber": 1844083
+  }
+}
+```

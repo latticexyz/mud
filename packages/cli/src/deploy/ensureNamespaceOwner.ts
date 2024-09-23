@@ -1,9 +1,10 @@
 import { Account, Chain, Client, Hex, Transport, getAddress } from "viem";
-import { WorldDeploy, worldAbi, worldTables } from "./common";
+import { WorldDeploy, worldAbi } from "./common";
 import { hexToResource, resourceToHex, writeContract } from "@latticexyz/common";
 import { getResourceIds } from "./getResourceIds";
 import { getTableValue } from "./getTableValue";
 import { debug } from "./debug";
+import worldConfig from "@latticexyz/world/mud.config";
 
 export async function ensureNamespaceOwner({
   client,
@@ -35,7 +36,7 @@ export async function ensureNamespaceOwner({
       const { owner } = await getTableValue({
         client,
         worldDeploy,
-        table: worldTables.world_NamespaceOwner,
+        table: worldConfig.namespaces.world.tables.NamespaceOwner,
         key: { namespaceId: resourceToHex({ type: "namespace", namespace, name: "" }) },
       });
       return [namespace, owner];
@@ -53,7 +54,7 @@ export async function ensureNamespaceOwner({
   // Register missing namespaces
   const missingNamespaces = desiredNamespaces.filter((namespace) => !existingNamespaces.has(namespace));
   if (missingNamespaces.length > 0) {
-    debug("registering namespaces", Array.from(missingNamespaces).join(", "));
+    debug("registering namespaces:", Array.from(missingNamespaces).join(", "));
   }
   const registrationTxs = Promise.all(
     missingNamespaces.map((namespace) =>

@@ -1,1 +1,3 @@
-export { setup, cleanup as teardown } from "@arktype/attest";
+import { setup } from "@ark/attest";
+
+export default () => setup({ updateSnapshots: true });

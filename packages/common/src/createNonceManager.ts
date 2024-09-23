@@ -9,7 +9,6 @@ const debug = parentDebug.extend("createNonceManager");
 
 export type CreateNonceManagerOptions = {
   client: Client;
-  chainId?: number;
   address: Hex;
   blockTag?: BlockTag;
   broadcastChannelName?: string;
@@ -27,51 +26,53 @@ export type CreateNonceManagerResult = {
 
 export function createNonceManager({
   client,
-  chainId,
   address, // TODO: rename to account?
-  blockTag = "pending",
+  blockTag = "latest",
   broadcastChannelName,
   queueConcurrency = 1,
 }: CreateNonceManagerOptions): CreateNonceManagerResult {
-  const nonceRef = { current: -1 };
+  const ref = { nonce: -1, noncePromise: null as Promise<void> | null };
   let channel: BroadcastChannel | null = null;
 
   if (typeof BroadcastChannel !== "undefined") {
     const channelName = broadcastChannelName
       ? Promise.resolve(broadcastChannelName)
-      : getNonceManagerId({ client, chainId, address, blockTag });
+      : getNonceManagerId({ client, address, blockTag });
     channelName.then((name) => {
       channel = new BroadcastChannel(name);
       // TODO: emit some sort of "connected" event so other channels can broadcast current nonce
       channel.addEventListener("message", (event) => {
         const nonce = JSON.parse(event.data);
         debug("got nonce from broadcast channel", nonce);
-        nonceRef.current = nonce;
+        ref.nonce = nonce;
       });
     });
   }
 
   function hasNonce(): boolean {
-    return nonceRef.current >= 0;
+    return ref.nonce >= 0;
   }
 
   function getNonce(): number {
     if (!hasNonce()) throw new Error("call resetNonce before using getNonce");
-    return nonceRef.current;
+    return ref.nonce;
   }
 
   function nextNonce(): number {
     if (!hasNonce()) throw new Error("call resetNonce before using nextNonce");
-    const nonce = nonceRef.current++;
-    channel?.postMessage(JSON.stringify(nonceRef.current));
+    const nonce = ref.nonce++;
+    channel?.postMessage(JSON.stringify(ref.nonce));
     return nonce;
   }
 
   async function resetNonce(): Promise<void> {
-    const nonce = await getAction(client, getTransactionCount, "getTransactionCount")({ address, blockTag });
-    nonceRef.current = nonce;
-    channel?.postMessage(JSON.stringify(nonceRef.current));
-    debug("reset nonce to", nonceRef.current);
+    ref.noncePromise ??= (async (): Promise<void> => {
+      ref.nonce = await getAction(client, getTransactionCount, "getTransactionCount")({ address, blockTag });
+      ref.noncePromise = null;
+      channel?.postMessage(JSON.stringify(ref.nonce));
+      debug("reset nonce to", ref.nonce);
+    })();
+    await ref.noncePromise;
   }
 
   function shouldResetNonce(error: unknown): boolean {

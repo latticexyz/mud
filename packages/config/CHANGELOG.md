@@ -1,5 +1,121 @@
 # Change Log
 
+## 2.2.8
+
+### Patch Changes
+
+- Updated dependencies [7c7bdb2]
+  - @latticexyz/common@2.2.8
+  - @latticexyz/schema-type@2.2.8
+
+## 2.2.7
+
+### Patch Changes
+
+- @latticexyz/common@2.2.7
+- @latticexyz/schema-type@2.2.7
+
+## 2.2.6
+
+### Patch Changes
+
+- @latticexyz/common@2.2.6
+- @latticexyz/schema-type@2.2.6
+
+## 2.2.5
+
+### Patch Changes
+
+- @latticexyz/common@2.2.5
+- @latticexyz/schema-type@2.2.5
+
+## 2.2.4
+
+### Patch Changes
+
+- 50010fb: Bumped viem, wagmi, and abitype packages to their latest release.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.6 wagmi@2.12.11 @wagmi/core@2.13.5 abitype@1.0.6
+  ```
+
+- Updated dependencies [2f935cf]
+- Updated dependencies [50010fb]
+  - @latticexyz/common@2.2.4
+  - @latticexyz/schema-type@2.2.4
+
+## 2.2.3
+
+### Patch Changes
+
+- @latticexyz/common@2.2.3
+- @latticexyz/schema-type@2.2.3
+
+## 2.2.2
+
+### Patch Changes
+
+- @latticexyz/common@2.2.2
+- @latticexyz/schema-type@2.2.2
+
+## 2.2.1
+
+### Patch Changes
+
+- Updated dependencies [c0764a5]
+  - @latticexyz/common@2.2.1
+  - @latticexyz/schema-type@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- 04c675c: Fixed a few type issues with `namespaceLabel` in tables and added/clarified TSDoc for config input/output objects.
+- Updated dependencies [69cd0a1]
+  - @latticexyz/common@2.2.0
+  - @latticexyz/schema-type@2.2.0
+
+## 2.1.1
+
+### Patch Changes
+
+- 9e21e42: Bumped viem to `2.19.8` and abitype to `1.0.5`.
+
+  MUD projects using viem or abitype should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.19.8 abitype@1.0.5
+  ```
+
+- 57bf8c3: Add a strongly typed `namespaceLabel` to the table config output.
+  It corresponds to the `label` of the namespace the table belongs to and can't be set manually.
+- Updated dependencies [9e21e42]
+- Updated dependencies [2daaab1]
+  - @latticexyz/common@2.1.1
+  - @latticexyz/schema-type@2.1.1
+
+## 2.1.0
+
+### Minor Changes
+
+- e85dc53: Tables and systems in config output now include a `label` property. Labels are now used throughout the codebase as a user-friendly way to reference the given resource: config keys, contract names, generated libraries, etc.
+
+  Inside `namespaces` config output, keys for tables and systems and their filenames will always correspond to their labels. This should make MUD tooling more intuitive and predictable. For backwards compatibility, `tables` config output still uses namespace-prefixed keys.
+
+  Labels replace the previous resource `name` usage, which is truncated to `bytes16` to be used as part of the resource ID and, in the future, may not always be human-readable.
+
+  These labels will soon be registered onchain so that developers can initialize a new MUD project from an existing world, generating config and interfaces with user-friendly names.
+
+### Patch Changes
+
+- 7129a16: Bumped `@arktype/util` and moved `evaluate`/`satisfy` usages to its `show`/`satisfy` helpers.
+- Updated dependencies [7129a16]
+- Updated dependencies [8d0453e]
+  - @latticexyz/common@2.1.0
+  - @latticexyz/schema-type@2.1.0
+
 ## 2.0.12
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/config",
-  "version": "2.0.12",
+  "version": "2.2.8",
   "description": "Config for Store and World",
   "repository": {
     "type": "git",
@@ -12,8 +12,6 @@
   "exports": {
     ".": "./dist/index.js",
     "./internal": "./dist/internal.js",
-    "./library": "./dist/deprecated/library.js",
-    "./register": "./dist/deprecated/register.js",
     "./node": "./dist/deprecated/node.js"
   },
   "typesVersions": {
@@ -23,12 +21,6 @@
       ],
       "internal": [
         "./dist/internal.d.ts"
-      ],
-      "library": [
-        "./dist/deprecated/library.d.ts"
-      ],
-      "register": [
-        "./dist/deprecated/register.d.ts"
       ],
       "node": [
         "./dist/deprecated/node.d.ts"
@@ -42,20 +34,18 @@
     "build": "pnpm run build:js",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
-    "clean:js": "rimraf dist",
+    "clean:js": "shx rm -rf dist",
     "dev": "tsup --watch",
     "test": "tsc --noEmit",
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@arktype/util": "0.0.40",
+    "@ark/util": "catalog:",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "esbuild": "^0.17.15",
     "find-up": "^6.3.0",
-    "viem": "2.9.20",
-    "zod": "^3.22.2",
-    "zod-validation-error": "^1.3.0"
+    "viem": "catalog:"
   },
   "devDependencies": {
     "tsup": "^6.7.0"

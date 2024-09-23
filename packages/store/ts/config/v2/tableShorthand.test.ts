@@ -1,7 +1,7 @@
 import { describe, it } from "vitest";
-import { attest } from "@arktype/attest";
+import { attest } from "@ark/attest";
 import { AbiTypeScope, extendScope } from "./scope";
-import { defineTableShorthand, NoStaticKeyFieldError } from "./tableShorthand";
+import { NoStaticKeyFieldError, defineTableShorthand } from "./tableShorthand";
 
 describe("defineTableShorthand", () => {
   it("should expand a single ABI type into a id/value schema", () => {

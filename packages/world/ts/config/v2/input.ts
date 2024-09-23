@@ -1,25 +1,48 @@
-import { show } from "@arktype/util";
-import { StoreInput, StoreWithShorthandsInput } from "@latticexyz/store/config/v2";
+import { StoreInput, NamespaceInput as StoreNamespaceInput } from "@latticexyz/store/config/v2";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
+import { Codegen, SystemDeploy } from "./output";
+
+export type SystemDeployInput = Partial<SystemDeploy>;
 
 export type SystemInput = {
-  /** The full resource selector consists of namespace and name */
-  name?: string;
   /**
-   * Register function selectors for the system in the World.
-   * Defaults to true.
-   * Note:
-   * - For root systems all World function selectors will correspond to the system's function selectors.
-   * - For non-root systems, the World function selectors will be <namespace>__<function>.
+   * Human-readable system label. Used as config keys, interface names, and filenames.
+   * Labels are not length constrained like resource names, but special characters should be avoided to be compatible with the filesystem, Solidity compiler, etc.
    */
-  registerFunctionSelectors?: boolean;
+  readonly label: string;
+  /**
+   * Human-readable label for this system's namespace. Used for namespace config keys and directory names.
+   * Defaults to the nearest namespace in the config or root namespace if not set.
+   */
+  readonly namespaceLabel?: string;
+  /**
+   * System namespace used in systems's resource ID and determines access control.
+   * Defaults to the nearest namespace in the config or root namespace if not set.
+   */
+  readonly namespace?: string;
+  /**
+   * System name used in systems's resource ID.
+   * Defaults to the first 16 characters of `label` if not set.
+   */
+  readonly name?: string;
   /** If openAccess is true, any address can call the system */
-  openAccess?: boolean;
+  readonly openAccess?: boolean;
   /** An array of addresses or system names that can access the system */
-  accessList?: readonly string[];
+  readonly accessList?: readonly string[];
+  readonly deploy?: SystemDeployInput;
 };
 
-export type SystemsInput = { [key: string]: SystemInput };
+export type SystemsInput = {
+  readonly [label: string]: Omit<SystemInput, "label" | "namespaceLabel" | "namespace">;
+};
+
+export type NamespaceInput = StoreNamespaceInput & {
+  readonly systems?: SystemsInput;
+};
+
+export type NamespacesInput = {
+  readonly [label: string]: Omit<NamespaceInput, "label">;
+};
 
 type ModuleInputArtifactPath =
   | {
@@ -46,7 +69,7 @@ export type ModuleInput = ModuleInputArtifactPath & {
   /**
    * Should this module be installed as a root module?
    * @default false
-   * */
+   */
   readonly root?: boolean;
   /** Arguments to be passed to the module's install method */
   // TODO: make more strongly typed by taking in tables input
@@ -54,57 +77,51 @@ export type ModuleInput = ModuleInputArtifactPath & {
 };
 
 export type DeployInput = {
-  /** The name of a custom World contract to deploy. If no name is provided, a default MUD World is deployed. */
-  // TODO: implement
-  customWorldContract?: never;
   /**
    * Script to execute after the deployment is complete (Default "PostDeploy").
    * Script must be placed in the forge scripts directory (see foundry.toml) and have a ".s.sol" extension.
    */
-  postDeployScript?: string;
+  readonly postDeployScript?: string;
   /** Directory to write the deployment info to (Default "./deploys") */
-  deploysDirectory?: string;
+  readonly deploysDirectory?: string;
   /** JSON file to write to with chain -> latest world deploy address (Default "./worlds.json") */
-  worldsFile?: string;
+  readonly worldsFile?: string;
   /** Deploy the World as an upgradeable proxy */
-  upgradeableWorldImplementation?: boolean;
+  readonly upgradeableWorldImplementation?: boolean;
+  /**
+   * Deploy the World using a custom implementation. This world must implement the same interface as `World.sol` so that it can initialize core modules, etc.
+   * If you want to extend the world with new functions or override existing registered functions, we recommend using [root systems](https://mud.dev/world/systems#root-systems).
+   * However, there are rare cases where this may not be enough to modify the native/internal World behavior.
+   * Note that deploying a custom World opts out of the world factory, deterministic world deploys, and upgradeable implementation proxy.
+   */
+  // TODO: enforce that this can't be used with `upgradeableWorldImplementation` (https://github.com/latticexyz/mud/issues/3151)
+  readonly customWorld?: {
+    /** Path to custom world source file relative to project root dir. */
+    sourcePath: string;
+    /** Contract name in custom world source file. */
+    name: string;
+    // TODO: constructor calldata (https://github.com/latticexyz/mud/issues/3150)
+  };
 };
 
-export type CodegenInput = {
-  /** The name of the World interface to generate. (Default `IWorld`) */
-  worldInterfaceName?: string;
-  /** Directory to output system and world interfaces of `worldgen` (Default "world") */
-  worldgenDirectory?: string;
-  /** Path for world package imports. Default is "@latticexyz/world/src/" */
-  worldImportPath?: string;
+export type CodegenInput = Partial<Codegen>;
+
+export type WorldInput = Omit<StoreInput, "namespaces"> & {
+  readonly namespaces?: NamespacesInput;
+  /**
+   * Contracts named *System will be deployed by default
+   * as public systems at `namespace/ContractName`, unless overridden
+   *
+   * The key is the system name (capitalized).
+   * The value is a SystemConfig object.
+   */
+  readonly systems?: SystemsInput;
+  /** System names to exclude from codegen and deployment */
+  readonly excludeSystems?: readonly string[];
+  /** Modules to install in the World */
+  readonly modules?: readonly ModuleInput[];
+  /** Deploy config */
+  readonly deploy?: DeployInput;
+  /** Codegen config */
+  readonly codegen?: CodegenInput;
 };
-
-export type WorldInput = show<
-  StoreInput & {
-    namespaces?: NamespacesInput;
-    /**
-     * Contracts named *System will be deployed by default
-     * as public systems at `namespace/ContractName`, unless overridden
-     *
-     * The key is the system name (capitalized).
-     * The value is a SystemConfig object.
-     */
-    systems?: SystemsInput;
-    /** System names to exclude from automatic deployment */
-    excludeSystems?: readonly string[];
-    /** Modules to in the World */
-    modules?: readonly ModuleInput[];
-    /** Deploy config */
-    deploy?: DeployInput;
-    /** Codegen config */
-    codegen?: CodegenInput;
-  }
->;
-
-export type NamespacesInput = { [label: string]: NamespaceInput };
-
-export type NamespaceInput = Pick<StoreInput, "tables">;
-
-/******** Variations with shorthands ********/
-
-export type WorldWithShorthandsInput = Omit<WorldInput, "tables"> & Pick<StoreWithShorthandsInput, "tables">;

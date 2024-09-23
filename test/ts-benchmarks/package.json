@@ -1,0 +1,19 @@
+{
+  "name": "ts-benchmarks",
+  "version": "2.2.8",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "bench": "tsx ./bench",
+    "test": "pnpm run bench",
+    "test:ci": "pnpm run test"
+  },
+  "devDependencies": {
+    "@latticexyz/recs": "workspace:*",
+    "@latticexyz/store-sync": "workspace:*",
+    "@latticexyz/world": "workspace:*",
+    "tsx": "4.16.2",
+    "viem": "catalog:",
+    "vite": "^4.2.1"
+  }
+}

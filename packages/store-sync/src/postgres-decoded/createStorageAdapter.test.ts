@@ -91,10 +91,18 @@ describe("createStorageAdapter", async () => {
       [
         {
           "address": "0x7C78d585F136d7247f9deA68f60CE8A2D3F311E2",
+          "key": [],
           "keySchema": {},
           "name": "NumberList",
           "namespace": "",
+          "schema": {
+            "value": {
+              "internalType": "uint32[]",
+              "type": "uint32[]",
+            },
+          },
           "tableId": "0x746200000000000000000000000000004e756d6265724c697374000000000000",
+          "type": "table",
           "valueSchema": {
             "value": "uint32[]",
           },

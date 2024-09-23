@@ -1,0 +1,12 @@
+out/
+cache/
+node_modules/
+bindings/
+artifacts/
+broadcast/
+
+pnpm-lock.yaml
+
+# Ignore MUD deploy artifacts
+deploys/**/*.json
+worlds.json

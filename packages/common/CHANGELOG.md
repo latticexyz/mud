@@ -1,5 +1,105 @@
 # Change Log
 
+## 2.2.8
+
+### Patch Changes
+
+- 7c7bdb2: Removed unused generics and ensure that we're only passing around the generics we need, when we need them. Hopefully this improves TS performance in MUD projects.
+  - @latticexyz/schema-type@2.2.8
+
+## 2.2.7
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.7
+
+## 2.2.6
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.6
+
+## 2.2.5
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.5
+
+## 2.2.4
+
+### Patch Changes
+
+- 2f935cf: To reset an account's nonce, the nonce manager uses the [`eth_getTransactionCount`](https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_gettransactioncount) RPC method,
+  which returns the number of transactions sent from the account.
+  When using the `pending` block tag, this includes transactions in the mempool that have not been included in a block yet.
+  If an account submits a transaction with a nonce higher than the next valid nonce, this transaction will stay in the mempool until the nonce gap is closed and the transactions nonce is the next valid nonce.
+  This means if an account has gapped transactions "stuck in the mempool", the `eth_getTransactionCount` method with `pending` block tag can't be used to get the next valid nonce
+  (since it includes the number of transactions stuck in the mempool).
+  Since the nonce manager only resets the nonce on reload or in case of a nonce error, using the `latest` block tag by default is the safer choice to be able to recover from nonce gaps.
+
+  Note that this change may reveal more "transaction underpriced" errors than before. These errors will now be retried automatically and should go through after the next block is mined.
+
+- 50010fb: Bumped viem, wagmi, and abitype packages to their latest release.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.6 wagmi@2.12.11 @wagmi/core@2.13.5 abitype@1.0.6
+  ```
+
+- Updated dependencies [50010fb]
+  - @latticexyz/schema-type@2.2.4
+
+## 2.2.3
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.3
+
+## 2.2.2
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.2
+
+## 2.2.1
+
+### Patch Changes
+
+- c0764a5: `writeContract` and `sendTransaction` actions now use `pending` block tag when estimating gas. This aligns with previous behavior before changes in the last version.
+  - @latticexyz/schema-type@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- 69cd0a1: Updated all custom Viem actions to properly call other actions via `getAction` so they can be composed.
+  - @latticexyz/schema-type@2.2.0
+
+## 2.1.1
+
+### Patch Changes
+
+- 9e21e42: Bumped viem to `2.19.8` and abitype to `1.0.5`.
+
+  MUD projects using viem or abitype should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.19.8 abitype@1.0.5
+  ```
+
+- 2daaab1: Refactored `writeContract` and `sendTransaction` actions for simplicity and better error messages.
+- Updated dependencies [9e21e42]
+  - @latticexyz/schema-type@2.1.1
+
+## 2.1.0
+
+### Patch Changes
+
+- 7129a16: Removed `evaluate` and `satisfy` type utils in favor of `show` and `satisfy` from `@arktype/util`.
+- 8d0453e: `resourceToHex` will now throw if provided namespace is >14 characters. Since namespaces are used to determine access control, it's not safe to automatically truncate to fit into `bytes14` as that may change the indended namespace for resource access.
+  - @latticexyz/schema-type@2.1.0
+
 ## 2.0.12
 
 ### Patch Changes

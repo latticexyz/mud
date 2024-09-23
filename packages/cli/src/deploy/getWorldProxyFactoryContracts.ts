@@ -20,7 +20,7 @@ export function getWorldProxyFactoryContracts(deployerAddress: Hex) {
     WorldProxyFactory: {
       bytecode: worldProxyFactoryBytecode,
       deployedBytecodeSize: worldProxyFactoryDeployedBytecodeSize,
-      label: "world proxy factory",
+      debugLabel: "world proxy factory",
       address: worldProxyFactory,
     },
   };

@@ -1,25 +1,34 @@
-import { Account, Address, Chain, Client, Hex, Transport } from "viem";
+import { Account, Address, Chain, Client, Hex, Transport, stringToHex } from "viem";
 import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
-import { Config, ConfigInput, Module, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
+import { Library, Module, System, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
 import { ensureSystems } from "./ensureSystems";
-import { waitForTransactionReceipt } from "viem/actions";
 import { getWorldDeploy } from "./getWorldDeploy";
 import { ensureFunctions } from "./ensureFunctions";
 import { ensureModules } from "./ensureModules";
-import { Table } from "./configToTables";
 import { ensureNamespaceOwner } from "./ensureNamespaceOwner";
 import { debug } from "./debug";
-import { resourceToLabel } from "@latticexyz/common";
+import { resourceToHex, resourceToLabel } from "@latticexyz/common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";
-import { ensureWorldFactory } from "./ensureWorldFactory";
+import { Table } from "@latticexyz/config";
+import { ensureResourceTags } from "./ensureResourceTags";
+import { waitForTransactions } from "./waitForTransactions";
+import { ContractArtifact } from "@latticexyz/world/node";
+import { World } from "@latticexyz/world";
+import { deployCustomWorld } from "./deployCustomWorld";
+import { uniqueBy } from "@latticexyz/common/utils";
+import { getLibraryMap } from "./getLibraryMap";
 
-type DeployOptions<configInput extends ConfigInput> = {
+type DeployOptions = {
+  config: World;
   client: Client<Transport, Chain | undefined, Account>;
-  config: Config<configInput>;
+  tables: readonly Table[];
+  systems: readonly System[];
+  libraries: readonly Library[];
   modules?: readonly Module[];
+  artifacts: readonly ContractArtifact[];
   salt?: Hex;
   worldAddress?: Address;
   /**
@@ -38,47 +47,35 @@ type DeployOptions<configInput extends ConfigInput> = {
  * amount of work to make the world match the config (e.g. deploy new tables,
  * replace systems, etc.)
  */
-export async function deploy<configInput extends ConfigInput>({
-  client,
+export async function deploy({
   config,
+  client,
+  tables,
+  systems,
+  libraries,
   modules = [],
+  artifacts,
   salt,
   worldAddress: existingWorldAddress,
   deployerAddress: initialDeployerAddress,
-  withWorldProxy,
-}: DeployOptions<configInput>): Promise<WorldDeploy> {
-  const tables = Object.values(config.tables) as Table[];
-
+}: DeployOptions): Promise<WorldDeploy> {
   const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
-
-  await ensureWorldFactory(client, deployerAddress, withWorldProxy);
-
-  // deploy all dependent contracts, because system registration, module install, etc. all expect these contracts to be callable.
-  await ensureContractsDeployed({
-    client,
-    deployerAddress,
-    contracts: [
-      ...config.libraries.map((library) => ({
-        bytecode: library.prepareDeploy(deployerAddress, config.libraries).bytecode,
-        deployedBytecodeSize: library.deployedBytecodeSize,
-        label: `${library.path}:${library.name} library`,
-      })),
-      ...config.systems.map((system) => ({
-        bytecode: system.prepareDeploy(deployerAddress, config.libraries).bytecode,
-        deployedBytecodeSize: system.deployedBytecodeSize,
-        label: `${resourceToLabel(system)} system`,
-      })),
-      ...modules.map((mod) => ({
-        bytecode: mod.prepareDeploy(deployerAddress, config.libraries).bytecode,
-        deployedBytecodeSize: mod.deployedBytecodeSize,
-        label: `${mod.name} module`,
-      })),
-    ],
-  });
 
   const worldDeploy = existingWorldAddress
     ? await getWorldDeploy(client, existingWorldAddress)
-    : await deployWorld(client, deployerAddress, salt ?? `0x${randomBytes(32).toString("hex")}`, withWorldProxy);
+    : config.deploy.customWorld
+      ? await deployCustomWorld({
+          client,
+          deployerAddress,
+          artifacts,
+          customWorld: config.deploy.customWorld,
+        })
+      : await deployWorld(
+          client,
+          deployerAddress,
+          salt ?? `0x${randomBytes(32).toString("hex")}`,
+          config.deploy.upgradeableWorldImplementation,
+        );
 
   if (!supportedStoreVersions.includes(worldDeploy.storeVersion)) {
     throw new Error(`Unsupported Store version: ${worldDeploy.storeVersion}`);
@@ -87,16 +84,37 @@ export async function deploy<configInput extends ConfigInput>({
     throw new Error(`Unsupported World version: ${worldDeploy.worldVersion}`);
   }
 
+  const libraryMap = getLibraryMap(libraries);
+  await ensureContractsDeployed({
+    client,
+    deployerAddress,
+    contracts: [
+      ...libraries.map((library) => ({
+        bytecode: library.prepareDeploy(deployerAddress, libraryMap).bytecode,
+        deployedBytecodeSize: library.deployedBytecodeSize,
+        debugLabel: `${library.path}:${library.name} library`,
+      })),
+      ...systems.map((system) => ({
+        bytecode: system.prepareDeploy(deployerAddress, libraryMap).bytecode,
+        deployedBytecodeSize: system.deployedBytecodeSize,
+        debugLabel: `${resourceToLabel(system)} system`,
+      })),
+      ...modules.map((mod) => ({
+        bytecode: mod.prepareDeploy(deployerAddress, libraryMap).bytecode,
+        deployedBytecodeSize: mod.deployedBytecodeSize,
+        debugLabel: `${mod.name} module`,
+      })),
+    ],
+  });
+
   const namespaceTxs = await ensureNamespaceOwner({
     client,
     worldDeploy,
-    resourceIds: [...tables.map((table) => table.tableId), ...config.systems.map((system) => system.systemId)],
+    resourceIds: [...tables.map(({ tableId }) => tableId), ...systems.map(({ systemId }) => systemId)],
   });
-
-  debug("waiting for all namespace registration transactions to confirm");
-  for (const tx of namespaceTxs) {
-    await waitForTransactionReceipt(client, { hash: tx });
-  }
+  // Wait for namespaces to be available, otherwise referencing them below may fail.
+  // This is only here because OPStack chains don't let us estimate gas with pending block tag.
+  await waitForTransactions({ client, hashes: namespaceTxs, debugLabel: "namespace registrations" });
 
   const tableTxs = await ensureTables({
     client,
@@ -106,31 +124,69 @@ export async function deploy<configInput extends ConfigInput>({
   const systemTxs = await ensureSystems({
     client,
     deployerAddress,
-    libraries: config.libraries,
+    libraryMap,
     worldDeploy,
-    systems: config.systems,
+    systems,
   });
+  // Wait for tables and systems to be available, otherwise referencing their resource IDs below may fail.
+  // This is only here because OPStack chains don't let us estimate gas with pending block tag.
+  await waitForTransactions({
+    client,
+    hashes: [...tableTxs, ...systemTxs],
+    debugLabel: "table and system registrations",
+  });
+
   const functionTxs = await ensureFunctions({
     client,
     worldDeploy,
-    functions: config.systems.flatMap((system) => system.functions),
+    functions: systems.flatMap((system) => system.worldFunctions),
   });
   const moduleTxs = await ensureModules({
     client,
     deployerAddress,
-    libraries: config.libraries,
+    libraryMap,
     worldDeploy,
     modules,
   });
 
-  const txs = [...tableTxs, ...systemTxs, ...functionTxs, ...moduleTxs];
+  const namespaceTags = uniqueBy(
+    [...tables, ...systems]
+      // only register labels if they differ from the resource ID
+      .filter(({ namespace, namespaceLabel }) => namespaceLabel !== namespace)
+      .map(({ namespace, namespaceLabel }) => ({
+        resourceId: resourceToHex({ type: "namespace", namespace, name: "" }),
+        tag: "label",
+        value: namespaceLabel,
+      })),
+    (tag) => tag.resourceId,
+  );
 
-  // wait for each tx separately/serially, because parallelizing results in RPC errors
-  debug("waiting for all transactions to confirm");
-  for (const tx of txs) {
-    await waitForTransactionReceipt(client, { hash: tx });
-    // TODO: throw if there was a revert?
-  }
+  const tableTags = tables
+    // only register labels if they differ from the resource ID
+    .filter((table) => table.label !== table.name)
+    .map(({ tableId: resourceId, label }) => ({ resourceId, tag: "label", value: label }));
+
+  const systemTags = systems.flatMap(({ name, systemId: resourceId, label, abi, worldAbi }) => [
+    // only register labels if they differ from the resource ID
+    ...(label !== name ? [{ resourceId, tag: "label", value: label }] : []),
+    { resourceId, tag: "abi", value: abi.join("\n") },
+    { resourceId, tag: "worldAbi", value: worldAbi.join("\n") },
+  ]);
+
+  const tagTxs = await ensureResourceTags({
+    client,
+    deployerAddress,
+    libraryMap,
+    worldDeploy,
+    tags: [...namespaceTags, ...tableTags, ...systemTags],
+    valueToHex: stringToHex,
+  });
+
+  await waitForTransactions({
+    client,
+    hashes: [...functionTxs, ...moduleTxs, ...tagTxs],
+    debugLabel: "remaining transactions",
+  });
 
   debug("deploy complete");
   return worldDeploy;

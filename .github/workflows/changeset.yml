@@ -1,0 +1,22 @@
+name: Changeset
+
+on:
+  pull_request:
+    paths:
+      - ".changeset/*.md"
+
+jobs:
+  changeset:
+    name: Validate changeset
+    runs-on: depot-ubuntu-22.04-16
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Changeset
+        run: pnpm changeset status --since origin/main

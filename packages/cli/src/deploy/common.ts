@@ -1,23 +1,13 @@
 import { Abi, Address, Hex, padHex } from "viem";
-import storeConfig from "@latticexyz/store/mud.config";
-import worldConfig from "@latticexyz/world/mud.config";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
-import { Tables, configToTables } from "./configToTables";
 import { helloStoreEvent } from "@latticexyz/store";
-import { StoreConfig } from "@latticexyz/store/internal";
 import { helloWorldEvent } from "@latticexyz/world";
-import { WorldConfig } from "@latticexyz/world/internal";
-import { storeToV1 } from "@latticexyz/store/config/v2";
-import { worldToV1 } from "@latticexyz/world/config/v2";
+import { LibraryMap } from "./getLibraryMap";
 
 export const salt = padHex("0x", { size: 32 });
 
 // https://eips.ethereum.org/EIPS/eip-170
 export const contractSizeLimit = parseInt("6000", 16);
-
-// TODO: add `as const` to mud config so these get more strongly typed (blocked by current config parsing not using readonly)
-export const storeTables = configToTables(storeToV1(storeConfig));
-export const worldTables = configToTables(worldToV1(worldConfig));
 
 export const worldDeployEvents = [helloStoreEvent, helloWorldEvent] as const;
 
@@ -72,7 +62,7 @@ export type LibraryPlaceholder = {
 export type DeterministicContract = {
   readonly prepareDeploy: (
     deployer: Address,
-    libraries: readonly Library[],
+    libraryMap?: LibraryMap,
   ) => {
     readonly address: Address;
     readonly bytecode: Hex;
@@ -93,16 +83,29 @@ export type Library = DeterministicContract & {
 };
 
 export type System = DeterministicContract & {
+  // labels
+  readonly label: string;
+  readonly namespaceLabel: string;
+  // resource ID
   readonly namespace: string;
   readonly name: string;
   readonly systemId: Hex;
+  // access
   readonly allowAll: boolean;
   readonly allowedAddresses: readonly Hex[];
   readonly allowedSystemIds: readonly Hex[];
-  readonly functions: readonly WorldFunction[];
+  // world registration
+  // TODO: replace this with system manifest data
+  readonly worldFunctions: readonly WorldFunction[];
+  // human readable ABIs to register onchain
+  readonly abi: readonly string[];
+  readonly worldAbi: readonly string[];
 };
 
-export type DeployedSystem = Omit<System, "abi" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"> & {
+export type DeployedSystem = Omit<
+  System,
+  "label" | "namespaceLabel" | "abi" | "worldAbi" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"
+> & {
   address: Address;
 };
 
@@ -110,11 +113,9 @@ export type Module = DeterministicContract & {
   readonly name: string;
   readonly installAsRoot: boolean;
   readonly installData: Hex; // TODO: figure out better naming for this
-};
-
-export type ConfigInput = StoreConfig & WorldConfig;
-export type Config<config extends ConfigInput> = {
-  readonly tables: Tables<config>;
-  readonly systems: readonly System[];
-  readonly libraries: readonly Library[];
+  /**
+   * @internal
+   * Optional modules warn instead of throw if they revert while being installed.
+   */
+  readonly optional?: boolean;
 };

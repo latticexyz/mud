@@ -1,0 +1,116 @@
+import { Tabs, Tab } from "nextra/components";
+import { CollapseCode } from "../components/CollapseCode";
+
+# World Explorer
+
+World Explorer is a GUI tool designed for visually exploring and manipulating the state of worlds.
+It is available in the MUD TypeScript templates starting with version 2.2.
+
+## Usage
+
+If you are running locally a MUD TypeScript template version 2.2 or later, the URL for World Explorer is [http://localhost:13690](http://localhost:13690).
+
+<Tabs items={["Data Explorer", "Interact"]}>
+  <Tab>
+    <iframe
+      width="761"
+      height="523"
+      src="https://www.youtube.com/embed/87wuGFH9Pz0"
+      title="Using the MUD Data Explorer"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      referrerpolicy="strict-origin-when-cross-origin"
+      allowfullscreen
+    ></iframe>
+  </Tab>
+  <Tab>
+    <iframe
+      width="761"
+      height="523"
+      src="https://www.youtube.com/embed/87wuGFH9Pz0?t=281https://www.youtube.com/embed/87wuGFH9Pz0?si=EsgcYGK9qk6J-Xvs&amp;start=281"
+      title="Using the MUD Data Explorer's Interact tab"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      referrerpolicy="strict-origin-when-cross-origin"
+      allowfullscreen
+    ></iframe>
+  </Tab>
+</Tabs>
+
+### CLI options
+
+To use the explorer with different command-line options, use this process:
+
+1. In the mprocs screen, go down to the **explorer** process.
+
+1. Type `x` to stop the default explorer.
+
+1. In a different command-line window, go to `packages/contract`.
+
+1. Run the explorer using `pnpm explorer <options>`.
+
+The World Explorer accepts the following CLI arguments:
+
+| Argument          | Description                                                         | Default value |
+| ----------------- | ------------------------------------------------------------------- | ------------- |
+| `worldAddress`    | The address of the world to explore                                 | None          |
+| `worldsFile`      | Path to a worlds configuration file (used to resolve world address) | "worlds.json" |
+| `indexerDatabase` | Path to your SQLite indexer database                                | "indexer.db"  |
+| `chainId`         | The chain ID of the network                                         | 31337         |
+| `port`            | The port on which to run the World Explorer                         | 13690         |
+| `hostname`        | The host on which to run the World Explorer                         | 0.0.0.0       |
+
+## Installation
+
+These installation steps are needed to add World Explorer to MUD 2.0 and 2.1.
+In later versions the template already includes World Explorer.
+
+1. Update to the latest MUD version (optional):
+
+   ```sh copy
+   pnpm mud set-version --tag latest
+   pnpm install
+   ```
+
+1. Install the Indexer and World Explorer packages in the project root.
+
+   ```sh copy
+   pnpm add -w @latticexyz/explorer @latticexyz/store-indexer
+   ```
+
+1. Edit `mprocs.yaml` to add the `indexer` and `explorer` processes.
+
+   <CollapseCode>
+
+   ```yaml filename="mprocs.yaml" copy showLineNumbers {11-20}
+   procs:
+     client:
+       cwd: packages/client
+       shell: pnpm run dev
+     contracts:
+       cwd: packages/contracts
+       shell: pnpm mud dev-contracts --rpc http://127.0.0.1:8545
+     anvil:
+       cwd: packages/contracts
+       shell: anvil --base-fee 0 --block-time 2
+     indexer:
+       cwd: packages/contracts
+       shell: rm -rf $SQLITE_FILENAME && pnpm sqlite-indexer
+       env:
+         RPC_HTTP_URL: "http://127.0.0.1:8545"
+         FOLLOW_BLOCK_TAG: "latest"
+         SQLITE_FILENAME: "indexer.db"
+     explorer:
+       cwd: packages/contracts
+       shell: pnpm explorer
+   ```
+
+   </CollapseCode>
+
+1. Restart `pnpm dev`.
+
+1. Browse to [World Explorer](http://localhost:13690).
+
+## Contributing
+
+See [the README](https://github.com/latticexyz/mud/blob/main/packages/explorer/README.md).

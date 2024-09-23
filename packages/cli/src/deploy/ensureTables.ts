@@ -1,12 +1,19 @@
 import { Client, Transport, Chain, Account, Hex } from "viem";
-import { Table } from "./configToTables";
 import { resourceToLabel, writeContract } from "@latticexyz/common";
 import { WorldDeploy, worldAbi } from "./common";
-import { valueSchemaToFieldLayoutHex, keySchemaToHex, valueSchemaToHex } from "@latticexyz/protocol-parser/internal";
+import {
+  valueSchemaToFieldLayoutHex,
+  keySchemaToHex,
+  valueSchemaToHex,
+  getSchemaTypes,
+  getValueSchema,
+  getKeySchema,
+  KeySchema,
+} from "@latticexyz/protocol-parser/internal";
 import { debug } from "./debug";
 import { getTables } from "./getTables";
 import pRetry from "p-retry";
-import { wait } from "@latticexyz/common/utils";
+import { Table } from "@latticexyz/config";
 
 export async function ensureTables({
   client,
@@ -22,15 +29,17 @@ export async function ensureTables({
 
   const existingTables = tables.filter((table) => worldTableIds.includes(table.tableId));
   if (existingTables.length) {
-    debug("existing tables", existingTables.map(resourceToLabel).join(", "));
+    debug("existing tables:", existingTables.map(resourceToLabel).join(", "));
   }
 
   const missingTables = tables.filter((table) => !worldTableIds.includes(table.tableId));
   if (missingTables.length) {
-    debug("registering tables", missingTables.map(resourceToLabel).join(", "));
+    debug("registering tables:", missingTables.map(resourceToLabel).join(", "));
     return await Promise.all(
-      missingTables.map((table) =>
-        pRetry(
+      missingTables.map((table) => {
+        const keySchema = getSchemaTypes(getKeySchema(table));
+        const valueSchema = getSchemaTypes(getValueSchema(table));
+        return pRetry(
           () =>
             writeContract(client, {
               chain: client.chain ?? null,
@@ -40,23 +49,19 @@ export async function ensureTables({
               functionName: "registerTable",
               args: [
                 table.tableId,
-                valueSchemaToFieldLayoutHex(table.valueSchema),
-                keySchemaToHex(table.keySchema),
-                valueSchemaToHex(table.valueSchema),
-                Object.keys(table.keySchema),
-                Object.keys(table.valueSchema),
+                valueSchemaToFieldLayoutHex(valueSchema),
+                keySchemaToHex(keySchema as KeySchema),
+                valueSchemaToHex(valueSchema),
+                Object.keys(keySchema),
+                Object.keys(valueSchema),
               ],
             }),
           {
             retries: 3,
-            onFailedAttempt: async (error) => {
-              const delay = error.attemptNumber * 500;
-              debug(`failed to register table ${resourceToLabel(table)}, retrying in ${delay}ms...`);
-              await wait(delay);
-            },
+            onFailedAttempt: () => debug(`failed to register table ${resourceToLabel(table)}, retrying...`),
           },
-        ),
-      ),
+        );
+      }),
     );
   }
 

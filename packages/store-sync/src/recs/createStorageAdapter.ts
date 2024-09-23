@@ -1,4 +1,4 @@
-import { Table } from "@latticexyz/config";
+import { Tables } from "@latticexyz/config";
 import { debug } from "./debug";
 import { World as RecsWorld, getComponentValue, hasComponent, removeComponent, setComponent } from "@latticexyz/recs";
 import { defineInternalComponents } from "./defineInternalComponents";
@@ -11,28 +11,21 @@ import { logToTable } from "../logToTable";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
 import { singletonEntity } from "./singletonEntity";
-import storeConfig from "@latticexyz/store/mud.config";
-import worldConfig from "@latticexyz/world/mud.config";
-import { TablesToComponents, tablesToComponents } from "./tablesToComponents";
+import { tablesToComponents } from "./tablesToComponents";
+import { merge } from "@ark/util";
 
-const storeTables = storeConfig.tables;
-const worldTables = worldConfig.tables;
-
-export type CreateStorageAdapterOptions<tables extends Record<string, Table>> = {
+export type CreateStorageAdapterOptions<tables extends Tables> = {
   world: RecsWorld;
   tables: tables;
   shouldSkipUpdateStream?: () => boolean;
 };
 
-export type CreateStorageAdapterResult<tables extends Record<string, Table>> = {
+export type CreateStorageAdapterResult<tables extends Tables> = {
   storageAdapter: StorageAdapter;
-  components: TablesToComponents<tables> &
-    TablesToComponents<typeof storeTables> &
-    TablesToComponents<typeof worldTables> &
-    ReturnType<typeof defineInternalComponents>;
+  components: merge<tablesToComponents<tables>, ReturnType<typeof defineInternalComponents>>;
 };
 
-export function createStorageAdapter<tables extends Record<string, Table>>({
+export function createStorageAdapter<tables extends Tables>({
   world,
   tables,
   shouldSkipUpdateStream,
@@ -41,10 +34,8 @@ export function createStorageAdapter<tables extends Record<string, Table>>({
 
   const components = {
     ...tablesToComponents(world, tables),
-    ...tablesToComponents(world, storeTables),
-    ...tablesToComponents(world, worldTables),
     ...defineInternalComponents(world),
-  };
+  } as CreateStorageAdapterResult<tables>["components"];
 
   async function recsStorageAdapter({ logs }: StorageAdapterBlock): Promise<void> {
     const newTables = logs.filter(isTableRegistrationLog).map(logToTable);

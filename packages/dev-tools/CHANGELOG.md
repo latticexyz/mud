@@ -1,5 +1,199 @@
 # @latticexyz/dev-tools
 
+## 2.2.8
+
+### Patch Changes
+
+- Updated dependencies [7c7bdb2]
+  - @latticexyz/common@2.2.8
+  - @latticexyz/store-sync@2.2.8
+  - @latticexyz/store@2.2.8
+  - @latticexyz/world@2.2.8
+  - @latticexyz/react@2.2.8
+  - @latticexyz/recs@2.2.8
+  - @latticexyz/schema-type@2.2.8
+  - @latticexyz/utils@2.2.8
+
+## 2.2.7
+
+### Patch Changes
+
+- Updated dependencies [a08ba5e]
+  - @latticexyz/store@2.2.7
+  - @latticexyz/react@2.2.7
+  - @latticexyz/store-sync@2.2.7
+  - @latticexyz/world@2.2.7
+  - @latticexyz/common@2.2.7
+  - @latticexyz/recs@2.2.7
+  - @latticexyz/schema-type@2.2.7
+  - @latticexyz/utils@2.2.7
+
+## 2.2.6
+
+### Patch Changes
+
+- Updated dependencies [8dc5889]
+  - @latticexyz/store-sync@2.2.6
+  - @latticexyz/common@2.2.6
+  - @latticexyz/react@2.2.6
+  - @latticexyz/recs@2.2.6
+  - @latticexyz/schema-type@2.2.6
+  - @latticexyz/store@2.2.6
+  - @latticexyz/utils@2.2.6
+  - @latticexyz/world@2.2.6
+
+## 2.2.5
+
+### Patch Changes
+
+- @latticexyz/common@2.2.5
+- @latticexyz/react@2.2.5
+- @latticexyz/recs@2.2.5
+- @latticexyz/schema-type@2.2.5
+- @latticexyz/store@2.2.5
+- @latticexyz/store-sync@2.2.5
+- @latticexyz/utils@2.2.5
+- @latticexyz/world@2.2.5
+
+## 2.2.4
+
+### Patch Changes
+
+- 50010fb: Bumped viem, wagmi, and abitype packages to their latest release.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.6 wagmi@2.12.11 @wagmi/core@2.13.5 abitype@1.0.6
+  ```
+
+- Updated dependencies [2f935cf]
+- Updated dependencies [50010fb]
+- Updated dependencies [1f24978]
+- Updated dependencies [8b4110e]
+  - @latticexyz/common@2.2.4
+  - @latticexyz/schema-type@2.2.4
+  - @latticexyz/store-sync@2.2.4
+  - @latticexyz/store@2.2.4
+  - @latticexyz/world@2.2.4
+  - @latticexyz/recs@2.2.4
+  - @latticexyz/react@2.2.4
+  - @latticexyz/utils@2.2.4
+
+## 2.2.3
+
+### Patch Changes
+
+- Updated dependencies [8546452]
+  - @latticexyz/world@2.2.3
+  - @latticexyz/store-sync@2.2.3
+  - @latticexyz/common@2.2.3
+  - @latticexyz/react@2.2.3
+  - @latticexyz/recs@2.2.3
+  - @latticexyz/schema-type@2.2.3
+  - @latticexyz/store@2.2.3
+  - @latticexyz/utils@2.2.3
+
+## 2.2.2
+
+### Patch Changes
+
+- @latticexyz/common@2.2.2
+- @latticexyz/react@2.2.2
+- @latticexyz/recs@2.2.2
+- @latticexyz/schema-type@2.2.2
+- @latticexyz/store@2.2.2
+- @latticexyz/store-sync@2.2.2
+- @latticexyz/utils@2.2.2
+- @latticexyz/world@2.2.2
+
+## 2.2.1
+
+### Patch Changes
+
+- Updated dependencies [603b2ab]
+- Updated dependencies [c0764a5]
+  - @latticexyz/store-sync@2.2.1
+  - @latticexyz/common@2.2.1
+  - @latticexyz/store@2.2.1
+  - @latticexyz/world@2.2.1
+  - @latticexyz/react@2.2.1
+  - @latticexyz/recs@2.2.1
+  - @latticexyz/schema-type@2.2.1
+  - @latticexyz/utils@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- Updated dependencies [69cd0a1]
+- Updated dependencies [04c675c]
+- Updated dependencies [04c675c]
+  - @latticexyz/common@2.2.0
+  - @latticexyz/store@2.2.0
+  - @latticexyz/world@2.2.0
+  - @latticexyz/store-sync@2.2.0
+  - @latticexyz/react@2.2.0
+  - @latticexyz/recs@2.2.0
+  - @latticexyz/schema-type@2.2.0
+  - @latticexyz/utils@2.2.0
+
+## 2.1.1
+
+### Patch Changes
+
+- 9e21e42: Bumped viem to `2.19.8` and abitype to `1.0.5`.
+
+  MUD projects using viem or abitype should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.19.8 abitype@1.0.5
+  ```
+
+- Updated dependencies [6435481]
+- Updated dependencies [9e21e42]
+- Updated dependencies [6a66f57]
+- Updated dependencies [86a8104]
+- Updated dependencies [2daaab1]
+- Updated dependencies [542ea54]
+- Updated dependencies [57bf8c3]
+  - @latticexyz/store-sync@2.1.1
+  - @latticexyz/common@2.1.1
+  - @latticexyz/schema-type@2.1.1
+  - @latticexyz/store@2.1.1
+  - @latticexyz/world@2.1.1
+  - @latticexyz/recs@2.1.1
+  - @latticexyz/react@2.1.1
+  - @latticexyz/utils@2.1.1
+
+## 2.1.0
+
+### Patch Changes
+
+- 9e05278: Updated Zustand components after changes to `syncToZustand`.
+- Updated dependencies [24e285d]
+- Updated dependencies [9e05278]
+- Updated dependencies [570086e]
+- Updated dependencies [f640fef]
+- Updated dependencies [7129a16]
+- Updated dependencies [3440a86]
+- Updated dependencies [3cbbc62]
+- Updated dependencies [7129a16]
+- Updated dependencies [e85dc53]
+- Updated dependencies [a10b453]
+- Updated dependencies [69eb63b]
+- Updated dependencies [e49059f]
+- Updated dependencies [8d0453e]
+- Updated dependencies [fb1cfef]
+  - @latticexyz/store@2.1.0
+  - @latticexyz/store-sync@2.1.0
+  - @latticexyz/world@2.1.0
+  - @latticexyz/common@2.1.0
+  - @latticexyz/react@2.1.0
+  - @latticexyz/recs@2.1.0
+  - @latticexyz/schema-type@2.1.0
+  - @latticexyz/utils@2.1.0
+
 ## 2.0.12
 
 ### Patch Changes

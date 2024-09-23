@@ -1,16 +1,17 @@
 import { PgDatabase } from "drizzle-orm/pg-core";
 import { and, eq, or } from "drizzle-orm";
-import { Table, storeTables } from "../common";
+import { schemasTable } from "../common";
 import { tables as internalTables } from "../postgres/tables";
 import { Hex } from "viem";
 import { decodeDynamicField } from "@latticexyz/protocol-parser/internal";
 import { logToTable } from "../logToTable";
+import { PartialTable } from "./common";
 
 export async function getTables(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   db: PgDatabase<any>,
   filters: { address: Hex | null; tableId: Hex | null }[] = [],
-): Promise<Table[]> {
+): Promise<readonly PartialTable[]> {
   const conditions = filters.map((filter) =>
     and(
       filter.address != null ? eq(internalTables.recordsTable.address, filter.address) : undefined,
@@ -21,7 +22,7 @@ export async function getTables(
   const records = await db
     .select()
     .from(internalTables.recordsTable)
-    .where(and(eq(internalTables.recordsTable.tableId, storeTables.Tables.tableId), or(...conditions)));
+    .where(and(eq(internalTables.recordsTable.tableId, schemasTable.tableId), or(...conditions)));
 
   const logs = records.map(
     (record) =>

@@ -1,0 +1,49 @@
+.list {
+  display: grid;
+  grid-template-columns: 12rem auto;
+}
+.list > :nth-child(n + 3) {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.title:not(:first-child),
+.list:not(:first-child):not(.title + .list) {
+  margin-top: 1rem;
+}
+.list:not(:last-child) {
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: bold;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.title,
+.term,
+.definition {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.term,
+.definition {
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+}
+.term {
+  font-family: monospace;
+  font-weight: bold;
+  background: rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.term:hover {
+  overflow: visible;
+  position: relative;
+}
+.definition {
+  padding-left: 0.5rem;
+}

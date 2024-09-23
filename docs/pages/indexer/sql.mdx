@@ -1,0 +1,905 @@
+import { CollapseCode } from "../../components/CollapseCode";
+import FilterTypes from "../../components/common-text/FilterTypes.mdx";
+import { Callout } from "nextra/components";
+
+# SQL API
+
+<FilterTypes />
+
+If there is a SQL-enabled indexer instance serving a blockchain, as there is for [Redstone](https://redstone.xyz/) and [Garnet](https://garnetchain.com/docs/what-is-redstone), you can use it to:
+
+- Run queries on the data of any `World` on that blockchain.
+- [Speed up the initial hydration](#mud-state-hydration-via-sql-api) by reducing the amount of data that needs to be synchronized.
+  This is important for the user experience, because until the initial hydration is done the client is typically unusable.
+
+The query language is a subset of [the SQL `SELECT` command](<https://en.wikipedia.org/wiki/Select_(SQL)>).
+
+## SQL-enabled indexer URLs
+
+- [Redstone](https://redstone.xyz/) - `https://indexer.mud.redstonechain.com/q`
+- [Garnet](https://garnetchain.com/) - `https://indexer.mud.garnetchain.com/q`
+
+## Example `World`
+
+On Garnet there is a `World` at address [`0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e`](https://explorer.garnetchain.com/address/0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e) that runs a slightly modified version of [the React template](https://github.com/latticexyz/mud/tree/main/templates/react).
+You can see the data schema for the `World` [in the block explorer](https://explorer.garnetchain.com/address/0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e?tab=mud).
+
+## Curl queries
+
+You can run SQL queries by communicating directly with the server's API, for example using [curl](https://curl.se/).
+
+### Simple query
+
+This query looks for some fields from a single table.
+
+1. Create a file, `query.json`, with this content.
+
+   ```json filename="query.json" copy
+   [
+     {
+       "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+       "query": "SELECT id, description FROM app__Tasks"
+     }
+   ]
+   ```
+
+   <Callout type="info" emoji="ℹ️">
+
+   The API does not support `SELECT * FROM <table>`, you have to specify column names.
+
+   </Callout>
+
+1. Run this command. Install `curl` and `jq` first if necessary.
+
+   ```sh copy
+   curl https://indexer.mud.garnetchain.com/q --compressed \
+        -H 'Accept-Encoding: gzip'  \
+        -H 'Content-Type: application/json' \
+        -d @query.json | jq
+   ```
+
+The output is a mapping with two fields, the block height for which the result is valid, and the result itself.
+The result is a list of query responses, here it contains just one item because we only submitted a single query.
+The query response is also a list.
+The first entry is the field names, and all the other entries are rows returned by `SELECT`.
+
+```
+{
+  "block_height": 5699682,
+  "result": [
+    [
+      [
+        "id",
+        "description"
+      ],
+      [
+        "0x3100000000000000000000000000000000000000000000000000000000000000",
+        "Walk the dog"
+      ],
+      [
+        "0x3e0a112aadc5e02927fb4a91649bea565fd1baa1175aae4cb4957d6348f165cf",
+        "Test"
+      ],
+    ]
+  ]
+}
+```
+
+Here we only care about the first result, so from now on we use this command line to tell `jq` to only show us that information.
+
+```sh copy
+curl https://indexer.mud.garnetchain.com/q --compressed  \
+    -H 'Accept-Encoding: gzip' \
+    -H 'Content-Type: application/json' \
+    -d @query.json | jq '.result[0]'
+```
+
+### Conditions
+
+If we want to see only those tasks that haven't been completed we can use a `WHERE` clause.
+
+```json filename="query.json" copy
+[
+  {
+    "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+    "query": "SELECT id, description FROM app__Tasks WHERE completedAt=0"
+  }
+]
+```
+
+<details>
+
+<summary>Results</summary>
+
+```json
+[
+  ["id", "description"],
+  ["0x3100000000000000000000000000000000000000000000000000000000000000", "Walk the dog"],
+  ["0x3e0a112aadc5e02927fb4a91649bea565fd1baa1175aae4cb4957d6348f165cf", "Test"]
+]
+```
+
+</details>
+
+### Limited results
+
+If you only want to see a few results, you can use a `LIMIT` clause.
+
+```json filename="query.json" copy
+[
+  {
+    "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+    "query": "SELECT id, description FROM app__Tasks LIMIT 2"
+  }
+]
+```
+
+<details>
+
+<summary>Results</summary>
+
+```json
+[
+  ["id", "description"],
+  ["0x3100000000000000000000000000000000000000000000000000000000000000", "Walk the dog"],
+  ["0x3e0a112aadc5e02927fb4a91649bea565fd1baa1175aae4cb4957d6348f165cf", "Test"]
+]
+```
+
+</details>
+
+You can use `OFFSET` to get a paging effect.
+For example, if you use this `query.json` you get two results, and the last row of the first one is repeated as the first row of the second one.
+
+```json filename="query.json" copy
+[
+  {
+    "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+    "query": "SELECT id, description FROM app__Tasks LIMIT 3"
+  },
+  {
+    "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+    "query": "SELECT id, description FROM app__Tasks LIMIT 3 OFFSET 2"
+  }
+]
+```
+
+<details>
+
+<summary>Results</summary>
+
+Use this command to see the results of both queries.
+
+```sh copy
+curl https://indexer.mud.garnetchain.com/q --compressed  \
+  -H 'Accept-Encoding: gzip' \
+  -H 'Content-Type: application/json' -d @query.json \
+  | jq '.result'
+```
+
+The result is:
+
+```json
+[
+  [
+    ["id", "description"],
+    ["0x3100000000000000000000000000000000000000000000000000000000000000", "Walk the dog"],
+    ["0x3e0a112aadc5e02927fb4a91649bea565fd1baa1175aae4cb4957d6348f165cf", "Test"],
+    ["0xb15fd0e41ab0bb6eb992e0a3d4f30fce6ee24a5fc9c30f725fdfc96d9d16ed95", "Do the dishes"]
+  ],
+  [
+    ["id", "description"],
+    ["0xb15fd0e41ab0bb6eb992e0a3d4f30fce6ee24a5fc9c30f725fdfc96d9d16ed95", "Do the dishes"],
+    ["0xb81d5036d0b62e0f2536635cbd5d7cec1d1f0706c0c6c1a9fa74293d7b0888eb", "Take out the trash"]
+  ]
+]
+```
+
+</details>
+
+### Sorted results
+
+If you want to control the order in which you get results, you can use an `ORDER BY` clause.
+
+```json filename="query.json" copy
+[
+  {
+    "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+    "query": "SELECT description, createdAt FROM app__Tasks ORDER BY createdAt"
+  }
+]
+```
+
+Note that the sort field(s) need to be part of the selected columns.
+
+<details>
+
+<summary>Results</summary>
+
+```json
+[
+  ["description", "createdat"],
+  ["Walk the dog", "1723495628"],
+  ["Take out the trash", "1723495640"],
+  ["Do the dishes", "1723495642"],
+  ["Test", "1723495964"],
+  ["Test from a different account", "1723576522"],
+  ["Another test", "1723576522"],
+  ["Yet another test", "1723646440"]
+]
+```
+
+</details>
+
+### Multiple tables
+
+You can join multiple tables, using the same syntax SQL uses.
+
+```json filename="query.json" copy
+[
+  {
+    "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+    "query": "SELECT app__Creator.id, description, taskCreator FROM app__Tasks, app__Creator WHERE app__Creator.id=app__Tasks.id"
+  }
+]
+```
+
+<details>
+
+<summary>Results</summary>
+
+```json
+[
+  ["id", "description", "taskcreator"],
+  [
+    "0x3e0a112aadc5e02927fb4a91649bea565fd1baa1175aae4cb4957d6348f165cf",
+    "Test",
+    "0x735b2f2c662ebedffa94027a7196f0559f7f18a4"
+  ],
+  [
+    "0x727d7bfe00b6db638c69595059dc10e21c52a7912d090905a7c7dc8659efd3b8",
+    "Test from a different account",
+    "0x428b1853e5ec29d35c84a218ec5170efc7621b58"
+  ],
+  [
+    "0xb15fd0e41ab0bb6eb992e0a3d4f30fce6ee24a5fc9c30f725fdfc96d9d16ed95",
+    "Do the dishes",
+    "0x8225d72f2c39f3729d7f3fc03c6aa8731eaeef48"
+  ],
+  [
+    "0xb81d5036d0b62e0f2536635cbd5d7cec1d1f0706c0c6c1a9fa74293d7b0888eb",
+    "Take out the trash",
+    "0x8225d72f2c39f3729d7f3fc03c6aa8731eaeef48"
+  ],
+  [
+    "0xd43394ecf79077f65cd83b534dd44d3b4e9e2aa553e95aafecd14b8529543cda",
+    "Another test",
+    "0x428b1853e5ec29d35c84a218ec5170efc7621b58"
+  ]
+]
+```
+
+</details>
+
+### Grouping results
+
+You can use `GROUP BY` to identify different groups.
+For example, this query gets you the different task creators.
+
+```json filename="query.json" copy
+[
+  {
+    "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+    "query": "SELECT taskCreator FROM app__Creator GROUP BY taskCreator"
+  }
+]
+```
+
+<details>
+
+<summary>Results</summary>
+
+```json
+[
+  ["taskcreator"],
+  ["0x428b1853e5ec29d35c84a218ec5170efc7621b58"],
+  ["0x735b2f2c662ebedffa94027a7196f0559f7f18a4"],
+  ["0x8225d72f2c39f3729d7f3fc03c6aa8731eaeef48"]
+]
+```
+
+</details>
+
+### Metadata
+
+You can use the `/tables` path to get the list of either all tables, or all tables that match a string.
+As per the SQL standard, the wildcard is `%`.
+
+1. Create a file, `tables.json`.
+
+   ```json filename="tables.json"
+   {
+     "address": "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+     "query": {
+       "name": "%"
+     }
+   }
+   ```
+
+1. Run this command.
+
+   ```sh copy
+   curl https://indexer.mud.garnetchain.com/tables --compressed \
+       -H 'Accept-Encoding: gzip'  \
+       -H 'Content-Type: application/json' \
+       -d @tables.json | jq
+   ```
+
+<details>
+
+<summary>Results</summary>
+
+```json
+[
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x746273746f72650000000000000000005461626c657300000000000000000000",
+    "key_names": ["tableId"],
+    "val_names": ["fieldLayout", "keySchema", "valueSchema", "abiEncodedKeyNames", "abiEncodedFieldNames"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x006003025f5f5fc4c40000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x746273746f72650000000000000000005265736f757263654964730000000000",
+    "key_names": ["resourceId"],
+    "val_names": ["exists"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x0001010060000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x746273746f726500000000000000000053746f7265486f6f6b73000000000000",
+    "key_names": ["tableId"],
+    "val_names": ["hooks"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x00000001b6000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c640000000000000000004e616d6573706163654f776e65720000",
+    "key_names": ["namespaceId"],
+    "val_names": ["owner"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x0014010061000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c6400000000000000000042616c616e6365730000000000000000",
+    "key_names": ["namespaceId"],
+    "val_names": ["balance"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x002001001f000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c64000000000000000000496e7374616c6c65644d6f64756c6573",
+    "key_names": ["moduleAddress", "argumentsHash"],
+    "val_names": ["isInstalled"],
+    "key_schema": "0x00340200615f0000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x0001010060000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c640000000000000000005573657244656c65676174696f6e436f",
+    "key_names": ["delegator", "delegatee"],
+    "val_names": ["delegationControlId"],
+    "key_schema": "0x0028020061610000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c640000000000000000004e616d65737061636544656c65676174",
+    "key_names": ["namespaceId"],
+    "val_names": ["delegationControlId"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c640000000000000000005265736f757263654163636573730000",
+    "key_names": ["resourceId", "caller"],
+    "val_names": ["access"],
+    "key_schema": "0x003402005f610000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x0001010060000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c6400000000000000000053797374656d73000000000000000000",
+    "key_names": ["systemId"],
+    "val_names": ["system", "publicAccess"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x0015020061600000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c6400000000000000000046756e6374696f6e53656c6563746f72",
+    "key_names": ["worldFunctionSelector"],
+    "val_names": ["systemId", "systemFunctionSelector"],
+    "key_schema": "0x0004010043000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x002402005f430000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x6f74776f726c6400000000000000000046756e6374696f6e5369676e61747572",
+    "key_names": ["functionSelector"],
+    "val_names": ["functionSignature"],
+    "key_schema": "0x0004010043000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x00000001c5000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c6400000000000000000053797374656d486f6f6b730000000000",
+    "key_names": ["systemId"],
+    "val_names": ["value"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x00000001b6000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c6400000000000000000053797374656d52656769737472790000",
+    "key_names": ["system"],
+    "val_names": ["systemId"],
+    "key_schema": "0x0014010061000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462776f726c64000000000000000000496e69744d6f64756c65416464726573",
+    "key_names": [],
+    "val_names": ["value"],
+    "key_schema": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x0014010061000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x7462617070000000000000000000000043726561746f72000000000000000000",
+    "key_names": ["id"],
+    "val_names": ["taskCreator"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x0014010061000000000000000000000000000000000000000000000000000000",
+    "query_name": null
+  },
+  {
+    "address": "0x95f5d049b014114e2feeb5d8d994358ce4ffd06e",
+    "table_id": "0x746261707000000000000000000000005461736b730000000000000000000000",
+    "key_names": ["id"],
+    "val_names": ["createdAt", "completedAt", "description"],
+    "key_schema": "0x002001005f000000000000000000000000000000000000000000000000000000",
+    "val_schema": "0x004002011f1fc500000000000000000000000000000000000000000000000000",
+    "query_name": null
+  }
+]
+```
+
+</details>
+
+To interpret the results, [see the table documentation](/store/tables#advanced).
+
+## Typescript queries
+
+You can query the SQL API from [Typescript](https://www.typescriptlang.org/) without using MUD client synchronization.
+
+1. Create the project (in an empty directory) and install the software.
+
+   ```sh copy
+   pnpm create ts-node
+   pnpm install
+   ```
+
+1. Add the package that includes the library.
+
+   ```sh copy
+   pnpm install @latticexyz/store-sync @latticexyz/store
+   ```
+
+1. Replace `src/main.ts` with this file.
+
+   ```ts filename="main.ts"
+   import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/internal";
+   import { defineStore } from "@latticexyz/store";
+
+   const config = defineStore({
+     namespace: "app",
+     tables: {
+       Tasks: {
+         schema: {
+           id: "bytes32",
+           createdAt: "uint256",
+           completedAt: "uint256",
+           description: "string",
+         },
+         key: ["id"],
+       },
+       Creator: {
+         schema: {
+           id: "bytes32",
+           taskCreator: "address",
+         },
+         key: ["id"],
+       },
+     },
+   });
+
+   const queryUncompleted = selectFrom({
+     table: config.tables.app__Tasks,
+     where: "completedAt = 0",
+     limit: 2,
+   });
+
+   const queryResult = await fetchRecordsSql({
+     indexerUrl: "https://indexer.mud.garnetchain.com/q",
+     storeAddress: "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+     queries: [queryUncompleted],
+   });
+
+   console.log("\n\nTwo uncompleted tasks");
+   console.log(`SQL: ${queryUncompleted.sql}\nResult:`);
+   console.log(queryResult.result[0].records);
+   ```
+
+1. Compile and execute the application.
+
+   ```sh copy
+   pnpm build && pnpm start
+   ```
+
+<details>
+
+<summary>Explanation</summary>
+
+```ts
+import { fetchRecordsSql, selectFrom } from "@latticexyz/store-sync/internal";
+import { defineStore } from "@latticexyz/store";
+```
+
+Import the necessary definitions.
+
+```typescript
+const config = defineStore({
+  namespace: "app",
+  tables: {
+    ...
+  },
+})
+```
+
+Create the table configuration.
+The input to `defineStore` is the same as used in the [the `mud.config.ts` file](/config).
+
+```typescript
+const queryUncompleted = selectFrom({
+  table: config.tables.app__Tasks,
+  where: "completedAt = 0",
+  limit: 2,
+});
+```
+
+Create a query using [`selectFrom`](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/sql/selectFrom.ts).
+The queries supported by `selectFrom` are a subset of those the SQL API supports.
+The results come from a single table, and only `WHERE` and `LIMIT` clauses are supported.
+
+```typescript
+const queryResult = await fetchRecordsSql({
+  indexrUrl: "https://indexer.mud.garnetchain.com/q",
+  storeAddress: "0x95F5d049B014114E2fEeB5d8d994358Ce4FFd06e",
+  queries: [queryUncompleted],
+});
+```
+
+Run the query.
+
+```typescript
+console.log("\n\nTwo uncompleted tasks");
+console.log(`SQL: ${queryUncompleted.sql}\nResult:`);
+```
+
+The SQL query that generated the resulting records.
+
+```typescript
+console.log(queryResult.result[0].records);
+```
+
+The actual records.
+
+</details>
+
+## MUD state hydration via SQL API
+
+You can also use the SQL API in a MUD client to speed up the initial hydration.
+
+### Create a client to access the `World`
+
+These are the steps to create a client that can access the `World`.
+
+1. Create and run a react template application.
+
+   ```sh copy
+   pnpm create mud@latest tasks --template react
+   cd tasks
+   pnpm dev
+   ```
+
+1. [Browse to the application](http://localhost:3000/?chainId=17069&worldAddress=0x95f5d049b014114e2feeb5d8d994358ce4ffd06e).
+   The URL specifies the `chainId` and `worldAddress` for the `World`.
+
+1. In MUD DevTools see your account address and [fund it on Garnet](https://garnetchain.com/faucet).
+   You may need to get test ETH for your own address, and then transfer it to the account address the application uses.
+
+1. You can now create, complete, and delete tasks.
+
+1. To see the content of the `app__Creator` table, edit `packages/contracts/mud.config.ts` to add the `Creator` table definition.
+
+   <CollapseCode>
+
+   ```typescript filename="mud.config.ts" copy showLineNumbers {15-21}
+   import { defineWorld } from "@latticexyz/world";
+
+   export default defineWorld({
+     namespace: "app",
+     tables: {
+       Tasks: {
+         schema: {
+           id: "bytes32",
+           createdAt: "uint256",
+           completedAt: "uint256",
+           description: "string",
+         },
+         key: ["id"],
+       },
+       Creator: {
+         schema: {
+           id: "bytes32",
+           taskCreator: "address",
+         },
+         key: ["id"],
+       },
+     },
+   });
+   ```
+
+   </CollapseCode>
+
+### Updating the client to use the SQL API
+
+The main purpose of the SQL API is to allow MUD clients to specify the subset of table records that a client needs, instead of synchronizing whole tables.
+
+To update the client, you change `packages/client/src/mud/setupNetwork.ts` to:
+
+<CollapseCode>
+
+```typescript filename="setupNetwork.ts" copy showLineNumbers {17, 80-97, 106-107}
+/*
+ * The MUD client code is built on top of viem
+ * (https://viem.sh/docs/getting-started.html).
+ * This line imports the functions we need from it.
+ */
+import {
+  createPublicClient,
+  fallback,
+  webSocket,
+  http,
+  createWalletClient,
+  Hex,
+  ClientConfig,
+  getContract,
+} from "viem";
+
+import { SyncFilter, getSnapshot, selectFrom } from "@latticexyz/store-sync/internal";
+
+import { syncToZustand } from "@latticexyz/store-sync/zustand";
+import { getNetworkConfig } from "./getNetworkConfig";
+import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
+import { createBurnerAccount, transportObserver, ContractWrite } from "@latticexyz/common";
+import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
+import { Subject, share } from "rxjs";
+
+/*
+ * Import our MUD config, which includes strong types for
+ * our tables and other config options. We use this to generate
+ * things like RECS components and get back strong types for them.
+ *
+ * See https://mud.dev/templates/typescript/contracts#mudconfigts
+ * for the source of this information.
+ */
+import mudConfig from "contracts/mud.config";
+
+export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
+
+export async function setupNetwork() {
+  const networkConfig = await getNetworkConfig();
+
+  /*
+   * Create a viem public (read only) client
+   * (https://viem.sh/docs/clients/public.html)
+   */
+  const clientOptions = {
+    chain: networkConfig.chain,
+    transport: transportObserver(fallback([webSocket(), http()])),
+    pollingInterval: 1000,
+  } as const satisfies ClientConfig;
+
+  const publicClient = createPublicClient(clientOptions);
+
+  /*
+   * Create an observable for contract writes that we can
+   * pass into MUD dev tools for transaction observability.
+   */
+  const write$ = new Subject<ContractWrite>();
+
+  /*
+   * Create a temporary wallet and a viem client for it
+   * (see https://viem.sh/docs/clients/wallet.html).
+   */
+  const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
+  const burnerWalletClient = createWalletClient({
+    ...clientOptions,
+    account: burnerAccount,
+  })
+    .extend(transactionQueue())
+    .extend(writeObserver({ onWrite: (write) => write$.next(write) }));
+
+  /*
+   * Create an object for communicating with the deployed World.
+   */
+  const worldContract = getContract({
+    address: networkConfig.worldAddress as Hex,
+    abi: IWorldAbi,
+    client: { public: publicClient, wallet: burnerWalletClient },
+  });
+
+  const indexerUrl = "https://indexer.mud.garnetchain.com/q";
+  const yesterday = Date.now() / 1000 - 24 * 60 * 60;
+  const filters: SyncFilter[] = [
+    selectFrom({
+      table: mudConfig.tables.app__Tasks,
+      where: `"createdAt" > ${yesterday}`,
+    }),
+    { table: mudConfig.tables.app__Creator },
+  ];
+  const { initialBlockLogs } = await getSnapshot({
+    indexerUrl,
+    storeAddress: networkConfig.worldAddress as Hex,
+    filters,
+    chainId: networkConfig.chainId,
+  });
+  const liveSyncFilters = filters.map((filter) => ({
+    tableId: filter.table.tableId,
+  }));
+
+  /*
+   * Sync on-chain state into RECS and keeps our client in sync.
+   * Uses the MUD indexer if available, otherwise falls back
+   * to the viem publicClient to make RPC calls to fetch MUD
+   * events from the chain.
+   */
+  const { tables, useStore, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToZustand({
+    initialBlockLogs,
+    filters: liveSyncFilters,
+    config: mudConfig,
+    address: networkConfig.worldAddress as Hex,
+    publicClient,
+    startBlock: BigInt(networkConfig.initialBlockNumber),
+  });
+
+  return {
+    tables,
+    useStore,
+    publicClient,
+    walletClient: burnerWalletClient,
+    latestBlock$,
+    storedBlockLogs$,
+    waitForTransaction,
+    worldContract,
+    write$: write$.asObservable().pipe(share()),
+  };
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```typescript
+import { SyncFilter, getSnapshot, selectFrom } from "@latticexyz/store-sync/internal";
+```
+
+Import the definitions we need.
+
+```typescript
+const indexerUrl = "https://indexer.mud.garnetchain.com/q";
+```
+
+The URL for the SQL-enabled indexer.
+This is simplified testing code, on a production system this will probably be a lookup table based on the chainId.
+
+```typescript
+const yesterday = Date.now() / 1000 - 24 * 60 * 60;
+```
+
+In JavaScript (and therefore TypeScript), time is stored as milliseconds since [the beginning of the epoch](https://en.wikipedia.org/wiki/Unix_time).
+In UNIX, and therefore in Ethereum, time is stored as seconds since that same point.
+This is the timestamp 24 hours ago.
+
+```typescript
+  const filters: SyncFilter[] = [
+```
+
+We create the filters for the tables we're interested in.
+
+```typescript
+    selectFrom({
+      table: mudConfig.tables.app__Tasks,
+      where: `"createdAt" > ${yesterday}`,
+    }),
+```
+
+From the `app__Tasks` table we only want entries created in the last 24 hours.
+To verify that the filter works as expected you can later change the code to only look for entries older than 24 hours.
+
+```typescript
+    { table: mudConfig.tables.app__Creator },
+  ];
+```
+
+We also want the `app__Counter` table.
+
+```typescript
+const { initialBlockLogs } = await getSnapshot({
+  indexerUrl,
+  storeAddress: networkConfig.worldAddress as Hex,
+  filters,
+  chainId: networkConfig.chainId,
+});
+```
+
+Get the initial snapshot to hydrate (fill with initial information) the data store.
+Note that this snapshot does not have the actual data, but the events that created it.
+
+```typescript
+const liveSyncFilters = filters.map((filter) => ({
+  tableId: filter.table.tableId,
+}));
+```
+
+The synchronization filters are a lot more limited.
+[You can read the description of these filters here](/guides/hello-world/filter-sync#filtering).
+
+```typescript
+  const { ... } = await syncToZustand({
+    initialBlockLogs,
+    filters: liveSyncFilters,
+      ...
+  });
+```
+
+Finally, we provide `initialBlockLogs` for the hydration and `filters` for the updates to the synchronization function (either `syncToRecs` or `syncToZustand`).
+
+</details>

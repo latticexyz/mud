@@ -1,4 +1,4 @@
-import { flatMorph } from "@arktype/util";
+import { flatMorph } from "@ark/util";
 import { EnumsInput } from "./input";
 import { AbiTypeScope, extendScope } from "./scope";
 import { parseNumber } from "./generics";
@@ -38,7 +38,7 @@ export function resolveEnums<enums extends EnumsInput>(enums: enums): resolveEnu
 
 export type mapEnums<enums> = {
   readonly [key in keyof enums]: {
-    readonly [element in keyof enums[key] as enums[key][element] & string]: parseNumber<element>;
+    readonly [element in keyof enums[key] & `${number}` as enums[key][element] & string]: parseNumber<element>;
   };
 };
 

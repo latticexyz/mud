@@ -5,7 +5,7 @@
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/IModule.sol)
 
 **Inherits:**
-[IERC165](/world/reference/internal/erc165-external#ierc165), [IModuleErrors](/src/IModuleErrors.sol/interface.IModuleErrors.md)
+[IERC165](/world/reference/internal/erc165-external#ierc165), [IModuleErrors](/world/reference/module-external#imoduleerrors)
 
 _Interface for the Module system.
 A module can be installed within the context of a world, either as a root or non-root module.
@@ -47,3 +47,52 @@ function install(bytes memory encodedArgs) external;
 | Name          | Type    | Description                                                                   |
 | ------------- | ------- | ----------------------------------------------------------------------------- |
 | `encodedArgs` | `bytes` | The ABI encoded arguments that may be needed during the installation process. |
+
+## IModuleErrors
+
+[Git Source](https://github.com/latticexyz/mud/blob/main/packages/world/src/IModuleErrors.sol)
+
+This interface includes errors for the Module library.
+
+_We bundle these errors in an interface (instead of at the file-level or in their corresponding library) so they can be inherited by IWorldKernel.
+This ensures that all errors are included in the IWorldKernel ABI for proper decoding in the frontend._
+
+### Errors
+
+#### Module_RootInstallNotSupported
+
+Error raised if installing in root is not supported.
+
+```solidity
+error Module_RootInstallNotSupported();
+```
+
+#### Module_NonRootInstallNotSupported
+
+Error raised if installing in non-root is not supported.
+
+```solidity
+error Module_NonRootInstallNotSupported();
+```
+
+#### Module_AlreadyInstalled
+
+Error raised if the provided module is already installed.
+
+```solidity
+error Module_AlreadyInstalled();
+```
+
+#### Module_MissingDependency
+
+Error raised if the provided module is missing a dependency.
+
+```solidity
+error Module_MissingDependency(address dependency);
+```
+
+**Parameters**
+
+| Name         | Type      | Description                    |
+| ------------ | --------- | ------------------------------ |
+| `dependency` | `address` | The address of the dependency. |

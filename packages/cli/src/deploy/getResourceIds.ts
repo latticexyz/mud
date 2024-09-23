@@ -1,9 +1,10 @@
 import { Client, parseAbiItem, Hex, HttpRequestError } from "viem";
 import { getLogs } from "viem/actions";
 import { storeSpliceStaticDataEvent } from "@latticexyz/store";
-import { WorldDeploy, storeTables } from "./common";
+import { WorldDeploy } from "./common";
 import { debug } from "./debug";
 import pRetry from "p-retry";
+import storeConfig from "@latticexyz/store/mud.config";
 
 export async function getResourceIds({
   client,
@@ -24,7 +25,7 @@ export async function getResourceIds({
         fromBlock: worldDeploy.deployBlock,
         toBlock: worldDeploy.stateBlock,
         event: parseAbiItem(storeSpliceStaticDataEvent),
-        args: { tableId: storeTables.store_ResourceIds.tableId },
+        args: { tableId: storeConfig.namespaces.store.tables.ResourceIds.tableId },
       }),
     {
       retries: 3,

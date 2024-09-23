@@ -3,7 +3,7 @@ import { Middleware } from "koa";
 import Router from "@koa/router";
 import compose from "koa-compose";
 import { input } from "@latticexyz/store-sync/indexer-client";
-import { storeTables } from "@latticexyz/store-sync";
+import { schemasTable } from "@latticexyz/store-sync";
 import { queryLogs } from "./queryLogs";
 import { recordToLog } from "./recordToLog";
 import { debug, error } from "../debug";
@@ -28,7 +28,7 @@ export function apiRoutes(database: Sql): Middleware {
     }
 
     try {
-      options.filters = options.filters.length > 0 ? [...options.filters, { tableId: storeTables.Tables.tableId }] : [];
+      options.filters = options.filters.length > 0 ? [...options.filters, { tableId: schemasTable.tableId }] : [];
       const records = await queryLogs(database, options ?? {}).execute();
       benchmark("query records");
       const logs = records.map(recordToLog);

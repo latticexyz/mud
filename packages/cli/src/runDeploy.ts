@@ -6,8 +6,7 @@ import { createWalletClient, http, Hex, isHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
-import { worldToV1 } from "@latticexyz/world/config/v2";
-import { getOutDirectory, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
+import { getOutDirectory, getRpcUrl } from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import { MUDError } from "@latticexyz/common/errors";
 import { resolveConfig } from "./deploy/resolveConfig";
@@ -17,6 +16,8 @@ import { WorldDeploy } from "./deploy/common";
 import { build } from "./build";
 import { kmsKeyToAccount } from "@latticexyz/common/kms";
 import { configToModules } from "./deploy/configToModules";
+import { findContractArtifacts } from "@latticexyz/world/node";
+import { enableAutomine } from "./utils/enableAutomine";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the MUD config file" },
@@ -33,7 +34,6 @@ export const deployOptions = {
     desc: "Deploy using an existing deterministic deployer (https://github.com/Arachnid/deterministic-deployment-proxy)",
   },
   worldAddress: { type: "string", desc: "Deploy to an existing World at the given address" },
-  srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
   skipBuild: { type: "boolean", desc: "Skip rebuilding the contracts before deploying" },
   alwaysRunPostDeploy: {
     type: "boolean",
@@ -65,13 +65,13 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
 
   const configPath = await resolveConfigPath(opts.configPath);
-  const configV2 = (await loadConfig(configPath)) as WorldConfig;
-  const config = worldToV1(configV2);
+  const config = (await loadConfig(configPath)) as WorldConfig;
+  const rootDir = path.dirname(configPath);
+
   if (opts.printConfig) {
     console.log(chalk.green("\nResolved config:\n"), JSON.stringify(config, null, 2));
   }
 
-  const srcDir = opts.srcDir ?? (await getSrcDirectory(profile));
   const outDir = await getOutDirectory(profile);
 
   const rpc = opts.rpc ?? (await getRpcUrl(profile));
@@ -83,11 +83,21 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   // Run build
   if (!opts.skipBuild) {
-    await build({ rootDir: path.dirname(configPath), config: configV2, srcDir, foundryProfile: profile });
+    await build({ rootDir, config, foundryProfile: profile });
   }
 
-  const resolvedConfig = resolveConfig({ config, forgeSourceDir: srcDir, forgeOutDir: outDir });
-  const modules = await configToModules(configV2, outDir);
+  const { systems, libraries } = await resolveConfig({
+    rootDir,
+    config,
+    forgeOutDir: outDir,
+  });
+  const artifacts = await findContractArtifacts({ forgeOutDir: outDir });
+  // TODO: pass artifacts into configToModules (https://github.com/latticexyz/mud/issues/3153)
+  const modules = await configToModules(config, outDir);
+
+  const tables = Object.values(config.namespaces)
+    .flatMap((namespace) => Object.values(namespace.tables))
+    .filter((table) => !table.deploy.disabled);
 
   const account = await (async () => {
     if (opts.kms) {
@@ -127,19 +137,25 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   console.log("Deploying from", client.account.address);
 
+  // Attempt to enable automine for the duration of the deploy. Noop if automine is not available.
+  const automine = await enableAutomine(client);
+
   const startTime = Date.now();
   const worldDeploy = await deploy({
+    config,
     deployerAddress: opts.deployerAddress as Hex | undefined,
     salt,
     worldAddress: opts.worldAddress as Hex | undefined,
     client,
-    config: resolvedConfig,
+    tables,
+    systems,
+    libraries,
     modules,
-    withWorldProxy: configV2.deploy.upgradeableWorldImplementation,
+    artifacts,
   });
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
     await postDeploy(
-      config.postDeployScript,
+      config.deploy.postDeployScript,
       worldDeploy.address,
       rpc,
       profile,
@@ -147,6 +163,10 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
       opts.kms ? true : false,
     );
   }
+
+  // Reset mining mode after deploy
+  await automine?.reset();
+
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
 
   const deploymentInfo = {
@@ -156,23 +176,27 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   if (opts.saveDeployment) {
     const chainId = await getChainId(client);
-    const deploysDir = path.join(config.deploysDirectory, chainId.toString());
+    const deploysDir = path.join(config.deploy.deploysDirectory, chainId.toString());
     mkdirSync(deploysDir, { recursive: true });
     writeFileSync(path.join(deploysDir, "latest.json"), JSON.stringify(deploymentInfo, null, 2));
     writeFileSync(path.join(deploysDir, Date.now() + ".json"), JSON.stringify(deploymentInfo, null, 2));
 
     const localChains = [1337, 31337];
-    const deploys = existsSync(config.worldsFile) ? JSON.parse(readFileSync(config.worldsFile, "utf-8")) : {};
+    const deploys = existsSync(config.deploy.worldsFile)
+      ? JSON.parse(readFileSync(config.deploy.worldsFile, "utf-8"))
+      : {};
     deploys[chainId] = {
       address: deploymentInfo.worldAddress,
       // We expect the worlds file to be committed and since local deployments are often
       // a consistent address but different block number, we'll ignore the block number.
       blockNumber: localChains.includes(chainId) ? undefined : deploymentInfo.blockNumber,
     };
-    writeFileSync(config.worldsFile, JSON.stringify(deploys, null, 2));
+    writeFileSync(config.deploy.worldsFile, JSON.stringify(deploys, null, 2));
 
     console.log(
-      chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${config.worldsFile} and ${deploysDir}): \n`)),
+      chalk.bgGreen(
+        chalk.whiteBright(`\n Deployment result (written to ${config.deploy.worldsFile} and ${deploysDir}): \n`),
+      ),
     );
   }
 

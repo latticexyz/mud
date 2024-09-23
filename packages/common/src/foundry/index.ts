@@ -72,15 +72,6 @@ export async function getRpcUrl(profile?: string): Promise<string> {
 }
 
 /**
- * Get the value of "remappings" from forge config
- * @param profile The foundry profile to use
- * @returns The array of remapping tuples `[from, to]`
- */
-export async function getRemappings(profile?: string): Promise<[string, string][]> {
-  return (await getForgeConfig(profile)).remappings.map((line) => line.trim().split("=")) as [string, string][];
-}
-
-/**
  * Execute a forge command
  * @param args The arguments to pass to forge
  * @param options { profile?: The foundry profile to use; silent?: If true, nothing will be logged to the console }

@@ -1,5 +1,97 @@
 # @latticexyz/faucet
 
+## 2.2.8
+
+### Patch Changes
+
+- Updated dependencies [7c7bdb2]
+  - @latticexyz/common@2.2.8
+
+## 2.2.7
+
+### Patch Changes
+
+- @latticexyz/common@2.2.7
+
+## 2.2.6
+
+### Patch Changes
+
+- @latticexyz/common@2.2.6
+
+## 2.2.5
+
+### Patch Changes
+
+- @latticexyz/common@2.2.5
+
+## 2.2.4
+
+### Patch Changes
+
+- 50010fb: Bumped viem, wagmi, and abitype packages to their latest release.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.6 wagmi@2.12.11 @wagmi/core@2.13.5 abitype@1.0.6
+  ```
+
+- Updated dependencies [2f935cf]
+- Updated dependencies [50010fb]
+  - @latticexyz/common@2.2.4
+
+## 2.2.3
+
+### Patch Changes
+
+- @latticexyz/common@2.2.3
+
+## 2.2.2
+
+### Patch Changes
+
+- @latticexyz/common@2.2.2
+
+## 2.2.1
+
+### Patch Changes
+
+- Updated dependencies [c0764a5]
+  - @latticexyz/common@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- Updated dependencies [69cd0a1]
+  - @latticexyz/common@2.2.0
+
+## 2.1.1
+
+### Patch Changes
+
+- 6435481: Upgrade `zod` to `3.23.8` to avoid issues with [excessively deep type instantiations](https://github.com/colinhacks/zod/issues/577).
+- 9e21e42: Bumped viem to `2.19.8` and abitype to `1.0.5`.
+
+  MUD projects using viem or abitype should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.19.8 abitype@1.0.5
+  ```
+
+- Updated dependencies [9e21e42]
+- Updated dependencies [2daaab1]
+  - @latticexyz/common@2.1.1
+
+## 2.1.0
+
+### Patch Changes
+
+- Updated dependencies [7129a16]
+- Updated dependencies [8d0453e]
+  - @latticexyz/common@2.1.0
+
 ## 2.0.12
 
 ### Patch Changes

@@ -90,7 +90,6 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
             saveDeployment: true,
             deployerAddress: undefined,
             worldAddress,
-            srcDir,
             salt: "0x",
             kms: undefined,
           });

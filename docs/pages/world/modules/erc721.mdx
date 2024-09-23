@@ -1,0 +1,307 @@
+import { CollapseCode } from "../../../components/CollapseCode";
+import { Callout } from "nextra/components";
+
+# ERC 721 (NFT) module
+
+<Callout type="warning" emoji="⚠️">
+
+This module is unaudited and may change in the future.
+
+</Callout>
+
+The [`erc721-puppet`](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/erc721-puppet) module lets you create [ERC-721](https://ethereum.org/en/developers/docs/standards/tokens/erc-721/) NFTs as part of a MUD `World`.
+The advantage of doing this, rather than creating a separate [NFT contract](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/token/ERC721) and merely controlling it from MUD, is that all the information is in MUD tables and is immediately available in the client.
+
+## Deployment
+
+The easiest way to deploy this module is to edit `mud.config.ts`.
+This is a modified version of the [vanilla](/templates/typescript/contracts) template.
+
+Note that before you use this file you need to run `pnpm add viem` (see explanation below).
+
+<CollapseCode>
+
+```typescript filename="mud.config.ts" showLineNumbers copy {2-13,25-41}
+import { defineWorld } from "@latticexyz/world";
+import { encodeAbiParameters, stringToHex } from "viem";
+
+const erc721ModuleArgs = encodeAbiParameters(
+  [
+    { type: "bytes14" },
+    {
+      type: "tuple",
+      components: [{ type: "string" }, { type: "string" }, { type: "string" }],
+    },
+  ],
+  [stringToHex("MyNFT", { size: 14 }), ["No Valuable Token", "NVT", "http://www.example.com/base/uri/goes/here"]],
+);
+
+export default defineWorld({
+  namespace: "app",
+  tables: {
+    Counter: {
+      schema: {
+        value: "uint32",
+      },
+      key: [],
+    },
+  },
+  modules: [
+    {
+      artifactPath: "@latticexyz/world-modules/out/PuppetModule.sol/PuppetModule.json",
+      root: false,
+      args: [],
+    },
+    {
+      artifactPath: "@latticexyz/world-modules/out/ERC721Module.sol/ERC721Module.json",
+      root: false,
+      args: [
+        {
+          type: "bytes",
+          value: erc721ModuleArgs,
+        },
+      ],
+    },
+  ],
+});
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```typescript
+import { encodeAbiParameters, stringToHex } from "viem";
+```
+
+In simple cases it is enough to use the config parser to specify the module arguments.
+However, the NFT module requires a `struct` as [one of the arguments](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/erc721-puppet/ERC721Module.sol#L37).
+We use [`encodeAbiParameters`](https://viem.sh/docs/abi/encodeAbiParameters.html) to encode the `struct` data.
+The [`stringToHex`](https://viem.sh/docs/utilities/toHex.html#stringtohex) function is used to specify the namespace the token uses.
+
+This is the reason we need to issue `pnpm install viem` in `packages/contracts` to be able to use the library here.
+
+```typescript
+const erc721ModuleArgs = encodeAbiParameters(
+```
+
+You can see the arguments for the ERC-721 module [here](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/erc721-puppet/ERC721Module.sol#L37).
+There are two arguments:
+
+- A 14-byte identifier for the namespace.
+- An `ERC721MetadataData` for the ERC-721 parameters, [defined here](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/erc721-puppet/tables/ERC721Metadata.sol#L19-L23).
+
+However, the arguments for a module are [ABI encoded](https://docs.soliditylang.org/en/develop/abi-spec.html) to a single value of type `bytes`.
+So we use `encodeAbiParameters` from the viem library to create this argument.
+The first parameter of this function is a list of argument types.
+
+```typescript
+  [
+    { type: "bytes14" },
+```
+
+The first parameter is simple, a 14 byte value for the namespace.
+
+```typescript
+    {
+      type: "tuple",
+      components: [{ type: "string" }, { type: "string" }, { type: "string" }],
+    },
+  ],
+```
+
+The second value is more complicated, it's a struct, or as it is called in ABI, a tuple.
+It consists of three strings (the token name, symbol, and [base URI](https://docs.openzeppelin.com/contracts/3.x/api/token/erc721#ERC721-baseURI--)).
+
+```typescript
+  [
+    stringToHex("MyNFT", { size: 14 }),
+```
+
+The second `encodeAbiParameters` parameter is a list of the values, of the types declared in the first list.
+
+The first parameter for the module is `bytes14`, the namespace of the ERC-721 token.
+We use [`stringToHex`](https://viem.sh/docs/utilities/toHex.html#stringtohex) to convert it from the text form that is easy for us to use, to the hexadecimal number that Viem expects for `bytes14` parameter.
+
+```typescript
+    ["No Valuable Token", "NVT", "http://www.example.com/base/uri/goes/here"],
+  ],
+);
+```
+
+The second parameter for the module is a structure of three strings, so here we provide the three strings.
+Then we close all the definitions.
+
+```typesceript
+  modules: [
+    {
+      artifactPath: "@latticexyz/world-modules/out/PuppetModule.sol/PuppetModule.json",
+      root: false,
+      args: [],
+    },
+```
+
+A module declaration requires three parameters:
+
+- `artifactPath`, a link to the compiled JSON file for the module.
+- `root`, whether to install the module with [root namespace permissions](/world/systems#root-systems) or not.
+- `args` the module arguments.
+
+Here we install [the `puppet` module](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/puppet).
+We need this module because a `System` is supposed to be stateless, and easily upgradeable to a contract in a different address.
+However, both the [ERC-20 standard](https://ethereum.org/en/developers/docs/standards/tokens/erc-20/) and the [ERC-721 standard](https://ethereum.org/en/developers/docs/standards/tokens/erc-721/) require the token contract to emit events.
+The solution is to put the `System` in one contract and have another contract, the puppet, which receives requests and emits events according to the ERC.
+
+```typescript
+    {
+      artifactPath: "@latticexyz/world-modules/out/ERC721Module.sol/ERC721Module.json",
+      root: false,
+      args: [
+        {
+          type: "bytes",
+```
+
+The data type for this parameter is `bytes`, because it is treated as opaque bytes by the `World` and only gets parsed by the module after it is transferred.
+
+```typescript
+          value: erc721ModuleArgs,
+        },
+      ],
+    },
+```
+
+The module arguments, stored in `erc721ModuleArgs`.
+
+</details>
+
+## Usage
+
+You can use the token the same way you use any other ERC721 contract.
+For example, run this script.
+
+<CollapseCode>
+
+```solidity filename="ManageERC721.s.sol" copy {29-33, 41-57}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
+import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { ERC721Registry } from "@latticexyz/world-modules/src/codegen/index.sol";
+import { IERC721Mintable } from "@latticexyz/world-modules/src/modules/erc721-puppet/IERC721Mintable.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+contract ManageERC721 is Script {
+  function run() external {
+    address worldAddress = address(0x8D8b6b8414E1e3DcfD4168561b9be6bD3bF6eC4B);
+
+    // Specify a store so that you can use tables directly in PostDeploy
+    StoreSwitch.setStoreAddress(worldAddress);
+
+    // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    address myAddress = vm.addr(deployerPrivateKey);
+
+    // Start broadcasting transactions from the deployer account
+    vm.startBroadcast(deployerPrivateKey);
+
+    // Get the ERC-721 token address
+    ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("MyNFT"));
+    ResourceId erc721RegistryResource = WorldResourceIdLib.encode(RESOURCE_TABLE, "erc721-puppet", "ERC721Registry");
+    address tokenAddress = ERC721Registry.getTokenAddress(erc721RegistryResource, namespaceResource);
+    console.log("Token address", tokenAddress);
+
+    // Settings to test with
+    uint256 badGoatToken = uint256(0xBAD060A7);
+    uint256 beefToken = uint256(0xBEEF);
+    address goodGuy = address(0x600D);
+    address badGuy = address(0x0BAD);
+
+    // Use the token
+    IERC721Mintable erc721 = IERC721Mintable(tokenAddress);
+
+    // Mint two tokens
+    erc721.mint(goodGuy, badGoatToken);
+    erc721.mint(myAddress, beefToken);
+    console.log("Owner of bad goat:", erc721.ownerOf(badGoatToken));
+    console.log("Owner of beef:", erc721.ownerOf(beefToken));
+
+    // Transfer a token
+    erc721.transferFrom(myAddress, badGuy, beefToken);
+    console.log("Owner of bad goat:", erc721.ownerOf(badGoatToken));
+    console.log("Owner of beef:", erc721.ownerOf(beefToken));
+
+    // Burn the tokens
+    erc721.burn(badGoatToken);
+    erc721.burn(beefToken);
+
+    console.log("Done");
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```solidity
+    // Get the ERC-721 token address
+    ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("MyNFT"));
+    ResourceId erc721RegistryResource =
+      WorldResourceIdLib.encode(RESOURCE_TABLE, "erc721-puppet", "ERC721Registry");
+    address tokenAddress = ERC721Registry.getTokenAddress(erc721RegistryResource, namespaceResource);
+    console.log("Token address", tokenAddress);
+```
+
+This is the process to get the address of our token contract (the puppet).
+First, we get the [`resourceId` values](/world/resource-ids) for the `erc721-puppet__ERC721Registry` table and the namespace we are interested in (each namespace can only have one ERC721 token).
+Then we use that table to get the token address.
+
+```solidity
+    // Use the token
+    IERC721Mintable erc721 = IERC721Mintable(tokenAddress);
+```
+
+Create an [`IERC721Mintable`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/erc721-puppet/IERC721Mintable.sol) for the token.
+
+```solidity
+    // Mint two tokens
+    erc721.mint(goodGuy, badGoatToken);
+    erc721.mint(myAddress, beefToken);
+    console.log("Owner of bad goat:", erc721.ownerOf(badGoatToken));
+    console.log("Owner of beef:", erc721.ownerOf(beefToken));
+```
+
+Mint a couple of tokens, and show who owns them.
+Note that only the owner of the name space is authorized to mint tokens.
+
+```solidity
+    // Transfer a token
+    erc721.transferFrom(myAddress, badGuy, beefToken);
+    console.log("Owner of bad goat:", erc721.ownerOf(badGoatToken));
+    console.log("Owner of beef:", erc721.ownerOf(beefToken));
+```
+
+Transfer a token.
+We can only transfer tokens we own, or that we have approval to transfer from the current owner.
+
+```solidity
+    // Burn the tokens
+    erc721.burn(badGoatToken);
+    erc721.burn(beefToken);
+```
+
+Destroy the tokens.
+
+</details>

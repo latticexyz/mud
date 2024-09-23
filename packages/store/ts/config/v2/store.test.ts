@@ -1,12 +1,12 @@
 import { describe, it } from "vitest";
 import { defineStore } from "./store";
-import { attest } from "@arktype/attest";
+import { attest } from "@ark/attest";
 import { resourceToHex } from "@latticexyz/common";
-import { CODEGEN_DEFAULTS, TABLE_CODEGEN_DEFAULTS, TABLE_DEPLOY_DEFAULTS } from "./defaults";
 import { Store } from "./output";
+import { satisfy } from "@ark/util";
 
 describe("defineStore", () => {
-  it("should return the full config given a full config with one key", () => {
+  it("should return a fully resolved config for a single namespace", () => {
     const config = defineStore({
       tables: {
         Example: {
@@ -16,98 +16,361 @@ describe("defineStore", () => {
       },
     });
 
-    const expected = {
-      sourceDirectory: "src",
-      tables: {
-        Example: {
-          tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
-          schema: {
-            id: {
-              type: "address",
-              internalType: "address",
-            },
-            name: {
-              type: "string",
-              internalType: "string",
-            },
-            age: {
-              type: "uint256",
-              internalType: "uint256",
+    attest(config).snap({
+      multipleNamespaces: false,
+      namespace: "",
+      namespaces: {
+        "": {
+          label: "",
+          namespace: "",
+          tables: {
+            Example: {
+              label: "Example",
+              type: "table",
+              namespace: "",
+              namespaceLabel: "",
+              name: "Example",
+              tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
+              schema: {
+                id: { type: "address", internalType: "address" },
+                name: { type: "string", internalType: "string" },
+                age: { type: "uint256", internalType: "uint256" },
+              },
+              key: ["age"],
+              codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: true },
+              deploy: { disabled: false },
             },
           },
-          key: ["age"],
-          name: "Example",
-          namespace: "",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
-          type: "table",
-          deploy: TABLE_DEPLOY_DEFAULTS,
         },
       },
+      tables: {
+        Example: {
+          label: "Example",
+          type: "table",
+          namespace: "",
+          namespaceLabel: "",
+          name: "Example",
+          tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
+          schema: {
+            id: { type: "address", internalType: "address" },
+            name: { type: "string", internalType: "string" },
+            age: { type: "uint256", internalType: "uint256" },
+          },
+          key: ["age"],
+          codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: true },
+          deploy: { disabled: false },
+        },
+      },
+      sourceDirectory: "src",
       userTypes: {},
       enums: {},
       enumValues: {},
-      namespace: "",
-      codegen: CODEGEN_DEFAULTS,
-    } as const;
-
-    attest<typeof expected>(config).equals(expected);
+      codegen: {
+        storeImportPath: "@latticexyz/store/src",
+        userTypesFilename: "common.sol",
+        outputDirectory: "codegen",
+        indexFilename: "index.sol",
+      },
+    }).type.toString.snap(`{
+  readonly multipleNamespaces: false
+  readonly namespace: string
+  readonly namespaces: {
+    readonly "": {
+      readonly label: ""
+      readonly namespace: string
+      readonly tables: {
+        readonly Example: {
+          readonly label: "Example"
+          readonly namespaceLabel: ""
+          readonly type: "table"
+          readonly namespace: string
+          readonly name: string
+          readonly tableId: \`0x\${string}\`
+          readonly schema: {
+            readonly id: {
+              readonly type: "address"
+              readonly internalType: "address"
+            }
+            readonly name: {
+              readonly type: "string"
+              readonly internalType: "string"
+            }
+            readonly age: {
+              readonly type: "uint256"
+              readonly internalType: "uint256"
+            }
+          }
+          readonly key: readonly ["age"]
+          readonly codegen: {
+            readonly outputDirectory: string
+            readonly tableIdArgument: false
+            readonly storeArgument: false
+            readonly dataStruct: boolean
+          }
+          readonly deploy: { readonly disabled: false }
+        }
+      }
+    }
+  }
+  readonly tables: {
+    readonly Example: {
+      readonly label: "Example"
+      readonly namespaceLabel: ""
+      readonly type: "table"
+      readonly namespace: string
+      readonly name: string
+      readonly tableId: \`0x\${string}\`
+      readonly schema: {
+        readonly id: {
+          readonly type: "address"
+          readonly internalType: "address"
+        }
+        readonly name: {
+          readonly type: "string"
+          readonly internalType: "string"
+        }
+        readonly age: {
+          readonly type: "uint256"
+          readonly internalType: "uint256"
+        }
+      }
+      readonly key: readonly ["age"]
+      readonly codegen: {
+        readonly outputDirectory: string
+        readonly tableIdArgument: false
+        readonly storeArgument: false
+        readonly dataStruct: boolean
+      }
+      readonly deploy: { readonly disabled: false }
+    }
+  }
+  readonly sourceDirectory: "src"
+  readonly userTypes: {}
+  readonly enums: {}
+  readonly enumValues: {}
+  readonly codegen: {
+    readonly storeImportPath: "@latticexyz/store/src"
+    readonly userTypesFilename: "common.sol"
+    readonly outputDirectory: "codegen"
+    readonly indexFilename: "index.sol"
+  }
+}`);
   });
 
-  it("should return the full config given a full config with one key and user types", () => {
+  it("should return a fully resolved config for multiple namespaces", () => {
     const config = defineStore({
+      namespaces: {
+        root: {
+          namespace: "",
+          tables: {
+            Example: {
+              schema: { id: "address", name: "string", age: "uint256" },
+              key: ["age"],
+            },
+          },
+        },
+      },
+    });
+
+    attest(config).snap({
+      multipleNamespaces: true,
+      namespace: null,
+      namespaces: {
+        root: {
+          label: "root",
+          namespace: "",
+          tables: {
+            Example: {
+              label: "Example",
+              type: "table",
+              namespace: "",
+              namespaceLabel: "root",
+              name: "Example",
+              tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
+              schema: {
+                id: { type: "address", internalType: "address" },
+                name: { type: "string", internalType: "string" },
+                age: { type: "uint256", internalType: "uint256" },
+              },
+              key: ["age"],
+              codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: true },
+              deploy: { disabled: false },
+            },
+          },
+        },
+      },
+      tables: {
+        root__Example: {
+          label: "Example",
+          type: "table",
+          namespace: "",
+          namespaceLabel: "root",
+          name: "Example",
+          tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
+          schema: {
+            id: { type: "address", internalType: "address" },
+            name: { type: "string", internalType: "string" },
+            age: { type: "uint256", internalType: "uint256" },
+          },
+          key: ["age"],
+          codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: true },
+          deploy: { disabled: false },
+        },
+      },
+      sourceDirectory: "src",
+      userTypes: {},
+      enums: {},
+      enumValues: {},
+      codegen: {
+        storeImportPath: "@latticexyz/store/src",
+        userTypesFilename: "common.sol",
+        outputDirectory: "codegen",
+        indexFilename: "index.sol",
+      },
+    }).type.toString.snap(`{
+  readonly multipleNamespaces: true
+  readonly namespace: null
+  readonly namespaces: {
+    readonly root: {
+      readonly label: "root"
+      readonly namespace: string
+      readonly tables: {
+        readonly Example: {
+          readonly label: "Example"
+          readonly namespaceLabel: "root"
+          readonly type: "table"
+          readonly namespace: string
+          readonly name: string
+          readonly tableId: \`0x\${string}\`
+          readonly schema: {
+            readonly id: {
+              readonly type: "address"
+              readonly internalType: "address"
+            }
+            readonly name: {
+              readonly type: "string"
+              readonly internalType: "string"
+            }
+            readonly age: {
+              readonly type: "uint256"
+              readonly internalType: "uint256"
+            }
+          }
+          readonly key: readonly ["age"]
+          readonly codegen: {
+            readonly outputDirectory: string
+            readonly tableIdArgument: false
+            readonly storeArgument: false
+            readonly dataStruct: boolean
+          }
+          readonly deploy: { readonly disabled: false }
+        }
+      }
+    }
+  }
+  readonly tables: {
+    readonly root__Example: {
+      readonly label: "Example"
+      readonly namespaceLabel: "root"
+      readonly type: "table"
+      readonly namespace: string
+      readonly name: string
+      readonly tableId: \`0x\${string}\`
+      readonly schema: {
+        readonly id: {
+          readonly type: "address"
+          readonly internalType: "address"
+        }
+        readonly name: {
+          readonly type: "string"
+          readonly internalType: "string"
+        }
+        readonly age: {
+          readonly type: "uint256"
+          readonly internalType: "uint256"
+        }
+      }
+      readonly key: readonly ["age"]
+      readonly codegen: {
+        readonly outputDirectory: string
+        readonly tableIdArgument: false
+        readonly storeArgument: false
+        readonly dataStruct: boolean
+      }
+      readonly deploy: { readonly disabled: false }
+    }
+  }
+  readonly sourceDirectory: "src"
+  readonly userTypes: {}
+  readonly enums: {}
+  readonly enumValues: {}
+  readonly codegen: {
+    readonly storeImportPath: "@latticexyz/store/src"
+    readonly userTypesFilename: "common.sol"
+    readonly outputDirectory: "codegen"
+    readonly indexFilename: "index.sol"
+  }
+}`);
+  });
+
+  it("should only allow for single namespace or multiple namespaces, not both", () => {
+    attest(() =>
+      defineStore({
+        // @ts-expect-error Cannot use `namespaces` with `namespace` or `tables` keys.
+        namespaces: {},
+        namespace: "app",
+      }),
+    )
+      .throws("Cannot use `namespaces` with `namespace` or `tables` keys.")
+      .type.errors("Cannot use `namespaces` with `namespace` or `tables` keys.");
+
+    attest(() =>
+      defineStore({
+        // @ts-expect-error Cannot use `namespaces` with `namespace` or `tables` keys.
+        namespaces: {},
+        tables: {},
+      }),
+    )
+      .throws("Cannot use `namespaces` with `namespace` or `tables` keys.")
+      .type.errors("Cannot use `namespaces` with `namespace` or `tables` keys.");
+  });
+
+  // TODO: move to table tests
+  it("should resolve schema with user types", () => {
+    const config = defineStore({
+      userTypes: {
+        static: { type: "address", filePath: "path/to/file" },
+        dynamic: { type: "string", filePath: "path/to/file" },
+      },
       tables: {
         Example: {
           schema: { id: "dynamic", name: "string", age: "static" },
           key: ["age"],
         },
       },
-      userTypes: {
-        static: { type: "address", filePath: "path/to/file" },
-        dynamic: { type: "string", filePath: "path/to/file" },
-      },
     });
 
-    const expected = {
-      sourceDirectory: "src",
-      tables: {
-        Example: {
-          tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
-          schema: {
-            id: {
-              type: "string",
-              internalType: "dynamic",
-            },
-            name: {
-              type: "string",
-              internalType: "string",
-            },
-            age: {
-              type: "address",
-              internalType: "static",
-            },
-          },
-          key: ["age"],
-          name: "Example",
-          namespace: "",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
-          type: "table",
-          deploy: TABLE_DEPLOY_DEFAULTS,
-        },
+    const expectedSchema = {
+      id: {
+        type: "string",
+        internalType: "dynamic",
       },
-      userTypes: {
-        static: { type: "address", filePath: "path/to/file" },
-        dynamic: { type: "string", filePath: "path/to/file" },
+      name: {
+        type: "string",
+        internalType: "string",
       },
-      enums: {},
-      enumValues: {},
-      namespace: "",
-      codegen: CODEGEN_DEFAULTS,
+      age: {
+        type: "address",
+        internalType: "static",
+      },
     } as const;
 
-    attest<typeof expected>(config).equals(expected);
+    attest<typeof expectedSchema>(config.tables.Example.schema).equals(expectedSchema);
+    attest<typeof config.tables.Example.schema>(expectedSchema);
   });
 
-  it("should return the full config given a full config with two key", () => {
+  // TODO: move to table tests
+  it("should resolve a table with a composite key", () => {
     const config = defineStore({
       tables: {
         Example: {
@@ -117,44 +380,14 @@ describe("defineStore", () => {
       },
     });
 
-    const expected = {
-      sourceDirectory: "src",
-      tables: {
-        Example: {
-          tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
-          schema: {
-            id: {
-              type: "address",
-              internalType: "address",
-            },
-            name: {
-              type: "string",
-              internalType: "string",
-            },
-            age: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
-          key: ["age", "id"],
-          name: "Example",
-          namespace: "",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-          type: "table",
-          deploy: TABLE_DEPLOY_DEFAULTS,
-        },
-      },
-      userTypes: {},
-      enums: {},
-      enumValues: {},
-      namespace: "",
-      codegen: CODEGEN_DEFAULTS,
-    } as const;
+    const expectedKey = ["age", "id"] as const;
 
-    attest<typeof expected>(config).equals(expected);
+    attest<typeof expectedKey>(config.tables.Example.key).equals(expectedKey);
+    attest<typeof config.tables.Example.key>(expectedKey);
   });
 
-  it("should resolve two tables in the config with different schemas", () => {
+  // TODO: move to table tests
+  it("should resolve two tables with different schemas", () => {
     const config = defineStore({
       tables: {
         First: {
@@ -168,68 +401,50 @@ describe("defineStore", () => {
       },
     });
 
-    const expected = {
-      sourceDirectory: "src",
-      tables: {
-        First: {
-          tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
-          schema: {
-            firstKey: {
-              type: "address",
-              internalType: "address",
-            },
-            firstName: {
-              type: "string",
-              internalType: "string",
-            },
-            firstAge: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
-          key: ["firstKey", "firstAge"],
-          name: "First",
-          namespace: "",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-          type: "table",
-          deploy: TABLE_DEPLOY_DEFAULTS,
-        },
-        Second: {
-          tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
-          schema: {
-            secondKey: {
-              type: "address",
-              internalType: "address",
-            },
-            secondName: {
-              type: "string",
-              internalType: "string",
-            },
-            secondAge: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
-          key: ["secondKey", "secondAge"],
-          name: "Second",
-          namespace: "",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-          type: "table",
-          deploy: TABLE_DEPLOY_DEFAULTS,
-        },
+    const expectedFirstSchema = {
+      firstKey: {
+        type: "address",
+        internalType: "address",
       },
-      userTypes: {},
-      enums: {},
-      enumValues: {},
-      namespace: "",
-      codegen: CODEGEN_DEFAULTS,
+      firstName: {
+        type: "string",
+        internalType: "string",
+      },
+      firstAge: {
+        type: "uint256",
+        internalType: "uint256",
+      },
     } as const;
 
-    attest<typeof expected>(config).equals(expected);
+    const expectedSecondSchema = {
+      secondKey: {
+        type: "address",
+        internalType: "address",
+      },
+      secondName: {
+        type: "string",
+        internalType: "string",
+      },
+      secondAge: {
+        type: "uint256",
+        internalType: "uint256",
+      },
+    } as const;
+
+    attest<typeof expectedFirstSchema>(config.tables.First.schema).equals(expectedFirstSchema);
+    attest<typeof config.tables.First.schema>(expectedFirstSchema);
+
+    attest<typeof expectedSecondSchema>(config.tables.Second.schema).equals(expectedSecondSchema);
+    attest<typeof config.tables.Second.schema>(expectedSecondSchema);
   });
 
-  it("should resolve two tables in the config with different schemas and user types", () => {
+  // TODO: move to table tests
+  it("should resolve two tables with different schemas and user types", () => {
     const config = defineStore({
+      userTypes: {
+        Static: { type: "address", filePath: "path/to/file" },
+        Dynamic: { type: "string", filePath: "path/to/file" },
+      },
       tables: {
         First: {
           schema: { firstKey: "Static", firstName: "Dynamic", firstAge: "uint256" },
@@ -240,73 +455,43 @@ describe("defineStore", () => {
           key: ["secondKey", "secondAge"],
         },
       },
-      userTypes: {
-        Static: { type: "address", filePath: "path/to/file" },
-        Dynamic: { type: "string", filePath: "path/to/file" },
-      },
     });
 
-    const expected = {
-      sourceDirectory: "src",
-      tables: {
-        First: {
-          tableId: resourceToHex({ type: "table", namespace: "", name: "First" }),
-          schema: {
-            firstKey: {
-              type: "address",
-              internalType: "Static",
-            },
-            firstName: {
-              type: "string",
-              internalType: "Dynamic",
-            },
-            firstAge: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
-          key: ["firstKey", "firstAge"],
-          name: "First",
-          namespace: "",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-          type: "table",
-          deploy: TABLE_DEPLOY_DEFAULTS,
-        },
-        Second: {
-          tableId: resourceToHex({ type: "table", namespace: "", name: "Second" }),
-          schema: {
-            secondKey: {
-              type: "address",
-              internalType: "Static",
-            },
-            secondName: {
-              type: "string",
-              internalType: "Dynamic",
-            },
-            secondAge: {
-              type: "uint256",
-              internalType: "uint256",
-            },
-          },
-          key: ["secondKey", "secondAge"],
-          name: "Second",
-          namespace: "",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: false as boolean },
-          type: "table",
-          deploy: TABLE_DEPLOY_DEFAULTS,
-        },
+    const expectedFirstSchema = {
+      firstKey: {
+        type: "address",
+        internalType: "Static",
       },
-      userTypes: {
-        Static: { type: "address", filePath: "path/to/file" },
-        Dynamic: { type: "string", filePath: "path/to/file" },
+      firstName: {
+        type: "string",
+        internalType: "Dynamic",
       },
-      enums: {},
-      enumValues: {},
-      namespace: "",
-      codegen: CODEGEN_DEFAULTS,
+      firstAge: {
+        type: "uint256",
+        internalType: "uint256",
+      },
     } as const;
 
-    attest<typeof expected>(config).equals(expected);
+    const expectedSecondSchema = {
+      secondKey: {
+        type: "address",
+        internalType: "Static",
+      },
+      secondName: {
+        type: "string",
+        internalType: "Dynamic",
+      },
+      secondAge: {
+        type: "uint256",
+        internalType: "uint256",
+      },
+    } as const;
+
+    attest<typeof expectedFirstSchema>(config.tables.First.schema).equals(expectedFirstSchema);
+    attest<typeof config.tables.First.schema>(expectedFirstSchema);
+
+    attest<typeof expectedSecondSchema>(config.tables.Second.schema).equals(expectedSecondSchema);
+    attest<typeof config.tables.Second.schema>(expectedSecondSchema);
   });
 
   it("should throw if referring to fields of different tables", () => {
@@ -364,91 +549,76 @@ describe("defineStore", () => {
       .type.errors(`Type '"name"' is not assignable to type '"id" | "age"'`);
   });
 
-  it("should return the full config given a full config with enums and user types", () => {
+  // TODO: move to table tests
+  it("should resolve schema with enums and user types", () => {
     const config = defineStore({
+      userTypes: {
+        static: { type: "address", filePath: "path/to/file" },
+        dynamic: { type: "string", filePath: "path/to/file" },
+      },
+      enums: {
+        ValidNames: ["first", "second"],
+      },
       tables: {
         Example: {
           schema: { id: "dynamic", name: "ValidNames", age: "static" },
           key: ["name"],
         },
       },
-      userTypes: {
-        static: { type: "address", filePath: "path/to/file" },
-        dynamic: { type: "string", filePath: "path/to/file" },
-      },
-      enums: {
-        ValidNames: ["first", "second"],
-      },
     });
-    const expected = {
-      sourceDirectory: "src",
-      tables: {
-        Example: {
-          tableId: resourceToHex({ type: "table", namespace: "", name: "Example" }),
-          schema: {
-            id: {
-              type: "string",
-              internalType: "dynamic",
-            },
-            name: {
-              type: "uint8",
-              internalType: "ValidNames",
-            },
-            age: {
-              type: "address",
-              internalType: "static",
-            },
-          },
-          key: ["name"],
-          name: "Example",
-          namespace: "",
-          codegen: { ...TABLE_CODEGEN_DEFAULTS, dataStruct: true as boolean },
-          type: "table",
-          deploy: TABLE_DEPLOY_DEFAULTS,
-        },
+
+    const expectedSchema = {
+      id: {
+        type: "string",
+        internalType: "dynamic",
       },
-      userTypes: {
-        static: { type: "address", filePath: "path/to/file" },
-        dynamic: { type: "string", filePath: "path/to/file" },
+      name: {
+        type: "uint8",
+        internalType: "ValidNames",
       },
-      enums: {
-        ValidNames: ["first", "second"],
+      age: {
+        type: "address",
+        internalType: "static",
       },
-      enumValues: {
-        ValidNames: {
-          first: 0,
-          second: 1,
-        },
-      },
-      namespace: "",
-      codegen: CODEGEN_DEFAULTS,
     } as const;
 
-    attest<typeof expected>(config).equals(expected);
+    attest<typeof expectedSchema>(config.tables.Example.schema).equals(expectedSchema);
+    attest<typeof config.tables.Example.schema>(expectedSchema);
   });
 
-  it("should use the root namespace as default namespace", () => {
+  it("should accept an empty input", () => {
     const config = defineStore({});
-
-    attest<"">(config.namespace).equals("");
+    attest<typeof config, satisfy<Store, typeof config>>();
   });
 
-  it("should use pipe through non-default namespaces", () => {
-    const config = defineStore({ namespace: "custom" });
-
-    attest<"custom">(config.namespace).equals("custom");
-  });
-
-  it("should extend the output Config type", () => {
+  it("should satisfy the output type when using single namespace", () => {
     const config = defineStore({
       tables: { Name: { schema: { id: "address" }, key: ["id"] } },
       userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
     });
 
-    attest<true, typeof config extends Store ? true : false>();
+    attest<typeof config, satisfy<Store, typeof config>>();
   });
 
-  it("should use the global namespace instead for tables", () => {
+  it("should satisfy the output type when using multiple namespaces", () => {
+    const config = defineStore({
+      namespaces: {},
+    });
+
+    attest<typeof config, satisfy<Store, typeof config>>();
+  });
+
+  it("should use the root namespace as default namespace", () => {
+    const config = defineStore({});
+    attest(config.namespace).equals("");
+  });
+
+  it("should use pipe through non-default namespace", () => {
+    const config = defineStore({ namespace: "custom" });
+    attest(config.namespace).equals("custom");
+  });
+
+  it("should use the base namespace for tables", () => {
     const config = defineStore({
       namespace: "namespace",
       tables: {
@@ -459,19 +629,13 @@ describe("defineStore", () => {
       },
     });
 
-    attest<"namespace">(config.namespace).equals("namespace");
-    attest<"namespace">(config.tables.namespace__Example.namespace).equals("namespace");
-    attest<"Example">(config.tables.namespace__Example.name).equals("Example");
+    attest(config.namespace).equals("namespace");
+    attest<"Example">(config.tables.namespace__Example.label).equals("Example");
+    attest(config.tables.namespace__Example.namespace).equals("namespace");
+    attest(config.tables.namespace__Example.name).equals("Example");
     attest(config.tables.namespace__Example.tableId).equals(
       resourceToHex({ type: "table", name: "Example", namespace: "namespace" }),
     );
-  });
-
-  it("should throw if a string is passed in as schema", () => {
-    // @ts-expect-error Invalid table config
-    attest(() => defineStore({ tables: { Invalid: "uint256" } }))
-      .throws('Expected full table config, got `"uint256"`')
-      .type.errors("Expected full table config");
   });
 
   it("should show a type error if an invalid schema is passed in", () => {
@@ -481,36 +645,111 @@ describe("defineStore", () => {
     );
   });
 
-  it("should throw if name is overridden in the store context", () => {
+  it("should throw if table label/namespace is overridden in namespace context", () => {
     attest(() =>
       defineStore({
         namespace: "CustomNS",
         tables: {
           Example: {
+            // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
+            label: "NotAllowed",
             schema: { id: "address" },
             key: ["id"],
-            // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
-            name: "NotAllowed",
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
-  });
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
 
-  it("should throw if namespace is overridden in the store context", () => {
     attest(() =>
       defineStore({
         namespace: "CustomNS",
         tables: {
           Example: {
+            // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
+            namespaceLabel: "NotAllowed",
             schema: { id: "address" },
             key: ["id"],
-            // @ts-expect-error "Overrides of `name` and `namespace` are not allowed for tables in a store config"
-            namespace: "NotAllowed",
           },
         },
       }),
-    ).throwsAndHasTypeError("Overrides of `name` and `namespace` are not allowed for tables in a store config");
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
+
+    attest(() =>
+      defineStore({
+        namespace: "CustomNS",
+        tables: {
+          Example: {
+            // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
+            namespace: "NotAllowed",
+            schema: { id: "address" },
+            key: ["id"],
+          },
+        },
+      }),
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
+
+    attest(() =>
+      defineStore({
+        namespaces: {
+          CustomNS: {
+            tables: {
+              Example: {
+                // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
+                label: "NotAllowed",
+                schema: { id: "address" },
+                key: ["id"],
+              },
+            },
+          },
+        },
+      }),
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
+
+    attest(() =>
+      defineStore({
+        namespaces: {
+          CustomNS: {
+            tables: {
+              Example: {
+                // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
+                namespaceLabel: "NotAllowed",
+                schema: { id: "address" },
+                key: ["id"],
+              },
+            },
+          },
+        },
+      }),
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
+
+    attest(() =>
+      defineStore({
+        namespaces: {
+          CustomNS: {
+            tables: {
+              Example: {
+                // @ts-expect-error "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context"
+                namespace: "NotAllowed",
+                schema: { id: "address" },
+                key: ["id"],
+              },
+            },
+          },
+        },
+      }),
+    ).throwsAndHasTypeError(
+      "Overrides of `label`, `namespaceLabel`, and `namespace` are not allowed for tables in this context",
+    );
   });
 
   it("should allow const enum as input", () => {
@@ -527,7 +766,12 @@ describe("defineStore", () => {
         First: 0,
         Second: 1,
       },
-    });
+    }).type.toString.snap(`{
+  readonly Example: {
+    readonly First: 0
+    readonly Second: 1
+  }
+}`);
   });
 
   it("should allow a const config as input", () => {
@@ -552,88 +796,178 @@ describe("defineStore", () => {
     ).type.errors("`invalidOption` is not a valid Store config option.");
   });
 
-  it("should namespace output directories for tables", () => {
-    const config = defineStore({
-      namespace: "app",
-      codegen: {
-        namespaceDirectories: true,
-      },
-      tables: {
-        NamespaceDir: {
-          schema: { name: "string" },
-          key: [],
-        },
-        NotNamespaceDir: {
-          schema: { name: "string" },
-          key: [],
-          codegen: {
-            outputDirectory: "tables",
+  describe("shorthands", () => {
+    // TODO: move to table tests
+    it("should accept a shorthand store config as input and expand it", () => {
+      const config = defineStore({ tables: { Name: "address" } });
+
+      const expectedTable = {
+        schema: {
+          id: {
+            type: "bytes32",
+            internalType: "bytes32",
+          },
+          value: {
+            type: "address",
+            internalType: "address",
           },
         },
-      },
+        key: ["id"],
+      } as const;
+
+      attest<typeof expectedTable.schema>(config.tables.Name.schema).equals(expectedTable.schema);
+      attest<typeof config.tables.Name.schema>(expectedTable.schema);
+
+      attest<typeof expectedTable.key>(config.tables.Name.key).equals(expectedTable.key);
+      attest<typeof config.tables.Name.key>(expectedTable.key);
     });
 
-    const expected = {
-      sourceDirectory: "src",
-      tables: {
-        app__NamespaceDir: {
-          tableId: resourceToHex({ type: "table", namespace: "app", name: "NamespaceDir" }),
-          schema: {
-            name: {
-              type: "string",
-              internalType: "string",
+    it("should satisfy the output type", () => {
+      const config = defineStore({
+        tables: { Name: { schema: { id: "address" }, key: ["id"] } },
+        userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
+      });
+
+      attest<typeof config, satisfy<Store, typeof config>>();
+    });
+
+    it("should accept an empty input", () => {
+      const config = defineStore({});
+      attest<typeof config, satisfy<Store, typeof config>>();
+    });
+
+    it("should accept a user type as input and expand it", () => {
+      const config = defineStore({
+        tables: { Name: "CustomType" },
+        userTypes: { CustomType: { type: "address", filePath: "path/to/file" } },
+      });
+
+      const expectedTable = {
+        schema: {
+          id: {
+            type: "bytes32",
+            internalType: "bytes32",
+          },
+          value: {
+            type: "address",
+            internalType: "CustomType",
+          },
+        },
+        key: ["id"],
+      } as const;
+
+      attest<typeof expectedTable.schema>(config.tables.Name.schema).equals(expectedTable.schema);
+      attest<typeof config.tables.Name.schema>(expectedTable.schema);
+
+      attest<typeof expectedTable.key>(config.tables.Name.key).equals(expectedTable.key);
+      attest<typeof config.tables.Name.key>(expectedTable.key);
+    });
+
+    it("given a schema with a key field with static ABI type, it should use `id` as single key", () => {
+      const config = defineStore({
+        tables: { Example: { id: "address", name: "string", age: "uint256" } },
+      });
+
+      const expectedTable = {
+        schema: {
+          id: {
+            type: "address",
+            internalType: "address",
+          },
+          name: {
+            type: "string",
+            internalType: "string",
+          },
+          age: {
+            type: "uint256",
+            internalType: "uint256",
+          },
+        },
+        key: ["id"],
+      } as const;
+
+      attest<typeof expectedTable.schema>(config.tables.Example.schema).equals(expectedTable.schema);
+      attest<typeof config.tables.Example.schema>(expectedTable.schema);
+
+      attest<typeof expectedTable.key>(config.tables.Example.key).equals(expectedTable.key);
+      attest<typeof config.tables.Example.key>(expectedTable.key);
+    });
+
+    it("given a schema with a key field with static custom type, it should use `id` as single key", () => {
+      const config = defineStore({
+        tables: { Example: { id: "address", name: "string", age: "uint256" } },
+      });
+
+      const expectedTable = {
+        schema: {
+          id: {
+            type: "address",
+            internalType: "address",
+          },
+          name: {
+            type: "string",
+            internalType: "string",
+          },
+          age: {
+            type: "uint256",
+            internalType: "uint256",
+          },
+        },
+        key: ["id"],
+      } as const;
+
+      attest<typeof expectedTable.schema>(config.tables.Example.schema).equals(expectedTable.schema);
+      attest<typeof config.tables.Example.schema>(expectedTable.schema);
+
+      attest<typeof expectedTable.key>(config.tables.Example.key).equals(expectedTable.key);
+      attest<typeof config.tables.Example.key>(expectedTable.key);
+    });
+
+    it("should throw if the shorthand doesn't include a key field", () => {
+      attest(() =>
+        defineStore({
+          tables: {
+            // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
+            Example: {
+              name: "string",
+              age: "uint256",
             },
           },
-          key: [],
-          name: "NamespaceDir",
-          namespace: "app",
-          codegen: {
-            ...TABLE_CODEGEN_DEFAULTS,
-            dataStruct: false as boolean,
-            outputDirectory: "app/tables" as string,
-          },
-          type: "table",
-          deploy: TABLE_DEPLOY_DEFAULTS,
-        },
-        app__NotNamespaceDir: {
-          tableId: resourceToHex({ type: "table", namespace: "app", name: "NotNamespaceDir" }),
-          schema: {
-            name: {
-              type: "string",
-              internalType: "string",
-            },
-          },
-          key: [],
-          name: "NotNamespaceDir",
-          namespace: "app",
-          codegen: {
-            ...TABLE_CODEGEN_DEFAULTS,
-            dataStruct: false as boolean,
-            outputDirectory: "tables",
-          },
-          type: "table",
-          deploy: TABLE_DEPLOY_DEFAULTS,
-        },
-      },
-      userTypes: {},
-      enums: {},
-      enumValues: {},
-      namespace: "app",
-      codegen: {
-        ...CODEGEN_DEFAULTS,
-        namespaceDirectories: true,
-      },
-    } as const;
+        }),
+      ).throwsAndHasTypeError(
+        "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
+      );
+    });
 
-    // Running attest on the whole object is hard to parse when it fails, so test the inner objects first
-    attest<typeof expected.codegen>(config.codegen).equals(expected.codegen);
-    attest<typeof expected.tables.app__NamespaceDir.codegen>(config.tables.app__NamespaceDir.codegen).equals(
-      expected.tables.app__NamespaceDir.codegen,
-    );
-    attest<typeof expected.tables.app__NotNamespaceDir.codegen>(config.tables.app__NotNamespaceDir.codegen).equals(
-      expected.tables.app__NotNamespaceDir.codegen,
-    );
+    it("should throw if the shorthand config includes a non-static key field", () => {
+      attest(() =>
+        // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
+        defineStore({ tables: { Example: { id: "string", name: "string", age: "uint256" } } }),
+      ).throwsAndHasTypeError(
+        "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
+      );
+    });
 
-    attest<typeof expected>(config).equals(expected);
+    it("should throw if the shorthand config includes a non-static user type as key field", () => {
+      attest(() =>
+        defineStore({
+          // @ts-expect-error Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.
+          tables: { Example: { id: "dynamic", name: "string", age: "uint256" } },
+          userTypes: {
+            dynamic: { type: "string", filePath: "path/to/file" },
+            static: { type: "address", filePath: "path/to/file" },
+          },
+        }),
+      ).throwsAndHasTypeError(
+        "Invalid schema. Expected an `id` field with a static ABI type or an explicit `key` option.",
+      );
+    });
+
+    it("should throw if the shorthand key is neither a custom nor ABI type", () => {
+      // @ts-expect-error Type '"NotAnAbiType"' is not assignable to type 'AbiType'
+      attest(() => defineStore({ tables: { Invalid: "NotAnAbiType" } }))
+        .throws("Invalid ABI type. `NotAnAbiType` not found in scope.")
+        .type.errors(`Type '"NotAnAbiType"' is not assignable to type 'AbiType'`);
+    });
   });
 });

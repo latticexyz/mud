@@ -3,7 +3,9 @@ import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { buildTable, chainState, getTables } from "@latticexyz/store-sync/sqlite";
 import { Hex, getAddress } from "viem";
 import { decodeDynamicField } from "@latticexyz/protocol-parser/internal";
-import { SyncFilter, TableWithRecords } from "@latticexyz/store-sync";
+import { SyncFilter, TableRecord, TableWithRecords } from "@latticexyz/store-sync";
+import { hexToResource } from "@latticexyz/common";
+import { mapObject } from "@latticexyz/common/utils";
 
 // TODO: refactor sqlite and replace this with getLogs to match postgres (https://github.com/latticexyz/mud/issues/1970)
 
@@ -60,13 +62,18 @@ export function getTablesWithRecords(
               (filter.key1 == null || filter.key1 === keyTuple[1]),
           );
         });
+    const resource = hexToResource(table.tableId);
     return {
       ...table,
-      records: filteredRecords.map((record) => ({
-        key: Object.fromEntries(Object.entries(table.keySchema).map(([name]) => [name, record[name]])),
-        value: Object.fromEntries(Object.entries(table.valueSchema).map(([name]) => [name, record[name]])),
-      })),
-    };
+      type: resource.type as never,
+      schema: mapObject({ ...table.keySchema, ...table.valueSchema }, (type) => ({ type, internalType: type })),
+      key: Object.keys(table.keySchema),
+      records: filteredRecords.map((record): TableRecord => {
+        const key = Object.fromEntries(Object.entries(table.keySchema).map(([name]) => [name, record[name]]));
+        const value = Object.fromEntries(Object.entries(table.valueSchema).map(([name]) => [name, record[name]]));
+        return { key, value, fields: { ...key, ...value } };
+      }),
+    } satisfies TableWithRecords;
   });
 
   return {

@@ -5,9 +5,17 @@ import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-
 import { bytesToHex } from "viem";
 import { createPrepareDeploy } from "./createPrepareDeploy";
 import { World } from "@latticexyz/world";
-import { getContractArtifact } from "../utils/getContractArtifact";
-import { knownModuleArtifacts } from "../utils/knownModuleArtifacts";
+import { importContractArtifact } from "../utils/importContractArtifact";
 import { resolveWithContext } from "@latticexyz/world/internal";
+
+/** Please don't add to this list! These are kept for backwards compatibility and assumes the downstream project has this module installed as a dependency. */
+const knownModuleArtifacts = {
+  KeysWithValueModule: "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json",
+  KeysInTableModule: "@latticexyz/world-modules/out/KeysInTableModule.sol/KeysInTableModule.json",
+  UniqueEntityModule: "@latticexyz/world-modules/out/UniqueEntityModule.sol/UniqueEntityModule.json",
+  Unstable_CallWithSignatureModule:
+    "@latticexyz/world-modules/out/Unstable_CallWithSignatureModule.sol/Unstable_CallWithSignatureModule.json",
+};
 
 export async function configToModules<config extends World>(
   config: config,
@@ -46,7 +54,7 @@ export async function configToModules<config extends World>(
       }
 
       const name = path.basename(artifactPath, ".json");
-      const artifact = await getContractArtifact({ artifactPath });
+      const artifact = await importContractArtifact({ artifactPath });
 
       // TODO: replace args with something more strongly typed
       const installArgs = mod.args

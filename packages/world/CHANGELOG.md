@@ -1,5 +1,257 @@
 # Change Log
 
+## 2.2.8
+
+### Patch Changes
+
+- Updated dependencies [7c7bdb2]
+  - @latticexyz/common@2.2.8
+  - @latticexyz/config@2.2.8
+  - @latticexyz/protocol-parser@2.2.8
+  - @latticexyz/store@2.2.8
+  - @latticexyz/schema-type@2.2.8
+
+## 2.2.7
+
+### Patch Changes
+
+- Updated dependencies [a08ba5e]
+  - @latticexyz/store@2.2.7
+  - @latticexyz/common@2.2.7
+  - @latticexyz/config@2.2.7
+  - @latticexyz/protocol-parser@2.2.7
+  - @latticexyz/schema-type@2.2.7
+
+## 2.2.6
+
+### Patch Changes
+
+- @latticexyz/common@2.2.6
+- @latticexyz/config@2.2.6
+- @latticexyz/protocol-parser@2.2.6
+- @latticexyz/schema-type@2.2.6
+- @latticexyz/store@2.2.6
+
+## 2.2.5
+
+### Patch Changes
+
+- @latticexyz/common@2.2.5
+- @latticexyz/config@2.2.5
+- @latticexyz/protocol-parser@2.2.5
+- @latticexyz/schema-type@2.2.5
+- @latticexyz/store@2.2.5
+
+## 2.2.4
+
+### Patch Changes
+
+- 50010fb: Bumped viem, wagmi, and abitype packages to their latest release.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.6 wagmi@2.12.11 @wagmi/core@2.13.5 abitype@1.0.6
+  ```
+
+- 1f24978: Added a config resolver to add default values for `modules` in the world config.
+- Updated dependencies [2f935cf]
+- Updated dependencies [50010fb]
+- Updated dependencies [8b4110e]
+  - @latticexyz/common@2.2.4
+  - @latticexyz/config@2.2.4
+  - @latticexyz/protocol-parser@2.2.4
+  - @latticexyz/schema-type@2.2.4
+  - @latticexyz/store@2.2.4
+
+## 2.2.3
+
+### Patch Changes
+
+- 8546452: MUD config now supports a `deploy.customWorld` option that, when used with the CLI, will deploy the specified custom World implementation.
+  Custom implementations must still follow [the World protocol](https://github.com/latticexyz/mud/tree/main/packages/world/ts/protocol-snapshots).
+
+  If you want to extend the world with new functions or override existing registered functions, we recommend using [root systems](https://mud.dev/world/systems#root-systems).
+  However, there are rare cases where this may not be enough to modify the native/internal World behavior.
+  Note that deploying a custom World opts out of the world factory, deterministic world deploys, and upgradeable implementation proxy.
+
+  ```ts
+  import { defineWorld } from "@latticexyz/world";
+
+  export default defineWorld({
+    customWorld: {
+      // path to custom world source from project root
+      sourcePath: "src/CustomWorld.sol",
+      // custom world contract name
+      name: "CustomWorld",
+    },
+  });
+  ```
+
+  - @latticexyz/common@2.2.3
+  - @latticexyz/config@2.2.3
+  - @latticexyz/protocol-parser@2.2.3
+  - @latticexyz/schema-type@2.2.3
+  - @latticexyz/store@2.2.3
+
+## 2.2.2
+
+### Patch Changes
+
+- @latticexyz/common@2.2.2
+- @latticexyz/config@2.2.2
+- @latticexyz/protocol-parser@2.2.2
+- @latticexyz/schema-type@2.2.2
+- @latticexyz/store@2.2.2
+
+## 2.2.1
+
+### Patch Changes
+
+- Updated dependencies [c0764a5]
+  - @latticexyz/common@2.2.1
+  - @latticexyz/config@2.2.1
+  - @latticexyz/protocol-parser@2.2.1
+  - @latticexyz/store@2.2.1
+  - @latticexyz/schema-type@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- 04c675c: Add a strongly typed `namespaceLabel` to the system config output.
+  It corresponds to the `label` of the namespace the system belongs to and can't be set manually.
+- Updated dependencies [69cd0a1]
+- Updated dependencies [04c675c]
+  - @latticexyz/common@2.2.0
+  - @latticexyz/config@2.2.0
+  - @latticexyz/store@2.2.0
+  - @latticexyz/protocol-parser@2.2.0
+  - @latticexyz/schema-type@2.2.0
+
+## 2.1.1
+
+### Patch Changes
+
+- 9e21e42: Bumped viem to `2.19.8` and abitype to `1.0.5`.
+
+  MUD projects using viem or abitype should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.19.8 abitype@1.0.5
+  ```
+
+- 6a66f57: Refactored `AccessControl` library exported from `@latticexyz/world` to be usable outside of the world package and updated module packages to use it.
+- 86a8104: Added `deploy` config options to systems in the MUD config:
+
+  - `disabled` to toggle deploying the system (defaults to `false`)
+  - `registerWorldFunctions` to toggle registering namespace-prefixed system functions on the world (defaults to `true`)
+
+  ```ts
+  import { defineWorld } from "@latticexyz/world";
+
+  export default defineWorld({
+    systems: {
+      HiddenSystem: {
+        deploy: {
+          registerWorldFunctions: false,
+        },
+      },
+    },
+  });
+  ```
+
+- 542ea54: Fixed an issue with worldgen when using a different `rootDir` from the current working directory, where worldgen would read system source files from the wrong place.
+- 57bf8c3: Add a strongly typed `namespaceLabel` to the table config output.
+  It corresponds to the `label` of the namespace the table belongs to and can't be set manually.
+- Updated dependencies [9e21e42]
+- Updated dependencies [2daaab1]
+- Updated dependencies [57bf8c3]
+  - @latticexyz/common@2.1.1
+  - @latticexyz/config@2.1.1
+  - @latticexyz/protocol-parser@2.1.1
+  - @latticexyz/schema-type@2.1.1
+  - @latticexyz/store@2.1.1
+
+## 2.1.0
+
+### Minor Changes
+
+- e85dc53: Tables and systems in config output now include a `label` property. Labels are now used throughout the codebase as a user-friendly way to reference the given resource: config keys, contract names, generated libraries, etc.
+
+  Inside `namespaces` config output, keys for tables and systems and their filenames will always correspond to their labels. This should make MUD tooling more intuitive and predictable. For backwards compatibility, `tables` config output still uses namespace-prefixed keys.
+
+  Labels replace the previous resource `name` usage, which is truncated to `bytes16` to be used as part of the resource ID and, in the future, may not always be human-readable.
+
+  These labels will soon be registered onchain so that developers can initialize a new MUD project from an existing world, generating config and interfaces with user-friendly names.
+
+- a10b453: MUD projects can now use multiple namespaces via a new top-level `namespaces` config option.
+
+  ```ts
+  import { defineWorld } from "@latticexyz/world";
+
+  export default defineWorld({
+    namespaces: {
+      game: {
+        tables: {
+          Player: { ... },
+          Position: { ... },
+        },
+      },
+      guilds: {
+        tables: {
+          Guild: { ... },
+        },
+        systems: {
+          MembershipSystem: { ... },
+          TreasurySystem: { ... },
+        },
+      },
+    },
+  });
+  ```
+
+  Once you use the top-level `namespaces` config option, your project will be in "multiple namespaces mode", which expects a source directory structure similar to the config structure: a top-level `namespaces` directory with nested namespace directories that correspond to each namespace label in the config.
+
+  ```
+  ~/guilds
+  ├── mud.config.ts
+  └── src
+      └── namespaces
+          ├── game
+          │   └── codegen
+          │       └── tables
+          │           ├── Player.sol
+          │           └── Position.sol
+          └── guilds
+              ├── MembershipSystem.sol
+              ├── TreasurySystem.sol
+              └── codegen
+                  └── tables
+                      └── Guild.sol
+  ```
+
+### Patch Changes
+
+- 570086e: Refactored worldgen in preparation for multiple namespaces.
+- 7129a16: Bumped `@arktype/util` and moved `evaluate`/`satisfy` usages to its `show`/`satisfy` helpers.
+- 3cbbc62: Refactored how worldgen resolves systems from the config and filesystem.
+- e49059f: Bumped `glob` dependency.
+- fb1cfef: Refactored how the config handles shorthand table definitions, greatly simplifying the codebase. This will make it easier to add support for multiple namespaces.
+- Updated dependencies [24e285d]
+- Updated dependencies [7129a16]
+- Updated dependencies [7129a16]
+- Updated dependencies [e85dc53]
+- Updated dependencies [a10b453]
+- Updated dependencies [69eb63b]
+- Updated dependencies [8d0453e]
+- Updated dependencies [fb1cfef]
+  - @latticexyz/store@2.1.0
+  - @latticexyz/config@2.1.0
+  - @latticexyz/common@2.1.0
+  - @latticexyz/protocol-parser@2.1.0
+  - @latticexyz/schema-type@2.1.0
+
 ## 2.0.12
 
 ### Patch Changes

@@ -3,43 +3,43 @@
     "file": "test/AccessControl.t.sol",
     "test": "testAccessControl",
     "name": "AccessControl: hasAccess (cold)",
-    "gasUsed": 6521
+    "gasUsed": 9111
   },
   {
     "file": "test/AccessControl.t.sol",
     "test": "testAccessControl",
     "name": "AccessControl: hasAccess (warm, namespace only)",
-    "gasUsed": 1300
+    "gasUsed": 1595
   },
   {
     "file": "test/AccessControl.t.sol",
     "test": "testAccessControl",
     "name": "AccessControl: hasAccess (warm)",
-    "gasUsed": 2527
+    "gasUsed": 3117
   },
   {
     "file": "test/AccessControl.t.sol",
     "test": "testRequireAccess",
     "name": "AccessControl: requireAccess (cold)",
-    "gasUsed": 6564
+    "gasUsed": 9154
   },
   {
     "file": "test/AccessControl.t.sol",
     "test": "testRequireAccess",
     "name": "AccessControl: requireAccess (warm)",
-    "gasUsed": 2566
+    "gasUsed": 3156
   },
   {
     "file": "test/AccessControl.t.sol",
     "test": "testRequireOwner",
     "name": "AccessControl: requireOwner (cold)",
-    "gasUsed": 3106
+    "gasUsed": 5401
   },
   {
     "file": "test/AccessControl.t.sol",
     "test": "testRequireOwner",
     "name": "AccessControl: requireOwner (warm)",
-    "gasUsed": 1107
+    "gasUsed": 1402
   },
   {
     "file": "test/BatchCall.t.sol",
@@ -123,7 +123,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterSystem",
     "name": "register a system",
-    "gasUsed": 185337
+    "gasUsed": 185349
   },
   {
     "file": "test/World.t.sol",
@@ -291,7 +291,7 @@
     "file": "test/WorldProxyFactory.t.sol",
     "test": "testWorldProxyFactoryGas",
     "name": "set WorldProxy implementation",
-    "gasUsed": 37541
+    "gasUsed": 37553
   },
   {
     "file": "test/WorldResourceId.t.sol",

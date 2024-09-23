@@ -1,12 +1,13 @@
+import fs from "node:fs/promises";
 import path from "node:path";
-import { formatAndWriteSolidity, loadAndExtractUserTypes } from "@latticexyz/common/codegen";
-import { getTableOptions } from "./tableOptions";
+import { formatAndWriteSolidity, renderEnums } from "@latticexyz/common/codegen";
 import { renderTable } from "./renderTable";
-import { renderTypesFromConfig } from "./renderTypesFromConfig";
 import { renderTableIndex } from "./renderTableIndex";
-import { rm } from "fs/promises";
 import { Store as StoreConfig } from "../config/v2/output";
-import { storeToV1 } from "../config/v2/compat";
+import { uniqueBy } from "@latticexyz/common/utils";
+import { getUserTypes } from "./getUserTypes";
+import { getUserTypesFilename } from "./getUserTypesFilename";
+import { getTableOptions } from "./getTableOptions";
 
 export type TablegenOptions = {
   /**
@@ -14,42 +15,54 @@ export type TablegenOptions = {
    */
   rootDir: string;
   config: StoreConfig;
-  remappings: [string, string][];
 };
 
-export async function tablegen({ rootDir, config, remappings }: TablegenOptions) {
-  const outputDirectory = path.join(rootDir, config.sourceDirectory, config.codegen.outputDirectory);
-  const configV1 = storeToV1(config);
-  const solidityUserTypes = loadAndExtractUserTypes(configV1.userTypes, outputDirectory, remappings);
-  const allTableOptions = getTableOptions(config, solidityUserTypes);
+export async function tablegen({ rootDir, config }: TablegenOptions) {
+  const userTypes = getUserTypes({ config });
 
-  const uniqueTableDirectories = Array.from(new Set(allTableOptions.map(({ outputPath }) => path.dirname(outputPath))));
-  await Promise.all(
-    uniqueTableDirectories.map(async (tableDir) => {
-      await rm(path.join(outputDirectory, tableDir), { recursive: true, force: true });
-    }),
-  );
-
-  // write tables to files
-  await Promise.all(
-    allTableOptions.map(async ({ outputPath, renderOptions }) => {
-      const fullOutputPath = path.join(outputDirectory, outputPath);
-      const output = renderTable(renderOptions);
-      await formatAndWriteSolidity(output, fullOutputPath, "Generated table");
-    }),
-  );
-
-  // write table index
-  if (allTableOptions.length > 0) {
-    const fullOutputPath = path.join(outputDirectory, config.codegen.indexFilename);
-    const output = renderTableIndex(allTableOptions);
-    await formatAndWriteSolidity(output, fullOutputPath, "Generated table index");
+  // Write enums to user types file
+  if (Object.keys(config.enums).length > 0) {
+    const userTypesFilename = path.join(rootDir, getUserTypesFilename({ config }));
+    const source = renderEnums(config.enums);
+    await formatAndWriteSolidity(source, userTypesFilename, "Generated types file with enums");
   }
 
-  // write types to file
-  if (Object.keys(configV1.enums).length > 0) {
-    const fullOutputPath = path.join(outputDirectory, config.codegen.userTypesFilename);
-    const output = renderTypesFromConfig(configV1);
-    await formatAndWriteSolidity(output, fullOutputPath, "Generated types file");
-  }
+  await Promise.all(
+    Object.values(config.namespaces).map(async (namespace) => {
+      const sourceDir = config.multipleNamespaces
+        ? path.join(config.sourceDirectory, "namespaces", namespace.label)
+        : config.sourceDirectory;
+      const codegenDir = path.join(sourceDir, config.codegen.outputDirectory);
+
+      const tables = Object.values(namespace.tables);
+      if (tables.length === 0) return;
+
+      const tableOptions = getTableOptions({
+        tables,
+        rootDir,
+        codegenDir,
+        userTypes,
+        storeImportPath: config.codegen.storeImportPath,
+      });
+
+      const tableDirs = uniqueBy(
+        tableOptions.map(({ outputPath }) => path.dirname(outputPath)),
+        (dir) => dir,
+      );
+      await Promise.all(tableDirs.map((dir) => fs.rm(dir, { recursive: true, force: true })));
+
+      await Promise.all(
+        tableOptions.map(async ({ outputPath, renderOptions }) => {
+          const source = renderTable(renderOptions);
+          return await formatAndWriteSolidity(source, outputPath, "Generated table");
+        }),
+      );
+
+      if (config.codegen.indexFilename !== false && tableOptions.length > 0) {
+        const codegenIndexPath = path.join(rootDir, codegenDir, config.codegen.indexFilename);
+        const source = renderTableIndex(codegenIndexPath, tableOptions);
+        await formatAndWriteSolidity(source, codegenIndexPath, "Generated table index");
+      }
+    }),
+  );
 }

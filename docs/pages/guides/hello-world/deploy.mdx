@@ -1,0 +1,57 @@
+# Deploy to a blockchain
+
+In this tutorial you deploy a MUD application to our test blockchain, [Garnet](https://garnetchain.com/bridge)
+
+## Setup
+
+[Create a new MUD application from the template](/quickstart).
+Use the `vanilla` template.
+
+```sh copy
+pnpm create mud@latest tutorial --template vanilla
+cd tutorial
+pnpm dev
+```
+
+## Deployment
+
+1. Change to the `contracts` package.
+
+   ```sh copy
+   cd packages/contracts
+   ```
+
+1. See that `foundry.toml` has a `[profile.garnet]` section with the RPC URL.
+
+1. Connect to [the Garnet faucet](https://garnetchain.com/faucet) to obtain test ETH.
+
+1. Specify the private key for the address that got the test ETH on Garnet.
+
+   ```sh copy
+   export PRIVATE_KEY=0x <your private key goes here>
+   ```
+
+1. Deploy using the [`mud deploy`](/cli/deploy) command.
+
+   ```sh copy
+   pnpm mud deploy --profile garnet
+   ```
+
+1. After the deployment is over, look at the `World` information.
+   The key, `17069`, is the chain ID for Garnet.
+
+   ```sh copy
+   cat worlds.json | jq .\"17069\"
+   ```
+
+1. To go to your application, [specify the chain ID on the URL](http://localhost:3000/?chainid=17069).
+   You can also quit out of the `pnpm dev` and specify the chain ID when running vite.
+
+   ```sh copy
+   cd packages/client
+   export VITE_CHAIN_ID=17069
+   pnpm vite
+   ```
+
+   When you do that, it is no longer necessary to specify the chain ID on the URL.
+   [The default URL](http://localhost:3000) takes you directly to the onchain application.

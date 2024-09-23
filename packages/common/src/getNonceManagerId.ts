@@ -4,15 +4,14 @@ import { getAction } from "viem/utils";
 
 export async function getNonceManagerId({
   client,
-  chainId: _chainId,
   address,
   blockTag,
 }: {
   client: Client;
-  chainId?: number;
   address: Hex;
   blockTag: BlockTag;
 }): Promise<string> {
-  const chainId = _chainId ?? client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
+  // TODO: improve this so we don't have to call getChainId every time
+  const chainId = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
   return `mud:createNonceManager:${chainId}:${getAddress(address)}:${blockTag}`;
 }

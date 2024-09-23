@@ -1,7 +1,6 @@
 import { PublicClient, encodePacked, size } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { and, eq } from "drizzle-orm";
-import { Store as StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import { tables } from "./tables";
 import { spliceHex } from "@latticexyz/common";
@@ -17,13 +16,12 @@ export type PostgresStorageAdapter = {
   cleanUp: () => Promise<void>;
 };
 
-export async function createStorageAdapter<config extends StoreConfig = StoreConfig>({
+export async function createStorageAdapter({
   database,
   publicClient,
 }: {
   database: PgDatabase<QueryResultHKT>;
   publicClient: PublicClient;
-  config?: config;
 }): Promise<PostgresStorageAdapter> {
   const cleanUp: (() => Promise<void>)[] = [];
 

@@ -1,0 +1,240 @@
+import { Callout } from "nextra/components";
+
+import { CollapseCode } from "../../../components/CollapseCode";
+
+# Keys in Table module
+
+[The `KeysInTable` module](https://github.com/latticexyz/mud/tree/main/packages/world-modules/src/modules/keysintable) tracks which keys are used with a specific table.
+This is useful if you need to be able to iterate through all the records of a table onchain.
+
+<Callout type="warning" emoji="💰">
+Using this module will add gas overhead to every write in the table it's used with.
+You can reduce this overhead by implementing your own "onchain index" pattern.
+
+</Callout>
+
+## Deployment
+
+It can be deployed multiple times, each time for a different table.
+For example, here is a `mud.config.ts` that deploys it for the `Tasks` table in [the React template](https://github.com/latticexyz/mud/tree/main/templates/react).
+
+<CollapseCode>
+
+```typescript filename="mud.config.ts" copy showLineNumbers {2,17-32}
+import { defineWorld } from "@latticexyz/world";
+import { resourceToHex } from "@latticexyz/common";
+
+export default defineWorld({
+  namespace: "app",
+  tables: {
+    Tasks: {
+      schema: {
+        id: "bytes32",
+        createdAt: "uint256",
+        completedAt: "uint256",
+        description: "string",
+      },
+      key: ["id"],
+    },
+  },
+  modules: [
+    {
+      root: true,
+      artifactPath: "@latticexyz/world-modules/out/KeysInTableModule.sol/KeysInTableModule.json",
+      args: [
+        {
+          type: "bytes32",
+          value: resourceToHex({
+            type: "table",
+            namespace: "app",
+            name: "Tasks",
+          }),
+        },
+      ],
+    },
+  ],
+});
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```typescript
+import { resourceToHex } from "@latticexyz/common";
+```
+
+We need to provide `KeysInTable` with the resource ID for the table.
+
+```typescript
+  modules: [
+    {
+```
+
+To install modules using `mud.config.ts`, you specify `modules:` which contains a list of module defintions.
+
+```typescript
+      root: true,
+      artifactPath: "@latticexyz/world-modules/out/KeysInTableModule.sol/KeysInTableModule.json",
+      args: [
+```
+
+- `artifactPath`, a link to the compiled JSON file for the module.
+- `root`, whether to install the module with [root namespace permissions](/world/systems#root-systems) or not.
+- `args` the module arguments.
+
+```typescript
+        {
+          type: "bytes32",
+          value:
+```
+
+The `args` list contains structures.
+Each structure has two fields:
+
+- `type`, the [Solidity data type](https://docs.soliditylang.org/en/latest/types.html)
+- `value`, the value
+
+```typescript
+resourceToHex({
+  type: "table",
+  namespace: "app",
+  name: "Tasks",
+});
+```
+
+[This function](https://github.com/latticexyz/mud/blob/main/packages/common/src/resourceToHex.ts) creates the [resourceID](/world/resource-ids) for us from the table's data.
+
+```typescript
+        }
+      ]
+    }
+  ]
+```
+
+</details>
+
+## Usage
+
+Installing the module creates two tables, `KeysInTable` and `UsedKeysIndex`.
+When entries are added in the source table, their keys are written to the arrays in `KeysInTable` and a hash of the keys is written to `keysHash`.
+This only applies from the time the module is installed, entries created prior to that don't get the reverse mapping.
+
+To get the keys you use [`getKeysInTable`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/keysintable/getKeysInTable.sol) with the identifier of the source table.
+
+For example, here is a Solidity script that reads the tasks added to `Tasks` after module installation.
+
+<CollapseCode>
+
+```solidity filename="UseGetKeysInTable.s.sol" copy showLineNumbers {9,19-23,25,27-33,35-39}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { getKeysInTable } from "@latticexyz/world-modules/src/modules/keysintable/getKeysInTable.sol";
+import { Tasks, TasksData } from "../src/codegen/index.sol";
+
+contract UseGetKeysInTable is Script {
+  function run() external {
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+    IWorld world = IWorld(worldAddress);
+    StoreSwitch.setStoreAddress(worldAddress);
+
+    vm.startBroadcast(deployerPrivateKey);
+    world.app__addTask("Walk the cat");
+    world.app__addTask("Cook delicious meal");
+    world.app__addTask("Practice Elvish");
+    vm.stopBroadcast();
+
+    bytes32[][] memory keys = getKeysInTable(Tasks._tableId);
+
+    console.log("Number of keys:", keys.length);
+    for (uint i = 0; i < keys.length; i++) {
+      console.log("\n");
+      console.log("Key #", i, ":");
+      for (uint j = 0; j < keys[i].length; j++) {
+        console.logBytes32(keys[i][j]);
+      }
+    }
+
+    console.log("\n\n");
+    console.log("Task descriptions");
+    for (uint i = 0; i < keys.length; i++) {
+      TasksData memory task = Tasks.get(keys[i][0]);
+      console.log(task.description);
+    }
+  }
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```solidity
+import { getKeysInTable } from "@latticexyz/world-modules/src/modules/keysintable/getKeysInTable.sol";
+```
+
+The function that gets the keys in the table.
+
+```solidity
+    StoreSwitch.setStoreAddress(worldAddress);
+```
+
+To use `getKeysInTable` we need to set the store address to `worldAddress`.
+
+```solidity
+    vm.startBroadcast(deployerPrivateKey);
+    world.app__addTask("Walk the cat");
+    world.app__addTask("Cook delicious meal");
+    world.app__addTask("Practice Elvish");
+    vm.stopBroadcast();
+```
+
+Creates three entries with different descriptions, to ensure we have entries to show.
+Note that this is the _only_ place in the script we need to send transactions.
+`getKeysInTable` is [a `view` function](https://docs.soliditylang.org/en/v0.8.26/contracts.html#view-functions), and does not change the state.
+
+```solidity
+    bytes32[][] memory keys = getKeysInTable(Tasks._tableId);
+```
+
+Get the key(s) by passing the Tasks table id as a parameter.
+
+```solidity
+    console.log("Number of keys:", keys.length);
+    for(uint i=0; i<keys.length; i++) {
+       console.log("\n");
+       console.log("Key #", i, ":");
+       for(uint j=0; j<keys[i].length; j++) {
+          console.logBytes32(keys[i][j]);
+       }
+    }
+```
+
+The `getKeysInTable` function returns a two-dimensional array.
+The first dimension is the keys in the table.
+The second dimension is the different key fields (in this case there is only one).
+
+```solidity
+    console.log("\n\n");
+    console.log("Task descriptions:");
+    for(uint i=0; i<keys.length; i++) {
+       TasksData memory task = Tasks.get(keys[i][0]);
+       console.log(task.description);
+    }
+```
+
+Once you have the key you can query the rest of the data using `Tasks.get`.
+In this example we print all the task descriptions.
+
+</details>
