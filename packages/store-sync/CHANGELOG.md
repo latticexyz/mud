@@ -1,5 +1,22 @@
 # @latticexyz/store-sync
 
+## 2.2.8
+
+### Patch Changes
+
+- 7c7bdb2: Removed unused generics and ensure that we're only passing around the generics we need, when we need them. Hopefully this improves TS performance in MUD projects.
+- Updated dependencies [7c7bdb2]
+- Updated dependencies [0f5b291]
+  - @latticexyz/common@2.2.8
+  - @latticexyz/block-logs-stream@2.2.8
+  - @latticexyz/config@2.2.8
+  - @latticexyz/protocol-parser@2.2.8
+  - @latticexyz/store@2.2.8
+  - @latticexyz/world@2.2.8
+  - @latticexyz/stash@2.2.8
+  - @latticexyz/recs@2.2.8
+  - @latticexyz/schema-type@2.2.8
+
 ## 2.2.7
 
 ### Patch Changes

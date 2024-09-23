@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.2.8
+
+### Patch Changes
+
+- 7c7bdb2: Removed unused generics and ensure that we're only passing around the generics we need, when we need them. Hopefully this improves TS performance in MUD projects.
+  - @latticexyz/schema-type@2.2.8
+
 ## 2.2.7
 
 ### Patch Changes
