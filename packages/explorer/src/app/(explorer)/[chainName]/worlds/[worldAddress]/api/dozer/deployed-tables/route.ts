@@ -13,7 +13,7 @@ export async function GET(request: Request, { params }: { params: { chainName: s
       address: worldAddress,
       query: `SELECT ${Object.keys(mudConfig.tables[storeTablesKey].schema).join(", ")} FROM ${storeTablesKey}`,
     });
-    const decodedData = data.result[0].slice(1).map((row: Hex[]) => {
+    const decodedData = data.result[0].slice(1).map((row: string[]) => {
       return decodeTable({
         tableId: row[0],
         keySchema: row[2],
