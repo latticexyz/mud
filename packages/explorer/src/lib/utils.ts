@@ -15,6 +15,10 @@ export function snakeCase(str: string) {
   return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 }
 
+export function bufferToBigInt(bufferData: number[]) {
+  return BigInt(Buffer.from(bufferData).toString());
+}
+
 export function formatBalance(wei: bigint) {
   const formatted = formatEther(wei);
   const magnitude = Math.floor(parseFloat(formatted)).toString().length;

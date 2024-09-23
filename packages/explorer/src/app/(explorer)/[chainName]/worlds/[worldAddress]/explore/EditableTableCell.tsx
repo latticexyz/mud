@@ -11,7 +11,7 @@ import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Checkbox } from "../../../../../../components/ui/Checkbox";
 import { useChain } from "../../../../../../hooks/useChain";
 import { cn } from "../../../../../../lib/utils";
-import { DeployedTable } from "./utils/decodeTable";
+import { DeployedTable } from "../api/utils/decodeTable";
 
 type Props = {
   name: string;
