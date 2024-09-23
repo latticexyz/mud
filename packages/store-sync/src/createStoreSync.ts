@@ -34,14 +34,13 @@ import { SyncStep } from "./SyncStep";
 import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/utils";
 import { getSnapshot } from "./getSnapshot";
 import { fetchAndFilterLogs } from "./fetchAndFilterLogs";
-import { Store as StoreConfig } from "@latticexyz/store";
 import { fromEventSource } from "./fromEventSource";
 
 const debug = parentDebug.extend("createStoreSync");
 
 const defaultFilters: SyncFilter[] = internalTableIds.map((tableId) => ({ tableId }));
 
-type CreateStoreSyncOptions<config extends StoreConfig = StoreConfig> = SyncOptions<config> & {
+type CreateStoreSyncOptions = SyncOptions & {
   storageAdapter: StorageAdapter;
   onProgress?: (opts: {
     step: SyncStep;
@@ -52,7 +51,7 @@ type CreateStoreSyncOptions<config extends StoreConfig = StoreConfig> = SyncOpti
   }) => void;
 };
 
-export async function createStoreSync<config extends StoreConfig = StoreConfig>({
+export async function createStoreSync({
   storageAdapter,
   onProgress,
   publicClient,
@@ -65,7 +64,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
   initialState,
   initialBlockLogs,
   indexerUrl: indexerUrlInput,
-}: CreateStoreSyncOptions<config>): Promise<SyncResult> {
+}: CreateStoreSyncOptions): Promise<SyncResult> {
   const filters: SyncFilter[] =
     initialFilters.length || tableIds.length
       ? [...initialFilters, ...tableIds.map((tableId) => ({ tableId })), ...defaultFilters]
@@ -317,15 +316,12 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
           }
         } catch (e) {
           const error = e as GetTransactionReceiptErrorType;
-
           if (error.name === "TransactionReceiptNotFoundError") {
             return;
           }
-
           throw error;
         }
       }),
-      tap((result) => debug("has tx?", tx, result)),
     );
 
     return await firstValueFrom(hasTransaction$.pipe(filter(isDefined)));

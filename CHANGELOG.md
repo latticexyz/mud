@@ -1,3 +1,67 @@
+## Version 2.2.8
+
+Release date: Mon Sep 23 2024
+
+### Patch changes
+
+**[feat(store-sync): remove unused generics (#3218)](https://github.com/latticexyz/mud/commit/7c7bdb26d0f87e2a5fc20c4eb34abb5167000ab9)** (@latticexyz/common, @latticexyz/store-sync)
+
+Removed unused generics and ensure that we're only passing around the generics we need, when we need them. Hopefully this improves TS performance in MUD projects.
+
+**[fix(create-mud): add missing three deps, fix types (#3221)](https://github.com/latticexyz/mud/commit/4fffb79d433d1052e4b3c9cce0215cf81eba9b11)** (create-mud)
+
+Fixed types in threejs template after dependency bump.
+
+**[feat(cli): paginate world deploy logs (#3217)](https://github.com/latticexyz/mud/commit/0f5b2916edfa24b9d0ad1b82df56aed57f7e657d)** (@latticexyz/cli)
+
+When deploying to an existing world, the deployer now paginates with [`fetchLogs`](https://github.com/latticexyz/mud/blob/main/packages/block-logs-stream/src/fetchLogs.ts) to find the world deployment.
+
+**[feat(cli): paginate world deploy logs (#3217)](https://github.com/latticexyz/mud/commit/0f5b2916edfa24b9d0ad1b82df56aed57f7e657d)** (@latticexyz/block-logs-stream)
+
+- For block range size errors, `fetchLogs` now reduces the max block range for subsequent requests in its loop. For block out of range or response size errors, only the current request's block range is reduced until the request succeeds, then it resets to the max block range.
+- Added `fetchBlockLogs` to find all matching logs of the given block range, grouped by block number, in a single async call.
+- Loosened the `publicClient` type and switched to tree shakable actions.
+
+**[fix(cli): wait for world init before transferring ownership (#3220)](https://github.com/latticexyz/mud/commit/b0711983a5f72f9b3236e6cbcef3dae7a424a09c)** (@latticexyz/cli)
+
+If the project is using a custom world, the deployer now waits for the init transaction to be confirmed before transferring ownership of the world.
+
+---
+
+## Version 2.2.7
+
+Release date: Fri Sep 20 2024
+
+### Patch changes
+
+**[feat(cli): quieter automine (#3212)](https://github.com/latticexyz/mud/commit/58f101e45ad50e064779cbc441246a22b70efa07)** (@latticexyz/cli)
+
+Reduced the log noise from enabling/disabling automine on non-Anvil chains.
+
+**[fix(explorer): better observer decorator types (#3206)](https://github.com/latticexyz/mud/commit/5a6c03c6bc02c980ca051dadd8e20560ac25c771)** (@latticexyz/explorer)
+
+Fixed `observer` decorator types so it can be used in more places.
+
+**[feat(explorer): filterable tables selector (#3203)](https://github.com/latticexyz/mud/commit/7ac2a0d5ffd3f65d89318fc5778121ddf45bb5e1)** (@latticexyz/explorer)
+
+Table selector of the Explore tab now has an input for searching/filtering tables by name.
+
+**[fix(store): better enumValues type (#3211)](https://github.com/latticexyz/mud/commit/a08ba5e31e90bf3208919bc1d5e08c1ba9524130)** (@latticexyz/store)
+
+Improved config output type of `enumValues`.
+
+**[refactor: waitForStateChange -> waitForTransaction (#3210)](https://github.com/latticexyz/mud/commit/d21c1d1817ec2394007b28c90fec5a81f1fdd3d0)** (@latticexyz/explorer)
+
+Renamed optional `waitForStateChange` param in `observer()` decorator to `waitForTransaction` to better align with `@latticexyz/store-sync` packages.
+
+```diff
+ const { waitForTransaction } = syncToZustand(...);
+-observer({ waitForStateChange: waitForTransaction });
++observer({ waitForTransaction });
+```
+
+---
+
 ## Version 2.2.6
 
 Release date: Thu Sep 19 2024

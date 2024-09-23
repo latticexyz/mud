@@ -9,10 +9,10 @@ import { SyncStep } from "../SyncStep";
 import { configToTables } from "../configToTables";
 import { merge } from "@ark/util";
 
-export type SyncToRecsOptions<config extends StoreConfig = StoreConfig, extraTables extends Tables = Tables> = Omit<
-  SyncOptions,
-  "config"
-> & {
+export type SyncToRecsOptions<
+  config extends StoreConfig = StoreConfig,
+  extraTables extends Tables = Tables,
+> = SyncOptions & {
   world: RecsWorld;
   config: config;
   tables?: extraTables;
@@ -46,7 +46,6 @@ export async function syncToRecs<config extends StoreConfig, extraTables extends
 
   const storeSync = await createStoreSync({
     storageAdapter,
-    config,
     ...syncOptions,
     onProgress: ({ step, percentage, latestBlockNumber, lastBlockNumberProcessed, message }) => {
       // already live, no need for more progress updates

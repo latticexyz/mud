@@ -2,7 +2,6 @@ import { Hex, PublicClient, concatHex, getAddress } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { and, eq } from "drizzle-orm";
 import { buildTable } from "./buildTable";
-import { Store as StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
@@ -22,16 +21,14 @@ export type PostgresStorageAdapter = {
   cleanUp: () => Promise<void>;
 };
 
-export async function createStorageAdapter<config extends StoreConfig = StoreConfig>({
+export async function createStorageAdapter({
   database,
   publicClient,
-  config,
 }: {
   database: PgDatabase<QueryResultHKT>;
   publicClient: PublicClient;
-  config?: config;
 }): Promise<PostgresStorageAdapter> {
-  const bytesStorageAdapter = await createBytesStorageAdapter({ database, publicClient, config });
+  const bytesStorageAdapter = await createBytesStorageAdapter({ database, publicClient });
   const cleanUp: (() => Promise<void>)[] = [];
 
   async function postgresStorageAdapter({ blockNumber, logs }: StorageAdapterBlock): Promise<void> {
