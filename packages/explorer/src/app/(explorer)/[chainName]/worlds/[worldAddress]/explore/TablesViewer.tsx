@@ -1,11 +1,10 @@
 import { ArrowUpDown, Loader } from "lucide-react";
-import { parseAsArrayOf, parseAsBoolean, parseAsJson, parseAsString, useQueryState } from "nuqs";
-import { useRef } from "react";
+import { parseAsBoolean, parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { internalTableNames } from "@latticexyz/store-sync/sqlite";
 import { useQuery } from "@tanstack/react-query";
 import {
   ColumnDef,
-  ColumnSort,
+  SortingState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -20,14 +19,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { bufferToBigInt } from "../utils/bufferToBigInt";
 import { EditableTableCell } from "./EditableTableCell";
 
+const emptyColumnSort: SortingState = [];
+
 export function TablesViewer() {
   const [selectedTableId] = useQueryState("tableId");
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [showAllColumns, setShowAllColumns] = useQueryState("showAllColumns", parseAsBoolean.withDefault(false));
-  const [sorting, setSorting] = useQueryState(
-    "sort",
-    parseAsArrayOf(parseAsJson<ColumnSort>()).withDefault(useRef([]).current),
-  );
+  const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(emptyColumnSort));
 
   const { data: schema } = useQuery({
     queryKey: ["schema", { table: selectedTableId }],
