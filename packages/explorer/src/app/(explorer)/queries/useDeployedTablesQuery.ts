@@ -4,7 +4,7 @@ import { anvil } from "viem/chains";
 import mudConfig from "@latticexyz/store/mud.config";
 import { useQuery } from "@tanstack/react-query";
 import { internalNamespaces } from "../../../common";
-import { decodeTable } from "../api/utils/decodeTable";
+import { DeployedTable, decodeTable } from "../api/utils/decodeTable";
 import { useChain } from "../hooks/useChain";
 import { useIndexerApiUrl } from "../hooks/useIndexerApiUrl";
 import { DozerResponse } from "../types";
@@ -14,7 +14,7 @@ export function useDeployedTablesQuery() {
   const { id: chainId } = useChain();
   const indexerApiUrl = useIndexerApiUrl();
 
-  return useQuery({
+  return useQuery<DozerResponse, Error, DeployedTable[]>({
     queryKey: ["deployedTables", worldAddress, chainName],
     queryFn: async () => {
       const storeTablesKey = "store__Tables";

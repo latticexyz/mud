@@ -21,7 +21,7 @@ import { useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { EditableTableCell } from "./EditableTableCell";
 
 type Props = {
-  tableData: ReturnType<typeof useTableDataQuery>["data"];
+  tableData: NonNullable<ReturnType<typeof useTableDataQuery>["data"]>;
   deployedTable: DeployedTable;
 };
 
@@ -30,49 +30,47 @@ const initialSortingState: SortingState = [];
 export function TablesViewer({ deployedTable, tableData }: Props) {
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
+  const { columns, rows } = tableData;
 
-  const columns = Object.keys(deployedTable?.schema || {});
-  const tableColumns: ColumnDef<getSchemaPrimitives<Schema>>[] = columns
-    .filter((name) => columns.includes(name))
-    .map((name) => {
-      const type = deployedTable?.schema[name].type;
-      return {
-        accessorKey: name,
-        header: ({ column }) => {
-          return (
-            <Button
-              variant="ghost"
-              className="-ml-4"
-              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            >
-              <span className="text-orange-500">{name}</span>
-              <span className="ml-1 opacity-70">({type})</span>
-              <ArrowUpDownIcon className="ml-2 h-4 w-4" />
-            </Button>
-          );
-        },
-        cell: ({
-          row,
-        }: {
-          row: {
-            getValue: (name: string) => string;
-          };
-        }) => {
-          const namespace = deployedTable?.namespace;
-          const keysSchema = Object.keys(deployedTable?.keySchema || {});
-          const keyTuple = keysSchema?.map((key) => row.getValue(key));
-          const value = row.getValue(name)?.toString();
+  const tableColumns: ColumnDef<getSchemaPrimitives<Schema>>[] = columns.map((name) => {
+    const type = deployedTable?.schema[name]?.type;
+    return {
+      accessorKey: name,
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            className="-ml-4"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            <span className="text-orange-500">{name}</span>
+            <span className="ml-1 opacity-70">({type})</span>
+            <ArrowUpDownIcon className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({
+        row,
+      }: {
+        row: {
+          getValue: (name: string) => string;
+        };
+      }) => {
+        const namespace = deployedTable?.namespace;
+        const keysSchema = Object.keys(deployedTable?.keySchema || {});
+        const keyTuple = keysSchema?.map((key) => row.getValue(key));
+        const value = row.getValue(name)?.toString();
 
-          if (keysSchema.includes(name) || internalNamespaces.includes(namespace)) {
-            return value;
-          }
-          return <EditableTableCell name={name} deployedTable={deployedTable} keyTuple={keyTuple} value={value} />;
-        },
-      };
-    });
+        if (keysSchema.includes(name) || internalNamespaces.includes(namespace)) {
+          return value;
+        }
+        return <EditableTableCell name={name} deployedTable={deployedTable} keyTuple={keyTuple} value={value} />;
+      },
+    };
+  });
 
   const table = useReactTable({
-    data: tableData,
+    data: rows,
     columns: tableColumns,
     initialState: {
       pagination: {

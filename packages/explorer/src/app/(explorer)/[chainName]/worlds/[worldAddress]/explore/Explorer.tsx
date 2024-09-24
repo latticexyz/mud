@@ -5,7 +5,7 @@ import { useQueryState } from "nuqs";
 import { anvil } from "viem/chains";
 import { useEffect, useState } from "react";
 import { useChain } from "../../../../hooks/useChain";
-import { useTableId } from "../../../../hooks/useTableId";
+import { useTableName } from "../../../../hooks/useTableName";
 import { useDeployedTablesQuery } from "../../../../queries/useDeployedTablesQuery";
 import { useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { SQLEditor } from "./SQLEditor";
@@ -16,20 +16,20 @@ export function Explorer() {
   const { id: chainId } = useChain();
   const [query, setQuery] = useState("");
   const [selectedTableId] = useQueryState("tableId");
-  const { data: deployedTables } = useDeployedTablesQuery();
+  const { data: deployedTables, isLoading: deployedTablesIsLoading } = useDeployedTablesQuery();
   const deployedTable = deployedTables?.find(({ tableId }) => tableId === selectedTableId);
-  const tableId = useTableId(deployedTable);
-  const { data: tableData } = useTableDataQuery({ deployedTable, query });
-  const isLoading = !deployedTable || !tableData;
+  const tableName = useTableName(deployedTable);
+  const { data: tableData, isLoading: tableDataIsLoading } = useTableDataQuery({ deployedTable, query });
+  const isLoading = !deployedTable || !tableData || deployedTablesIsLoading || tableDataIsLoading;
 
   useEffect(() => {
-    if (!deployedTable || !tableId) return;
+    if (!deployedTable || !tableName) return;
     if (chainId === anvil.id) {
-      setQuery(`SELECT * FROM "${tableId}"`);
+      setQuery(`SELECT * FROM "${tableName}"`);
     } else {
-      setQuery(`SELECT ${Object.keys(deployedTable.schema).join(", ")} FROM ${tableId}`);
+      setQuery(`SELECT ${Object.keys(deployedTable.schema).join(", ")} FROM ${tableName}`);
     }
-  }, [chainId, deployedTable, tableId]);
+  }, [chainId, deployedTable, setQuery, tableName]);
 
   return (
     <>

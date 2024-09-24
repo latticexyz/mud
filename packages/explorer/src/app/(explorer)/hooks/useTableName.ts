@@ -4,7 +4,7 @@ import { supportedChains, validateChainName } from "../../../common";
 import { DeployedTable } from "../api/utils/decodeTable";
 import { snakeCase } from "../lib/utils";
 
-export function useTableId(deployedTable?: DeployedTable) {
+export function useTableName(deployedTable?: DeployedTable) {
   const { chainName, worldAddress } = useParams();
   if (!deployedTable) return undefined;
 

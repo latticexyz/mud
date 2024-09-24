@@ -29,7 +29,7 @@ export function EditableTableCell({ name, deployedTable, keyTuple, value: defaul
   const account = useAccount();
   const tableId = deployedTable?.tableId;
   const valueSchema = deployedTable?.valueSchema;
-  const type = valueSchema[name].type;
+  const type = valueSchema[name]?.type;
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (newValue: unknown) => {
