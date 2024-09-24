@@ -31,7 +31,7 @@ export function SQLEditor() {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input {...field} className="pr-[90px]" disabled={!query} />
+                  <Input {...field} className="pr-[90px]" />
                 </FormControl>
               </FormItem>
             )}
