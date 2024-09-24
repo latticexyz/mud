@@ -27,9 +27,8 @@ export function EditableTableCell({ name, deployedTable, keyTuple, value: defaul
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
   const account = useAccount();
-  const tableId = deployedTable?.tableId;
-  const valueSchema = deployedTable?.valueSchema;
-  const type = valueSchema[name]?.type;
+  const { tableId, valueSchema } = deployedTable;
+  const type = valueSchema[name].type;
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (newValue: unknown) => {

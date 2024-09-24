@@ -34,7 +34,7 @@ export function Explorer() {
         setQuery(`SELECT ${Object.keys(deployedTable.schema).join(", ")} FROM ${tableName}`);
       }
     }
-  }, [chainId, setQuery, selectedTableId, deployedTable, worldAddress, prevSelectedTableId]);
+  }, [chainId, setQuery, selectedTableId, deployedTable, worldAddress, prevSelectedTableId, query]);
 
   return (
     <>
