@@ -1,10 +1,11 @@
 import { ArrowUpDown, Loader } from "lucide-react";
-import { parseAsBoolean, parseAsJson, useQueryState } from "nuqs";
+import { parseAsArrayOf, parseAsBoolean, parseAsJson, parseAsString, useQueryState } from "nuqs";
+import { useRef } from "react";
 import { internalTableNames } from "@latticexyz/store-sync/sqlite";
 import { useQuery } from "@tanstack/react-query";
 import {
   ColumnDef,
-  SortingState,
+  ColumnSort,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -21,9 +22,12 @@ import { EditableTableCell } from "./EditableTableCell";
 
 export function TablesViewer() {
   const [selectedTableId] = useQueryState("tableId");
-  const [globalFilter, setGlobalFilter] = useQueryState("globalFilter");
+  const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [showAllColumns, setShowAllColumns] = useQueryState("showAllColumns", parseAsBoolean.withDefault(false));
-  const [sorting, setSorting] = useQueryState("sorting", parseAsJson<SortingState>().withDefault([]));
+  const [sorting, setSorting] = useQueryState(
+    "sort",
+    parseAsArrayOf(parseAsJson<ColumnSort>()).withDefault(useRef([]).current),
+  );
 
   const { data: schema } = useQuery({
     queryKey: ["schema", { table: selectedTableId }],
@@ -160,7 +164,7 @@ export function TablesViewer() {
       <div className="flex items-center justify-between gap-4 pb-4">
         <Input
           placeholder="Filter all columns..."
-          value={globalFilter ?? ""}
+          value={globalFilter}
           onChange={(event) => table.setGlobalFilter(event.target.value)}
           className="max-w-sm rounded border px-2 py-1"
         />
