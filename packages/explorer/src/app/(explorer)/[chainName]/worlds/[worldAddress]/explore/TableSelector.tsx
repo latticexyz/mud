@@ -51,7 +51,13 @@ export function TableSelector({ tables }: { tables?: DeployedTable[] }) {
     <div className="w-full py-4">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between">
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-full justify-between"
+            disabled={!tables}
+          >
             {selectedTable && (
               <TableSelectorItem table={selectedTable} selected={selectedTableId === selectedTable.tableId} />
             )}

@@ -23,7 +23,7 @@ export async function POST(request: Request) {
         throw new Error("No data found");
       }
 
-      const columns = Object.keys(data[0]);
+      const columns = Object.keys(data[0]).map((key) => key.replaceAll("_", "").toLowerCase());
       const rows = data.map((row) => Object.values(row).map((value) => value.toString()));
       result.push([columns, ...rows]);
     }

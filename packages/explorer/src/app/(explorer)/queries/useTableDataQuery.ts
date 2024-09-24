@@ -3,7 +3,6 @@ import { Hex } from "viem";
 import { useQuery } from "@tanstack/react-query";
 import { DeployedTable } from "../api/utils/decodeTable";
 import { useIndexerApiUrl } from "../hooks/useIndexerApiUrl";
-import { snakeCase } from "../lib/utils";
 import { DozerResponse } from "../types";
 
 type Props = {
@@ -11,7 +10,7 @@ type Props = {
   query: string | undefined;
 };
 
-type TableData = {
+export type TableData = {
   columns: string[];
   rows: Record<string, string>[];
 };
@@ -44,9 +43,7 @@ export function useTableDataQuery({ deployedTable, query }: Props) {
       const schemaKeys = Object.keys(deployedTable.schema);
       const result = data.result[0];
       const columnKeys = result[0].map((columnKey) => {
-        const schemaKey = schemaKeys.find(
-          (schemaKey) => snakeCase(schemaKey) === columnKey || schemaKey.toLowerCase() === columnKey,
-        );
+        const schemaKey = schemaKeys.find((schemaKey) => schemaKey.toLowerCase() === columnKey);
         return schemaKey || columnKey;
       });
       const rows = result.slice(1).map((row) => Object.fromEntries(columnKeys.map((key, index) => [key, row[index]])));
@@ -57,6 +54,6 @@ export function useTableDataQuery({ deployedTable, query }: Props) {
       };
     },
     enabled: !!deployedTable && !!query,
-    refetchInterval: 1000,
+    refetchInterval: 2_000,
   });
 }

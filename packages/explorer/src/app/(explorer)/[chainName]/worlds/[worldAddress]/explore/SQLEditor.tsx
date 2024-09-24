@@ -1,16 +1,13 @@
 import { PlayIcon } from "lucide-react";
+import { useQueryState } from "nuqs";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../../../../../../components/ui/Button";
 import { Form, FormControl, FormField, FormItem } from "../../../../../../components/ui/Form";
 import { Input } from "../../../../../../components/ui/Input";
 
-type Props = {
-  query: string | undefined;
-  setQuery: (query: string) => void;
-};
-
-export function SQLEditor({ query, setQuery }: Props) {
+export function SQLEditor() {
+  const [query, setQuery] = useQueryState("query");
   const form = useForm({
     defaultValues: {
       query: query || "",
