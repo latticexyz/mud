@@ -19,18 +19,18 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { bufferToBigInt } from "../utils/bufferToBigInt";
 import { EditableTableCell } from "./EditableTableCell";
 
-const emptyColumnSort: SortingState = [];
+const initialSortingState: SortingState = [];
 
 export function TablesViewer() {
-  const [selectedTableId] = useQueryState("tableId");
+  const [selectedTableId] = useQueryState("tableId", parseAsString.withDefault(""));
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [showAllColumns, setShowAllColumns] = useQueryState("showAllColumns", parseAsBoolean.withDefault(false));
-  const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(emptyColumnSort));
+  const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
 
   const { data: schema } = useQuery({
     queryKey: ["schema", { table: selectedTableId }],
     queryFn: async () => {
-      const response = await fetch(`/api/schema?table=${selectedTableId}`);
+      const response = await fetch(`/api/schema?${new URLSearchParams({ table: selectedTableId })}`);
       return response.json();
     },
     select: (data) => {
@@ -41,12 +41,13 @@ export function TablesViewer() {
         return !column.name.startsWith("__");
       });
     },
+    enabled: Boolean(selectedTableId),
   });
 
   const { data: rows } = useQuery({
     queryKey: ["rows", { table: selectedTableId }],
     queryFn: async () => {
-      const response = await fetch(`/api/rows?table=${selectedTableId}`);
+      const response = await fetch(`/api/rows?${new URLSearchParams({ table: selectedTableId })}`);
       return response.json();
     },
     select: (data) => {
@@ -68,7 +69,7 @@ export function TablesViewer() {
   const { data: mudTableConfig } = useQuery({
     queryKey: ["table", { selectedTableId }],
     queryFn: async () => {
-      const response = await fetch(`/api/table?table=${selectedTableId}`);
+      const response = await fetch(`/api/table?${new URLSearchParams({ table: selectedTableId })}`);
       return response.json();
     },
     select: (data) => {
