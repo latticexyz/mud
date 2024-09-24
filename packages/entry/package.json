@@ -34,7 +34,7 @@
     "build": "pnpm run build:js",
     "build:js": "tsup && vite build",
     "clean": "pnpm run clean:js",
-    "clean:js": "rimraf dist",
+    "clean:js": "shx rm -rf dist",
     "dev": "tsup --watch & vite build --watch",
     "playground": "mprocs",
     "test": "tsc --noEmit && vitest",
