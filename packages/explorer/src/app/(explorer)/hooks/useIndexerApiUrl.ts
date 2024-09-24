@@ -3,7 +3,7 @@ import { useChain } from "./useChain";
 
 const dozerUrl = {
   [garnet.id]: "https://indexer.mud.garnetchain.com/q",
-  [redstone.id]: "https://indexer.mud.redstone.xyz/q",
+  [redstone.id]: "https://indexer.mud.redstonechain.com/q",
 } as const;
 
 export function useIndexerApiUrl() {
