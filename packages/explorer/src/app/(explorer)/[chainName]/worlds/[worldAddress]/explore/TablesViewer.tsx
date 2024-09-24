@@ -1,6 +1,5 @@
 import { ArrowUpDown, Loader } from "lucide-react";
-import { parseAsBoolean, useQueryState } from "nuqs";
-import { useState } from "react";
+import { parseAsBoolean, parseAsJson, useQueryState } from "nuqs";
 import { internalTableNames } from "@latticexyz/store-sync/sqlite";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -23,8 +22,8 @@ import { EditableTableCell } from "./EditableTableCell";
 export function TablesViewer() {
   const [selectedTableId] = useQueryState("tableId");
   const [globalFilter, setGlobalFilter] = useQueryState("globalFilter");
-  const [showAllColumns, setShowAllColumns] = useQueryState("showAllColumns", parseAsBoolean);
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [showAllColumns, setShowAllColumns] = useQueryState("showAllColumns", parseAsBoolean.withDefault(false));
+  const [sorting, setSorting] = useQueryState("sorting", parseAsJson<SortingState>().withDefault([]));
 
   const { data: schema } = useQuery({
     queryKey: ["schema", { table: selectedTableId }],
