@@ -17,7 +17,7 @@ export function useWorldAbiQuery(): UseQueryResult<AbiQueryResult> {
     queryKey: ["worldAbi", chainName, worldAddress],
     queryFn: async () => {
       const res = await fetch(
-        `/api/world-abi/?${new URLSearchParams({ chainId: chainId.toString(), worldAddress: worldAddress as Hex })}`,
+        `/api/world-abi?${new URLSearchParams({ chainId: chainId.toString(), worldAddress: worldAddress as Hex })}`,
       );
       const data = await res.json();
       return data;

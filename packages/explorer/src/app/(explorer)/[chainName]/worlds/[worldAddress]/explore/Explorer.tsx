@@ -1,6 +1,7 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { LoaderIcon } from "lucide-react";
+import { useQueryState } from "nuqs";
 import { anvil } from "viem/chains";
 import { useEffect, useState } from "react";
 import { useChain } from "../../../../hooks/useChain";
@@ -14,12 +15,12 @@ import { TablesViewer } from "./TablesViewer";
 export function Explorer() {
   const { id: chainId } = useChain();
   const [query, setQuery] = useState("");
-  const searchParams = useSearchParams();
+  const [selectedTableId] = useQueryState("tableId");
   const { data: deployedTables } = useDeployedTablesQuery();
-  const selectedTableId = searchParams.get("tableId") ?? deployedTables?.[0]?.tableId;
   const deployedTable = deployedTables?.find(({ tableId }) => tableId === selectedTableId);
   const tableId = useTableId(deployedTable);
-  const { data: tableData, isLoading } = useTableDataQuery({ deployedTable, query });
+  const { data: tableData } = useTableDataQuery({ deployedTable, query });
+  const isLoading = !deployedTable || !tableData;
 
   useEffect(() => {
     if (!deployedTable || !tableId) return;
@@ -34,7 +35,9 @@ export function Explorer() {
     <>
       {chainId !== anvil.id && <SQLEditor query={query} setQuery={setQuery} />}
       <TableSelector tables={deployedTables} />
-      <TablesViewer deployedTable={deployedTable} data={tableData} isLoading={isLoading} />
+
+      {isLoading && <LoaderIcon className="animate-spin" />}
+      {!isLoading && <TablesViewer deployedTable={deployedTable} tableData={tableData} />}
     </>
   );
 }

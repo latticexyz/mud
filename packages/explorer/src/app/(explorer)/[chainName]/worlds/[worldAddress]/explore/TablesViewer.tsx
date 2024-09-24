@@ -1,6 +1,5 @@
-import { ArrowUpDown, Loader } from "lucide-react";
+import { ArrowUpDownIcon } from "lucide-react";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
-import { useMemo } from "react";
 import { Schema } from "@latticexyz/config";
 import { getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
 import {
@@ -22,66 +21,58 @@ import { useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { EditableTableCell } from "./EditableTableCell";
 
 type Props = {
-  data: ReturnType<typeof useTableDataQuery>["data"] | undefined;
-  deployedTable: DeployedTable | undefined;
-  isLoading: boolean;
+  tableData: ReturnType<typeof useTableDataQuery>["data"];
+  deployedTable: DeployedTable;
 };
 
 const initialSortingState: SortingState = [];
 
-export function TablesViewer({ data, deployedTable, isLoading }: Props) {
+export function TablesViewer({ deployedTable, tableData }: Props) {
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
 
-  const tableColumns: ColumnDef<getSchemaPrimitives<Schema>>[] = useMemo(() => {
-    if (!deployedTable) return [];
-
-    const columns = Object.keys(deployedTable.schema);
-    return (
-      columns
-        // Filter by query columns. Note: columns fetched from dozer are lowercase.
-        .filter((name) => columns.includes(name) || columns.includes(name.toLowerCase()))
-        .map((name) => {
-          const type = deployedTable.schema[name].type;
-          return {
-            accessorKey: name,
-            header: ({ column }) => {
-              return (
-                <Button
-                  variant="ghost"
-                  className="-ml-4"
-                  onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                  <span className="text-orange-500">{name}</span>
-                  <span className="ml-1 opacity-70">({type})</span>
-                  <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-              );
-            },
-            cell: ({
-              row,
-            }: {
-              row: {
-                getValue: (name: string) => string;
-              };
-            }) => {
-              const namespace = deployedTable?.namespace;
-              const keysSchema = Object.keys(deployedTable?.keySchema || {});
-              const keyTuple = keysSchema?.map((key) => row.getValue(key));
-              const value = row.getValue(name)?.toString();
-
-              if (keysSchema.includes(name) || internalNamespaces.includes(namespace)) {
-                return value;
-              }
-              return <EditableTableCell name={name} deployedTable={deployedTable} keyTuple={keyTuple} value={value} />;
-            },
+  const columns = Object.keys(deployedTable?.schema || {});
+  const tableColumns: ColumnDef<getSchemaPrimitives<Schema>>[] = columns
+    .filter((name) => columns.includes(name))
+    .map((name) => {
+      const type = deployedTable?.schema[name].type;
+      return {
+        accessorKey: name,
+        header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              className="-ml-4"
+              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+              <span className="text-orange-500">{name}</span>
+              <span className="ml-1 opacity-70">({type})</span>
+              <ArrowUpDownIcon className="ml-2 h-4 w-4" />
+            </Button>
+          );
+        },
+        cell: ({
+          row,
+        }: {
+          row: {
+            getValue: (name: string) => string;
           };
-        })
-    );
-  }, [deployedTable]);
+        }) => {
+          const namespace = deployedTable?.namespace;
+          const keysSchema = Object.keys(deployedTable?.keySchema || {});
+          const keyTuple = keysSchema?.map((key) => row.getValue(key));
+          const value = row.getValue(name)?.toString();
+
+          if (keysSchema.includes(name) || internalNamespaces.includes(namespace)) {
+            return value;
+          }
+          return <EditableTableCell name={name} deployedTable={deployedTable} keyTuple={keyTuple} value={value} />;
+        },
+      };
+    });
 
   const table = useReactTable({
-    data: data || [],
+    data: tableData,
     columns: tableColumns,
     initialState: {
       pagination: {
@@ -101,14 +92,6 @@ export function TablesViewer({ data, deployedTable, isLoading }: Props) {
     },
   });
 
-  if (!deployedTable || !data) {
-    return (
-      <div className="rounded-md border p-4">
-        <Loader className="animate-spin" />
-      </div>
-    );
-  }
-
   return (
     <>
       <div className="flex items-center justify-between gap-4 pb-4">
@@ -120,43 +103,40 @@ export function TablesViewer({ data, deployedTable, isLoading }: Props) {
         />
       </div>
 
-      {isLoading && <Loader className="animate-spin" />}
-      {!isLoading && (
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                      </TableHead>
-                    );
-                  })}
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                  ))}
                 </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={tableColumns.length} className="h-24 text-center">
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={tableColumns.length} className="h-24 text-center">
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="space-x-2">

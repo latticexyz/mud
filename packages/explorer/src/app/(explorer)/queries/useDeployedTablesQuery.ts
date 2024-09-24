@@ -19,8 +19,10 @@ export function useDeployedTablesQuery() {
     queryFn: async () => {
       const storeTablesKey = "store__Tables";
       const tableName = chainId === anvil.id ? `${worldAddress}__${storeTablesKey}` : storeTablesKey;
-      const columns = chainId === anvil.id ? "*" : Object.keys(mudConfig.tables[storeTablesKey].schema).join(", ");
-      const query = `SELECT ${columns} FROM "${tableName}"`;
+      const query =
+        chainId === anvil.id
+          ? `SELECT * FROM "${tableName}"`
+          : `SELECT ${Object.keys(mudConfig.tables[storeTablesKey].schema).join(", ")} FROM ${tableName}`;
 
       const response = await fetch(indexerApiUrl, {
         method: "POST",
