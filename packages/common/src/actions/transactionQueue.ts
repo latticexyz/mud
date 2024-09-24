@@ -19,10 +19,10 @@ export type TransactionQueueOptions<chain extends Chain> = {
   queueConcurrency?: number;
 };
 
-export function transactionQueue<chain extends Chain, account extends Account>(
+export function transactionQueue<chain extends Chain>(
   opts: TransactionQueueOptions<chain> = {},
-): (
-  client: Client<Transport, chain, account>,
+): <transport extends Transport, account extends Account | undefined = Account | undefined>(
+  client: Client<transport, chain, account>,
 ) => Pick<WalletActions<chain, account>, "writeContract" | "sendTransaction"> {
   return (client) => ({
     // Applies to: `client.writeContract`, `getContract(client, ...).write`

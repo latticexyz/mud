@@ -12,7 +12,6 @@ import { debug } from "./debug";
 import { resourceToHex, resourceToLabel } from "@latticexyz/common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";
-import { ensureWorldFactory } from "./ensureWorldFactory";
 import { Table } from "@latticexyz/config";
 import { ensureResourceTags } from "./ensureResourceTags";
 import { waitForTransactions } from "./waitForTransactions";
@@ -62,32 +61,6 @@ export async function deploy({
 }: DeployOptions): Promise<WorldDeploy> {
   const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
 
-  await ensureWorldFactory(client, deployerAddress, config.deploy.upgradeableWorldImplementation);
-
-  // deploy all dependent contracts, because system registration, module install, etc. all expect these contracts to be callable.
-  const libraryMap = getLibraryMap(libraries);
-  await ensureContractsDeployed({
-    client,
-    deployerAddress,
-    contracts: [
-      ...libraries.map((library) => ({
-        bytecode: library.prepareDeploy(deployerAddress, libraryMap).bytecode,
-        deployedBytecodeSize: library.deployedBytecodeSize,
-        debugLabel: `${library.path}:${library.name} library`,
-      })),
-      ...systems.map((system) => ({
-        bytecode: system.prepareDeploy(deployerAddress, libraryMap).bytecode,
-        deployedBytecodeSize: system.deployedBytecodeSize,
-        debugLabel: `${resourceToLabel(system)} system`,
-      })),
-      ...modules.map((mod) => ({
-        bytecode: mod.prepareDeploy(deployerAddress, libraryMap).bytecode,
-        deployedBytecodeSize: mod.deployedBytecodeSize,
-        debugLabel: `${mod.name} module`,
-      })),
-    ],
-  });
-
   const worldDeploy = existingWorldAddress
     ? await getWorldDeploy(client, existingWorldAddress)
     : config.deploy.customWorld
@@ -110,6 +83,29 @@ export async function deploy({
   if (!supportedWorldVersions.includes(worldDeploy.worldVersion)) {
     throw new Error(`Unsupported World version: ${worldDeploy.worldVersion}`);
   }
+
+  const libraryMap = getLibraryMap(libraries);
+  await ensureContractsDeployed({
+    client,
+    deployerAddress,
+    contracts: [
+      ...libraries.map((library) => ({
+        bytecode: library.prepareDeploy(deployerAddress, libraryMap).bytecode,
+        deployedBytecodeSize: library.deployedBytecodeSize,
+        debugLabel: `${library.path}:${library.name} library`,
+      })),
+      ...systems.map((system) => ({
+        bytecode: system.prepareDeploy(deployerAddress, libraryMap).bytecode,
+        deployedBytecodeSize: system.deployedBytecodeSize,
+        debugLabel: `${resourceToLabel(system)} system`,
+      })),
+      ...modules.map((mod) => ({
+        bytecode: mod.prepareDeploy(deployerAddress, libraryMap).bytecode,
+        deployedBytecodeSize: mod.deployedBytecodeSize,
+        debugLabel: `${mod.name} module`,
+      })),
+    ],
+  });
 
   const namespaceTxs = await ensureNamespaceOwner({
     client,

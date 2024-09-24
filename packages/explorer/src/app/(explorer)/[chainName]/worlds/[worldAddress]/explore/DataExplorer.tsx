@@ -1,13 +1,11 @@
 "use client";
 
 import { Loader } from "lucide-react";
-import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { TableSelector } from "./TableSelector";
 import { TablesViewer } from "./TablesViewer";
 
 export function DataExplorer() {
-  const searchParams = useSearchParams();
   const { data: tables, isLoading } = useQuery({
     queryKey: ["tables"],
     queryFn: async () => {
@@ -16,7 +14,6 @@ export function DataExplorer() {
       if (!response.ok) {
         throw new Error(json.error);
       }
-
       return json;
     },
     select: (data) => data.tables.map((table: { name: string }) => table.name),
@@ -24,7 +21,6 @@ export function DataExplorer() {
     throwOnError: true,
     retry: false,
   });
-  const selectedTable = searchParams.get("tableId") || (tables?.length > 0 ? tables[0] : null);
 
   if (isLoading) {
     return <Loader className="animate-spin" />;
@@ -32,8 +28,8 @@ export function DataExplorer() {
 
   return (
     <>
-      <TableSelector value={selectedTable} options={tables} />
-      <TablesViewer table={selectedTable} />
+      <TableSelector tables={tables} />
+      <TablesViewer />
     </>
   );
 }

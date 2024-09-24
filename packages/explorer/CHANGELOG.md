@@ -1,5 +1,39 @@
 # @latticexyz/explorer
 
+## 2.2.8
+
+### Patch Changes
+
+- Updated dependencies [7c7bdb2]
+  - @latticexyz/common@2.2.8
+  - @latticexyz/store-sync@2.2.8
+  - @latticexyz/protocol-parser@2.2.8
+  - @latticexyz/store@2.2.8
+  - @latticexyz/world@2.2.8
+  - @latticexyz/schema-type@2.2.8
+
+## 2.2.7
+
+### Patch Changes
+
+- 5a6c03c: Fixed `observer` decorator types so it can be used in more places.
+- 7ac2a0d: Table selector of the Explore tab now has an input for searching/filtering tables by name.
+- d21c1d1: Renamed optional `waitForStateChange` param in `observer()` decorator to `waitForTransaction` to better align with `@latticexyz/store-sync` packages.
+
+  ```diff
+   const { waitForTransaction } = syncToZustand(...);
+  -observer({ waitForStateChange: waitForTransaction });
+  +observer({ waitForTransaction });
+  ```
+
+- Updated dependencies [a08ba5e]
+  - @latticexyz/store@2.2.7
+  - @latticexyz/store-sync@2.2.7
+  - @latticexyz/world@2.2.7
+  - @latticexyz/common@2.2.7
+  - @latticexyz/protocol-parser@2.2.7
+  - @latticexyz/schema-type@2.2.7
+
 ## 2.2.6
 
 ### Patch Changes

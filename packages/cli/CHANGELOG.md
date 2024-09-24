@@ -1,5 +1,42 @@
 # Change Log
 
+## 2.2.8
+
+### Patch Changes
+
+- 0f5b291: When deploying to an existing world, the deployer now paginates with [`fetchLogs`](https://github.com/latticexyz/mud/blob/main/packages/block-logs-stream/src/fetchLogs.ts) to find the world deployment.
+- b071198: If the project is using a custom world, the deployer now waits for the init transaction to be confirmed before transferring ownership of the world.
+- Updated dependencies [7c7bdb2]
+- Updated dependencies [0f5b291]
+  - @latticexyz/common@2.2.8
+  - @latticexyz/block-logs-stream@2.2.8
+  - @latticexyz/config@2.2.8
+  - @latticexyz/protocol-parser@2.2.8
+  - @latticexyz/store@2.2.8
+  - @latticexyz/world@2.2.8
+  - @latticexyz/world-module-metadata@2.2.8
+  - @latticexyz/abi-ts@2.2.8
+  - @latticexyz/gas-report@2.2.8
+  - @latticexyz/schema-type@2.2.8
+  - @latticexyz/utils@2.2.8
+
+## 2.2.7
+
+### Patch Changes
+
+- 58f101e: Reduced the log noise from enabling/disabling automine on non-Anvil chains.
+- Updated dependencies [a08ba5e]
+  - @latticexyz/store@2.2.7
+  - @latticexyz/world@2.2.7
+  - @latticexyz/world-module-metadata@2.2.7
+  - @latticexyz/abi-ts@2.2.7
+  - @latticexyz/common@2.2.7
+  - @latticexyz/config@2.2.7
+  - @latticexyz/gas-report@2.2.7
+  - @latticexyz/protocol-parser@2.2.7
+  - @latticexyz/schema-type@2.2.7
+  - @latticexyz/utils@2.2.7
+
 ## 2.2.6
 
 ### Patch Changes

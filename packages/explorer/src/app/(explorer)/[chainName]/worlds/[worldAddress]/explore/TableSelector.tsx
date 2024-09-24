@@ -1,6 +1,8 @@
 import { Check, ChevronsUpDown, Lock } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useQueryState } from "nuqs";
+import { Hex } from "viem";
+import { useEffect, useState } from "react";
 import { internalTableNames } from "@latticexyz/store-sync/sqlite";
 import { Button } from "../../../../../../components/ui/Button";
 import {
@@ -15,20 +17,28 @@ import { Popover, PopoverContent, PopoverTrigger } from "../../../../../../compo
 import { cn } from "../../../../../../lib/utils";
 
 type Props = {
-  value: string | undefined;
-  options: string[];
+  tables: string[];
 };
 
-export function TableSelector({ value, options }: Props) {
+export function TableSelector({ tables }: Props) {
+  const [selectedTableId, setTableId] = useQueryState("tableId");
   const [open, setOpen] = useState(false);
   const { worldAddress } = useParams();
+
+  useEffect(() => {
+    if (!selectedTableId && tables.length > 0) {
+      setTableId(tables[0] as Hex);
+    }
+  }, [selectedTableId, setTableId, tables]);
 
   return (
     <div className="w-full py-4">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between">
-            {value ? options.find((option) => option === value)?.replace(`${worldAddress}__`, "") : "Select table..."}
+            {selectedTableId
+              ? tables.find((tableId) => tableId === selectedTableId)?.replace(`${worldAddress}__`, "")
+              : "Select table..."}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -39,26 +49,24 @@ export function TableSelector({ value, options }: Props) {
             <CommandList>
               <CommandEmpty>No framework found.</CommandEmpty>
               <CommandGroup>
-                {options.map((option) => {
+                {tables.map((tableId) => {
                   return (
                     <CommandItem
-                      key={option}
-                      value={option}
-                      onSelect={(currentValue) => {
-                        const url = new URL(window.location.href);
-                        const searchParams = new URLSearchParams(url.search);
-                        searchParams.set("tableId", currentValue);
-                        window.history.pushState({}, "", `${window.location.pathname}?${searchParams}`);
-
+                      key={tableId}
+                      value={tableId}
+                      onSelect={(newTableId) => {
+                        setTableId(newTableId as Hex);
                         setOpen(false);
                       }}
                       className="font-mono"
                     >
-                      <Check className={cn("mr-2 h-4 w-4", value === option ? "opacity-100" : "opacity-0")} />
-                      {(internalTableNames as string[]).includes(option) && (
+                      <Check
+                        className={cn("mr-2 h-4 w-4", selectedTableId === tableId ? "opacity-100" : "opacity-0")}
+                      />
+                      {(internalTableNames as string[]).includes(tableId) && (
                         <Lock className="mr-2 inline-block opacity-70" size={14} />
                       )}
-                      {option.replace(`${worldAddress}__`, "")}
+                      {tableId.replace(`${worldAddress}__`, "")}
                     </CommandItem>
                   );
                 })}
