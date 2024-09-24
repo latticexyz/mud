@@ -1,12 +1,10 @@
 import { ArrowUpDown, Loader } from "lucide-react";
-import { useState } from "react";
+import { parseAsBoolean, parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { internalTableNames } from "@latticexyz/store-sync/sqlite";
 import { useQuery } from "@tanstack/react-query";
 import {
   ColumnDef,
-  ColumnFiltersState,
   SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -21,22 +19,18 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { bufferToBigInt } from "../utils/bufferToBigInt";
 import { EditableTableCell } from "./EditableTableCell";
 
-type Props = {
-  table: string | undefined;
-};
+const initialSortingState: SortingState = [];
 
-export function TablesViewer({ table: selectedTable }: Props) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [showAllColumns, setShowAllColumns] = useState(false);
+export function TablesViewer() {
+  const [selectedTableId] = useQueryState("tableId", parseAsString.withDefault(""));
+  const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
+  const [showAllColumns, setShowAllColumns] = useQueryState("showAllColumns", parseAsBoolean.withDefault(false));
+  const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
 
   const { data: schema } = useQuery({
-    queryKey: ["schema", { table: selectedTable }],
+    queryKey: ["schema", { table: selectedTableId }],
     queryFn: async () => {
-      const response = await fetch(`/api/schema?table=${selectedTable}`);
+      const response = await fetch(`/api/schema?${new URLSearchParams({ table: selectedTableId })}`);
       return response.json();
     },
     select: (data) => {
@@ -47,12 +41,13 @@ export function TablesViewer({ table: selectedTable }: Props) {
         return !column.name.startsWith("__");
       });
     },
+    enabled: Boolean(selectedTableId),
   });
 
   const { data: rows } = useQuery({
-    queryKey: ["rows", { table: selectedTable }],
+    queryKey: ["rows", { table: selectedTableId }],
     queryFn: async () => {
-      const response = await fetch(`/api/rows?table=${selectedTable}`);
+      const response = await fetch(`/api/rows?${new URLSearchParams({ table: selectedTableId })}`);
       return response.json();
     },
     select: (data) => {
@@ -67,14 +62,14 @@ export function TablesViewer({ table: selectedTable }: Props) {
         );
       });
     },
-    enabled: Boolean(selectedTable),
+    enabled: Boolean(selectedTableId),
     refetchInterval: 1000,
   });
 
   const { data: mudTableConfig } = useQuery({
-    queryKey: ["table", { selectedTable }],
+    queryKey: ["table", { selectedTableId }],
     queryFn: async () => {
-      const response = await fetch(`/api/table?table=${selectedTable}`);
+      const response = await fetch(`/api/table?${new URLSearchParams({ table: selectedTableId })}`);
       return response.json();
     },
     select: (data) => {
@@ -84,7 +79,7 @@ export function TablesViewer({ table: selectedTable }: Props) {
         value_schema: JSON.parse(data.table.value_schema).json,
       };
     },
-    enabled: Boolean(selectedTable),
+    enabled: Boolean(selectedTableId),
   });
 
   const columns: ColumnDef<{}>[] = schema?.map(({ name, type }: { name: string; type: string }) => {
@@ -122,7 +117,10 @@ export function TablesViewer({ table: selectedTable }: Props) {
         const keysSchema = Object.keys(mudTableConfig?.key_schema || {});
         const keyTuple = keysSchema.map((key) => row.getValue(key));
         const value = row.getValue(name);
-        if ((selectedTable && (internalTableNames as string[]).includes(selectedTable)) || keysSchema.includes(name)) {
+        if (
+          (selectedTableId && (internalTableNames as string[]).includes(selectedTableId)) ||
+          keysSchema.includes(name)
+        ) {
           return value?.toString();
         }
 
@@ -140,20 +138,14 @@ export function TablesViewer({ table: selectedTable }: Props) {
       },
     },
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: "includesString",
     state: {
       sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
       globalFilter,
     },
   });
@@ -171,7 +163,7 @@ export function TablesViewer({ table: selectedTable }: Props) {
       <div className="flex items-center justify-between gap-4 pb-4">
         <Input
           placeholder="Filter all columns..."
-          value={globalFilter ?? ""}
+          value={globalFilter}
           onChange={(event) => table.setGlobalFilter(event.target.value)}
           className="max-w-sm rounded border px-2 py-1"
         />
