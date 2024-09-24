@@ -2,4 +2,4 @@
 "@latticexyz/explorer": patch
 ---
 
-Added support for tracking table filtering, sorting, and additional parameters like selected tableId using type-safe URL search params. This ensures that state changes persist across sessions and can be shared with a URL.
+Table filters are now included as part of the URL. This enables deep links and improves navigating between pages without losing search state.
