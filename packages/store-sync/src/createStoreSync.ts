@@ -204,7 +204,7 @@ export async function createStoreSync({
 
   // For chains that provide guaranteed receipts ahead of block mining, we can apply the logs immediately.
   // This works because, once the block is mined, the same logs will be applied. Store events are defined in
-  // such a way that reapplying the same logs, even if the order changes, will mean that the storage adapter
+  // such a way that reapplying the same logs will mean that the storage adapter
   // is kept up to date.
 
   let optimisticLogs: readonly StoreEventsLog[] = [];
