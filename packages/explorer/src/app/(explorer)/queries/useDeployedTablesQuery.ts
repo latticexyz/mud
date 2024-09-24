@@ -1,27 +1,28 @@
 import { useParams } from "next/navigation";
 import { Hex } from "viem";
+import { anvil } from "viem/chains";
 import mudConfig from "@latticexyz/store/mud.config";
 import { useQuery } from "@tanstack/react-query";
-import { internalNamespaces } from "../../../../../../common";
-import { useApiTablesUrl } from "../../../../../../hooks/useApiUrl";
-import { useDozerUrl } from "../../../../../../hooks/useDozerUrl";
-import { DeployedTable, decodeTable } from "../api/utils/decodeTable";
-import { fetchDozer } from "../api/utils/fetchDozer";
-
-type DozerResponse = {
-  block_height: number;
-  result: [string[][]];
-};
+import { internalNamespaces } from "../../../common";
+import { decodeTable } from "../api/utils/decodeTable";
+import { useChain } from "../hooks/useChain";
+import { useIndexerApiUrl } from "../hooks/useIndexerApiUrl";
+import { DozerResponse } from "../types";
 
 export function useDeployedTablesQuery() {
-  const dozerUrl = useDozerUrl();
   const { worldAddress, chainName } = useParams();
+  const { id: chainId } = useChain();
+  const indexerApiUrl = useIndexerApiUrl();
 
   return useQuery({
     queryKey: ["deployedTables", worldAddress, chainName],
     queryFn: async () => {
       const storeTablesKey = "store__Tables";
-      const response = await fetch(dozerUrl, {
+      const tableName = chainId === anvil.id ? `${worldAddress}__${storeTablesKey}` : storeTablesKey;
+      const columns = chainId === anvil.id ? "*" : Object.keys(mudConfig.tables[storeTablesKey].schema).join(", ");
+      const query = `SELECT ${columns} FROM "${tableName}"`;
+
+      const response = await fetch(indexerApiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -29,10 +30,11 @@ export function useDeployedTablesQuery() {
         body: JSON.stringify([
           {
             address: worldAddress as Hex,
-            query: `SELECT ${Object.keys(mudConfig.tables[storeTablesKey].schema).join(", ")} FROM ${storeTablesKey}`,
+            query,
           },
         ]),
       });
+
       return response.json();
     },
     select: (data: DozerResponse) => {

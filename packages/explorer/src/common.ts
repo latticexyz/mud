@@ -10,7 +10,7 @@ export type supportedChainId = supportedChains[supportedChainName]["id"];
 
 export const chainIdToName = Object.fromEntries(
   Object.entries(supportedChains).map(([chainName, chain]) => [chain.id, chainName]),
-);
+) as Record<supportedChainId, supportedChainName>;
 
 export function validateChainId(chainId: unknown): asserts chainId is supportedChainId {
   if (!(typeof chainId === "number" && chainId in chainIdToName)) {

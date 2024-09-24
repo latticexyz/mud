@@ -1,7 +1,7 @@
 import { useParams } from "next/navigation";
-import { AbiFunction } from "viem";
+import { AbiFunction, Hex } from "viem";
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
-import { useApiBaseUrl } from "../../../../../../hooks/useApiUrl";
+import { validateChainName } from "../../../common";
 
 type AbiQueryResult = {
   abi: AbiFunction[];
@@ -10,12 +10,14 @@ type AbiQueryResult = {
 
 export function useAbiQuery(): UseQueryResult<AbiQueryResult> {
   const { chainName, worldAddress } = useParams();
-  const apiBaseUrl = useApiBaseUrl();
+  validateChainName(chainName);
 
   return useQuery({
     queryKey: ["abi", chainName, worldAddress],
     queryFn: async () => {
-      const res = await fetch(`${apiBaseUrl}/world-abi`);
+      const res = await fetch(
+        `/api/world-abi/?${new URLSearchParams({ chainName, worldAddress: worldAddress as Hex })}`,
+      );
       const data = await res.json();
       return data;
     },

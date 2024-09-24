@@ -3,11 +3,11 @@
 import { Loader } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAbiQuery } from "../app/(explorer)/[chainName]/worlds/[worldAddress]/queries/useAbiQuery";
+import { useWorldUrl } from "../app/(explorer)/hooks/useWorldUrl";
+import { cn } from "../app/(explorer)/lib/utils";
+import { useAbiQuery } from "../app/(explorer)/queries/useAbiQuery";
 import { LatestBlock } from "../components/LatestBlock";
 import { Separator } from "../components/ui/Separator";
-import { useWorldUrl } from "../hooks/useWorldUrl";
-import { cn } from "../lib/utils";
 import { ConnectButton } from "./ConnectButton";
 
 export function Navigation() {

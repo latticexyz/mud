@@ -3,12 +3,12 @@ import { getBlockNumber, getLogs } from "viem/actions";
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
 import { getWorldAbi } from "@latticexyz/world/internal";
-import { supportedChainId, supportedChains, validateChainName } from "../../../../../../../common";
+import { chainIdToName, supportedChainId, supportedChains, validateChainId } from "../../../../common";
 
 export const dynamic = "force-dynamic";
 
 async function getClient(chainId: supportedChainId) {
-  const chain = Object.values(supportedChains).find((c) => c.id === chainId);
+  const chain = supportedChains[chainIdToName[chainId]];
   const client = createWalletClient({
     chain,
     transport: http(),
@@ -34,10 +34,15 @@ async function getParameters(chainId: supportedChainId, worldAddress: Address) {
   return { fromBlock, toBlock, isWorldDeployed };
 }
 
-export async function GET(req: Request, { params }: { params: { chainName: string; worldAddress: Hex } }) {
-  const { chainName, worldAddress } = params;
-  validateChainName(chainName);
-  const chainId = supportedChains[chainName].id;
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const chainId = searchParams.get("chainId");
+  const worldAddress = searchParams.get("worldAddress") as Hex;
+
+  if (!chainId || !worldAddress) {
+    return Response.json({ error: "Missing chainId or worldAddress" }, { status: 400 });
+  }
+  validateChainId(chainId);
 
   try {
     const client = await getClient(chainId);

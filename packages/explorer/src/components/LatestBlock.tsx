@@ -1,5 +1,5 @@
 import { useBlockNumber } from "wagmi";
-import { useChain } from "../hooks/useChain";
+import { useChain } from "../app/(explorer)/hooks/useChain";
 import { Skeleton } from "./ui/Skeleton";
 
 export function LatestBlock() {

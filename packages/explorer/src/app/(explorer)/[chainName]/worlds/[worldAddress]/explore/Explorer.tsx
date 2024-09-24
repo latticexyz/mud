@@ -3,10 +3,10 @@
 import { useSearchParams } from "next/navigation";
 import { anvil } from "viem/chains";
 import { useEffect, useState } from "react";
-import { useChain } from "../../../../../../hooks/useChain";
-import { useTableId } from "../../../../../../hooks/useTableId";
-import { useDeployedTablesQuery } from "../queries/useDeployedTablesQuery";
-import { useTableDataQuery } from "../queries/useTableDataQuery";
+import { useChain } from "../../../../hooks/useChain";
+import { useTableId } from "../../../../hooks/useTableId";
+import { useDeployedTablesQuery } from "../../../../queries/useDeployedTablesQuery";
+import { useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { SQLEditor } from "./SQLEditor";
 import { TableSelector } from "./TableSelector";
 import { TablesViewer } from "./TablesViewer";

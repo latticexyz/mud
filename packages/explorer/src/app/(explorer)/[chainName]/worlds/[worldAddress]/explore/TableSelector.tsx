@@ -11,7 +11,7 @@ import {
   CommandList,
 } from "../../../../../../components/ui/Command";
 import { Popover, PopoverContent, PopoverTrigger } from "../../../../../../components/ui/Popover";
-import { cn } from "../../../../../../lib/utils";
+import { cn } from "../../../../lib/utils";
 import { DeployedTable } from "../api/utils/decodeTable";
 
 function TableSelectorItem({
