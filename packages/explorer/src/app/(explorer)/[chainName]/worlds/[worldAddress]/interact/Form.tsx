@@ -8,12 +8,12 @@ import { Separator } from "../../../../../../components/ui/Separator";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
 import { useHashState } from "../../../../hooks/useHashState";
 import { cn } from "../../../../lib/utils";
-import { useAbiQuery } from "../../../../queries/useAbiQuery";
+import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { FunctionField } from "./FunctionField";
 
 export function Form() {
   const [hash] = useHashState();
-  const { data, isFetched } = useAbiQuery();
+  const { data, isFetched } = useWorldAbiQuery();
   const [filterValue, setFilterValue] = useState("");
   const deferredFilterValue = useDeferredValue(filterValue);
   const filteredFunctions = data?.abi?.filter((item) =>

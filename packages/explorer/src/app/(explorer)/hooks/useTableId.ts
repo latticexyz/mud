@@ -1,7 +1,7 @@
 import { useParams } from "next/navigation";
 import { anvil } from "viem/chains";
 import { supportedChains, validateChainName } from "../../../common";
-import { DeployedTable } from "../app/(explorer)/[chainName]/worlds/[worldAddress]/api/utils/decodeTable";
+import { DeployedTable } from "../api/utils/decodeTable";
 import { snakeCase } from "../lib/utils";
 
 export function useTableId(deployedTable?: DeployedTable) {

@@ -1,12 +1,11 @@
 import { ArrowUpDown, Loader } from "lucide-react";
-import { useMemo, useState } from "react";
+import { parseAsJson, parseAsString, useQueryState } from "nuqs";
+import { useMemo } from "react";
 import { Schema } from "@latticexyz/config";
 import { getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
 import {
   ColumnDef,
-  ColumnFiltersState,
   SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -18,8 +17,8 @@ import { internalNamespaces } from "../../../../../../common";
 import { Button } from "../../../../../../components/ui/Button";
 import { Input } from "../../../../../../components/ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
+import { DeployedTable } from "../../../../api/utils/decodeTable";
 import { useTableDataQuery } from "../../../../queries/useTableDataQuery";
-import { DeployedTable } from "../api/utils/decodeTable";
 import { EditableTableCell } from "./EditableTableCell";
 
 type Props = {
@@ -28,12 +27,11 @@ type Props = {
   isLoading: boolean;
 };
 
+const initialSortingState: SortingState = [];
+
 export function TablesViewer({ data, deployedTable, isLoading }: Props) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
+  const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
 
   const tableColumns: ColumnDef<getSchemaPrimitives<Schema>>[] = useMemo(() => {
     if (!deployedTable) return [];
@@ -91,20 +89,14 @@ export function TablesViewer({ data, deployedTable, isLoading }: Props) {
       },
     },
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: "includesString",
     state: {
       sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
       globalFilter,
     },
   });
@@ -122,7 +114,7 @@ export function TablesViewer({ data, deployedTable, isLoading }: Props) {
       <div className="flex items-center justify-between gap-4 pb-4">
         <Input
           placeholder="Filter ..."
-          value={globalFilter ?? ""}
+          value={globalFilter}
           onChange={(event) => table.setGlobalFilter(event.target.value)}
           className="max-w-sm rounded border px-2 py-1"
         />

@@ -36,7 +36,7 @@ async function getParameters(chainId: supportedChainId, worldAddress: Address) {
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const chainId = searchParams.get("chainId");
+  const chainId = Number(searchParams.get("chainId"));
   const worldAddress = searchParams.get("worldAddress") as Hex;
 
   if (!chainId || !worldAddress) {

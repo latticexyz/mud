@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useWorldUrl } from "../app/(explorer)/hooks/useWorldUrl";
 import { cn } from "../app/(explorer)/lib/utils";
-import { useAbiQuery } from "../app/(explorer)/queries/useAbiQuery";
+import { useWorldAbiQuery } from "../app/(explorer)/queries/useWorldAbiQuery";
 import { LatestBlock } from "../components/LatestBlock";
 import { Separator } from "../components/ui/Separator";
 import { ConnectButton } from "./ConnectButton";
@@ -13,7 +13,7 @@ import { ConnectButton } from "./ConnectButton";
 export function Navigation() {
   const pathname = usePathname();
   const getLinkUrl = useWorldUrl();
-  const { data, isFetched } = useAbiQuery();
+  const { data, isFetched } = useWorldAbiQuery();
 
   return (
     <div className="mb-8">

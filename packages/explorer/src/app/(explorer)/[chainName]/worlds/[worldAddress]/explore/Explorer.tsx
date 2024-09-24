@@ -33,7 +33,7 @@ export function Explorer() {
   return (
     <>
       {chainId !== anvil.id && <SQLEditor query={query} setQuery={setQuery} />}
-      <TableSelector value={selectedTableId} deployedTables={deployedTables} />
+      <TableSelector tables={deployedTables} />
       <TablesViewer deployedTable={deployedTable} data={tableData} isLoading={isLoading} />
     </>
   );

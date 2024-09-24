@@ -1,6 +1,8 @@
-import { Link2Icon, Link2OffIcon } from "lucide-react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { CheckIcon, ChevronsUpDownIcon, Link2Icon, Link2OffIcon } from "lucide-react";
+import { useQueryState } from "nuqs";
+import { Hex } from "viem";
 import { useState } from "react";
+import { useEffect } from "react";
 import { Button } from "../../../../../../components/ui/Button";
 import {
   Command,
@@ -11,8 +13,8 @@ import {
   CommandList,
 } from "../../../../../../components/ui/Command";
 import { Popover, PopoverContent, PopoverTrigger } from "../../../../../../components/ui/Popover";
+import { DeployedTable } from "../../../../api/utils/decodeTable";
 import { cn } from "../../../../lib/utils";
-import { DeployedTable } from "../api/utils/decodeTable";
 
 function TableSelectorItem({
   table,
@@ -26,7 +28,7 @@ function TableSelectorItem({
   const { type, name, namespace } = table;
   return (
     <div className="flex items-center">
-      {asOption && <Check className={cn("mr-2 h-4 w-4", selected ? "opacity-100" : "opacity-0")} />}
+      {asOption && <CheckIcon className={cn("mr-2 h-4 w-4", selected ? "opacity-100" : "opacity-0")} />}
       {type === "offchainTable" && <Link2OffIcon className="mr-2 inline-block opacity-70" size={14} />}
       {type === "table" && <Link2Icon className="mr-2 inline-block opacity-70" size={14} />}
       {name} {namespace && <span className="ml-2 opacity-70">({namespace})</span>}
@@ -34,24 +36,27 @@ function TableSelectorItem({
   );
 }
 
-export function TableSelector({
-  value,
-  deployedTables,
-}: {
-  value: string | undefined;
-  deployedTables: DeployedTable[] | undefined;
-}) {
+export function TableSelector({ tables }: { tables?: DeployedTable[] }) {
+  const [selectedTableId, setTableId] = useQueryState("tableId");
   const [open, setOpen] = useState(false);
-  const selectedTable = deployedTables?.find(({ tableId }) => tableId === value);
+  const selectedTable = tables?.find(({ tableId }) => tableId === selectedTableId);
+
+  useEffect(() => {
+    if (!selectedTableId && Array.isArray(tables) && tables.length > 0) {
+      setTableId(tables[0].tableId);
+    }
+  }, [selectedTableId, setTableId, tables]);
 
   return (
     <div className="w-full py-4">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between">
-            {selectedTable && <TableSelectorItem table={selectedTable} selected={value === selectedTable.tableId} />}
+            {selectedTable && (
+              <TableSelectorItem table={selectedTable} selected={selectedTableId === selectedTable.tableId} />
+            )}
             {!selectedTable && <span className="opacity-50">Select table...</span>}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
 
@@ -61,22 +66,18 @@ export function TableSelector({
             <CommandList>
               <CommandEmpty className="py-4 text-center font-mono text-sm">No table found.</CommandEmpty>
               <CommandGroup>
-                {deployedTables?.map((table) => {
+                {tables?.map((table) => {
                   return (
                     <CommandItem
                       key={table.tableId}
-                      value={`${table.namespace}__${table.name}`}
-                      onSelect={() => {
-                        const url = new URL(window.location.href);
-                        const searchParams = new URLSearchParams(url.search);
-                        searchParams.set("tableId", table.tableId);
-                        window.history.pushState({}, "", `${window.location.pathname}?${searchParams}`);
-
+                      value={table.tableId}
+                      onSelect={(newTableId) => {
+                        setTableId(newTableId as Hex);
                         setOpen(false);
                       }}
                       className="font-mono"
                     >
-                      <TableSelectorItem table={table} selected={value === table.tableId} asOption />
+                      <TableSelectorItem table={table} selected={selectedTableId === table.tableId} asOption />
                     </CommandItem>
                   );
                 })}
