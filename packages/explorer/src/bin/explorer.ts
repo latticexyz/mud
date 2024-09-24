@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-import { watchFile } from "fs";
+import { existsSync, watchFile } from "fs";
 import { readFile } from "fs/promises";
 import path from "path";
 import process from "process";
 import { fileURLToPath } from "url";
 import { anvil } from "viem/chains";
 import yargs from "yargs";
-import { ChildProcess, spawn } from "child_process";
+import { ChildProcess, execSync, spawn } from "child_process";
 import { validateChainId } from "../common";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -73,7 +73,7 @@ async function startExplorer() {
     ...process.env,
     CHAIN_ID: chainId.toString(),
     WORLD_ADDRESS: worldAddress?.toString(),
-    INDEXER_DATABASE: path.join(process.cwd(), indexerDatabase),
+    INDEXER_DATABASE: indexerDatabase,
   };
 
   if (dev) {
@@ -100,12 +100,27 @@ async function startExplorer() {
 }
 
 async function startSQLiteIndexer() {
-  console.log("Running SQLite indexer for anvil...");
-  indexerProcess = spawn("node_modules/@latticexyz/store-indexer/dist/bin/sqlite-indexer.js", [], {
+  console.log("Running SQLite indexer for anvil...", packageRoot);
+
+  try {
+    const indexerDatabasePath = path.join(packageRoot, indexerDatabase);
+    if (existsSync(indexerDatabasePath)) {
+      execSync(`shx rm -rf ${indexerDatabasePath}`);
+    }
+  } catch (error: unknown) {
+    console.warn(`Failed to remove database file: ${error instanceof Error ? error.message : "Unknown error"}`);
+  }
+
+  indexerProcess = spawn("sh", ["node_modules/.bin/sqlite-indexer"], {
     cwd: packageRoot,
     stdio: "inherit",
-    shell: true,
-    env: { ...process.env, SQLITE_FILENAME: indexerDatabase },
+    env: {
+      ...process.env,
+      DEBUG: "mud:*",
+      RPC_HTTP_URL: "http://127.0.0.1:8545",
+      FOLLOW_BLOCK_TAG: "latest",
+      SQLITE_FILENAME: indexerDatabase,
+    },
   });
 }
 
