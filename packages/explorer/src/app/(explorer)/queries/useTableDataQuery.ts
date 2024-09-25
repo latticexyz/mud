@@ -2,8 +2,9 @@ import { useParams } from "next/navigation";
 import { Hex } from "viem";
 import { useQuery } from "@tanstack/react-query";
 import { DeployedTable } from "../api/utils/decodeTable";
-import { useIndexerApiUrl } from "../hooks/useIndexerApiUrl";
+import { useChain } from "../hooks/useChain";
 import { DozerResponse } from "../types";
+import { indexerForChainId } from "../utils/indexerForChainId";
 
 type Props = {
   deployedTable: DeployedTable | undefined;
@@ -17,12 +18,13 @@ export type TableData = {
 
 export function useTableDataQuery({ deployedTable, query }: Props) {
   const { chainName, worldAddress } = useParams();
-  const indexerApiUrl = useIndexerApiUrl();
+  const { id: chainId } = useChain();
 
   return useQuery<DozerResponse, Error, TableData | undefined>({
     queryKey: ["table", chainName, worldAddress, query],
     queryFn: async () => {
-      const response = await fetch(indexerApiUrl, {
+      const indexer = indexerForChainId(chainId);
+      const response = await fetch(indexer.url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

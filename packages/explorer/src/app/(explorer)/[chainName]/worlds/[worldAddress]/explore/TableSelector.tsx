@@ -13,8 +13,8 @@ import {
   CommandList,
 } from "../../../../../../components/ui/Command";
 import { Popover, PopoverContent, PopoverTrigger } from "../../../../../../components/ui/Popover";
+import { cn } from "../../../../../../utils";
 import { DeployedTable } from "../../../../api/utils/decodeTable";
-import { cn } from "../../../../lib/utils";
 
 function TableSelectorItem({
   table,

@@ -9,9 +9,9 @@ import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.j
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Checkbox } from "../../../../../../components/ui/Checkbox";
+import { cn } from "../../../../../../utils";
 import { DeployedTable } from "../../../../api/utils/decodeTable";
 import { useChain } from "../../../../hooks/useChain";
-import { cn } from "../../../../lib/utils";
 
 type Props = {
   name: string;

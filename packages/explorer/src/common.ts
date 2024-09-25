@@ -1,4 +1,5 @@
-import { anvil, garnet, redstone } from "viem/chains";
+import { anvil } from "viem/chains";
+import { garnet, redstone } from "@latticexyz/common/chains";
 
 export const internalNamespaces = ["world", "store", "metadata"];
 

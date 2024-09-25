@@ -4,10 +4,10 @@ import { Loader } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useWorldUrl } from "../app/(explorer)/hooks/useWorldUrl";
-import { cn } from "../app/(explorer)/lib/utils";
 import { useWorldAbiQuery } from "../app/(explorer)/queries/useWorldAbiQuery";
 import { LatestBlock } from "../components/LatestBlock";
 import { Separator } from "../components/ui/Separator";
+import { cn } from "../utils";
 import { ConnectButton } from "./ConnectButton";
 
 export function Navigation() {

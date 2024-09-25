@@ -1,30 +1,28 @@
 import { useParams } from "next/navigation";
 import { Hex } from "viem";
-import { anvil } from "viem/chains";
 import mudConfig from "@latticexyz/store/mud.config";
 import { useQuery } from "@tanstack/react-query";
 import { internalNamespaces } from "../../../common";
 import { DeployedTable, decodeTable } from "../api/utils/decodeTable";
 import { useChain } from "../hooks/useChain";
-import { useIndexerApiUrl } from "../hooks/useIndexerApiUrl";
 import { DozerResponse } from "../types";
+import { indexerForChainId } from "../utils/indexerForChainId";
 
 export function useDeployedTablesQuery() {
   const { worldAddress, chainName } = useParams();
   const { id: chainId } = useChain();
-  const indexerApiUrl = useIndexerApiUrl();
 
   return useQuery<DozerResponse, Error, DeployedTable[]>({
     queryKey: ["deployedTables", worldAddress, chainName],
     queryFn: async () => {
-      const storeTablesKey = "store__Tables";
-      const tableName = chainId === anvil.id ? `${worldAddress}__${storeTablesKey}` : storeTablesKey;
+      const indexer = indexerForChainId(chainId);
+      const tableName = "store__Tables";
       const query =
-        chainId === anvil.id
-          ? `SELECT * FROM "${tableName}"`
-          : `SELECT ${Object.keys(mudConfig.tables[storeTablesKey].schema).join(", ")} FROM ${tableName}`;
+        indexer.type === "sqlite"
+          ? `SELECT * FROM "${worldAddress}__${tableName}"`
+          : `SELECT ${Object.keys(mudConfig.tables[tableName].schema).join(", ")} FROM ${tableName}`;
 
-      const response = await fetch(indexerApiUrl, {
+      const response = await fetch(indexer.url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

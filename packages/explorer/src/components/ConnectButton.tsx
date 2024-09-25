@@ -2,7 +2,7 @@ import { PlugIcon, ZapIcon } from "lucide-react";
 import { anvil } from "viem/chains";
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
 import { useChain } from "../app/(explorer)/hooks/useChain";
-import { cn } from "../app/(explorer)/lib/utils";
+import { cn } from "../utils";
 import { AccountSelect } from "./AccountSelect";
 import { Button } from "./ui/Button";
 

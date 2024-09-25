@@ -2,4 +2,4 @@
 "@latticexyz/explorer": patch
 ---
 
-Hosted SQL API integration has been added for Redstone and Garnet.
+Exploring worlds on Redstone and Garnet chains will now retrieve data from the hosted SQL indexer.

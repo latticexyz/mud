@@ -6,8 +6,8 @@ import { useDeferredValue, useState } from "react";
 import { Input } from "../../../../../../components/ui/Input";
 import { Separator } from "../../../../../../components/ui/Separator";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
+import { cn } from "../../../../../../utils";
 import { useHashState } from "../../../../hooks/useHashState";
-import { cn } from "../../../../lib/utils";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { FunctionField } from "./FunctionField";
 
