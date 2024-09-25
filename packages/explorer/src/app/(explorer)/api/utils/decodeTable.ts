@@ -34,7 +34,7 @@ export const decodeTable = ({
     tableId: tableId as Hex,
     name,
     namespace,
-    label: namespace,
+    label: name,
     namespaceLabel: namespace,
     type: type as DeployedTable["type"],
     schema: {
