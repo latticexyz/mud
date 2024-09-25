@@ -86,10 +86,6 @@ export function TablesViewer({
       pagination: {
         pageSize: 50,
       },
-      columnVisibility: {
-        systemId: false,
-        puppet: true,
-      },
     },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
