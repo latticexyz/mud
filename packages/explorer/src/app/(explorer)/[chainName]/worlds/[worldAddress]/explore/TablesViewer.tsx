@@ -24,11 +24,11 @@ const initialSortingState: SortingState = [];
 const initialRows: TableData["rows"] = [];
 
 export function TablesViewer({
-  deployedTable,
+  tableConfig,
   tableData,
   isLoading,
 }: {
-  deployedTable?: TableType;
+  tableConfig?: TableType;
   tableData?: TableData;
   isLoading: boolean;
 }) {
@@ -36,10 +36,10 @@ export function TablesViewer({
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
 
   const tableColumns: ColumnDef<getSchemaPrimitives<Schema>>[] = useMemo(() => {
-    if (!deployedTable || !tableData) return [];
+    if (!tableConfig || !tableData) return [];
 
     return tableData.columns.map((name) => {
-      const type = deployedTable?.schema[name]?.type;
+      const type = tableConfig?.schema[name]?.type;
       return {
         accessorKey: name,
         header: ({ column }) => {
@@ -62,20 +62,20 @@ export function TablesViewer({
             getValue: (name: string) => string;
           };
         }) => {
-          const namespace = deployedTable?.namespace;
-          const keySchema = getKeySchema(deployedTable);
+          const namespace = tableConfig?.namespace;
+          const keySchema = getKeySchema(tableConfig);
           const value = row.getValue(name)?.toString();
 
-          if (!deployedTable || Object.keys(keySchema).includes(name) || internalNamespaces.includes(namespace)) {
+          if (!tableConfig || Object.keys(keySchema).includes(name) || internalNamespaces.includes(namespace)) {
             return value;
           }
 
           const fieldKey = Object.keys(keySchema).map((key) => row.getValue(key));
-          return <EditableTableCell name={name} deployedTable={deployedTable} value={value} fieldKey={fieldKey} />;
+          return <EditableTableCell name={name} tableConfig={tableConfig} value={value} fieldKey={fieldKey} />;
         },
       };
     });
-  }, [deployedTable, tableData]);
+  }, [tableConfig, tableData]);
 
   const table = useReactTable({
     data: tableData?.rows ?? initialRows,

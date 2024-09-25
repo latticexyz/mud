@@ -6,8 +6,8 @@ import { Hex } from "viem";
 import { useEffect } from "react";
 import { useChain } from "../../../../hooks/useChain";
 import { usePrevious } from "../../../../hooks/usePrevious";
-import { useDeployedTablesQuery } from "../../../../queries/useDeployedTablesQuery";
 import { useTableDataQuery } from "../../../../queries/useTableDataQuery";
+import { useTablesConfigQuery } from "../../../../queries/useTablesConfigQuery";
 import { constructTableName } from "../../../../utils/constructTableName";
 import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { SQLEditor } from "./SQLEditor";
@@ -22,27 +22,27 @@ export function Explorer() {
   const [selectedTableId] = useQueryState("tableId");
   const prevSelectedTableId = usePrevious(selectedTableId);
 
-  const { data: deployedTables } = useDeployedTablesQuery();
-  const deployedTable = deployedTables?.find(({ tableId }) => tableId === selectedTableId);
-  const { data: tableData, isLoading, isFetched } = useTableDataQuery({ deployedTable, query });
+  const { data: tablesConfig } = useTablesConfigQuery();
+  const tableConfig = tablesConfig?.find(({ tableId }) => tableId === selectedTableId);
+  const { data: tableData, isLoading, isFetched } = useTableDataQuery({ tableConfig, query });
 
   useEffect(() => {
-    if (deployedTable && (!query || prevSelectedTableId !== selectedTableId)) {
-      const tableName = constructTableName(deployedTable, worldAddress as Hex, chainId);
+    if (tableConfig && (!query || prevSelectedTableId !== selectedTableId)) {
+      const tableName = constructTableName(tableConfig, worldAddress as Hex, chainId);
 
       if (indexer.type === "sqlite") {
         setQuery(`SELECT * FROM "${tableName}"`);
       } else {
-        setQuery(`SELECT ${Object.keys(deployedTable.schema).join(", ")} FROM ${tableName}`);
+        setQuery(`SELECT ${Object.keys(tableConfig.schema).join(", ")} FROM ${tableName}`);
       }
     }
-  }, [chainId, setQuery, selectedTableId, deployedTable, worldAddress, prevSelectedTableId, query, indexer.type]);
+  }, [chainId, setQuery, selectedTableId, tableConfig, worldAddress, prevSelectedTableId, query, indexer.type]);
 
   return (
     <>
       {indexer.type !== "sqlite" && <SQLEditor />}
-      <TableSelector tables={deployedTables} />
-      <TablesViewer deployedTable={deployedTable} tableData={tableData} isLoading={isLoading || !isFetched} />
+      <TableSelector tablesConfig={tablesConfig} />
+      <TablesViewer tableConfig={tableConfig} tableData={tableData} isLoading={isLoading || !isFetched} />
     </>
   );
 }

@@ -16,8 +16,16 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../../../../../../components/ui/Popover";
 import { cn } from "../../../../../../utils";
 
-function TableSelectorItem({ table, selected, asOption }: { table: Table; selected: boolean; asOption?: boolean }) {
-  const { type, name, namespace } = table;
+function TableSelectorItem({
+  tableConfig,
+  selected,
+  asOption,
+}: {
+  tableConfig: Table;
+  selected: boolean;
+  asOption?: boolean;
+}) {
+  const { type, name, namespace } = tableConfig;
   return (
     <div className="flex items-center">
       {asOption && <CheckIcon className={cn("mr-2 h-4 w-4", selected ? "opacity-100" : "opacity-0")} />}
@@ -28,16 +36,16 @@ function TableSelectorItem({ table, selected, asOption }: { table: Table; select
   );
 }
 
-export function TableSelector({ tables }: { tables?: Table[] }) {
+export function TableSelector({ tablesConfig }: { tablesConfig?: Table[] }) {
   const [selectedTableId, setTableId] = useQueryState("tableId");
   const [open, setOpen] = useState(false);
-  const selectedTable = tables?.find(({ tableId }) => tableId === selectedTableId);
+  const selectedTableConfig = tablesConfig?.find(({ tableId }) => tableId === selectedTableId);
 
   useEffect(() => {
-    if (!selectedTableId && Array.isArray(tables) && tables.length > 0) {
-      setTableId(tables[0].tableId);
+    if (!selectedTableId && Array.isArray(tablesConfig) && tablesConfig.length > 0) {
+      setTableId(tablesConfig[0].tableId);
     }
-  }, [selectedTableId, setTableId, tables]);
+  }, [selectedTableId, setTableId, tablesConfig]);
 
   return (
     <div className="w-full py-4">
@@ -48,12 +56,15 @@ export function TableSelector({ tables }: { tables?: Table[] }) {
             role="combobox"
             aria-expanded={open}
             className="w-full justify-between"
-            disabled={!tables}
+            disabled={!tablesConfig}
           >
-            {selectedTable && (
-              <TableSelectorItem table={selectedTable} selected={selectedTableId === selectedTable.tableId} />
+            {selectedTableConfig && (
+              <TableSelectorItem
+                tableConfig={selectedTableConfig}
+                selected={selectedTableId === selectedTableConfig.tableId}
+              />
             )}
-            {!selectedTable && <span className="opacity-50">Select table...</span>}
+            {!selectedTableConfig && <span className="opacity-50">Select table...</span>}
             <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -64,18 +75,22 @@ export function TableSelector({ tables }: { tables?: Table[] }) {
             <CommandList>
               <CommandEmpty className="py-4 text-center font-mono text-sm">No table found.</CommandEmpty>
               <CommandGroup>
-                {tables?.map((table) => {
+                {tablesConfig?.map((tableConfig) => {
                   return (
                     <CommandItem
-                      key={table.tableId}
-                      value={table.tableId}
+                      key={tableConfig.tableId}
+                      value={tableConfig.tableId}
                       onSelect={(newTableId) => {
                         setTableId(newTableId as Hex);
                         setOpen(false);
                       }}
                       className="font-mono"
                     >
-                      <TableSelectorItem table={table} selected={selectedTableId === table.tableId} asOption />
+                      <TableSelectorItem
+                        tableConfig={tableConfig}
+                        selected={selectedTableId === tableConfig.tableId}
+                        asOption
+                      />
                     </CommandItem>
                   );
                 })}

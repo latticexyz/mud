@@ -7,7 +7,7 @@ import { DozerResponse } from "../types";
 import { indexerForChainId } from "../utils/indexerForChainId";
 
 type Props = {
-  deployedTable: Table | undefined;
+  tableConfig: Table | undefined;
   query: string | undefined;
 };
 
@@ -16,12 +16,12 @@ export type TableData = {
   rows: Record<string, string>[];
 };
 
-export function useTableDataQuery({ deployedTable, query }: Props) {
+export function useTableDataQuery({ tableConfig, query }: Props) {
   const { chainName, worldAddress } = useParams();
   const { id: chainId } = useChain();
 
   return useQuery<DozerResponse, Error, TableData | undefined>({
-    queryKey: ["table", chainName, worldAddress, query],
+    queryKey: ["tableData", chainName, worldAddress, query],
     queryFn: async () => {
       const indexer = indexerForChainId(chainId);
       const response = await fetch(indexer.url, {
@@ -40,9 +40,9 @@ export function useTableDataQuery({ deployedTable, query }: Props) {
       return response.json();
     },
     select: (data: DozerResponse) => {
-      if (!deployedTable || !data?.result?.[0]) return;
+      if (!tableConfig || !data?.result?.[0]) return;
 
-      const schemaKeys = Object.keys(deployedTable.schema);
+      const schemaKeys = Object.keys(tableConfig.schema);
       const result = data.result[0];
       const columnKeys = result[0]
         .map((columnKey) => {
@@ -57,7 +57,7 @@ export function useTableDataQuery({ deployedTable, query }: Props) {
         rows,
       };
     },
-    enabled: !!deployedTable && !!query,
+    enabled: !!tableConfig && !!query,
     refetchInterval: 1_000,
   });
 }
