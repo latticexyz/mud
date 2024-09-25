@@ -60,8 +60,6 @@ export function TablesViewer({
           const keySchema = getKeySchema(table);
           const value = row.getValue(name)?.toString();
 
-          console.log(row.original);
-
           if (!table || Object.keys(keySchema).includes(name) || internalNamespaces.includes(namespace)) {
             return value;
           }
