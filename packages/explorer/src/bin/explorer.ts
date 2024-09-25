@@ -167,11 +167,14 @@ function watchWorldsJson() {
   });
 }
 
-process.on("SIGINT", () => {
+function killChildProcesses() {
   indexerProcess?.kill();
   explorerProcess?.kill();
   process.exit();
-});
+}
+
+process.on("SIGINT", killChildProcesses);
+process.on("SIGTERM", killChildProcesses);
 
 async function main() {
   // If world address is not provided, try to read it from worlds.json
