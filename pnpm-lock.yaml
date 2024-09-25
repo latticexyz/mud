@@ -6,21 +6,9 @@ settings:
 
 catalogs:
   default:
-    '@ark/attest':
-      specifier: 0.12.1
-      version: 0.12.1
-    '@ark/util':
-      specifier: 0.2.2
-      version: 0.2.2
     '@wagmi/core':
       specifier: 2.13.5
       version: 2.13.5
-    abitype:
-      specifier: 1.0.6
-      version: 1.0.6
-    arktype:
-      specifier: 2.0.0-beta.6
-      version: 2.0.0-beta.6
     viem:
       specifier: 2.21.6
       version: 2.21.6
@@ -465,6 +453,9 @@ importers:
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
+      '@latticexyz/config':
+        specifier: workspace:*
+        version: link:../config
       '@latticexyz/protocol-parser':
         specifier: workspace:*
         version: link:../protocol-parser
@@ -815,10 +806,10 @@ importers:
         version: 8.3.4
       jest:
         specifier: ^29.3.1
-        version: 29.5.0(@types/node@18.15.11)
+        version: 29.5.0(@types/node@20.12.12)
       ts-jest:
         specifier: ^29.0.5
-        version: 29.0.5(@babel/core@7.21.4)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.21.4))(jest@29.5.0(@types/node@18.15.11))(typescript@5.4.2)
+        version: 29.0.5(@babel/core@7.25.2)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.25.2))(jest@29.5.0(@types/node@20.12.12))(typescript@5.4.2)
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
@@ -1206,10 +1197,10 @@ importers:
         version: 27.4.1
       jest:
         specifier: ^29.3.1
-        version: 29.5.0(@types/node@20.12.12)
+        version: 29.5.0(@types/node@18.15.11)
       ts-jest:
         specifier: ^29.0.5
-        version: 29.0.5(@babel/core@7.25.2)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.25.2))(jest@29.5.0(@types/node@20.12.12))(typescript@5.4.2)
+        version: 29.0.5(@babel/core@7.21.4)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.21.4))(jest@29.5.0(@types/node@18.15.11))(typescript@5.4.2)
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.31)(typescript@5.4.2)
