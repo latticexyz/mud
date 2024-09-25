@@ -100,28 +100,32 @@ async function startExplorer() {
 }
 
 async function startStoreIndexer() {
-  console.log("Running SQLite indexer for anvil...", packageRoot);
+  if (chainId !== anvil.id) {
+    console.log("Skipping SQLite indexer for non-anvil chain ID", chainId);
+    return;
+  }
 
+  console.log("Running SQLite indexer for anvil...", packageRoot);
+  const indexerDatabasePath = path.join(packageRoot, indexerDatabase);
   try {
-    const indexerDatabasePath = path.join(packageRoot, indexerDatabase);
     if (existsSync(indexerDatabasePath)) {
       execSync(`shx rm -rf ${indexerDatabasePath}`);
     }
+
+    indexerProcess = spawn("sh", ["node_modules/.bin/sqlite-indexer"], {
+      cwd: packageRoot,
+      stdio: "inherit",
+      env: {
+        ...process.env,
+        DEBUG: "mud:*",
+        RPC_HTTP_URL: "http://127.0.0.1:8545",
+        FOLLOW_BLOCK_TAG: "latest",
+        SQLITE_FILENAME: indexerDatabase,
+      },
+    });
   } catch (error: unknown) {
     console.warn(`Failed to remove database file: ${error instanceof Error ? error.message : "Unknown error"}`);
   }
-
-  indexerProcess = spawn("sh", ["node_modules/.bin/sqlite-indexer"], {
-    cwd: packageRoot,
-    stdio: "inherit",
-    env: {
-      ...process.env,
-      DEBUG: "mud:*",
-      RPC_HTTP_URL: "http://127.0.0.1:8545",
-      FOLLOW_BLOCK_TAG: "latest",
-      SQLITE_FILENAME: indexerDatabase,
-    },
-  });
 }
 
 async function readWorldsJson() {
@@ -192,10 +196,7 @@ async function main() {
     watchWorldsJson();
   }
 
-  // only start SQLite indexer if chainId is anvil
-  if (chainId === anvil.id) {
-    await startStoreIndexer();
-  }
+  await startStoreIndexer();
   await startExplorer();
 }
 
