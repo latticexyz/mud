@@ -70,7 +70,7 @@ let worldAddress = argv.worldAddress;
 let explorerProcess: ChildProcess;
 let indexerProcess: ChildProcess;
 
-async function startExplorer() {
+function startExplorer() {
   const env = {
     ...process.env,
     CHAIN_ID: chainId.toString(),
@@ -119,6 +119,7 @@ function startStoreIndexer() {
       RPC_HTTP_URL: "http://127.0.0.1:8545",
       FOLLOW_BLOCK_TAG: "latest",
       SQLITE_FILENAME: indexerDatabase,
+      STORE_ADDRESS: worldAddress,
     },
   });
 }
@@ -142,11 +143,12 @@ async function readWorldsJson() {
   }
 }
 
-async function restartExplorer() {
-  if (explorerProcess) {
-    explorerProcess.kill();
-  }
-  await startExplorer();
+function restartExplorer() {
+  indexerProcess?.kill();
+  explorerProcess?.kill();
+
+  startStoreIndexer();
+  startExplorer();
 }
 
 function watchWorldsJson() {
@@ -160,14 +162,14 @@ function watchWorldsJson() {
       console.log("\nWorld address changed, restarting explorer...");
 
       worldAddress = newWorldAddress;
-      await restartExplorer();
+      restartExplorer();
     }
   });
 }
 
 process.on("SIGINT", () => {
-  explorerProcess?.kill();
   indexerProcess?.kill();
+  explorerProcess?.kill();
   process.exit();
 });
 
@@ -187,8 +189,8 @@ async function main() {
     watchWorldsJson();
   }
 
-  await startStoreIndexer();
-  await startExplorer();
+  startStoreIndexer();
+  startExplorer();
 }
 
 main().catch(console.error);
