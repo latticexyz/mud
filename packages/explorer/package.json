@@ -32,10 +32,7 @@
     "explorer:dev": "next dev --port 13690",
     "explorer:start": "node .next/standalone/packages/explorer/server.js",
     "knip": "knip",
-    "lint": "next lint",
-    "pnpm install-vercel": "pnpm prepare-vercel && pnpm install",
-    "prepare": "husky install && (forge --version || pnpm foundryup)",
-    "prepare-vercel": "(forge --version || pnpm foundry:up) && ln -sf /vercel/.foundry/bin/* node_modules/.bin/ && forge --version"
+    "lint": "next lint"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
