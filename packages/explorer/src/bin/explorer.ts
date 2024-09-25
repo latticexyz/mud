@@ -107,26 +107,22 @@ async function startStoreIndexer() {
     return;
   }
 
-  try {
-    if (existsSync(indexerDatabasePath)) {
-      execSync(`shx rm -rf ${indexerDatabasePath}`);
-    }
-
-    console.log("Running SQLite indexer for anvil...");
-    indexerProcess = spawn("sh", ["node_modules/.bin/sqlite-indexer"], {
-      cwd: packageRoot,
-      stdio: "inherit",
-      env: {
-        ...process.env,
-        DEBUG: "mud:*",
-        RPC_HTTP_URL: "http://127.0.0.1:8545",
-        FOLLOW_BLOCK_TAG: "latest",
-        SQLITE_FILENAME: indexerDatabase,
-      },
-    });
-  } catch (error: unknown) {
-    console.warn(`Failed to remove database file: ${error instanceof Error ? error.message : "Unknown error"}`);
+  if (existsSync(indexerDatabasePath)) {
+    execSync(`shx rm -rf ${indexerDatabasePath}`);
   }
+
+  console.log("Running SQLite indexer for anvil...");
+  indexerProcess = spawn("sh", ["node_modules/.bin/sqlite-indexer"], {
+    cwd: packageRoot,
+    stdio: "inherit",
+    env: {
+      ...process.env,
+      DEBUG: "mud:*",
+      RPC_HTTP_URL: "http://127.0.0.1:8545",
+      FOLLOW_BLOCK_TAG: "latest",
+      SQLITE_FILENAME: indexerDatabase,
+    },
+  });
 }
 
 async function readWorldsJson() {
