@@ -31,11 +31,12 @@
     "dev": "tsup --watch",
     "explorer:dev": "next dev --port 13690",
     "explorer:start": "node .next/standalone/packages/explorer/server.js",
+    "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
     "install-vercel": "pnpm prepare-vercel && pnpm install",
     "knip": "knip",
     "lint": "next lint",
     "prepare": "(forge --version || pnpm foundryup)",
-    "prepare-vercel": "(forge --version || pnpm foundry:up) && ln -sf /vercel/.foundry/bin/* node_modules/.bin/ && forge --version"
+    "prepare-vercel": "(forge --version || pnpm foundryup) && ln -sf /vercel/.foundry/bin/* node_modules/.bin/ && forge --version"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
