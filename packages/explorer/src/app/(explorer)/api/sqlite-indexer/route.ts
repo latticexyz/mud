@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       }
 
       const columns = Object.keys(data[0]).map((key) => key.replaceAll("_", "").toLowerCase());
-      const rows = data.map((row) => Object.values(row).map((value) => value.toString()));
+      const rows = data.map((row) => Object.values(row).map((value) => value?.toString() ?? ""));
       result.push([columns, ...rows]);
     }
 
