@@ -64,8 +64,13 @@ export function TablesViewer({
             return value;
           }
 
-          const keyTuple = getKeyTuple(table, row.original as never);
-          return <EditableTableCell name={name} table={table} value={value} keyTuple={keyTuple} />;
+          try {
+            const keyTuple = getKeyTuple(table, row.original as never);
+            return <EditableTableCell name={name} table={table} value={value} keyTuple={keyTuple} />;
+          } catch (e) {
+            console.error(e);
+            return value;
+          }
         },
       };
     });
