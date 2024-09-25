@@ -31,9 +31,10 @@ export async function resolveSystems({
   const systems = systemContracts
     .map((contract): ResolvedSystem => {
       const systemConfig =
-        config.namespaces[contract.namespaceLabel].systems[contract.systemLabel] ??
+        config.namespaces[contract.namespaceLabel]?.systems[contract.systemLabel] ??
         resolveNamespace({
           label: contract.namespaceLabel,
+          namespace: config.namespaces[contract.namespaceLabel]?.namespace,
           systems: {
             [contract.systemLabel]: {},
           },
