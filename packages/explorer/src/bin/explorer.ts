@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import fs from "fs";
-import { readFile } from "fs/promises";
+import { watchFile } from "fs";
+import { readFile, rm } from "fs/promises";
 import path from "path";
 import process from "process";
 import { fileURLToPath } from "url";
@@ -70,7 +70,7 @@ let worldAddress = argv.worldAddress;
 let explorerProcess: ChildProcess;
 let indexerProcess: ChildProcess;
 
-function startExplorer() {
+async function startExplorer() {
   const env = {
     ...process.env,
     CHAIN_ID: chainId.toString(),
@@ -101,13 +101,13 @@ function startExplorer() {
   }
 }
 
-function startStoreIndexer() {
+async function startStoreIndexer() {
   if (chainId !== anvil.id) {
     console.log("Skipping SQLite indexer for non-anvil chain ID", chainId);
     return;
   }
 
-  fs.rmSync(indexerDatabasePath, { recursive: true, force: true });
+  await rm(indexerDatabasePath, { recursive: true, force: true });
 
   console.log("Running SQLite indexer for anvil...");
   indexerProcess = spawn("sh", ["node_modules/.bin/sqlite-indexer"], {
@@ -143,12 +143,12 @@ async function readWorldsJson() {
   }
 }
 
-function restartExplorer() {
+async function restartExplorer() {
   indexerProcess?.kill();
   explorerProcess?.kill();
 
-  startStoreIndexer();
-  startExplorer();
+  await startStoreIndexer();
+  await startExplorer();
 }
 
 function watchWorldsJson() {
@@ -156,13 +156,13 @@ function watchWorldsJson() {
     return;
   }
 
-  fs.watchFile(worldsFile, async () => {
+  watchFile(worldsFile, async () => {
     const newWorldAddress = await readWorldsJson();
     if (worldAddress && worldAddress !== newWorldAddress) {
       console.log("\nWorld address changed, restarting explorer...");
 
       worldAddress = newWorldAddress;
-      restartExplorer();
+      await restartExplorer();
     }
   });
 }
@@ -189,8 +189,8 @@ async function main() {
     watchWorldsJson();
   }
 
-  startStoreIndexer();
-  startExplorer();
+  await startStoreIndexer();
+  await startExplorer();
 }
 
 main().catch(console.error);
