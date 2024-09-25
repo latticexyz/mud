@@ -64,6 +64,8 @@ const argv = yargs(process.argv.slice(2))
   .parseSync();
 
 const { port, hostname, chainId, indexerDatabase, worldsFile, dev } = argv;
+const indexerDatabasePath = path.join(packageRoot, indexerDatabase);
+
 let worldAddress = argv.worldAddress;
 let explorerProcess: ChildProcess;
 let indexerProcess: ChildProcess;
@@ -73,7 +75,7 @@ async function startExplorer() {
     ...process.env,
     CHAIN_ID: chainId.toString(),
     WORLD_ADDRESS: worldAddress?.toString(),
-    INDEXER_DATABASE: indexerDatabase,
+    INDEXER_DATABASE: indexerDatabasePath,
   };
 
   if (dev) {
@@ -105,13 +107,12 @@ async function startStoreIndexer() {
     return;
   }
 
-  console.log("Running SQLite indexer for anvil...", packageRoot);
-  const indexerDatabasePath = path.join(packageRoot, indexerDatabase);
   try {
     if (existsSync(indexerDatabasePath)) {
       execSync(`shx rm -rf ${indexerDatabasePath}`);
     }
 
+    console.log("Running SQLite indexer for anvil...");
     indexerProcess = spawn("sh", ["node_modules/.bin/sqlite-indexer"], {
       cwd: packageRoot,
       stdio: "inherit",
