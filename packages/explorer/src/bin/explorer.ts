@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-import { existsSync, watchFile } from "fs";
+import fs from "fs";
 import { readFile } from "fs/promises";
 import path from "path";
 import process from "process";
 import { fileURLToPath } from "url";
 import { anvil } from "viem/chains";
 import yargs from "yargs";
-import { ChildProcess, execSync, spawn } from "child_process";
+import { ChildProcess, spawn } from "child_process";
 import { validateChainId } from "../common";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -101,15 +101,13 @@ async function startExplorer() {
   }
 }
 
-async function startStoreIndexer() {
+function startStoreIndexer() {
   if (chainId !== anvil.id) {
     console.log("Skipping SQLite indexer for non-anvil chain ID", chainId);
     return;
   }
 
-  if (existsSync(indexerDatabasePath)) {
-    execSync(`shx rm -rf ${indexerDatabasePath}`);
-  }
+  fs.rmSync(indexerDatabasePath, { recursive: true, force: true });
 
   console.log("Running SQLite indexer for anvil...");
   indexerProcess = spawn("sh", ["node_modules/.bin/sqlite-indexer"], {
@@ -156,7 +154,7 @@ function watchWorldsJson() {
     return;
   }
 
-  watchFile(worldsFile, async () => {
+  fs.watchFile(worldsFile, async () => {
     const newWorldAddress = await readWorldsJson();
     if (worldAddress && worldAddress !== newWorldAddress) {
       console.log("\nWorld address changed, restarting explorer...");
