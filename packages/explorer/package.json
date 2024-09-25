@@ -23,7 +23,7 @@
   ],
   "scripts": {
     "build": "pnpm run build:js && pnpm run build:explorer",
-    "build:explorer": "next build && shx cp -r .next/static .next/standalone/packages/explorer/.next",
+    "build:explorer": "OUTPUT=standalone next build && shx cp -r .next/static .next/standalone/packages/explorer/.next",
     "build:js": "tsup",
     "clean": "pnpm run clean:js && pnpm run clean:explorer",
     "clean:explorer": "shx rm -rf .next .turbo",
