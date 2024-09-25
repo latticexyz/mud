@@ -32,7 +32,7 @@
     "explorer:dev": "next dev --port 13690",
     "explorer:start": "node .next/standalone/packages/explorer/server.js",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
-    "install-vercel": "pnpm prepare-vercel && pnpm install",
+    "install-vercel": "pnpm install && pnpm prepare-vercel",
     "knip": "knip",
     "lint": "next lint",
     "prepare": "(forge --version || pnpm foundryup)",
