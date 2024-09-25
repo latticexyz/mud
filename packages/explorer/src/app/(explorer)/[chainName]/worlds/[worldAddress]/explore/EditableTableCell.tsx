@@ -13,6 +13,7 @@ import {
   getValueSchema,
 } from "@latticexyz/protocol-parser/internal";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Checkbox } from "../../../../../../components/ui/Checkbox";
@@ -28,6 +29,7 @@ type Props = {
 
 export function EditableTableCell({ name, table, keyTuple, value: defaultValue }: Props) {
   const [value, setValue] = useState<unknown>(defaultValue);
+  const { openConnectModal } = useConnectModal();
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
   const { worldAddress } = useParams();
@@ -85,6 +87,10 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
   });
 
   const handleSubmit = (newValue: unknown) => {
+    if (!account.isConnected) {
+      return openConnectModal?.();
+    }
+
     if (newValue !== defaultValue) {
       mutate(newValue);
     }

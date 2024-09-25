@@ -1,4 +1,5 @@
 import { CheckIcon, ChevronsUpDownIcon, Link2Icon, Link2OffIcon } from "lucide-react";
+import { useParams } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { Hex } from "viem";
 import { useState } from "react";
@@ -15,6 +16,8 @@ import {
 } from "../../../../../../components/ui/Command";
 import { Popover, PopoverContent, PopoverTrigger } from "../../../../../../components/ui/Popover";
 import { cn } from "../../../../../../utils";
+import { useChain } from "../../../../hooks/useChain";
+import { constructTableName } from "../../../../utils/constructTableName";
 
 function TableSelectorItem({ table, selected, asOption }: { table: Table; selected: boolean; asOption?: boolean }) {
   const { type, name, namespace } = table;
@@ -29,6 +32,8 @@ function TableSelectorItem({ table, selected, asOption }: { table: Table; select
 }
 
 export function TableSelector({ tables }: { tables?: Table[] }) {
+  const { worldAddress } = useParams();
+  const { id: chainId } = useChain();
   const [selectedTableId, setTableId] = useQueryState("tableId");
   const [open, setOpen] = useState(false);
   const selectedTableConfig = tables?.find(({ tableId }) => tableId === selectedTableId);
@@ -71,9 +76,9 @@ export function TableSelector({ tables }: { tables?: Table[] }) {
                   return (
                     <CommandItem
                       key={table.tableId}
-                      value={table.tableId}
-                      onSelect={(newTableId) => {
-                        setTableId(newTableId as Hex);
+                      value={constructTableName(table, worldAddress as Hex, chainId)}
+                      onSelect={() => {
+                        setTableId(table.tableId);
                         setOpen(false);
                       }}
                       className="font-mono"
