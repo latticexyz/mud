@@ -65,13 +65,14 @@ export function TablesViewer({
         }) => {
           const namespace = deployedTable?.namespace;
           const keysSchema = Object.keys(deployedTable?.keySchema || {});
-          const keyTuple = keysSchema.map((key) => row.getValue(key));
           const value = row.getValue(name)?.toString();
 
           if (!deployedTable || keysSchema.includes(name) || internalNamespaces.includes(namespace)) {
             return value;
           }
-          return <EditableTableCell name={name} deployedTable={deployedTable} keyTuple={keyTuple} value={value} />;
+
+          const fieldKey = keysSchema.map((key) => row.getValue(key));
+          return <EditableTableCell name={name} deployedTable={deployedTable} value={value} fieldKey={fieldKey} />;
         },
       };
     });

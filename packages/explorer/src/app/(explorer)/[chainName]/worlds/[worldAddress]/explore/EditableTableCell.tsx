@@ -16,32 +16,31 @@ import { useChain } from "../../../../hooks/useChain";
 type Props = {
   name: string;
   value: string;
-  keyTuple: string[];
   deployedTable: DeployedTable;
+  fieldKey: string[];
 };
 
-export function EditableTableCell({ name, deployedTable, keyTuple, value: defaultValue }: Props) {
+export function EditableTableCell({ name, deployedTable, fieldKey, value: defaultValue }: Props) {
   const [value, setValue] = useState<unknown>(defaultValue);
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
   const account = useAccount();
-  const { tableId, valueSchema } = deployedTable;
-  const type = valueSchema[name].type;
+  const fieldType = deployedTable.valueSchema[name].type;
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (newValue: unknown) => {
       const fieldIndex = getFieldIndex(
-        Object.fromEntries(Object.entries(valueSchema).map(([key, value]) => [key, value.type])),
+        Object.fromEntries(Object.entries(deployedTable.valueSchema).map(([key, value]) => [key, value.type])),
         name,
       );
-      const encodedField = encodeField(type, newValue);
+      const encodedFieldValue = encodeField(fieldType, newValue);
       const txHash = await writeContract(wagmiConfig, {
         abi: IBaseWorldAbi,
         address: worldAddress as Hex,
         functionName: "setField",
-        args: [tableId, keyTuple, fieldIndex, encodedField],
+        args: [deployedTable.tableId, fieldKey, fieldIndex, encodedFieldValue],
         chainId,
       });
 
@@ -86,7 +85,7 @@ export function EditableTableCell({ name, deployedTable, keyTuple, value: defaul
     }
   };
 
-  if (type === "bool") {
+  if (fieldType === "bool") {
     return (
       <>
         <Checkbox
