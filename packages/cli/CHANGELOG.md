@@ -1,5 +1,22 @@
 # Change Log
 
+## 2.2.9
+
+### Patch Changes
+
+- 9d990b5: Adjusted deploy order so that the world deploy happens before everything else to avoid spending gas on system contract deploys, etc. if a world cannot be created first.
+  - @latticexyz/abi-ts@2.2.9
+  - @latticexyz/block-logs-stream@2.2.9
+  - @latticexyz/common@2.2.9
+  - @latticexyz/config@2.2.9
+  - @latticexyz/gas-report@2.2.9
+  - @latticexyz/protocol-parser@2.2.9
+  - @latticexyz/schema-type@2.2.9
+  - @latticexyz/store@2.2.9
+  - @latticexyz/utils@2.2.9
+  - @latticexyz/world@2.2.9
+  - @latticexyz/world-module-metadata@2.2.9
+
 ## 2.2.8
 
 ### Patch Changes

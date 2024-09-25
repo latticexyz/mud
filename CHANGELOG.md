@@ -1,3 +1,40 @@
+## Version 2.2.9
+
+Release date: Wed Sep 25 2024
+
+### Patch changes
+
+**[feat(explorer): dozer integration (#3185)](https://github.com/latticexyz/mud/commit/2f2e63adbc90288d11e4a15d755167f9c97cbf74)** (@latticexyz/explorer)
+
+Exploring worlds on Redstone and Garnet chains will now retrieve data from the hosted SQL indexer.
+
+**[feat(explorer): local indexer inside explorer (#3229)](https://github.com/latticexyz/mud/commit/95aa3bb07df284a374e982ccea53d24df4d61219)** (@latticexyz/explorer, create-mud)
+
+Explorer now automatically starts a local indexer when using Anvil as the target chain.
+
+If you previously had an `indexer` entry in your `mprocs.yaml` file, it can now be removed.
+
+```diff
+-  indexer:
+-    cwd: packages/contracts
+-    shell: shx rm -rf $SQLITE_FILENAME && pnpm sqlite-indexer
+-    env:
+-      DEBUG: mud:*
+-      RPC_HTTP_URL: "http://127.0.0.1:8545"
+-      FOLLOW_BLOCK_TAG: "latest"
+-      SQLITE_FILENAME: "indexer.db"
+```
+
+**[feat(explorer): move filter state to url (#3225)](https://github.com/latticexyz/mud/commit/6c056de6090a6f4a9633b96513ca1738dc0993c1)** (@latticexyz/explorer)
+
+Table filters are now included as part of the URL. This enables deep links and improves navigating between pages without losing search state.
+
+**[refactor(cli): adjust deploy order (#3222)](https://github.com/latticexyz/mud/commit/9d990b5edc39c471929b2e6309bfa2ac448aa4c3)** (@latticexyz/cli)
+
+Adjusted deploy order so that the world deploy happens before everything else to avoid spending gas on system contract deploys, etc. if a world cannot be created first.
+
+---
+
 ## Version 2.2.8
 
 Release date: Mon Sep 23 2024
