@@ -92,5 +92,10 @@
     "prettier-plugin-tailwindcss": "^0.6.5",
     "tailwindcss": "^3.4.1",
     "tailwindcss-animate": "^1.0.7"
+  },
+  "packageManager": "pnpm@9.6.0",
+  "engines": {
+    "node": "^18.20.1",
+    "pnpm": "^9.6.0"
   }
 }
