@@ -22,8 +22,6 @@ export function Explorer() {
   const [selectedTableId] = useQueryState("tableId");
   const prevSelectedTableId = usePrevious(selectedTableId);
 
-  console.log("trigger change test");
-
   const { data: tables } = useTablesQuery();
   const table = tables?.find(({ tableId }) => tableId === selectedTableId);
   const { data: tableData, isLoading, isFetched } = useTableDataQuery({ table, query });
