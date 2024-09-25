@@ -59,7 +59,7 @@
   },
   "packageManager": "pnpm@9.4.0",
   "engines": {
-    "node": "^18.20.1",
+    "node": "^20.1.1",
     "pnpm": "^9.4.0"
   }
 }
