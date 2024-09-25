@@ -38,7 +38,8 @@ export function TablesViewer({
   const tableColumns: ColumnDef<getSchemaPrimitives<Schema>>[] = useMemo(() => {
     if (!table || !tableData) return [];
 
-    return tableData.columns.map((name) => {
+    const schema = Object.keys(table.schema);
+    return schema.map((name) => {
       const type = table?.schema[name]?.type;
       return {
         accessorKey: name,
@@ -60,12 +61,19 @@ export function TablesViewer({
           const keySchema = getKeySchema(table);
           const value = row.getValue(name)?.toString();
 
+          console.log(row.original);
+
           if (!table || Object.keys(keySchema).includes(name) || internalNamespaces.includes(namespace)) {
             return value;
           }
 
-          const keyTuple = getKeyTuple(table, row.original as never);
-          return <EditableTableCell name={name} table={table} value={value} keyTuple={keyTuple} />;
+          try {
+            const keyTuple = getKeyTuple(table, row.original as never);
+            return <EditableTableCell name={name} table={table} value={value} keyTuple={keyTuple} />;
+          } catch (e) {
+            console.error(e);
+            return value;
+          }
         },
       };
     });
@@ -77,6 +85,10 @@ export function TablesViewer({
     initialState: {
       pagination: {
         pageSize: 50,
+      },
+      columnVisibility: {
+        systemId: false,
+        puppet: true,
       },
     },
     onSortingChange: setSorting,
