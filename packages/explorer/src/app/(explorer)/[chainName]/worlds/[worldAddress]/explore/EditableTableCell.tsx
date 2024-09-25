@@ -5,7 +5,13 @@ import { Hex } from "viem";
 import { useAccount, useConfig } from "wagmi";
 import { ChangeEvent, useState } from "react";
 import { Table } from "@latticexyz/config";
-import { encodeField, getFieldIndex, getValueSchema } from "@latticexyz/protocol-parser/internal";
+import {
+  ValueSchema,
+  encodeField,
+  getFieldIndex,
+  getSchemaTypes,
+  getValueSchema,
+} from "@latticexyz/protocol-parser/internal";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
@@ -33,10 +39,7 @@ export function EditableTableCell({ name, tableConfig, fieldKey, value: defaultV
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (newValue: unknown) => {
-      const fieldIndex = getFieldIndex(
-        Object.fromEntries(Object.entries(valueSchema).map(([key, value]) => [key, value.type])),
-        name,
-      );
+      const fieldIndex = getFieldIndex<ValueSchema>(getSchemaTypes(valueSchema), name);
       const encodedFieldValue = encodeField(fieldType, newValue);
       const txHash = await writeContract(wagmiConfig, {
         abi: IBaseWorldAbi,
