@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function snakeCase(str: string) {
-  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+  return str.replace(/([A-Z])/g, (letter, offset) => (offset > 0 ? `_${letter.toLowerCase()}` : letter.toLowerCase()));
 }
 
 export function formatBalance(wei: bigint) {
