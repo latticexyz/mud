@@ -3,7 +3,7 @@
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../../components/ui/Button";
-import { useWorldUrl } from "../../hooks/useWorldUrl";
+import { useWorldUrl } from "./hooks/useWorldUrl";
 
 export default function NotFound() {
   const getUrl = useWorldUrl();
