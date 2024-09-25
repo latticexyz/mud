@@ -38,8 +38,7 @@ export function TablesViewer({
   const tableColumns: ColumnDef<getSchemaPrimitives<Schema>>[] = useMemo(() => {
     if (!table || !tableData) return [];
 
-    const schema = Object.keys(table.schema);
-    return schema.map((name) => {
+    return tableData.columns.map((name) => {
       const type = table?.schema[name]?.type;
       return {
         accessorKey: name,
