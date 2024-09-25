@@ -2,7 +2,7 @@ import { ArrowUpDownIcon, LoaderIcon } from "lucide-react";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { useMemo } from "react";
 import { Schema, Table as TableType } from "@latticexyz/config";
-import { getKeySchema, getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
+import { getKeySchema, getKeyTuple, getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
 import {
   ColumnDef,
   SortingState,
@@ -55,13 +55,7 @@ export function TablesViewer({
             </Button>
           );
         },
-        cell: ({
-          row,
-        }: {
-          row: {
-            getValue: (name: string) => string;
-          };
-        }) => {
+        cell: ({ row }) => {
           const namespace = tableConfig?.namespace;
           const keySchema = getKeySchema(tableConfig);
           const value = row.getValue(name)?.toString();
@@ -70,8 +64,8 @@ export function TablesViewer({
             return value;
           }
 
-          const fieldKey = Object.keys(keySchema).map((key) => row.getValue(key));
-          return <EditableTableCell name={name} tableConfig={tableConfig} value={value} fieldKey={fieldKey} />;
+          const keyTuple = getKeyTuple(tableConfig, row.original as never);
+          return <EditableTableCell name={name} tableConfig={tableConfig} value={value} keyTuple={keyTuple} />;
         },
       };
     });
