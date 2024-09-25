@@ -168,12 +168,8 @@ function watchWorldsJson() {
 }
 
 process.on("SIGINT", () => {
-  if (explorerProcess) {
-    explorerProcess.kill();
-  }
-  if (indexerProcess) {
-    indexerProcess.kill();
-  }
+  explorerProcess?.kill();
+  indexerProcess?.kill();
   process.exit();
 });
 
