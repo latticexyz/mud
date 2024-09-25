@@ -99,7 +99,7 @@ async function startExplorer() {
   }
 }
 
-async function startSQLiteIndexer() {
+async function startStoreIndexer() {
   console.log("Running SQLite indexer for anvil...", packageRoot);
 
   try {
@@ -194,7 +194,7 @@ async function main() {
 
   // only start SQLite indexer if chainId is anvil
   if (chainId === anvil.id) {
-    await startSQLiteIndexer();
+    await startStoreIndexer();
   }
   await startExplorer();
 }
