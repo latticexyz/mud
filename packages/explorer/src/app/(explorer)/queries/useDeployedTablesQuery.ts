@@ -1,9 +1,10 @@
 import { useParams } from "next/navigation";
 import { Hex } from "viem";
+import { Table } from "@latticexyz/config";
 import mudConfig from "@latticexyz/store/mud.config";
 import { useQuery } from "@tanstack/react-query";
 import { internalNamespaces } from "../../../common";
-import { DeployedTable, decodeTable } from "../api/utils/decodeTable";
+import { decodeTable } from "../api/utils/decodeTable";
 import { useChain } from "../hooks/useChain";
 import { DozerResponse } from "../types";
 import { indexerForChainId } from "../utils/indexerForChainId";
@@ -12,7 +13,7 @@ export function useDeployedTablesQuery() {
   const { worldAddress, chainName } = useParams();
   const { id: chainId } = useChain();
 
-  return useQuery<DozerResponse, Error, DeployedTable[]>({
+  return useQuery<DozerResponse, Error, Table[]>({
     queryKey: ["deployedTables", worldAddress, chainName],
     queryFn: async () => {
       const indexer = indexerForChainId(chainId);

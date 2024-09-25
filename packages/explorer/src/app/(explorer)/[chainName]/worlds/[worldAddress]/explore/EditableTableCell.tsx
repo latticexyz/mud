@@ -4,19 +4,19 @@ import { toast } from "sonner";
 import { Hex } from "viem";
 import { useAccount, useConfig } from "wagmi";
 import { ChangeEvent, useState } from "react";
-import { encodeField, getFieldIndex } from "@latticexyz/protocol-parser/internal";
+import { Table } from "@latticexyz/config";
+import { encodeField, getFieldIndex, getValueSchema } from "@latticexyz/protocol-parser/internal";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Checkbox } from "../../../../../../components/ui/Checkbox";
 import { cn } from "../../../../../../utils";
-import { DeployedTable } from "../../../../api/utils/decodeTable";
 import { useChain } from "../../../../hooks/useChain";
 
 type Props = {
   name: string;
   value: string;
-  deployedTable: DeployedTable;
+  deployedTable: Table;
   fieldKey: string[];
 };
 
@@ -27,12 +27,14 @@ export function EditableTableCell({ name, deployedTable, fieldKey, value: defaul
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
   const account = useAccount();
-  const fieldType = deployedTable.valueSchema[name].type;
+
+  const valueSchema = getValueSchema(deployedTable);
+  const fieldType = valueSchema[name as never].type;
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (newValue: unknown) => {
       const fieldIndex = getFieldIndex(
-        Object.fromEntries(Object.entries(deployedTable.valueSchema).map(([key, value]) => [key, value.type])),
+        Object.fromEntries(Object.entries(valueSchema).map(([key, value]) => [key, value.type])),
         name,
       );
       const encodedFieldValue = encodeField(fieldType, newValue);

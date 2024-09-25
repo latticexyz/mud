@@ -3,6 +3,7 @@ import { useQueryState } from "nuqs";
 import { Hex } from "viem";
 import { useState } from "react";
 import { useEffect } from "react";
+import { Table } from "@latticexyz/config";
 import { Button } from "../../../../../../components/ui/Button";
 import {
   Command,
@@ -14,17 +15,8 @@ import {
 } from "../../../../../../components/ui/Command";
 import { Popover, PopoverContent, PopoverTrigger } from "../../../../../../components/ui/Popover";
 import { cn } from "../../../../../../utils";
-import { DeployedTable } from "../../../../api/utils/decodeTable";
 
-function TableSelectorItem({
-  table,
-  selected,
-  asOption,
-}: {
-  table: DeployedTable;
-  selected: boolean;
-  asOption?: boolean;
-}) {
+function TableSelectorItem({ table, selected, asOption }: { table: Table; selected: boolean; asOption?: boolean }) {
   const { type, name, namespace } = table;
   return (
     <div className="flex items-center">
@@ -36,7 +28,7 @@ function TableSelectorItem({
   );
 }
 
-export function TableSelector({ tables }: { tables?: DeployedTable[] }) {
+export function TableSelector({ tables }: { tables?: Table[] }) {
   const [selectedTableId, setTableId] = useQueryState("tableId");
   const [open, setOpen] = useState(false);
   const selectedTable = tables?.find(({ tableId }) => tableId === selectedTableId);

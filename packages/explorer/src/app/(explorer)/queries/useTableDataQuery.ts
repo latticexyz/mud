@@ -1,13 +1,13 @@
 import { useParams } from "next/navigation";
 import { Hex } from "viem";
+import { Table } from "@latticexyz/config";
 import { useQuery } from "@tanstack/react-query";
-import { DeployedTable } from "../api/utils/decodeTable";
 import { useChain } from "../hooks/useChain";
 import { DozerResponse } from "../types";
 import { indexerForChainId } from "../utils/indexerForChainId";
 
 type Props = {
-  deployedTable: DeployedTable | undefined;
+  deployedTable: Table | undefined;
   query: string | undefined;
 };
 

@@ -1,8 +1,8 @@
 import { ArrowUpDownIcon, LoaderIcon } from "lucide-react";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { useMemo } from "react";
-import { Schema } from "@latticexyz/config";
-import { getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
+import { Schema, Table as TableType } from "@latticexyz/config";
+import { getKeySchema, getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
 import {
   ColumnDef,
   SortingState,
@@ -17,7 +17,6 @@ import { internalNamespaces } from "../../../../../../common";
 import { Button } from "../../../../../../components/ui/Button";
 import { Input } from "../../../../../../components/ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
-import { DeployedTable } from "../../../../api/utils/decodeTable";
 import { TableData } from "../../../../queries/useTableDataQuery";
 import { EditableTableCell } from "./EditableTableCell";
 
@@ -29,7 +28,7 @@ export function TablesViewer({
   tableData,
   isLoading,
 }: {
-  deployedTable?: DeployedTable;
+  deployedTable?: TableType;
   tableData?: TableData;
   isLoading: boolean;
 }) {
@@ -64,14 +63,14 @@ export function TablesViewer({
           };
         }) => {
           const namespace = deployedTable?.namespace;
-          const keysSchema = Object.keys(deployedTable?.keySchema || {});
+          const keySchema = getKeySchema(deployedTable);
           const value = row.getValue(name)?.toString();
 
-          if (!deployedTable || keysSchema.includes(name) || internalNamespaces.includes(namespace)) {
+          if (!deployedTable || Object.keys(keySchema).includes(name) || internalNamespaces.includes(namespace)) {
             return value;
           }
 
-          const fieldKey = keysSchema.map((key) => row.getValue(key));
+          const fieldKey = Object.keys(keySchema).map((key) => row.getValue(key));
           return <EditableTableCell name={name} deployedTable={deployedTable} value={value} fieldKey={fieldKey} />;
         },
       };

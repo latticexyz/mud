@@ -3,18 +3,13 @@ import { hexToResource } from "@latticexyz/common";
 import { Schema, Table } from "@latticexyz/config";
 import { getSchemaPrimitives, hexToSchema } from "@latticexyz/protocol-parser/internal";
 
-export type DeployedTable = Table & {
-  valueSchema: Schema;
-  keySchema: Schema;
-};
-
 export const decodeTable = ({
   tableId,
   keySchema: encodedKeySchema,
   valueSchema: encodedValueSchema,
   abiEncodedKeyNames,
   abiEncodedFieldNames,
-}: getSchemaPrimitives<Schema>): DeployedTable => {
+}: getSchemaPrimitives<Schema>): Table => {
   const { type, namespace, name } = hexToResource(tableId as Hex);
 
   const solidityKeySchema = hexToSchema(encodedKeySchema as Hex);
@@ -36,13 +31,11 @@ export const decodeTable = ({
     namespace,
     label: name,
     namespaceLabel: namespace,
-    type: type as DeployedTable["type"],
+    type: type as Table["type"],
     schema: {
       ...keySchema,
       ...valueSchema,
     },
-    valueSchema,
-    keySchema,
     key: Object.keys(keySchema),
   };
 };
