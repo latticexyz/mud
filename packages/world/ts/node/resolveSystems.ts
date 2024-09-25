@@ -34,7 +34,7 @@ export async function resolveSystems({
         config.namespaces[contract.namespaceLabel]?.systems[contract.systemLabel] ??
         resolveNamespace({
           label: contract.namespaceLabel,
-          namespace: config.namespaces[contract.namespaceLabel].namespace,
+          namespace: config.namespaces[contract.namespaceLabel]?.namespace,
           systems: {
             [contract.systemLabel]: {},
           },
