@@ -23,6 +23,7 @@
   ],
   "scripts": {
     "build": "pnpm run build:js && pnpm run build:explorer",
+    "build-vercel": "next build",
     "build:explorer": "OUTPUT=standalone next build && shx cp -r .next/static .next/standalone/packages/explorer/.next",
     "build:js": "tsup",
     "clean": "pnpm run clean:js && pnpm run clean:explorer",
@@ -32,7 +33,7 @@
     "explorer:dev": "next dev --port 13690",
     "explorer:start": "node .next/standalone/packages/explorer/server.js",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
-    "install-vercel": "pnpm install && pnpm prepare-vercel",
+    "install-vercel": "pnpm install",
     "knip": "knip",
     "lint": "next lint",
     "prepare": "(forge --version || pnpm foundryup)",

@@ -31,3 +31,4 @@ test-data/world-logs-query.json
 *.db
 *.db-journal
 .vercel
+.env*.local
