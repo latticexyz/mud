@@ -24,11 +24,11 @@ const initialSortingState: SortingState = [];
 const initialRows: TableData["rows"] = [];
 
 export function TablesViewer({
-  tableConfig,
+  table,
   tableData,
   isLoading,
 }: {
-  tableConfig?: TableType;
+  table?: TableType;
   tableData?: TableData;
   isLoading: boolean;
 }) {
@@ -36,10 +36,10 @@ export function TablesViewer({
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
 
   const tableColumns: ColumnDef<getSchemaPrimitives<Schema>>[] = useMemo(() => {
-    if (!tableConfig || !tableData) return [];
+    if (!table || !tableData) return [];
 
     return tableData.columns.map((name) => {
-      const type = tableConfig?.schema[name]?.type;
+      const type = table?.schema[name]?.type;
       return {
         accessorKey: name,
         header: ({ column }) => {
@@ -56,22 +56,22 @@ export function TablesViewer({
           );
         },
         cell: ({ row }) => {
-          const namespace = tableConfig?.namespace;
-          const keySchema = getKeySchema(tableConfig);
+          const namespace = table?.namespace;
+          const keySchema = getKeySchema(table);
           const value = row.getValue(name)?.toString();
 
-          if (!tableConfig || Object.keys(keySchema).includes(name) || internalNamespaces.includes(namespace)) {
+          if (!table || Object.keys(keySchema).includes(name) || internalNamespaces.includes(namespace)) {
             return value;
           }
 
-          const keyTuple = getKeyTuple(tableConfig, row.original as never);
-          return <EditableTableCell name={name} tableConfig={tableConfig} value={value} keyTuple={keyTuple} />;
+          const keyTuple = getKeyTuple(table, row.original as never);
+          return <EditableTableCell name={name} table={table} value={value} keyTuple={keyTuple} />;
         },
       };
     });
-  }, [tableConfig, tableData]);
+  }, [table, tableData]);
 
-  const table = useReactTable({
+  const reactTable = useReactTable({
     data: tableData?.rows ?? initialRows,
     columns: tableColumns,
     initialState: {
@@ -98,7 +98,7 @@ export function TablesViewer({
         <Input
           placeholder="Filter..."
           value={globalFilter}
-          onChange={(event) => table.setGlobalFilter(event.target.value)}
+          onChange={(event) => reactTable.setGlobalFilter(event.target.value)}
           className="max-w-sm rounded border px-2 py-1"
           disabled={!tableData}
         />
@@ -113,7 +113,7 @@ export function TablesViewer({
         {!isLoading && (
           <Table>
             <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
+              {reactTable.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
                     return (
@@ -126,8 +126,8 @@ export function TablesViewer({
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
+              {reactTable.getRowModel().rows?.length ? (
+                reactTable.getRowModel().rows.map((row) => (
                   <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
@@ -151,12 +151,17 @@ export function TablesViewer({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => reactTable.previousPage()}
+            disabled={!reactTable.getCanPreviousPage()}
           >
             Previous
           </Button>
-          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => reactTable.nextPage()}
+            disabled={!reactTable.getCanNextPage()}
+          >
             Next
           </Button>
         </div>

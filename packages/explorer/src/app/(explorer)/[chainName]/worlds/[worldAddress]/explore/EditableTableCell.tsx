@@ -22,11 +22,11 @@ import { useChain } from "../../../../hooks/useChain";
 type Props = {
   name: string;
   value: string | undefined;
-  tableConfig: Table;
+  table: Table;
   keyTuple: readonly Hex[];
 };
 
-export function EditableTableCell({ name, tableConfig, keyTuple, value: defaultValue }: Props) {
+export function EditableTableCell({ name, table, keyTuple, value: defaultValue }: Props) {
   const [value, setValue] = useState<unknown>(defaultValue);
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
@@ -34,7 +34,7 @@ export function EditableTableCell({ name, tableConfig, keyTuple, value: defaultV
   const { id: chainId } = useChain();
   const account = useAccount();
 
-  const valueSchema = getValueSchema(tableConfig);
+  const valueSchema = getValueSchema(table);
   const fieldType = valueSchema[name as never].type;
 
   const { mutate, isPending } = useMutation({
@@ -45,7 +45,7 @@ export function EditableTableCell({ name, tableConfig, keyTuple, value: defaultV
         abi: IBaseWorldAbi,
         address: worldAddress as Hex,
         functionName: "setField",
-        args: [tableConfig.tableId, keyTuple, fieldIndex, encodedFieldValue],
+        args: [table.tableId, keyTuple, fieldIndex, encodedFieldValue],
         chainId,
       });
 

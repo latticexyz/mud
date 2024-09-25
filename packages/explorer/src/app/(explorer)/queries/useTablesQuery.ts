@@ -9,12 +9,12 @@ import { useChain } from "../hooks/useChain";
 import { DozerResponse } from "../types";
 import { indexerForChainId } from "../utils/indexerForChainId";
 
-export function useTablesConfigQuery() {
+export function useTablesQuery() {
   const { worldAddress, chainName } = useParams();
   const { id: chainId } = useChain();
 
   return useQuery<DozerResponse, Error, Table[]>({
-    queryKey: ["tablesConfig", worldAddress, chainName],
+    queryKey: ["tables", worldAddress, chainName],
     queryFn: async () => {
       const indexer = indexerForChainId(chainId);
       const tableName = "store__Tables";

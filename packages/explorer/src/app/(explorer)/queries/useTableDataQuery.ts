@@ -7,7 +7,7 @@ import { DozerResponse } from "../types";
 import { indexerForChainId } from "../utils/indexerForChainId";
 
 type Props = {
-  tableConfig: Table | undefined;
+  table: Table | undefined;
   query: string | undefined;
 };
 
@@ -16,7 +16,7 @@ export type TableData = {
   rows: Record<string, string>[];
 };
 
-export function useTableDataQuery({ tableConfig, query }: Props) {
+export function useTableDataQuery({ table, query }: Props) {
   const { chainName, worldAddress } = useParams();
   const { id: chainId } = useChain();
 
@@ -40,9 +40,9 @@ export function useTableDataQuery({ tableConfig, query }: Props) {
       return response.json();
     },
     select: (data: DozerResponse) => {
-      if (!tableConfig || !data?.result?.[0]) return;
+      if (!table || !data?.result?.[0]) return;
 
-      const schemaKeys = Object.keys(tableConfig.schema);
+      const schemaKeys = Object.keys(table.schema);
       const result = data.result[0];
       const columnKeys = result[0]
         .map((columnKey) => {
@@ -57,7 +57,7 @@ export function useTableDataQuery({ tableConfig, query }: Props) {
         rows,
       };
     },
-    enabled: !!tableConfig && !!query,
+    enabled: !!table && !!query,
     refetchInterval: 1_000,
   });
 }
