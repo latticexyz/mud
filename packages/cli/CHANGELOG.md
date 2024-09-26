@@ -1,5 +1,22 @@
 # Change Log
 
+## 2.2.10
+
+### Patch Changes
+
+- Updated dependencies [9d7fc85]
+  - @latticexyz/world@2.2.10
+  - @latticexyz/world-module-metadata@2.2.10
+  - @latticexyz/abi-ts@2.2.10
+  - @latticexyz/block-logs-stream@2.2.10
+  - @latticexyz/common@2.2.10
+  - @latticexyz/config@2.2.10
+  - @latticexyz/gas-report@2.2.10
+  - @latticexyz/protocol-parser@2.2.10
+  - @latticexyz/schema-type@2.2.10
+  - @latticexyz/store@2.2.10
+  - @latticexyz/utils@2.2.10
+
 ## 2.2.9
 
 ### Patch Changes
