@@ -31,7 +31,7 @@ export default function RootLayout({
       <body className={`${inter.variable} ${jetbrains.variable} dark`}>
         <Theme>
           <div
-            className="container"
+            className="container pb-8"
             style={{
               fontFamily: "var(--font-jetbrains-mono)",
             }}

@@ -1,5 +1,5 @@
-import { TransactionsWatcher } from "./TransactionsWatcher";
+import { TransactionsTable } from "./TransactionsTable";
 
 export default async function TransactionsPage() {
-  return <TransactionsWatcher />;
+  return <TransactionsTable />;
 }
