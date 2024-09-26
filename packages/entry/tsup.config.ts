@@ -18,4 +18,5 @@ export default defineConfig({
   loader: {
     ".css": "text",
   },
+  external: ["react", "react-dom"],
 });
