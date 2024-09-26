@@ -33,8 +33,8 @@ importers:
         specifier: 8.57.0
         version: 8.57.0
       mprocs:
-        specifier: ^0.6.4
-        version: 0.6.4
+        specifier: ^0.7.1
+        version: 0.7.1
       shx:
         specifier: ^0.3.4
         version: 0.3.4
@@ -1230,8 +1230,8 @@ packages:
   minimist@1.2.8:
     resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
 
-  mprocs@0.6.4:
-    resolution: {integrity: sha512-Y4eqnAjp3mjy0eT+zPoMQ+P/ISOzjgRG/4kh4I5cRA4Tv0rPxTCBRadn3+j+boMF5id7IoLhrVq9NFWFPuzD9A==}
+  mprocs@0.7.1:
+    resolution: {integrity: sha512-v22SIwcOphZm6XLdNfeHf4ZDYHqV1hghyfqNLwmZ604lEXlEkiuazYBWUz3xEB2GdABEAKfCZ8qiOVIoREM6CQ==}
     engines: {node: '>=0.10.0'}
     hasBin: true
 
@@ -2887,7 +2887,7 @@ snapshots:
 
   minimist@1.2.8: {}
 
-  mprocs@0.6.4: {}
+  mprocs@0.7.1: {}
 
   ms@2.1.2: {}
 
