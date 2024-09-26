@@ -7,7 +7,7 @@ import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { getDefaultAnvilConnectors } from "../../../../../connectors/anvil";
-import { useChain } from "../../../../../hooks/useChain";
+import { useChain } from "../../../hooks/useChain";
 
 const queryClient = new QueryClient();
 

@@ -2,10 +2,12 @@
 
 import { Coins, Eye, Send } from "lucide-react";
 import { AbiFunction } from "viem";
+import { useAccount } from "wagmi";
 import { z } from "zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Button } from "../../../../../../components/ui/Button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../../../../../components/ui/Form";
 import { Input } from "../../../../../../components/ui/Input";
@@ -30,7 +32,9 @@ export function FunctionField({ abi }: Props) {
   const operationType: FunctionType =
     abi.stateMutability === "view" || abi.stateMutability === "pure" ? FunctionType.READ : FunctionType.WRITE;
   const [result, setResult] = useState<string | null>(null);
+  const { openConnectModal } = useConnectModal();
   const mutation = useContractMutation({ abi, operationType });
+  const account = useAccount();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -40,6 +44,10 @@ export function FunctionField({ abi }: Props) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!account.isConnected) {
+      return openConnectModal?.();
+    }
+
     const mutationResult = await mutation.mutateAsync({
       inputs: values.inputs,
       value: values.value,

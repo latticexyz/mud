@@ -1,5 +1,27 @@
 # Change Log
 
+## 2.2.10
+
+### Patch Changes
+
+- 9d7fc85: The `namespace` field in a multi-namespace config is now correctly resolved for systems.
+  This fixes a bug with root systems in a multi-namespace project.
+  - @latticexyz/common@2.2.10
+  - @latticexyz/config@2.2.10
+  - @latticexyz/protocol-parser@2.2.10
+  - @latticexyz/schema-type@2.2.10
+  - @latticexyz/store@2.2.10
+
+## 2.2.9
+
+### Patch Changes
+
+- @latticexyz/common@2.2.9
+- @latticexyz/config@2.2.9
+- @latticexyz/protocol-parser@2.2.9
+- @latticexyz/schema-type@2.2.9
+- @latticexyz/store@2.2.9
+
 ## 2.2.8
 
 ### Patch Changes

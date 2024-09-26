@@ -601,6 +601,9 @@ importers:
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
+      '@latticexyz/config':
+        specifier: workspace:*
+        version: link:../config
       '@latticexyz/protocol-parser':
         specifier: workspace:*
         version: link:../protocol-parser
@@ -610,6 +613,9 @@ importers:
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
+      '@latticexyz/store-indexer':
+        specifier: workspace:*
+        version: link:../store-indexer
       '@latticexyz/store-sync':
         specifier: workspace:*
         version: link:../store-sync
@@ -673,6 +679,9 @@ importers:
       next:
         specifier: 14.2.5
         version: 14.2.5(@babel/core@7.25.2)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      nuqs:
+        specifier: ^1.19.2
+        version: 1.19.2(next@14.2.5(@babel/core@7.25.2)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       query-string:
         specifier: ^9.1.0
         version: 9.1.0
@@ -8168,10 +8177,6 @@ packages:
     resolution: {integrity: sha512-x7Wolra5V0tt3wRs3/ts3S6ciSQVypgGQlJpz2rsdQYoUKxMxPNaoHMGJN6qAuPJqS+2iQ1ZUn5kl7HCyls84g==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
 
-  jest-util@29.5.0:
-    resolution: {integrity: sha512-RYMgG/MTadOr5t8KdhejfvUU82MxsCu5MF6KuDUHl+NuwzUt+Sm6jJWxTJVrDR1j5M/gJVCPKQEpWXY+yIQ6lQ==}
-    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
-
   jest-util@29.7.0:
     resolution: {integrity: sha512-z6EbKajIpqGKU56y5KBUgy1dt1ihhQJgWzUlZHArA/+X2ad7Cb5iF+AK1EWVL/Bo7Rz9uurpqw6SiBCefUbCGA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -8771,6 +8776,9 @@ packages:
       typescript:
         optional: true
 
+  mitt@3.0.1:
+    resolution: {integrity: sha512-vKivATfr97l2/QBCYAkXYDbrIWPM2IIKEl7YPhjCvKlG3kE2gm+uBo6nEXK3M5/Ffh/FLpKExzOQ3JJoJGFKBw==}
+
   mkdirp-classic@0.5.3:
     resolution: {integrity: sha512-gKLcREMhtuZRwRAfqP3RFW+TK4JqApVBtOIftVgjuABpAtpxhPGaDcfvbhNvD0B8iD1oUr/txX35NjcaY6Ns/A==}
 
@@ -8980,6 +8988,11 @@ packages:
 
   nullthrows@1.1.1:
     resolution: {integrity: sha512-2vPPEi+Z7WqML2jZYddDIfy5Dqb0r2fze2zTxNNknZaFpVHU3mFB3R+DWeJWGVx0ecvttSGlJTI+WG+8Z4cDWw==}
+
+  nuqs@1.19.2:
+    resolution: {integrity: sha512-r6Hw44yMg8tuxr+zS4AmeB+Z++j1pT99DuCfy+XmouCBaXHHhBPOoWZQQuSUI0ja2s00v6o96HdSnvq2/5qOyw==}
+    peerDependencies:
+      next: '>=13.4 <14.0.2 || ^14.0.3'
 
   nwsapi@2.2.7:
     resolution: {integrity: sha512-ub5E4+FBPKwAZx0UwIQOjYWGHTEq5sPqHQNRN8Z9e4A7u3Tj1weLJsL59yH9vmvqEtBHaOmT6cYQKIZOxp35FQ==}
@@ -11706,7 +11719,7 @@ snapshots:
       '@smithy/util-middleware': 2.2.0
       '@smithy/util-retry': 2.2.0
       '@smithy/util-utf8': 2.3.0
-      tslib: 2.6.2
+      tslib: 2.7.0
     transitivePeerDependencies:
       - aws-crt
 
@@ -11749,7 +11762,7 @@ snapshots:
       '@smithy/util-middleware': 2.2.0
       '@smithy/util-retry': 2.2.0
       '@smithy/util-utf8': 2.3.0
-      tslib: 2.6.2
+      tslib: 2.7.0
     transitivePeerDependencies:
       - aws-crt
 
@@ -11936,7 +11949,7 @@ snapshots:
       '@smithy/property-provider': 2.2.0
       '@smithy/shared-ini-file-loader': 2.4.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
     transitivePeerDependencies:
       - '@aws-sdk/credential-provider-node'
       - aws-crt
@@ -13619,7 +13632,7 @@ snapshots:
       '@types/node': 18.19.50
       chalk: 4.1.2
       jest-message-util: 29.5.0
-      jest-util: 29.5.0
+      jest-util: 29.7.0
       slash: 3.0.0
 
   '@jest/core@29.5.0':
@@ -13645,7 +13658,7 @@ snapshots:
       jest-runner: 29.5.0
       jest-runtime: 29.5.0
       jest-snapshot: 29.5.0
-      jest-util: 29.5.0
+      jest-util: 29.7.0
       jest-validate: 29.5.0
       jest-watcher: 29.5.0
       micromatch: 4.0.8
@@ -13663,7 +13676,7 @@ snapshots:
   '@jest/environment@29.5.0':
     dependencies:
       '@jest/fake-timers': 29.5.0
-      '@jest/types': 29.5.0
+      '@jest/types': 29.6.3
       '@types/node': 18.19.50
       jest-mock: 29.5.0
 
@@ -13687,7 +13700,7 @@ snapshots:
 
   '@jest/fake-timers@29.5.0':
     dependencies:
-      '@jest/types': 29.5.0
+      '@jest/types': 29.6.3
       '@sinonjs/fake-timers': 10.0.2
       '@types/node': 18.19.50
       jest-message-util: 29.5.0
@@ -13707,7 +13720,7 @@ snapshots:
     dependencies:
       '@jest/environment': 29.5.0
       '@jest/expect': 29.5.0
-      '@jest/types': 29.5.0
+      '@jest/types': 29.6.3
       jest-mock: 29.5.0
     transitivePeerDependencies:
       - supports-color
@@ -13732,7 +13745,7 @@ snapshots:
       istanbul-lib-source-maps: 4.0.1
       istanbul-reports: 3.1.5
       jest-message-util: 29.5.0
-      jest-util: 29.5.0
+      jest-util: 29.7.0
       jest-worker: 29.5.0
       slash: 3.0.0
       string-length: 4.0.2
@@ -13781,7 +13794,7 @@ snapshots:
       graceful-fs: 4.2.11
       jest-haste-map: 29.5.0
       jest-regex-util: 29.4.3
-      jest-util: 29.5.0
+      jest-util: 29.7.0
       micromatch: 4.0.8
       pirates: 4.0.5
       slash: 3.0.0
@@ -15640,7 +15653,7 @@ snapshots:
 
   '@smithy/is-array-buffer@2.2.0':
     dependencies:
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/middleware-content-length@2.2.0':
     dependencies:
@@ -15803,7 +15816,7 @@ snapshots:
 
   '@smithy/util-hex-encoding@2.2.0':
     dependencies:
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/util-middleware@2.2.0':
     dependencies:
@@ -15829,7 +15842,7 @@ snapshots:
 
   '@smithy/util-uri-escape@2.2.0':
     dependencies:
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/util-utf8@2.3.0':
     dependencies:
@@ -19801,7 +19814,7 @@ snapshots:
       '@jest/environment': 29.5.0
       '@jest/expect': 29.5.0
       '@jest/test-result': 29.5.0
-      '@jest/types': 29.5.0
+      '@jest/types': 29.6.3
       '@types/node': 18.19.50
       chalk: 4.1.2
       co: 4.6.0
@@ -19831,7 +19844,7 @@ snapshots:
       graceful-fs: 4.2.11
       import-local: 3.1.0
       jest-config: 29.5.0(@types/node@18.15.11)
-      jest-util: 29.5.0
+      jest-util: 29.7.0
       jest-validate: 29.5.0
       prompts: 2.4.2
       yargs: 17.7.2
@@ -19850,7 +19863,7 @@ snapshots:
       graceful-fs: 4.2.11
       import-local: 3.1.0
       jest-config: 29.5.0(@types/node@20.12.12)
-      jest-util: 29.5.0
+      jest-util: 29.7.0
       jest-validate: 29.5.0
       prompts: 2.4.2
       yargs: 17.7.2
@@ -19876,7 +19889,7 @@ snapshots:
       jest-regex-util: 29.4.3
       jest-resolve: 29.5.0
       jest-runner: 29.5.0
-      jest-util: 29.5.0
+      jest-util: 29.7.0
       jest-validate: 29.5.0
       micromatch: 4.0.8
       parse-json: 5.2.0
@@ -19905,7 +19918,7 @@ snapshots:
       jest-regex-util: 29.4.3
       jest-resolve: 29.5.0
       jest-runner: 29.5.0
-      jest-util: 29.5.0
+      jest-util: 29.7.0
       jest-validate: 29.5.0
       micromatch: 4.0.8
       parse-json: 5.2.0
@@ -19947,7 +19960,7 @@ snapshots:
     dependencies:
       '@jest/environment': 29.5.0
       '@jest/fake-timers': 29.5.0
-      '@jest/types': 29.5.0
+      '@jest/types': 29.6.3
       '@types/node': 18.19.50
       jest-mock: 29.5.0
       jest-util: 29.7.0
@@ -19976,7 +19989,7 @@ snapshots:
       fb-watchman: 2.0.2
       graceful-fs: 4.2.11
       jest-regex-util: 29.4.3
-      jest-util: 29.5.0
+      jest-util: 29.7.0
       jest-worker: 29.5.0
       micromatch: 4.0.8
       walker: 1.0.8
@@ -20028,7 +20041,7 @@ snapshots:
 
   jest-mock@29.5.0:
     dependencies:
-      '@jest/types': 29.5.0
+      '@jest/types': 29.6.3
       '@types/node': 18.19.50
       jest-util: 29.7.0
 
@@ -20057,7 +20070,7 @@ snapshots:
       graceful-fs: 4.2.11
       jest-haste-map: 29.5.0
       jest-pnp-resolver: 1.2.3(jest-resolve@29.5.0)
-      jest-util: 29.5.0
+      jest-util: 29.7.0
       jest-validate: 29.5.0
       resolve: 1.22.8
       resolve.exports: 2.0.2
@@ -20081,7 +20094,7 @@ snapshots:
       jest-message-util: 29.5.0
       jest-resolve: 29.5.0
       jest-runtime: 29.5.0
-      jest-util: 29.5.0
+      jest-util: 29.7.0
       jest-watcher: 29.5.0
       jest-worker: 29.5.0
       p-limit: 3.1.0
@@ -20110,7 +20123,7 @@ snapshots:
       jest-regex-util: 29.4.3
       jest-resolve: 29.5.0
       jest-snapshot: 29.5.0
-      jest-util: 29.5.0
+      jest-util: 29.7.0
       slash: 3.0.0
       strip-bom: 4.0.0
     transitivePeerDependencies:
@@ -20137,21 +20150,12 @@ snapshots:
       jest-get-type: 29.4.3
       jest-matcher-utils: 29.5.0
       jest-message-util: 29.5.0
-      jest-util: 29.5.0
+      jest-util: 29.7.0
       natural-compare: 1.4.0
       pretty-format: 29.5.0
       semver: 7.6.3
     transitivePeerDependencies:
       - supports-color
-
-  jest-util@29.5.0:
-    dependencies:
-      '@jest/types': 29.5.0
-      '@types/node': 18.19.50
-      chalk: 4.1.2
-      ci-info: 3.8.0
-      graceful-fs: 4.2.11
-      picomatch: 2.3.1
 
   jest-util@29.7.0:
     dependencies:
@@ -20188,7 +20192,7 @@ snapshots:
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       emittery: 0.13.1
-      jest-util: 29.5.0
+      jest-util: 29.7.0
       string-length: 4.0.2
 
   jest-worker@29.5.0:
@@ -20995,6 +20999,8 @@ snapshots:
     optionalDependencies:
       typescript: 5.4.2
 
+  mitt@3.0.1: {}
+
   mkdirp-classic@0.5.3: {}
 
   mkdirp@0.5.6:
@@ -21184,6 +21190,11 @@ snapshots:
       set-blocking: 2.0.0
 
   nullthrows@1.1.1: {}
+
+  nuqs@1.19.2(next@14.2.5(@babel/core@7.25.2)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)):
+    dependencies:
+      mitt: 3.0.1
+      next: 14.2.5(@babel/core@7.25.2)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
 
   nwsapi@2.2.7: {}
 

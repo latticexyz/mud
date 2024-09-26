@@ -1,9 +1,12 @@
 import { useBlockNumber } from "wagmi";
+import { useChain } from "../app/(explorer)/hooks/useChain";
 import { Skeleton } from "./ui/Skeleton";
 
 export function LatestBlock() {
+  const { id: chainId } = useChain();
   const { data: block } = useBlockNumber({
     watch: true,
+    chainId,
   });
 
   return (

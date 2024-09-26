@@ -3,7 +3,7 @@ import { useAccount, useBalance, useConnect, useConnectors } from "wagmi";
 import { useState } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { AnvilConnector, isAnvilConnector } from "../connectors/anvil";
-import { formatBalance } from "../lib/utils";
+import { formatBalance } from "../utils";
 import { Button } from "./ui/Button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
 import { TruncatedHex } from "./ui/TruncatedHex";
