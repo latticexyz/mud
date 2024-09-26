@@ -2,6 +2,7 @@ import { Abi, Address, Hex, padHex } from "viem";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
+import { LibraryMap } from "./getLibraryMap";
 
 export const salt = padHex("0x", { size: 32 });
 
@@ -61,7 +62,7 @@ export type LibraryPlaceholder = {
 export type DeterministicContract = {
   readonly prepareDeploy: (
     deployer: Address,
-    libraries: readonly Library[],
+    libraryMap?: LibraryMap,
   ) => {
     readonly address: Address;
     readonly bytecode: Hex;
@@ -94,12 +95,16 @@ export type System = DeterministicContract & {
   readonly allowedAddresses: readonly Hex[];
   readonly allowedSystemIds: readonly Hex[];
   // world registration
+  // TODO: replace this with system manifest data
   readonly worldFunctions: readonly WorldFunction[];
+  // human readable ABIs to register onchain
+  readonly abi: readonly string[];
+  readonly worldAbi: readonly string[];
 };
 
 export type DeployedSystem = Omit<
   System,
-  "label" | "namespaceLabel" | "abi" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"
+  "label" | "namespaceLabel" | "abi" | "worldAbi" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"
 > & {
   address: Address;
 };

@@ -1,17 +1,18 @@
 "use client";
 
+import { Loader } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useWorldUrl } from "../app/(explorer)/hooks/useWorldUrl";
+import { useWorldAbiQuery } from "../app/(explorer)/queries/useWorldAbiQuery";
 import { LatestBlock } from "../components/LatestBlock";
 import { Separator } from "../components/ui/Separator";
-import { useWorldUrl } from "../hooks/useWorldUrl";
-import { cn } from "../lib/utils";
-import { AccountSelect } from "./AccountSelect";
+import { cn } from "../utils";
+import { ConnectButton } from "./ConnectButton";
 
 function NavigationLink({ href, children }: { href: string; children: React.ReactNode }) {
   const pathname = usePathname();
   const getLinkUrl = useWorldUrl();
-
   return (
     <Link
       href={getLinkUrl(href)}
@@ -25,18 +26,26 @@ function NavigationLink({ href, children }: { href: string; children: React.Reac
 }
 
 export function Navigation() {
+  const { data, isFetched } = useWorldAbiQuery();
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between">
         <div className="flex gap-x-6 py-4">
-          <NavigationLink href="/explorer">Data Explorer</NavigationLink>
-          <NavigationLink href="/interact">Interact</NavigationLink>
-          <NavigationLink href="/transactions">Transactions</NavigationLink>
+          <NavigationLink href="explore">Explore</NavigationLink>
+          <NavigationLink href="interact">Interact</NavigationLink>
+          <NavigationLink href="observe">Observe</NavigationLink>
+          <NavigationLink href="transactions">Transactions</NavigationLink>
         </div>
+
+        {isFetched && !data?.isWorldDeployed && (
+          <h4 className="font-mono text-sm font-bold uppercase opacity-70">
+            Waiting for world deploy <Loader className="inline-block h-4 w-4 animate-spin" />
+          </h4>
+        )}
 
         <div className="flex items-center gap-x-4">
           <LatestBlock />
-          <AccountSelect />
+          <ConnectButton />
         </div>
       </div>
 

@@ -1,13 +1,11 @@
 #!/usr/bin/env node
-
 import { create } from "create-create-app";
-import { resolve } from "path";
+import path from "node:path";
 import packageJson from "../package.json";
 
-const templateRoot = resolve(__dirname, "..", "dist", "templates");
+const templateRoot = path.resolve(__dirname, "..", "dist", "templates");
 
 // See https://github.com/uetchy/create-create-app/blob/master/README.md for other options.
-
 create("create-mud", {
   templateRoot,
   defaultTemplate: "vanilla",

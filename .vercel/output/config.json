@@ -1,0 +1,283 @@
+{
+  "version": 3,
+  "routes": [
+    {
+      "src": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$",
+      "headers": {
+        "Location": "/$1"
+      },
+      "status": 308,
+      "continue": true
+    },
+    {
+      "src": "/_next/__private/trace",
+      "dest": "/404",
+      "status": 404,
+      "continue": true
+    },
+    {
+      "src": "/404/?",
+      "status": 404,
+      "continue": true,
+      "missing": [
+        {
+          "type": "header",
+          "key": "x-prerender-revalidate"
+        }
+      ]
+    },
+    {
+      "src": "/500",
+      "status": 500,
+      "continue": true
+    },
+    {
+      "src": "^(?!/_next)/worlds(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$",
+      "headers": {
+        "Location": "/anvil/worlds/$1"
+      },
+      "status": 307
+    },
+    {
+      "src": "^(?!/_next)(?:/([^/]+?))/worlds(?:/([^/]+?))/explorer(?:/)?$",
+      "headers": {
+        "Location": "/$1/worlds/$2/explore"
+      },
+      "status": 307
+    },
+    {
+      "src": "^/?",
+      "has": [
+        {
+          "type": "header",
+          "key": "rsc"
+        }
+      ],
+      "dest": "/index.rsc",
+      "headers": {
+        "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+      },
+      "continue": true,
+      "override": true
+    },
+    {
+      "src": "^/((?!.+\\.rsc).+?)(?:/)?$",
+      "has": [
+        {
+          "type": "header",
+          "key": "rsc"
+        }
+      ],
+      "dest": "/$1.rsc",
+      "headers": {
+        "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+      },
+      "continue": true,
+      "override": true
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/index(\\.action|\\.rsc)",
+      "dest": "/",
+      "continue": true
+    },
+    {
+      "src": "/_next/data/(.*)",
+      "dest": "/_next/data/$1",
+      "check": true
+    },
+    {
+      "src": "/\\.prefetch\\.rsc$",
+      "dest": "/__index.prefetch.rsc",
+      "check": true
+    },
+    {
+      "src": "/(.+)/\\.prefetch\\.rsc$",
+      "dest": "/$1.prefetch.rsc",
+      "check": true
+    },
+    {
+      "src": "/\\.rsc$",
+      "dest": "/index.rsc",
+      "check": true
+    },
+    {
+      "src": "/(.+)/\\.rsc$",
+      "dest": "/$1.rsc",
+      "check": true
+    },
+    {
+      "handle": "resource"
+    },
+    {
+      "src": "/.*",
+      "status": 404
+    },
+    {
+      "handle": "miss"
+    },
+    {
+      "src": "/_next/static/(?:[^/]+/pages|pages|chunks|runtime|css|image|media)/.+",
+      "status": 404,
+      "check": true,
+      "dest": "$0"
+    },
+    {
+      "handle": "rewrite"
+    },
+    {
+      "src": "/_next/data/(.*)",
+      "dest": "/404",
+      "status": 404
+    },
+    {
+      "src": "^/(?<nxtPchainName>[^/]+?)(?:\\.rsc)(?:/)?$",
+      "dest": "/[chainName].rsc?nxtPchainName=$nxtPchainName"
+    },
+    {
+      "src": "^/(?<nxtPchainName>[^/]+?)(?:/)?$",
+      "dest": "/[chainName]?nxtPchainName=$nxtPchainName"
+    },
+    {
+      "src": "^/(?<nxtPchainName>[^/]+?)/worlds(?:\\.rsc)(?:/)?$",
+      "dest": "/[chainName]/worlds.rsc?nxtPchainName=$nxtPchainName"
+    },
+    {
+      "src": "^/(?<nxtPchainName>[^/]+?)/worlds(?:/)?$",
+      "dest": "/[chainName]/worlds?nxtPchainName=$nxtPchainName"
+    },
+    {
+      "src": "^/(?<nxtPchainName>[^/]+?)/worlds/(?<nxtPworldAddress>[^/]+?)(?:\\.rsc)(?:/)?$",
+      "dest": "/[chainName]/worlds/[worldAddress].rsc?nxtPchainName=$nxtPchainName&nxtPworldAddress=$nxtPworldAddress"
+    },
+    {
+      "src": "^/(?<nxtPchainName>[^/]+?)/worlds/(?<nxtPworldAddress>[^/]+?)(?:/)?$",
+      "dest": "/[chainName]/worlds/[worldAddress]?nxtPchainName=$nxtPchainName&nxtPworldAddress=$nxtPworldAddress"
+    },
+    {
+      "src": "^/(?<nxtPchainName>[^/]+?)/worlds/(?<nxtPworldAddress>[^/]+?)/explore(?:\\.rsc)(?:/)?$",
+      "dest": "/[chainName]/worlds/[worldAddress]/explore.rsc?nxtPchainName=$nxtPchainName&nxtPworldAddress=$nxtPworldAddress"
+    },
+    {
+      "src": "^/(?<nxtPchainName>[^/]+?)/worlds/(?<nxtPworldAddress>[^/]+?)/explore(?:/)?$",
+      "dest": "/[chainName]/worlds/[worldAddress]/explore?nxtPchainName=$nxtPchainName&nxtPworldAddress=$nxtPworldAddress"
+    },
+    {
+      "src": "^/(?<nxtPchainName>[^/]+?)/worlds/(?<nxtPworldAddress>[^/]+?)/interact(?:\\.rsc)(?:/)?$",
+      "dest": "/[chainName]/worlds/[worldAddress]/interact.rsc?nxtPchainName=$nxtPchainName&nxtPworldAddress=$nxtPworldAddress"
+    },
+    {
+      "src": "^/(?<nxtPchainName>[^/]+?)/worlds/(?<nxtPworldAddress>[^/]+?)/interact(?:/)?$",
+      "dest": "/[chainName]/worlds/[worldAddress]/interact?nxtPchainName=$nxtPchainName&nxtPworldAddress=$nxtPworldAddress"
+    },
+    {
+      "src": "^/(?<nxtPchainName>[^/]+?)/worlds/(?<nxtPworldAddress>[^/]+?)/observe(?:\\.rsc)(?:/)?$",
+      "dest": "/[chainName]/worlds/[worldAddress]/observe.rsc?nxtPchainName=$nxtPchainName&nxtPworldAddress=$nxtPworldAddress"
+    },
+    {
+      "src": "^/(?<nxtPchainName>[^/]+?)/worlds/(?<nxtPworldAddress>[^/]+?)/observe(?:/)?$",
+      "dest": "/[chainName]/worlds/[worldAddress]/observe?nxtPchainName=$nxtPchainName&nxtPworldAddress=$nxtPworldAddress"
+    },
+    {
+      "handle": "hit"
+    },
+    {
+      "src": "/_next/static/(?:[^/]+/pages|pages|chunks|runtime|css|image|media|tWHpDk13\\-CpThp3dnQBoa)/.+",
+      "headers": {
+        "cache-control": "public,max-age=31536000,immutable"
+      },
+      "continue": true,
+      "important": true
+    },
+    {
+      "src": "/index(?:/)?",
+      "headers": {
+        "x-matched-path": "/"
+      },
+      "continue": true,
+      "important": true
+    },
+    {
+      "src": "/((?!index$).*?)(?:/)?",
+      "headers": {
+        "x-matched-path": "/$1"
+      },
+      "continue": true,
+      "important": true
+    },
+    {
+      "handle": "error"
+    },
+    {
+      "src": "/.*",
+      "dest": "/404",
+      "status": 404
+    },
+    {
+      "src": "/.*",
+      "dest": "/500",
+      "status": 500
+    }
+  ],
+  "images": {
+    "domains": [],
+    "sizes": [
+      640,
+      750,
+      828,
+      1080,
+      1200,
+      1920,
+      2048,
+      3840,
+      16,
+      32,
+      48,
+      64,
+      96,
+      128,
+      256,
+      384
+    ],
+    "remotePatterns": [],
+    "minimumCacheTTL": 60,
+    "formats": [
+      "image/webp"
+    ],
+    "dangerouslyAllowSVG": false,
+    "contentSecurityPolicy": "script-src 'none'; frame-src 'none'; sandbox;",
+    "contentDispositionType": "inline"
+  },
+  "overrides": {
+    "404.html": {
+      "path": "404",
+      "contentType": "text/html; charset=utf-8"
+    },
+    "500.html": {
+      "path": "500",
+      "contentType": "text/html; charset=utf-8"
+    },
+    "_error.rsc.json": {
+      "path": "_error.rsc",
+      "contentType": "application/json"
+    },
+    "_app.rsc.json": {
+      "path": "_app.rsc",
+      "contentType": "application/json"
+    },
+    "_document.rsc.json": {
+      "path": "_document.rsc",
+      "contentType": "application/json"
+    },
+    "404.rsc.json": {
+      "path": "404.rsc",
+      "contentType": "application/json"
+    }
+  },
+  "framework": {
+    "version": "14.2.5"
+  },
+  "crons": []
+}

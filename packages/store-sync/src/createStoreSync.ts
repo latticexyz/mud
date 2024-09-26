@@ -1,5 +1,5 @@
 import { storeEventsAbi } from "@latticexyz/store";
-import { Hex, TransactionReceiptNotFoundError } from "viem";
+import { GetTransactionReceiptErrorType, Hex } from "viem";
 import {
   StorageAdapter,
   StorageAdapterBlock,
@@ -33,13 +33,12 @@ import { SyncStep } from "./SyncStep";
 import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/utils";
 import { getSnapshot } from "./getSnapshot";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
-import { Store as StoreConfig } from "@latticexyz/store";
 
 const debug = parentDebug.extend("createStoreSync");
 
 const defaultFilters: SyncFilter[] = internalTableIds.map((tableId) => ({ tableId }));
 
-type CreateStoreSyncOptions<config extends StoreConfig = StoreConfig> = SyncOptions<config> & {
+type CreateStoreSyncOptions = SyncOptions & {
   storageAdapter: StorageAdapter;
   onProgress?: (opts: {
     step: SyncStep;
@@ -50,7 +49,7 @@ type CreateStoreSyncOptions<config extends StoreConfig = StoreConfig> = SyncOpti
   }) => void;
 };
 
-export async function createStoreSync<config extends StoreConfig = StoreConfig>({
+export async function createStoreSync({
   storageAdapter,
   onProgress,
   publicClient,
@@ -63,7 +62,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
   initialState,
   initialBlockLogs,
   indexerUrl,
-}: CreateStoreSyncOptions<config>): Promise<SyncResult> {
+}: CreateStoreSyncOptions): Promise<SyncResult> {
   const filters: SyncFilter[] =
     initialFilters.length || tableIds.length
       ? [...initialFilters, ...tableIds.map((tableId) => ({ tableId })), ...defaultFilters]
@@ -290,14 +289,14 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
           if (lastBlock.blockNumber >= blockNumber) {
             return { status, blockNumber, transactionHash };
           }
-        } catch (error) {
-          if (error instanceof TransactionReceiptNotFoundError) {
+        } catch (e) {
+          const error = e as GetTransactionReceiptErrorType;
+          if (error.name === "TransactionReceiptNotFoundError") {
             return;
           }
           throw error;
         }
       }),
-      tap((result) => debug("has tx?", tx, result)),
     );
 
     return await firstValueFrom(hasTransaction$.pipe(filter(isDefined)));

@@ -1,75 +1,96 @@
 {
   "name": "@latticexyz/explorer",
-  "version": "2.1.1",
+  "version": "2.2.9",
   "description": "World Explorer is a tool for visually exploring and manipulating the state of worlds",
   "type": "module",
+  "exports": {
+    "./observer": "./dist/exports/observer.js"
+  },
+  "typesVersions": {
+    "*": {
+      "observer": [
+        "./dist/exports/observer.d.ts"
+      ]
+    }
+  },
   "bin": {
-    "explorer": "./dist/explorer.js"
+    "explorer": "./bin/explorer.js"
   },
   "files": [
+    "bin",
     "dist",
     ".next/standalone/packages/explorer"
   ],
   "scripts": {
-    "build": "pnpm run build:explorer && pnpm run build:bin",
-    "build:bin": "tsup",
-    "build:explorer": "next build && cp -r .next/static .next/standalone/packages/explorer/.next",
-    "clean": "pnpm run clean:explorer && pnpm run clean:bin",
-    "clean:bin": "rimraf dist",
-    "clean:explorer": "rimraf .next .turbo",
-    "dev": "next dev",
-    "lint": "next lint",
-    "start": "node .next/standalone/packages/explorer/server.js"
+    "build": "pnpm run build:js && pnpm run build:explorer",
+    "build:explorer": "next build && shx cp -r .next/static .next/standalone/packages/explorer/.next",
+    "build:js": "tsup",
+    "clean": "pnpm run clean:js && pnpm run clean:explorer",
+    "clean:explorer": "shx rm -rf .next .turbo",
+    "clean:js": "shx rm -rf dist",
+    "dev": "tsup --watch",
+    "explorer:dev": "next dev --port 13690",
+    "explorer:start": "node .next/standalone/packages/explorer/server.js",
+    "knip": "knip",
+    "lint": "next lint"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
     "@latticexyz/common": "workspace:*",
+    "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
+    "@latticexyz/store-indexer": "workspace:*",
     "@latticexyz/store-sync": "workspace:*",
     "@latticexyz/world": "workspace:*",
     "@radix-ui/react-checkbox": "^1.1.1",
-    "@radix-ui/react-dropdown-menu": "^2.1.1",
+    "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-popover": "^1.1.1",
     "@radix-ui/react-select": "^2.1.1",
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
-    "@radix-ui/react-toast": "^1.2.1",
     "@radix-ui/themes": "^3.0.5",
+    "@rainbow-me/rainbowkit": "^2.1.5",
     "@tanstack/react-query": "^5.51.3",
     "@tanstack/react-table": "^8.19.3",
-    "@wagmi/core": "^2.12.1",
+    "@wagmi/core": "catalog:",
     "better-sqlite3": "^8.6.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "cmdk": "1.0.0",
+    "debug": "^4.3.4",
     "lucide-react": "^0.408.0",
-    "minimist": "^1.2.8",
     "next": "14.2.5",
+    "nuqs": "^1.19.2",
     "query-string": "^9.1.0",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.52.1",
     "sonner": "^1.5.0",
     "tailwind-merge": "^1.12.0",
-    "tailwindcss-animate": "^1.0.7",
     "tsup": "^6.7.0",
     "viem": "catalog:",
-    "wagmi": "^2.11.1",
+    "wagmi": "catalog:",
+    "yargs": "^17.7.1",
     "zod": "3.23.8",
     "zustand": "^4.3.7"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/better-sqlite3": "^7.6.4",
-    "@types/minimist": "^1.2.5",
+    "@types/debug": "^4.1.7",
     "@types/node": "^18.15.11",
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
+    "@types/yargs": "^17.0.10",
     "eslint-config-next": "14.2.3",
+    "knip": "^5.30.2",
     "postcss": "^8",
     "prettier": "3.2.5",
     "prettier-plugin-tailwindcss": "^0.6.5",
-    "tailwindcss": "^3.4.1"
+    "tailwindcss": "^3.4.1",
+    "tailwindcss-animate": "^1.0.7"
   }
 }

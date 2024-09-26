@@ -8,7 +8,7 @@ export type Module = {
    * The name of the module
    * @deprecated
    */
-  readonly name: string;
+  readonly name?: string;
   /** Should this module be installed as a root module? */
   readonly root: boolean;
   /** Arguments to be passed to the module's install method */
@@ -80,8 +80,6 @@ export type Namespaces = {
 };
 
 export type Deploy = {
-  /** The name of a custom World contract to deploy. If no name is provided, a default MUD World is deployed */
-  readonly customWorldContract: string | undefined;
   /**
    * Script to execute after the deployment is complete (Default "PostDeploy").
    * Script must be placed in the forge scripts directory (see foundry.toml) and have a ".s.sol" extension.
@@ -93,6 +91,18 @@ export type Deploy = {
   readonly worldsFile: string;
   /** Deploy the World as an upgradeable proxy */
   readonly upgradeableWorldImplementation: boolean;
+  /**
+   * Deploy the World using a custom implementation. This world must implement the same interface as `World.sol` so that it can initialize core modules, etc.
+   * If you want to extend the world with new functions or override existing registered functions, we recommend using [root systems](https://mud.dev/world/systems#root-systems).
+   * However, there are rare cases where this may not be enough to modify the native/internal World behavior.
+   * Note that deploying a custom World opts out of the world factory, deterministic world deploys, and upgradeable implementation proxy.
+   */
+  readonly customWorld?: {
+    /** Path to custom world source file relative to project root dir. */
+    sourcePath: string;
+    /** Contract name in custom world source file. */
+    name: string;
+  };
 };
 
 export type Codegen = {

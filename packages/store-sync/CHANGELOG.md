@@ -1,5 +1,186 @@
 # @latticexyz/store-sync
 
+## 2.2.9
+
+### Patch Changes
+
+- @latticexyz/block-logs-stream@2.2.9
+- @latticexyz/common@2.2.9
+- @latticexyz/config@2.2.9
+- @latticexyz/protocol-parser@2.2.9
+- @latticexyz/recs@2.2.9
+- @latticexyz/schema-type@2.2.9
+- @latticexyz/stash@2.2.9
+- @latticexyz/store@2.2.9
+- @latticexyz/world@2.2.9
+
+## 2.2.8
+
+### Patch Changes
+
+- 7c7bdb2: Removed unused generics and ensure that we're only passing around the generics we need, when we need them. Hopefully this improves TS performance in MUD projects.
+- Updated dependencies [7c7bdb2]
+- Updated dependencies [0f5b291]
+  - @latticexyz/common@2.2.8
+  - @latticexyz/block-logs-stream@2.2.8
+  - @latticexyz/config@2.2.8
+  - @latticexyz/protocol-parser@2.2.8
+  - @latticexyz/store@2.2.8
+  - @latticexyz/world@2.2.8
+  - @latticexyz/stash@2.2.8
+  - @latticexyz/recs@2.2.8
+  - @latticexyz/schema-type@2.2.8
+
+## 2.2.7
+
+### Patch Changes
+
+- Updated dependencies [a08ba5e]
+  - @latticexyz/store@2.2.7
+  - @latticexyz/stash@2.2.7
+  - @latticexyz/world@2.2.7
+  - @latticexyz/block-logs-stream@2.2.7
+  - @latticexyz/common@2.2.7
+  - @latticexyz/config@2.2.7
+  - @latticexyz/protocol-parser@2.2.7
+  - @latticexyz/recs@2.2.7
+  - @latticexyz/schema-type@2.2.7
+
+## 2.2.6
+
+### Patch Changes
+
+- 8dc5889: Added a `syncToStash` util to hydrate a `stash` client store from MUD contract state. This is currently exported from `@latticexyz/store-sync/internal` while Stash package is unstable/experimental.
+
+  ```ts
+  import { createClient, http } from "viem";
+  import { anvil } from "viem/chains";
+  import { createStash } from "@latticexyz/stash/internal";
+  import { syncToStash } from "@latticexyz/store-sync/internal";
+  import config from "../mud.config";
+
+  const client = createClient({
+    chain: anvil,
+    transport: http(),
+  });
+
+  const address = "0x...";
+
+  const stash = createStash(config);
+  const sync = await syncToStash({ stash, client, address });
+  ```
+
+- Updated dependencies [20fac30]
+  - @latticexyz/stash@2.2.6
+  - @latticexyz/block-logs-stream@2.2.6
+  - @latticexyz/common@2.2.6
+  - @latticexyz/config@2.2.6
+  - @latticexyz/protocol-parser@2.2.6
+  - @latticexyz/recs@2.2.6
+  - @latticexyz/schema-type@2.2.6
+  - @latticexyz/store@2.2.6
+  - @latticexyz/world@2.2.6
+
+## 2.2.5
+
+### Patch Changes
+
+- @latticexyz/block-logs-stream@2.2.5
+- @latticexyz/common@2.2.5
+- @latticexyz/config@2.2.5
+- @latticexyz/protocol-parser@2.2.5
+- @latticexyz/recs@2.2.5
+- @latticexyz/schema-type@2.2.5
+- @latticexyz/store@2.2.5
+- @latticexyz/world@2.2.5
+
+## 2.2.4
+
+### Patch Changes
+
+- 50010fb: Bumped viem, wagmi, and abitype packages to their latest release.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.6 wagmi@2.12.11 @wagmi/core@2.13.5 abitype@1.0.6
+  ```
+
+- 8b4110e: Added `store-sync` helper libraries to interact with the indexer's experimental SQL API endpoint. Documentation is available at [https://mud.dev/indexer/sql](https://mud.dev/indexer/sql).
+- Updated dependencies [2f935cf]
+- Updated dependencies [50010fb]
+- Updated dependencies [1f24978]
+- Updated dependencies [8b4110e]
+  - @latticexyz/common@2.2.4
+  - @latticexyz/block-logs-stream@2.2.4
+  - @latticexyz/config@2.2.4
+  - @latticexyz/protocol-parser@2.2.4
+  - @latticexyz/schema-type@2.2.4
+  - @latticexyz/store@2.2.4
+  - @latticexyz/world@2.2.4
+  - @latticexyz/recs@2.2.4
+
+## 2.2.3
+
+### Patch Changes
+
+- Updated dependencies [8546452]
+  - @latticexyz/world@2.2.3
+  - @latticexyz/block-logs-stream@2.2.3
+  - @latticexyz/common@2.2.3
+  - @latticexyz/config@2.2.3
+  - @latticexyz/protocol-parser@2.2.3
+  - @latticexyz/recs@2.2.3
+  - @latticexyz/schema-type@2.2.3
+  - @latticexyz/store@2.2.3
+
+## 2.2.2
+
+### Patch Changes
+
+- @latticexyz/block-logs-stream@2.2.2
+- @latticexyz/common@2.2.2
+- @latticexyz/config@2.2.2
+- @latticexyz/protocol-parser@2.2.2
+- @latticexyz/query@2.2.2
+- @latticexyz/recs@2.2.2
+- @latticexyz/schema-type@2.2.2
+- @latticexyz/store@2.2.2
+- @latticexyz/world@2.2.2
+
+## 2.2.1
+
+### Patch Changes
+
+- 603b2ab: Improved error handling of `TransactionReceiptNotFoundError` in `waitForTransaction` when Viem versions aren't aligned.
+- Updated dependencies [c0764a5]
+  - @latticexyz/common@2.2.1
+  - @latticexyz/block-logs-stream@2.2.1
+  - @latticexyz/config@2.2.1
+  - @latticexyz/protocol-parser@2.2.1
+  - @latticexyz/query@2.2.1
+  - @latticexyz/store@2.2.1
+  - @latticexyz/world@2.2.1
+  - @latticexyz/recs@2.2.1
+  - @latticexyz/schema-type@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- Updated dependencies [69cd0a1]
+- Updated dependencies [04c675c]
+- Updated dependencies [04c675c]
+  - @latticexyz/common@2.2.0
+  - @latticexyz/config@2.2.0
+  - @latticexyz/store@2.2.0
+  - @latticexyz/world@2.2.0
+  - @latticexyz/block-logs-stream@2.2.0
+  - @latticexyz/protocol-parser@2.2.0
+  - @latticexyz/query@2.2.0
+  - @latticexyz/recs@2.2.0
+  - @latticexyz/schema-type@2.2.0
+
 ## 2.1.1
 
 ### Patch Changes

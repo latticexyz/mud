@@ -16,9 +16,9 @@ import {
 import { syncToZustand } from "@latticexyz/store-sync/zustand";
 import { getNetworkConfig } from "./getNetworkConfig";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
-import { createBurnerAccount, transportObserver, ContractWrite } from "@latticexyz/common";
-import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
-import { Subject, share } from "rxjs";
+import { createBurnerAccount, transportObserver } from "@latticexyz/common";
+import { transactionQueue } from "@latticexyz/common/actions";
+import { observer } from "@latticexyz/explorer/observer";
 
 /*
  * Import our MUD config, which includes strong types for
@@ -48,33 +48,6 @@ export async function setupNetwork() {
   const publicClient = createPublicClient(clientOptions);
 
   /*
-   * Create an observable for contract writes that we can
-   * pass into MUD dev tools for transaction observability.
-   */
-  const write$ = new Subject<ContractWrite>();
-
-  /*
-   * Create a temporary wallet and a viem client for it
-   * (see https://viem.sh/docs/clients/wallet.html).
-   */
-  const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
-  const burnerWalletClient = createWalletClient({
-    ...clientOptions,
-    account: burnerAccount,
-  })
-    .extend(transactionQueue())
-    .extend(writeObserver({ onWrite: (write) => write$.next(write) }));
-
-  /*
-   * Create an object for communicating with the deployed World.
-   */
-  const worldContract = getContract({
-    address: networkConfig.worldAddress as Hex,
-    abi: IWorldAbi,
-    client: { public: publicClient, wallet: burnerWalletClient },
-  });
-
-  /*
    * Sync on-chain state into RECS and keeps our client in sync.
    * Uses the MUD indexer if available, otherwise falls back
    * to the viem publicClient to make RPC calls to fetch MUD
@@ -87,6 +60,27 @@ export async function setupNetwork() {
     startBlock: BigInt(networkConfig.initialBlockNumber),
   });
 
+  /*
+   * Create a temporary wallet and a viem client for it
+   * (see https://viem.sh/docs/clients/wallet.html).
+   */
+  const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
+  const burnerWalletClient = createWalletClient({
+    ...clientOptions,
+    account: burnerAccount,
+  })
+    .extend(transactionQueue())
+    .extend(observer({ waitForTransaction }));
+
+  /*
+   * Create an object for communicating with the deployed World.
+   */
+  const worldContract = getContract({
+    address: networkConfig.worldAddress as Hex,
+    abi: IWorldAbi,
+    client: { public: publicClient, wallet: burnerWalletClient },
+  });
+
   return {
     tables,
     useStore,
@@ -96,6 +90,5 @@ export async function setupNetwork() {
     storedBlockLogs$,
     waitForTransaction,
     worldContract,
-    write$: write$.asObservable().pipe(share()),
   };
 }

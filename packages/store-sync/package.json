@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store-sync",
-  "version": "2.1.1",
+  "version": "2.2.9",
   "description": "Utilities to sync MUD Store events with a client or cache",
   "repository": {
     "type": "git",
@@ -12,6 +12,7 @@
   "exports": {
     ".": "./dist/index.js",
     "./indexer-client": "./dist/indexer-client/index.js",
+    "./internal": "./dist/exports/internal.js",
     "./postgres": "./dist/postgres/index.js",
     "./postgres-decoded": "./dist/postgres-decoded/index.js",
     "./recs": "./dist/recs/index.js",
@@ -26,6 +27,9 @@
       ],
       "indexer-client": [
         "./dist/indexer-client/index.d.ts"
+      ],
+      "internal": [
+        "./dist/exports/internal.d.ts"
       ],
       "postgres": [
         "./dist/postgres/index.d.ts"
@@ -55,7 +59,7 @@
     "build": "pnpm run build:js",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
-    "clean:js": "rimraf dist",
+    "clean:js": "shx rm -rf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
     "test": "DATABASE_URL=http://127.0.0.1:5432/postgres vitest",
@@ -67,9 +71,9 @@
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
-    "@latticexyz/query": "workspace:*",
     "@latticexyz/recs": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
+    "@latticexyz/stash": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/world": "workspace:*",
     "@trpc/client": "10.34.0",

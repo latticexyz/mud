@@ -6,6 +6,7 @@ export * from "./chunk";
 export * from "./groupBy";
 export * from "./identity";
 export * from "./includes";
+export * from "./indent";
 export * from "./isDefined";
 export * from "./isNotNull";
 export * from "./iteratorToArray";

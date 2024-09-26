@@ -1,6 +1,6 @@
 {
   "name": "ts-benchmarks",
-  "version": "2.1.1",
+  "version": "2.2.9",
   "private": true,
   "license": "MIT",
   "scripts": {

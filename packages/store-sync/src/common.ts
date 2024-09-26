@@ -3,6 +3,7 @@ import { StoreEventsAbiItem, StoreEventsAbi } from "@latticexyz/store";
 import { Observable } from "rxjs";
 import { UnionPick } from "@latticexyz/common/type-utils";
 import {
+  ValueArgs,
   getKeySchema,
   getSchemaPrimitives,
   getSchemaTypes,
@@ -10,7 +11,6 @@ import {
 } from "@latticexyz/protocol-parser/internal";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
-import { Store as StoreConfig } from "@latticexyz/store";
 import { Table as ConfigTable, Schema } from "@latticexyz/config";
 import { configToTables } from "./configToTables";
 
@@ -65,11 +65,7 @@ export type SyncFilter = {
   key1?: Hex;
 };
 
-export type SyncOptions<config extends StoreConfig = StoreConfig> = {
-  /**
-   * MUD config
-   */
-  config?: config;
+export type SyncOptions = {
   /**
    * [viem `PublicClient`][0] used for fetching logs from the RPC.
    *
@@ -140,3 +136,9 @@ export const schemasTable = {
   keySchema: getSchemaTypes(getKeySchema(mudTables.Tables)),
   valueSchema: getSchemaTypes(getValueSchema(mudTables.Tables)),
 };
+
+export const emptyValueArgs = {
+  staticData: "0x",
+  encodedLengths: "0x",
+  dynamicData: "0x",
+} as const satisfies ValueArgs;

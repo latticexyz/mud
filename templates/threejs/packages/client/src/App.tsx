@@ -16,52 +16,52 @@ const Plane = () => {
     <>
       <mesh position={[0, -1, 0]}>
         <boxGeometry args={[20, 0.1, 20]} />
-        <meshStandardMaterial color="#000" opacity="0.9" transparent />
+        <meshStandardMaterial color="#000" opacity={0.9} transparent />
       </mesh>
 
       <mesh position={[0, 3, -10]}>
         <boxGeometry args={[20, 5, 0.1]} />
-        <meshStandardMaterial color="#F00" opacity="0.5" transparent />
+        <meshStandardMaterial color="#F00" opacity={0.5} transparent />
       </mesh>
 
       <mesh position={[10, 3, 0]}>
         <boxGeometry args={[0.1, 5, 20]} />
-        <meshStandardMaterial color="#0F0" opacity="0.5" transparent />
+        <meshStandardMaterial color="#0F0" opacity={0.5} transparent />
       </mesh>
 
       <mesh position={[5, 2, 0]}>
         <sphereGeometry args={[2, 10, 10]} />
-        <meshStandardMaterial color="#FF0" opacity="0.8" transparent />
+        <meshStandardMaterial color="#FF0" opacity={0.8} transparent />
       </mesh>
 
       <mesh position={[0, 2, 5]}>
         <sphereGeometry args={[2, 10, 10]} />
-        <meshStandardMaterial color="#FF0" opacity="0.8" transparent />
+        <meshStandardMaterial color="#FF0" opacity={0.8} transparent />
       </mesh>
 
       <mesh position={[-5, 2, 0]}>
         <sphereGeometry args={[2, 10, 10]} />
-        <meshStandardMaterial color="#FF0" opacity="0.8" transparent />
+        <meshStandardMaterial color="#FF0" opacity={0.8} transparent />
       </mesh>
 
       <mesh position={[0, 2, -5]}>
         <sphereGeometry args={[2, 10, 10]} />
-        <meshStandardMaterial color="#FF0" opacity="0.8" transparent />
+        <meshStandardMaterial color="#FF0" opacity={0.8} transparent />
       </mesh>
 
       <mesh position={[5, 2, -5]}>
         <sphereGeometry args={[1, 10, 10]} />
-        <meshStandardMaterial color="#008" opacity="0.8" transparent />
+        <meshStandardMaterial color="#008" opacity={0.8} transparent />
       </mesh>
 
       <mesh position={[5, 2, 5]}>
         <sphereGeometry args={[1, 10, 10]} />
-        <meshStandardMaterial color="#008" opacity="0.8" transparent />
+        <meshStandardMaterial color="#008" opacity={0.8} transparent />
       </mesh>
 
       <mesh position={[-5, 2, -5]}>
         <sphereGeometry args={[1, 10, 10]} />
-        <meshStandardMaterial color="#008" opacity="0.8" transparent />
+        <meshStandardMaterial color="#008" opacity={0.8} transparent />
       </mesh>
     </>
   );

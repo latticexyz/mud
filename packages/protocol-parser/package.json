@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/protocol-parser",
-  "version": "2.1.1",
+  "version": "2.2.9",
   "description": "Parser utilities for the MUD protocol",
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
     "build": "pnpm run build:js",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
-    "clean:js": "rimraf dist",
+    "clean:js": "shx rm -rf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
     "test": "vitest typecheck --run && vitest --run",

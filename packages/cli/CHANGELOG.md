@@ -1,5 +1,210 @@
 # Change Log
 
+## 2.2.9
+
+### Patch Changes
+
+- 9d990b5: Adjusted deploy order so that the world deploy happens before everything else to avoid spending gas on system contract deploys, etc. if a world cannot be created first.
+  - @latticexyz/abi-ts@2.2.9
+  - @latticexyz/block-logs-stream@2.2.9
+  - @latticexyz/common@2.2.9
+  - @latticexyz/config@2.2.9
+  - @latticexyz/gas-report@2.2.9
+  - @latticexyz/protocol-parser@2.2.9
+  - @latticexyz/schema-type@2.2.9
+  - @latticexyz/store@2.2.9
+  - @latticexyz/utils@2.2.9
+  - @latticexyz/world@2.2.9
+  - @latticexyz/world-module-metadata@2.2.9
+
+## 2.2.8
+
+### Patch Changes
+
+- 0f5b291: When deploying to an existing world, the deployer now paginates with [`fetchLogs`](https://github.com/latticexyz/mud/blob/main/packages/block-logs-stream/src/fetchLogs.ts) to find the world deployment.
+- b071198: If the project is using a custom world, the deployer now waits for the init transaction to be confirmed before transferring ownership of the world.
+- Updated dependencies [7c7bdb2]
+- Updated dependencies [0f5b291]
+  - @latticexyz/common@2.2.8
+  - @latticexyz/block-logs-stream@2.2.8
+  - @latticexyz/config@2.2.8
+  - @latticexyz/protocol-parser@2.2.8
+  - @latticexyz/store@2.2.8
+  - @latticexyz/world@2.2.8
+  - @latticexyz/world-module-metadata@2.2.8
+  - @latticexyz/abi-ts@2.2.8
+  - @latticexyz/gas-report@2.2.8
+  - @latticexyz/schema-type@2.2.8
+  - @latticexyz/utils@2.2.8
+
+## 2.2.7
+
+### Patch Changes
+
+- 58f101e: Reduced the log noise from enabling/disabling automine on non-Anvil chains.
+- Updated dependencies [a08ba5e]
+  - @latticexyz/store@2.2.7
+  - @latticexyz/world@2.2.7
+  - @latticexyz/world-module-metadata@2.2.7
+  - @latticexyz/abi-ts@2.2.7
+  - @latticexyz/common@2.2.7
+  - @latticexyz/config@2.2.7
+  - @latticexyz/gas-report@2.2.7
+  - @latticexyz/protocol-parser@2.2.7
+  - @latticexyz/schema-type@2.2.7
+  - @latticexyz/utils@2.2.7
+
+## 2.2.6
+
+### Patch Changes
+
+- 22c37c3: Significantly improved the deployment performance for large projects with public libraries by implementing a more efficient algorithm to resolve public libraries during deployment.
+  The local deployment time on a large reference project was reduced from over 10 minutes to 4 seconds.
+  - @latticexyz/abi-ts@2.2.6
+  - @latticexyz/common@2.2.6
+  - @latticexyz/config@2.2.6
+  - @latticexyz/gas-report@2.2.6
+  - @latticexyz/protocol-parser@2.2.6
+  - @latticexyz/schema-type@2.2.6
+  - @latticexyz/store@2.2.6
+  - @latticexyz/utils@2.2.6
+  - @latticexyz/world@2.2.6
+  - @latticexyz/world-module-metadata@2.2.6
+
+## 2.2.5
+
+### Patch Changes
+
+- @latticexyz/abi-ts@2.2.5
+- @latticexyz/common@2.2.5
+- @latticexyz/config@2.2.5
+- @latticexyz/gas-report@2.2.5
+- @latticexyz/protocol-parser@2.2.5
+- @latticexyz/schema-type@2.2.5
+- @latticexyz/store@2.2.5
+- @latticexyz/utils@2.2.5
+- @latticexyz/world@2.2.5
+- @latticexyz/world-module-metadata@2.2.5
+
+## 2.2.4
+
+### Patch Changes
+
+- 50010fb: Bumped viem, wagmi, and abitype packages to their latest release.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.6 wagmi@2.12.11 @wagmi/core@2.13.5 abitype@1.0.6
+  ```
+
+- d3acd92: Along with table and system labels, the MUD deployer now registers namespace labels. Additionally, labels will only be registered if they differ from the underlying resource name.
+- Updated dependencies [2f935cf]
+- Updated dependencies [50010fb]
+- Updated dependencies [1f24978]
+- Updated dependencies [8b4110e]
+  - @latticexyz/common@2.2.4
+  - @latticexyz/config@2.2.4
+  - @latticexyz/protocol-parser@2.2.4
+  - @latticexyz/schema-type@2.2.4
+  - @latticexyz/store@2.2.4
+  - @latticexyz/world@2.2.4
+  - @latticexyz/world-module-metadata@2.2.4
+  - @latticexyz/abi-ts@2.2.4
+  - @latticexyz/gas-report@2.2.4
+  - @latticexyz/utils@2.2.4
+
+## 2.2.3
+
+### Patch Changes
+
+- 8546452: MUD config now supports a `deploy.customWorld` option that, when used with the CLI, will deploy the specified custom World implementation.
+  Custom implementations must still follow [the World protocol](https://github.com/latticexyz/mud/tree/main/packages/world/ts/protocol-snapshots).
+
+  If you want to extend the world with new functions or override existing registered functions, we recommend using [root systems](https://mud.dev/world/systems#root-systems).
+  However, there are rare cases where this may not be enough to modify the native/internal World behavior.
+  Note that deploying a custom World opts out of the world factory, deterministic world deploys, and upgradeable implementation proxy.
+
+  ```ts
+  import { defineWorld } from "@latticexyz/world";
+
+  export default defineWorld({
+    customWorld: {
+      // path to custom world source from project root
+      sourcePath: "src/CustomWorld.sol",
+      // custom world contract name
+      name: "CustomWorld",
+    },
+  });
+  ```
+
+- d3ab5c3: Speed up deployment in development by temporarily enabling automine mode for the duration of the deployment.
+- Updated dependencies [8546452]
+  - @latticexyz/world@2.2.3
+  - @latticexyz/world-module-metadata@2.2.3
+  - @latticexyz/abi-ts@2.2.3
+  - @latticexyz/common@2.2.3
+  - @latticexyz/config@2.2.3
+  - @latticexyz/gas-report@2.2.3
+  - @latticexyz/protocol-parser@2.2.3
+  - @latticexyz/schema-type@2.2.3
+  - @latticexyz/store@2.2.3
+  - @latticexyz/utils@2.2.3
+
+## 2.2.2
+
+### Patch Changes
+
+- ef6f7c0: Fixed regression in 2.2.1 where deployment of modules already installed would throw an error instead of skipping.
+  - @latticexyz/abi-ts@2.2.2
+  - @latticexyz/common@2.2.2
+  - @latticexyz/config@2.2.2
+  - @latticexyz/gas-report@2.2.2
+  - @latticexyz/protocol-parser@2.2.2
+  - @latticexyz/schema-type@2.2.2
+  - @latticexyz/store@2.2.2
+  - @latticexyz/utils@2.2.2
+  - @latticexyz/world@2.2.2
+  - @latticexyz/world-module-metadata@2.2.2
+
+## 2.2.1
+
+### Patch Changes
+
+- 0738d29: Deployer now waits for prerequisite transactions before continuing.
+- Updated dependencies [c0764a5]
+  - @latticexyz/common@2.2.1
+  - @latticexyz/config@2.2.1
+  - @latticexyz/protocol-parser@2.2.1
+  - @latticexyz/store@2.2.1
+  - @latticexyz/world@2.2.1
+  - @latticexyz/world-module-metadata@2.2.1
+  - @latticexyz/abi-ts@2.2.1
+  - @latticexyz/gas-report@2.2.1
+  - @latticexyz/schema-type@2.2.1
+  - @latticexyz/utils@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- 04c675c: Add a strongly typed `namespaceLabel` to the system config output.
+  It corresponds to the `label` of the namespace the system belongs to and can't be set manually.
+- 31caecc: In addition to table labels, system labels and ABIs are now registered onchain during deploy.
+- Updated dependencies [69cd0a1]
+- Updated dependencies [04c675c]
+- Updated dependencies [04c675c]
+  - @latticexyz/common@2.2.0
+  - @latticexyz/config@2.2.0
+  - @latticexyz/store@2.2.0
+  - @latticexyz/world@2.2.0
+  - @latticexyz/protocol-parser@2.2.0
+  - @latticexyz/world-module-metadata@2.2.0
+  - @latticexyz/abi-ts@2.2.0
+  - @latticexyz/gas-report@2.2.0
+  - @latticexyz/schema-type@2.2.0
+  - @latticexyz/utils@2.2.0
+
 ## 2.1.1
 
 ### Patch Changes

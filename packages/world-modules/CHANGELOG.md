@@ -1,5 +1,115 @@
 # Change Log
 
+## 2.2.9
+
+### Patch Changes
+
+- @latticexyz/common@2.2.9
+- @latticexyz/config@2.2.9
+- @latticexyz/schema-type@2.2.9
+- @latticexyz/store@2.2.9
+- @latticexyz/world@2.2.9
+
+## 2.2.8
+
+### Patch Changes
+
+- Updated dependencies [7c7bdb2]
+  - @latticexyz/common@2.2.8
+  - @latticexyz/config@2.2.8
+  - @latticexyz/store@2.2.8
+  - @latticexyz/world@2.2.8
+  - @latticexyz/schema-type@2.2.8
+
+## 2.2.7
+
+### Patch Changes
+
+- Updated dependencies [a08ba5e]
+  - @latticexyz/store@2.2.7
+  - @latticexyz/world@2.2.7
+  - @latticexyz/common@2.2.7
+  - @latticexyz/config@2.2.7
+  - @latticexyz/schema-type@2.2.7
+
+## 2.2.6
+
+### Patch Changes
+
+- @latticexyz/common@2.2.6
+- @latticexyz/config@2.2.6
+- @latticexyz/schema-type@2.2.6
+- @latticexyz/store@2.2.6
+- @latticexyz/world@2.2.6
+
+## 2.2.5
+
+### Patch Changes
+
+- @latticexyz/common@2.2.5
+- @latticexyz/config@2.2.5
+- @latticexyz/schema-type@2.2.5
+- @latticexyz/store@2.2.5
+- @latticexyz/world@2.2.5
+
+## 2.2.4
+
+### Patch Changes
+
+- Updated dependencies [2f935cf]
+- Updated dependencies [50010fb]
+- Updated dependencies [1f24978]
+  - @latticexyz/common@2.2.4
+  - @latticexyz/config@2.2.4
+  - @latticexyz/schema-type@2.2.4
+  - @latticexyz/store@2.2.4
+  - @latticexyz/world@2.2.4
+
+## 2.2.3
+
+### Patch Changes
+
+- Updated dependencies [8546452]
+  - @latticexyz/world@2.2.3
+  - @latticexyz/common@2.2.3
+  - @latticexyz/config@2.2.3
+  - @latticexyz/schema-type@2.2.3
+  - @latticexyz/store@2.2.3
+
+## 2.2.2
+
+### Patch Changes
+
+- @latticexyz/common@2.2.2
+- @latticexyz/config@2.2.2
+- @latticexyz/schema-type@2.2.2
+- @latticexyz/store@2.2.2
+- @latticexyz/world@2.2.2
+
+## 2.2.1
+
+### Patch Changes
+
+- Updated dependencies [c0764a5]
+  - @latticexyz/common@2.2.1
+  - @latticexyz/config@2.2.1
+  - @latticexyz/store@2.2.1
+  - @latticexyz/world@2.2.1
+  - @latticexyz/schema-type@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- Updated dependencies [69cd0a1]
+- Updated dependencies [04c675c]
+- Updated dependencies [04c675c]
+  - @latticexyz/common@2.2.0
+  - @latticexyz/config@2.2.0
+  - @latticexyz/store@2.2.0
+  - @latticexyz/world@2.2.0
+  - @latticexyz/schema-type@2.2.0
+
 ## 2.1.1
 
 ### Patch Changes

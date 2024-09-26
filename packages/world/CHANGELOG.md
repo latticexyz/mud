@@ -1,5 +1,144 @@
 # Change Log
 
+## 2.2.9
+
+### Patch Changes
+
+- @latticexyz/common@2.2.9
+- @latticexyz/config@2.2.9
+- @latticexyz/protocol-parser@2.2.9
+- @latticexyz/schema-type@2.2.9
+- @latticexyz/store@2.2.9
+
+## 2.2.8
+
+### Patch Changes
+
+- Updated dependencies [7c7bdb2]
+  - @latticexyz/common@2.2.8
+  - @latticexyz/config@2.2.8
+  - @latticexyz/protocol-parser@2.2.8
+  - @latticexyz/store@2.2.8
+  - @latticexyz/schema-type@2.2.8
+
+## 2.2.7
+
+### Patch Changes
+
+- Updated dependencies [a08ba5e]
+  - @latticexyz/store@2.2.7
+  - @latticexyz/common@2.2.7
+  - @latticexyz/config@2.2.7
+  - @latticexyz/protocol-parser@2.2.7
+  - @latticexyz/schema-type@2.2.7
+
+## 2.2.6
+
+### Patch Changes
+
+- @latticexyz/common@2.2.6
+- @latticexyz/config@2.2.6
+- @latticexyz/protocol-parser@2.2.6
+- @latticexyz/schema-type@2.2.6
+- @latticexyz/store@2.2.6
+
+## 2.2.5
+
+### Patch Changes
+
+- @latticexyz/common@2.2.5
+- @latticexyz/config@2.2.5
+- @latticexyz/protocol-parser@2.2.5
+- @latticexyz/schema-type@2.2.5
+- @latticexyz/store@2.2.5
+
+## 2.2.4
+
+### Patch Changes
+
+- 50010fb: Bumped viem, wagmi, and abitype packages to their latest release.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.6 wagmi@2.12.11 @wagmi/core@2.13.5 abitype@1.0.6
+  ```
+
+- 1f24978: Added a config resolver to add default values for `modules` in the world config.
+- Updated dependencies [2f935cf]
+- Updated dependencies [50010fb]
+- Updated dependencies [8b4110e]
+  - @latticexyz/common@2.2.4
+  - @latticexyz/config@2.2.4
+  - @latticexyz/protocol-parser@2.2.4
+  - @latticexyz/schema-type@2.2.4
+  - @latticexyz/store@2.2.4
+
+## 2.2.3
+
+### Patch Changes
+
+- 8546452: MUD config now supports a `deploy.customWorld` option that, when used with the CLI, will deploy the specified custom World implementation.
+  Custom implementations must still follow [the World protocol](https://github.com/latticexyz/mud/tree/main/packages/world/ts/protocol-snapshots).
+
+  If you want to extend the world with new functions or override existing registered functions, we recommend using [root systems](https://mud.dev/world/systems#root-systems).
+  However, there are rare cases where this may not be enough to modify the native/internal World behavior.
+  Note that deploying a custom World opts out of the world factory, deterministic world deploys, and upgradeable implementation proxy.
+
+  ```ts
+  import { defineWorld } from "@latticexyz/world";
+
+  export default defineWorld({
+    customWorld: {
+      // path to custom world source from project root
+      sourcePath: "src/CustomWorld.sol",
+      // custom world contract name
+      name: "CustomWorld",
+    },
+  });
+  ```
+
+  - @latticexyz/common@2.2.3
+  - @latticexyz/config@2.2.3
+  - @latticexyz/protocol-parser@2.2.3
+  - @latticexyz/schema-type@2.2.3
+  - @latticexyz/store@2.2.3
+
+## 2.2.2
+
+### Patch Changes
+
+- @latticexyz/common@2.2.2
+- @latticexyz/config@2.2.2
+- @latticexyz/protocol-parser@2.2.2
+- @latticexyz/schema-type@2.2.2
+- @latticexyz/store@2.2.2
+
+## 2.2.1
+
+### Patch Changes
+
+- Updated dependencies [c0764a5]
+  - @latticexyz/common@2.2.1
+  - @latticexyz/config@2.2.1
+  - @latticexyz/protocol-parser@2.2.1
+  - @latticexyz/store@2.2.1
+  - @latticexyz/schema-type@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- 04c675c: Add a strongly typed `namespaceLabel` to the system config output.
+  It corresponds to the `label` of the namespace the system belongs to and can't be set manually.
+- Updated dependencies [69cd0a1]
+- Updated dependencies [04c675c]
+  - @latticexyz/common@2.2.0
+  - @latticexyz/config@2.2.0
+  - @latticexyz/store@2.2.0
+  - @latticexyz/protocol-parser@2.2.0
+  - @latticexyz/schema-type@2.2.0
+
 ## 2.1.1
 
 ### Patch Changes
