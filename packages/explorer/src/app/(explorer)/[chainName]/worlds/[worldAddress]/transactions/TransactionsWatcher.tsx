@@ -29,19 +29,19 @@ const columns = [
     cell: (row) => <Badge variant="outline">#{row.getValue()?.toString()}</Badge>,
   }),
   columnHelper.accessor("hash", {
-    header: "tx hash",
+    header: "tx hash:",
     cell: (row) => <TruncatedHex hex={row.getValue()} />,
   }),
   columnHelper.accessor("functionName", {
-    header: "function",
+    header: "function:",
     cell: ({ row }) => <Badge variant="secondary">{row.original.functionName}</Badge>,
   }),
   columnHelper.accessor("from", {
-    header: "from",
+    header: "from:",
     cell: (row) => <TruncatedHex hex={row.getValue()} />,
   }),
   columnHelper.accessor("status", {
-    header: "status",
+    header: "status:",
     cell: (row) => {
       const status = true;
 
@@ -164,9 +164,9 @@ function TransactionTableRow({ row, abi }: { row: Row<FinalTransaction>; abi: Ab
                 <div className="mt-6">
                   <h3 className="pb-2 text-xs font-bold uppercase text-muted-foreground">Logs:</h3>
 
-                  <div className="mt-2 border border-white/20 p-2">
+                  <pre className="mt-2 border border-white/20 p-2">
                     {eventLogs.length > 0 && (
-                      <ul className="[&_ul]:list-[revert]">
+                      <ul className="break-words [&_ul]:list-[revert]">
                         {eventLogs.map((eventLog, idx) => (
                           <li key={idx}>
                             {eventLog.eventName}:
@@ -181,7 +181,7 @@ function TransactionTableRow({ row, abi }: { row: Row<FinalTransaction>; abi: Ab
                         ))}
                       </ul>
                     )}
-                  </div>
+                  </pre>
                 </div>
 
                 <Separator className="mt-6" />
@@ -253,7 +253,7 @@ export function TransactionsWatcher() {
           <TableRow key={headerGroup.id}>
             {headerGroup.headers.map((header) => {
               return (
-                <TableHead key={header.id}>
+                <TableHead key={header.id} className="text-xs uppercase">
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                 </TableHead>
               );
