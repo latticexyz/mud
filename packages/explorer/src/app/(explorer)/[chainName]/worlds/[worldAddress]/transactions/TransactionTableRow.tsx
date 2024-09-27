@@ -1,8 +1,11 @@
-import { Abi } from "viem";
+import { ExternalLinkIcon } from "lucide-react";
+import { Hex } from "viem";
 import { Row, flexRender } from "@tanstack/react-table";
 import { Separator } from "../../../../../../components/ui/Separator";
 import { TableCell, TableRow } from "../../../../../../components/ui/Table";
 import { TruncatedHex } from "../../../../../../components/ui/TruncatedHex";
+import { useChain } from "../../../../hooks/useChain";
+import { explorerForChainId } from "../../../../utils/explorerForChainId";
 import { WatchedTransaction } from "./TransactionsTable";
 import { columns } from "./columns";
 
@@ -15,9 +18,19 @@ function TranctionTableRowDataCell({ label, children }: { label: string; childre
   );
 }
 
-export function TransactionTableRow({ row }: { row: Row<WatchedTransaction>; abi: Abi }) {
-  const data = row.original;
+function BlockExplorerLink({ hash, chainId }: { hash?: Hex; chainId: number }) {
+  const explorerUrl = explorerForChainId({ hash, chainId });
+  if (!explorerUrl) return null;
 
+  return (
+    <a href={`${explorerUrl}/tx/${hash}`} target="_blank" rel="noopener noreferrer" className="flex hover:underline">
+      <ExternalLinkIcon className="mr-2 h-3 w-3" /> Link
+    </a>
+  );
+}
+export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
+  const { id: chainId } = useChain();
+  const data = row?.original;
   return (
     <>
       <TableRow className="cursor-pointer" onClick={() => row.toggleExpanded()}>
@@ -41,6 +54,9 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction>; abi
                   <TranctionTableRowDataCell label="From">
                     {data?.transaction?.from && <TruncatedHex hex={data.transaction.from} />}
                   </TranctionTableRowDataCell>
+                  <TranctionTableRowDataCell label="Explorer URL">
+                    <BlockExplorerLink hash={data.transaction?.hash} chainId={chainId} />
+                  </TranctionTableRowDataCell>
                   <TranctionTableRowDataCell label="Tx value">
                     {data.transaction?.value?.toString()}
                   </TranctionTableRowDataCell>
@@ -56,7 +72,6 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction>; abi
                   <TranctionTableRowDataCell label="Gas price">
                     {data.receipt?.effectiveGasPrice.toString()}
                   </TranctionTableRowDataCell>
-                  <TranctionTableRowDataCell label="Total fee">TODO:</TranctionTableRowDataCell>
                 </div>
 
                 <Separator className="mt-6" />

@@ -22,6 +22,7 @@ import { columns } from "./columns";
 
 export type WatchedTransaction = {
   hash: Hex;
+  timestamp: bigint;
   transaction?: Transaction;
   functionData?: DecodeFunctionDataReturnType;
   receipt?: TransactionReceipt;
