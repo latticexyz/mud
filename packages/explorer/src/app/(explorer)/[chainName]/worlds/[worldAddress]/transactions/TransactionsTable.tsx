@@ -1,5 +1,6 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import {
   DecodeFunctionDataReturnType,
   Hex,
@@ -9,9 +10,8 @@ import {
   decodeFunctionData,
   parseEventLogs,
 } from "viem";
-import { useConfig, useWatchPendingTransactions } from "wagmi";
+import { useConfig, useWatchBlocks } from "wagmi";
 import React, { useState } from "react";
-import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from "@tanstack/react-table";
 import { getTransaction, getTransactionReceipt } from "@wagmi/core";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
@@ -20,7 +20,7 @@ import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { TransactionTableRow } from "./TransactionTableRow";
 import { columns } from "./columns";
 
-type WatchedTransaction = {
+export type WatchedTransaction = {
   hash: Hex;
   transaction?: Transaction;
   functionData?: DecodeFunctionDataReturnType;
@@ -31,58 +31,49 @@ type WatchedTransaction = {
 
 export function TransactionsTable() {
   const { id: chainId } = useChain();
-  const { data } = useWorldAbiQuery();
-  const queryClient = useQueryClient();
-  const [expanded, setExpanded] = useState<ExpandedState>({});
+  const { worldAddress } = useParams();
   const wagmiConfig = useConfig();
-  const abi = data?.abi;
+  const [expanded, setExpanded] = useState<ExpandedState>({});
+  const [transactions, setTransactions] = useState<WatchedTransaction[]>([]);
+  const { data: worldAbiData } = useWorldAbiQuery();
+  const abi = worldAbiData?.abi;
 
-  const { data: hashes } = useQuery<Hex[]>({
-    queryKey: ["hashes"],
-    enabled: false,
-    initialData: [],
-  });
-  const transactions = useQueries<WatchedTransaction[]>({
-    queries: hashes?.map((hash) => ({
-      queryKey: ["transactions", hash],
-      queryFn: async ({ queryKey }) => {
-        queryClient.setQueryData(queryKey, { hash, status: "pending", timestamp: Date.now() });
+  async function handleTransaction(hash: Hex, timestamp: bigint) {
+    if (!abi) return;
 
-        const transaction = await getTransaction(wagmiConfig, { hash });
-        const functionData = decodeFunctionData({
-          abi,
-          data: transaction.input,
-        });
-        queryClient.setQueryData(queryKey, (prev) => {
-          return {
-            ...prev,
-            transaction,
-            functionData,
-          };
-        });
+    const transaction = await getTransaction(wagmiConfig, { hash });
+    if (transaction.to === worldAddress) {
+      const functionData = decodeFunctionData({
+        abi,
+        data: transaction.input,
+      });
 
-        const receipt = await getTransactionReceipt(wagmiConfig, { hash });
-        const logs = parseEventLogs({
-          abi,
-          logs: receipt.logs,
-        });
-        queryClient.setQueryData(queryKey, (prev) => {
-          return {
-            ...prev,
-            receipt,
-            logs,
-            status: "success",
-          };
-        });
-      },
-      retry: 5,
-    })),
-    combine: (results) => results.map((result) => result.data),
-  });
+      const receipt = await getTransactionReceipt(wagmiConfig, { hash });
+      const logs = parseEventLogs({
+        abi,
+        logs: receipt.logs,
+      });
 
-  useWatchPendingTransactions({
-    onTransactions: (hashes) => {
-      queryClient.setQueryData(["hashes"], (currentHashes: Hex[]) => [...hashes, ...currentHashes]);
+      setTransactions((transactions) => [
+        ...transactions,
+        {
+          hash,
+          transaction,
+          functionData,
+          receipt,
+          logs,
+          timestamp,
+          status: receipt.status === "success" ? "success" : "failed",
+        },
+      ]);
+    }
+  }
+
+  useWatchBlocks({
+    onBlock(block) {
+      for (const hash of block.transactions) {
+        handleTransaction(hash, block.timestamp);
+      }
     },
     chainId,
   });

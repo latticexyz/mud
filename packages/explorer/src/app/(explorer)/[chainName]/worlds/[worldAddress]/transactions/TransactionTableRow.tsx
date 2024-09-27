@@ -36,13 +36,13 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction>; abi
                     {data?.receipt?.blockNumber.toString()}
                   </TranctionTableRowDataCell>
                   <TranctionTableRowDataCell label="Tx hash">
-                    <TruncatedHex hex={data.transaction.hash} />
+                    {data?.transaction?.hash && <TruncatedHex hex={data.transaction.hash} />}
                   </TranctionTableRowDataCell>
                   <TranctionTableRowDataCell label="From">
-                    <TruncatedHex hex={data.transaction.from} />
+                    {data?.transaction?.from && <TruncatedHex hex={data.transaction.from} />}
                   </TranctionTableRowDataCell>
                   <TranctionTableRowDataCell label="Tx value">
-                    {data.transaction.value.toString()}
+                    {data.transaction?.value?.toString()}
                   </TranctionTableRowDataCell>
                   <TranctionTableRowDataCell label="Gas used">
                     {data?.receipt?.gasUsed.toString()}
@@ -72,10 +72,10 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction>; abi
                   <h3 className="pb-2 text-xs font-bold uppercase text-muted-foreground">Inputs:</h3>
 
                   <div className="mt-2 border border-white/20 p-2">
-                    {data.functionData.args?.map((arg, idx) => (
+                    {data.functionData?.args?.map((arg, idx) => (
                       <div key={idx} className="flex">
                         <span className="flex-shrink-0 text-xs text-muted-foreground">arg {idx + 1}:</span>
-                        <span className="ml-2 text-xs">{arg}</span>
+                        <span className="ml-2 text-xs">{arg as never}</span>
                       </div>
                     ))}
                   </div>

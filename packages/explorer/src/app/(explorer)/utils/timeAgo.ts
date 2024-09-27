@@ -1,4 +1,4 @@
-export function timeAgo(timestamp: string) {
+export function timeAgo(timestamp: bigint) {
   const units = [
     { name: "y", limit: 365 * 24 * 60 * 60 * 1000, inMilliseconds: 365 * 24 * 60 * 60 * 1000 },
     { name: "mth", limit: 30 * 24 * 60 * 60 * 1000, inMilliseconds: 30 * 24 * 60 * 60 * 1000 },
@@ -8,7 +8,7 @@ export function timeAgo(timestamp: string) {
     { name: "s", limit: 1000, inMilliseconds: 1000 },
   ];
 
-  const diff = Date.now() - new Date(timestamp).getTime();
+  const diff = Date.now() - new Date(timestamp.toString()).getTime();
   if (diff < 0) {
     return "in the future";
   }

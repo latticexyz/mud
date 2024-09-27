@@ -1,4 +1,4 @@
-import { AbiFunction, Address, Hex, createWalletClient, http, parseAbi } from "viem";
+import { Address, Hex, createWalletClient, http, parseAbi } from "viem";
 import { getBlockNumber, getLogs } from "viem/actions";
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";

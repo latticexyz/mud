@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Badge } from "../../../../../../components/ui/Badge";
 import { timeAgo } from "../../../../utils/timeAgo";
 
-export function TimeAgoCell({ timestamp }: { timestamp: string }) {
+export function TimeAgoCell({ timestamp }: { timestamp: bigint }) {
   const [ago, setAgo] = useState(() => timeAgo(timestamp));
 
   useEffect(() => {
