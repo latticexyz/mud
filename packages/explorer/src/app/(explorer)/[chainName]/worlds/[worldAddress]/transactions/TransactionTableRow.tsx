@@ -6,6 +6,15 @@ import { TruncatedHex } from "../../../../../../components/ui/TruncatedHex";
 import { WatchedTransaction } from "./TransactionsTable";
 import { columns } from "./columns";
 
+function TranctionTableRowDataCell({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <h3 className="pb-2 text-xs font-bold uppercase text-muted-foreground">{label}</h3>
+      <p className="text-xs uppercase">{children ?? "Not found"}</p>
+    </div>
+  );
+}
+
 export function TransactionTableRow({ row }: { row: Row<WatchedTransaction>; abi: Abi }) {
   const data = row.original;
 
@@ -23,50 +32,31 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction>; abi
             {data && (
               <>
                 <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-6">
-                  <div>
-                    <h3 className="pb-2 text-xs font-bold uppercase text-muted-foreground">Block number:</h3>
-                    <p className="text-sm">#{data?.receipt?.blockNumber.toString() ?? "Unknown"}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="pb-2 text-xs font-bold uppercase text-muted-foreground">Tx hash:</h3>
+                  <TranctionTableRowDataCell label="Block number">
+                    {data?.receipt?.blockNumber.toString()}
+                  </TranctionTableRowDataCell>
+                  <TranctionTableRowDataCell label="Tx hash">
                     <TruncatedHex hex={data.transaction.hash} />
-                  </div>
-
-                  <div>
-                    <h3 className="pb-2 text-xs font-bold uppercase text-muted-foreground">From:</h3>
+                  </TranctionTableRowDataCell>
+                  <TranctionTableRowDataCell label="From">
                     <TruncatedHex hex={data.transaction.from} />
-                  </div>
-
-                  <div>
-                    <h3 className="pb-2 text-xs font-bold uppercase text-muted-foreground">Tx value:</h3>
-                    <p className="text-sm">{data.transaction.value.toString()}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="pb-2 text-xs font-bold uppercase text-muted-foreground">Gas used:</h3>
-                    <p className="text-sm">{data?.receipt?.gasUsed.toString() ?? "Unknown"}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="pb-2 text-xs font-bold uppercase text-muted-foreground">Base fee (TODO):</h3>
-                    <p className="text-sm">{data?.transaction?.maxFeePerGas?.toString() ?? "Unknown"}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="pb-2 text-xs font-bold uppercase text-muted-foreground">Priority fee (TODO):</h3>
-                    <p className="text-sm">{data?.transaction?.maxFeePerGas?.toString() ?? "Unknown"}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="pb-2 text-xs font-bold uppercase text-muted-foreground">Gas price:</h3>
-                    <p className="text-sm">{data.receipt?.effectiveGasPrice.toString() ?? "Unknown"}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="pb-2 text-xs font-bold uppercase text-muted-foreground">Total fee:</h3>
-                    <p className="text-sm">TODO:</p>
-                  </div>
+                  </TranctionTableRowDataCell>
+                  <TranctionTableRowDataCell label="Tx value">
+                    {data.transaction.value.toString()}
+                  </TranctionTableRowDataCell>
+                  <TranctionTableRowDataCell label="Gas used">
+                    {data?.receipt?.gasUsed.toString()}
+                  </TranctionTableRowDataCell>
+                  <TranctionTableRowDataCell label="Base fee">
+                    {data?.transaction?.maxFeePerGas?.toString()}
+                  </TranctionTableRowDataCell>
+                  <TranctionTableRowDataCell label="Priority fee">
+                    {data?.transaction?.maxFeePerGas?.toString()}
+                  </TranctionTableRowDataCell>
+                  <TranctionTableRowDataCell label="Gas price">
+                    {data.receipt?.effectiveGasPrice.toString()}
+                  </TranctionTableRowDataCell>
+                  <TranctionTableRowDataCell label="Total fee">TODO:</TranctionTableRowDataCell>
                 </div>
 
                 <Separator className="mt-6" />
