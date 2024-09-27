@@ -1,5 +1,17 @@
 # Change Log
 
+## 2.2.10
+
+### Patch Changes
+
+- af26487: Upgraded mprocs to fix issues with it not running when started via npm script.
+
+  You can do the same in an existing MUD project with:
+
+  ```
+  pnpm recursive up mprocs@latest
+  ```
+
 ## 2.2.9
 
 ### Patch Changes

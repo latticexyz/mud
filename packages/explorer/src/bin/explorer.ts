@@ -114,12 +114,12 @@ async function startStoreIndexer() {
     cwd: packageRoot,
     stdio: "inherit",
     env: {
-      ...process.env,
       DEBUG: "mud:*",
       RPC_HTTP_URL: "http://127.0.0.1:8545",
       FOLLOW_BLOCK_TAG: "latest",
       SQLITE_FILENAME: indexerDatabase,
       STORE_ADDRESS: worldAddress,
+      ...process.env,
     },
   });
 }
