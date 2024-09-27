@@ -68,7 +68,7 @@ export const columns = [
     },
   }),
   columnHelper.accessor("timestamp", {
-    header: "time ago:",
+    header: "time:",
     cell: (row) => {
       const timestamp = row.getValue();
       return <TimeAgoCell timestamp={timestamp} />;
