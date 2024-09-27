@@ -1,13 +1,11 @@
-import { ExternalLinkIcon } from "lucide-react";
-import { Hex } from "viem";
 import { Row, flexRender } from "@tanstack/react-table";
 import { Separator } from "../../../../../../components/ui/Separator";
 import { TableCell, TableRow } from "../../../../../../components/ui/Table";
 import { TruncatedHex } from "../../../../../../components/ui/TruncatedHex";
-import { useChain } from "../../../../hooks/useChain";
-import { explorerForChainId } from "../../../../utils/explorerForChainId";
+import { BlockExplorerLink } from "./BlockExplorerLink";
+import { Confirmations } from "./Confirmations";
 import { WatchedTransaction } from "./TransactionsTable";
-import { columns } from "./columns";
+import { columns } from "./TransactionsTable";
 
 function TranctionTableRowDataCell({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -18,18 +16,7 @@ function TranctionTableRowDataCell({ label, children }: { label: string; childre
   );
 }
 
-function BlockExplorerLink({ hash, chainId }: { hash?: Hex; chainId: number }) {
-  const explorerUrl = explorerForChainId({ hash, chainId });
-  if (!explorerUrl) return null;
-
-  return (
-    <a href={`${explorerUrl}/tx/${hash}`} target="_blank" rel="noopener noreferrer" className="flex hover:underline">
-      <ExternalLinkIcon className="mr-2 h-3 w-3" /> Link
-    </a>
-  );
-}
 export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
-  const { id: chainId } = useChain();
   const data = row?.original;
   return (
     <>
@@ -54,31 +41,15 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                   <TranctionTableRowDataCell label="From">
                     {data?.transaction?.from && <TruncatedHex hex={data.transaction.from} />}
                   </TranctionTableRowDataCell>
-                  <TranctionTableRowDataCell label="Explorer URL">
-                    <BlockExplorerLink hash={data.transaction?.hash} chainId={chainId} />
+                  <TranctionTableRowDataCell label="Confirmations">
+                    <Confirmations hash={data.transaction?.hash} />
                   </TranctionTableRowDataCell>
                   <TranctionTableRowDataCell label="Tx value">
                     {data.transaction?.value?.toString()}
                   </TranctionTableRowDataCell>
-                  <TranctionTableRowDataCell label="Gas used">
-                    {data?.receipt?.gasUsed.toString()}
+                  <TranctionTableRowDataCell label="Explorer URL">
+                    <BlockExplorerLink hash={data.transaction?.hash} />
                   </TranctionTableRowDataCell>
-                  <TranctionTableRowDataCell label="Base fee">
-                    {data?.transaction?.maxFeePerGas?.toString()}
-                  </TranctionTableRowDataCell>
-                  <TranctionTableRowDataCell label="Priority fee">
-                    {data?.transaction?.maxFeePerGas?.toString()}
-                  </TranctionTableRowDataCell>
-                  <TranctionTableRowDataCell label="Gas price">
-                    {data.receipt?.effectiveGasPrice.toString()}
-                  </TranctionTableRowDataCell>
-                </div>
-
-                <Separator className="mt-6" />
-
-                <div className="mt-6">
-                  <h3 className="pb-2 text-xs font-bold uppercase text-muted-foreground">Errors:</h3>
-                  <p className="text-sm">{data.status === "success" ? "No errors" : "Transaction failed"}</p>
                 </div>
 
                 <Separator className="mt-6" />
@@ -103,18 +74,21 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                   <div className="mt-2 break-all border border-white/20 p-2">
                     {Array.isArray(data.logs) && data.logs.length > 0 && (
                       <ul>
-                        {data.logs.map((eventLog, idx) => (
+                        {data.logs.map((log, idx) => (
                           <li key={idx}>
-                            <span className="text-xs">{eventLog.eventName}:</span>
+                            {/* @ts-expect-error TODO: types needs fixing */}
+                            <span className="text-xs">{log.eventName}:</span>
                             <ul className="list-inside pt-1">
-                              {Object.entries(eventLog.args).map(([key, value]) => (
+                              {/* @ts-expect-error TODO: types needs fixing */}
+                              {Object.entries(log.args as never).map(([key, value]) => (
                                 <li key={key} className="mt-1 flex">
                                   <span className="flex-shrink-0 text-xs text-muted-foreground">{key}: </span>
-                                  <span className="ml-2 text-xs">{value}</span>
+                                  <span className="ml-2 text-xs">{value as never}</span>
                                 </li>
                               ))}
                             </ul>
 
+                            {/* @ts-expect-error TODO: types needs fixing */}
                             {idx < data.logs.length - 1 && <Separator className="my-4" />}
                           </li>
                         ))}

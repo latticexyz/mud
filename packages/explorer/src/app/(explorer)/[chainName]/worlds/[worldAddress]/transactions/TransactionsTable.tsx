@@ -13,12 +13,15 @@ import {
 import { useConfig, useWatchBlocks } from "wagmi";
 import React, { useState } from "react";
 import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from "@tanstack/react-table";
+import { createColumnHelper } from "@tanstack/react-table";
 import { getTransaction, getTransactionReceipt } from "@wagmi/core";
+import { Badge } from "../../../../../../components/ui/Badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
+import { TruncatedHex } from "../../../../../../components/ui/TruncatedHex";
 import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
+import { TimeAgoCell } from "./TimeAgoCell";
 import { TransactionTableRow } from "./TransactionTableRow";
-import { columns } from "./columns";
 
 export type WatchedTransaction = {
   hash: Hex;
@@ -29,6 +32,49 @@ export type WatchedTransaction = {
   logs?: Log[];
   status: "pending" | "success" | "failed";
 };
+
+const columnHelper = createColumnHelper<WatchedTransaction>();
+export const columns = [
+  columnHelper.accessor("transaction.blockNumber", {
+    header: "",
+    cell: (row) => <Badge variant="outline">#{row.getValue()?.toString()}</Badge>,
+  }),
+  columnHelper.accessor("hash", {
+    header: "tx hash:",
+    cell: (row) => <TruncatedHex hex={row.getValue()} />,
+  }),
+  columnHelper.accessor("functionData.functionName", {
+    header: "function:",
+    cell: (row) => <Badge variant="secondary">{row.getValue()}</Badge>,
+  }),
+  columnHelper.accessor("transaction.from", {
+    header: "from:",
+    cell: (row) => {
+      const from = row.getValue();
+      if (!from) return null;
+      return <TruncatedHex hex={from} />;
+    },
+  }),
+  columnHelper.accessor("status", {
+    header: "status:",
+    cell: (row) => {
+      const status = row.getValue();
+      if (status === "success") {
+        return <Badge variant="success">success</Badge>;
+      } else if (status === "failed") {
+        return <Badge variant="destructive">failed</Badge>;
+      }
+      return <Badge variant="outline">pending</Badge>;
+    },
+  }),
+  columnHelper.accessor("timestamp", {
+    header: "time ago:",
+    cell: (row) => {
+      const timestamp = row.getValue();
+      return <TimeAgoCell timestamp={timestamp} />;
+    },
+  }),
+];
 
 export function TransactionsTable() {
   const { id: chainId } = useChain();
@@ -107,7 +153,7 @@ export function TransactionsTable() {
       </TableHeader>
       <TableBody>
         {table.getRowModel().rows?.length ? (
-          table.getRowModel().rows.map((row) => <TransactionTableRow key={row.id} row={row} abi={abi} />)
+          table.getRowModel().rows.map((row) => <TransactionTableRow key={row.id} row={row} />)
         ) : (
           <TableRow>
             <TableCell colSpan={columns.length} className="h-24 text-center">
