@@ -11,98 +11,80 @@ import {
 } from "viem";
 import { useConfig, useWatchPendingTransactions } from "wagmi";
 import React, { useState } from "react";
+import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from "@tanstack/react-table";
 import { getTransaction, getTransactionReceipt } from "@wagmi/core";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
+import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { TransactionTableRow } from "./TransactionTableRow";
 import { columns } from "./columns";
 
-type BaseWatchedTransaction = {
+type WatchedTransaction = {
   hash: Hex;
-  transaction: Transaction;
-  functionData: DecodeFunctionDataReturnType;
-  timestamp: string;
-
-  receipt?: TransactionReceipt; // TODO: update
-  logs?: Log[]; // TODO: update
+  transaction?: Transaction;
+  functionData?: DecodeFunctionDataReturnType;
+  receipt?: TransactionReceipt;
+  logs?: Log[];
+  status: "pending" | "success" | "failed";
 };
-
-type PendingWatchedTransaction = BaseWatchedTransaction & {
-  status: "pending";
-};
-
-type SuccessWatchedTransaction = BaseWatchedTransaction & {
-  status: "success";
-  receipt: TransactionReceipt;
-  logs: Log[];
-};
-
-type FailedWatchedTransaction = BaseWatchedTransaction & {
-  status: "failed";
-  receipt: TransactionReceipt;
-};
-
-export type WatchedTransaction = PendingWatchedTransaction | SuccessWatchedTransaction | FailedWatchedTransaction;
 
 export function TransactionsTable() {
+  const { id: chainId } = useChain();
   const { data } = useWorldAbiQuery();
-  const [transactions, setTransactions] = useState<WatchedTransaction[]>([]);
+  const queryClient = useQueryClient();
   const [expanded, setExpanded] = useState<ExpandedState>({});
   const wagmiConfig = useConfig();
   const abi = data?.abi;
 
-  const handleTransaction = async (hash: Hex) => {
-    // TODO: handle error
-    // TODO: handle transactions not included in the block
-    setTransactions((transactions) => [{ hash, status: "pending", timestamp: Date.now() }, ...transactions]);
+  const { data: hashes } = useQuery<Hex[]>({
+    queryKey: ["hashes"],
+    enabled: false,
+    initialData: [],
+  });
+  const transactions = useQueries<WatchedTransaction[]>({
+    queries: hashes?.map((hash) => ({
+      queryKey: ["transactions", hash],
+      queryFn: async ({ queryKey }) => {
+        queryClient.setQueryData(queryKey, { hash, status: "pending", timestamp: Date.now() });
 
-    const transaction = await getTransaction(wagmiConfig, { hash });
-    const functionData = decodeFunctionData({
-      abi,
-      data: transaction.input,
-    });
-    setTransactions((transactions) => {
-      const index = transactions.findIndex((tx) => tx.hash === hash);
-      if (index === -1) return transactions;
-      return [
-        ...transactions.slice(0, index),
-        {
-          ...transactions[index],
-          transaction,
-          functionData,
-        },
-        ...transactions.slice(index + 1),
-      ];
-    });
+        const transaction = await getTransaction(wagmiConfig, { hash });
+        const functionData = decodeFunctionData({
+          abi,
+          data: transaction.input,
+        });
+        queryClient.setQueryData(queryKey, (prev) => {
+          return {
+            ...prev,
+            transaction,
+            functionData,
+          };
+        });
 
-    const receipt = await getTransactionReceipt(wagmiConfig, { hash });
-    const logs = parseEventLogs({
-      abi,
-      logs: receipt.logs,
-    });
-    setTransactions((transactions) => {
-      const index = transactions.findIndex((tx) => tx.hash === hash);
-      if (index === -1) return transactions;
-      return [
-        ...transactions.slice(0, index),
-        {
-          ...transactions[index],
-          receipt,
-          logs,
-          status: "success",
-        },
-        ...transactions.slice(index + 1),
-      ];
-    });
-  };
+        const receipt = await getTransactionReceipt(wagmiConfig, { hash });
+        const logs = parseEventLogs({
+          abi,
+          logs: receipt.logs,
+        });
+        queryClient.setQueryData(queryKey, (prev) => {
+          return {
+            ...prev,
+            receipt,
+            logs,
+            status: "success",
+          };
+        });
+      },
+      retry: 5,
+    })),
+    combine: (results) => results.map((result) => result.data),
+  });
 
   useWatchPendingTransactions({
     onTransactions: (hashes) => {
-      for (const hash of hashes) {
-        handleTransaction(hash);
-      }
+      queryClient.setQueryData(["hashes"], (currentHashes: Hex[]) => [...hashes, ...currentHashes]);
     },
+    chainId,
   });
 
   const table = useReactTable({
