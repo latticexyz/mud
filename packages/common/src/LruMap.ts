@@ -12,6 +12,15 @@ export class LruMap<key, value> extends Map<key, value> {
     this.maxSize = size;
   }
 
+  override get(key: key): value | undefined {
+    const value = super.get(key);
+    if (this.has(key)) {
+      this.delete(key);
+      this.set(key, value as never);
+    }
+    return value;
+  }
+
   override set(key: key, value: value): this {
     super.set(key, value);
     if (this.maxSize && this.size > this.maxSize) {

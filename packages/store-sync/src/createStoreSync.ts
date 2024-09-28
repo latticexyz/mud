@@ -1,5 +1,5 @@
 import { storeEventsAbi } from "@latticexyz/store";
-import { GetTransactionReceiptErrorType, Hex } from "viem";
+import { GetTransactionReceiptErrorType, Hex, parseEventLogs } from "viem";
 import {
   StorageAdapter,
   StorageAdapterBlock,
@@ -10,7 +10,7 @@ import {
   internalTableIds,
   WaitForTransactionResult,
 } from "./common";
-import { createBlockStream } from "@latticexyz/block-logs-stream";
+import { createBlockStream, groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import {
   filter,
   map,
@@ -25,14 +25,17 @@ import {
   catchError,
   shareReplay,
   combineLatest,
-  scan,
   mergeMap,
+  BehaviorSubject,
+  ignoreElements,
+  first,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
 import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/utils";
 import { getSnapshot } from "./getSnapshot";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
+import { LruMap } from "@latticexyz/common";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -199,6 +202,27 @@ export async function createStoreSync({
   let endBlock: bigint | null = null;
   let lastBlockNumberProcessed: bigint | null = null;
 
+  // For chains that provide guaranteed receipts ahead of block mining, we can apply the logs immediately.
+  // This works because, once the block is mined, the same logs will be applied. Store events are defined in
+  // such a way that reapplying the same logs will mean that the storage adapter
+  // is kept up to date.
+
+  let optimisticLogs: readonly StoreEventsLog[] = [];
+  async function applyOptimisticLogs(blockNumber: bigint): Promise<void> {
+    const logs = optimisticLogs.filter((log) => log.blockNumber > blockNumber);
+    if (logs.length) {
+      debug("applying", logs.length, "optimistic logs");
+      const blocks = groupLogsByBlockNumber(logs).filter((block) => block.logs.length);
+      for (const block of blocks) {
+        debug("applying optimistic logs for block", block.blockNumber);
+        await storageAdapter(block);
+      }
+    }
+    optimisticLogs = logs;
+  }
+
+  const storageAdapterLock$ = new BehaviorSubject(false);
+
   const storedBlock$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
     tap((range) => {
@@ -219,21 +243,41 @@ export async function createStoreSync({
         logFilter,
       });
 
-      return from(storedBlocks);
-    }),
-    tap(({ blockNumber, logs }) => {
-      debug("stored", logs.length, "logs for block", blockNumber);
-      lastBlockNumberProcessed = blockNumber;
+      const storedBlock$ = from(storedBlocks).pipe(share());
 
+      return concat(
+        storageAdapterLock$.pipe(
+          first((lock) => lock === false),
+          tap(() => storageAdapterLock$.next(true)),
+          ignoreElements(),
+        ),
+        storedBlock$.pipe(
+          tap(({ blockNumber, logs }) => {
+            debug("stored", logs.length, "logs for block", blockNumber);
+            lastBlockNumberProcessed = blockNumber;
+          }),
+        ),
+        of(true).pipe(
+          concatMap(async () => {
+            if (lastBlockNumberProcessed != null) {
+              await applyOptimisticLogs(lastBlockNumberProcessed);
+            }
+          }),
+          tap(() => storageAdapterLock$.next(false)),
+          ignoreElements(),
+        ),
+      );
+    }),
+    tap(({ blockNumber }) => {
       if (startBlock != null && endBlock != null) {
         if (blockNumber < endBlock) {
           const totalBlocks = endBlock - startBlock;
-          const processedBlocks = lastBlockNumberProcessed - startBlock;
+          const processedBlocks = blockNumber - startBlock;
           onProgress?.({
             step: SyncStep.RPC,
             percentage: Number((processedBlocks * 1000n) / totalBlocks) / 10,
             latestBlockNumber: endBlock,
-            lastBlockNumberProcessed,
+            lastBlockNumberProcessed: blockNumber,
             message: "Hydrating from RPC",
           });
         } else {
@@ -241,7 +285,7 @@ export async function createStoreSync({
             step: SyncStep.LIVE,
             percentage: 100,
             latestBlockNumber: endBlock,
-            lastBlockNumberProcessed,
+            lastBlockNumberProcessed: blockNumber,
             message: "All caught up!",
           });
         }
@@ -250,27 +294,27 @@ export async function createStoreSync({
     share(),
   );
 
-  const storedBlockLogs$ = concat(storedInitialBlockLogs$, storedBlock$).pipe(share());
-
   // keep 10 blocks worth processed transactions in memory
   const recentBlocksWindow = 10;
-  // most recent block first, for ease of pulling the first one off the array
-  const recentBlocks$ = storedBlockLogs$.pipe(
-    scan<StorageAdapterBlock, StorageAdapterBlock[]>(
-      (recentBlocks, block) => [block, ...recentBlocks].slice(0, recentBlocksWindow),
-      [],
-    ),
-    filter((recentBlocks) => recentBlocks.length > 0),
-    shareReplay(1),
+  const recentBlocks$ = new BehaviorSubject<StorageAdapterBlock[]>([]);
+
+  const storedBlockLogs$ = concat(storedInitialBlockLogs$, storedBlock$).pipe(
+    tap((block) => {
+      // most recent block first, for ease of pulling the first one off the array
+      recentBlocks$.next([block, ...recentBlocks$.value].slice(0, recentBlocksWindow));
+    }),
+    share(),
   );
 
   // TODO: move to its own file so we can test it, have its own debug instance, etc.
-  async function waitForTransaction(tx: Hex): Promise<WaitForTransactionResult> {
-    debug("waiting for tx", tx);
+  const waitPromises = new LruMap<Hex, Promise<WaitForTransactionResult>>(1024);
+  function waitForTransaction(tx: Hex): Promise<WaitForTransactionResult> {
+    const existingPromise = waitPromises.get(tx);
+    if (existingPromise) return existingPromise;
 
     // This currently blocks for async call on each block processed
     // We could potentially speed this up a tiny bit by racing to see if 1) tx exists in processed block or 2) fetch tx receipt for latest block processed
-    const hasTransaction$ = recentBlocks$.pipe(
+    const receipt$ = recentBlocks$.pipe(
       // We use `mergeMap` instead of `concatMap` here to send the fetch request immediately when a new block range appears,
       // instead of sending the next request only when the previous one completed.
       mergeMap(async (blocks) => {
@@ -284,11 +328,26 @@ export async function createStoreSync({
 
         try {
           const lastBlock = blocks[0];
-          debug("fetching tx receipt for block", lastBlock.blockNumber);
-          const { status, blockNumber, transactionHash } = await publicClient.getTransactionReceipt({ hash: tx });
-          if (lastBlock.blockNumber >= blockNumber) {
-            return { status, blockNumber, transactionHash };
+          debug("fetching tx receipt after seeing block", lastBlock.blockNumber);
+          const receipt = await publicClient.getTransactionReceipt({ hash: tx });
+          debug("got receipt", receipt.status);
+          if (receipt.status === "success") {
+            const logs = parseEventLogs({ abi: storeEventsAbi, logs: receipt.logs });
+            if (logs.length) {
+              // wait for lock to clear
+              // unclear what happens if two waitForTransaction calls are triggered simultaneously and both get released for the same lock emission?
+              await firstValueFrom(storageAdapterLock$.pipe(filter((lock) => lock === false)));
+              storageAdapterLock$.next(true);
+              optimisticLogs = [...optimisticLogs, ...logs];
+              await applyOptimisticLogs(lastBlock.blockNumber);
+              storageAdapterLock$.next(false);
+            }
           }
+          return {
+            status: receipt.status,
+            blockNumber: receipt.blockNumber,
+            transactionHash: receipt.transactionHash,
+          };
         } catch (e) {
           const error = e as GetTransactionReceiptErrorType;
           if (error.name === "TransactionReceiptNotFoundError") {
@@ -297,9 +356,13 @@ export async function createStoreSync({
           throw error;
         }
       }),
+      filter(isDefined),
     );
 
-    return await firstValueFrom(hasTransaction$.pipe(filter(isDefined)));
+    debug("waiting for tx", tx);
+    const promise = firstValueFrom(receipt$);
+    waitPromises.set(tx, promise);
+    return promise;
   }
 
   return {
