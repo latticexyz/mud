@@ -46,7 +46,7 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
 
       write.then((hash) => {
         const receipt = getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });
-        emit("waitForTransactionReceipt", { writeId });
+        emit("waitForTransactionReceipt", { writeId, hash });
         Promise.allSettled([receipt]).then(([result]) => {
           emit("waitForTransactionReceipt:result", { ...result, writeId });
         });

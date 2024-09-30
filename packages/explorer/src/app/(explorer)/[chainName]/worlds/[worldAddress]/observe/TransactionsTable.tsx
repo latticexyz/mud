@@ -11,26 +11,29 @@ import {
   parseEventLogs,
 } from "viem";
 import { useConfig, useWatchBlocks } from "wagmi";
-import React, { useState } from "react";
+import { useStore } from "zustand";
+import React, { useMemo, useState } from "react";
 import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { getTransaction, getTransactionReceipt } from "@wagmi/core";
 import { Badge } from "../../../../../../components/ui/Badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
 import { TruncatedHex } from "../../../../../../components/ui/TruncatedHex";
+import { Write, store } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { TimeAgoCell } from "./TimeAgoCell";
 import { TransactionTableRow } from "./TransactionTableRow";
 
 export type WatchedTransaction = {
-  hash: Hex;
-  timestamp: bigint;
+  hash?: Hex;
+  timestamp?: bigint;
   transaction?: Transaction;
   functionData?: DecodeFunctionDataReturnType;
   receipt?: TransactionReceipt;
   logs?: Log[];
   status: "pending" | "success" | "failed";
+  write?: Write;
 };
 
 const columnHelper = createColumnHelper<WatchedTransaction>();
@@ -41,7 +44,11 @@ export const columns = [
   }),
   columnHelper.accessor("hash", {
     header: "tx hash:",
-    cell: (row) => <TruncatedHex hex={row.getValue()} />,
+    cell: (row) => {
+      const hash = row.getValue();
+      if (!hash) return null;
+      return <TruncatedHex hex={hash} />;
+    },
   }),
   columnHelper.accessor("functionData.functionName", {
     header: "function:",
@@ -80,10 +87,36 @@ export function TransactionsTable() {
   const { id: chainId } = useChain();
   const { worldAddress } = useParams();
   const wagmiConfig = useConfig();
-  const [expanded, setExpanded] = useState<ExpandedState>({});
-  const [transactions, setTransactions] = useState<WatchedTransaction[]>([]);
+
   const { data: worldAbiData } = useWorldAbiQuery();
   const abi = worldAbiData?.abi;
+
+  const observerWrites = useStore(store, (state) => Object.values(state.writes));
+  const transactions = useStore(store, (state) => state.transactions);
+
+  console.log("123 observerWrites:", observerWrites);
+  console.log("123 transactions:", transactions);
+
+  const mergedTransactions = useMemo((): WatchedTransaction[] => {
+    const mergedMap = new Map<Hex | undefined, WatchedTransaction>();
+
+    for (const transaction of transactions) {
+      mergedMap.set(transaction.hash, { ...transaction });
+    }
+
+    for (const write of observerWrites) {
+      const existing = mergedMap.get(write.hash);
+      if (existing) {
+        mergedMap.set(write.hash, { ...existing, write });
+      } else {
+        mergedMap.set(write.hash, { write, status: "pending" });
+      }
+    }
+
+    return Array.from(mergedMap.values());
+  }, [transactions, observerWrites]);
+
+  console.log("mergedTransactions:", mergedTransactions);
 
   async function handleTransaction(hash: Hex, timestamp: bigint) {
     if (!abi) return;
@@ -101,32 +134,43 @@ export function TransactionsTable() {
         logs: receipt.logs,
       });
 
-      setTransactions((transactions) => [
-        ...transactions,
-        {
-          hash,
-          transaction,
-          functionData,
-          receipt,
-          logs,
-          timestamp,
-          status: receipt.status === "success" ? "success" : "failed",
-        },
-      ]);
+      store.setState((state) => {
+        return {
+          transactions: [
+            ...state.transactions,
+            {
+              hash,
+              transaction,
+              functionData,
+              receipt,
+              logs,
+              timestamp,
+              status: receipt.status === "success" ? "success" : "failed",
+            },
+          ],
+        };
+      });
     }
   }
 
   useWatchBlocks({
     onBlock(block) {
       for (const hash of block.transactions) {
+        if (transactions.find((transaction) => transaction.hash === hash)) continue;
         handleTransaction(hash, block.timestamp);
       }
     },
     chainId,
+    pollingInterval: 1000,
   });
 
+  return <TransactionTableView data={mergedTransactions} />;
+}
+
+function TransactionTableView({ data }: { data: WatchedTransaction[] }) {
+  const [expanded, setExpanded] = useState<ExpandedState>({});
   const table = useReactTable({
-    data: transactions,
+    data,
     columns,
     state: {
       expanded,

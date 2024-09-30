@@ -34,7 +34,6 @@ export function Navigation() {
           <NavigationLink href="explore">Explore</NavigationLink>
           <NavigationLink href="interact">Interact</NavigationLink>
           <NavigationLink href="observe">Observe</NavigationLink>
-          <NavigationLink href="transactions">Transactions</NavigationLink>
         </div>
 
         {isFetched && !data?.isWorldDeployed && (

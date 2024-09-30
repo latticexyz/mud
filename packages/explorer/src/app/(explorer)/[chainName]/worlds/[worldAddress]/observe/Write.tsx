@@ -1,7 +1,8 @@
 "use client";
 
 import { type Write } from "../../../../../../observer/store";
-import { msPerViewportWidth } from "./common";
+
+const msPerViewportWidth = 1000 * 60 * 1;
 
 export type Props = Write;
 
