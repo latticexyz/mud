@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Badge } from "../../../../../../components/ui/Badge";
+import { Skeleton } from "../../../../../../components/ui/Skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
 import { TruncatedHex } from "../../../../../../components/ui/TruncatedHex";
 import { TimeAgoCell } from "./TimeAgoCell";
@@ -12,13 +13,17 @@ const columnHelper = createColumnHelper<WatchedTransaction>();
 export const columns = [
   columnHelper.accessor("transaction.blockNumber", {
     header: "",
-    cell: (row) => <Badge variant="outline">#{row.getValue()?.toString()}</Badge>,
+    cell: (row) => {
+      const blockNumber = row.getValue();
+      if (!blockNumber) return <Skeleton className="h-4 w-full" />;
+      return <Badge variant="outline">#{blockNumber.toString()}</Badge>;
+    },
   }),
   columnHelper.accessor("hash", {
     header: "tx hash:",
     cell: (row) => {
       const hash = row.getValue();
-      if (!hash) return null;
+      if (!hash) return <Skeleton className="h-4 w-full" />;
       return <TruncatedHex hex={hash} />;
     },
   }),
@@ -30,7 +35,7 @@ export const columns = [
     header: "from:",
     cell: (row) => {
       const from = row.getValue();
-      if (!from) return null;
+      if (!from) return <Skeleton className="h-4 w-full" />;
       return <TruncatedHex hex={from} />;
     },
   }),
@@ -50,7 +55,7 @@ export const columns = [
     header: "time:",
     cell: (row) => {
       const timestamp = row.getValue();
-      if (!timestamp) return null;
+      if (!timestamp) return <Skeleton className="h-4 w-full" />;
       return <TimeAgoCell timestamp={timestamp} />;
     },
   }),
