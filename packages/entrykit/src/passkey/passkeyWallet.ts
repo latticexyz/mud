@@ -10,13 +10,15 @@ export type PasskeyWalletOptions = {
   chainId: number;
 };
 
-export const passkeyWallet = ({ chainId }: PasskeyWalletOptions): Wallet => ({
-  id: "passkey",
-  name: "Passkey",
-  iconUrl,
-  iconBackground: "#fec",
-  createConnector: (walletDetails) => (config) => ({
-    ...passkeyConnector({ chainId })(config),
-    ...walletDetails,
-  }),
-});
+export const passkeyWallet =
+  ({ chainId }: PasskeyWalletOptions) =>
+  (): Wallet => ({
+    id: "passkey",
+    name: "Passkey",
+    iconUrl,
+    iconBackground: "#fec",
+    createConnector: (walletDetails) => (config) => ({
+      ...passkeyConnector({ chainId })(config),
+      ...walletDetails,
+    }),
+  });

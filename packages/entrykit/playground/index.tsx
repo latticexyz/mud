@@ -3,21 +3,13 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { WagmiProvider, createConfig } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { connectorsForWallets, getDefaultWallets, WalletList } from "@rainbow-me/rainbowkit";
 import { garnet, mudFoundry, redstone } from "@latticexyz/common/chains";
+import { passkeyWallet } from "../src/passkey/passkeyWallet";
 import { AccountModal } from "../src/AccountModal";
 import { EntryKitConfigProvider } from "../src/EntryKitConfigProvider";
 import { App } from "./App";
 import { Chain, Hex, http } from "viem";
-
-const queryClient = new QueryClient();
-
-const chains = [redstone, garnet, mudFoundry] as [Chain, ...Chain[]];
-const wagmiConfig = createConfig({
-  chains,
-  transports: Object.fromEntries(
-    chains.map((chain) => [chain.id, chain.id === 31337 ? http("http://127.0.0.1:3478") : http()]),
-  ),
-});
 
 const testWorlds = {
   [mudFoundry.id]: "0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b",
@@ -31,6 +23,31 @@ const worldAddress = testWorlds[chainId];
 if (!worldAddress) {
   throw new Error(`EntryKit playground is not configured with a test world address for chain ID ${chainId}`);
 }
+
+const queryClient = new QueryClient();
+
+const { wallets: defaultWallets } = getDefaultWallets();
+const wallets: WalletList = [
+  {
+    groupName: "Recommended",
+    wallets: [passkeyWallet({ chainId })],
+  },
+  ...defaultWallets,
+];
+
+const connectors = connectorsForWallets(wallets, {
+  appName: "EAT THE FLY",
+  projectId: "14ce88fdbc0f9c294e26ec9b4d848e44",
+});
+
+const chains = [redstone, garnet, mudFoundry] as [Chain, ...Chain[]];
+const wagmiConfig = createConfig({
+  connectors,
+  chains,
+  transports: Object.fromEntries(
+    chains.map((chain) => [chain.id, chain.id === 31337 ? http("http://127.0.0.1:3478") : http()]),
+  ),
+});
 
 const entryKitConfig = {
   chainId,
