@@ -8,11 +8,10 @@ yarn.lock
 # npm pack
 *.tgz
 
+*.log
 .eslintcache
 .parcel-cache
 .docs
-lerna-debug.log
-yarn-error.log
 .turbo
 .attest
 .tstrace
