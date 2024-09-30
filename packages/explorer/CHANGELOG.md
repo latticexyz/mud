@@ -1,5 +1,24 @@
 # @latticexyz/explorer
 
+## 2.2.10
+
+### Patch Changes
+
+- e39afda: Fixed table name construction in the explorer query for root tables for SQLite.
+- 8858e52: - Tables can be searched by specific values.
+  - Improved handling of dynamic SQL queries.
+  - The "Connect" modal is triggered during a write action if the wallet is not connected.
+  - Toast messages are now dismissible.
+- Updated dependencies [9d7fc85]
+  - @latticexyz/world@2.2.10
+  - @latticexyz/store-sync@2.2.10
+  - @latticexyz/store-indexer@2.2.10
+  - @latticexyz/common@2.2.10
+  - @latticexyz/config@2.2.10
+  - @latticexyz/protocol-parser@2.2.10
+  - @latticexyz/schema-type@2.2.10
+  - @latticexyz/store@2.2.10
+
 ## 2.2.9
 
 ### Patch Changes

@@ -1,3 +1,37 @@
+## Version 2.2.10
+
+Release date: Thu Sep 26 2024
+
+### Patch changes
+
+**[fix(world): resolve system namespace label (#3232)](https://github.com/latticexyz/mud/commit/9d7fc8588ef045280b544d2aace0d53a4324c71a)** (@latticexyz/world)
+
+The `namespace` field in a multi-namespace config is now correctly resolved for systems.
+This fixes a bug with root systems in a multi-namespace project.
+
+**[fix(explorer): construct sqlite table names (#3234)](https://github.com/latticexyz/mud/commit/e39afda94e23cf11ade7bdc46c7ae6510ddc5e26)** (@latticexyz/explorer)
+
+Fixed table name construction in the explorer query for root tables for SQLite.
+
+**[fix(explorer): various fixes (#3235)](https://github.com/latticexyz/mud/commit/8858e52210693679e7626e25ee4dd9bcf30d7ae8)** (@latticexyz/explorer)
+
+- Tables can be searched by specific values.
+- Improved handling of dynamic SQL queries.
+- The "Connect" modal is triggered during a write action if the wallet is not connected.
+- Toast messages are now dismissible.
+
+**[fix(create-mud): upgrade mprocs (#3236)](https://github.com/latticexyz/mud/commit/af26487ed896a2734f50b16a54d585631b13110d)** (create-mud)
+
+Upgraded mprocs to fix issues with it not running when started via npm script.
+
+You can do the same in an existing MUD project with:
+
+```
+pnpm recursive up mprocs@latest
+```
+
+---
+
 ## Version 2.2.9
 
 Release date: Wed Sep 25 2024
