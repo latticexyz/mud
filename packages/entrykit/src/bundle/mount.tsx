@@ -1,4 +1,3 @@
-import rainbowKitCss from "@rainbow-me/rainbowkit/styles.css?inline";
 import type { Config as WagmiConfig } from "wagmi";
 import type { Config as entryKitConfig } from "../config";
 import { store } from "./store";
@@ -33,7 +32,6 @@ export function mount({ rootContainer: initialRootContainer, wagmiConfig, entryK
     const ReactDOM = await import("react-dom/client");
     const { WagmiProvider } = await import("wagmi");
     const { QueryClientProvider, QueryClient } = await import("@tanstack/react-query");
-    const { RainbowKitProvider, lightTheme, midnightTheme } = await import("@rainbow-me/rainbowkit");
     const { EntryKitProvider } = await import("../EntryKitProvider");
     const { SyncStore } = await import("./SyncStore");
 
@@ -44,28 +42,10 @@ export function mount({ rootContainer: initialRootContainer, wagmiConfig, entryK
       <React.StrictMode>
         <WagmiProvider config={wagmiConfig}>
           <QueryClientProvider client={queryClient}>
-            <RainbowKitProvider
-              appInfo={{
-                appName: entryKitConfig.appInfo?.name,
-                // TODO: learn more and disclaimer
-              }}
-              theme={
-                entryKitConfig.theme === "light"
-                  ? lightTheme({ borderRadius: "none" })
-                  : entryKitConfig.theme === "dark"
-                    ? midnightTheme({ borderRadius: "none" })
-                    : {
-                        lightMode: lightTheme({ borderRadius: "none" }),
-                        darkMode: midnightTheme({ borderRadius: "none" }),
-                      }
-              }
-            >
-              <EntryKitProvider config={entryKitConfig}>
-                <SyncStore store={store} />
-                <Buttons />
-                <style dangerouslySetInnerHTML={{ __html: rainbowKitCss }} />
-              </EntryKitProvider>
-            </RainbowKitProvider>
+            <EntryKitProvider config={entryKitConfig}>
+              <SyncStore store={store} />
+              <Buttons />
+            </EntryKitProvider>
           </QueryClientProvider>
         </WagmiProvider>
       </React.StrictMode>,

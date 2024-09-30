@@ -1,29 +1,22 @@
 import "./polyfills";
-import "@rainbow-me/rainbowkit/styles.css";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { WagmiProvider, createConfig } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RainbowKitProvider, lightTheme, midnightTheme } from "@rainbow-me/rainbowkit";
 import { garnet, mudFoundry, redstone } from "@latticexyz/common/chains";
 import { AccountModal } from "../src/AccountModal";
 import { EntryKitConfigProvider } from "../src/EntryKitConfigProvider";
 import { App } from "./App";
-import { Hex, createClient, http } from "viem";
-import { chains } from "../src/exports/chains";
+import { Chain, Hex, http } from "viem";
 
 const queryClient = new QueryClient();
 
+const chains = [redstone, garnet, mudFoundry] as [Chain, ...Chain[]];
 const wagmiConfig = createConfig({
-  chains: [mudFoundry, ...chains],
-  client: ({ chain }) =>
-    createClient({
-      chain,
-      // We intentionally don't use fallback+webSocket here because if a chain's RPC config
-      // doesn't include a `webSocket` entry, it doesn't seem to fallback and instead just
-      // ~never makes any requests and all queries seem to sit idle.
-      transport: chain.id === 31337 ? http("http://127.0.0.1:3478") : http(),
-    }),
+  chains,
+  transports: Object.fromEntries(
+    chains.map((chain) => [chain.id, chain.id === 31337 ? http("http://127.0.0.1:3478") : http()]),
+  ),
 });
 
 const testWorlds = {
@@ -54,17 +47,10 @@ root.render(
   <StrictMode>
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider
-          theme={{
-            lightMode: lightTheme({ borderRadius: "none" }),
-            darkMode: midnightTheme({ borderRadius: "none" }),
-          }}
-        >
-          <EntryKitConfigProvider config={entryKitConfig}>
-            <App />
-            <AccountModal />
-          </EntryKitConfigProvider>
-        </RainbowKitProvider>
+        <EntryKitConfigProvider config={entryKitConfig}>
+          <App />
+          <AccountModal />
+        </EntryKitConfigProvider>
       </QueryClientProvider>
     </WagmiProvider>
   </StrictMode>,

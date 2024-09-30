@@ -1,4 +1,6 @@
+import "@rainbow-me/rainbowkit/styles.css";
 import { createContext, useContext, type ReactNode } from "react";
+import { RainbowKitProvider, lightTheme, midnightTheme } from "@rainbow-me/rainbowkit";
 import { Config } from "./config";
 
 /** @internal */
@@ -12,7 +14,26 @@ export type Props = {
 export function EntryKitConfigProvider({ config, children }: Props) {
   const currentConfig = useContext(Context);
   if (currentConfig) throw new Error("`EntryKitProvider` can only be used once.");
-  return <Context.Provider value={config}>{children}</Context.Provider>;
+  return (
+    <RainbowKitProvider
+      appInfo={{
+        appName: config.appInfo?.name,
+        // TODO: learn more and disclaimer
+      }}
+      theme={
+        config.theme === "light"
+          ? lightTheme({ borderRadius: "none" })
+          : config.theme === "dark"
+            ? midnightTheme({ borderRadius: "none" })
+            : {
+                lightMode: lightTheme({ borderRadius: "none" }),
+                darkMode: midnightTheme({ borderRadius: "none" }),
+              }
+      }
+    >
+      <Context.Provider value={config}>{children}</Context.Provider>
+    </RainbowKitProvider>
+  );
 }
 
 export function useConfig(): Config {

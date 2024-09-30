@@ -1,6 +1,6 @@
 import { resourceToHex } from "@latticexyz/common";
-import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
 import { Client, Chain, Transport, Account, RpcSchema, PublicActions, WalletActions } from "viem";
+import { entryPoint07Address } from "viem/account-abstraction";
 
 // TODO: it'd be great if we could have strong types around `client.type` to do downstream checks
 export type AppAccountClient = Client<
@@ -17,7 +17,7 @@ export const defaultPollingInterval = 250;
 
 // ERC-4337
 
-export const entryPointAddress = ENTRYPOINT_ADDRESS_V07;
+export const entryPointAddress = entryPoint07Address;
 /**
  * `deposits` storage variable position in the entry point contract,
  * used to override contract state when doing paymaster gas estimation.
