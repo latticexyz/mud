@@ -12,7 +12,7 @@ import {
 } from "viem";
 import { useConfig, useWatchBlocks } from "wagmi";
 import { useStore } from "zustand";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { getTransaction, getTransactionReceipt } from "@wagmi/core";
 import { Write, store } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
@@ -26,7 +26,7 @@ export type WatchedTransaction = {
   functionData?: DecodeFunctionDataReturnType;
   receipt?: TransactionReceipt;
   logs?: Log[];
-  status: "pending" | "success" | "failed";
+  status: "pending" | "success" | "reverted";
   write?: Write;
 };
 
@@ -38,8 +38,8 @@ export function TransactionsTableContainer() {
   const { data: worldAbiData } = useWorldAbiQuery();
   const abi = worldAbiData?.abi;
 
+  const [transactions, setTransactions] = useState<WatchedTransaction[]>([]);
   const observerWrites = useStore(store, (state) => Object.values(state.writes));
-  const transactions = useStore(store, (state) => state.transactions);
 
   console.log("123 observerWrites:", observerWrites);
   console.log("123 transactions:", transactions);
@@ -81,22 +81,18 @@ export function TransactionsTableContainer() {
         logs: receipt.logs,
       });
 
-      store.setState((state) => {
-        return {
-          transactions: [
-            ...state.transactions,
-            {
-              hash,
-              transaction,
-              functionData,
-              receipt,
-              logs,
-              timestamp,
-              status: receipt.status === "success" ? "success" : "failed",
-            },
-          ],
-        };
-      });
+      setTransactions((transactions) => [
+        {
+          hash,
+          transaction,
+          functionData,
+          receipt,
+          logs,
+          timestamp,
+          status: receipt.status,
+        },
+        ...transactions,
+      ]);
     }
   }
 

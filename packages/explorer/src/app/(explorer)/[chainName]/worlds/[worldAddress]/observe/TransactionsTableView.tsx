@@ -45,8 +45,8 @@ export const columns = [
       const status = row.getValue();
       if (status === "success") {
         return <Badge variant="success">success</Badge>;
-      } else if (status === "failed") {
-        return <Badge variant="destructive">failed</Badge>;
+      } else if (status === "reverted") {
+        return <Badge variant="destructive">reverted</Badge>;
       }
       return <Badge variant="outline">pending</Badge>;
     },
