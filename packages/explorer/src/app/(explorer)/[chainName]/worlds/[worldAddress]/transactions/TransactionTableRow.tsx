@@ -18,6 +18,8 @@ function TranctionTableRowDataCell({ label, children }: { label: string; childre
 
 export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
   const data = row?.original;
+  const logs = data?.logs;
+
   return (
     <>
       <TableRow className="cursor-pointer" onClick={() => row.toggleExpanded()}>
@@ -72,26 +74,29 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                 <div className="mt-6">
                   <h3 className="pb-2 text-xs font-bold uppercase text-muted-foreground">Logs:</h3>
                   <div className="mt-2 break-all border border-white/20 p-2">
-                    {Array.isArray(data.logs) && data.logs.length > 0 && (
+                    {Array.isArray(logs) && logs.length > 0 && (
                       <ul>
-                        {data.logs.map((log, idx) => (
-                          <li key={idx}>
-                            {/* @ts-expect-error TODO: types needs fixing */}
-                            <span className="text-xs">{log.eventName}:</span>
-                            <ul className="list-inside pt-1">
-                              {/* @ts-expect-error TODO: types needs fixing */}
-                              {Object.entries(log.args as never).map(([key, value]) => (
-                                <li key={key} className="mt-1 flex">
-                                  <span className="flex-shrink-0 text-xs text-muted-foreground">{key}: </span>
-                                  <span className="ml-2 text-xs">{value as never}</span>
-                                </li>
-                              ))}
-                            </ul>
+                        {logs.map((log, idx) => {
+                          const eventName = "eventName" in log ? log.eventName : null;
+                          const args = "args" in log ? (log.args as Record<string, unknown>) : null;
 
-                            {/* @ts-expect-error TODO: types needs fixing */}
-                            {idx < data.logs.length - 1 && <Separator className="my-4" />}
-                          </li>
-                        ))}
+                          return (
+                            <li key={idx}>
+                              {Boolean(eventName) && <span className="text-xs">{eventName?.toString()}:</span>}
+                              {args && (
+                                <ul className="list-inside pt-1">
+                                  {Object.entries(args).map(([key, value]) => (
+                                    <li key={key} className="mt-1 flex">
+                                      <span className="flex-shrink-0 text-xs text-muted-foreground">{key}: </span>
+                                      <span className="ml-2 text-xs">{value as never}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                              {idx < logs.length - 1 && <Separator className="my-4" />}
+                            </li>
+                          );
+                        })}
                       </ul>
                     )}
                   </div>
