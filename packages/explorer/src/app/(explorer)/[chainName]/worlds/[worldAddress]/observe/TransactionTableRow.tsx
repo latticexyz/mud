@@ -4,8 +4,8 @@ import { TableCell, TableRow } from "../../../../../../components/ui/Table";
 import { TruncatedHex } from "../../../../../../components/ui/TruncatedHex";
 import { BlockExplorerLink } from "./BlockExplorerLink";
 import { Confirmations } from "./Confirmations";
-import { WatchedTransaction } from "./TransactionsTable";
-import { columns } from "./TransactionsTable";
+import { WatchedTransaction } from "./TransactionsTableContainer";
+import { columns } from "./TransactionsTableView";
 
 function TranctionTableRowDataCell({ label, children }: { label: string; children: React.ReactNode }) {
   return (

@@ -1,5 +1,5 @@
-import { TransactionsTable } from "./TransactionsTable";
+import { TransactionsTableContainer } from "./TransactionsTableContainer";
 
 export default async function ObservePage() {
-  return <TransactionsTable />;
+  return <TransactionsTableContainer />;
 }

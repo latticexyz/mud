@@ -2,7 +2,7 @@
 
 import { Address, Hash } from "viem";
 import { createStore } from "zustand/vanilla";
-import { WatchedTransaction } from "../app/(explorer)/[chainName]/worlds/[worldAddress]/observe/TransactionsTable";
+import { WatchedTransaction } from "../app/(explorer)/[chainName]/worlds/[worldAddress]/observe/TransactionsTableContainer";
 import { relayChannelName } from "./common";
 import { debug } from "./debug";
 import { Message, MessageType } from "./messages";
