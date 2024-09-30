@@ -2,12 +2,14 @@
 
 import { useParams } from "next/navigation";
 import {
+  AbiFunction,
   DecodeFunctionDataReturnType,
   Hex,
   Log,
   Transaction,
   TransactionReceipt,
   decodeFunctionData,
+  parseAbiItem,
   parseEventLogs,
 } from "viem";
 import { useConfig, useWatchBlocks } from "wagmi";
@@ -34,15 +36,10 @@ export function TransactionsTableContainer() {
   const { id: chainId } = useChain();
   const { worldAddress } = useParams();
   const wagmiConfig = useConfig();
-
   const { data: worldAbiData } = useWorldAbiQuery();
   const abi = worldAbiData?.abi;
-
   const [transactions, setTransactions] = useState<WatchedTransaction[]>([]);
   const observerWrites = useStore(store, (state) => Object.values(state.writes));
-
-  console.log("123 observerWrites:", observerWrites);
-  console.log("123 transactions:", transactions);
 
   const mergedTransactions = useMemo((): WatchedTransaction[] => {
     const mergedMap = new Map<Hex | undefined, WatchedTransaction>();
@@ -56,7 +53,17 @@ export function TransactionsTableContainer() {
       if (existing) {
         mergedMap.set(write.hash, { ...existing, write });
       } else {
-        mergedMap.set(write.hash, { write, status: "pending" });
+        const parsedAbiItem = parseAbiItem(`function ${write.functionSignature}`) as AbiFunction;
+        const functionData = {
+          functionName: parsedAbiItem.name,
+          args: write.args,
+        };
+
+        mergedMap.set(write.hash, {
+          status: "pending",
+          functionData,
+          write,
+        });
       }
     }
 
