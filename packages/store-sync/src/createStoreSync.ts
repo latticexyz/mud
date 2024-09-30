@@ -204,10 +204,15 @@ export async function createStoreSync({
   const storedIndexerLogs$ = indexerUrl
     ? startBlock$.pipe(
         mergeMap((startBlock) => {
-          const input = encodeURIComponent(JSON.stringify({ chainId, address, filters }));
-          return fromEventSource<string>(
-            new URL(`/api/logs-live?input=${input}&block_num=${startBlock}&include_tx_hash=true`, indexerUrl),
+          const url = new URL(
+            `api/logs-live?${new URLSearchParams({
+              input: JSON.stringify({ chainId, address, filters }),
+              block_num: startBlock.toString(),
+              include_tx_hash: "true",
+            })}`,
+            indexerUrl,
           );
+          return fromEventSource<string>(url);
         }),
         map((messageEvent) => JSON.parse(messageEvent.data) as StorageAdapterBlock),
         concatMap(async (block) => {
