@@ -33,8 +33,8 @@ import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
 import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/utils";
 import { getSnapshot } from "./getSnapshot";
-import { fetchAndFilterLogs } from "./fetchAndFilterLogs";
 import { fromEventSource } from "./fromEventSource";
+import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -201,25 +201,30 @@ export async function createStoreSync({
   let endBlock: bigint | null = null;
   let lastBlockNumberProcessed: bigint | null = null;
 
-  const indexerLogs$ = indexerUrl
+  const storedIndexerLogs$ = indexerUrl
     ? startBlock$.pipe(
         mergeMap((startBlock) => {
           const input = encodeURIComponent(JSON.stringify({ chainId, address, filters }));
           return fromEventSource<string>(
             new URL(`/api/logs-live?input=${input}&block_num=${startBlock}&include_tx_hash=true`, indexerUrl),
-          ).pipe(map((messageEvent) => JSON.parse(messageEvent.data) as StorageAdapterBlock));
+          );
+        }),
+        map((messageEvent) => JSON.parse(messageEvent.data) as StorageAdapterBlock),
+        concatMap(async (block) => {
+          await storageAdapter(block);
+          return block;
         }),
       )
     : throwError(() => new Error("No indexer URL provided"));
 
-  const rpcLogs$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
+  const storedRpcLogs$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
     tap((range) => {
       startBlock = range.startBlock;
       endBlock = range.endBlock;
     }),
     concatMap((range) => {
-      const storedBlocks = fetchAndFilterLogs({
+      const storedBlocks = fetchAndStoreLogs({
         publicClient,
         address,
         events: storeEventsAbi,
@@ -229,24 +234,20 @@ export async function createStoreSync({
           : range.startBlock,
         toBlock: range.endBlock,
         logFilter,
+        storageAdapter,
       });
 
       return from(storedBlocks);
     }),
   );
 
-  const logs$ = indexerLogs$.pipe(
+  const storedBlock$ = storedIndexerLogs$.pipe(
     catchError((e) => {
       debug("error streaming logs from indexer:", e);
       debug("falling back to streaming logs from RPC");
-      return rpcLogs$;
+      return storedRpcLogs$;
     }),
-  );
-
-  const storedBlock$ = logs$.pipe(
     tap(async (block) => {
-      await storageAdapter(block);
-
       debug("stored", block.logs.length, "logs for block", block.blockNumber);
       lastBlockNumberProcessed = block.blockNumber;
 
