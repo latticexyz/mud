@@ -82,7 +82,7 @@
     "autoprefixer": "^10.4.14",
     "eslint-plugin-react": "7.31.11",
     "eslint-plugin-react-hooks": "4.6.0",
-    "mprocs": "^0.6.4",
+    "mprocs": "^0.7.1",
     "postcss": "^8.4.23",
     "tailwindcss": "^3.4.3",
     "tsup": "^6.7.0",
