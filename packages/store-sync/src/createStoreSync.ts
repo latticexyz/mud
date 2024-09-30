@@ -247,12 +247,12 @@ export async function createStoreSync({
       debug("falling back to streaming logs from RPC");
       return storedRpcLogs$;
     }),
-    tap(async (block) => {
-      debug("stored", block.logs.length, "logs for block", block.blockNumber);
-      lastBlockNumberProcessed = block.blockNumber;
+    tap(async ({ logs, blockNumber }) => {
+      debug("stored", logs.length, "logs for block", blockNumber);
+      lastBlockNumberProcessed = blockNumber;
 
       if (startBlock != null && endBlock != null) {
-        if (block.blockNumber < endBlock) {
+        if (blockNumber < endBlock) {
           const totalBlocks = endBlock - startBlock;
           const processedBlocks = lastBlockNumberProcessed - startBlock;
           onProgress?.({
