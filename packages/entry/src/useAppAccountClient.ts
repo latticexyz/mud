@@ -1,5 +1,5 @@
-import { http, useAccount, usePublicClient } from "wagmi";
-import { publicActions, createClient, walletActions } from "viem";
+import { useAccount, usePublicClient } from "wagmi";
+import { publicActions, createClient, walletActions, createTransport } from "viem";
 import { callFrom } from "@latticexyz/world/internal";
 import { useConfig } from "./EntryConfigProvider";
 import { useAppSigner } from "./useAppSigner";
@@ -39,7 +39,7 @@ export function useAppAccountClient(): UseQueryResult<AppAccountClient> {
               pollingInterval: defaultPollingInterval,
               // TODO: add websocket + fallback?
               // TODO: provide way to override this transport?
-              transport: transportObserver("app signer account client", http()),
+              transport: transportObserver("app signer account client", () => createTransport(publicClient.transport)),
             })
               .extend(publicActions)
               .extend(walletActions)

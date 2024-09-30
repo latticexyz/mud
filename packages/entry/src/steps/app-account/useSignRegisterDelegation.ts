@@ -2,7 +2,7 @@ import { resourceToHex } from "@latticexyz/common";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { useMutation } from "@tanstack/react-query";
 import { Hex, encodeFunctionData } from "viem";
-import { usePublicClient, useWalletClient } from "wagmi";
+import { useConnectorClient } from "wagmi";
 import { unlimitedDelegationControlId } from "../../common";
 import { useAppAccountClient } from "../../useAppAccountClient";
 import { signCall } from "../../utils/signCall";
@@ -17,8 +17,7 @@ const store = createStore(() => ({ signature: undefined as Hex | undefined }));
 
 export function useSignRegisterDelegation() {
   const { chainId, worldAddress } = useConfig();
-  const publicClient = usePublicClient({ chainId });
-  const { data: userAccountClient } = useWalletClient({ chainId });
+  const { data: userAccountClient } = useConnectorClient({ chainId });
   const { data: appAccountClient } = useAppAccountClient();
   const { nonce } = useCallWithSignatureNonce();
   const registerDelegationSignature = useStore(store, (state) => state.signature);
@@ -27,10 +26,12 @@ export function useSignRegisterDelegation() {
 
   const result = useMutation({
     mutationFn: async () => {
-      if (!publicClient) throw new Error("Public client not ready. Not connected?");
       if (!userAccountClient) throw new Error("Wallet client not ready. Not connected?");
       if (!appAccountClient) throw new Error("App account client not ready.");
       if (nonce == null) throw new Error("Nonce not ready.");
+
+      console.log("user account client type", userAccountClient.type, userAccountClient.account.address);
+      console.log("app account client type", appAccountClient.type, appAccountClient.account.address);
 
       const signature = await signCall({
         userAccountClient,

@@ -1,4 +1,4 @@
-import { Account, Address, Chain, Hex, PublicClient, Transport, WalletClient, toHex } from "viem";
+import { Account, Address, Chain, Client, Hex, PublicClient, Transport, toHex } from "viem";
 import { signTypedData } from "viem/actions";
 import { callWithSignatureTypes } from "@latticexyz/world/internal";
 import { getRecord } from "./getRecord";
@@ -9,7 +9,7 @@ import { hexToResource } from "@latticexyz/common";
 // TODO: nonce _or_ publicClient?
 
 export type SignCallOptions = {
-  userAccountClient: WalletClient<Transport, Chain, Account>;
+  userAccountClient: Client<Transport, Chain, Account>;
   chainId: number;
   worldAddress: Address;
   systemId: Hex;

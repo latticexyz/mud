@@ -44,6 +44,12 @@ export function FinalizingStep() {
               appAccountClient,
               userAddress,
               signature: registerDelegationSignature,
+            }).catch((error) => {
+              if (/InvalidSignature\(/.test(String(error))) {
+                console.log("invalid delegation signature, clearing to try again");
+                clearSignature();
+              }
+              throw error;
             });
             console.log("waiting for delegation tx", hash);
             const receipt = await waitForTransactionReceipt(appAccountClient, { hash });
