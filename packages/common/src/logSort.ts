@@ -1,6 +1,8 @@
 import { Log } from "viem";
 
-export function logSort(a: Log, b: Log): number {
+type PartialLog = Pick<Log, "blockNumber" | "logIndex">;
+
+export function logSort(a: PartialLog, b: PartialLog): number {
   if (a.blockNumber === b.blockNumber) {
     if (a.logIndex === b.logIndex) return 0;
     if (a.logIndex == null) return 1;
