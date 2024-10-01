@@ -81,12 +81,12 @@ export function TransactionsTableContainer() {
     const receipt = await getTransactionReceipt(wagmiConfig, { hash });
 
     let functionName: string | undefined;
-    let functionArgs: readonly unknown[] | undefined;
+    let args: readonly unknown[] | undefined;
     let transactionError: BaseError | undefined;
     try {
       const functionData = decodeFunctionData({ abi, data: transaction.input });
       functionName = functionData.functionName;
-      functionArgs = functionData.args;
+      args = functionData.args;
     } catch (error) {
       transactionError = error as BaseError;
       functionName = transaction.input.length > 10 ? transaction.input.slice(0, 10) : "unknown";
@@ -104,7 +104,7 @@ export function TransactionsTableContainer() {
           value: transaction.value,
           blockNumber: receipt.blockNumber,
           functionName,
-          args: functionArgs,
+          args,
         });
       } catch (error) {
         transactionError = error as BaseError;
@@ -121,8 +121,8 @@ export function TransactionsTableContainer() {
         hash,
         transaction,
         functionData: {
-          functionName: functionName,
-          args: functionArgs || [],
+          functionName,
+          args,
         },
         receipt,
         logs,
