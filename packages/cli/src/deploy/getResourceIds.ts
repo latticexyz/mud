@@ -26,8 +26,9 @@ export async function getResourceIds({
       });
     },
   });
+  const logs = flattenStoreLogs(blockLogs.flatMap((block) => block.logs));
 
-  const resourceIds = flattenStoreLogs(blockLogs.flatMap((block) => block.logs)).map((log) => log.args.keyTuple[0]);
+  const resourceIds = logs.map((log) => log.args.keyTuple[0]);
   debug("found", resourceIds.length, "resource IDs for", worldDeploy.address);
 
   return resourceIds;
