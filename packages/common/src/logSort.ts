@@ -1,6 +1,4 @@
-import { Log } from "viem";
-
-type PartialLog = Pick<Log, "blockNumber" | "logIndex">;
+type PartialLog = { readonly blockNumber: bigint; readonly logIndex: number };
 
 export function logSort(a: PartialLog, b: PartialLog): number {
   if (a.blockNumber === b.blockNumber) {
