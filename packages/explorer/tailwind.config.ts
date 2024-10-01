@@ -17,7 +17,9 @@ const config = {
         sans: ["var(--font-jetbrains-mono)"],
         mono: ["var(--font-jetbrains-mono)"],
       },
-
+      fontSize: {
+        "2xs": ["0.625rem", { lineHeight: "1rem" }],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -71,9 +73,6 @@ const config = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-      },
-      fontSize: {
-        "2xs": ["0.625rem", { lineHeight: "1rem" }],
       },
     },
   },

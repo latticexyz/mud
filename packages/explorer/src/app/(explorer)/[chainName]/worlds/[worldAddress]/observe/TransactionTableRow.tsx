@@ -50,6 +50,19 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                 <Separator className="my-5" />
 
                 <div className="flex items-start gap-x-4">
+                  <h3 className="w-[45px] text-2xs font-bold uppercase">Error</h3>
+                  {data.error ? (
+                    <div className="flex-grow whitespace-pre-wrap border border-red-500 p-2 font-mono text-xs">
+                      {data.error.message}
+                    </div>
+                  ) : (
+                    <p className="text-2xs uppercase text-muted-foreground">No error</p>
+                  )}
+                </div>
+
+                <Separator className="my-5" />
+
+                <div className="flex items-start gap-x-4">
                   <h3 className="w-[45px] text-2xs font-bold uppercase">Inputs</h3>
                   {Array.isArray(data.functionData?.args) && data.functionData?.args.length > 0 ? (
                     <div className="flex-grow border border-white/20 p-2">

@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import {
   AbiFunction,
+  BaseError,
   DecodeFunctionDataReturnType,
   Hex,
   Log,
@@ -15,7 +16,7 @@ import {
 import { useConfig, useWatchBlocks } from "wagmi";
 import { useStore } from "zustand";
 import React, { useMemo, useState } from "react";
-import { getTransaction, getTransactionReceipt } from "@wagmi/core";
+import { getTransaction, getTransactionReceipt, simulateContract } from "@wagmi/core";
 import { Write, store } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
@@ -27,9 +28,10 @@ export type WatchedTransaction = {
   transaction?: Transaction;
   functionData?: DecodeFunctionDataReturnType;
   receipt?: TransactionReceipt;
-  logs?: Log[];
   status: "pending" | "success" | "reverted";
   write?: Write;
+  logs?: Log[];
+  error?: BaseError; // TODO: correct type ?
 };
 
 export function TransactionsTableContainer() {
@@ -44,7 +46,6 @@ export function TransactionsTableContainer() {
   const mergedTransactions = useMemo((): WatchedTransaction[] => {
     const mergedMap = new Map<Hex | undefined, WatchedTransaction>();
 
-    // Process observerWrites first
     for (const write of observerWrites) {
       const parsedAbiItem = parseAbiItem(`function ${write.functionSignature}`) as AbiFunction;
       const functionData = {
@@ -59,7 +60,6 @@ export function TransactionsTableContainer() {
       });
     }
 
-    // Then process transactions, potentially overwriting write transactions
     for (const transaction of transactions) {
       const existing = mergedMap.get(transaction.hash);
       if (existing) {
@@ -69,7 +69,6 @@ export function TransactionsTableContainer() {
       }
     }
 
-    // Convert map to array and reverse to have newest first
     return Array.from(mergedMap.values()).reverse();
   }, [transactions, observerWrites]);
 
@@ -77,31 +76,61 @@ export function TransactionsTableContainer() {
     if (!abi) return;
 
     const transaction = await getTransaction(wagmiConfig, { hash });
-    if (transaction.to === worldAddress) {
-      const functionData = decodeFunctionData({
-        abi,
-        data: transaction.input,
-      });
+    if (transaction.to !== worldAddress) return;
 
-      const receipt = await getTransactionReceipt(wagmiConfig, { hash });
-      const logs = parseEventLogs({
-        abi,
-        logs: receipt.logs,
-      });
+    const receipt = await getTransactionReceipt(wagmiConfig, { hash });
 
-      setTransactions((transactions) => [
-        {
-          hash,
-          transaction,
-          functionData,
-          receipt,
-          logs,
-          timestamp,
-          status: receipt.status,
-        },
-        ...transactions,
-      ]);
+    let functionName: string | undefined;
+    let functionArgs: readonly unknown[] | undefined;
+    let transactionError: BaseError | undefined;
+    try {
+      const functionData = decodeFunctionData({ abi, data: transaction.input });
+      functionName = functionData.functionName;
+      functionArgs = functionData.args;
+    } catch (error) {
+      transactionError = error as BaseError;
     }
+
+    if (receipt.status === "reverted" && functionName) {
+      try {
+        // Simulate the failed transaction to retrieve the revert reason
+        // Note, it only works for functions that are declared in the ABI
+        // See: https://github.com/wevm/viem/discussions/462
+        await simulateContract(wagmiConfig, {
+          account: transaction.from,
+          address: worldAddress,
+          abi,
+          value: transaction.value,
+          blockNumber: receipt.blockNumber,
+          functionName,
+          args: functionArgs,
+        });
+      } catch (error) {
+        transactionError = error as BaseError;
+      }
+    }
+
+    const logs = parseEventLogs({
+      abi,
+      logs: receipt.logs,
+    });
+
+    setTransactions((transactions) => [
+      {
+        hash,
+        transaction,
+        functionData: {
+          functionName: functionName || "unknown",
+          args: functionArgs || [],
+        },
+        receipt,
+        logs,
+        timestamp,
+        status: receipt.status,
+        error: transactionError,
+      },
+      ...transactions,
+    ]);
   }
 
   useWatchBlocks({
