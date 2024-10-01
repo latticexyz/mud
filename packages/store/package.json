@@ -66,11 +66,13 @@
     "@latticexyz/schema-type": "workspace:*",
     "abitype": "catalog:",
     "arktype": "catalog:",
+    "debug": "^4.3.4",
     "viem": "catalog:"
   },
   "devDependencies": {
     "@latticexyz/abi-ts": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
+    "@types/debug": "^4.1.7",
     "@types/ejs": "^3.1.1",
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.15.11",

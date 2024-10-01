@@ -5,11 +5,11 @@ node_modules
 package-lock.json
 yarn.lock
 
+*.log
+
 .eslintcache
 .parcel-cache
 .docs
-lerna-debug.log
-yarn-error.log
 .turbo
 .attest
 .tstrace
