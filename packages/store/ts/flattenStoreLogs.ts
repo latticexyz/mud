@@ -2,16 +2,17 @@ import { Log, size } from "viem";
 import { storeEventsAbi } from "./storeEventsAbi";
 import { emptyRecord } from "./common";
 import { StoreLog, StoreSetRecordLog } from "./storeLog";
-import { spliceHex } from "@latticexyz/common";
+import { logSort, spliceHex } from "@latticexyz/common";
 
 function getKey(log: Log<bigint, number, boolean, undefined, true, storeEventsAbi, undefined>) {
   return [log.address, log.args.tableId, log.args.keyTuple.join(",")].join(":");
 }
 
 export function flattenStoreLogs(logs: StoreLog[]): StoreSetRecordLog[] {
+  const sortedLogs = logs.slice().sort(logSort);
   const records = new Map<string, StoreSetRecordLog>();
 
-  for (const log of logs) {
+  for (const log of sortedLogs) {
     const key = getKey(log);
 
     if (log.eventName === "Store_SetRecord") {
