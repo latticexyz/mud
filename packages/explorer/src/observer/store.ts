@@ -37,6 +37,7 @@ channel.addEventListener("message", ({ data }: MessageEvent<Message>) => {
         ...state.writes,
         [data.writeId]: {
           ...write,
+          hash: data.type === "waitForTransactionReceipt" ? data.hash : write.hash,
           events: [...write.events, data],
         },
       },
