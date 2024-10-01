@@ -1,4 +1,4 @@
-type PartialLog = { readonly blockNumber: bigint; readonly logIndex: number };
+type PartialLog = { readonly blockNumber: bigint | null; readonly logIndex: number | null };
 
 export function logSort(a: PartialLog, b: PartialLog): number {
   if (a.blockNumber === b.blockNumber) {
