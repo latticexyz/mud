@@ -10,10 +10,7 @@ import { Tables } from "@latticexyz/config";
 import { merge } from "@ark/util";
 import { configToTables } from "../configToTables";
 
-export type SyncToZustandOptions<config extends StoreConfig, extraTables extends Tables> = Omit<
-  SyncOptions,
-  "address" | "config"
-> & {
+export type SyncToZustandOptions<config extends StoreConfig, extraTables extends Tables> = SyncOptions & {
   // require address for now to keep the data model + retrieval simpler
   address: Address;
   config: config;

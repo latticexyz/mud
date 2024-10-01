@@ -1,21 +1,22 @@
 import { Client, Transport, Chain, Account, Hex, BaseError } from "viem";
 import { writeContract } from "@latticexyz/common";
-import { Library, Module, WorldDeploy, worldAbi } from "./common";
+import { Module, WorldDeploy, worldAbi } from "./common";
 import { debug } from "./debug";
 import { isDefined } from "@latticexyz/common/utils";
 import pRetry from "p-retry";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
+import { LibraryMap } from "./getLibraryMap";
 
 export async function ensureModules({
   client,
   deployerAddress,
-  libraries,
+  libraryMap,
   worldDeploy,
   modules,
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
   readonly deployerAddress: Hex;
-  readonly libraries: readonly Library[];
+  readonly libraryMap: LibraryMap;
   readonly worldDeploy: WorldDeploy;
   readonly modules: readonly Module[];
 }): Promise<readonly Hex[]> {
@@ -25,7 +26,7 @@ export async function ensureModules({
     client,
     deployerAddress,
     contracts: modules.map((mod) => ({
-      bytecode: mod.prepareDeploy(deployerAddress, libraries).bytecode,
+      bytecode: mod.prepareDeploy(deployerAddress, libraryMap).bytecode,
       deployedBytecodeSize: mod.deployedBytecodeSize,
       debugLabel: `${mod.name} module`,
     })),
@@ -40,7 +41,7 @@ export async function ensureModules({
             try {
               // append module's ABI so that we can decode any custom errors
               const abi = [...worldAbi, ...mod.abi];
-              const moduleAddress = mod.prepareDeploy(deployerAddress, libraries).address;
+              const moduleAddress = mod.prepareDeploy(deployerAddress, libraryMap).address;
               // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
               const params = mod.installAsRoot
                 ? ({ functionName: "installRootModule", args: [moduleAddress, mod.installData] } as const)

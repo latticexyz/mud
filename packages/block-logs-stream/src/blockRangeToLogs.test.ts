@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { blockRangeToLogs } from "./blockRangeToLogs";
 import { Subject, lastValueFrom, map, toArray } from "rxjs";
-import { EIP1193RequestFn, RpcLog, Transport, createPublicClient, createTransport } from "viem";
+import { EIP1193RequestFn, RpcLog, Transport, createClient, createTransport } from "viem";
 import { wait } from "@latticexyz/common/utils";
 
 vi.useFakeTimers();
@@ -14,9 +14,10 @@ const mockTransport: Transport = () =>
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     request: mockedTransportRequest as any,
     type: "mock",
+    retryCount: 0,
   });
 
-const publicClient = createPublicClient({
+const publicClient = createClient({
   transport: mockTransport,
 });
 

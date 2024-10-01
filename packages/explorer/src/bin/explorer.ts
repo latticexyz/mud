@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 import { watchFile } from "fs";
-import { readFile } from "fs/promises";
+import { readFile, rm } from "fs/promises";
 import path from "path";
 import process from "process";
 import { fileURLToPath } from "url";
+import { anvil } from "viem/chains";
 import yargs from "yargs";
 import { ChildProcess, spawn } from "child_process";
-import { chains } from "../common";
+import { validateChainId } from "../common";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -57,23 +58,24 @@ const argv = yargs(process.argv.slice(2))
     },
   })
   .check((argv) => {
-    if (!chains[Number(argv.chainId)]) {
-      throw new Error(`Invalid chain ID. Supported chains are: ${Object.keys(chains).join(", ")}.`);
-    }
+    validateChainId(Number(argv.chainId));
     return true;
   })
   .parseSync();
 
 const { port, hostname, chainId, indexerDatabase, worldsFile, dev } = argv;
+const indexerDatabasePath = path.join(packageRoot, indexerDatabase);
+
 let worldAddress = argv.worldAddress;
 let explorerProcess: ChildProcess;
+let indexerProcess: ChildProcess;
 
 async function startExplorer() {
   const env = {
     ...process.env,
-    NEXT_PUBLIC_CHAIN_ID: chainId.toString(),
+    CHAIN_ID: chainId.toString(),
     WORLD_ADDRESS: worldAddress?.toString(),
-    INDEXER_DATABASE: path.join(process.cwd(), indexerDatabase),
+    INDEXER_DATABASE: indexerDatabasePath,
   };
 
   if (dev) {
@@ -99,6 +101,29 @@ async function startExplorer() {
   }
 }
 
+async function startStoreIndexer() {
+  if (chainId !== anvil.id) {
+    console.log("Skipping SQLite indexer for non-anvil chain ID", chainId);
+    return;
+  }
+
+  await rm(indexerDatabasePath, { recursive: true, force: true });
+
+  console.log("Running SQLite indexer for anvil...");
+  indexerProcess = spawn("sh", ["node_modules/.bin/sqlite-indexer"], {
+    cwd: packageRoot,
+    stdio: "inherit",
+    env: {
+      DEBUG: "mud:*",
+      RPC_HTTP_URL: "http://127.0.0.1:8545",
+      FOLLOW_BLOCK_TAG: "latest",
+      SQLITE_FILENAME: indexerDatabase,
+      STORE_ADDRESS: worldAddress,
+      ...process.env,
+    },
+  });
+}
+
 async function readWorldsJson() {
   try {
     const data = await readFile(worldsFile, "utf8");
@@ -119,9 +144,10 @@ async function readWorldsJson() {
 }
 
 async function restartExplorer() {
-  if (explorerProcess) {
-    explorerProcess.kill();
-  }
+  indexerProcess?.kill();
+  explorerProcess?.kill();
+
+  await startStoreIndexer();
   await startExplorer();
 }
 
@@ -141,11 +167,9 @@ function watchWorldsJson() {
   });
 }
 
-process.on("SIGINT", () => {
-  if (explorerProcess) {
-    explorerProcess.kill();
-  }
-  process.exit();
+process.on("exit", () => {
+  indexerProcess?.kill();
+  explorerProcess?.kill();
 });
 
 async function main() {
@@ -164,6 +188,7 @@ async function main() {
     watchWorldsJson();
   }
 
+  await startStoreIndexer();
   await startExplorer();
 }
 

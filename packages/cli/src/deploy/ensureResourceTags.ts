@@ -1,5 +1,5 @@
 import { Hex, Client, Transport, Chain, Account, stringToHex, BaseError } from "viem";
-import { Library, WorldDeploy } from "./common";
+import { WorldDeploy } from "./common";
 import { debug } from "./debug";
 import { hexToResource, writeContract } from "@latticexyz/common";
 import { identity, isDefined } from "@latticexyz/common/utils";
@@ -11,6 +11,7 @@ import metadataModule from "@latticexyz/world-module-metadata/out/MetadataModule
 import { getContractArtifact } from "../utils/getContractArtifact";
 import { createPrepareDeploy } from "./createPrepareDeploy";
 import { waitForTransactions } from "./waitForTransactions";
+import { LibraryMap } from "./getLibraryMap";
 
 const metadataModuleArtifact = getContractArtifact(metadataModule);
 
@@ -23,14 +24,14 @@ export type ResourceTag<value> = {
 export async function ensureResourceTags<const value>({
   client,
   deployerAddress,
-  libraries,
+  libraryMap,
   worldDeploy,
   tags,
   valueToHex = identity,
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
   readonly deployerAddress: Hex;
-  readonly libraries: readonly Library[];
+  readonly libraryMap: LibraryMap;
   readonly worldDeploy: WorldDeploy;
   readonly tags: readonly ResourceTag<value>[];
 } & (value extends Hex
@@ -59,7 +60,7 @@ export async function ensureResourceTags<const value>({
     client,
     deployerAddress,
     worldDeploy,
-    libraries,
+    libraryMap,
     modules: [
       {
         optional: true,

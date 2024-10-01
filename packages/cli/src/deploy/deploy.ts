@@ -12,7 +12,6 @@ import { debug } from "./debug";
 import { resourceToHex, resourceToLabel } from "@latticexyz/common";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";
-import { ensureWorldFactory } from "./ensureWorldFactory";
 import { Table } from "@latticexyz/config";
 import { ensureResourceTags } from "./ensureResourceTags";
 import { waitForTransactions } from "./waitForTransactions";
@@ -20,6 +19,7 @@ import { ContractArtifact } from "@latticexyz/world/node";
 import { World } from "@latticexyz/world";
 import { deployCustomWorld } from "./deployCustomWorld";
 import { uniqueBy } from "@latticexyz/common/utils";
+import { getLibraryMap } from "./getLibraryMap";
 
 type DeployOptions = {
   config: World;
@@ -61,31 +61,6 @@ export async function deploy({
 }: DeployOptions): Promise<WorldDeploy> {
   const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
 
-  await ensureWorldFactory(client, deployerAddress, config.deploy.upgradeableWorldImplementation);
-
-  // deploy all dependent contracts, because system registration, module install, etc. all expect these contracts to be callable.
-  await ensureContractsDeployed({
-    client,
-    deployerAddress,
-    contracts: [
-      ...libraries.map((library) => ({
-        bytecode: library.prepareDeploy(deployerAddress, libraries).bytecode,
-        deployedBytecodeSize: library.deployedBytecodeSize,
-        debugLabel: `${library.path}:${library.name} library`,
-      })),
-      ...systems.map((system) => ({
-        bytecode: system.prepareDeploy(deployerAddress, libraries).bytecode,
-        deployedBytecodeSize: system.deployedBytecodeSize,
-        debugLabel: `${resourceToLabel(system)} system`,
-      })),
-      ...modules.map((mod) => ({
-        bytecode: mod.prepareDeploy(deployerAddress, libraries).bytecode,
-        deployedBytecodeSize: mod.deployedBytecodeSize,
-        debugLabel: `${mod.name} module`,
-      })),
-    ],
-  });
-
   const worldDeploy = existingWorldAddress
     ? await getWorldDeploy(client, existingWorldAddress)
     : config.deploy.customWorld
@@ -109,6 +84,29 @@ export async function deploy({
     throw new Error(`Unsupported World version: ${worldDeploy.worldVersion}`);
   }
 
+  const libraryMap = getLibraryMap(libraries);
+  await ensureContractsDeployed({
+    client,
+    deployerAddress,
+    contracts: [
+      ...libraries.map((library) => ({
+        bytecode: library.prepareDeploy(deployerAddress, libraryMap).bytecode,
+        deployedBytecodeSize: library.deployedBytecodeSize,
+        debugLabel: `${library.path}:${library.name} library`,
+      })),
+      ...systems.map((system) => ({
+        bytecode: system.prepareDeploy(deployerAddress, libraryMap).bytecode,
+        deployedBytecodeSize: system.deployedBytecodeSize,
+        debugLabel: `${resourceToLabel(system)} system`,
+      })),
+      ...modules.map((mod) => ({
+        bytecode: mod.prepareDeploy(deployerAddress, libraryMap).bytecode,
+        deployedBytecodeSize: mod.deployedBytecodeSize,
+        debugLabel: `${mod.name} module`,
+      })),
+    ],
+  });
+
   const namespaceTxs = await ensureNamespaceOwner({
     client,
     worldDeploy,
@@ -126,7 +124,7 @@ export async function deploy({
   const systemTxs = await ensureSystems({
     client,
     deployerAddress,
-    libraries,
+    libraryMap,
     worldDeploy,
     systems,
   });
@@ -146,7 +144,7 @@ export async function deploy({
   const moduleTxs = await ensureModules({
     client,
     deployerAddress,
-    libraries,
+    libraryMap,
     worldDeploy,
     modules,
   });
@@ -178,7 +176,7 @@ export async function deploy({
   const tagTxs = await ensureResourceTags({
     client,
     deployerAddress,
-    libraries,
+    libraryMap,
     worldDeploy,
     tags: [...namespaceTags, ...tableTags, ...systemTags],
     valueToHex: stringToHex,

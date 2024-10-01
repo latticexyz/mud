@@ -3,17 +3,17 @@
 import { Loader } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useWorldUrl } from "../app/(explorer)/hooks/useWorldUrl";
+import { useWorldAbiQuery } from "../app/(explorer)/queries/useWorldAbiQuery";
 import { LatestBlock } from "../components/LatestBlock";
 import { Separator } from "../components/ui/Separator";
-import { useWorldUrl } from "../hooks/useWorldUrl";
-import { cn } from "../lib/utils";
-import { useAbiQuery } from "../queries/useAbiQuery";
+import { cn } from "../utils";
 import { ConnectButton } from "./ConnectButton";
 
 export function Navigation() {
   const pathname = usePathname();
   const getLinkUrl = useWorldUrl();
-  const { data, isFetched } = useAbiQuery();
+  const { data, isFetched } = useWorldAbiQuery();
 
   return (
     <div className="mb-8">

@@ -8,7 +8,7 @@ export type Module = {
    * The name of the module
    * @deprecated
    */
-  readonly name: string;
+  readonly name?: string;
   /** Should this module be installed as a root module? */
   readonly root: boolean;
   /** Arguments to be passed to the module's install method */

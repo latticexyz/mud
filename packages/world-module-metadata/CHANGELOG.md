@@ -1,5 +1,65 @@
 # @latticexyz/world-module-metadata
 
+## 2.2.10
+
+### Patch Changes
+
+- Updated dependencies [9d7fc85]
+  - @latticexyz/world@2.2.10
+  - @latticexyz/schema-type@2.2.10
+  - @latticexyz/store@2.2.10
+
+## 2.2.9
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.9
+- @latticexyz/store@2.2.9
+- @latticexyz/world@2.2.9
+
+## 2.2.8
+
+### Patch Changes
+
+- @latticexyz/store@2.2.8
+- @latticexyz/world@2.2.8
+- @latticexyz/schema-type@2.2.8
+
+## 2.2.7
+
+### Patch Changes
+
+- Updated dependencies [a08ba5e]
+  - @latticexyz/store@2.2.7
+  - @latticexyz/world@2.2.7
+  - @latticexyz/schema-type@2.2.7
+
+## 2.2.6
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.6
+- @latticexyz/store@2.2.6
+- @latticexyz/world@2.2.6
+
+## 2.2.5
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.5
+- @latticexyz/store@2.2.5
+- @latticexyz/world@2.2.5
+
+## 2.2.4
+
+### Patch Changes
+
+- Updated dependencies [50010fb]
+- Updated dependencies [1f24978]
+  - @latticexyz/schema-type@2.2.4
+  - @latticexyz/store@2.2.4
+  - @latticexyz/world@2.2.4
+
 ## 2.2.3
 
 ### Patch Changes

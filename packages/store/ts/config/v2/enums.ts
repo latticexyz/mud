@@ -38,7 +38,7 @@ export function resolveEnums<enums extends EnumsInput>(enums: enums): resolveEnu
 
 export type mapEnums<enums> = {
   readonly [key in keyof enums]: {
-    readonly [element in keyof enums[key] as enums[key][element] & string]: parseNumber<element>;
+    readonly [element in keyof enums[key] & `${number}` as enums[key][element] & string]: parseNumber<element>;
   };
 };
 

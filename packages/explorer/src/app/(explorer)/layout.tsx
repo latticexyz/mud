@@ -3,7 +3,6 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
-import { Providers } from "./Providers";
 import "./globals.css";
 
 const inter = Inter({
@@ -30,19 +29,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${jetbrains.variable} dark`}>
-        <Providers>
-          <Theme>
-            <div
-              className="container"
-              style={{
-                fontFamily: "var(--font-jetbrains-mono)",
-              }}
-            >
-              {children}
-            </div>
-            <Toaster richColors />
-          </Theme>
-        </Providers>
+        <Theme>
+          <div
+            className="container"
+            style={{
+              fontFamily: "var(--font-jetbrains-mono)",
+            }}
+          >
+            {children}
+          </div>
+          <Toaster richColors closeButton duration={10000} />
+        </Theme>
       </body>
     </html>
   );

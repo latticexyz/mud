@@ -1,5 +1,112 @@
 # @latticexyz/dev-tools
 
+## 2.2.10
+
+### Patch Changes
+
+- Updated dependencies [9d7fc85]
+  - @latticexyz/world@2.2.10
+  - @latticexyz/store-sync@2.2.10
+  - @latticexyz/common@2.2.10
+  - @latticexyz/react@2.2.10
+  - @latticexyz/recs@2.2.10
+  - @latticexyz/schema-type@2.2.10
+  - @latticexyz/store@2.2.10
+  - @latticexyz/utils@2.2.10
+
+## 2.2.9
+
+### Patch Changes
+
+- @latticexyz/common@2.2.9
+- @latticexyz/react@2.2.9
+- @latticexyz/recs@2.2.9
+- @latticexyz/schema-type@2.2.9
+- @latticexyz/store@2.2.9
+- @latticexyz/store-sync@2.2.9
+- @latticexyz/utils@2.2.9
+- @latticexyz/world@2.2.9
+
+## 2.2.8
+
+### Patch Changes
+
+- Updated dependencies [7c7bdb2]
+  - @latticexyz/common@2.2.8
+  - @latticexyz/store-sync@2.2.8
+  - @latticexyz/store@2.2.8
+  - @latticexyz/world@2.2.8
+  - @latticexyz/react@2.2.8
+  - @latticexyz/recs@2.2.8
+  - @latticexyz/schema-type@2.2.8
+  - @latticexyz/utils@2.2.8
+
+## 2.2.7
+
+### Patch Changes
+
+- Updated dependencies [a08ba5e]
+  - @latticexyz/store@2.2.7
+  - @latticexyz/react@2.2.7
+  - @latticexyz/store-sync@2.2.7
+  - @latticexyz/world@2.2.7
+  - @latticexyz/common@2.2.7
+  - @latticexyz/recs@2.2.7
+  - @latticexyz/schema-type@2.2.7
+  - @latticexyz/utils@2.2.7
+
+## 2.2.6
+
+### Patch Changes
+
+- Updated dependencies [8dc5889]
+  - @latticexyz/store-sync@2.2.6
+  - @latticexyz/common@2.2.6
+  - @latticexyz/react@2.2.6
+  - @latticexyz/recs@2.2.6
+  - @latticexyz/schema-type@2.2.6
+  - @latticexyz/store@2.2.6
+  - @latticexyz/utils@2.2.6
+  - @latticexyz/world@2.2.6
+
+## 2.2.5
+
+### Patch Changes
+
+- @latticexyz/common@2.2.5
+- @latticexyz/react@2.2.5
+- @latticexyz/recs@2.2.5
+- @latticexyz/schema-type@2.2.5
+- @latticexyz/store@2.2.5
+- @latticexyz/store-sync@2.2.5
+- @latticexyz/utils@2.2.5
+- @latticexyz/world@2.2.5
+
+## 2.2.4
+
+### Patch Changes
+
+- 50010fb: Bumped viem, wagmi, and abitype packages to their latest release.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.6 wagmi@2.12.11 @wagmi/core@2.13.5 abitype@1.0.6
+  ```
+
+- Updated dependencies [2f935cf]
+- Updated dependencies [50010fb]
+- Updated dependencies [1f24978]
+- Updated dependencies [8b4110e]
+  - @latticexyz/common@2.2.4
+  - @latticexyz/schema-type@2.2.4
+  - @latticexyz/store-sync@2.2.4
+  - @latticexyz/store@2.2.4
+  - @latticexyz/world@2.2.4
+  - @latticexyz/recs@2.2.4
+  - @latticexyz/react@2.2.4
+  - @latticexyz/utils@2.2.4
+
 ## 2.2.3
 
 ### Patch Changes

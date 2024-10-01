@@ -1,10 +1,9 @@
-import { Store as StoreConfig } from "@latticexyz/store";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { SyncOptions, SyncResult } from "../common";
 import { sqliteStorage } from "./sqliteStorage";
 import { createStoreSync } from "../createStoreSync";
 
-export type SyncToSqliteOptions<config extends StoreConfig = StoreConfig> = SyncOptions<config> & {
+export type SyncToSqliteOptions = SyncOptions & {
   /**
    * [SQLite database object from Drizzle][0].
    *
@@ -25,16 +24,14 @@ export type SyncToSqliteResult = SyncResult & {
  * @param {SyncToSqliteOptions} options See `SyncToSqliteOptions`.
  * @returns A function to unsubscribe from the block stream, effectively stopping the indexer.
  */
-export async function syncToSqlite<config extends StoreConfig = StoreConfig>({
-  config,
+export async function syncToSqlite({
   database,
   publicClient,
   startSync = true,
   ...syncOptions
-}: SyncToSqliteOptions<config>): Promise<SyncToSqliteResult> {
+}: SyncToSqliteOptions): Promise<SyncToSqliteResult> {
   const storeSync = await createStoreSync({
-    storageAdapter: await sqliteStorage({ database, publicClient, config }),
-    config,
+    storageAdapter: await sqliteStorage({ database, publicClient }),
     publicClient,
     ...syncOptions,
   });

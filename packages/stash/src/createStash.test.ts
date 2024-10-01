@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { attest } from "@arktype/attest";
-import { CreateStoreResult, createStash } from "./createStash";
+import { CreateStashResult, createStash } from "./createStash";
 import { defineStore, defineTable } from "@latticexyz/store/config/v2";
 import { Hex } from "viem";
 
@@ -60,7 +60,7 @@ describe("createStash", () => {
       value: { field1: "hello" },
     });
 
-    attest<CreateStoreResult<typeof config>>(stash);
+    attest<CreateStashResult<typeof config>>(stash);
     attest<{
       config: {
         namespace1: {

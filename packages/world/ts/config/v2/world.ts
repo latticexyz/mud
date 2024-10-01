@@ -74,6 +74,8 @@ export type resolveNamespaceMode<input> = "namespaces" extends keyof input
       >;
     };
 
+type resolveModules<input> = { [key in keyof input]: mergeIfUndefined<input[key], MODULE_DEFAULTS> };
+
 export type resolveWorld<input> = resolveNamespaceMode<input> &
   Omit<resolveStore<input>, "multipleNamespaces" | "namespace" | "namespaces" | "tables"> & {
     readonly tables: flattenNamespacedTables<resolveNamespaceMode<input>>;
@@ -88,7 +90,7 @@ export type resolveWorld<input> = resolveNamespaceMode<input> &
     readonly excludeSystems: "excludeSystems" extends keyof input
       ? input["excludeSystems"]
       : CONFIG_DEFAULTS["excludeSystems"];
-    readonly modules: "modules" extends keyof input ? input["modules"] : CONFIG_DEFAULTS["modules"];
+    readonly modules: "modules" extends keyof input ? resolveModules<input["modules"]> : CONFIG_DEFAULTS["modules"];
     readonly codegen: show<resolveCodegen<"codegen" extends keyof input ? input["codegen"] : {}>>;
     readonly deploy: show<resolveDeploy<"deploy" extends keyof input ? input["deploy"] : {}>>;
   };
