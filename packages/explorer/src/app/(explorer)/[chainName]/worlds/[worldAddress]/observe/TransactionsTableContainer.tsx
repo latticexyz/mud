@@ -31,7 +31,7 @@ export type WatchedTransaction = {
   status: "pending" | "success" | "reverted";
   write?: Write;
   logs?: Log[];
-  error?: BaseError; // TODO: correct type ?
+  error?: BaseError;
 };
 
 export function TransactionsTableContainer() {
@@ -89,6 +89,7 @@ export function TransactionsTableContainer() {
       functionArgs = functionData.args;
     } catch (error) {
       transactionError = error as BaseError;
+      functionName = transaction.input.length > 10 ? transaction.input.slice(0, 10) : "unknown";
     }
 
     if (receipt.status === "reverted" && functionName) {
@@ -115,12 +116,12 @@ export function TransactionsTableContainer() {
       logs: receipt.logs,
     });
 
-    setTransactions((transactions) => [
+    setTransactions((prevTransactions) => [
       {
         hash,
         transaction,
         functionData: {
-          functionName: functionName || "unknown",
+          functionName: functionName,
           args: functionArgs || [],
         },
         receipt,
@@ -129,7 +130,7 @@ export function TransactionsTableContainer() {
         status: receipt.status,
         error: transactionError,
       },
-      ...transactions,
+      ...prevTransactions,
     ]);
   }
 

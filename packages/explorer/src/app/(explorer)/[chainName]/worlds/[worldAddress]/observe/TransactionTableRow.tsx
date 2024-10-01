@@ -34,7 +34,7 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
           <TableCell colSpan={columns.length}>
             {data && (
               <>
-                <div className="md-grid-cols-5 grid grid-cols-2 gap-5 sm:grid-cols-4 lg:grid-cols-6">
+                <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
                   <TranctionTableRowDataCell label="Confirmations">
                     <Confirmations hash={data.transaction?.hash} />
                   </TranctionTableRowDataCell>
