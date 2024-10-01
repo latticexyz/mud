@@ -11,6 +11,7 @@ import { AccountModalErrorBoundary } from "./AccountModalErrorBoundary";
 
 export function AccountModal() {
   const { status } = useAccount();
+  console.log("status", status);
   const { accountModalOpen, toggleAccountModal } = useAccountModal();
   const { openConnectModal, connectModalOpen } = useConnectModal();
   const shown = accountModalOpen && status === "connected";

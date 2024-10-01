@@ -121,6 +121,7 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions) {
       },
 
       async connect(params) {
+        console.log("connect");
         // TODO: allow any chain?
         if (params && params.chainId !== chainId) {
           throw new Error(`Can't connect to chain ${params.chainId}. Passkey connector is bound to chain ${chainId}.`);
@@ -154,13 +155,20 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions) {
         const id = cache.getState().activeCredential;
         if (!id) return [];
 
-        const address = await getCredentialAddress(client, id);
-        return [address];
+        try {
+          const address = await getCredentialAddress(client, id);
+          return [address];
+        } catch (error) {
+          console.log("could not get address for credential ID", id);
+        }
+
+        return [];
       },
       async getChainId() {
         return chainId;
       },
       async isAuthorized() {
+        console.log("isAuthorized");
         // const accounts = await this.getAccounts();
         // return accounts.length > 0;
         return true;
@@ -202,7 +210,8 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions) {
         const account = await getAccount(client);
         // TODO: should this still return a provider but without the account-specific methods implemented?
         console.log("got account for provider", account);
-        if (!account) throw new Error("not connected");
+        // if (!account) throw new Error("not connected");
+        if (!account) return createTransport(client.transport);
 
         const bundlerClient = createClient({
           chain,
@@ -254,7 +263,7 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions) {
             }
           }
           console.log("requested", req.method, req.params);
-          return smartAccountClient.request(req);
+          return client.transport.request(req);
         };
 
         return custom({ request })({ retryCount: 0 });
