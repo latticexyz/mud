@@ -1,6 +1,6 @@
 "use client";
 
-import { Address, Hash } from "viem";
+import { Address } from "viem";
 import { createStore } from "zustand/vanilla";
 import { relayChannelName } from "./common";
 import { debug } from "./debug";
@@ -11,7 +11,6 @@ export type Write = {
   address: Address;
   functionSignature: string;
   args: unknown[];
-  hash?: Hash;
   time: number;
   events: Message<Exclude<MessageType, "ping">>[];
 };
@@ -27,22 +26,18 @@ export const store = createStore<State>(() => ({
 }));
 
 debug("listening for relayed messages", relayChannelName);
-
 const channel = new BroadcastChannel(relayChannelName);
 channel.addEventListener("message", ({ data }: MessageEvent<Message>) => {
   if (data.type === "ping") return;
   store.setState((state) => {
     const write = data.type === "write" ? ({ ...data, events: [] } satisfies Write) : state.writes[data.writeId];
-    const newWriteState = {
-      ...write,
-      hash: data.type === "waitForTransactionReceipt" ? data.hash : write.hash,
-      events: [...write.events, data],
-    };
-
     return {
       writes: {
         ...state.writes,
-        [data.writeId]: newWriteState,
+        [data.writeId]: {
+          ...write,
+          events: [...write.events, data],
+        },
       },
     };
   });
