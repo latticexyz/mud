@@ -44,30 +44,33 @@ export function TransactionsTableContainer() {
   const mergedTransactions = useMemo((): WatchedTransaction[] => {
     const mergedMap = new Map<Hex | undefined, WatchedTransaction>();
 
-    for (const transaction of transactions) {
-      mergedMap.set(transaction.hash, { ...transaction });
+    // Process observerWrites first
+    for (const write of observerWrites) {
+      const parsedAbiItem = parseAbiItem(`function ${write.functionSignature}`) as AbiFunction;
+      const functionData = {
+        functionName: parsedAbiItem.name,
+        args: write.args,
+      };
+
+      mergedMap.set(write.hash, {
+        status: "pending",
+        functionData,
+        write,
+      });
     }
 
-    for (const write of observerWrites) {
-      const existing = mergedMap.get(write.hash);
+    // Then process transactions, potentially overwriting write transactions
+    for (const transaction of transactions) {
+      const existing = mergedMap.get(transaction.hash);
       if (existing) {
-        mergedMap.set(write.hash, { ...existing, write });
+        mergedMap.set(transaction.hash, { ...transaction, write: existing.write });
       } else {
-        const parsedAbiItem = parseAbiItem(`function ${write.functionSignature}`) as AbiFunction;
-        const functionData = {
-          functionName: parsedAbiItem.name,
-          args: write.args,
-        };
-
-        mergedMap.set(write.hash, {
-          status: "pending",
-          functionData,
-          write,
-        });
+        mergedMap.set(transaction.hash, { ...transaction });
       }
     }
 
-    return Array.from(mergedMap.values());
+    // Convert map to array and reverse to have newest first
+    return Array.from(mergedMap.values()).reverse();
   }, [transactions, observerWrites]);
 
   async function handleTransaction(hash: Hex, timestamp: bigint) {
@@ -109,7 +112,7 @@ export function TransactionsTableContainer() {
       }
     },
     chainId,
-    pollingInterval: 1000,
+    pollingInterval: 500,
   });
 
   return <TransactionsTableView data={mergedTransactions} />;

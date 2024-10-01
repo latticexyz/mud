@@ -1,9 +1,7 @@
-import { ExternalLinkIcon } from "lucide-react";
 import { Row, flexRender } from "@tanstack/react-table";
 import { Separator } from "../../../../../../components/ui/Separator";
+import { Skeleton } from "../../../../../../components/ui/Skeleton";
 import { TableCell, TableRow } from "../../../../../../components/ui/Table";
-import { TruncatedHex } from "../../../../../../components/ui/TruncatedHex";
-import { BlockExplorerLink } from "./BlockExplorerLink";
 import { Confirmations } from "./Confirmations";
 import { WatchedTransaction } from "./TransactionsTableContainer";
 import { columns } from "./TransactionsTableView";
@@ -11,8 +9,8 @@ import { columns } from "./TransactionsTableView";
 function TranctionTableRowDataCell({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <h3 className="pb-2 text-xs font-bold uppercase text-muted-foreground">{label}</h3>
-      <p className="text-xs uppercase">{children ?? "Not found"}</p>
+      <h3 className="text-2xs font-bold uppercase text-muted-foreground">{label}</h3>
+      <p className="pt-1 text-xs uppercase">{children ?? <Skeleton className="h-4 w-[100px]" />}</p>
     </div>
   );
 }
@@ -34,60 +32,48 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
           <TableCell colSpan={columns.length}>
             {data && (
               <>
-                <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-6">
-                  <TranctionTableRowDataCell label="Block number">
-                    {data?.receipt?.blockNumber.toString()}
-                  </TranctionTableRowDataCell>
-                  <TranctionTableRowDataCell label="Tx hash">
-                    {data?.transaction?.hash && <TruncatedHex hex={data.transaction.hash} />}
-                  </TranctionTableRowDataCell>
-                  <TranctionTableRowDataCell label="From">
-                    {data?.transaction?.from && <TruncatedHex hex={data.transaction.from} />}
-                  </TranctionTableRowDataCell>
+                <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-6">
                   <TranctionTableRowDataCell label="Confirmations">
                     <Confirmations hash={data.transaction?.hash} />
                   </TranctionTableRowDataCell>
                   <TranctionTableRowDataCell label="Tx value">
-                    {data.transaction?.value?.toString()}
-                  </TranctionTableRowDataCell>
-                  <TranctionTableRowDataCell label="Explorer URL">
-                    <BlockExplorerLink hash={data.transaction?.hash}>
-                      <ExternalLinkIcon className="mr-2 h-3 w-3" /> Link
-                    </BlockExplorerLink>
+                    {data.transaction?.value !== undefined ? `${data.transaction.value.toString()} ETH` : null}
                   </TranctionTableRowDataCell>
                 </div>
 
-                <Separator className="mt-6" />
+                <Separator className="my-5" />
 
-                <div className="mt-6 pb-2">
-                  <h3 className="pb-2 text-xs font-bold uppercase text-muted-foreground">Inputs:</h3>
-
-                  <div className="mt-2 border border-white/20 p-2">
-                    {data.functionData?.args?.map((arg, idx) => (
-                      <div key={idx} className="flex">
-                        <span className="flex-shrink-0 text-xs text-muted-foreground">arg {idx + 1}:</span>
-                        <span className="ml-2 text-xs">{arg as never}</span>
-                      </div>
-                    ))}
-                  </div>
+                <div className="flex items-start gap-x-4">
+                  <h3 className="w-[45px] text-2xs font-bold uppercase">Inputs</h3>
+                  {data.functionData?.args ? (
+                    <div className="flex-grow border border-white/20 p-2">
+                      {data.functionData?.args?.map((arg, idx) => (
+                        <div key={idx} className="flex">
+                          <span className="flex-shrink-0 text-xs text-muted-foreground">arg {idx + 1}:</span>
+                          <span className="ml-2 text-xs">{String(arg)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-2xs uppercase text-muted-foreground">No inputs</p>
+                  )}
                 </div>
 
-                <Separator className="mt-6" />
+                <Separator className="my-5" />
 
-                <div className="mt-6">
-                  <h3 className="pb-2 text-xs font-bold uppercase text-muted-foreground">Logs:</h3>
-                  <div className="mt-2 break-all border border-white/20 p-2">
-                    {Array.isArray(logs) && logs.length > 0 && (
+                <div className="flex items-start gap-x-4">
+                  <h3 className="inline-block w-[45px] pb-2 text-2xs font-bold uppercase">Logs</h3>
+                  {Array.isArray(logs) && logs.length > 0 ? (
+                    <div className="flex-grow break-all border border-white/20 p-2 pb-3">
                       <ul>
                         {logs.map((log, idx) => {
                           const eventName = "eventName" in log ? log.eventName : null;
                           const args = "args" in log ? (log.args as Record<string, unknown>) : null;
-
                           return (
                             <li key={idx}>
                               {Boolean(eventName) && <span className="text-xs">{eventName?.toString()}:</span>}
                               {args && (
-                                <ul className="list-inside pt-1">
+                                <ul className="list-inside">
                                   {Object.entries(args).map(([key, value]) => (
                                     <li key={key} className="mt-1 flex">
                                       <span className="flex-shrink-0 text-xs text-muted-foreground">{key}: </span>
@@ -101,8 +87,10 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                           );
                         })}
                       </ul>
-                    )}
-                  </div>
+                    </div>
+                  ) : (
+                    <p className="text-2xs uppercase text-muted-foreground">No logs</p>
+                  )}
                 </div>
               </>
             )}

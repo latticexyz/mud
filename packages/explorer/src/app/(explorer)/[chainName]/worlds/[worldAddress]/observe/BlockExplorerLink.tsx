@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "lucide-react";
 import { Hex } from "viem";
 import { useChain } from "../../../../hooks/useChain";
 import { explorerForChainId } from "../../../../utils/explorerForChainId";
@@ -6,10 +7,12 @@ export function BlockExplorerLink({ hash, children }: { hash?: Hex; children: Re
   const { id: chainId } = useChain();
   const explorerUrl = explorerForChainId({ hash, chainId });
 
-  // TODO: do not show link if url not available
+  if (!explorerUrl) return children;
   return (
     <a href={`${explorerUrl}/tx/${hash}`} target="_blank" rel="noopener noreferrer" className="flex hover:underline">
-      {children}
+      <div className="flex items-center">
+        <ExternalLinkIcon className="mr-2 h-3 w-3" /> {children}
+      </div>
     </a>
   );
 }

@@ -1,5 +1,6 @@
 import { Hex } from "viem";
 import { useTransactionConfirmations } from "wagmi";
+import { Skeleton } from "../../../../../../components/ui/Skeleton";
 import { useChain } from "../../../../hooks/useChain";
 
 export function Confirmations({ hash }: { hash?: Hex }) {
@@ -12,7 +13,7 @@ export function Confirmations({ hash }: { hash?: Hex }) {
     },
   });
 
-  if (!confirmations) return null;
+  if (!confirmations) return <Skeleton className="h-4 w-[50px]" />;
   return (
     <span className="flex items-center text-xs font-extrabold text-green-600">
       <span
