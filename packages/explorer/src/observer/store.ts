@@ -1,6 +1,6 @@
 "use client";
 
-import { Address } from "viem";
+import { Address, Hex } from "viem";
 import { createStore } from "zustand/vanilla";
 import { relayChannelName } from "./common";
 import { debug } from "./debug";
@@ -8,6 +8,7 @@ import { Message, MessageType } from "./messages";
 
 export type Write = {
   writeId: string;
+  hash?: Hex;
   address: Address;
   functionSignature: string;
   args: unknown[];
