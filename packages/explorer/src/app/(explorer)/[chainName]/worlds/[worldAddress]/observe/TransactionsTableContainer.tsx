@@ -70,8 +70,6 @@ export function TransactionsTableContainer() {
     return Array.from(mergedMap.values());
   }, [transactions, observerWrites]);
 
-  console.log("mergedTransactions:", mergedTransactions);
-
   async function handleTransaction(hash: Hex, timestamp: bigint) {
     if (!abi) return;
 

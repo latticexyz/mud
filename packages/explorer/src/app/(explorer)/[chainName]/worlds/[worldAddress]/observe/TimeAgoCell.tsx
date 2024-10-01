@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Badge } from "../../../../../../components/ui/Badge";
 import { timeAgo } from "../../../../utils/timeAgo";
 
 export function TimeAgoCell({ timestamp }: { timestamp: bigint }) {
@@ -13,5 +12,5 @@ export function TimeAgoCell({ timestamp }: { timestamp: bigint }) {
     return () => clearInterval(timer);
   }, [timestamp]);
 
-  return <Badge variant="outline">{ago}</Badge>;
+  return <span title={new Date(Number(timestamp) * 1000).toISOString()}>{ago}</span>;
 }

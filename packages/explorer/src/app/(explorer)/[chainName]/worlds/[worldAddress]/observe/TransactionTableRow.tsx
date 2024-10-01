@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "lucide-react";
 import { Row, flexRender } from "@tanstack/react-table";
 import { Separator } from "../../../../../../components/ui/Separator";
 import { TableCell, TableRow } from "../../../../../../components/ui/Table";
@@ -50,7 +51,9 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                     {data.transaction?.value?.toString()}
                   </TranctionTableRowDataCell>
                   <TranctionTableRowDataCell label="Explorer URL">
-                    <BlockExplorerLink hash={data.transaction?.hash} />
+                    <BlockExplorerLink hash={data.transaction?.hash}>
+                      <ExternalLinkIcon className="mr-2 h-3 w-3" /> Link
+                    </BlockExplorerLink>
                   </TranctionTableRowDataCell>
                 </div>
 

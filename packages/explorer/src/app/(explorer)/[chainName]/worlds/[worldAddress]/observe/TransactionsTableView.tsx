@@ -1,3 +1,4 @@
+import { CheckCheckIcon, ExternalLinkIcon, XIcon } from "lucide-react";
 import React, { useState } from "react";
 import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -5,6 +6,7 @@ import { Badge } from "../../../../../../components/ui/Badge";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
 import { TruncatedHex } from "../../../../../../components/ui/TruncatedHex";
+import { BlockExplorerLink } from "./BlockExplorerLink";
 import { TimeAgoCell } from "./TimeAgoCell";
 import { TransactionTableRow } from "./TransactionTableRow";
 import { WatchedTransaction } from "./TransactionsTableContainer";
@@ -19,40 +21,46 @@ export const columns = [
       return <Badge variant="outline">#{blockNumber.toString()}</Badge>;
     },
   }),
-  columnHelper.accessor("hash", {
-    header: "tx hash:",
-    cell: (row) => {
-      const hash = row.getValue();
-      if (!hash) return <Skeleton className="h-4 w-full" />;
-      return <TruncatedHex hex={hash} />;
-    },
-  }),
-  columnHelper.accessor("functionData.functionName", {
-    header: "function:",
-    cell: (row) => <Badge variant="secondary">{row.getValue()}</Badge>,
-  }),
   columnHelper.accessor("transaction.from", {
-    header: "from:",
+    header: "from",
     cell: (row) => {
       const from = row.getValue();
       if (!from) return <Skeleton className="h-4 w-full" />;
       return <TruncatedHex hex={from} />;
     },
   }),
-  columnHelper.accessor("status", {
-    header: "status:",
+  columnHelper.accessor("functionData.functionName", {
+    header: "function",
     cell: (row) => {
-      const status = row.getValue();
-      if (status === "success") {
-        return <Badge variant="success">success</Badge>;
-      } else if (status === "reverted") {
-        return <Badge variant="destructive">reverted</Badge>;
-      }
-      return <Badge variant="outline">pending</Badge>;
+      const functionName = row.getValue();
+      const status = row.row.original.status;
+      return (
+        <div className="flex items-center">
+          <Badge variant="secondary">{functionName}</Badge>
+
+          {status === "pending" && <CheckCheckIcon className="ml-2 h-4 w-4 text-muted" />}
+          {status === "success" && <CheckCheckIcon className="ml-2 h-4 w-4 text-green-400" />}
+          {status === "reverted" && <XIcon className="ml-2 h-4 w-4 text-red-400" />}
+        </div>
+      );
+    },
+  }),
+  columnHelper.accessor("hash", {
+    header: "tx hash",
+    cell: (row) => {
+      const hash = row.getValue();
+      if (!hash) return <Skeleton className="h-4 w-full" />;
+      return (
+        <BlockExplorerLink hash={hash}>
+          <div className="flex items-center">
+            <ExternalLinkIcon className="mr-2 h-3 w-3" /> <TruncatedHex hex={hash} />
+          </div>
+        </BlockExplorerLink>
+      );
     },
   }),
   columnHelper.accessor("timestamp", {
-    header: "time:",
+    header: "time",
     cell: (row) => {
       const timestamp = row.getValue();
       if (!timestamp) return <Skeleton className="h-4 w-full" />;
