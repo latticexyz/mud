@@ -1,3 +1,4 @@
+import { formatEther } from "viem";
 import { Row, flexRender } from "@tanstack/react-table";
 import { Separator } from "../../../../../../components/ui/Separator";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
@@ -38,7 +39,7 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                     <Confirmations hash={data.transaction?.hash} />
                   </TranctionTableRowDataCell>
                   <TranctionTableRowDataCell label="Tx value">
-                    {data.transaction?.value !== undefined ? `${data.transaction.value.toString()} ETH` : null}
+                    {data.transaction?.value !== undefined ? `${formatEther(data.transaction.value)} ETH` : null}
                   </TranctionTableRowDataCell>
                   <TranctionTableRowDataCell label="Gas used">{receipt?.gasUsed.toString()}</TranctionTableRowDataCell>
                   <TranctionTableRowDataCell label="Gas price">
@@ -50,7 +51,7 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
 
                 <div className="flex items-start gap-x-4">
                   <h3 className="w-[45px] text-2xs font-bold uppercase">Inputs</h3>
-                  {data.functionData?.args ? (
+                  {Array.isArray(data.functionData?.args) && data.functionData?.args.length > 0 ? (
                     <div className="flex-grow border border-white/20 p-2">
                       {data.functionData?.args?.map((arg, idx) => (
                         <div key={idx} className="flex">
