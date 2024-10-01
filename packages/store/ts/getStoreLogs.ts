@@ -40,7 +40,7 @@ export type GetStoreLogsReturnType<
 export type GetStoreLogsErrorType = GetLogsErrorType;
 
 /**
- * Returns a list of store event logs matching the provided parameters.
+ * Returns an unordered list of store event logs matching the provided parameters.
  *
  * @param client - Client to use
  * @param parameters - {@link GetStoreLogsParameters}
