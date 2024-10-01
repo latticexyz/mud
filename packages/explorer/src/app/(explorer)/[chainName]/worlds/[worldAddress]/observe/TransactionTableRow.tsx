@@ -18,6 +18,7 @@ function TranctionTableRowDataCell({ label, children }: { label: string; childre
 export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
   const data = row?.original;
   const logs = data?.logs;
+  const receipt = data?.receipt;
 
   return (
     <>
@@ -32,12 +33,16 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
           <TableCell colSpan={columns.length}>
             {data && (
               <>
-                <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-6">
+                <div className="md-grid-cols-5 grid grid-cols-2 gap-5 sm:grid-cols-4 lg:grid-cols-6">
                   <TranctionTableRowDataCell label="Confirmations">
                     <Confirmations hash={data.transaction?.hash} />
                   </TranctionTableRowDataCell>
                   <TranctionTableRowDataCell label="Tx value">
                     {data.transaction?.value !== undefined ? `${data.transaction.value.toString()} ETH` : null}
+                  </TranctionTableRowDataCell>
+                  <TranctionTableRowDataCell label="Gas used">{receipt?.gasUsed.toString()}</TranctionTableRowDataCell>
+                  <TranctionTableRowDataCell label="Gas price">
+                    {receipt?.effectiveGasPrice.toString()}
                   </TranctionTableRowDataCell>
                 </div>
 
