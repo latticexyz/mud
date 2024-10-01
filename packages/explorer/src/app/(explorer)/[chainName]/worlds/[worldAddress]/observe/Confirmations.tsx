@@ -17,7 +17,7 @@ export function Confirmations({ hash }: { hash?: Hex }) {
   return (
     <span className="flex items-center text-xs font-extrabold text-green-600">
       <span
-        className="mr-2 inline-block h-[8px] w-[8px] animate-pulse rounded-full"
+        className="mr-2 inline-block h-2 w-2 animate-pulse rounded-full"
         style={{
           background: "rgb(64, 182, 107)",
         }}

@@ -82,8 +82,11 @@ export function TransactionsTableView({ data }: { data: WatchedTransaction[] }) 
           table.getRowModel().rows.map((row) => <TransactionTableRow key={row.id} row={row} />)
         ) : (
           <TableRow>
-            <TableCell colSpan={columns.length} className="h-24 text-center">
-              No transactions.
+            <TableCell colSpan={columns.length}>
+              <p className="flex items-center justify-center gap-3 font-mono uppercase text-muted-foreground">
+                <span className="inline-block h-1.5 w-1.5 animate-ping rounded-full bg-muted-foreground" /> Waiting for
+                transactions…
+              </p>
             </TableCell>
           </TableRow>
         )}
