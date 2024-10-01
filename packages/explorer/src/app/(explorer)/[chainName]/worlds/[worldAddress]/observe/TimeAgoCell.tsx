@@ -12,5 +12,9 @@ export function TimeAgoCell({ timestamp }: { timestamp: bigint }) {
     return () => clearInterval(timer);
   }, [timestamp]);
 
-  return <span title={new Date(Number(timestamp) * 1000).toISOString()}>{ago}</span>;
+  return (
+    <span className="text-white/60" title={new Date(Number(timestamp) * 1000).toISOString()}>
+      {ago}
+    </span>
+  );
 }
