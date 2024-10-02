@@ -2,4 +2,4 @@
 "@latticexyz/explorer": patch
 ---
 
-World Explorer now includes a "Transactions" tab for reviewing completed transactions. It provides detailed information about emitted events, logs, and additional transaction data.
+Observe tab is now populated by transactions flowing through the world, in addition to local transactions when using the `observer` transport wrapper.
