@@ -37,8 +37,6 @@ import { fromEventSource } from "./fromEventSource";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 
 const debug = parentDebug.extend("createStoreSync");
-// Pipe debug output to stdout instead of stderr
-debug.log = console.debug.bind(console);
 
 const defaultFilters: SyncFilter[] = internalTableIds.map((tableId) => ({ tableId }));
 
@@ -250,7 +248,7 @@ export async function createStoreSync({
 
   const storedBlock$ = storedIndexerLogs$.pipe(
     catchError((e) => {
-      debug("error streaming logs from indexer:", e);
+      debug("failed to stream logs from indexer:", e.message);
       debug("falling back to streaming logs from RPC");
       return storedRpcLogs$;
     }),
