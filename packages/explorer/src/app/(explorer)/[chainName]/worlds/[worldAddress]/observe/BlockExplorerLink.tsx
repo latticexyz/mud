@@ -9,8 +9,7 @@ export function BlockExplorerLink({ hash, children }: { hash?: Hex; children: Re
 
   if (!explorerUrl) return children;
   return (
-    <a href={`${explorerUrl}/tx/${hash}`} target="_blank" rel="noopener noreferrer" className="flex hover:underline">
-      <div className="flex items-center">
+    <a href={`${explorerUrl}/tx/${hash}`} target="_blank" rel="noopener noreferrer" className="flex items-center hover:underline">
         <ExternalLinkIcon className="mr-2 h-3 w-3" /> {children}
       </div>
     </a>
