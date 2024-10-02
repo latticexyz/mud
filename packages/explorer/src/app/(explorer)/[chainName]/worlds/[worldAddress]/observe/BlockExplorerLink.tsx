@@ -5,7 +5,7 @@ import { explorerForChainId } from "../../../../utils/explorerForChainId";
 
 export function BlockExplorerLink({ hash, children }: { hash?: Hex; children: React.ReactNode }) {
   const { id: chainId } = useChain();
-  const explorerUrl = explorerForChainId({ hash, chainId });
+  const url = blockExplorerTransactionUrl({ chainId, hash });
 
   if (!explorerUrl) return children;
   return (
