@@ -1,40 +1,52 @@
-import { CheckCheckIcon, XIcon } from "lucide-react";
+import { BoxIcon, CheckCheckIcon, ReceiptTextIcon, UserPenIcon, XIcon } from "lucide-react";
 import React, { useState } from "react";
-import { ExpandedState, getCoreRowModel, getExpandedRowModel, useReactTable } from "@tanstack/react-table";
+import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Badge } from "../../../../../../components/ui/Badge";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
-import { Table, TableBody, TableCell, TableRow } from "../../../../../../components/ui/Table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
 import { TruncatedHex } from "../../../../../../components/ui/TruncatedHex";
 import { BlockExplorerLink } from "./BlockExplorerLink";
-import { TimeAgoCell } from "./TimeAgoCell";
+import { TimeAgo } from "./TimeAgo";
 import { TransactionTableRow } from "./TransactionTableRow";
 import { WatchedTransaction } from "./TransactionsTableContainer";
 
 const columnHelper = createColumnHelper<WatchedTransaction>();
 export const columns = [
   columnHelper.accessor("transaction.blockNumber", {
+    header: "Block",
     cell: (row) => {
       const blockNumber = row.getValue();
       if (!blockNumber) return <Skeleton className="h-4 w-full" />;
-      return <Badge variant="outline">#{blockNumber.toString()}</Badge>;
+      return (
+        <div className="flex items-center gap-1">
+          <BoxIcon className="mr-1 h-3 w-3" />
+          {blockNumber.toString()}
+        </div>
+      );
     },
   }),
   columnHelper.accessor("transaction.from", {
+    header: "From",
     cell: (row) => {
       const from = row.getValue();
       if (!from) return <Skeleton className="h-4 w-full" />;
-      return <TruncatedHex hex={from} />;
+      return (
+        <div className="flex items-center gap-1">
+          <UserPenIcon className="mr-1 h-3 w-3" />
+          <TruncatedHex hex={from} />
+        </div>
+      );
     },
   }),
   columnHelper.accessor("functionData.functionName", {
+    header: "Function",
     cell: (row) => {
       const functionName = row.getValue();
       const status = row.row.original.status;
       return (
         <div className="flex items-center">
           <Badge variant="secondary">{functionName}</Badge>
-
           {status === "pending" && <CheckCheckIcon className="ml-2 h-4 w-4 text-white/50" />}
           {status === "success" && <CheckCheckIcon className="ml-2 h-4 w-4 text-green-400" />}
           {status === "reverted" && <XIcon className="ml-2 h-4 w-4 text-red-400" />}
@@ -43,21 +55,26 @@ export const columns = [
     },
   }),
   columnHelper.accessor("hash", {
+    header: "Tx hash",
     cell: (row) => {
       const hash = row.getValue();
       if (!hash) return <Skeleton className="h-4 w-full" />;
       return (
-        <BlockExplorerLink hash={hash}>
-          <TruncatedHex hex={hash} />
-        </BlockExplorerLink>
+        <div className="flex items-center gap-1">
+          <ReceiptTextIcon className="mr-1 h-3 w-3" />
+          <BlockExplorerLink hash={hash}>
+            <TruncatedHex hex={hash} />
+          </BlockExplorerLink>
+        </div>
       );
     },
   }),
   columnHelper.accessor("timestamp", {
+    header: "Time",
     cell: (row) => {
       const timestamp = row.getValue();
       if (!timestamp) return <Skeleton className="h-4 w-full" />;
-      return <TimeAgoCell timestamp={timestamp} />;
+      return <TimeAgo timestamp={timestamp} />;
     },
   }),
 ];
@@ -77,13 +94,26 @@ export function TransactionsTableView({ data }: { data: WatchedTransaction[] }) 
 
   return (
     <Table>
+      <TableHeader className="sticky top-0 bg-[var(--color-background)]">
+        {table.getHeaderGroups().map((headerGroup) => (
+          <TableRow key={headerGroup.id}>
+            {headerGroup.headers.map((header) => {
+              return (
+                <TableHead key={header.id} className="text-xs uppercase">
+                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                </TableHead>
+              );
+            })}
+          </TableRow>
+        ))}
+      </TableHeader>
       <TableBody>
         {table.getRowModel().rows?.length ? (
           table.getRowModel().rows.map((row) => <TransactionTableRow key={row.id} row={row} />)
         ) : (
           <TableRow>
             <TableCell colSpan={columns.length}>
-              <p className="flex items-center gap-3 font-mono text-xs font-bold uppercase text-muted-foreground">
+              <p className="flex items-center justify-center gap-3 py-4 font-mono text-xs font-bold uppercase text-muted-foreground">
                 <span className="inline-block h-1.5 w-1.5 animate-ping rounded-full bg-muted-foreground" /> Waiting for
                 transactions…
               </p>

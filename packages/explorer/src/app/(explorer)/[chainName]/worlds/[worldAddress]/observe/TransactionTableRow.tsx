@@ -34,7 +34,7 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
           <TableCell colSpan={columns.length}>
             {data && (
               <>
-                <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
+                <div className="grid grid-cols-2 gap-x-2 gap-y-5 sm:grid-cols-4 md:grid-cols-5">
                   <TranctionTableRowDataCell label="Confirmations">
                     <Confirmations hash={data.transaction?.hash} />
                   </TranctionTableRowDataCell>
@@ -44,6 +44,11 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                   <TranctionTableRowDataCell label="Gas used">{receipt?.gasUsed.toString()}</TranctionTableRowDataCell>
                   <TranctionTableRowDataCell label="Gas price">
                     {receipt?.effectiveGasPrice.toString()}
+                  </TranctionTableRowDataCell>
+                  <TranctionTableRowDataCell label="Tx cost">
+                    {receipt?.gasUsed && receipt?.effectiveGasPrice
+                      ? `${formatEther(receipt.gasUsed * receipt.effectiveGasPrice)} ETH`
+                      : null}
                   </TranctionTableRowDataCell>
                 </div>
 

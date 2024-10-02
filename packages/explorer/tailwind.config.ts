@@ -14,7 +14,7 @@ const config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-jetbrains-mono)"],
+        sans: ["var(--font-inter)"],
         mono: ["var(--font-jetbrains-mono)"],
       },
       fontSize: {
@@ -54,6 +54,7 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        success: "#34d399",
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -1,7 +1,13 @@
 import { Hex } from "viem";
 import { chainIdToName, supportedChains, validateChainId } from "../../../common";
 
-export function explorerForChainId({ hash, chainId }: { hash: Hex | undefined; chainId: number }): string | undefined {
+export function blockExplorerTransactionUrl({
+  hash,
+  chainId,
+}: {
+  hash: Hex | undefined;
+  chainId: number;
+}): string | undefined {
   if (!hash) return undefined;
   validateChainId(chainId);
 
@@ -9,5 +15,5 @@ export function explorerForChainId({ hash, chainId }: { hash: Hex | undefined; c
   const chain = supportedChains[chainName];
   const explorerUrl = chain.blockExplorers?.default.url;
   if (!explorerUrl) return undefined;
-  return explorerUrl;
+  return `${explorerUrl}/tx/${hash}`;
 }

@@ -16,12 +16,7 @@ export function Confirmations({ hash }: { hash?: Hex }) {
   if (!confirmations) return <Skeleton className="h-4 w-[50px]" />;
   return (
     <span className="flex items-center text-xs font-extrabold text-green-600">
-      <span
-        className="mr-2 inline-block h-2 w-2 animate-pulse rounded-full"
-        style={{
-          background: "rgb(64, 182, 107)",
-        }}
-      ></span>
+      <span className="mr-2 inline-block h-2 w-2 animate-pulse rounded-full bg-success"></span>
       <span className="opacity-70">{confirmations.toString()}</span>
     </span>
   );

@@ -7,18 +7,16 @@ export function LatestBlock() {
   const { data: block } = useBlockNumber({
     watch: true,
     chainId,
+    query: {
+      refetchInterval: 1000,
+    },
   });
 
   return (
     <div className="inline-block w-[50px]">
       {block ? (
         <div className="flex items-center justify-end text-xs font-extrabold text-green-600">
-          <span
-            className="mr-2 inline-block h-[8px] w-[8px] animate-pulse rounded-full"
-            style={{
-              background: "rgb(64, 182, 107)",
-            }}
-          ></span>
+          <span className="mr-2 inline-block h-[8px] w-[8px] animate-pulse rounded-full bg-success"></span>
           <span className="opacity-70">{block.toString()}</span>
         </div>
       ) : (
