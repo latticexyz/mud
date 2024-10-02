@@ -214,8 +214,12 @@ export async function createStoreSync({
           );
           return fromEventSource<string>(url);
         }),
-        map((messageEvent) => JSON.parse(messageEvent.data) as StorageAdapterBlock),
+        map((messageEvent) => {
+          const parsedBlock = JSON.parse(messageEvent.data);
+          return { ...parsedBlock, blockNumber: BigInt(parsedBlock.blockNumber) } as StorageAdapterBlock;
+        }),
         concatMap(async (block) => {
+          console.log("block", block);
           await storageAdapter(block);
           return block;
         }),
