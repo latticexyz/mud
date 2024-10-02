@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { timeAgo } from "../../../../utils/timeAgo";
 
-export function TimeAgoCell({ timestamp }: { timestamp: bigint }) {
+export function TimeAgo({ timestamp }: { timestamp: bigint }) {
   const [ago, setAgo] = useState(() => timeAgo(timestamp));
 
   useEffect(() => {
