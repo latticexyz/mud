@@ -2,7 +2,7 @@ import { z } from "zod";
 import { input } from "./input";
 import { StorageAdapterBlock } from "../common";
 import { Result } from "@latticexyz/common";
-import { isStorageAdapterBlock } from "../isStorageAdapterBlock";
+import { isLogsApiResponse } from "../isLogsApiResponse";
 
 export type CreateIndexerClientOptions = {
   /**
@@ -31,7 +31,7 @@ export function createIndexerClient({ url }: CreateIndexerClientOptions): Indexe
 
         // TODO: return a readable stream instead of fetching the entire response at once
         const result = await response.json();
-        if (!isStorageAdapterBlock(result)) {
+        if (!isLogsApiResponse(result)) {
           return { error: result };
         }
 
