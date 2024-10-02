@@ -219,7 +219,6 @@ export async function createStoreSync({
           return { ...parsedBlock, blockNumber: BigInt(parsedBlock.blockNumber) } as StorageAdapterBlock;
         }),
         concatMap(async (block) => {
-          console.log("block", block);
           await storageAdapter(block);
           return block;
         }),
