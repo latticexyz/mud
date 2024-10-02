@@ -1,14 +1,10 @@
 import {
-  Address,
-  bytesToHex,
-  Client,
   createClient,
   createTransport,
   custom,
   EIP1193Parameters,
   EIP1474Methods,
   getAddress,
-  hashMessage,
   hexToBigInt,
   http,
   publicActions,
@@ -16,45 +12,21 @@ import {
   walletActions,
 } from "viem";
 import { ChainNotConfiguredError, createConnector } from "wagmi";
-import { bundlerActions, toCoinbaseSmartAccount, toWebAuthnAccount } from "viem/account-abstraction";
-import { createCredential, sign } from "webauthn-p256";
+import { bundlerActions } from "viem/account-abstraction";
 import { getCredentialAddress } from "./getCredentialAddress";
 import { cache } from "./cache";
 import { smartAccountActions } from "permissionless/clients";
-import { getMessageHash } from "./getMessageHash";
-import { recoverPublicKey } from "./recoverPublicKey";
-
-async function getAccount(client: Client) {
-  const id = cache.getState().activeCredential;
-  if (!id) return;
-
-  const { publicKeys, addresses } = cache.getState();
-
-  const publicKey = publicKeys[id];
-  if (!publicKey) return;
-
-  // TODO: replace this with our own thing
-  return await toCoinbaseSmartAccount({
-    address: addresses[id],
-    client,
-    owners: [toWebAuthnAccount({ credential: { id, publicKey } })],
-  });
-}
+import { getAccount } from "./getAccount";
 
 export type PasskeyConnectorOptions = {
+  // TODO: figure out what we wanna do across chains
   chainId: number;
 };
 
 passkeyConnector.type = "passkey" as const;
-export function passkeyConnector({ chainId }: PasskeyConnectorOptions) {
-  type Provider = unknown; // TODO
-  type Properties = {
-    createPasskey(): Promise<Address>;
-    reusePasskey(): Promise<Address>;
-  };
-  // TODO: StorageItem type? use instead zustand store?
 
-  return createConnector<Provider, Properties>((config) => {
+export function passkeyConnector({ chainId }: PasskeyConnectorOptions) {
+  return createConnector<{}, {}>((config) => {
     if (!config.transports) {
       throw new Error(`Wagmi must be configured with transports to use the passkey connector.`);
     }
@@ -72,52 +44,24 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions) {
       type: passkeyConnector.type,
       name: "Passkey",
 
-      async createPasskey() {
-        const credential = await createCredential({ name: "MUD Account" });
-        console.log("created passkey", credential);
-
-        cache.setState((state) => ({
-          activeCredential: credential.id,
-          publicKeys: {
-            ...state.publicKeys,
-            [credential.id]: credential.publicKey,
-          },
-        }));
-
-        const address = await getCredentialAddress(client, credential.id);
-        return address;
-      },
-
-      async reusePasskey() {
-        const randomChallenge = bytesToHex(crypto.getRandomValues(new Uint8Array(256)));
-
-        const messageHash = hashMessage(randomChallenge);
-        const { signature, webauthn, raw: credential } = await sign({ hash: messageHash });
-        // TODO: look up account/public key by credential ID once we store it onchain
-
-        const webauthnHash = await getMessageHash(webauthn);
-
-        const passkey = await recoverPublicKey({
-          credentialId: credential.id,
-          messageHash: webauthnHash,
-          signatureHex: signature,
+      async setup() {
+        // TODO: should I subscribe somewhere?
+        console.log("listening for cache changes");
+        cache.subscribe((state, prevState) => {
+          console.log("state change");
+          if (state.activeCredential !== prevState.activeCredential) {
+            console.log("credential change");
+            // const address = state.activeCredential != null ? state.addresses[state.activeCredential] : undefined;
+            // config.emitter.emit("change", {
+            //   accounts: address ? [getAddress(address)] : [],
+            // });
+            if (state.activeCredential == null) {
+              this.disconnect();
+            } else {
+              this.connect();
+            }
+          }
         });
-        if (!passkey) {
-          throw new Error("recovery failed");
-        }
-
-        console.log("recovered passkey", passkey);
-
-        cache.setState((state) => ({
-          activeCredential: passkey.credential.id,
-          publicKeys: {
-            ...state.publicKeys,
-            [passkey.credential.id]: passkey.publicKey,
-          },
-        }));
-
-        const address = await getCredentialAddress(client, passkey.credential.id);
-        return address;
       },
 
       async connect(params) {

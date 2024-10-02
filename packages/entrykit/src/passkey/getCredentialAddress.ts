@@ -5,6 +5,8 @@ import { P256Credential } from "webauthn-p256";
 import { cache } from "./cache";
 import { readContract } from "viem/actions";
 
+const salt = 0n;
+
 export async function getCredentialAddress(client: Client, credentialId: P256Credential["id"]): Promise<Address> {
   const { publicKeys, addresses } = cache.getState();
 
@@ -19,7 +21,7 @@ export async function getCredentialAddress(client: Client, credentialId: P256Cre
     address: coinbaseSmartWalletFactory,
     abi: CoinbaseSmartWalletFactory,
     functionName: "getAddress",
-    args: [[publicKey], 0n],
+    args: [[publicKey], salt],
   });
   cache.setState((state) => ({
     addresses: { ...state.addresses, [credentialId]: address },

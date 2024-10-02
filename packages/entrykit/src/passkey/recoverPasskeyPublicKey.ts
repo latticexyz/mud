@@ -10,7 +10,7 @@ export function findPublicKey([input1, input2]: [SignatureAndMessage, SignatureA
   return firstDuplicate([...getCandidatePublicKeys(input1), ...getCandidatePublicKeys(input2)]);
 }
 
-export async function recoverPublicKey(input: { credentialId: P256Credential["id"] } & SignatureAndMessage) {
+export async function recoverPasskeyPublicKey(input: { credentialId: P256Credential["id"] } & SignatureAndMessage) {
   const message2 = hashMessage(input.signatureHex);
   const {
     signature: signature2,

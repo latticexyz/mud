@@ -5,6 +5,19 @@ procs:
     # To hydrate `anvil-state.json`, swap the command below and then deploy a MUD world to it.
     # shell: anvil --dump-state playground/anvil-state.json
     shell: anvil --port 3478 --block-time 2 --load-state playground/anvil-state.json
-  # mud:
-  #   cwd: ../..
-  #   shell: pnpm run dev --filter=!@latticexyz/entry
+  mud:
+    cwd: ../..
+    shell: pnpm run dev --filter=!@latticexyz/entrykit
+
+  # cbsw-deploy:
+  #   cwd: ../../../smart-wallet
+  #   shell: make deploy
+  # aa-deploy:
+  #   cwd: ../../../alto
+  #   shell: pnpm ts-node scripts/localDeployer/index.ts
+  # game-deploy:
+  #   cwd: ../../test/mock-game-contracts
+  #   shell: pnpm deploy:local
+  #   env:
+  #     # Anvil default account (0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc)
+  #     PRIVATE_KEY: "0x8b3a350cf5c34c9194ca85829a2df0ec3153be0318b5e2d3348e872092edffba"

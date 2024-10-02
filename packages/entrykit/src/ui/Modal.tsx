@@ -29,7 +29,7 @@ export function Modal({ open, onOpenChange, children }: Props) {
           <div
             className={twMerge(
               "fixed inset-0",
-              "grid items-start justify-center overflow-y-auto py-[8vh]",
+              "grid place-items-center overflow-y-auto py-8",
               "animate-in animate-duration-200 fade-in slide-in-from-bottom-4",
             )}
           >
