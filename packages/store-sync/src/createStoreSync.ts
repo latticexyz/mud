@@ -37,6 +37,8 @@ import { fromEventSource } from "./fromEventSource";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 
 const debug = parentDebug.extend("createStoreSync");
+// Pipe debug output to stdout instead of stderr
+debug.log = console.debug.bind(console);
 
 const defaultFilters: SyncFilter[] = internalTableIds.map((tableId) => ({ tableId }));
 
