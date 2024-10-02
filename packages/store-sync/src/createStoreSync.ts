@@ -35,6 +35,7 @@ import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/uti
 import { getSnapshot } from "./getSnapshot";
 import { fromEventSource } from "./fromEventSource";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
+import { isStorageAdapterBlock } from "./isStorageAdapterBlock";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -215,8 +216,11 @@ export async function createStoreSync({
           return fromEventSource<string>(url);
         }),
         map((messageEvent) => {
-          const parsedBlock = JSON.parse(messageEvent.data);
-          return { ...parsedBlock, blockNumber: BigInt(parsedBlock.blockNumber) } as StorageAdapterBlock;
+          const data = JSON.parse(messageEvent.data);
+          if (!isStorageAdapterBlock(data)) {
+            throw new Error("Received unexpected from indexer:" + messageEvent.data);
+          }
+          return { ...data, blockNumber: BigInt(data.blockNumber) };
         }),
         concatMap(async (block) => {
           await storageAdapter(block);

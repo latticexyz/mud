@@ -2,6 +2,7 @@ import { z } from "zod";
 import { input } from "./input";
 import { StorageAdapterBlock } from "../common";
 import { Result } from "@latticexyz/common";
+import { isStorageAdapterBlock } from "../isStorageAdapterBlock";
 
 export type CreateIndexerClientOptions = {
   /**
@@ -40,9 +41,4 @@ export function createIndexerClient({ url }: CreateIndexerClientOptions): Indexe
       }
     },
   };
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function isStorageAdapterBlock(data: any): data is Omit<StorageAdapterBlock, "blockNumber"> & { blockNumber: string } {
-  return data && typeof data.blockNumber === "string" && Array.isArray(data.logs);
 }
