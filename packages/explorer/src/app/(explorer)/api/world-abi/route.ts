@@ -3,12 +3,12 @@ import { getBlockNumber, getLogs } from "viem/actions";
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
 import { getWorldAbi } from "@latticexyz/world/internal";
-import { supportedChainId, supportedChains, validateChainId } from "../../../common";
+import { chainIdToName, supportedChainId, supportedChains, validateChainId } from "../../../../common";
 
 export const dynamic = "force-dynamic";
 
 async function getClient(chainId: supportedChainId) {
-  const chain = Object.values(supportedChains).find((c) => c.id === chainId);
+  const chain = supportedChains[chainIdToName[chainId]];
   const client = createWalletClient({
     chain,
     transport: http(),
@@ -36,13 +36,13 @@ async function getParameters(chainId: supportedChainId, worldAddress: Address) {
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const worldAddress = searchParams.get("worldAddress") as Hex;
   const chainId = Number(searchParams.get("chainId"));
-  validateChainId(chainId);
+  const worldAddress = searchParams.get("worldAddress") as Hex;
 
-  if (!worldAddress) {
-    return Response.json({ error: "address is required" }, { status: 400 });
+  if (!chainId || !worldAddress) {
+    return Response.json({ error: "Missing chainId or worldAddress" }, { status: 400 });
   }
+  validateChainId(chainId);
 
   try {
     const client = await getClient(chainId);
@@ -59,10 +59,7 @@ export async function GET(req: Request) {
 
     return Response.json({ abi, isWorldDeployed });
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      return Response.json({ error: error.message }, { status: 400 });
-    } else {
-      return Response.json({ error: "An unknown error occurred" }, { status: 400 });
-    }
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    return Response.json({ error: errorMessage }, { status: 400 });
   }
 }

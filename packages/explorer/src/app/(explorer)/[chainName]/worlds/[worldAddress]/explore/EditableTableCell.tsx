@@ -4,44 +4,50 @@ import { toast } from "sonner";
 import { Hex } from "viem";
 import { useAccount, useConfig } from "wagmi";
 import { ChangeEvent, useState } from "react";
-import { encodeField, getFieldIndex } from "@latticexyz/protocol-parser/internal";
-import { SchemaAbiType } from "@latticexyz/schema-type/internal";
+import { Table } from "@latticexyz/config";
+import {
+  ValueSchema,
+  encodeField,
+  getFieldIndex,
+  getSchemaTypes,
+  getValueSchema,
+} from "@latticexyz/protocol-parser/internal";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Checkbox } from "../../../../../../components/ui/Checkbox";
-import { useChain } from "../../../../../../hooks/useChain";
-import { camelCase, cn } from "../../../../../../lib/utils";
-import { TableConfig } from "../../../../../api/table/route";
+import { cn } from "../../../../../../utils";
+import { useChain } from "../../../../hooks/useChain";
 
 type Props = {
   name: string;
-  value: string;
-  keyTuple: string[];
-  config: TableConfig;
+  value: string | undefined;
+  table: Table;
+  keyTuple: readonly Hex[];
 };
 
-export function EditableTableCell({ name, config, keyTuple, value: defaultValue }: Props) {
+export function EditableTableCell({ name, table, keyTuple, value: defaultValue }: Props) {
+  const [value, setValue] = useState<unknown>(defaultValue);
+  const { openConnectModal } = useConnectModal();
   const wagmiConfig = useConfig();
   const queryClient = useQueryClient();
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
   const account = useAccount();
 
-  const [value, setValue] = useState<unknown>(defaultValue);
-
-  const tableId = config?.table_id;
-  const fieldType = config?.value_schema[camelCase(name)] as SchemaAbiType;
+  const valueSchema = getValueSchema(table);
+  const fieldType = valueSchema[name as never].type;
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (newValue: unknown) => {
-      const fieldIndex = getFieldIndex(config?.value_schema, camelCase(name));
-      const encodedField = encodeField(fieldType, newValue);
+      const fieldIndex = getFieldIndex<ValueSchema>(getSchemaTypes(valueSchema), name);
+      const encodedFieldValue = encodeField(fieldType, newValue);
       const txHash = await writeContract(wagmiConfig, {
         abi: IBaseWorldAbi,
         address: worldAddress as Hex,
         functionName: "setField",
-        args: [tableId, keyTuple, fieldIndex, encodedField],
+        args: [table.tableId, keyTuple, fieldIndex, encodedFieldValue],
         chainId,
       });
 
@@ -81,6 +87,10 @@ export function EditableTableCell({ name, config, keyTuple, value: defaultValue 
   });
 
   const handleSubmit = (newValue: unknown) => {
+    if (!account.isConnected) {
+      return openConnectModal?.();
+    }
+
     if (newValue !== defaultValue) {
       mutate(newValue);
     }

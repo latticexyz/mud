@@ -59,7 +59,11 @@ export async function buildSystemsManifest(opts: { rootDir: string; config: Worl
       const artifact = getSystemArtifact(system);
       const abi = artifact.abi.filter((item) => !excludedAbi.includes(formatAbiItem(item)));
       const worldAbi = system.deploy.registerWorldFunctions
-        ? abi.map((item) => (item.type === "function" ? { ...item, name: `${system.namespace}__${item.name}` } : item))
+        ? abi.map((item) =>
+            item.type === "function"
+              ? { ...item, name: system.namespace ? `${system.namespace}__${item.name}` : item.name }
+              : item,
+          )
         : [];
       return {
         // labels

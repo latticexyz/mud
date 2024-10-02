@@ -1,5 +1,54 @@
 # @latticexyz/explorer
 
+## 2.2.10
+
+### Patch Changes
+
+- e39afda: Fixed table name construction in the explorer query for root tables for SQLite.
+- 8858e52: - Tables can be searched by specific values.
+  - Improved handling of dynamic SQL queries.
+  - The "Connect" modal is triggered during a write action if the wallet is not connected.
+  - Toast messages are now dismissible.
+- Updated dependencies [9d7fc85]
+  - @latticexyz/world@2.2.10
+  - @latticexyz/store-sync@2.2.10
+  - @latticexyz/store-indexer@2.2.10
+  - @latticexyz/common@2.2.10
+  - @latticexyz/config@2.2.10
+  - @latticexyz/protocol-parser@2.2.10
+  - @latticexyz/schema-type@2.2.10
+  - @latticexyz/store@2.2.10
+
+## 2.2.9
+
+### Patch Changes
+
+- 2f2e63a: Exploring worlds on Redstone and Garnet chains will now retrieve data from the hosted SQL indexer.
+- 95aa3bb: Explorer now automatically starts a local indexer when using Anvil as the target chain.
+
+  If you previously had an `indexer` entry in your `mprocs.yaml` file, it can now be removed.
+
+  ```diff
+  -  indexer:
+  -    cwd: packages/contracts
+  -    shell: shx rm -rf $SQLITE_FILENAME && pnpm sqlite-indexer
+  -    env:
+  -      DEBUG: mud:*
+  -      RPC_HTTP_URL: "http://127.0.0.1:8545"
+  -      FOLLOW_BLOCK_TAG: "latest"
+  -      SQLITE_FILENAME: "indexer.db"
+  ```
+
+- 6c056de: Table filters are now included as part of the URL. This enables deep links and improves navigating between pages without losing search state.
+  - @latticexyz/common@2.2.9
+  - @latticexyz/config@2.2.9
+  - @latticexyz/protocol-parser@2.2.9
+  - @latticexyz/schema-type@2.2.9
+  - @latticexyz/store@2.2.9
+  - @latticexyz/store-indexer@2.2.9
+  - @latticexyz/store-sync@2.2.9
+  - @latticexyz/world@2.2.9
+
 ## 2.2.8
 
 ### Patch Changes

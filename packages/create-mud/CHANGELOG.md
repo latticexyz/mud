@@ -1,5 +1,36 @@
 # Change Log
 
+## 2.2.10
+
+### Patch Changes
+
+- af26487: Upgraded mprocs to fix issues with it not running when started via npm script.
+
+  You can do the same in an existing MUD project with:
+
+  ```
+  pnpm recursive up mprocs@latest
+  ```
+
+## 2.2.9
+
+### Patch Changes
+
+- 95aa3bb: Explorer now automatically starts a local indexer when using Anvil as the target chain.
+
+  If you previously had an `indexer` entry in your `mprocs.yaml` file, it can now be removed.
+
+  ```diff
+  -  indexer:
+  -    cwd: packages/contracts
+  -    shell: shx rm -rf $SQLITE_FILENAME && pnpm sqlite-indexer
+  -    env:
+  -      DEBUG: mud:*
+  -      RPC_HTTP_URL: "http://127.0.0.1:8545"
+  -      FOLLOW_BLOCK_TAG: "latest"
+  -      SQLITE_FILENAME: "indexer.db"
+  ```
+
 ## 2.2.8
 
 ### Patch Changes

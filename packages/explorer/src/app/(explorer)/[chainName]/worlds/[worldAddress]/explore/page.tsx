@@ -1,12 +1,5 @@
-import { Suspense } from "react";
-import { DataExplorer } from "./DataExplorer";
+import { Explorer } from "./Explorer";
 
-export default function ExplorerPage() {
-  return (
-    <div className="w-full">
-      <Suspense>
-        <DataExplorer />
-      </Suspense>
-    </div>
-  );
+export default function ExplorePage() {
+  return <Explorer />;
 }
