@@ -1,4 +1,4 @@
-import { StorageAdapterBlock } from "./common";
+import { StorageAdapterBlock } from "../common";
 
 export type LogsApiResponse = Omit<StorageAdapterBlock, "blockNumber"> & { blockNumber: string };
 

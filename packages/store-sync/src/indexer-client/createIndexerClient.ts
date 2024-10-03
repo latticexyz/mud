@@ -2,7 +2,8 @@ import { z } from "zod";
 import { input } from "./input";
 import { StorageAdapterBlock } from "../common";
 import { Result } from "@latticexyz/common";
-import { isLogsApiResponse } from "../isLogsApiResponse";
+import { isLogsApiResponse } from "./isLogsApiResponse";
+import { toStorageAdatperBlock } from "./toStorageAdapterBlock";
 
 export type CreateIndexerClientOptions = {
   /**
@@ -35,7 +36,7 @@ export function createIndexerClient({ url }: CreateIndexerClientOptions): Indexe
           return { error: result };
         }
 
-        return { ok: { ...result, blockNumber: BigInt(result.blockNumber) } };
+        return { ok: toStorageAdatperBlock(result) };
       } catch (error) {
         return { error };
       }
