@@ -17,7 +17,7 @@ import { ChainNotConfiguredError, createConnector, CreateConnectorFn } from "wag
 import { bundlerActions, P256Credential } from "viem/account-abstraction";
 import { getCredentialAddress } from "./getCredentialAddress";
 import { cache } from "./cache";
-import { smartAccountActions } from "permissionless/clients";
+import { createSmartAccountClient, smartAccountActions } from "permissionless/clients";
 import { getAccount } from "./getAccount";
 import { createPasskey } from "./createPasskey";
 import { reusePasskey } from "./reusePasskey";
@@ -60,7 +60,7 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePa
     if (!transport) {
       throw new Error(`Could not find configured transport for chain ID ${chainId}.`);
     }
-    const client = createClient({ chain, transport });
+    const client = createClient({ chain, transport, pollingInterval: 1000 });
 
     let connected = cache.getState().activeCredential != null;
 
@@ -170,13 +170,14 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePa
         // TODO: support params.chainId?
 
         const account = await getAccount(client);
-        const connectorClient = createClient({
-          account,
-          chain,
-          transport: () => createTransport(client.transport),
-        });
 
-        return connectorClient;
+        return createSmartAccountClient({
+          // TODO: lift this into config
+          bundlerTransport: http("http://127.0.0.1:4337"),
+          client,
+          account,
+          pollingInterval: 1000,
+        });
       },
 
       async getProvider(params) {

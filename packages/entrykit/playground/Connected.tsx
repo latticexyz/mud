@@ -1,4 +1,4 @@
-import { useAccount, useConnectorClient } from "wagmi";
+import { useAccount, useConnectorClient, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { useConfig } from "../src/EntryKitConfigProvider";
 import { http } from "viem";
 import { getAction } from "viem/utils";
@@ -20,33 +20,18 @@ export function Connected() {
   useAutoTopUp({ address });
 
   const { chainId, worldAddress } = useConfig();
-  const { data: connectorClient } = useConnectorClient({ chainId });
+
+  const { writeContractAsync, data: hash } = useWriteContract();
+  const { data: receipt } = useWaitForTransactionReceipt({ hash });
 
   return (
     <div>
       <button
-        disabled={!connectorClient}
         onClick={async () => {
-          if (!connectorClient) return;
-
-          const client =
-            connectorClient.account.type === "smart"
-              ? createSmartAccountClient({
-                  bundlerTransport,
-                  client: connectorClient,
-                  account: connectorClient.account,
-                })
-              : connectorClient;
-
           console.log("calling writeContract");
 
-          const hash = await getAction(
-            client,
-            writeContract,
-            "writeContract",
-          )({
-            chain: client.chain,
-            account: client.account,
+          const hash = await writeContractAsync({
+            chainId,
             address: worldAddress,
             abi: [
               {
@@ -73,12 +58,12 @@ export function Connected() {
           });
 
           console.log("got tx", hash);
-          const receipt = waitForTransactionReceipt(client, { hash });
-          console.log("got receipt", receipt);
         }}
       >
         Write contract
       </button>
+      <br />
+      tx: {hash ?? "??"} ({receipt?.status ?? "??"})
     </div>
   );
 }
