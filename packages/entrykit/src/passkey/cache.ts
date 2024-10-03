@@ -3,6 +3,9 @@ import { persist } from "zustand/middleware";
 import { P256Credential } from "viem/account-abstraction";
 import { Address } from "viem";
 
+// TODO: move this to wagmi storage?
+//       when I tried, it blew up TS complexity and my IDE was impossible to work with
+
 export type State = {
   readonly publicKeys: {
     readonly [key in P256Credential["id"]]: P256Credential["publicKey"];

@@ -1,48 +1,45 @@
 import {
-  Address,
   createClient,
   custom,
   EIP1193RequestFn,
   EIP1474Methods,
   getAddress,
   numberToHex,
-  http,
   SwitchChainError,
+  Client,
+  ProviderConnectInfo,
+  Transport,
 } from "viem";
 import { ChainNotConfiguredError, createConnector, CreateConnectorFn } from "wagmi";
-import { P256Credential } from "viem/account-abstraction";
 import { getCredentialAddress } from "./getCredentialAddress";
 import { cache } from "./cache";
 import { createSmartAccountClient } from "permissionless/clients";
 import { getAccount } from "./getAccount";
-import { createPasskey } from "./createPasskey";
 import { reusePasskey } from "./reusePasskey";
+import { createPasskey } from "./createPasskey";
 
 export type PasskeyConnectorOptions = {
   // TODO: figure out what we wanna do across chains
   chainId: number;
+  bundlerTransport: Transport;
 };
 
 export type PasskeyProvider = {
   request: EIP1193RequestFn<EIP1474Methods>;
 };
 export type PasskeyConnectorProperties = {
-  createPasskey(): Promise<Address>;
-  reusePasskey(): Promise<Address>;
-};
-export type PasskeyStorage = {
-  // TODO: convert cache to wagmi storage
-  passkey: {
-    activeCredential?: P256Credential["id"];
-  };
+  createPasskey(): Promise<void>;
+  reusePasskey(): Promise<void>;
+  getClient(): Promise<Client>;
+  onConnect(connectInfo: ProviderConnectInfo): void;
 };
 
-export type CreatePasskeyConnector = CreateConnectorFn<PasskeyProvider, PasskeyConnectorProperties, PasskeyStorage>;
+export type CreatePasskeyConnector = CreateConnectorFn<PasskeyProvider, PasskeyConnectorProperties, {}>;
 export type PasskeyConnector = ReturnType<CreatePasskeyConnector>;
 
 passkeyConnector.type = "passkey" as const;
 
-export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePasskeyConnector {
+export function passkeyConnector({ chainId, bundlerTransport }: PasskeyConnectorOptions): CreatePasskeyConnector {
   return createConnector((config) => {
     // TODO: figure out how to use with config's `client` option
     if (!config.transports) {
@@ -70,14 +67,12 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePa
       async createPasskey() {
         const address = await createPasskey(client);
         this.onAccountsChanged([address]);
-        this.onConnect({ chainId: numberToHex(chainId) });
-        return address;
+        this.onConnect?.({ chainId: numberToHex(chainId) });
       },
       async reusePasskey() {
         const address = await reusePasskey(client);
         this.onAccountsChanged([address]);
-        this.onConnect({ chainId: numberToHex(chainId) });
-        return address;
+        this.onConnect?.({ chainId: numberToHex(chainId) });
       },
 
       async connect(params) {
@@ -95,6 +90,7 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePa
       async disconnect() {
         console.log("disconnect");
         connected = false;
+        cache.setState({ activeCredential: null });
       },
       async getAccounts() {
         console.log("getAccounts");
@@ -145,10 +141,9 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePa
         console.log("onChainChanged");
         config.emitter.emit("change", { chainId: Number(chainId) });
       },
-      async onConnect(connectInfo) {
+      async onConnect(_connectInfo) {
         console.log("onConnect");
         const accounts = await this.getAccounts();
-        const chainId = Number(connectInfo.chainId);
         config.emitter.emit("connect", { accounts, chainId });
       },
       async onDisconnect(_error) {
@@ -173,8 +168,7 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePa
         const account = await getAccount(client);
 
         return createSmartAccountClient({
-          // TODO: lift this into config
-          bundlerTransport: http("http://127.0.0.1:4337"),
+          bundlerTransport,
           client,
           account,
           pollingInterval: 1000,

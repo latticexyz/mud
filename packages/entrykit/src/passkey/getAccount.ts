@@ -1,9 +1,9 @@
 import { Client } from "viem";
-import { ToCoinbaseSmartAccountReturnType, toCoinbaseSmartAccount, toWebAuthnAccount } from "viem/account-abstraction";
+import { SmartAccount, toCoinbaseSmartAccount, toWebAuthnAccount } from "viem/account-abstraction";
 import { cache } from "./cache";
 import { getCredentialAddress } from "./getCredentialAddress";
 
-export async function getAccount(client: Client): Promise<undefined | ToCoinbaseSmartAccountReturnType> {
+export async function getAccount(client: Client): Promise<undefined | SmartAccount> {
   const id = cache.getState().activeCredential;
   if (!id) return;
 

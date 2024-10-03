@@ -31,7 +31,7 @@ const { wallets: defaultWallets } = getDefaultWallets();
 const wallets: WalletList = [
   {
     groupName: "Recommended",
-    wallets: [passkeyWallet({ chainId })],
+    wallets: [passkeyWallet({ chainId, bundlerTransport: http("http://127.0.0.1:4337") })],
   },
   ...defaultWallets,
 ];
