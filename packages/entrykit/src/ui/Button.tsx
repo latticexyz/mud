@@ -13,7 +13,7 @@ const buttonClassName = ({ variant = "primary", pending = false }: ButtonClassNa
   twMerge(
     "group self-center leading-none outline-none border border-transparent ring-2 ring-transparent focus:ring-orange-500 focus:border-transparent transition",
     "aria-disabled:pointer-events-none aria-busy:pointer-events-none",
-    "p-4 font-semibold",
+    "p-[1em] font-semibold",
     {
       primary: twMerge(
         "bg-neutral-900 text-white hover:bg-neutral-700 active:bg-neutral-600 aria-disabled:bg-neutral-200 aria-disabled:text-neutral-400",

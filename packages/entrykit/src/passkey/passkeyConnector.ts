@@ -11,7 +11,6 @@ import {
   Transport,
 } from "viem";
 import { ChainNotConfiguredError, createConnector, CreateConnectorFn } from "wagmi";
-import { getCredentialAddress } from "./getCredentialAddress";
 import { cache } from "./cache";
 import { createSmartAccountClient } from "permissionless/clients";
 import { getAccount } from "./getAccount";
@@ -53,7 +52,8 @@ export function passkeyConnector({ chainId, bundlerTransport }: PasskeyConnector
     if (!transport) {
       throw new Error(`Could not find configured transport for chain ID ${chainId}.`);
     }
-    const client = createClient({ chain, transport, pollingInterval: 1000 });
+    const clientOpts = { pollingInterval: 1000 } as const;
+    const client = createClient({ chain, transport, ...clientOpts });
 
     let connected = cache.getState().activeCredential != null;
 
@@ -65,13 +65,15 @@ export function passkeyConnector({ chainId, bundlerTransport }: PasskeyConnector
       supportsSimulation: true,
 
       async createPasskey() {
-        const address = await createPasskey(client);
-        this.onAccountsChanged([address]);
+        const { id } = await createPasskey();
+        const account = await getAccount(client, id);
+        this.onAccountsChanged([account.address]);
         this.onConnect?.({ chainId: numberToHex(chainId) });
       },
       async reusePasskey() {
-        const address = await reusePasskey(client);
-        this.onAccountsChanged([address]);
+        const { id } = await reusePasskey();
+        const account = await getAccount(client, id);
+        this.onAccountsChanged([account.address]);
         this.onConnect?.({ chainId: numberToHex(chainId) });
       },
 
@@ -98,10 +100,10 @@ export function passkeyConnector({ chainId, bundlerTransport }: PasskeyConnector
         if (!id) return [];
 
         try {
-          console.log("looking up address for credential", id);
-          const address = await getCredentialAddress(client, id);
-          console.log("got credential address", address);
-          return [address];
+          console.log("getting account for credential", id);
+          const account = await getAccount(client, id);
+          console.log("got account", account);
+          return [account.address];
         } catch (error) {
           console.log("could not get address for credential ID", id);
         }
@@ -165,13 +167,16 @@ export function passkeyConnector({ chainId, bundlerTransport }: PasskeyConnector
         console.log("passkeyConnector.getClient", params);
         // TODO: support params.chainId?
 
-        const account = await getAccount(client);
+        const credentialId = cache.getState().activeCredential;
+        if (!credentialId) return client;
+
+        const account = await getAccount(client, credentialId);
 
         return createSmartAccountClient({
           bundlerTransport,
           client,
           account,
-          pollingInterval: 1000,
+          ...clientOpts,
         });
       },
 

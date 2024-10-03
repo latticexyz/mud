@@ -1,11 +1,11 @@
-import { Address, Client, bytesToHex, hashMessage } from "viem";
+import { bytesToHex, hashMessage } from "viem";
 import { sign } from "webauthn-p256";
 import { cache } from "./cache";
-import { getCredentialAddress } from "./getCredentialAddress";
 import { getMessageHash } from "./getMessageHash";
 import { recoverPasskeyPublicKey } from "./recoverPasskeyPublicKey";
+import { P256Credential } from "viem/account-abstraction";
 
-export async function reusePasskey(client: Client): Promise<Address> {
+export async function reusePasskey(): Promise<P256Credential> {
   const randomChallenge = bytesToHex(crypto.getRandomValues(new Uint8Array(256)));
   const messageHash = hashMessage(randomChallenge);
   const { signature, webauthn, raw: credential } = await sign({ hash: messageHash });
@@ -45,6 +45,5 @@ export async function reusePasskey(client: Client): Promise<Address> {
     activeCredential: credential.id,
   }));
 
-  const address = await getCredentialAddress(client, credential.id);
-  return address;
+  return { id: credential.id, publicKey, raw: credential };
 }

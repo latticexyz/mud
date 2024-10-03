@@ -43,23 +43,28 @@ export function SignInModal() {
               </Button>
             </div>
           ) : (
-            <div className="flex-grow flex flex-col items-center justify-center gap-2">
-              <Button
-                onClick={async () => {
-                  const address = await passkeyConnector.createPasskey();
-                  console.log("created passkey, smart account address:", address);
-                }}
-              >
-                Sign up
-              </Button>
-              <Button
-                onClick={async () => {
-                  const address = await passkeyConnector.reusePasskey();
-                  console.log("reused passkey, smart account address:", address);
-                }}
-              >
-                Sign in
-              </Button>
+            <div className="flex flex-col items-center justify-center">
+              <div className="flex flex-col gap-2">
+                <Button
+                  className="self-auto flex justify-center"
+                  onClick={async () => {
+                    const address = await passkeyConnector.createPasskey();
+                    console.log("created passkey, smart account address:", address);
+                  }}
+                >
+                  Create account
+                </Button>
+                <Button
+                  className="self-auto flex justify-center text-sm py-1"
+                  variant="secondary"
+                  onClick={async () => {
+                    const address = await passkeyConnector.reusePasskey();
+                    console.log("reused passkey, smart account address:", address);
+                  }}
+                >
+                  Connect with passkey or wallet
+                </Button>
+              </div>
             </div>
           )}
         </div>
