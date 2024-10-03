@@ -8,6 +8,7 @@ import { Message, MessageType } from "./messages";
 
 export type Write = {
   writeId: string;
+  type: MessageType;
   hash?: Hex;
   address: Address;
   functionSignature: string;
@@ -37,6 +38,7 @@ channel.addEventListener("message", ({ data }: MessageEvent<Message>) => {
         ...state.writes,
         [data.writeId]: {
           ...write,
+          type: data.type,
           hash: data.type === "waitForTransactionReceipt" ? data.hash : write.hash,
           events: [...write.events, data],
         },

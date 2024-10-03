@@ -13,7 +13,7 @@ import { WatchedTransaction } from "./TransactionsTableContainer";
 
 const columnHelper = createColumnHelper<WatchedTransaction>();
 export const columns = [
-  columnHelper.accessor("transaction.blockNumber", {
+  columnHelper.accessor("receipt.blockNumber", {
     header: "Block",
     cell: (row) => {
       const blockNumber = row.getValue();

@@ -28,7 +28,7 @@ export type WatchedTransaction = {
   transaction?: Transaction;
   functionData?: DecodeFunctionDataReturnType;
   receipt?: TransactionReceipt;
-  status: "pending" | "success" | "reverted";
+  status: "pending" | "success" | "reverted" | "unknown";
   write?: Write;
   logs?: Log[];
   error?: BaseError;
@@ -80,16 +80,6 @@ export function TransactionsTableContainer() {
       const transaction = await getTransaction(wagmiConfig, { hash });
       if (transaction.to !== worldAddress) return;
 
-      setTransactions((prevTransactions) => [
-        {
-          hash,
-          timestamp,
-          transaction,
-          status: "pending",
-        },
-        ...prevTransactions,
-      ]);
-
       let functionName: string | undefined;
       let args: readonly unknown[] | undefined;
       let transactionError: BaseError | undefined;
@@ -103,22 +93,42 @@ export function TransactionsTableContainer() {
         functionName = transaction.input.length > 10 ? transaction.input.slice(0, 10) : "unknown";
       }
 
-      setTransactions((prevTransactions) =>
-        prevTransactions.map((transaction) =>
-          transaction.hash === hash
-            ? {
-                ...transaction,
-                functionData: {
-                  functionName,
-                  args,
-                },
-              }
-            : transaction,
-        ),
-      );
+      setTransactions((prevTransactions) => [
+        {
+          hash,
+          timestamp,
+          transaction,
+          status: "pending",
+          functionData: {
+            functionName,
+            args,
+          },
+        },
+        ...prevTransactions,
+      ]);
 
-      const receipt = await getTransactionReceipt(wagmiConfig, { hash });
-      if (receipt.status === "reverted" && functionName) {
+      // Receipt
+      const maxRetries = 10;
+      const retryInterval = 2000;
+      let receipt: TransactionReceipt | undefined;
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+          receipt = await getTransactionReceipt(wagmiConfig, { hash });
+          if (receipt) break;
+        } catch (error) {
+          console.error(`Failed to fetch receipt, attempt ${attempt + 1}:`, error);
+        }
+
+        if (attempt < maxRetries - 1) {
+          await new Promise((resolve) => setTimeout(resolve, retryInterval));
+        }
+      }
+
+      if (!receipt) {
+        console.error(`Failed to fetch transaction receipt after ${maxRetries} attempts`);
+      }
+
+      if (receipt && receipt.status === "reverted" && functionName) {
         try {
           // Simulate the failed transaction to retrieve the revert reason
           // Note, it only works for functions that are declared in the ABI
@@ -137,9 +147,10 @@ export function TransactionsTableContainer() {
         }
       }
 
+      const status = receipt ? receipt.status : "unknown";
       const logs = parseEventLogs({
         abi,
-        logs: receipt.logs,
+        logs: receipt?.logs || [],
       });
 
       setTransactions((prevTransactions) =>
@@ -149,7 +160,7 @@ export function TransactionsTableContainer() {
                 ...transaction,
                 receipt,
                 logs,
-                status: receipt.status,
+                status,
                 error: transactionError,
               }
             : transaction,
@@ -158,6 +169,18 @@ export function TransactionsTableContainer() {
     },
     [abi, wagmiConfig, worldAddress],
   );
+
+  useEffect(() => {
+    for (const write of observerWrites) {
+      const hash = write.hash;
+      if (write.type === "waitForTransactionReceipt" && hash) {
+        const transaction = transactions.find((transaction) => transaction.hash === hash);
+        if (!transaction) {
+          handleTransaction(hash, BigInt(write.time) / 1000n);
+        }
+      }
+    }
+  }, [handleTransaction, observerWrites, transactions]);
 
   useWatchBlocks({
     onBlock(block) {
@@ -169,23 +192,6 @@ export function TransactionsTableContainer() {
     chainId,
     pollingInterval: 500,
   });
-
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        for (const write of observerWrites) {
-          if (write.hash && !transactions.find((t) => t.hash === write.hash)) {
-            handleTransaction(write.hash, BigInt(write.time) / 1000n);
-          }
-        }
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [handleTransaction, observerWrites, transactions]);
 
   return <TransactionsTableView data={mergedTransactions} />;
 }
