@@ -1,9 +1,9 @@
-import { Client } from "viem";
+import { Address, Client } from "viem";
 import { createCredential } from "webauthn-p256";
 import { cache } from "./cache";
 import { getCredentialAddress } from "./getCredentialAddress";
 
-export async function createPasskey(client: Client) {
+export async function createPasskey(client: Client): Promise<Address> {
   const credential = await createCredential({ name: "MUD Account" });
   console.log("created passkey", credential);
 

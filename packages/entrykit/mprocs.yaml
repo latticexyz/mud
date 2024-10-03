@@ -8,6 +8,9 @@ procs:
   mud:
     cwd: ../..
     shell: pnpm run dev --filter=!@latticexyz/entrykit
+  bundler:
+    cwd: ../../../alto
+    shell: ./alto --config ../mud/packages/entrykit/playground/alto.config.json
 
   # cbsw-deploy:
   #   cwd: ../../../smart-wallet

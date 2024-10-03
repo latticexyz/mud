@@ -2,8 +2,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { createContext, useContext, type ReactNode } from "react";
 import { RainbowKitProvider, lightTheme, midnightTheme } from "@rainbow-me/rainbowkit";
 import { Config } from "./config";
-import { useConnectors } from "wagmi";
-import { passkeyConnector } from "./passkey/passkeyConnector";
+import { usePasskeyConnector } from "./usePasskeyConnector";
 
 /** @internal */
 const Context = createContext<Config | null>(null);
@@ -18,14 +17,7 @@ export function EntryKitConfigProvider({ config, children }: Props) {
   if (currentConfig) throw new Error("`EntryKitProvider` can only be used once.");
 
   // ensure we have passkey connector configured
-  const connectors = useConnectors();
-  const connector = connectors.find((c) => c.type === passkeyConnector.type);
-  if (!connector) {
-    // TODO: provide link to instructions
-    throw new Error(
-      "Could not find passkey connector. Did you configure Wagmi with the EntryKit passkey connector or passkey wallet?",
-    );
-  }
+  usePasskeyConnector();
 
   return (
     <RainbowKitProvider

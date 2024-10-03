@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { AccountButton, useAccountModal } from "../src/exports";
 import { useLocalStorage } from "usehooks-ts";
+import { Connected } from "./Connected";
 
 export function App() {
   const { openAccountModal } = useAccountModal();
@@ -23,6 +24,9 @@ export function App() {
           <input type="checkbox" checked={openModal} onChange={(event) => setOpenModal(event.currentTarget.checked)} />
           Open modal on mount
         </label>
+      </div>
+      <div>
+        <Connected />
       </div>
     </div>
   );

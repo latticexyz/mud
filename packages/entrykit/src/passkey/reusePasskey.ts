@@ -1,11 +1,11 @@
-import { Client, bytesToHex, hashMessage } from "viem";
+import { Address, Client, bytesToHex, hashMessage } from "viem";
 import { sign } from "webauthn-p256";
 import { cache } from "./cache";
 import { getCredentialAddress } from "./getCredentialAddress";
 import { getMessageHash } from "./getMessageHash";
 import { recoverPasskeyPublicKey } from "./recoverPasskeyPublicKey";
 
-export async function reusePasskey(client: Client) {
+export async function reusePasskey(client: Client): Promise<Address> {
   const randomChallenge = bytesToHex(crypto.getRandomValues(new Uint8Array(256)));
 
   const messageHash = hashMessage(randomChallenge);

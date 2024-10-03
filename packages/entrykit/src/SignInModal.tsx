@@ -1,22 +1,20 @@
 import { Modal } from "./ui/Modal";
-import { useAccount, useClient, useConnections } from "wagmi";
+import { useAccount, useConnections, useDisconnect } from "wagmi";
 import { useAccountModal } from "./useAccountModal";
 import { twMerge } from "tailwind-merge";
 import { Button } from "./ui/Button";
-import { createPasskey } from "./passkey/createPasskey";
-import { useConfig } from "./EntryKitConfigProvider";
-import { reusePasskey } from "./passkey/reusePasskey";
+import { usePasskeyConnector } from "./usePasskeyConnector";
 
 export function SignInModal() {
   const { status } = useAccount();
   console.log("useAccount.status", status);
   const { accountModalOpen, toggleAccountModal } = useAccountModal();
+  const { disconnectAsync } = useDisconnect();
+
+  const passkeyConnector = usePasskeyConnector();
 
   const connections = useConnections();
-  const passkeyAddress = connections.find((conn) => conn.connector.type === "passkey")?.accounts.at(0);
-
-  const { chainId } = useConfig();
-  const client = useClient({ chainId })!;
+  const passkeyAddress = connections.find((conn) => conn.connector.type === passkeyConnector.type)?.accounts.at(0);
 
   return (
     <Modal open={accountModalOpen} onOpenChange={toggleAccountModal}>
@@ -32,12 +30,23 @@ export function SignInModal() {
           )}
         >
           {passkeyAddress ? (
-            <>{passkeyAddress}</>
+            <div className="flex-grow flex flex-col items-center justify-center gap-2">
+              {passkeyAddress}
+              <Button
+                onClick={async () => {
+                  console.log("disconnecting");
+                  await disconnectAsync();
+                  console.log("disconnected");
+                }}
+              >
+                Sign out
+              </Button>
+            </div>
           ) : (
             <div className="flex-grow flex flex-col items-center justify-center gap-2">
               <Button
                 onClick={async () => {
-                  const address = await createPasskey(client);
+                  const address = await passkeyConnector.createPasskey();
                   console.log("created passkey, smart account address:", address);
                 }}
               >
@@ -45,7 +54,7 @@ export function SignInModal() {
               </Button>
               <Button
                 onClick={async () => {
-                  const address = await reusePasskey(client);
+                  const address = await passkeyConnector.reusePasskey();
                   console.log("reused passkey, smart account address:", address);
                 }}
               >
