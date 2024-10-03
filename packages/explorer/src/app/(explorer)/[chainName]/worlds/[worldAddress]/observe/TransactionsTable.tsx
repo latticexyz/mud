@@ -1,3 +1,5 @@
+"use client";
+
 import { BoxIcon, CheckCheckIcon, ReceiptTextIcon, UserPenIcon, XIcon } from "lucide-react";
 import React, { useState } from "react";
 import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from "@tanstack/react-table";
@@ -9,7 +11,7 @@ import { TruncatedHex } from "../../../../../../components/ui/TruncatedHex";
 import { BlockExplorerLink } from "./BlockExplorerLink";
 import { TimeAgo } from "./TimeAgo";
 import { TransactionTableRow } from "./TransactionTableRow";
-import { WatchedTransaction } from "./TransactionsTableContainer";
+import { WatchedTransaction, useTransactionWatcher } from "./useTransactionWatcher";
 
 const columnHelper = createColumnHelper<WatchedTransaction>();
 export const columns = [
@@ -79,10 +81,12 @@ export const columns = [
   }),
 ];
 
-export function TransactionsTableView({ data }: { data: WatchedTransaction[] }) {
+export function TransactionsTable() {
+  const transactions = useTransactionWatcher();
   const [expanded, setExpanded] = useState<ExpandedState>({});
+
   const table = useReactTable({
-    data,
+    data: transactions,
     columns,
     state: {
       expanded,

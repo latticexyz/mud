@@ -6,8 +6,8 @@ import { Skeleton } from "../../../../../../components/ui/Skeleton";
 import { TableCell, TableRow } from "../../../../../../components/ui/Table";
 import { cn } from "../../../../../../utils";
 import { Confirmations } from "./Confirmations";
-import { WatchedTransaction } from "./TransactionsTableContainer";
-import { columns } from "./TransactionsTableView";
+import { columns } from "./TransactionsTable";
+import { WatchedTransaction } from "./useTransactionWatcher";
 
 function TranctionTableRowDataCell({ label, children }: { label: string; children: React.ReactNode }) {
   return (

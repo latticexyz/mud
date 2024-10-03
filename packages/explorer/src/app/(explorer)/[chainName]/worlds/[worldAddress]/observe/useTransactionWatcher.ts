@@ -1,5 +1,3 @@
-"use client";
-
 import { useParams } from "next/navigation";
 import {
   AbiFunction,
@@ -15,12 +13,11 @@ import {
 } from "viem";
 import { useConfig, useWatchBlocks } from "wagmi";
 import { useStore } from "zustand";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getTransaction, simulateContract, waitForTransactionReceipt } from "@wagmi/core";
 import { Write, store } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
-import { TransactionsTableView } from "./TransactionsTableView";
 
 export type WatchedTransaction = {
   hash?: Hex;
@@ -34,44 +31,14 @@ export type WatchedTransaction = {
   error?: BaseError;
 };
 
-export function TransactionsTableContainer() {
+export function useTransactionWatcher() {
   const { id: chainId } = useChain();
   const { worldAddress } = useParams();
   const wagmiConfig = useConfig();
   const { data: worldAbiData } = useWorldAbiQuery();
   const abi = worldAbiData?.abi;
   const [transactions, setTransactions] = useState<WatchedTransaction[]>([]);
-  const observerWrites = useStore(store, (state) => Object.values(state.writes));
-
-  const mergedTransactions = useMemo((): WatchedTransaction[] => {
-    const mergedMap = new Map<Hex | undefined, WatchedTransaction>();
-
-    for (const write of observerWrites) {
-      const parsedAbiItem = parseAbiItem(`function ${write.functionSignature}`) as AbiFunction;
-      const functionData = {
-        functionName: parsedAbiItem.name,
-        args: write.args,
-      };
-
-      mergedMap.set(write.hash, {
-        status: "pending",
-        timestamp: BigInt(write.time) / 1000n,
-        functionData,
-        write,
-      });
-    }
-
-    for (const transaction of transactions) {
-      const existing = mergedMap.get(transaction.hash);
-      if (existing) {
-        mergedMap.set(transaction.hash, { ...transaction, write: existing.write });
-      } else {
-        mergedMap.set(transaction.hash, { ...transaction });
-      }
-    }
-
-    return Array.from(mergedMap.values()).sort((a, b) => Number(b.timestamp ?? 0n) - Number(a.timestamp ?? 0n));
-  }, [transactions, observerWrites]);
+  const observerWrites = useStore(store, (state) => state.writes);
 
   const handleTransaction = useCallback(
     async (hash: Hex, timestamp: bigint) => {
@@ -157,7 +124,7 @@ export function TransactionsTableContainer() {
   );
 
   useEffect(() => {
-    for (const write of observerWrites) {
+    for (const write of Object.values(observerWrites)) {
       const hash = write.hash;
       if (write.type === "waitForTransactionReceipt" && hash) {
         const transaction = transactions.find((transaction) => transaction.hash === hash);
@@ -179,5 +146,35 @@ export function TransactionsTableContainer() {
     pollingInterval: 500,
   });
 
-  return <TransactionsTableView data={mergedTransactions} />;
+  const mergedTransactions = useMemo((): WatchedTransaction[] => {
+    const mergedMap = new Map<Hex | undefined, WatchedTransaction>();
+
+    for (const write of Object.values(observerWrites)) {
+      const parsedAbiItem = parseAbiItem(`function ${write.functionSignature}`) as AbiFunction;
+      const functionData = {
+        functionName: parsedAbiItem.name,
+        args: write.args,
+      };
+
+      mergedMap.set(write.hash, {
+        status: "pending",
+        timestamp: BigInt(write.time) / 1000n,
+        functionData,
+        write,
+      });
+    }
+
+    for (const transaction of transactions) {
+      const existing = mergedMap.get(transaction.hash);
+      if (existing) {
+        mergedMap.set(transaction.hash, { ...transaction, write: existing.write });
+      } else {
+        mergedMap.set(transaction.hash, { ...transaction });
+      }
+    }
+
+    return Array.from(mergedMap.values()).sort((a, b) => Number(b.timestamp ?? 0n) - Number(a.timestamp ?? 0n));
+  }, [transactions, observerWrites]);
+
+  return mergedTransactions;
 }
