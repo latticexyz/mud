@@ -94,7 +94,7 @@ export function TransactionsTableView({ data }: { data: WatchedTransaction[] }) 
 
   return (
     <Table>
-      <TableHeader className="sticky top-0 bg-[var(--color-background)]">
+      <TableHeader className="sticky top-0 z-10 bg-[var(--color-background)]">
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id}>
             {headerGroup.headers.map((header) => {

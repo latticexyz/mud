@@ -1,8 +1,10 @@
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { formatEther } from "viem";
 import { Row, flexRender } from "@tanstack/react-table";
 import { Separator } from "../../../../../../components/ui/Separator";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
 import { TableCell, TableRow } from "../../../../../../components/ui/Table";
+import { cn } from "../../../../../../utils";
 import { Confirmations } from "./Confirmations";
 import { WatchedTransaction } from "./TransactionsTableContainer";
 import { columns } from "./TransactionsTableView";
@@ -10,7 +12,7 @@ import { columns } from "./TransactionsTableView";
 function TranctionTableRowDataCell({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <h3 className="text-2xs font-bold uppercase text-muted-foreground">{label}</h3>
+      <h3 className="text-2xs font-bold uppercase text-white/60">{label}</h3>
       <p className="pt-1 text-xs uppercase">{children ?? <Skeleton className="h-4 w-[100px]" />}</p>
     </div>
   );
@@ -23,14 +25,25 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
 
   return (
     <>
-      <TableRow className="cursor-pointer" onClick={() => row.toggleExpanded()}>
+      <TableRow
+        className={cn("relative cursor-pointer", {
+          "bg-muted/50": row.getIsExpanded(),
+        })}
+        onClick={() => row.toggleExpanded()}
+      >
         {row.getVisibleCells().map((cell) => (
           <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
         ))}
+
+        {row.getIsExpanded() ? (
+          <ChevronUpIcon className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" />
+        ) : (
+          <ChevronDownIcon className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" />
+        )}
       </TableRow>
 
       {row.getIsExpanded() && (
-        <TableRow className="bg-muted/20 hover:bg-muted/20">
+        <TableRow className="border-b-white/20 bg-muted/50 hover:bg-muted/50">
           <TableCell colSpan={columns.length}>
             {data && (
               <>
@@ -46,23 +59,8 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                     {receipt?.effectiveGasPrice.toString()}
                   </TranctionTableRowDataCell>
                   <TranctionTableRowDataCell label="Tx cost">
-                    {receipt?.gasUsed && receipt?.effectiveGasPrice
-                      ? `${formatEther(receipt.gasUsed * receipt.effectiveGasPrice)} ETH`
-                      : null}
+                    {receipt ? `${formatEther(receipt.gasUsed * receipt.effectiveGasPrice)} ETH` : null}
                   </TranctionTableRowDataCell>
-                </div>
-
-                <Separator className="my-5" />
-
-                <div className="flex items-start gap-x-4">
-                  <h3 className="w-[45px] text-2xs font-bold uppercase">Error</h3>
-                  {data.error ? (
-                    <div className="flex-grow whitespace-pre-wrap border border-red-500 p-2 font-mono text-xs">
-                      {data.error.message}
-                    </div>
-                  ) : (
-                    <p className="text-2xs uppercase text-muted-foreground">No error</p>
-                  )}
                 </div>
 
                 <Separator className="my-5" />
@@ -73,19 +71,35 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                     <div className="flex-grow border border-white/20 p-2">
                       {data.functionData?.args?.map((arg, idx) => (
                         <div key={idx} className="flex">
-                          <span className="flex-shrink-0 text-xs text-muted-foreground">arg {idx + 1}:</span>
+                          <span className="flex-shrink-0 text-xs text-white/60">arg {idx + 1}:</span>
                           <span className="ml-2 text-xs">{String(arg)}</span>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-2xs uppercase text-muted-foreground">No inputs</p>
+                    <p className="text-2xs uppercase text-white/60">No inputs</p>
                   )}
                 </div>
 
+                {data.error ? (
+                  <>
+                    <Separator className="my-5" />
+                    <div className="flex items-start gap-x-4">
+                      <h3 className="w-[45px] text-2xs font-bold uppercase">Error</h3>
+                      {data.error ? (
+                        <div className="flex-grow whitespace-pre-wrap border border-red-500 p-2 font-mono text-xs">
+                          {data.error.message}
+                        </div>
+                      ) : (
+                        <p className="text-2xs uppercase text-white/60">No error</p>
+                      )}
+                    </div>
+                  </>
+                ) : null}
+
                 <Separator className="my-5" />
 
-                <div className="flex items-start gap-x-4">
+                <div className="flex items-start gap-x-4 pb-2">
                   <h3 className="inline-block w-[45px] pb-2 text-2xs font-bold uppercase">Logs</h3>
                   {Array.isArray(logs) && logs.length > 0 ? (
                     <div className="flex-grow break-all border border-white/20 p-2 pb-3">
@@ -100,7 +114,7 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                                 <ul className="list-inside">
                                   {Object.entries(args).map(([key, value]) => (
                                     <li key={key} className="mt-1 flex">
-                                      <span className="flex-shrink-0 text-xs text-muted-foreground">{key}: </span>
+                                      <span className="flex-shrink-0 text-xs text-white/60">{key}: </span>
                                       <span className="ml-2 text-xs">{value as never}</span>
                                     </li>
                                   ))}
@@ -113,7 +127,7 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                       </ul>
                     </div>
                   ) : (
-                    <p className="text-2xs uppercase text-muted-foreground">No logs</p>
+                    <p className="text-2xs uppercase text-white/60">No logs</p>
                   )}
                 </div>
               </>
