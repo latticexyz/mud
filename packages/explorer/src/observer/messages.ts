@@ -14,6 +14,7 @@ export type Messages = {
   };
   waitForTransactionReceipt: {
     writeId: string;
+    hash: Hash;
   };
   "waitForTransactionReceipt:result": PromiseSettledResult<ReceiptSummary> & {
     writeId: string;

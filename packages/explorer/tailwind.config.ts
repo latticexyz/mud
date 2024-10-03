@@ -14,10 +14,12 @@ const config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-jetbrains-mono)"],
+        sans: ["var(--font-inter)"],
         mono: ["var(--font-jetbrains-mono)"],
       },
-
+      fontSize: {
+        "2xs": ["0.625rem", { lineHeight: "1rem" }],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -52,6 +54,7 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        success: "#34d399",
       },
       borderRadius: {
         lg: "var(--radius)",
