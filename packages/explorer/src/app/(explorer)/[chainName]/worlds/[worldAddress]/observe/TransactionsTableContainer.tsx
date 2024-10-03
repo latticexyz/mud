@@ -16,7 +16,7 @@ import {
 import { useConfig, useWatchBlocks } from "wagmi";
 import { useStore } from "zustand";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { getTransaction, getTransactionReceipt, simulateContract } from "@wagmi/core";
+import { getTransaction, simulateContract, waitForTransactionReceipt } from "@wagmi/core";
 import { Write, store } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
@@ -107,25 +107,11 @@ export function TransactionsTableContainer() {
         ...prevTransactions,
       ]);
 
-      // Receipt
-      const maxRetries = 10;
-      const retryInterval = 2000;
       let receipt: TransactionReceipt | undefined;
-      for (let attempt = 0; attempt < maxRetries; attempt++) {
-        try {
-          receipt = await getTransactionReceipt(wagmiConfig, { hash });
-          if (receipt) break;
-        } catch (error) {
-          console.error(`Failed to fetch receipt, attempt ${attempt + 1}:`, error);
-        }
-
-        if (attempt < maxRetries - 1) {
-          await new Promise((resolve) => setTimeout(resolve, retryInterval));
-        }
-      }
-
-      if (!receipt) {
-        console.error(`Failed to fetch transaction receipt after ${maxRetries} attempts`);
+      try {
+        receipt = await waitForTransactionReceipt(wagmiConfig, { hash });
+      } catch {
+        console.error(`Failed to fetch transaction receipt. Transaction hash: ${hash}`);
       }
 
       if (receipt && receipt.status === "reverted" && functionName) {
