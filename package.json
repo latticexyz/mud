@@ -20,6 +20,7 @@
     "gas-report": "pnpm run --recursive --parallel gas-report",
     "lint": "pnpm prettier:check && eslint . --ext .ts --ext .tsx",
     "prepare": "husky install && (forge --version || pnpm foundryup)",
+    "prepare:vercel": "(forge --version || pnpm foundryup) && ln -sf /vercel/.foundry/bin/* node_modules/.bin/ && forge --version",
     "prettier": "prettier --write '**/*.{ts,tsx,css,md,mdx,sol}'",
     "prettier:check": "prettier --check '**/*.{ts,tsx,css,md,mdx,sol}'",
     "release:check": "changeset status --verbose --since=origin/main",
@@ -57,7 +58,7 @@
   },
   "packageManager": "pnpm@9.6.0",
   "engines": {
-    "node": "^18.20.1",
+    "node": "18.x || 20.x",
     "pnpm": "^9.6.0"
   }
 }
