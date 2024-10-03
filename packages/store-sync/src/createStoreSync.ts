@@ -64,7 +64,7 @@ export async function createStoreSync({
   maxBlockRange,
   initialState,
   initialBlockLogs,
-  indexerUrl: indexerUrlInput,
+  indexerUrl: initialIndexerUrl,
 }: CreateStoreSyncOptions): Promise<SyncResult> {
   const filters: SyncFilter[] =
     initialFilters.length || tableIds.length
@@ -82,8 +82,8 @@ export async function createStoreSync({
     : undefined;
 
   const indexerUrl =
-    indexerUrlInput !== false
-      ? indexerUrlInput ??
+    initialIndexerUrl !== false
+      ? initialIndexerUrl ??
         (publicClient.chain && "indexerUrl" in publicClient.chain && typeof publicClient.chain.indexerUrl === "string"
           ? publicClient.chain.indexerUrl
           : undefined)
