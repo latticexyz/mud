@@ -2,4 +2,4 @@
 "@latticexyz/store": patch
 ---
 
-Added an `unwrap` function to the ResourceIdInstance library, so now it is possible to directly unwrap a ResourceId by doing `id.unwrap()`.
+Added an `unwrap` function to the `ResourceIdInstance` library to make it easier to unwrap a `ResourceId` with `resourceId.unwrap()`.
