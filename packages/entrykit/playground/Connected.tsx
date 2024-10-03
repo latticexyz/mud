@@ -1,19 +1,6 @@
-import { useAccount, useConnectorClient, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { useConfig } from "../src/EntryKitConfigProvider";
-import { http } from "viem";
-import { getAction } from "viem/utils";
-import { waitForTransactionReceipt, writeContract } from "viem/actions";
-import { createSmartAccountClient } from "permissionless/clients";
 import { useAutoTopUp } from "./useAutoTopUp";
-
-// const bundlerTransport = http("https://bundler.tunnel.offchain.dev");
-const bundlerTransport = http("http://127.0.0.1:4337");
-
-// const bundlerClient = createClient({
-//   chain: anvil,
-//   transport: bundlerTransport,
-//   pollingInterval: 500,
-// });
 
 export function Connected() {
   const { address } = useAccount();

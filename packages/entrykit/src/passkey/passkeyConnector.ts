@@ -1,23 +1,19 @@
 import {
   Address,
   createClient,
-  createTransport,
   custom,
-  EIP1193Parameters,
   EIP1193RequestFn,
   EIP1474Methods,
   getAddress,
   numberToHex,
   http,
-  publicActions,
   SwitchChainError,
-  walletActions,
 } from "viem";
 import { ChainNotConfiguredError, createConnector, CreateConnectorFn } from "wagmi";
-import { bundlerActions, P256Credential } from "viem/account-abstraction";
+import { P256Credential } from "viem/account-abstraction";
 import { getCredentialAddress } from "./getCredentialAddress";
 import { cache } from "./cache";
-import { createSmartAccountClient, smartAccountActions } from "permissionless/clients";
+import { createSmartAccountClient } from "permissionless/clients";
 import { getAccount } from "./getAccount";
 import { createPasskey } from "./createPasskey";
 import { reusePasskey } from "./reusePasskey";
@@ -165,6 +161,11 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePa
       // We provide our own `getClient` method here so that we can return
       // a `smart` account, which is necessary for using with Viem's
       // account abstraction actions (i.e. user ops).
+      //
+      // Although Wagmi recommends connectors be tree-shakable, we return
+      // an extended client here so that this client works with native
+      // Wagmi hooks. Otherwise the app needs to build its own client, then
+      // wrap each call in its own react-query hooks.
       async getClient(params) {
         console.log("passkeyConnector.getClient", params);
         // TODO: support params.chainId?
@@ -180,70 +181,10 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePa
         });
       },
 
-      async getProvider(params) {
-        console.log("passkeyConnector.getProvider", params);
-
-        // This feels like a weird dependency loop
-        const account = await getAccount(client);
-        // TODO: should this still return a provider but without the account-specific methods implemented?
-        console.log("got account for provider", account);
-        // if (!account) throw new Error("not connected");
-        if (!account) return createTransport(client.transport);
-
-        // const bundlerClient = createClient({
-        //   chain,
-        //   transport: http("https://bundler.tunnel.offchain.dev"),
-        //   pollingInterval: 500,
-        // });
-
-        // const connectorClient = createClient({
-        //   account,
-        //   chain,
-        //   transport: () => createTransport(client.transport),
-        // });
-
-        // const smartAccountClient = connectorClient
-        //   .extend(publicActions)
-        //   .extend(walletActions) // TODO: bind account to client somehow
-        //   .extend(() => bundlerActions(bundlerClient))
-        //   .extend(smartAccountActions());
-
-        const request = async (req: EIP1193Parameters<EIP1474Methods>) => {
-          // switch (req.method) {
-          //   case "personal_sign": {
-          //     const [message, _address] = req.params;
-          //     return await account.signMessage({ message });
-          //   }
-          //   case "eth_signTypedData_v4": {
-          //     const [_address, data] = req.params;
-          //     return await account.signTypedData(JSON.parse(data));
-          //   }
-          //   // case "eth_sendTransaction": {
-          //   //   console.log("eth_sendTransaction", req.params);
-          //   //   const actualParams = req.params[0];
-          //   //   const hash = await smartAccountClient.sendTransaction({
-          //   //     account,
-          //   //     data: actualParams?.data,
-          //   //     to: actualParams?.to,
-          //   //     value: actualParams?.value ? hexToBigInt(actualParams.value) : undefined,
-          //   //     gas: actualParams?.gas ? hexToBigInt(actualParams.gas) : undefined,
-          //   //     // nonce: actualParams?.nonce
-          //   //     //   ? hexToNumber(actualParams.nonce)
-          //   //     //   : undefined,
-          //   //     maxPriorityFeePerGas: actualParams?.maxPriorityFeePerGas
-          //   //       ? hexToBigInt(actualParams.maxPriorityFeePerGas)
-          //   //       : undefined,
-          //   //     maxFeePerGas: actualParams?.maxFeePerGas ? hexToBigInt(actualParams.maxFeePerGas) : undefined,
-          //   //     gasPrice: (actualParams?.gasPrice ? hexToBigInt(actualParams.gasPrice) : undefined) as undefined,
-          //   //   });
-          //   //   return hash;
-          //   // }
-          // }
-          console.log("requested", req.method, req.params);
-          return client.transport.request(req);
-        };
-
-        return custom({ request })({ retryCount: 0 });
+      async getProvider(_params) {
+        // TODO: chain specific provider?
+        // TODO: is turning off retryCount important? is wrapping in this way enough to turn off retries?
+        return custom({ request: client.transport.request })({ retryCount: 0 });
       },
     };
   });
