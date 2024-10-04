@@ -1,5 +1,4 @@
 import { useAccountModal } from "./useAccountModal";
-import { useAccountRequirements } from "./useAccountRequirements";
 import { Shadow } from "./ui/Shadow";
 import { Logo } from "./icons/Logo";
 import { useAccount, useDisconnect } from "wagmi";
@@ -30,14 +29,16 @@ const secondaryInteractiveClassNames = twMerge(
 );
 
 export function AccountButton() {
-  const { requirement } = useAccountRequirements();
   const { openAccountModal, accountModalOpen } = useAccountModal();
-  const { address } = useAccount();
+  const { status, address } = useAccount();
   const [menuOpen, setMenuOpen] = useState(false);
   const { disconnect, isPending: disconnectPending } = useDisconnect();
   const { setStep } = useOnboardingSteps();
 
-  if (requirement != null) {
+  // TODO: show indicator that onboarding is not complete
+  // TODO: fix small flash between connected/disconnected state, I think because of <Shadow> remounting
+
+  if (status !== "connected") {
     return (
       <Shadow mode="child">
         <button
@@ -162,7 +163,7 @@ export function AccountButton() {
                 onSelect={() => disconnect()}
               >
                 <LogoutIcon className="flex-shrink-0 text-red-500" />
-                <span className="flex-grow">Disconnect</span>
+                <span className="flex-grow">Sign out</span>
               </DropdownMenu.Item>
             </div>
           </Shadow>
