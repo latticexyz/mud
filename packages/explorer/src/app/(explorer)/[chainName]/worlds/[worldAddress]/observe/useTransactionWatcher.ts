@@ -27,6 +27,7 @@ export type WatchedTransaction = {
   timestamp?: bigint;
   transaction?: Transaction;
   functionData?: DecodeFunctionDataReturnType;
+  value?: bigint;
   receipt?: TransactionReceipt;
   status: "pending" | "success" | "reverted" | "rejected" | "unknown";
   write?: Write;
@@ -52,14 +53,14 @@ export function useTransactionWatcher() {
 
       let functionName: string | undefined;
       let args: readonly unknown[] | undefined;
-      let transactionError: Error | undefined;
+      let transactionError: BaseError | undefined;
 
       try {
         const functionData = decodeFunctionData({ abi, data: transaction.input });
         functionName = functionData.functionName;
         args = functionData.args;
       } catch (error) {
-        transactionError = error as Error;
+        transactionError = error as BaseError;
         functionName = transaction.input.length > 10 ? transaction.input.slice(0, 10) : "unknown";
       }
 
@@ -74,6 +75,7 @@ export function useTransactionWatcher() {
             functionName,
             args,
           },
+          value: transaction.value,
         },
         ...prevTransactions,
       ]);
@@ -159,24 +161,24 @@ export function useTransactionWatcher() {
 
       mergedMap.set(write.hash || write.writeId, {
         from: write.from,
-        status: writeResult?.status === "rejected" ? writeResult.status : "pending",
+        status: writeResult?.status === "rejected" ? "rejected" : "pending",
         timestamp: BigInt(write.time) / 1000n,
         functionData: {
           functionName: parsedAbiItem.name,
           args: write.args,
         },
+        value: write.value,
         error: writeResult && "reason" in writeResult ? (writeResult.reason as BaseError) : undefined,
         write,
       });
     }
 
     for (const transaction of transactions) {
-      const key = transaction.hash || transaction.writeId;
-      const existing = mergedMap.get(key);
+      const existing = mergedMap.get(transaction.hash);
       if (existing) {
-        mergedMap.set(key, { ...transaction, write: existing.write });
+        mergedMap.set(transaction.hash, { ...transaction, write: existing.write });
       } else {
-        mergedMap.set(key, { ...transaction });
+        mergedMap.set(transaction.hash, { ...transaction });
       }
     }
 

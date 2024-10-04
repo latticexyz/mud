@@ -14,6 +14,7 @@ export type Write = {
   address: Address;
   functionSignature: string;
   args: unknown[];
+  value?: bigint;
   time: number;
   events: Message<Exclude<MessageType, "ping">>[];
   error?: Error;
