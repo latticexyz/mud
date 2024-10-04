@@ -2,7 +2,6 @@ import { Client } from "viem";
 import { SmartAccount, toCoinbaseSmartAccount, toWebAuthnAccount } from "viem/account-abstraction";
 import { cache } from "./cache";
 import { P256Credential } from "webauthn-p256";
-import { getInitializerAccount } from "./getInitializerAccount";
 
 export async function getAccount(client: Client, id: P256Credential["id"]): Promise<SmartAccount> {
   const { publicKeys } = cache.getState();
@@ -13,8 +12,7 @@ export async function getAccount(client: Client, id: P256Credential["id"]): Prom
     throw new Error("No public key found for passkey credential.");
   }
 
-  const initializer = getInitializerAccount(id, publicKey);
-  const owners = [toWebAuthnAccount({ credential: { id, publicKey } }), initializer];
+  const owners = [toWebAuthnAccount({ credential: { id, publicKey } })];
 
   return await toCoinbaseSmartAccount({
     client,
