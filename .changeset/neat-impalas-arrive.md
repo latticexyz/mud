@@ -2,4 +2,4 @@
 "@latticexyz/explorer": patch
 ---
 
-Rejected transactions coming from `observer` are now integrated into World Explorer transactions list. 
+Observe tab is now populated by rejected transactions coming from the `observer` transport wrapper.
