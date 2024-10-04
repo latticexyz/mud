@@ -98,6 +98,7 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                 {data.error ? (
                   <>
                     <Separator className="my-5" />
+
                     <div className="flex items-start gap-x-4">
                       <h3 className="w-[45px] flex-shrink-0 text-2xs font-bold uppercase">Error</h3>
                       {data.error ? (
@@ -111,39 +112,43 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                   </>
                 ) : null}
 
-                <Separator className="my-5" />
+                {!data.error ? (
+                  <>
+                    <Separator className="my-5" />
 
-                <div className="flex items-start gap-x-4 pb-2">
-                  <h3 className="inline-block w-[45px] flex-shrink-0 pb-2 text-2xs font-bold uppercase">Logs</h3>
-                  {Array.isArray(logs) && logs.length > 0 ? (
-                    <div className="flex-grow break-all border border-white/20 p-2 pb-3">
-                      <ul>
-                        {logs.map((log, idx) => {
-                          const eventName = "eventName" in log ? log.eventName : null;
-                          const args = "args" in log ? (log.args as Record<string, unknown>) : null;
-                          return (
-                            <li key={idx}>
-                              {Boolean(eventName) && <span className="text-xs">{eventName?.toString()}:</span>}
-                              {args && (
-                                <ul className="list-inside">
-                                  {Object.entries(args).map(([key, value]) => (
-                                    <li key={key} className="mt-1 flex">
-                                      <span className="flex-shrink-0 text-xs text-white/60">{key}: </span>
-                                      <span className="ml-2 text-xs">{value as never}</span>
-                                    </li>
-                                  ))}
-                                </ul>
-                              )}
-                              {idx < logs.length - 1 && <Separator className="my-4" />}
-                            </li>
-                          );
-                        })}
-                      </ul>
+                    <div className="flex items-start gap-x-4 pb-2">
+                      <h3 className="inline-block w-[45px] pb-2 text-2xs font-bold uppercase">Logs</h3>
+                      {Array.isArray(logs) && logs.length > 0 ? (
+                        <div className="flex-grow break-all border border-white/20 p-2 pb-3">
+                          <ul>
+                            {logs.map((log, idx) => {
+                              const eventName = "eventName" in log ? log.eventName : null;
+                              const args = "args" in log ? (log.args as Record<string, unknown>) : null;
+                              return (
+                                <li key={idx}>
+                                  {Boolean(eventName) && <span className="text-xs">{eventName?.toString()}:</span>}
+                                  {args && (
+                                    <ul className="list-inside">
+                                      {Object.entries(args).map(([key, value]) => (
+                                        <li key={key} className="mt-1 flex">
+                                          <span className="flex-shrink-0 text-xs text-white/60">{key}: </span>
+                                          <span className="ml-2 text-xs">{value as never}</span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  )}
+                                  {idx < logs.length - 1 && <Separator className="my-4" />}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      ) : (
+                        <p className="text-2xs uppercase text-white/60">No logs</p>
+                      )}
                     </div>
-                  ) : (
-                    <p className="text-2xs uppercase text-white/60">No logs</p>
-                  )}
-                </div>
+                  </>
+                ) : null}
               </>
             )}
           </TableCell>
