@@ -7,7 +7,7 @@ import { connectorsForWallets, getDefaultWallets, WalletList } from "@rainbow-me
 import { garnet, redstone } from "@latticexyz/common/chains";
 import { anvil } from "viem/chains";
 import { passkeyWallet } from "../src/passkey/passkeyWallet";
-import { SignInModal } from "../src/SignInModal";
+import { AccountModal } from "../src/AccountModal";
 import { EntryKitConfigProvider } from "../src/EntryKitConfigProvider";
 import { App } from "./App";
 import { Chain, Hex, http } from "viem";
@@ -65,7 +65,7 @@ root.render(
       <QueryClientProvider client={queryClient}>
         <EntryKitConfigProvider config={entryKitConfig}>
           <App />
-          <SignInModal />
+          <AccountModal />
         </EntryKitConfigProvider>
       </QueryClientProvider>
     </WagmiProvider>

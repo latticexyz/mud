@@ -10,7 +10,7 @@ export function AppInfo() {
   // TODO: add "already signed" state
 
   return (
-    <div className="flex-grow flex flex-col items-center justify-center p-6 gap-2">
+    <div className="flex-grow flex flex-col items-center justify-center gap-2">
       <div className="w-16 h-16 m-2">
         {!appIconLoading ? (
           hasAppIcon ? (

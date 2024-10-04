@@ -82,7 +82,8 @@ export function useOnboardingSteps() {
       steps,
       setStep,
       resetStep,
+      nextStep,
     }),
-    [resetStep, setStep, step, steps],
+    [nextStep, resetStep, setStep, step, steps],
   );
 }

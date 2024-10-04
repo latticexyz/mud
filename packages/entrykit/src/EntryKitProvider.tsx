@@ -1,5 +1,5 @@
 import { type ReactNode } from "react";
-import { SignInModal } from "./SignInModal";
+import { AccountModal } from "./AccountModal";
 import { Config } from "./config";
 import { EntryKitConfigProvider } from "./EntryKitConfigProvider";
 
@@ -16,7 +16,7 @@ export function EntryKitProvider({ config, children }: Props) {
   return (
     <EntryKitConfigProvider config={config}>
       {children}
-      <SignInModal />
+      <AccountModal />
     </EntryKitConfigProvider>
   );
 }
