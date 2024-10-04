@@ -10,6 +10,7 @@ export function Confirmations({ hash }: { hash?: Hex }) {
     chainId,
     query: {
       refetchInterval: 1000,
+      enabled: !!hash,
     },
   });
 

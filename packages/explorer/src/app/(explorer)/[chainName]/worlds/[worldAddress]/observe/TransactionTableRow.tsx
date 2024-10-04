@@ -9,17 +9,29 @@ import { Confirmations } from "./Confirmations";
 import { columns } from "./TransactionsTable";
 import { WatchedTransaction } from "./useTransactionWatcher";
 
-function TranctionTableRowDataCell({ label, children }: { label: string; children: React.ReactNode }) {
+function TransactionTableRowDataCell({
+  label,
+  status,
+  children,
+}: {
+  label: string;
+  status: WatchedTransaction["status"];
+  children: React.ReactNode;
+}) {
   return (
     <div>
       <h3 className="text-2xs font-bold uppercase text-white/60">{label}</h3>
-      <p className="pt-1 text-xs uppercase">{children ?? <Skeleton className="h-4 w-[100px]" />}</p>
+      <p className="pt-1 text-xs uppercase">
+        {children ??
+          (status === "rejected" ? <span className="text-white/60">N/A</span> : <Skeleton className="h-4 w-[100px]" />)}
+      </p>
     </div>
   );
 }
 
 export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
   const data = row?.original;
+  const status = data.status;
   const logs = data?.logs;
   const receipt = data?.receipt;
 
@@ -48,25 +60,27 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
             {data && (
               <>
                 <div className="grid grid-cols-2 gap-x-2 gap-y-5 sm:grid-cols-4 md:grid-cols-5">
-                  <TranctionTableRowDataCell label="Confirmations">
-                    <Confirmations hash={data.transaction?.hash} />
-                  </TranctionTableRowDataCell>
-                  <TranctionTableRowDataCell label="Tx value">
-                    {data.transaction?.value !== undefined ? `${formatEther(data.transaction.value)} ETH` : null}
-                  </TranctionTableRowDataCell>
-                  <TranctionTableRowDataCell label="Gas used">{receipt?.gasUsed.toString()}</TranctionTableRowDataCell>
-                  <TranctionTableRowDataCell label="Gas price">
+                  <TransactionTableRowDataCell label="Confirmations" status={status}>
+                    {status !== "rejected" ? <Confirmations hash={data.transaction?.hash} /> : null}
+                  </TransactionTableRowDataCell>
+                  <TransactionTableRowDataCell label="Tx value" status={status}>
+                    {data.value ? formatEther(data.value) : 0} ETH
+                  </TransactionTableRowDataCell>
+                  <TransactionTableRowDataCell label="Gas used" status={status}>
+                    {receipt?.gasUsed.toString()}
+                  </TransactionTableRowDataCell>
+                  <TransactionTableRowDataCell label="Gas price" status={status}>
                     {receipt?.effectiveGasPrice.toString()}
-                  </TranctionTableRowDataCell>
-                  <TranctionTableRowDataCell label="Tx cost">
+                  </TransactionTableRowDataCell>
+                  <TransactionTableRowDataCell label="Tx cost" status={status}>
                     {receipt ? `${formatEther(receipt.gasUsed * receipt.effectiveGasPrice)} ETH` : null}
-                  </TranctionTableRowDataCell>
+                  </TransactionTableRowDataCell>
                 </div>
 
                 <Separator className="my-5" />
 
                 <div className="flex items-start gap-x-4">
-                  <h3 className="w-[45px] text-2xs font-bold uppercase">Inputs</h3>
+                  <h3 className="w-[45px] flex-shrink-0 text-2xs font-bold uppercase">Inputs</h3>
                   {Array.isArray(data.functionData?.args) && data.functionData?.args.length > 0 ? (
                     <div className="flex-grow border border-white/20 p-2">
                       {data.functionData?.args?.map((arg, idx) => (
@@ -85,7 +99,7 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                   <>
                     <Separator className="my-5" />
                     <div className="flex items-start gap-x-4">
-                      <h3 className="w-[45px] text-2xs font-bold uppercase">Error</h3>
+                      <h3 className="w-[45px] flex-shrink-0 text-2xs font-bold uppercase">Error</h3>
                       {data.error ? (
                         <div className="flex-grow whitespace-pre-wrap border border-red-500 p-2 font-mono text-xs">
                           {data.error.message}
@@ -100,7 +114,7 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                 <Separator className="my-5" />
 
                 <div className="flex items-start gap-x-4 pb-2">
-                  <h3 className="inline-block w-[45px] pb-2 text-2xs font-bold uppercase">Logs</h3>
+                  <h3 className="inline-block w-[45px] flex-shrink-0 pb-2 text-2xs font-bold uppercase">Logs</h3>
                   {Array.isArray(logs) && logs.length > 0 ? (
                     <div className="flex-grow break-all border border-white/20 p-2 pb-3">
                       <ul>

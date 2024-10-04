@@ -1,6 +1,7 @@
 import { useParams } from "next/navigation";
 import {
   AbiFunction,
+  Address,
   BaseError,
   DecodeFunctionDataReturnType,
   Hex,
@@ -15,17 +16,21 @@ import { useConfig, useWatchBlocks } from "wagmi";
 import { useStore } from "zustand";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getTransaction, simulateContract, waitForTransactionReceipt } from "@wagmi/core";
+import { Message } from "../../../../../../observer/messages";
 import { Write, store } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 
 export type WatchedTransaction = {
   hash?: Hex;
+  writeId?: string;
+  from?: Address;
   timestamp?: bigint;
   transaction?: Transaction;
   functionData?: DecodeFunctionDataReturnType;
+  value?: bigint;
   receipt?: TransactionReceipt;
-  status: "pending" | "success" | "reverted" | "unknown";
+  status: "pending" | "success" | "reverted" | "rejected" | "unknown";
   write?: Write;
   logs?: Log[];
   error?: BaseError;
@@ -63,6 +68,7 @@ export function useTransactionWatcher() {
       setTransactions((prevTransactions) => [
         {
           hash,
+          from: transaction.from,
           timestamp,
           transaction,
           status: "pending",
@@ -70,6 +76,7 @@ export function useTransactionWatcher() {
             functionName,
             args,
           },
+          value: transaction.value,
         },
         ...prevTransactions,
       ]);
@@ -114,7 +121,7 @@ export function useTransactionWatcher() {
                 receipt,
                 logs,
                 status,
-                error: transactionError,
+                error: transactionError as BaseError,
               }
             : transaction,
         ),
@@ -147,19 +154,22 @@ export function useTransactionWatcher() {
   });
 
   const mergedTransactions = useMemo((): WatchedTransaction[] => {
-    const mergedMap = new Map<Hex | undefined, WatchedTransaction>();
+    const mergedMap = new Map<string | undefined, WatchedTransaction>();
 
     for (const write of Object.values(observerWrites)) {
       const parsedAbiItem = parseAbiItem(`function ${write.functionSignature}`) as AbiFunction;
-      const functionData = {
-        functionName: parsedAbiItem.name,
-        args: write.args,
-      };
+      const writeResult = write.events.find((event): event is Message<"write:result"> => event.type === "write:result");
 
-      mergedMap.set(write.hash, {
-        status: "pending",
+      mergedMap.set(write.hash || write.writeId, {
+        from: write.from,
+        status: writeResult?.status === "rejected" ? "rejected" : "pending",
         timestamp: BigInt(write.time) / 1000n,
-        functionData,
+        functionData: {
+          functionName: parsedAbiItem.name,
+          args: write.args,
+        },
+        value: write.value,
+        error: writeResult && "reason" in writeResult ? (writeResult.reason as BaseError) : undefined,
         write,
       });
     }
