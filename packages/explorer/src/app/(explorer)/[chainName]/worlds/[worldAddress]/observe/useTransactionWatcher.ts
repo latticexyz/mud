@@ -16,6 +16,7 @@ import { useConfig, useWatchBlocks } from "wagmi";
 import { useStore } from "zustand";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getTransaction, simulateContract, waitForTransactionReceipt } from "@wagmi/core";
+import { Message } from "../../../../../../observer/messages";
 import { Write, store } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
@@ -157,7 +158,7 @@ export function useTransactionWatcher() {
 
     for (const write of Object.values(observerWrites)) {
       const parsedAbiItem = parseAbiItem(`function ${write.functionSignature}`) as AbiFunction;
-      const writeResult = write.events.find((event) => event.type === "write:result");
+      const writeResult = write.events.find((event): event is Message<"write:result"> => event.type === "write:result");
 
       mergedMap.set(write.hash || write.writeId, {
         from: write.from,
