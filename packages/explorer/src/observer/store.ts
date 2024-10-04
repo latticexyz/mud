@@ -10,11 +10,14 @@ export type Write = {
   writeId: string;
   type: MessageType;
   hash?: Hex;
+  from?: Address;
   address: Address;
   functionSignature: string;
   args: unknown[];
+  value?: bigint;
   time: number;
   events: Message<Exclude<MessageType, "ping">>[];
+  error?: Error;
 };
 
 export type State = {
