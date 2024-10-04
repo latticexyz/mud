@@ -20,7 +20,6 @@
     "gas-report": "pnpm run --recursive --parallel gas-report",
     "lint": "pnpm prettier:check && eslint . --ext .ts --ext .tsx",
     "prepare": "husky install && (forge --version || pnpm foundryup)",
-    "prepare:vercel": "(forge --version || pnpm foundryup) && ln -sf /vercel/.foundry/bin/* node_modules/.bin/ && forge --version",
     "prettier": "prettier --write '**/*.{ts,tsx,css,md,mdx,sol}'",
     "prettier:check": "prettier --check '**/*.{ts,tsx,css,md,mdx,sol}'",
     "release:check": "changeset status --verbose --since=origin/main",
@@ -29,7 +28,8 @@
     "test": "pnpm run --recursive test",
     "test:ci": "pnpm run --recursive --parallel test:ci",
     "type-bench": "pnpm --filter ./test/ts-benchmarks bench",
-    "type-stats-repo": "attest stats packages/*"
+    "type-stats-repo": "attest stats packages/*",
+    "vercel:prepare": "(forge --version || pnpm foundryup) && ln -sf /vercel/.foundry/bin/* node_modules/.bin/ && forge --version"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --cache --fix",
