@@ -84,6 +84,12 @@ export function passkeyConnector({ chainId, bundlerTransport }: PasskeyConnector
           throw new Error(`Can't connect to chain ${params.chainId}. Passkey connector is bound to chain ${chainId}.`);
         }
 
+        // attempt to reuse credential if this is called directly
+        // TODO: move this into wallet so it's only triggered via rainbowkit?
+        if (!cache.getState().activeCredential && !params?.isReconnecting) {
+          await reusePasskey();
+        }
+
         const accounts = await this.getAccounts();
         connected = accounts.length > 0;
 

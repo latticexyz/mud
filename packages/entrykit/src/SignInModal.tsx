@@ -1,20 +1,25 @@
 import { Modal } from "./ui/Modal";
-import { useAccount, useConnections, useDisconnect } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import { useAccountModal } from "./useAccountModal";
 import { twMerge } from "tailwind-merge";
 import { Button } from "./ui/Button";
 import { usePasskeyConnector } from "./usePasskeyConnector";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useMutation } from "@tanstack/react-query";
 
 export function SignInModal() {
-  const { status } = useAccount();
-  console.log("useAccount.status", status);
+  const { address, status } = useAccount();
   const { accountModalOpen, toggleAccountModal } = useAccountModal();
-  const { disconnectAsync } = useDisconnect();
+  const { openConnectModal } = useConnectModal();
+  const { disconnect } = useDisconnect();
 
   const passkeyConnector = usePasskeyConnector();
-
-  const connections = useConnections();
-  const passkeyAddress = connections.find((conn) => conn.connector.type === passkeyConnector.type)?.accounts.at(0);
+  const createPasskey = useMutation({
+    mutationKey: ["createPasskey", passkeyConnector.id],
+    mutationFn: async () => {
+      return await passkeyConnector.createPasskey();
+    },
+  });
 
   return (
     <Modal open={accountModalOpen} onOpenChange={toggleAccountModal}>
@@ -29,38 +34,26 @@ export function SignInModal() {
             "links:decoration-neutral-300 dark:links:decoration-neutral-500 hover:links:decoration-orange-500",
           )}
         >
-          {passkeyAddress ? (
+          {status === "connected" ? (
             <div className="flex-grow flex flex-col items-center justify-center gap-2">
-              {passkeyAddress}
-              <Button
-                onClick={async () => {
-                  console.log("disconnecting");
-                  await disconnectAsync();
-                  console.log("disconnected");
-                }}
-              >
-                Sign out
-              </Button>
+              {address}
+              <Button onClick={() => disconnect()}>Sign out</Button>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center">
               <div className="flex flex-col gap-2">
                 <Button
                   className="self-auto flex justify-center"
-                  onClick={async () => {
-                    const address = await passkeyConnector.createPasskey();
-                    console.log("created passkey, smart account address:", address);
-                  }}
+                  pending={createPasskey.status === "pending"}
+                  onClick={() => createPasskey.mutate()}
                 >
                   Create account
                 </Button>
                 <Button
                   className="self-auto flex justify-center text-sm py-1"
                   variant="secondary"
-                  onClick={async () => {
-                    const address = await passkeyConnector.reusePasskey();
-                    console.log("reused passkey, smart account address:", address);
-                  }}
+                  pending={status === "connecting"}
+                  onClick={openConnectModal}
                 >
                   Connect with passkey or wallet
                 </Button>
