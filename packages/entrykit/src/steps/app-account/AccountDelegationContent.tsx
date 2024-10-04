@@ -1,7 +1,6 @@
 import { Button } from "../../ui/Button";
 import { AccountModalSection } from "../../AccountModalSection";
 import { AccountModalTitle } from "../../AccoutModalTitle";
-import { AppInfo } from "./AppInfo";
 import { useSignRegisterDelegation } from "./useSignRegisterDelegation";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
 import { useConfig } from "../../EntryKitConfigProvider";
@@ -23,9 +22,6 @@ export function AccountDelegationContent() {
   return (
     <>
       <AccountModalTitle title="Sign in" />
-      <AccountModalSection className="flex-grow bg-white dark:bg-neutral-700">
-        <AppInfo />
-      </AccountModalSection>
       <AccountModalSection>
         <div className="flex flex-col gap-6 px-5 py-6">
           {error ? <ErrorNotice error={error} /> : null}

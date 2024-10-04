@@ -9,7 +9,7 @@ export type Props = {
 export function AccountModalSection({ className, children }: Props) {
   return (
     <div className={twMerge("flex", className)}>
-      <div className="flex-grow flex flex-col animate-in fade-in">{children}</div>
+      <div className="flex-grow flex flex-col animate-in fade-in slide-in-from-left-2">{children}</div>
     </div>
   );
 }
