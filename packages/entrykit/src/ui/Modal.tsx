@@ -29,11 +29,11 @@ export function Modal({ open, onOpenChange, children }: Props) {
           <div
             className={twMerge(
               "fixed inset-0",
-              "grid place-items-center overflow-y-auto py-8",
+              "grid place-items-end sm:place-items-center overflow-y-auto",
               "animate-in animate-duration-200 fade-in slide-in-from-bottom-4",
             )}
           >
-            <Dialog.Content className="outline-none">{children}</Dialog.Content>
+            <Dialog.Content className="outline-none w-full sm:w-[28rem]">{children}</Dialog.Content>
           </div>
         </Shadow>
       </Dialog.Portal>

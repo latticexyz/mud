@@ -26,7 +26,7 @@ export function SignInModal() {
       {accountModalOpen ? (
         <div
           className={twMerge(
-            "flex flex-col w-[min(100vw,_44rem)] min-h-[28rem] border divide-x",
+            "flex flex-col min-h-[20rem] items-center justify-center border-t sm:border divide-x",
             "bg-neutral-100 text-neutral-700 border-neutral-300 divide-neutral-300",
             "dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-700 dark:divide-neutral-700",
             "links:font-medium links:underline links:underline-offset-4",
