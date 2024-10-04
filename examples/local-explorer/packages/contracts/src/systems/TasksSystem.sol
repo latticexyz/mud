@@ -12,6 +12,8 @@ contract TasksSystem is System {
 
   function completeTask(bytes32 id) public {
     Tasks.setCompletedAt(id, block.timestamp);
+
+    revert("Oops");
   }
 
   function resetTask(bytes32 id) public {

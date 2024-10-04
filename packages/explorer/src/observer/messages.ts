@@ -8,10 +8,9 @@ export type Messages = {
     address: Address;
     functionSignature: string;
     args: unknown[];
+    from?: Address;
   };
-  "write:result": PromiseSettledResult<Hash> & {
-    writeId: string;
-  };
+  "write:result": PromiseSettledResult<Hash> & { writeId: string };
   waitForTransactionReceipt: {
     writeId: string;
     hash: Hash;

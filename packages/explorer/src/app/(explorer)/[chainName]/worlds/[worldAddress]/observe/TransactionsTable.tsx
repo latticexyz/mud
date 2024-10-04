@@ -18,6 +18,9 @@ export const columns = [
   columnHelper.accessor("receipt.blockNumber", {
     header: "Block",
     cell: (row) => {
+      const status = row.row.original.status;
+      if (status === "rejected") return <span className="text-white/60">N/A</span>;
+
       const blockNumber = row.getValue();
       if (!blockNumber) return <Skeleton className="h-4 w-full" />;
       return (
@@ -28,7 +31,7 @@ export const columns = [
       );
     },
   }),
-  columnHelper.accessor("transaction.from", {
+  columnHelper.accessor("from", {
     header: "From",
     cell: (row) => {
       const from = row.getValue();
@@ -49,9 +52,9 @@ export const columns = [
       return (
         <div className="flex items-center">
           <Badge variant="secondary">{functionName}</Badge>
-          {status === "pending" && <CheckCheckIcon className="ml-2 h-4 w-4 text-white/50" />}
+          {status === "pending" && <CheckCheckIcon className="ml-2 h-4 w-4 text-white/60" />}
           {status === "success" && <CheckCheckIcon className="ml-2 h-4 w-4 text-green-400" />}
-          {status === "reverted" && <XIcon className="ml-2 h-4 w-4 text-red-400" />}
+          {(status === "reverted" || status === "rejected") && <XIcon className="ml-2 h-4 w-4 text-red-400" />}
         </div>
       );
     },
@@ -59,6 +62,9 @@ export const columns = [
   columnHelper.accessor("hash", {
     header: "Tx hash",
     cell: (row) => {
+      const status = row.row.original.status;
+      if (status === "rejected") return <span className="text-white/60">N/A</span>;
+
       const hash = row.getValue();
       if (!hash) return <Skeleton className="h-4 w-full" />;
       return (

@@ -37,6 +37,7 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
       emit("write", {
         writeId,
         address: args.address,
+        from: client.account?.address,
         functionSignature: formatAbiItem(functionAbiItem),
         args: (args.args ?? []) as never,
       });
