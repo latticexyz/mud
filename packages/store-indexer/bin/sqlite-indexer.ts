@@ -109,7 +109,7 @@ const { latestBlockNumber$, storedBlockLogs$ } = await syncToSqlite({
   address: env.STORE_ADDRESS,
 });
 
-let isCaughtUp = false;
+let isCaughtUp = startBlock >= (await publicClient.getBlock({ blockTag: env.FOLLOW_BLOCK_TAG })).number;
 combineLatest([latestBlockNumber$, storedBlockLogs$])
   .pipe(
     filter(

@@ -91,7 +91,7 @@ const { latestBlockNumber$, storedBlockLogs$ } = await createStoreSync({
 
 storedBlockLogs$.subscribe();
 
-let isCaughtUp = false;
+let isCaughtUp = startBlock >= (await publicClient.getBlock({ blockTag: env.FOLLOW_BLOCK_TAG })).number;
 combineLatest([latestBlockNumber$, storedBlockLogs$])
   .pipe(
     filter(
