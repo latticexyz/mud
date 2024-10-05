@@ -19,6 +19,10 @@ import { configToModules } from "./deploy/configToModules";
 import { findContractArtifacts } from "@latticexyz/world/node";
 import { enableAutomine } from "./utils/enableAutomine";
 
+function encodeToHex(str: string): Hex {
+  return ("0x" + Buffer.from(str, "utf8").toString("hex")) as Hex;
+}
+
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the MUD config file" },
   printConfig: { type: "boolean", desc: "Print the resolved config" },
@@ -52,14 +56,13 @@ export const deployOptions = {
 
 export type DeployOptions = InferredOptionTypes<typeof deployOptions>;
 
-/**
- * Given some CLI arguments, finds and resolves a MUD config, foundry profile, and runs a deploy.
- * This is used by the deploy, test, and dev-contracts CLI commands.
- */
 export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
-  const salt = opts.salt;
-  if (salt != null && !isHex(salt)) {
-    throw new MUDError("Expected hex string for salt");
+  let salt: `0x${string}` | undefined = opts.salt as `0x${string}` | undefined;
+
+  if (salt != null) {
+    if (!isHex(salt)) {
+      salt = encodeToHex(salt) as `0x${string}`;
+    }
   }
 
   const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
@@ -81,7 +84,6 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     ),
   );
 
-  // Run build
   if (!opts.skipBuild) {
     await build({ rootDir, config, foundryProfile: profile });
   }
@@ -92,7 +94,6 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     forgeOutDir: outDir,
   });
   const artifacts = await findContractArtifacts({ forgeOutDir: outDir });
-  // TODO: pass artifacts into configToModules (https://github.com/latticexyz/mud/issues/3153)
   const modules = await configToModules(config, outDir);
 
   const tables = Object.values(config.namespaces)
@@ -114,8 +115,8 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
       if (!privateKey) {
         throw new MUDError(
           `Missing PRIVATE_KEY environment variable.
-  Run 'echo "PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" > .env'
-  in your contracts directory to use the default anvil private key.`,
+    Run 'echo "PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" > .env'
+    in your contracts directory to use the default anvil private key.`,
         );
       }
 
@@ -137,14 +138,13 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   console.log("Deploying from", client.account.address);
 
-  // Attempt to enable automine for the duration of the deploy. Noop if automine is not available.
   const automine = await enableAutomine(client);
 
   const startTime = Date.now();
   const worldDeploy = await deploy({
     config,
     deployerAddress: opts.deployerAddress as Hex | undefined,
-    salt,
+    salt, // Use the new salt variable here
     worldAddress: opts.worldAddress as Hex | undefined,
     client,
     tables,
@@ -164,7 +164,6 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     );
   }
 
-  // Reset mining mode after deploy
   await automine?.reset();
 
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
@@ -187,8 +186,6 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
       : {};
     deploys[chainId] = {
       address: deploymentInfo.worldAddress,
-      // We expect the worlds file to be committed and since local deployments are often
-      // a consistent address but different block number, we'll ignore the block number.
       blockNumber: localChains.includes(chainId) ? undefined : deploymentInfo.blockNumber,
     };
     writeFileSync(config.deploy.worldsFile, JSON.stringify(deploys, null, 2));
