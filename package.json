@@ -28,7 +28,8 @@
     "test": "pnpm run --recursive test",
     "test:ci": "pnpm run --recursive --parallel test:ci",
     "type-bench": "pnpm --filter ./test/ts-benchmarks bench",
-    "type-stats-repo": "attest stats packages/*"
+    "type-stats-repo": "attest stats packages/*",
+    "vercel:prepare": "(forge --version || pnpm foundryup) && ln -sf /vercel/.foundry/bin/* node_modules/.bin/ && forge --version"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --cache --fix",
@@ -57,7 +58,7 @@
   },
   "packageManager": "pnpm@9.6.0",
   "engines": {
-    "node": "^18.20.1",
+    "node": "18.x || 20.x",
     "pnpm": "^9.6.0"
   }
 }

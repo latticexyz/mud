@@ -1870,6 +1870,26 @@ function getResourceName(ResourceId resourceId) internal pure returns (bytes30);
 | -------- | --------- | --------------- |
 | `<none>` | `bytes30` | A 30-byte name. |
 
+#### unwrap
+
+Unwrap a resource ID into a bytes32.
+
+```solidity
+function unwrap(ResourceId resourceId) internal pure returns (bytes32);
+```
+
+**Parameters**
+
+| Name         | Type         | Description      |
+| ------------ | ------------ | ---------------- |
+| `resourceId` | `ResourceId` | The resource ID. |
+
+**Returns**
+
+| Name     | Type      | Description             |
+| -------- | --------- | ----------------------- |
+| `<none>` | `bytes32` | The underlying bytes32. |
+
 ## ResourceIdLib
 
 [Git Source](https://github.com/latticexyz/mud/blob/main/packages/store/src/ResourceId.sol)

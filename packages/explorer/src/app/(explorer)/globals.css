@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body,
+.container {
+  font-family: var(--font-jetbrains-mono);
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

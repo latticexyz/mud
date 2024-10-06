@@ -10,41 +10,30 @@ import { Separator } from "../components/ui/Separator";
 import { cn } from "../utils";
 import { ConnectButton } from "./ConnectButton";
 
-export function Navigation() {
+function NavigationLink({ href, children }: { href: string; children: React.ReactNode }) {
   const pathname = usePathname();
   const getLinkUrl = useWorldUrl();
-  const { data, isFetched } = useWorldAbiQuery();
+  return (
+    <Link
+      href={getLinkUrl(href)}
+      className={cn("text-sm uppercase underline-offset-[16px]", {
+        "font-semibold underline decoration-orange-500 decoration-4": pathname === getLinkUrl(href),
+      })}
+    >
+      {children}
+    </Link>
+  );
+}
 
+export function Navigation() {
+  const { data, isFetched } = useWorldAbiQuery();
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between">
         <div className="flex gap-x-6 py-4">
-          <Link
-            href={getLinkUrl("explore")}
-            className={cn("text-sm uppercase underline-offset-[16px]", {
-              "font-semibold underline decoration-orange-500 decoration-4": pathname === getLinkUrl("explore"),
-            })}
-          >
-            Explore
-          </Link>
-
-          <Link
-            href={getLinkUrl("interact")}
-            className={cn("text-sm uppercase underline-offset-[16px]", {
-              "font-semibold underline decoration-orange-500 decoration-4": pathname === getLinkUrl("interact"),
-            })}
-          >
-            Interact
-          </Link>
-
-          <Link
-            href={getLinkUrl("observe")}
-            className={cn("text-sm uppercase underline-offset-[16px]", {
-              "font-semibold underline decoration-orange-500 decoration-4": pathname === getLinkUrl("observe"),
-            })}
-          >
-            Observe
-          </Link>
+          <NavigationLink href="explore">Explore</NavigationLink>
+          <NavigationLink href="interact">Interact</NavigationLink>
+          <NavigationLink href="observe">Observe</NavigationLink>
         </div>
 
         {isFetched && !data?.isWorldDeployed && (

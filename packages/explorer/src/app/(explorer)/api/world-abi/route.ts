@@ -1,4 +1,4 @@
-import { AbiFunction, Address, Hex, createWalletClient, http, parseAbi } from "viem";
+import { Address, Hex, createWalletClient, http, parseAbi } from "viem";
 import { getBlockNumber, getLogs } from "viem/actions";
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
@@ -47,15 +47,12 @@ export async function GET(req: Request) {
   try {
     const client = await getClient(chainId);
     const { fromBlock, toBlock, isWorldDeployed } = await getParameters(chainId, worldAddress);
-    const worldAbiResponse = await getWorldAbi({
+    const abi = await getWorldAbi({
       client,
       worldAddress,
       fromBlock,
       toBlock,
     });
-    const abi = worldAbiResponse
-      .filter((entry): entry is AbiFunction => entry.type === "function")
-      .sort((a, b) => a.name.localeCompare(b.name));
 
     return Response.json({ abi, isWorldDeployed });
   } catch (error: unknown) {

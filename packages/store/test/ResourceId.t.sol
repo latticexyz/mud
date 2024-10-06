@@ -26,6 +26,12 @@ contract ResourceIdTest is Test, GasReporter {
     assertEq(resourceType, RESOURCE_TABLE);
   }
 
+  function testUnwrap() public {
+    bytes32 underlying = keccak256("test");
+    ResourceId id = ResourceId.wrap(underlying);
+    assertEq(id.unwrap(), ResourceId.unwrap(id));
+  }
+
   function testFuzz(bytes30 name, bytes2 resourceType) public {
     ResourceId tableId = ResourceIdLib.encode({ typeId: resourceType, name: name });
     assertEq(tableId.getType(), resourceType);
