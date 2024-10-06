@@ -988,9 +988,6 @@ importers:
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
-      tsx:
-        specifier: ^3.12.6
-        version: 3.12.6
 
   packages/store-indexer:
     dependencies:

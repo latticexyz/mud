@@ -25,8 +25,9 @@
     "release:check": "changeset status --verbose --since=origin/main",
     "release:publish": "pnpm install && pnpm build && changeset publish",
     "release:version": "changeset version && pnpm install --lockfile-only && pnpm run changelog:generate",
-    "test": "tsx test-setup/startAnvil.ts & pnpm run --filter mock-game-contracts build && pnpm run --recursive test",
-    "test:ci": "tsx test-setup/startAnvil.ts & pnpm run --filter mock-game-contracts build && pnpm run --recursive test:ci",
+    "test": "pnpm run test:setup && pnpm run --recursive test",
+    "test:ci": "pnpm run test:setup && pnpm run --recursive test:ci",
+    "test:setup": "tsx test-setup/startAnvil.ts & pnpm run --filter mock-game-contracts build",
     "type-bench": "pnpm --filter ./test/ts-benchmarks bench",
     "type-stats-repo": "attest stats packages/*",
     "vercel:prepare": "(forge --version || pnpm foundryup) && ln -sf /vercel/.foundry/bin/* node_modules/.bin/ && forge --version"
