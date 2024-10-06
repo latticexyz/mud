@@ -25,10 +25,9 @@
     "release:check": "changeset status --verbose --since=origin/main",
     "release:publish": "pnpm install && pnpm build && changeset publish",
     "release:version": "changeset version && pnpm install --lockfile-only && pnpm run changelog:generate",
-    "pretest": "ANVIL_PORT=8556 tsx test-setup/startAnvil.ts & wait-on tcp:8556",
-    "test": "pnpm run --recursive test",
-    "pretest:ci": "pnpm run pretest",
-    "test:ci": "pnpm run --recursive test:ci",
+    "test": "pnpm run test:start-anvil & wait-on tcp:8556 && pnpm run --recursive test",
+    "test:ci": "pnpm run test:start-anvil & wait-on tcp:8556 && pnpm run --recursive test:ci",
+    "test:start-anvil": "tsx test-setup/startAnvil.ts",
     "type-bench": "pnpm --filter ./test/ts-benchmarks bench",
     "type-stats-repo": "attest stats packages/*",
     "vercel:prepare": "(forge --version || pnpm foundryup) && ln -sf /vercel/.foundry/bin/* node_modules/.bin/ && forge --version"

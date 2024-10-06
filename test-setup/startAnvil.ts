@@ -13,10 +13,7 @@ await execa("pnpm", ["run", "build"], {
 });
 
 console.log("starting anvil proxy");
-await startAnvilProxy({
-  host: anvilHost,
-  port: Number(anvilPort),
-});
+await startAnvilProxy({ host: anvilHost, port: anvilPort });
 
 // ensure anvil dies
 process.on("SIGINT", () => process.exit());
