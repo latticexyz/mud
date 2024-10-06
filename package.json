@@ -25,8 +25,8 @@
     "release:check": "changeset status --verbose --since=origin/main",
     "release:publish": "pnpm install && pnpm build && changeset publish",
     "release:version": "changeset version && pnpm install --lockfile-only && pnpm run changelog:generate",
-    "test": "pnpm run --recursive test",
-    "test:ci": "pnpm run --recursive --parallel test:ci",
+    "test": "tsx test-setup/startAnvil.ts & pnpm run --recursive test",
+    "test:ci": "tsx test-setup/startAnvil.ts & pnpm run --recursive test:ci",
     "type-bench": "pnpm --filter ./test/ts-benchmarks bench",
     "type-stats-repo": "attest stats packages/*",
     "vercel:prepare": "(forge --version || pnpm foundryup) && ln -sf /vercel/.foundry/bin/* node_modules/.bin/ && forge --version"

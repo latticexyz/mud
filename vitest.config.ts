@@ -2,8 +2,8 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    globalSetup: [`${__dirname}/test-setup/global/arktype.ts`, `${__dirname}/test-setup/global/anvil.ts`],
-    setupFiles: [`${__dirname}/test-setup/anvil.ts`],
+    globalSetup: [`${__dirname}/test-setup/global/arktype.ts`],
+    setupFiles: [],
     // Temporarily set a low teardown timeout because anvil hangs otherwise
     // Could move this timeout to anvil setup after https://github.com/wevm/anvil.js/pull/46
     teardownTimeout: 500,
