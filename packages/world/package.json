@@ -75,7 +75,6 @@
     "@latticexyz/gas-report": "workspace:*",
     "@types/debug": "^4.1.7",
     "@types/ejs": "^3.1.1",
-    "@types/mocha": "^9.1.1",
     "@types/node": "^18.15.11",
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
     "ejs": "^3.1.10",
