@@ -17,6 +17,7 @@ export async function getResourceIds({
   const blockLogs = await fetchBlockLogs({
     fromBlock: worldDeploy.deployBlock,
     toBlock: worldDeploy.stateBlock,
+    maxBlockRange: 100_000n,
     async getLogs({ fromBlock, toBlock }) {
       return getStoreLogs(client, {
         address: worldDeploy.address,

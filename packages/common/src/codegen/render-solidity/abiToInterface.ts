@@ -4,9 +4,10 @@ import { renderedSolidityHeader } from "./common";
 import { hexToResource } from "../../hexToResource";
 
 function formatParam(param: AbiParameter): string {
-  return param.type === "string" || param.type === "bytes" || param.type === "tuple" || param.type.endsWith("]")
-    ? `${formatAbiParameter(param)} memory`
-    : formatAbiParameter(param);
+  // return param.type === "string" || param.type === "bytes" || param.type === "tuple" || param.type.endsWith("]")
+  //   ? `${formatAbiParameter(param)} memory`
+  //   : formatAbiParameter(param);
+  return formatAbiParameter(param);
 }
 
 function formatFunction(item: AbiFunction): string {

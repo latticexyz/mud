@@ -1,4 +1,4 @@
-import { Address, Client, hexToString, parseAbi, stringToHex } from "viem";
+import { Address, Client, hexToString, parseAbiItem, stringToHex } from "viem";
 import { getTables } from "../deploy/getTables";
 import { getWorldDeploy } from "../deploy/getWorldDeploy";
 import { getSchemaTypes } from "@latticexyz/protocol-parser/internal";
@@ -13,6 +13,7 @@ import { abiToInterface, formatSolidity, formatTypescript } from "@latticexyz/co
 import { debug } from "./debug";
 import { defineWorld } from "@latticexyz/world";
 import { findUp } from "find-up";
+import { isDefined } from "@latticexyz/common/utils";
 
 const ignoredNamespaces = new Set(["store", "world", "metadata"]);
 
@@ -106,12 +107,29 @@ export async function pull({ rootDir, client, worldAddress, replace }: PullOptio
 
         // If empty or unset ABI in metadata table, backfill with world functions.
         // These don't have parameter names or return values, but better than nothing?
-        const abi = parseAbi(
-          metadataAbi.length ? metadataAbi : functions.map((func) => `function ${func.systemFunctionSignature}`),
-        );
-        const worldAbi = parseAbi(
-          metadataWorldAbi.length ? metadataWorldAbi : functions.map((func) => `function ${func.signature}`),
-        );
+        const abi = (
+          metadataAbi.length ? metadataAbi : functions.map((func) => `function ${func.systemFunctionSignature}`)
+        )
+          .map((sig) => {
+            try {
+              return parseAbiItem(sig);
+            } catch {
+              debug(`Skipping invalid system signature: ${sig}`);
+            }
+          })
+          .filter(isDefined);
+
+        const worldAbi = (
+          metadataWorldAbi.length ? metadataWorldAbi : functions.map((func) => `function ${func.signature}`)
+        )
+          .map((sig) => {
+            try {
+              return parseAbiItem(sig);
+            } catch {
+              debug(`Skipping invalid world signature: ${sig}`);
+            }
+          })
+          .filter(isDefined);
 
         return {
           namespaceId,
