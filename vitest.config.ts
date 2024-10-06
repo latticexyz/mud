@@ -1,9 +1,13 @@
-import { defineConfig, mergeConfig } from "vitest/config";
+import { defineConfig } from "vitest/config";
 
-export const baseConfig = defineConfig({
+export default defineConfig({
   test: {
     globalSetup: [`${__dirname}/test-setup/global/arktype.ts`],
     setupFiles: [],
+    // Temporarily set a low teardown timeout because anvil hangs otherwise
+    // Could move this timeout to anvil setup after https://github.com/wevm/anvil.js/pull/46
+    teardownTimeout: 500,
+    hookTimeout: 15000,
   },
   server: {
     watch: {
@@ -12,20 +16,3 @@ export const baseConfig = defineConfig({
     },
   },
 });
-
-// TODO: migrate to prool: https://github.com/wevm/prool
-// note that using this across packages running tests in parallel may cause port issues
-export const anvilConfig = mergeConfig(
-  baseConfig,
-  defineConfig({
-    test: {
-      globalSetup: [`${__dirname}/test-setup/global/anvil.ts`],
-      // Temporarily set a low teardown timeout because anvil hangs otherwise
-      // Could move this timeout to anvil setup after https://github.com/wevm/anvil.js/pull/46
-      teardownTimeout: 500,
-      hookTimeout: 15000,
-    },
-  }),
-);
-
-export default baseConfig;

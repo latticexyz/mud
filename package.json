@@ -25,7 +25,9 @@
     "release:check": "changeset status --verbose --since=origin/main",
     "release:publish": "pnpm install && pnpm build && changeset publish",
     "release:version": "changeset version && pnpm install --lockfile-only && pnpm run changelog:generate",
+    "pretest": "ANVIL_PORT=8556 tsx test-setup/startAnvil.ts & wait-on tcp:8556",
     "test": "pnpm run --recursive test",
+    "pretest:ci": "pnpm run pretest",
     "test:ci": "pnpm run --recursive test:ci",
     "type-bench": "pnpm --filter ./test/ts-benchmarks bench",
     "type-stats-repo": "attest stats packages/*",
@@ -57,7 +59,8 @@
     "turbo": "^1.9.3",
     "typescript": "5.4.2",
     "viem": "catalog:",
-    "vitest": "2.1.2"
+    "vitest": "2.1.2",
+    "wait-on": "^8.0.1"
   },
   "packageManager": "pnpm@9.6.0",
   "engines": {
