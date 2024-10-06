@@ -37,8 +37,10 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
       emit("write", {
         writeId,
         address: args.address,
+        from: client.account!.address,
         functionSignature: formatAbiItem(functionAbiItem),
         args: (args.args ?? []) as never,
+        value: args.value,
       });
       Promise.allSettled([write]).then(([result]) => {
         emit("write:result", { ...result, writeId });
@@ -46,7 +48,7 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
 
       write.then((hash) => {
         const receipt = getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });
-        emit("waitForTransactionReceipt", { writeId });
+        emit("waitForTransactionReceipt", { writeId, hash });
         Promise.allSettled([receipt]).then(([result]) => {
           emit("waitForTransactionReceipt:result", { ...result, writeId });
         });

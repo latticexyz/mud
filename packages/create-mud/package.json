@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
+    "execa": "^7.0.0",
     "tsup": "^6.7.0"
   },
   "publishConfig": {

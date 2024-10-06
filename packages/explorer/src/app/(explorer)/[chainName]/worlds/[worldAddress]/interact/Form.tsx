@@ -16,8 +16,8 @@ export function Form() {
   const { data, isFetched } = useWorldAbiQuery();
   const [filterValue, setFilterValue] = useState("");
   const deferredFilterValue = useDeferredValue(filterValue);
-  const filteredFunctions = data?.abi?.filter((item) =>
-    item.name.toLowerCase().includes(deferredFilterValue.toLowerCase()),
+  const filteredFunctions = data?.abi?.filter(
+    (item) => item.type === "function" && item.name.toLowerCase().includes(deferredFilterValue.toLowerCase()),
   );
 
   return (

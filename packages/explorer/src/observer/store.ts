@@ -1,6 +1,6 @@
 "use client";
 
-import { Address } from "viem";
+import { Address, Hex } from "viem";
 import { createStore } from "zustand/vanilla";
 import { relayChannelName } from "./common";
 import { debug } from "./debug";
@@ -8,11 +8,16 @@ import { Message, MessageType } from "./messages";
 
 export type Write = {
   writeId: string;
+  type: MessageType;
+  hash?: Hex;
+  from?: Address;
   address: Address;
   functionSignature: string;
   args: unknown[];
+  value?: bigint;
   time: number;
   events: Message<Exclude<MessageType, "ping">>[];
+  error?: Error;
 };
 
 export type State = {
@@ -36,6 +41,8 @@ channel.addEventListener("message", ({ data }: MessageEvent<Message>) => {
         ...state.writes,
         [data.writeId]: {
           ...write,
+          type: data.type,
+          hash: data.type === "waitForTransactionReceipt" ? data.hash : write.hash,
           events: [...write.events, data],
         },
       },

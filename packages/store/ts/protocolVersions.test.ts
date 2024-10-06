@@ -19,7 +19,9 @@ import { protocolVersions } from "./protocolVersions";
 
 const [, currentVersion] = fs.readFileSync(`${__dirname}/../src/version.sol`, "utf8").match(/VERSION = "(.*?)"/) ?? [];
 
-const currentAbi = formatAbi(StoreAbi).sort((a, b) => a.localeCompare(b));
+const currentAbi = formatAbi(StoreAbi)
+  .slice()
+  .sort((a, b) => a.localeCompare(b));
 
 describe("Store protocol version", () => {
   it("is up to date", async () => {

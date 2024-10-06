@@ -1,5 +1,5 @@
-import { Writes } from "./Writes";
+import { TransactionsTable } from "./TransactionsTable";
 
 export default function ObservePage() {
-  return <Writes />;
+  return <TransactionsTable />;
 }
