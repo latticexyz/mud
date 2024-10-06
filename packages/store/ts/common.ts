@@ -28,3 +28,9 @@ export type Tables = {
 export type SchemaToPrimitives<schema extends ValueSchema> = {
   readonly [key in keyof schema]: SchemaAbiTypeToPrimitiveType<schema[key]["type"]>;
 };
+
+export const emptyRecord = {
+  staticData: "0x",
+  encodedLengths: "0x",
+  dynamicData: "0x",
+} as const;

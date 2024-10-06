@@ -14,8 +14,7 @@ export function logsToBlocks(
         topics: log.topics as [Hex, ...Hex[]],
         strict: true,
       });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return formatLog(log as any as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
+      return formatLog(log as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
     }),
   );
 }
