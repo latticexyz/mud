@@ -9,6 +9,6 @@
   },
   "dependencies": {
     "@latticexyz/store-sync": "link:../../packages/store-sync",
-    "tsx": "^3.12.7"
+    "tsx": "4.19.0"
   }
 }

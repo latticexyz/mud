@@ -12,7 +12,6 @@
     "@latticexyz/recs": "workspace:*",
     "@latticexyz/store-sync": "workspace:*",
     "@latticexyz/world": "workspace:*",
-    "tsx": "4.16.2",
     "viem": "catalog:",
     "vite": "^4.2.1"
   }
