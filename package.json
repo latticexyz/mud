@@ -42,9 +42,10 @@
     "@types/node": "^18.15.11",
     "@typescript-eslint/eslint-plugin": "7.1.1",
     "@typescript-eslint/parser": "7.1.1",
+    "@viem/anvil": "^0.0.7",
     "chalk": "^5.2.0",
     "eslint": "8.57.0",
-    "execa": "^7.0.0",
+    "execa": "^9.4.0",
     "glob": "^10.4.2",
     "husky": ">=6",
     "lint-staged": "^15.2.10",
@@ -54,7 +55,9 @@
     "sort-package-json": "^2.10.1",
     "tsx": "4.16.2",
     "turbo": "^1.9.3",
-    "typescript": "5.4.2"
+    "typescript": "5.4.2",
+    "viem": "catalog:",
+    "vitest": "2.1.2"
   },
   "packageManager": "pnpm@9.6.0",
   "engines": {

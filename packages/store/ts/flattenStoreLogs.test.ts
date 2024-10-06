@@ -1,15 +1,18 @@
 /* eslint-disable max-len */
-import { beforeAll, describe, expect, it } from "vitest";
-import { deployMockGame } from "./test/mockGame";
-import { testClient } from "./test/common";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { getStoreLogs } from "./getStoreLogs";
-import { summarizeLogs } from "./test/summarizeLogs";
 import { flattenStoreLogs } from "./flattenStoreLogs";
+import { snapshotAnvilState, testClient } from "../../../test-setup/common";
+import { deployMockGame } from "../../../test-setup/mockGame";
+import { summarizeLogs } from "./test/summarizeLogs";
 
 describe("flattenStoreLogs", async () => {
   beforeAll(async () => {
+    const resetAnvilState = await snapshotAnvilState();
     await deployMockGame();
+    return resetAnvilState;
   });
+  beforeEach(snapshotAnvilState);
 
   it("flattens store logs", async () => {
     const logs = await getStoreLogs(testClient, { fromBlock: "earliest", toBlock: "latest" });
@@ -132,8 +135,8 @@ describe("flattenStoreLogs", async () => {
         "Store_SetRecord  store__ResourceIds  (0x746200000000000000000000000000005465727261696e000000000000000000)",
         "Store_SetRecord  store__ResourceIds  (0x737900000000000000000000000000004d6f766553797374656d000000000000)",
         "Store_SetRecord  world__Systems  (0x737900000000000000000000000000004d6f766553797374656d000000000000)",
-        "Store_SetRecord  world__SystemRegistry  (0x000000000000000000000000b7b226e8dc03ee1e9c28eb37309c1c48dd5d88f3)",
-        "Store_SetRecord  world__ResourceAccess  (0x6e73000000000000000000000000000000000000000000000000000000000000,0x000000000000000000000000b7b226e8dc03ee1e9c28eb37309c1c48dd5d88f3)",
+        "Store_SetRecord  world__SystemRegistry  (0x000000000000000000000000909d87ff2af6abace4fe66171b9622bc10305c3c)",
+        "Store_SetRecord  world__ResourceAccess  (0x6e73000000000000000000000000000000000000000000000000000000000000,0x000000000000000000000000909d87ff2af6abace4fe66171b9622bc10305c3c)",
         "Store_SetRecord  world__FunctionSelector  (0xb591186e00000000000000000000000000000000000000000000000000000000)",
         "Store_SetRecord  world__FunctionSignatur  (0xb591186e00000000000000000000000000000000000000000000000000000000)",
         "Store_SetRecord  store__Tables  (0x7462000000000000000000000000000043616c6c576974685369676e61747572)",

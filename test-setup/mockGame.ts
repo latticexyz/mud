@@ -1,8 +1,8 @@
 import { execa } from "execa";
 import { anvilRpcUrl } from "./common";
 import { Hex, isHex } from "viem";
-import config from "../../../../test/mock-game-contracts/mud.config";
-import worldAbi from "../../../../test/mock-game-contracts/out/IWorld.sol/IWorld.abi.json";
+import config from "../test/mock-game-contracts/mud.config";
+import worldAbi from "../test/mock-game-contracts/out/IWorld.sol/IWorld.abi.json";
 
 export { config, worldAbi };
 
@@ -14,7 +14,7 @@ export async function deployMockGame(): Promise<Hex> {
     // if we don't skip build here, it regenerates ABIs which cause the tests to re-run (because we import the ABI here), which re-runs this deploy...
     ["mud", "deploy", "--rpc", anvilRpcUrl, "--saveDeployment", "false", "--skipBuild"],
     {
-      cwd: `${__dirname}/../../../../test/mock-game-contracts`,
+      cwd: `${__dirname}/../test/mock-game-contracts`,
       env: {
         // anvil default account
         PRIVATE_KEY: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",

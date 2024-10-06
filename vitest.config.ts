@@ -2,8 +2,8 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    globalSetup: ["vitestSetup.ts", "ts/test/globalSetup.ts"],
-    setupFiles: ["ts/test/setup.ts"],
+    globalSetup: [`${__dirname}/test-setup/global/arktype.ts`, `${__dirname}/test-setup/global/anvil.ts`],
+    setupFiles: [`${__dirname}/test-setup/anvil.ts`],
     // Temporarily set a low teardown timeout because anvil hangs otherwise
     // Could move this timeout to anvil setup after https://github.com/wevm/anvil.js/pull/46
     teardownTimeout: 500,
@@ -12,7 +12,7 @@ export default defineConfig({
   server: {
     watch: {
       // we build+import this file in test setup, which causes vitest to restart in a loop unless we ignore it here
-      ignored: ["**/test/mock-game-contracts/out/IWorld.sol/IWorld.abi.json"],
+      ignored: ["**/mock-game-contracts/out/IWorld.sol/IWorld.abi.json"],
     },
   },
 });

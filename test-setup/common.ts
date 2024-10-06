@@ -14,3 +14,10 @@ export const testClient = createTestClient({
   transport: http(anvilRpcUrl),
   pollingInterval: 10,
 });
+
+export async function snapshotAnvilState() {
+  const state = await testClient.dumpState();
+  return async (): Promise<void> => {
+    await testClient.loadState({ state });
+  };
+}
