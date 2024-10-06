@@ -25,9 +25,8 @@
     "release:check": "changeset status --verbose --since=origin/main",
     "release:publish": "pnpm install && pnpm build && changeset publish",
     "release:version": "changeset version && pnpm install --lockfile-only && pnpm run changelog:generate",
-    "test": "pnpm run test:start-anvil & wait-on tcp:8556 && pnpm run --recursive test",
-    "test:ci": "pnpm run test:start-anvil & wait-on tcp:8556 && pnpm run --recursive test:ci",
-    "test:start-anvil": "tsx test-setup/startAnvil.ts",
+    "test": "tsx test-setup/startAnvil.ts & pnpm run --recursive test",
+    "test:ci": "tsx test-setup/startAnvil.ts & pnpm run --recursive test:ci",
     "type-bench": "pnpm --filter ./test/ts-benchmarks bench",
     "type-stats-repo": "attest stats packages/*",
     "vercel:prepare": "(forge --version || pnpm foundryup) && ln -sf /vercel/.foundry/bin/* node_modules/.bin/ && forge --version"
@@ -58,8 +57,7 @@
     "turbo": "^1.9.3",
     "typescript": "5.4.2",
     "viem": "catalog:",
-    "vitest": "2.1.2",
-    "wait-on": "^8.0.1"
+    "vitest": "2.1.2"
   },
   "packageManager": "pnpm@9.6.0",
   "engines": {
