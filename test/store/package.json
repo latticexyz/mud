@@ -1,0 +1,21 @@
+{
+  "name": "store-tests",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "bench": "tsx ./bench",
+    "test": "pnpm run bench",
+    "test:ci": "pnpm run test"
+  },
+  "devDependencies": {
+    "@latticexyz/common": "workspace:*",
+    "@latticexyz/store": "workspace:*",
+    "@viem/anvil": "^0.0.7",
+    "mock-game-contracts": "workspace:*",
+    "tsx": "4.16.2",
+    "viem": "catalog:",
+    "vite": "^4.2.1",
+    "vitest": "0.34.6"
+  }
+}
