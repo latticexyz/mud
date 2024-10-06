@@ -881,9 +881,6 @@ importers:
 
   packages/stash:
     dependencies:
-      '@arktype/util':
-        specifier: 0.0.40
-        version: 0.0.40
       '@latticexyz/config':
         specifier: workspace:*
         version: link:../config
@@ -903,9 +900,6 @@ importers:
         specifier: 2.21.6
         version: 2.21.6(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
     devDependencies:
-      '@arktype/attest':
-        specifier: 0.7.5
-        version: 0.7.5(typescript@5.4.2)
       '@testing-library/react':
         specifier: ^16.0.0
         version: 16.0.0(@testing-library/dom@10.4.0)(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -1459,27 +1453,6 @@ packages:
 
   '@ark/util@0.2.2':
     resolution: {integrity: sha512-ryZ4+f3SlReQRH9nTFLK5EeU1Pan5ZfS+ACPSk0ir5uujJouFmvOdnkVfeAJAgeOb3kKmUM9kjelv1cwH2ScZg==}
-
-  '@arktype/attest@0.7.5':
-    resolution: {integrity: sha512-ZOF9uqLbvoVO6RHhlByJEBBj5qhWLpaCK/wWa5guD1OQR1/a7JZ9jCrDAcaASt6tYBA3dGhDerXhc7FcDWlRQw==}
-    hasBin: true
-    peerDependencies:
-      typescript: '*'
-
-  '@arktype/fs@0.0.19':
-    resolution: {integrity: sha512-ZEiSc6DgJANSgMTee9lueumCH/3gIikJWT8wlN8CyVk/IDFKFbJb3/BHj906Aw+APvCc8oyvu+2Hanshkgh4Bg==}
-
-  '@arktype/schema@0.1.2':
-    resolution: {integrity: sha512-ggvxs5P0toqd/4/XK76URQrtyOYpbYcLhirEZeTso6FxkloPa0lT+whPg7DNQj5qi2OQXLUHBYKMx9DOb13ViQ==}
-
-  '@arktype/util@0.0.38':
-    resolution: {integrity: sha512-IvYMGnkUASJllRk3mdBVgckomKx2LNsDTrWCxz04EBK1OuU+4fJ/smSjxgZVWfopNXZds9sHNxZgTJOIw7GvJw==}
-
-  '@arktype/util@0.0.40':
-    resolution: {integrity: sha512-dwC3xZh9Bz6LWSJq71AUoh06zB0qM65N4zS/NNogbumhbO55yot7yqDlv0qeBMNOWXj/gX7l7l58v0EqEaXN2w==}
-
-  '@arktype/util@0.0.41':
-    resolution: {integrity: sha512-0YURzJ42v+lhlP1t5Dj90YezETRTCdFU0oM4xMVpYsmPx/DHJzr9n7AX1QPAlYWH4wY7hYY3gwai3O+8VntPgw==}
 
   '@aws-crypto/ie11-detection@3.0.0':
     resolution: {integrity: sha512-341lBBkiY1DfDNKai/wXM3aujNBkXR7tq1URPQDL9wi3AUbI80NR74uF1TXHMm7po1AcnFk8iu2S2IeU/+/A+Q==}
@@ -5381,9 +5354,6 @@ packages:
     resolution: {integrity: sha512-RnlSOPh14QbopGCApgkSx5UBgGda5MX1cHqp2fsqfiDyCwGL/m1jaeB9fzu7didVS81LQqGZZuxFBcg8YU8EVw==}
     hasBin: true
 
-  '@typescript/vfs@1.5.0':
-    resolution: {integrity: sha512-AJS307bPgbsZZ9ggCT3wwpg3VbTKMFNHfaY/uF0ahSkYYrPF2dSSKDNIDIQAHm9qJqbLvCsSJH7yN4Vs/CsMMg==}
-
   '@typescript/vfs@1.6.0':
     resolution: {integrity: sha512-hvJUjNVeBMp77qPINuUvYXj4FyWeeMMKZkxEATEU3hqBAQ7qdTBCUFT7Sp0Zu0faeEtFf+ldXxMEDr/bk73ISg==}
     peerDependencies:
@@ -5766,9 +5736,6 @@ packages:
 
   arktype@2.0.0-beta.6:
     resolution: {integrity: sha512-tbH5/h0z371sgrJIAhZhH2BcrErWv8uQIPVcLmknJ8ffov5/ZbMNufrQ3hG9avGKTcVnVmdQoPhl1WuKuagqXA==}
-
-  arktype@2.0.0-dev.11:
-    resolution: {integrity: sha512-k+WVQoHsHsTyTiVQkO201mxLQxyXHmy3buJW8TXLOkr4X2yOUCp0K1SBscuG9OEJoc8MjpvoIharjPHEkFI7kg==}
 
   array-buffer-byte-length@1.0.1:
     resolution: {integrity: sha512-ahC5W1xgou+KTXix4sAO8Ki12Q+jf4i0+tmk3sC+zgcynshkHxzpXdImBehiUYKKKDwvfFiJl1tZt6ewscS1Mg==}
@@ -11754,29 +11721,6 @@ snapshots:
 
   '@ark/util@0.2.2': {}
 
-  '@arktype/attest@0.7.5(typescript@5.4.2)':
-    dependencies:
-      '@arktype/fs': 0.0.19
-      '@arktype/util': 0.0.41
-      '@typescript/analyze-trace': 0.10.1
-      '@typescript/vfs': 1.5.0
-      arktype: 2.0.0-dev.11
-      typescript: 5.4.2
-    transitivePeerDependencies:
-      - supports-color
-
-  '@arktype/fs@0.0.19': {}
-
-  '@arktype/schema@0.1.2':
-    dependencies:
-      '@arktype/util': 0.0.38
-
-  '@arktype/util@0.0.38': {}
-
-  '@arktype/util@0.0.40': {}
-
-  '@arktype/util@0.0.41': {}
-
   '@aws-crypto/ie11-detection@3.0.0':
     dependencies:
       tslib: 1.14.1
@@ -16712,12 +16656,6 @@ snapshots:
       treeify: 1.1.0
       yargs: 16.2.0
 
-  '@typescript/vfs@1.5.0':
-    dependencies:
-      debug: 4.3.7
-    transitivePeerDependencies:
-      - supports-color
-
   '@typescript/vfs@1.6.0(typescript@5.4.2)':
     dependencies:
       debug: 4.3.7
@@ -17386,11 +17324,6 @@ snapshots:
     dependencies:
       '@ark/schema': 0.3.3
       '@ark/util': 0.2.2
-
-  arktype@2.0.0-dev.11:
-    dependencies:
-      '@arktype/schema': 0.1.2
-      '@arktype/util': 0.0.38
 
   array-buffer-byte-length@1.0.1:
     dependencies:

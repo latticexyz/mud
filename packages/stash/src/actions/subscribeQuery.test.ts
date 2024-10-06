@@ -1,6 +1,6 @@
 import { beforeEach, describe, it, vi, expect } from "vitest";
 import { QueryUpdate, subscribeQuery } from "./subscribeQuery";
-import { attest } from "@arktype/attest";
+import { attest } from "@ark/attest";
 import { defineStore } from "@latticexyz/store";
 import { In, Matches } from "../queryFragments";
 import { deleteRecord } from "./deleteRecord";
