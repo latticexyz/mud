@@ -954,6 +954,9 @@ importers:
       arktype:
         specifier: 'catalog:'
         version: 2.0.0-beta.6
+      debug:
+        specifier: ^4.3.4
+        version: 4.3.7
       viem:
         specifier: 'catalog:'
         version: 2.21.6(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
@@ -964,6 +967,9 @@ importers:
       '@latticexyz/gas-report':
         specifier: workspace:*
         version: link:../gas-report
+      '@types/debug':
+        specifier: ^4.1.7
+        version: 4.1.7
       '@types/ejs':
         specifier: ^3.1.1
         version: 3.1.1
@@ -982,9 +988,6 @@ importers:
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
-      tsx:
-        specifier: ^3.12.6
-        version: 3.12.6
 
   packages/store-indexer:
     dependencies:
@@ -14052,7 +14055,7 @@ snapshots:
 
   '@koa/router@12.0.1':
     dependencies:
-      debug: 4.3.4
+      debug: 4.3.7
       http-errors: 2.0.0
       koa-compose: 4.1.0
       methods: 1.1.2
@@ -16485,7 +16488,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/typescript-estree': 7.1.1(typescript@5.4.2)
       '@typescript-eslint/utils': 7.1.1(eslint@8.57.0)(typescript@5.4.2)
-      debug: 4.3.4
+      debug: 4.3.7
       eslint: 8.57.0
       ts-api-utils: 1.2.1(typescript@5.4.2)
     optionalDependencies:
@@ -16499,7 +16502,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 7.1.1
       '@typescript-eslint/visitor-keys': 7.1.1
-      debug: 4.3.4
+      debug: 4.3.7
       globby: 11.1.0
       is-glob: 4.0.3
       minimatch: 9.0.3
@@ -20724,7 +20727,7 @@ snapshots:
       content-disposition: 0.5.4
       content-type: 1.0.5
       cookies: 0.8.0
-      debug: 4.3.4
+      debug: 4.3.7
       delegates: 1.0.0
       depd: 2.0.0
       destroy: 1.2.0
