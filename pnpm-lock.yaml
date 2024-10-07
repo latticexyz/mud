@@ -308,6 +308,9 @@ importers:
       '@solidity-parser/parser':
         specifier: ^0.16.0
         version: 0.16.0
+      abitype:
+        specifier: 'catalog:'
+        version: 1.0.6(typescript@5.4.2)(zod@3.23.8)
       asn1.js:
         specifier: 5.x
         version: 5.4.1
@@ -19980,8 +19983,8 @@ snapshots:
 
   is-arguments@1.1.1:
     dependencies:
-      call-bind: 1.0.2
-      has-tostringtag: 1.0.0
+      call-bind: 1.0.7
+      has-tostringtag: 1.0.2
 
   is-array-buffer@3.0.4:
     dependencies:
