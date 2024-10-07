@@ -159,6 +159,8 @@ export function useTransactionWatcher() {
       const writeResult = write.events.find((event): event is Message<"write:result"> => event.type === "write:result");
 
       mergedMap.set(write.hash || write.writeId, {
+        hash: write.hash,
+        writeId: write.writeId,
         from: write.from,
         status: writeResult?.status === "rejected" ? "rejected" : "pending",
         timestamp: BigInt(write.time) / 1000n,
