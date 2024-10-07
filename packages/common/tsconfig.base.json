@@ -17,6 +17,7 @@
     "esModuleInterop": true,
     "noErrorTruncation": true,
     "resolveJsonModule": true,
+    "allowArbitraryExtensions": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true
   }

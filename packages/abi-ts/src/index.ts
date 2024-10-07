@@ -39,7 +39,7 @@ const commandModule: CommandModule<Options, Options> = {
       }
 
       const ts = `declare const abi: ${json}; export default abi;\n`;
-      const tsFilename = `${jsonFilename}.d.ts`;
+      const tsFilename = jsonFilename.replace(/\.json$/, ".d.json.ts");
 
       debug("Writing", tsFilename);
       writeFileSync(tsFilename, ts);
