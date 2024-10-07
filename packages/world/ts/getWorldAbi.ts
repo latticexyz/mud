@@ -26,8 +26,16 @@ export async function getWorldAbi({
   });
   const baseFunctionSelectors = (IBaseWorldAbi as Abi).filter(isAbiFunction).map(toFunctionSelector);
   const worldFunctionsAbi = worldFunctions
-    .map((func) => functionSignatureToAbiItem(func.signature))
-    .filter((abiItem) => !baseFunctionSelectors.includes(toFunctionSelector(abiItem)));
+    .map((func) => {
+      try {
+        return functionSignatureToAbiItem(func.signature);
+      } catch (error) {
+        console.error(error);
+      }
+    })
+    .filter(
+      (abiItem): abiItem is AbiFunction => !!abiItem && !baseFunctionSelectors.includes(toFunctionSelector(abiItem)),
+    );
   const abi = [...IBaseWorldAbi, ...worldFunctionsAbi];
 
   return abi;
