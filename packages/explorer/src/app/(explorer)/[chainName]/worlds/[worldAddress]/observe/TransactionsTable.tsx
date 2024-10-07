@@ -97,7 +97,7 @@ export function TransactionsTable() {
     state: {
       expanded,
     },
-    getRowId: (row) => row.hash || row.writeId,
+    getRowId: (row) => row.writeId || row.hash!,
     onExpandedChange: setExpanded,
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
