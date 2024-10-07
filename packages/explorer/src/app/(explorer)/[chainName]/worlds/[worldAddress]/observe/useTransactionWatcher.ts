@@ -32,7 +32,7 @@ export type WatchedTransaction = {
   write?: Write;
   logs?: Log[];
   error?: BaseError;
-} & ({ hash: Hex; writeId?: string } | { hash?: Hex; writeId: string } | { hash: Hex; writeId: string });
+} & ({ hash: Hex; writeId?: string } | { hash?: Hex; writeId: string });
 
 export function useTransactionWatcher() {
   const { id: chainId } = useChain();
