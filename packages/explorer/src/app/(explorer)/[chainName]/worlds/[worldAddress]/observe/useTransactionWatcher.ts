@@ -65,10 +65,11 @@ export function useTransactionWatcher() {
         functionName = transaction.input.length > 10 ? transaction.input.slice(0, 10) : "unknown";
       }
 
+      const write = Object.values(observerWrites).find((write) => write.hash === hash);
       setTransactions((prevTransactions) => [
         {
           hash,
-          writeId: hash,
+          writeId: write?.writeId ?? hash,
           from: transaction.from,
           timestamp,
           transaction,
@@ -128,7 +129,7 @@ export function useTransactionWatcher() {
         ),
       );
     },
-    [abi, wagmiConfig, worldAddress],
+    [abi, observerWrites, wagmiConfig, worldAddress],
   );
 
   useEffect(() => {
