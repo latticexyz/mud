@@ -22,8 +22,6 @@ import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 
 export type WatchedTransaction = {
-  hash?: Hex;
-  writeId?: string;
   from?: Address;
   timestamp?: bigint;
   transaction?: Transaction;
@@ -34,7 +32,7 @@ export type WatchedTransaction = {
   write?: Write;
   logs?: Log[];
   error?: BaseError;
-};
+} & ({ hash: Hex; writeId?: string } | { hash?: Hex; writeId: string } | { hash: Hex; writeId: string });
 
 export function useTransactionWatcher() {
   const { id: chainId } = useChain();
