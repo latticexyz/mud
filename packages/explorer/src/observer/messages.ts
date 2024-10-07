@@ -6,14 +6,15 @@ export type Messages = {
   write: {
     writeId: string;
     address: Address;
+    from: Address;
     functionSignature: string;
     args: unknown[];
+    value?: bigint;
   };
-  "write:result": PromiseSettledResult<Hash> & {
-    writeId: string;
-  };
+  "write:result": PromiseSettledResult<Hash> & { writeId: string };
   waitForTransactionReceipt: {
     writeId: string;
+    hash: Hash;
   };
   "waitForTransactionReceipt:result": PromiseSettledResult<ReceiptSummary> & {
     writeId: string;

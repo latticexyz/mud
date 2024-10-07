@@ -27,12 +27,16 @@ import {
   combineLatest,
   scan,
   mergeMap,
+  throwError,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
 import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/utils";
 import { getSnapshot } from "./getSnapshot";
+import { fromEventSource } from "./fromEventSource";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
+import { isLogsApiResponse } from "./indexer-client/isLogsApiResponse";
+import { toStorageAdatperBlock } from "./indexer-client/toStorageAdapterBlock";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -61,7 +65,7 @@ export async function createStoreSync({
   maxBlockRange,
   initialState,
   initialBlockLogs,
-  indexerUrl,
+  indexerUrl: initialIndexerUrl,
 }: CreateStoreSyncOptions): Promise<SyncResult> {
   const filters: SyncFilter[] =
     initialFilters.length || tableIds.length
@@ -78,9 +82,17 @@ export async function createStoreSync({
         )
     : undefined;
 
-  const initialBlockLogs$ = defer(async (): Promise<StorageAdapterBlock | undefined> => {
-    const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+  const indexerUrl =
+    initialIndexerUrl !== false
+      ? initialIndexerUrl ??
+        (publicClient.chain && "indexerUrl" in publicClient.chain && typeof publicClient.chain.indexerUrl === "string"
+          ? publicClient.chain.indexerUrl
+          : undefined)
+      : undefined;
 
+  const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+
+  const initialBlockLogs$ = defer(async (): Promise<StorageAdapterBlock | undefined> => {
     onProgress?.({
       step: SyncStep.SNAPSHOT,
       percentage: 0,
@@ -95,15 +107,7 @@ export async function createStoreSync({
       filters,
       initialState,
       initialBlockLogs,
-      indexerUrl:
-        indexerUrl !== false
-          ? indexerUrl ??
-            (publicClient.chain &&
-            "indexerUrl" in publicClient.chain &&
-            typeof publicClient.chain.indexerUrl === "string"
-              ? publicClient.chain.indexerUrl
-              : undefined)
-          : undefined,
+      indexerUrl,
     });
 
     onProgress?.({
@@ -199,7 +203,34 @@ export async function createStoreSync({
   let endBlock: bigint | null = null;
   let lastBlockNumberProcessed: bigint | null = null;
 
-  const storedBlock$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
+  const storedIndexerLogs$ = indexerUrl
+    ? startBlock$.pipe(
+        mergeMap((startBlock) => {
+          const url = new URL(
+            `api/logs-live?${new URLSearchParams({
+              input: JSON.stringify({ chainId, address, filters }),
+              block_num: startBlock.toString(),
+              include_tx_hash: "true",
+            })}`,
+            indexerUrl,
+          );
+          return fromEventSource<string>(url);
+        }),
+        map((messageEvent) => {
+          const data = JSON.parse(messageEvent.data);
+          if (!isLogsApiResponse(data)) {
+            throw new Error("Received unexpected from indexer:" + messageEvent.data);
+          }
+          return toStorageAdatperBlock(data);
+        }),
+        concatMap(async (block) => {
+          await storageAdapter(block);
+          return block;
+        }),
+      )
+    : throwError(() => new Error("No indexer URL provided"));
+
+  const storedRpcLogs$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
     tap((range) => {
       startBlock = range.startBlock;
@@ -215,13 +246,21 @@ export async function createStoreSync({
           ? bigIntMax(range.startBlock, lastBlockNumberProcessed + 1n)
           : range.startBlock,
         toBlock: range.endBlock,
-        storageAdapter,
         logFilter,
+        storageAdapter,
       });
 
       return from(storedBlocks);
     }),
-    tap(({ blockNumber, logs }) => {
+  );
+
+  const storedBlock$ = storedIndexerLogs$.pipe(
+    catchError((e) => {
+      debug("failed to stream logs from indexer:", e.message);
+      debug("falling back to streaming logs from RPC");
+      return storedRpcLogs$;
+    }),
+    tap(async ({ logs, blockNumber }) => {
       debug("stored", logs.length, "logs for block", blockNumber);
       lastBlockNumberProcessed = blockNumber;
 

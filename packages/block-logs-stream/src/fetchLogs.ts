@@ -1,25 +1,11 @@
 import { AbiEvent } from "abitype";
-import { Address, Client, BlockNumber, GetLogsReturnType } from "viem";
+import { Address, Client, BlockNumber, GetLogsReturnType, OneOf } from "viem";
 import { bigIntMin, wait } from "@latticexyz/common/utils";
 import { debug } from "./debug";
 import { getAction } from "viem/utils";
-import { getLogs } from "viem/actions";
+import { getLogs as viem_getLogs } from "viem/actions";
 
 export type FetchLogsOptions<abiEvents extends readonly AbiEvent[]> = {
-  /**
-   * [viem `Client`][0] used for fetching logs from the RPC.
-   *
-   * [0]: https://viem.sh/docs/clients/public.html
-   */
-  publicClient: Client;
-  /**
-   * Optional contract address(es) to fetch logs for.
-   */
-  address?: Address | Address[];
-  /**
-   * Events to fetch logs for.
-   */
-  events: abiEvents;
   /**
    * The block number to start fetching logs from (inclusive).
    */
@@ -36,7 +22,33 @@ export type FetchLogsOptions<abiEvents extends readonly AbiEvent[]> = {
    * Optional maximum amount of retries if the RPC returns a rate limit error. Defaults to 3.
    */
   maxRetryCount?: number;
-};
+} & OneOf<
+  | {
+      /**
+       * Async function to return logs for the given block range.
+       */
+      getLogs: (args: {
+        fromBlock: bigint;
+        toBlock: bigint;
+      }) => Promise<GetLogsReturnType<undefined, abiEvents, true, BlockNumber, BlockNumber>>;
+    }
+  | {
+      /**
+       * [viem `Client`][0] used for fetching logs from the RPC.
+       *
+       * [0]: https://viem.sh/docs/clients/public.html
+       */
+      publicClient: Client;
+      /**
+       * Optional contract address(es) to fetch logs for.
+       */
+      address?: Address | Address[];
+      /**
+       * Events to fetch logs for.
+       */
+      events: abiEvents;
+    }
+>;
 
 export type FetchLogsResult<abiEvents extends readonly AbiEvent[]> = {
   fromBlock: BlockNumber;
@@ -96,25 +108,31 @@ const BLOCK_RANGE_ERRORS = [
 export async function* fetchLogs<abiEvents extends readonly AbiEvent[]>({
   maxBlockRange = 1000n,
   maxRetryCount = 3,
-  publicClient,
-  ...getLogsOpts
+  fromBlock: initialFromBlock,
+  toBlock: initialToBlock,
+  ...opts
 }: FetchLogsOptions<abiEvents>): AsyncGenerator<FetchLogsResult<abiEvents>> {
-  let fromBlock = getLogsOpts.fromBlock;
-  let blockRange = bigIntMin(maxBlockRange, getLogsOpts.toBlock - fromBlock);
+  const getLogs =
+    opts.getLogs ??
+    (async (blockRange): Promise<GetLogsReturnType<undefined, abiEvents, true, BlockNumber, BlockNumber>> =>
+      getAction(
+        opts.publicClient,
+        viem_getLogs,
+        "getLogs",
+      )({ ...blockRange, address: opts.address, events: opts.events, strict: true }));
+
+  let fromBlock = initialFromBlock;
+  let blockRange = bigIntMin(maxBlockRange, initialToBlock - fromBlock);
   let retryCount = 0;
 
-  while (fromBlock <= getLogsOpts.toBlock) {
+  while (fromBlock <= initialToBlock) {
     try {
       const toBlock = fromBlock + blockRange;
       debug(`getting logs for blocks ${fromBlock}-${toBlock} (${blockRange} blocks, ${maxBlockRange} max)`);
-      const logs = await getAction(
-        publicClient,
-        getLogs,
-        "getLogs",
-      )({ ...getLogsOpts, fromBlock, toBlock, strict: true });
+      const logs = await getLogs({ fromBlock, toBlock });
       yield { fromBlock, toBlock, logs };
       fromBlock = toBlock + 1n;
-      blockRange = bigIntMin(maxBlockRange, getLogsOpts.toBlock - fromBlock);
+      blockRange = bigIntMin(maxBlockRange, initialToBlock - fromBlock);
       retryCount = 0;
     } catch (error: unknown) {
       if (!(error instanceof Error)) throw error;

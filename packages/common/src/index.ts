@@ -8,6 +8,7 @@ export * from "./getFeeRef";
 export * from "./getNonceManager";
 export * from "./getNonceManagerId";
 export * from "./hexToResource";
+export * from "./logSort";
 export * from "./LruMap";
 export * from "./readHex";
 export * from "./resourceToLabel";

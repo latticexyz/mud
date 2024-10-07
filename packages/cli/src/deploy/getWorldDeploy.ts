@@ -12,7 +12,10 @@ export async function getWorldDeploy(client: Client, worldAddress: Address): Pro
 
   let deploy = deploys.get(address);
   if (deploy != null) {
-    return deploy;
+    return {
+      ...deploy,
+      stateBlock: (await getBlock(client, { blockTag: "latest" })).number,
+    };
   }
 
   debug("looking up world deploy for", address);

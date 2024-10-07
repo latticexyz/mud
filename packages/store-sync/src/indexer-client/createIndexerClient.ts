@@ -2,6 +2,8 @@ import { z } from "zod";
 import { input } from "./input";
 import { StorageAdapterBlock } from "../common";
 import { Result } from "@latticexyz/common";
+import { isLogsApiResponse } from "./isLogsApiResponse";
+import { toStorageAdatperBlock } from "./toStorageAdapterBlock";
 
 export type CreateIndexerClientOptions = {
   /**
@@ -30,19 +32,14 @@ export function createIndexerClient({ url }: CreateIndexerClientOptions): Indexe
 
         // TODO: return a readable stream instead of fetching the entire response at once
         const result = await response.json();
-        if (!isStorageAdapterBlock(result)) {
+        if (!isLogsApiResponse(result)) {
           return { error: result };
         }
 
-        return { ok: { ...result, blockNumber: BigInt(result.blockNumber) } };
+        return { ok: toStorageAdatperBlock(result) };
       } catch (error) {
         return { error };
       }
     },
   };
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function isStorageAdapterBlock(data: any): data is Omit<StorageAdapterBlock, "blockNumber"> & { blockNumber: string } {
-  return data && typeof data.blockNumber === "string" && Array.isArray(data.logs);
 }
