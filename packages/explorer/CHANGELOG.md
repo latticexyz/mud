@@ -1,5 +1,26 @@
 # @latticexyz/explorer
 
+## 2.2.11
+
+### Patch Changes
+
+- bbd5e31: Observe tab is now populated by transactions flowing through the world, in addition to local transactions when using the `observer` transport wrapper.
+- 645b7e0: Fixed row expansion in the transactions table where an incorrect row would expand when new transactions appeared.
+- 85bbeb8: It is now possible to pass in environment variables like `RPC_HTTP_URL` to the internal local indexer when running the explorer locally.
+- 71eb348: Observe tab is now populated by rejected transactions coming from the `observer` transport wrapper.
+- Updated dependencies [7ddcf64]
+- Updated dependencies [61930ee]
+- Updated dependencies [13e5689]
+- Updated dependencies [7ddcf64]
+  - @latticexyz/store@2.2.11
+  - @latticexyz/store-sync@2.2.11
+  - @latticexyz/common@2.2.11
+  - @latticexyz/store-indexer@2.2.11
+  - @latticexyz/world@2.2.11
+  - @latticexyz/config@2.2.11
+  - @latticexyz/protocol-parser@2.2.11
+  - @latticexyz/schema-type@2.2.11
+
 ## 2.2.10
 
 ### Patch Changes

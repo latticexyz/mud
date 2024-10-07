@@ -1,5 +1,17 @@
 # Change Log
 
+## 2.2.11
+
+### Patch Changes
+
+- 7ddcf64: Added `getStoreLogs` and `flattenStoreLogs` to aid in fetching data from store contracts. For now, these are internal exports and considered unstable/experimental.
+- 13e5689: Added an `unwrap` function to the `ResourceIdInstance` library to make it easier to unwrap a `ResourceId` with `resourceId.unwrap()`.
+- Updated dependencies [7ddcf64]
+  - @latticexyz/common@2.2.11
+  - @latticexyz/config@2.2.11
+  - @latticexyz/protocol-parser@2.2.11
+  - @latticexyz/schema-type@2.2.11
+
 ## 2.2.10
 
 ### Patch Changes

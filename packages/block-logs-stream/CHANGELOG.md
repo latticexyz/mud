@@ -1,5 +1,13 @@
 # @latticexyz/block-logs-stream
 
+## 2.2.11
+
+### Patch Changes
+
+- 7ddcf64: `fetchLogs` and `blockRangeToLogs` now accept a `getLogs` option to override the default behavior.
+- Updated dependencies [7ddcf64]
+  - @latticexyz/common@2.2.11
+
 ## 2.2.10
 
 ### Patch Changes
