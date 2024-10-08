@@ -60,7 +60,7 @@ const argv = yargs(process.argv.slice(2))
       alias: "f",
       description: "Disable the front page",
       type: "boolean",
-      default: true,
+      default: false,
     },
   })
   .check((argv) => {
