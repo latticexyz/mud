@@ -2,40 +2,15 @@ procs:
   client:
     shell: pnpm vite dev playground
   anvil:
-    # To hydrate `anvil-state.json`, swap the command below and then deploy a MUD world to it.
-    # shell: anvil --dump-state playground/anvil-state.json
     shell: anvil --block-time 2 --load-state playground/anvil-state.json
-  mud:
-    cwd: ../..
-    shell: pnpm run dev --filter=!@latticexyz/entrykit
+  # mud:
+  #   cwd: ../..
+  #   shell: pnpm run dev --filter=!@latticexyz/entrykit
   bundler:
     cwd: ../../../alto
     shell: ./alto --config ../mud/packages/entrykit/playground/alto.config.json
-  indexer:
-    cwd: ../explorer
-    shell: shx rm -rf $SQLITE_FILENAME && pnpm sqlite-indexer
-    env:
-      DEBUG: mud:*
-      RPC_HTTP_URL: "http://127.0.0.1:8545"
-      FOLLOW_BLOCK_TAG: "latest"
-      SQLITE_FILENAME: "indexer.db"
+  paymaster:
+    cwd: ../../../quarry-paymaster/packages/service
+    shell: pnpm start
   explorer:
-    cwd: ../explorer
-    shell: pnpm explorer:dev
-    env:
-      CHAIN_ID: "31337"
-      WORLD_ADDRESS: "0xdc1069d47206299a0b864a6ffcafbf4bc70c207c"
-      INDEXER_DATABASE: indexer.db
-
-  # cbsw-deploy:
-  #   cwd: ../../../smart-wallet
-  #   shell: make deploy
-  # aa-deploy:
-  #   cwd: ../../../alto
-  #   shell: pnpm ts-node scripts/localDeployer/index.ts
-  # game-deploy:
-  #   cwd: ../../test/mock-game-contracts
-  #   shell: pnpm deploy:local
-  #   env:
-  #     # Anvil default account (0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc)
-  #     PRIVATE_KEY: "0x8b3a350cf5c34c9194ca85829a2df0ec3153be0318b5e2d3348e872092edffba"
+    shell: pnpm explorer --worldAddress 0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b

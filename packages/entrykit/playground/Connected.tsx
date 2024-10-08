@@ -6,8 +6,8 @@ import { useAppAccount } from "../src/useAppAccount";
 export function Connected() {
   const wallet = useAccount();
   const { data: appAccount } = useAppAccount();
-  useAutoTopUp({ address: wallet.address });
-  useAutoTopUp({ address: appAccount?.address });
+  // useAutoTopUp({ address: wallet.address });
+  // useAutoTopUp({ address: appAccount?.address });
 
   const { chainId, worldAddress } = useConfig();
 

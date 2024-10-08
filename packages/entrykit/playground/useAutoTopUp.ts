@@ -8,7 +8,7 @@ export type AutoTopUpParameters = {
   minBalance?: bigint;
 };
 
-export function useAutoTopUp({ address, minBalance = parseEther("10000") }: AutoTopUpParameters) {
+export function useAutoTopUp({ address, minBalance = parseEther("1337") }: AutoTopUpParameters) {
   const queryClient = useQueryClient();
   const client = useClient();
   useQuery({

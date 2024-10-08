@@ -37,6 +37,7 @@
     "clean:js": "shx rm -rf dist",
     "dev": "tsup --watch & vite build --watch",
     "playground": "mprocs",
+    "playground:deploy": "mprocs --config mprocs.deploy.yaml",
     "test": "tsc --noEmit && vitest",
     "test:ci": "tsc --noEmit && vitest --run"
   },

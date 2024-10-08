@@ -183,6 +183,15 @@ export function passkeyConnector({ chainId, bundlerTransport }: PasskeyConnector
           client,
           account,
           ...clientOpts,
+          paymaster: {
+            getPaymasterData: async () => ({
+              paymasterAndData: "0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b",
+              preVerificationGas: 100_000n,
+              verificationGasLimit: 1_000_000n,
+              // TODO: figure out how to not hardcode this, estimation fails without it
+              callGasLimit: 1_000_000n,
+            }),
+          },
         });
       },
 
