@@ -1,4 +1,5 @@
 import { Address } from "viem";
+import { supportedChains, validateChainName } from "../../../../common";
 import { WorldsForm } from "./WorldsForm";
 
 type ApiResponse = {
@@ -9,8 +10,16 @@ type ApiResponse = {
   }[];
 };
 
-async function fetchWorlds(): Promise<Address[]> {
-  const response = await fetch("https://explorer.redstone.xyz/api/v2/mud/worlds");
+async function fetchWorlds(chainName: string): Promise<Address[]> {
+  validateChainName(chainName);
+
+  const chain = supportedChains[chainName];
+  const blockExplorerUrl = chain.blockExplorers?.default.url;
+  if (!blockExplorerUrl) {
+    return [];
+  }
+
+  const response = await fetch(`${blockExplorerUrl}/api/v2/mud/worlds`);
   if (!response.ok) {
     throw new Error("Failed to fetch worlds");
   }
@@ -18,7 +27,13 @@ async function fetchWorlds(): Promise<Address[]> {
   return data.items.map((world) => world.address.hash);
 }
 
-export default async function WorldsPage({ params }: { params: { chainName: string } }) {
-  const worlds = await fetchWorlds();
+type Props = {
+  params: {
+    chainName: string;
+  };
+};
+
+export default async function WorldsPage({ params }: Props) {
+  const worlds = await fetchWorlds(params.chainName);
   return <WorldsForm worlds={worlds} />;
 }
