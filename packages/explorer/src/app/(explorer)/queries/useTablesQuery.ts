@@ -12,11 +12,12 @@ import { indexerForChainId } from "../utils/indexerForChainId";
 export function useTablesQuery() {
   const { worldAddress, chainName } = useParams();
   const { id: chainId } = useChain();
+  const indexer = indexerForChainId(chainId);
 
   return useQuery<DozerResponse, Error, Table[]>({
     queryKey: ["tables", worldAddress, chainName],
     queryFn: async () => {
-      const indexer = indexerForChainId(chainId);
+      if (!indexer.url) return;
       const tableName = "store__Tables";
       const query =
         indexer.type === "sqlite"
