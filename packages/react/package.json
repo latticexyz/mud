@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/react",
-  "version": "2.2.10",
+  "version": "2.2.11",
   "description": "React tools for MUD client.",
   "repository": {
     "type": "git",

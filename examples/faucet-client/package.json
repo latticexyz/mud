@@ -9,6 +9,6 @@
   },
   "dependencies": {
     "@latticexyz/faucet": "link:../../packages/faucet",
-    "tsx": "^3.12.7"
+    "tsx": "4.19.0"
   }
 }

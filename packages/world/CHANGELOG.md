@@ -1,5 +1,18 @@
 # Change Log
 
+## 2.2.11
+
+### Patch Changes
+
+- Updated dependencies [7ddcf64]
+- Updated dependencies [13e5689]
+- Updated dependencies [7ddcf64]
+  - @latticexyz/store@2.2.11
+  - @latticexyz/common@2.2.11
+  - @latticexyz/config@2.2.11
+  - @latticexyz/protocol-parser@2.2.11
+  - @latticexyz/schema-type@2.2.11
+
 ## 2.2.10
 
 ### Patch Changes

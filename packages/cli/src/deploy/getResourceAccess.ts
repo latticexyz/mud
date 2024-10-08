@@ -1,11 +1,11 @@
-import { Client, parseAbiItem, Hex, Address, getAddress } from "viem";
+import { Client, Hex, Address, getAddress } from "viem";
 import { WorldDeploy } from "./common";
 import { debug } from "./debug";
-import { storeSpliceStaticDataEvent } from "@latticexyz/store";
-import { getLogs } from "viem/actions";
 import { decodeKey, getKeySchema, getSchemaTypes } from "@latticexyz/protocol-parser/internal";
 import { getTableValue } from "./getTableValue";
 import worldConfig from "@latticexyz/world/mud.config";
+import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
+import { flattenStoreLogs, getStoreLogs } from "@latticexyz/store/internal";
 
 export async function getResourceAccess({
   client,
@@ -14,21 +14,22 @@ export async function getResourceAccess({
   readonly client: Client;
   readonly worldDeploy: WorldDeploy;
 }): Promise<readonly { readonly resourceId: Hex; readonly address: Address }[]> {
-  // This assumes we only use `ResourceAccess._set(...)`, which is true as of this writing.
-  // TODO: PR to viem's getLogs to accept topics array so we can filter on all store events and quickly recreate this table's current state
-
   debug("looking up resource access for", worldDeploy.address);
 
-  const logs = await getLogs(client, {
-    strict: true,
+  const blockLogs = await fetchBlockLogs({
     fromBlock: worldDeploy.deployBlock,
     toBlock: worldDeploy.stateBlock,
-    address: worldDeploy.address,
-    // our usage of `ResourceAccess._set(...)` emits a splice instead of set record
-    // TODO: https://github.com/latticexyz/mud/issues/479
-    event: parseAbiItem(storeSpliceStaticDataEvent),
-    args: { tableId: worldConfig.namespaces.world.tables.ResourceAccess.tableId },
+    maxBlockRange: 100_000n,
+    async getLogs({ fromBlock, toBlock }) {
+      return getStoreLogs(client, {
+        address: worldDeploy.address,
+        fromBlock,
+        toBlock,
+        tableId: worldConfig.namespaces.world.tables.ResourceAccess.tableId,
+      });
+    },
   });
+  const logs = flattenStoreLogs(blockLogs.flatMap((block) => block.logs));
 
   const keys = logs.map((log) =>
     decodeKey(getSchemaTypes(getKeySchema(worldConfig.namespaces.world.tables.ResourceAccess)), log.args.keyTuple),
