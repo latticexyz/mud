@@ -1,5 +1,33 @@
 # Change Log
 
+## 2.2.11
+
+### Patch Changes
+
+- 111bb1b: Fixed a dev runner bug where the state block of a previous deploy was not updated during a redeploy, causing failed deploys due to fetching outdated world state.
+- 7ddcf64: Deployer now has a better method for fetching store logs from the world that should be more efficient and resilient to block range errors and rate limiting.
+- 9e53a51: Added a `mud pull` command that downloads state from an existing world and uses it to generate a MUD config with tables and system interfaces. This makes it much easier to extend worlds.
+
+  ```
+  mud pull --worldAddress 0x… --rpc https://…
+  ```
+
+- Updated dependencies [7ddcf64]
+- Updated dependencies [7ddcf64]
+- Updated dependencies [13e5689]
+- Updated dependencies [7ddcf64]
+  - @latticexyz/block-logs-stream@2.2.11
+  - @latticexyz/store@2.2.11
+  - @latticexyz/common@2.2.11
+  - @latticexyz/world@2.2.11
+  - @latticexyz/world-module-metadata@2.2.11
+  - @latticexyz/config@2.2.11
+  - @latticexyz/protocol-parser@2.2.11
+  - @latticexyz/abi-ts@2.2.11
+  - @latticexyz/gas-report@2.2.11
+  - @latticexyz/schema-type@2.2.11
+  - @latticexyz/utils@2.2.11
+
 ## 2.2.10
 
 ### Patch Changes

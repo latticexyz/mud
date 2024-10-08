@@ -1,5 +1,20 @@
 # Change Log
 
+## 2.2.11
+
+### Patch Changes
+
+- 7ddcf64: Added `logSort` method to help when sorting logs fetched from RPC, where they come back ordered relative to the topics used.
+
+  ```ts
+  import { logSort } from "@latticexyz/common";
+
+  const logs = getLogs(...);
+  logs.sort(logSort);
+  ```
+
+  - @latticexyz/schema-type@2.2.11
+
 ## 2.2.10
 
 ### Patch Changes

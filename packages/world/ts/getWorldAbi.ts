@@ -2,6 +2,7 @@ import { Client, Abi, AbiItem, AbiFunction, Address, getAddress, toFunctionSelec
 import IBaseWorldAbi from "../out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { functionSignatureToAbiItem } from "./functionSignatureToAbiItem";
 import { getFunctions } from "./getFunctions";
+import { isDefined } from "@latticexyz/common/utils";
 
 function isAbiFunction(abiItem: AbiItem): abiItem is AbiFunction {
   return abiItem.type === "function";
@@ -26,7 +27,14 @@ export async function getWorldAbi({
   });
   const baseFunctionSelectors = (IBaseWorldAbi as Abi).filter(isAbiFunction).map(toFunctionSelector);
   const worldFunctionsAbi = worldFunctions
-    .map((func) => functionSignatureToAbiItem(func.signature))
+    .map((func) => {
+      try {
+        return functionSignatureToAbiItem(func.signature);
+      } catch (error) {
+        console.error(error);
+      }
+    })
+    .filter(isDefined)
     .filter((abiItem) => !baseFunctionSelectors.includes(toFunctionSelector(abiItem)));
   const abi = [...IBaseWorldAbi, ...worldFunctionsAbi];
 

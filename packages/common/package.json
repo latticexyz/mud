@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/common",
-  "version": "2.2.10",
+  "version": "2.2.11",
   "description": "Common low level logic shared between packages",
   "repository": {
     "type": "git",
@@ -68,6 +68,7 @@
   "dependencies": {
     "@latticexyz/schema-type": "workspace:*",
     "@solidity-parser/parser": "^0.16.0",
+    "abitype": "catalog:",
     "debug": "^4.3.4",
     "execa": "^7.0.0",
     "p-queue": "^7.4.1",

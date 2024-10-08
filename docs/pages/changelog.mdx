@@ -1,3 +1,70 @@
+## Version 2.2.11
+
+Release date: Mon Oct 07 2024
+
+### Patch changes
+
+**[feat(explorer): show transactions (#3062)](https://github.com/latticexyz/mud/commit/bbd5e315d18e2a3cdbd9a20023b680eac77d74b6)** (@latticexyz/explorer)
+
+Observe tab is now populated by transactions flowing through the world, in addition to local transactions when using the `observer` transport wrapper.
+
+**[feat(cli,store): fetch table-specific logs (#3245)](https://github.com/latticexyz/mud/commit/7ddcf64a222f184b1902a1dc93089064465b6acf)** (@latticexyz/block-logs-stream)
+
+`fetchLogs` and `blockRangeToLogs` now accept a `getLogs` option to override the default behavior.
+
+**[feat(cli,store): fetch table-specific logs (#3245)](https://github.com/latticexyz/mud/commit/7ddcf64a222f184b1902a1dc93089064465b6acf)** (@latticexyz/store)
+
+Added `getStoreLogs` and `flattenStoreLogs` to aid in fetching data from store contracts. For now, these are internal exports and considered unstable/experimental.
+
+**[feat(store-sync): add client support for streaming logs from indexer (#3226)](https://github.com/latticexyz/mud/commit/61930eeade86d8ce46392449a797ef6291f0ce62)** (@latticexyz/store-sync)
+
+Added support for streaming logs from the indexer.
+
+**[fix(explorer): expand selected transaction table row by hash/writeId (#3263)](https://github.com/latticexyz/mud/commit/645b7e09f191b41ad296c23f212da1739f17add5)** (@latticexyz/explorer)
+
+Fixed row expansion in the transactions table where an incorrect row would expand when new transactions appeared.
+
+**[fix(cli): update state block in dev runner redeploy (#3243)](https://github.com/latticexyz/mud/commit/111bb1b6c767a6f9654dde1a711d1db784f0770a)** (@latticexyz/cli)
+
+Fixed a dev runner bug where the state block of a previous deploy was not updated during a redeploy, causing failed deploys due to fetching outdated world state.
+
+**[fix(explorer): allow overriding internal indexer env variables (#3237)](https://github.com/latticexyz/mud/commit/85bbeb8be12597f28cd1506dae0d44b34c1427e4)** (@latticexyz/explorer)
+
+It is now possible to pass in environment variables like `RPC_HTTP_URL` to the internal local indexer when running the explorer locally.
+
+**[feat(explorer): integrate rejected transactions (#3251)](https://github.com/latticexyz/mud/commit/71eb34804ee9a6c74a10f896f41bf6f74cfc889c)** (@latticexyz/explorer)
+
+Observe tab is now populated by rejected transactions coming from the `observer` transport wrapper.
+
+**[feat(cli,store): fetch table-specific logs (#3245)](https://github.com/latticexyz/mud/commit/7ddcf64a222f184b1902a1dc93089064465b6acf)** (@latticexyz/cli)
+
+Deployer now has a better method for fetching store logs from the world that should be more efficient and resilient to block range errors and rate limiting.
+
+**[feat(store): add unwrap() function to ResourceIdInstance (#3249)](https://github.com/latticexyz/mud/commit/13e56891c7d6b66d53047e0d2de38ffea6fd2524)** (@latticexyz/store)
+
+Added an `unwrap` function to the `ResourceIdInstance` library to make it easier to unwrap a `ResourceId` with `resourceId.unwrap()`.
+
+**[feat(cli,store): fetch table-specific logs (#3245)](https://github.com/latticexyz/mud/commit/7ddcf64a222f184b1902a1dc93089064465b6acf)** (@latticexyz/common)
+
+Added `logSort` method to help when sorting logs fetched from RPC, where they come back ordered relative to the topics used.
+
+```ts
+import { logSort } from "@latticexyz/common";
+
+const logs = getLogs(...);
+logs.sort(logSort);
+```
+
+**[feat(cli): mud pull (#3171)](https://github.com/latticexyz/mud/commit/9e53a51f3b6bf04f5a0074e2c61dc88a9a63ceec)** (@latticexyz/cli)
+
+Added a `mud pull` command that downloads state from an existing world and uses it to generate a MUD config with tables and system interfaces. This makes it much easier to extend worlds.
+
+```
+mud pull --worldAddress 0x… --rpc https://…
+```
+
+---
+
 ## Version 2.2.10
 
 Release date: Thu Sep 26 2024
