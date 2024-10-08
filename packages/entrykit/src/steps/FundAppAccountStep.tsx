@@ -4,9 +4,13 @@ import { AccountModalNav } from "../AccoutModalNav";
 import { useConfig } from "../EntryKitConfigProvider";
 import { useAppAccount } from "../useAppAccount";
 import { DialogTitle } from "@radix-ui/react-dialog";
+import { Balance } from "./deposit/Balance";
+// import { useEffect } from "react";
+// import { useOnboardingSteps } from "../useOnboardingSteps";
 
 export function FundAppAccountStep() {
   const { chainId } = useConfig();
+  // const { resetStep } = useOnboardingSteps();
 
   const { data: appAccount } = useAppAccount();
   const balance = useBalance({ chainId, address: appAccount?.address });
@@ -21,6 +25,12 @@ export function FundAppAccountStep() {
         <DialogTitle className="text-lg font-medium">Set up account</DialogTitle>
         <p>Allow your app account to spend gas on behalf of your primary wallet.</p>
         {/* TODO: improve this */}
+        <p>
+          {/* TODO: pending/error states */}
+          Wallet balance: <Balance amount={balance.data?.value ?? 0n} />
+          <br />
+          Wallet allowance: <Balance amount={allowance} />
+        </p>
         {!isFunded ? <p>Deposit funds to get started.</p> : null}
       </AccountModalSection>
     </>

@@ -42,9 +42,7 @@ const connectors = connectorsForWallets(wallets, {
 });
 
 const chains = [anvil, redstone, garnet] as [Chain, ...Chain[]];
-const transports = Object.fromEntries(
-  chains.map((chain) => [chain.id, chain.id === 31337 ? http("http://127.0.0.1:3478") : http()]),
-);
+const transports = Object.fromEntries(chains.map((chain) => [chain.id, http()]));
 
 const wagmiConfig = createConfig({ connectors, chains, transports });
 
