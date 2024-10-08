@@ -1,9 +1,14 @@
 import { Table } from "@latticexyz/config";
-import { schemaToPrimitives } from "./utils/schemaToPrimitives";
 import { UseReadContractParameters, UseReadContractReturnType, useReadContract } from "wagmi";
 import IStoreReadAbi from "@latticexyz/store/out/IStoreRead.sol/IStoreRead.abi.json";
-import { encodeKeyTuple } from "./utils/encodeKeyTuple";
-import { decodeValueArgs, getKeySchema, getSchemaTypes, getValueSchema } from "@latticexyz/protocol-parser/internal";
+import {
+  decodeValueArgs,
+  getKeySchema,
+  getKeyTuple,
+  getSchemaPrimitives,
+  getSchemaTypes,
+  getValueSchema,
+} from "@latticexyz/protocol-parser/internal";
 import { Hex } from "viem";
 
 export function useRecord<table extends Table>({
@@ -15,9 +20,9 @@ export function useRecord<table extends Table>({
   "abi" | "functionName" | "args"
 > & {
   readonly table?: table;
-  readonly key?: schemaToPrimitives<getKeySchema<table>>;
+  readonly key?: getSchemaPrimitives<getKeySchema<table>>;
 }): UseReadContractReturnType<typeof IStoreReadAbi, "getRecord", [Hex, readonly Hex[]]> & {
-  readonly record: schemaToPrimitives<table["schema"]> | undefined;
+  readonly record: getSchemaPrimitives<table["schema"]> | undefined;
 } {
   const result = useReadContract(
     table && key && opts.query?.enabled !== false
@@ -25,7 +30,7 @@ export function useRecord<table extends Table>({
           ...opts,
           abi: IStoreReadAbi,
           functionName: "getRecord",
-          args: [table.tableId, encodeKeyTuple(getKeySchema(table), key)],
+          args: [table.tableId, getKeyTuple(table, key)],
         }
       : {},
   );

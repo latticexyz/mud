@@ -1,7 +1,7 @@
 export function getAppSignerMessage(origin: string, appAccountNonce: number = 0) {
   // BE CAREFUL MODIFYING THIS MESSAGE!
   //
-  // Once modified, all prior accounts will not be easily retrievable.
+  // Once modified, all prior accounts will not be recoverable via our SDK.
   return [
     `${origin} is requesting proof of ownership of your connected account.`,
     "",

@@ -4,7 +4,7 @@ import { AccountDelegationContent } from "./AccountDelegationContent";
 import { AppSignerContent } from "./AppSignerContent";
 import { useSignRegisterDelegation } from "./useSignRegisterDelegation";
 import { AccountModalSection } from "../../AccountModalSection";
-import { AccountModalTitle } from "../../AccoutModalTitle";
+import { AccountModalTitle } from "../../AccoutModalNav";
 import { RevokeButton } from "./RevokeButton";
 
 export function AppAccountStep() {

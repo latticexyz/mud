@@ -1,10 +1,13 @@
 import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { useConfig } from "../src/EntryKitConfigProvider";
 import { useAutoTopUp } from "./useAutoTopUp";
+import { useAppAccount } from "../src/useAppAccount";
 
 export function Connected() {
-  const { address } = useAccount();
-  useAutoTopUp({ address });
+  const wallet = useAccount();
+  const { data: appAccount } = useAppAccount();
+  useAutoTopUp({ address: wallet.address });
+  useAutoTopUp({ address: appAccount?.address });
 
   const { chainId, worldAddress } = useConfig();
 

@@ -1,6 +1,6 @@
 import { Button } from "../../ui/Button";
 import { AccountModalSection } from "../../AccountModalSection";
-import { AccountModalTitle } from "../../AccoutModalTitle";
+import { AccountModalTitle } from "../../AccoutModalNav";
 import { useSignRegisterDelegation } from "./useSignRegisterDelegation";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
 import { useConfig } from "../../EntryKitConfigProvider";

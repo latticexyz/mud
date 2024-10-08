@@ -4,7 +4,7 @@ import { useAppSigner } from "../../useAppSigner";
 import { Button } from "../../ui/Button";
 import { AccountModalSection } from "../../AccountModalSection";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
-import { AccountModalTitle } from "../../AccoutModalTitle";
+import { AccountModalTitle } from "../../AccoutModalNav";
 import { useAppInfo } from "../../useAppInfo";
 import { getAppSignerMessage } from "./getAppSignerMessage";
 import { ErrorNotice } from "../../ErrorNotice";

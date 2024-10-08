@@ -1,4 +1,4 @@
-import { AccountModalTitle } from "../../AccoutModalTitle";
+import { AccountModalTitle } from "../../AccoutModalNav";
 import { AccountModalSection } from "../../AccountModalSection";
 import { GasBalanceSection } from "./GasBalanceSection";
 import { useState } from "react";

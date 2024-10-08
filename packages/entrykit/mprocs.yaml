@@ -11,6 +11,21 @@ procs:
   bundler:
     cwd: ../../../alto
     shell: ./alto --config ../mud/packages/entrykit/playground/alto.config.json
+  indexer:
+    cwd: ../explorer
+    shell: shx rm -rf $SQLITE_FILENAME && pnpm sqlite-indexer
+    env:
+      DEBUG: mud:*
+      RPC_HTTP_URL: "http://127.0.0.1:3478"
+      FOLLOW_BLOCK_TAG: "latest"
+      SQLITE_FILENAME: "indexer.db"
+  explorer:
+    cwd: ../explorer
+    shell: pnpm explorer:dev
+    env:
+      CHAIN_ID: "31337"
+      WORLD_ADDRESS: "0xdc1069d47206299a0b864a6ffcafbf4bc70c207c"
+      INDEXER_DATABASE: indexer.db
 
   # cbsw-deploy:
   #   cwd: ../../../smart-wallet

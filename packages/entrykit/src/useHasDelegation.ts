@@ -1,39 +1,41 @@
-import { useAccount } from "wagmi";
+import { useAccount, useClient } from "wagmi";
 import { useConfig } from "./EntryKitConfigProvider";
 import { unlimitedDelegationControlId } from "./common";
 import worldConfig from "@latticexyz/world/mud.config";
-import { useRecord } from "./useRecord";
-import { useAppAccountClient } from "./useAppAccountClient";
+import { useAppAccount } from "./useAppAccount";
+import { getRecord } from "./utils/getRecord";
+import { useQuery } from "@tanstack/react-query";
 
 export function useHasDelegation() {
   const { chainId, worldAddress } = useConfig();
+  const client = useClient({ chainId });
+  const wallet = useAccount();
+  const walletAddress = wallet?.address;
+  const { data: appAccount } = useAppAccount();
+  const appAccountAddress = appAccount?.address;
 
-  const userAccount = useAccount();
-  const userAccountAddress = userAccount.address;
-
-  const { data: appAccountClient } = useAppAccountClient();
-  const appAccountAddress = appAccountClient?.account.address;
-
-  const result = useRecord(
-    userAccountAddress && appAccountAddress
+  const queryKey = ["hasDelegation", chainId, worldAddress, walletAddress, appAccountAddress];
+  const result = useQuery(
+    client && walletAddress && appAccountAddress
       ? {
-          chainId,
-          address: worldAddress,
-          table: worldConfig.tables.world__UserDelegationControl,
-          key: {
-            delegator: userAccountAddress,
-            delegatee: appAccountAddress,
-          },
-          blockTag: "pending",
-          query: {
-            staleTime: 1000 * 60 * 5,
-          },
+          queryKey,
+          queryFn: async () =>
+            await getRecord(client, {
+              address: worldAddress,
+              table: worldConfig.tables.world__UserDelegationControl,
+              key: {
+                delegator: walletAddress,
+                delegatee: appAccountAddress,
+              },
+              blockTag: "pending",
+            }),
+          staleTime: 1000 * 60 * 5,
         }
-      : {},
+      : { queryKey, enabled: false },
   );
 
   return {
     ...result,
-    hasDelegation: result.record?.delegationControlId === unlimitedDelegationControlId,
+    hasDelegation: result.data?.delegationControlId === unlimitedDelegationControlId,
   };
 }

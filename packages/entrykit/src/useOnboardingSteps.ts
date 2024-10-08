@@ -1,52 +1,25 @@
 import { createStore } from "zustand/vanilla";
-import { AccountRequirement, useAccountRequirements } from "./useAccountRequirements";
+import { useAccountRequirements } from "./useAccountRequirements";
 import { useStore } from "zustand";
 import { useCallback, useMemo } from "react";
 import { keysOf } from "./utils/keysOf";
 import { useAccountModal } from "./useAccountModal";
+import { useAccount } from "wagmi";
+import { passkeyConnector } from "./passkey/passkeyConnector";
+import { StepId, Steps, passkeySteps, walletSteps } from "./steps";
 
-export const onboardingSteps = {
-  wallet: {
-    label: "Connect",
-    requires: [],
-    satisfies: ["connectedWallet"],
-  },
-  "app-account": {
-    label: "Sign in",
-    requires: ["connectedWallet"],
-    satisfies: ["appSigner", "accountDelegation"],
-  },
-  deposit: {
-    label: "Top up",
-    requires: ["connectedWallet", "appSigner", "accountDelegation"],
-    satisfies: ["gasAllowance", "gasSpender"],
-  },
-  // TODO: rework this, feels weird to show this as a step on the left
-  finalizing: {
-    label: "Finalizing",
-    requires: ["connectedWallet", "gasAllowance", "gasSpender", "accountDelegation"],
-    satisfies: ["accountDelegationConfirmed"],
-  },
-} as const satisfies {
-  readonly [key: string]: {
-    readonly label: string;
-    readonly requires: readonly AccountRequirement[];
-    readonly satisfies: readonly AccountRequirement[];
-  };
-};
-
-export type OnboardingStep = keyof typeof onboardingSteps;
-
-const store = createStore<{ readonly step: OnboardingStep | null }>(() => ({ step: null }));
+const store = createStore<{ readonly step: StepId | null }>(() => ({ step: null }));
 
 export function useOnboardingSteps() {
-  const initialStep = useStore(store, (state) => state.step);
+  const selectedStep = useStore(store, (state) => state.step);
   const { closeAccountModal } = useAccountModal();
   const { requirements } = useAccountRequirements();
+  const wallet = useAccount();
 
   const { step, nextStep, steps } = useMemo(() => {
+    const onboardingSteps: Steps = wallet.connector?.type === passkeyConnector.type ? passkeySteps : walletSteps;
     const steps = keysOf(onboardingSteps).map((id) => {
-      const step = onboardingSteps[id];
+      const step = onboardingSteps[id]!;
       return {
         id,
         ...step,
@@ -56,16 +29,16 @@ export function useOnboardingSteps() {
     });
 
     const nextStep = steps.filter((step) => !step.isComplete).at(0);
-    const step = initialStep ?? nextStep?.id ?? steps.filter((step) => step.id !== "finalizing").at(-1)!.id;
+    const step = selectedStep ?? nextStep?.id ?? steps.filter((step) => step.id !== "finalize").at(-1)!.id;
 
     return {
       step,
       nextStep,
       steps,
     };
-  }, [initialStep, requirements]);
+  }, [selectedStep, requirements, wallet.connector?.type]);
 
-  const setStep = useCallback((step: OnboardingStep): void => {
+  const setStep = useCallback((step: StepId): void => {
     store.setState({ step });
   }, []);
 

@@ -1,32 +1,38 @@
-import { Address, PublicClient } from "viem";
+import { Address, Client, Hex } from "viem";
 import { Table } from "@latticexyz/config";
-import { decodeValueArgs, getKeySchema, getSchemaTypes, getValueSchema } from "@latticexyz/protocol-parser/internal";
+import {
+  decodeValueArgs,
+  getKeySchema,
+  getKeyTuple,
+  getSchemaPrimitives,
+  getSchemaTypes,
+  getValueSchema,
+} from "@latticexyz/protocol-parser/internal";
 import { readContract } from "viem/actions";
-import IStoreReadAbi from "@latticexyz/store/out/IStoreRead.sol/IStoreRead.abi.json";
-import { schemaToPrimitives } from "./schemaToPrimitives";
-import { encodeKeyTuple } from "./encodeKeyTuple";
+import { getAction } from "viem/utils";
 
 // TODO: move this to store package or similar
 
 export type GetRecordOptions<table extends Table> = {
-  storeAddress: Address;
+  address: Address;
   table: table;
-  key: schemaToPrimitives<getKeySchema<table>>;
+  key: getSchemaPrimitives<getKeySchema<table>>;
   blockTag?: "latest" | "pending";
 };
 
 export async function getRecord<table extends Table>(
-  publicClient: PublicClient,
-  { storeAddress, table, key, blockTag }: GetRecordOptions<table>,
-): Promise<schemaToPrimitives<table["schema"]>> {
-  const keyTuple = encodeKeyTuple(getKeySchema(table), key);
-
-  // @ts-expect-error https://github.com/wevm/viem/issues/2125
-  const [staticData, encodedLengths, dynamicData] = await readContract(publicClient, {
-    address: storeAddress,
-    abi: IStoreReadAbi,
+  client: Client,
+  { address, table, key, blockTag }: GetRecordOptions<table>,
+): Promise<getSchemaPrimitives<table["schema"]>> {
+  const [staticData, encodedLengths, dynamicData] = await getAction(
+    client,
+    readContract,
+    "readContract",
+  )({
+    address,
+    abi,
     functionName: "getRecord",
-    args: [table.tableId, keyTuple],
+    args: [table.tableId, getKeyTuple(table, key) as readonly Hex[]],
     blockTag,
   });
 
@@ -35,3 +41,40 @@ export async function getRecord<table extends Table>(
     ...decodeValueArgs(getSchemaTypes(getValueSchema(table)), { staticData, encodedLengths, dynamicData }),
   };
 }
+
+const abi = [
+  {
+    type: "function",
+    name: "getRecord",
+    inputs: [
+      {
+        name: "tableId",
+        type: "bytes32",
+        internalType: "ResourceId",
+      },
+      {
+        name: "keyTuple",
+        type: "bytes32[]",
+        internalType: "bytes32[]",
+      },
+    ],
+    outputs: [
+      {
+        name: "staticData",
+        type: "bytes",
+        internalType: "bytes",
+      },
+      {
+        name: "encodedLengths",
+        type: "bytes32",
+        internalType: "EncodedLengths",
+      },
+      {
+        name: "dynamicData",
+        type: "bytes",
+        internalType: "bytes",
+      },
+    ],
+    stateMutability: "view",
+  },
+] as const;
