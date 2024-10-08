@@ -180,19 +180,9 @@ process.on("exit", () => {
 });
 
 async function main() {
-  // If world address is not provided, try to read it from worldsFile.
-  // Provided worldAddress or worldsFile is only required if entry page is disabled.
-  if (disableFrontPage && !worldAddress) {
+  // If world address is not provided, try to read it from worldsFile
+  if (!worldAddress) {
     worldAddress = await readWorldsJson();
-
-    // If world address is still not found, throw an error
-    if (!worldAddress) {
-      throw new Error(
-        `No world address found in "${worldsFile}" file. Either run \`mud deploy\` to create one or provide one with \`--worldAddress\`.`,
-      );
-    }
-
-    // only watch worldsFile if world address was not provided with --worldAddress
     watchWorldsJson();
   }
 
