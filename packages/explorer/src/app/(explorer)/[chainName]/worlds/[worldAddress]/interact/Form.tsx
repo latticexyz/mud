@@ -15,7 +15,7 @@ import { FunctionField } from "./FunctionField";
 export function Form() {
   const [hash] = useHashState();
   const { data, isFetched } = useWorldAbiQuery();
-  const [filterValue, setFilterValue] = useQueryState("functions-filter", { defaultValue: "" });
+  const [filterValue, setFilterValue] = useQueryState("functions", { defaultValue: "" });
   const deferredFilterValue = useDeferredValue(filterValue);
   const filteredFunctions = data?.abi?.filter(
     (item) => item.type === "function" && item.name.toLowerCase().includes(deferredFilterValue.toLowerCase()),
