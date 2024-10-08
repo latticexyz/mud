@@ -86,7 +86,9 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                       {data.functionData?.args?.map((arg, idx) => (
                         <div key={idx} className="flex">
                           <span className="flex-shrink-0 text-xs text-white/60">arg {idx + 1}:</span>
-                          <span className="ml-2 text-xs">{String(arg)}</span>
+                          <span className="ml-2 whitespace-pre-wrap text-xs">
+                            {typeof arg === "object" && arg !== null ? JSON.stringify(arg, null, 2) : String(arg)}
+                          </span>
                         </div>
                       ))}
                     </div>
