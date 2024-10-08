@@ -58,7 +58,7 @@ const argv = yargs(process.argv.slice(2))
     },
     disableFrontPage: {
       alias: "f",
-      description: "Disable the entry page and redirect to the Explorer",
+      description: "Disable the front page",
       type: "boolean",
       default: true,
     },
