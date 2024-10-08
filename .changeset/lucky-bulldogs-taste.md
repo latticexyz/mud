@@ -2,4 +2,4 @@
 "@latticexyz/explorer": patch
 ---
 
-Added an entry page to Explorer, allowing to type or select the world to enter.
+The home page now lets you find and pick a world to explore.
