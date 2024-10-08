@@ -19,12 +19,14 @@ async function fetchWorlds(chainName: string): Promise<Address[]> {
     return [];
   }
 
-  const response = await fetch(`${blockExplorerUrl}/api/v2/mud/worlds`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch worlds");
+  try {
+    const response = await fetch(`${blockExplorerUrl}/api/v2/mud/worlds`);
+    const data: ApiResponse = await response.json();
+    return data.items.map((world) => world.address.hash);
+  } catch (error) {
+    console.error(error);
+    return [];
   }
-  const data: ApiResponse = await response.json();
-  return data.items.map((world) => world.address.hash);
 }
 
 type Props = {

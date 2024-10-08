@@ -47,13 +47,13 @@ export function WorldsForm({ worlds }: { worlds: Address[] }) {
 
   return (
     <div className="mx-auto flex min-h-screen w-[450px] flex-col items-center justify-center p-4">
-      <h1 className="mb-6 flex items-center gap-4 self-start font-mono text-4xl font-bold uppercase">
+      <h1 className="flex items-center gap-6 self-start font-mono text-4xl font-bold uppercase">
         <Image src={mudLogo} alt="MUD logo" width={48} height={48} /> Worlds Explorer
       </h1>
 
-      <Command className="overflow-visible">
+      <Command className="mt-6 overflow-visible bg-transparent">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-md space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div>
               <FormField
                 control={form.control}
