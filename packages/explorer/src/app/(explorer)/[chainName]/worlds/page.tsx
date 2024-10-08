@@ -1,3 +1,4 @@
+import { notFound, redirect } from "next/navigation";
 import { Address } from "viem";
 import { supportedChains, validateChainName } from "../../../../common";
 import { WorldsForm } from "./WorldsForm";
@@ -36,6 +37,12 @@ type Props = {
 };
 
 export default async function WorldsPage({ params }: Props) {
+  const worldAddress = process.env.WORLD_ADDRESS;
+  const disableFrontPage = process.env.DISABLE_FRONT_PAGE === "1";
+
+  if (worldAddress) return redirect(`/${params.chainName}/worlds/${worldAddress}`);
+  if (!worldAddress && disableFrontPage) return notFound();
+
   const worlds = await fetchWorlds(params.chainName);
   return <WorldsForm worlds={worlds} />;
 }

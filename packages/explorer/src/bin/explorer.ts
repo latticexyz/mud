@@ -56,6 +56,12 @@ const argv = yargs(process.argv.slice(2))
       type: "string",
       default: process.env.WORLD_ADDRESS,
     },
+    disableFrontPage: {
+      alias: "f",
+      description: "Disable the entry page and redirect to the Explorer",
+      type: "boolean",
+      default: true,
+    },
   })
   .check((argv) => {
     validateChainId(Number(argv.chainId));
@@ -63,7 +69,7 @@ const argv = yargs(process.argv.slice(2))
   })
   .parseSync();
 
-const { port, hostname, chainId, indexerDatabase, worldsFile, dev } = argv;
+const { port, hostname, chainId, indexerDatabase, worldsFile, dev, disableFrontPage } = argv;
 const indexerDatabasePath = path.join(packageRoot, indexerDatabase);
 
 let worldAddress = argv.worldAddress;
@@ -76,6 +82,7 @@ async function startExplorer() {
     CHAIN_ID: chainId.toString(),
     WORLD_ADDRESS: worldAddress?.toString(),
     INDEXER_DATABASE: indexerDatabasePath,
+    DISABLE_FRONT_PAGE: disableFrontPage ? "1" : "0",
   };
 
   if (dev) {
@@ -173,8 +180,9 @@ process.on("exit", () => {
 });
 
 async function main() {
-  // If world address is not provided, try to read it from worlds.json
-  if (!worldAddress) {
+  // If world address is not provided, try to read it from worldsFile.
+  // Provided worldAddress or worldsFile is only required if entry page is disabled.
+  if (disableFrontPage && !worldAddress) {
     worldAddress = await readWorldsJson();
 
     // If world address is still not found, throw an error
@@ -184,7 +192,7 @@ async function main() {
       );
     }
 
-    // only watch worlds.json if world address was not provided with --worldAddress
+    // only watch worldsFile if world address was not provided with --worldAddress
     watchWorldsJson();
   }
 
