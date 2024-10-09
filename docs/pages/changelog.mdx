@@ -1,3 +1,33 @@
+## Version 2.2.12
+
+Release date: Wed Oct 09 2024
+
+### Patch changes
+
+**[feat(explorer): add functions filter to query state (#3268)](https://github.com/latticexyz/mud/commit/3d8db6f76f3634d532d39cf4091f22fee0a32b68)** (@latticexyz/explorer)
+
+Function filters in `Interact` tab are now included as part of the URL.
+
+**[chore: bump viem (#3273)](https://github.com/latticexyz/mud/commit/ea18f270c9a43dbe489b25f11b8379ccd969c02a)** (@latticexyz/block-logs-stream, @latticexyz/cli, @latticexyz/common, @latticexyz/config, @latticexyz/dev-tools, @latticexyz/explorer, @latticexyz/faucet, @latticexyz/protocol-parser, @latticexyz/schema-type, @latticexyz/stash, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world, create-mud)
+
+Bumped viem to v2.21.19.
+
+MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+```
+pnpm recursive up viem@2.21.19
+```
+
+**[fix(explorer): display nested inputs (#3266)](https://github.com/latticexyz/mud/commit/2c9240111ae11e6727d3581453fba2b866f4b4a0)** (@latticexyz/explorer)
+
+Fixed inputs display in the transactions table row.
+
+**[feat(explorer): front page (#3255)](https://github.com/latticexyz/mud/commit/6476dec94cf32275631d49c7e8fe8fe5a0708040)** (@latticexyz/explorer)
+
+Each chain's home page now lets you find and pick a world to explore.
+
+---
+
 ## Version 2.2.11
 
 Release date: Mon Oct 07 2024

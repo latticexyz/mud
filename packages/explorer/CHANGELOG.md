@@ -1,5 +1,30 @@
 # @latticexyz/explorer
 
+## 2.2.12
+
+### Patch Changes
+
+- 3d8db6f: Function filters in `Interact` tab are now included as part of the URL.
+- ea18f27: Bumped viem to v2.21.19.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.19
+  ```
+
+- 2c92401: Fixed inputs display in the transactions table row.
+- 6476dec: Each chain's home page now lets you find and pick a world to explore.
+- Updated dependencies [ea18f27]
+  - @latticexyz/common@2.2.12
+  - @latticexyz/config@2.2.12
+  - @latticexyz/protocol-parser@2.2.12
+  - @latticexyz/schema-type@2.2.12
+  - @latticexyz/store-indexer@2.2.12
+  - @latticexyz/store-sync@2.2.12
+  - @latticexyz/store@2.2.12
+  - @latticexyz/world@2.2.12
+
 ## 2.2.11
 
 ### Patch Changes
