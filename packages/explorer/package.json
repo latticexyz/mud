@@ -35,7 +35,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@hookform/resolvers": "^3.8.0",
+    "@hookform/resolvers": "^3.9.0",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
@@ -62,7 +62,7 @@
     "debug": "^4.3.4",
     "lucide-react": "^0.408.0",
     "next": "14.2.5",
-    "nuqs": "^1.19.2",
+    "nuqs": "^1.19.3",
     "query-string": "^9.1.0",
     "react": "^18",
     "react-dom": "^18",
