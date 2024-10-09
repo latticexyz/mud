@@ -2,8 +2,8 @@ import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Abi, AbiFunction, Hex } from "viem";
 import { useAccount, useConfig } from "wagmi";
+import { readContract, waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { readContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { useChain } from "../../../../hooks/useChain";
 import { FunctionType } from "./FunctionField";
 

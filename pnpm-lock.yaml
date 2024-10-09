@@ -12,9 +12,6 @@ catalogs:
     '@ark/util':
       specifier: 0.2.2
       version: 0.2.2
-    '@wagmi/core':
-      specifier: 2.13.5
-      version: 2.13.5
     abitype:
       specifier: 1.0.6
       version: 1.0.6
@@ -531,9 +528,6 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.19.3
         version: 8.20.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@wagmi/core':
-        specifier: 'catalog:'
-        version: 2.13.5(@tanstack/query-core@5.52.0)(@types/react@18.2.22)(react@18.2.0)(typescript@5.4.2)(viem@2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8))
       better-sqlite3:
         specifier: ^8.6.0
         version: 8.6.0
