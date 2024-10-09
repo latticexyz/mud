@@ -185,12 +185,22 @@ export function passkeyConnector({ chainId, bundlerTransport }: PasskeyConnector
           ...clientOpts,
           paymaster: {
             getPaymasterData: async () => ({
-              paymasterAndData: "0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b",
-              preVerificationGas: 100_000n,
-              verificationGasLimit: 1_000_000n,
+              paymaster: "0x8D8b6b8414E1e3DcfD4168561b9be6bD3bF6eC4B",
+              paymasterData: "0x",
+              // preVerificationGas: 100_000n,
+              // verificationGasLimit: 1_000_000n,
               // TODO: figure out how to not hardcode this, estimation fails without it
-              callGasLimit: 1_000_000n,
+              // callGasLimit: 1_000_000n,
             }),
+          },
+          userOperation: {
+            estimateFeesPerGas:
+              client.chain.id === 31337
+                ? async () => {
+                    console.log("returning hardcoded fees");
+                    return { maxFeePerGas: 100_000n, maxPriorityFeePerGas: 0n };
+                  }
+                : undefined,
           },
         });
       },

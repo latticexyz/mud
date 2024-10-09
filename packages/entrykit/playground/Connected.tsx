@@ -1,14 +1,7 @@
-import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { useConfig } from "../src/EntryKitConfigProvider";
-import { useAutoTopUp } from "./useAutoTopUp";
-import { useAppAccount } from "../src/useAppAccount";
 
 export function Connected() {
-  const wallet = useAccount();
-  const { data: appAccount } = useAppAccount();
-  // useAutoTopUp({ address: wallet.address });
-  // useAutoTopUp({ address: appAccount?.address });
-
   const { chainId, worldAddress } = useConfig();
 
   const { writeContractAsync, data: hash } = useWriteContract();
@@ -45,6 +38,9 @@ export function Connected() {
             ],
             functionName: "move",
             args: [1, 1],
+
+            maxFeePerGas: 100_000n,
+            maxPriorityFeePerGas: 0n,
           });
 
           console.log("got tx", hash);

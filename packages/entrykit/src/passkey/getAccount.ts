@@ -1,7 +1,8 @@
 import { Client } from "viem";
-import { SmartAccount, toCoinbaseSmartAccount, toWebAuthnAccount } from "viem/account-abstraction";
+import { SmartAccount, toWebAuthnAccount } from "viem/account-abstraction";
 import { cache } from "./cache";
 import { P256Credential } from "webauthn-p256";
+import { toCoinbaseSmartAccount } from "../smart-account/toCoinbaseSmartAccount";
 
 export async function getAccount(client: Client, id: P256Credential["id"]): Promise<SmartAccount> {
   const { publicKeys } = cache.getState();
@@ -14,11 +15,5 @@ export async function getAccount(client: Client, id: P256Credential["id"]): Prom
 
   const owners = [toWebAuthnAccount({ credential: { id, publicKey } })];
 
-  return await toCoinbaseSmartAccount({
-    client,
-    owners,
-    // populate address here so it doesn't have to be fetched repeatedly
-    // TODO: simplify after https://github.com/wevm/viem/pull/2820
-    address: (await toCoinbaseSmartAccount({ client, owners })).address,
-  });
+  return await toCoinbaseSmartAccount({ client, owners });
 }

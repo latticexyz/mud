@@ -1,3 +1,5 @@
+// Forked from https://github.com/wevm/viem/blob/main/src/account-abstraction/accounts/implementations/toCoinbaseSmartAccount.ts
+// to match our forked factory so we could add `initializers` and upgrade to v0.7 entrypoint
 import { BaseError, type Address, type TypedData } from "abitype";
 import {
   Client,
@@ -21,8 +23,8 @@ import {
   WebAuthnAccount,
   SmartAccount,
   SmartAccountImplementation,
-  entryPoint06Abi,
-  entryPoint06Address,
+  entryPoint07Abi,
+  entryPoint07Address,
   getUserOperationHash,
   UserOperation,
   toSmartAccount,
@@ -35,14 +37,15 @@ export type ToCoinbaseSmartAccountParameters = {
   client: Client;
   owners: readonly OneOf<LocalAccount | WebAuthnAccount>[];
   nonce?: bigint | undefined;
+  initializers?: readonly LocalAccount[];
 };
 
 export type ToCoinbaseSmartAccountReturnType = Prettify<SmartAccount<CoinbaseSmartAccountImplementation>>;
 
 export type CoinbaseSmartAccountImplementation = Assign<
   SmartAccountImplementation<
-    typeof entryPoint06Abi,
-    "0.6",
+    typeof entryPoint07Abi,
+    "0.7",
     { abi: typeof abi; factory: { abi: typeof factoryAbi; address: Address } }
   >,
   { sign: NonNullable<SmartAccountImplementation["sign"]> }
@@ -67,21 +70,23 @@ export type CoinbaseSmartAccountImplementation = Assign<
 export async function toCoinbaseSmartAccount(
   parameters: ToCoinbaseSmartAccountParameters,
 ): Promise<ToCoinbaseSmartAccountReturnType> {
-  const { client, owners, nonce = 0n } = parameters;
+  const { client, owners, nonce = 0n, initializers = [] } = parameters;
 
   let address = parameters.address;
 
   const entryPoint = {
-    abi: entryPoint06Abi,
-    address: entryPoint06Address,
-    version: "0.6",
+    abi: entryPoint07Abi,
+    address: entryPoint07Address,
+    version: "0.7",
   } as const;
   const factory = {
     abi: factoryAbi,
-    address: "0x0ba5ed0c6aa8c49038f819e587e2633c4a9f428a",
+    // TODO: make configurable?
+    address: "0xFE8cDc868E8C8a6C43Cd457D482D153F172d22a1",
   } as const;
 
   const owners_bytes = owners.map((owner) => (owner.type === "webAuthn" ? owner.publicKey : pad(owner.address)));
+  const initializers_bytes = initializers.map((account) => account.address);
 
   const owner = owners[0];
 
@@ -124,13 +129,14 @@ export async function toCoinbaseSmartAccount(
       const factoryData = encodeFunctionData({
         abi: factory.abi,
         functionName: "createAccount",
-        args: [owners_bytes, nonce],
+        args: [owners_bytes, nonce, initializers_bytes],
       });
       return { factory: factory.address, factoryData };
     },
 
     async getStubSignature() {
       if (owner.type === "webAuthn")
+        // eslint-disable-next-line max-len
         return "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000012000000000000000000000000000000000000000000000000000000000000000170000000000000000000000000000000000000000000000000000000000000001949fc7c88032b9fcb5f6efc7a7b8c63668eae9871b765e23123bb473ff57aa831a7c0d9276168ebcc29f2875a0239cffdf2a9cd1c2007c5c77c071db9264df1d000000000000000000000000000000000000000000000000000000000000002549960de5880e8c687434170f6476605b8fe4aeb9a28632c7995cf3ba831d97630500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008a7b2274797065223a22776562617574686e2e676574222c226368616c6c656e6765223a2273496a396e6164474850596759334b7156384f7a4a666c726275504b474f716d59576f4d57516869467773222c226f726967696e223a2268747470733a2f2f7369676e2e636f696e626173652e636f6d222c2263726f73734f726967696e223a66616c73657d00000000000000000000000000000000000000000000";
       return wrapSignature({
         signature:
@@ -741,6 +747,7 @@ const factoryAbi = [
     inputs: [
       { name: "owners", type: "bytes[]" },
       { name: "nonce", type: "uint256" },
+      { name: "initializers", type: "bytes[]" },
     ],
     name: "createAccount",
     outputs: [

@@ -13,7 +13,7 @@ import { App } from "./App";
 import { Chain, Hex, http } from "viem";
 
 const testWorlds = {
-  [anvil.id]: "0x5080281e487e9cb0a026b090aa695bd8afd6564d",
+  [anvil.id]: "0x6Eb9682FE93c6fE4346e0a1e70bC049Aa18CC0CA",
   [garnet.id]: "0x352bd50fc7cbb8a1b3e5f84cf6f4e7d84792acd1",
   [redstone.id]: "0x51778368cd250e4e3800a8fb20c32474c5f1c8cd",
 } as Partial<Record<string, Hex>>;

@@ -1,8 +1,9 @@
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { useAppSigner } from "./useAppSigner";
-import { SmartAccount, toCoinbaseSmartAccount } from "viem/account-abstraction";
+import { SmartAccount } from "viem/account-abstraction";
 import { useConfig } from "./EntryKitConfigProvider";
 import { useClient } from "wagmi";
+import { toCoinbaseSmartAccount } from "./smart-account/toCoinbaseSmartAccount";
 
 export function useAppAccount(): UseQueryResult<SmartAccount> {
   const { chainId } = useConfig();
@@ -17,13 +18,7 @@ export function useAppAccount(): UseQueryResult<SmartAccount> {
           queryKey,
           queryFn: async (): Promise<SmartAccount> => {
             const owners = [appSigner];
-            return await toCoinbaseSmartAccount({
-              client,
-              owners,
-              // populate address here so it doesn't have to be fetched repeatedly
-              // TODO: simplify after https://github.com/wevm/viem/pull/2820
-              address: (await toCoinbaseSmartAccount({ client, owners })).address,
-            });
+            return await toCoinbaseSmartAccount({ client, owners });
           },
         }
       : { queryKey, enabled: false },
