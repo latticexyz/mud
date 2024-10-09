@@ -4,6 +4,7 @@ import { Row, flexRender } from "@tanstack/react-table";
 import { Separator } from "../../../../../../components/ui/Separator";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
 import { TableCell, TableRow } from "../../../../../../components/ui/Table";
+import { type Write } from "../../../../../../observer/store";
 import { cn } from "../../../../../../utils";
 import { Confirmations } from "./Confirmations";
 import { columns } from "./TransactionsTable";
@@ -151,11 +152,120 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                     </div>
                   </>
                 ) : null}
+
+                {data.write && <Timing {...data.write} />}
               </>
             )}
           </TableCell>
         </TableRow>
       )}
+    </>
+  );
+}
+
+function Timing({ time: start, events }: Write) {
+  const maxLen = Math.max(...events.map((event) => event.time - start));
+
+  const eventPriority = {
+    write: 1,
+    "write:result": 2,
+    waitForTransaction: 3,
+    "waitForTransaction:result": 4,
+    waitForTransactionReceipt: 5,
+    "waitForTransactionReceipt:result": 6,
+  };
+
+  const eventMap = events.reduce(
+    (acc, event) => {
+      acc[event.type] = event.time;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+
+  const groupedEvents = events.reduce(
+    (acc, event) => {
+      const baseType = event.type.split(":")[0];
+      if (!acc[baseType]) {
+        acc[baseType] = [];
+      }
+      acc[baseType].push(event);
+      return acc;
+    },
+    {} as Record<string, typeof events>,
+  );
+
+  const sortedEvents = Object.values(groupedEvents)
+    .flat()
+    .sort((a, b) => {
+      const priorityA = eventPriority[a.type as keyof typeof eventPriority] || Infinity;
+      const priorityB = eventPriority[b.type as keyof typeof eventPriority] || Infinity;
+      return priorityA - priorityB;
+    });
+
+  console.log(events);
+
+  return (
+    <>
+      <Separator className="my-5" />
+
+      <div className="flex items-start gap-x-4 pb-2">
+        <h3 className="inline-block w-[45px] pb-2 text-2xs font-bold uppercase">Timing</h3>
+
+        <div className="w-full border border-white/20 p-2 pb-3">
+          <div className="grid gap-y-1">
+            {sortedEvents.map((event, index) => {
+              const type = event.type;
+              const baseType = type.split(":")[0];
+              const isResult = type.endsWith(":result");
+
+              let duration: number;
+              let startOffset: number;
+
+              if (isResult) {
+                const startTime = eventMap[baseType] || start;
+                duration = event.time - startTime;
+                startOffset = startTime - start;
+              } else {
+                duration = (eventMap[`${type}:result`] || event.time) - event.time;
+                startOffset = event.time - start;
+              }
+
+              const startPercentage = (startOffset / maxLen) * 100;
+              const widthPercentage = (duration / maxLen) * 100;
+
+              if (isResult) {
+                return null;
+              }
+
+              return (
+                <div
+                  key={index}
+                  className="group grid grid-cols-[195px_1fr_70px] items-center gap-x-2 hover:bg-white/10"
+                >
+                  <span className="text-xs" title={type}>
+                    {type}:
+                  </span>
+                  <div className="relative h-1">
+                    <div
+                      className={cn("absolute top-0 h-full bg-cyan-500", {
+                        "bg-orange-500": index === 0,
+                        "bg-cyan-500": index === 1,
+                        "bg-green-500": index === 4,
+                      })}
+                      style={{
+                        left: `${startPercentage}%`,
+                        width: `${widthPercentage}%`,
+                      }}
+                    />
+                  </div>
+                  <span className="text-right text-xs">{duration}ms</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
     </>
   );
 }

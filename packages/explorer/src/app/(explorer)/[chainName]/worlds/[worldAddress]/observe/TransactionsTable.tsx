@@ -85,6 +85,18 @@ export const columns = [
       return <TimeAgo timestamp={timestamp} />;
     },
   }),
+  columnHelper.accessor("write", {
+    header: "Timing",
+    cell: () => {
+      return (
+        <div className="flex h-3 w-[70px]">
+          <span className="h-full w-[15%] bg-orange-500"></span>
+          <span className="h-full w-[35%] bg-cyan-500"></span>
+          <span className="h-full w-[50%] bg-green-500"></span>
+        </div>
+      );
+    },
+  }),
 ];
 
 export function TransactionsTable() {
