@@ -3,6 +3,7 @@ import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Hex } from "viem";
 import { useAccount, useConfig } from "wagmi";
+import { waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { ChangeEvent, useState } from "react";
 import { Table } from "@latticexyz/config";
 import {
@@ -15,7 +16,6 @@ import {
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { Checkbox } from "../../../../../../components/ui/Checkbox";
 import { cn } from "../../../../../../utils";
 import { useChain } from "../../../../hooks/useChain";

@@ -13,9 +13,9 @@ import {
   parseEventLogs,
 } from "viem";
 import { useConfig, useWatchBlocks } from "wagmi";
+import { getTransaction, simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { useStore } from "zustand";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getTransaction, simulateContract, waitForTransactionReceipt } from "@wagmi/core";
 import { Message } from "../../../../../../observer/messages";
 import { Write, store } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
