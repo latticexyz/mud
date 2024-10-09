@@ -38,9 +38,6 @@ export function Connected() {
             ],
             functionName: "move",
             args: [1, 1],
-
-            maxFeePerGas: 100_000n,
-            maxPriorityFeePerGas: 0n,
           });
 
           console.log("got tx", hash);

@@ -187,19 +187,18 @@ export function passkeyConnector({ chainId, bundlerTransport }: PasskeyConnector
             getPaymasterData: async () => ({
               paymaster: "0x8D8b6b8414E1e3DcfD4168561b9be6bD3bF6eC4B",
               paymasterData: "0x",
-              // preVerificationGas: 100_000n,
-              // verificationGasLimit: 1_000_000n,
-              // TODO: figure out how to not hardcode this, estimation fails without it
-              // callGasLimit: 1_000_000n,
             }),
           },
           userOperation: {
             estimateFeesPerGas:
+              // anvil hardcodes fee returned by `eth_maxPriorityFeePerGas`
+              // so we have to override it here
+              // https://github.com/foundry-rs/foundry/pull/8081#issuecomment-2402002485
               client.chain.id === 31337
-                ? async () => {
-                    console.log("returning hardcoded fees");
-                    return { maxFeePerGas: 100_000n, maxPriorityFeePerGas: 0n };
-                  }
+                ? async () => ({
+                    maxFeePerGas: 100_000n,
+                    maxPriorityFeePerGas: 0n,
+                  })
                 : undefined,
           },
         });
