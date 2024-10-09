@@ -40,7 +40,7 @@
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "react": "^18.2.0",
-    "viem": "2.21.6"
+    "viem": "catalog:"
   },
   "devDependencies": {
     "@testing-library/react": "^16.0.0",
