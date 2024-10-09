@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-import { watchFile } from "fs";
-import { readFile, rm } from "fs/promises";
+import { rm } from "fs/promises";
 import path from "path";
 import process from "process";
 import { fileURLToPath } from "url";
@@ -38,27 +37,9 @@ const argv = yargs(process.argv.slice(2))
       type: "string",
       default: process.env.INDEXER_DATABASE || "indexer.db",
     },
-    worldsFile: {
-      alias: "w",
-      description: "Path to the worlds.json file",
-      type: "string",
-      default: process.env.WORLDS_FILE || "worlds.json",
-    },
     dev: {
       alias: "D",
       description: "Run in development mode",
-      type: "boolean",
-      default: false,
-    },
-    worldAddress: {
-      alias: "a",
-      description: "World address",
-      type: "string",
-      default: process.env.WORLD_ADDRESS,
-    },
-    disableFrontPage: {
-      alias: "f",
-      description: "Disable the front page",
       type: "boolean",
       default: false,
     },
@@ -69,10 +50,9 @@ const argv = yargs(process.argv.slice(2))
   })
   .parseSync();
 
-const { port, hostname, chainId, indexerDatabase, worldsFile, dev, disableFrontPage } = argv;
+const { port, hostname, chainId, indexerDatabase, dev } = argv;
 const indexerDatabasePath = path.join(packageRoot, indexerDatabase);
 
-let worldAddress = argv.worldAddress;
 let explorerProcess: ChildProcess;
 let indexerProcess: ChildProcess;
 
@@ -80,9 +60,7 @@ async function startExplorer() {
   const env = {
     ...process.env,
     CHAIN_ID: chainId.toString(),
-    WORLD_ADDRESS: worldAddress?.toString(),
     INDEXER_DATABASE: indexerDatabasePath,
-    DISABLE_FRONT_PAGE: disableFrontPage ? "1" : "0",
   };
 
   if (dev) {
@@ -125,52 +103,8 @@ async function startStoreIndexer() {
       RPC_HTTP_URL: "http://127.0.0.1:8545",
       FOLLOW_BLOCK_TAG: "latest",
       SQLITE_FILENAME: indexerDatabase,
-      STORE_ADDRESS: worldAddress,
       ...process.env,
     },
-  });
-}
-
-async function readWorldsJson() {
-  try {
-    const data = await readFile(worldsFile, "utf8");
-    if (data) {
-      const worlds = JSON.parse(data);
-      const world = worlds[chainId];
-      if (world) {
-        return world.address;
-      } else {
-        console.error(`World not found for chain ID ${chainId}`);
-        return null;
-      }
-    }
-  } catch (error) {
-    console.error("Error reading worlds.json:", error);
-    return null;
-  }
-}
-
-async function restartExplorer() {
-  indexerProcess?.kill();
-  explorerProcess?.kill();
-
-  await startStoreIndexer();
-  await startExplorer();
-}
-
-function watchWorldsJson() {
-  if (!worldsFile) {
-    return;
-  }
-
-  watchFile(worldsFile, async () => {
-    const newWorldAddress = await readWorldsJson();
-    if (worldAddress && worldAddress !== newWorldAddress) {
-      console.log("\nWorld address changed, restarting explorer...");
-
-      worldAddress = newWorldAddress;
-      await restartExplorer();
-    }
   });
 }
 
@@ -180,12 +114,6 @@ process.on("exit", () => {
 });
 
 async function main() {
-  // If world address is not provided, try to read it from worldsFile
-  if (!worldAddress) {
-    worldAddress = await readWorldsJson();
-    watchWorldsJson();
-  }
-
   await startStoreIndexer();
   await startExplorer();
 }
