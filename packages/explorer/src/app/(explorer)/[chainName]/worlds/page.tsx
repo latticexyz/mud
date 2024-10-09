@@ -1,6 +1,51 @@
-import { notFound, redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { Address } from "viem";
+import { supportedChains, validateChainName } from "../../../../common";
+import { indexerForChainId } from "../../utils/indexerForChainId";
+import { WorldsForm } from "./WorldsForm";
 
-export const dynamic = "force-dynamic";
+type ApiResponse = {
+  items: {
+    address: {
+      hash: Address;
+    };
+  }[];
+};
+
+async function fetchWorlds(chainName: string): Promise<Address[]> {
+  validateChainName(chainName);
+
+  const chain = supportedChains[chainName];
+  const indexer = indexerForChainId(chain.id);
+  let worldsApiUrl: string | null = null;
+
+  if (indexer.type === "sqlite") {
+    const headersList = headers();
+    const host = headersList.get("host") || "";
+    const protocol = headersList.get("x-forwarded-proto") || "http";
+    const baseUrl = `${protocol}://${host}`;
+    worldsApiUrl = `${baseUrl}/api/sqlite-indexer/worlds`;
+  } else {
+    const blockExplorerUrl = chain.blockExplorers?.default.url;
+    if (blockExplorerUrl) {
+      worldsApiUrl = `${blockExplorerUrl}/api/v2/mud/worlds`;
+    }
+  }
+
+  if (!worldsApiUrl) {
+    return [];
+  }
+
+  try {
+    const response = await fetch(worldsApiUrl);
+    const data: ApiResponse = await response.json();
+    return data.items.map((world) => world.address.hash);
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
 
 type Props = {
   params: {
@@ -8,8 +53,11 @@ type Props = {
   };
 };
 
-export default function WorldsPage({ params }: Props) {
-  const worldAddress = process.env.WORLD_ADDRESS;
-  if (worldAddress) return redirect(`/${params.chainName}/worlds/${worldAddress}`);
-  return notFound();
+export default async function WorldsPage({ params }: Props) {
+  const worlds = await fetchWorlds(params.chainName);
+  if (worlds.length === 1) {
+    return redirect(`/${params.chainName}/worlds/${worlds[0]}`);
+  }
+
+  return <WorldsForm worlds={worlds} />;
 }
