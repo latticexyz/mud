@@ -16,7 +16,7 @@ type ApiResponse = {
 async function fetchWorlds(chainName: string): Promise<Address[]> {
   validateChainName(chainName);
 
-  console.log("trigger change");
+  console.log("trigger change 2");
 
   const chain = supportedChains[chainName];
   const indexer = indexerForChainId(chain.id);
