@@ -14,6 +14,8 @@ export function AccountModalErrorBoundary({ children }: Props) {
   const isMounted = useIsMounted();
   const [retries, setRetries] = useState(1);
 
+  // TODO: invalidate query cache?
+
   return (
     <ErrorBoundary
       fallbackRender={({ error, resetErrorBoundary }) => (

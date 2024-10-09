@@ -1,15 +1,17 @@
 import { Modal } from "./ui/Modal";
 import { useAccountModal } from "./useAccountModal";
 import { twMerge } from "tailwind-merge";
-import { AccountModalContent } from "./AccountModalContent";
+import { AccountModalOnboarding } from "./onboarding/AccountModalOnboarding";
 import { AccountModalErrorBoundary } from "./AccountModalErrorBoundary";
-import { DialogClose } from "@radix-ui/react-dialog";
+import { DialogClose, DialogTitle } from "@radix-ui/react-dialog";
 import { CloseIcon } from "./icons/CloseIcon";
 
 export function AccountModal() {
   const { accountModalOpen, toggleAccountModal } = useAccountModal();
   return (
     <Modal open={accountModalOpen} onOpenChange={toggleAccountModal}>
+      {/* TODO: move this into `<Modal>` props? */}
+      <DialogTitle className="sr-only">Connect with EntryKit</DialogTitle>
       {accountModalOpen ? (
         <div
           className={twMerge(
@@ -22,7 +24,7 @@ export function AccountModal() {
           )}
         >
           <AccountModalErrorBoundary>
-            <AccountModalContent />
+            <AccountModalOnboarding />
           </AccountModalErrorBoundary>
 
           <div className="absolute top-0 right-0">

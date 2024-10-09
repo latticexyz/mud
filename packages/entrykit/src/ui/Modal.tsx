@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import * as Dialog from "@radix-ui/react-dialog";
+import { Root as DialogRoot, DialogPortal, DialogContent } from "@radix-ui/react-dialog";
 import { Shadow } from "./Shadow";
 import { twMerge } from "tailwind-merge";
 
@@ -11,12 +11,12 @@ export type Props = {
 
 export function Modal({ open, onOpenChange, children }: Props) {
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      {/* This intentionally does not use `Dialog.Trigger` because it doesn't play nicely with `<Shadow>` trigger (our primary use case). */}
-      <Dialog.Portal>
+    <DialogRoot open={open} onOpenChange={onOpenChange}>
+      {/* This intentionally does not use `<DialogTrigger>` because it doesn't play nicely with `<Shadow>` trigger (our primary use case). */}
+      <DialogPortal>
         <Shadow mode="modal">
           {/**
-           * This intentionally does not use `Dialog.Overlay` due to an issue it causes with scrolling the modal contents.
+           * This intentionally does not use `<DialogOverlay>` due to an issue it causes with scrolling the modal contents.
            * See https://github.com/radix-ui/primitives/issues/1159#issuecomment-1105320294
            */}
           <div
@@ -33,10 +33,16 @@ export function Modal({ open, onOpenChange, children }: Props) {
               "animate-in animate-duration-200 fade-in slide-in-from-bottom-4",
             )}
           >
-            <Dialog.Content className="outline-none w-full sm:max-w-screen-sm">{children}</Dialog.Content>
+            <DialogContent
+              className="outline-none w-full sm:max-w-screen-sm"
+              // TODO description
+              aria-describedby={undefined}
+            >
+              {children}
+            </DialogContent>
           </div>
         </Shadow>
-      </Dialog.Portal>
-    </Dialog.Root>
+      </DialogPortal>
+    </DialogRoot>
   );
 }

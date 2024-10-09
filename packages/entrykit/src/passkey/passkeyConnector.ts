@@ -185,6 +185,7 @@ export function passkeyConnector({ chainId, bundlerTransport }: PasskeyConnector
           ...clientOpts,
           paymaster: {
             getPaymasterData: async () => ({
+              // TODO: make configurable
               paymaster: "0x8D8b6b8414E1e3DcfD4168561b9be6bD3bF6eC4B",
               paymasterData: "0x",
             }),
