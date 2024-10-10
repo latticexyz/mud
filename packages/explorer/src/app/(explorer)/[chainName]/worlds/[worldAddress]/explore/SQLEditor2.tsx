@@ -1,34 +1,26 @@
-import { Loader2Icon, LoaderIcon, PlayIcon } from "lucide-react";
+import { PlayIcon } from "lucide-react";
+import { useParams } from "next/navigation";
 import { useQueryState } from "nuqs";
+import { Address } from "viem";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { Table } from "@latticexyz/config";
 import MonacoEditor, { useMonaco } from "@monaco-editor/react";
 import { Button } from "../../../../../../components/ui/Button";
-import { Form, FormControl, FormField, FormItem } from "../../../../../../components/ui/Form";
-import { Input } from "../../../../../../components/ui/Input";
+import { Form, FormField } from "../../../../../../components/ui/Form";
+import { useChain } from "../../../../hooks/useChain";
+import { constructTableName } from "../../../../utils/constructTableName";
 
-const SQL_KEYWORDS = ["SELECT", "WHERE", "AND", "OR", "FROM"];
+const SQL_KEYWORDS = ["SELECT", "FROM", "WHERE", "AND", "OR"];
 
-function shouldTriggerAutocomplete(text: string): boolean {
-  const trimmedText = text.trim();
-  const textSplit = trimmedText.split(/\s+/);
-  const lastSignificantWord = trimmedText.split(/\s+/).pop()?.toUpperCase();
-  const triggerKeywords = ["SELECT", "WHERE", "AND", "OR", "FROM"];
+type Props = {
+  table: Table;
+  tables: Table[];
+};
 
-  if (textSplit.length == 2 && textSplit[0].toUpperCase() == "WHERE") {
-    /* since we pre-pend the 'WHERE', we want the autocomplete to show up for the first letter typed
-     which would come through as 'WHERE a' if the user just typed the letter 'a'
-     so the when we split that text, we check if the length is 2 (as a way of checking if the user has only typed one letter or is still on the first word) and if it is and the first word is 'WHERE' which it should be since we pre-pend it, then show the auto-complete */
-    return true;
-  } else {
-    return (
-      triggerKeywords.includes(lastSignificantWord || "") ||
-      triggerKeywords.some((keyword) => trimmedText.endsWith(keyword + " "))
-    );
-  }
-}
-
-export function SQLEditor2() {
+export function SQLEditor2({ table, tables }: Props) {
+  const { worldAddress } = useParams();
+  const { id: chainId } = useChain();
   const monaco = useMonaco();
   const [query, setQuery] = useQueryState("query");
   const form = useForm({
@@ -45,7 +37,12 @@ export function SQLEditor2() {
     form.reset({ query: query || "" });
   }, [query, form]);
 
-  const columns = ["abc", "def", "asd"];
+  console.log(tables);
+  const columns = Object.keys(table?.schema || {});
+  const selectableTables = (tables || []).map((table) => {
+    return constructTableName(table, worldAddress as Address, chainId);
+  });
+
   useEffect(() => {
     if (monaco) {
       const provider = monaco.languages.registerCompletionItemProvider("sql", {
@@ -59,20 +56,15 @@ export function SQLEditor2() {
             endColumn: position.column,
           });
 
-          // Check if the last character or word should trigger the auto-complete
-          // if (!shouldTriggerAutocomplete(textUntilPosition)) {
-          //   return { suggestions: [] };
-          // }
-
-          const trimmedText = textUntilPosition.trim();
+          const trimmedText = textUntilPosition.toUpperCase().trim();
           const textSplit = trimmedText.split(/\s+/);
-          const lastSignificantWord = trimmedText.split(/\s+/).pop()?.toUpperCase();
 
-          const lastSqlKeyword = SQL_KEYWORDS.reduce(
-            (last, keyword) => (textSplit.includes(keyword) ? keyword : last),
-            null,
-          );
-          console.log(lastSignificantWord, lastSqlKeyword);
+          const lastSqlKeyword = SQL_KEYWORDS.reduce((last, keyword) => {
+            const lastIndex = textSplit.lastIndexOf(keyword);
+            return lastIndex > -1 && (last === null || lastIndex > textSplit.lastIndexOf(last)) ? keyword : last;
+          }, null);
+
+          console.log(textSplit, lastSqlKeyword);
 
           const word = model.getWordUntilPosition(position);
 
@@ -84,24 +76,32 @@ export function SQLEditor2() {
           };
 
           const suggestionsByTypeData = {
-            select: ["col1", "col2", "col3"],
-            from: ["from1", "from2", "from3"],
-            where: ["where1", "where2", "where"],
+            select: columns,
+            from: selectableTables,
+            where: columns,
           };
 
-          const suggestionByType = suggestionsByTypeData[lastSignificantWord?.toLowerCase()];
+          const suggestionByType = suggestionsByTypeData[lastSqlKeyword?.toLowerCase()];
+          const keywordSuggestions = SQL_KEYWORDS.map((keyword) => ({
+            label: keyword,
+            kind: monaco.languages.CompletionItemKind.Keyword,
+            insertText: keyword,
+            range: range,
+            sortText: "b",
+          }));
 
           if (suggestionByType) {
-            const suggestions = Array.from(suggestionByType).map((name) => ({
+            const fieldSuggestions = Array.from(suggestionByType).map((name) => ({
               label: name,
               kind: monaco.languages.CompletionItemKind.Field,
               insertText: name,
               range: range,
+              sortText: "a",
             }));
 
-            return { suggestions };
+            return { suggestions: [...fieldSuggestions, ...keywordSuggestions] };
           } else {
-            return { suggestions: [] };
+            return { suggestions: [...keywordSuggestions] };
           }
         },
       });

@@ -27,6 +27,8 @@ export function Explorer() {
   const table = tables?.find(({ tableId }) => tableId === selectedTableId);
   const { data: tableData, isLoading, isFetched } = useTableDataQuery({ table, query });
 
+  console.log("TABLE:", table);
+
   useEffect(() => {
     if (table && (!query || prevSelectedTableId !== selectedTableId)) {
       const tableName = constructTableName(table, worldAddress as Hex, chainId);
@@ -41,7 +43,7 @@ export function Explorer() {
 
   return (
     <>
-      <SQLEditor2 />
+      <SQLEditor2 table={table} tables={tables} />
       {indexer.type !== "sqlite" && <SQLEditor2 />}
       {indexer.type !== "sqlite" && <SQLEditor />}
       <TableSelector tables={tables} />
