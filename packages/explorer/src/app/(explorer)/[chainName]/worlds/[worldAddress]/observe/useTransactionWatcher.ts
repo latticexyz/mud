@@ -17,7 +17,7 @@ import { getTransaction, simulateContract, waitForTransactionReceipt } from "wag
 import { useStore } from "zustand";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Message } from "../../../../../../observer/messages";
-import { Write, store } from "../../../../../../observer/store";
+import { type Write, store } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 
