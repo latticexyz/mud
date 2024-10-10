@@ -17,9 +17,9 @@ export function TimingRowExpanded(write: Write) {
                 <span className="text-xs">{timing.label}:</span>
                 <div
                   className={cn(`h-1`, {
-                    "bg-orange-900": timing.type === "write",
-                    "bg-orange-700": timing.type === "waitForTransaction",
-                    "bg-orange-500": timing.type === "waitForTransactionReceipt",
+                    "bg-[#5c9af6]": timing.type === "write",
+                    "bg-[#4d7cc0]": timing.type === "waitForTransaction",
+                    "bg-[#3d5c8a]": timing.type === "waitForTransactionReceipt",
                   })}
                   style={{
                     width: `${timing.widthPercentage}%`,
