@@ -11,6 +11,7 @@ import { useTablesQuery } from "../../../../queries/useTablesQuery";
 import { constructTableName } from "../../../../utils/constructTableName";
 import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { SQLEditor } from "./SQLEditor";
+import { SQLEditor2 } from "./SQLEditor2";
 import { TableSelector } from "./TableSelector";
 import { TablesViewer } from "./TablesViewer";
 
@@ -40,6 +41,7 @@ export function Explorer() {
 
   return (
     <>
+      {indexer.type !== "sqlite" && <SQLEditor2 />}
       {indexer.type !== "sqlite" && <SQLEditor />}
       <TableSelector tables={tables} />
       <TablesViewer table={table} tableData={tableData} isLoading={isLoading || !isFetched} />
