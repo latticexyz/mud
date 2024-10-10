@@ -109,7 +109,7 @@ export function SQLEditor2({ table, tables }: Props) {
         provider.dispose();
       };
     }
-  }, [monaco, columns]);
+  }, [monaco, columns, selectableTables]);
 
   return (
     <Form {...form}>
