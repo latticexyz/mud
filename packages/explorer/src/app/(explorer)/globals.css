@@ -8,6 +8,10 @@ body,
   font-family: var(--font-jetbrains-mono);
 }
 
+.decorationsOverviewRuler {
+  display: none;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
