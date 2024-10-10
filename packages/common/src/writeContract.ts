@@ -8,7 +8,6 @@ import {
   WriteContractReturnType,
   ContractFunctionName,
   ContractFunctionArgs,
-  PublicClient,
 } from "viem";
 import { writeContract as viem_writeContract } from "viem/actions";
 import pRetry from "p-retry";
@@ -27,7 +26,7 @@ export type WriteContractExtraOptions<chain extends Chain | undefined> = {
    * viem client is a smart account client, like in [permissionless.js](https://github.com/pimlicolabs/permissionless.js),
    * where the transport is the bundler, not an RPC.
    */
-  publicClient?: PublicClient<Transport, chain>;
+  publicClient?: Client<Transport, chain>;
   /**
    * Adjust the number of concurrent calls to the mempool. This defaults to `1` to ensure transactions are ordered
    * and nonces are handled properly. Any number greater than that is likely to see nonce errors and/or transactions

@@ -55,7 +55,7 @@ contract Unstable_CallWithSignatureModuleTest is Test, GasReporter {
 
     world.installRootModule(callWithSignatureModule, new bytes(0));
 
-    // Register a limited delegation using signature
+    // Register an unlimited delegation using signature
     (address delegator, uint256 delegatorPk) = makeAddrAndKey("delegator");
     address delegatee = address(2);
 

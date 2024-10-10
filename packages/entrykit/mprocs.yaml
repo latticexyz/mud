@@ -1,0 +1,16 @@
+procs:
+  client:
+    shell: pnpm vite dev playground
+  anvil:
+    shell: anvil --block-time 2 --load-state playground/anvil-state.json
+  # mud:
+  #   cwd: ../..
+  #   shell: pnpm run dev --filter=!@latticexyz/entrykit
+  bundler:
+    cwd: ../../../alto
+    shell: ./alto --config ../mud/packages/entrykit/playground/alto.config.json
+  paymaster:
+    cwd: ../../../quarry-paymaster/packages/service
+    shell: pnpm start
+  explorer:
+    shell: pnpm explorer --worldAddress 0x6Eb9682FE93c6fE4346e0a1e70bC049Aa18CC0CA
