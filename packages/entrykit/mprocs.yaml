@@ -13,4 +13,4 @@ procs:
     cwd: ../../../quarry-paymaster/packages/service
     shell: pnpm start
   explorer:
-    shell: pnpm explorer --worldAddress 0x8d8b6b8414e1e3dcfd4168561b9be6bd3bf6ec4b
+    shell: pnpm explorer --worldAddress 0x6Eb9682FE93c6fE4346e0a1e70bC049Aa18CC0CA

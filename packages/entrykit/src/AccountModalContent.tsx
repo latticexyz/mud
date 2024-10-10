@@ -1,13 +1,15 @@
-import { useAccount } from "wagmi";
+import { useConnectorClient } from "wagmi";
 import { ConnectWallet } from "./onboarding/ConnectWallet";
 import { ConnectedSteps } from "./onboarding/ConnectedSteps";
+import { useEntryKitConfig } from "./EntryKitConfigProvider";
 
 export function AccountModalContent() {
-  const userAccount = useAccount();
+  const { chainId } = useEntryKitConfig();
+  const userClient = useConnectorClient({ chainId });
 
-  if (userAccount.status !== "connected") {
+  if (userClient.status !== "success") {
     return <ConnectWallet />;
   }
 
-  return <ConnectedSteps userAddress={userAccount.address} />;
+  return <ConnectedSteps userClient={userClient.data} />;
 }

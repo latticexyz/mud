@@ -3,16 +3,16 @@ import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { useRecord } from "../useRecord";
 import { paymasterTables } from "../paymaster";
 
-export function useAllowance(user: Address | undefined) {
+export function useSpender(spender: Address | undefined) {
   const { chainId, paymasterAddress } = useEntryKitConfig();
 
   return useRecord({
     chainId,
     address: paymasterAddress,
-    ...(user
+    ...(spender
       ? {
-          table: paymasterTables.Allowance,
-          key: { user },
+          table: paymasterTables.Spender,
+          key: { spender },
         }
       : null),
   });

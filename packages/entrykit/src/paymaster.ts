@@ -1,4 +1,11 @@
 import { defineStore } from "@latticexyz/store";
+import { parseAbi } from "viem";
+
+export const paymasterAbi = parseAbi([
+  "error SpenderSystem_AlreadyRegistered(address spender, address user)",
+  "error SpenderSystem_HasOwnBalance(address spender)",
+  "function registerSpender(address spender)",
+]);
 
 export const paymasterConfig = defineStore({
   namespaces: {

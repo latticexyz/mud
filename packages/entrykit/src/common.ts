@@ -1,6 +1,7 @@
 import { resourceToHex } from "@latticexyz/common";
-import { Client, Chain, Transport, Account, RpcSchema, PublicActions, WalletActions } from "viem";
+import { Client, Chain, Transport, Account, RpcSchema, PublicActions, WalletActions, parseAbi } from "viem";
 import { entryPoint07Address } from "viem/account-abstraction";
+import worldConfig from "@latticexyz/world/mud.config";
 
 // TODO: it'd be great if we could have strong types around `client.type` to do downstream checks
 export type AppAccountClient = Client<
@@ -23,5 +24,9 @@ export const entryPointAddress = entryPoint07Address;
  * used to override contract state when doing paymaster gas estimation.
  */
 export const entryPointDepositsSlot = 0n;
-// TODO: should this be configurable or part of the chain contracts?
-export const smartAccountFactory = "0x91E60e0613810449d098b0b5Ec8b51A0FE8c8985";
+
+export const worldTables = worldConfig.namespaces.world.tables;
+
+export const worldAbi = parseAbi([
+  "function registerDelegation(address delegatee, bytes32 delegationControlId, bytes initCallData)",
+]);

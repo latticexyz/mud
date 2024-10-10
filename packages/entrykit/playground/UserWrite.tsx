@@ -1,7 +1,7 @@
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { useEntryKitConfig } from "../src/EntryKitConfigProvider";
 
-export function Connected() {
+export function UserWrite() {
   const { chainId, worldAddress } = useEntryKitConfig();
 
   const { writeContractAsync, data: hash } = useWriteContract();
@@ -11,7 +11,7 @@ export function Connected() {
     <div>
       <button
         onClick={async () => {
-          console.log("calling writeContract");
+          console.log("writing from user");
 
           const hash = await writeContractAsync({
             chainId,
@@ -43,7 +43,7 @@ export function Connected() {
           console.log("got tx", hash);
         }}
       >
-        Write contract
+        User write
       </button>
       <br />
       tx: {hash ?? "??"} ({receipt?.status ?? "??"})

@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { AccountButton, useAccountModal } from "../src/exports";
 import { useLocalStorage } from "usehooks-ts";
-import { Connected } from "./Connected";
+import { UserWrite } from "./UserWrite";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { AppAccountWrite } from "./AppAccountWrite";
 
 export function App() {
   const { openAccountModal } = useAccountModal();
@@ -30,7 +31,10 @@ export function App() {
         <ConnectButton />
       </div>
       <div>
-        <Connected />
+        <UserWrite />
+      </div>
+      <div>
+        <AppAccountWrite />
       </div>
     </div>
   );
