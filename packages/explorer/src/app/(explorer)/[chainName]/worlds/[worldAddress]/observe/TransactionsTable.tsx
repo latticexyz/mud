@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { TruncatedHex } from "../../../../../../components/ui/TruncatedHex";
 import { BlockExplorerLink } from "./BlockExplorerLink";
 import { TimeAgo } from "./TimeAgo";
+import { TimingRowHeader } from "./TimingRowHeader";
 import { TransactionTableRow } from "./TransactionTableRow";
 import { WatchedTransaction, useTransactionWatcher } from "./useTransactionWatcher";
 
@@ -83,6 +84,14 @@ export const columns = [
       const timestamp = row.getValue();
       if (!timestamp) return <Skeleton className="h-4 w-full" />;
       return <TimeAgo timestamp={timestamp} />;
+    },
+  }),
+  columnHelper.accessor("write", {
+    header: "Timing",
+    cell: (row) => {
+      const write = row.getValue();
+      if (!write) return <Skeleton className="h-4 w-full" />;
+      return <TimingRowHeader {...write} />;
     },
   }),
 ];

@@ -6,6 +6,7 @@ import { Skeleton } from "../../../../../../components/ui/Skeleton";
 import { TableCell, TableRow } from "../../../../../../components/ui/Table";
 import { cn } from "../../../../../../utils";
 import { Confirmations } from "./Confirmations";
+import { TimingRowExpanded } from "./TimingRowExpanded";
 import { columns } from "./TransactionsTable";
 import { WatchedTransaction } from "./useTransactionWatcher";
 
@@ -78,7 +79,6 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                 </div>
 
                 <Separator className="my-5" />
-
                 <div className="flex items-start gap-x-4">
                   <h3 className="w-[45px] flex-shrink-0 text-2xs font-bold uppercase">Inputs</h3>
                   {Array.isArray(data.functionData?.args) && data.functionData?.args.length > 0 ? (
@@ -100,7 +100,6 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                 {data.error ? (
                   <>
                     <Separator className="my-5" />
-
                     <div className="flex items-start gap-x-4">
                       <h3 className="w-[45px] flex-shrink-0 text-2xs font-bold uppercase">Error</h3>
                       {data.error ? (
@@ -117,9 +116,8 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                 {!data.error ? (
                   <>
                     <Separator className="my-5" />
-
-                    <div className="flex items-start gap-x-4 pb-2">
-                      <h3 className="inline-block w-[45px] pb-2 text-2xs font-bold uppercase">Logs</h3>
+                    <div className="flex items-start gap-x-4">
+                      <h3 className="inline-block w-[45px] text-2xs font-bold uppercase">Logs</h3>
                       {Array.isArray(logs) && logs.length > 0 ? (
                         <div className="flex-grow break-all border border-white/20 p-2 pb-3">
                           <ul>
@@ -151,6 +149,8 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                     </div>
                   </>
                 ) : null}
+
+                {data.write && <TimingRowExpanded {...data.write} />}
               </>
             )}
           </TableCell>
