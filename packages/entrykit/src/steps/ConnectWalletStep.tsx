@@ -1,7 +1,7 @@
 import { useAccount } from "wagmi";
 import { AccountModalNav } from "../AccoutModalNav";
-import { ConnectWallet } from "../content/ConnectWallet";
-import { ConnectedWallet } from "../content/ConnectedWallet";
+import { ConnectWallet } from "../onboarding/ConnectWallet";
+import { ConnectedWallet } from "../onboarding/ConnectedWallet";
 
 export function ConnectWalletStep() {
   const userAccount = useAccount();

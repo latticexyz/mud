@@ -1,13 +1,15 @@
-import { useAccount } from "wagmi";
-import { ConnectWallet } from "../content/ConnectWallet";
-import { ConnectedWallet } from "../content/ConnectedWallet";
+import { ConnectedWallet } from "./ConnectedWallet";
 import { Steps } from "./Steps";
-import { CreateAppAccount } from "../content/CreateAppAccount";
+import { CreateAppAccount } from "./CreateAppAccount";
 import { useAllowance } from "./useAllowance";
 import { Address } from "viem";
-import { ClaimGasPass } from "../content/ClaimGasPass";
+import { ClaimGasPass } from "./ClaimGasPass";
 
-export function ConnectedSteps({ userAddress }: { userAddress: Address }) {
+export type Props = {
+  userAddress: Address;
+};
+
+export function ConnectedSteps({ userAddress }: Props) {
   const allowance = useAllowance(userAddress);
   return (
     <Steps
@@ -36,14 +38,4 @@ export function ConnectedSteps({ userAddress }: { userAddress: Address }) {
       ]}
     />
   );
-}
-
-export function AccountModalOnboarding() {
-  const userAccount = useAccount();
-
-  if (userAccount.status !== "connected") {
-    return <ConnectWallet />;
-  }
-
-  return <ConnectedSteps userAddress={userAccount.address} />;
 }

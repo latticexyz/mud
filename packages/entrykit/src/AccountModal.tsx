@@ -1,7 +1,7 @@
 import { Modal } from "./ui/Modal";
 import { useAccountModal } from "./useAccountModal";
 import { twMerge } from "tailwind-merge";
-import { AccountModalOnboarding } from "./onboarding/AccountModalOnboarding";
+import { AccountModalContent } from "./AccountModalContent";
 import { AccountModalErrorBoundary } from "./AccountModalErrorBoundary";
 import { DialogClose, DialogTitle } from "@radix-ui/react-dialog";
 import { CloseIcon } from "./icons/CloseIcon";
@@ -24,7 +24,7 @@ export function AccountModal() {
           )}
         >
           <AccountModalErrorBoundary>
-            <AccountModalOnboarding />
+            <AccountModalContent />
           </AccountModalErrorBoundary>
 
           <div className="absolute top-0 right-0">

@@ -7,7 +7,6 @@ import { ErrorNotice } from "../ErrorNotice";
 import { Button } from "../ui/Button";
 import { useAppInfo } from "../useAppInfo";
 import { useAppSigner } from "../useAppSigner";
-import { useOnboardingSteps } from "../useOnboardingSteps";
 import { getAppSignerMessage } from "./app-account/getAppSignerMessage";
 import { useEffect } from "react";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";

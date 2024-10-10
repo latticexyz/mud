@@ -1,7 +1,7 @@
 import { AccountModalSection } from "../AccountModalSection";
 import { ErrorNotice } from "../ErrorNotice";
 import { Hex } from "viem";
-import { useAllowance } from "../onboarding/useAllowance";
+import { useAllowance } from "./useAllowance";
 import { PendingIcon } from "../icons/PendingIcon";
 import { useClaimGasPass } from "./useClaimGasPass";
 import { Button } from "../ui/Button";

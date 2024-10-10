@@ -3,7 +3,6 @@ import { AccountModalSection } from "../AccountModalSection";
 import { useENS } from "../useENS";
 import { TruncatedHex } from "../ui/TruncatedHex";
 import { Button } from "../ui/Button";
-import { useOnboardingSteps } from "../useOnboardingSteps";
 import { useAccountModal } from "../useAccountModal";
 import { ErrorNotice } from "../ErrorNotice";
 import { Hex } from "viem";
@@ -15,7 +14,6 @@ export type Props = {
 export function ConnectedWallet({ userAddress }: Props) {
   const { data: ens } = useENS(userAddress);
   const { disconnect, isPending: disconnectIsPending, error: disconnectError } = useDisconnect();
-  const { resetStep } = useOnboardingSteps();
   const { closeAccountModal } = useAccountModal();
 
   // TODO: render ENS avatar if available?
@@ -52,7 +50,6 @@ export function ConnectedWallet({ userAddress }: Props) {
           pending={disconnectIsPending}
           onClick={() => {
             closeAccountModal();
-            resetStep();
             disconnect();
           }}
         >
