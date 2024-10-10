@@ -10,14 +10,14 @@ import { useAppSigner } from "../useAppSigner";
 import { useOnboardingSteps } from "../useOnboardingSteps";
 import { getAppSignerMessage } from "./app-account/getAppSignerMessage";
 import { useEffect } from "react";
-import { useConfig } from "../EntryKitConfigProvider";
+import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { privateKeyToAccount } from "viem/accounts";
 import { useAppAccount } from "../useAppAccount";
 import { PendingIcon } from "../icons/PendingIcon";
 import { TruncatedHex } from "../ui/TruncatedHex";
 
 export function CreateAppAccountStep() {
-  const { chainId } = useConfig();
+  const { chainId } = useEntryKitConfig();
   const { appName } = useAppInfo();
   const { data: connectorClient } = useConnectorClient({ chainId });
   const [appSigner, setAppSigner] = useAppSigner();

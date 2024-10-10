@@ -3,12 +3,12 @@ import { useAppAccountClient } from "../../useAppAccountClient";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { waitForTransactionReceipt, writeContract } from "viem/actions";
 import { getAction } from "viem/utils";
-import { useConfig } from "../../EntryKitConfigProvider";
+import { useEntryKitConfig } from "../../EntryKitConfigProvider";
 import { Button } from "../../ui/Button";
 
 export function RevokeButton() {
   const queryClient = useQueryClient();
-  const { worldAddress } = useConfig();
+  const { worldAddress } = useEntryKitConfig();
   const { data: appAccountClient } = useAppAccountClient();
 
   const revoke = useMutation({

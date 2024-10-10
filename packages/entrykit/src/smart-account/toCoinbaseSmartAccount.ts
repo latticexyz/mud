@@ -1,5 +1,5 @@
 // Forked from https://github.com/wevm/viem/blob/main/src/account-abstraction/accounts/implementations/toCoinbaseSmartAccount.ts
-// to match our forked factory so we could add `initializers` and upgrade to v0.7 entrypoint
+// to match our forked contracts (upgrade to v0.7 entrypoint)
 import { BaseError, type Address, type TypedData } from "abitype";
 import {
   Client,
@@ -37,7 +37,6 @@ export type ToCoinbaseSmartAccountParameters = {
   client: Client;
   owners: readonly OneOf<LocalAccount | WebAuthnAccount>[];
   nonce?: bigint | undefined;
-  initializer?: LocalAccount;
   signer?: OneOf<LocalAccount | WebAuthnAccount>;
 };
 
@@ -51,13 +50,12 @@ export type CoinbaseSmartAccountImplementation = Assign<
       __isCoinbaseSmartAccount: true;
       abi: typeof abi;
       factory: { abi: typeof factoryAbi; address: Address };
-      initializer?: LocalAccount;
       signer: OneOf<LocalAccount | WebAuthnAccount>;
     }
   >,
   {
     sign: NonNullable<SmartAccountImplementation["sign"]>;
-    // TODO: should this be inside `extend` of `
+    // TODO: should this be inside `extend` of `SmartAccountImplementation`?
     isOwner: (account: LocalAccount | WebAuthnAccount) => Promise<boolean>;
   }
 >;
@@ -81,7 +79,7 @@ export type CoinbaseSmartAccountImplementation = Assign<
 export async function toCoinbaseSmartAccount(
   parameters: ToCoinbaseSmartAccountParameters,
 ): Promise<ToCoinbaseSmartAccountReturnType> {
-  const { client, owners, nonce = 0n, initializer } = parameters;
+  const { client, owners, nonce = 0n } = parameters;
 
   let address = parameters.address;
 
@@ -93,7 +91,7 @@ export async function toCoinbaseSmartAccount(
   const factory = {
     abi: factoryAbi,
     // TODO: make configurable?
-    address: "0xFE8cDc868E8C8a6C43Cd457D482D153F172d22a1",
+    address: "0x356336adA1619BeC1Ae4E6D94Dd9c0490DA414a8",
   } as const;
 
   if (!owners.length) {
@@ -104,13 +102,10 @@ export async function toCoinbaseSmartAccount(
     return account.type === "webAuthn" ? account.publicKey : pad(account.address);
   }
 
-  // Must match factory's `initialize` call so that we get the same owner index.
-  const initialOwners: OneOf<WebAuthnAccount | LocalAccount>[] = [...owners, ...(initializer ? [initializer] : [])];
-
-  const owner = parameters.signer ?? initialOwners[0];
-  const ownerIndex = initialOwners.indexOf(owner);
+  const owner = parameters.signer ?? owners[0];
+  const ownerIndex = owners.indexOf(owner);
   if (ownerIndex === -1) {
-    throw new Error("`signer` must be one of `owners` or `initializer`.");
+    throw new Error("`signer` must be one of `owners`.");
   }
 
   return toSmartAccount({
@@ -121,7 +116,6 @@ export async function toCoinbaseSmartAccount(
       __isCoinbaseSmartAccount: true as const,
       abi,
       factory,
-      initializer,
       signer: owner,
     },
 
@@ -158,7 +152,7 @@ export async function toCoinbaseSmartAccount(
       const factoryData = encodeFunctionData({
         abi: factory.abi,
         functionName: "createAccount",
-        args: [owners.map(accountToBytes), nonce, initializer ? [accountToBytes(initializer)] : []],
+        args: [owners.map(accountToBytes), nonce],
       });
       return { factory: factory.address, factoryData };
     },
@@ -778,7 +772,6 @@ const factoryAbi = [
     inputs: [
       { name: "owners", type: "bytes[]" },
       { name: "nonce", type: "uint256" },
-      { name: "initializers", type: "bytes[]" },
     ],
     name: "createAccount",
     outputs: [

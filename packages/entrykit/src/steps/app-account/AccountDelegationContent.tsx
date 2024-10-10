@@ -3,14 +3,14 @@ import { AccountModalSection } from "../../AccountModalSection";
 import { AccountModalTitle } from "../../AccoutModalNav";
 import { useSignRegisterDelegation } from "./useSignRegisterDelegation";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
-import { useConfig } from "../../EntryKitConfigProvider";
+import { useEntryKitConfig } from "../../EntryKitConfigProvider";
 import { Join } from "../../ui/Join";
 import { TruncatedHex } from "../../ui/TruncatedHex";
 import { useAccount } from "wagmi";
 import { ErrorNotice } from "../../ErrorNotice";
 
 export function AccountDelegationContent() {
-  const config = useConfig();
+  const config = useEntryKitConfig();
   const { address: userAddress } = useAccount();
   // TODO: pass in app account client, display error if pending or not ready
   const { signRegisterDelegationAsync, isPending, error } = useSignRegisterDelegation();

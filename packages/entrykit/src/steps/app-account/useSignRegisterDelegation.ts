@@ -6,7 +6,7 @@ import { useConnectorClient } from "wagmi";
 import { unlimitedDelegationControlId } from "../../common";
 import { useAppAccountClient } from "../../useAppAccountClient";
 import { signCall } from "../../utils/signCall";
-import { useConfig } from "../../EntryKitConfigProvider";
+import { useEntryKitConfig } from "../../EntryKitConfigProvider";
 import { useCallWithSignatureNonce } from "../../useCallWithSignatureNonce";
 import { createStore } from "zustand/vanilla";
 import { useMemo } from "react";
@@ -16,7 +16,7 @@ import { useStore } from "zustand";
 const store = createStore(() => ({ signature: undefined as Hex | undefined }));
 
 export function useSignRegisterDelegation() {
-  const { chainId, worldAddress } = useConfig();
+  const { chainId, worldAddress } = useEntryKitConfig();
   const { data: userAccountClient } = useConnectorClient({ chainId });
   const { data: appAccountClient } = useAppAccountClient();
   const { nonce } = useCallWithSignatureNonce();

@@ -1,5 +1,5 @@
 import { useAccount, useClient } from "wagmi";
-import { useConfig } from "./EntryKitConfigProvider";
+import { useEntryKitConfig } from "./EntryKitConfigProvider";
 import { unlimitedDelegationControlId } from "./common";
 import worldConfig from "@latticexyz/world/mud.config";
 import { useAppAccount } from "./useAppAccount";
@@ -7,7 +7,7 @@ import { getRecord } from "./utils/getRecord";
 import { useQuery } from "@tanstack/react-query";
 
 export function useHasDelegation() {
-  const { chainId, worldAddress } = useConfig();
+  const { chainId, worldAddress } = useEntryKitConfig();
   const client = useClient({ chainId });
   const wallet = useAccount();
   const walletAddress = wallet?.address;

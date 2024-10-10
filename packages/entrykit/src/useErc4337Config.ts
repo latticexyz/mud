@@ -1,11 +1,11 @@
 import { http } from "wagmi";
 import { assert } from "@latticexyz/common/utils";
 import { Erc4337Config } from "./config";
-import { useConfig } from "./EntryKitConfigProvider";
+import { useEntryKitConfig } from "./EntryKitConfigProvider";
 import { useAppChain } from "./useAppChain";
 
 export function useErc4337Config(): Erc4337Config | undefined {
-  const config = useConfig();
+  const config = useEntryKitConfig();
   const chain = useAppChain();
 
   // TODO: do bundler transport health check?

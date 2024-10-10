@@ -42,8 +42,8 @@ export function EntryKitConfigProvider({ config, children }: Props) {
   );
 }
 
-export function useConfig(): Config {
+export function useEntryKitConfig(): Config {
   const config = useContext(Context);
-  if (!config) throw new Error("`useConfig` can only be used within a `EntryKitProvider`.");
+  if (!config) throw new Error("`useEntryKitConfig` can only be used within a `EntryKitProvider`.");
   return config;
 }

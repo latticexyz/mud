@@ -1,8 +1,8 @@
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
-import { useConfig } from "../src/EntryKitConfigProvider";
+import { useEntryKitConfig } from "../src/EntryKitConfigProvider";
 
 export function Connected() {
-  const { chainId, worldAddress } = useConfig();
+  const { chainId, worldAddress } = useEntryKitConfig();
 
   const { writeContractAsync, data: hash } = useWriteContract();
   const { data: receipt } = useWaitForTransactionReceipt({ hash });

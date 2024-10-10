@@ -1,12 +1,12 @@
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { useAppSigner } from "./useAppSigner";
 import { SmartAccount } from "viem/account-abstraction";
-import { useConfig } from "./EntryKitConfigProvider";
+import { useEntryKitConfig } from "./EntryKitConfigProvider";
 import { useClient } from "wagmi";
 import { toCoinbaseSmartAccount } from "./smart-account/toCoinbaseSmartAccount";
 
 export function useAppAccount(): UseQueryResult<SmartAccount> {
-  const { chainId } = useConfig();
+  const { chainId } = useEntryKitConfig();
   // TODO: does this need to be a bundler client?
   const client = useClient({ chainId });
   const [appSigner] = useAppSigner();

@@ -1,7 +1,7 @@
 import { useAccount, usePublicClient } from "wagmi";
 import { publicActions, createClient, walletActions, createTransport } from "viem";
 import { callFrom } from "@latticexyz/world/internal";
-import { useConfig } from "./EntryKitConfigProvider";
+import { useEntryKitConfig } from "./EntryKitConfigProvider";
 import { useAppSigner } from "./useAppSigner";
 import { AppAccountClient, defaultPollingInterval } from "./common";
 import { transportObserver } from "./transportObserver";
@@ -13,7 +13,7 @@ export function useAppAccountClient(): UseQueryResult<AppAccountClient> {
   // TODO: add support for erc4337
 
   const [appSignerAccount] = useAppSigner();
-  const { worldAddress } = useConfig();
+  const { worldAddress } = useEntryKitConfig();
   const chain = useAppChain();
   const { address: userAddress } = useAccount();
   const publicClient = usePublicClient({ chainId: chain.id });

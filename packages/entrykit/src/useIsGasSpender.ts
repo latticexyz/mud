@@ -1,12 +1,12 @@
 import { useAccount } from "wagmi";
-import { useConfig } from "./EntryKitConfigProvider";
+import { useEntryKitConfig } from "./EntryKitConfigProvider";
 import gasTankConfig from "./gas-tank/mud.config";
 import { useRecord } from "./useRecord";
 import { usePaymaster } from "./usePaymaster";
 import { useAppAccountClient } from "./useAppAccountClient";
 
 export function useIsGasSpender() {
-  const { chainId } = useConfig();
+  const { chainId } = useEntryKitConfig();
   const gasTank = usePaymaster("gasTank");
 
   const userAccount = useAccount();
@@ -31,7 +31,7 @@ export function useIsGasSpender() {
     ...result,
     isGasSpender:
       appAccountClient?.type === "smartAccountClient"
-        ? userAccountAddress && userAccountAddress === result.record?.userAccount
+        ? userAccountAddress && userAccountAddress === result.data?.userAccount
         : true,
   };
 }

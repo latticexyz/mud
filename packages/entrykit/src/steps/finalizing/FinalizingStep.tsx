@@ -5,7 +5,7 @@ import { useSignRegisterDelegation } from "../app-account/useSignRegisterDelegat
 import { useAccount } from "wagmi";
 import { useAppAccountClient } from "../../useAppAccountClient";
 import { useOnboardingSteps } from "../../useOnboardingSteps";
-import { useConfig } from "../../EntryKitConfigProvider";
+import { useEntryKitConfig } from "../../EntryKitConfigProvider";
 import { registerDelegationWithSignature } from "../app-account/registerDelegationWithSignature";
 import { waitForTransactionReceipt } from "viem/actions";
 import { useAccountModal } from "../../useAccountModal";
@@ -13,7 +13,7 @@ import { ErrorNotice } from "../../ErrorNotice";
 
 export function FinalizingStep() {
   const queryClient = useQueryClient();
-  const { worldAddress } = useConfig();
+  const { worldAddress } = useEntryKitConfig();
   const { data: appAccountClient } = useAppAccountClient();
   const { address: userAddress } = useAccount();
   const { resetStep } = useOnboardingSteps();

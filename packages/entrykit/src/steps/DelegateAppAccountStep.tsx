@@ -1,7 +1,7 @@
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { AccountModalSection } from "../AccountModalSection";
 import { AccountModalNav } from "../AccoutModalNav";
-import { useConfig } from "../EntryKitConfigProvider";
+import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { useAccount, useTransactionReceipt, useWriteContract } from "wagmi";
 // import { useSignRegisterDelegation } from "./app-account/useSignRegisterDelegation";
 import { useOnboardingSteps } from "../useOnboardingSteps";
@@ -18,7 +18,7 @@ import { useHasDelegation } from "../useHasDelegation";
 
 export function DelegateAppAccountStep() {
   const queryClient = useQueryClient();
-  const config = useConfig();
+  const config = useEntryKitConfig();
   const wallet = useAccount();
   const { data: appAccount } = useAppAccount();
   const { hasDelegation } = useHasDelegation();

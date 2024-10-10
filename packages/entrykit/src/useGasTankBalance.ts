@@ -1,12 +1,12 @@
 import { useAccount, useBalance } from "wagmi";
-import { useConfig } from "./EntryKitConfigProvider";
+import { useEntryKitConfig } from "./EntryKitConfigProvider";
 import gasTankConfig from "./gas-tank/mud.config";
 import { useRecord } from "./useRecord";
 import { usePaymaster } from "./usePaymaster";
 import { useAppAccountClient } from "./useAppAccountClient";
 
 export function useGasTankBalance() {
-  const { chainId } = useConfig();
+  const { chainId } = useEntryKitConfig();
   const { data: appAccountClient } = useAppAccountClient();
   const appAccountBalance = useBalance(
     appAccountClient && appAccountClient.type !== "smartAccountClient"
@@ -42,7 +42,7 @@ export function useGasTankBalance() {
   return appAccountClient?.type === "smartAccountClient"
     ? {
         ...gasTankBalance,
-        gasTankBalance: gasTankBalance.record?.balance,
+        gasTankBalance: gasTankBalance.data?.balance,
       }
     : {
         ...appAccountBalance,

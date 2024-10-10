@@ -1,12 +1,12 @@
 import { useAccount, useBalance } from "wagmi";
 import { AccountModalSection } from "../AccountModalSection";
 import { AccountModalNav } from "../AccoutModalNav";
-import { useConfig } from "../EntryKitConfigProvider";
-import { Balance } from "./deposit/Balance";
+import { useEntryKitConfig } from "../EntryKitConfigProvider";
+import { Balance } from "../ui/Balance";
 import { DialogTitle } from "@radix-ui/react-dialog";
 
 export function FundWalletStep() {
-  const { chainId } = useConfig();
+  const { chainId } = useEntryKitConfig();
 
   const wallet = useAccount();
   const balance = useBalance({ chainId, address: wallet.address });
@@ -26,9 +26,9 @@ export function FundWalletStep() {
         {/* TODO: improve this */}
         <p>
           {/* TODO: pending/error states */}
-          Wallet balance: <Balance amount={balance.data?.value ?? 0n} />
+          Wallet balance: <Balance wei={balance.data?.value ?? 0n} />
           <br />
-          Wallet allowance: <Balance amount={allowance} />
+          Wallet allowance: <Balance wei={allowance} />
         </p>
         {!isFunded ? <p>Deposit funds to get started.</p> : null}
       </AccountModalSection>

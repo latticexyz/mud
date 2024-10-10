@@ -1,10 +1,10 @@
 import { useWalletClient } from "wagmi";
-import { useConfig } from "./EntryKitConfigProvider";
+import { useEntryKitConfig } from "./EntryKitConfigProvider";
 import { useRecord } from "./useRecord";
 import modulesConfig from "@latticexyz/world-modules/internal/mud.config";
 
 export function useCallWithSignatureNonce() {
-  const { chainId, worldAddress } = useConfig();
+  const { chainId, worldAddress } = useEntryKitConfig();
   const { data: userAccountClient } = useWalletClient({ chainId });
   const userAccountAddress = userAccountClient?.account.address;
 
@@ -22,6 +22,6 @@ export function useCallWithSignatureNonce() {
 
   return {
     ...result,
-    nonce: result.record?.nonce,
+    nonce: result.data?.nonce,
   };
 }

@@ -4,13 +4,13 @@ import { GasBalanceSection } from "./GasBalanceSection";
 import { useState } from "react";
 import { DepositMethod } from "./common";
 import { useSourceChains } from "./useSourceChains";
-import { useConfig } from "../../EntryKitConfigProvider";
+import { useEntryKitConfig } from "../../EntryKitConfigProvider";
 import { DepositMethodForm } from "./DepositMethodForm";
 import { useDebounceValue } from "usehooks-ts";
 import { Deposits } from "./Deposits";
 
 export function DepositStep() {
-  const { chainId: appChainId } = useConfig();
+  const { chainId: appChainId } = useEntryKitConfig();
   const [sourceChainId, setSourceChainId] = useState(appChainId);
   const [amount, setAmount] = useDebounceValue<bigint | undefined>(undefined, 200);
   const [selectedDepositMethod, setSelectedDepositMethod] = useState<DepositMethod>("transfer");

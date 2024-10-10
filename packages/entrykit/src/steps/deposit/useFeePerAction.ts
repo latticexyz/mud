@@ -1,4 +1,4 @@
-import { useConfig } from "../../EntryKitConfigProvider";
+import { useEntryKitConfig } from "../../EntryKitConfigProvider";
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { useAppAccountClient } from "../../useAppAccountClient";
 import { getGasPrice } from "viem/actions";
@@ -9,7 +9,7 @@ import { estimateL1Fee } from "viem/op-stack";
 export function useFeePerAction(): UseQueryResult<bigint> {
   const { data: appAccountClient } = useAppAccountClient();
   // TODO: derive these from historical actions for the given world
-  const { gasPerAction = 500_000n, calldataPerAction = 512 } = useConfig();
+  const { gasPerAction = 500_000n, calldataPerAction = 512 } = useEntryKitConfig();
 
   const queryKey = ["feePerAction", gasPerAction.toString(), calldataPerAction];
   const fees = useQuery(

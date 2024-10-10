@@ -11,6 +11,7 @@ import { AccountModal } from "../src/AccountModal";
 import { EntryKitConfigProvider } from "../src/EntryKitConfigProvider";
 import { App } from "./App";
 import { Chain, Hex, http } from "viem";
+import { Config } from "../src/config";
 
 const testWorlds = {
   [anvil.id]: "0x6Eb9682FE93c6fE4346e0a1e70bC049Aa18CC0CA",
@@ -25,13 +26,31 @@ if (!worldAddress) {
   throw new Error(`EntryKit playground is not configured with a test world address for chain ID ${chainId}`);
 }
 
+const entryKitConfig = {
+  chainId,
+  worldAddress,
+  appInfo: {
+    termsOfUse: "#terms",
+    privacyPolicy: "#privacy",
+  },
+  bundlerTransport: http("http://127.0.0.1:4337"),
+  paymasterAddress: "0x8D8b6b8414E1e3DcfD4168561b9be6bD3bF6eC4B",
+  passIssuerTransport: http("http://127.0.0.1:3003/rpc"),
+} as const satisfies Config;
+
 const queryClient = new QueryClient();
 
 const { wallets: defaultWallets } = getDefaultWallets();
 const wallets: WalletList = [
   {
     groupName: "Recommended",
-    wallets: [passkeyWallet({ chainId, bundlerTransport: http("http://127.0.0.1:4337") })],
+    wallets: [
+      passkeyWallet({
+        chainId,
+        bundlerTransport: entryKitConfig.bundlerTransport,
+        paymasterAddress: entryKitConfig.paymasterAddress,
+      }),
+    ],
   },
   ...defaultWallets,
 ];
@@ -45,16 +64,6 @@ const chains = [anvil, redstone, garnet] as [Chain, ...Chain[]];
 const transports = Object.fromEntries(chains.map((chain) => [chain.id, http()]));
 
 const wagmiConfig = createConfig({ connectors, chains, transports });
-
-const entryKitConfig = {
-  chainId,
-  worldAddress,
-  erc4337: false,
-  appInfo: {
-    termsOfUse: "#terms",
-    privacyPolicy: "#privacy",
-  },
-} as const;
 
 const root = ReactDOM.createRoot(document.querySelector("#react-root")!);
 root.render(

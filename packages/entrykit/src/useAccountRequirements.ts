@@ -3,7 +3,7 @@ import { useAppSigner } from "./useAppSigner";
 import { useHasDelegation } from "./useHasDelegation";
 import { useMemo } from "react";
 import { useSignRegisterDelegation } from "./steps/app-account/useSignRegisterDelegation";
-import { useConfig } from "./EntryKitConfigProvider";
+import { useEntryKitConfig } from "./EntryKitConfigProvider";
 import { useAppAccount } from "./useAppAccount";
 
 export const accountRequirements = [
@@ -28,7 +28,7 @@ export type UseAccountRequirementsResult = {
 const minBalance = 100_000n;
 
 export function useAccountRequirements(): UseAccountRequirementsResult {
-  const { chainId } = useConfig();
+  const { chainId } = useEntryKitConfig();
 
   const wallet = useAccount();
   const walletBalance = useBalance({ chainId, address: wallet.address });

@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { DepositStatus } from "./DepositStatus";
 import { useChains } from "wagmi";
 import { TransferDeposit } from "./useDeposits";
-import { Balance } from "./Balance";
+import { Balance } from "../../ui/Balance";
 
 export type Props = TransferDeposit & { onDismiss: () => void };
 
@@ -74,7 +74,7 @@ export function TransferDepositStatus({
             >
               deposited
             </a>{" "}
-            <Balance amount={amount} /> !
+            <Balance wei={amount} /> !
           </>
         );
       })()}

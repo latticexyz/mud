@@ -2,7 +2,7 @@ import { twMerge } from "tailwind-merge";
 import { AccountModalSection } from "../../AccountModalSection";
 import { BoltIcon } from "../../icons/BoltIcon";
 import { useGasTankBalance } from "../../useGasTankBalance";
-import { Balance } from "./Balance";
+import { Balance } from "../../ui/Balance";
 import { formatActions } from "./formatActions";
 import { WithdrawButton } from "./WithdrawButton";
 import { useFeePerAction } from "./useFeePerAction";
@@ -29,7 +29,7 @@ export function GasBalanceSection() {
               "transition opacity-100 group-hover:opacity-0 group-hover:pointer-events-none",
             )}
           >
-            <Balance amount={balance} />
+            <Balance wei={balance} />
           </div>
           <div
             className={twMerge(

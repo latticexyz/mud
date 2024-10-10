@@ -1,38 +1,7 @@
-import { satisfy } from "@ark/util";
 import { Transport } from "viem";
 import { Address } from "viem/accounts";
 
-export type PaymasterType = "gasTank";
-export type PaymasterBase = { readonly type: PaymasterType; readonly address: Address };
-
-/**
- * @link http://www.npmjs.com/package/@latticexyz/gas-tank
- */
-export type GasTankPaymaster = {
-  readonly type: "gasTank";
-  /**
-   * Address of the `GasTank` paymaster. Defaults to `chain.contracts.gasTank.address` if set.
-   * @link http://www.npmjs.com/package/@latticexyz/gas-tank
-   */
-  readonly address: Address;
-};
-
-export type Paymaster = satisfy<PaymasterBase, GasTankPaymaster>;
-
-export type Erc4337Config = {
-  /**
-   * viem `Transport` for ERC-4337-specific RPC methods (e.g. `eth_sendUserOperation`).
-   *
-   * If not set, defaults to `http(chain.rpcUrls.erc4337Bundler.http[0])`.
-   */
-  readonly transport: Transport;
-  /**
-   * List of ERC-4337 paymasters.
-   *
-   * If not set, defaults to `gasTank` paymaster using `chain.contracts.gasTank.address`.
-   */
-  readonly paymasters: readonly [Paymaster, ...Paymaster[]];
-};
+// TODO: rethink smart account config options
 
 export type Config = {
   /**
@@ -41,10 +10,17 @@ export type Config = {
    * The app account client returned by EntryKit will be tied to this chain.
    */
   readonly chainId: number;
-  /*
+  /**
    * The world address.
    */
   readonly worldAddress: Address;
+
+  readonly bundlerTransport: Transport;
+  // currently assumes quarry paymaster
+  readonly paymasterAddress: Address;
+  // currently assumes quarry paymaster pass issuer service
+  // TODO: add rpc types
+  readonly passIssuerTransport: Transport;
 
   /**
    * EntryKit UI theme.
@@ -81,26 +57,4 @@ export type Config = {
      */
     readonly privacyPolicy?: string;
   };
-
-  /**
-   * Configuration for ERC-4337 compatible smart accounts.
-   *
-   * If not set, defaults to chain's `rpcUrls.erc4337Bundler` and `contracts.gasTank`.
-   *
-   * Set to `false` to opt out of smart accounts. The app signer will be used in its place and its balance treated as the gas tank.
-   */
-  readonly erc4337?: Erc4337Config | false;
-
-  /**
-   * Estimated gas per action in wei, used to calculate fees to abstract away ETH balance into number of "actions".
-   *
-   * Defaults to 500,000 wei.
-   */
-  readonly gasPerAction?: bigint;
-  /**
-   * Estimated calldata byte length per action, used to calculate fees to abstract away ETH balance into number of "actions".
-   *
-   * Defaults to 512 bytes.
-   */
-  readonly calldataPerAction?: number;
 };

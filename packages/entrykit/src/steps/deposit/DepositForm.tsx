@@ -9,7 +9,7 @@ import { ReactNode, useEffect, useRef } from "react";
 import { SubmitButton } from "./SubmitButton";
 import { useIsMounted } from "usehooks-ts";
 import { WarningIcon } from "../../icons/WarningIcon";
-import { Balance } from "./Balance";
+import { Balance } from "../../ui/Balance";
 
 export const DEFAULT_DEPOSIT_AMOUNT = 0.005;
 
@@ -142,7 +142,7 @@ export function DepositForm({
         <dt>Available to deposit</dt>
         <dd>
           {balance.isSuccess ? (
-            <Balance amount={balance.data.value} />
+            <Balance wei={balance.data.value} />
           ) : balance.isError ? (
             <span title={String(balance.error)}>
               <WarningIcon className="inline-block text-amber-500" />

@@ -1,9 +1,9 @@
 import { useBlock } from "wagmi";
-import { useConfig } from "./EntryKitConfigProvider";
+import { useEntryKitConfig } from "./EntryKitConfigProvider";
 
 // TODO: figure out a better name
 export function useIsGasFree() {
-  const { chainId } = useConfig();
+  const { chainId } = useEntryKitConfig();
   const { data: block } = useBlock({
     chainId,
     query: {

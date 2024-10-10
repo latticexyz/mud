@@ -1,9 +1,9 @@
 import { useChains } from "wagmi";
-import { useConfig } from "./EntryKitConfigProvider";
+import { useEntryKitConfig } from "./EntryKitConfigProvider";
 import { MUDChain } from "@latticexyz/common/chains";
 
 export function useAppChain(): MUDChain {
-  const { chainId } = useConfig();
+  const { chainId } = useEntryKitConfig();
   const chains = useChains();
   const chain = chains.find((c) => c.id === chainId);
   if (!chain) {

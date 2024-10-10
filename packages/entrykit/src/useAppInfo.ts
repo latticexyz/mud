@@ -1,7 +1,7 @@
-import { useConfig } from "./EntryKitConfigProvider";
+import { useEntryKitConfig } from "./EntryKitConfigProvider";
 
 export function useAppInfo() {
-  const { appInfo } = useConfig();
+  const { appInfo } = useEntryKitConfig();
 
   const appName = appInfo?.name ?? document.title;
   // TODO: should origin be set in config and validated against current host?

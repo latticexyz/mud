@@ -11,6 +11,8 @@ import {
 } from "@latticexyz/protocol-parser/internal";
 import { Hex } from "viem";
 
+// TODO: move to our own useQuery so we can control the query key
+
 export function useRecord<table extends Table>({
   table,
   key,
@@ -21,32 +23,31 @@ export function useRecord<table extends Table>({
 > & {
   readonly table?: table;
   readonly key?: getSchemaPrimitives<getKeySchema<table>>;
-}): UseReadContractReturnType<typeof IStoreReadAbi, "getRecord", [Hex, readonly Hex[]]> & {
-  readonly record: getSchemaPrimitives<table["schema"]> | undefined;
-} {
-  const result = useReadContract(
+}): UseReadContractReturnType<
+  typeof IStoreReadAbi,
+  "getRecord",
+  [Hex, readonly Hex[]],
+  getSchemaPrimitives<table["schema"]>
+> {
+  return useReadContract(
     table && key && opts.query?.enabled !== false
       ? {
           ...opts,
           abi: IStoreReadAbi,
           functionName: "getRecord",
           args: [table.tableId, getKeyTuple(table, key)],
+          query: {
+            ...opts.query,
+            select: (data) => ({
+              ...key,
+              ...decodeValueArgs(getSchemaTypes(getValueSchema(table)), {
+                staticData: data[0],
+                encodedLengths: data[1],
+                dynamicData: data[2],
+              }),
+            }),
+          },
         }
       : {},
   );
-
-  return {
-    ...result,
-    record:
-      table && key && result.data != null
-        ? {
-            ...key,
-            ...decodeValueArgs(getSchemaTypes(getValueSchema(table)), {
-              staticData: result.data[0],
-              encodedLengths: result.data[1],
-              dynamicData: result.data[2],
-            }),
-          }
-        : undefined,
-  };
 }
