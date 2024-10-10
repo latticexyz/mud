@@ -29,7 +29,8 @@ export type PasskeyProvider = {
 export type PasskeyConnectorProperties = {
   createPasskey(): Promise<void>;
   reusePasskey(): Promise<void>;
-  getClient(): Promise<Client>;
+  getClient(parameters?: { chainId?: number | undefined } | undefined): Promise<Client>;
+  createClient(parameters?: { account?: "passkey" | "initializer" } | undefined): Promise<Client>;
   onConnect(connectInfo: ProviderConnectInfo): void;
 };
 
@@ -56,6 +57,39 @@ export function passkeyConnector({ chainId, bundlerTransport }: PasskeyConnector
     const client = createClient({ chain, transport, ...clientOpts });
 
     let connected = cache.getState().activeCredential != null;
+
+    async function createConnectorClient(signer?: "passkey" | "initializer") {
+      const credentialId = cache.getState().activeCredential;
+      if (!credentialId) throw new Error("Not connected.");
+
+      const account = await getAccount(client, credentialId, signer);
+
+      return createSmartAccountClient({
+        bundlerTransport,
+        client,
+        account,
+        ...clientOpts,
+        paymaster: {
+          getPaymasterData: async () => ({
+            // TODO: make configurable
+            paymaster: "0x8D8b6b8414E1e3DcfD4168561b9be6bD3bF6eC4B",
+            paymasterData: "0x",
+          }),
+        },
+        userOperation: {
+          estimateFeesPerGas:
+            // anvil hardcodes fee returned by `eth_maxPriorityFeePerGas`
+            // so we have to override it here
+            // https://github.com/foundry-rs/foundry/pull/8081#issuecomment-2402002485
+            client.chain.id === 31337
+              ? async () => ({
+                  maxFeePerGas: 100_000n,
+                  maxPriorityFeePerGas: 0n,
+                })
+              : undefined,
+        },
+      });
+    }
 
     return {
       id: "passkey",
@@ -171,38 +205,11 @@ export function passkeyConnector({ chainId, bundlerTransport }: PasskeyConnector
       // wrap each call in its own react-query hooks.
       async getClient(params) {
         console.log("passkeyConnector.getClient", params);
-        // TODO: support params.chainId?
-
-        const credentialId = cache.getState().activeCredential;
-        if (!credentialId) return client;
-
-        const account = await getAccount(client, credentialId);
-
-        return createSmartAccountClient({
-          bundlerTransport,
-          client,
-          account,
-          ...clientOpts,
-          paymaster: {
-            getPaymasterData: async () => ({
-              // TODO: make configurable
-              paymaster: "0x8D8b6b8414E1e3DcfD4168561b9be6bD3bF6eC4B",
-              paymasterData: "0x",
-            }),
-          },
-          userOperation: {
-            estimateFeesPerGas:
-              // anvil hardcodes fee returned by `eth_maxPriorityFeePerGas`
-              // so we have to override it here
-              // https://github.com/foundry-rs/foundry/pull/8081#issuecomment-2402002485
-              client.chain.id === 31337
-                ? async () => ({
-                    maxFeePerGas: 100_000n,
-                    maxPriorityFeePerGas: 0n,
-                  })
-                : undefined,
-          },
-        });
+        return await createConnectorClient();
+      },
+      async createClient(params) {
+        console.log("passkeyConnector.getClient", params);
+        return await createConnectorClient(params?.account);
       },
 
       async getProvider(_params) {

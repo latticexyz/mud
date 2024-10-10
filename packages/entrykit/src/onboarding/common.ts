@@ -1,13 +1,9 @@
 import { ReactNode } from "react";
 
-export type Props = {
+export type Step = {
   id: string;
   label: string;
   isComplete: boolean;
   canComplete: boolean;
-  children: ReactNode;
+  content: ReactNode;
 };
-
-export function Step(_props: Props) {
-  return null;
-}

@@ -1,7 +1,8 @@
 import { createStore } from "zustand/vanilla";
 import { persist } from "zustand/middleware";
 import { P256Credential } from "viem/account-abstraction";
-import { Address } from "viem";
+import { Address, Hex } from "viem";
+import { generatePrivateKey } from "viem/accounts";
 
 // TODO: move this to wagmi storage?
 //       when I tried, it blew up TS complexity and my IDE was impossible to work with
@@ -14,6 +15,7 @@ export type State = {
     readonly [key in P256Credential["id"]]: Address;
   };
   readonly activeCredential: P256Credential["id"] | null;
+  readonly initializerPrivateKey: Hex;
 };
 
 export const cache = createStore(
@@ -22,6 +24,7 @@ export const cache = createStore(
       publicKeys: {},
       addresses: {},
       activeCredential: null,
+      initializerPrivateKey: generatePrivateKey(),
     }),
     { name: "mud:passkey:cache" },
   ),

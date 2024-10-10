@@ -37,7 +37,8 @@ export type ToCoinbaseSmartAccountParameters = {
   client: Client;
   owners: readonly OneOf<LocalAccount | WebAuthnAccount>[];
   nonce?: bigint | undefined;
-  initializers?: readonly LocalAccount[];
+  initializer?: LocalAccount;
+  signer?: OneOf<LocalAccount | WebAuthnAccount>;
 };
 
 export type ToCoinbaseSmartAccountReturnType = Prettify<SmartAccount<CoinbaseSmartAccountImplementation>>;
@@ -46,9 +47,19 @@ export type CoinbaseSmartAccountImplementation = Assign<
   SmartAccountImplementation<
     typeof entryPoint07Abi,
     "0.7",
-    { abi: typeof abi; factory: { abi: typeof factoryAbi; address: Address } }
+    {
+      __isCoinbaseSmartAccount: true;
+      abi: typeof abi;
+      factory: { abi: typeof factoryAbi; address: Address };
+      initializer?: LocalAccount;
+      signer: OneOf<LocalAccount | WebAuthnAccount>;
+    }
   >,
-  { sign: NonNullable<SmartAccountImplementation["sign"]> }
+  {
+    sign: NonNullable<SmartAccountImplementation["sign"]>;
+    // TODO: should this be inside `extend` of `
+    isOwner: (account: LocalAccount | WebAuthnAccount) => Promise<boolean>;
+  }
 >;
 
 /**
@@ -70,7 +81,7 @@ export type CoinbaseSmartAccountImplementation = Assign<
 export async function toCoinbaseSmartAccount(
   parameters: ToCoinbaseSmartAccountParameters,
 ): Promise<ToCoinbaseSmartAccountReturnType> {
-  const { client, owners, nonce = 0n, initializers = [] } = parameters;
+  const { client, owners, nonce = 0n, initializer } = parameters;
 
   let address = parameters.address;
 
@@ -85,16 +96,34 @@ export async function toCoinbaseSmartAccount(
     address: "0xFE8cDc868E8C8a6C43Cd457D482D153F172d22a1",
   } as const;
 
-  const owners_bytes = owners.map((owner) => (owner.type === "webAuthn" ? owner.publicKey : pad(owner.address)));
-  const initializers_bytes = initializers.map((account) => account.address);
+  if (!owners.length) {
+    throw new Error("`owners` must have at least one account.");
+  }
 
-  const owner = owners[0];
+  function accountToBytes(account: LocalAccount | WebAuthnAccount) {
+    return account.type === "webAuthn" ? account.publicKey : pad(account.address);
+  }
+
+  // Must match factory's `initialize` call so that we get the same owner index.
+  const initialOwners: OneOf<WebAuthnAccount | LocalAccount>[] = [...owners, ...(initializer ? [initializer] : [])];
+
+  const owner = parameters.signer ?? initialOwners[0];
+  const ownerIndex = initialOwners.indexOf(owner);
+  if (ownerIndex === -1) {
+    throw new Error("`signer` must be one of `owners` or `initializer`.");
+  }
 
   return toSmartAccount({
     client,
     entryPoint,
 
-    extend: { abi, factory },
+    extend: {
+      __isCoinbaseSmartAccount: true as const,
+      abi,
+      factory,
+      initializer,
+      signer: owner,
+    },
 
     async encodeCalls(calls) {
       if (calls.length === 1)
@@ -120,7 +149,7 @@ export async function toCoinbaseSmartAccount(
       address ??= await readContract(client, {
         ...factory,
         functionName: "getAddress",
-        args: [owners_bytes, nonce],
+        args: [owners.map(accountToBytes), nonce],
       });
       return address;
     },
@@ -129,7 +158,7 @@ export async function toCoinbaseSmartAccount(
       const factoryData = encodeFunctionData({
         abi: factory.abi,
         functionName: "createAccount",
-        args: [owners_bytes, nonce, initializers_bytes],
+        args: [owners.map(accountToBytes), nonce, initializer ? [accountToBytes(initializer)] : []],
       });
       return { factory: factory.address, factoryData };
     },
@@ -141,6 +170,7 @@ export async function toCoinbaseSmartAccount(
       return wrapSignature({
         signature:
           "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c",
+        ownerIndex,
       });
     },
 
@@ -155,9 +185,7 @@ export async function toCoinbaseSmartAccount(
 
       const signature = await sign({ hash, owner });
 
-      return wrapSignature({
-        signature,
-      });
+      return wrapSignature({ signature, ownerIndex });
     },
 
     async signMessage(parameters) {
@@ -172,9 +200,7 @@ export async function toCoinbaseSmartAccount(
 
       const signature = await sign({ hash, owner });
 
-      return wrapSignature({
-        signature,
-      });
+      return wrapSignature({ signature, ownerIndex });
     },
 
     async signTypedData(parameters) {
@@ -194,9 +220,7 @@ export async function toCoinbaseSmartAccount(
 
       const signature = await sign({ hash, owner });
 
-      return wrapSignature({
-        signature,
-      });
+      return wrapSignature({ signature, ownerIndex });
     },
 
     async signUserOperation(parameters) {
@@ -215,9 +239,7 @@ export async function toCoinbaseSmartAccount(
 
       const signature = await sign({ hash, owner });
 
-      return wrapSignature({
-        signature,
-      });
+      return wrapSignature({ signature, ownerIndex });
     },
 
     userOperation: {
@@ -229,6 +251,15 @@ export async function toCoinbaseSmartAccount(
           verificationGasLimit: BigInt(Math.max(Number(userOperation.verificationGasLimit ?? 0n), 800_000)),
         };
       },
+    },
+
+    async isOwner(account: LocalAccount | WebAuthnAccount) {
+      return await readContract(client, {
+        abi,
+        address: await this.getAddress(),
+        functionName: "isOwnerBytes",
+        args: [accountToBytes(account)],
+      });
     },
   });
 }
@@ -316,8 +347,8 @@ export function toWebAuthnSignature({ webauthn, signature }: { webauthn: WebAuth
 }
 
 /** @internal */
-export function wrapSignature(parameters: { ownerIndex?: number | undefined; signature: Hex }) {
-  const { ownerIndex = 0 } = parameters;
+export function wrapSignature(parameters: { ownerIndex: number; signature: Hex }) {
+  const { ownerIndex } = parameters;
   const signatureData = (() => {
     if (size(parameters.signature) !== 65) return parameters.signature;
     const signature = parseSignature(parameters.signature);
