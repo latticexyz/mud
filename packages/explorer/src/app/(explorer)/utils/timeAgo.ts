@@ -22,5 +22,5 @@ export function timeAgo(timestamp: bigint) {
     }
   }
 
-  return "just now";
+  return "0s ago";
 }
