@@ -2,13 +2,14 @@ import { PlayIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { Address } from "viem";
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Table } from "@latticexyz/config";
 import MonacoEditor, { useMonaco } from "@monaco-editor/react";
 import { Button } from "../../../../../../components/ui/Button";
 import { Form, FormField } from "../../../../../../components/ui/Form";
 import { useChain } from "../../../../hooks/useChain";
+import { usePrevious } from "../../../../hooks/usePrevious";
 import { constructTableName } from "../../../../utils/constructTableName";
 
 const SQL_KEYWORDS = ["SELECT", "FROM", "WHERE", "AND", "OR"];
@@ -37,11 +38,65 @@ export function SQLEditor2({ table, tables }: Props) {
     form.reset({ query: query || "" });
   }, [query, form]);
 
-  console.log(tables);
-  const columns = Object.keys(table?.schema || {});
+  const columns = useMemo(() => {
+    return Object.keys(table?.schema || {}).map((column) => column.toLowerCase());
+  }, [table?.schema]);
+  const prevColumns = usePrevious(columns);
+
   const selectableTables = (tables || []).map((table) => {
     return constructTableName(table, worldAddress as Address, chainId);
   });
+
+  const editorRef = useRef(null);
+
+  useEffect(() => {
+    if (columns !== prevColumns) {
+      console.log("helllo", columns, prevColumns);
+    }
+  }, [columns, prevColumns]);
+
+  // Function to validate SQL and set markers
+  const validateSQL = useCallback(
+    (value) => {
+      if (!editorRef.current) return;
+      if (!monaco) return;
+
+      console.log("new value:", value);
+
+      const model = editorRef.current.getModel();
+      if (!model) return;
+
+      const markers = [];
+
+      // Simple validation example: check if selected columns exist
+      const sqlParts = value.toUpperCase().split(/\s+/);
+      const selectIndex = sqlParts.indexOf("SELECT");
+      const fromIndex = sqlParts.indexOf("FROM");
+
+      if (selectIndex !== -1 && fromIndex !== -1 && fromIndex > selectIndex) {
+        const selectedColumns = sqlParts
+          .slice(selectIndex + 1, fromIndex)
+          .map((col) => col.replace(",", "").toLowerCase());
+
+        selectedColumns.forEach((col) => {
+          if (col !== "*" && !columns.includes(col)) {
+            markers.push({
+              severity: monaco.MarkerSeverity.Error,
+              message: `Column '${col}' does not exist`,
+              startLineNumber: 1,
+              startColumn: value.toLowerCase().indexOf(col) + 1,
+              endLineNumber: 1,
+              endColumn: value.toLowerCase().indexOf(col) + col.length + 1,
+            });
+          }
+        });
+      }
+
+      // Set markers on the model
+      monaco.editor.setModelMarkers(model, "sql", markers);
+    },
+    [columns, monaco],
+  );
 
   useEffect(() => {
     if (monaco) {
@@ -64,10 +119,7 @@ export function SQLEditor2({ table, tables }: Props) {
             return lastIndex > -1 && (last === null || lastIndex > textSplit.lastIndexOf(last)) ? keyword : last;
           }, null);
 
-          console.log(textSplit, lastSqlKeyword);
-
           const word = model.getWordUntilPosition(position);
-
           const range = {
             startLineNumber: position.lineNumber,
             startColumn: word.startColumn,
@@ -105,11 +157,19 @@ export function SQLEditor2({ table, tables }: Props) {
           }
         },
       });
+
+      // Add event listener for content changes
+      const disposable = editorRef.current?.onDidChangeModelContent(() => {
+        const value = editorRef.current.getValue();
+        validateSQL(value);
+      });
+
       return () => {
         provider.dispose();
+        disposable?.dispose();
       };
     }
-  }, [monaco, columns, selectableTables]);
+  }, [monaco, columns, selectableTables, validateSQL]);
 
   return (
     <Form {...form}>
@@ -137,16 +197,16 @@ export function SQLEditor2({ table, tables }: Props) {
                     },
                     hideCursorInOverviewRuler: true,
                   }}
-                  onChange={field.onChange}
+                  onChange={(value) => {
+                    field.onChange(value);
+                    validateSQL(value);
+                  }}
+                  onMount={(editor) => {
+                    editorRef.current = editor;
+                  }}
                   loading={null}
                 />
               </div>
-
-              // <FormItem>
-              //   <FormControl>
-              //     <Input {...field} className="pr-[90px]" />
-              //   </FormControl>
-              // </FormItem>
             )}
           />
 
