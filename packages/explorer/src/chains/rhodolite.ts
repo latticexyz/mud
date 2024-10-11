@@ -1,4 +1,4 @@
-import { Chain } from "viem/chains";
+import { MUDChain } from "@latticexyz/common/chains";
 
 export const rhodolite = {
   id: 17420,
@@ -16,4 +16,5 @@ export const rhodolite = {
       http: ["http://79.127.239.88:54337"],
     },
   },
-} satisfies Chain;
+  indexerUrl: "https://indexer.mud.rhodolitechain.com",
+} satisfies MUDChain;
