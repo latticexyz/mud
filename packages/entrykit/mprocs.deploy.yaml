@@ -1,4 +1,3 @@
-# To hydrate `anvil-state.json`, swap the command below and then deploy a MUD world to it.
 procs:
   anvil:
     shell: anvil --dump-state playground/anvil-state.json
