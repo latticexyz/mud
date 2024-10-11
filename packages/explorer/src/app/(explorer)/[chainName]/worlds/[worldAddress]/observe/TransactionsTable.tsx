@@ -82,16 +82,13 @@ export const columns = [
     header: "Time",
     cell: (row) => {
       const timestamp = row.getValue();
-      if (!timestamp) return <Skeleton className="h-4 w-full" />;
-      return <TimeAgo timestamp={timestamp} />;
-    },
-  }),
-  columnHelper.accessor("write", {
-    header: "Timing",
-    cell: (row) => {
-      const write = row.getValue();
-      if (!write) return <span className="text-white/60">N/A</span>;
-      return <TimingRowHeader {...write} />;
+      const write = row.row.original.write;
+      return (
+        <>
+          {timestamp ? <TimeAgo timestamp={timestamp} /> : <Skeleton className="h-4 w-14" />}
+          {write && <TimingRowHeader {...write} />}
+        </>
+      );
     },
   }),
 ];

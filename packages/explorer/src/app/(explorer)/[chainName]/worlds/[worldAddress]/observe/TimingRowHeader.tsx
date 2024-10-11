@@ -5,7 +5,7 @@ import { useTimings } from "./useTimings";
 export function TimingRowHeader(write: Write) {
   const timings = useTimings(write);
   return (
-    <div className="-mt-1 h-full w-[50px] grayscale">
+    <div className="ml-4 inline-block h-full w-14 grayscale lg:-mr-8 lg:ml-8 xl:-mr-16 xl:ml-16">
       {timings.map((timing) => (
         <div
           key={timing.label}
