@@ -9,8 +9,8 @@ procs:
   bundler:
     cwd: ../../../alto
     shell: ./alto --config ../mud/packages/entrykit/playground/alto.config.json
-  paymaster:
+  issuer:
     cwd: ../../../quarry-paymaster/packages/service
     shell: pnpm start
   explorer:
-    shell: pnpm explorer --worldAddress 0x6Eb9682FE93c6fE4346e0a1e70bC049Aa18CC0CA
+    shell: pnpm explorer

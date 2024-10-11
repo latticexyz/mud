@@ -12,6 +12,7 @@ import { EntryKitConfigProvider } from "../src/EntryKitConfigProvider";
 import { App } from "./App";
 import { Chain, Hex, http } from "viem";
 import { Config } from "../src/config";
+import { wiresaw } from "../src/wiresaw";
 
 const testWorlds = {
   [anvil.id]: "0x6Eb9682FE93c6fE4346e0a1e70bC049Aa18CC0CA",
@@ -33,7 +34,7 @@ const entryKitConfig = {
     termsOfUse: "#terms",
     privacyPolicy: "#privacy",
   },
-  bundlerTransport: http("http://127.0.0.1:4337"),
+  bundlerTransport: wiresaw(http("http://127.0.0.1:4337")),
   paymasterAddress: "0x8D8b6b8414E1e3DcfD4168561b9be6bD3bF6eC4B",
   passIssuerTransport: http("http://127.0.0.1:3003/rpc"),
 } as const satisfies Config;
