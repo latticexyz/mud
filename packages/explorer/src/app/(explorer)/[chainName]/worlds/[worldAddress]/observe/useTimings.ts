@@ -15,8 +15,8 @@ type EventType = keyof typeof eventConfig;
 export function useTimings({ time: start, events }: Write) {
   const maxLen = Math.max(...events.map((event) => event.time - start));
   const sortedEvents = Object.values(events).sort((a, b) => {
-    const priorityA = eventConfig[a.type as EventType]?.priority ?? Infinity;
-    const priorityB = eventConfig[b.type as EventType]?.priority ?? Infinity;
+    const priorityA = eventConfig[a.type as EventType]?.priority;
+    const priorityB = eventConfig[b.type as EventType]?.priority;
     return priorityA - priorityB;
   });
 
