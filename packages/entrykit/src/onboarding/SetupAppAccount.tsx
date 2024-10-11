@@ -1,11 +1,11 @@
 import { PendingIcon } from "../icons/PendingIcon";
 import { ErrorNotice } from "../ErrorNotice";
 import { AccountModalSection } from "../AccountModalSection";
-import { useAppAccountClient } from "./useAppAccountClient";
+import { useAppAccountClient } from "../useAppAccountClient";
 import { Button } from "../ui/Button";
-import { ConnectedClient } from "./common";
 import { useSetupAppAccount } from "./useSetupAppAccount";
 import { useAccountModal } from "../useAccountModal";
+import { ConnectedClient } from "../common";
 
 export type Props = {
   userClient: ConnectedClient;

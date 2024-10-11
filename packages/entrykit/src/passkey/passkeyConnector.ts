@@ -17,6 +17,7 @@ import { createSmartAccountClient } from "permissionless/clients";
 import { getAccount } from "./getAccount";
 import { reusePasskey } from "./reusePasskey";
 import { createPasskey } from "./createPasskey";
+import { defaultClientConfig } from "../common";
 
 export type PasskeyConnectorOptions = {
   // TODO: figure out what we wanna do across chains
@@ -58,8 +59,7 @@ export function passkeyConnector({
     if (!transport) {
       throw new Error(`Could not find configured transport for chain ID ${chainId}.`);
     }
-    const clientOpts = { pollingInterval: 1000 } as const;
-    const client = createClient({ chain, transport, ...clientOpts });
+    const client = createClient({ ...defaultClientConfig, chain, transport });
 
     let connected = cache.getState().activeCredential != null;
 
@@ -184,10 +184,10 @@ export function passkeyConnector({
         const account = await getAccount(client, credentialId);
 
         return createSmartAccountClient({
+          ...defaultClientConfig,
           bundlerTransport,
           client,
           account,
-          ...clientOpts,
           paymaster: {
             getPaymasterData: async () => ({
               paymaster: paymasterAddress,

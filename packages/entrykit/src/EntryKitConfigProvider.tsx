@@ -1,14 +1,14 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import { createContext, useContext, type ReactNode } from "react";
 import { RainbowKitProvider, lightTheme, midnightTheme } from "@rainbow-me/rainbowkit";
-import { Config } from "./config";
+import { EntryKitConfig } from "./config";
 import { usePasskeyConnector } from "./usePasskeyConnector";
 
 /** @internal */
-const Context = createContext<Config | null>(null);
+const Context = createContext<EntryKitConfig | null>(null);
 
 export type Props = {
-  config: Config;
+  config: EntryKitConfig;
   children?: ReactNode;
 };
 
@@ -42,7 +42,7 @@ export function EntryKitConfigProvider({ config, children }: Props) {
   );
 }
 
-export function useEntryKitConfig(): Config {
+export function useEntryKitConfig(): EntryKitConfig {
   const config = useContext(Context);
   if (!config) throw new Error("`useEntryKitConfig` can only be used within a `EntryKitProvider`.");
   return config;

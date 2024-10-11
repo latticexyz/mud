@@ -3,9 +3,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAction } from "viem/utils";
 import { sendUserOperation, waitForUserOperationReceipt } from "viem/account-abstraction";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
-import { unlimitedDelegationControlId, worldAbi } from "../common";
+import { ConnectedClient, unlimitedDelegationControlId, worldAbi } from "../common";
 import { paymasterAbi } from "../paymaster";
-import { ConnectedClient } from "./common";
 
 function defineCall<abi extends Abi | readonly unknown[]>(
   call: Omit<ContractFunctionParameters<abi>, "address"> & {

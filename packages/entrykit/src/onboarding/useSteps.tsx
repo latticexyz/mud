@@ -2,12 +2,12 @@ import { ConnectedWallet } from "./ConnectedWallet";
 import { SetupAppAccount } from "./SetupAppAccount";
 import { useAllowance } from "./useAllowance";
 import { ClaimGasPass } from "./ClaimGasPass";
-import { useAppAccountClient } from "./useAppAccountClient";
+import { useAppAccountClient } from "../useAppAccountClient";
 import { useSpender } from "./useSpender";
-import { ConnectedClient, Step } from "./common";
+import { Step } from "./common";
 import { useDelegation } from "./useDelegation";
 import { useMemo } from "react";
-import { unlimitedDelegationControlId } from "../common";
+import { ConnectedClient, unlimitedDelegationControlId } from "../common";
 
 export function useSteps(userClient: ConnectedClient | undefined): readonly Step[] {
   const userAddress = userClient?.account.address;

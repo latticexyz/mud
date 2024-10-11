@@ -11,7 +11,7 @@ import { AccountModal } from "../src/AccountModal";
 import { EntryKitConfigProvider } from "../src/EntryKitConfigProvider";
 import { App } from "./App";
 import { Chain, Hex, http } from "viem";
-import { Config } from "../src/config";
+import { EntryKitConfig } from "../src/config";
 import { wiresaw } from "../src/wiresaw";
 
 const testWorlds = {
@@ -37,7 +37,7 @@ const entryKitConfig = {
   bundlerTransport: wiresaw(http("http://127.0.0.1:4337")),
   paymasterAddress: "0x8D8b6b8414E1e3DcfD4168561b9be6bD3bF6eC4B",
   passIssuerTransport: http("http://127.0.0.1:3003/rpc"),
-} as const satisfies Config;
+} as const satisfies EntryKitConfig;
 
 const queryClient = new QueryClient();
 

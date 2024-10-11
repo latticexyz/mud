@@ -1,5 +1,5 @@
 import { EthIcon } from "../icons/EthIcon";
-import { formatBalance } from "../steps/deposit/formatBalance";
+import { formatBalance } from "../formatBalance";
 
 type Props = {
   wei: bigint;

@@ -13,7 +13,7 @@ export function wiresaw<const transport extends Transport>(originalTransport: tr
     return {
       ...rest,
       async request(req) {
-        console.log("wiresaw: got rpc call", req.method, JSON.stringify(req.params ?? []));
+        // console.log("wiresaw: got rpc call", req.method, JSON.stringify(req.params ?? []));
 
         if (req.method === "eth_chainId") {
           if (chainId != null) return chainId;
@@ -46,13 +46,13 @@ export function wiresaw<const transport extends Transport>(originalTransport: tr
         }
 
         if (req.method === "eth_sendUserOperation") {
-          console.log("intercepted request", req);
+          // console.log("intercepted request", req);
           const receipt = (await originalRequest({
             ...req,
             method: "pimlico_sendUserOperationNow",
             // TODO: type `request` so we don't have to cast
           })) as UserOperationReceipt;
-          console.log("user op receipt", receipt);
+          // console.log("user op receipt", receipt);
           receipts.set(receipt["userOpHash"], receipt);
           return receipt["userOpHash"];
         }

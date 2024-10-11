@@ -1,16 +1,14 @@
-import { PrivateKeyAccount, Hex } from "viem";
-import { useLocalStorage } from "usehooks-ts";
-import { privateKeyToAccount } from "viem/accounts";
+import { useStore } from "zustand";
+import { store } from "./onboarding/store";
+import { Address } from "viem/accounts";
+import { getAppSigner } from "./getAppSigner";
 import { useMemo } from "react";
-import { useAccount } from "wagmi";
 
-export function useAppSigner(): [PrivateKeyAccount | undefined, (privateKey: Hex) => void] {
-  const { address } = useAccount();
-  const storageKey = `mud:appSigner:privateKey:${address?.toLowerCase() ?? ""}`;
-
-  const [privateKey, setPrivateKey] = useLocalStorage<Hex | undefined>(storageKey, undefined);
-  return useMemo(
-    () => [privateKey ? privateKeyToAccount(privateKey) : undefined, address ? setPrivateKey : () => {}],
-    [address, privateKey, setPrivateKey],
-  );
+export function useAppSigner(userAddress: Address) {
+  const state = useStore(store, (state) => state.appSigners[userAddress]);
+  return useMemo(() => {
+    // trigger hook to reevaluate when underlying app signers change
+    state;
+    return getAppSigner(userAddress);
+  }, [userAddress, state]);
 }

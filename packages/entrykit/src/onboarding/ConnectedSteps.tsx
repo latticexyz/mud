@@ -1,5 +1,5 @@
+import { ConnectedClient } from "../common";
 import { Steps } from "./Steps";
-import { ConnectedClient } from "./common";
 import { useSteps } from "./useSteps";
 
 export type Props = {

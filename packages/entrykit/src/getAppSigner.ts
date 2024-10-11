@@ -1,5 +1,5 @@
 import { Address } from "viem";
-import { store } from "./store";
+import { store } from "./onboarding/store";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
 export function getAppSigner(userAddress: Address) {

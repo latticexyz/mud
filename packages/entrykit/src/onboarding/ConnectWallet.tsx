@@ -5,7 +5,7 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useMutation } from "@tanstack/react-query";
 import { usePasskeyConnector } from "../usePasskeyConnector";
 import { Logo } from "../icons/Logo";
-import { AppInfo } from "../steps/app-account/AppInfo";
+import { AppInfo } from "../AppInfo";
 
 export function ConnectWallet() {
   const userAccount = useAccount();

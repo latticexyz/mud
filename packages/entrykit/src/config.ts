@@ -3,7 +3,7 @@ import { Address } from "viem/accounts";
 
 // TODO: rethink smart account config options
 
-export type Config = {
+export type EntryKitConfig = {
   /**
    * The chain ID where the world is deployed.
    * There must be a matching chain entry in wagmi's configured chains.

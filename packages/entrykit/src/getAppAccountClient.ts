@@ -1,12 +1,9 @@
 import { Account, Address, Chain, Client, Transport } from "viem";
 import { getAppSigner } from "./getAppSigner";
-import { toCoinbaseSmartAccount } from "../smart-account/toCoinbaseSmartAccount";
+import { toCoinbaseSmartAccount } from "./smart-account/toCoinbaseSmartAccount";
 import { createSmartAccountClient } from "permissionless";
 import { callFrom } from "@latticexyz/world/internal";
-// import { transactionQueue } from "@latticexyz/common/actions";
-
-// TODO: lift out to somewhere else
-const clientOpts = { pollingInterval: 1000 } as const;
+import { defaultClientConfig } from "./common";
 
 export async function getAppAccountClient<chain extends Chain>({
   worldAddress,
@@ -25,10 +22,10 @@ export async function getAppAccountClient<chain extends Chain>({
   const account = await toCoinbaseSmartAccount({ client, owners: [appSigner] });
 
   const appAccountClient = createSmartAccountClient({
+    ...defaultClientConfig,
     bundlerTransport,
     client,
     account,
-    ...clientOpts,
     // TODO: lift out to somewhere else
     paymaster: {
       getPaymasterData: async () => ({
@@ -51,10 +48,5 @@ export async function getAppAccountClient<chain extends Chain>({
     },
   });
 
-  return (
-    appAccountClient
-      // TODO: figure out how to do tx queue in a smart account
-      // .extend(transactionQueue({ publicClient: client }))
-      .extend(callFrom({ worldAddress, delegatorAddress: userAddress, publicClient: client }))
-  );
+  return appAccountClient.extend(callFrom({ worldAddress, delegatorAddress: userAddress, publicClient: client }));
 }
