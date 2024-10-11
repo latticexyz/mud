@@ -90,7 +90,7 @@ export const columns = [
     header: "Timing",
     cell: (row) => {
       const write = row.getValue();
-      if (!write) return <Skeleton className="h-4 w-full" />;
+      if (!write) return <Skeleton className="h-4 w-[50px]" />;
       return <TimingRowHeader {...write} />;
     },
   }),
