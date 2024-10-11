@@ -13,7 +13,7 @@ export function TimeAgo({ timestamp }: { timestamp: bigint }) {
   }, [timestamp]);
 
   return (
-    <span className="text-white/60" title={new Date(Number(timestamp) * 1000).toISOString()}>
+    <span className="inline-block min-w-[60px] text-white/60" title={new Date(Number(timestamp) * 1000).toISOString()}>
       {ago}
     </span>
   );

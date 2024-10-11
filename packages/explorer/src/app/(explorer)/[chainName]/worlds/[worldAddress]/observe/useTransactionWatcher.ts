@@ -17,7 +17,7 @@ import { getTransaction, simulateContract, waitForTransactionReceipt } from "wag
 import { useStore } from "zustand";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Message } from "../../../../../../observer/messages";
-import { Write, store } from "../../../../../../observer/store";
+import { type Write, store } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 
@@ -135,14 +135,14 @@ export function useTransactionWatcher() {
   useEffect(() => {
     for (const write of Object.values(observerWrites)) {
       const hash = write.hash;
-      if (write.type === "waitForTransactionReceipt" && hash) {
+      if (write.type === "waitForTransactionReceipt" && hash && write.address === worldAddress) {
         const transaction = transactions.find((transaction) => transaction.hash === hash);
         if (!transaction) {
           handleTransaction(hash, BigInt(write.time) / 1000n);
         }
       }
     }
-  }, [handleTransaction, observerWrites, transactions]);
+  }, [handleTransaction, observerWrites, transactions, worldAddress]);
 
   useWatchBlocks({
     onBlock(block) {
@@ -159,6 +159,8 @@ export function useTransactionWatcher() {
     const mergedMap = new Map<string | undefined, WatchedTransaction>();
 
     for (const write of Object.values(observerWrites)) {
+      if (write.address !== worldAddress) continue;
+
       const parsedAbiItem = parseAbiItem(`function ${write.functionSignature}`) as AbiFunction;
       const writeResult = write.events.find((event): event is Message<"write:result"> => event.type === "write:result");
 
@@ -188,7 +190,7 @@ export function useTransactionWatcher() {
     }
 
     return Array.from(mergedMap.values()).sort((a, b) => Number(b.timestamp ?? 0n) - Number(a.timestamp ?? 0n));
-  }, [transactions, observerWrites]);
+  }, [observerWrites, worldAddress, transactions]);
 
   return mergedTransactions;
 }
