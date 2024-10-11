@@ -8,7 +8,7 @@ procs:
   #   shell: pnpm run dev --filter=!@latticexyz/entrykit
   bundler:
     cwd: ../../../alto
-    shell: ./alto --config ../mud/packages/entrykit/playground/alto.config.json
+    shell: pnpm ts-node src --config ../mud/packages/entrykit/playground/alto.config.json
   issuer:
     cwd: ../../../quarry-paymaster/packages/service
     shell: pnpm start
