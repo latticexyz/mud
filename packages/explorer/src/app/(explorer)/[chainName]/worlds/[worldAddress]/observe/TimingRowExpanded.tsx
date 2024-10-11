@@ -15,7 +15,7 @@ export function TimingRowExpanded(write: Write) {
             {timings.map((timing) => (
               <>
                 <span className="text-xs">{timing.label}:</span>
-                <div
+                <span
                   className={cn(`h-1`, {
                     "bg-[#5c9af6]": timing.type === "write",
                     "bg-[#4d7cc0]": timing.type === "waitForTransaction",
