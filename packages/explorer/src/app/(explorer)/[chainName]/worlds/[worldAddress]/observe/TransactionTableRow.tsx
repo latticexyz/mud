@@ -102,13 +102,9 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                     <Separator className="my-5" />
                     <div className="flex items-start gap-x-4">
                       <h3 className="w-[45px] flex-shrink-0 text-2xs font-bold uppercase">Error</h3>
-                      {data.error ? (
-                        <div className="flex-grow whitespace-pre-wrap border border-red-500 p-2 font-mono text-xs">
-                          {data.error.message}
-                        </div>
-                      ) : (
-                        <p className="text-2xs uppercase text-white/60">No error</p>
-                      )}
+                      <div className="flex-grow whitespace-pre-wrap border border-red-500 p-2 font-mono text-xs">
+                        {data.error.message}
+                      </div>
                     </div>
                   </>
                 ) : null}
@@ -118,7 +114,7 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                     <Separator className="my-5" />
                     <div className="flex items-start gap-x-4">
                       <h3 className="inline-block w-[45px] text-2xs font-bold uppercase">Logs</h3>
-                      {Array.isArray(logs) && logs.length > 0 ? (
+                      {Array.isArray(logs) && logs.length > 10 ? (
                         <div className="flex-grow break-all border border-white/20 p-2 pb-3">
                           <ul>
                             {logs.map((log, idx) => {
@@ -143,6 +139,8 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                             })}
                           </ul>
                         </div>
+                      ) : status === "pending" ? (
+                        <Skeleton className="h-4 w-full" />
                       ) : (
                         <p className="text-2xs uppercase text-white/60">No logs</p>
                       )}
