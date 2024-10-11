@@ -39,7 +39,8 @@ export function wiresaw<const transport extends Transport>(originalTransport: tr
         // }
 
         if (req.method === "eth_getTransactionReceipt") {
-          const hash = req.params[0] as Hash;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const hash = (req.params as any)[0] as Hash;
           const receipt = receipts.get(hash) ?? ((await originalRequest(req)) as RpcTransactionReceipt);
           if (!receipts.has(hash)) receipts.set(hash, receipt);
           return receipt;
@@ -58,7 +59,8 @@ export function wiresaw<const transport extends Transport>(originalTransport: tr
         }
 
         if (req.method === "eth_getUserOperationReceipt") {
-          const hash = req.params[0] as Hash;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const hash = (req.params as any)[0] as Hash;
           const receipt = receipts.get(hash) ?? ((await originalRequest(req)) as UserOperationReceipt);
           if (!receipts.has(hash)) receipts.set(hash, receipt);
           return receipt;
