@@ -26,7 +26,8 @@ export function useTimings({ time: start, events }: Write) {
       if (type.endsWith(":result")) return;
 
       const writeResult = events.find((e) => e.type === `${type}:result`);
-      const duration = (writeResult?.time || event.time) - event.time;
+      const endTime = writeResult?.time ?? event.time;
+      const duration = endTime - event.time;
       const startOffset = event.time - start;
 
       const startPercentage = (startOffset / maxLen) * 100;
