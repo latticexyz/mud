@@ -2,6 +2,7 @@ packages:
   - packages/*
   - test/mock-game-contracts
   - test/ts-benchmarks
+  - docs
 
 catalog:
   "@ark/attest": "0.12.1"
