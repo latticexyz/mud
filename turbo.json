@@ -17,7 +17,7 @@
     },
     "clean": {
       "cache": false
-    },
-    "globalPassThroughEnv": ["COREPACK_HOME"]
-  }
+    }
+  },
+  "globalPassThroughEnv": ["COREPACK_HOME"]
 }
