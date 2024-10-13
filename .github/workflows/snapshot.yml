@@ -39,12 +39,12 @@ jobs:
 
       - name: Clean
         shell: bash
-        run: pnpm turbo run clean --force --concurrency 10
+        run: pnpm run clean --force
 
       # Build without cache to ensure we release with the most accurate output
       - name: Build
         shell: bash
-        run: pnpm turbo run build --force --concurrency 10
+        run: pnpm run build --force
 
       # The changesets action doesn't support releasing snapshots (yet),
       # so doing it manually here
