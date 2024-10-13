@@ -27,7 +27,7 @@ async function fetchWorlds(chainName: string): Promise<Address[]> {
     const baseUrl = `${protocol}://${host}`;
     worldsApiUrl = `${baseUrl}/api/sqlite-indexer/worlds`;
   } else {
-    const blockExplorerUrl = chain.blockExplorers?.default.url;
+    const blockExplorerUrl = "blockExplorers" in chain && chain.blockExplorers?.default.url;
     if (blockExplorerUrl) {
       worldsApiUrl = `${blockExplorerUrl}/api/v2/mud/worlds`;
     }
