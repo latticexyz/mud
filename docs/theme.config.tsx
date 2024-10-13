@@ -24,7 +24,11 @@ const config: DocsThemeConfig = {
     defaultTheme: "dark",
   },
   footer: {
-    text: "MIT 2023 © MUD",
+    text: (
+      <>
+        MUD by <a href="https://lattice.xyz/">Lattice</a>
+      </>
+    ),
   },
   primaryHue: 28,
   sidebar: {
