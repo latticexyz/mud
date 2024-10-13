@@ -17,6 +17,9 @@
     },
     "clean": {
       "cache": false
+    },
+    "globalPassThroughEnv": {
+      "COREPACK_HOME": "$HOME/.node/corepack"
     }
   }
 }
