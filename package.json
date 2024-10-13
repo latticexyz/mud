@@ -1,4 +1,5 @@
 {
+  "name": "mud",
   "private": true,
   "repository": {
     "type": "git",
@@ -55,7 +56,7 @@
     "shx": "^0.3.4",
     "sort-package-json": "^2.10.1",
     "tsx": "4.19.0",
-    "turbo": "^1.9.3",
+    "turbo": "^2.1.3",
     "typescript": "5.4.2",
     "viem": "catalog:",
     "vitest": "2.1.2"
