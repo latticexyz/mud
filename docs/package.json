@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "description": "mud.dev docs",
-  "license": "",
   "type": "module",
   "main": "index.js",
   "scripts": {
