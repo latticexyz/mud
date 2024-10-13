@@ -13,7 +13,7 @@ export function blockExplorerTransactionUrl({
 
   const chainName = chainIdToName[chainId];
   const chain = supportedChains[chainName];
-  const explorerUrl = chain.blockExplorers?.default.url;
+  const explorerUrl = "blockExplorers" in chain && chain.blockExplorers?.default.url;
   if (!explorerUrl) return undefined;
   return `${explorerUrl}/tx/${hash}`;
 }
