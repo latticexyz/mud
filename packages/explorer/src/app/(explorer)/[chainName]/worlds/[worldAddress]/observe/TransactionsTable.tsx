@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { TruncatedHex } from "../../../../../../components/ui/TruncatedHex";
 import { BlockExplorerLink } from "./BlockExplorerLink";
 import { TimeAgo } from "./TimeAgo";
+import { TimingRowHeader } from "./TimingRowHeader";
 import { TransactionTableRow } from "./TransactionTableRow";
 import { WatchedTransaction, useTransactionWatcher } from "./useTransactionWatcher";
 
@@ -81,8 +82,13 @@ export const columns = [
     header: "Time",
     cell: (row) => {
       const timestamp = row.getValue();
-      if (!timestamp) return <Skeleton className="h-4 w-full" />;
-      return <TimeAgo timestamp={timestamp} />;
+      const write = row.row.original.write;
+      return (
+        <>
+          {timestamp ? <TimeAgo timestamp={timestamp} /> : <Skeleton className="h-4 w-14" />}
+          {write && <TimingRowHeader {...write} />}
+        </>
+      );
     },
   }),
 ];
@@ -97,6 +103,7 @@ export function TransactionsTable() {
     state: {
       expanded,
     },
+    getRowId: (row) => row.writeId,
     onExpandedChange: setExpanded,
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),

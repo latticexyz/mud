@@ -1,5 +1,5 @@
 import { describe, beforeEach, it } from "vitest";
-import { attest } from "@arktype/attest";
+import { attest } from "@ark/attest";
 import { createStash } from "./createStash";
 import { BoundTable } from "./actions/getTable";
 import { Stash } from "./common";

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/explorer",
-  "version": "2.2.10",
+  "version": "2.2.11",
   "description": "World Explorer is a tool for visually exploring and manipulating the state of worlds",
   "type": "module",
   "exports": {
@@ -55,7 +55,6 @@
     "@rainbow-me/rainbowkit": "^2.1.5",
     "@tanstack/react-query": "^5.51.3",
     "@tanstack/react-table": "^8.19.3",
-    "@wagmi/core": "catalog:",
     "better-sqlite3": "^8.6.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

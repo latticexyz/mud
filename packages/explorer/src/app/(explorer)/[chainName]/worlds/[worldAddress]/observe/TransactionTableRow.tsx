@@ -6,6 +6,7 @@ import { Skeleton } from "../../../../../../components/ui/Skeleton";
 import { TableCell, TableRow } from "../../../../../../components/ui/Table";
 import { cn } from "../../../../../../utils";
 import { Confirmations } from "./Confirmations";
+import { TimingRowExpanded } from "./TimingRowExpanded";
 import { columns } from "./TransactionsTable";
 import { WatchedTransaction } from "./useTransactionWatcher";
 
@@ -78,7 +79,6 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                 </div>
 
                 <Separator className="my-5" />
-
                 <div className="flex items-start gap-x-4">
                   <h3 className="w-[45px] flex-shrink-0 text-2xs font-bold uppercase">Inputs</h3>
                   {Array.isArray(data.functionData?.args) && data.functionData?.args.length > 0 ? (
@@ -86,7 +86,9 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                       {data.functionData?.args?.map((arg, idx) => (
                         <div key={idx} className="flex">
                           <span className="flex-shrink-0 text-xs text-white/60">arg {idx + 1}:</span>
-                          <span className="ml-2 text-xs">{String(arg)}</span>
+                          <span className="ml-2 whitespace-pre-wrap text-xs">
+                            {typeof arg === "object" && arg !== null ? JSON.stringify(arg, null, 2) : String(arg)}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -98,16 +100,11 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                 {data.error ? (
                   <>
                     <Separator className="my-5" />
-
                     <div className="flex items-start gap-x-4">
                       <h3 className="w-[45px] flex-shrink-0 text-2xs font-bold uppercase">Error</h3>
-                      {data.error ? (
-                        <div className="flex-grow whitespace-pre-wrap border border-red-500 p-2 font-mono text-xs">
-                          {data.error.message}
-                        </div>
-                      ) : (
-                        <p className="text-2xs uppercase text-white/60">No error</p>
-                      )}
+                      <div className="flex-grow whitespace-pre-wrap border border-red-500 p-2 font-mono text-xs">
+                        {data.error.message}
+                      </div>
                     </div>
                   </>
                 ) : null}
@@ -115,10 +112,9 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                 {!data.error ? (
                   <>
                     <Separator className="my-5" />
-
-                    <div className="flex items-start gap-x-4 pb-2">
-                      <h3 className="inline-block w-[45px] pb-2 text-2xs font-bold uppercase">Logs</h3>
-                      {Array.isArray(logs) && logs.length > 0 ? (
+                    <div className="flex items-start gap-x-4">
+                      <h3 className="inline-block w-[45px] text-2xs font-bold uppercase">Logs</h3>
+                      {Array.isArray(logs) && logs.length > 10 ? (
                         <div className="flex-grow break-all border border-white/20 p-2 pb-3">
                           <ul>
                             {logs.map((log, idx) => {
@@ -143,12 +139,16 @@ export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
                             })}
                           </ul>
                         </div>
+                      ) : status === "pending" ? (
+                        <Skeleton className="h-4 w-full" />
                       ) : (
                         <p className="text-2xs uppercase text-white/60">No logs</p>
                       )}
                     </div>
                   </>
                 ) : null}
+
+                {data.write && <TimingRowExpanded {...data.write} />}
               </>
             )}
           </TableCell>

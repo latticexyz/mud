@@ -1,8 +1,9 @@
 "use client";
 
 import { Coins, Eye, Send } from "lucide-react";
+import { useQueryState } from "nuqs";
 import { AbiFunction } from "viem";
-import { useDeferredValue, useState } from "react";
+import { useDeferredValue } from "react";
 import { Input } from "../../../../../../components/ui/Input";
 import { Separator } from "../../../../../../components/ui/Separator";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
@@ -14,7 +15,7 @@ import { FunctionField } from "./FunctionField";
 export function Form() {
   const [hash] = useHashState();
   const { data, isFetched } = useWorldAbiQuery();
-  const [filterValue, setFilterValue] = useState("");
+  const [filterValue, setFilterValue] = useQueryState("function", { defaultValue: "" });
   const deferredFilterValue = useDeferredValue(filterValue);
   const filteredFunctions = data?.abi?.filter(
     (item) => item.type === "function" && item.name.toLowerCase().includes(deferredFilterValue.toLowerCase()),

@@ -26,8 +26,6 @@ Or, can be executed with a package bin directly:
 npx @latticexyz/explorer
 ```
 
-**Note:** `worlds.json` is the default file used to configure the world. If you're using a different file or if the file is located in a different path than where you're running the command, you can specify it with the `--worldsFile` flag, or use `--worldAddress` to point to the world address directly. Accordingly, `indexer.db` is the default database file used to index the world state. If you're using a different database file or if the file is located in a different path than where you're running the command, you can specify it with the `--indexerDatabase` flag.
-
 ### Example setup
 
 For a full working setup, check out the [local-explorer](https://github.com/latticexyz/mud/tree/main/examples/local-explorer) example.
@@ -38,15 +36,13 @@ You may also want to check out the MUD [Quickstart guide](https://mud.dev/quicks
 
 The World Explorer accepts the following CLI arguments:
 
-| Argument          | Description                                                         | Default value |
-| ----------------- | ------------------------------------------------------------------- | ------------- |
-| `worldAddress`    | The address of the world to explore                                 | None          |
-| `worldsFile`      | Path to a worlds configuration file (used to resolve world address) | "worlds.json" |
-| `indexerDatabase` | Path to your SQLite indexer database                                | "indexer.db"  |
-| `chainId`         | The chain ID of the network                                         | 31337         |
-| `port`            | The port on which to run the World Explorer                         | 13690         |
-| `hostname`        | The host on which to run the World Explorer                         | 0.0.0.0       |
-| `dev`             | Run the World Explorer in development mode                          | false         |
+| Argument          | Description                                 | Default value |
+| ----------------- | ------------------------------------------- | ------------- |
+| `indexerDatabase` | Path to your SQLite indexer database        | "indexer.db"  |
+| `chainId`         | The chain ID of the network                 | 31337         |
+| `port`            | The port on which to run the World Explorer | 13690         |
+| `hostname`        | The host on which to run the World Explorer | 0.0.0.0       |
+| `dev`             | Run the World Explorer in development mode  | false         |
 
 ## Contributing
 

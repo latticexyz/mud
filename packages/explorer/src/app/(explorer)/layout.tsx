@@ -17,8 +17,8 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "World Explorer",
-  description: "World Explorer is a tool for visually exploring and manipulating the state of worlds",
+  title: "Worlds Explorer",
+  description: "Worlds Explorer is a tool for visually exploring and manipulating the state of worlds",
 };
 
 export default function RootLayout({
@@ -30,7 +30,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${jetbrains.variable} dark`}>
         <Theme>
-          <div className="container pb-8">{children}</div>
+          <div className="container">{children}</div>
           <Toaster richColors closeButton duration={10000} />
         </Theme>
       </body>

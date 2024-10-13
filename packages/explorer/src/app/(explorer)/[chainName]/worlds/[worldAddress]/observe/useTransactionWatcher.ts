@@ -13,17 +13,17 @@ import {
   parseEventLogs,
 } from "viem";
 import { useConfig, useWatchBlocks } from "wagmi";
+import { getTransaction, simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { useStore } from "zustand";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getTransaction, simulateContract, waitForTransactionReceipt } from "@wagmi/core";
 import { Message } from "../../../../../../observer/messages";
-import { Write, store } from "../../../../../../observer/store";
+import { type Write, store } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 
 export type WatchedTransaction = {
+  writeId: string;
   hash?: Hex;
-  writeId?: string;
   from?: Address;
   timestamp?: bigint;
   transaction?: Transaction;
@@ -65,9 +65,11 @@ export function useTransactionWatcher() {
         functionName = transaction.input.length > 10 ? transaction.input.slice(0, 10) : "unknown";
       }
 
+      const write = Object.values(observerWrites).find((write) => write.hash === hash);
       setTransactions((prevTransactions) => [
         {
           hash,
+          writeId: write?.writeId ?? hash,
           from: transaction.from,
           timestamp,
           transaction,
@@ -127,20 +129,20 @@ export function useTransactionWatcher() {
         ),
       );
     },
-    [abi, wagmiConfig, worldAddress],
+    [abi, observerWrites, wagmiConfig, worldAddress],
   );
 
   useEffect(() => {
     for (const write of Object.values(observerWrites)) {
       const hash = write.hash;
-      if (write.type === "waitForTransactionReceipt" && hash) {
+      if (write.type === "waitForTransactionReceipt" && hash && write.address === worldAddress) {
         const transaction = transactions.find((transaction) => transaction.hash === hash);
         if (!transaction) {
           handleTransaction(hash, BigInt(write.time) / 1000n);
         }
       }
     }
-  }, [handleTransaction, observerWrites, transactions]);
+  }, [handleTransaction, observerWrites, transactions, worldAddress]);
 
   useWatchBlocks({
     onBlock(block) {
@@ -157,10 +159,14 @@ export function useTransactionWatcher() {
     const mergedMap = new Map<string | undefined, WatchedTransaction>();
 
     for (const write of Object.values(observerWrites)) {
+      if (write.address !== worldAddress) continue;
+
       const parsedAbiItem = parseAbiItem(`function ${write.functionSignature}`) as AbiFunction;
       const writeResult = write.events.find((event): event is Message<"write:result"> => event.type === "write:result");
 
       mergedMap.set(write.hash || write.writeId, {
+        hash: write.hash,
+        writeId: write.writeId,
         from: write.from,
         status: writeResult?.status === "rejected" ? "rejected" : "pending",
         timestamp: BigInt(write.time) / 1000n,
@@ -184,7 +190,7 @@ export function useTransactionWatcher() {
     }
 
     return Array.from(mergedMap.values()).sort((a, b) => Number(b.timestamp ?? 0n) - Number(a.timestamp ?? 0n));
-  }, [transactions, observerWrites]);
+  }, [observerWrites, worldAddress, transactions]);
 
   return mergedTransactions;
 }

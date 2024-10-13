@@ -1,5 +1,5 @@
 import { describe, beforeEach, it } from "vitest";
-import { attest } from "@arktype/attest";
+import { attest } from "@ark/attest";
 import { createStash } from "../createStash";
 import { runQuery } from "./runQuery";
 import { defineStore } from "@latticexyz/store";

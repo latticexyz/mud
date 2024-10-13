@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { attest } from "@arktype/attest";
+import { attest } from "@ark/attest";
 import { CreateStashResult, createStash } from "./createStash";
 import { defineStore, defineTable } from "@latticexyz/store/config/v2";
 import { Hex } from "viem";

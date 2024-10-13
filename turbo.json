@@ -18,5 +18,6 @@
     "clean": {
       "cache": false
     }
-  }
+  },
+  "globalPassThroughEnv": ["COREPACK_HOME"]
 }

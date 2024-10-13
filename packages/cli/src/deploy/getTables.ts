@@ -1,9 +1,7 @@
-import { Client, parseAbiItem, decodeAbiParameters, parseAbiParameters } from "viem";
+import { Client, decodeAbiParameters, parseAbiParameters } from "viem";
 import { hexToResource } from "@latticexyz/common";
 import { WorldDeploy } from "./common";
 import { debug } from "./debug";
-import { storeSetRecordEvent } from "@latticexyz/store";
-import { getLogs } from "viem/actions";
 import {
   decodeKey,
   decodeValueArgs,
@@ -14,6 +12,8 @@ import {
 } from "@latticexyz/protocol-parser/internal";
 import { Schema, Table } from "@latticexyz/config";
 import storeConfig from "@latticexyz/store/mud.config";
+import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
+import { flattenStoreLogs, getStoreLogs } from "@latticexyz/store/internal";
 
 // TODO: add label and namespaceLabel once we register it onchain
 type DeployedTable = Omit<Table, "label" | "namespaceLabel">;
@@ -25,21 +25,22 @@ export async function getTables({
   readonly client: Client;
   readonly worldDeploy: WorldDeploy;
 }): Promise<readonly Omit<DeployedTable, "label">[]> {
-  // This assumes we only use `Tables._set(...)`, which is true as of this writing.
-  // TODO: PR to viem's getLogs to accept topics array so we can filter on all store events and quickly recreate this table's current state
-  // TODO: consider moving this to a batched getRecord for Tables table
-
   debug("looking up tables for", worldDeploy.address);
-  const logs = await getLogs(client, {
-    strict: true,
-    // this may fail for certain RPC providers with block range limits
-    // if so, could potentially use our fetchLogs helper (which does pagination)
+
+  const blockLogs = await fetchBlockLogs({
     fromBlock: worldDeploy.deployBlock,
     toBlock: worldDeploy.stateBlock,
-    address: worldDeploy.address,
-    event: parseAbiItem(storeSetRecordEvent),
-    args: { tableId: storeConfig.namespaces.store.tables.Tables.tableId },
+    maxBlockRange: 100_000n,
+    async getLogs({ fromBlock, toBlock }) {
+      return getStoreLogs(client, {
+        address: worldDeploy.address,
+        fromBlock,
+        toBlock,
+        tableId: storeConfig.namespaces.store.tables.Tables.tableId,
+      });
+    },
   });
+  const logs = flattenStoreLogs(blockLogs.flatMap((block) => block.logs));
 
   // TODO: combine with store-sync logToTable and export from somewhere
   const tables = logs.map((log): DeployedTable => {

@@ -14,13 +14,15 @@ function NavigationLink({ href, children }: { href: string; children: React.Reac
   const pathname = usePathname();
   const getLinkUrl = useWorldUrl();
   return (
-    <Link
-      href={getLinkUrl(href)}
-      className={cn("text-sm uppercase underline-offset-[16px]", {
-        "font-semibold underline decoration-orange-500 decoration-4": pathname === getLinkUrl(href),
-      })}
-    >
-      {children}
+    <Link href={getLinkUrl(href)} className="group px-3 text-sm font-semibold uppercase">
+      <span
+        className={cn(
+          "flex border-b-4 border-transparent pb-3 pt-4 transition group-hover:border-orange-500/30",
+          pathname === getLinkUrl(href) ? "border-orange-500 group-hover:border-orange-400" : null,
+        )}
+      >
+        {children}
+      </span>
     </Link>
   );
 }
@@ -30,7 +32,7 @@ export function Navigation() {
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between">
-        <div className="flex gap-x-6 py-4">
+        <div className="-mx-3 flex">
           <NavigationLink href="explore">Explore</NavigationLink>
           <NavigationLink href="interact">Interact</NavigationLink>
           <NavigationLink href="observe">Observe</NavigationLink>

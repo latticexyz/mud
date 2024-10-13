@@ -1,6 +1,6 @@
 {
   "name": "create-mud",
-  "version": "2.2.10",
+  "version": "2.2.11",
   "description": "Create a new MUD project",
   "license": "MIT",
   "author": "Lattice <mud@lattice.xyz>",
@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
+    "execa": "^7.0.0",
     "tsup": "^6.7.0"
   },
   "publishConfig": {
