@@ -30,7 +30,7 @@
     "test:setup": "tsx test-setup/startAnvil.ts & pnpm run --filter mock-game-contracts build",
     "type-bench": "pnpm --filter ./test/ts-benchmarks bench",
     "type-stats-repo": "attest stats packages/*",
-    "vercel:prepare": "(forge --version || pnpm foundryup) && ln -sf /vercel/.foundry/bin/* node_modules/.bin/ && forge --version"
+    "vercel:prepare": "ln -sf /vercel/.foundry/bin/* node_modules/.bin/ && forge --version"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --cache --fix",
