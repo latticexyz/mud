@@ -3,7 +3,7 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", "out/**", "build/**", "bin/**", ".next/**"]
+      "outputs": ["dist/**", "out/**", "build/**", "bin/**", ".next/**", "!docs/.next/**"]
     },
     "create-mud#build": {
       "dependsOn": ["^build"],
