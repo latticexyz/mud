@@ -37,6 +37,7 @@ import { fromEventSource } from "./fromEventSource";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 import { isLogsApiResponse } from "./indexer-client/isLogsApiResponse";
 import { toStorageAdatperBlock } from "./indexer-client/toStorageAdapterBlock";
+import { watchLogs } from "./wiresaw";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -203,6 +204,17 @@ export async function createStoreSync({
   let endBlock: bigint | null = null;
   let lastBlockNumberProcessed: bigint | null = null;
 
+  const webSocketRpcUrl = publicClient.chain?.rpcUrls.default.webSocket?.[0];
+  const storedPendingLogs$ = webSocketRpcUrl
+    ? startBlock$.pipe(
+        mergeMap((startBlock) => watchLogs({ url: webSocketRpcUrl, address, fromBlock: startBlock }).logs$),
+        concatMap(async (block) => {
+          await storageAdapter(block);
+          return block;
+        }),
+      )
+    : throwError(() => new Error("No WebSocket RPC URL provided"));
+
   const storedIndexerLogs$ = indexerUrl
     ? startBlock$.pipe(
         mergeMap((startBlock) => {
@@ -230,7 +242,7 @@ export async function createStoreSync({
       )
     : throwError(() => new Error("No indexer URL provided"));
 
-  const storedRpcLogs$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
+  const storedEthRpcLogs$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
     tap((range) => {
       startBlock = range.startBlock;
@@ -254,11 +266,16 @@ export async function createStoreSync({
     }),
   );
 
-  const storedBlock$ = storedIndexerLogs$.pipe(
+  const storedBlock$ = storedPendingLogs$.pipe(
+    catchError((e) => {
+      debug("failed to stream logs from pending log RPC:", e.message);
+      debug("falling back to streaming logs from indexer");
+      return storedIndexerLogs$;
+    }),
     catchError((e) => {
       debug("failed to stream logs from indexer:", e.message);
-      debug("falling back to streaming logs from RPC");
-      return storedRpcLogs$;
+      debug("falling back to streaming logs from ETH RPC");
+      return storedEthRpcLogs$;
     }),
     tap(async ({ logs, blockNumber }) => {
       debug("stored", logs.length, "logs for block", blockNumber);
