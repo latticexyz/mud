@@ -1,4 +1,4 @@
-import { ArrowUpDownIcon, LoaderIcon } from "lucide-react";
+import { ArrowUpDownIcon, LoaderIcon, TriangleAlertIcon } from "lucide-react";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { useMemo } from "react";
 import { Schema, Table as TableType } from "@latticexyz/config";
@@ -17,21 +17,23 @@ import { internalNamespaces } from "../../../../../../common";
 import { Button } from "../../../../../../components/ui/Button";
 import { Input } from "../../../../../../components/ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
-import { TableData } from "../../../../queries/useTableDataQuery";
+import { cn } from "../../../../../../utils";
+import { TableData, useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { EditableTableCell } from "./EditableTableCell";
 
 const initialSortingState: SortingState = [];
 const initialRows: TableData["rows"] = [];
 
-export function TablesViewer({
-  table,
-  tableData,
-  isLoading,
-}: {
-  table?: TableType;
-  tableData?: TableData;
-  isLoading: boolean;
-}) {
+export function TablesViewer({ table, query }: { table?: TableType; query?: string }) {
+  const {
+    data: tableData,
+    isLoading: isTableDataLoading,
+    isFetched,
+    isError,
+    error,
+  } = useTableDataQuery({ table, query });
+  const isLoading = isTableDataLoading || !isFetched;
+
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
 
@@ -109,7 +111,11 @@ export function TablesViewer({
         />
       </div>
 
-      <div className="rounded-md border">
+      <div
+        className={cn("rounded-md border", {
+          "border-red-300": isError,
+        })}
+      >
         {isLoading && (
           <div className="flex h-24 items-center justify-center">
             <LoaderIcon className="h-5 w-5 animate-spin" />
@@ -144,8 +150,19 @@ export function TablesViewer({
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={tableColumns.length} className="h-24 text-center">
-                      No results.
+                    <TableCell
+                      colSpan={tableColumns.length}
+                      className={cn("h-24 text-center", {
+                        "text-red-300": isError,
+                      })}
+                    >
+                      {isError ? (
+                        <div className="flex items-center justify-center gap-x-2">
+                          <TriangleAlertIcon /> {error.message}
+                        </div>
+                      ) : (
+                        "No results."
+                      )}
                     </TableCell>
                   </TableRow>
                 )}
