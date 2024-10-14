@@ -37,7 +37,12 @@ export function useTableDataQuery({ table, query }: Props) {
         ]),
       });
 
-      return response.json();
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.msg || "Network response was not ok");
+      }
+
+      return data;
     },
     select: (data: DozerResponse) => {
       if (!table || !data?.result?.[0]) return;
@@ -58,6 +63,9 @@ export function useTableDataQuery({ table, query }: Props) {
       };
     },
     enabled: !!table && !!query,
-    refetchInterval: 1_000,
+    refetchInterval: (query) => {
+      if (query.state.error) return false;
+      return 1000;
+    },
   });
 }
