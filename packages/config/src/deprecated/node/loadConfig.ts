@@ -19,9 +19,12 @@ export async function loadConfig(configPath?: string): Promise<unknown> {
   const packageJson = JSON.parse(await fs.readFile(packageJsonPath, "utf8"));
   // use require if cjs
   if (!packageJson.type || packageJson.type === "commonjs") {
-    return tsRequire(configPath, import.meta.url).default;
+    // tsRequire has an internal cache, so we need to append data to reload the config
+    // this helps with things like the mud dev runner that reevalutes the config on changes
+    return tsRequire(`${configPath}?update=${Date.now()}`, import.meta.url).default;
   }
   // otherwise default to esm
+  // this is not cached, so we don't need to append anything to the config path
   return (await tsImport(configPath, import.meta.url)).default;
 }
 
