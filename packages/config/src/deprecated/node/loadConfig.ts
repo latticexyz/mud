@@ -1,41 +1,28 @@
 import { findUp } from "find-up";
 import path from "path";
-import esbuild from "esbuild";
-import { rmSync } from "fs";
 import { pathToFileURL } from "url";
 import os from "os";
-
-// TODO: explore using https://www.npmjs.com/package/ts-import instead
+import fs from "fs/promises";
+import { tsImport } from "tsx/esm/api";
+import { require as tsRequire } from "tsx/cjs/api";
 
 // In order of preference files are checked
 /** @deprecated */
 const configFiles = ["mud.config.js", "mud.config.mjs", "mud.config.ts", "mud.config.mts"];
-/** @deprecated */
-const TEMP_CONFIG = "mud.config.temp.mjs";
 
 /** @deprecated */
 export async function loadConfig(configPath?: string): Promise<unknown> {
   configPath = await resolveConfigPath(configPath);
-  try {
-    await esbuild.build({
-      entryPoints: [configPath],
-      format: "esm",
-      outfile: TEMP_CONFIG,
-      // https://esbuild.github.io/getting-started/#bundling-for-node
-      platform: "node",
-      // bundle local imports (otherwise it may error, js can't import ts)
-      bundle: true,
-      // avoid bundling external imports (it's unnecessary and esbuild can't handle all node features)
-      packages: "external",
-    });
-    configPath = await resolveConfigPath(TEMP_CONFIG, true);
-    // Node.js caches dynamic imports, so without appending a cache breaking
-    // param like `?update={Date.now()}` this import always returns the same config
-    // if called multiple times in a single process, like the `dev-contracts` cli
-    return (await import(configPath + `?update=${Date.now()}`)).default;
-  } finally {
-    rmSync(TEMP_CONFIG, { force: true });
+  // load nearest package.json to figure out if we need to import with ESM or CJS
+  const packageJsonPath = await findUp("package.json", { cwd: path.dirname(configPath) });
+  if (!packageJsonPath) throw new Error(`Could not find package.json for config at "${configPath}".`);
+  const packageJson = JSON.parse(await fs.readFile(packageJsonPath, "utf8"));
+  // use require if cjs
+  if (!packageJson.type || packageJson.type === "commonjs") {
+    return tsRequire(configPath, import.meta.url).default;
   }
+  // otherwise default to esm
+  return (await tsImport(configPath, import.meta.url)).default;
 }
 
 /** @deprecated */
