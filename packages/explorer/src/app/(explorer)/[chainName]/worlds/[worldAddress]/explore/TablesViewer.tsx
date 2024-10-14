@@ -113,7 +113,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
 
       <div
         className={cn("rounded-md border", {
-          "border-red-300": isError,
+          "border-red-400": isError,
         })}
       >
         {isLoading && (
@@ -153,12 +153,12 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
                     <TableCell
                       colSpan={tableColumns.length}
                       className={cn("h-24 text-center", {
-                        "text-red-300": isError,
+                        "text-red-400": isError,
                       })}
                     >
                       {isError ? (
                         <div className="flex items-center justify-center gap-x-2">
-                          <TriangleAlertIcon /> {error.message}
+                          <TriangleAlertIcon /> Error: {error.message}
                         </div>
                       ) : (
                         "No results."
