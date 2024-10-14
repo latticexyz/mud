@@ -1,6 +1,5 @@
 import { anvil } from "viem/chains";
-import { garnet, redstone } from "@latticexyz/common/chains";
-import { rhodolite } from "./chains/rhodolite";
+import { garnet, redstone, rhodolite } from "@latticexyz/common/chains";
 
 export const internalNamespaces = ["world", "store", "metadata", "puppet", "erc20-puppet", "erc721-puppet"];
 

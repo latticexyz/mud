@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { parseEther } from "viem";
 
 export type Step = {
   id: string;
@@ -6,3 +7,5 @@ export type Step = {
   isComplete: boolean;
   content: null | ReactNode;
 };
+
+export const minGasBalance = parseEther(".25");

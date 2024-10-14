@@ -18,5 +18,5 @@ export default defineConfig({
   loader: {
     ".css": "text",
   },
-  external: ["react", "react-dom"],
+  external: ["react", "react-dom", "wagmi", "viem"],
 });

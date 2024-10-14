@@ -4,7 +4,7 @@ import { useAllowance } from "./useAllowance";
 import { ClaimGasPass } from "./ClaimGasPass";
 import { useAppAccountClient } from "../useAppAccountClient";
 import { useSpender } from "./useSpender";
-import { Step } from "./common";
+import { Step, minGasBalance } from "./common";
 import { useDelegation } from "./useDelegation";
 import { useMemo } from "react";
 import { ConnectedClient, unlimitedDelegationControlId } from "../common";
@@ -42,7 +42,7 @@ export function useSteps(userClient: ConnectedClient | undefined): readonly Step
       {
         id: "claimGasPass",
         label: "Top up",
-        isComplete: (allowance.data?.allowance ?? 0n) > 0n,
+        isComplete: (allowance.data?.allowance ?? 0n) > minGasBalance,
         content: <ClaimGasPass userAddress={userAddress} />,
       },
       {

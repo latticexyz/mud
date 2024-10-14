@@ -7,6 +7,7 @@ import { useClaimGasPass } from "./useClaimGasPass";
 import { Button } from "../ui/Button";
 import { Balance } from "../ui/Balance";
 import { useEffect } from "react";
+import { minGasBalance } from "./common";
 
 export type Props = {
   userAddress: Hex;
@@ -18,10 +19,10 @@ export function ClaimGasPass({ userAddress }: Props) {
 
   // TODO: improve pending state since this is kicked off automatically and showing a pending button is weird
   useEffect(() => {
-    if (claimGasPass.status === "idle" && allowance.data?.allowance === 0n) {
+    if (claimGasPass.status === "idle" && allowance.data && allowance.data.allowance < minGasBalance) {
       claimGasPass.mutate(userAddress);
     }
-  }, [allowance.data?.allowance, claimGasPass, userAddress]);
+  }, [allowance.data, claimGasPass, userAddress]);
 
   if (allowance.status === "pending") {
     // TODO: better loading state/message
@@ -46,7 +47,7 @@ export function ClaimGasPass({ userAddress }: Props) {
       <AccountModalSection>
         <div className="text-lg font-medium">Top up</div>
         <div className="space-y-4">
-          {allowance.data.allowance > 0n ? (
+          {allowance.data.allowance > minGasBalance ? (
             <p>
               You currently have <Balance wei={allowance.data.allowance} /> allowance to spend on gas.
             </p>

@@ -68,7 +68,7 @@ export function passkeyConnector({
       type: passkeyConnector.type,
       name: "Passkey",
       // TODO: check that this works
-      supportsSimulation: true,
+      // supportsSimulation: true,
 
       async createPasskey() {
         const { id } = await createPasskey();

@@ -1,6 +1,7 @@
 import { defineStore } from "@latticexyz/store";
 import { parseAbi } from "viem";
 
+// TODO: whole ABI
 export const paymasterAbi = parseAbi([
   "error SpenderSystem_AlreadyRegistered(address spender, address user)",
   "error SpenderSystem_HasOwnBalance(address spender)",

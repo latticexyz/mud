@@ -377,7 +377,7 @@ export function wrapSignature(parameters: { ownerIndex: number; signature: Hex }
 // Constants
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-const abi = [
+export const abi = [
   { inputs: [], stateMutability: "nonpayable", type: "constructor" },
   {
     inputs: [{ name: "owner", type: "bytes" }],

@@ -65,7 +65,21 @@ export function useSetupAppAccount() {
 
       if (!calls.length) return;
 
-      const hash = await getAction(userClient, sendUserOperation, "sendUserOperation")({ calls });
+      console.log("setting up account with", calls);
+      const hash = await getAction(
+        userClient,
+        sendUserOperation,
+        "sendUserOperation",
+      )({
+        calls,
+        // maxFeePerGas: 100_000n,
+        // maxPriorityFeePerGas: 0n,
+        // callGasLimit: 100_000_000n,
+        // verificationGasLimit: 100_000_000n,
+        // preVerificationGas: 100_000_000n,
+        // paymasterPostOpGasLimit: 100_000_000n,
+        // paymasterVerificationGasLimit: 100_000_000n,
+      });
       console.log("got user op hash", hash);
 
       const receipt = await getAction(userClient, waitForUserOperationReceipt, "waitForUserOperationReceipt")({ hash });

@@ -2,7 +2,6 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { createContext, useContext, type ReactNode } from "react";
 import { RainbowKitProvider, lightTheme, midnightTheme } from "@rainbow-me/rainbowkit";
 import { EntryKitConfig } from "./config";
-import { usePasskeyConnector } from "./usePasskeyConnector";
 
 /** @internal */
 const Context = createContext<EntryKitConfig | null>(null);
@@ -15,9 +14,6 @@ export type Props = {
 export function EntryKitConfigProvider({ config, children }: Props) {
   const currentConfig = useContext(Context);
   if (currentConfig) throw new Error("`EntryKitProvider` can only be used once.");
-
-  // ensure we have passkey connector configured
-  usePasskeyConnector();
 
   return (
     <RainbowKitProvider
