@@ -8,7 +8,7 @@ import { SocketRpcClient, getWebSocketRpcClient } from "viem/utils";
 type WatchLogsInput = {
   url: string;
   fromBlock: bigint;
-  address: Hex;
+  address?: Hex;
 };
 
 type WatchLogsResult = {
