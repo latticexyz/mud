@@ -8,7 +8,6 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { getDefaultAnvilConnectors } from "../../../../../connectors/anvil";
 import { useChain } from "../../../hooks/useChain";
-import { WorldStoreProvider } from "./store";
 
 const queryClient = new QueryClient();
 
@@ -37,9 +36,7 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider theme={darkTheme()}>
-          <WorldStoreProvider>{children}</WorldStoreProvider>
-        </RainbowKitProvider>
+        <RainbowKitProvider theme={darkTheme()}>{children}</RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

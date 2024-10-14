@@ -13,8 +13,8 @@ import {
 import { useStore } from "zustand";
 import { useMemo } from "react";
 import { Message } from "../../../../../../observer/messages";
-import { type Write, store } from "../../../../../../observer/store";
-import { useWorldStore } from "../store/useWorldStore";
+import { type Write, store as observerStore } from "../../../../../../observer/store";
+import { store as worldStore } from "../store";
 
 export type WatchedTransaction = {
   writeId: string;
@@ -33,8 +33,8 @@ export type WatchedTransaction = {
 
 export function useTransactionsWatcher() {
   const { worldAddress } = useParams();
-  const { transactions } = useWorldStore();
-  const observerWrites = useStore(store, (state) => state.writes);
+  const { transactions } = useStore(worldStore);
+  const observerWrites = useStore(observerStore, (state) => state.writes);
 
   const mergedTransactions = useMemo((): WatchedTransaction[] => {
     const mergedMap = new Map<string | undefined, WatchedTransaction>();

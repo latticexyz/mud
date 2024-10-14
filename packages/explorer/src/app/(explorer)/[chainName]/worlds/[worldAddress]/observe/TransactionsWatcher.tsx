@@ -5,10 +5,10 @@ import { getTransaction, simulateContract, waitForTransactionReceipt } from "wag
 import { useStore } from "zustand";
 import { ReactNode } from "react";
 import { useCallback, useEffect } from "react";
-import { store } from "../../../../../../observer/store";
+import { store as observerStore } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
-import { useWorldStore } from "../store/useWorldStore";
+import { store as worldStore } from "../store";
 
 export function TransactionsWatcher({ children }: { children: ReactNode }) {
   const { id: chainId } = useChain();
@@ -16,8 +16,8 @@ export function TransactionsWatcher({ children }: { children: ReactNode }) {
   const wagmiConfig = useConfig();
   const { data: worldAbiData } = useWorldAbiQuery();
   const abi = worldAbiData?.abi;
-  const { transactions, setTransaction, updateTransaction } = useWorldStore();
-  const observerWrites = useStore(store, (state) => state.writes);
+  const { transactions, setTransaction, updateTransaction } = useStore(worldStore);
+  const observerWrites = useStore(observerStore, (state) => state.writes);
 
   const handleTransaction = useCallback(
     async (hash: Hex, timestamp: bigint) => {
