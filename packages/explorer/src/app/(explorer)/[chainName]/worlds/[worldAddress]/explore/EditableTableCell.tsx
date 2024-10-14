@@ -64,7 +64,6 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
     },
     onSuccess: ({ txHash }, newValue, { toastId }) => {
       setValue(newValue);
-
       toast.success(`Transaction successful with hash: ${txHash}`, {
         id: toastId,
       });
