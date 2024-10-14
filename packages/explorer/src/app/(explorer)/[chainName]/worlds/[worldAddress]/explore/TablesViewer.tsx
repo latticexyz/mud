@@ -158,7 +158,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
                     >
                       {isError ? (
                         <div className="flex items-center justify-center gap-x-2">
-                          <TriangleAlertIcon /> Error: {error.message}
+                          <TriangleAlertIcon /> Query error: {error.message}
                         </div>
                       ) : (
                         "No results."
