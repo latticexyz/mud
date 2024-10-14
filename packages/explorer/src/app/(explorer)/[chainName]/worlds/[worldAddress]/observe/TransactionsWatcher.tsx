@@ -3,14 +3,13 @@ import { BaseError, Hex, TransactionReceipt, decodeFunctionData, parseEventLogs 
 import { useConfig, useWatchBlocks } from "wagmi";
 import { getTransaction, simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { useStore } from "zustand";
-import { ReactNode } from "react";
 import { useCallback, useEffect } from "react";
 import { store as observerStore } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { store as worldStore } from "../store";
 
-export function TransactionsWatcher({ children }: { children: ReactNode }) {
+export function TransactionsWatcher({ children }: { children: React.ReactNode }) {
   const { id: chainId } = useChain();
   const { worldAddress } = useParams();
   const wagmiConfig = useConfig();
