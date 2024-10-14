@@ -3,6 +3,7 @@ import { Hex, LogTopic, RpcLog, encodeEventTopics, formatLog, parseEventLogs, to
 import { StorageAdapterBlock, StoreEventsLog } from "./common";
 import { storeEventsAbi } from "@latticexyz/store";
 import { logSort } from "@latticexyz/common";
+import { SocketRpcClient, getWebSocketRpcClient } from "viem/utils";
 
 type WatchLogsInput = {
   url: string;
@@ -14,128 +15,108 @@ type WatchLogsResult = {
   logs$: Observable<StorageAdapterBlock>;
 };
 
-type JsonRpcInput = {
-  id: string;
-} & (
-  | { method: "eth_blockNumber"; params: [] }
-  | { method: "eth_getLogs"; params: [{ address: Hex; topics: LogTopic[]; fromBlock: Hex; toBlock: Hex }] }
-  | { method: "wiresaw_getLogs"; params: [{ address: Hex; topics: LogTopic[]; fromBlock: Hex }] }
-  | { method: "wiresaw_watchLogs"; params: [{ address: Hex; topics: LogTopic[] }] }
-);
-
-function jsonRpc(input: JsonRpcInput): string {
-  return JSON.stringify({
-    jsonRpc: "2.0",
-    ...input,
-  });
-}
-
 export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLogsResult {
-  const blockNumberId = `blockNumber+` + Date.now();
-  const getLogsId = `getLogs+` + Date.now();
-  const getPendingLogsId = `getPendingLogs+` + Date.now();
-  const watchLogsId = `watchLogs+` + Date.now();
-
   // Buffer the live logs received until the gap from `startBlock` to `currentBlock` is closed
-  let ready = false;
+  let caughtUp = false;
   const logBuffer: StoreEventsLog[] = [];
 
-  let subscriptionId: Hex | undefined;
   const topics = [
     storeEventsAbi.flatMap((event) => encodeEventTopics({ abi: [event], eventName: event.name })),
   ] as LogTopic[]; // https://github.com/wevm/viem/blob/63a5ac86eb9a2962f7323b4cc76ef54f9f5ef7ed/src/actions/public/getLogs.ts#L171
 
   const logs$ = new Observable<StorageAdapterBlock>((subscriber) => {
-    const ws = new WebSocket(url);
-
-    ws.addEventListener("open", () => {
-      // Open the watchLogs subscription
-      ws.send(
-        jsonRpc({
-          id: watchLogsId,
-          method: "wiresaw_watchLogs",
-          params: [{ address, topics }],
-        }),
+    let client: SocketRpcClient<WebSocket>;
+    getWebSocketRpcClient(url).then(async (_client) => {
+      client = _client;
+      client.socket.addEventListener("error", (error) =>
+        subscriber.error({ code: -32603, message: "WebSocket error", data: error }),
       );
 
-      // Fetch the current block number
-      ws.send(
-        jsonRpc({
-          id: blockNumberId,
-          method: "eth_blockNumber",
-          params: [],
-        }),
-      );
-    });
+      // Start watching pending logs
+      const subscriptionId: Hex = (
+        await client.requestAsync({
+          body: {
+            method: "wiresaw_watchLogs",
+            params: [{ address, topics }],
+          },
+        })
+      ).result;
 
-    ws.addEventListener("message", (message) => {
-      const response = JSON.parse(message.data);
-      if ("error" in response) {
-        subscriber.error(response.error);
-      }
-
-      // Store the subscription ID to be able to filter relevant messages
-      if (response.id === watchLogsId) {
-        subscriptionId = response.result;
-        return;
-      }
-
-      if (response.id === blockNumberId) {
-        // Request the logs from the start block number till the current block number
-        const currentBlockNumber = response.result;
-        ws.send(
-          jsonRpc({
-            id: getLogsId,
-            method: "eth_getLogs",
-            params: [{ address, topics, fromBlock: toHex(fromBlock), toBlock: currentBlockNumber }],
-          }),
-        );
-
-        // Request the logs from the current pending block
-        ws.send(
-          jsonRpc({
-            id: getPendingLogsId,
-            method: "wiresaw_getLogs",
-            params: [{ address, topics, fromBlock: currentBlockNumber }],
-          }),
-        );
-
-        return;
-      }
-
-      // Process the initial `getLogs` result
-      // TODO: also process the `wiresaw_getLogs` request
-      // TODO: refactor to use Promise for the initial requests
-      if (response.id === getLogsId) {
-        const logs: RpcLog[] = response.params.result;
-        const formattedLogs = logs.map((log) => formatLog(log));
-        const parsedLogs = parseEventLogs({ abi: storeEventsAbi, logs: formattedLogs });
-        const initialLogs = [...logBuffer, ...parsedLogs].sort(logSort);
-        const blockNumber = initialLogs.at(-1)?.blockNumber ?? fromBlock;
-        subscriber.next({ blockNumber, logs: initialLogs });
-        ready = true;
-      }
-
-      // Return parsed logs from the `watchLogs` subscription to the subscriber
-      if ("params" in response && response.params.subscription === subscriptionId) {
-        const logs: RpcLog[] = response.params.result;
-        const formattedLogs = logs.map((log) => formatLog(log));
-        const parsedLogs = parseEventLogs({ abi: storeEventsAbi, logs: formattedLogs });
-        if (ready) {
-          const blockNumber = parsedLogs[0].blockNumber;
-          subscriber.next({ blockNumber, logs: parsedLogs });
-        } else {
-          logBuffer.push(...parsedLogs);
+      // Listen for wiresaw_watchLogs subscription
+      // Need to use low level methods since viem's socekt client only handles `eth_subscription` messages.
+      // (https://github.com/wevm/viem/blob/f81d497f2afc11b9b81a79057d1f797694b69793/src/utils/rpc/socket.ts#L178)
+      client.socket.addEventListener("message", (message) => {
+        const response = JSON.parse(message.data);
+        if ("error" in response) {
+          // Return JSON-RPC errors to the subscriber
+          subscriber.error(response.error);
+          return;
         }
-      }
+
+        // Parse the logs from wiresaw_watchLogs
+        if ("params" in response && response.params.subscription === subscriptionId) {
+          const logs: RpcLog[] = response.params.result;
+          const formattedLogs = logs.map((log) => formatLog(log));
+          const parsedLogs = parseEventLogs({ abi: storeEventsAbi, logs: formattedLogs });
+          if (caughtUp) {
+            const blockNumber = parsedLogs[0].blockNumber;
+            subscriber.next({ blockNumber, logs: parsedLogs });
+          } else {
+            logBuffer.push(...parsedLogs);
+          }
+        }
+      });
+
+      // Catch up to the pending logs
+      const initialLogs = await fetchInitialLogs({ client, address, fromBlock, topics });
+      const logs = [...initialLogs, ...logBuffer].sort(logSort);
+      const blockNumber = logs.at(-1)?.blockNumber ?? fromBlock;
+      subscriber.next({ blockNumber, logs: initialLogs });
+      caughtUp = true;
     });
 
-    ws.addEventListener("error", (error) =>
-      subscriber.error({ code: -32603, message: "WebSocket error", data: error }),
-    );
-
-    subscriber.add(() => ws.close());
+    return () => client?.close();
   });
 
   return { logs$ };
+}
+
+type FetchInitialLogsInput = { client: SocketRpcClient<WebSocket>; topics: LogTopic[] } & Omit<WatchLogsInput, "url">;
+
+async function fetchInitialLogs({
+  client,
+  address,
+  topics,
+  fromBlock,
+}: FetchInitialLogsInput): Promise<StoreEventsLog[]> {
+  // Fetch latest block number
+  const latestBlockNumber: Hex = (
+    await client.requestAsync({
+      body: {
+        method: "eth_blockNumber",
+      },
+    })
+  ).result;
+
+  const [catchUpLogs, pendingLogs] = await Promise.all([
+    // Request all logs from `fromBlock` to the latest block number
+    client.requestAsync({
+      body: {
+        method: "eth_getLogs",
+        params: [{ address, topics, fromBlock: toHex(fromBlock), toBlock: latestBlockNumber }],
+      },
+    }),
+    // Request all logs from the current pending block
+    client.requestAsync({
+      body: {
+        method: "wiresaw_getLogs",
+        params: [{ address, topics, fromBlock: latestBlockNumber }],
+      },
+    }),
+  ]);
+
+  // Return all logs from `fromBlock` until the current pending block state as initial result
+  const rawLogs: RpcLog[] = [...catchUpLogs.result, ...pendingLogs.result];
+  const formattedLogs = rawLogs.map((log) => formatLog(log));
+  return parseEventLogs({ abi: storeEventsAbi, logs: formattedLogs });
 }
