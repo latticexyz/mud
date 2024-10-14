@@ -68,11 +68,15 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
       });
 
       // Catch up to the pending logs
-      const initialLogs = await fetchInitialLogs({ client, address, fromBlock, topics });
-      const logs = [...initialLogs, ...logBuffer].sort(logSort);
-      const blockNumber = logs.at(-1)?.blockNumber ?? fromBlock;
-      subscriber.next({ blockNumber, logs: initialLogs });
-      caughtUp = true;
+      try {
+        const initialLogs = await fetchInitialLogs({ client, address, fromBlock, topics });
+        const logs = [...initialLogs, ...logBuffer].sort(logSort);
+        const blockNumber = logs.at(-1)?.blockNumber ?? fromBlock;
+        subscriber.next({ blockNumber, logs: initialLogs });
+        caughtUp = true;
+      } catch (e) {
+        subscriber.error("Could not fetch initial wiresaw logs");
+      }
     });
 
     return () => client?.close();
