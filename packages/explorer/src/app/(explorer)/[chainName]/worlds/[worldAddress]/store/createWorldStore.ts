@@ -10,12 +10,10 @@ export type AppStoreData = {
 export const createWorldStore = () => {
   return createStore<AppStoreData>()((set) => ({
     transactions: [],
-
     setTransaction: (transaction) =>
       set((state) => ({
         transactions: [...state.transactions, transaction],
       })),
-
     updateTransaction: (hash: string, updatedTransaction: Partial<WatchedTransaction>) =>
       set((state) => ({
         transactions: state.transactions.map((tx) => (tx.hash === hash ? { ...tx, ...updatedTransaction } : tx)),

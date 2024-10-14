@@ -1,5 +1,5 @@
 import { useParams, usePathname } from "next/navigation";
-import { toast } from "sonner";
+import { toast, useSonner } from "sonner";
 import { BaseError, Hex, TransactionReceipt, decodeFunctionData, parseEventLogs } from "viem";
 import { useConfig, useWatchBlocks } from "wagmi";
 import { getTransaction, simulateContract, waitForTransactionReceipt } from "wagmi/actions";
@@ -12,6 +12,13 @@ import { useWorldUrl } from "../../../../hooks/useWorldUrl";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { useWorldStore } from "../store/useWorldStore";
 
+const formatHexInput = (input: unknown): string => {
+  if (typeof input === "string" && input.startsWith("0x")) {
+    return input.length > 10 ? `${input.slice(0, 6)}...${input.slice(-4)}` : input;
+  }
+  return String(input);
+};
+
 export function TransactionsWatcher({ children }: { children: ReactNode }) {
   const getLinkUrl = useWorldUrl();
   const pathname = usePathname();
@@ -22,6 +29,7 @@ export function TransactionsWatcher({ children }: { children: ReactNode }) {
   const abi = worldAbiData?.abi;
   const { transactions, setTransaction, updateTransaction } = useWorldStore();
   const observerWrites = useStore(store, (state) => state.writes);
+  const { toasts } = useSonner();
 
   const handleTransaction = useCallback(
     async (hash: Hex, timestamp: bigint) => {
@@ -44,14 +52,17 @@ export function TransactionsWatcher({ children }: { children: ReactNode }) {
       }
 
       if (pathname !== getLinkUrl("observe")) {
-        // TODO: submit toast with new tx
-        toast(`${functionName}(${args?.join(", ")})`, {
-          description: `Tx hash: ${hash}`,
-          action: {
-            label: "Open",
-            onClick: () => console.log("Open"),
-          },
-        });
+        const existingToast = toasts.find((toast) => toast.id === hash);
+        if (!existingToast) {
+          toast(`${functionName}(${args?.map(formatHexInput).join(", ")})`, {
+            id: hash,
+            description: `Hash: ${formatHexInput(hash)}`,
+            action: {
+              label: "Open",
+              onClick: () => console.log("Open"),
+            },
+          });
+        }
       }
 
       const write = Object.values(observerWrites).find((write) => write.hash === hash);
@@ -108,7 +119,7 @@ export function TransactionsWatcher({ children }: { children: ReactNode }) {
         error: transactionError as BaseError,
       });
     },
-    [abi, wagmiConfig, worldAddress, pathname, getLinkUrl, observerWrites, setTransaction, updateTransaction],
+    [abi, wagmiConfig, worldAddress, pathname, getLinkUrl, observerWrites, setTransaction, updateTransaction, toasts],
   );
 
   useEffect(() => {

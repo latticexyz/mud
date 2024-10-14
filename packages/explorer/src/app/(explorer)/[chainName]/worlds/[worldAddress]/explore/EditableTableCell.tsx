@@ -58,14 +58,11 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
 
       return { txHash, receipt };
     },
-    onMutate: () => {
-      const toastId = toast.loading("Transaction submitted");
-      return { toastId };
-    },
-    onSuccess: ({ txHash }, newValue, { toastId }) => {
+    onSuccess: ({ txHash }, newValue) => {
       setValue(newValue);
+
       toast.success(`Transaction successful with hash: ${txHash}`, {
-        id: toastId,
+        id: txHash,
       });
       queryClient.invalidateQueries({
         queryKey: [
@@ -77,11 +74,9 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
         ],
       });
     },
-    onError: (error, _, context) => {
+    onError: (error) => {
       console.error("Error:", error);
-      toast.error(error.message || "Something went wrong. Please try again.", {
-        id: context?.toastId,
-      });
+      toast.error(error.message || "Something went wrong. Please try again.");
       setValue(defaultValue);
     },
   });
