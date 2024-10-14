@@ -8,7 +8,7 @@ import { cn } from "../../../../../../utils";
 import { Confirmations } from "./Confirmations";
 import { TimingRowExpanded } from "./TimingRowExpanded";
 import { columns } from "./TransactionsTable";
-import { WatchedTransaction } from "./useTransactionWatcher";
+import { WatchedTransaction } from "./useTransactionsWatcher";
 
 function TransactionTableRowDataCell({
   label,

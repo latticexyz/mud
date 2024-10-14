@@ -12,7 +12,7 @@ import { BlockExplorerLink } from "./BlockExplorerLink";
 import { TimeAgo } from "./TimeAgo";
 import { TimingRowHeader } from "./TimingRowHeader";
 import { TransactionTableRow } from "./TransactionTableRow";
-import { WatchedTransaction, useTransactionWatcher } from "./useTransactionWatcher";
+import { WatchedTransaction, useTransactionsWatcher } from "./useTransactionsWatcher";
 
 const columnHelper = createColumnHelper<WatchedTransaction>();
 export const columns = [
@@ -94,7 +94,7 @@ export const columns = [
 ];
 
 export function TransactionsTable() {
-  const transactions = useTransactionWatcher();
+  const transactions = useTransactionsWatcher();
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const table = useReactTable({

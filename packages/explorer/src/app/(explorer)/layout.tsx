@@ -29,9 +29,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${jetbrains.variable} dark`}>
-        <Theme>
+        <Theme appearance="dark">
           <div className="container">{children}</div>
-          <Toaster richColors closeButton duration={10000} />
+          <Toaster richColors closeButton duration={10000} theme="dark" />
         </Theme>
       </body>
     </html>
