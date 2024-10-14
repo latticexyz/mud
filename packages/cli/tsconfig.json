@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "moduleResolution": "Node",
+    "moduleResolution": "Node16",
     "lib": ["DOM", "ESNext"],
     "outDir": "dist"
   },
