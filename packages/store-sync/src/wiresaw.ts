@@ -26,7 +26,7 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
 
   const logs$ = new Observable<StorageAdapterBlock>((subscriber) => {
     let client: SocketRpcClient<WebSocket>;
-    getWebSocketRpcClient(url).then(async (_client) => {
+    getWebSocketRpcClient(url, { keepAlive: true, reconnect: true }).then(async (_client) => {
       client = _client;
       client.socket.addEventListener("error", (error) =>
         subscriber.error({ code: -32603, message: "WebSocket error", data: error }),
