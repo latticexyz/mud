@@ -28,7 +28,7 @@ import {
   scan,
   mergeMap,
   throwError,
-  merge,
+  mergeWith,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
@@ -214,18 +214,15 @@ export async function createStoreSync({
 
   const pendingLogsWebSocketUrl = publicClient.chain?.rpcUrls?.wiresaw?.webSocket?.[0];
   const storedPendingLogs$ = pendingLogsWebSocketUrl
-    ? merge(
-        startBlock$.pipe(
-          mergeMap((startBlock) => watchLogs({ url: pendingLogsWebSocketUrl, address, fromBlock: startBlock }).logs$),
-          concatMap(async (block) => {
-            await storageAdapter(block);
-            return block;
-          }),
-        ),
-        // The watchLogs API doesn't emit on empty logs, but consumers expect an emission on empty logs
-        latestBlockNumber$.pipe(
-          filter(() => caughtUp),
-          map((blockNumber) => ({ blockNumber, logs: [] })),
+    ? startBlock$.pipe(
+        mergeMap((startBlock) => watchLogs({ url: pendingLogsWebSocketUrl, address, fromBlock: startBlock }).logs$),
+        concatMap(async (block) => {
+          await storageAdapter(block);
+          return block;
+        }),
+        mergeWith(
+          // The watchLogs API doesn't emit on empty logs, but consumers expect an emission on empty logs
+          latestBlockNumber$.pipe(map((blockNumber) => ({ blockNumber, logs: [] }))),
         ),
       )
     : throwError(() => new Error("No pending logs WebSocket RPC URL provided"));
