@@ -2,7 +2,7 @@ import { PlayIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { Parser } from "node-sql-parser";
 import { useQueryState } from "nuqs";
-// import { SQLAutocomplete, SQLDialect } from "sql-autocomplete";
+import { SQLAutocomplete, SQLDialect } from "sql-autocomplete";
 import { Address } from "viem";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
@@ -20,8 +20,6 @@ type Props = {
   tables?: Table[];
 };
 
-// const sqlAutocomplete = new SQLAutocomplete(SQLDialect.PLpgSQL, ["myDatabaseTableName"], ["aColumnName"]);
-
 export function SQLEditor2({ table, tables }: Props) {
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
@@ -32,6 +30,16 @@ export function SQLEditor2({ table, tables }: Props) {
       query: query || "",
     },
   });
+
+  const sqlAutocomplete = useMemo(() => {
+    if (!table) return null;
+
+    return new SQLAutocomplete(
+      SQLDialect.MYSQL,
+      [constructTableName(table, worldAddress as Address, chainId)],
+      Object.keys(table.schema),
+    );
+  }, [table, worldAddress, chainId]);
 
   const handleSubmit = form.handleSubmit((data) => {
     setQuery(data.query);
@@ -102,9 +110,11 @@ export function SQLEditor2({ table, tables }: Props) {
       const provider = monaco.languages.registerCompletionItemProvider("sql", {
         triggerCharacters: [" ", ".", ","], // Trigger autocomplete on space and dot
 
-        // completion
-
         provideCompletionItems: (model, position) => {
+          if (!sqlAutocomplete) {
+            return null;
+          }
+
           const textUntilPosition = model.getValueInRange({
             startLineNumber: 1,
             startColumn: 1,
@@ -120,18 +130,22 @@ export function SQLEditor2({ table, tables }: Props) {
             endColumn: word.endColumn,
           };
 
-          // const trimmedText = textUntilPosition.toUpperCase().trim();
-          // const textSplit = trimmedText.split(/\s+/);
+          const optionTypeMap = {
+            KEYWORD: "Keyword",
+            TABLE: "Field",
+            COLUMN: "Field",
+          };
+          const suggestions = sqlAutocomplete.autocomplete(textUntilPosition).map(({ value, optionType }) => {
+            return {
+              label: value,
+              kind: monaco.languages.CompletionItemKind[optionTypeMap[optionType]],
+              insertText: value,
+              range,
+              sortText: optionType === "KEYWORD" ? "b" : "a",
+            };
+          });
 
-          console.log(textUntilPosition);
-
-          // const suggestions = sqlAutocomplete.autocomplete(textUntilPosition).map(({ value, optionType }) => {
-          //   return {
-          //     kind: monaco.languages.CompletionItemKind.Keyword,
-          //     insertText: value,
-          //     range,
-          //   };
-          // });
+          console.log(suggestions);
 
           // const lastSqlKeyword = SQL_KEYWORDS.reduce((last, keyword) => {
           //   const lastIndex = textSplit.lastIndexOf(keyword);
@@ -192,7 +206,7 @@ export function SQLEditor2({ table, tables }: Props) {
         disposable?.dispose();
       };
     }
-  }, [monaco, columns, selectableTables, validateSQL]);
+  }, [monaco, columns, selectableTables, validateSQL, sqlAutocomplete]);
 
   return (
     <Form {...form}>

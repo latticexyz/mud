@@ -10,9 +10,6 @@ import { useTablesQuery } from "../../../../queries/useTablesQuery";
 import { constructTableName } from "../../../../utils/constructTableName";
 import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { EditorSmallInput } from "./EditorSmallInput";
-import { SQLEditor } from "./SQLEditor";
-import { SQLEditor2 } from "./SQLEditor2";
-import { SQLEditor3 } from "./SQLEditor3";
 import { TableSelector } from "./TableSelector";
 import { TablesViewer } from "./TablesViewer";
 
@@ -41,10 +38,7 @@ export function Explorer() {
 
   return (
     <>
-      <EditorSmallInput />
-      {/* {indexer.type !== "sqlite" && <SQLEditor3 table={table} tables={tables} />} */}
-      {indexer.type !== "sqlite" && <SQLEditor2 table={table} tables={tables} />}
-      {indexer.type !== "sqlite" && <SQLEditor />}
+      {indexer.type !== "sqlite" && <EditorSmallInput table={table} />}
       <TableSelector tables={tables} />
       <TablesViewer table={table} query={query} />
     </>
