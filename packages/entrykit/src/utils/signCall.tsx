@@ -1,15 +1,17 @@
-import { Account, Address, Chain, Client, Hex, PublicClient, Transport, toHex } from "viem";
+import { Address, Client, Hex, toHex } from "viem";
 import { signTypedData } from "viem/actions";
 import { callWithSignatureTypes } from "@latticexyz/world/internal";
 import { getRecord } from "./getRecord";
 import modulesConfig from "@latticexyz/world-modules/internal/mud.config";
 import { hexToResource } from "@latticexyz/common";
+import { getAction } from "viem/utils";
+import { ConnectedClient } from "../common";
 
 // TODO: move this to world package or similar
 // TODO: nonce _or_ publicClient?
 
 export type SignCallOptions = {
-  userAccountClient: Client<Transport, Chain, Account>;
+  userAccountClient: ConnectedClient;
   chainId: number;
   worldAddress: Address;
   systemId: Hex;
@@ -18,7 +20,7 @@ export type SignCallOptions = {
   /**
    * This should be bound to the same chain as `chainId` option.
    */
-  publicClient?: PublicClient<Transport, Chain>;
+  publicClient?: Client;
 };
 
 export async function signCall({
@@ -35,7 +37,7 @@ export async function signCall({
     (publicClient
       ? (
           await getRecord(publicClient, {
-            storeAddress: worldAddress,
+            address: worldAddress,
             table: modulesConfig.tables.CallWithSignatureNonces,
             key: { signer: userAccountClient.account.address },
             blockTag: "pending",
@@ -45,7 +47,11 @@ export async function signCall({
 
   const { namespace: systemNamespace, name: systemName } = hexToResource(systemId);
 
-  return await signTypedData(userAccountClient, {
+  return await getAction(
+    userAccountClient,
+    signTypedData,
+    "signTypedData",
+  )({
     account: userAccountClient.account,
     domain: {
       verifyingContract: worldAddress,

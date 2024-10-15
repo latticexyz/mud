@@ -15,6 +15,8 @@ export type EntryKitConfig = {
    */
   readonly worldAddress: Address;
 
+  readonly walletConnectProjectId: string;
+
   readonly bundlerTransport: Transport;
   // currently assumes quarry paymaster
   readonly paymasterAddress: Address;

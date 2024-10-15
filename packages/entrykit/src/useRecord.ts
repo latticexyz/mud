@@ -41,9 +41,9 @@ export function useRecord<table extends Table>({
             select: (data) => ({
               ...key,
               ...decodeValueArgs(getSchemaTypes(getValueSchema(table)), {
-                staticData: data[0],
-                encodedLengths: data[1],
-                dynamicData: data[2],
+                staticData: (data as [Hex, Hex, Hex])[0],
+                encodedLengths: (data as [Hex, Hex, Hex])[1],
+                dynamicData: (data as [Hex, Hex, Hex])[2],
               }),
             }),
           },

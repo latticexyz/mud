@@ -1,4 +1,5 @@
 import { defineConfig } from "tsup";
+// import packageJson from "./package.json";
 
 export default defineConfig({
   outDir: "dist/tsup",
@@ -15,8 +16,6 @@ export default defineConfig({
   // Because we're injecting CSS via shadow DOM, we'll disable style injection and load CSS as a base64 string.
   // TODO: figure out how to do this conditionally for only specific imports?
   injectStyle: false,
-  loader: {
-    ".css": "text",
-  },
-  external: ["react", "react-dom", "wagmi", "viem"],
+  loader: { ".css": "text" },
+  // external: Object.keys(packageJson.dependencies),
 });

@@ -15,6 +15,7 @@ export function EntryKitConfigProvider({ config, children }: Props) {
   const currentConfig = useContext(Context);
   if (currentConfig) throw new Error("`EntryKitProvider` can only be used once.");
 
+  // throw new Error("here");
   return (
     <RainbowKitProvider
       initialChain={config.chainId}

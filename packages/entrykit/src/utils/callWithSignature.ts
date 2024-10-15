@@ -1,10 +1,10 @@
 import { Address } from "abitype";
-import { Hex, WalletClient, Transport, Chain, Account, PublicClient } from "viem";
+import { Hex, Client } from "viem";
 import { writeContract as viem_writeContract } from "viem/actions";
 import { getAction } from "viem/utils";
-import { AppAccountClient } from "../common";
 import { signCall } from "./signCall";
 import CallWithSignatureAbi from "@latticexyz/world-modules/out/IUnstable_CallWithSignatureSystem.sol/IUnstable_CallWithSignatureSystem.abi.json";
+import { ConnectedClient } from "../common";
 
 // TODO: move this to world package or similar
 // TODO: nonce _or_ publicClient?
@@ -17,9 +17,9 @@ export type CallWithSignatureOptions = {
   /**
    * This should be bound to the same chain as `chainId` option.
    */
-  publicClient: PublicClient<Transport, Chain>;
-  userAccountClient: WalletClient<Transport, Chain, Account>;
-  appAccountClient: AppAccountClient;
+  publicClient: Client;
+  userAccountClient: ConnectedClient;
+  appAccountClient: ConnectedClient;
   nonce?: bigint | null;
 };
 
