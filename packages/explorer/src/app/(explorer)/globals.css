@@ -8,6 +8,11 @@ body,
   font-family: var(--font-jetbrains-mono);
 }
 
+.cm-editor {
+  font-family: var(--font-jetbrains-mono);
+  @apply text-sm;
+}
+
 .decorationsOverviewRuler {
   display: none;
 }
