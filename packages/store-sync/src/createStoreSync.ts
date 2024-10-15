@@ -67,6 +67,7 @@ export async function createStoreSync({
   initialState,
   initialBlockLogs,
   indexerUrl: initialIndexerUrl,
+  pendingLogsWebSocketRpcUrl,
 }: CreateStoreSyncOptions): Promise<SyncResult> {
   const filters: SyncFilter[] =
     initialFilters.length || tableIds.length
@@ -204,16 +205,15 @@ export async function createStoreSync({
   let endBlock: bigint | null = null;
   let lastBlockNumberProcessed: bigint | null = null;
 
-  const webSocketRpcUrl = publicClient.chain?.rpcUrls.default.webSocket?.[0];
-  const storedPendingLogs$ = webSocketRpcUrl
+  const storedPendingLogs$ = pendingLogsWebSocketRpcUrl
     ? startBlock$.pipe(
-        mergeMap((startBlock) => watchLogs({ url: webSocketRpcUrl, address, fromBlock: startBlock }).logs$),
+        mergeMap((startBlock) => watchLogs({ url: pendingLogsWebSocketRpcUrl, address, fromBlock: startBlock }).logs$),
         concatMap(async (block) => {
           await storageAdapter(block);
           return block;
         }),
       )
-    : throwError(() => new Error("No WebSocket RPC URL provided"));
+    : throwError(() => new Error("No pending logs WebSocket RPC URL provided"));
 
   const storedIndexerLogs$ = indexerUrl
     ? startBlock$.pipe(
