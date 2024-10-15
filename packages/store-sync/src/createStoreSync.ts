@@ -193,7 +193,6 @@ export async function createStoreSync({
     tap((blockNumber) => {
       startBlock = blockNumber;
       debug("starting sync from block", startBlock);
-      return startBlock;
     }),
   );
 
@@ -204,7 +203,6 @@ export async function createStoreSync({
     tap((blockNumber) => {
       latestBlockNumber = blockNumber;
       debug("on block number", blockNumber, "for", followBlockTag, "block tag");
-      return latestBlockNumber;
     }),
     shareReplay(1),
   );
@@ -275,13 +273,13 @@ export async function createStoreSync({
   );
 
   const storedBlock$ = storedPendingLogs$.pipe(
-    catchError((e) => {
-      debug("failed to stream logs from pending log RPC:", e.message);
+    catchError((error) => {
+      debug("failed to stream logs from pending log RPC:", error.message);
       debug("falling back to streaming logs from indexer");
       return storedIndexerLogs$;
     }),
-    catchError((e) => {
-      debug("failed to stream logs from indexer:", e.message);
+    catchError((error) => {
+      debug("failed to stream logs from indexer:", error.message);
       debug("falling back to streaming logs from ETH RPC");
       return storedEthRpcLogs$;
     }),
