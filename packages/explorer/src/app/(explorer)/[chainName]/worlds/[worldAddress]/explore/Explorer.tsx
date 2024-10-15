@@ -9,6 +9,7 @@ import { usePrevious } from "../../../../hooks/usePrevious";
 import { useTablesQuery } from "../../../../queries/useTablesQuery";
 import { constructTableName } from "../../../../utils/constructTableName";
 import { indexerForChainId } from "../../../../utils/indexerForChainId";
+import { EditorSmallInput } from "./EditorSmallInput";
 import { SQLEditor } from "./SQLEditor";
 import { SQLEditor2 } from "./SQLEditor2";
 import { SQLEditor3 } from "./SQLEditor3";
@@ -40,7 +41,8 @@ export function Explorer() {
 
   return (
     <>
-      {indexer.type !== "sqlite" && <SQLEditor3 table={table} tables={tables} />}
+      <EditorSmallInput />
+      {/* {indexer.type !== "sqlite" && <SQLEditor3 table={table} tables={tables} />} */}
       {indexer.type !== "sqlite" && <SQLEditor2 table={table} tables={tables} />}
       {indexer.type !== "sqlite" && <SQLEditor />}
       <TableSelector tables={tables} />

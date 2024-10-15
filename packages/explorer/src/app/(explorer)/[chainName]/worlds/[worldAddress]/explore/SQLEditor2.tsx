@@ -2,7 +2,7 @@ import { PlayIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { Parser } from "node-sql-parser";
 import { useQueryState } from "nuqs";
-import { SQLAutocomplete, SQLDialect } from "sql-autocomplete";
+// import { SQLAutocomplete, SQLDialect } from "sql-autocomplete";
 import { Address } from "viem";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
@@ -20,7 +20,7 @@ type Props = {
   tables?: Table[];
 };
 
-const sqlAutocomplete = new SQLAutocomplete(SQLDialect.PLpgSQL, ["myDatabaseTableName"], ["aColumnName"]);
+// const sqlAutocomplete = new SQLAutocomplete(SQLDialect.PLpgSQL, ["myDatabaseTableName"], ["aColumnName"]);
 
 export function SQLEditor2({ table, tables }: Props) {
   const { worldAddress } = useParams();
@@ -125,13 +125,13 @@ export function SQLEditor2({ table, tables }: Props) {
 
           console.log(textUntilPosition);
 
-          const suggestions = sqlAutocomplete.autocomplete(textUntilPosition).map(({ value, optionType }) => {
-            return {
-              kind: monaco.languages.CompletionItemKind.Keyword,
-              insertText: value,
-              range,
-            };
-          });
+          // const suggestions = sqlAutocomplete.autocomplete(textUntilPosition).map(({ value, optionType }) => {
+          //   return {
+          //     kind: monaco.languages.CompletionItemKind.Keyword,
+          //     insertText: value,
+          //     range,
+          //   };
+          // });
 
           // const lastSqlKeyword = SQL_KEYWORDS.reduce((last, keyword) => {
           //   const lastIndex = textSplit.lastIndexOf(keyword);
