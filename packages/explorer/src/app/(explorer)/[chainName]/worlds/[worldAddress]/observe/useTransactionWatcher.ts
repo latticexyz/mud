@@ -16,9 +16,11 @@ import { useConfig, useWatchBlocks } from "wagmi";
 import { getTransaction, simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { useStore } from "zustand";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { observer } from "../../../../../../observer/decorator";
 import { Message } from "../../../../../../observer/messages";
 import { type Write, store } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
+import { usePrevious } from "../../../../hooks/usePrevious";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 
 export type WatchedTransaction = {
@@ -45,6 +47,10 @@ export function useTransactionWatcher() {
   const [transactions, setTransactions] = useState<WatchedTransaction[]>([]);
   const observerWrites = useStore(store, (state) => state.writes);
 
+  // const observerWritesLen = observerWrites.length;
+  // const prevObserverWritesLen = usePrevious(observerWrites.length);
+  // const latestUpdatesLen = observerWritesLen - (prevObserverWritesLen || 0);
+
   const handleTransaction = useCallback(
     async (hash: Hex, timestamp: bigint) => {
       if (!abi) return;
@@ -65,7 +71,7 @@ export function useTransactionWatcher() {
         functionName = transaction.input.length > 10 ? transaction.input.slice(0, 10) : "unknown";
       }
 
-      const write = Object.values(observerWrites).find((write) => write.hash === hash);
+      const write = observerWrites.find((write) => write.hash === hash);
       setTransactions((prevTransactions) => [
         {
           hash,
@@ -133,7 +139,7 @@ export function useTransactionWatcher() {
   );
 
   useEffect(() => {
-    for (const write of Object.values(observerWrites)) {
+    for (const write of observerWrites.slice(0, 50)) {
       const hash = write.hash;
       if (write.type === "waitForTransactionReceipt" && hash && write.address === worldAddress) {
         const transaction = transactions.find((transaction) => transaction.hash === hash);
@@ -155,42 +161,42 @@ export function useTransactionWatcher() {
     pollingInterval: 500,
   });
 
-  const mergedTransactions = useMemo((): WatchedTransaction[] => {
-    const mergedMap = new Map<string | undefined, WatchedTransaction>();
+  // const mergedTransactions = useMemo((): WatchedTransaction[] => {
+  //   const mergedMap = new Map<string | undefined, WatchedTransaction>();
 
-    for (const write of Object.values(observerWrites)) {
-      if (write.address !== worldAddress) continue;
+  //   for (const write of observerWrites) {
+  //     if (write.address !== worldAddress) continue;
 
-      const parsedAbiItem = parseAbiItem(`function ${write.functionSignature}`) as AbiFunction;
-      const writeResult = write.events.find((event): event is Message<"write:result"> => event.type === "write:result");
+  //     const parsedAbiItem = parseAbiItem(`function ${write.functionSignature}`) as AbiFunction;
+  //     const writeResult = write.events.find((event): event is Message<"write:result"> => event.type === "write:result");
 
-      mergedMap.set(write.hash || write.writeId, {
-        hash: write.hash,
-        writeId: write.writeId,
-        from: write.from,
-        status: writeResult?.status === "rejected" ? "rejected" : "pending",
-        timestamp: BigInt(write.time) / 1000n,
-        functionData: {
-          functionName: parsedAbiItem.name,
-          args: write.args,
-        },
-        value: write.value,
-        error: writeResult && "reason" in writeResult ? (writeResult.reason as BaseError) : undefined,
-        write,
-      });
-    }
+  //     mergedMap.set(write.hash || write.writeId, {
+  //       hash: write.hash,
+  //       writeId: write.writeId,
+  //       from: write.from,
+  //       status: writeResult?.status === "rejected" ? "rejected" : "pending",
+  //       timestamp: BigInt(write.time) / 1000n,
+  //       functionData: {
+  //         functionName: parsedAbiItem.name,
+  //         args: write.args,
+  //       },
+  //       value: write.value,
+  //       error: writeResult && "reason" in writeResult ? (writeResult.reason as BaseError) : undefined,
+  //       write,
+  //     });
+  //   }
 
-    for (const transaction of transactions) {
-      const existing = mergedMap.get(transaction.hash);
-      if (existing) {
-        mergedMap.set(transaction.hash, { ...transaction, write: existing.write });
-      } else {
-        mergedMap.set(transaction.hash, { ...transaction });
-      }
-    }
+  //   for (const transaction of transactions) {
+  //     const existing = mergedMap.get(transaction.hash);
+  //     if (existing) {
+  //       mergedMap.set(transaction.hash, { ...transaction, write: existing.write });
+  //     } else {
+  //       mergedMap.set(transaction.hash, { ...transaction });
+  //     }
+  //   }
 
-    return Array.from(mergedMap.values()).sort((a, b) => Number(b.timestamp ?? 0n) - Number(a.timestamp ?? 0n));
-  }, [observerWrites, worldAddress, transactions]);
+  //   return Array.from(mergedMap.values()).sort((a, b) => Number(b.timestamp ?? 0n) - Number(a.timestamp ?? 0n));
+  // }, [observerWrites, worldAddress, transactions]);
 
-  return mergedTransactions;
+  return transactions;
 }

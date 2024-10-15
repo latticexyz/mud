@@ -1,6 +1,13 @@
 import { useMUD } from "./MUDContext";
+import { useEffect } from "react";
 
 const styleUnset = { all: "unset" } as const;
+
+// Function to generate random task descriptions
+const generateRandomTask = () => {
+  const tasks = ["Buy groceries", "Walk the dog", "Do laundry", "Clean the house", "Pay bills"];
+  return tasks[Math.floor(Math.random() * tasks.length)] + " " + Math.floor(Math.random() * 1000);
+};
 
 export const App = () => {
   const {
@@ -13,6 +20,17 @@ export const App = () => {
     records.sort((a, b) => Number(a.value.createdAt - b.value.createdAt));
     return records;
   });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const randomTask = generateRandomTask();
+      addTask(randomTask);
+    }, 5000); // 100ms interval for 10 tasks per second
+
+    // TODO: Add a way to stop the interval (e.g., after a certain number of tasks or time)
+
+    return () => clearInterval(interval);
+  }, [addTask]);
 
   return (
     <>
