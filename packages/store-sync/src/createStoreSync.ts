@@ -67,7 +67,6 @@ export async function createStoreSync({
   initialState,
   initialBlockLogs,
   indexerUrl: initialIndexerUrl,
-  experimentalPendingLogsWebSocketRpcUrl,
 }: CreateStoreSyncOptions): Promise<SyncResult> {
   const filters: SyncFilter[] =
     initialFilters.length || tableIds.length
@@ -205,12 +204,10 @@ export async function createStoreSync({
   let endBlock: bigint | null = null;
   let lastBlockNumberProcessed: bigint | null = null;
 
-  const storedPendingLogs$ = experimentalPendingLogsWebSocketRpcUrl
+  const pendingLogsWebSocketUrl = publicClient.chain?.rpcUrls?.wiresaw?.webSocket?.[0];
+  const storedPendingLogs$ = pendingLogsWebSocketUrl
     ? startBlock$.pipe(
-        mergeMap(
-          (startBlock) =>
-            watchLogs({ url: experimentalPendingLogsWebSocketRpcUrl, address, fromBlock: startBlock }).logs$,
-        ),
+        mergeMap((startBlock) => watchLogs({ url: pendingLogsWebSocketUrl, address, fromBlock: startBlock }).logs$),
         concatMap(async (block) => {
           await storageAdapter(block);
           return block;

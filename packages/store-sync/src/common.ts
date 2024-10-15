@@ -115,11 +115,6 @@ export type SyncOptions = {
     blockNumber: bigint;
     logs: readonly StorageAdapterLog[];
   };
-  /**
-   * Optional WebSocket URL with `wiresaw_getLogs` and `wiresaw_watchLogs` RPC support for syncing with pending logs.
-   * Note: this is an experimental feature and might be changed in the future.
-   */
-  experimentalPendingLogsWebSocketRpcUrl?: string;
 };
 
 export type WaitForTransactionResult = Pick<TransactionReceipt, "blockNumber" | "status" | "transactionHash">;
