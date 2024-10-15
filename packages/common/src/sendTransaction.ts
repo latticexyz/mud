@@ -74,9 +74,9 @@ export async function sendTransaction<
           const params = {
             // viem_sendTransaction internally estimates gas, which we want to happen on the pending block
             blockTag: "pending",
+            ...feeRef.fees,
             ...request,
             nonce,
-            ...feeRef.fees,
           } as const satisfies SendTransactionParameters<chain, account, chainOverride, request>;
           debug("sending tx to", request.to, "with nonce", nonce);
           return await getAction(client, viem_sendTransaction, "sendTransaction")(params as never);
