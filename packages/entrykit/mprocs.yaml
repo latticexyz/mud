@@ -10,7 +10,7 @@ procs:
     cwd: ../../../alto
     shell: pnpm ts-node src --config ../mud/packages/entrykit/playground/alto.config.json
   issuer:
-    cwd: ../../../quarry-paymaster/packages/service
+    cwd: ../../../quarry-paymaster/packages/issuer
     shell: pnpm start
   explorer:
     shell: pnpm explorer

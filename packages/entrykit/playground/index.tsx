@@ -1,18 +1,17 @@
 import "./polyfills";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import { WagmiProvider, createConfig } from "wagmi";
+import { WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { connectorsForWallets, getDefaultWallets, WalletList } from "@rainbow-me/rainbowkit";
-import { garnet, redstone } from "@latticexyz/common/chains";
+import { garnet, redstone, rhodolite } from "@latticexyz/common/chains";
 import { anvil } from "viem/chains";
-import { passkeyWallet } from "../src/passkey/passkeyWallet";
 import { AccountModal } from "../src/AccountModal";
 import { EntryKitConfigProvider } from "../src/EntryKitConfigProvider";
 import { App } from "./App";
 import { Chain, Hex, http } from "viem";
 import { EntryKitConfig } from "../src/config";
 import { wiresaw } from "../src/wiresaw";
+import { createWagmiConfig } from "../src/createWagmiConfig";
 
 const testWorlds = {
   [anvil.id]: "0x6Eb9682FE93c6fE4346e0a1e70bC049Aa18CC0CA",
@@ -31,6 +30,7 @@ const entryKitConfig = {
   chainId,
   worldAddress,
   appInfo: {
+    name: "EAT THE FLY",
     termsOfUse: "#terms",
     privacyPolicy: "#privacy",
   },
@@ -39,32 +39,17 @@ const entryKitConfig = {
   passIssuerTransport: http("http://127.0.0.1:3003/rpc"),
 } as const satisfies EntryKitConfig;
 
-const queryClient = new QueryClient();
-
-const { wallets: defaultWallets } = getDefaultWallets();
-const wallets: WalletList = [
-  {
-    groupName: "Recommended",
-    wallets: [
-      passkeyWallet({
-        chainId,
-        bundlerTransport: entryKitConfig.bundlerTransport,
-        paymasterAddress: entryKitConfig.paymasterAddress,
-      }),
-    ],
-  },
-  ...defaultWallets,
-];
-
-const connectors = connectorsForWallets(wallets, {
-  appName: "EAT THE FLY",
-  projectId: "14ce88fdbc0f9c294e26ec9b4d848e44",
-});
-
-const chains = [anvil, redstone, garnet] as [Chain, ...Chain[]];
+const chains = [anvil, redstone, garnet, rhodolite] as [Chain, ...Chain[]];
 const transports = Object.fromEntries(chains.map((chain) => [chain.id, http()]));
 
-const wagmiConfig = createConfig({ connectors, chains, transports });
+const wagmiConfig = createWagmiConfig({
+  ...entryKitConfig,
+  chains,
+  transports,
+  walletConnectProjectId: "14ce88fdbc0f9c294e26ec9b4d848e44",
+});
+
+const queryClient = new QueryClient();
 
 const root = ReactDOM.createRoot(document.querySelector("#react-root")!);
 root.render(
