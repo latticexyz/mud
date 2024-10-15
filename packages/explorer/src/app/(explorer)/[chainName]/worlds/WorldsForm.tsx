@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { Address, isAddress } from "viem";
 import * as z from "zod";
+import { useStore } from "zustand";
 import { Command as CommandPrimitive } from "cmdk";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -12,6 +13,7 @@ import { Button } from "../../../../components/ui/Button";
 import { Command, CommandGroup, CommandItem, CommandList } from "../../../../components/ui/Command";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "../../../../components/ui/Form";
 import { Input } from "../../../../components/ui/Input";
+import { store } from "../../../../observer/store";
 import mudLogo from "../../icon.svg";
 import { getWorldUrl } from "../../utils/getWorldUrl";
 
@@ -25,6 +27,9 @@ const formSchema = z.object({
 });
 
 export function WorldsForm({ worlds }: { worlds: Address[] }) {
+  // Initialize the observer store to start fetching transactions
+  useStore(store);
+
   const router = useRouter();
   const { chainName } = useParams();
   const [open, setOpen] = useState(false);

@@ -7,10 +7,9 @@ import { TransactionsWatcher } from "./observe/TransactionsWatcher";
 export default function WorldLayout({ children }: { children: React.ReactNode }) {
   return (
     <Providers>
-      <TransactionsWatcher>
-        <Navigation />
-        {children}
-      </TransactionsWatcher>
+      <Navigation />
+      <TransactionsWatcher />
+      {children}
     </Providers>
   );
 }

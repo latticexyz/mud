@@ -9,7 +9,7 @@ import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { store as worldStore } from "../store";
 
-export function TransactionsWatcher({ children }: { children: React.ReactNode }) {
+export function TransactionsWatcher() {
   const { id: chainId } = useChain();
   const { worldAddress } = useParams();
   const wagmiConfig = useConfig();
@@ -98,7 +98,7 @@ export function TransactionsWatcher({ children }: { children: React.ReactNode })
   useEffect(() => {
     for (const write of Object.values(observerWrites)) {
       const hash = write.hash;
-      if (write.type === "waitForTransactionReceipt" && hash && write.address === worldAddress) {
+      if (hash && write.address === worldAddress) {
         const transaction = transactions.find((transaction) => transaction.hash === hash);
         if (!transaction) {
           handleTransaction(hash, BigInt(write.time) / 1000n);
@@ -118,5 +118,5 @@ export function TransactionsWatcher({ children }: { children: React.ReactNode })
     pollingInterval: 500,
   });
 
-  return children;
+  return null;
 }
