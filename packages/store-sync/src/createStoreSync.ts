@@ -223,7 +223,10 @@ export async function createStoreSync({
           }),
         ),
         // The watchLogs API doesn't emit on empty logs, but consumers expect an emission on empty logs
-        latestBlockNumber$.pipe(map((blockNumber) => ({ blockNumber, logs: [] }))),
+        latestBlockNumber$.pipe(
+          filter(() => caughtUp),
+          map((blockNumber) => ({ blockNumber, logs: [] })),
+        ),
       )
     : throwError(() => new Error("No pending logs WebSocket RPC URL provided"));
 
