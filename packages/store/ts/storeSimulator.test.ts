@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { beforeAll, beforeEach, describe, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { snapshotAnvilState, testClient } from "../../../test-setup/common";
 import { deployMockGame, worldAbi } from "../../../test-setup/mockGame";
 import {
@@ -13,7 +13,7 @@ import {
   encodeFunctionData,
   keccak256,
   pad,
-  parseAbi,
+  size,
   stringToHex,
   toBytes,
 } from "viem";
@@ -52,7 +52,7 @@ describe("storeSimulator", async () => {
       args: [5, 5],
     });
 
-    const result = await simulateContract(testClient, {
+    const [result, calls] = await simulateContract(testClient, {
       address: storeSimulator,
       abi: storeSimulatorAbi,
       functionName: "call",
@@ -69,30 +69,42 @@ describe("storeSimulator", async () => {
           ],
         },
       ],
-    }).catch((e) => {
-      const error = e as SimulateContractErrorType;
-      // throw error;
-      if (error.name === "ContractFunctionExecutionError") {
-        if (error.cause instanceof ContractFunctionRevertedError) {
-          if (error.cause.data) {
-            const callResult = error.cause.data as DecodeErrorResultReturnType<storeSimulatorAbi>;
-            if (callResult.errorName === "CallResult") {
-              const [success, data, calls] = callResult.args;
-              console.log("got calls", calls);
-              if (success) {
-                return decodeFunctionResult({ abi: worldAbi, data });
-              } else {
-                return decodeErrorResult({ abi: worldAbi, data });
+    }).then(
+      () => {
+        throw new Error("Simulated call did not revert with CallResult as expected.");
+      },
+      (e) => {
+        const error = e as SimulateContractErrorType;
+        // throw error;
+        if (error.name === "ContractFunctionExecutionError") {
+          if (error.cause instanceof ContractFunctionRevertedError) {
+            if (error.cause.data) {
+              const callResult = error.cause.data as DecodeErrorResultReturnType<storeSimulatorAbi>;
+              if (callResult.errorName === "CallResult") {
+                const [success, data, calls] = callResult.args;
+                console.log("got calls", calls);
+                if (success) {
+                  return [size(data) > 0 ? decodeFunctionResult({ abi: worldAbi, data }) : null, calls] as const;
+                } else {
+                  return [decodeErrorResult({ abi: worldAbi, data }), calls] as const;
+                }
               }
             }
           }
         }
-      }
-      throw error;
-    });
+        throw error;
+      },
+    );
 
-    console.log("got result", result);
-    console.dir(result, { depth: null });
+    expect(result).toMatchInlineSnapshot(`null`);
+
+    // TODO: replace calls with just store events
+    expect(calls).toMatchInlineSnapshot(`
+      [
+        "0xb591186e00000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000005",
+        "0x298314fb74620000000000000000000000000000506f736974696f6e000000000000000000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000aaadeca8087c6a96822fd24e6d906c4677a09f90000000000000000000000000000000000000000000000000000000000000000800000005000000050000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      ]
+    `);
   });
 });
 
