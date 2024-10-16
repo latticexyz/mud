@@ -26,7 +26,7 @@ const formSchema = z.object({
 });
 
 export function WorldsForm({ worlds }: { worlds: Address[] }) {
-  // Initialize the observer store to start fetching transactions
+  // Reference to imported store observer so the listener is established when this component is used.
   store;
 
   const router = useRouter();
