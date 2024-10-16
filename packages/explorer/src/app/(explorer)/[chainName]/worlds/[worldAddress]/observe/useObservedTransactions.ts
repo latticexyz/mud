@@ -16,7 +16,7 @@ import { Message } from "../../../../../../observer/messages";
 import { type Write, store as observerStore } from "../../../../../../observer/store";
 import { store as worldStore } from "../store";
 
-export type WatchedTransaction = {
+export type ObservedTransaction = {
   writeId: string;
   hash?: Hex;
   from?: Address;
@@ -31,13 +31,13 @@ export type WatchedTransaction = {
   error?: BaseError;
 };
 
-export function useTransactionsWatcher() {
+export function useObservedTransactions() {
   const { worldAddress } = useParams();
   const { transactions } = useStore(worldStore);
   const observerWrites = useStore(observerStore, (state) => state.writes);
 
-  const mergedTransactions = useMemo((): WatchedTransaction[] => {
-    const mergedMap = new Map<string | undefined, WatchedTransaction>();
+  const mergedTransactions = useMemo((): ObservedTransaction[] => {
+    const mergedMap = new Map<string | undefined, ObservedTransaction>();
 
     for (const write of Object.values(observerWrites)) {
       if (write.address !== worldAddress) continue;

@@ -12,9 +12,9 @@ import { BlockExplorerLink } from "./BlockExplorerLink";
 import { TimeAgo } from "./TimeAgo";
 import { TimingRowHeader } from "./TimingRowHeader";
 import { TransactionTableRow } from "./TransactionTableRow";
-import { WatchedTransaction, useTransactionsWatcher } from "./useTransactionsWatcher";
+import { ObservedTransaction, useObservedTransactions } from "./useObservedTransactions";
 
-const columnHelper = createColumnHelper<WatchedTransaction>();
+const columnHelper = createColumnHelper<ObservedTransaction>();
 export const columns = [
   columnHelper.accessor("receipt.blockNumber", {
     header: "Block",
@@ -94,7 +94,7 @@ export const columns = [
 ];
 
 export function TransactionsTable() {
-  const transactions = useTransactionsWatcher();
+  const transactions = useObservedTransactions();
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const table = useReactTable({

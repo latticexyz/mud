@@ -1,10 +1,10 @@
 import { createStore } from "zustand";
-import { WatchedTransaction } from "./observe/useTransactionsWatcher";
+import { ObservedTransaction } from "./observe/useObservedTransactions";
 
 export type State = {
-  transactions: WatchedTransaction[];
-  setTransaction: (transaction: WatchedTransaction) => void;
-  updateTransaction: (hash: string, updatedTransaction: Partial<WatchedTransaction>) => void;
+  transactions: ObservedTransaction[];
+  setTransaction: (transaction: ObservedTransaction) => void;
+  updateTransaction: (hash: string, updatedTransaction: Partial<ObservedTransaction>) => void;
 };
 
 export const store = createStore<State>()((set) => ({
@@ -13,7 +13,7 @@ export const store = createStore<State>()((set) => ({
     set((state) => ({
       transactions: [...state.transactions, transaction],
     })),
-  updateTransaction: (hash: string, updatedTransaction: Partial<WatchedTransaction>) =>
+  updateTransaction: (hash: string, updatedTransaction: Partial<ObservedTransaction>) =>
     set((state) => ({
       transactions: state.transactions.map((tx) => (tx.hash === hash ? { ...tx, ...updatedTransaction } : tx)),
     })),
