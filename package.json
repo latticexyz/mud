@@ -1,4 +1,5 @@
 {
+  "name": "mud-monorepo",
   "private": true,
   "repository": {
     "type": "git",
@@ -12,7 +13,7 @@
     "build": "turbo run build --concurrency=100%",
     "changelog:generate": "tsx scripts/changelog.ts",
     "clean": "turbo run clean --concurrency=100%",
-    "dev": "TSUP_SKIP_DTS=true turbo run dev --concurrency=100% --filter !@latticexyz/explorer",
+    "dev": "turbo run dev --concurrency=999",
     "dist-tag-rm": "pnpm recursive exec -- sh -c 'npm dist-tag rm $(cat package.json | jq -r \".name\") $TAG || true'",
     "docs:generate:api": "tsx scripts/render-api-docs.ts",
     "fix:package-json": "sort-package-json package.json 'packages/*/package.json' 'templates/*/package.json' 'templates/*/packages/*/package.json' 'examples/*/package.json' 'examples/*/packages/*/package.json' 'e2e/*/package.json' 'e2e/*/packages/*/package.json' 'docs/package.json' 'test/*/package.json'",
