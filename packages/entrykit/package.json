@@ -48,23 +48,19 @@
     "@noble/curves": "^1.6.0",
     "@radix-ui/react-dialog": "^1.0.5",
     "@rainbow-me/rainbowkit": "2.1.7",
-    "@tanstack/react-query": "^5.56.2",
     "abitype": "catalog:",
     "debug": "^4.3.4",
     "permissionless": "^0.2.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.13",
     "react-merge-refs": "^2.1.1",
     "tailwind-merge": "^1.12.0",
     "usehooks-ts": "^3.1.0",
-    "viem": "catalog:",
-    "wagmi": "catalog:",
     "webauthn-p256": "^0.0.10",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@latticexyz/explorer": "workspace:*",
+    "@tanstack/react-query": "^5.56.2",
     "@types/debug": "^4.1.7",
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
@@ -75,12 +71,23 @@
     "eslint-plugin-react-hooks": "4.6.0",
     "mprocs": "^0.7.1",
     "postcss": "^8.4.47",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "tailwindcss": "^3.4.13",
     "tsup": "^6.7.0",
+    "viem": "catalog:",
     "vite": "^5.4.1",
     "vite-plugin-dts": "^4.2.4",
     "vite-plugin-externalize-deps": "^0.8.0",
-    "vitest": "0.34.6"
+    "vitest": "0.34.6",
+    "wagmi": "catalog:"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "5.x",
+    "react": "18.x",
+    "react-dom": "18.x",
+    "viem": "2.x",
+    "wagmi": "2.x"
   },
   "publishConfig": {
     "access": "public"

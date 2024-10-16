@@ -498,9 +498,6 @@ importers:
       '@rainbow-me/rainbowkit':
         specifier: 2.1.7
         version: 2.1.7(@tanstack/react-query@5.56.2(react@18.2.0))(@types/react@18.2.22)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(viem@2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8))(wagmi@2.12.11(@tanstack/query-core@5.56.2)(@tanstack/react-query@5.56.2(react@18.2.0))(@types/react@18.2.22)(bufferutil@4.0.8)(encoding@0.1.13)(react-dom@18.2.0(react@18.2.0))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.22)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.2.0)(typescript@5.4.2)(utf-8-validate@5.0.10))(react@18.2.0)(rollup@4.22.5)(typescript@5.4.2)(utf-8-validate@5.0.10)(viem@2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8))(zod@3.23.8))
-      '@tanstack/react-query':
-        specifier: ^5.56.2
-        version: 5.56.2(react@18.2.0)
       abitype:
         specifier: 'catalog:'
         version: 1.0.6(typescript@5.4.2)(zod@3.23.8)
@@ -510,12 +507,6 @@ importers:
       permissionless:
         specifier: ^0.2.3
         version: 0.2.3(viem@2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8))
-      react:
-        specifier: ^18.2.0
-        version: 18.2.0
-      react-dom:
-        specifier: ^18.2.0
-        version: 18.2.0(react@18.2.0)
       react-error-boundary:
         specifier: ^4.0.13
         version: 4.0.13(react@18.2.0)
@@ -528,12 +519,6 @@ importers:
       usehooks-ts:
         specifier: ^3.1.0
         version: 3.1.0(react@18.2.0)
-      viem:
-        specifier: 'catalog:'
-        version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
-      wagmi:
-        specifier: 'catalog:'
-        version: 2.12.11(@tanstack/query-core@5.56.2)(@tanstack/react-query@5.56.2(react@18.2.0))(@types/react@18.2.22)(bufferutil@4.0.8)(encoding@0.1.13)(react-dom@18.2.0(react@18.2.0))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.22)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.2.0)(typescript@5.4.2)(utf-8-validate@5.0.10))(react@18.2.0)(rollup@4.22.5)(typescript@5.4.2)(utf-8-validate@5.0.10)(viem@2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8))(zod@3.23.8)
       webauthn-p256:
         specifier: ^0.0.10
         version: 0.0.10
@@ -544,6 +529,9 @@ importers:
       '@latticexyz/explorer':
         specifier: workspace:*
         version: link:../explorer
+      '@tanstack/react-query':
+        specifier: ^5.56.2
+        version: 5.56.2(react@18.2.0)
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.7
@@ -574,12 +562,21 @@ importers:
       postcss:
         specifier: ^8.4.47
         version: 8.4.47
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.2.0(react@18.2.0)
       tailwindcss:
         specifier: ^3.4.13
         version: 3.4.13
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
+      viem:
+        specifier: 'catalog:'
+        version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
       vite:
         specifier: ^5.4.1
         version: 5.4.8(@types/node@22.7.4)(terser@5.34.1)
@@ -592,6 +589,9 @@ importers:
       vitest:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.34.1)
+      wagmi:
+        specifier: 'catalog:'
+        version: 2.12.11(@tanstack/query-core@5.56.2)(@tanstack/react-query@5.56.2(react@18.2.0))(@types/react@18.2.22)(bufferutil@4.0.8)(encoding@0.1.13)(react-dom@18.2.0(react@18.2.0))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.22)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.2.0)(typescript@5.4.2)(utf-8-validate@5.0.10))(react@18.2.0)(rollup@4.22.5)(typescript@5.4.2)(utf-8-validate@5.0.10)(viem@2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8))(zod@3.23.8)
 
   packages/explorer:
     dependencies:
