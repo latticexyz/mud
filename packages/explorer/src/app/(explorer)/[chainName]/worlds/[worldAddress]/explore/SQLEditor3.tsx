@@ -3,6 +3,7 @@
 import { PlayIcon } from "lucide-react";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { useParams } from "next/navigation";
+import { Parser } from "node-sql-parser";
 import { useQueryState } from "nuqs";
 import { SQLAutocomplete, SQLDialect } from "sql-autocomplete";
 import { Address } from "viem";
@@ -12,6 +13,7 @@ import { Table } from "@latticexyz/config";
 import Editor, { useMonaco } from "@monaco-editor/react";
 import { Button } from "../../../../../../components/ui/Button";
 import { Form, FormField } from "../../../../../../components/ui/Form";
+import { cn } from "../../../../../../utils";
 import { useChain } from "../../../../hooks/useChain";
 import { constructTableName } from "../../../../utils/constructTableName";
 
@@ -61,12 +63,13 @@ const monacoOptionTypesMap = {
   COLUMN: "Field",
 } as const;
 
+const sqlParser = new Parser();
+
 type Props = {
   table?: Table;
 };
 
-// this is not a controlled component
-const EditorSmallInput = ({ table }: Props) => {
+export function SQLEditor3({ table }: Props) {
   const monaco = useMonaco();
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
@@ -123,7 +126,7 @@ const EditorSmallInput = ({ table }: Props) => {
               insertText: value,
               range,
               // bring non-keyword suggestions to the top
-              sortText: optionType !== "KEYWORD" ? "a" : "b",
+              sortText: optionType !== "KEYWORD" ? "a" : "b", // TODO: any better way?
             };
           });
 
@@ -131,6 +134,8 @@ const EditorSmallInput = ({ table }: Props) => {
             suggestions,
           };
         },
+
+        // TODO: const ast = parser.astify("SELECT * FROM t", { parseOptions: { includeLocations: true } });
       });
 
       return () => {
@@ -142,7 +147,13 @@ const EditorSmallInput = ({ table }: Props) => {
   return (
     <Form {...form}>
       <form
-        className="relative flex h-10 max-h-10 w-full flex-grow items-center justify-center rounded-md border bg-black px-3 py-2 align-middle"
+        className={cn(
+          "relative flex w-full flex-grow items-center justify-center bg-black align-middle",
+          "max-rounded-md h-10 border px-3 py-2",
+          "placeholder:text-muted-foreground",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+        )}
         onSubmit={handleSubmit}
       >
         <FormField
@@ -166,6 +177,4 @@ const EditorSmallInput = ({ table }: Props) => {
       </form>
     </Form>
   );
-};
-
-export { EditorSmallInput };
+}

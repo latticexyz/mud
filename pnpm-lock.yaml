@@ -6,6 +6,18 @@ settings:
 
 catalogs:
   default:
+    '@ark/attest':
+      specifier: 0.12.1
+      version: 0.12.1
+    '@ark/util':
+      specifier: 0.2.2
+      version: 0.2.2
+    abitype:
+      specifier: 1.0.6
+      version: 1.0.6
+    arktype:
+      specifier: 2.0.0-beta.6
+      version: 2.0.0-beta.6
     viem:
       specifier: 2.21.19
       version: 2.21.19
