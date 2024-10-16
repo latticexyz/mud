@@ -10,19 +10,20 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/src/index.js"
+    ".": "./dist/index.js"
   },
   "typesVersions": {
     "*": {
       "index": [
-        "./dist/src/index.d.ts"
+        "./dist/index.d.ts"
       ]
     }
   },
   "bin": {
-    "faucet-server": "./dist/bin/faucet-server.js"
+    "faucet-server": "./bin/faucet-server.js"
   },
   "files": [
+    "bin",
     "dist"
   ],
   "scripts": {

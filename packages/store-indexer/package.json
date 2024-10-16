@@ -15,17 +15,18 @@
   "typesVersions": {
     "*": {
       "index": [
-        "./dist/src/index.d.ts"
+        "./dist/index.d.ts"
       ]
     }
   },
   "bin": {
-    "postgres-decoded-indexer": "./dist/bin/postgres-decoded-indexer.js",
-    "postgres-frontend": "./dist/bin/postgres-frontend.js",
-    "postgres-indexer": "./dist/bin/postgres-indexer.js",
-    "sqlite-indexer": "./dist/bin/sqlite-indexer.js"
+    "postgres-decoded-indexer": "./bin/postgres-decoded-indexer.js",
+    "postgres-frontend": "./bin/postgres-frontend.js",
+    "postgres-indexer": "./bin/postgres-indexer.js",
+    "sqlite-indexer": "./bin/sqlite-indexer.js"
   },
   "files": [
+    "bin",
     "dist"
   ],
   "scripts": {
