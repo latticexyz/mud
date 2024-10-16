@@ -1,4 +1,5 @@
 ---
+"@latticexyz/faucet": patch
 "@latticexyz/store-indexer": patch
 ---
 
