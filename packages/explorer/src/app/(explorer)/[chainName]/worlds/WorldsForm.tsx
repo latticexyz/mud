@@ -12,12 +12,8 @@ import { Button } from "../../../../components/ui/Button";
 import { Command, CommandGroup, CommandItem, CommandList } from "../../../../components/ui/Command";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "../../../../components/ui/Form";
 import { Input } from "../../../../components/ui/Input";
-import { store } from "../../../../observer/store";
 import mudLogo from "../../icon.svg";
 import { getWorldUrl } from "../../utils/getWorldUrl";
-
-// Reference to imported store observer so the listener is established when this component is used.
-store;
 
 const formSchema = z.object({
   worldAddress: z
