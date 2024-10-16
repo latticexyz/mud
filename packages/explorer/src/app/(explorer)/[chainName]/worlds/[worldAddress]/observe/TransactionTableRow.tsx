@@ -8,7 +8,7 @@ import { cn } from "../../../../../../utils";
 import { Confirmations } from "./Confirmations";
 import { TimingRowExpanded } from "./TimingRowExpanded";
 import { columns } from "./TransactionsTable";
-import { WatchedTransaction } from "./useTransactionWatcher";
+import { ObservedTransaction } from "./useObservedTransactions";
 
 function TransactionTableRowDataCell({
   label,
@@ -16,7 +16,7 @@ function TransactionTableRowDataCell({
   children,
 }: {
   label: string;
-  status: WatchedTransaction["status"];
+  status: ObservedTransaction["status"];
   children: React.ReactNode;
 }) {
   return (
@@ -30,7 +30,7 @@ function TransactionTableRowDataCell({
   );
 }
 
-export function TransactionTableRow({ row }: { row: Row<WatchedTransaction> }) {
+export function TransactionTableRow({ row }: { row: Row<ObservedTransaction> }) {
   const data = row?.original;
   const status = data.status;
   const logs = data?.logs;
