@@ -15,7 +15,7 @@
   "typesVersions": {
     "*": {
       "index": [
-        "./dist/src/index.d.ts"
+        "./dist/index.d.ts"
       ]
     }
   },
@@ -26,6 +26,7 @@
     "sqlite-indexer": "./bin/sqlite-indexer.js"
   },
   "files": [
+    "bin",
     "dist"
   ],
   "scripts": {
