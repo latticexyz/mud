@@ -89,13 +89,14 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
 
         // Keep websocket alive and reconnect if it's not alive anymore
         keepAliveInterval = setInterval(async () => {
-          const result = await Promise.race([
-            client.requestAsync({ body: { method: "net_version" } }),
-            new Promise<void>((resolve) => {
-              setTimeout(resolve, 2000);
-            }),
-          ]);
-          if (!result) {
+          try {
+            await Promise.race([
+              client.requestAsync({ body: { method: "net_version" } }),
+              new Promise<void>((_, reject) => {
+                setTimeout(reject, 2000);
+              }),
+            ]);
+          } catch {
             debug("Detected unresponsive websocket, reconnecting...");
             clearInterval(keepAliveInterval);
             client.close();
