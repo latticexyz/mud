@@ -26,6 +26,7 @@
     "sqlite-indexer": "./bin/sqlite-indexer.js"
   },
   "files": [
+    "bin",
     "dist"
   ],
   "scripts": {
