@@ -16,6 +16,9 @@ import { store } from "../../../../observer/store";
 import mudLogo from "../../icon.svg";
 import { getWorldUrl } from "../../utils/getWorldUrl";
 
+// Reference to imported store observer so the listener is established when this component is used.
+store;
+
 const formSchema = z.object({
   worldAddress: z
     .string()
@@ -26,9 +29,6 @@ const formSchema = z.object({
 });
 
 export function WorldsForm({ worlds }: { worlds: Address[] }) {
-  // Reference to imported store observer so the listener is established when this component is used.
-  store;
-
   const router = useRouter();
   const { chainName } = useParams();
   const [open, setOpen] = useState(false);
