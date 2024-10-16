@@ -46,6 +46,7 @@ abstract contract Pausable is Context, StoreConsumer {
    * @dev Initializes the contract in unpaused state.
    */
   constructor() {
+    PausedTbl.register(PAUSED_ID);
     PausedTbl.set(PAUSED_ID, false);
   }
 
