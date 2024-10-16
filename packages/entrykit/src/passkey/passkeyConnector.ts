@@ -19,12 +19,14 @@ import { reusePasskey } from "./reusePasskey";
 import { createPasskey } from "./createPasskey";
 import { defaultClientConfig } from "../common";
 import { createBundlerClient } from "../createBundlerClient";
+import { observer } from "@latticexyz/explorer/observer";
 
 export type PasskeyConnectorOptions = {
   // TODO: figure out what we wanna do across chains
   chainId: number;
   bundlerTransport: Transport;
   paymasterAddress: Address;
+  explorerUrl?: string;
 };
 
 export type PasskeyProvider = {
@@ -46,6 +48,7 @@ export function passkeyConnector({
   chainId,
   bundlerTransport,
   paymasterAddress,
+  explorerUrl,
 }: PasskeyConnectorOptions): CreatePasskeyConnector {
   return createConnector((config) => {
     // TODO: figure out how to use with config's `client` option
@@ -189,7 +192,9 @@ export function passkeyConnector({
           transport: bundlerTransport,
           client,
           account,
-        }).extend(smartAccountActions());
+        })
+          .extend(smartAccountActions())
+          .extend((client) => (explorerUrl ? observer({ explorerUrl })(client) : {}));
       },
 
       async getProvider(_params) {

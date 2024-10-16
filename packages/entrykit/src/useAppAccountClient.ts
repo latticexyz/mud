@@ -7,7 +7,7 @@ import { getAppAccountClient } from "./getAppAccountClient";
 export function useAppAccountClient(
   userAddress: Address | undefined,
 ): UseQueryResult<Client<Transport, Chain, Account>> {
-  const { chainId, bundlerTransport, paymasterAddress, worldAddress } = useEntryKitConfig();
+  const { chainId, bundlerTransport, paymasterAddress, worldAddress, explorerUrl } = useEntryKitConfig();
   const client = useClient({ chainId });
 
   const queryKey = ["appAccountClient", client?.uid, userAddress];
@@ -22,6 +22,7 @@ export function useAppAccountClient(
               client,
               bundlerTransport,
               paymasterAddress,
+              explorerUrl,
             });
           },
           staleTime: Infinity,

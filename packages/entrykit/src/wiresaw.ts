@@ -47,15 +47,13 @@ export function wiresaw<const transport extends Transport>(originalTransport: tr
         }
 
         if (req.method === "eth_sendUserOperation") {
-          // console.log("intercepted request", req);
-          const receipt = (await originalRequest({
+          // TODO: type `request` so we don't have to cast
+          const result = await originalRequest({
             ...req,
             method: "pimlico_sendUserOperationNow",
-            // TODO: type `request` so we don't have to cast
-          })) as UserOperationReceipt;
-          // console.log("user op receipt", receipt);
-          receipts.set(receipt["userOpHash"], receipt);
-          return receipt["userOpHash"];
+          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return (result as any).userOpHash;
         }
 
         if (req.method === "eth_getUserOperationReceipt") {

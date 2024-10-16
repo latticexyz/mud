@@ -477,6 +477,9 @@ importers:
       '@latticexyz/config':
         specifier: workspace:*
         version: link:../config
+      '@latticexyz/explorer':
+        specifier: workspace:*
+        version: link:../explorer
       '@latticexyz/protocol-parser':
         specifier: workspace:*
         version: link:../protocol-parser
@@ -526,9 +529,6 @@ importers:
         specifier: ^4.5.2
         version: 4.5.5(@types/react@18.2.22)(react@18.2.0)
     devDependencies:
-      '@latticexyz/explorer':
-        specifier: workspace:*
-        version: link:../explorer
       '@tanstack/react-query':
         specifier: ^5.56.2
         version: 5.56.2(react@18.2.0)

@@ -17,12 +17,14 @@ export type EntryKitConfig = {
 
   readonly walletConnectProjectId: string;
 
+  // TODO: move these to chain config
   readonly bundlerTransport: Transport;
   // currently assumes quarry paymaster
   readonly paymasterAddress: Address;
   // currently assumes quarry paymaster pass issuer service
   // TODO: add rpc types
   readonly passIssuerTransport: Transport;
+  readonly explorerUrl?: string;
 
   /**
    * EntryKit UI theme.
