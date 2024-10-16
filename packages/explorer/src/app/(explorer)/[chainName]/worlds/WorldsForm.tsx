@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { Address, isAddress } from "viem";
 import * as z from "zod";
-import { useStore } from "zustand";
 import { Command as CommandPrimitive } from "cmdk";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
