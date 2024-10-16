@@ -7,7 +7,7 @@ import { Parser } from "node-sql-parser";
 import { useQueryState } from "nuqs";
 import { SQLAutocomplete, SQLDialect } from "sql-autocomplete";
 import { Address } from "viem";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { Table } from "@latticexyz/config";
 import Editor, { useMonaco } from "@monaco-editor/react";
@@ -90,7 +90,36 @@ export function SQLEditor3({ table }: Props) {
     );
   }, [table, worldAddress, chainId]);
 
+  const validateSQL = useCallback(
+    (value: string) => {
+      if (!monaco) return;
+
+      try {
+        sqlParser.astify(value);
+        monaco.editor.setModelMarkers(monaco.editor.getModels()[0], "sql", []);
+        return true;
+      } catch (error) {
+        if (error instanceof Error) {
+          // const match = error.message.match(/(?:line|column) (\d+)/g);
+          monaco.editor.setModelMarkers(monaco.editor.getModels()[0], "sql", [
+            {
+              severity: monaco.MarkerSeverity.Error,
+              message: error.message,
+              startLineNumber: 1,
+              startColumn: 1,
+              endLineNumber: 1,
+              endColumn: value.length + 1,
+            },
+          ]);
+        }
+        return false;
+      }
+    },
+    [monaco],
+  );
+
   const handleSubmit = form.handleSubmit((data) => {
+    if (!validateSQL(data.query)) return;
     setQuery(data.query);
   });
 
@@ -134,15 +163,13 @@ export function SQLEditor3({ table }: Props) {
             suggestions,
           };
         },
-
-        // TODO: const ast = parser.astify("SELECT * FROM t", { parseOptions: { includeLocations: true } });
       });
 
       return () => {
         provider.dispose();
       };
     }
-  }, [monaco, sqlAutocomplete]);
+  }, [monaco, sqlAutocomplete, validateSQL]);
 
   return (
     <Form {...form}>
