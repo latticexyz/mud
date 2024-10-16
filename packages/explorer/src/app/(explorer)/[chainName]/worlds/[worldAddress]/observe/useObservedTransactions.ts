@@ -33,7 +33,7 @@ export type ObservedTransaction = {
 
 export function useObservedTransactions() {
   const { worldAddress } = useParams();
-  const { transactions } = useStore(worldStore);
+  const transactions = useStore(worldStore, (state) => state.transactions);
   const observerWrites = useStore(observerStore, (state) => state.writes);
 
   const mergedTransactions = useMemo((): ObservedTransaction[] => {
