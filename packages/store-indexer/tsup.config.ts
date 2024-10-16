@@ -3,10 +3,10 @@ import { defineConfig } from "tsup";
 export default defineConfig((opts) => ({
   entry: [
     "src/index.ts",
-    "bin/postgres-frontend.ts",
-    "bin/postgres-indexer.ts",
-    "bin/postgres-decoded-indexer.ts",
-    "bin/sqlite-indexer.ts",
+    "src/bin/postgres-frontend.ts",
+    "src/bin/postgres-indexer.ts",
+    "src/bin/postgres-decoded-indexer.ts",
+    "src/bin/sqlite-indexer.ts",
   ],
   target: "esnext",
   format: ["esm"],

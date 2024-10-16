@@ -11,15 +11,15 @@ import cors from "@koa/cors";
 import { createKoaMiddleware } from "trpc-koa-adapter";
 import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { chainState, schemaVersion, syncToSqlite } from "@latticexyz/store-sync/sqlite";
-import { createQueryAdapter } from "../src/sqlite/createQueryAdapter";
+import { createQueryAdapter } from "../sqlite/createQueryAdapter";
 import { isDefined } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
 import { frontendEnvSchema, indexerEnvSchema, parseEnv } from "./parseEnv";
-import { healthcheck } from "../src/koa-middleware/healthcheck";
-import { helloWorld } from "../src/koa-middleware/helloWorld";
-import { apiRoutes } from "../src/sqlite/apiRoutes";
-import { sentry } from "../src/koa-middleware/sentry";
-import { metrics } from "../src/koa-middleware/metrics";
+import { healthcheck } from "../koa-middleware/healthcheck";
+import { helloWorld } from "../koa-middleware/helloWorld";
+import { apiRoutes } from "../sqlite/apiRoutes";
+import { sentry } from "../koa-middleware/sentry";
+import { metrics } from "../koa-middleware/metrics";
 
 const env = parseEnv(
   z.intersection(
