@@ -4,7 +4,6 @@ import { StorageAdapterBlock, StoreEventsLog } from "./common";
 import { storeEventsAbi } from "@latticexyz/store";
 import { logSort } from "@latticexyz/common";
 import { SocketRpcClient, getWebSocketRpcClient } from "viem/utils";
-import { sleep } from "@latticexyz/utils";
 import { debug } from "./debug";
 
 type WatchLogsInput = {
@@ -32,7 +31,9 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
       let caughtUp = false;
       const logBuffer: StoreEventsLog[] = [];
 
-      getWebSocketRpcClient(url).then(async (_client) => {
+      getWebSocketRpcClient(url, {
+        keepAlive: false, // keepAlive is handled below
+      }).then(async (_client) => {
         client = _client;
         client.socket.addEventListener("error", (error) =>
           subscriber.error({ code: -32603, message: "WebSocket error", data: error }),
@@ -90,7 +91,9 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
         keepAliveInterval = setInterval(async () => {
           const result = await Promise.race([
             client.requestAsync({ body: { method: "net_version" } }),
-            sleep(1000, null),
+            new Promise<void>((resolve) => {
+              setTimeout(resolve, 2000);
+            }),
           ]);
           if (!result) {
             debug("Detected unresponsive websocket, reconnecting...");
