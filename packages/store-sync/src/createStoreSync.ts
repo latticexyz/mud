@@ -28,6 +28,7 @@ import {
   scan,
   mergeMap,
   throwError,
+  mergeWith,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
@@ -37,6 +38,7 @@ import { fromEventSource } from "./fromEventSource";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 import { isLogsApiResponse } from "./indexer-client/isLogsApiResponse";
 import { toStorageAdatperBlock } from "./indexer-client/toStorageAdapterBlock";
+import { watchLogs } from "./wiresaw";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -184,24 +186,44 @@ export async function createStoreSync({
     shareReplay(1),
   );
 
+  let startBlock: bigint | null = null;
   const startBlock$ = initialBlockLogs$.pipe(
     map((block) => bigIntMax(block?.blockNumber ?? 0n, initialStartBlock)),
     // TODO: if start block is still 0, find via deploy event
-    tap((startBlock) => debug("starting sync from block", startBlock)),
+    tap((blockNumber) => {
+      startBlock = blockNumber;
+      debug("starting sync from block", startBlock);
+    }),
   );
 
+  let latestBlockNumber: bigint | null = null;
   const latestBlock$ = createBlockStream({ publicClient, blockTag: followBlockTag }).pipe(shareReplay(1));
   const latestBlockNumber$ = latestBlock$.pipe(
     map((block) => block.number),
     tap((blockNumber) => {
+      latestBlockNumber = blockNumber;
       debug("on block number", blockNumber, "for", followBlockTag, "block tag");
     }),
     shareReplay(1),
   );
 
-  let startBlock: bigint | null = null;
-  let endBlock: bigint | null = null;
   let lastBlockNumberProcessed: bigint | null = null;
+  let caughtUp = false;
+
+  const pendingLogsWebSocketUrl = publicClient.chain?.rpcUrls?.wiresaw?.webSocket?.[0];
+  const storedPendingLogs$ = pendingLogsWebSocketUrl
+    ? startBlock$.pipe(
+        mergeMap((startBlock) => watchLogs({ url: pendingLogsWebSocketUrl, address, fromBlock: startBlock }).logs$),
+        concatMap(async (block) => {
+          await storageAdapter(block);
+          return block;
+        }),
+        mergeWith(
+          // The watchLogs API doesn't emit on empty logs, but consumers expect an emission on empty logs
+          latestBlockNumber$.pipe(map((blockNumber) => ({ blockNumber, logs: [] }))),
+        ),
+      )
+    : throwError(() => new Error("No pending logs WebSocket RPC URL provided"));
 
   const storedIndexerLogs$ = indexerUrl
     ? startBlock$.pipe(
@@ -230,12 +252,8 @@ export async function createStoreSync({
       )
     : throwError(() => new Error("No indexer URL provided"));
 
-  const storedRpcLogs$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
+  const storedEthRpcLogs$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
-    tap((range) => {
-      startBlock = range.startBlock;
-      endBlock = range.endBlock;
-    }),
     concatMap((range) => {
       const storedBlocks = fetchAndStoreLogs({
         publicClient,
@@ -254,32 +272,38 @@ export async function createStoreSync({
     }),
   );
 
-  const storedBlock$ = storedIndexerLogs$.pipe(
-    catchError((e) => {
-      debug("failed to stream logs from indexer:", e.message);
-      debug("falling back to streaming logs from RPC");
-      return storedRpcLogs$;
+  const storedBlock$ = storedPendingLogs$.pipe(
+    catchError((error) => {
+      debug("failed to stream logs from pending log RPC:", error.message);
+      debug("falling back to streaming logs from indexer");
+      return storedIndexerLogs$;
+    }),
+    catchError((error) => {
+      debug("failed to stream logs from indexer:", error.message);
+      debug("falling back to streaming logs from ETH RPC");
+      return storedEthRpcLogs$;
     }),
     tap(async ({ logs, blockNumber }) => {
       debug("stored", logs.length, "logs for block", blockNumber);
       lastBlockNumberProcessed = blockNumber;
 
-      if (startBlock != null && endBlock != null) {
-        if (blockNumber < endBlock) {
-          const totalBlocks = endBlock - startBlock;
+      if (!caughtUp && startBlock != null && latestBlockNumber != null) {
+        if (lastBlockNumberProcessed < latestBlockNumber) {
+          const totalBlocks = latestBlockNumber - startBlock;
           const processedBlocks = lastBlockNumberProcessed - startBlock;
           onProgress?.({
             step: SyncStep.RPC,
             percentage: Number((processedBlocks * 1000n) / totalBlocks) / 10,
-            latestBlockNumber: endBlock,
+            latestBlockNumber,
             lastBlockNumberProcessed,
             message: "Hydrating from RPC",
           });
         } else {
+          caughtUp = true;
           onProgress?.({
             step: SyncStep.LIVE,
             percentage: 100,
-            latestBlockNumber: endBlock,
+            latestBlockNumber,
             lastBlockNumberProcessed,
             message: "All caught up!",
           });
