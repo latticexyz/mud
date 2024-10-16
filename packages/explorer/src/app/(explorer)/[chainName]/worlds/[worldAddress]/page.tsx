@@ -7,7 +7,6 @@ type Props = {
   };
 };
 
-export default async function WorldPage({ params }: Props) {
-  const { chainName, worldAddress } = params;
+export default async function WorldPage({ params: { chainName, worldAddress } }: Props) {
   return redirect(`/${chainName}/worlds/${worldAddress}/explore`);
 }

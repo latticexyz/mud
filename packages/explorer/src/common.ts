@@ -13,14 +13,22 @@ export const chainIdToName = Object.fromEntries(
   Object.entries(supportedChains).map(([chainName, chain]) => [chain.id, chainName]),
 ) as Record<supportedChainId, supportedChainName>;
 
+export function isValidChainId(chainId: unknown): name is supportedChainId {
+  return typeof chainId === "number" && chainId in chainIdToName;
+}
+
+export function isValidChainName(name: unknown): name is supportedChainName {
+  return typeof name === "string" && name in supportedChains;
+}
+
 export function validateChainId(chainId: unknown): asserts chainId is supportedChainId {
-  if (!(typeof chainId === "number" && chainId in chainIdToName)) {
+  if (!isValidChainId(name)) {
     throw new Error(`Invalid chain ID. Supported chains are: ${Object.keys(chainIdToName).join(", ")}.`);
   }
 }
 
 export function validateChainName(name: unknown): asserts name is supportedChainName {
-  if (!(typeof name === "string" && name in supportedChains)) {
+  if (!isValidChainName(name)) {
     throw new Error(`Invalid chain name. Supported chains are: ${Object.keys(supportedChains).join(", ")}.`);
   }
 }
