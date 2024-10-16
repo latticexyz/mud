@@ -47,30 +47,28 @@ export function ClaimGasPass({ userAddress }: Props) {
       <AccountModalSection>
         <div className="text-lg font-medium">Top up</div>
         <div className="space-y-4">
-          {allowance.data.allowance > minGasBalance ? (
+          {allowance.data.allowance > 0n ? (
             <p>
               You currently have <Balance wei={allowance.data.allowance} /> allowance to spend on gas.
             </p>
           ) : (
-            <>
-              <p>You haven&apos;t claimed a gas pass yet.</p>
-              <div className="flex flex-col">
-                <Button
-                  className="self-start"
-                  pending={claimGasPass.status === "pending"}
-                  onClick={() => claimGasPass.mutate(userAddress)}
-                >
-                  Claim gas pass
-                </Button>
-                {/* TODO: better error styles */}
-                {claimGasPass.status === "error" ? (
-                  <div className="bg-red-100 text-red-700 text-sm p-2 animate-in animate-duration-200 fade-in">
-                    {claimGasPass.error.message}
-                  </div>
-                ) : null}
-              </div>
-            </>
+            <p>You haven&apos;t claimed a gas pass yet.</p>
           )}
+          <div className="flex flex-col">
+            <Button
+              className="self-start"
+              pending={claimGasPass.status === "pending"}
+              onClick={() => claimGasPass.mutate(userAddress)}
+            >
+              Claim gas pass
+            </Button>
+            {/* TODO: better error styles */}
+            {claimGasPass.status === "error" ? (
+              <div className="bg-red-100 text-red-700 text-sm p-2 animate-in animate-duration-200 fade-in">
+                {claimGasPass.error.message}
+              </div>
+            ) : null}
+          </div>
         </div>
       </AccountModalSection>
     </>

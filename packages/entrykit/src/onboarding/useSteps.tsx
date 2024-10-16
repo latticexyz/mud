@@ -42,7 +42,7 @@ export function useSteps(userClient: ConnectedClient | undefined): readonly Step
       {
         id: "claimGasPass",
         label: "Top up",
-        isComplete: (allowance.data?.allowance ?? 0n) > minGasBalance,
+        isComplete: (allowance.data?.allowance ?? 0n) >= minGasBalance,
         content: <ClaimGasPass userAddress={userAddress} />,
       },
       {

@@ -13,11 +13,12 @@ import {
 } from "viem";
 import { ChainNotConfiguredError, createConnector, CreateConnectorFn } from "wagmi";
 import { cache } from "./cache";
-import { createSmartAccountClient } from "permissionless/clients";
+import { smartAccountActions } from "permissionless/clients";
 import { getAccount } from "./getAccount";
 import { reusePasskey } from "./reusePasskey";
 import { createPasskey } from "./createPasskey";
 import { defaultClientConfig } from "../common";
+import { createBundlerClient } from "../createBundlerClient";
 
 export type PasskeyConnectorOptions = {
   // TODO: figure out what we wanna do across chains
@@ -183,30 +184,12 @@ export function passkeyConnector({
 
         const account = await getAccount(client, credentialId);
 
-        return createSmartAccountClient({
-          ...defaultClientConfig,
-          bundlerTransport,
+        return createBundlerClient({
+          paymasterAddress,
+          transport: bundlerTransport,
           client,
           account,
-          paymaster: {
-            getPaymasterData: async () => ({
-              paymaster: paymasterAddress,
-              paymasterData: "0x",
-            }),
-          },
-          userOperation: {
-            estimateFeesPerGas:
-              // anvil hardcodes fee returned by `eth_maxPriorityFeePerGas`
-              // so we have to override it here
-              // https://github.com/foundry-rs/foundry/pull/8081#issuecomment-2402002485
-              client.chain.id === 31337
-                ? async () => ({
-                    maxFeePerGas: 100_000n,
-                    maxPriorityFeePerGas: 0n,
-                  })
-                : undefined,
-          },
-        });
+        }).extend(smartAccountActions());
       },
 
       async getProvider(_params) {
