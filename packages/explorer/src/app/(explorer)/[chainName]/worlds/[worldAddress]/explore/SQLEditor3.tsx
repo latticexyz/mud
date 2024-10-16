@@ -75,27 +75,31 @@ export function SQLEditor3({ table }: Props) {
   const { id: chainId } = useChain();
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
 
-  const form = useForm({
-    defaultValues: {
-      query: query || "",
-    },
-  });
-
-  const sqlAutocomplete = useMemo(() => {
-    if (!table) return null;
-    return new SQLAutocomplete(
-      SQLDialect.MYSQL,
-      [constructTableName(table, worldAddress as Address, chainId)],
-      Object.keys(table.schema),
-    );
-  }, [table, worldAddress, chainId]);
-
   const validateSQL = useCallback(
     (value: string) => {
-      if (!monaco) return;
+      if (!monaco || !table) return true;
 
       try {
-        sqlParser.astify(value);
+        const ast = sqlParser.astify(value);
+
+        if ("columns" in ast && Array.isArray(ast.columns) && ast.columns?.length) {
+          for (const column of ast.columns) {
+            if (!Object.keys(table.schema).includes(column)) {
+              monaco.editor.setModelMarkers(monaco.editor.getModels()[0], "sql", [
+                {
+                  severity: monaco.MarkerSeverity.Error,
+                  message: `Column '${column}' does not exist in the table schema`,
+                  startLineNumber: 1,
+                  startColumn: value.indexOf(column) + 1,
+                  endLineNumber: 1,
+                  endColumn: value.indexOf(column) + column.length + 1,
+                },
+              ]);
+              return false;
+            }
+          }
+        }
+
         monaco.editor.setModelMarkers(monaco.editor.getModels()[0], "sql", []);
         return true;
       } catch (error) {
@@ -115,12 +119,28 @@ export function SQLEditor3({ table }: Props) {
         return false;
       }
     },
-    [monaco],
+    [monaco, table],
   );
 
+  const form = useForm({
+    defaultValues: {
+      query: query || "",
+    },
+  });
+
+  const sqlAutocomplete = useMemo(() => {
+    if (!table) return null;
+    return new SQLAutocomplete(
+      SQLDialect.MYSQL,
+      [constructTableName(table, worldAddress as Address, chainId)],
+      Object.keys(table.schema),
+    );
+  }, [table, worldAddress, chainId]);
+
   const handleSubmit = form.handleSubmit((data) => {
-    if (!validateSQL(data.query)) return;
-    setQuery(data.query);
+    if (validateSQL(data.query)) {
+      setQuery(data.query);
+    }
   });
 
   useEffect(() => {
