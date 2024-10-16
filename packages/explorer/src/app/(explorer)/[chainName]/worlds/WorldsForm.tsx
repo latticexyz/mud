@@ -28,7 +28,7 @@ const formSchema = z.object({
 
 export function WorldsForm({ worlds }: { worlds: Address[] }) {
   // Initialize the observer store to start fetching transactions
-  useStore(store);
+  store;
 
   const router = useRouter();
   const { chainName } = useParams();
