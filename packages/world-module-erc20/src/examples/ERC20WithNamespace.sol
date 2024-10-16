@@ -1,0 +1,47 @@
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+
+// Adapted example from OpenZeppelin's Contract Wizard: https://wizard.openzeppelin.com/
+
+import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { WithStore, WithNamespace } from "../StoreConsumer.sol";
+import { ERC20Pausable } from "../ERC20Pausable.sol";
+import { ERC20Burnable } from "../ERC20Burnable.sol";
+import { MUDERC20 } from "../MUDERC20.sol";
+import { Context } from "../Context.sol";
+
+contract ERC20WithNamespace is WithNamespace, MUDERC20, ERC20Pausable, ERC20Burnable {
+  constructor(
+    IBaseWorld world,
+    bytes14 namespace,
+    string memory name,
+    string memory symbol
+  ) WithNamespace(world, namespace) MUDERC20(name, symbol) {
+    ResourceId namespaceId = getNamespaceId();
+
+    // Grant access to ourselves so we can write to tables after transferring ownership
+    world.grantAccess(namespaceId, address(this));
+
+    // Transfer namespace ownership to the creator
+    world.transferOwnership(getNamespaceId(), _msgSender());
+  }
+
+  function mint(address to, uint256 value) public onlyNamespace {
+    _mint(to, value);
+  }
+
+  function pause() public onlyNamespace {
+    _pause();
+  }
+
+  function unpause() public onlyNamespace {
+    _unpause();
+  }
+
+  // The following functions are overrides required by Solidity.
+
+  function _update(address from, address to, uint256 value) internal override(MUDERC20, ERC20Pausable) {
+    super._update(from, to, value);
+  }
+}
