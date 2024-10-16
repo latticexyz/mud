@@ -8,4 +8,4 @@ export type Step = {
   content: null | ReactNode;
 };
 
-export const minGasBalance = parseEther("0.05");
+export const minGasBalance = parseEther("0.01");
