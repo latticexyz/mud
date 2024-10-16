@@ -10,9 +10,9 @@ import postgres from "postgres";
 import { createStorageAdapter } from "@latticexyz/store-sync/postgres-decoded";
 import { createStoreSync } from "@latticexyz/store-sync";
 import { indexerEnvSchema, parseEnv } from "./parseEnv";
-import { sentry } from "../src/koa-middleware/sentry";
-import { healthcheck } from "../src/koa-middleware/healthcheck";
-import { helloWorld } from "../src/koa-middleware/helloWorld";
+import { sentry } from "../koa-middleware/sentry";
+import { healthcheck } from "../koa-middleware/healthcheck";
+import { helloWorld } from "../koa-middleware/helloWorld";
 
 const env = parseEnv(
   z.intersection(

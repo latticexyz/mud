@@ -16,5 +16,5 @@ export const rhodolite = {
     },
   },
   iconUrls: ["https://redstone.xyz/chain-icons/rhodolite.png"],
-  // indexerUrl: "https://indexer.mud.rhodolitechain.com",
+  indexerUrl: "https://indexer.mud.rhodolitechain.com",
 } as const satisfies MUDChain;

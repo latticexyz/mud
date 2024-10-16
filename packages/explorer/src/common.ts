@@ -3,7 +3,7 @@ import { garnet, redstone, rhodolite } from "@latticexyz/common/chains";
 
 export const internalNamespaces = ["world", "store", "metadata", "puppet", "erc20-puppet", "erc721-puppet"];
 
-export const supportedChains = { anvil, garnet, redstone, rhodolite } as const;
+export const supportedChains = { anvil, rhodolite, garnet, redstone } as const;
 export type supportedChains = typeof supportedChains;
 
 export type supportedChainName = keyof supportedChains;
