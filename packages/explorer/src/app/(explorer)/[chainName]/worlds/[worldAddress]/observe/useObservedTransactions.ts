@@ -32,7 +32,7 @@ export type ObservedTransaction = {
 };
 
 export function useObservedTransactions() {
-  const { worldAddress } = useParams();
+  const { worldAddress } = useParams<{ worldAddress: string }>();
   const transactions = useStore(worldStore, (state) => state.transactions);
   const observerWrites = useStore(observerStore, (state) => state.writes);
 
@@ -40,7 +40,7 @@ export function useObservedTransactions() {
     const mergedMap = new Map<string | undefined, ObservedTransaction>();
 
     for (const write of Object.values(observerWrites)) {
-      if (write.address !== worldAddress) continue;
+      if (write.address.toLowerCase() !== worldAddress.toLowerCase()) continue;
 
       const parsedAbiItem = parseAbiItem(`function ${write.functionSignature}`) as AbiFunction;
       const writeResult = write.events.find((event): event is Message<"write:result"> => event.type === "write:result");
