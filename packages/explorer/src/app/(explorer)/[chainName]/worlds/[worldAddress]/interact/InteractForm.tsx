@@ -25,26 +25,22 @@ export function InteractForm() {
   }, [data?.abi, deferredFilterValue]);
 
   return (
-    <div className="flex min-h-full">
-      <div className="w-[320px] flex-shrink-0">
-        <div className="sticky top-2 pr-4">
-          <h4 className="py-4 text-xs font-semibold uppercase opacity-70">Jump to:</h4>
+    <>
+      <div className="-mr-1g -ml-1 flex gap-x-4 overflow-y-hidden">
+        <div className="w-[320px] flex-shrink-0 overflow-y-auto border-r pl-1">
+          <div className="pr-4">
+            <h4 className="py-4 text-xs font-semibold uppercase opacity-70">Jump to:</h4>
+            <Input
+              type="text"
+              placeholder="Filter functions..."
+              value={deferredFilterValue}
+              onChange={(evt) => {
+                setFilterValue(evt.target.value);
+              }}
+            />
+          </div>
 
-          <Input
-            type="text"
-            placeholder="Filter functions..."
-            value={deferredFilterValue}
-            onChange={(evt) => {
-              setFilterValue(evt.target.value);
-            }}
-          />
-
-          <ul
-            className="mt-4 max-h-max space-y-2 overflow-y-auto pb-4"
-            style={{
-              maxHeight: "calc(100vh - 160px)",
-            }}
-          >
+          <ul className="mt-4 max-h-max space-y-2 overflow-y-auto pb-4">
             {!isFetched &&
               Array.from({ length: 10 }).map((_, index) => {
                 return (
@@ -80,26 +76,26 @@ export function InteractForm() {
             })}
           </ul>
         </div>
-      </div>
 
-      <div className="min-h-full w-full border-l pl-4">
-        {!isFetched && (
-          <>
-            <Skeleton className="h-[100px]" />
-            <Separator className="my-4" />
-            <Skeleton className="h-[100px]" />
-            <Separator className="my-4" />
-            <Skeleton className="h-[100px]" />
-            <Separator className="my-4" />
-            <Skeleton className="h-[100px]" />
-          </>
-        )}
+        <div className="w-full overflow-y-auto pl-1 pr-1">
+          {!isFetched && (
+            <>
+              <Skeleton className="h-[100px]" />
+              <Separator className="my-4" />
+              <Skeleton className="h-[100px]" />
+              <Separator className="my-4" />
+              <Skeleton className="h-[100px]" />
+              <Separator className="my-4" />
+              <Skeleton className="h-[100px]" />
+            </>
+          )}
 
-        {data?.abi &&
-          filteredFunctions.map((abi) => (
-            <FunctionField key={JSON.stringify(abi)} worldAbi={data.abi} functionAbi={abi} />
-          ))}
+          {data?.abi &&
+            filteredFunctions.map((abi) => (
+              <FunctionField key={JSON.stringify(abi)} worldAbi={data.abi} functionAbi={abi} />
+            ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
