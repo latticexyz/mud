@@ -5,6 +5,7 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useMutation } from "@tanstack/react-query";
 import { usePasskeyConnector } from "./usePasskeyConnector";
 import { AppInfo } from "./AppInfo";
+import { twMerge } from "tailwind-merge";
 
 export function ConnectWallet() {
   const userAccount = useAccount();
@@ -55,7 +56,12 @@ export function ConnectWallet() {
   }
 
   return (
-    <div className="flex-grow grid place-items-center p-6">
+    <div
+      className={twMerge(
+        "flex-grow grid place-items-center p-6",
+        "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
+      )}
+    >
       <div className="flex flex-col gap-6">
         <div className="p-4">
           {/* TODO: render appImage if available? */}
