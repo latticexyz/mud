@@ -44,7 +44,7 @@ export function SQLEditor({ table }: Props) {
       <form
         className={cn(
           "relative flex w-full flex-grow items-center justify-center bg-black align-middle",
-          "h-10 rounded-md border px-3 py-2 ring-offset-background",
+          "rounded-md border px-3 py-2 ring-offset-background",
           {
             "outline-none ring-2 ring-ring ring-offset-2": isFocused,
           },
