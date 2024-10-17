@@ -9,6 +9,7 @@ import {
   Hex,
   SimulateContractErrorType,
   decodeErrorResult,
+  decodeFunctionData,
   decodeFunctionResult,
   encodeFunctionData,
   keccak256,
@@ -21,6 +22,8 @@ import storeSimulatorArtifact from "../out/StoreSimulator.sol/StoreSimulator.jso
 import { readContract, simulateContract } from "viem/actions";
 
 const storeSimulator = stringToHex("StoreSimulator", { size: 20 });
+const alice = stringToHex("Alice", { size: 20 });
+console.log("alice", alice);
 
 describe("storeSimulator", async () => {
   let worldAddress: Address;
@@ -57,7 +60,7 @@ describe("storeSimulator", async () => {
       abi: storeSimulatorAbi,
       functionName: "call",
       args: [worldAddress, callData],
-      // account: worldAddress,
+      account: alice,
       stateOverride: [
         {
           address: worldAddress,
@@ -99,10 +102,27 @@ describe("storeSimulator", async () => {
     expect(result).toMatchInlineSnapshot(`null`);
 
     // TODO: replace calls with just store events
-    expect(calls).toMatchInlineSnapshot(`
+    expect(calls.map((data) => decodeFunctionData({ abi: worldAbi, data }))).toMatchInlineSnapshot(`
       [
-        "0xb591186e00000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000005",
-        "0x298314fb74620000000000000000000000000000506f736974696f6e000000000000000000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000d622adbdeed85e1a3df183e08c0ba7503f720ca7000000000000000000000000000000000000000000000000000000000000000800000005000000050000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        {
+          "args": [
+            5,
+            5,
+          ],
+          "functionName": "move",
+        },
+        {
+          "args": [
+            "0x74620000000000000000000000000000506f736974696f6e0000000000000000",
+            [
+              "0x0000000000000000000000002fb283b95c5f9b601f151a91cf72fb5fa53713d7",
+            ],
+            "0x0000000500000005",
+            "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "0x",
+          ],
+          "functionName": "setRecord",
+        },
       ]
     `);
   });
