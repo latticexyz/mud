@@ -5,6 +5,7 @@ import { sendUserOperation, waitForUserOperationReceipt } from "viem/account-abs
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { ConnectedClient, unlimitedDelegationControlId, worldAbi } from "../common";
 import { paymasterAbi } from "../paymaster";
+import { writeContract } from "viem/actions";
 
 function defineCall<abi extends Abi | readonly unknown[]>(
   call: Omit<ContractFunctionParameters<abi>, "address"> & {
@@ -34,7 +35,30 @@ export function useSetupAppAccount() {
     }): Promise<void> => {
       // TODO: for non-smart accounts, collect signatures and store to be executed later?
       if (userClient.account.type !== "smart") {
-        throw new Error("User account is not a smart account.");
+        await getAction(
+          userClient,
+          writeContract,
+          "writeContract",
+        )({
+          chain: userClient.chain,
+          account: userClient.account,
+          address: paymasterAddress,
+          abi: paymasterAbi,
+          functionName: "registerSpender",
+          args: [appAccountAddress],
+        });
+        await getAction(
+          userClient,
+          writeContract,
+          "writeContract",
+        )({
+          chain: userClient.chain,
+          account: userClient.account,
+          address: worldAddress,
+          abi: worldAbi,
+          functionName: "registerDelegation",
+          args: [appAccountAddress, unlimitedDelegationControlId, "0x"],
+        });
       }
 
       const calls = [];
