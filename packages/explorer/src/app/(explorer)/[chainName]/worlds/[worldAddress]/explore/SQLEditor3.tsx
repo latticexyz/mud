@@ -17,6 +17,8 @@ import { cn } from "../../../../../../utils";
 import { useChain } from "../../../../hooks/useChain";
 import { constructTableName } from "../../../../utils/constructTableName";
 
+const sqlParser = new Parser();
+
 const options: editor.IStandaloneEditorConstructionOptions = {
   fontSize: 14,
   fontWeight: "normal",
@@ -57,13 +59,11 @@ const options: editor.IStandaloneEditorConstructionOptions = {
   fixedOverflowWidgets: true,
 };
 
-const monacoOptionTypesMap = {
+const monacoSuggestionsMap = {
   KEYWORD: "Keyword",
   TABLE: "Field",
   COLUMN: "Field",
 } as const;
-
-const sqlParser = new Parser();
 
 type Props = {
   table?: Table;
@@ -81,7 +81,16 @@ export function SQLEditor3({ table }: Props) {
     },
   });
 
-  const validateSQL = useCallback(
+  const sqlAutocomplete = useMemo(() => {
+    if (!table || !worldAddress || !chainId) return null;
+
+    const tableName = constructTableName(table, worldAddress as Address, chainId);
+    const columnNames = Object.keys(table.schema);
+
+    return new SQLAutocomplete(SQLDialect.PLpgSQL, [tableName], columnNames);
+  }, [table, worldAddress, chainId]);
+
+  const validateQuery = useCallback(
     (value: string) => {
       if (!monaco || !table) return true;
 
@@ -127,20 +136,15 @@ export function SQLEditor3({ table }: Props) {
     [monaco, table],
   );
 
-  const sqlAutocomplete = useMemo(() => {
-    if (!table) return null;
-    return new SQLAutocomplete(
-      SQLDialect.PLpgSQL,
-      [constructTableName(table, worldAddress as Address, chainId)],
-      Object.keys(table.schema),
-    );
-  }, [table, worldAddress, chainId]);
-
   const handleSubmit = form.handleSubmit((data) => {
-    if (validateSQL(data.query)) {
+    if (validateQuery(data.query)) {
       setQuery(data.query);
     }
   });
+
+  useEffect(() => {
+    form.reset({ query: query || "" });
+  }, [query, form]);
 
   useEffect(() => {
     if (monaco) {
@@ -170,7 +174,7 @@ export function SQLEditor3({ table }: Props) {
           const suggestions = sqlAutocomplete.autocomplete(textUntilPosition).map(({ value, optionType }) => {
             return {
               label: value,
-              kind: monaco.languages.CompletionItemKind[monacoOptionTypesMap[optionType]],
+              kind: monaco.languages.CompletionItemKind[monacoSuggestionsMap[optionType]],
               insertText: value,
               range,
               // bring non-keyword suggestions to the top
@@ -188,7 +192,7 @@ export function SQLEditor3({ table }: Props) {
         provider.dispose();
       };
     }
-  }, [monaco, sqlAutocomplete, validateSQL]);
+  }, [monaco, sqlAutocomplete, validateQuery]);
 
   return (
     <Form {...form}>
