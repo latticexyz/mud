@@ -25,7 +25,7 @@ export function SQLEditor({ table }: Props) {
 
   const form = useForm({
     defaultValues: {
-      query: query || "",
+      query,
     },
   });
 
@@ -36,7 +36,7 @@ export function SQLEditor({ table }: Props) {
   });
 
   useEffect(() => {
-    form.reset({ query: query || "" });
+    form.reset({ query });
   }, [query, form]);
 
   return (
