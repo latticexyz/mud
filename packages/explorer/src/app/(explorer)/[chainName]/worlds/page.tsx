@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { Address } from "viem";
-import { isValidChainName, supportedChainName, supportedChains } from "../../../../common";
+import { supportedChainName, supportedChains } from "../../../../common";
 import { indexerForChainId } from "../../utils/indexerForChainId";
 import { WorldsForm } from "./WorldsForm";
 
@@ -47,15 +47,11 @@ async function fetchWorlds(chainName: supportedChainName): Promise<Address[]> {
 
 type Props = {
   params: {
-    chainName: string;
+    chainName: supportedChainName;
   };
 };
 
 export default async function WorldsPage({ params: { chainName } }: Props) {
-  if (!isValidChainName(chainName)) {
-    return notFound();
-  }
-
   const worlds = await fetchWorlds(chainName);
   if (worlds.length === 1) {
     return redirect(`/${chainName}/worlds/${worlds[0]}`);
