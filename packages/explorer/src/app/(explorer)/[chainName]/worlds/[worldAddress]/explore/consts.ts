@@ -39,9 +39,3 @@ export const monacoOptions: editor.IStandaloneEditorConstructionOptions = {
   automaticLayout: true,
   fixedOverflowWidgets: true,
 };
-
-export const monacoSuggestionsMap = {
-  KEYWORD: "Keyword",
-  TABLE: "Field",
-  COLUMN: "Field",
-} as const;

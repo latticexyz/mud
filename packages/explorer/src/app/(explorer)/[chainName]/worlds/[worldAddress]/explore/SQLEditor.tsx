@@ -2,7 +2,7 @@
 
 import { PlayIcon } from "lucide-react";
 import { useQueryState } from "nuqs";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Table } from "@latticexyz/config";
 import Editor from "@monaco-editor/react";
@@ -18,6 +18,7 @@ type Props = {
 };
 
 export function SQLEditor({ table }: Props) {
+  const [isFocused, setIsFocused] = useState(false);
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
   const validateQuery = useQueryValidator();
   useMonacoSuggestions(table);
@@ -43,10 +44,10 @@ export function SQLEditor({ table }: Props) {
       <form
         className={cn(
           "relative flex w-full flex-grow items-center justify-center bg-black align-middle",
-          "max-rounded-md h-10 border px-3 py-2",
-          "placeholder:text-muted-foreground",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-          "disabled:cursor-not-allowed disabled:opacity-50",
+          "h-10 rounded-md border px-3 py-2 ring-offset-background",
+          {
+            "outline-none ring-2 ring-ring ring-offset-2": isFocused,
+          },
         )}
         onSubmit={handleSubmit}
       >
@@ -60,6 +61,15 @@ export function SQLEditor({ table }: Props) {
               options={monacoOptions}
               language="sql"
               onChange={(value) => field.onChange(value)}
+              onMount={(editor) => {
+                editor.onDidFocusEditorText(() => {
+                  setIsFocused(true);
+                });
+
+                editor.onDidBlurEditorText(() => {
+                  setIsFocused(false);
+                });
+              }}
               loading={null}
             />
           )}

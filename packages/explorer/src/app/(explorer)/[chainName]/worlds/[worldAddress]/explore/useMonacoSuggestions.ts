@@ -1,8 +1,13 @@
 import { useEffect } from "react";
 import { Table } from "@latticexyz/config";
 import { useMonaco } from "@monaco-editor/react";
-import { monacoSuggestionsMap } from "./consts";
 import { useQueryAutocomplete } from "./useQueryAutocomplete";
+
+const monacoSuggestionsMap = {
+  KEYWORD: "Keyword",
+  TABLE: "Field",
+  COLUMN: "Field",
+} as const;
 
 export function useMonacoSuggestions(table?: Table) {
   const monaco = useMonaco();
@@ -39,6 +44,7 @@ export function useMonacoSuggestions(table?: Table) {
           kind: monaco.languages.CompletionItemKind[monacoSuggestionsMap[optionType]],
           insertText: value,
           range,
+          // move keyword optionType to the top of suggestions list
           sortText: optionType !== "KEYWORD" ? "0" : "1",
         }));
 
