@@ -38,7 +38,7 @@ export function Explorer() {
 
   return (
     <>
-      {indexer.type !== "sqlite" && <SQLEditor />}
+      {indexer.type !== "sqlite" && <SQLEditor table={table} />}
       <TableSelector tables={tables} />
       <TablesViewer table={table} query={query} />
     </>
