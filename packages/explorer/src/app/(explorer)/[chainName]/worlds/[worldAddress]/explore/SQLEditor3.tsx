@@ -75,6 +75,12 @@ export function SQLEditor3({ table }: Props) {
   const { id: chainId } = useChain();
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
 
+  const form = useForm({
+    defaultValues: {
+      query: query || "",
+    },
+  });
+
   const validateSQL = useCallback(
     (value: string) => {
       if (!monaco || !table) return true;
@@ -121,16 +127,10 @@ export function SQLEditor3({ table }: Props) {
     [monaco, table],
   );
 
-  const form = useForm({
-    defaultValues: {
-      query: query || "",
-    },
-  });
-
   const sqlAutocomplete = useMemo(() => {
     if (!table) return null;
     return new SQLAutocomplete(
-      SQLDialect.MYSQL,
+      SQLDialect.PLpgSQL,
       [constructTableName(table, worldAddress as Address, chainId)],
       Object.keys(table.schema),
     );
