@@ -5,9 +5,8 @@ import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { useParams } from "next/navigation";
 import { Parser } from "node-sql-parser";
 import { useQueryState } from "nuqs";
-import { SQLAutocomplete, SQLDialect } from "sql-autocomplete";
 import { Address } from "viem";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Table } from "@latticexyz/config";
 import Editor, { useMonaco } from "@monaco-editor/react";
@@ -16,6 +15,7 @@ import { Form, FormField } from "../../../../../../components/ui/Form";
 import { cn } from "../../../../../../utils";
 import { useChain } from "../../../../hooks/useChain";
 import { constructTableName } from "../../../../utils/constructTableName";
+import { useQueryAutocomplete } from "./useQueryAutocomplete";
 
 const sqlParser = new Parser();
 
@@ -74,6 +74,7 @@ export function SQLEditor3({ table }: Props) {
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
+  const queryAutocomplete = useQueryAutocomplete(table);
 
   const form = useForm({
     defaultValues: {
@@ -81,14 +82,23 @@ export function SQLEditor3({ table }: Props) {
     },
   });
 
-  const sqlAutocomplete = useMemo(() => {
-    if (!table || !worldAddress || !chainId) return null;
+  const setErrorMarker = useCallback(
+    (message: string, startColumn: number, endColumn: number) => {
+      if (!monaco) return;
 
-    const tableName = constructTableName(table, worldAddress as Address, chainId);
-    const columnNames = Object.keys(table.schema);
-
-    return new SQLAutocomplete(SQLDialect.PLpgSQL, [tableName], columnNames);
-  }, [table, worldAddress, chainId]);
+      monaco.editor.setModelMarkers(monaco.editor.getModels()[0], "sql", [
+        {
+          severity: monaco.MarkerSeverity.Error,
+          message,
+          startLineNumber: 1,
+          startColumn,
+          endLineNumber: 1,
+          endColumn,
+        },
+      ]);
+    },
+    [monaco],
+  );
 
   const validateQuery = useCallback(
     (value: string) => {
@@ -96,21 +106,34 @@ export function SQLEditor3({ table }: Props) {
 
       try {
         const ast = sqlParser.astify(value);
-        if ("columns" in ast && Array.isArray(ast.columns) && ast.columns?.length) {
-          for (const columnInfo of ast.columns) {
-            const columnName = columnInfo.expr.column;
+        if ("columns" in ast && Array.isArray(ast.columns)) {
+          for (const column of ast.columns) {
+            const columnName = column.expr.column;
             if (!Object.keys(table.schema).includes(columnName)) {
-              monaco.editor.setModelMarkers(monaco.editor.getModels()[0], "sql", [
-                {
-                  severity: monaco.MarkerSeverity.Error,
-                  message: `Column '${columnName}' does not exist in the table schema`,
-                  startLineNumber: 1,
-                  startColumn: value.indexOf(columnName) + 1,
-                  endLineNumber: 1,
-                  endColumn: value.indexOf(columnName) + columnName.length + 1,
-                },
-              ]);
+              setErrorMarker(
+                `Column '${columnName}' does not exist in the table schema.`,
+                value.indexOf(columnName) + 1,
+                value.indexOf(columnName) + columnName.length + 1,
+              );
               return false;
+            }
+          }
+        }
+
+        if ("from" in ast && Array.isArray(ast.from)) {
+          for (const tableInfo of ast.from) {
+            if ("table" in tableInfo) {
+              const selectedTableName = tableInfo.table;
+              const tableName = constructTableName(table, worldAddress as Address, chainId);
+
+              if (selectedTableName !== tableName) {
+                setErrorMarker(
+                  `Only '${tableName}' is available for this query.`,
+                  value.indexOf(selectedTableName) + 1,
+                  value.indexOf(selectedTableName) + selectedTableName.length + 1,
+                );
+                return false;
+              }
             }
           }
         }
@@ -119,21 +142,12 @@ export function SQLEditor3({ table }: Props) {
         return true;
       } catch (error) {
         if (error instanceof Error) {
-          monaco.editor.setModelMarkers(monaco.editor.getModels()[0], "sql", [
-            {
-              severity: monaco.MarkerSeverity.Error,
-              message: error.message,
-              startLineNumber: 1,
-              startColumn: 1,
-              endLineNumber: 1,
-              endColumn: value.length + 1,
-            },
-          ]);
+          setErrorMarker(error.message, 1, value.length + 1);
         }
         return false;
       }
     },
-    [monaco, table],
+    [monaco, table, worldAddress, chainId, setErrorMarker],
   );
 
   const handleSubmit = form.handleSubmit((data) => {
@@ -152,7 +166,7 @@ export function SQLEditor3({ table }: Props) {
         triggerCharacters: [" ", ".", ","],
 
         provideCompletionItems: (model, position) => {
-          if (!sqlAutocomplete) {
+          if (!queryAutocomplete) {
             return { suggestions: [] };
           }
 
@@ -171,7 +185,7 @@ export function SQLEditor3({ table }: Props) {
             endColumn: word.endColumn,
           };
 
-          const suggestions = sqlAutocomplete.autocomplete(textUntilPosition).map(({ value, optionType }) => {
+          const suggestions = queryAutocomplete.autocomplete(textUntilPosition).map(({ value, optionType }) => {
             return {
               label: value,
               kind: monaco.languages.CompletionItemKind[monacoSuggestionsMap[optionType]],
@@ -192,7 +206,7 @@ export function SQLEditor3({ table }: Props) {
         provider.dispose();
       };
     }
-  }, [monaco, sqlAutocomplete, validateQuery]);
+  }, [monaco, queryAutocomplete, validateQuery]);
 
   return (
     <Form {...form}>
