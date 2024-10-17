@@ -32,6 +32,9 @@ export function Modal({ open, onOpenChange, children }: Props) {
                 className="outline-none w-full max-w-[26rem] mx-auto"
                 // TODO description
                 aria-describedby={undefined}
+                onOpenAutoFocus={(event) => {
+                  event.preventDefault();
+                }}
               >
                 {children}
               </DialogContent>

@@ -35,7 +35,8 @@ export type PasskeyProvider = {
 export type PasskeyConnectorProperties = {
   createPasskey(): Promise<void>;
   reusePasskey(): Promise<void>;
-  hasPasskey(): Promise<boolean>;
+  // TODO: does wagmi storage require this to be async?
+  hasPasskey(): boolean;
   getClient(parameters?: { chainId?: number | undefined } | undefined): Promise<Client>;
   onConnect(connectInfo: ProviderConnectInfo): void;
 };
@@ -87,7 +88,7 @@ export function passkeyConnector({
         this.onAccountsChanged([account.address]);
         this.onConnect?.({ chainId: numberToHex(chainId) });
       },
-      async hasPasskey() {
+      hasPasskey() {
         return Object.keys(cache.getState().publicKeys).length > 0;
       },
 

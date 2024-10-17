@@ -25,6 +25,7 @@ export function ConnectedSteps({ userClient }: Props) {
     <div
       className={twMerge(
         "px-8 flex-grow flex flex-col divide-y divide-neutral-800",
+        // TODO: do not animate in if the modal is opening
         "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
       )}
     >
