@@ -44,7 +44,7 @@ export function SQLEditor({ table }: Props) {
       <form
         className={cn(
           "relative flex w-full flex-grow items-center justify-center bg-black align-middle",
-          "rounded-md border px-3 py-2 ring-offset-background",
+          "h-10 max-h-10 rounded-md border px-3 py-2 ring-offset-background",
           {
             "outline-none ring-2 ring-ring ring-offset-2": isFocused,
           },
@@ -56,6 +56,7 @@ export function SQLEditor({ table }: Props) {
           render={({ field }) => (
             <Editor
               width="100%"
+              height="21px"
               theme="hc-black"
               value={field.value}
               options={monacoOptions}
