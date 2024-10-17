@@ -20,7 +20,7 @@ type Props = {
 export function SQLEditor({ table }: Props) {
   const [isFocused, setIsFocused] = useState(false);
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
-  const validateQuery = useQueryValidator();
+  const validateQuery = useQueryValidator(table);
   useMonacoSuggestions(table);
 
   const form = useForm({
