@@ -35,6 +35,7 @@ export type PasskeyProvider = {
 export type PasskeyConnectorProperties = {
   createPasskey(): Promise<void>;
   reusePasskey(): Promise<void>;
+  hasPasskey(): Promise<boolean>;
   getClient(parameters?: { chainId?: number | undefined } | undefined): Promise<Client>;
   onConnect(connectInfo: ProviderConnectInfo): void;
 };
@@ -85,6 +86,9 @@ export function passkeyConnector({
         const account = await getAccount(client, id);
         this.onAccountsChanged([account.address]);
         this.onConnect?.({ chainId: numberToHex(chainId) });
+      },
+      async hasPasskey() {
+        return Object.keys(cache.getState().publicKeys).length > 0;
       },
 
       async connect(params) {

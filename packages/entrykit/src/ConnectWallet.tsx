@@ -2,27 +2,33 @@ import { useAccount } from "wagmi";
 import { Button } from "./ui/Button";
 import { useAccountModal } from "./useAccountModal";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { usePasskeyConnector } from "./usePasskeyConnector";
 import { AppInfo } from "./AppInfo";
+import { twMerge } from "tailwind-merge";
 
 export function ConnectWallet() {
   const userAccount = useAccount();
   const { accountModalOpen } = useAccountModal();
   const { openConnectModal, connectModalOpen } = useConnectModal();
 
+  // TODO: show error states
+
   const passkeyConnector = usePasskeyConnector();
   const createPasskey = useMutation({
+    onError: (error) => console.error(error),
     mutationKey: ["createPasskey", passkeyConnector.id, accountModalOpen, connectModalOpen, userAccount.status],
-    mutationFn: async () => {
-      return await passkeyConnector.createPasskey();
-    },
+    mutationFn: () => passkeyConnector.createPasskey(),
   });
   const reusePasskey = useMutation({
+    onError: (error) => console.error(error),
     mutationKey: ["reusePasskey", passkeyConnector.id, accountModalOpen, connectModalOpen, userAccount.status],
-    mutationFn: async () => {
-      return await passkeyConnector.reusePasskey();
-    },
+    mutationFn: () => passkeyConnector.reusePasskey(),
+  });
+
+  const { data: hasPasskey } = useQuery({
+    queryKey: ["hasPasskey", passkeyConnector.id, accountModalOpen, connectModalOpen, userAccount.status],
+    queryFn: () => passkeyConnector.hasPasskey(),
   });
 
   return (
@@ -34,32 +40,27 @@ export function ConnectWallet() {
             <AppInfo />
           </div>
           <div className="self-center flex flex-col gap-2 w-60">
-            <div className="flex flex-col">
+            <div className={twMerge("flex flex-col gap-2", hasPasskey ? "flex-col-reverse" : null)}>
               <Button
+                variant={hasPasskey ? "secondary" : "primary"}
                 className="self-auto flex justify-center"
                 pending={createPasskey.status === "pending"}
                 onClick={() => createPasskey.mutate()}
               >
                 Create account
               </Button>
-              {/* TODO: better error styles */}
-              {createPasskey.status === "error" ? (
-                <div className="bg-red-800 text-white text-sm p-2 animate-in animate-duration-200 fade-in">
-                  {createPasskey.error.message}
-                </div>
-              ) : null}
+              <Button
+                variant={hasPasskey ? "primary" : "secondary"}
+                className="self-auto flex justify-center"
+                pending={reusePasskey.status === "pending"}
+                onClick={() => reusePasskey.mutate()}
+              >
+                Sign in
+              </Button>
             </div>
-            <Button
-              className="self-auto flex justify-center"
-              variant="secondary"
-              pending={reusePasskey.status === "pending"}
-              onClick={() => reusePasskey.mutate()}
-            >
-              Sign in
-            </Button>
 
             <button
-              className="text-sm transition text-neutral-500 hover:text-white"
+              className="text-sm self-center transition text-neutral-500 hover:text-white p-2"
               disabled={userAccount.status === "connecting"}
               // TODO: figure out how to prevent this from switching chains after connecting
               onClick={openConnectModal}
