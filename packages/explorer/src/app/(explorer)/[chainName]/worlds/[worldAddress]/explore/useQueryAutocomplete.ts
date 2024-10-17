@@ -8,7 +8,7 @@ import { constructTableName } from "../../../../utils/constructTableName";
 
 export function useQueryAutocomplete(table?: Table) {
   const { id: chainId } = useChain();
-  const { worldAddress } = useParams();
+  const { worldAddress } = useParams<{ worldAddress: Address }>();
 
   return useMemo(() => {
     if (!table || !worldAddress || !chainId) return null;
