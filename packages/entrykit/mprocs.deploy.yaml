@@ -3,14 +3,14 @@ procs:
     shell: anvil --dump-state playground/anvil-state.json
   deploy-factory:
     cwd: ../../../coinbase-smart-wallet
-    shell: make deploy
+    shell: make deploy-local
   deploy-bundler:
     cwd: ../../../alto
     shell: pnpm ts-node scripts/localDeployer/index.ts
   deploy-paymaster:
     cwd: ../../../quarry-paymaster/packages/contracts
     # TODO: pick or mine a nice salt for paymaster
-    shell: pnpm mud deploy --salt 0x && pnpm fund:paymaster:local && pnpm fund:service:local
+    shell: pnpm mud deploy --salt 0x && pnpm fund:paymaster:local && pnpm fund:issuer:local
   deploy-game:
     cwd: ../../test/mock-game-contracts
     shell: pnpm deploy:local --salt 0x
