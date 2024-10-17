@@ -3,7 +3,7 @@ import { useAppInfo } from "./useAppInfo";
 import { usePreloadImage } from "./usePreloadImage";
 
 export function AppInfo() {
-  const { appName, appOrigin, appIcon } = useAppInfo();
+  const { appName, appIcon } = useAppInfo();
 
   const { data: hasAppIcon, isLoading: appIconLoading } = usePreloadImage(appIcon);
 
@@ -19,10 +19,7 @@ export function AppInfo() {
           )
         ) : null}
       </div>
-      <div className="flex flex-col gap-1 items-center justify-center">
-        <div className="text-2xl text-white">{appName}</div>
-        <div className="text-sm font-mono">{appOrigin}</div>
-      </div>
+      <div className="text-2xl text-white text-center">{appName}</div>
     </div>
   );
 }

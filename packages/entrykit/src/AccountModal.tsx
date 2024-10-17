@@ -23,9 +23,11 @@ export function AccountModal() {
             "links:decoration-neutral-500 hover:links:decoration-orange-500",
           )}
         >
-          <AccountModalErrorBoundary>
-            <AccountModalContent />
-          </AccountModalErrorBoundary>
+          <div className="flex-grow flex flex-col">
+            <AccountModalErrorBoundary>
+              <AccountModalContent />
+            </AccountModalErrorBoundary>
+          </div>
 
           <a
             href="https://mud.dev"

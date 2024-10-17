@@ -21,6 +21,7 @@ export function useSetupAppAccount() {
   const queryClient = useQueryClient();
 
   return useMutation({
+    onError: (error) => console.error(error),
     mutationKey: ["setupAppAccount"],
     mutationFn: async ({
       userClient,

@@ -1,13 +1,13 @@
-import { ConnectedWallet } from "./ConnectedWallet";
-import { SetupAppAccount } from "./SetupAppAccount";
-import { useAllowance } from "./useAllowance";
-import { ClaimGasPass } from "./ClaimGasPass";
-import { useAppAccountClient } from "../useAppAccountClient";
-import { useSpender } from "./useSpender";
-import { Step, minGasBalance } from "./common";
-import { useDelegation } from "./useDelegation";
 import { useMemo } from "react";
 import { ConnectedClient, unlimitedDelegationControlId } from "../common";
+import { Step, minGasBalance } from "./common";
+import { useAllowance } from "./useAllowance";
+import { useAppAccountClient } from "../useAppAccountClient";
+import { useSpender } from "./useSpender";
+import { useDelegation } from "./useDelegation";
+import { Wallet } from "./Wallet";
+import { Allowance } from "./Allowance";
+import { Session } from "./Session";
 
 export function useSteps(userClient: ConnectedClient | undefined): readonly Step[] {
   const userAddress = userClient?.account.address;
@@ -24,33 +24,38 @@ export function useSteps(userClient: ConnectedClient | undefined): readonly Step
     if (!userAddress) {
       return [
         {
-          id: "connectWallet",
+          id: "wallet",
           label: "Sign in",
           isComplete: false,
-          content: null,
+          content: () => null,
         },
       ];
     }
 
     return [
       {
-        id: "connectWallet",
+        id: "wallet",
         label: "Sign in",
         isComplete: true,
-        content: <ConnectedWallet userAddress={userAddress} />,
+        content: (props) => <Wallet {...props} userAddress={userAddress} />,
       },
       {
-        id: "claimGasPass",
+        id: "allowance",
         label: "Top up",
         isComplete: (allowance.data?.allowance ?? 0n) >= minGasBalance,
-        content: <ClaimGasPass userAddress={userAddress} />,
+        content: (props) => <Allowance {...props} userAddress={userAddress} />,
       },
       {
-        id: "setupAppAccount",
+        id: "session",
         label: "Set up account",
         isComplete: isSpender && hasDelegation,
-        content: (
-          <SetupAppAccount userClient={userClient} registerSpender={!isSpender} registerDelegation={!hasDelegation} />
+        content: (props) => (
+          <Session
+            {...props}
+            userClient={userClient}
+            registerSpender={!isSpender}
+            registerDelegation={!hasDelegation}
+          />
         ),
       },
     ];

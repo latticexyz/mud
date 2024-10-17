@@ -9,6 +9,7 @@ export function useClaimGasPass() {
   // TODO: use client.request once this is behind proxyd
   const { passIssuerTransport } = useEntryKitConfig();
   return useMutation({
+    onError: (error) => console.error(error),
     mutationKey: ["claimGasPass"],
     mutationFn: async (userAddress: Address) => {
       const transport = passIssuerTransport({ retryCount: 0 });

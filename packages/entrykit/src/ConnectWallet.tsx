@@ -1,10 +1,10 @@
 import { useAccount } from "wagmi";
-import { Button } from "../ui/Button";
-import { useAccountModal } from "../useAccountModal";
+import { Button } from "./ui/Button";
+import { useAccountModal } from "./useAccountModal";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useMutation } from "@tanstack/react-query";
-import { usePasskeyConnector } from "../usePasskeyConnector";
-import { AppInfo } from "../AppInfo";
+import { usePasskeyConnector } from "./usePasskeyConnector";
+import { AppInfo } from "./AppInfo";
 
 export function ConnectWallet() {
   const userAccount = useAccount();
@@ -33,7 +33,7 @@ export function ConnectWallet() {
             {/* TODO: render appImage if available? */}
             <AppInfo />
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="self-center flex flex-col gap-2 w-60">
             <div className="flex flex-col">
               <Button
                 className="self-auto flex justify-center"

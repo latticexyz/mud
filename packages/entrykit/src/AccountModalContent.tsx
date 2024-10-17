@@ -1,5 +1,5 @@
 import { useConnectorClient } from "wagmi";
-import { ConnectWallet } from "./onboarding/ConnectWallet";
+import { ConnectWallet } from "./ConnectWallet";
 import { ConnectedSteps } from "./onboarding/ConnectedSteps";
 import { useEntryKitConfig } from "./EntryKitConfigProvider";
 

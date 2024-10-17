@@ -5,7 +5,7 @@ export type Step = {
   id: string;
   label: string;
   isComplete: boolean;
-  content: null | ReactNode;
+  content: (props: { isActive: boolean; isExpanded: boolean }) => ReactNode;
 };
 
 export const minGasBalance = parseEther("0.01");
