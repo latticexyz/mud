@@ -3,7 +3,7 @@
 import { Coins, Eye, Send } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { AbiFunction } from "viem";
-import { useDeferredValue } from "react";
+import { useDeferredValue, useMemo } from "react";
 import { Input } from "../../../../../../components/ui/Input";
 import { Separator } from "../../../../../../components/ui/Separator";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
@@ -12,14 +12,17 @@ import { useHashState } from "../../../../hooks/useHashState";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { FunctionField } from "./FunctionField";
 
-export function Form() {
+export function InteractForm() {
   const [hash] = useHashState();
   const { data, isFetched } = useWorldAbiQuery();
   const [filterValue, setFilterValue] = useQueryState("function", { defaultValue: "" });
   const deferredFilterValue = useDeferredValue(filterValue);
-  const filteredFunctions = data?.abi?.filter(
-    (item) => item.type === "function" && item.name.toLowerCase().includes(deferredFilterValue.toLowerCase()),
-  );
+  const filteredFunctions = useMemo(() => {
+    if (!data?.abi) return [];
+    return data.abi.filter(
+      (item) => item.type === "function" && item.name.toLowerCase().includes(deferredFilterValue.toLowerCase()),
+    );
+  }, [data?.abi, deferredFilterValue]);
 
   return (
     <div className="flex min-h-full">
@@ -92,9 +95,10 @@ export function Form() {
           </>
         )}
 
-        {filteredFunctions?.map((abi) => {
-          return <FunctionField key={JSON.stringify(abi)} abi={abi as AbiFunction} />;
-        })}
+        {data?.abi &&
+          filteredFunctions.map((abi) => (
+            <FunctionField key={JSON.stringify(abi)} worldAbi={data.abi} functionAbi={abi} />
+          ))}
       </div>
     </div>
   );
