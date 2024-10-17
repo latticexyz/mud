@@ -2,7 +2,6 @@
 // Adapted from OpenZeppelin Contracts (token/ERC20/ERC20.sol)
 pragma solidity >=0.8.24;
 
-import { StoreCore } from "@latticexyz/store/src/Store.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 import { ERC20Metadata, ERC20MetadataData } from "./codegen/tables/ERC20Metadata.sol";
