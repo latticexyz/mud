@@ -6,7 +6,7 @@ In order to achieve a similar level of composability to `Openzeppelin` ERC20 con
 
 - `StoreConsumer`: all contracts inherit from `StoreConsumer`, which abstracts the way in which `ResourceId`s are encoded. This allows us to have composable contracts whose implementations don't depend on the type of Store being used.
 - `WithStore(address) is StoreConsumer`: this contract initializes the store, using the contract's internal storage or the provided external `Store`. It encodes `ResourceId`s using `ResourceIdLib` from the `@latticexyz/store` package.
-- `WithNamespace(IBaseWorld, bytes14) is WithStore`: initializes the store and also registers the provided namespace in the provided World. It encodes `ResourceId`s using `WorldResourceIdLib` (using the namespace). It also provides an `onlyNamespace` modifier, which can be used to restrict access to certain functions, only allowing calls from addresses that have access to the namespace.
+- `WithWorld(IBaseWorld, bytes14) is WithStore`: initializes the store and also registers the provided namespace in the provided World. It encodes `ResourceId`s using `WorldResourceIdLib` (using the namespace). It also provides an `onlyNamespace` modifier, which can be used to restrict access to certain functions, only allowing calls from addresses that have access to the namespace.
 
 - `MUDERC20`: base ERC20 implementation adapted from Openzeppelin's ERC20. Contains the ERC20 logic, reads/writes to the store through MUD's codegen libraries and initializes the tables it needs. As these libraries use `StoreSwitch` internally, this contract doesn't need to know about the store it's interacting with (it can be internal storage, an external `Store` or a `World`).
 
@@ -42,16 +42,16 @@ contract ERC20WithInternalStore is WithStore(address(this)), MUDERC20, ERC20Paus
 
 ### Example 2: Using a World as an external Store and registering a new Namespace
 
-The `WithNamespace` contract internally points the `StoreSwitch` to the provided World and attempts to register the provided namespace. It allows the other contracts in the inheritance list to use the external World as a `Store`, using the provided namespace for all operations. Additionally, all functions that use the `onlyNamespace` modifier can only be called by addresses that have access to the namespace.
+The `WithWorld` contract internally points the `StoreSwitch` to the provided World and attempts to register the provided namespace. It allows the other contracts in the inheritance list to use the external World as a `Store`, using the provided namespace for all operations. Additionally, all functions that use the `onlyNamespace` modifier can only be called by addresses that have access to the namespace.
 
 ```solidity
-contract ERC20WithNamespace is WithNamespace, MUDERC20, ERC20Pausable, ERC20Burnable {
+contract ERC20WithWorld is WithWorld, MUDERC20, ERC20Pausable, ERC20Burnable {
   constructor(
     IBaseWorld world,
     bytes14 namespace,
     string memory name,
     string memory symbol
-  ) WithNamespace(world, namespace) MUDERC20(name, symbol) {
+  ) WithWorld(world, namespace) MUDERC20(name, symbol) {
     // transfer namespace ownership to the creator
     world.transferOwnership(getNamespaceId(), _msgSender());
   }
@@ -78,7 +78,7 @@ contract ERC20WithNamespace is WithNamespace, MUDERC20, ERC20Pausable, ERC20Burn
 
 # Module usage
 
-The ERC20Module receives the namespace, name and symbol of the token as parameters, and deploys the new token. Currently it installs a default ERC20 (`examples/ERC20WithNamespace.sol`) with the following features:
+The ERC20Module receives the namespace, name and symbol of the token as parameters, and deploys the new token. Currently it installs a default ERC20 (`examples/ERC20WithWorld.sol`) with the following features:
 
 - ERC20Burnable: Allows users to burn their tokens (or the ones approved to them) using the `burn` and `burnFrom` function.
 - ERC20Pausable: Supports pausing and unpausing token operations. This is combined with the `pause` and `unpause` public functions that can be called by addresses with access to the token's namespace.

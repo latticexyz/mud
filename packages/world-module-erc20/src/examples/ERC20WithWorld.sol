@@ -5,19 +5,19 @@ pragma solidity >=0.8.24;
 
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { WithStore, WithNamespace } from "../StoreConsumer.sol";
+import { WithStore, WithWorld } from "../StoreConsumer.sol";
 import { ERC20Pausable } from "../ERC20Pausable.sol";
 import { ERC20Burnable } from "../ERC20Burnable.sol";
 import { MUDERC20 } from "../MUDERC20.sol";
 import { Context } from "../Context.sol";
 
-contract ERC20WithNamespace is WithNamespace, MUDERC20, ERC20Pausable, ERC20Burnable {
+contract ERC20WithWorld is WithWorld, MUDERC20, ERC20Pausable, ERC20Burnable {
   constructor(
     IBaseWorld world,
     bytes14 namespace,
     string memory name,
     string memory symbol
-  ) WithNamespace(world, namespace) MUDERC20(name, symbol) {
+  ) WithWorld(world, namespace) MUDERC20(name, symbol) {
     // Transfer namespace ownership to the creator
     world.transferOwnership(getNamespaceId(), _msgSender());
   }

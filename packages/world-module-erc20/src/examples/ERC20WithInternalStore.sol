@@ -5,7 +5,7 @@ pragma solidity >=0.8.24;
 
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { WithStore, WithNamespace } from "../StoreConsumer.sol";
+import { WithStore } from "../StoreConsumer.sol";
 import { Ownable } from "../Ownable.sol";
 import { ERC20Pausable } from "../ERC20Pausable.sol";
 import { ERC20Burnable } from "../ERC20Burnable.sol";

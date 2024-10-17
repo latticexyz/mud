@@ -10,10 +10,9 @@ import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.
 import { ERC20MetadataData } from "../src/codegen/tables/ERC20Metadata.sol";
 import { IERC20Errors } from "../src/interfaces/IERC20Errors.sol";
 import { IERC20Events } from "../src/interfaces/IERC20Events.sol";
-import { WithStore, WithNamespace } from "../src/StoreConsumer.sol";
 import { MUDERC20 } from "../src/MUDERC20.sol";
 import { Pausable, ERC20Pausable } from "../src/ERC20Pausable.sol";
-import { MockERC20Base, MockERC20WithInternalStore, MockERC20WithNamespace, ERC20BehaviorTest, ERC20WithInternalStoreBehaviorTest, ERC20WithNamespaceBehaviorTest } from "./ERC20BaseTest.sol";
+import { MockERC20Base, MockERC20WithInternalStore, MockERC20WithWorld, ERC20BehaviorTest, ERC20WithInternalStoreBehaviorTest, ERC20WithWorldBehaviorTest } from "./ERC20BaseTest.sol";
 
 // Mock to include mint and burn functions
 abstract contract MockERC20Pausable is MUDERC20, ERC20Pausable {
@@ -36,7 +35,7 @@ contract MockERC20WithInternalStorePausable is MockERC20WithInternalStore, MockE
   }
 }
 
-contract MockERC20WithNamespacePausable is MockERC20WithNamespace, MockERC20Pausable {
+contract MockERC20WithWorldPausable is MockERC20WithWorld, MockERC20Pausable {
   function _update(address from, address to, uint256 value) internal override(MUDERC20, MockERC20Pausable) {
     super._update(from, to, value);
   }
@@ -67,8 +66,8 @@ contract ERC20PausableWithInternalStoreTest is ERC20WithInternalStoreBehaviorTes
   }
 }
 
-contract ERC20PausableWithNamespaceTest is ERC20WithNamespaceBehaviorTest, ERC20PausableBehaviorTest {
+contract ERC20PausableWithWorldTest is ERC20WithWorldBehaviorTest, ERC20PausableBehaviorTest {
   function createToken() internal override returns (MockERC20Base) {
-    return new MockERC20WithNamespacePausable();
+    return new MockERC20WithWorldPausable();
   }
 }

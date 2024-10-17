@@ -9,7 +9,7 @@ import { ResourceId, ResourceIdLib } from "@latticexyz/store/src/ResourceId.sol"
 
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { ResourceAccess } from "@latticexyz/world/src/codegen/tables/ResourceAccess.sol";
-import { WorldResourceIdLib, TYPE_BITS, NAME_BITS, NAMESPACE_BITS } from "@latticexyz/world/src/WorldResourceId.sol";
+import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { WorldContextConsumerLib } from "@latticexyz/world/src/WorldContext.sol";
 
 import { Context } from "./Context.sol";
@@ -44,7 +44,7 @@ abstract contract WithStore is Context, StoreConsumer {
   }
 }
 
-abstract contract WithNamespace is WithStore {
+abstract contract WithWorld is WithStore {
   bytes14 public immutable NAMESPACE;
 
   error NamespaceAlreadyExists(bytes14 namespace);
