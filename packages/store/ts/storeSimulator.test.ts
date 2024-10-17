@@ -12,6 +12,7 @@ import {
   decodeFunctionData,
   decodeFunctionResult,
   encodeFunctionData,
+  getAbiItem,
   keccak256,
   pad,
   size,
@@ -20,6 +21,7 @@ import {
 } from "viem";
 import storeSimulatorArtifact from "../out/StoreSimulator.sol/StoreSimulator.json";
 import { readContract, simulateContract } from "viem/actions";
+import { formatAbiItemWithArgs } from "viem/utils";
 
 const storeSimulator = stringToHex("StoreSimulator", { size: 20 });
 const alice = stringToHex("Alice", { size: 20 });
@@ -102,27 +104,16 @@ describe("storeSimulator", async () => {
     expect(result).toMatchInlineSnapshot(`null`);
 
     // TODO: replace calls with just store events
-    expect(calls.map((data) => decodeFunctionData({ abi: worldAbi, data }))).toMatchInlineSnapshot(`
+
+    const formattedCalls = calls.map((data) => {
+      const { args, functionName } = decodeFunctionData({ abi: worldAbi, data });
+      const abiItem = getAbiItem({ abi: worldAbi, name: functionName, args });
+      return formatAbiItemWithArgs({ abiItem, args } as never);
+    });
+    expect(formattedCalls).toMatchInlineSnapshot(`
       [
-        {
-          "args": [
-            5,
-            5,
-          ],
-          "functionName": "move",
-        },
-        {
-          "args": [
-            "0x74620000000000000000000000000000506f736974696f6e0000000000000000",
-            [
-              "0x0000000000000000000000002fb283b95c5f9b601f151a91cf72fb5fa53713d7",
-            ],
-            "0x0000000500000005",
-            "0x0000000000000000000000000000000000000000000000000000000000000000",
-            "0x",
-          ],
-          "functionName": "setRecord",
-        },
+        "move(5, 5)",
+        "setRecord(0x74620000000000000000000000000000506f736974696f6e0000000000000000, ["0x000000000000000000000000d710dcd524f7ee4886e50c67940e98e994efc88c"], 0x0000000500000005, 0x0000000000000000000000000000000000000000000000000000000000000000, 0x)",
       ]
     `);
   });
