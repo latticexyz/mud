@@ -22,7 +22,12 @@ export function ConnectedSteps({ userClient }: Props) {
     (completedSteps.length < steps.length ? completedSteps.at(-1) : null);
 
   return (
-    <div className="px-8 flex-grow flex flex-col divide-y divide-neutral-800">
+    <div
+      className={twMerge(
+        "px-8 flex-grow flex flex-col divide-y divide-neutral-800",
+        "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
+      )}
+    >
       {steps.map((step) => {
         const isActive = step === activeStep;
         const isExpanded = isActive || completedSteps.length === steps.length;
