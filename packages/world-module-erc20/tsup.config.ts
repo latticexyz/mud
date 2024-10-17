@@ -3,7 +3,7 @@ import { defineConfig } from "tsup";
 export default defineConfig({
   entry: {
     "mud.config": "mud.config.ts",
-    module: "ts/module.ts",
+    index: "ts/exports/index.ts",
   },
   target: "esnext",
   format: ["esm"],
