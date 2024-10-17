@@ -11,7 +11,7 @@
   "type": "module",
   "exports": {
     "./mud.config": "./dist/mud.config.js",
-    "./module": "./dist/module.js",
+    ".": "./dist/index.js",
     "./out/*": "./out/*"
   },
   "typesVersions": {
