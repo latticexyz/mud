@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
+import { supportedChainName } from "../../../../../common";
 
 type Props = {
   params: {
-    chainName: string;
+    chainName: supportedChainName;
     worldAddress: string;
   };
 };
