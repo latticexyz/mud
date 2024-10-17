@@ -23,7 +23,7 @@ import { OwnableTableNames } from "./Constants.sol";
  * the owner.
  */
 abstract contract Ownable is Context, StoreConsumer {
-  ResourceId immutable OWNER_ID = _encodeTableId(OwnableTableNames.OWNER);
+  ResourceId immutable OWNER_ID;
 
   /**
    * @dev The caller account is not authorized to perform an operation.
@@ -44,6 +44,8 @@ abstract contract Ownable is Context, StoreConsumer {
     if (initialOwner == address(0)) {
       revert OwnableInvalidOwner(address(0));
     }
+
+    OWNER_ID = _encodeTableId(OwnableTableNames.OWNER);
 
     // Register table
     Owner.register(OWNER_ID);

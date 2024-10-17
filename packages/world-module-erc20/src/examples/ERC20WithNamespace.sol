@@ -18,11 +18,6 @@ contract ERC20WithNamespace is WithNamespace, MUDERC20, ERC20Pausable, ERC20Burn
     string memory name,
     string memory symbol
   ) WithNamespace(world, namespace) MUDERC20(name, symbol) {
-    ResourceId namespaceId = getNamespaceId();
-
-    // Grant access to ourselves so we can write to tables after transferring ownership
-    world.grantAccess(namespaceId, address(this));
-
     // Transfer namespace ownership to the creator
     world.transferOwnership(getNamespaceId(), _msgSender());
   }
