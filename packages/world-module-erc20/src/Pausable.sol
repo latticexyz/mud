@@ -20,7 +20,7 @@ import { PausableTableNames } from "./Constants.sol";
  * simply including this module, only once the modifiers are put in place.
  */
 abstract contract Pausable is Context, StoreConsumer {
-  ResourceId immutable PAUSED_ID = _encodeTableId(PausableTableNames.PAUSED);
+  ResourceId immutable PAUSED_ID;
 
   /**
    * @dev Emitted when the pause is triggered by `account`.
@@ -46,6 +46,7 @@ abstract contract Pausable is Context, StoreConsumer {
    * @dev Initializes the contract in unpaused state.
    */
   constructor() {
+    PAUSED_ID = _encodeTableId(PausableTableNames.PAUSED);
     PausedTbl.register(PAUSED_ID);
     PausedTbl.set(PAUSED_ID, false);
   }

@@ -15,6 +15,10 @@ import { WorldContextConsumerLib } from "@latticexyz/world/src/WorldContext.sol"
 import { Context } from "./Context.sol";
 
 abstract contract StoreConsumer {
+  function getStore() public view returns (address) {
+    return StoreSwitch.getStoreAddress();
+  }
+
   function _encodeResourceId(bytes2 typeId, bytes16 name) internal view virtual returns (ResourceId);
 
   function _encodeTableId(bytes16 name) internal view returns (ResourceId) {
@@ -41,15 +45,14 @@ abstract contract WithStore is Context, StoreConsumer {
 }
 
 abstract contract WithNamespace is WithStore {
-  bytes14 immutable NAMESPACE;
+  bytes14 public immutable NAMESPACE;
 
-  error NamespaceAlreadyExists();
+  error NamespaceAlreadyExists(bytes14 namespace);
   error CallerHasNoNamespaceAccess();
 
   modifier onlyNamespace() {
     address sender = _msgSender();
-    ResourceId namespaceId = getNamespaceId();
-    if (!ResourceAccess.get(namespaceId, sender)) {
+    if (!ResourceAccess.get(getNamespaceId(), sender)) {
       revert CallerHasNoNamespaceAccess();
     }
     _;
@@ -61,7 +64,7 @@ abstract contract WithNamespace is WithStore {
     ResourceId namespaceId = getNamespaceId();
 
     if (ResourceIds.getExists(namespaceId)) {
-      revert NamespaceAlreadyExists();
+      revert NamespaceAlreadyExists(namespace);
     }
 
     world.registerNamespace(namespaceId);

@@ -33,6 +33,8 @@ contract ERC20Module is Module {
       revert ERC20Module_NamespaceAlreadyExists(namespace);
     }
 
+    IBaseWorld world = IBaseWorld(_world());
+
     ResourceId moduleNamespaceId = WorldResourceIdLib.encodeNamespace(ModuleConstants.NAMESPACE);
     ResourceId erc20RegistryTableId = WorldResourceIdLib.encode(
       RESOURCE_TABLE,
@@ -40,16 +42,17 @@ contract ERC20Module is Module {
       ModuleConstants.REGISTRY_TABLE_NAME
     );
 
-    IBaseWorld world = IBaseWorld(_world());
-
-    ERC20WithNamespace token = new ERC20WithNamespace(world, namespace, name, symbol);
-
-    // Register the ERC20 in the ERC20Registry
     if (!ResourceIds.getExists(erc20RegistryTableId)) {
       world.registerNamespace(moduleNamespaceId);
       ERC20Registry.register(erc20RegistryTableId);
     }
 
+    ERC20WithNamespace token = new ERC20WithNamespace(world, namespace, name, symbol);
+
+    // Grant access to the token so it can write to tables after transferring ownership
+    world.grantAccess(namespaceId, address(token));
+
+    // Register the ERC20 in the ERC20Registry
     ERC20Registry.set(erc20RegistryTableId, namespaceId, address(token));
 
     // The token should have transferred the namespace ownership to this module in its constructor
