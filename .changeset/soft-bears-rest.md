@@ -7,4 +7,5 @@
 - Remove "future time" from transactions table.
 - Improved layout for Interact tab.
 - Wrap long args in transactions table.
+- New tables polling.
 - Add logs (regression).
