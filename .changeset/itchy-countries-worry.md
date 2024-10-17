@@ -2,4 +2,4 @@
 "@latticexyz/explorer": patch
 ---
 
-Enhance Explorer's with SQL syntax highlighting, autocomplete, and query validation.
+Explore page now has a full-featured SQL editor with syntax highlighting, autocomplete, and query validation.
