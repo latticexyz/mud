@@ -52,5 +52,6 @@ export function useTablesQuery() {
         })
         .sort(({ namespace }) => (internalNamespaces.includes(namespace) ? 1 : -1));
     },
+    refetchInterval: 5000,
   });
 }
