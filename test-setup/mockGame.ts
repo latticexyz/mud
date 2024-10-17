@@ -12,7 +12,7 @@ export async function deployMockGame(): Promise<Hex> {
     "pnpm",
     // skip build because its slow and we do it in global setup
     // if we don't skip build here, it regenerates ABIs which cause the tests to re-run (because we import the ABI here), which re-runs this deploy...
-    ["mud", "deploy", "--rpc", anvilRpcUrl, "--saveDeployment", "false", "--skipBuild"],
+    ["mud", "deploy", "--rpc", anvilRpcUrl, "--salt", "0x", "--saveDeployment", "false", "--skipBuild"],
     {
       cwd: `${__dirname}/../test/mock-game-contracts`,
       env: {
