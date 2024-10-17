@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig((opts) => ({
-  entry: ["src/index.ts", "bin/faucet-server.ts"],
+  entry: ["src/index.ts", "src/bin/faucet-server.ts"],
   target: "esnext",
   format: ["esm"],
   sourcemap: true,

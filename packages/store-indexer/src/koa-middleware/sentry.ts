@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/node";
 import { ProfilingIntegration } from "@sentry/profiling-node";
 import { stripUrlQueryAndFragment } from "@sentry/utils";
-import debug from "debug";
+import { debug } from "../debug";
 import Koa from "koa";
 import compose from "koa-compose";
 

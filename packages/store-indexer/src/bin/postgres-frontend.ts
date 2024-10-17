@@ -8,12 +8,12 @@ import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { frontendEnvSchema, parseEnv } from "./parseEnv";
-import { createQueryAdapter } from "../src/postgres/deprecated/createQueryAdapter";
-import { apiRoutes } from "../src/postgres/apiRoutes";
-import { sentry } from "../src/koa-middleware/sentry";
-import { healthcheck } from "../src/koa-middleware/healthcheck";
-import { helloWorld } from "../src/koa-middleware/helloWorld";
-import { metrics } from "../src/koa-middleware/metrics";
+import { createQueryAdapter } from "../postgres/deprecated/createQueryAdapter";
+import { apiRoutes } from "../postgres/apiRoutes";
+import { sentry } from "../koa-middleware/sentry";
+import { healthcheck } from "../koa-middleware/healthcheck";
+import { helloWorld } from "../koa-middleware/helloWorld";
+import { metrics } from "../koa-middleware/metrics";
 
 const env = parseEnv(
   z.intersection(

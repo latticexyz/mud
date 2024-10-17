@@ -11,7 +11,7 @@ import { store as worldStore } from "../store";
 
 export function TransactionsWatcher() {
   const { id: chainId } = useChain();
-  const { worldAddress } = useParams();
+  const { worldAddress } = useParams<{ worldAddress: string }>();
   const wagmiConfig = useConfig();
   const { data: worldAbiData } = useWorldAbiQuery();
   const abi = worldAbiData?.abi;
@@ -98,7 +98,7 @@ export function TransactionsWatcher() {
   useEffect(() => {
     for (const write of Object.values(observerWrites)) {
       const hash = write.hash;
-      if (hash && write.address === worldAddress) {
+      if (hash && write.address.toLowerCase() === worldAddress.toLowerCase()) {
         const transaction = transactions.find((transaction) => transaction.hash === hash);
         if (!transaction) {
           handleTransaction(hash, BigInt(write.time) / 1000n);
