@@ -81,18 +81,18 @@ export function SQLEditor3({ table }: Props) {
 
       try {
         const ast = sqlParser.astify(value);
-
         if ("columns" in ast && Array.isArray(ast.columns) && ast.columns?.length) {
-          for (const column of ast.columns) {
-            if (!Object.keys(table.schema).includes(column)) {
+          for (const columnInfo of ast.columns) {
+            const columnName = columnInfo.expr.column;
+            if (!Object.keys(table.schema).includes(columnName)) {
               monaco.editor.setModelMarkers(monaco.editor.getModels()[0], "sql", [
                 {
                   severity: monaco.MarkerSeverity.Error,
-                  message: `Column '${column}' does not exist in the table schema`,
+                  message: `Column '${columnName}' does not exist in the table schema`,
                   startLineNumber: 1,
-                  startColumn: value.indexOf(column) + 1,
+                  startColumn: value.indexOf(columnName) + 1,
                   endLineNumber: 1,
-                  endColumn: value.indexOf(column) + column.length + 1,
+                  endColumn: value.indexOf(columnName) + columnName.length + 1,
                 },
               ]);
               return false;
@@ -104,7 +104,6 @@ export function SQLEditor3({ table }: Props) {
         return true;
       } catch (error) {
         if (error instanceof Error) {
-          // const match = error.message.match(/(?:line|column) (\d+)/g);
           monaco.editor.setModelMarkers(monaco.editor.getModels()[0], "sql", [
             {
               severity: monaco.MarkerSeverity.Error,
@@ -175,7 +174,7 @@ export function SQLEditor3({ table }: Props) {
               insertText: value,
               range,
               // bring non-keyword suggestions to the top
-              sortText: optionType !== "KEYWORD" ? "a" : "b", // TODO: any better way?
+              sortText: optionType !== "KEYWORD" ? "0" : "1",
             };
           });
 
