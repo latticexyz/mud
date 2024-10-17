@@ -17,7 +17,7 @@ import { IERC20 } from "../src/interfaces/IERC20.sol";
 import { IERC20Metadata } from "../src/interfaces/IERC20Metadata.sol";
 import { IERC20Errors } from "../src/interfaces/IERC20Errors.sol";
 import { IERC20Events } from "../src/interfaces/IERC20Events.sol";
-import { WithStore, WithNamespace } from "../src/StoreConsumer.sol";
+import { WithStore, WithWorld } from "../src/StoreConsumer.sol";
 import { MUDERC20 } from "../src/MUDERC20.sol";
 
 library TestConstants {
@@ -39,8 +39,8 @@ abstract contract MockERC20Base is MUDERC20 {
 
 contract MockERC20WithInternalStore is WithStore(address(this)), MockERC20Base {}
 
-contract MockERC20WithNamespace is WithNamespace, MockERC20Base {
-  constructor() WithNamespace(createWorld(), TestConstants.ERC20_NAMESPACE) {}
+contract MockERC20WithWorld is WithWorld, MockERC20Base {
+  constructor() WithWorld(createWorld(), TestConstants.ERC20_NAMESPACE) {}
 }
 
 abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Errors {
@@ -338,15 +338,15 @@ contract ERC20WithInternalStoreTest is ERC20WithInternalStoreBehaviorTest {
   }
 }
 
-abstract contract ERC20WithNamespaceBehaviorTest is ERC20BehaviorTest {
+abstract contract ERC20WithWorldBehaviorTest is ERC20BehaviorTest {
   function testNamespaceAccess() public {
     assertTrue(ResourceAccess.get(WorldResourceIdLib.encodeNamespace(TestConstants.ERC20_NAMESPACE), address(token)));
   }
 }
 
 // Concrete tests for basic namespace ERC20 behavior
-contract ERC20WithNamespaceTest is ERC20WithNamespaceBehaviorTest {
+contract ERC20WithWorldTest is ERC20WithWorldBehaviorTest {
   function createToken() internal virtual override returns (MockERC20Base) {
-    return new MockERC20WithNamespace();
+    return new MockERC20WithWorld();
   }
 }

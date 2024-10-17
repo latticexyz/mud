@@ -42,12 +42,7 @@ contract ERC20ModuleTest is Test, GasReporter {
     world.installModule(erc20Module, args);
     endGasReport();
 
-    ResourceId erc20RegistryTableId = WorldResourceIdLib.encode(
-      RESOURCE_TABLE,
-      ModuleConstants.NAMESPACE,
-      ModuleConstants.REGISTRY_TABLE_NAME
-    );
-
+    ResourceId erc20RegistryTableId = ModuleConstants.registryTableId();
     ResourceId erc20NamespaceId = WorldResourceIdLib.encodeNamespace(TestConstants.ERC20_NAMESPACE);
 
     // Token should retain access to the namespace
@@ -67,7 +62,7 @@ contract ERC20ModuleTest is Test, GasReporter {
   }
 
   function testInstallExistingNamespace() public {
-    ResourceId moduleNamespaceId = WorldResourceIdLib.encodeNamespace(ModuleConstants.NAMESPACE);
+    ResourceId moduleNamespaceId = ModuleConstants.namespaceId();
     world.registerNamespace(moduleNamespaceId);
 
     bytes memory args = abi.encode(TestConstants.ERC20_NAMESPACE, "myERC20Token", "MTK");

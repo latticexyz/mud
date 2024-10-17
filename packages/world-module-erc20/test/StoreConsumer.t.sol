@@ -16,7 +16,7 @@ import { Tables, ResourceIds } from "@latticexyz/store/src/codegen/index.sol";
 import { StoreCore } from "@latticexyz/store/src/Store.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
-import { WithStore, WithNamespace, StoreConsumer } from "../src/StoreConsumer.sol";
+import { WithStore, WithWorld, StoreConsumer } from "../src/StoreConsumer.sol";
 
 abstract contract MockStoreConsumer is StoreConsumer {
   function getStoreAddress() public view virtual returns (address) {
@@ -34,8 +34,8 @@ contract MockWithStore is WithStore, MockStoreConsumer {
 
 contract MockWithInternalStore is MockWithStore(address(this)) {}
 
-contract MockWithNamespace is WithNamespace, MockStoreConsumer {
-  constructor(IBaseWorld world, bytes14 namespace) WithNamespace(world, namespace) {
+contract MockWithWorld is WithWorld, MockStoreConsumer {
+  constructor(IBaseWorld world, bytes14 namespace) WithWorld(world, namespace) {
     ResourceId namespaceId = getNamespaceId();
     world.grantAccess(namespaceId, address(this));
 
@@ -56,10 +56,10 @@ contract StoreConsumerTest is Test, GasReporter {
     assertEq(mock.getStoreAddress(), address(mock));
   }
 
-  function testWithNamespace() public {
+  function testWithWorld() public {
     IBaseWorld world = createWorld();
     bytes14 namespace = "myNamespace";
-    MockWithNamespace mock = new MockWithNamespace(world, namespace);
+    MockWithWorld mock = new MockWithWorld(world, namespace);
     assertEq(mock.getStoreAddress(), address(world));
 
     StoreSwitch.setStoreAddress(address(world));
@@ -72,7 +72,7 @@ contract StoreConsumerTest is Test, GasReporter {
     IBaseWorld world = createWorld();
     bytes14 namespace = "myNamespace";
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
-    MockWithNamespace mock = new MockWithNamespace(world, namespace);
+    MockWithWorld mock = new MockWithWorld(world, namespace);
     StoreSwitch.setStoreAddress(address(world));
 
     address alice = address(0x1234);

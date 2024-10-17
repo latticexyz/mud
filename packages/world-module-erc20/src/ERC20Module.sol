@@ -11,7 +11,7 @@ import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
 import { ERC20Registry } from "./codegen/tables/ERC20Registry.sol";
-import { ERC20WithNamespace } from "./examples/ERC20WithNamespace.sol";
+import { ERC20WithWorld } from "./examples/ERC20WithWorld.sol";
 import { ModuleConstants } from "./Constants.sol";
 
 contract ERC20Module is Module {
@@ -35,19 +35,13 @@ contract ERC20Module is Module {
 
     IBaseWorld world = IBaseWorld(_world());
 
-    ResourceId moduleNamespaceId = WorldResourceIdLib.encodeNamespace(ModuleConstants.NAMESPACE);
-    ResourceId erc20RegistryTableId = WorldResourceIdLib.encode(
-      RESOURCE_TABLE,
-      ModuleConstants.NAMESPACE,
-      ModuleConstants.REGISTRY_TABLE_NAME
-    );
-
+    ResourceId erc20RegistryTableId = ModuleConstants.registryTableId();
     if (!ResourceIds.getExists(erc20RegistryTableId)) {
-      world.registerNamespace(moduleNamespaceId);
+      world.registerNamespace(ModuleConstants.namespaceId());
       ERC20Registry.register(erc20RegistryTableId);
     }
 
-    ERC20WithNamespace token = new ERC20WithNamespace(world, namespace, name, symbol);
+    ERC20WithWorld token = new ERC20WithWorld(world, namespace, name, symbol);
 
     // Grant access to the token so it can write to tables after transferring ownership
     world.grantAccess(namespaceId, address(token));

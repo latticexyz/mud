@@ -1,9 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
+import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
+import { ResourceId, WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+
 library ModuleConstants {
   bytes14 constant NAMESPACE = "erc20-module";
   bytes16 constant REGISTRY_TABLE_NAME = "ERC20_REGISTRY";
+
+  function namespaceId() internal pure returns (ResourceId) {
+    return WorldResourceIdLib.encodeNamespace(NAMESPACE);
+  }
+
+  function registryTableId() internal pure returns (ResourceId) {
+    return WorldResourceIdLib.encode(RESOURCE_TABLE, NAMESPACE, REGISTRY_TABLE_NAME);
+  }
 }
 
 library ERC20TableNames {
