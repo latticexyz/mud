@@ -23,7 +23,7 @@ export function Form() {
 
   return (
     <>
-      <div className="-ml-1 -mr-1 flex gap-x-4">
+      <div className="-ml-1 -mr-1 flex gap-x-4 overflow-y-hidden">
         <div className="w-[320px] flex-shrink-0 overflow-y-auto border-r pl-1">
           <div className="pr-4">
             <h4 className="py-4 text-xs font-semibold uppercase opacity-70">Jump to:</h4>
