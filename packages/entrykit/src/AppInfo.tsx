@@ -20,8 +20,8 @@ export function AppInfo() {
         ) : null}
       </div>
       <div className="flex flex-col gap-1 items-center justify-center">
-        <div className="text-2xl">{appName}</div>
-        <div className="text-sm font-mono text-neutral-400">{appOrigin}</div>
+        <div className="text-2xl text-white">{appName}</div>
+        <div className="text-sm font-mono">{appOrigin}</div>
       </div>
     </div>
   );

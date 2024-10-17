@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
 import { twMerge } from "tailwind-merge";
 import { PendingIcon } from "../icons/PendingIcon";
@@ -11,22 +12,14 @@ type ButtonClassNameOptions = {
 
 const buttonClassName = ({ variant = "primary", pending = false }: ButtonClassNameOptions = {}) =>
   twMerge(
-    "group self-center leading-none outline-none border border-transparent ring-2 ring-transparent focus:ring-orange-500 focus:border-transparent transition",
+    "group self-center leading-none outline-none border-4 border-transparent",
+    "transition hover:brightness-125 active:brightness-150",
+    "focus:border-orange-500",
     "aria-disabled:pointer-events-none aria-busy:pointer-events-none",
-    "p-[1em] font-semibold",
+    "p-[.75em] font-medium",
     {
-      primary: twMerge(
-        "bg-neutral-900 text-white hover:bg-neutral-700 active:bg-neutral-600 aria-disabled:bg-neutral-200 aria-disabled:text-neutral-400",
-        // eslint-disable-next-line max-len
-        "dark:bg-neutral-100 dark:text-black dark:hover:bg-neutral-200 dark:active:bg-neutral-300 dark:aria-disabled:bg-neutral-400 dark:aria-disabled:text-neutral-600",
-        pending && "dark:bg-neutral-700 dark:text-neutral-400",
-      ),
-      secondary: twMerge(
-        // eslint-disable-next-line max-len
-        "text-black border-neutral-400 hover:bg-neutral-200 hover:border-neutral-500 active:bg-neutral-300 active:border-neutral-600 aria-disabled:text-neutral-400 aria-disabled:border-neutral-300",
-        // eslint-disable-next-line max-len
-        "dark:text-white dark:border-neutral-400 dark:hover:bg-neutral-700 dark:hover:border-neutral-300 dark:active:bg-neutral-600 dark:active:border-neutral-200 dark:aria-disabled:text-neutral-500 dark:aria-disabled:border-neutral-600",
-      ),
+      primary: twMerge("bg-neutral-700 text-white"),
+      secondary: twMerge("bg-neutral-800 text-white"),
     }[variant],
   );
 

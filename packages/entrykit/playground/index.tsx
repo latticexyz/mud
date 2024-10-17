@@ -30,13 +30,14 @@ const entryKitConfig = {
   chainId,
   worldAddress,
   appInfo: {
-    name: "EAT THE FLY",
+    name: document.title,
     termsOfUse: "#terms",
     privacyPolicy: "#privacy",
   },
   bundlerTransport: wiresaw(http("http://127.0.0.1:4337")),
   paymasterAddress: "0x8D8b6b8414E1e3DcfD4168561b9be6bD3bF6eC4B",
   passIssuerTransport: http("http://127.0.0.1:3003/rpc"),
+  walletConnectProjectId: "14ce88fdbc0f9c294e26ec9b4d848e44",
 } as const satisfies EntryKitConfig;
 
 const chains = [anvil, redstone, garnet, rhodolite] as [Chain, ...Chain[]];
@@ -46,7 +47,6 @@ const wagmiConfig = createWagmiConfig({
   ...entryKitConfig,
   chains,
   transports,
-  walletConnectProjectId: "14ce88fdbc0f9c294e26ec9b4d848e44",
 });
 
 const queryClient = new QueryClient();

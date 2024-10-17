@@ -64,7 +64,7 @@ export function ClaimGasPass({ userAddress }: Props) {
             </Button>
             {/* TODO: better error styles */}
             {claimGasPass.status === "error" ? (
-              <div className="bg-red-100 text-red-700 text-sm p-2 animate-in animate-duration-200 fade-in">
+              <div className="bg-red-100 text-red-700 text-sm p-2 animate-in animate-duration-200 fade-in max-h-40 overflow-auto">
                 {claimGasPass.error.message}
               </div>
             ) : null}

@@ -5,6 +5,7 @@ import { AccountModalContent } from "./AccountModalContent";
 import { AccountModalErrorBoundary } from "./AccountModalErrorBoundary";
 import { DialogClose, DialogTitle } from "@radix-ui/react-dialog";
 import { CloseIcon } from "./icons/CloseIcon";
+import { Logo } from "./icons/Logo";
 
 export function AccountModal() {
   const { accountModalOpen, toggleAccountModal } = useAccountModal();
@@ -15,24 +16,34 @@ export function AccountModal() {
       {accountModalOpen ? (
         <div
           className={twMerge(
-            "relative flex flex-col min-h-[20rem] border-t sm:border",
-            "bg-neutral-100 text-neutral-700 border-neutral-300",
-            "dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-700 dark:divide-neutral-700",
+            "relative flex flex-col min-h-[28rem] ring-1",
+            "bg-neutral-900 text-neutral-400 ring-neutral-700/50 divide-neutral-700",
             "links:font-medium links:underline links:underline-offset-4",
-            "links:text-black dark:links:text-white",
-            "links:decoration-neutral-300 dark:links:decoration-neutral-500 hover:links:decoration-orange-500",
+            "links:text-white",
+            "links:decoration-neutral-500 hover:links:decoration-orange-500",
           )}
         >
           <AccountModalErrorBoundary>
             <AccountModalContent />
           </AccountModalErrorBoundary>
 
+          <a
+            href="https://mud.dev"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="group self-center p-3 flex items-center justify-center gap-2 links-unset text-sm font-mono transition text-neutral-400 hover:text-white"
+          >
+            <span className="block w-4 h-4">
+              <Logo className="w-full h-full text-orange-500 group-hover:rotate-90 transition duration-300" />
+            </span>
+            <span>Powered by MUD</span>
+          </a>
+
           <div className="absolute top-0 right-0">
             <DialogClose
               className={twMerge(
-                "pointer-events-auto leading-none p-1 transition",
-                "text-neutral-400 hover:text-neutral-600",
-                "dark:text-neutral-500 dark:hover:text-neutral-400",
+                "pointer-events-auto leading-none p-2 transition",
+                "text-neutral-700 hover:text-neutral-500",
               )}
               title="Close"
             >

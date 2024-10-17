@@ -19,27 +19,23 @@ export function Modal({ open, onOpenChange, children }: Props) {
            * This intentionally does not use `<DialogOverlay>` due to an issue it causes with scrolling the modal contents.
            * See https://github.com/radix-ui/primitives/issues/1159#issuecomment-1105320294
            */}
+          <div className={twMerge("fixed inset-0", "bg-neutral-800/85", "animate-in animate-duration-300 fade-in")} />
           <div
             className={twMerge(
               "fixed inset-0",
-              "bg-neutral-700/50 dark:bg-neutral-900/75",
-              "animate-in animate-duration-500 fade-in",
-            )}
-          />
-          <div
-            className={twMerge(
-              "fixed inset-0",
-              "grid place-items-end sm:place-items-center overflow-y-auto",
-              "animate-in animate-duration-200 fade-in slide-in-from-bottom-4",
+              "grid items-end sm:items-center transition-all",
+              "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
             )}
           >
-            <DialogContent
-              className="outline-none w-full sm:max-w-screen-sm"
-              // TODO description
-              aria-describedby={undefined}
-            >
-              {children}
-            </DialogContent>
+            <div>
+              <DialogContent
+                className="outline-none w-full max-w-[26rem] mx-auto"
+                // TODO description
+                aria-describedby={undefined}
+              >
+                {children}
+              </DialogContent>
+            </div>
           </div>
         </Shadow>
       </DialogPortal>

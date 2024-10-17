@@ -7,7 +7,7 @@ import { PendingIcon } from "./icons/PendingIcon";
 import { AccountName } from "./AccountName";
 
 const containerClassNames = twMerge(
-  "w-60 inline-flex outline-none transition",
+  "w-48 inline-flex outline-none transition",
   "border border-transparent",
   "text-base leading-none",
 );
