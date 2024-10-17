@@ -11,10 +11,6 @@ export function timeAgo(timestamp: bigint) {
   const currentTimestampSeconds = Math.floor(Date.now() / 1000);
   const diff = currentTimestampSeconds - Number(timestamp);
 
-  if (diff < 0) {
-    return "in the future";
-  }
-
   for (const unit of units) {
     if (diff >= unit.limit) {
       const unitsAgo = Math.floor(diff / unit.inSeconds);
