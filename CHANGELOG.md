@@ -1,3 +1,90 @@
+## Version 2.2.12
+
+Release date: Fri Oct 18 2024
+
+### Patch changes
+
+**[feat(explorer): add functions filter to query state (#3268)](https://github.com/latticexyz/mud/commit/3d8db6f76f3634d532d39cf4091f22fee0a32b68)** (@latticexyz/explorer)
+
+Function filters in `Interact` tab are now included as part of the URL.
+
+**[feat(explorer): transaction timings (#3274)](https://github.com/latticexyz/mud/commit/1b0ffcf7a1a7daa2a87efe26059d6a142d257588)** (@latticexyz/explorer)
+
+Transactions in Observe tab are now populated with timing metrics when using the `observer` Viem decorator in local projects.
+
+You can wire up your local project to use transaction timings with:
+
+```
+import { observer } from "@latticexyz/explorer/observer";
+
+// Extend the Viem client that is performing writes
+walletClient.extend(observer());
+```
+
+**[fix(faucet,store-indexer): add bin wrappers (#3296)](https://github.com/latticexyz/mud/commit/20f44fbf733ff876d64a544c68a3cb1a4dc307a9)** (@latticexyz/faucet, @latticexyz/store-indexer)
+
+Added bin wrappers to resolve issues when installing the package locally as a dependency of another package.
+
+**[feat(explorer): show ABI errors in interact page (#3303)](https://github.com/latticexyz/mud/commit/d4c10c18ad853bed21c55fe92e2ba09c2382316d)** (@latticexyz/explorer)
+
+Interact tab now displays decoded ABI errors for failed transactions.
+
+**[chore: bump viem (#3273)](https://github.com/latticexyz/mud/commit/ea18f270c9a43dbe489b25f11b8379ccd969c02a)** (@latticexyz/block-logs-stream, @latticexyz/cli, @latticexyz/common, @latticexyz/config, @latticexyz/dev-tools, @latticexyz/explorer, @latticexyz/faucet, @latticexyz/protocol-parser, @latticexyz/schema-type, @latticexyz/stash, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world, create-mud)
+
+Bumped viem to v2.21.19.
+
+MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+```
+pnpm recursive up viem@2.21.19
+```
+
+**[fix(explorer): display nested inputs (#3266)](https://github.com/latticexyz/mud/commit/2c9240111ae11e6727d3581453fba2b866f4b4a0)** (@latticexyz/explorer)
+
+Fixed inputs display in the transactions table row.
+
+**[feat(common): add rhodolite chain (#3295)](https://github.com/latticexyz/mud/commit/41a6e2f83ac4d48a9dccf52d933c15074b9a724e)** (@latticexyz/common)
+
+Added Rhodolite devnet chain config and removed the old and now-defunct Lattice testnet chain config.
+
+**[feat(explorer): show explore table error message (#3286)](https://github.com/latticexyz/mud/commit/af725304e133f95b0b0eb827fdf7283e54ac8342)** (@latticexyz/explorer)
+
+Display error messages for failed queries within the Explore tab's table viewer.
+
+**[feat(explorer): sql editor (#3276)](https://github.com/latticexyz/mud/commit/3a80bed31b97d439025f68b8e4ded27354e102f1)** (@latticexyz/explorer)
+
+Explore page now has a full-featured SQL editor with syntax highlighting, autocomplete, and query validation.
+
+**[feat(explorer): front page (#3255)](https://github.com/latticexyz/mud/commit/6476dec94cf32275631d49c7e8fe8fe5a0708040)** (@latticexyz/explorer)
+
+Each chain's home page now lets you find and pick a world to explore.
+
+**[feat(store-sync): add support for watching pending logs (#3287)](https://github.com/latticexyz/mud/commit/84ae33b8af3ebeb90749c6e82250869b15d17ed1)** (@latticexyz/store-sync)
+
+Added experimental support for syncing state from pending logs.
+
+**[fix(explorer): various fixes (#3299)](https://github.com/latticexyz/mud/commit/9a43e87db302ec599fd1e97d8b77e2e68831017f)** (@latticexyz/explorer)
+
+- Not found page if invalid chain name.
+- Only show selector for worlds if options exist.
+- Remove "future time" from transactions table.
+- Improved layout for Interact tab.
+- Wrap long args in transactions table.
+- New tables polling.
+- Add logs (regression).
+
+**[fix(common): allow overriding fees in writeContract and sendTransaction (#3288)](https://github.com/latticexyz/mud/commit/fe98442d7ee82f0d41ba10f05a4ee1bafea69d48)** (@latticexyz/common)
+
+The `transactionQueue` decorator internally keeps an updated reference for the recommended `baseFeePerGas` and `maxPriorityFeePerGas` from the connected chain to avoid having to fetch it right before sending a transaction.
+However, due to the way the fee values were overridden, it wasn't possible for users to explicitly pass in custom fee values.
+Now explicitly provided fee values have precedence over the internally estimated fee values.
+
+**[feat(explorer): global transactions listener (#3285)](https://github.com/latticexyz/mud/commit/4b4640913d014fb3a0a5a417b84c91b247e08ffc)** (@latticexyz/explorer)
+
+Transactions are now monitored across all tabs while the World Explorer is open.
+
+---
+
 ## Version 2.2.11
 
 Release date: Mon Oct 07 2024
