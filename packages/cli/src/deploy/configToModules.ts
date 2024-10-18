@@ -57,12 +57,12 @@ export async function configToModules<config extends World>(
         }
       }
 
+      const name = path.basename(artifactPath, ".json");
+      const artifact = await importContractArtifact({ artifactPath });
+
       const requirePath = await findUp("package.json", { cwd: process.cwd() });
       if (!requirePath) throw new Error("Could not find package.json to import relative to.");
       const require = createRequire(requirePath);
-
-      const name = path.basename(artifactPath, ".json");
-      const artifact = await importContractArtifact({ artifactPath });
 
       const moduleOutDir = path.join(require.resolve(artifactPath), "../../");
       const libraries = findLibraries(moduleOutDir).map((library): Library => {
