@@ -1,12 +1,11 @@
-import { Account, Address, Chain, Client, Transport } from "viem";
+import { Address } from "viem";
 import { useEntryKitConfig } from "./EntryKitConfigProvider";
 import { useClient } from "wagmi";
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { getAppAccountClient } from "./getAppAccountClient";
+import { AppAccountClient } from "./common";
 
-export function useAppAccountClient(
-  userAddress: Address | undefined,
-): UseQueryResult<Client<Transport, Chain, Account>> {
+export function useAppAccountClient(userAddress: Address | undefined): UseQueryResult<AppAccountClient> {
   const { chainId, bundlerTransport, paymasterAddress, worldAddress, explorerUrl } = useEntryKitConfig();
   const client = useClient({ chainId });
 

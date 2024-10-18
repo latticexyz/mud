@@ -1,5 +1,6 @@
 // TODO: move to external exports once we're ready
 export type { EntryKitConfig } from "../config";
+export type { ConnectedClient, AppAccountClient } from "../common";
 export { EntryKitProvider } from "../EntryKitProvider";
 export { useEntryKitConfig } from "../EntryKitConfigProvider";
 export { AccountButton } from "../AccountButton";

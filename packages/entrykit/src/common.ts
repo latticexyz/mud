@@ -1,8 +1,9 @@
 import { resourceToHex } from "@latticexyz/common";
-import { Client, Chain, Transport, Account, parseAbi, ClientConfig } from "viem";
+import { Client, Chain, Transport, Account, parseAbi, ClientConfig, Address } from "viem";
 import worldConfig from "@latticexyz/world/mud.config";
 
-export type ConnectedClient = Client<Transport, Chain, Account>;
+export type ConnectedClient<chain extends Chain = Chain> = Client<Transport, chain, Account>;
+export type AppAccountClient<chain extends Chain = Chain> = ConnectedClient<chain> & { readonly userAddress: Address };
 
 export const defaultClientConfig = {
   pollingInterval: 250,
