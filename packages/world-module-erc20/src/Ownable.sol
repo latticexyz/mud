@@ -3,10 +3,10 @@
 
 pragma solidity >=0.8.24;
 
-import { ResourceId, ResourceIdLib } from "@latticexyz/store/src/ResourceId.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 import { Owner } from "./codegen/tables/Owner.sol";
-import { StoreConsumer, WithStore } from "./StoreConsumer.sol";
+import { StoreConsumer } from "./StoreConsumer.sol";
 import { Context } from "./Context.sol";
 import { OwnableTableNames } from "./Constants.sol";
 
@@ -23,7 +23,7 @@ import { OwnableTableNames } from "./Constants.sol";
  * the owner.
  */
 abstract contract Ownable is Context, StoreConsumer {
-  ResourceId immutable OWNER_ID;
+  ResourceId internal immutable ownerId;
 
   /**
    * @dev The caller account is not authorized to perform an operation.
@@ -45,10 +45,10 @@ abstract contract Ownable is Context, StoreConsumer {
       revert OwnableInvalidOwner(address(0));
     }
 
-    OWNER_ID = _encodeTableId(OwnableTableNames.OWNER);
+    ownerId = _encodeTableId(OwnableTableNames.OWNER);
 
     // Register table
-    Owner.register(OWNER_ID);
+    Owner.register(ownerId);
 
     _transferOwnership(initialOwner);
   }
@@ -65,7 +65,7 @@ abstract contract Ownable is Context, StoreConsumer {
    * @dev Returns the address of the current owner.
    */
   function owner() public view virtual returns (address) {
-    return Owner.get(OWNER_ID);
+    return Owner.get(ownerId);
   }
 
   /**
@@ -105,7 +105,7 @@ abstract contract Ownable is Context, StoreConsumer {
    */
   function _transferOwnership(address newOwner) internal virtual {
     address oldOwner = owner();
-    Owner.set(OWNER_ID, newOwner);
+    Owner.set(ownerId, newOwner);
     emit OwnershipTransferred(oldOwner, newOwner);
   }
 }

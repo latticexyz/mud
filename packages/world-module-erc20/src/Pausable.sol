@@ -3,10 +3,10 @@
 
 pragma solidity >=0.8.24;
 
-import { ResourceId, ResourceIdLib } from "@latticexyz/store/src/ResourceId.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 import { Paused as PausedTable } from "./codegen/tables/Paused.sol";
-import { StoreConsumer, WithStore } from "./StoreConsumer.sol";
+import { StoreConsumer } from "./StoreConsumer.sol";
 import { Context } from "./Context.sol";
 import { PausableTableNames } from "./Constants.sol";
 
@@ -20,7 +20,7 @@ import { PausableTableNames } from "./Constants.sol";
  * simply including this module, only once the modifiers are put in place.
  */
 abstract contract Pausable is Context, StoreConsumer {
-  ResourceId immutable PAUSED_ID;
+  ResourceId internal immutable pausedId;
 
   /**
    * @dev Emitted when the pause is triggered by `account`.
@@ -46,9 +46,9 @@ abstract contract Pausable is Context, StoreConsumer {
    * @dev Initializes the contract in unpaused state.
    */
   constructor() {
-    PAUSED_ID = _encodeTableId(PausableTableNames.PAUSED);
-    PausedTable.register(PAUSED_ID);
-    PausedTable.set(PAUSED_ID, false);
+    pausedId = _encodeTableId(PausableTableNames.PAUSED);
+    PausedTable.register(pausedId);
+    PausedTable.set(pausedId, false);
   }
 
   /**
@@ -79,7 +79,7 @@ abstract contract Pausable is Context, StoreConsumer {
    * @dev Returns true if the contract is paused, and false otherwise.
    */
   function paused() public view virtual returns (bool) {
-    return PausedTable.get(PAUSED_ID);
+    return PausedTable.get(pausedId);
   }
 
   /**
@@ -108,7 +108,7 @@ abstract contract Pausable is Context, StoreConsumer {
    * - The contract must not be paused.
    */
   function _pause() internal virtual whenNotPaused {
-    PausedTable.set(PAUSED_ID, true);
+    PausedTable.set(pausedId, true);
     emit Paused(_msgSender());
   }
 
@@ -120,7 +120,7 @@ abstract contract Pausable is Context, StoreConsumer {
    * - The contract must be paused.
    */
   function _unpause() internal virtual whenPaused {
-    PausedTable.set(PAUSED_ID, false);
+    PausedTable.set(pausedId, false);
     emit Unpaused(_msgSender());
   }
 }

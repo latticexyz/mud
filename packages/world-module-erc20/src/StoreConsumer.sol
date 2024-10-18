@@ -4,13 +4,11 @@ pragma solidity >=0.8.24;
 import { StoreCore } from "@latticexyz/store/src/Store.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
-import { ResourceIds } from "@latticexyz/store/src/codegen/index.sol";
 import { ResourceId, ResourceIdLib } from "@latticexyz/store/src/ResourceId.sol";
 
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { ResourceAccess } from "@latticexyz/world/src/codegen/tables/ResourceAccess.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
-import { WorldContextConsumerLib } from "@latticexyz/world/src/WorldContext.sol";
 
 import { Context } from "./Context.sol";
 
@@ -45,7 +43,7 @@ abstract contract WithStore is Context, StoreConsumer {
 }
 
 abstract contract WithWorld is WithStore {
-  bytes14 public immutable NAMESPACE;
+  bytes14 public immutable namespace;
 
   error WithWorld_CallerHasNoNamespaceAccess();
 
@@ -57,8 +55,8 @@ abstract contract WithWorld is WithStore {
     _;
   }
 
-  constructor(IBaseWorld world, bytes14 namespace) WithStore(address(world)) {
-    NAMESPACE = namespace;
+  constructor(IBaseWorld world, bytes14 _namespace) WithStore(address(world)) {
+    namespace = _namespace;
 
     ResourceId namespaceId = getNamespaceId();
 
@@ -67,10 +65,10 @@ abstract contract WithWorld is WithStore {
   }
 
   function getNamespaceId() public view returns (ResourceId) {
-    return WorldResourceIdLib.encodeNamespace(NAMESPACE);
+    return WorldResourceIdLib.encodeNamespace(namespace);
   }
 
   function _encodeResourceId(bytes2 typeId, bytes16 name) internal view virtual override returns (ResourceId) {
-    return WorldResourceIdLib.encode(typeId, NAMESPACE, name);
+    return WorldResourceIdLib.encode(typeId, namespace, name);
   }
 }
