@@ -101,4 +101,75 @@ describe("subscribeStore", () => {
       },
     });
   });
+
+  it("should notify subscriber of singleton table changes", () => {
+    const config = defineStore({
+      namespaces: {
+        app: {
+          tables: {
+            config: {
+              schema: { enabled: "bool" },
+              key: [],
+            },
+          },
+        },
+      },
+    });
+
+    const stash = createStash(config);
+    const subscriber = vi.fn();
+
+    subscribeStore({ stash, subscriber });
+
+    setRecord({ stash, table: config.tables.app__config, key: {}, value: { enabled: true } });
+
+    expect(subscriber).toHaveBeenCalledTimes(1);
+    expect(subscriber).toHaveBeenNthCalledWith(1, {
+      config: {},
+      records: {
+        app: {
+          config: {
+            "": {
+              prev: undefined,
+              current: { enabled: true },
+            },
+          },
+        },
+      },
+    });
+
+    setRecord({ stash, table: config.tables.app__config, key: {}, value: { enabled: false } });
+
+    expect(subscriber).toHaveBeenCalledTimes(2);
+    expect(subscriber).toHaveBeenNthCalledWith(2, {
+      config: {},
+      records: {
+        app: {
+          config: {
+            "": {
+              prev: { enabled: true },
+              current: { enabled: false },
+            },
+          },
+        },
+      },
+    });
+
+    deleteRecord({ stash, table: config.tables.app__config, key: {} });
+
+    expect(subscriber).toHaveBeenCalledTimes(3);
+    expect(subscriber).toHaveBeenNthCalledWith(3, {
+      config: {},
+      records: {
+        app: {
+          config: {
+            "": {
+              prev: { enabled: false },
+              current: undefined,
+            },
+          },
+        },
+      },
+    });
+  });
 });
