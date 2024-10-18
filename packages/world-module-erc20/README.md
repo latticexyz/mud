@@ -2,7 +2,7 @@
 
 ## ERC20 contracts
 
-In order to achieve a similar level of composability to `Openzeppelin` ERC20 contract extensions, we provide a way to abstract the underlying Store being used. This allows developers to easily create ERC20 tokens that can either use its own storage as the Store, or attach themselves to an existing World.
+In order to achieve a similar level of composability to [`OpenZeppelin` ERC20 contract extensions](https://docs.openzeppelin.com/contracts/5.x/api/token/erc20), we provide a way to abstract the underlying Store being used. This allows developers to easily create ERC20 tokens that can either use its own storage as the Store, or attach themselves to an existing World.
 
 - `StoreConsumer`: all contracts inherit from `StoreConsumer`, which abstracts the way in which `ResourceId`s are encoded. This allows us to have composable contracts whose implementations don't depend on the type of Store being used.
 - `WithStore(address) is StoreConsumer`: this contract initializes the store, using the contract's internal storage or the provided external `Store`. It encodes `ResourceId`s using `ResourceIdLib` from the `@latticexyz/store` package.
