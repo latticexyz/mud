@@ -1,6 +1,12 @@
 import { encodeAbiParameters, stringToHex } from "viem";
 
-export function createModuleConfig(namespace: string, name: string, symbol: string) {
+export type DefineERC20ConfigInput = {
+  namespace: string;
+  name: string;
+  symbol: string;
+};
+
+export function defineERC20Config({ namespace, name, symbol }: DefineERC20ConfigInput) {
   const erc20ModuleArgs = encodeAbiParameters(
     [{ type: "bytes14" }, { type: "string" }, { type: "string" }],
     [stringToHex(namespace, { size: 14 }), name, symbol],
