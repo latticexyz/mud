@@ -3,36 +3,6 @@
     "file": "test/ERC20BaseTest.sol",
     "test": "testApprove",
     "name": "approve",
-    "gasUsed": 62702
-  },
-  {
-    "file": "test/ERC20BaseTest.sol",
-    "test": "testBurn",
-    "name": "burn",
-    "gasUsed": 56406
-  },
-  {
-    "file": "test/ERC20BaseTest.sol",
-    "test": "testMint",
-    "name": "mint",
-    "gasUsed": 95192
-  },
-  {
-    "file": "test/ERC20BaseTest.sol",
-    "test": "testTransfer",
-    "name": "transfer",
-    "gasUsed": 67736
-  },
-  {
-    "file": "test/ERC20BaseTest.sol",
-    "test": "testTransferFrom",
-    "name": "transferFrom",
-    "gasUsed": 79566
-  },
-  {
-    "file": "test/ERC20BaseTest.sol",
-    "test": "testApprove",
-    "name": "approve",
     "gasUsed": 70832
   },
   {
@@ -58,6 +28,36 @@
     "test": "testTransferFrom",
     "name": "transferFrom",
     "gasUsed": 99423
+  },
+  {
+    "file": "test/ERC20BaseTest.sol",
+    "test": "testApprove",
+    "name": "approve",
+    "gasUsed": 62702
+  },
+  {
+    "file": "test/ERC20BaseTest.sol",
+    "test": "testBurn",
+    "name": "burn",
+    "gasUsed": 56406
+  },
+  {
+    "file": "test/ERC20BaseTest.sol",
+    "test": "testMint",
+    "name": "mint",
+    "gasUsed": 95192
+  },
+  {
+    "file": "test/ERC20BaseTest.sol",
+    "test": "testTransfer",
+    "name": "transfer",
+    "gasUsed": 67736
+  },
+  {
+    "file": "test/ERC20BaseTest.sol",
+    "test": "testTransferFrom",
+    "name": "transferFrom",
+    "gasUsed": 79566
   },
   {
     "file": "test/ERC20Burnable.t.sol",
