@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { createStash } from "../createStash";
 import { subscribeStore } from "./subscribeStore";
 import { setRecord } from "./setRecord";
+import { deleteRecord } from "./deleteRecord";
 
 describe("subscribeStore", () => {
   it("should notify subscriber of any stash change", () => {
@@ -77,6 +78,23 @@ describe("subscribeStore", () => {
             "0x01": {
               prev: { a: "0x01", b: 1n, c: 2 },
               current: { a: "0x01", b: 1n, c: 3 },
+            },
+          },
+        },
+      },
+    });
+
+    deleteRecord({ stash, table: config.tables.namespace2__table2, key: { a: "0x01" } });
+
+    expect(subscriber).toHaveBeenCalledTimes(4);
+    expect(subscriber).toHaveBeenNthCalledWith(4, {
+      config: {},
+      records: {
+        namespace2: {
+          table2: {
+            "0x01": {
+              prev: { a: "0x01", b: 1n, c: 3 },
+              current: undefined,
             },
           },
         },
