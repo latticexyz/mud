@@ -91,6 +91,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     config,
     forgeOutDir: outDir,
   });
+
   const artifacts = await findContractArtifacts({ forgeOutDir: outDir });
   // TODO: pass artifacts into configToModules (https://github.com/latticexyz/mud/issues/3153)
   const modules = await configToModules(config, outDir);
@@ -149,7 +150,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     client,
     tables,
     systems,
-    libraries,
+    libraries: [...libraries, ...modules.flatMap((mod) => mod.libraries)],
     modules,
     artifacts,
   });
