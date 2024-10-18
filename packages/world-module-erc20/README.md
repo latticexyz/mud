@@ -10,7 +10,7 @@ In order to achieve a similar level of composability to [`OpenZeppelin` ERC20 co
 
 - `MUDERC20`: base ERC20 implementation adapted from Openzeppelin's ERC20. Contains the ERC20 logic, reads/writes to the store through MUD's codegen libraries and initializes the tables it needs. As these libraries use `StoreSwitch` internally, this contract doesn't need to know about the store it's interacting with (it can be internal storage, an external `Store` or a `World`).
 
-- Extensions and other contracts: contracts like `Ownable`, `Pausable`, `ERC20Burnable`, etc are adapted from `Openzeppelin` contracts to use MUD's codegen libraries to read and write from a `Store`. They inherit from `StoreConsumer`, so they can obtain the `ResourceId` for the tables they use using `_encodeResourceId()`.
+- Extensions and other contracts: contracts like `Ownable`, `Pausable`, `ERC20Burnable`, etc are adapted from `OpenZeppelin` contracts to use MUD's codegen libraries to read and write from a `Store`. They inherit from `StoreConsumer`, so they can obtain the `ResourceId` for the tables they use using `_encodeResourceId()`.
 
 ### Example 1: Using the contract's storage
 
