@@ -52,7 +52,7 @@ export function AccountButton() {
             "bg-orange-500 text-white font-medium",
             "hover:bg-orange-400",
             "active:bg-orange-600",
-            "aria-busy:saturate-50",
+            // "aria-busy:saturate-50",
           )}
           aria-busy={accountModalOpen}
           onClick={openAccountModal}
