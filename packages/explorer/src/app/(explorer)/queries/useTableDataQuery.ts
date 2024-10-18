@@ -1,10 +1,13 @@
 import { useParams } from "next/navigation";
+import { Parser } from "node-sql-parser";
 import { Hex } from "viem";
 import { Table } from "@latticexyz/config";
 import { useQuery } from "@tanstack/react-query";
 import { useChain } from "../hooks/useChain";
 import { DozerResponse } from "../types";
 import { indexerForChainId } from "../utils/indexerForChainId";
+
+const parser = new Parser();
 
 type Props = {
   table: Table | undefined;
@@ -24,6 +27,14 @@ export function useTableDataQuery({ table, query }: Props) {
     queryKey: ["tableData", chainName, worldAddress, query],
     queryFn: async () => {
       const indexer = indexerForChainId(chainId);
+      const ast = parser.astify(query);
+      const formattedQuery = parser.sqlify(ast, {
+        database: "Postgresql",
+        parseOptions: {
+          includeLocations: false,
+        },
+      });
+
       const response = await fetch(indexer.url, {
         method: "POST",
         headers: {
@@ -32,7 +43,7 @@ export function useTableDataQuery({ table, query }: Props) {
         body: JSON.stringify([
           {
             address: worldAddress as Hex,
-            query,
+            query: formattedQuery,
           },
         ]),
       });
