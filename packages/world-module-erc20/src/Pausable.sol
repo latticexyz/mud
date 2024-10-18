@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Adapted from OpenZeppelin Contracts (utils/Pausable.sol)
 
-pragma solidity ^0.8.20;
+pragma solidity >=0.8.24;
 
 import { ResourceId, ResourceIdLib } from "@latticexyz/store/src/ResourceId.sol";
 
