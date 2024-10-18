@@ -92,8 +92,6 @@ In your MUD config:
 import { defineWorld } from "@latticexyz/world";
 import { createModuleConfig } from "@latticexyz/world-module-erc20";
 
-
-
 export default defineWorld({
   namespace: "app",
   tables: {
