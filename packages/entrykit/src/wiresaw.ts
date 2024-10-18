@@ -48,12 +48,16 @@ export function wiresaw<const transport extends Transport>(originalTransport: tr
 
         if (req.method === "eth_sendUserOperation") {
           // TODO: type `request` so we don't have to cast
-          const result = await originalRequest({
+          const result = (await originalRequest({
             ...req,
-            method: "pimlico_sendUserOperationNow",
-          });
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          return (result as any).userOpHash;
+            method: "wiresaw_sendUserOperation",
+          })) as { txHash: Hex; userOpHash: Hex };
+          // :haroldsmile:
+          receipts.set(result.userOpHash, {
+            userOpHash: result.userOpHash,
+            receipt: { transactionHash: result.txHash },
+          } as UserOperationReceipt);
+          return result.userOpHash;
         }
 
         if (req.method === "eth_getUserOperationReceipt") {
