@@ -11,18 +11,24 @@ export type GetContractArtifactResult = {
   deployedBytecodeSize: number;
 };
 
+function HexNotStrict(value: string): value is Hex {
+  return isHex(value, { strict: false });
+}
+
 const bytecodeSchema = z.object({
-  object: z.string().refine(isHex),
-  linkReferences: z.record(
-    z.record(
-      z.array(
-        z.object({
-          start: z.number(),
-          length: z.number(),
-        }),
+  object: z.string().refine(HexNotStrict),
+  linkReferences: z
+    .record(
+      z.record(
+        z.array(
+          z.object({
+            start: z.number(),
+            length: z.number(),
+          }),
+        ),
       ),
-    ),
-  ),
+    )
+    .optional(),
 });
 
 const artifactSchema = z.object({
@@ -34,7 +40,7 @@ const artifactSchema = z.object({
 export function getContractArtifact(artifactJson: unknown): GetContractArtifactResult {
   // TODO: improve errors or replace with arktype?
   const artifact = artifactSchema.parse(artifactJson);
-  const placeholders = findPlaceholders(artifact.bytecode.linkReferences);
+  const placeholders = findPlaceholders(artifact.bytecode.linkReferences ?? {});
 
   return {
     abi: artifact.abi,

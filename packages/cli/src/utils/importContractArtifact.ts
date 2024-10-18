@@ -25,6 +25,7 @@ export async function importContractArtifact({
   let artfactJson;
   try {
     const requirePath = packageJsonPath ?? (await findUp("package.json", { cwd: process.cwd() }));
+    console.log({ requirePath });
     if (!requirePath) throw new Error("Could not find package.json to import relative to.");
 
     const require = createRequire(requirePath);
