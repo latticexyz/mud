@@ -31,12 +31,12 @@ jobs:
       - name: Clean
         if: steps.check_changes.outputs.changes_outside_docs
         shell: bash
-        run: pnpm turbo run clean --concurrency 10
+        run: pnpm run clean
 
       - name: Build
         if: steps.check_changes.outputs.changes_outside_docs
         shell: bash
-        run: pnpm turbo run build --concurrency 10
+        run: pnpm run build
 
       - name: Outdated files, run `pnpm build` and commit them
         if: steps.check_changes.outputs.changes_outside_docs

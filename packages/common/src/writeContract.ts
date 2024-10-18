@@ -78,9 +78,9 @@ export async function writeContract<
           const params = {
             // viem_writeContract internally estimates gas, which we want to happen on the pending block
             blockTag: "pending",
+            ...feeRef.fees,
             ...request,
             nonce,
-            ...feeRef.fees,
           } as const satisfies WriteContractParameters<abi, functionName, args, chain, account, chainOverride>;
           debug("calling", params.functionName, "at", params.address, "with nonce", nonce);
           return await getAction(client, viem_writeContract, "writeContract")(params as never);

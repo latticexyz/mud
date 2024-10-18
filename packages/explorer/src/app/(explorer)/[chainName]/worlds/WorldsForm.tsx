@@ -84,7 +84,7 @@ export function WorldsForm({ worlds }: { worlds: Address[] }) {
 
               <div className="relative">
                 <CommandList>
-                  {open ? (
+                  {open && worlds.length > 0 ? (
                     <div className="absolute top-3 z-10 max-h-[200px] w-full overflow-y-auto rounded-md border bg-popover text-popover-foreground outline-none animate-in">
                       <CommandGroup>
                         {worlds?.map((world) => {

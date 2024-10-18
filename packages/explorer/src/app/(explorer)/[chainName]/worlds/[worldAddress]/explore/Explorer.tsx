@@ -6,7 +6,6 @@ import { Hex } from "viem";
 import { useEffect } from "react";
 import { useChain } from "../../../../hooks/useChain";
 import { usePrevious } from "../../../../hooks/usePrevious";
-import { useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { useTablesQuery } from "../../../../queries/useTablesQuery";
 import { constructTableName } from "../../../../utils/constructTableName";
 import { indexerForChainId } from "../../../../utils/indexerForChainId";
@@ -24,7 +23,6 @@ export function Explorer() {
 
   const { data: tables } = useTablesQuery();
   const table = tables?.find(({ tableId }) => tableId === selectedTableId);
-  const { data: tableData, isLoading, isFetched } = useTableDataQuery({ table, query });
 
   useEffect(() => {
     if (table && (!query || prevSelectedTableId !== selectedTableId)) {
@@ -40,9 +38,9 @@ export function Explorer() {
 
   return (
     <>
-      {indexer.type !== "sqlite" && <SQLEditor />}
+      {indexer.type !== "sqlite" && <SQLEditor table={table} />}
       <TableSelector tables={tables} />
-      <TablesViewer table={table} tableData={tableData} isLoading={isLoading || !isFetched} />
+      <TablesViewer table={table} query={query} />
     </>
   );
 }

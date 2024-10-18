@@ -1,4 +1,5 @@
 {
+  "name": "mud-monorepo",
   "private": true,
   "repository": {
     "type": "git",
@@ -9,10 +10,10 @@
     "all-build": "for dir in packages/store packages/world packages/world-modules packages/cli test/mock-game-contracts e2e/packages/contracts examples/*/packages/contracts examples/multiple-namespaces templates/*/packages/contracts; do (cd \"$dir\" && pwd && pnpm build); done",
     "all-install": "for dir in . docs e2e examples/* templates/*; do (cd \"$dir\" && pwd && pnpm install); done",
     "bench": "pnpm run --recursive bench",
-    "build": "turbo run build",
+    "build": "turbo run build --concurrency=100%",
     "changelog:generate": "tsx scripts/changelog.ts",
-    "clean": "turbo run clean",
-    "dev": "TSUP_SKIP_DTS=true turbo run dev --concurrency 100 --filter !@latticexyz/explorer",
+    "clean": "turbo run clean --concurrency=100%",
+    "dev": "turbo run dev --concurrency=999",
     "dist-tag-rm": "pnpm recursive exec -- sh -c 'npm dist-tag rm $(cat package.json | jq -r \".name\") $TAG || true'",
     "docs:generate:api": "tsx scripts/render-api-docs.ts",
     "fix:package-json": "sort-package-json package.json 'packages/*/package.json' 'templates/*/package.json' 'templates/*/packages/*/package.json' 'examples/*/package.json' 'examples/*/packages/*/package.json' 'e2e/*/package.json' 'e2e/*/packages/*/package.json' 'docs/package.json' 'test/*/package.json'",
@@ -30,7 +31,7 @@
     "test:setup": "tsx test-setup/startAnvil.ts & pnpm run --filter mock-game-contracts build",
     "type-bench": "pnpm --filter ./test/ts-benchmarks bench",
     "type-stats-repo": "attest stats packages/*",
-    "vercel:prepare": "(forge --version || pnpm foundryup) && ln -sf /vercel/.foundry/bin/* node_modules/.bin/ && forge --version"
+    "vercel:prepare": "ln -sf /vercel/.foundry/bin/* node_modules/.bin/ && forge --version"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --cache --fix",
