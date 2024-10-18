@@ -20,7 +20,7 @@ export function Allowance({ isActive, isExpanded, userAddress }: Props) {
   // TODO: improve pending state since this is kicked off automatically and showing a pending button is weird
   useEffect(() => {
     if (isActive && claimGasPass.status === "idle" && allowance.data && allowance.data.allowance < minGasBalance) {
-      claimGasPass.mutate(userAddress);
+      // claimGasPass.mutate(userAddress);
     }
   }, [allowance.data, claimGasPass, isActive, userAddress]);
 
