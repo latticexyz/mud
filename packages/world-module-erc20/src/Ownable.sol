@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Adapted from OpenZeppelin Contracts (access/Ownable.sol)
-
+// Adapted from OpenZeppelin Contracts [access/Ownable.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/f989fff93168606c726bc5e831ef50dd6e543f45/contracts/access/Ownable.sol)
 pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
