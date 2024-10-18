@@ -5,7 +5,7 @@ pragma solidity >=0.8.24;
 
 import { ResourceId, ResourceIdLib } from "@latticexyz/store/src/ResourceId.sol";
 
-import { Paused as PausedTbl } from "./codegen/tables/Paused.sol";
+import { Paused as PausedTable } from "./codegen/tables/Paused.sol";
 import { StoreConsumer, WithStore } from "./StoreConsumer.sol";
 import { Context } from "./Context.sol";
 import { PausableTableNames } from "./Constants.sol";
@@ -47,8 +47,8 @@ abstract contract Pausable is Context, StoreConsumer {
    */
   constructor() {
     PAUSED_ID = _encodeTableId(PausableTableNames.PAUSED);
-    PausedTbl.register(PAUSED_ID);
-    PausedTbl.set(PAUSED_ID, false);
+    PausedTable.register(PAUSED_ID);
+    PausedTable.set(PAUSED_ID, false);
   }
 
   /**
@@ -79,7 +79,7 @@ abstract contract Pausable is Context, StoreConsumer {
    * @dev Returns true if the contract is paused, and false otherwise.
    */
   function paused() public view virtual returns (bool) {
-    return PausedTbl.get(PAUSED_ID);
+    return PausedTable.get(PAUSED_ID);
   }
 
   /**
@@ -108,7 +108,7 @@ abstract contract Pausable is Context, StoreConsumer {
    * - The contract must not be paused.
    */
   function _pause() internal virtual whenNotPaused {
-    PausedTbl.set(PAUSED_ID, true);
+    PausedTable.set(PAUSED_ID, true);
     emit Paused(_msgSender());
   }
 
@@ -120,7 +120,7 @@ abstract contract Pausable is Context, StoreConsumer {
    * - The contract must be paused.
    */
   function _unpause() internal virtual whenPaused {
-    PausedTbl.set(PAUSED_ID, false);
+    PausedTable.set(PAUSED_ID, false);
     emit Unpaused(_msgSender());
   }
 }

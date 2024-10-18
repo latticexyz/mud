@@ -90,7 +90,7 @@ In your MUD config:
 
 ```
 import { defineWorld } from "@latticexyz/world";
-import { createModuleConfig } from "@latticexyz/world-module-erc20";
+import { defineERC20Config } from "@latticexyz/world-module-erc20";
 
 export default defineWorld({
   namespace: "app",
@@ -103,7 +103,11 @@ export default defineWorld({
     },
   },
   modules: [
-    createModuleConfig("erc20Namespace", "MyToken", "MTK"),
+    defineERC20Config({
+      namespace: "erc20Namespace",
+      name: "MyToken",
+      symbol: "MTK"
+    }),
   ],
 });
 ```

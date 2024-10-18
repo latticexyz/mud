@@ -47,13 +47,12 @@ abstract contract WithStore is Context, StoreConsumer {
 abstract contract WithWorld is WithStore {
   bytes14 public immutable NAMESPACE;
 
-  error NamespaceAlreadyExists(bytes14 namespace);
-  error CallerHasNoNamespaceAccess();
+  error WithWorld_CallerHasNoNamespaceAccess();
 
   modifier onlyNamespace() {
     address sender = _msgSender();
     if (!ResourceAccess.get(getNamespaceId(), sender)) {
-      revert CallerHasNoNamespaceAccess();
+      revert WithWorld_CallerHasNoNamespaceAccess();
     }
     _;
   }
@@ -63,10 +62,7 @@ abstract contract WithWorld is WithStore {
 
     ResourceId namespaceId = getNamespaceId();
 
-    if (ResourceIds.getExists(namespaceId)) {
-      revert NamespaceAlreadyExists(namespace);
-    }
-
+    // This will revert if namespace already exists
     world.registerNamespace(namespaceId);
   }
 
