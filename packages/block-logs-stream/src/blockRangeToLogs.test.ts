@@ -1,39 +1,24 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { blockRangeToLogs } from "./blockRangeToLogs";
 import { Subject, lastValueFrom, map, toArray } from "rxjs";
-import { EIP1193RequestFn, RpcLog, Transport, createClient, createTransport } from "viem";
+import { createClient, http } from "viem";
 import { wait } from "@latticexyz/common/utils";
 
 vi.useFakeTimers();
 
-const mockedTransportRequest = vi.fn<Parameters<EIP1193RequestFn>, ReturnType<EIP1193RequestFn>>();
-const mockTransport: Transport = () =>
-  createTransport({
-    key: "mock",
-    name: "Mock Transport",
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    request: mockedTransportRequest as any,
-    type: "mock",
-    retryCount: 0,
-  });
-
-const publicClient = createClient({
-  transport: mockTransport,
-});
-
 describe("blockRangeToLogs", () => {
-  beforeEach(() => {
-    mockedTransportRequest.mockClear();
-  });
-
   it("processes block ranges in order", async () => {
-    const requests: unknown[] = [];
-    mockedTransportRequest.mockImplementation(async ({ method, params }): Promise<RpcLog[]> => {
-      requests.push(params);
-      if (method !== "eth_getLogs") throw new Error("not implemented");
-      await Promise.race([wait(450), vi.runAllTimersAsync()]);
-      return [];
-    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const requests: any[] = [];
+    const publicClient = createClient({
+      transport: http("http://mock"),
+    }).extend(() => ({
+      getLogs: vi.fn(async (params) => {
+        requests.push(params);
+        await Promise.race([wait(450), vi.runAllTimersAsync()]);
+        return [];
+      }),
+    }));
 
     const latestBlockNumber$ = new Subject<bigint>();
 
@@ -59,46 +44,34 @@ describe("blockRangeToLogs", () => {
 
     expect(requests).toMatchInlineSnapshot(`
       [
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x0",
-            "toBlock": "0x3e8",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x3e9",
-            "toBlock": "0x3ec",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x3ed",
-            "toBlock": "0x3f0",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x3f1",
-            "toBlock": "0x3f2",
-            "topics": [
-              [],
-            ],
-          },
-        ],
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 0n,
+          "strict": true,
+          "toBlock": 1000n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 1001n,
+          "strict": true,
+          "toBlock": 1004n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 1005n,
+          "strict": true,
+          "toBlock": 1008n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 1009n,
+          "strict": true,
+          "toBlock": 1010n,
+        },
       ]
     `);
 
