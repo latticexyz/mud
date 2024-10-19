@@ -1,6 +1,6 @@
 import { AbiEvent } from "abitype";
 import { Address, Client, BlockNumber, GetLogsReturnType, OneOf } from "viem";
-import { bigIntMin, wait } from "@latticexyz/common/utils";
+import { bigIntMax, bigIntMin, wait } from "@latticexyz/common/utils";
 import { debug } from "./debug";
 import { getAction } from "viem/utils";
 import { getLogs as viem_getLogs } from "viem/actions";
@@ -127,7 +127,7 @@ export async function* fetchLogs<abiEvents extends readonly AbiEvent[]>({
 
   while (fromBlock <= initialToBlock) {
     try {
-      const toBlock = fromBlock + blockRange;
+      const toBlock = fromBlock + bigIntMax(0n, blockRange - 1n);
       debug(`getting logs for blocks ${fromBlock}-${toBlock} (${blockRange} blocks, ${maxBlockRange} max)`);
       const logs = await getLogs({ fromBlock, toBlock });
       yield { fromBlock, toBlock, logs };
