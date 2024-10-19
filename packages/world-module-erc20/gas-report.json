@@ -141,48 +141,6 @@
     "file": "test/ERC20Pausable.t.sol",
     "test": "testApprove",
     "name": "approve",
-    "gasUsed": 70832
-  },
-  {
-    "file": "test/ERC20Pausable.t.sol",
-    "test": "testBurn",
-    "name": "burn",
-    "gasUsed": 75650
-  },
-  {
-    "file": "test/ERC20Pausable.t.sol",
-    "test": "testMint",
-    "name": "mint",
-    "gasUsed": 114369
-  },
-  {
-    "file": "test/ERC20Pausable.t.sol",
-    "test": "testPause",
-    "name": "pause",
-    "gasUsed": 70617
-  },
-  {
-    "file": "test/ERC20Pausable.t.sol",
-    "test": "testPause",
-    "name": "unpause",
-    "gasUsed": 44203
-  },
-  {
-    "file": "test/ERC20Pausable.t.sol",
-    "test": "testTransfer",
-    "name": "transfer",
-    "gasUsed": 87085
-  },
-  {
-    "file": "test/ERC20Pausable.t.sol",
-    "test": "testTransferFrom",
-    "name": "transferFrom",
-    "gasUsed": 104234
-  },
-  {
-    "file": "test/ERC20Pausable.t.sol",
-    "test": "testApprove",
-    "name": "approve",
     "gasUsed": 62702
   },
   {
@@ -220,5 +178,47 @@
     "test": "testTransferFrom",
     "name": "transferFrom",
     "gasUsed": 82868
+  },
+  {
+    "file": "test/ERC20Pausable.t.sol",
+    "test": "testApprove",
+    "name": "approve",
+    "gasUsed": 70832
+  },
+  {
+    "file": "test/ERC20Pausable.t.sol",
+    "test": "testBurn",
+    "name": "burn",
+    "gasUsed": 75650
+  },
+  {
+    "file": "test/ERC20Pausable.t.sol",
+    "test": "testMint",
+    "name": "mint",
+    "gasUsed": 114369
+  },
+  {
+    "file": "test/ERC20Pausable.t.sol",
+    "test": "testPause",
+    "name": "pause",
+    "gasUsed": 70617
+  },
+  {
+    "file": "test/ERC20Pausable.t.sol",
+    "test": "testPause",
+    "name": "unpause",
+    "gasUsed": 44203
+  },
+  {
+    "file": "test/ERC20Pausable.t.sol",
+    "test": "testTransfer",
+    "name": "transfer",
+    "gasUsed": 87085
+  },
+  {
+    "file": "test/ERC20Pausable.t.sol",
+    "test": "testTransferFrom",
+    "name": "transferFrom",
+    "gasUsed": 104234
   }
 ]
