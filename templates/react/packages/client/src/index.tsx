@@ -1,4 +1,5 @@
 import ReactDOM from "react-dom/client";
+import {StrictMode} from 'react'
 import { App } from "./App";
 import { setup } from "./mud/setup";
 import { MUDProvider } from "./MUDContext";
@@ -11,9 +12,11 @@ const root = ReactDOM.createRoot(rootElement);
 // TODO: figure out if we actually want this to be async or if we should render something else in the meantime
 setup().then(async (result) => {
   root.render(
-    <MUDProvider value={result}>
-      <App />
-    </MUDProvider>,
+      <StrictMode>
+        <MUDProvider value={result}>
+          <App />
+        </MUDProvider>
+      </StrictMode>,
   );
 
   // https://vitejs.dev/guide/env-and-mode.html
