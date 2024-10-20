@@ -59,7 +59,7 @@ export function ConnectWallet() {
     <div
       className={twMerge(
         "flex-grow grid place-items-center p-6",
-        "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
+        // "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
       )}
     >
       <div className="flex flex-col gap-6">

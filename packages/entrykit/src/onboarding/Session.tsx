@@ -24,12 +24,12 @@ export function Session({ isActive, isExpanded, userClient, registerSpender, reg
       <div className="flex justify-between gap-4">
         <div>
           <div>Session</div>
-          <div className="font-mono text-white">{isReady ? "Approved" : "Set up"}</div>
+          <div className="font-mono text-white">{isReady ? "Activated" : "Set up"}</div>
         </div>
         {isReady ? (
           <Button variant={isActive ? "primary" : "secondary"} className="flex-shrink-0 text-sm p-1 w-28" disabled>
             {/* TODO: revoke */}
-            Revoke
+            Deactivate
           </Button>
         ) : (
           <Button
@@ -50,7 +50,7 @@ export function Session({ isActive, isExpanded, userClient, registerSpender, reg
                 : undefined
             }
           >
-            Approve
+            Activate
           </Button>
         )}
       </div>
