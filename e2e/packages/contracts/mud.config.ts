@@ -1,4 +1,5 @@
 import { defineWorld } from "@latticexyz/world";
+import { defineERC20Config } from "@latticexyz/world-module-erc20";
 import { encodeAbiParameters, stringToHex } from "viem";
 
 const erc20ModuleArgs = encodeAbiParameters(
@@ -119,5 +120,10 @@ export default defineWorld({
         },
       ],
     },
+    defineERC20Config({
+      namespace: "erc20Namespace",
+      name: "MyToken",
+      symbol: "MTK",
+    }),
   ],
 });
