@@ -1,5 +1,7 @@
 # ERC20 World Module
 
+> :warning: **Important note: this module has not been audited yet, so any production use is discouraged for now.**
+
 ## ERC20 contracts
 
 In order to achieve a similar level of composability to [`OpenZeppelin` ERC20 contract extensions](https://docs.openzeppelin.com/contracts/5.x/api/token/erc20), we provide a way to abstract the underlying Store being used. This allows developers to easily create ERC20 tokens that can either use its own storage as the Store, or attach themselves to an existing World.
