@@ -38,17 +38,19 @@ export async function resolveConfig({
     return [moduleOutDir];
   });
 
-  const libraries = [forgeOutDir, ...moduleOutDirs].flatMap(findLibraries).map((library): Library => {
-    // foundry/solc flattens artifacts, so we just use the path basename
-    const contractData = getContractData(path.basename(library.path), library.name, forgeOutDir);
-    return {
-      path: library.path,
-      name: library.name,
-      abi: contractData.abi,
-      prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
-      deployedBytecodeSize: contractData.deployedBytecodeSize,
-    };
-  });
+  const libraries = [forgeOutDir, ...moduleOutDirs].flatMap((outDir) =>
+    findLibraries(outDir).map((library): Library => {
+      // foundry/solc flattens artifacts, so we just use the path basename
+      const contractData = getContractData(path.basename(library.path), library.name, outDir);
+      return {
+        path: library.path,
+        name: library.name,
+        abi: contractData.abi,
+        prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
+        deployedBytecodeSize: contractData.deployedBytecodeSize,
+      };
+    }),
+  );
 
   const baseSystemContractData = getContractData("System.sol", "System", forgeOutDir);
   const baseSystemFunctions = baseSystemContractData.abi
