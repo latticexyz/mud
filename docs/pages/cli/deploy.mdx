@@ -51,9 +51,14 @@ These are the command line options you can specify on `mud deploy`:
 | `--alwaysRunPostDeploy` | Run `PostDeploy.s.sol` after each deploy         | boolean | `false` (run the script only when deploying a new `World`) |
 | `--help`                | Show help                                        | boolean | `false`                                                    |
 | `--version`             | Show version number                              | boolean | `false`                                                    |
-| `--forgeScriptOptions`  | Command line options for forge                   | string  | empty                                                      |
+| `--forgeScriptOptions`  | Command line options for forge<sup>2</sup>       | string  | empty                                                      |
 
-(1) The hostname `localhost` may not work. If that is the case, use `127.0.0.1` instead.
+(1) The hostname `localhost` may not work. If that is the case, use `127.0.0.1` instead.<br />
+(2) Forge command line options also start with a double dash. To avoid having them parsed by the `mud` command-line parser, use this syntax:
+
+```sh
+pnpm mud deploy --forgeScriptOptions="--legacy --skip-simulation"
+```
 
 <Callout type="info" emoji="ℹ️">
   If you want to [verify](./verify) the contracts that make up the `World`, do it right after deployment. Verification
