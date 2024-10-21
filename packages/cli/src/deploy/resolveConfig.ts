@@ -33,6 +33,7 @@ export async function resolveConfig({
       return [];
     }
 
+    // Navigate up two dirs to get the contract output directory
     const moduleOutDir = path.join(require.resolve(mod.artifactPath), "../../");
     return [moduleOutDir];
   });
