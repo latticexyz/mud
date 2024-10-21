@@ -36,11 +36,14 @@ export function useObservedTransactions() {
   const transactions = useStore(worldStore, (state) => state.transactions);
   const observerWrites = useStore(observerStore, (state) => state.writes);
 
+  console.log("worldAddress", worldAddress);
+  console.log("observerWrites", observerWrites);
+
   const mergedTransactions = useMemo((): ObservedTransaction[] => {
     const mergedMap = new Map<string | undefined, ObservedTransaction>();
 
     for (const write of Object.values(observerWrites)) {
-      if (write.address.toLowerCase() !== worldAddress.toLowerCase()) continue;
+      if (write.address.toLowerCase() !== worldAddress.toLowerCase()) continue; // TODO: add back
 
       const parsedAbiItem = parseAbiItem(`function ${write.functionSignature}`) as AbiFunction;
       const writeResult = write.events.find((event): event is Message<"write:result"> => event.type === "write:result");
@@ -71,7 +74,7 @@ export function useObservedTransactions() {
     }
 
     return Array.from(mergedMap.values()).sort((a, b) => Number(b.timestamp ?? 0n) - Number(a.timestamp ?? 0n));
-  }, [observerWrites, worldAddress, transactions]);
+  }, [observerWrites, transactions]);
 
   return mergedTransactions;
 }

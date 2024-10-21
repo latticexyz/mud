@@ -20,12 +20,35 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
 >(
   client: Client<transport, chain, account>,
 ) => Pick<WalletActions<chain, account>, "writeContract"> {
+  console.log("connecting observer:", explorerUrl);
+
   const emit = createBridge({ url: `${explorerUrl}/internal/observer-relay` });
 
   return (client) => ({
     async writeContract(args) {
       const writeId = `${client.uid}-${++writeCounter}`;
       const write = getAction(client, writeContract, "writeContract")(args);
+
+      // if (args.address === "0x0000000071727De22E5E9d8BAf0edAc6f37da032") {
+      //   console.log("writeContract (from observer) 111:", write);
+
+      // const decodedEntryPointCall = decodeFunctionData({
+      //   abi: entryPoint07Abi,
+      //   data: transaction.input,
+      // });
+
+      // const userOps = decodedEntryPointCall.args[0] as PackedUserOperation[];
+      // console.log("user operations", userOps);
+
+      // const decodedSmartAccountCall = decodeFunctionData({
+      //   abi: parseAbi(["function execute(address target, uint256 value, bytes calldata data)"]),
+      //   data: userOps[0].callData,
+      // });
+
+      // console.log("observer decodedEntryPointCall", decodedEntryPointCall);
+      // console.log("observer userOps", userOps);
+      // console.log("observer decodedSmartAccountCall", decodedSmartAccountCall);
+      // }
 
       // `writeContract` above will throw if this isn't present
       const functionAbiItem = getAbiItem({
@@ -57,6 +80,9 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
       if (waitForTransaction) {
         write.then((hash) => {
           const receipt = waitForTransaction(hash);
+
+          console.log("wait for transaction (observer):", receipt);
+
           emit("waitForTransaction", { writeId });
           Promise.allSettled([receipt]).then(([result]) => {
             emit("waitForTransaction:result", { ...result, writeId });
