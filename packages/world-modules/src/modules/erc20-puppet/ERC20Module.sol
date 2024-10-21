@@ -24,8 +24,6 @@ import { ERC20Metadata, ERC20MetadataData } from "./tables/ERC20Metadata.sol";
 contract ERC20Module is Module {
   error ERC20Module_InvalidNamespace(bytes14 namespace);
 
-  address immutable registrationLibrary = address(new ERC20ModuleRegistrationLibrary());
-
   function install(bytes memory encodedArgs) public {
     // Require the module to not be installed with these args yet
     requireNotInstalled(__self, encodedArgs);
@@ -40,10 +38,7 @@ contract ERC20Module is Module {
 
     // Register the ERC20 tables and system
     IBaseWorld world = IBaseWorld(_world());
-    (bool success, bytes memory returnData) = registrationLibrary.delegatecall(
-      abi.encodeCall(ERC20ModuleRegistrationLibrary.register, (world, namespace))
-    );
-    if (!success) revertWithBytes(returnData);
+    ERC20ModuleRegistrationLib.register(world, namespace);
 
     // Initialize the Metadata
     ERC20Metadata.set(_metadataTableId(namespace), metadata);
@@ -69,7 +64,7 @@ contract ERC20Module is Module {
   }
 }
 
-contract ERC20ModuleRegistrationLibrary {
+library ERC20ModuleRegistrationLib {
   /**
    * Register systems and tables for a new ERC20 token in a given namespace
    */
