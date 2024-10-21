@@ -2,8 +2,6 @@
 "@latticexyz/world-module-erc20": patch
 ---
 
-feat(world-module-erc20): new ERC20 World Module
-
 The new ERC20 World Module provides a simpler alternative to the ERC20 Puppet Module, while also being structured in a more extendable way so users can create tokens with custom functionality.
 
 To install this module, you can import and define the module configuration from the NPM package:
