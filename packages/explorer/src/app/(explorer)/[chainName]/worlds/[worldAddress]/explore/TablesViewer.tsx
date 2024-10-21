@@ -99,8 +99,6 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
     },
   });
 
-  console.log("error:", error);
-
   return (
     <>
       <div className="flex items-center justify-between gap-4 pb-4">
@@ -176,6 +174,10 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
       </div>
 
       <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+          {tableData && `Total rows: ${tableData.rows.length.toLocaleString()}`}
+        </div>
+
         <div className="space-x-2">
           <Button
             variant="outline"
