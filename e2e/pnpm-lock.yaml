@@ -96,6 +96,9 @@ importers:
       '@latticexyz/world':
         specifier: link:../../../packages/world
         version: link:../../../packages/world
+      '@latticexyz/world-module-erc20':
+        specifier: link:../../../packages/world-module-erc20
+        version: link:../../../packages/world-module-erc20
       '@latticexyz/world-modules':
         specifier: link:../../../packages/world-modules
         version: link:../../../packages/world-modules

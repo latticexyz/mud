@@ -16,6 +16,7 @@
     "@latticexyz/schema-type": "link:../../../packages/schema-type",
     "@latticexyz/store": "link:../../../packages/store",
     "@latticexyz/world": "link:../../../packages/world",
+    "@latticexyz/world-module-erc20": "link:../../../packages/world-module-erc20",
     "@latticexyz/world-modules": "link:../../../packages/world-modules",
     "dotenv": "^16.0.3",
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
