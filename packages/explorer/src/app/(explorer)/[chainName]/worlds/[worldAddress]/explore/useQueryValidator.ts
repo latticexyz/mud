@@ -20,16 +20,17 @@ export function useQueryValidator(table?: Table) {
     (value: string) => {
       if (!monaco || !table) return true;
 
+      const decodedValue = decodeURIComponent(value);
       try {
-        const ast = sqlParser.astify(value);
+        const ast = sqlParser.astify(decodedValue);
         if ("columns" in ast && Array.isArray(ast.columns)) {
           for (const column of ast.columns) {
             const columnName = column.expr.column;
             if (!Object.keys(table.schema).includes(columnName)) {
               setErrorMarker({
                 message: `Column '${columnName}' does not exist in the table schema.`,
-                startColumn: value.indexOf(columnName) + 1,
-                endColumn: value.indexOf(columnName) + columnName.length + 1,
+                startColumn: decodedValue.indexOf(columnName) + 1,
+                endColumn: decodedValue.indexOf(columnName) + columnName.length + 1,
               });
               return false;
             }
@@ -45,8 +46,8 @@ export function useQueryValidator(table?: Table) {
               if (selectedTableName !== tableName) {
                 setErrorMarker({
                   message: `Only '${tableName}' is available for this query.`,
-                  startColumn: value.indexOf(selectedTableName) + 1,
-                  endColumn: value.indexOf(selectedTableName) + selectedTableName.length + 1,
+                  startColumn: decodedValue.indexOf(selectedTableName) + 1,
+                  endColumn: decodedValue.indexOf(selectedTableName) + selectedTableName.length + 1,
                 });
                 return false;
               }
@@ -61,7 +62,7 @@ export function useQueryValidator(table?: Table) {
           setErrorMarker({
             message: error.message,
             startColumn: 1,
-            endColumn: value.length + 1,
+            endColumn: decodedValue.length + 1,
           });
         }
         return false;

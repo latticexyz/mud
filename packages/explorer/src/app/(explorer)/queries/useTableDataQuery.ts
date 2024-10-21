@@ -22,9 +22,10 @@ export type TableData = {
 export function useTableDataQuery({ table, query }: Props) {
   const { chainName, worldAddress } = useParams();
   const { id: chainId } = useChain();
+  const decodedQuery = decodeURIComponent(query);
 
   return useQuery<DozerResponse, Error, TableData | undefined>({
-    queryKey: ["tableData", chainName, worldAddress, query],
+    queryKey: ["tableData", chainName, worldAddress, decodedQuery],
     queryFn: async () => {
       const indexer = indexerForChainId(chainId);
       const response = await fetch(indexer.url, {
@@ -35,7 +36,7 @@ export function useTableDataQuery({ table, query }: Props) {
         body: JSON.stringify([
           {
             address: worldAddress as Hex,
-            query,
+            query: decodedQuery,
           },
         ]),
       });
@@ -50,7 +51,7 @@ export function useTableDataQuery({ table, query }: Props) {
     select: (data: DozerResponse) => {
       if (!table || !data?.result?.[0]) return;
 
-      const parsedQuery = parser.astify(query);
+      const parsedQuery = parser.astify(decodedQuery);
       const columnKeys = parsedQuery.columns.map((column) => column.expr.column);
       const result = data.result[0];
       const rows = result.slice(1).map((row) => Object.fromEntries(columnKeys.map((key, index) => [key, row[index]])));
