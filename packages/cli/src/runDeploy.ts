@@ -150,7 +150,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     client,
     tables,
     systems,
-    libraries: [...libraries, ...modules.flatMap((mod) => mod.libraries)],
+    libraries,
     modules,
     artifacts,
   });
