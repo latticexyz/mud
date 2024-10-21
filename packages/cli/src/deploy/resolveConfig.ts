@@ -24,11 +24,7 @@ export async function resolveConfig({
   readonly systems: readonly System[];
   readonly libraries: readonly Library[];
 }> {
-<<<<<<< HEAD
   const requirePath = await findUp("package.json");
-=======
-  const requirePath = await findUp("package.json", { cwd: process.cwd() });
->>>>>>> ba714287d (Refactor to do the module library search inside resolveConfig)
   if (!requirePath) throw new Error("Could not find package.json to import relative to.");
   const require = createRequire(requirePath);
 
@@ -37,26 +33,9 @@ export async function resolveConfig({
       return [];
     }
 
-<<<<<<< HEAD
     // Navigate up two dirs to get the contract output directory
     const moduleOutDir = path.join(require.resolve(mod.artifactPath), "../../");
     return [moduleOutDir];
-=======
-    const moduleOutDir = path.join(require.resolve(mod.artifactPath), "../../");
-    return [moduleOutDir];
-  });
-
-  const libraries = [forgeOutDir, ...moduleOutDirs].flatMap(findLibraries).map((library): Library => {
-    // foundry/solc flattens artifacts, so we just use the path basename
-    const contractData = getContractData(path.basename(library.path), library.name, forgeOutDir);
-    return {
-      path: library.path,
-      name: library.name,
-      abi: contractData.abi,
-      prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
-      deployedBytecodeSize: contractData.deployedBytecodeSize,
-    };
->>>>>>> ba714287d (Refactor to do the module library search inside resolveConfig)
   });
 
   const libraries = [forgeOutDir, ...moduleOutDirs].flatMap((outDir) =>
