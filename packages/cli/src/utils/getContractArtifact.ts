@@ -11,12 +11,12 @@ export type GetContractArtifactResult = {
   deployedBytecodeSize: number;
 };
 
-function HexNotStrict(value: string): value is Hex {
+function isBytecode(value: string): value is Hex {
   return isHex(value, { strict: false });
 }
 
 const bytecodeSchema = z.object({
-  object: z.string().refine(HexNotStrict),
+  object: z.string().refine(isBytecode),
   linkReferences: z
     .record(
       z.record(
