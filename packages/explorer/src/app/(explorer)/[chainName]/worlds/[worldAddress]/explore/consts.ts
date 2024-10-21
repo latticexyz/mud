@@ -3,7 +3,8 @@ import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 export const monacoOptions: editor.IStandaloneEditorConstructionOptions = {
   fontSize: 14,
   fontWeight: "normal",
-  wordWrap: "off",
+  wordWrap: "on",
+  wrappingStrategy: "advanced",
   lineNumbers: "off",
   lineNumbersMinChars: 0,
   overviewRulerLanes: 0,
@@ -13,6 +14,7 @@ export const monacoOptions: editor.IStandaloneEditorConstructionOptions = {
   glyphMargin: false,
   folding: false,
   scrollBeyondLastColumn: 0,
+  scrollBeyondLastLine: false,
   scrollbar: {
     horizontal: "hidden",
     vertical: "hidden",
