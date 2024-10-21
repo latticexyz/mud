@@ -90,7 +90,7 @@ The ERC20Module receives the namespace, name and symbol of the token as paramete
 
 In your MUD config:
 
-```
+```typescript
 import { defineWorld } from "@latticexyz/world";
 import { defineERC20Config } from "@latticexyz/world-module-erc20";
 
@@ -108,7 +108,7 @@ export default defineWorld({
     defineERC20Config({
       namespace: "erc20Namespace",
       name: "MyToken",
-      symbol: "MTK"
+      symbol: "MTK",
     }),
   ],
 });
@@ -118,7 +118,7 @@ This will deploy the token and register the provided namespace.
 
 In order to get the token's address in a script or system:
 
-```
+```solidity
 // Table Id of the ERC20Registry, under the `erc20-module` namespace
 ResourceId erc20RegistryResource = WorldResourceIdLib.encode(RESOURCE_TABLE, "erc20-module", "ERC20_REGISTRY");
 
