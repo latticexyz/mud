@@ -92,6 +92,7 @@
     "zustand": "^4.3.7"
   },
   "devDependencies": {
+    "@latticexyz/world-module-erc20": "workspace:*",
     "@types/debug": "^4.1.7",
     "@types/node": "20.12.12",
     "@types/sql.js": "^1.4.4",
