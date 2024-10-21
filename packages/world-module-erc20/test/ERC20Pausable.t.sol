@@ -43,14 +43,14 @@ contract MockERC20WithWorldPausable is MockERC20WithWorld, MockERC20Pausable {
 
 abstract contract ERC20PausableBehaviorTest is ERC20BehaviorTest {
   function testPause() public {
-    startGasReport("pause");
+    startGasReportWithPrefix("pause");
     MockERC20Pausable(address(token)).pause();
     endGasReport();
 
     vm.expectRevert(abi.encodeWithSelector(Pausable.EnforcedPause.selector));
     token.transfer(address(0xBEEF), 0);
 
-    startGasReport("unpause");
+    startGasReportWithPrefix("unpause");
     MockERC20Pausable(address(token)).unpause();
     endGasReport();
 

@@ -27,7 +27,7 @@ abstract contract ERC20BurnableTest is ERC20BehaviorTest {
 
     vm.expectEmit(true, true, true, true);
     emit Transfer(address(0xBEEF), address(0), 0.9e18);
-    startGasReport("burn");
+    startGasReportWithPrefix("burn");
     vm.prank(address(0xBEEF));
     ERC20Burnable(address(token)).burn(0.9e18);
     endGasReport();

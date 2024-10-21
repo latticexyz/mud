@@ -17,7 +17,8 @@ import { IERC20 } from "../src/interfaces/IERC20.sol";
 import { IERC20Metadata } from "../src/interfaces/IERC20Metadata.sol";
 import { IERC20Errors } from "../src/interfaces/IERC20Errors.sol";
 import { IERC20Events } from "../src/interfaces/IERC20Events.sol";
-import { WithStore, WithWorld } from "../src/StoreConsumer.sol";
+import { WithStore } from "../src/WithStore.sol";
+import { WithWorld } from "../src/WithWorld.sol";
 import { MUDERC20 } from "../src/MUDERC20.sol";
 
 library TestConstants {
@@ -48,6 +49,16 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
 
   function createToken() internal virtual returns (MockERC20Base);
 
+  // TODO: startGasReport should be marked virtual so we can override
+  function startGasReportWithPrefix(string memory name) internal {
+    startGasReport(reportNameWithPrefix(name));
+  }
+
+  function reportNameWithPrefix(string memory name) private view returns (string memory) {
+    string memory prefix = token.getStore() == address(token) ? "internal_" : "world_";
+    return string.concat(prefix, name);
+  }
+
   function setUp() public {
     token = createToken();
     StoreSwitch.setStoreAddress(token.getStore());
@@ -71,7 +82,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   function testMint() public {
     vm.expectEmit(true, true, true, true);
     emit Transfer(address(0), address(0xBEEF), 1e18);
-    startGasReport("mint");
+    startGasReportWithPrefix("mint");
     token.__mint(address(0xBEEF), 1e18);
     endGasReport();
 
@@ -84,7 +95,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
 
     vm.expectEmit(true, true, true, true);
     emit Transfer(address(0xBEEF), address(0), 0.9e18);
-    startGasReport("burn");
+    startGasReportWithPrefix("burn");
     token.__burn(address(0xBEEF), 0.9e18);
     endGasReport();
 
@@ -95,7 +106,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
   function testApprove() public {
     vm.expectEmit(true, true, true, true);
     emit Approval(address(this), address(0xBEEF), 1e18);
-    startGasReport("approve");
+    startGasReportWithPrefix("approve");
     bool success = token.approve(address(0xBEEF), 1e18);
     endGasReport();
     assertTrue(success);
@@ -108,7 +119,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
 
     vm.expectEmit(true, true, true, true);
     emit Transfer(address(this), address(0xBEEF), 1e18);
-    startGasReport("transfer");
+    startGasReportWithPrefix("transfer");
     bool success = token.transfer(address(0xBEEF), 1e18);
     endGasReport();
     assertTrue(success);
@@ -128,7 +139,7 @@ abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Er
 
     vm.expectEmit(true, true, true, true);
     emit Transfer(from, address(0xBEEF), 1e18);
-    startGasReport("transferFrom");
+    startGasReportWithPrefix("transferFrom");
     bool success = token.transferFrom(from, address(0xBEEF), 1e18);
     endGasReport();
     assertTrue(success);
