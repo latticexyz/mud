@@ -1,5 +1,5 @@
 import path from "node:path";
-import { Library, Module } from "./common";
+import { Module } from "./common";
 import { encodeField } from "@latticexyz/protocol-parser/internal";
 import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type/internal";
 import { bytesToHex } from "viem";
@@ -7,10 +7,6 @@ import { createPrepareDeploy } from "./createPrepareDeploy";
 import { World } from "@latticexyz/world";
 import { importContractArtifact } from "../utils/importContractArtifact";
 import { resolveWithContext } from "@latticexyz/world/internal";
-import { findLibraries } from "./findLibraries";
-import { getContractData } from "../utils/getContractData";
-import { createRequire } from "node:module";
-import { findUp } from "find-up";
 
 /** Please don't add to this list! These are kept for backwards compatibility and assumes the downstream project has this module installed as a dependency. */
 const knownModuleArtifacts = {
@@ -60,23 +56,6 @@ export async function configToModules<config extends World>(
       const name = path.basename(artifactPath, ".json");
       const artifact = await importContractArtifact({ artifactPath });
 
-      const requirePath = await findUp("package.json", { cwd: process.cwd() });
-      if (!requirePath) throw new Error("Could not find package.json to import relative to.");
-      const require = createRequire(requirePath);
-
-      const moduleOutDir = path.join(require.resolve(artifactPath), "../../");
-      const libraries = findLibraries(moduleOutDir).map((library): Library => {
-        // foundry/solc flattens artifacts, so we just use the path basename
-        const contractData = getContractData(path.basename(library.path), library.name, moduleOutDir);
-        return {
-          path: library.path,
-          name: library.name,
-          abi: contractData.abi,
-          prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
-          deployedBytecodeSize: contractData.deployedBytecodeSize,
-        };
-      });
-
       // TODO: replace args with something more strongly typed
       const installArgs = mod.args
         .map((arg) => resolveWithContext(arg, { config }))
@@ -91,7 +70,6 @@ export async function configToModules<config extends World>(
 
       return {
         name,
-        libraries,
         installAsRoot: mod.root,
         installData: installArgs.length === 0 ? "0x" : installArgs[0],
         prepareDeploy: createPrepareDeploy(artifact.bytecode, artifact.placeholders),
