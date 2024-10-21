@@ -18,6 +18,8 @@ type Props = {
 };
 
 export function SQLEditor({ table }: Props) {
+  const editorRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
   const validateQuery = useQueryValidator(table);
@@ -31,7 +33,7 @@ export function SQLEditor({ table }: Props) {
 
   const handleSubmit = form.handleSubmit((data) => {
     if (validateQuery(data.query)) {
-      setQuery(query);
+      setQuery(data.query);
     }
   });
 
@@ -39,13 +41,8 @@ export function SQLEditor({ table }: Props) {
     form.reset({ query });
   }, [query, form]);
 
-  const editorRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-
   const updateHeight = () => {
     if (editorRef.current) {
-      console.log("UPDATE HEIGHT");
-
       const contentHeight = Math.min(200, editorRef.current.getContentHeight());
       if (containerRef.current) {
         containerRef.current.style.height = `${contentHeight}px`;
@@ -61,19 +58,15 @@ export function SQLEditor({ table }: Props) {
   return (
     <Form {...form}>
       <form
-        className={cn(
-          "relative flex w-full flex-grow items-center justify-center bg-black align-middle",
-          "rounded-md border px-3 py-2 ring-offset-background",
-          {
-            "outline-none ring-2 ring-ring ring-offset-2": isFocused,
-          },
-        )}
+        className={cn("relative w-full rounded-md border bg-black px-3 py-2 ring-offset-background", {
+          "outline-none ring-2 ring-ring ring-offset-2": isFocused,
+        })}
         onSubmit={handleSubmit}
       >
         <FormField
           name="query"
           render={({ field }) => (
-            <div ref={containerRef} className="w-full">
+            <div ref={containerRef} className="min-h-[21px] w-full">
               <Editor
                 forwardRef={editorRef}
                 width="100%"
@@ -81,18 +74,16 @@ export function SQLEditor({ table }: Props) {
                 value={decodeURIComponent(field.value)}
                 options={monacoOptions}
                 language="sql"
-                onChange={(value) => {
-                  field.onChange(encodeURIComponent(value));
-                  updateHeight();
-                }}
+                onChange={(value) => field.onChange(encodeURIComponent(value))}
                 onMount={(editor) => {
                   editorRef.current = editor;
+
                   updateHeight();
+                  editor.onDidContentSizeChange(updateHeight);
 
                   editor.onDidFocusEditorText(() => {
                     setIsFocused(true);
                   });
-
                   editor.onDidBlurEditorText(() => {
                     setIsFocused(false);
                   });

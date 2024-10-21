@@ -17,20 +17,20 @@ export function useQueryValidator(table?: Table) {
   const setErrorMarker = useMonacoErrorMarker();
 
   return useCallback(
-    (value: string) => {
+    (query: string) => {
       if (!monaco || !table) return true;
 
-      const decodedValue = decodeURIComponent(value);
+      const decodedQuery = decodeURIComponent(query);
       try {
-        const ast = sqlParser.astify(decodedValue);
+        const ast = sqlParser.astify(decodedQuery);
         if ("columns" in ast && Array.isArray(ast.columns)) {
           for (const column of ast.columns) {
             const columnName = column.expr.column;
             if (!Object.keys(table.schema).includes(columnName)) {
               setErrorMarker({
                 message: `Column '${columnName}' does not exist in the table schema.`,
-                startColumn: decodedValue.indexOf(columnName) + 1,
-                endColumn: decodedValue.indexOf(columnName) + columnName.length + 1,
+                startColumn: decodedQuery.indexOf(columnName) + 1,
+                endColumn: decodedQuery.indexOf(columnName) + columnName.length + 1,
               });
               return false;
             }
@@ -46,8 +46,8 @@ export function useQueryValidator(table?: Table) {
               if (selectedTableName !== tableName) {
                 setErrorMarker({
                   message: `Only '${tableName}' is available for this query.`,
-                  startColumn: decodedValue.indexOf(selectedTableName) + 1,
-                  endColumn: decodedValue.indexOf(selectedTableName) + selectedTableName.length + 1,
+                  startColumn: decodedQuery.indexOf(selectedTableName) + 1,
+                  endColumn: decodedQuery.indexOf(selectedTableName) + selectedTableName.length + 1,
                 });
                 return false;
               }
@@ -62,7 +62,7 @@ export function useQueryValidator(table?: Table) {
           setErrorMarker({
             message: error.message,
             startColumn: 1,
-            endColumn: decodedValue.length + 1,
+            endColumn: decodedQuery.length + 1,
           });
         }
         return false;
