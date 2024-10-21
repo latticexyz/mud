@@ -24,7 +24,7 @@ export async function resolveConfig({
   readonly systems: readonly System[];
   readonly libraries: readonly Library[];
 }> {
-  const requirePath = await findUp("package.json", { cwd: process.cwd() });
+  const requirePath = await findUp("package.json");
   if (!requirePath) throw new Error("Could not find package.json to import relative to.");
   const require = createRequire(requirePath);
 
