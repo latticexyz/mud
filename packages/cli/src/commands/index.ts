@@ -21,7 +21,7 @@ export const commands: CommandModule<any, any>[] = [
   build,
   deploy,
   devnode,
-  gasReport as CommandModule,
+  gasReport,
   hello,
   tablegen,
   worldgen,
