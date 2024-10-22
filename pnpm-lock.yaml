@@ -902,9 +902,6 @@ importers:
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
-      react:
-        specifier: ^18.2.0
-        version: 18.2.0
       viem:
         specifier: 'catalog:'
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
@@ -918,6 +915,9 @@ importers:
       '@types/react':
         specifier: 18.2.22
         version: 18.2.22
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)

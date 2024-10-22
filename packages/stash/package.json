@@ -39,18 +39,24 @@
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
-    "react": "^18.2.0",
     "viem": "catalog:"
   },
   "devDependencies": {
     "@testing-library/react": "^16.0.0",
     "@testing-library/react-hooks": "^8.0.1",
     "@types/react": "18.2.22",
+    "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tsup": "^6.7.0",
     "vitest": "0.34.6"
   },
+  "peerDependencies": {
+    "react": "18.x"
+  },
   "publishConfig": {
     "access": "public"
+  },
+  "optionalPeerDependencies": {
+    "react": "18.x"
   }
 }
