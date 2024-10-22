@@ -2,4 +2,4 @@
 "@latticexyz/gas-report": patch
 ---
 
-Gas report output is now fully sorted, rather than relying on `forge test` output ordering.
+Gas report output now include contract name as part of the `file` to help with stable ordering when sorting output.
