@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../../packages/cli",
+    "@latticexyz/schema-type": "link:../../../packages/schema-type",
     "@latticexyz/store": "link:../../../packages/store",
     "@latticexyz/world": "link:../../../packages/world",
     "@latticexyz/world-module-erc20": "link:../../../packages/world-module-erc20",
