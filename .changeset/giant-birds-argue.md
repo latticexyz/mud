@@ -10,7 +10,7 @@ To install this module, you can import and define the module configuration from 
 import { defineERC20Module } from "@latticexyz/world-module-erc20/internal";
 
 // Add the output of this function to your World's modules
-const moduleDefinition = defineERC20Module({ namespace: "erc20Namespace", name: "MyToken", symbol: "MTK" });
+const erc20Module = defineERC20Module({ namespace: "erc20Namespace", name: "MyToken", symbol: "MTK" });
 ```
 
 For detailed installation instructions, please check out the [`@latticexyz/world-module-erc20` README.md](https://github.com/latticexyz/mud/blob/main/packages/world-module-erc20/README.md).
