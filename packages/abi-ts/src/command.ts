@@ -45,8 +45,7 @@ export const command: CommandModule<Options, Options> = {
       }
 
       const jsonExtension = path.extname(jsonFilename);
-      const basename = path.basename(jsonFilename, jsonExtension);
-      const tsFilename = `${basename}${tsExtension}`;
+      const tsFilename = `${jsonFilename.substring(0, jsonFilename.lastIndexOf(jsonExtension))}${tsExtension}`;
 
       const ts = tsExtension.includes(".d.")
         ? `declare const abi: ${json};\n\nexport default abi;\n`
