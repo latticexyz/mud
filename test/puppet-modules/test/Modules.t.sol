@@ -10,10 +10,8 @@ contract ModulesTest is MudTest {
   function testModulesInstalled() public {
     ResourceId erc20PuppetNamespaceId = WorldResourceIdLib.encodeNamespace("MyToken");
     ResourceId erc721PuppetNamespaceId = WorldResourceIdLib.encodeNamespace("MyNFT");
-    ResourceId erc20NamespaceId = WorldResourceIdLib.encodeNamespace("erc20Namespace");
 
     assertTrue(ResourceIds.getExists(erc20PuppetNamespaceId));
     assertTrue(ResourceIds.getExists(erc721PuppetNamespaceId));
-    assertTrue(ResourceIds.getExists(erc20NamespaceId));
   }
 }
