@@ -1,6 +1,6 @@
 import { CommandModule } from "yargs";
 
-import gasReport from "@latticexyz/gas-report";
+import { command as gasReport } from "@latticexyz/gas-report/internal";
 import abiTs from "@latticexyz/abi-ts";
 
 import build from "./build";

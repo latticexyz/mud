@@ -45,7 +45,7 @@ type GasReportEntry = {
 
 type GasReport = GasReportEntry[];
 
-const commandModule: CommandModule<Options, Options> = {
+export const command: CommandModule<Options, Options> = {
   command: "gas-report",
 
   describe: "Create a gas report",
@@ -96,8 +96,6 @@ const commandModule: CommandModule<Options, Options> = {
     process.exit(0);
   },
 };
-
-export default commandModule;
 
 async function runGasReport(options: Options): Promise<GasReport> {
   console.log("Running gas report");
