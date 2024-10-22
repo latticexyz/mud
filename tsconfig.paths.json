@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "paths": {
-      "@latticexyz/abi-ts": ["./packages/abi-ts/src/index.ts"],
+      "@latticexyz/abi-ts/internal": ["./packages/abi-ts/src/exports/internal.ts"],
       "@latticexyz/block-logs-stream": ["./packages/block-logs-stream/src/index.ts"],
       "@latticexyz/cli": ["./packages/cli/src/index.ts"],
       "@latticexyz/common": ["./packages/common/src/index.ts"],
