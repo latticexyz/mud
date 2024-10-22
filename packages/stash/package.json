@@ -31,10 +31,11 @@
     "build": "tsup",
     "clean": "shx rm -rf dist",
     "dev": "tsup --watch",
-    "test": "vitest",
-    "test:ci": "vitest --run"
+    "test": "tsc -p tsconfig.test.json && vitest --run",
+    "test:ci": "pnpm run test"
   },
   "dependencies": {
+    "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",

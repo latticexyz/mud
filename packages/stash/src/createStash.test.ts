@@ -406,8 +406,8 @@ describe("createStash", () => {
       });
       const tables = stash.getTables();
 
-      expect(tables.namespace1.table1).toBeDefined();
-      expect(tables.namespace2.table2).toBeDefined();
+      expect(tables.namespace1?.table1).toBeDefined();
+      expect(tables.namespace2?.table2).toBeDefined();
     });
   });
 });

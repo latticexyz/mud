@@ -183,7 +183,7 @@ describe("stash with default actions", () => {
         value: { field1: "world" },
       });
 
-      attest<{ field1: string; field2: number; field3: number }>(
+      attest<{ field1: string; field2: number; field3: number } | undefined>(
         stash.getRecord({
           table,
           key: { field2: 2, field3: 1 },

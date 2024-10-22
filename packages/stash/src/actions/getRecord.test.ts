@@ -47,7 +47,7 @@ describe("getRecord", () => {
       }),
     ).snap({ field1: "hello", field2: 1, field3: 2 });
 
-    attest<{ field1: string; field2: number; field3: number }>(
+    attest<{ field1: string; field2: number; field3: number } | undefined>(
       getRecord({
         stash,
         table,

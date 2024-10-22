@@ -890,6 +890,9 @@ importers:
 
   packages/stash:
     dependencies:
+      '@latticexyz/common':
+        specifier: workspace:*
+        version: link:../common
       '@latticexyz/config':
         specifier: workspace:*
         version: link:../config

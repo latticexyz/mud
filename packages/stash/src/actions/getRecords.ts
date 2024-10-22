@@ -1,4 +1,5 @@
 import { Table } from "@latticexyz/config";
+import { isDefined } from "@latticexyz/common/utils";
 import { Key, Stash, TableRecords } from "../common";
 import { encodeKey } from "./encodeKey";
 
@@ -16,16 +17,19 @@ export function getRecords<table extends Table>({
   keys,
 }: GetRecordsArgs<table>): GetRecordsResult<table> {
   const { namespaceLabel, label } = table;
-  const records = stash.get().records[namespaceLabel][label];
+  const records = stash.get().records[namespaceLabel]?.[label] ?? {};
 
   if (!keys || !keys.length) {
     return records;
   }
 
   return Object.fromEntries(
-    keys.map((key) => {
-      const encodedKey = encodeKey({ table, key });
-      return [encodedKey, records[encodedKey]];
-    }),
+    keys
+      .map((key) => {
+        const encodedKey = encodeKey({ table, key });
+        const record = records[encodedKey];
+        return record != null ? [encodedKey, record] : undefined;
+      })
+      .filter(isDefined),
   );
 }
