@@ -46,11 +46,11 @@ export const command: CommandModule<Options, Options> = {
 
       const jsonExtension = path.extname(jsonFilename);
       const basename = path.basename(jsonFilename, jsonExtension);
-      const tsFilename = `${basename}.${tsExtension}`;
+      const tsFilename = `${basename}${tsExtension}`;
 
       const ts = tsExtension.includes(".d.")
-        ? `declare const abi: ${json};\nexport default abi;\n`
-        : `const abi = ${json};\nexport default abi;\n`;
+        ? `declare const abi: ${json};\n\nexport default abi;\n`
+        : `const abi = ${json};\n\nexport default abi;\n`;
 
       debug("Writing", tsFilename);
       writeFileSync(tsFilename, ts);
