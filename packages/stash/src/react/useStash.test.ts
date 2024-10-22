@@ -4,6 +4,8 @@ import { useStash } from "./useStash";
 import { defineStore } from "@latticexyz/store/config/v2";
 import { createStash } from "../createStash";
 import isEqual from "fast-deep-equal";
+import { getRecord, getRecords } from "../actions";
+import { Hex } from "viem";
 
 // TODO: migrate to ark/attest snapshots for better formatting + typechecking
 
@@ -23,10 +25,10 @@ describe("useStash", () => {
     });
     const Position = config.namespaces.game.tables.Position;
     const stash = createStash(config);
-    const player = "0x00";
+    const player: Hex = "0x00";
 
     const { result, rerender } = renderHook(
-      ({ player }) => useStash(stash, (state) => state.records.game.Position[player]),
+      ({ player }) => useStash(stash, (state) => getRecord({ state, table: Position, key: { player } })),
       { initialProps: { player } },
     );
     expect(result.all.length).toBe(1);
@@ -97,10 +99,10 @@ describe("useStash", () => {
     });
     const Position = config.namespaces.game.tables.Position;
     const stash = createStash(config);
-    const player = "0x00";
+    const player: Hex = "0x00";
 
     const { result } = renderHook(() =>
-      useStash(stash, (state) => Object.values(state.records.game.Position), { isEqual }),
+      useStash(stash, (state) => Object.values(getRecords({ state, table: Position })), { isEqual }),
     );
     expect(result.all.length).toBe(1);
     expect(result.current).toMatchInlineSnapshot(`[]`);
