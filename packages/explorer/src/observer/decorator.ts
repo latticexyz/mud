@@ -6,7 +6,7 @@ import {
   sendUserOperation,
   waitForUserOperationReceipt,
 } from "viem/account-abstraction";
-import { waitForTransactionReceipt, writeContract } from "viem/actions";
+import { getTransaction, waitForTransactionReceipt, writeContract } from "viem/actions";
 import { formatAbiItem, getAction } from "viem/utils";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 import { createBridge } from "./bridge";
@@ -70,32 +70,37 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
           const write = getAction(client, sendUserOperation, "sendUserOperation")(args);
           const calls = args.calls;
 
-          // const write2 = await getAction(client, sendUserOperation, "sendUserOperation")(args);
-          // console.log("observerWrite write2", write2);
-          // const txHash = write2;
-          // console.log("observerWrite txHash", txHash);
+          // write
+          //   .then((hash) => {
+          //     console.log("observerWrite HASH IS:", hash);
 
-          write.then((hash) => {
-            console.log("observerWrite HASH IS:", hash);
+          //     try {
+          //       const userOpReceipt = getAction(
+          //         client,
+          //         waitForUserOperationReceipt,
+          //         "waitForUserOperationReceipt",
+          //       )({ hash });
 
-            try {
-              console.log("WHY 2");
-              const userOpReceipt = getAction(
-                client,
-                waitForUserOperationReceipt,
-                "waitForUserOperationReceipt",
-              )({ hash });
-              console.log("observerWrite userOpReceipt", userOpReceipt);
+          //       const txReceipt = getAction(client, getUserOperation, "getUserOperation")({ hash });
 
-              Promise.allSettled([userOpReceipt]).then(([result]) => {
-                console.log("observerWrite userOpReceipt result", result);
+          //       Promise.allSettled([txReceipt]).then(([result]) => {
+          //         console.log("observerWrite getUserOperation result", result);
+          //       });
 
-                // emit("waitForUserOperationReceipt:result", { ...result, writeId });
-              });
-            } catch (error) {
-              console.error("observerWrite op error", error);
-            }
-          });
+          //       Promise.allSettled([userOpReceipt]).then(([result]) => {
+          //         console.log("observerWrite userOpReceipt result", result);
+
+          //         const txHash = result.value.receipt.transactionHash;
+          //         console.log("observerWrite txHash", txHash);
+          //         // emit("waitForUserOperationReceipt:result", { ...result, writeId });
+          //       });
+          //     } catch (error) {
+          //       console.error("observerWrite op error", error);
+          //     }
+          //   })
+          //   .catch((error) => {
+          //     console.error("observerWrite op error", error);
+          //   });
 
           // try {
           //   console.log("WHY 1");
@@ -124,7 +129,7 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
               args,
             } as never)!;
 
-            console.log(writeId, args, client, functionAbiItem, args.args, args.value);
+            // console.log(writeId, args, client, functionAbiItem, args.args, args.value);
 
             // const userOperationHash = getUserOperationHash({
             //   ...args,
@@ -140,6 +145,29 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
               args: (args.args ?? []) as never,
               value: args.value,
             });
+
+            write.then((hash) => {
+              console.log("observerWrite HASH IS:", hash, "writeId is:", writeId);
+
+              const receipt = getAction(client, waitForUserOperationReceipt, "waitForUserOperationReceipt")({ hash });
+
+              // emit("waitForTransactionReceipt", { writeId, hash });
+              Promise.allSettled([receipt]).then(([result]) => {
+                console.log("observerWrite waitForUserOperationReceipt result", result);
+
+                const txHash = result.value.receipt.transactionHash;
+                console.log("observerWrite tx hash", txHash);
+
+                emit("waitForTransactionReceipt", { hash: txHash, writeId });
+              });
+            });
+
+            // write.then((hash) => {
+            // emit("waitForTransactionReceipt", { writeId, hash });
+            // Promise.allSettled([receipt]).then(([result]) => {
+            //   emit("waitForTransactionReceipt:result", { ...result, writeId });
+            // });
+            // });
 
             // Promise.allSettled([write]).then(([result]) => {
             //   emit("write:result", { ...result, writeId });
