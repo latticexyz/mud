@@ -13,6 +13,7 @@ export type Write = {
   from?: Address;
   address: Address;
   functionSignature: string;
+  userOperationHash?: Hex; // TODO:
   args: unknown[];
   value?: bigint;
   time: number;

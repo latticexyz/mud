@@ -1,5 +1,5 @@
 import { useParams } from "next/navigation";
-import { BaseError, Hex, TransactionReceipt, decodeFunctionData, parseAbi, parseEventLogs } from "viem";
+import { Address, BaseError, Hex, TransactionReceipt, decodeFunctionData, parseAbi, parseEventLogs } from "viem";
 import { PackedUserOperation, entryPoint07Abi, entryPoint07Address } from "viem/account-abstraction";
 import { useConfig, useWatchBlocks } from "wagmi";
 import { getTransaction, simulateContract, waitForTransactionReceipt } from "wagmi/actions";
@@ -12,7 +12,7 @@ import { store as worldStore } from "../store";
 
 export function TransactionsWatcher() {
   const { id: chainId } = useChain();
-  const { worldAddress } = useParams<{ worldAddress: string }>();
+  const { worldAddress } = useParams<{ worldAddress: Address }>();
   const wagmiConfig = useConfig();
   const { data: worldAbiData } = useWorldAbiQuery();
   const abi = worldAbiData?.abi;
@@ -24,8 +24,9 @@ export function TransactionsWatcher() {
       if (!abi) return;
 
       const transaction = await getTransaction(wagmiConfig, { hash });
+      console.log("user transaction", transaction);
 
-      if (transaction.to.toLowerCase() === entryPoint07Address.toLowerCase()) {
+      if (transaction.to?.toLowerCase() === entryPoint07Address.toLowerCase()) {
         console.log("user operation 111:");
 
         const decodedEntryPointCall = decodeFunctionData({
@@ -34,7 +35,7 @@ export function TransactionsWatcher() {
         });
 
         const userOps = decodedEntryPointCall.args[0] as PackedUserOperation[];
-        console.log("user operations", userOps);
+        console.log("user operations", userOps[0]);
 
         const decodedSmartAccountCall = decodeFunctionData({
           abi: parseAbi(["function execute(address target, uint256 value, bytes calldata data)"]),
@@ -105,8 +106,19 @@ export function TransactionsWatcher() {
         }
 
         const status = receipt ? receipt.status : "unknown";
+
+        //    TODO:
+        //     event UserOperationEvent(
+        //     bytes32 indexed userOpHash,
+        //     address indexed sender,
+        //     address indexed paymaster,
+        //     uint256 nonce,
+        //     bool success,
+        //     uint256 actualGasCost,
+        //     uint256 actualGasUsed
+        // );
         const logs = parseEventLogs({
-          abi,
+          abi, // TODO: [...abi, us]
           logs: receipt?.logs || [],
         });
 
@@ -201,16 +213,16 @@ export function TransactionsWatcher() {
     }
   }, [handleTransaction, observerWrites, transactions, worldAddress]);
 
-  useWatchBlocks({
-    onBlock(block) {
-      for (const hash of block.transactions) {
-        if (transactions.find((transaction) => transaction.hash === hash)) continue;
-        handleTransaction(hash, block.timestamp);
-      }
-    },
-    chainId,
-    pollingInterval: 500,
-  });
+  // useWatchBlocks({
+  //   onBlock(block) {
+  //     for (const hash of block.transactions) {
+  //       if (transactions.find((transaction) => transaction.hash === hash)) continue;
+  //       handleTransaction(hash, block.timestamp);
+  //     }
+  //   },
+  //   chainId,
+  //   pollingInterval: 500,
+  // });
 
   return null;
 }

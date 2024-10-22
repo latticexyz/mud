@@ -8,10 +8,14 @@ import {
   Log,
   Transaction,
   TransactionReceipt,
+  decodeAbiParameters,
+  decodeFunctionData,
+  parseAbi,
   parseAbiItem,
 } from "viem";
+import { entryPoint07Abi, getUserOperation } from "viem/account-abstraction";
 import { useStore } from "zustand";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Message } from "../../../../../../observer/messages";
 import { type Write, store as observerStore } from "../../../../../../observer/store";
 import { store as worldStore } from "../store";
@@ -36,14 +40,11 @@ export function useObservedTransactions() {
   const transactions = useStore(worldStore, (state) => state.transactions);
   const observerWrites = useStore(observerStore, (state) => state.writes);
 
-  console.log("worldAddress", worldAddress);
-  console.log("observerWrites", observerWrites);
-
   const mergedTransactions = useMemo((): ObservedTransaction[] => {
     const mergedMap = new Map<string | undefined, ObservedTransaction>();
 
     for (const write of Object.values(observerWrites)) {
-      if (write.address.toLowerCase() !== worldAddress.toLowerCase()) continue; // TODO: add back
+      if (write.address.toLowerCase() !== worldAddress.toLowerCase()) continue; // TODO: filter entrypoint
 
       const parsedAbiItem = parseAbiItem(`function ${write.functionSignature}`) as AbiFunction;
       const writeResult = write.events.find((event): event is Message<"write:result"> => event.type === "write:result");
@@ -74,7 +75,7 @@ export function useObservedTransactions() {
     }
 
     return Array.from(mergedMap.values()).sort((a, b) => Number(b.timestamp ?? 0n) - Number(a.timestamp ?? 0n));
-  }, [observerWrites, transactions]);
+  }, [observerWrites, transactions, worldAddress]);
 
   return mergedTransactions;
 }
