@@ -24,32 +24,19 @@ export function TransactionsWatcher() {
       if (!abi) return;
 
       const transaction = await getTransaction(wagmiConfig, { hash });
-      console.log("user transaction", transaction);
-
       if (transaction.to?.toLowerCase() === entryPoint07Address.toLowerCase()) {
-        console.log("user operation 111:");
-
         const decodedEntryPointCall = decodeFunctionData({
           abi: entryPoint07Abi,
           data: transaction.input,
         });
 
         const userOps = decodedEntryPointCall.args[0] as PackedUserOperation[];
-        console.log("user operations", userOps[0]);
-
         const decodedSmartAccountCall = decodeFunctionData({
           abi: parseAbi(["function execute(address target, uint256 value, bytes calldata data)"]),
           data: userOps[0].callData,
         });
 
-        console.log("user operation 222:", decodedSmartAccountCall);
-
-        // const to = decodedSmartAccountCall.args[0];
-        // const value = decodedSmartAccountCall.args[1];
         const data = decodedSmartAccountCall.args[2];
-
-        // console.log("user operation functionData2", functionData2);
-
         let functionName: string | undefined;
         let args: readonly unknown[] | undefined;
         let transactionError: BaseError | undefined;
@@ -118,7 +105,7 @@ export function TransactionsWatcher() {
         //     uint256 actualGasUsed
         // );
         const logs = parseEventLogs({
-          abi, // TODO: [...abi, us]
+          abi, // TODO: [...abi, userOperationEventAbi]
           logs: receipt?.logs || [],
         });
 
