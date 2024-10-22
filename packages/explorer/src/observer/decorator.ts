@@ -1,4 +1,15 @@
-import { Account, Chain, Client, Hex, Transport, WalletActions, decodeFunctionData, getAbiItem, parseAbi } from "viem";
+import {
+  Account,
+  Chain,
+  Client,
+  Hex,
+  Transport,
+  WalletActions,
+  decodeFunctionData,
+  getAbiItem,
+  parseAbi,
+  parseEventLogs,
+} from "viem";
 import {
   entryPoint07Address,
   getUserOperation,
@@ -9,6 +20,10 @@ import {
 import { getTransaction, waitForTransactionReceipt, writeContract } from "viem/actions";
 import { formatAbiItem, getAction } from "viem/utils";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
+import {
+  doomWorldAbi,
+  userOperationEventAbi,
+} from "../app/(explorer)/[chainName]/worlds/[worldAddress]/observe/TransactionsWatcher";
 import { createBridge } from "./bridge";
 import { ReceiptSummary } from "./common";
 import { getUserOperationHashV07 } from "./utils";
@@ -59,13 +74,29 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
             from: client.account!.address,
             functionSignature: formatAbiItem(functionAbiItem),
             args: (functionArgs.args ?? []) as never,
-            value: args2.value,
+            value: functionArgs.value,
           });
 
           write.then((hash) => {
             const receipt = getAction(client, waitForUserOperationReceipt, "waitForUserOperationReceipt")({ hash });
             Promise.allSettled([receipt]).then(async ([result]) => {
               console.log("observerWrite waitForUserOperationReceipt result:", result);
+
+              const logs = result.value?.logs;
+              const parsedLogs = parseEventLogs({
+                abi: [...doomWorldAbi, userOperationEventAbi],
+                logs,
+              });
+
+              const receiptLogs = result.value?.receipt?.logs;
+              const parsedReceiptLogs = parseEventLogs({
+                abi: [...doomWorldAbi, userOperationEventAbi],
+                logs: receiptLogs,
+              });
+
+              console.log("observerWrite parsedLogs:", parsedLogs);
+              console.log("observerWrite parsedReceiptLogs:", parsedReceiptLogs);
+
               // TODO: emit("waitForTransactionReceipt", { hash: txHash, writeId });
             });
           });
