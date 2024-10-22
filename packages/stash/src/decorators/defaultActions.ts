@@ -13,7 +13,7 @@ import { RunQueryArgs, RunQueryOptions, RunQueryResult, runQuery } from "../acti
 import { SetRecordArgs, SetRecordResult, setRecord } from "../actions/setRecord";
 import { SetRecordsArgs, SetRecordsResult, setRecords } from "../actions/setRecords";
 import { SubscribeQueryArgs, SubscribeQueryResult, subscribeQuery } from "../actions/subscribeQuery";
-import { SubscribeStoreArgs, SubscribeStoreResult, subscribeStore } from "../actions/subscribeStore";
+import { SubscribeStoreArgs, SubscribeStoreResult, subscribeStore } from "../actions/subscribeStash";
 import { SubscribeTableArgs, SubscribeTableResult, subscribeTable } from "../actions/subscribeTable";
 import { Table } from "@latticexyz/config";
 

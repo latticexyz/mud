@@ -18,7 +18,7 @@ export function getRecords<table extends Table>({
   const { namespaceLabel, label } = table;
   const records = stash.get().records[namespaceLabel][label];
 
-  if (!keys) {
+  if (!keys || !keys.length) {
     return records;
   }
 
