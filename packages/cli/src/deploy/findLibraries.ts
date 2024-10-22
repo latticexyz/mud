@@ -3,11 +3,13 @@ import { globSync } from "glob";
 import { orderByDependencies } from "./orderByDependencies";
 import { LinkReferences } from "../utils/findPlaceholders";
 
-export function findLibraries(forgeOutDir: string): readonly {
+export function findLibraries(forgeOutDirs: string | string[]): readonly {
   readonly path: string;
   readonly name: string;
 }[] {
-  const artifacts = globSync(`${forgeOutDir}/**/*.json`, { ignore: "**/*.abi.json" })
+  const dirs = Array.isArray(forgeOutDirs) ? forgeOutDirs : [forgeOutDirs];
+  const globs = dirs.map((dir) => `${dir}/**/*.json`);
+  const artifacts = globSync(globs, { ignore: "**/*.abi.json" })
     .sort()
     .map((path) => JSON.parse(readFileSync(path, "utf8")));
 

@@ -38,21 +38,21 @@ export async function resolveConfig({
     return [moduleOutDir];
   });
 
-  const libraries = [forgeOutDir, ...moduleOutDirs].flatMap((outDir) =>
-    findLibraries(outDir).map((library): Library => {
-      // foundry/solc flattens artifacts, so we just use the path basename
-      const contractData = getContractData(path.basename(library.path), library.name, outDir);
-      return {
-        path: library.path,
-        name: library.name,
-        abi: contractData.abi,
-        prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
-        deployedBytecodeSize: contractData.deployedBytecodeSize,
-      };
-    }),
-  );
+  // TODO: we can even make findLibraries return Library directly, not sure why this step was needed.
+  const libraries = findLibraries([forgeOutDir, ...moduleOutDirs]).map((library): Library => {
+    // foundry/solc flattens artifacts, so we just use the path basename
+    const contractData = getContractData(library.path);
+    return {
+      path: library.path,
+      name: library.name,
+      abi: contractData.abi,
+      prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
+      deployedBytecodeSize: contractData.deployedBytecodeSize,
+    };
+  });
 
-  const baseSystemContractData = getContractData("System.sol", "System", forgeOutDir);
+  const baseSystemPath = path.join(forgeOutDir, "System.sol", "System.json");
+  const baseSystemContractData = getContractData(baseSystemPath);
   const baseSystemFunctions = baseSystemContractData.abi
     .filter((item): item is typeof item & { type: "function" } => item.type === "function")
     .map(toFunctionSignature);
@@ -70,7 +70,8 @@ export async function resolveConfig({
         );
       }
 
-      const contractData = getContractData(`${system.label}.sol`, system.label, forgeOutDir);
+      const contractDataPath = path.join(forgeOutDir, `${system.label}.sol`, `${system.label}.json`);
+      const contractData = getContractData(contractDataPath);
 
       // TODO: replace this with manifest
       const worldFunctions = system.deploy.registerWorldFunctions
