@@ -38,7 +38,7 @@ export async function runGasReport(options: CommandOptions): Promise<GasReport> 
   const testFunctionPattern = /^\[(?:PASS|FAIL).*\] (\w+)\(\)/;
   // Matches "Running" for forge versions before 2024-02-15
   // And "Ran" for forge versions after 2024-02-15
-  const testFilePattern = /^(?:Running|Ran) \d+ tests? for (.*):(.*)$/;
+  const testFilePattern = /^(?:Running|Ran) \d+ tests? for (.*:.*)$/;
 
   function nearestLine(pattern: RegExp, startIndex: number = lines.length - 1): number {
     for (let i = startIndex; i >= 0; i--) {
@@ -81,9 +81,7 @@ export async function runGasReport(options: CommandOptions): Promise<GasReport> 
     gasReport.push({ file, test, name, gasUsed });
   }
 
-  gasReport.sort(
-    (a, b) => a.file.localeCompare(b.file) || a.test.localeCompare(b.test) || a.name.localeCompare(b.name),
-  );
+  gasReport.sort((a, b) => a.file.localeCompare(b.file));
 
   return gasReport;
 }
