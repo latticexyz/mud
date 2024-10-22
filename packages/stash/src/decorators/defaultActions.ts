@@ -22,8 +22,8 @@ export type StashBoundDeleteRecordArgs<table extends Table> = Omit<DeleteRecordA
 export type StashBoundEncodeKeyArgs<table extends Table = Table> = EncodeKeyArgs<table>;
 export type StashBoundGetTableConfigArgs = Omit<GetTableConfigArgs, "stash">;
 export type StashBoundGetKeysArgs<table extends Table = Table> = Omit<GetKeysArgs<table>, "stash">;
-export type StashBoundGetRecordArgs<table extends Table = Table> = Omit<GetRecordArgs<table>, "stash">;
-export type StashBoundGetRecordsArgs<table extends Table = Table> = Omit<GetRecordsArgs<table>, "stash">;
+export type StashBoundGetRecordArgs<table extends Table = Table> = Omit<GetRecordArgs<table>, "stash" | "state">;
+export type StashBoundGetRecordsArgs<table extends Table = Table> = Omit<GetRecordsArgs<table>, "stash" | "state">;
 export type StashBoundGetTableArgs<table extends Table = Table> = Omit<GetTableArgs<table>, "stash">;
 export type StashBoundRegisterTableArgs<table extends Table = Table> = Omit<RegisterTableArgs<table>, "stash">;
 export type StashBoundRunQueryArgs<

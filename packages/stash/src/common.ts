@@ -1,6 +1,6 @@
-import { QueryFragment } from "./queryFragments";
-import { Table } from "@latticexyz/config";
 import { getKeySchema, getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
+import { Table } from "@latticexyz/config";
+import { QueryFragment } from "./queryFragments";
 
 export type StoreConfig = {
   namespaces: {

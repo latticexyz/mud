@@ -1,23 +1,22 @@
+import { propwiseXor } from "@ark/util";
 import { Table } from "@latticexyz/config";
 import { isDefined } from "@latticexyz/common/utils";
-import { Key, Stash, TableRecords } from "../common";
+import { Key, Stash, State, TableRecords } from "../common";
 import { encodeKey } from "./encodeKey";
 
-export type GetRecordsArgs<table extends Table = Table> = {
-  stash: Stash;
+export type GetRecordsArgs<table extends Table = Table> = propwiseXor<{ stash: Stash }, { state: State }> & {
   table: table;
-  keys?: Key<table>[];
+  keys?: readonly Key<table>[];
 };
 
 export type GetRecordsResult<table extends Table = Table> = TableRecords<table>;
 
-export function getRecords<table extends Table>({
-  stash,
-  table,
-  keys,
-}: GetRecordsArgs<table>): GetRecordsResult<table> {
+export function getRecords<table extends Table>(args: GetRecordsArgs<table>): GetRecordsResult<table> {
+  const state = args.state ?? args.stash.get();
+  const { table, keys } = args;
   const { namespaceLabel, label } = table;
-  const records = stash.get().records[namespaceLabel]?.[label] ?? {};
+
+  const records = state.records[namespaceLabel]?.[label] ?? {};
 
   if (!keys || !keys.length) {
     return records;
