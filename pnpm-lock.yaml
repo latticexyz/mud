@@ -1173,9 +1173,6 @@ importers:
         specifier: ^4.3.7
         version: 4.3.7(react@18.2.0)
     devDependencies:
-      '@latticexyz/world-module-erc20':
-        specifier: workspace:*
-        version: link:../world-module-erc20
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.7
