@@ -8,10 +8,10 @@ import { createPrepareDeploy } from "./createPrepareDeploy";
 import path from "path";
 
 export function findLibraries(forgeOutDirs: string | string[]): Library[] {
-  const dirs = Array.isArray(forgeOutDirs) ? forgeOutDirs : [forgeOutDirs];
+  const dirs = Array.isArray(forgeOutDirs) ? [...new Set(forgeOutDirs)] : [forgeOutDirs];
 
   // Deduplicate output directories and get all the artifacts
-  const artifactsWithDirs = [...new Set(dirs)].flatMap((dir) => {
+  const artifactsWithDirs = dirs.flatMap((dir) => {
     const files = globSync(`${dir}/**/*.json`, { ignore: "/**/*.abi.json" }).sort();
     return files.map((filePath) => ({
       forgeOutDir: dir,
