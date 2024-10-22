@@ -2,7 +2,7 @@
 
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import abiTsCommand from ".";
+import { command as abiTsCommand } from "../command";
 import chalk from "chalk";
 
 // $0 makes this a default command (as opposed to a sub-command),

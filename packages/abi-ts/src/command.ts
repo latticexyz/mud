@@ -8,7 +8,7 @@ type Options = {
   output: string;
 };
 
-const commandModule: CommandModule<Options, Options> = {
+export const command: CommandModule<Options, Options> = {
   command: "abi-ts",
 
   describe: "Convert a directory of JSON ABI files to a directory of TS files with `as const`",
@@ -48,5 +48,3 @@ const commandModule: CommandModule<Options, Options> = {
     process.exit(0);
   },
 };
-
-export default commandModule;
