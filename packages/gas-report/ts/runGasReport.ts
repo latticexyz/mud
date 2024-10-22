@@ -81,7 +81,9 @@ export async function runGasReport(options: CommandOptions): Promise<GasReport> 
     gasReport.push({ file, test, name, gasUsed });
   }
 
-  gasReport.sort((a, b) => a.file.localeCompare(b.file));
+  gasReport.sort(
+    (a, b) => a.file.localeCompare(b.file) || a.test.localeCompare(b.test) || a.name.localeCompare(b.name),
+  );
 
   return gasReport;
 }

@@ -20,12 +20,6 @@
   {
     "file": "test/Callbacks.t.sol",
     "test": "testSetAndGet",
-    "name": "Callbacks: set field",
-    "gasUsed": 56118
-  },
-  {
-    "file": "test/Callbacks.t.sol",
-    "test": "testSetAndGet",
     "name": "Callbacks: get field (warm)",
     "gasUsed": 2616
   },
@@ -36,10 +30,22 @@
     "gasUsed": 32402
   },
   {
+    "file": "test/Callbacks.t.sol",
+    "test": "testSetAndGet",
+    "name": "Callbacks: set field",
+    "gasUsed": 56118
+  },
+  {
     "file": "test/EncodedLengths.t.sol",
     "test": "testAtIndex",
     "name": "get value at index of EncodedLengths",
     "gasUsed": 24
+  },
+  {
+    "file": "test/EncodedLengths.t.sol",
+    "test": "testGas",
+    "name": "get total of EncodedLengths",
+    "gasUsed": 15
   },
   {
     "file": "test/EncodedLengths.t.sol",
@@ -55,21 +61,9 @@
   },
   {
     "file": "test/EncodedLengths.t.sol",
-    "test": "testGas",
-    "name": "get total of EncodedLengths",
-    "gasUsed": 15
-  },
-  {
-    "file": "test/EncodedLengths.t.sol",
     "test": "testSetAtIndex",
     "name": "set value at index of EncodedLengths",
     "gasUsed": 283
-  },
-  {
-    "file": "test/FieldLayout.t.sol",
-    "test": "testEncodeDecodeFieldLayout",
-    "name": "initialize field layout array with 5 entries",
-    "gasUsed": 439
   },
   {
     "file": "test/FieldLayout.t.sol",
@@ -82,6 +76,12 @@
     "test": "testEncodeDecodeFieldLayout",
     "name": "get static byte length at index",
     "gasUsed": 19
+  },
+  {
+    "file": "test/FieldLayout.t.sol",
+    "test": "testEncodeDecodeFieldLayout",
+    "name": "initialize field layout array with 5 entries",
+    "gasUsed": 439
   },
   {
     "file": "test/FieldLayout.t.sol",
@@ -128,14 +128,8 @@
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
-    "name": "abi encode (static)",
-    "gasUsed": 133
-  },
-  {
-    "file": "test/Gas.t.sol",
-    "test": "testCompareAbiEncodeVsCustom",
-    "name": "abi encode (dynamic)",
-    "gasUsed": 824
+    "name": "abi decode",
+    "gasUsed": 1716
   },
   {
     "file": "test/Gas.t.sol",
@@ -146,26 +140,20 @@
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
-    "name": "abi decode",
-    "gasUsed": 1716
+    "name": "abi encode (dynamic)",
+    "gasUsed": 824
   },
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
-    "name": "custom encode (static)",
-    "gasUsed": 191
+    "name": "abi encode (static)",
+    "gasUsed": 133
   },
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
-    "name": "custom encode (length)",
-    "gasUsed": 141
-  },
-  {
-    "file": "test/Gas.t.sol",
-    "test": "testCompareAbiEncodeVsCustom",
-    "name": "custom encode (dynamic)",
-    "gasUsed": 1101
+    "name": "custom decode",
+    "gasUsed": 1954
   },
   {
     "file": "test/Gas.t.sol",
@@ -176,8 +164,20 @@
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
-    "name": "custom decode",
-    "gasUsed": 1954
+    "name": "custom encode (dynamic)",
+    "gasUsed": 1101
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareAbiEncodeVsCustom",
+    "name": "custom encode (length)",
+    "gasUsed": 141
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareAbiEncodeVsCustom",
+    "name": "custom encode (static)",
+    "gasUsed": 191
   },
   {
     "file": "test/Gas.t.sol",
@@ -194,14 +194,14 @@
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareStorageWriteMUD",
-    "name": "MUD storage write (cold, 1 word)",
-    "gasUsed": 22354
+    "name": "MUD storage write (cold, 1 word, partial)",
+    "gasUsed": 22421
   },
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareStorageWriteMUD",
-    "name": "MUD storage write (cold, 1 word, partial)",
-    "gasUsed": 22421
+    "name": "MUD storage write (cold, 1 word)",
+    "gasUsed": 22354
   },
   {
     "file": "test/Gas.t.sol",
@@ -212,14 +212,14 @@
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareStorageWriteMUD",
-    "name": "MUD storage write (warm, 1 word)",
-    "gasUsed": 354
+    "name": "MUD storage write (warm, 1 word, partial)",
+    "gasUsed": 521
   },
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareStorageWriteMUD",
-    "name": "MUD storage write (warm, 1 word, partial)",
-    "gasUsed": 521
+    "name": "MUD storage write (warm, 1 word)",
+    "gasUsed": 354
   },
   {
     "file": "test/Gas.t.sol",
@@ -230,14 +230,14 @@
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareStorageWriteSolidity",
-    "name": "solidity storage write (cold, 1 word)",
-    "gasUsed": 22107
+    "name": "solidity storage write (cold, 1 word, partial)",
+    "gasUsed": 22136
   },
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareStorageWriteSolidity",
-    "name": "solidity storage write (cold, 1 word, partial)",
-    "gasUsed": 22136
+    "name": "solidity storage write (cold, 1 word)",
+    "gasUsed": 22107
   },
   {
     "file": "test/Gas.t.sol",
@@ -248,14 +248,14 @@
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareStorageWriteSolidity",
-    "name": "solidity storage write (warm, 1 word)",
-    "gasUsed": 107
+    "name": "solidity storage write (warm, 1 word, partial)",
+    "gasUsed": 236
   },
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareStorageWriteSolidity",
-    "name": "solidity storage write (warm, 1 word, partial)",
-    "gasUsed": 236
+    "name": "solidity storage write (warm, 1 word)",
+    "gasUsed": 107
   },
   {
     "file": "test/Gas.t.sol",
@@ -266,14 +266,14 @@
   {
     "file": "test/GasStorageLoad.t.sol",
     "test": "testCompareStorageLoadMUD",
-    "name": "MUD storage load (cold, 1 word)",
-    "gasUsed": 2411
+    "name": "MUD storage load (cold, 1 word, partial)",
+    "gasUsed": 2481
   },
   {
     "file": "test/GasStorageLoad.t.sol",
     "test": "testCompareStorageLoadMUD",
-    "name": "MUD storage load (cold, 1 word, partial)",
-    "gasUsed": 2481
+    "name": "MUD storage load (cold, 1 word)",
+    "gasUsed": 2411
   },
   {
     "file": "test/GasStorageLoad.t.sol",
@@ -284,20 +284,20 @@
   {
     "file": "test/GasStorageLoad.t.sol",
     "test": "testCompareStorageLoadMUD",
+    "name": "MUD storage load (warm, 1 word, partial)",
+    "gasUsed": 481
+  },
+  {
+    "file": "test/GasStorageLoad.t.sol",
+    "test": "testCompareStorageLoadMUD",
     "name": "MUD storage load (warm, 1 word)",
     "gasUsed": 412
   },
   {
     "file": "test/GasStorageLoad.t.sol",
     "test": "testCompareStorageLoadMUD",
-    "name": "MUD storage load field (warm, 1 word)",
-    "gasUsed": 2300
-  },
-  {
-    "file": "test/GasStorageLoad.t.sol",
-    "test": "testCompareStorageLoadMUD",
-    "name": "MUD storage load (warm, 1 word, partial)",
-    "gasUsed": 481
+    "name": "MUD storage load (warm, 10 words)",
+    "gasUsed": 1916
   },
   {
     "file": "test/GasStorageLoad.t.sol",
@@ -308,14 +308,8 @@
   {
     "file": "test/GasStorageLoad.t.sol",
     "test": "testCompareStorageLoadMUD",
-    "name": "MUD storage load (warm, 10 words)",
-    "gasUsed": 1916
-  },
-  {
-    "file": "test/GasStorageLoad.t.sol",
-    "test": "testCompareStorageLoadSolidity",
-    "name": "solidity storage load (cold, 1 word)",
-    "gasUsed": 2109
+    "name": "MUD storage load field (warm, 1 word)",
+    "gasUsed": 2300
   },
   {
     "file": "test/GasStorageLoad.t.sol",
@@ -326,20 +320,26 @@
   {
     "file": "test/GasStorageLoad.t.sol",
     "test": "testCompareStorageLoadSolidity",
+    "name": "solidity storage load (cold, 1 word)",
+    "gasUsed": 2109
+  },
+  {
+    "file": "test/GasStorageLoad.t.sol",
+    "test": "testCompareStorageLoadSolidity",
     "name": "solidity storage load (cold, 10 words)",
     "gasUsed": 19894
   },
   {
     "file": "test/GasStorageLoad.t.sol",
     "test": "testCompareStorageLoadSolidity",
-    "name": "solidity storage load (warm, 1 word)",
-    "gasUsed": 109
+    "name": "solidity storage load (warm, 1 word, partial)",
+    "gasUsed": 126
   },
   {
     "file": "test/GasStorageLoad.t.sol",
     "test": "testCompareStorageLoadSolidity",
-    "name": "solidity storage load (warm, 1 word, partial)",
-    "gasUsed": 126
+    "name": "solidity storage load (warm, 1 word)",
+    "gasUsed": 109
   },
   {
     "file": "test/GasStorageLoad.t.sol",
@@ -380,8 +380,8 @@
   {
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteExternal",
-    "name": "set record in Mixed (external, cold)",
-    "gasUsed": 107665
+    "name": "delete record from Mixed (external, warm)",
+    "gasUsed": 7826
   },
   {
     "file": "test/Mixed.t.sol",
@@ -392,14 +392,14 @@
   {
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteExternal",
-    "name": "delete record from Mixed (external, warm)",
-    "gasUsed": 7826
+    "name": "set record in Mixed (external, cold)",
+    "gasUsed": 107665
   },
   {
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteInternal",
-    "name": "set record in Mixed (internal, cold)",
-    "gasUsed": 102831
+    "name": "delete record from Mixed (internal, warm)",
+    "gasUsed": 7033
   },
   {
     "file": "test/Mixed.t.sol",
@@ -410,8 +410,8 @@
   {
     "file": "test/Mixed.t.sol",
     "test": "testSetGetDeleteInternal",
-    "name": "delete record from Mixed (internal, warm)",
-    "gasUsed": 7033
+    "name": "set record in Mixed (internal, cold)",
+    "gasUsed": 102831
   },
   {
     "file": "test/ResourceId.t.sol",
@@ -428,12 +428,6 @@
   {
     "file": "test/Schema.t.sol",
     "test": "testEncodeDecodeSchema",
-    "name": "initialize schema array with 6 entries",
-    "gasUsed": 856
-  },
-  {
-    "file": "test/Schema.t.sol",
-    "test": "testEncodeDecodeSchema",
     "name": "encode schema with 6 entries",
     "gasUsed": 3609
   },
@@ -442,6 +436,12 @@
     "test": "testEncodeDecodeSchema",
     "name": "get schema type at index",
     "gasUsed": 119
+  },
+  {
+    "file": "test/Schema.t.sol",
+    "test": "testEncodeDecodeSchema",
+    "name": "initialize schema array with 6 entries",
+    "gasUsed": 856
   },
   {
     "file": "test/Schema.t.sol",
@@ -488,12 +488,6 @@
   {
     "file": "test/Slice.t.sol",
     "test": "testFromBytes",
-    "name": "make Slice from bytes",
-    "gasUsed": 31
-  },
-  {
-    "file": "test/Slice.t.sol",
-    "test": "testFromBytes",
     "name": "get Slice length",
     "gasUsed": 10
   },
@@ -502,6 +496,12 @@
     "test": "testFromBytes",
     "name": "get Slice pointer",
     "gasUsed": 33
+  },
+  {
+    "file": "test/Slice.t.sol",
+    "test": "testFromBytes",
+    "name": "make Slice from bytes",
+    "gasUsed": 31
   },
   {
     "file": "test/Slice.t.sol",
@@ -524,6 +524,18 @@
   {
     "file": "test/Slice.t.sol",
     "test": "testToBytes",
+    "name": "Slice (1024 bytes) to bytes memory",
+    "gasUsed": 7264
+  },
+  {
+    "file": "test/Slice.t.sol",
+    "test": "testToBytes",
+    "name": "Slice (1024x1024 bytes) to bytes memory",
+    "gasUsed": 9205065
+  },
+  {
+    "file": "test/Slice.t.sol",
+    "test": "testToBytes",
     "name": "Slice (2 bytes) to bytes memory",
     "gasUsed": 531
   },
@@ -541,21 +553,15 @@
   },
   {
     "file": "test/Slice.t.sol",
-    "test": "testToBytes",
-    "name": "Slice (1024 bytes) to bytes memory",
-    "gasUsed": 7264
-  },
-  {
-    "file": "test/Slice.t.sol",
-    "test": "testToBytes",
-    "name": "Slice (1024x1024 bytes) to bytes memory",
-    "gasUsed": 9205065
-  },
-  {
-    "file": "test/Slice.t.sol",
     "test": "testToBytes32",
     "name": "Slice to bytes32",
     "gasUsed": 81
+  },
+  {
+    "file": "test/Storage.t.sol",
+    "test": "testStoreLoad",
+    "name": "load 34 bytes over 3 storage slots (with offset and safeTrail))",
+    "gasUsed": 871
   },
   {
     "file": "test/Storage.t.sol",
@@ -570,12 +576,6 @@
     "gasUsed": 23025
   },
   {
-    "file": "test/Storage.t.sol",
-    "test": "testStoreLoad",
-    "name": "load 34 bytes over 3 storage slots (with offset and safeTrail))",
-    "gasUsed": 871
-  },
-  {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetDynamicFieldSlice",
     "name": "get field slice (cold, 1 slot)",
@@ -584,14 +584,14 @@
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetDynamicFieldSlice",
-    "name": "get field slice (warm, 1 slot)",
-    "gasUsed": 1668
+    "name": "get field slice (semi-cold, 1 slot)",
+    "gasUsed": 3661
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetDynamicFieldSlice",
-    "name": "get field slice (semi-cold, 1 slot)",
-    "gasUsed": 3661
+    "name": "get field slice (warm, 1 slot)",
+    "gasUsed": 1668
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
@@ -650,18 +650,6 @@
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testAccessEmptyData",
-    "name": "access non-existing record",
-    "gasUsed": 7073
-  },
-  {
-    "file": "test/StoreCoreGas.t.sol",
-    "test": "testAccessEmptyData",
-    "name": "access static field of non-existing record",
-    "gasUsed": 1330
-  },
-  {
-    "file": "test/StoreCoreGas.t.sol",
-    "test": "testAccessEmptyData",
     "name": "access dynamic field of non-existing record",
     "gasUsed": 2062
   },
@@ -670,6 +658,18 @@
     "test": "testAccessEmptyData",
     "name": "access length of dynamic field of non-existing record",
     "gasUsed": 1159
+  },
+  {
+    "file": "test/StoreCoreGas.t.sol",
+    "test": "testAccessEmptyData",
+    "name": "access non-existing record",
+    "gasUsed": 7073
+  },
+  {
+    "file": "test/StoreCoreGas.t.sol",
+    "test": "testAccessEmptyData",
+    "name": "access static field of non-existing record",
+    "gasUsed": 1330
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -686,14 +686,14 @@
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testGetStaticDataLocation",
-    "name": "get static data location (single key)",
-    "gasUsed": 217
+    "name": "get static data location (single key tuple)",
+    "gasUsed": 387
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testGetStaticDataLocation",
-    "name": "get static data location (single key tuple)",
-    "gasUsed": 387
+    "name": "get static data location (single key)",
+    "gasUsed": 217
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -706,6 +706,12 @@
     "test": "testHasFieldLayout",
     "name": "check for existence of table (non-existent)",
     "gasUsed": 3033
+  },
+  {
+    "file": "test/StoreCoreGas.t.sol",
+    "test": "testHooks",
+    "name": "delete record on table with subscriber",
+    "gasUsed": 47489
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -727,9 +733,9 @@
   },
   {
     "file": "test/StoreCoreGas.t.sol",
-    "test": "testHooks",
-    "name": "delete record on table with subscriber",
-    "gasUsed": 47489
+    "test": "testHooksDynamicData",
+    "name": "delete (dynamic) record on table with subscriber",
+    "gasUsed": 49266
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -740,20 +746,14 @@
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
-    "name": "set (dynamic) record on table with subscriber",
-    "gasUsed": 191643
-  },
-  {
-    "file": "test/StoreCoreGas.t.sol",
-    "test": "testHooksDynamicData",
     "name": "set (dynamic) field on table with subscriber",
     "gasUsed": 60374
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
-    "name": "delete (dynamic) record on table with subscriber",
-    "gasUsed": 49266
+    "name": "set (dynamic) record on table with subscriber",
+    "gasUsed": 191643
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -770,14 +770,14 @@
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
-    "name": "StoreCore: register table",
-    "gasUsed": 651056
+    "name": "StoreCore: get field layout (warm)",
+    "gasUsed": 509
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
-    "name": "StoreCore: get field layout (warm)",
-    "gasUsed": 509
+    "name": "StoreCore: get key schema (warm)",
+    "gasUsed": 2313
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -788,20 +788,14 @@
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
-    "name": "StoreCore: get key schema (warm)",
-    "gasUsed": 2313
+    "name": "StoreCore: register table",
+    "gasUsed": 651056
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetDynamicData",
-    "name": "set complex record with dynamic data (4 slots)",
-    "gasUsed": 101867
-  },
-  {
-    "file": "test/StoreCoreGas.t.sol",
-    "test": "testSetAndGetDynamicData",
-    "name": "get complex record with dynamic data (4 slots)",
-    "gasUsed": 4234
+    "name": "compare: Set complex record with dynamic data using abi.encode",
+    "gasUsed": 267535
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -812,8 +806,20 @@
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetDynamicData",
-    "name": "compare: Set complex record with dynamic data using abi.encode",
-    "gasUsed": 267535
+    "name": "get complex record with dynamic data (4 slots)",
+    "gasUsed": 4234
+  },
+  {
+    "file": "test/StoreCoreGas.t.sol",
+    "test": "testSetAndGetDynamicData",
+    "name": "set complex record with dynamic data (4 slots)",
+    "gasUsed": 101867
+  },
+  {
+    "file": "test/StoreCoreGas.t.sol",
+    "test": "testSetAndGetDynamicDataLength",
+    "name": "reduce dynamic length of dynamic index 0",
+    "gasUsed": 958
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -829,27 +835,21 @@
   },
   {
     "file": "test/StoreCoreGas.t.sol",
-    "test": "testSetAndGetDynamicDataLength",
-    "name": "reduce dynamic length of dynamic index 0",
-    "gasUsed": 958
+    "test": "testSetAndGetField",
+    "name": "get dynamic field (1 slot, first dynamic field)",
+    "gasUsed": 2227
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetField",
-    "name": "set static field (1 slot)",
-    "gasUsed": 31026
+    "name": "get dynamic field (1 slot, second dynamic field)",
+    "gasUsed": 2229
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetField",
     "name": "get static field (1 slot)",
     "gasUsed": 1331
-  },
-  {
-    "file": "test/StoreCoreGas.t.sol",
-    "test": "testSetAndGetField",
-    "name": "set static field (overlap 2 slot)",
-    "gasUsed": 29609
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -866,26 +866,20 @@
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetField",
-    "name": "get dynamic field (1 slot, first dynamic field)",
-    "gasUsed": 2227
-  },
-  {
-    "file": "test/StoreCoreGas.t.sol",
-    "test": "testSetAndGetField",
     "name": "set dynamic field (1 slot, second dynamic field)",
     "gasUsed": 32247
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetField",
-    "name": "get dynamic field (1 slot, second dynamic field)",
-    "gasUsed": 2229
+    "name": "set static field (1 slot)",
+    "gasUsed": 31026
   },
   {
     "file": "test/StoreCoreGas.t.sol",
-    "test": "testSetAndGetStaticData",
-    "name": "set static record (1 slot)",
-    "gasUsed": 32142
+    "test": "testSetAndGetField",
+    "name": "set static field (overlap 2 slot)",
+    "gasUsed": 29609
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -895,15 +889,21 @@
   },
   {
     "file": "test/StoreCoreGas.t.sol",
-    "test": "testSetAndGetStaticDataSpanningWords",
-    "name": "set static record (2 slots)",
-    "gasUsed": 54650
+    "test": "testSetAndGetStaticData",
+    "name": "set static record (1 slot)",
+    "gasUsed": 32142
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetStaticDataSpanningWords",
     "name": "get static record (2 slots)",
     "gasUsed": 1737
+  },
+  {
+    "file": "test/StoreCoreGas.t.sol",
+    "test": "testSetAndGetStaticDataSpanningWords",
+    "name": "set static record (2 slots)",
+    "gasUsed": 54650
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -914,26 +914,26 @@
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testUpdateInDynamicField",
-    "name": "update in field (1 slot, 1 uint32 item)",
-    "gasUsed": 8899
-  },
-  {
-    "file": "test/StoreCoreGas.t.sol",
-    "test": "testUpdateInDynamicField",
     "name": "push to field (2 slots, 6 uint64 items)",
     "gasUsed": 9342
   },
   {
-    "file": "test/StoreHook.t.sol",
-    "test": "testCallHook",
-    "name": "call an enabled hook",
-    "gasUsed": 37660
+    "file": "test/StoreCoreGas.t.sol",
+    "test": "testUpdateInDynamicField",
+    "name": "update in field (1 slot, 1 uint32 item)",
+    "gasUsed": 8899
   },
   {
     "file": "test/StoreHook.t.sol",
     "test": "testCallHook",
     "name": "call a disabled hook",
     "gasUsed": 123
+  },
+  {
+    "file": "test/StoreHook.t.sol",
+    "test": "testCallHook",
+    "name": "call an enabled hook",
+    "gasUsed": 37660
   },
   {
     "file": "test/StoreHook.t.sol",
@@ -956,8 +956,8 @@
   {
     "file": "test/StoreHooks.t.sol",
     "test": "testTable",
-    "name": "StoreHooks: set field (cold)",
-    "gasUsed": 58112
+    "name": "StoreHooks: delete record (warm)",
+    "gasUsed": 9552
   },
   {
     "file": "test/StoreHooks.t.sol",
@@ -968,14 +968,14 @@
   {
     "file": "test/StoreHooks.t.sol",
     "test": "testTable",
-    "name": "StoreHooks: push 1 element (cold)",
-    "gasUsed": 12491
+    "name": "StoreHooks: pop 1 element (warm)",
+    "gasUsed": 9795
   },
   {
     "file": "test/StoreHooks.t.sol",
     "test": "testTable",
-    "name": "StoreHooks: pop 1 element (warm)",
-    "gasUsed": 9795
+    "name": "StoreHooks: push 1 element (cold)",
+    "gasUsed": 12491
   },
   {
     "file": "test/StoreHooks.t.sol",
@@ -986,20 +986,20 @@
   {
     "file": "test/StoreHooks.t.sol",
     "test": "testTable",
-    "name": "StoreHooks: update 1 element (warm)",
-    "gasUsed": 29741
-  },
-  {
-    "file": "test/StoreHooks.t.sol",
-    "test": "testTable",
-    "name": "StoreHooks: delete record (warm)",
-    "gasUsed": 9552
+    "name": "StoreHooks: set field (cold)",
+    "gasUsed": 58112
   },
   {
     "file": "test/StoreHooks.t.sol",
     "test": "testTable",
     "name": "StoreHooks: set field (warm)",
     "gasUsed": 30255
+  },
+  {
+    "file": "test/StoreHooks.t.sol",
+    "test": "testTable",
+    "name": "StoreHooks: update 1 element (warm)",
+    "gasUsed": 29741
   },
   {
     "file": "test/StoreHooks.t.sol",
@@ -1100,14 +1100,14 @@
   {
     "file": "test/tightcoder/TightCoder.t.sol",
     "test": "testToAndFromBytes24Array",
-    "name": "encode packed bytes24[]",
-    "gasUsed": 503
+    "name": "decode packed bytes24[]",
+    "gasUsed": 486
   },
   {
     "file": "test/tightcoder/TightCoder.t.sol",
     "test": "testToAndFromBytes24Array",
-    "name": "decode packed bytes24[]",
-    "gasUsed": 486
+    "name": "encode packed bytes24[]",
+    "gasUsed": 503
   },
   {
     "file": "test/Vector2.t.sol",
@@ -1118,13 +1118,13 @@
   {
     "file": "test/Vector2.t.sol",
     "test": "testSetAndGet",
-    "name": "set Vector2 record",
-    "gasUsed": 32824
+    "name": "get Vector2 record",
+    "gasUsed": 2306
   },
   {
     "file": "test/Vector2.t.sol",
     "test": "testSetAndGet",
-    "name": "get Vector2 record",
-    "gasUsed": 2306
+    "name": "set Vector2 record",
+    "gasUsed": 32824
   }
 ]

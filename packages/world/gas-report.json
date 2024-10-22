@@ -80,14 +80,14 @@
   {
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
-    "name": "register an unlimited delegation",
-    "gasUsed": 74771
+    "name": "call a system via an unlimited delegation",
+    "gasUsed": 40663
   },
   {
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
-    "name": "call a system via an unlimited delegation",
-    "gasUsed": 40663
+    "name": "register an unlimited delegation",
+    "gasUsed": 74771
   },
   {
     "file": "test/World.t.sol",
@@ -200,14 +200,14 @@
   {
     "file": "test/WorldProxy.t.sol",
     "test": "testCallFromUnlimitedDelegation",
-    "name": "register an unlimited delegation",
-    "gasUsed": 79685
+    "name": "call a system via an unlimited delegation",
+    "gasUsed": 45592
   },
   {
     "file": "test/WorldProxy.t.sol",
     "test": "testCallFromUnlimitedDelegation",
-    "name": "call a system via an unlimited delegation",
-    "gasUsed": 45592
+    "name": "register an unlimited delegation",
+    "gasUsed": 79685
   },
   {
     "file": "test/WorldProxy.t.sol",
