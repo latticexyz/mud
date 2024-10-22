@@ -18,7 +18,7 @@
       "@latticexyz/config/node": ["./packages/config/src/deprecated/node"],
       "@latticexyz/dev-tools": ["./packages/dev-tools/src/index.ts"],
       "@latticexyz/explorer/observer": ["./packages/explorer/src/exports/observer.ts"],
-      "@latticexyz/gas-report": ["./packages/gas-report/ts/index.ts"],
+      "@latticexyz/gas-report/internal": ["./packages/gas-report/ts/exports/internal.ts"],
       "@latticexyz/protocol-parser": ["./packages/protocol-parser/src/index.ts"],
       "@latticexyz/protocol-parser/*": ["./packages/protocol-parser/src/exports/*.ts"],
       "@latticexyz/react": ["./packages/react/src/index.ts"],

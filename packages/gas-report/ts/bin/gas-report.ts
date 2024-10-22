@@ -2,7 +2,7 @@
 
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import gasReport from ".";
+import { command as gasReport } from "../command";
 
 // Load .env file into process.env
 import * as dotenv from "dotenv";
