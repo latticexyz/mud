@@ -44,8 +44,7 @@ export function findLibraries(forgeOutDirs: string | string[]): Library[] {
   );
 
   return orderedByDeps.map((library) => {
-    const contractDataPath = path.join(library.forgeOutDir, path.basename(library.path), `${library.name}.json`);
-    const contractData = getContractData(contractDataPath);
+    const contractData = getContractData(path.basename(library.path), library.name, library.forgeOutDir);
     return {
       path: library.path,
       name: library.name,

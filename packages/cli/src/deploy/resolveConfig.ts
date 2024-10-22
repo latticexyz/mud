@@ -40,8 +40,7 @@ export async function resolveConfig({
 
   const libraries = findLibraries([forgeOutDir, ...moduleOutDirs]);
 
-  const baseSystemPath = path.join(forgeOutDir, "System.sol", "System.json");
-  const baseSystemContractData = getContractData(baseSystemPath);
+  const baseSystemContractData = getContractData("System.sol", "System", forgeOutDir);
   const baseSystemFunctions = baseSystemContractData.abi
     .filter((item): item is typeof item & { type: "function" } => item.type === "function")
     .map(toFunctionSignature);
@@ -59,8 +58,7 @@ export async function resolveConfig({
         );
       }
 
-      const contractDataPath = path.join(forgeOutDir, `${system.label}.sol`, `${system.label}.json`);
-      const contractData = getContractData(contractDataPath);
+      const contractData = getContractData(`${system.label}.sol`, system.label, forgeOutDir);
 
       // TODO: replace this with manifest
       const worldFunctions = system.deploy.registerWorldFunctions

@@ -72,8 +72,7 @@ const commandModule: CommandModule<Options, Options> = {
     // TODO: replace with `resolveConfig` and support for linked libs
     const configSystems = await resolveSystems({ rootDir, config });
     const systems = configSystems.map((system) => {
-      const contractDataPath = path.join(outDir, `${system.name}.sol`, `${system.name}.json`);
-      const contractData = getContractData(contractDataPath);
+      const contractData = getContractData(`${system.name}.sol`, system.name, outDir);
       return {
         name: system.name,
         bytecode: contractData.bytecode,
