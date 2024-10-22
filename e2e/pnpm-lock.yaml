@@ -96,6 +96,9 @@ importers:
       '@latticexyz/world':
         specifier: link:../../../packages/world
         version: link:../../../packages/world
+      '@latticexyz/world-modules':
+        specifier: link:../../../packages/world-modules
+        version: link:../../../packages/world-modules
       dotenv:
         specifier: ^16.0.3
         version: 16.0.3
