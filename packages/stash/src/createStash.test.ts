@@ -207,7 +207,7 @@ describe("createStash", () => {
     });
   });
 
-  describe("subscribeStore", () => {
+  describe("subscribeStash", () => {
     it("should notify listeners on stash updates", () => {
       const config = defineStore({
         namespace: "namespace1",
@@ -228,7 +228,7 @@ describe("createStash", () => {
 
       const subscriber = vi.fn();
 
-      stash.subscribeStore({ subscriber });
+      stash.subscribeStash({ subscriber });
 
       stash.setRecord({
         table,
@@ -349,7 +349,7 @@ describe("createStash", () => {
 
       const subscriber = vi.fn();
 
-      const unsubscribe = stash.subscribeStore({
+      const unsubscribe = stash.subscribeStash({
         subscriber,
       });
 

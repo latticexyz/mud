@@ -460,7 +460,7 @@ describe("stash with default actions", () => {
     });
   });
 
-  describe("subscribeStore", () => {
+  describe("subscribeStash", () => {
     it("should notify subscriber of any stash change", () => {
       const config = defineStore({
         namespaces: {
@@ -478,7 +478,7 @@ describe("stash with default actions", () => {
       const stash = createStash(config);
       const subscriber = vi.fn();
 
-      stash.subscribeStore({ subscriber });
+      stash.subscribeStash({ subscriber });
 
       stash.setRecord({ table: config.tables.namespace1__table1, key: { a: "0x00" }, value: { b: 1n, c: 2 } });
 
