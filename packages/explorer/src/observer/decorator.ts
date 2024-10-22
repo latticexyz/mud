@@ -70,142 +70,99 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
           const write = getAction(client, sendUserOperation, "sendUserOperation")(args);
           const calls = args.calls;
 
-          // write
-          //   .then((hash) => {
-          //     console.log("observerWrite HASH IS:", hash);
+          // for (const call of calls) {
+          const call = calls[0];
+          const writeId = `${client.uid}-${++writeCounter}`; // TODO: rename write to send ?
+          const { to, args: args2, abi, functionName } = call;
 
-          //     try {
-          //       const userOpReceipt = getAction(
-          //         client,
-          //         waitForUserOperationReceipt,
-          //         "waitForUserOperationReceipt",
-          //       )({ hash });
+          console.log("observerWrite call", call);
 
-          //       const txReceipt = getAction(client, getUserOperation, "getUserOperation")({ hash });
+          const functionAbiItem = getAbiItem({
+            abi,
+            name: functionName,
+            args,
+          } as never)!;
 
-          //       Promise.allSettled([txReceipt]).then(([result]) => {
-          //         console.log("observerWrite getUserOperation result", result);
-          //       });
+          emit("write", {
+            writeId,
+            address: to, // args.address,
+            from: client.account!.address,
+            functionSignature: formatAbiItem(functionAbiItem),
+            args: (args2.args ?? []) as never,
+            value: args2.value,
+          });
 
-          //       Promise.allSettled([userOpReceipt]).then(([result]) => {
-          //         console.log("observerWrite userOpReceipt result", result);
-
-          //         const txHash = result.value.receipt.transactionHash;
-          //         console.log("observerWrite txHash", txHash);
-          //         // emit("waitForUserOperationReceipt:result", { ...result, writeId });
-          //       });
-          //     } catch (error) {
-          //       console.error("observerWrite op error", error);
-          //     }
-          //   })
-          //   .catch((error) => {
-          //     console.error("observerWrite op error", error);
-          //   });
-
-          // try {
-          //   console.log("WHY 1");
-          //   const txReceipt = await getAction(
-          //     client,
-          //     waitForTransactionReceipt,
-          //     "waitForTransactionReceipt",
-          //   )({ hash: txHash });
-          //   console.log("observerWrite txReceipt", txReceipt);
-          // } catch (error) {
-          //   console.error("observerWrite error", error);
-          // }
-
-          for (const call of calls) {
-            const writeId = `${client.uid}-${++writeCounter}`; // TODO: rename write to send ?
-            const { to, args, abi, functionName } = call;
-
-            console.log("observerWrite call", call);
-
-            // const userOpTxHash = getUserOperationHashV07(args, entryPoint07Address, client.chain.id);
-            // console.log("observerWrite userOpTxHash", userOpTxHash);
-
-            const functionAbiItem = getAbiItem({
-              abi,
-              name: functionName,
-              args,
-            } as never)!;
-
-            // console.log(writeId, args, client, functionAbiItem, args.args, args.value);
-
-            // const userOperationHash = getUserOperationHash({
-            //   ...args,
-            //   entryPointAddress: entryPoint07Address,
-            //   chainId: client.chain.id,
-            // });
-
-            emit("write", {
-              writeId,
-              address: to, // args.address,
-              from: client.account!.address,
-              functionSignature: formatAbiItem(functionAbiItem),
-              args: (args.args ?? []) as never,
-              value: args.value,
-            });
-
-            write.then((hash) => {
-              console.log("observerWrite HASH IS:", hash, "writeId is:", writeId);
-
+          write
+            .then((hash) => {
               const receipt = getAction(client, waitForUserOperationReceipt, "waitForUserOperationReceipt")({ hash });
 
-              // emit("waitForTransactionReceipt", { writeId, hash });
-              Promise.allSettled([receipt]).then(([result]) => {
-                console.log("observerWrite waitForUserOperationReceipt result", result);
+              Promise.allSettled([receipt])
+                .then(async ([result]) => {
+                  console.log("observerWrite waitForUserOperationReceipt result", result);
+                  const txHash = result.value.receipt.transactionHash;
+                  console.log("observerWrite tx hash:", txHash);
 
-                const txHash = result.value.receipt.transactionHash;
-                console.log("observerWrite tx hash", txHash);
+                  try {
+                    const receipt3 = await getAction(
+                      client,
+                      waitForTransactionReceipt,
+                      "waitForTransactionReceipt",
+                    )({
+                      hash: txHash,
+                    });
+                    console.log("observerWrite receipt3", receipt3);
+                  } catch (error) {
+                    console.log("observerWrite waitForTransactionReceipt error", error);
+                  }
 
-                emit("waitForTransactionReceipt", { hash: txHash, writeId });
-              });
+                  try {
+                    console.log("observerWrite before receipt", txHash);
+
+                    const receipt2 = getAction(
+                      client,
+                      waitForTransactionReceipt,
+                      "waitForTransactionReceipt",
+                    )({ hash: txHash });
+                    console.log("observerWrite 1 receipt:".receipt2);
+
+                    Promise.allSettled([receipt2])
+                      .then(([result2]) => {
+                        console.log("observerWrite 1 receipt result", result2);
+                      })
+                      .catch((error) => {
+                        console.log("observerWrite waitForTransactionReceipt", error);
+                      });
+                  } catch (error) {
+                    console.log("observerWrite waitForTransactionReceipt error", error);
+                  }
+
+                  emit("waitForTransactionReceipt", { hash: txHash, writeId });
+                })
+                .catch((error) => {
+                  console.log("observerWrite fetching receipt", error);
+                });
+            })
+            .catch((error) => {
+              console.log("observerWrite waitForUserOperationReceipt error", error);
             });
 
-            // write.then((hash) => {
-            // emit("waitForTransactionReceipt", { writeId, hash });
-            // Promise.allSettled([receipt]).then(([result]) => {
-            //   emit("waitForTransactionReceipt:result", { ...result, writeId });
-            // });
-            // });
-
-            // Promise.allSettled([write]).then(([result]) => {
-            //   emit("write:result", { ...result, writeId });
-            // });
-          }
-
-          // write.then((hash) => {
-          //   console.log("observerWrite hash", hash);
-
-          //   const receipt = getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });
-          //   const receipt2 = getAction(client, waitForUserOperationReceipt, "waitForUserOperationReceipt")({ hash });
-
-          //   Promise.allSettled([receipt, receipt2]).then(([result, result2]) => {
-          //     console.log("observerWrite result", result);
-          //     console.log("observerWrite result2", result2);
-          //   });
-          // });
-
-          // write.then((hash) => {
-          //   console.log("observerWrite write then!", hash);
-
-          //   const receipt = getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });
-          //   Promise.allSettled([receipt]).then(([result]) => {
-          //     console.log("observerWrite result receipt:", result);
-
-          //     // emit("waitForTransactionReceipt:result", { ...result, writeId });
-          //   });
-
-          //   // emit("write:result", { hash, writeId });
-          // });
-
           return write;
+        },
+
+        async writeContract(args) {
+          console.log("(bundler client) observerWrite writeContract", args);
+
+          return client.writeContract(args);
         },
       };
     }
 
     return {
       async writeContract(args) {
+        console.log("(wallet client) observerWrite writeContract", args);
+
+        if (args.address === entryPoint07Address) return;
+
         const writeId = `${client.uid}-${++writeCounter}`;
         const write = getAction(client, writeContract, "writeContract")(args);
 
