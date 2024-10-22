@@ -2,18 +2,24 @@ import { readFileSync } from "fs";
 import { globSync } from "glob";
 import { orderByDependencies } from "./orderByDependencies";
 import { LinkReferences } from "../utils/findPlaceholders";
+import { Library } from "./common";
+import { getContractData } from "../utils/getContractData";
+import { createPrepareDeploy } from "./createPrepareDeploy";
+import path from "path";
 
-export function findLibraries(forgeOutDirs: string | string[]): readonly {
-  readonly path: string;
-  readonly name: string;
-}[] {
+export function findLibraries(forgeOutDirs: string | string[]): Library[] {
   const dirs = Array.isArray(forgeOutDirs) ? forgeOutDirs : [forgeOutDirs];
-  const globs = dirs.map((dir) => `${dir}/**/*.json`);
-  const artifacts = globSync(globs, { ignore: "**/*.abi.json" })
-    .sort()
-    .map((path) => JSON.parse(readFileSync(path, "utf8")));
 
-  const libraries = artifacts.flatMap((artifact) => {
+  // Deduplicate output directories and get all the artifacts
+  const artifactsWithDirs = [...new Set(dirs)].flatMap((dir) => {
+    const files = globSync(`${dir}/**/*.json`, { ignore: "/**/*.abi.json" }).sort();
+    return files.map((filePath) => ({
+      forgeOutDir: dir,
+      artifact: JSON.parse(readFileSync(filePath, "utf8")),
+    }));
+  });
+
+  const libraries = artifactsWithDirs.flatMap(({ artifact, forgeOutDir }) => {
     if (!artifact.metadata) return [];
 
     const contractPath = Object.keys(artifact.metadata.settings.compilationTarget)[0];
@@ -26,13 +32,26 @@ export function findLibraries(forgeOutDirs: string | string[]): readonly {
         name: libraryName,
         dependentPath: contractPath,
         dependentName: contractName,
+        forgeOutDir,
       })),
     );
   });
 
-  return orderByDependencies(
+  const orderedByDeps = orderByDependencies(
     libraries,
     (lib) => `${lib.path}:${lib.name}`,
     (lib) => [`${lib.dependentPath}:${lib.dependentName}`],
   );
+
+  return orderedByDeps.map((library) => {
+    const contractDataPath = path.join(library.forgeOutDir, path.basename(library.path), `${library.name}.json`);
+    const contractData = getContractData(contractDataPath);
+    return {
+      path: library.path,
+      name: library.name,
+      abi: contractData.abi,
+      prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
+      deployedBytecodeSize: contractData.deployedBytecodeSize,
+    };
+  });
 }

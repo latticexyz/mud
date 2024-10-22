@@ -38,18 +38,7 @@ export async function resolveConfig({
     return [moduleOutDir];
   });
 
-  // TODO: we can even make findLibraries return Library directly, not sure why this step was needed.
-  const libraries = findLibraries([forgeOutDir, ...moduleOutDirs]).map((library): Library => {
-    // foundry/solc flattens artifacts, so we just use the path basename
-    const contractData = getContractData(library.path);
-    return {
-      path: library.path,
-      name: library.name,
-      abi: contractData.abi,
-      prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
-      deployedBytecodeSize: contractData.deployedBytecodeSize,
-    };
-  });
+  const libraries = findLibraries([forgeOutDir, ...moduleOutDirs]);
 
   const baseSystemPath = path.join(forgeOutDir, "System.sol", "System.json");
   const baseSystemContractData = getContractData(baseSystemPath);
