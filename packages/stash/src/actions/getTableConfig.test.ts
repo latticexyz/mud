@@ -1,4 +1,4 @@
-import { defineTable } from "@latticexyz/store/config/v2";
+import { defineTable } from "@latticexyz/store/internal";
 import { describe, it } from "vitest";
 import { createStash } from "../createStash";
 import { attest } from "@ark/attest";
