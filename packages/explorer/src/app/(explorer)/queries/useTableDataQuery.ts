@@ -1,5 +1,4 @@
 import { useParams } from "next/navigation";
-import { Parser } from "node-sql-parser";
 import { Hex } from "viem";
 import { Table } from "@latticexyz/config";
 import { useQuery } from "@tanstack/react-query";
@@ -11,8 +10,6 @@ type Props = {
   table: Table | undefined;
   query: string | undefined;
 };
-
-const parser = new Parser();
 
 export type TableData = {
   columns: string[];
@@ -51,9 +48,14 @@ export function useTableDataQuery({ table, query }: Props) {
     select: (data: DozerResponse) => {
       if (!table || !data?.result?.[0]) return;
 
-      const parsedQuery = parser.astify(decodedQuery);
-      const columnKeys = parsedQuery.columns.map((column) => column.expr.column);
+      const schemaKeys = Object.keys(table.schema);
       const result = data.result[0];
+      const columnKeys = result[0]
+        .map((columnKey) => {
+          const schemaKey = schemaKeys.find((schemaKey) => schemaKey.toLowerCase() === columnKey);
+          return schemaKey || columnKey;
+        })
+        .filter((key) => schemaKeys.includes(key));
       const rows = result.slice(1).map((row) => Object.fromEntries(columnKeys.map((key, index) => [key, row[index]])));
 
       return {

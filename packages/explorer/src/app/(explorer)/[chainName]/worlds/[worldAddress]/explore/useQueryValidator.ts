@@ -10,6 +10,29 @@ import { useMonacoErrorMarker } from "./useMonacoErrorMarker";
 
 const sqlParser = new Parser();
 
+function findErrorPosition(query: string, erroredQueryStr: string) {
+  const lines = query.split("\n");
+  let startLineNumber = 1;
+  let startColumn = 1;
+  let currentPosition = 0;
+
+  for (let i = 0; i < lines.length; i++) {
+    if (currentPosition + lines[i].length >= query.indexOf(erroredQueryStr)) {
+      startLineNumber = i + 1;
+      startColumn = query.indexOf(erroredQueryStr) - currentPosition + 1;
+      break;
+    }
+    currentPosition += lines[i].length + 1; // +1 for newline character
+  }
+
+  return {
+    startLineNumber,
+    endLineNumber: startLineNumber,
+    startColumn,
+    endColumn: startColumn + erroredQueryStr.length,
+  };
+}
+
 export function useQueryValidator(table?: Table) {
   const monaco = useMonaco();
   const { worldAddress } = useParams();
@@ -27,10 +50,10 @@ export function useQueryValidator(table?: Table) {
           for (const column of ast.columns) {
             const columnName = column.expr.column;
             if (!Object.keys(table.schema).includes(columnName)) {
+              const position = findErrorPosition(decodedQuery, columnName);
               setErrorMarker({
                 message: `Column '${columnName}' does not exist in the table schema.`,
-                startColumn: decodedQuery.indexOf(columnName) + 1,
-                endColumn: decodedQuery.indexOf(columnName) + columnName.length + 1,
+                ...position,
               });
               return false;
             }
@@ -44,10 +67,10 @@ export function useQueryValidator(table?: Table) {
               const tableName = constructTableName(table, worldAddress as Address, chainId);
 
               if (selectedTableName !== tableName) {
+                const position = findErrorPosition(decodedQuery, selectedTableName);
                 setErrorMarker({
                   message: `Only '${tableName}' is available for this query.`,
-                  startColumn: decodedQuery.indexOf(selectedTableName) + 1,
-                  endColumn: decodedQuery.indexOf(selectedTableName) + selectedTableName.length + 1,
+                  ...position,
                 });
                 return false;
               }
@@ -59,10 +82,14 @@ export function useQueryValidator(table?: Table) {
         return true;
       } catch (error) {
         if (error instanceof Error) {
+          // For general errors, set the error for the entire query
+          const lines = decodedQuery.split("\n");
           setErrorMarker({
             message: error.message,
+            startLineNumber: 1,
+            endLineNumber: lines.length,
             startColumn: 1,
-            endColumn: decodedQuery.length + 1,
+            endColumn: lines[lines.length - 1].length + 1,
           });
         }
         return false;
