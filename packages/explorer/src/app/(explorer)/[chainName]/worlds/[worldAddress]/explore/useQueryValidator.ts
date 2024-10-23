@@ -50,10 +50,9 @@ export function useQueryValidator(table?: Table) {
           for (const column of ast.columns) {
             const columnName = column.expr.column;
             if (!Object.keys(table.schema).includes(columnName)) {
-              const position = findErrorPosition(decodedQuery, columnName);
               setErrorMarker({
                 message: `Column '${columnName}' does not exist in the table schema.`,
-                ...position,
+                ...findErrorPosition(decodedQuery, columnName),
               });
               return false;
             }
@@ -67,10 +66,9 @@ export function useQueryValidator(table?: Table) {
               const tableName = constructTableName(table, worldAddress as Address, chainId);
 
               if (selectedTableName !== tableName) {
-                const position = findErrorPosition(decodedQuery, selectedTableName);
                 setErrorMarker({
                   message: `Only '${tableName}' is available for this query.`,
-                  ...position,
+                  ...findErrorPosition(decodedQuery, selectedTableName),
                 });
                 return false;
               }
