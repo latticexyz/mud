@@ -1,5 +1,23 @@
 # Change Log
 
+## 2.2.13
+
+### Patch Changes
+
+- Updated dependencies [d5c2700]
+- Updated dependencies [75e93ba]
+  - @latticexyz/gas-report@2.2.13
+  - @latticexyz/abi-ts@2.2.13
+  - @latticexyz/schema-type@2.2.13
+  - @latticexyz/store@2.2.13
+  - @latticexyz/world@2.2.13
+  - @latticexyz/world-module-metadata@2.2.13
+  - @latticexyz/block-logs-stream@2.2.13
+  - @latticexyz/common@2.2.13
+  - @latticexyz/config@2.2.13
+  - @latticexyz/protocol-parser@2.2.13
+  - @latticexyz/utils@2.2.13
+
 ## 2.2.12
 
 ### Patch Changes
