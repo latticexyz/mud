@@ -102,8 +102,7 @@ export function useSetupAppAccount() {
       await queryClient.invalidateQueries({ queryKey: ["readContract"] });
 
       // TODO: throw if revert?
-      // TODO: add success boolean to wiresaw return value
-      // if (!receipt.success) return;
+      if (!receipt.success) return;
 
       if (registerSpender) {
         const queryKey = getSpenderQueryKey({

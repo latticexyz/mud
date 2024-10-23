@@ -1,5 +1,4 @@
-import { Hash, Hex, RpcTransactionReceipt, Transport } from "viem";
-import { UserOperationReceipt } from "viem/account-abstraction";
+import { Hash, Hex, RpcTransactionReceipt, RpcUserOperationReceipt, Transport } from "viem";
 
 export const wiresawChainIds = new Set([17420, 31337]);
 
@@ -8,7 +7,7 @@ export function wiresaw<const transport extends Transport>(originalTransport: tr
     const { request: originalRequest, ...rest } = originalTransport(opts);
 
     let chainId: Hex | null = null;
-    const receipts = new Map<Hash, RpcTransactionReceipt | UserOperationReceipt>();
+    const receipts = new Map<Hash, RpcTransactionReceipt | RpcUserOperationReceipt>();
 
     return {
       ...rest,
@@ -54,16 +53,17 @@ export function wiresaw<const transport extends Transport>(originalTransport: tr
           })) as { txHash: Hex; userOpHash: Hex };
           // :haroldsmile:
           receipts.set(result.userOpHash, {
+            success: true,
             userOpHash: result.userOpHash,
             receipt: { transactionHash: result.txHash },
-          } as UserOperationReceipt);
+          } as RpcUserOperationReceipt);
           return result.userOpHash;
         }
 
         if (req.method === "eth_getUserOperationReceipt") {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const hash = (req.params as any)[0] as Hash;
-          const receipt = receipts.get(hash) ?? ((await originalRequest(req)) as UserOperationReceipt);
+          const receipt = receipts.get(hash) ?? ((await originalRequest(req)) as RpcUserOperationReceipt);
           if (!receipts.has(hash)) receipts.set(hash, receipt);
           return receipt;
         }
