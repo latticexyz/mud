@@ -82,7 +82,6 @@ export function useQueryValidator(table?: Table) {
         return true;
       } catch (error) {
         if (error instanceof Error) {
-          // For general errors, set the error for the entire query
           const lines = decodedQuery.split("\n");
           setErrorMarker({
             message: error.message,
