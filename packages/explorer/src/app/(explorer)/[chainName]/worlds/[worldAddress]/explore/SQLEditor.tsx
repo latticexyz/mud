@@ -68,7 +68,6 @@ export function SQLEditor({ table }: Props) {
           render={({ field }) => (
             <div ref={containerRef} className="min-h-[21px] w-full">
               <Editor
-                forwardRef={editorRef}
                 width="100%"
                 theme="hc-black"
                 value={decodeURIComponent(field.value)}
