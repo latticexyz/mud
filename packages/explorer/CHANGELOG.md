@@ -1,5 +1,56 @@
 # @latticexyz/explorer
 
+## 2.2.12
+
+### Patch Changes
+
+- 3d8db6f: Function filters in `Interact` tab are now included as part of the URL.
+- 1b0ffcf: Transactions in Observe tab are now populated with timing metrics when using the `observer` Viem decorator in local projects.
+
+  You can wire up your local project to use transaction timings with:
+
+  ```
+  import { observer } from "@latticexyz/explorer/observer";
+
+  // Extend the Viem client that is performing writes
+  walletClient.extend(observer());
+  ```
+
+- d4c10c1: Interact tab now displays decoded ABI errors for failed transactions.
+- ea18f27: Bumped viem to v2.21.19.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.19
+  ```
+
+- 2c92401: Fixed inputs display in the transactions table row.
+- af72530: Display error messages for failed queries within the Explore tab's table viewer.
+- 3a80bed: Explore page now has a full-featured SQL editor with syntax highlighting, autocomplete, and query validation.
+- 6476dec: Each chain's home page now lets you find and pick a world to explore.
+- 9a43e87: - Not found page if invalid chain name.
+  - Only show selector for worlds if options exist.
+  - Remove "future time" from transactions table.
+  - Improved layout for Interact tab.
+  - Wrap long args in transactions table.
+  - New tables polling.
+  - Add logs (regression).
+- 4b46409: Transactions are now monitored across all tabs while the World Explorer is open.
+- Updated dependencies [20f44fb]
+- Updated dependencies [ea18f27]
+- Updated dependencies [41a6e2f]
+- Updated dependencies [84ae33b]
+- Updated dependencies [fe98442]
+  - @latticexyz/store-indexer@2.2.12
+  - @latticexyz/common@2.2.12
+  - @latticexyz/config@2.2.12
+  - @latticexyz/protocol-parser@2.2.12
+  - @latticexyz/schema-type@2.2.12
+  - @latticexyz/store-sync@2.2.12
+  - @latticexyz/store@2.2.12
+  - @latticexyz/world@2.2.12
+
 ## 2.2.11
 
 ### Patch Changes

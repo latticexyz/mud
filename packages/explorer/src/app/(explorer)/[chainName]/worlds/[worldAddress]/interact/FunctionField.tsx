@@ -1,7 +1,7 @@
 "use client";
 
 import { Coins, Eye, Send } from "lucide-react";
-import { AbiFunction } from "viem";
+import { Abi, AbiFunction } from "viem";
 import { useAccount } from "wagmi";
 import { z } from "zod";
 import { useState } from "react";
@@ -20,7 +20,8 @@ export enum FunctionType {
 }
 
 type Props = {
-  abi: AbiFunction;
+  worldAbi: Abi;
+  functionAbi: AbiFunction;
 };
 
 const formSchema = z.object({
@@ -28,12 +29,14 @@ const formSchema = z.object({
   value: z.string().optional(),
 });
 
-export function FunctionField({ abi }: Props) {
+export function FunctionField({ worldAbi, functionAbi }: Props) {
   const operationType: FunctionType =
-    abi.stateMutability === "view" || abi.stateMutability === "pure" ? FunctionType.READ : FunctionType.WRITE;
+    functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure"
+      ? FunctionType.READ
+      : FunctionType.WRITE;
   const [result, setResult] = useState<string | null>(null);
   const { openConnectModal } = useConnectModal();
-  const mutation = useContractMutation({ abi, operationType });
+  const mutation = useContractMutation({ worldAbi, functionAbi, operationType });
   const account = useAccount();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -58,23 +61,23 @@ export function FunctionField({ abi }: Props) {
     }
   }
 
-  const inputsLabel = abi?.inputs.map((input) => input.type).join(", ");
+  const inputsLabel = functionAbi?.inputs.map((input) => input.type).join(", ");
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} id={abi.name} className="space-y-4 pb-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} id={functionAbi.name} className="space-y-4 pb-4">
         <h3 className="pt-4 font-semibold">
-          <span className="text-orange-500">{abi?.name}</span>
+          <span className="text-orange-500">{functionAbi?.name}</span>
           <span className="opacity-50">{inputsLabel && ` (${inputsLabel})`}</span>
           <span className="ml-2 opacity-50">
-            {abi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
-            {(abi.stateMutability === "view" || abi.stateMutability === "pure") && (
+            {functionAbi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
+            {(functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure") && (
               <Eye className="mr-2 inline-block h-4 w-4" />
             )}
-            {abi.stateMutability === "nonpayable" && <Send className="mr-2 inline-block h-4 w-4" />}
+            {functionAbi.stateMutability === "nonpayable" && <Send className="mr-2 inline-block h-4 w-4" />}
           </span>
         </h3>
 
-        {abi?.inputs.map((input, index) => (
+        {functionAbi?.inputs.map((input, index) => (
           <FormField
             key={index}
             control={form.control}
@@ -91,7 +94,7 @@ export function FunctionField({ abi }: Props) {
           />
         ))}
 
-        {abi.stateMutability === "payable" && (
+        {functionAbi.stateMutability === "payable" && (
           <FormField
             control={form.control}
             name="value"
@@ -108,8 +111,8 @@ export function FunctionField({ abi }: Props) {
         )}
 
         <Button type="submit" disabled={mutation.isPending}>
-          {(abi.stateMutability === "view" || abi.stateMutability === "pure") && "Read"}
-          {(abi.stateMutability === "payable" || abi.stateMutability === "nonpayable") && "Write"}
+          {(functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure") && "Read"}
+          {(functionAbi.stateMutability === "payable" || functionAbi.stateMutability === "nonpayable") && "Write"}
         </Button>
 
         {result && <pre className="text-md rounded border p-3 text-sm">{result}</pre>}

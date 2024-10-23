@@ -622,6 +622,9 @@ importers:
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../world
+      '@monaco-editor/react':
+        specifier: ^4.6.0
+        version: 4.6.0(monaco-editor@0.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@radix-ui/react-checkbox':
         specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -673,9 +676,15 @@ importers:
       lucide-react:
         specifier: ^0.408.0
         version: 0.408.0(react@18.2.0)
+      monaco-editor:
+        specifier: ^0.52.0
+        version: 0.52.0
       next:
         specifier: 14.2.5
         version: 14.2.5(@babel/core@7.25.7)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      node-sql-parser:
+        specifier: ^5.3.3
+        version: 5.3.3
       nuqs:
         specifier: ^1.19.2
         version: 1.19.2(next@14.2.5(@babel/core@7.25.7)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
@@ -694,6 +703,9 @@ importers:
       sonner:
         specifier: ^1.5.0
         version: 1.5.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      sql-autocomplete:
+        specifier: ^1.1.1
+        version: 1.1.1
       tailwind-merge:
         specifier: ^1.12.0
         version: 1.12.0
@@ -948,10 +960,10 @@ importers:
         version: 8.3.4
       jest:
         specifier: ^29.3.1
-        version: 29.5.0(@types/node@18.15.11)
+        version: 29.5.0(@types/node@18.19.50)
       ts-jest:
         specifier: ^29.0.5
-        version: 29.0.5(@babel/core@7.25.2)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.25.2))(jest@29.5.0(@types/node@18.15.11))(typescript@5.4.2)
+        version: 29.0.5(@babel/core@7.25.2)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.25.2))(jest@29.5.0(@types/node@18.19.50))(typescript@5.4.2)
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
@@ -1395,6 +1407,46 @@ importers:
       glob:
         specifier: ^10.4.2
         version: 10.4.2
+      solhint:
+        specifier: ^3.3.7
+        version: 3.3.7
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
+      vitest:
+        specifier: 0.34.6
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.34.1)
+
+  packages/world-module-erc20:
+    dependencies:
+      '@latticexyz/schema-type':
+        specifier: workspace:*
+        version: link:../schema-type
+      '@latticexyz/store':
+        specifier: workspace:*
+        version: link:../store
+      '@latticexyz/world':
+        specifier: workspace:*
+        version: link:../world
+    devDependencies:
+      '@latticexyz/abi-ts':
+        specifier: workspace:*
+        version: link:../abi-ts
+      '@latticexyz/cli':
+        specifier: workspace:*
+        version: link:../cli
+      '@latticexyz/gas-report':
+        specifier: workspace:*
+        version: link:../gas-report
+      '@types/node':
+        specifier: ^18.15.11
+        version: 18.19.50
+      ds-test:
+        specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
+        version: https://codeload.github.com/dapphub/ds-test/tar.gz/e282159d5170298eb2455a6c05280ab5a73a4ef0
+      forge-std:
+        specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
+        version: https://codeload.github.com/foundry-rs/forge-std/tar.gz/74cfb77e308dd188d2f58864aaf44963ae6b88b1
       solhint:
         specifier: ^3.3.7
         version: 3.3.7
@@ -3684,6 +3736,18 @@ packages:
   '@microsoft/tsdoc@0.15.0':
     resolution: {integrity: sha512-HZpPoABogPvjeJOdzCOSJsXeL/SMCBgBZMVC3X3d7YYp2gf31MfxhUoYUNwf1ERPJOnQc0wkFn9trqI6ZEdZuA==}
 
+  '@monaco-editor/loader@1.4.0':
+    resolution: {integrity: sha512-00ioBig0x642hytVspPl7DbQyaSWRaolYie/UFNjoTdvoKPzo6xrXLhTk9ixgIKcLH5b5vDOjVNiGyY+uDCUlg==}
+    peerDependencies:
+      monaco-editor: '>= 0.21.0 < 1'
+
+  '@monaco-editor/react@4.6.0':
+    resolution: {integrity: sha512-RFkU9/i7cN2bsq/iTkurMWOEErmYcY6JiQI3Jn+WeR/FGISH8JbHERjpS9oRuSOPvDMJI0Z8nJeKkbOs9sBYQw==}
+    peerDependencies:
+      monaco-editor: '>= 0.25.0 < 1'
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+
   '@motionone/animation@10.18.0':
     resolution: {integrity: sha512-9z2p5GFGCm0gBsZbi8rVMOAJCtw1WqBTIPw3ozk06gDvZInBPIsQcHgYogEJ4yuHJ+akuW8g1SEIOpTOvYs8hw==}
 
@@ -5458,6 +5522,9 @@ packages:
   '@types/openurl@1.0.0':
     resolution: {integrity: sha512-fUHH4T8FmEl3NBtGbUYYzMo1Ev47uVCVEGVjVNjorOMzgjls6zH82yr/zqkkcEOHY2HUC5PZ8dRFwGed/NR7wQ==}
 
+  '@types/pegjs@0.10.6':
+    resolution: {integrity: sha512-eLYXDbZWXh2uxf+w8sXS8d6KSoXTswfps6fvCUuVAGN8eRpfe7h9eSRydxiSJvo9Bf+GzifsDOr9TMQlmJdmkw==}
+
   '@types/prettier@2.7.2':
     resolution: {integrity: sha512-KufADq8uQqo1pYKVIYzfKbJfBAc0sOeXqGbFaSpv8MRmC/zXgowNZmFcbngndGk922QDmOASEXUZCaY48gs4cg==}
 
@@ -5970,8 +6037,14 @@ packages:
     resolution: {integrity: sha512-bN798gFfQX+viw3R7yrGWRqnrN2oRkEkUjjl4JNn4E8GxxbjtG3FbrEIIY3l8/hrwUwIeCZvi4QuOTP4MErVug==}
     engines: {node: '>=12'}
 
+  antlr4-c3@1.1.16:
+    resolution: {integrity: sha512-3CZQ54JPyo6lkZYDOXaKUsy5KNFucveocvRy+03R7zJQbYOUr4Z6lFeBWzkxJXLitc7yQYe7OHbB6snyp7IJvQ==}
+
   antlr4@4.7.1:
     resolution: {integrity: sha512-haHyTW7Y9joE5MVs37P2lNYfU2RWBLfcRDD8OWldcdZm5TiCE91B5Xl1oWSwiDUSd4rlExpt2pu1fksYQjRBYQ==}
+
+  antlr4ts-sql@1.1.0:
+    resolution: {integrity: sha512-94+8/+hsPI/OLG0WRGqW88/gqz+xxrSLSz/jGqS8Xl7tYWwUj/cBB4D/QRmNezYLqEaUzMHhTeQn5hzrpC2wNQ==}
 
   antlr4ts@0.5.0-alpha.4:
     resolution: {integrity: sha512-WPQDt1B74OfPv/IMS2ekXAKkTZIHl88uMetg6q3OTqgFxZ/dxDXI0EWLyZid/1Pe6hTftyg5N7gel5wNAGxXyQ==}
@@ -6212,6 +6285,10 @@ packages:
 
   better-sqlite3@8.6.0:
     resolution: {integrity: sha512-jwAudeiTMTSyby+/SfbHDebShbmC2MCH8mU2+DXi0WJfv13ypEJm47cd3kljmy/H130CazEvkf2Li//ewcMJ1g==}
+
+  big-integer@1.6.52:
+    resolution: {integrity: sha512-QxD8cf2eVqJOOz63z6JIN9BzvVs/dlySa5HGSBH5xtR8dPteIRQnBxxKqkNTiT6jbDTF6jAfrd4oMcND9RGbQg==}
+    engines: {node: '>=0.6'}
 
   binary-extensions@2.2.0:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}
@@ -9190,6 +9267,9 @@ packages:
   modern-ahocorasick@1.0.1:
     resolution: {integrity: sha512-yoe+JbhTClckZ67b2itRtistFKf8yPYelHLc7e5xAwtNAXxM6wJTUx2C7QeVSJFDzKT7bCIFyBVybPMKvmB9AA==}
 
+  monaco-editor@0.52.0:
+    resolution: {integrity: sha512-OeWhNpABLCeTqubfqLMXGsqf6OmPU6pHM85kF3dhy6kq5hnhuVS1p3VrEW/XhWHc71P2tHyS5JFySD8mgs1crw==}
+
   motion@10.16.2:
     resolution: {integrity: sha512-p+PurYqfUdcJZvtnmAqu5fJgV2kR0uLFQuBKtLeFVTrYEVllI99tiOTSefVNYuip9ELTEkepIIDftNdze76NAQ==}
 
@@ -9343,6 +9423,10 @@ packages:
 
   node-releases@2.0.18:
     resolution: {integrity: sha512-d9VeXT4SJ7ZeOqGX6R5EM022wpL+eWPooLI+5UpWn2jCT1aosUQEhQP214x33Wkwx3JQMvIm+tIoVOdodFS40g==}
+
+  node-sql-parser@5.3.3:
+    resolution: {integrity: sha512-KRVnneHhy5zaylFmtojHxpXqjmThFSOn7n6x1J/38gTE6NL5Wj/yY7hjbFqpYcpPwIpXM7sFDnvV3ejxmoPAJQ==}
+    engines: {node: '>=8'}
 
   node-stream-zip@1.15.0:
     resolution: {integrity: sha512-LN4fydt9TqhZhThkZIVQnF9cwjU3qmUH9h78Mx/K7d3VvfRqqwthLwJEUOEL0QPZ0XQmNN7be5Ggit5+4dq3Bw==}
@@ -10776,6 +10860,9 @@ packages:
   sprintf-js@1.0.3:
     resolution: {integrity: sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g==}
 
+  sql-autocomplete@1.1.1:
+    resolution: {integrity: sha512-0Fz1utcPC5m6qQiFDhIgyqNk8J0DyGBtv59++uUjkjM9vOdv6ugGuM+ZcjY0qyG9ofLmT6wLHSpx+2h6jm0t6Q==}
+
   sql.js@1.8.0:
     resolution: {integrity: sha512-3HD8pSkZL+5YvYUI8nlvNILs61ALqq34xgmF+BHpqxe68yZIJ1H+sIVIODvni25+CcxHUxDyrTJUL0lE/m7afw==}
 
@@ -10796,6 +10883,9 @@ packages:
   stacktrace-parser@0.1.10:
     resolution: {integrity: sha512-KJP1OCML99+8fhOHxwwzyWrlUuVX5GQ0ZpJTd1DFXhdkrvg1szxfHhawXUZ3g9TkXORQd4/WG68jMlQZ2p8wlg==}
     engines: {node: '>=6'}
+
+  state-local@1.0.7:
+    resolution: {integrity: sha512-HTEHMNieakEnoe33shBYcZ7NX83ACUjCu8c40iOGEZsngj9zRnkqS9j1pqQPXwobB0ZcVTk27REb7COQ0UR59w==}
 
   statuses@1.5.0:
     resolution: {integrity: sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==}
@@ -12322,7 +12412,7 @@ snapshots:
       '@smithy/util-middleware': 2.2.0
       '@smithy/util-retry': 2.2.0
       '@smithy/util-utf8': 2.3.0
-      tslib: 2.6.2
+      tslib: 2.7.0
     transitivePeerDependencies:
       - aws-crt
 
@@ -12334,7 +12424,7 @@ snapshots:
       '@smithy/smithy-client': 2.5.1
       '@smithy/types': 2.12.0
       fast-xml-parser: 4.2.5
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@aws-sdk/credential-provider-env@3.535.0':
     dependencies:
@@ -12385,7 +12475,7 @@ snapshots:
       '@smithy/property-provider': 2.2.0
       '@smithy/shared-ini-file-loader': 2.4.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
     transitivePeerDependencies:
       - aws-crt
 
@@ -12426,20 +12516,20 @@ snapshots:
       '@aws-sdk/types': 3.535.0
       '@smithy/protocol-http': 3.3.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@aws-sdk/middleware-logger@3.535.0':
     dependencies:
       '@aws-sdk/types': 3.535.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@aws-sdk/middleware-recursion-detection@3.535.0':
     dependencies:
       '@aws-sdk/types': 3.535.0
       '@smithy/protocol-http': 3.3.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@aws-sdk/middleware-user-agent@3.540.0':
     dependencies:
@@ -12447,7 +12537,7 @@ snapshots:
       '@aws-sdk/util-endpoints': 3.540.0
       '@smithy/protocol-http': 3.3.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@aws-sdk/region-config-resolver@3.535.0':
     dependencies:
@@ -12456,7 +12546,7 @@ snapshots:
       '@smithy/types': 2.12.0
       '@smithy/util-config-provider': 2.3.0
       '@smithy/util-middleware': 2.2.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@aws-sdk/token-providers@3.556.0(@aws-sdk/credential-provider-node@3.556.0)':
     dependencies:
@@ -12473,14 +12563,14 @@ snapshots:
   '@aws-sdk/types@3.535.0':
     dependencies:
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@aws-sdk/util-endpoints@3.540.0':
     dependencies:
       '@aws-sdk/types': 3.535.0
       '@smithy/types': 2.12.0
       '@smithy/util-endpoints': 1.2.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@aws-sdk/util-locate-window@3.535.0':
     dependencies:
@@ -12491,14 +12581,14 @@ snapshots:
       '@aws-sdk/types': 3.535.0
       '@smithy/types': 2.12.0
       bowser: 2.11.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@aws-sdk/util-user-agent-node@3.535.0':
     dependencies:
       '@aws-sdk/types': 3.535.0
       '@smithy/node-config-provider': 2.3.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@aws-sdk/util-utf8-browser@3.259.0':
     dependencies:
@@ -15038,14 +15128,14 @@ snapshots:
       '@jest/test-result': 29.5.0
       '@jest/transform': 29.5.0
       '@jest/types': 29.5.0
-      '@types/node': 18.15.11
+      '@types/node': 18.19.50
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       ci-info: 3.8.0
       exit: 0.1.2
       graceful-fs: 4.2.11
       jest-changed-files: 29.5.0
-      jest-config: 29.5.0(@types/node@18.15.11)
+      jest-config: 29.5.0(@types/node@18.19.50)
       jest-haste-map: 29.5.0
       jest-message-util: 29.5.0
       jest-regex-util: 29.4.3
@@ -15211,7 +15301,7 @@ snapshots:
       '@jest/schemas': 29.4.3
       '@types/istanbul-lib-coverage': 2.0.4
       '@types/istanbul-reports': 3.0.1
-      '@types/node': 18.15.11
+      '@types/node': 18.19.50
       '@types/yargs': 17.0.24
       chalk: 4.1.2
 
@@ -15548,6 +15638,18 @@ snapshots:
       resolve: 1.22.8
 
   '@microsoft/tsdoc@0.15.0': {}
+
+  '@monaco-editor/loader@1.4.0(monaco-editor@0.52.0)':
+    dependencies:
+      monaco-editor: 0.52.0
+      state-local: 1.0.7
+
+  '@monaco-editor/react@4.6.0(monaco-editor@0.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+    dependencies:
+      '@monaco-editor/loader': 1.4.0(monaco-editor@0.52.0)
+      monaco-editor: 0.52.0
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
 
   '@motionone/animation@10.18.0':
     dependencies:
@@ -17234,7 +17336,7 @@ snapshots:
       '@smithy/types': 2.12.0
       '@smithy/util-config-provider': 2.3.0
       '@smithy/util-middleware': 2.2.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/core@1.4.2':
     dependencies:
@@ -17245,7 +17347,7 @@ snapshots:
       '@smithy/smithy-client': 2.5.1
       '@smithy/types': 2.12.0
       '@smithy/util-middleware': 2.2.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/credential-provider-imds@2.3.0':
     dependencies:
@@ -17261,19 +17363,19 @@ snapshots:
       '@smithy/querystring-builder': 2.2.0
       '@smithy/types': 2.12.0
       '@smithy/util-base64': 2.3.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/hash-node@2.2.0':
     dependencies:
       '@smithy/types': 2.12.0
       '@smithy/util-buffer-from': 2.2.0
       '@smithy/util-utf8': 2.3.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/invalid-dependency@2.2.0':
     dependencies:
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/is-array-buffer@2.2.0':
     dependencies:
@@ -17283,7 +17385,7 @@ snapshots:
     dependencies:
       '@smithy/protocol-http': 3.3.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/middleware-endpoint@2.5.1':
     dependencies:
@@ -17293,7 +17395,7 @@ snapshots:
       '@smithy/types': 2.12.0
       '@smithy/url-parser': 2.2.0
       '@smithy/util-middleware': 2.2.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/middleware-retry@2.3.1':
     dependencies:
@@ -17304,25 +17406,25 @@ snapshots:
       '@smithy/types': 2.12.0
       '@smithy/util-middleware': 2.2.0
       '@smithy/util-retry': 2.2.0
-      tslib: 2.6.2
+      tslib: 2.7.0
       uuid: 9.0.1
 
   '@smithy/middleware-serde@2.3.0':
     dependencies:
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/middleware-stack@2.2.0':
     dependencies:
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/node-config-provider@2.3.0':
     dependencies:
       '@smithy/property-provider': 2.2.0
       '@smithy/shared-ini-file-loader': 2.4.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/node-http-handler@2.5.0':
     dependencies:
@@ -17330,7 +17432,7 @@ snapshots:
       '@smithy/protocol-http': 3.3.0
       '@smithy/querystring-builder': 2.2.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/property-provider@2.2.0':
     dependencies:
@@ -17340,7 +17442,7 @@ snapshots:
   '@smithy/protocol-http@3.3.0':
     dependencies:
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/querystring-builder@2.2.0':
     dependencies:
@@ -17379,31 +17481,31 @@ snapshots:
       '@smithy/protocol-http': 3.3.0
       '@smithy/types': 2.12.0
       '@smithy/util-stream': 2.2.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/types@2.12.0':
     dependencies:
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/url-parser@2.2.0':
     dependencies:
       '@smithy/querystring-parser': 2.2.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/util-base64@2.3.0':
     dependencies:
       '@smithy/util-buffer-from': 2.2.0
       '@smithy/util-utf8': 2.3.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/util-body-length-browser@2.2.0':
     dependencies:
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/util-body-length-node@2.3.0':
     dependencies:
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/util-buffer-from@2.2.0':
     dependencies:
@@ -17420,7 +17522,7 @@ snapshots:
       '@smithy/smithy-client': 2.5.1
       '@smithy/types': 2.12.0
       bowser: 2.11.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/util-defaults-mode-node@2.3.1':
     dependencies:
@@ -17430,13 +17532,13 @@ snapshots:
       '@smithy/property-provider': 2.2.0
       '@smithy/smithy-client': 2.5.1
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/util-endpoints@1.2.0':
     dependencies:
       '@smithy/node-config-provider': 2.3.0
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/util-hex-encoding@2.2.0':
     dependencies:
@@ -17445,13 +17547,13 @@ snapshots:
   '@smithy/util-middleware@2.2.0':
     dependencies:
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/util-retry@2.2.0':
     dependencies:
       '@smithy/service-error-classification': 2.1.5
       '@smithy/types': 2.12.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@smithy/util-stream@2.2.0':
     dependencies:
@@ -17471,7 +17573,7 @@ snapshots:
   '@smithy/util-utf8@2.3.0':
     dependencies:
       '@smithy/util-buffer-from': 2.2.0
-      tslib: 2.6.2
+      tslib: 2.7.0
 
   '@snyk/github-codeowners@1.1.0':
     dependencies:
@@ -17714,7 +17816,7 @@ snapshots:
       '@types/connect': 3.4.38
       '@types/express': 4.17.21
       '@types/keygrip': 1.0.6
-      '@types/node': 18.15.11
+      '@types/node': 18.19.50
 
   '@types/debug@4.1.7':
     dependencies:
@@ -17834,6 +17936,8 @@ snapshots:
   '@types/openurl@1.0.0':
     dependencies:
       '@types/node': 18.15.11
+
+  '@types/pegjs@0.10.6': {}
 
   '@types/prettier@2.7.2': {}
 
@@ -18741,7 +18845,15 @@ snapshots:
 
   ansi-styles@6.2.1: {}
 
+  antlr4-c3@1.1.16:
+    dependencies:
+      antlr4ts: 0.5.0-alpha.4
+
   antlr4@4.7.1: {}
+
+  antlr4ts-sql@1.1.0:
+    dependencies:
+      antlr4ts: 0.5.0-alpha.4
 
   antlr4ts@0.5.0-alpha.4: {}
 
@@ -19119,6 +19231,8 @@ snapshots:
     dependencies:
       bindings: 1.5.0
       prebuild-install: 7.1.1
+
+  big-integer@1.6.52: {}
 
   binary-extensions@2.2.0: {}
 
@@ -21730,7 +21844,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  jest-cli@29.5.0(@types/node@18.15.11):
+  jest-cli@29.5.0(@types/node@18.19.50):
     dependencies:
       '@jest/core': 29.5.0
       '@jest/test-result': 29.5.0
@@ -21739,7 +21853,7 @@ snapshots:
       exit: 0.1.2
       graceful-fs: 4.2.11
       import-local: 3.1.0
-      jest-config: 29.5.0(@types/node@18.15.11)
+      jest-config: 29.5.0(@types/node@18.19.50)
       jest-util: 29.7.0
       jest-validate: 29.5.0
       prompts: 2.4.2
@@ -21768,7 +21882,7 @@ snapshots:
       - supports-color
       - ts-node
 
-  jest-config@29.5.0(@types/node@18.15.11):
+  jest-config@29.5.0(@types/node@18.19.50):
     dependencies:
       '@babel/core': 7.25.2
       '@jest/test-sequencer': 29.5.0
@@ -21793,7 +21907,7 @@ snapshots:
       slash: 3.0.0
       strip-json-comments: 3.1.1
     optionalDependencies:
-      '@types/node': 18.15.11
+      '@types/node': 18.19.50
     transitivePeerDependencies:
       - supports-color
 
@@ -22105,12 +22219,12 @@ snapshots:
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
-  jest@29.5.0(@types/node@18.15.11):
+  jest@29.5.0(@types/node@18.19.50):
     dependencies:
       '@jest/core': 29.5.0
       '@jest/types': 29.5.0
       import-local: 3.1.0
-      jest-cli: 29.5.0(@types/node@18.15.11)
+      jest-cli: 29.5.0(@types/node@18.19.50)
     transitivePeerDependencies:
       - '@types/node'
       - supports-color
@@ -22954,6 +23068,8 @@ snapshots:
 
   modern-ahocorasick@1.0.1: {}
 
+  monaco-editor@0.52.0: {}
+
   motion@10.16.2:
     dependencies:
       '@motionone/animation': 10.18.0
@@ -23006,7 +23122,7 @@ snapshots:
       '@next/env': 14.2.5
       '@swc/helpers': 0.5.5
       busboy: 1.6.0
-      caniuse-lite: 1.0.30001609
+      caniuse-lite: 1.0.30001667
       graceful-fs: 4.2.11
       postcss: 8.4.31
       react: 18.2.0
@@ -23091,6 +23207,11 @@ snapshots:
   node-releases@2.0.14: {}
 
   node-releases@2.0.18: {}
+
+  node-sql-parser@5.3.3:
+    dependencies:
+      '@types/pegjs': 0.10.6
+      big-integer: 1.6.52
 
   node-stream-zip@1.15.0: {}
 
@@ -24641,6 +24762,11 @@ snapshots:
 
   sprintf-js@1.0.3: {}
 
+  sql-autocomplete@1.1.1:
+    dependencies:
+      antlr4-c3: 1.1.16
+      antlr4ts-sql: 1.1.0
+
   sql.js@1.8.0: {}
 
   ssri@9.0.1:
@@ -24658,6 +24784,8 @@ snapshots:
   stacktrace-parser@0.1.10:
     dependencies:
       type-fest: 0.7.1
+
+  state-local@1.0.7: {}
 
   statuses@1.5.0: {}
 
@@ -25116,11 +25244,11 @@ snapshots:
 
   ts-interface-checker@0.1.13: {}
 
-  ts-jest@29.0.5(@babel/core@7.25.2)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.25.2))(jest@29.5.0(@types/node@18.15.11))(typescript@5.4.2):
+  ts-jest@29.0.5(@babel/core@7.25.2)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.25.2))(jest@29.5.0(@types/node@18.19.50))(typescript@5.4.2):
     dependencies:
       bs-logger: 0.2.6
       fast-json-stable-stringify: 2.1.0
-      jest: 29.5.0(@types/node@18.15.11)
+      jest: 29.5.0(@types/node@18.19.50)
       jest-util: 29.7.0
       json5: 2.2.3
       lodash.memoize: 4.1.2
@@ -25523,7 +25651,7 @@ snapshots:
       debug: 4.3.7
       mlly: 1.7.1
       pathe: 1.1.2
-      picocolors: 1.0.1
+      picocolors: 1.1.0
       vite: 4.5.5(@types/node@18.19.50)(terser@5.34.1)
     transitivePeerDependencies:
       - '@types/node'
@@ -25633,7 +25761,7 @@ snapshots:
       local-pkg: 0.4.3
       magic-string: 0.30.11
       pathe: 1.1.2
-      picocolors: 1.0.1
+      picocolors: 1.1.0
       std-env: 3.7.0
       strip-literal: 1.3.0
       tinybench: 2.9.0

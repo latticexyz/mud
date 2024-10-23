@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "paths": {
-      "@latticexyz/abi-ts": ["./packages/abi-ts/src/index.ts"],
+      "@latticexyz/abi-ts/internal": ["./packages/abi-ts/src/exports/internal.ts"],
       "@latticexyz/block-logs-stream": ["./packages/block-logs-stream/src/index.ts"],
       "@latticexyz/cli": ["./packages/cli/src/index.ts"],
       "@latticexyz/common": ["./packages/common/src/index.ts"],
@@ -20,7 +20,7 @@
       "@latticexyz/entrykit": ["./packages/entrykit/src/exports/index.ts"],
       "@latticexyz/entrykit/internal": ["./packages/entrykit/src/exports/internal.ts"],
       "@latticexyz/explorer/observer": ["./packages/explorer/src/exports/observer.ts"],
-      "@latticexyz/gas-report": ["./packages/gas-report/ts/index.ts"],
+      "@latticexyz/gas-report/internal": ["./packages/gas-report/ts/exports/internal.ts"],
       "@latticexyz/protocol-parser": ["./packages/protocol-parser/src/index.ts"],
       "@latticexyz/protocol-parser/*": ["./packages/protocol-parser/src/exports/*.ts"],
       "@latticexyz/react": ["./packages/react/src/index.ts"],

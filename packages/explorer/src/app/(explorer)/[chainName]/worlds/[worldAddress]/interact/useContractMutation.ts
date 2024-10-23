@@ -8,11 +8,12 @@ import { useChain } from "../../../../hooks/useChain";
 import { FunctionType } from "./FunctionField";
 
 type UseContractMutationProps = {
-  abi: AbiFunction;
+  worldAbi: Abi;
+  functionAbi: AbiFunction;
   operationType: FunctionType;
 };
 
-export function useContractMutation({ abi, operationType }: UseContractMutationProps) {
+export function useContractMutation({ worldAbi, functionAbi, operationType }: UseContractMutationProps) {
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
   const queryClient = useQueryClient();
@@ -23,9 +24,9 @@ export function useContractMutation({ abi, operationType }: UseContractMutationP
     mutationFn: async ({ inputs, value }: { inputs: unknown[]; value?: string }) => {
       if (operationType === FunctionType.READ) {
         const result = await readContract(wagmiConfig, {
-          abi: [abi] as Abi,
+          abi: worldAbi,
           address: worldAddress as Hex,
-          functionName: abi.name,
+          functionName: functionAbi.name,
           args: inputs,
           chainId,
         });
@@ -33,9 +34,9 @@ export function useContractMutation({ abi, operationType }: UseContractMutationP
         return { result };
       } else {
         const txHash = await writeContract(wagmiConfig, {
-          abi: [abi] as Abi,
+          abi: worldAbi,
           address: worldAddress as Hex,
-          functionName: abi.name,
+          functionName: functionAbi.name,
           args: inputs,
           ...(value && { value: BigInt(value) }),
           chainId,
