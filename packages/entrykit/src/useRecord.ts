@@ -10,6 +10,7 @@ import {
   getValueSchema,
 } from "@latticexyz/protocol-parser/internal";
 import { Hex } from "viem";
+import { show } from "@ark/util";
 
 // TODO: move to our own useQuery so we can control the query key
 
@@ -26,8 +27,8 @@ export function useRecord<table extends Table>({
 }): UseReadContractReturnType<
   typeof IStoreReadAbi,
   "getRecord",
-  [Hex, readonly Hex[]],
-  getSchemaPrimitives<table["schema"]>
+  readonly [Hex, readonly Hex[]],
+  show<getSchemaPrimitives<table["schema"]>>
 > {
   return useReadContract(
     table && key && opts.query?.enabled !== false
