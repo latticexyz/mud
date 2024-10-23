@@ -10,7 +10,7 @@ import { useMonacoErrorMarker } from "./useMonacoErrorMarker";
 
 const sqlParser = new Parser();
 
-function findErrorPosition(query: string, erroredQueryStr: string) {
+function findErrorPosition(query: string, target: string) {
   const lines = query.split("\n");
   let startLineNumber = 1;
   let startColumn = 1;
