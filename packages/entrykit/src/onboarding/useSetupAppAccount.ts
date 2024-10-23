@@ -6,6 +6,8 @@ import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { ConnectedClient, unlimitedDelegationControlId, worldAbi } from "../common";
 import { paymasterAbi } from "../paymaster";
 import { writeContract } from "viem/actions";
+import { getSpenderQueryKey } from "./useSpender";
+import { getDelegationQueryKey } from "./useDelegation";
 
 function defineCall<abi extends Abi | readonly unknown[]>(
   call: Omit<ContractFunctionParameters<abi>, "address"> & {
@@ -98,6 +100,30 @@ export function useSetupAppAccount() {
       console.log("got user op receipt", receipt);
 
       await queryClient.invalidateQueries({ queryKey: ["readContract"] });
+
+      // TODO: throw if revert?
+      // TODO: add success boolean to wiresaw return value
+      // if (!receipt.success) return;
+
+      if (registerSpender) {
+        const queryKey = getSpenderQueryKey({
+          client: userClient,
+          paymasterAddress,
+          userAddress: userClient.account.address,
+          appAccountAddress,
+        });
+        queryClient.setQueryData(queryKey, true);
+      }
+
+      if (registerDelegation) {
+        const queryKey = getDelegationQueryKey({
+          client: userClient,
+          worldAddress,
+          userAddress: userClient.account.address,
+          appAccountAddress,
+        });
+        queryClient.setQueryData(queryKey, true);
+      }
     },
   });
 }

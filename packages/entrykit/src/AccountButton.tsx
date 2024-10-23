@@ -25,7 +25,6 @@ export function AccountButton() {
   const { openAccountModal, accountModalOpen } = useAccountModal();
   const { status, address } = useAccount();
 
-  // load prepared app account client to preload its state
   // TODO: use this to show indicator when onboarding is not complete
   usePreparedAppAccountClient();
 
