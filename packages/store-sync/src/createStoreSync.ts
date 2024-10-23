@@ -29,6 +29,7 @@ import {
   mergeMap,
   throwError,
   mergeWith,
+  EMPTY,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
@@ -239,6 +240,7 @@ export async function createStoreSync({
           return fromEventSource<string>(url);
         }),
         map((messageEvent) => {
+          console.log("got message event", messageEvent);
           const data = JSON.parse(messageEvent.data);
           if (!isLogsApiResponse(data)) {
             throw new Error("Received unexpected from indexer:" + messageEvent.data);
@@ -283,9 +285,14 @@ export async function createStoreSync({
       debug("falling back to streaming logs from ETH RPC");
       return storedEthRpcLogs$;
     }),
+    // subscribe to `latestBlockNumber$` so the sync progress is updated
+    // but don't merge/emit anything
+    mergeWith(latestBlockNumber$.pipe(mergeMap(() => EMPTY))),
     tap(async ({ logs, blockNumber }) => {
       debug("stored", logs.length, "logs for block", blockNumber);
       lastBlockNumberProcessed = blockNumber;
+
+      console.log({ caughtUp, startBlock, latestBlockNumber });
 
       if (!caughtUp && startBlock != null && latestBlockNumber != null) {
         if (lastBlockNumberProcessed < latestBlockNumber) {
