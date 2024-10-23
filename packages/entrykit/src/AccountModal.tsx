@@ -16,7 +16,7 @@ export function AccountModal() {
       {accountModalOpen ? (
         <div
           className={twMerge(
-            "relative flex flex-col min-h-[28rem] ring-1 py-2",
+            "relative flex flex-col h-0 min-h-[28rem] ring-1 py-2",
             "bg-neutral-900 text-neutral-400 ring-neutral-700/50 divide-neutral-700",
             "links:font-medium links:underline links:underline-offset-4",
             "links:text-white",
