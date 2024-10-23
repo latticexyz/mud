@@ -4,6 +4,7 @@ export * from "../flattenStoreLogs";
 
 export * from "../config/v2/input";
 export * from "../config/v2/output";
+export * from "../config/v2/store";
 export * from "../config/v2/generics";
 export * from "../config/v2/defaults";
 export * from "../config/v2/table";
