@@ -16,18 +16,16 @@ export function AccountModal() {
       {accountModalOpen ? (
         <div
           className={twMerge(
-            "relative flex flex-col h-0 min-h-[28rem] ring-1 py-2",
+            "relative py-2 ring-1",
             "bg-neutral-900 text-neutral-400 ring-neutral-700/50 divide-neutral-700",
             "links:font-medium links:underline links:underline-offset-4",
             "links:text-white",
             "links:decoration-neutral-500 hover:links:decoration-orange-500",
           )}
         >
-          <div className="flex-grow flex flex-col">
-            <AccountModalErrorBoundary>
-              <AccountModalContent />
-            </AccountModalErrorBoundary>
-          </div>
+          <AccountModalErrorBoundary>
+            <AccountModalContent />
+          </AccountModalErrorBoundary>
 
           <a
             href="https://mud.dev"

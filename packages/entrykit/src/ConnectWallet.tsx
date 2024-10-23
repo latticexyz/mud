@@ -57,27 +57,22 @@ export function ConnectWallet() {
 
   return (
     <div
-      className={twMerge(
-        "flex-grow grid place-items-center p-6",
-        "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
-      )}
+      className={twMerge("flex flex-col gap-6 p-6", "animate-in animate-duration-300 fade-in slide-in-from-bottom-8")}
     >
-      <div className="flex flex-col gap-6">
-        <div className="p-4">
-          {/* TODO: render appImage if available? */}
-          <AppInfo />
-        </div>
-        <div className="self-center flex flex-col gap-2 w-60">
-          {buttons}
-          <button
-            className="text-sm self-center transition text-neutral-500 hover:text-white p-2"
-            disabled={userAccount.status === "connecting"}
-            // TODO: figure out how to prevent this from switching chains after connecting
-            onClick={openConnectModal}
-          >
-            Already have a wallet?
-          </button>
-        </div>
+      <div className="p-4">
+        {/* TODO: render appImage if available? */}
+        <AppInfo />
+      </div>
+      <div className="self-center flex flex-col gap-2 w-60">
+        {buttons}
+        <button
+          className="text-sm self-center transition text-neutral-500 hover:text-white p-2"
+          disabled={userAccount.status === "connecting"}
+          // TODO: figure out how to prevent this from switching chains after connecting
+          onClick={openConnectModal}
+        >
+          Already have a wallet?
+        </button>
       </div>
     </div>
   );

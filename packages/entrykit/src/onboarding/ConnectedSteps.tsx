@@ -24,7 +24,7 @@ export function ConnectedSteps({ userClient }: Props) {
   return (
     <div
       className={twMerge(
-        "px-8 flex-grow flex flex-col divide-y divide-neutral-800",
+        "min-h-[26rem] px-8 flex flex-col divide-y divide-neutral-800",
         "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
       )}
     >
