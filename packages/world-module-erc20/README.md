@@ -92,7 +92,7 @@ In your MUD config:
 
 ```typescript
 import { defineWorld } from "@latticexyz/world";
-import { defineERC20Config } from "@latticexyz/world-module-erc20";
+import { defineERC20Module } from "@latticexyz/world-module-erc20/internal";
 
 export default defineWorld({
   namespace: "app",
@@ -105,7 +105,7 @@ export default defineWorld({
     },
   },
   modules: [
-    defineERC20Config({
+    defineERC20Module({
       namespace: "erc20Namespace",
       name: "MyToken",
       symbol: "MTK",
