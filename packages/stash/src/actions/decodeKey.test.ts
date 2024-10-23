@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 import { createStash } from "../createStash";
-import { defineStore } from "@latticexyz/store/config/v2";
+import { defineStore } from "@latticexyz/store";
 import { setRecord } from "./setRecord";
 import { encodeKey } from "./encodeKey";
 import { attest } from "@ark/attest";
