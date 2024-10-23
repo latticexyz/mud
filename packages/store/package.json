@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store",
-  "version": "2.2.11",
+  "version": "2.2.12",
   "description": "Store",
   "repository": {
     "type": "git",
@@ -55,7 +55,7 @@
     "dev": "tsup --watch",
     "gas-report": "gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
-    "test": "vitest --run --passWithNoTests --no-file-parallelism && forge test",
+    "test": "vitest --run && forge test",
     "test:ci": "pnpm run test"
   },
   "dependencies": {
