@@ -1,5 +1,19 @@
 # @latticexyz/dev-tools
 
+## 2.2.13
+
+### Patch Changes
+
+- Updated dependencies [dfc2d64]
+  - @latticexyz/store-sync@2.2.13
+  - @latticexyz/schema-type@2.2.13
+  - @latticexyz/store@2.2.13
+  - @latticexyz/world@2.2.13
+  - @latticexyz/common@2.2.13
+  - @latticexyz/react@2.2.13
+  - @latticexyz/recs@2.2.13
+  - @latticexyz/utils@2.2.13
+
 ## 2.2.12
 
 ### Patch Changes
