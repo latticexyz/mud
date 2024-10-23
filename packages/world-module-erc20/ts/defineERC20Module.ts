@@ -1,5 +1,5 @@
 import { encodeAbiParameters, stringToHex } from "viem";
-import { ModuleInput } from "@latticexyz/world/config/v2";
+import { ModuleInput } from "@latticexyz/world/internal";
 
 export type DefineERC20ModuleInput = {
   namespace: string;
