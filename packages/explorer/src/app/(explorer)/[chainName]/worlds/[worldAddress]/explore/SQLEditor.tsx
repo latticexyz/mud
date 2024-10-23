@@ -79,13 +79,8 @@ export function SQLEditor({ table }: Props) {
 
                   updateHeight();
                   editor.onDidContentSizeChange(updateHeight);
-
-                  editor.onDidFocusEditorText(() => {
-                    setIsFocused(true);
-                  });
-                  editor.onDidBlurEditorText(() => {
-                    setIsFocused(false);
-                  });
+                  editor.onDidFocusEditorText(() => setIsFocused(true));
+                  editor.onDidBlurEditorText(() => setIsFocused(false));
                 }}
                 loading={null}
               />
