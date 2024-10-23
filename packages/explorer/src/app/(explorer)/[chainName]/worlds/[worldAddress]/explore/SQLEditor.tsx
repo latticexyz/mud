@@ -1,6 +1,7 @@
 "use client";
 
 import { PlayIcon } from "lucide-react";
+import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -18,7 +19,7 @@ type Props = {
 };
 
 export function SQLEditor({ table }: Props) {
-  const editorRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
@@ -73,7 +74,7 @@ export function SQLEditor({ table }: Props) {
                 value={decodeURIComponent(field.value)}
                 options={monacoOptions}
                 language="sql"
-                onChange={(value) => field.onChange(encodeURIComponent(value))}
+                onChange={(value) => field.onChange(encodeURIComponent(value ?? ""))}
                 onMount={(editor) => {
                   editorRef.current = editor;
 
