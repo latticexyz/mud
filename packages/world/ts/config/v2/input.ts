@@ -1,4 +1,4 @@
-import { StoreInput, NamespaceInput as StoreNamespaceInput } from "@latticexyz/store/config/v2";
+import { StoreInput, NamespaceInput as StoreNamespaceInput } from "@latticexyz/store/internal";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
 import { Codegen, SystemDeploy } from "./output";
 

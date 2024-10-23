@@ -1,6 +1,6 @@
-import { CollapseCode } from "../../../components/CollapseCode";
+import { CollapseCode } from "../../components/CollapseCode";
 
-# Extending a World Permissionlessly
+# Extending a World
 
 On this page you learn how to modify a `World` that is already deployed to the blockchain, without using a privileged address, such as the one that initially deployed it.
 If you want to learn how to modify a `World` before it is deployed, [see the hello world page](../hello-world).
@@ -660,7 +660,7 @@ We will fix these problems now.
 1. Now you can click **Increment** in the user interface and create messages.
    The user interface does not display those messages, but you can open the **MUD Dev Tools**, click the **Components** tab, and select **messagings\_\_Messages** to view them.
 
-   ![The extended UI with the messages shown in the MUD Dev Tools](./extend-ui-with-msgs.png)
+   ![The extended UI with the messages shown in the MUD Dev Tools](./extending-a-world/extend-ui-with-msgs.png)
 
 ### Read the counter
 
@@ -696,7 +696,7 @@ We will now fix this.
 
    <CollapseCode>
 
-   ```ts filename="setupNetwork.ts" copy showLineNumbers {24-25,38,96}
+   ```ts filename="setupNetwork.ts" copy showLineNumbers {34,92}
    /*
     * The MUD client code is built on top of viem
     * (https://viem.sh/docs/getting-started.html).
@@ -719,10 +719,6 @@ We will now fix this.
    import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
    import { createBurnerAccount, transportObserver, ContractWrite } from "@latticexyz/common";
    import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
-
-   import { resolveConfig } from "@latticexyz/store/internal";
-   import { storeToV1 } from "@latticexyz/store/config/v2";
-
    import { Subject, share } from "rxjs";
 
    /*
@@ -792,7 +788,7 @@ We will now fix this.
        address: networkConfig.worldAddress as Hex,
        publicClient,
        startBlock: BigInt(networkConfig.initialBlockNumber),
-       tables: resolveConfig(storeToV1(counterConfig)).tables,
+       tables: counterConfig.tables,
      });
 
      return {

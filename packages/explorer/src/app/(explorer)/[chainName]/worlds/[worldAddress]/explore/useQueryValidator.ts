@@ -17,19 +17,19 @@ function findErrorPosition(query: string, target: string) {
   let currentPosition = 0;
 
   for (let i = 0; i < lines.length; i++) {
-    if (currentPosition + lines[i].length >= query.indexOf(erroredQueryStr)) {
+    if (currentPosition + lines[i].length >= query.indexOf(target)) {
       startLineNumber = i + 1;
-      startColumn = query.indexOf(erroredQueryStr) - currentPosition + 1;
+      startColumn = query.indexOf(target) - currentPosition + 1;
       break;
     }
-    currentPosition += lines[i].length + 1; // +1 for newline character
+    currentPosition += lines[i].length + 1;
   }
 
   return {
     startLineNumber,
     endLineNumber: startLineNumber,
     startColumn,
-    endColumn: startColumn + erroredQueryStr.length,
+    endColumn: startColumn + target.length,
   };
 }
 

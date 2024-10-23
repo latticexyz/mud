@@ -14,7 +14,6 @@
     "./internal": "./dist/internal.js",
     "./mud.config": "./dist/mud.config.js",
     "./codegen": "./dist/codegen.js",
-    "./config/v2": "./dist/config/v2.js",
     "./out/*": "./out/*"
   },
   "typesVersions": {
@@ -30,9 +29,6 @@
       ],
       "codegen": [
         "./dist/codegen.d.ts"
-      ],
-      "config/v2": [
-        "./dist/config/v2.d.ts"
       ]
     }
   },
@@ -55,7 +51,7 @@
     "dev": "tsup --watch",
     "gas-report": "gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
-    "test": "vitest --run --passWithNoTests --no-file-parallelism && forge test",
+    "test": "vitest --run && forge test",
     "test:ci": "pnpm run test"
   },
   "dependencies": {

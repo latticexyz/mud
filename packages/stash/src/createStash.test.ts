@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { attest } from "@ark/attest";
 import { CreateStashResult, createStash } from "./createStash";
-import { defineStore, defineTable } from "@latticexyz/store/config/v2";
+import { defineStore } from "@latticexyz/store";
+import { defineTable } from "@latticexyz/store/internal";
 import { Hex } from "viem";
 
 describe("createStash", () => {

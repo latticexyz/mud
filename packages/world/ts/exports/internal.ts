@@ -11,3 +11,4 @@ export * from "../getFunctions";
 export * from "../getWorldAbi";
 
 export { resolveTableId, resolveWithContext } from "../config/v2/dynamicResolution";
+export { ModuleInput } from "../config/v2/input";

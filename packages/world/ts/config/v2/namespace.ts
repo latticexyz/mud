@@ -5,7 +5,7 @@ import {
   resolveNamespace as resolveStoreNamespace,
   Scope,
   AbiTypeScope,
-} from "@latticexyz/store/config/v2";
+} from "@latticexyz/store/internal";
 import { resolveSystems, validateSystems } from "./systems";
 import { show } from "@ark/util";
 

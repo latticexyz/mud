@@ -1,7 +1,7 @@
 import { MutableState, Stash, StoreConfig, StoreSubscribers, TableSubscribers } from "./common";
 import { DefaultActions, defaultActions } from "./decorators/defaultActions";
 import { extend } from "./actions/extend";
-import { Table } from "@latticexyz/store/config/v2";
+import { Table } from "@latticexyz/store/internal";
 
 export type Config = StoreConfig;
 

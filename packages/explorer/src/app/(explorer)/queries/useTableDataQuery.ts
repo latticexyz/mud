@@ -19,7 +19,7 @@ export type TableData = {
 export function useTableDataQuery({ table, query }: Props) {
   const { chainName, worldAddress } = useParams();
   const { id: chainId } = useChain();
-  const decodedQuery = decodeURIComponent(query);
+  const decodedQuery = decodeURIComponent(query ?? "");
 
   return useQuery<DozerResponse, Error, TableData | undefined>({
     queryKey: ["tableData", chainName, worldAddress, decodedQuery],

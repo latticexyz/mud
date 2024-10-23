@@ -1,5 +1,5 @@
 import { Store } from "@latticexyz/store";
-import { Namespace as StoreNamespace } from "@latticexyz/store/config/v2";
+import { Namespace as StoreNamespace } from "@latticexyz/store/internal";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
 import { Hex } from "viem";
 
