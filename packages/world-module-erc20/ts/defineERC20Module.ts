@@ -1,12 +1,13 @@
 import { encodeAbiParameters, stringToHex } from "viem";
+import { ModuleInput } from "@latticexyz/world/internal";
 
-export type DefineERC20ConfigInput = {
+export type DefineERC20ModuleInput = {
   namespace: string;
   name: string;
   symbol: string;
 };
 
-export function defineERC20Config({ namespace, name, symbol }: DefineERC20ConfigInput) {
+export function defineERC20Module({ namespace, name, symbol }: DefineERC20ModuleInput): ModuleInput {
   const erc20ModuleArgs = encodeAbiParameters(
     [{ type: "bytes14" }, { type: "string" }, { type: "string" }],
     [stringToHex(namespace, { size: 14 }), name, symbol],

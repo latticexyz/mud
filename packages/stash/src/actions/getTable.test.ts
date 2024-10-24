@@ -1,5 +1,5 @@
 import { attest } from "@ark/attest";
-import { defineTable } from "@latticexyz/store/config/v2";
+import { defineTable } from "@latticexyz/store/internal";
 import { describe, it, expect, vi } from "vitest";
 import { createStash } from "../createStash";
 import { getTable } from "./getTable";

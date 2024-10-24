@@ -1,13 +1,10 @@
 import { useParams } from "next/navigation";
-import { AST, Parser } from "node-sql-parser";
 import { Hex } from "viem";
 import { Table } from "@latticexyz/config";
 import { useQuery } from "@tanstack/react-query";
 import { useChain } from "../hooks/useChain";
 import { DozerResponse } from "../types";
 import { indexerForChainId } from "../utils/indexerForChainId";
-
-const parser = new Parser();
 
 type Props = {
   table: Table | undefined;
@@ -22,28 +19,12 @@ export type TableData = {
 export function useTableDataQuery({ table, query }: Props) {
   const { chainName, worldAddress } = useParams();
   const { id: chainId } = useChain();
+  const decodedQuery = decodeURIComponent(query ?? "");
 
   return useQuery<DozerResponse, Error, TableData | undefined>({
-    queryKey: ["tableData", chainName, worldAddress, query],
+    queryKey: ["tableData", chainName, worldAddress, decodedQuery],
     queryFn: async () => {
       const indexer = indexerForChainId(chainId);
-      const ast = parser.astify(query ?? "") as AST;
-      let formattedQuery = parser.sqlify(ast, {
-        database: "Postgresql",
-        parseOptions: {
-          includeLocations: false,
-        },
-      });
-
-      // remove double quotes from table names, required for Dozer
-      if ("from" in ast && Array.isArray(ast.from)) {
-        for (const tableInfo of ast.from) {
-          if ("table" in tableInfo) {
-            formattedQuery = formattedQuery.replace(new RegExp(`"${tableInfo.table}"`, "g"), tableInfo.table);
-          }
-        }
-      }
-
       const response = await fetch(indexer.url, {
         method: "POST",
         headers: {
@@ -52,7 +33,7 @@ export function useTableDataQuery({ table, query }: Props) {
         body: JSON.stringify([
           {
             address: worldAddress as Hex,
-            query: formattedQuery,
+            query: decodedQuery,
           },
         ]),
       });
