@@ -1,29 +1,35 @@
 import type { CommandModule } from "yargs";
 import { readFileSync, writeFileSync } from "fs";
+import path from "path";
 import { globSync } from "glob";
 import { debug } from "./debug";
 
 type Options = {
   input: string;
-  output: string;
+  extension: string;
 };
 
-const commandModule: CommandModule<Options, Options> = {
+export const command: CommandModule<Options, Options> = {
   command: "abi-ts",
 
-  describe: "Convert a directory of JSON ABI files to a directory of TS files with `as const`",
+  describe: "Convert a directory of JSON ABI files to a directory of TS or DTS files with `as const`.",
 
   builder(yargs) {
     return yargs.options({
       input: {
         type: "string",
-        desc: "Input glob of ABI JSON files",
+        desc: "Input glob of ABI JSON files.",
         default: "**/*.abi.json",
+      },
+      extension: {
+        type: "string",
+        desc: "Extension of the resulting ABI TS or DTS file.",
+        default: ".json.d.ts",
       },
     });
   },
 
-  handler({ input }) {
+  handler({ input, extension: tsExtension }) {
     const files = globSync(input).sort();
 
     if (!files.length) {
@@ -38,8 +44,12 @@ const commandModule: CommandModule<Options, Options> = {
         continue;
       }
 
-      const ts = `declare const abi: ${json}; export default abi;\n`;
-      const tsFilename = `${jsonFilename}.d.ts`;
+      const jsonExtension = path.extname(jsonFilename);
+      const tsFilename = `${jsonFilename.substring(0, jsonFilename.lastIndexOf(jsonExtension))}${tsExtension}`;
+
+      const ts = tsExtension.includes(".d.")
+        ? `declare const abi: ${json};\n\nexport default abi;\n`
+        : `const abi = ${json};\n\nexport default abi;\n`;
 
       debug("Writing", tsFilename);
       writeFileSync(tsFilename, ts);
@@ -48,5 +58,3 @@ const commandModule: CommandModule<Options, Options> = {
     process.exit(0);
   },
 };
-
-export default commandModule;

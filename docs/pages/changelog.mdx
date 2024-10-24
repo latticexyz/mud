@@ -1,3 +1,42 @@
+## Version 2.2.13
+
+Release date: Wed Oct 23 2024
+
+### Patch changes
+
+**[fix(gas-report): include contract name in file of output (#3317)](https://github.com/latticexyz/mud/commit/d5c270023abc325f25af868d3db1a0bdc3e62d6d)** (@latticexyz/gas-report)
+
+Gas report output now include contract name as part of the `file` to help with stable ordering when sorting output.
+
+**[chore(world-module-erc20): export erc20 module from internal (#3319)](https://github.com/latticexyz/mud/commit/90803770ee72bfd2b9ba9a7990285d1c5866f362)** (@latticexyz/world-module-erc20)
+
+The new ERC20 World Module provides a simpler alternative to the ERC20 Puppet Module, while also being structured in a more extendable way so users can create tokens with custom functionality.
+
+To install this module, you can import and define the module configuration from the NPM package:
+
+```typescript
+import { defineERC20Module } from "@latticexyz/world-module-erc20/internal";
+
+// Add the output of this function to your World's modules
+const erc20Module = defineERC20Module({ namespace: "erc20Namespace", name: "MyToken", symbol: "MTK" });
+```
+
+For detailed installation instructions, please check out the [`@latticexyz/world-module-erc20` README.md](https://github.com/latticexyz/mud/blob/main/packages/world-module-erc20/README.md).
+
+**[feat(explorer): multi-line sql editor (#3311)](https://github.com/latticexyz/mud/commit/79d273a20b3dd50ab733b3261b830b0ef47bcebf)** (@latticexyz/explorer)
+
+The SQL query editor now supports multi-line input.
+
+**[feat(abi-ts): extension option (#3315)](https://github.com/latticexyz/mud/commit/75e93bac492f9000c482d6a26a5c8e29079dd32d)** (@latticexyz/abi-ts)
+
+Added an `--extension` option to customize the resulting TS or DTS output. It defaults to the previous behavior of `.json.d.ts`, but can now be set to `.d.json.ts` for compatibility with newer TS versions and `.json.ts` or just `.ts` for a pure TS file.
+
+**[fix(store-sync): update latest block for live logs API (#3323)](https://github.com/latticexyz/mud/commit/dfc2d6439ee7076cdccbf1a24b7423fb19a7771d)** (@latticexyz/store-sync)
+
+Fixed an issue where the sync progress was not moving to "live" when synced from the MUD indexer's live logs API.
+
+---
+
 ## Version 2.2.12
 
 Release date: Fri Oct 18 2024

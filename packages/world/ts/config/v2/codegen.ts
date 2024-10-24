@@ -1,4 +1,4 @@
-import { isObject, mergeIfUndefined } from "@latticexyz/store/config/v2";
+import { isObject, mergeIfUndefined } from "@latticexyz/store/internal";
 import { CODEGEN_DEFAULTS } from "./defaults";
 
 export type resolveCodegen<codegen> = codegen extends {}

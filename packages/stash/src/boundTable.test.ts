@@ -4,7 +4,7 @@ import { createStash } from "./createStash";
 import { BoundTable } from "./actions/getTable";
 import { Stash } from "./common";
 import { DefaultActions } from "./decorators/defaultActions";
-import { defineTable } from "@latticexyz/store/config/v2";
+import { defineTable } from "@latticexyz/store/internal";
 
 describe("BoundTable", () => {
   const tableConfig = defineTable({

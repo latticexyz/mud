@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig((opts) => ({
-  entry: ["src/index.ts", "src/abi-ts.ts"],
+  entry: ["src/exports/internal.ts", "src/bin/abi-ts.ts"],
   target: "esnext",
   format: ["esm"],
   sourcemap: true,

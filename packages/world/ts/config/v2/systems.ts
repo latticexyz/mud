@@ -1,5 +1,5 @@
 import { ErrorMessage } from "@ark/util";
-import { isObject } from "@latticexyz/store/config/v2";
+import { isObject } from "@latticexyz/store/internal";
 import { SystemsInput } from "./input";
 import { resolveSystem, validateSystem } from "./system";
 

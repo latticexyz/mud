@@ -1,5 +1,16 @@
 # @latticexyz/store-indexer
 
+## 2.2.13
+
+### Patch Changes
+
+- Updated dependencies [dfc2d64]
+  - @latticexyz/store-sync@2.2.13
+  - @latticexyz/store@2.2.13
+  - @latticexyz/block-logs-stream@2.2.13
+  - @latticexyz/common@2.2.13
+  - @latticexyz/protocol-parser@2.2.13
+
 ## 2.2.12
 
 ### Patch Changes

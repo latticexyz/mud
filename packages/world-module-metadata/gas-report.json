@@ -1,18 +1,18 @@
 [
   {
-    "file": "test/MetadataModule.t.sol",
+    "file": "test/MetadataModule.t.sol:MetadataModuleTest",
     "test": "testDeleteResourceTag",
     "name": "delete resource tag",
     "gasUsed": 70301
   },
   {
-    "file": "test/MetadataModule.t.sol",
+    "file": "test/MetadataModule.t.sol:MetadataModuleTest",
     "test": "testInstall",
     "name": "install metadata module",
     "gasUsed": 1109853
   },
   {
-    "file": "test/MetadataModule.t.sol",
+    "file": "test/MetadataModule.t.sol:MetadataModuleTest",
     "test": "testSetResourceTag",
     "name": "set resource tag",
     "gasUsed": 116708

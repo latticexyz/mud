@@ -5,7 +5,6 @@ export default defineConfig((opts) => ({
     "mud.config": "mud.config.ts",
     index: "ts/exports/index.ts",
     internal: "ts/exports/internal.ts",
-    "config/v2": "ts/config/v2/index.ts",
     node: "ts/node/index.ts",
   },
   target: "esnext",

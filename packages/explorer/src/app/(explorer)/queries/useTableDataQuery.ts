@@ -19,9 +19,10 @@ export type TableData = {
 export function useTableDataQuery({ table, query }: Props) {
   const { chainName, worldAddress } = useParams();
   const { id: chainId } = useChain();
+  const decodedQuery = decodeURIComponent(query ?? "");
 
   return useQuery<DozerResponse, Error, TableData | undefined>({
-    queryKey: ["tableData", chainName, worldAddress, query],
+    queryKey: ["tableData", chainName, worldAddress, decodedQuery],
     queryFn: async () => {
       const indexer = indexerForChainId(chainId);
       const response = await fetch(indexer.url, {
@@ -32,7 +33,7 @@ export function useTableDataQuery({ table, query }: Props) {
         body: JSON.stringify([
           {
             address: worldAddress as Hex,
-            query,
+            query: decodedQuery,
           },
         ]),
       });
