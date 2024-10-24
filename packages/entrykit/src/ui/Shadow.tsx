@@ -19,7 +19,7 @@ function Resizer({
 } & HTMLProps<HTMLDivElement>) {
   const ref = useRef<HTMLDivElement | null>(null);
   useResizeObserver({ ref, onResize: onSize });
-  return <div ref={ref} {...props} style={{ ...props.style, display: "inline-block" }} />;
+  return <div ref={ref} {...props} style={{ ...props.style, display: "inline-grid" }} />;
 }
 
 // TODO: make a container inside the iframe that is at least the size of the window, render content into that so we can correctly measure size relative to window
@@ -57,7 +57,7 @@ export const Shadow = forwardRef<HTMLIFrameElement, Props>(function Shadow({ mod
       : frameSize.width && frameSize.height
         ? {
             all: "unset",
-            display: "inline-block",
+            display: "inline-grid",
             width: `${frameSize.width}px`,
             height: `${frameSize.height}px`,
           }
