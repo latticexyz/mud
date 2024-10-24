@@ -21,6 +21,7 @@ export type Write = {
   error?: Error;
 };
 
+// TODO: improve ts
 export type Send = {
   writeId: string;
   calls: {
@@ -28,6 +29,18 @@ export type Send = {
     functionSignature: string;
     args: unknown[];
   }[];
+
+  type: MessageType;
+  hash?: Hex;
+  from?: Address;
+  address: Address;
+  functionSignature: string;
+  userOperationHash?: Hex;
+  args: unknown[];
+  value?: bigint;
+  time: number;
+  events: Message<Exclude<MessageType, "ping">>[];
+  error?: Error;
 };
 
 export type State = {
@@ -49,14 +62,22 @@ const channel = new BroadcastChannel(relayChannelName);
 channel.addEventListener("message", ({ data }: MessageEvent<Message>) => {
   if (data.type === "ping") return;
   store.setState((state) => {
-    if (data.type === "send") {
+    if (
+      data.type === "send" ||
+      data.type === "waitForUserOperationReceipt" ||
+      data.type === "waitForUserOperationReceipt:result"
+    ) {
+      console.log("incoming send", data);
+
+      const send = data.type === "send" ? ({ ...data, events: [] } satisfies Send) : state.sends[data.writeId];
       return {
         ...state,
         sends: {
           ...state.sends,
           [data.writeId]: {
-            writeId: data.writeId,
-            calls: data.calls,
+            ...send,
+            type: data.type,
+            events: [...send.events, data],
           },
         },
       };

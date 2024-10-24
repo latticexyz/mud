@@ -1,7 +1,16 @@
 import { Account, Chain, Client, Hex, Transport, WalletActions, decodeFunctionData, getAbiItem, parseAbi } from "viem";
-import { entryPoint07Abi, entryPoint07Address, sendUserOperation } from "viem/account-abstraction";
+import {
+  entryPoint07Abi,
+  entryPoint07Address,
+  sendUserOperation,
+  waitForUserOperationReceipt,
+} from "viem/account-abstraction";
 import { getTransaction, waitForTransactionReceipt, writeContract } from "viem/actions";
 import { formatAbiItem, getAction } from "viem/utils";
+import {
+  doomWorldAbi,
+  userOperationEventAbi,
+} from "../app/(explorer)/[chainName]/worlds/[worldAddress]/observe/TransactionsWatcher";
 import { createBridge } from "./bridge";
 import { ReceiptSummary } from "./common";
 
@@ -13,6 +22,21 @@ export type ObserverOptions = {
 };
 
 let writeCounter = 0;
+
+// type ObservedTransaction = {
+//   writeId: string;
+//   hash?: Hex;
+//   from?: Address;
+//   timestamp?: bigint;
+//   transaction?: Transaction;
+//   functionData?: DecodeFunctionDataReturnType;
+//   value?: bigint;
+//   receipt?: TransactionReceipt;
+//   status: "pending" | "success" | "reverted" | "rejected" | "unknown";
+//   write?: Write;
+//   logs?: Log[];
+//   error?: BaseError;
+// }
 
 export function observer({ explorerUrl = "http://localhost:13690", waitForTransaction }: ObserverOptions = {}): <
   transport extends Transport,
@@ -50,6 +74,30 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
             }),
           });
 
+          write.then((hash) => {
+            const receipt = getAction(client, waitForUserOperationReceipt, "waitForUserOperationReceipt")({ hash });
+
+            emit("waitForUserOperationReceipt", { writeId, hash });
+            Promise.allSettled([receipt]).then(async ([result]) => {
+              emit("waitForUserOperationReceipt:result", { ...result.value, writeId });
+
+              // const logs = result.value?.logs;
+              // const parsedLogs = parseEventLogs({
+              //   abi: [...doomWorldAbi, userOperationEventAbi],
+              //   logs,
+              // });
+
+              // const receiptLogs = result.value?.receipt?.logs;
+              // const parsedReceiptLogs = parseEventLogs({
+              //   abi: [...doomWorldAbi, userOperationEventAbi],
+              //   logs: receiptLogs,
+              // });
+
+              // console.log("observerWrite parsedLogs:", parsedLogs);
+              // console.log("observerWrite parsedReceiptLogs:", parsedReceiptLogs);
+            });
+          });
+
           // emit("write", {
           //   writeId,
 
@@ -82,30 +130,6 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
           //   value: functionArgs.value,
           // });
 
-          // write.then((hash) => {
-          //   const receipt = getAction(client, waitForUserOperationReceipt, "waitForUserOperationReceipt")({ hash });
-          //   Promise.allSettled([receipt]).then(async ([result]) => {
-          //     console.log("observerWrite waitForUserOperationReceipt result:", result);
-
-          //     const logs = result.value?.logs;
-          //     const parsedLogs = parseEventLogs({
-          //       abi: [...doomWorldAbi, userOperationEventAbi],
-          //       logs,
-          //     });
-
-          //     const receiptLogs = result.value?.receipt?.logs;
-          //     const parsedReceiptLogs = parseEventLogs({
-          //       abi: [...doomWorldAbi, userOperationEventAbi],
-          //       logs: receiptLogs,
-          //     });
-
-          //     console.log("observerWrite parsedLogs:", parsedLogs);
-          //     console.log("observerWrite parsedReceiptLogs:", parsedReceiptLogs);
-
-          //     // TODO: emit("waitForTransactionReceipt", { hash: txHash, writeId });
-          //   });
-          // });
-
           return write;
         },
       };
@@ -136,36 +160,6 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
         });
 
         write.then(async (hash) => {
-          //////////////////////////////////////////////////////////////
-
-          console.log("writeContract args:", args);
-
-          if (args.address.toLowerCase() === entryPoint07Address.toLowerCase()) {
-            const transaction = await getTransaction(client, { hash });
-
-            const decodedEntryPointCall = decodeFunctionData({
-              abi: entryPoint07Abi,
-              data: transaction.input,
-            });
-
-            const userOps = decodedEntryPointCall.args[0];
-            console.log("user operations", userOps, parseAbi(["function executeBatch((address,uint256,bytes)[])"]));
-
-            const decodedSmartAccountCall = decodeFunctionData({
-              abi: [
-                ...parseAbi(["function execute(address target, uint256 value, bytes calldata data)"]),
-                ...parseAbi(["function executeBatch((address,uint256,bytes)[])"]),
-              ],
-              data: userOps[0].callData,
-            });
-
-            console.log("observer decodedEntryPointCall", decodedEntryPointCall);
-            console.log("observer userOps", userOps);
-            console.log("observer decodedSmartAccountCall", decodedSmartAccountCall);
-          }
-
-          //////////////////////////////////////////////////////////////
-
           const receipt = getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });
 
           emit("waitForTransactionReceipt", { writeId, hash });

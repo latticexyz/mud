@@ -39,6 +39,35 @@ export function useObservedTransactions() {
   const { worldAddress } = useParams<{ worldAddress: string }>();
   const transactions = useStore(worldStore, (state) => state.transactions);
   const observerWrites = useStore(observerStore, (state) => state.writes);
+  const observerSends = useStore(observerStore, (state) => state.sends);
+
+  // console.log("observerWrites", observerWrites);
+  console.log("observerSends", observerSends);
+
+  // const sendsTransactions = useMemo(() => {
+  //   return Object.values(observerSends).flatMap((send) => {
+  //     return send.calls.map((call) => {
+  //       const parsedAbiItem = parseAbiItem(`function ${call.functionSignature}`) as AbiFunction;
+
+  //       return {
+  //         writeId: `${send.writeId}-${call.functionSignature}`,
+  //         from: "0x123", // TODO: send.from
+  //         hash: "0x123", // TODO: send.hash
+  //         status: "pending",
+  //         timestamp: undefined,
+  //         functionData: {
+  //           functionName: parsedAbiItem.name,
+  //           args: call.args,
+  //         },
+  //         value: 0n, // TODO: send.value
+  //         error: undefined, // TODO: send.error
+  //         ...call,
+  //       };
+  //     });
+  //   });
+  // }, [observerSends]);
+
+  // console.log("sendsTransactions", sendsTransactions);
 
   const mergedTransactions = useMemo((): ObservedTransaction[] => {
     const mergedMap = new Map<string | undefined, ObservedTransaction>();
@@ -73,6 +102,11 @@ export function useObservedTransactions() {
         mergedMap.set(transaction.hash, { ...transaction });
       }
     }
+
+    // Add sendsTransactions to the mergedMap
+    // for (const sendTransaction of sendsTransactions) {
+    //   mergedMap.set(sendTransaction.writeId + Math.random().toString(), sendTransaction);
+    // }
 
     return Array.from(mergedMap.values()).sort((a, b) => Number(b.timestamp ?? 0n) - Number(a.timestamp ?? 0n));
   }, [observerWrites, transactions, worldAddress]);

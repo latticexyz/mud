@@ -99,6 +99,8 @@ export function TransactionsTable() {
   const transactions = useObservedTransactions();
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
+  console.log("transactions", transactions);
+
   const table = useReactTable({
     data: transactions,
     columns,
