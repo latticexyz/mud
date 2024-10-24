@@ -48,6 +48,10 @@ channel.addEventListener("message", ({ data }: MessageEvent<Message>) => {
             data.type === "waitForTransactionReceipt" || data.type === "waitForUserOperationReceipt:result"
               ? data.hash
               : write.hash,
+          receipt:
+            data.type === "waitForTransactionReceipt:result" || data.type === "waitForUserOperationReceipt:result"
+              ? data.receipt
+              : write.receipt,
           events: [...write.events, data],
         },
       },

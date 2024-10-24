@@ -63,6 +63,14 @@ export function useObservedTransactions() {
             args: [],
           },
           calls: write.calls, // TODO: rename to functions?
+          receipt: write.events.find(
+            (event): event is Message<"waitForUserOperationReceipt:result"> =>
+              event.type === "waitForUserOperationReceipt:result",
+          )?.receipt,
+          logs: write.events.find(
+            (event): event is Message<"waitForUserOperationReceipt:result"> =>
+              event.type === "waitForUserOperationReceipt:result",
+          )?.logs,
           value: 0n,
           error: undefined,
         });

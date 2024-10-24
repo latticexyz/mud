@@ -1,6 +1,16 @@
 import { useParams } from "next/navigation";
-import { Address, BaseError, Hex, TransactionReceipt, decodeFunctionData, parseAbi, parseEventLogs } from "viem";
+import {
+  Address,
+  BaseError,
+  Hex,
+  TransactionReceipt,
+  decodeFunctionData,
+  getAbiItem,
+  parseAbi,
+  parseEventLogs,
+} from "viem";
 import { PackedUserOperation, entryPoint07Abi, entryPoint07Address } from "viem/account-abstraction";
+import { formatAbiItem } from "viem/utils";
 import { useConfig, useWatchBlocks } from "wagmi";
 import { getTransaction, simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { useStore } from "zustand";
@@ -717,94 +727,6 @@ export const doomWorldAbi = [
         internalType: "bytes4",
       },
     ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "registerNamespace",
-    inputs: [
-      {
-        name: "namespaceId",
-        type: "bytes32",
-        internalType: "ResourceId",
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "registerNamespaceDelegation",
-    inputs: [
-      {
-        name: "namespaceId",
-        type: "bytes32",
-        internalType: "ResourceId",
-      },
-      {
-        name: "delegationControlId",
-        type: "bytes32",
-        internalType: "ResourceId",
-      },
-      {
-        name: "initCallData",
-        type: "bytes",
-        internalType: "bytes",
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "registerRootFunctionSelector",
-    inputs: [
-      {
-        name: "systemId",
-        type: "bytes32",
-        internalType: "ResourceId",
-      },
-      {
-        name: "worldFunctionSignature",
-        type: "string",
-        internalType: "string",
-      },
-      {
-        name: "systemFunctionSignature",
-        type: "string",
-        internalType: "string",
-      },
-    ],
-    outputs: [
-      {
-        name: "worldFunctionSelector",
-        type: "bytes4",
-        internalType: "bytes4",
-      },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "registerStoreHook",
-    inputs: [
-      {
-        name: "tableId",
-        type: "bytes32",
-        internalType: "ResourceId",
-      },
-      {
-        name: "hookAddress",
-        type: "address",
-        internalType: "contract IStoreHook",
-      },
-      {
-        name: "enabledHooksBitmap",
-        type: "uint8",
-        internalType: "uint8",
-      },
-    ],
-    outputs: [],
     stateMutability: "nonpayable",
   },
   {
@@ -2138,96 +2060,85 @@ export function TransactionsWatcher() {
 
       const transaction = await getTransaction(wagmiConfig, { hash });
       if (transaction.to?.toLowerCase() === entryPoint07Address.toLowerCase()) {
+        console.log("entry point call", transaction);
+
         const decodedEntryPointCall = decodeFunctionData({
           abi: entryPoint07Abi,
           data: transaction.input,
         });
 
+        console.log("decodedEntryPointCall", decodedEntryPointCall);
+
         const userOps = decodedEntryPointCall.args[0] as PackedUserOperation[];
-        const decodedSmartAccountCall = decodeFunctionData({
-          abi: parseAbi(["function execute(address target, uint256 value, bytes calldata data)"]),
-          data: userOps[0].callData,
-        });
+        const worldTo = decodedEntryPointCall.args[1] as Address;
 
-        const data = decodedSmartAccountCall.args[2];
-        let functionName: string | undefined;
-        let args: readonly unknown[] | undefined;
-        let transactionError: BaseError | undefined;
+        for (const userOp of userOps) {
+          const decodedSmartAccountCall = decodeFunctionData({
+            abi: parseAbi([
+              "function execute(address target, uint256 value, bytes calldata data)",
+              "function executeBatch((address target,uint256 value,bytes data)[])",
+            ]),
+            data: userOp.callData,
+          });
 
-        try {
-          const functionData = decodeFunctionData({ abi, data });
+          console.log("decodedSmartAccountCall (userOp) within loop:", decodedSmartAccountCall);
 
-          functionName = functionData.functionName;
-          args = functionData.args;
-        } catch (error) {
-          transactionError = error as BaseError;
-          functionName = transaction.input.length > 10 ? transaction.input.slice(0, 10) : "unknown";
-        }
+          const calls = decodedSmartAccountCall.args[0].map((worldFunction) => {
+            let functionName: string | undefined;
+            let args: readonly unknown[] | undefined;
+            let transactionError: BaseError | undefined; // TODO: what to do with this?
+            try {
+              const functionData = decodeFunctionData({ abi: doomWorldAbi, data: worldFunction.data });
+              functionName = functionData.functionName;
+              args = functionData.args;
+            } catch (error) {
+              transactionError = error as BaseError;
+              functionName = transaction.input.length > 10 ? transaction.input.slice(0, 10) : "unknown";
+            }
 
-        const write = Object.values(observerWrites).find((write) => write.hash === hash);
-        setTransaction({
-          hash,
-          writeId: write?.writeId ?? hash,
-          from: transaction.from,
-          timestamp,
-          transaction,
-          status: "pending",
-          functionData: {
-            functionName,
-            args,
-          },
-          value: transaction.value,
-        });
+            const functionAbiItem = getAbiItem({
+              abi: doomWorldAbi,
+              name: functionName,
+              args,
+            } as never);
 
-        let receipt: TransactionReceipt | undefined;
-        try {
-          receipt = await waitForTransactionReceipt(wagmiConfig, { hash });
-        } catch {
-          console.error(`Failed to fetch transaction receipt. Transaction hash: ${hash}`);
-        }
-
-        if (receipt && receipt.status === "reverted" && functionName) {
-          try {
-            // Simulate the failed transaction to retrieve the revert reason
-            // Note, it only works for functions that are declared in the ABI
-            // See: https://github.com/wevm/viem/discussions/462
-            await simulateContract(wagmiConfig, {
-              account: transaction.from,
-              address: worldAddress,
-              abi,
-              value: transaction.value,
-              blockNumber: receipt.blockNumber,
+            return {
+              to: worldFunction.target,
+              functionSignature: functionAbiItem ? formatAbiItem(functionAbiItem) : "unknown",
               functionName,
               args,
-            });
-          } catch (error) {
-            transactionError = error as BaseError;
-          }
+            };
+          });
+
+          console.log("calls", calls);
+
+          const write = undefined; // TODO: add back
+          setTransaction({
+            hash,
+            writeId: write?.writeId ?? hash,
+            from: transaction.from,
+            timestamp,
+            transaction,
+            status: "pending",
+            calls,
+            value: transaction.value,
+          });
+
+          const receipt = await waitForTransactionReceipt(wagmiConfig, { hash });
+          const logs = parseEventLogs({
+            abi: [...abi, userOperationEventAbi],
+            logs: receipt?.logs || [],
+          });
+
+          console.log("logs:", logs);
+
+          updateTransaction(hash, {
+            receipt,
+            logs,
+            status: "success",
+            error: undefined, // TODO: transactionError as BaseError,
+          });
         }
-
-        const status = receipt ? receipt.status : "unknown";
-
-        // TODO:
-        // event UserOperationEvent(
-        //     bytes32 indexed userOpHash,
-        //     address indexed sender,
-        //     address indexed paymaster,
-        //     uint256 nonce,
-        //     bool success,
-        //     uint256 actualGasCost,
-        //     uint256 actualGasUsed
-        // );
-        const logs = parseEventLogs({
-          abi: [...abi, userOperationEventAbi],
-          logs: receipt?.logs || [],
-        });
-
-        updateTransaction(hash, {
-          receipt,
-          logs,
-          status,
-          error: transactionError as BaseError,
-        });
       } else if (transaction.to === worldAddress) {
         let functionName: string | undefined;
         let args: readonly unknown[] | undefined;
@@ -2301,28 +2212,30 @@ export function TransactionsWatcher() {
   );
 
   useEffect(() => {
-    for (const write of Object.values(observerWrites)) {
-      const hash = write.hash;
-      if (hash) {
-        // TODO: add back -> && write.address.toLowerCase() === worldAddress.toLowerCase()
-        const transaction = transactions.find((transaction) => transaction.hash === hash);
-        if (!transaction) {
-          handleTransaction(hash, BigInt(write.time) / 1000n);
-        }
-      }
-    }
+    // for (const write of Object.values(observerWrites)) {
+    //   const hash = write.hash;
+    //   if (hash) {
+    //     // TODO: add back -> && write.address.toLowerCase() === worldAddress.toLowerCase()
+    //     const transaction = transactions.find((transaction) => transaction.hash === hash);
+    //     if (!transaction) {
+    //       handleTransaction(hash, BigInt(write.time) / 1000n);
+    //     }
+    //   }
+    // }
   }, [handleTransaction, observerWrites, transactions, worldAddress]);
 
-  // useWatchBlocks({
-  //   onBlock(block) {
-  //     for (const hash of block.transactions) {
-  //       if (transactions.find((transaction) => transaction.hash === hash)) continue;
-  //       handleTransaction(hash, block.timestamp);
-  //     }
-  //   },
-  //   chainId,
-  //   pollingInterval: 500,
-  // });
+  useWatchBlocks({
+    onBlock(block) {
+      for (const hash of block.transactions) {
+        console.log("hash", hash);
+
+        if (transactions.find((transaction) => transaction.hash === hash)) continue;
+        handleTransaction(hash, block.timestamp);
+      }
+    },
+    chainId,
+    pollingInterval: 500,
+  });
 
   return null;
 }
