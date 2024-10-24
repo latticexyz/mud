@@ -1,5 +1,11 @@
 # @latticexyz/faucet
 
+## 2.2.13
+
+### Patch Changes
+
+- @latticexyz/common@2.2.13
+
 ## 2.2.12
 
 ### Patch Changes

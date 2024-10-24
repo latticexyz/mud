@@ -1,5 +1,6 @@
 import { Table } from "@latticexyz/config";
 import { Key, Stash } from "../common";
+import { getKey } from "@latticexyz/protocol-parser/internal";
 
 export type DecodeKeyArgs<table extends Table = Table> = {
   stash: Stash;
@@ -14,9 +15,8 @@ export function decodeKey<table extends Table>({
   table,
   encodedKey,
 }: DecodeKeyArgs<table>): DecodeKeyResult<table> {
-  const { namespaceLabel, label, key } = table;
-  const record = stash.get().records[namespaceLabel][label][encodedKey];
-
-  // Typecast needed because record values could be arrays, but we know they are not if they are key fields
-  return Object.fromEntries(Object.entries(record).filter(([field]) => key.includes(field))) as never;
+  const { namespaceLabel, label } = table;
+  const record = stash.get().records[namespaceLabel]?.[label]?.[encodedKey];
+  if (!record) throw new Error(`No record found for key "${encodedKey}".`);
+  return getKey(table, record);
 }

@@ -1,11 +1,11 @@
 import { defineStore } from "@latticexyz/store";
 import { describe, expect, it, vi } from "vitest";
 import { createStash } from "../createStash";
-import { subscribeStore } from "./subscribeStore";
+import { subscribeStash } from "./subscribeStash";
 import { setRecord } from "./setRecord";
 import { deleteRecord } from "./deleteRecord";
 
-describe("subscribeStore", () => {
+describe("subscribeStash", () => {
   it("should notify subscriber of any stash change", () => {
     const config = defineStore({
       namespaces: {
@@ -31,7 +31,7 @@ describe("subscribeStore", () => {
     const stash = createStash(config);
     const subscriber = vi.fn();
 
-    subscribeStore({ stash, subscriber });
+    subscribeStash({ stash, subscriber });
 
     setRecord({ stash, table: config.tables.namespace1__table1, key: { a: "0x00" }, value: { b: 1n, c: 2 } });
 

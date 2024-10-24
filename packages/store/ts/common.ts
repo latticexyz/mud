@@ -1,5 +1,4 @@
 import { SchemaAbiType, SchemaAbiTypeToPrimitiveType, StaticAbiType } from "@latticexyz/schema-type/internal";
-import { Hex } from "viem";
 
 export type KeySchema = {
   readonly [k: string]: {
@@ -10,18 +9,6 @@ export type ValueSchema = {
   readonly [k: string]: {
     readonly type: SchemaAbiType;
   };
-};
-
-export type Table = {
-  readonly tableId: Hex;
-  readonly namespace: string;
-  readonly name: string;
-  readonly keySchema: KeySchema;
-  readonly valueSchema: ValueSchema;
-};
-
-export type Tables = {
-  readonly [k: string]: Table;
 };
 
 /** Map a table schema like `{ value: { type: "uint256" } }` to its primitive types like `{ value: bigint }` */

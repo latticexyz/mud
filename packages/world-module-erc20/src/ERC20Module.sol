@@ -17,8 +17,6 @@ contract ERC20Module is Module {
   error ERC20Module_InvalidNamespace(bytes14 namespace);
   error ERC20Module_NamespaceAlreadyExists(bytes14 namespace);
 
-  ERC20RegistryLib public immutable registryLib = new ERC20RegistryLib();
-
   function install(bytes memory encodedArgs) public {
     // TODO: we should probably check just for namespace, not for all args
     requireNotInstalled(__self, encodedArgs);
@@ -44,7 +42,7 @@ contract ERC20Module is Module {
     // The token should have transferred the namespace ownership to this module in its constructor
     world.transferOwnership(namespaceId, _msgSender());
 
-    registryLib.delegateRegister(world, namespaceId, address(token));
+    ERC20RegistryLib.register(world, namespaceId, address(token));
   }
 
   function installRoot(bytes memory) public pure {
@@ -52,7 +50,7 @@ contract ERC20Module is Module {
   }
 }
 
-contract ERC20RegistryLib {
+library ERC20RegistryLib {
   function register(IBaseWorld world, ResourceId namespaceId, address token) public {
     ResourceId erc20RegistryTableId = ModuleConstants.registryTableId();
     if (!ResourceIds.getExists(erc20RegistryTableId)) {
@@ -63,12 +61,3 @@ contract ERC20RegistryLib {
     ERC20Registry.set(erc20RegistryTableId, namespaceId, address(token));
   }
 }
-
-function delegateRegister(ERC20RegistryLib lib, IBaseWorld world, ResourceId namespaceId, address token) {
-  (bool success, bytes memory returnData) = address(lib).delegatecall(
-    abi.encodeCall(ERC20RegistryLib.register, (world, namespaceId, token))
-  );
-  if (!success) revertWithBytes(returnData);
-}
-
-using { delegateRegister } for ERC20RegistryLib;

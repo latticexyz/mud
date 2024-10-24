@@ -10,6 +10,29 @@ import { useMonacoErrorMarker } from "./useMonacoErrorMarker";
 
 const sqlParser = new Parser();
 
+function findErrorPosition(query: string, target: string) {
+  const lines = query.split("\n");
+  let startLineNumber = 1;
+  let startColumn = 1;
+  let currentPosition = 0;
+
+  for (let i = 0; i < lines.length; i++) {
+    if (currentPosition + lines[i].length >= query.indexOf(target)) {
+      startLineNumber = i + 1;
+      startColumn = query.indexOf(target) - currentPosition + 1;
+      break;
+    }
+    currentPosition += lines[i].length + 1;
+  }
+
+  return {
+    startLineNumber,
+    endLineNumber: startLineNumber,
+    startColumn,
+    endColumn: startColumn + target.length,
+  };
+}
+
 export function useQueryValidator(table?: Table) {
   const monaco = useMonaco();
   const { worldAddress } = useParams();
@@ -17,19 +40,19 @@ export function useQueryValidator(table?: Table) {
   const setErrorMarker = useMonacoErrorMarker();
 
   return useCallback(
-    (value: string) => {
+    (query: string) => {
       if (!monaco || !table) return true;
 
+      const decodedQuery = decodeURIComponent(query);
       try {
-        const ast = sqlParser.astify(value);
+        const ast = sqlParser.astify(decodedQuery);
         if ("columns" in ast && Array.isArray(ast.columns)) {
           for (const column of ast.columns) {
             const columnName = column.expr.column;
             if (!Object.keys(table.schema).includes(columnName)) {
               setErrorMarker({
                 message: `Column '${columnName}' does not exist in the table schema.`,
-                startColumn: value.indexOf(columnName) + 1,
-                endColumn: value.indexOf(columnName) + columnName.length + 1,
+                ...findErrorPosition(decodedQuery, columnName),
               });
               return false;
             }
@@ -45,8 +68,7 @@ export function useQueryValidator(table?: Table) {
               if (selectedTableName !== tableName) {
                 setErrorMarker({
                   message: `Only '${tableName}' is available for this query.`,
-                  startColumn: value.indexOf(selectedTableName) + 1,
-                  endColumn: value.indexOf(selectedTableName) + selectedTableName.length + 1,
+                  ...findErrorPosition(decodedQuery, selectedTableName),
                 });
                 return false;
               }
@@ -58,10 +80,13 @@ export function useQueryValidator(table?: Table) {
         return true;
       } catch (error) {
         if (error instanceof Error) {
+          const lines = decodedQuery.split("\n");
           setErrorMarker({
             message: error.message,
+            startLineNumber: 1,
+            endLineNumber: lines.length,
             startColumn: 1,
-            endColumn: value.length + 1,
+            endColumn: lines[lines.length - 1].length + 1,
           });
         }
         return false;

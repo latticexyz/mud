@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/world-module-erc20",
-  "version": "2.2.11",
+  "version": "2.2.13",
   "description": "ERC20 world module",
   "repository": {
     "type": "git",
@@ -10,8 +10,8 @@
   "license": "MIT",
   "type": "module",
   "exports": {
+    "./internal": "./dist/internal.js",
     "./mud.config": "./dist/mud.config.js",
-    ".": "./dist/index.js",
     "./out/*": "./out/*"
   },
   "typesVersions": {
@@ -19,8 +19,8 @@
       "mud.config": [
         "./dist/mud.config.d.ts"
       ],
-      "module": [
-        "./dist/module.d.ts"
+      "internal": [
+        "./dist/internal.d.ts"
       ]
     }
   },

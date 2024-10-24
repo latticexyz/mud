@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { attest } from "@ark/attest";
 import { CreateStashResult, createStash } from "./createStash";
-import { defineStore, defineTable } from "@latticexyz/store/config/v2";
+import { defineStore } from "@latticexyz/store";
+import { defineTable } from "@latticexyz/store/internal";
 import { Hex } from "viem";
 
 describe("createStash", () => {
@@ -207,7 +208,7 @@ describe("createStash", () => {
     });
   });
 
-  describe("subscribeStore", () => {
+  describe("subscribeStash", () => {
     it("should notify listeners on stash updates", () => {
       const config = defineStore({
         namespace: "namespace1",
@@ -228,7 +229,7 @@ describe("createStash", () => {
 
       const subscriber = vi.fn();
 
-      stash.subscribeStore({ subscriber });
+      stash.subscribeStash({ subscriber });
 
       stash.setRecord({
         table,
@@ -349,7 +350,7 @@ describe("createStash", () => {
 
       const subscriber = vi.fn();
 
-      const unsubscribe = stash.subscribeStore({
+      const unsubscribe = stash.subscribeStash({
         subscriber,
       });
 
@@ -406,8 +407,8 @@ describe("createStash", () => {
       });
       const tables = stash.getTables();
 
-      expect(tables.namespace1.table1).toBeDefined();
-      expect(tables.namespace2.table2).toBeDefined();
+      expect(tables.namespace1?.table1).toBeDefined();
+      expect(tables.namespace2?.table2).toBeDefined();
     });
   });
 });

@@ -2,7 +2,7 @@ import { show, flatMorph } from "@ark/util";
 import { NamespacesInput } from "./input";
 import { validateNamespace, resolveNamespace } from "./namespace";
 import { groupBy } from "@latticexyz/common/utils";
-import { AbiTypeScope, Scope, isObject, mergeIfUndefined } from "@latticexyz/store/config/v2";
+import { AbiTypeScope, Scope, isObject, mergeIfUndefined } from "@latticexyz/store/internal";
 
 // Copied from store/ts/config/v2/namespaces.ts but using world namespace validate/resolve methods
 // TODO: figure out how to dedupe these?

@@ -1,7 +1,7 @@
 import { MutableState, Stash, StoreConfig, StoreSubscribers, TableSubscribers } from "./common";
 import { DefaultActions, defaultActions } from "./decorators/defaultActions";
 import { extend } from "./actions/extend";
-import { Table } from "@latticexyz/store/config/v2";
+import { Table } from "@latticexyz/store/internal";
 
 export type Config = StoreConfig;
 
@@ -28,16 +28,13 @@ export function createStash<config extends Config>(storeConfig?: config): Create
         const { deploy, codegen, ...tableConfig } = { ...(fullTableConfig as Table) };
 
         // Set config for tables
-        state.config[namespace] ??= {};
-        state.config[namespace][table] = tableConfig;
+        (state.config[namespace] ??= {})[table] = tableConfig;
 
         // Init records map for tables
-        state.records[namespace] ??= {};
-        state.records[namespace][table] = {};
+        (state.records[namespace] ??= {})[table] = {};
 
         // Init subscribers set for tables
-        tableSubscribers[namespace] ??= {};
-        tableSubscribers[namespace][table] ??= new Set();
+        (tableSubscribers[namespace] ??= {})[table] ??= new Set();
       }
     }
   }

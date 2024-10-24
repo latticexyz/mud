@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/world",
-  "version": "2.2.12",
+  "version": "2.2.13",
   "description": "World framework",
   "repository": {
     "type": "git",
@@ -13,7 +13,6 @@
     ".": "./dist/index.js",
     "./internal": "./dist/internal.js",
     "./mud.config": "./dist/mud.config.js",
-    "./config/v2": "./dist/config/v2.js",
     "./node": "./dist/node.js",
     "./out/*": "./out/*"
   },
@@ -27,9 +26,6 @@
       ],
       "mud.config": [
         "./dist/mud.config.d.ts"
-      ],
-      "config/v2": [
-        "./dist/config/v2.d.ts"
       ],
       "node": [
         "./dist/node.d.ts"
