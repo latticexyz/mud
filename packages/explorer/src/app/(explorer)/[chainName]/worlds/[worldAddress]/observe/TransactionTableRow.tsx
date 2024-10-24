@@ -1,5 +1,6 @@
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { formatEther } from "viem";
+import { formatAbiItemWithArgs } from "viem/utils";
 import { Row, flexRender } from "@tanstack/react-table";
 import { Separator } from "../../../../../../components/ui/Separator";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
@@ -8,6 +9,7 @@ import { cn } from "../../../../../../utils";
 import { Confirmations } from "./Confirmations";
 import { TimingRowExpanded } from "./TimingRowExpanded";
 import { columns } from "./TransactionsTable";
+import { doomWorldAbi } from "./TransactionsWatcher";
 import { ObservedTransaction } from "./useObservedTransactions";
 
 function TransactionTableRowDataCell({
@@ -82,11 +84,52 @@ export function TransactionTableRow({ row }: { row: Row<ObservedTransaction> }) 
                 <div className="flex items-start gap-x-4">
                   <h3 className="w-[45px] flex-shrink-0 text-2xs font-bold uppercase">Inputs</h3>
 
+                  <div className="min-w-0 flex-grow border border-white/20 p-2">
+                    {data.calls && data.calls.length > 0 ? (
+                      <div className="flex w-full flex-col gap-y-4">
+                        {data.calls.map((call, idx) => {
+                          return (
+                            <div key={idx} className="text-xs">
+                              {formatAbiItemWithArgs({
+                                abiItem: {
+                                  name: "send",
+                                  type: "function",
+                                  stateMutability: "nonpayable",
+                                  inputs: [
+                                    {
+                                      type: "uint256",
+                                    },
+                                    {
+                                      type: "uint32[]",
+                                    },
+                                    {
+                                      type: "bytes",
+                                    },
+                                  ],
+                                  outputs: [],
+                                },
+                                args: call.args,
+                              })}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="text-2xs uppercase text-white/60">No inputs</p>
+                    )}
+                  </div>
+                </div>
+
+                <Separator className="my-5" />
+                <div className="flex items-start gap-x-4">
+                  <h3 className="w-[45px] flex-shrink-0 text-2xs font-bold uppercase">Inputs</h3>
+
                   {data.calls && data.calls.length > 0 ? (
                     <div className="flex w-full flex-col gap-y-4">
                       {data.calls.map((call, idx) => {
                         return (
                           <div key={idx} className="min-w-0 flex-grow border border-white/20 p-2">
+                            <span className="text-xs">send:</span>
                             {call.args?.map((arg, idx) => (
                               <div key={idx} className="flex">
                                 <span className="flex-shrink-0 text-xs text-white/60">arg {idx + 1}:</span>
@@ -103,6 +146,7 @@ export function TransactionTableRow({ row }: { row: Row<ObservedTransaction> }) 
                     <p className="text-2xs uppercase text-white/60">No inputs</p>
                   )}
 
+                  {/* TODO: add back */}
                   {/* {Array.isArray(data.functionData?.args) && data.functionData?.args.length > 0 ? (
                     <div className="min-w-0 flex-grow border border-white/20 p-2">
                       {data.functionData?.args?.map((arg, idx) => (

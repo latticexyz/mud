@@ -8,14 +8,10 @@ import {
   Log,
   Transaction,
   TransactionReceipt,
-  decodeAbiParameters,
-  decodeFunctionData,
-  parseAbi,
   parseAbiItem,
 } from "viem";
-import { entryPoint07Abi, getUserOperation } from "viem/account-abstraction";
 import { useStore } from "zustand";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { Message } from "../../../../../../observer/messages";
 import { type Write, store as observerStore } from "../../../../../../observer/store";
 import { store as worldStore } from "../store";
@@ -38,14 +34,10 @@ export type ObservedTransaction = {
   error?: BaseError;
 };
 
-const arr = [];
-
 export function useObservedTransactions() {
   const { worldAddress } = useParams<{ worldAddress: string }>();
   const transactions = useStore(worldStore, (state) => state.transactions);
   const observerWrites = useStore(observerStore, (state) => state.writes);
-
-  console.log("observerWrites", observerWrites);
 
   const mergedTransactions = useMemo((): ObservedTransaction[] => {
     const mergedMap = new Map<string | undefined, ObservedTransaction>();
