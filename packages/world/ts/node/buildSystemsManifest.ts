@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { ResolvedSystem, resolveSystems } from "./resolveSystems";
-import { World } from "../config/v2";
+import { World } from "../config/v2/output";
 import { ContractArtifact, systemsManifestFilename } from "./common";
 import { findContractArtifacts } from "./findContractArtifacts";
 import { getOutDirectory as getForgeOutDirectory } from "@latticexyz/common/foundry";
