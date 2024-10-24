@@ -59,8 +59,8 @@ export function useTableDataQuery({ table, query }: Props) {
       const rows = result.slice(1).map((row) => Object.fromEntries(columnKeys.map((key, index) => [key, row[index]])));
 
       return {
-        columns: columnKeys,
-        rows,
+        columns: columnKeys || [],
+        rows: rows || [],
       };
     },
     enabled: !!table && !!query,
