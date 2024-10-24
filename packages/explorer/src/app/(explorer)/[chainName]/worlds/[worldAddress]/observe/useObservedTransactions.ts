@@ -27,6 +27,9 @@ export type ObservedTransaction = {
   timestamp?: bigint;
   transaction?: Transaction;
   functionData?: DecodeFunctionDataReturnType;
+
+  calls?: DecodeFunctionDataReturnType[]; // TODO: rename to functions?
+
   value?: bigint;
   receipt?: TransactionReceipt;
   status: "pending" | "success" | "reverted" | "rejected" | "unknown";
@@ -35,63 +38,58 @@ export type ObservedTransaction = {
   error?: BaseError;
 };
 
+const arr = [];
+
 export function useObservedTransactions() {
   const { worldAddress } = useParams<{ worldAddress: string }>();
   const transactions = useStore(worldStore, (state) => state.transactions);
   const observerWrites = useStore(observerStore, (state) => state.writes);
-  const observerSends = useStore(observerStore, (state) => state.sends);
 
-  // console.log("observerWrites", observerWrites);
-  console.log("observerSends", observerSends);
-
-  // const sendsTransactions = useMemo(() => {
-  //   return Object.values(observerSends).flatMap((send) => {
-  //     return send.calls.map((call) => {
-  //       const parsedAbiItem = parseAbiItem(`function ${call.functionSignature}`) as AbiFunction;
-
-  //       return {
-  //         writeId: `${send.writeId}-${call.functionSignature}`,
-  //         from: "0x123", // TODO: send.from
-  //         hash: "0x123", // TODO: send.hash
-  //         status: "pending",
-  //         timestamp: undefined,
-  //         functionData: {
-  //           functionName: parsedAbiItem.name,
-  //           args: call.args,
-  //         },
-  //         value: 0n, // TODO: send.value
-  //         error: undefined, // TODO: send.error
-  //         ...call,
-  //       };
-  //     });
-  //   });
-  // }, [observerSends]);
-
-  // console.log("sendsTransactions", sendsTransactions);
+  console.log("observerWrites", observerWrites);
 
   const mergedTransactions = useMemo((): ObservedTransaction[] => {
     const mergedMap = new Map<string | undefined, ObservedTransaction>();
 
     for (const write of Object.values(observerWrites)) {
-      if (write.address.toLowerCase() !== worldAddress.toLowerCase()) continue; // TODO: filter entrypoint
+      if (write.clientType === "bundlerClient") {
+        mergedMap.set(write.hash || write.writeId, {
+          hash: write.hash,
+          writeId: write.writeId,
+          from: write.from,
+          status: "pending",
+          timestamp: BigInt(write.time) / 1000n,
+          functionData: {
+            functionName: "multiple",
+            args: [],
+          },
+          calls: write.calls, // TODO: rename to functions?
+          value: 0n,
+          error: undefined,
+        });
+      } else {
+        // TODO: original
+        if (write.address.toLowerCase() !== worldAddress.toLowerCase()) continue; // TODO: filter entrypoint
 
-      const parsedAbiItem = parseAbiItem(`function ${write.functionSignature}`) as AbiFunction;
-      const writeResult = write.events.find((event): event is Message<"write:result"> => event.type === "write:result");
+        const parsedAbiItem = parseAbiItem(`function ${write.functionSignature}`) as AbiFunction;
+        const writeResult = write.events.find(
+          (event): event is Message<"write:result"> => event.type === "write:result",
+        );
 
-      mergedMap.set(write.hash || write.writeId, {
-        hash: write.hash,
-        writeId: write.writeId,
-        from: write.from,
-        status: writeResult?.status === "rejected" ? "rejected" : "pending",
-        timestamp: BigInt(write.time) / 1000n,
-        functionData: {
-          functionName: parsedAbiItem.name,
-          args: write.args,
-        },
-        value: write.value,
-        error: writeResult && "reason" in writeResult ? (writeResult.reason as BaseError) : undefined,
-        write,
-      });
+        mergedMap.set(write.hash || write.writeId, {
+          hash: write.hash,
+          writeId: write.writeId,
+          from: write.from,
+          status: writeResult?.status === "rejected" ? "rejected" : "pending",
+          timestamp: BigInt(write.time) / 1000n,
+          functionData: {
+            functionName: parsedAbiItem.name,
+            args: write.args,
+          },
+          value: write.value,
+          error: writeResult && "reason" in writeResult ? (writeResult.reason as BaseError) : undefined,
+          write,
+        });
+      }
     }
 
     for (const transaction of transactions) {
@@ -103,13 +101,10 @@ export function useObservedTransactions() {
       }
     }
 
-    // Add sendsTransactions to the mergedMap
-    // for (const sendTransaction of sendsTransactions) {
-    //   mergedMap.set(sendTransaction.writeId + Math.random().toString(), sendTransaction);
-    // }
-
     return Array.from(mergedMap.values()).sort((a, b) => Number(b.timestamp ?? 0n) - Number(a.timestamp ?? 0n));
   }, [observerWrites, transactions, worldAddress]);
+
+  console.log("mergedTransactions", mergedTransactions);
 
   return mergedTransactions;
 }

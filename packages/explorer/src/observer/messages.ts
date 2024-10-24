@@ -3,14 +3,15 @@ import { ReceiptSummary } from "./common";
 
 export type Messages = {
   ping: {};
-  send: {
-    writeId: string;
-    calls: {
-      to: Address;
-      functionSignature: string;
-      args: unknown[];
-    }[];
-  };
+  // send: {
+  //   writeId: string;
+  //   calls: {
+  //     to: Address;
+  //     functionSignature: string;
+  //     args: unknown[];
+  //   }[];
+  // };
+  // "send:result": PromiseSettledResult<Hash> & { writeId: string };
   waitForUserOperationReceipt: {
     writeId: string;
     hash: Hash;

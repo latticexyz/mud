@@ -45,16 +45,21 @@ export const columns = [
       );
     },
   }),
-  columnHelper.accessor("functionData.functionName", {
+  columnHelper.accessor("calls", {
     header: "Function",
     cell: (row) => {
-      const functionName = row.getValue();
+      const calls = row.getValue();
       const status = row.row.original.status;
       return (
         <div className="flex items-center">
-          <Badge variant="secondary">
-            <WalletIcon className="mr-2 h-3 w-3" /> {functionName}
-          </Badge>
+          <div className="flex gap-2">
+            {calls?.map((call, idx) => (
+              <Badge variant="secondary" key={idx}>
+                {call.functionName}
+              </Badge>
+            ))}
+          </div>
+
           {status === "pending" && <CheckCheckIcon className="ml-2 h-4 w-4 text-white/60" />}
           {status === "success" && <CheckCheckIcon className="ml-2 h-4 w-4 text-green-400" />}
           {(status === "reverted" || status === "rejected") && <XIcon className="ml-2 h-4 w-4 text-red-400" />}
