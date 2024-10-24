@@ -1,3 +1,50 @@
+## Version 2.2.14
+
+Release date: Thu Oct 24 2024
+
+### Patch changes
+
+**[fix(cli): support public library methods in modules (#3308)](https://github.com/latticexyz/mud/commit/8eaad304db2fe9ae79f087ec7860928f734039d4)** (@latticexyz/cli)
+
+Added support for deploying public libraries used within modules.
+
+**[fix(cli): support public library methods in modules (#3308)](https://github.com/latticexyz/mud/commit/8eaad304db2fe9ae79f087ec7860928f734039d4)** (@latticexyz/world-module-erc20, @latticexyz/world-modules)
+
+Changed ERC20 and ERC721 related modules to use public library methods instead of manual `delegatecall`s.
+
+**[feat(stash): add useStash and improve other helpers (#3320)](https://github.com/latticexyz/mud/commit/93d0e763cca0facaaa20d7bde861c98c298f08ad)** (@latticexyz/stash)
+
+Added `useStash` React hook. It's heavily inspired by Zustand's `useStore` and accepts a stash, a state selector, an an optional equality function to avoid unnecessary re-render cycles when returning unstable values.
+
+Also updated `getRecord` and `getRecords` to each take either a `stash` or `state` object for more ergonomic use with `useStash`.
+
+```ts
+import { useStash } from "@latticexyz/stash/react";
+import { getRecord } from "@latticexyz/stash";
+import config from "../mud.config";
+
+const tables = config.namespaces.app.tables;
+
+export function PlayerName({ playerId }) {
+  const record = useStash(stash, (state) => getRecord({ state, table: tables.Player, key: { playerId } }));
+  ...
+}
+```
+
+```ts
+import isEqual from "fast-deep-equal";
+import { useStash } from "@latticexyz/stash/react";
+import { getRecords } from "@latticexyz/stash";
+import config from "../mud.config";
+
+export function PlayerNames() {
+  const record = useStash(stash, (state) => getRecords({ state, table: tables.Player }), { isEqual });
+  ...
+}
+```
+
+---
+
 ## Version 2.2.13
 
 Release date: Wed Oct 23 2024

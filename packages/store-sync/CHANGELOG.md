@@ -1,5 +1,20 @@
 # @latticexyz/store-sync
 
+## 2.2.14
+
+### Patch Changes
+
+- Updated dependencies [93d0e76]
+  - @latticexyz/stash@2.2.14
+  - @latticexyz/block-logs-stream@2.2.14
+  - @latticexyz/common@2.2.14
+  - @latticexyz/config@2.2.14
+  - @latticexyz/protocol-parser@2.2.14
+  - @latticexyz/recs@2.2.14
+  - @latticexyz/schema-type@2.2.14
+  - @latticexyz/store@2.2.14
+  - @latticexyz/world@2.2.14
+
 ## 2.2.13
 
 ### Patch Changes

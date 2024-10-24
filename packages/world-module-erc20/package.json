@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/world-module-erc20",
-  "version": "2.2.13",
+  "version": "2.2.14",
   "description": "ERC20 world module",
   "repository": {
     "type": "git",
