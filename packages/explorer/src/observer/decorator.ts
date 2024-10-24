@@ -11,6 +11,7 @@ import {
   parseEventLogs,
 } from "viem";
 import {
+  entryPoint07Abi,
   entryPoint07Address,
   getUserOperation,
   getUserOperationHash,
@@ -47,64 +48,64 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
   const emit = createBridge({ url: `${explorerUrl}/internal/observer-relay` });
 
   return (client) => {
-    if (client.type === "bundlerClient") {
-      return {
-        async sendUserOperation(args) {
-          console.log("observerWrite sendUserOperation args:", args);
+    // if (client.type === "bundlerClient") {
+    //   return {
+    //     async sendUserOperation(args) {
+    //       console.log("observerWrite sendUserOperation args:", args);
 
-          const write = getAction(client, sendUserOperation, "sendUserOperation")(args);
-          const calls = args.calls;
+    //       const write = getAction(client, sendUserOperation, "sendUserOperation")(args);
+    //       const calls = args.calls;
 
-          // for (const call of calls) {
-          const call = calls[0];
-          const writeId = `${client.uid}-${++writeCounter}`; // TODO: rename write to send ?
-          const { to, args: functionArgs, abi, functionName } = call;
+    //       // for (const call of calls) {
+    //       const call = calls[0];
+    //       const writeId = `${client.uid}-${++writeCounter}`; // TODO: rename write to send ?
+    //       const { to, args: functionArgs, abi, functionName } = call;
 
-          console.log("observerWrite call", call);
+    //       console.log("observerWrite call", call);
 
-          const functionAbiItem = getAbiItem({
-            abi,
-            name: functionName,
-            args,
-          } as never)!;
+    //       const functionAbiItem = getAbiItem({
+    //         abi,
+    //         name: functionName,
+    //         args,
+    //       } as never)!;
 
-          emit("write", {
-            writeId,
-            address: to,
-            from: client.account!.address,
-            functionSignature: formatAbiItem(functionAbiItem),
-            args: (functionArgs.args ?? []) as never,
-            value: functionArgs.value,
-          });
+    //       emit("write", {
+    //         writeId,
+    //         address: to,
+    //         from: client.account!.address,
+    //         functionSignature: formatAbiItem(functionAbiItem),
+    //         args: (functionArgs.args ?? []) as never,
+    //         value: functionArgs.value,
+    //       });
 
-          write.then((hash) => {
-            const receipt = getAction(client, waitForUserOperationReceipt, "waitForUserOperationReceipt")({ hash });
-            Promise.allSettled([receipt]).then(async ([result]) => {
-              console.log("observerWrite waitForUserOperationReceipt result:", result);
+    //       write.then((hash) => {
+    //         const receipt = getAction(client, waitForUserOperationReceipt, "waitForUserOperationReceipt")({ hash });
+    //         Promise.allSettled([receipt]).then(async ([result]) => {
+    //           console.log("observerWrite waitForUserOperationReceipt result:", result);
 
-              const logs = result.value?.logs;
-              const parsedLogs = parseEventLogs({
-                abi: [...doomWorldAbi, userOperationEventAbi],
-                logs,
-              });
+    //           const logs = result.value?.logs;
+    //           const parsedLogs = parseEventLogs({
+    //             abi: [...doomWorldAbi, userOperationEventAbi],
+    //             logs,
+    //           });
 
-              const receiptLogs = result.value?.receipt?.logs;
-              const parsedReceiptLogs = parseEventLogs({
-                abi: [...doomWorldAbi, userOperationEventAbi],
-                logs: receiptLogs,
-              });
+    //           const receiptLogs = result.value?.receipt?.logs;
+    //           const parsedReceiptLogs = parseEventLogs({
+    //             abi: [...doomWorldAbi, userOperationEventAbi],
+    //             logs: receiptLogs,
+    //           });
 
-              console.log("observerWrite parsedLogs:", parsedLogs);
-              console.log("observerWrite parsedReceiptLogs:", parsedReceiptLogs);
+    //           console.log("observerWrite parsedLogs:", parsedLogs);
+    //           console.log("observerWrite parsedReceiptLogs:", parsedReceiptLogs);
 
-              // TODO: emit("waitForTransactionReceipt", { hash: txHash, writeId });
-            });
-          });
+    //           // TODO: emit("waitForTransactionReceipt", { hash: txHash, writeId });
+    //         });
+    //       });
 
-          return write;
-        },
-      };
-    }
+    //       return write;
+    //     },
+    //   };
+    // }
 
     return {
       async writeContract(args) {
@@ -130,7 +131,37 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
           emit("write:result", { ...result, writeId });
         });
 
-        write.then((hash) => {
+        write.then(async (hash) => {
+          //////////////////////////////////////////////////////////////
+
+          console.log("writeContract args:", args);
+
+          if (args.address.toLowerCase() === entryPoint07Address.toLowerCase()) {
+            const transaction = await getTransaction(client, { hash });
+
+            const decodedEntryPointCall = decodeFunctionData({
+              abi: entryPoint07Abi,
+              data: transaction.input,
+            });
+
+            const userOps = decodedEntryPointCall.args[0];
+            console.log("user operations", userOps, parseAbi(["function executeBatch((address,uint256,bytes)[])"]));
+
+            const decodedSmartAccountCall = decodeFunctionData({
+              abi: [
+                ...parseAbi(["function execute(address target, uint256 value, bytes calldata data)"]),
+                ...parseAbi(["function executeBatch((address,uint256,bytes)[])"]),
+              ],
+              data: userOps[0].callData,
+            });
+
+            console.log("observer decodedEntryPointCall", decodedEntryPointCall);
+            console.log("observer userOps", userOps);
+            console.log("observer decodedSmartAccountCall", decodedSmartAccountCall);
+          }
+
+          //////////////////////////////////////////////////////////////
+
           const receipt = getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });
 
           emit("waitForTransactionReceipt", { writeId, hash });
