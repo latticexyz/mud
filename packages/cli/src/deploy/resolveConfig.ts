@@ -7,6 +7,8 @@ import { groupBy } from "@latticexyz/common/utils";
 import { findLibraries } from "./findLibraries";
 import { createPrepareDeploy } from "./createPrepareDeploy";
 import { World } from "@latticexyz/world";
+import { findUp } from "find-up";
+import { createRequire } from "node:module";
 
 // TODO: replace this with a manifest/combined config output
 
@@ -22,17 +24,33 @@ export async function resolveConfig({
   readonly systems: readonly System[];
   readonly libraries: readonly Library[];
 }> {
-  const libraries = findLibraries(forgeOutDir).map((library): Library => {
-    // foundry/solc flattens artifacts, so we just use the path basename
-    const contractData = getContractData(path.basename(library.path), library.name, forgeOutDir);
-    return {
-      path: library.path,
-      name: library.name,
-      abi: contractData.abi,
-      prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
-      deployedBytecodeSize: contractData.deployedBytecodeSize,
-    };
+  const requirePath = await findUp("package.json");
+  if (!requirePath) throw new Error("Could not find package.json to import relative to.");
+  const require = createRequire(requirePath);
+
+  const moduleOutDirs = config.modules.flatMap((mod) => {
+    if (mod.artifactPath == undefined) {
+      return [];
+    }
+
+    // Navigate up two dirs to get the contract output directory
+    const moduleOutDir = path.join(require.resolve(mod.artifactPath), "../../");
+    return [moduleOutDir];
   });
+
+  const libraries = [forgeOutDir, ...moduleOutDirs].flatMap((outDir) =>
+    findLibraries(outDir).map((library): Library => {
+      // foundry/solc flattens artifacts, so we just use the path basename
+      const contractData = getContractData(path.basename(library.path), library.name, outDir);
+      return {
+        path: library.path,
+        name: library.name,
+        abi: contractData.abi,
+        prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
+        deployedBytecodeSize: contractData.deployedBytecodeSize,
+      };
+    }),
+  );
 
   const baseSystemContractData = getContractData("System.sol", "System", forgeOutDir);
   const baseSystemFunctions = baseSystemContractData.abi

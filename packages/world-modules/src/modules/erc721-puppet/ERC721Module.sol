@@ -27,8 +27,6 @@ import { ERC721Metadata, ERC721MetadataData } from "./tables/ERC721Metadata.sol"
 contract ERC721Module is Module {
   error ERC721Module_InvalidNamespace(bytes14 namespace);
 
-  address immutable registrationLibrary = address(new ERC721ModuleRegistrationLibrary());
-
   function install(bytes memory encodedArgs) public {
     // Require the module to not be installed with these args yet
     requireNotInstalled(__self, encodedArgs);
@@ -43,10 +41,7 @@ contract ERC721Module is Module {
 
     // Register the ERC721 tables and system
     IBaseWorld world = IBaseWorld(_world());
-    (bool success, bytes memory returnData) = registrationLibrary.delegatecall(
-      abi.encodeCall(ERC721ModuleRegistrationLibrary.register, (world, namespace))
-    );
-    if (!success) revertWithBytes(returnData);
+    ERC721ModuleRegistrationLib.register(world, namespace);
 
     // Initialize the Metadata
     ERC721Metadata.set(_metadataTableId(namespace), metadata);
@@ -72,7 +67,7 @@ contract ERC721Module is Module {
   }
 }
 
-contract ERC721ModuleRegistrationLibrary {
+library ERC721ModuleRegistrationLib {
   /**
    * Register systems and tables for a new ERC721 token in a given namespace
    */
