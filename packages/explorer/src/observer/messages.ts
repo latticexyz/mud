@@ -3,6 +3,14 @@ import { ReceiptSummary } from "./common";
 
 export type Messages = {
   ping: {};
+  send: {
+    writeId: string;
+    calls: {
+      to: Address;
+      functionSignature: string;
+      args: unknown[];
+    }[];
+  };
   write: {
     writeId: string;
     address: Address;

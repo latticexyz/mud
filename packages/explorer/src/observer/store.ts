@@ -21,14 +21,27 @@ export type Write = {
   error?: Error;
 };
 
+export type Send = {
+  writeId: string;
+  calls: {
+    to: Address;
+    functionSignature: string;
+    args: unknown[];
+  }[];
+};
+
 export type State = {
   writes: {
     [id: string]: Write;
+  };
+  sends: {
+    [id: string]: Send;
   };
 };
 
 export const store = createStore<State>(() => ({
   writes: {},
+  sends: {},
 }));
 
 debug("listening for relayed messages", relayChannelName);
@@ -36,17 +49,31 @@ const channel = new BroadcastChannel(relayChannelName);
 channel.addEventListener("message", ({ data }: MessageEvent<Message>) => {
   if (data.type === "ping") return;
   store.setState((state) => {
-    const write = data.type === "write" ? ({ ...data, events: [] } satisfies Write) : state.writes[data.writeId];
-    return {
-      writes: {
-        ...state.writes,
-        [data.writeId]: {
-          ...write,
-          type: data.type,
-          hash: data.type === "waitForTransactionReceipt" ? data.hash : write.hash,
-          events: [...write.events, data],
+    if (data.type === "send") {
+      return {
+        ...state,
+        sends: {
+          ...state.sends,
+          [data.writeId]: {
+            writeId: data.writeId,
+            calls: data.calls,
+          },
         },
-      },
-    };
+      };
+    } else {
+      const write = data.type === "write" ? ({ ...data, events: [] } satisfies Write) : state.writes[data.writeId];
+      return {
+        ...state,
+        writes: {
+          ...state.writes,
+          [data.writeId]: {
+            ...write,
+            type: data.type,
+            hash: data.type === "waitForTransactionReceipt" ? data.hash : write.hash,
+            events: [...write.events, data],
+          },
+        },
+      };
+    }
   });
 });
