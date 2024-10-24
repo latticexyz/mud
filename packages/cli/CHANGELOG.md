@@ -1,5 +1,22 @@
 # Change Log
 
+## 2.2.14
+
+### Patch Changes
+
+- 8eaad30: Added support for deploying public libraries used within modules.
+  - @latticexyz/abi-ts@2.2.14
+  - @latticexyz/block-logs-stream@2.2.14
+  - @latticexyz/common@2.2.14
+  - @latticexyz/config@2.2.14
+  - @latticexyz/gas-report@2.2.14
+  - @latticexyz/protocol-parser@2.2.14
+  - @latticexyz/schema-type@2.2.14
+  - @latticexyz/store@2.2.14
+  - @latticexyz/utils@2.2.14
+  - @latticexyz/world@2.2.14
+  - @latticexyz/world-module-metadata@2.2.14
+
 ## 2.2.13
 
 ### Patch Changes

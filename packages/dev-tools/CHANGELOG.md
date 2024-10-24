@@ -1,5 +1,18 @@
 # @latticexyz/dev-tools
 
+## 2.2.14
+
+### Patch Changes
+
+- @latticexyz/store-sync@2.2.14
+- @latticexyz/common@2.2.14
+- @latticexyz/react@2.2.14
+- @latticexyz/recs@2.2.14
+- @latticexyz/schema-type@2.2.14
+- @latticexyz/store@2.2.14
+- @latticexyz/utils@2.2.14
+- @latticexyz/world@2.2.14
+
 ## 2.2.13
 
 ### Patch Changes
