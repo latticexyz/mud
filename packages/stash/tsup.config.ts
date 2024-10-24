@@ -1,10 +1,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig((opts) => ({
-  entry: {
-    index: "src/exports/index.ts",
-    internal: "src/exports/internal.ts",
-  },
+  entry: ["src/exports/index.ts", "src/exports/internal.ts", "src/exports/react.ts"],
   target: "esnext",
   format: ["esm"],
   sourcemap: true,
