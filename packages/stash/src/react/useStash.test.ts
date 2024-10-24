@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { renderHook, act } from "@testing-library/react-hooks";
 import { useStash } from "./useStash";
-import { defineStore } from "@latticexyz/store/config/v2";
+import { defineStore } from "@latticexyz/store";
 import { createStash } from "../createStash";
 import isEqual from "fast-deep-equal";
 import { getRecord, getRecords } from "../actions";
