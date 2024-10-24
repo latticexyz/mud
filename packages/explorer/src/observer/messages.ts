@@ -1,8 +1,37 @@
-import { Address, Hash } from "viem";
+import { Address, Hash, Log, TransactionReceipt } from "viem";
 import { ReceiptSummary } from "./common";
 
 export type Messages = {
   ping: {};
+  // send: {
+  //   writeId: string;
+  //   calls: {
+  //     to: Address;
+  //     functionSignature: string;
+  //     args: unknown[];
+  //   }[];
+  // };
+  // "send:result": PromiseSettledResult<Hash> & { writeId: string };
+  waitForUserOperationReceipt: {
+    writeId: string;
+    hash: Hash;
+  };
+  "waitForUserOperationReceipt:result": PromiseSettledResult<{
+    actualGasCost: bigint;
+    actualGasUsed: bigint;
+    entryPoint: Address;
+    logs: Log<bigint, number, false>[];
+    nonce: bigint;
+    paymaster?: Address | undefined;
+    reason?: string | undefined;
+    receipt: TransactionReceipt<bigint, number, "success" | "reverted">;
+    sender: Address;
+    success: boolean;
+    userOpHash: Hash;
+    // TODO: improve ts
+  }> & {
+    writeId: string;
+  };
   write: {
     writeId: string;
     address: Address;
