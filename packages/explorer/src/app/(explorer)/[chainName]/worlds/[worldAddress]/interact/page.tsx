@@ -1,10 +1,10 @@
 import { Metadata } from "next";
-import { Form } from "./Form";
+import { InteractForm } from "./InteractForm";
 
 export const metadata: Metadata = {
   title: "Interact",
 };
 
 export default async function InteractPage() {
-  return <Form />;
+  return <InteractForm />;
 }

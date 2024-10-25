@@ -1,3 +1,176 @@
+## Version 2.2.14
+
+Release date: Thu Oct 24 2024
+
+### Patch changes
+
+**[fix(cli): support public library methods in modules (#3308)](https://github.com/latticexyz/mud/commit/8eaad304db2fe9ae79f087ec7860928f734039d4)** (@latticexyz/cli)
+
+Added support for deploying public libraries used within modules.
+
+**[fix(cli): support public library methods in modules (#3308)](https://github.com/latticexyz/mud/commit/8eaad304db2fe9ae79f087ec7860928f734039d4)** (@latticexyz/world-module-erc20, @latticexyz/world-modules)
+
+Changed ERC20 and ERC721 related modules to use public library methods instead of manual `delegatecall`s.
+
+**[feat(stash): add useStash and improve other helpers (#3320)](https://github.com/latticexyz/mud/commit/93d0e763cca0facaaa20d7bde861c98c298f08ad)** (@latticexyz/stash)
+
+Added `useStash` React hook. It's heavily inspired by Zustand's `useStore` and accepts a stash, a state selector, an an optional equality function to avoid unnecessary re-render cycles when returning unstable values.
+
+Also updated `getRecord` and `getRecords` to each take either a `stash` or `state` object for more ergonomic use with `useStash`.
+
+```ts
+import { useStash } from "@latticexyz/stash/react";
+import { getRecord } from "@latticexyz/stash";
+import config from "../mud.config";
+
+const tables = config.namespaces.app.tables;
+
+export function PlayerName({ playerId }) {
+  const record = useStash(stash, (state) => getRecord({ state, table: tables.Player, key: { playerId } }));
+  ...
+}
+```
+
+```ts
+import isEqual from "fast-deep-equal";
+import { useStash } from "@latticexyz/stash/react";
+import { getRecords } from "@latticexyz/stash";
+import config from "../mud.config";
+
+export function PlayerNames() {
+  const record = useStash(stash, (state) => getRecords({ state, table: tables.Player }), { isEqual });
+  ...
+}
+```
+
+---
+
+## Version 2.2.13
+
+Release date: Wed Oct 23 2024
+
+### Patch changes
+
+**[fix(gas-report): include contract name in file of output (#3317)](https://github.com/latticexyz/mud/commit/d5c270023abc325f25af868d3db1a0bdc3e62d6d)** (@latticexyz/gas-report)
+
+Gas report output now include contract name as part of the `file` to help with stable ordering when sorting output.
+
+**[chore(world-module-erc20): export erc20 module from internal (#3319)](https://github.com/latticexyz/mud/commit/90803770ee72bfd2b9ba9a7990285d1c5866f362)** (@latticexyz/world-module-erc20)
+
+The new ERC20 World Module provides a simpler alternative to the ERC20 Puppet Module, while also being structured in a more extendable way so users can create tokens with custom functionality.
+
+To install this module, you can import and define the module configuration from the NPM package:
+
+```typescript
+import { defineERC20Module } from "@latticexyz/world-module-erc20/internal";
+
+// Add the output of this function to your World's modules
+const erc20Module = defineERC20Module({ namespace: "erc20Namespace", name: "MyToken", symbol: "MTK" });
+```
+
+For detailed installation instructions, please check out the [`@latticexyz/world-module-erc20` README.md](https://github.com/latticexyz/mud/blob/main/packages/world-module-erc20/README.md).
+
+**[feat(explorer): multi-line sql editor (#3311)](https://github.com/latticexyz/mud/commit/79d273a20b3dd50ab733b3261b830b0ef47bcebf)** (@latticexyz/explorer)
+
+The SQL query editor now supports multi-line input.
+
+**[feat(abi-ts): extension option (#3315)](https://github.com/latticexyz/mud/commit/75e93bac492f9000c482d6a26a5c8e29079dd32d)** (@latticexyz/abi-ts)
+
+Added an `--extension` option to customize the resulting TS or DTS output. It defaults to the previous behavior of `.json.d.ts`, but can now be set to `.d.json.ts` for compatibility with newer TS versions and `.json.ts` or just `.ts` for a pure TS file.
+
+**[fix(store-sync): update latest block for live logs API (#3323)](https://github.com/latticexyz/mud/commit/dfc2d6439ee7076cdccbf1a24b7423fb19a7771d)** (@latticexyz/store-sync)
+
+Fixed an issue where the sync progress was not moving to "live" when synced from the MUD indexer's live logs API.
+
+---
+
+## Version 2.2.12
+
+Release date: Fri Oct 18 2024
+
+### Patch changes
+
+**[feat(explorer): add functions filter to query state (#3268)](https://github.com/latticexyz/mud/commit/3d8db6f76f3634d532d39cf4091f22fee0a32b68)** (@latticexyz/explorer)
+
+Function filters in `Interact` tab are now included as part of the URL.
+
+**[feat(explorer): transaction timings (#3274)](https://github.com/latticexyz/mud/commit/1b0ffcf7a1a7daa2a87efe26059d6a142d257588)** (@latticexyz/explorer)
+
+Transactions in Observe tab are now populated with timing metrics when using the `observer` Viem decorator in local projects.
+
+You can wire up your local project to use transaction timings with:
+
+```
+import { observer } from "@latticexyz/explorer/observer";
+
+// Extend the Viem client that is performing writes
+walletClient.extend(observer());
+```
+
+**[fix(faucet,store-indexer): add bin wrappers (#3296)](https://github.com/latticexyz/mud/commit/20f44fbf733ff876d64a544c68a3cb1a4dc307a9)** (@latticexyz/faucet, @latticexyz/store-indexer)
+
+Added bin wrappers to resolve issues when installing the package locally as a dependency of another package.
+
+**[feat(explorer): show ABI errors in interact page (#3303)](https://github.com/latticexyz/mud/commit/d4c10c18ad853bed21c55fe92e2ba09c2382316d)** (@latticexyz/explorer)
+
+Interact tab now displays decoded ABI errors for failed transactions.
+
+**[chore: bump viem (#3273)](https://github.com/latticexyz/mud/commit/ea18f270c9a43dbe489b25f11b8379ccd969c02a)** (@latticexyz/block-logs-stream, @latticexyz/cli, @latticexyz/common, @latticexyz/config, @latticexyz/dev-tools, @latticexyz/explorer, @latticexyz/faucet, @latticexyz/protocol-parser, @latticexyz/schema-type, @latticexyz/stash, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world, create-mud)
+
+Bumped viem to v2.21.19.
+
+MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+```
+pnpm recursive up viem@2.21.19
+```
+
+**[fix(explorer): display nested inputs (#3266)](https://github.com/latticexyz/mud/commit/2c9240111ae11e6727d3581453fba2b866f4b4a0)** (@latticexyz/explorer)
+
+Fixed inputs display in the transactions table row.
+
+**[feat(common): add rhodolite chain (#3295)](https://github.com/latticexyz/mud/commit/41a6e2f83ac4d48a9dccf52d933c15074b9a724e)** (@latticexyz/common)
+
+Added Rhodolite devnet chain config and removed the old and now-defunct Lattice testnet chain config.
+
+**[feat(explorer): show explore table error message (#3286)](https://github.com/latticexyz/mud/commit/af725304e133f95b0b0eb827fdf7283e54ac8342)** (@latticexyz/explorer)
+
+Display error messages for failed queries within the Explore tab's table viewer.
+
+**[feat(explorer): sql editor (#3276)](https://github.com/latticexyz/mud/commit/3a80bed31b97d439025f68b8e4ded27354e102f1)** (@latticexyz/explorer)
+
+Explore page now has a full-featured SQL editor with syntax highlighting, autocomplete, and query validation.
+
+**[feat(explorer): front page (#3255)](https://github.com/latticexyz/mud/commit/6476dec94cf32275631d49c7e8fe8fe5a0708040)** (@latticexyz/explorer)
+
+Each chain's home page now lets you find and pick a world to explore.
+
+**[feat(store-sync): add support for watching pending logs (#3287)](https://github.com/latticexyz/mud/commit/84ae33b8af3ebeb90749c6e82250869b15d17ed1)** (@latticexyz/store-sync)
+
+Added experimental support for syncing state from pending logs.
+
+**[fix(explorer): various fixes (#3299)](https://github.com/latticexyz/mud/commit/9a43e87db302ec599fd1e97d8b77e2e68831017f)** (@latticexyz/explorer)
+
+- Not found page if invalid chain name.
+- Only show selector for worlds if options exist.
+- Remove "future time" from transactions table.
+- Improved layout for Interact tab.
+- Wrap long args in transactions table.
+- New tables polling.
+- Add logs (regression).
+
+**[fix(common): allow overriding fees in writeContract and sendTransaction (#3288)](https://github.com/latticexyz/mud/commit/fe98442d7ee82f0d41ba10f05a4ee1bafea69d48)** (@latticexyz/common)
+
+The `transactionQueue` decorator internally keeps an updated reference for the recommended `baseFeePerGas` and `maxPriorityFeePerGas` from the connected chain to avoid having to fetch it right before sending a transaction.
+However, due to the way the fee values were overridden, it wasn't possible for users to explicitly pass in custom fee values.
+Now explicitly provided fee values have precedence over the internally estimated fee values.
+
+**[feat(explorer): global transactions listener (#3285)](https://github.com/latticexyz/mud/commit/4b4640913d014fb3a0a5a417b84c91b247e08ffc)** (@latticexyz/explorer)
+
+Transactions are now monitored across all tabs while the World Explorer is open.
+
+---
+
 ## Version 2.2.11
 
 Release date: Mon Oct 07 2024

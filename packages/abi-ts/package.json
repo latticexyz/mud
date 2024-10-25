@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/abi-ts",
-  "version": "2.2.11",
+  "version": "2.2.14",
   "description": "Create TypeScript type declaration files (`.d.ts`) for your ABI JSON files.",
   "repository": {
     "type": "git",
@@ -10,12 +10,12 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js"
+    "./internal": "./dist/exports/internal.js"
   },
   "typesVersions": {
     "*": {
-      "index": [
-        "./dist/index.d.ts"
+      "internal": [
+        "./dist/exports/internal.d.ts"
       ]
     }
   },

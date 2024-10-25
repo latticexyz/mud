@@ -1,5 +1,37 @@
 # Change Log
 
+## 2.2.14
+
+### Patch Changes
+
+- @latticexyz/common@2.2.14
+- @latticexyz/schema-type@2.2.14
+
+## 2.2.13
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.13
+- @latticexyz/common@2.2.13
+
+## 2.2.12
+
+### Patch Changes
+
+- ea18f27: Bumped viem to v2.21.19.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.19
+  ```
+
+- Updated dependencies [ea18f27]
+- Updated dependencies [41a6e2f]
+- Updated dependencies [fe98442]
+  - @latticexyz/common@2.2.12
+  - @latticexyz/schema-type@2.2.12
+
 ## 2.2.11
 
 ### Patch Changes

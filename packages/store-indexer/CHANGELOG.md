@@ -1,5 +1,49 @@
 # @latticexyz/store-indexer
 
+## 2.2.14
+
+### Patch Changes
+
+- @latticexyz/store-sync@2.2.14
+- @latticexyz/block-logs-stream@2.2.14
+- @latticexyz/common@2.2.14
+- @latticexyz/protocol-parser@2.2.14
+- @latticexyz/store@2.2.14
+
+## 2.2.13
+
+### Patch Changes
+
+- Updated dependencies [dfc2d64]
+  - @latticexyz/store-sync@2.2.13
+  - @latticexyz/store@2.2.13
+  - @latticexyz/block-logs-stream@2.2.13
+  - @latticexyz/common@2.2.13
+  - @latticexyz/protocol-parser@2.2.13
+
+## 2.2.12
+
+### Patch Changes
+
+- 20f44fb: Added bin wrappers to resolve issues when installing the package locally as a dependency of another package.
+- ea18f27: Bumped viem to v2.21.19.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.19
+  ```
+
+- Updated dependencies [ea18f27]
+- Updated dependencies [41a6e2f]
+- Updated dependencies [84ae33b]
+- Updated dependencies [fe98442]
+  - @latticexyz/block-logs-stream@2.2.12
+  - @latticexyz/common@2.2.12
+  - @latticexyz/protocol-parser@2.2.12
+  - @latticexyz/store-sync@2.2.12
+  - @latticexyz/store@2.2.12
+
 ## 2.2.11
 
 ### Patch Changes

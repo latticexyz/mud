@@ -1,8 +1,8 @@
 import { ArrowUpDownIcon, LoaderIcon, TriangleAlertIcon } from "lucide-react";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { useMemo } from "react";
-import { Schema, Table as TableType } from "@latticexyz/config";
-import { getKeySchema, getKeyTuple, getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
+import { Table as TableType } from "@latticexyz/config";
+import { getKeySchema, getKeyTuple } from "@latticexyz/protocol-parser/internal";
 import {
   ColumnDef,
   SortingState,
@@ -37,7 +37,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
 
-  const tableColumns: ColumnDef<getSchemaPrimitives<Schema>>[] = useMemo(() => {
+  const tableColumns: ColumnDef<Record<string, unknown>>[] = useMemo(() => {
     if (!table || !tableData) return [];
 
     return tableData.columns.map((name) => {
@@ -125,22 +125,23 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
           <div className="relative w-full overflow-auto">
             <Table>
               <TableHeader>
-                {reactTable.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <TableHead key={header.id}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(header.column.columnDef.header, header.getContext())}
-                        </TableHead>
-                      );
-                    })}
-                  </TableRow>
-                ))}
+                {!isError &&
+                  reactTable.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => {
+                        return (
+                          <TableHead key={header.id}>
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(header.column.columnDef.header, header.getContext())}
+                          </TableHead>
+                        );
+                      })}
+                    </TableRow>
+                  ))}
               </TableHeader>
               <TableBody>
-                {reactTable.getRowModel().rows?.length ? (
+                {!isError && reactTable.getRowModel().rows?.length ? (
                   reactTable.getRowModel().rows.map((row) => (
                     <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                       {row.getVisibleCells().map((cell) => (
@@ -173,6 +174,10 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
       </div>
 
       <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+          {tableData && `Total rows: ${tableData.rows.length.toLocaleString()}`}
+        </div>
+
         <div className="space-x-2">
           <Button
             variant="outline"

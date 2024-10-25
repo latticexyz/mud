@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/gas-report",
-  "version": "2.2.11",
+  "version": "2.2.14",
   "description": "Gas reporter for specific lines within forge tests",
   "repository": {
     "type": "git",
@@ -10,12 +10,12 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js"
+    "./internal": "./dist/exports/internal.js"
   },
   "typesVersions": {
     "*": {
-      "index": [
-        "./dist/index.d.ts"
+      "internal": [
+        "./dist/exports/internal.d.ts"
       ]
     }
   },

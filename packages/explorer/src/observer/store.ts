@@ -36,6 +36,7 @@ channel.addEventListener("message", ({ data }: MessageEvent<Message>) => {
   if (data.type === "ping") return;
   store.setState((state) => {
     const write = data.type === "write" ? ({ ...data, events: [] } satisfies Write) : state.writes[data.writeId];
+    if (!write) return state;
     return {
       writes: {
         ...state.writes,

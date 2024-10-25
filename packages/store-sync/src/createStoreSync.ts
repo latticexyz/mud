@@ -29,6 +29,7 @@ import {
   mergeMap,
   throwError,
   mergeWith,
+  ignoreElements,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
@@ -283,6 +284,9 @@ export async function createStoreSync({
       debug("falling back to streaming logs from ETH RPC");
       return storedEthRpcLogs$;
     }),
+    // subscribe to `latestBlockNumber$` so the sync progress is updated
+    // but don't merge/emit anything
+    mergeWith(latestBlockNumber$.pipe(ignoreElements())),
     tap(async ({ logs, blockNumber }) => {
       debug("stored", logs.length, "logs for block", blockNumber);
       lastBlockNumberProcessed = blockNumber;

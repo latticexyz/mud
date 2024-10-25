@@ -2,7 +2,7 @@ import { attest } from "@ark/attest";
 import { defineStore } from "@latticexyz/store";
 import { describe, expect, it, vi } from "vitest";
 import { createStash } from "../createStash";
-import { defineTable } from "@latticexyz/store/config/v2";
+import { defineTable } from "@latticexyz/store/internal";
 import { In } from "../queryFragments";
 import { Hex } from "viem";
 import { runQuery } from "../actions";
@@ -183,7 +183,7 @@ describe("stash with default actions", () => {
         value: { field1: "world" },
       });
 
-      attest<{ field1: string; field2: number; field3: number }>(
+      attest<{ field1: string; field2: number; field3: number } | undefined>(
         stash.getRecord({
           table,
           key: { field2: 2, field3: 1 },
@@ -460,7 +460,7 @@ describe("stash with default actions", () => {
     });
   });
 
-  describe("subscribeStore", () => {
+  describe("subscribeStash", () => {
     it("should notify subscriber of any stash change", () => {
       const config = defineStore({
         namespaces: {
@@ -478,7 +478,7 @@ describe("stash with default actions", () => {
       const stash = createStash(config);
       const subscriber = vi.fn();
 
-      stash.subscribeStore({ subscriber });
+      stash.subscribeStash({ subscriber });
 
       stash.setRecord({ table: config.tables.namespace1__table1, key: { a: "0x00" }, value: { b: 1n, c: 2 } });
 

@@ -10,5 +10,7 @@ export type GetTableConfigResult<table extends Table = Table> = table;
 
 export function getTableConfig({ stash, table }: GetTableConfigArgs): GetTableConfigResult<Table> {
   const { namespaceLabel, label } = table;
-  return stash.get().config[namespaceLabel ?? ""][label];
+  const tableConfig = stash.get().config[namespaceLabel ?? ""]?.[label];
+  if (tableConfig == null) throw new Error("No table found.");
+  return tableConfig;
 }

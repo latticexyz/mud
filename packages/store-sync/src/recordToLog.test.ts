@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import { describe, it, expect } from "vitest";
 import { recordToLog } from "./recordToLog";
-import { defineTable } from "@latticexyz/store/config/v2";
+import { defineTable } from "@latticexyz/store/internal";
 import { logToRecord } from "./logToRecord";
 
 describe("recordToLog", () => {

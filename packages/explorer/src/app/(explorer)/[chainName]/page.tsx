@@ -6,6 +6,6 @@ type Props = {
   };
 };
 
-export default async function ChainPage({ params }: Props) {
-  return redirect(`/${params.chainName}/worlds`);
+export default async function ChainPage({ params: { chainName } }: Props) {
+  return redirect(`/${chainName}/worlds`);
 }

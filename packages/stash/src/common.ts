@@ -1,6 +1,6 @@
-import { QueryFragment } from "./queryFragments";
-import { Table } from "@latticexyz/config";
 import { getKeySchema, getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
+import { Table } from "@latticexyz/config";
+import { QueryFragment } from "./queryFragments";
 
 export type StoreConfig = {
   namespaces: {
@@ -33,7 +33,9 @@ export type Key<table extends Table = Table> = getSchemaPrimitives<getKeySchema<
 /**
  * A map from encoded key to decoded key
  */
-export type Keys<table extends Table = Table> = { [encodedKey: string]: Key<table> };
+export type Keys<table extends Table = Table> = {
+  [encodedKey: string]: Key<table>;
+};
 
 export type CommonQueryResult = {
   /**
@@ -75,9 +77,13 @@ export type TableLabel<config extends StoreConfig = StoreConfig, namespace exten
   namespace?: namespace;
 };
 
-export type TableRecords<table extends Table = Table> = { readonly [key: string]: TableRecord<table> };
+export type TableRecords<table extends Table = Table> = {
+  readonly [key: string]: TableRecord<table>;
+};
 
-export type MutableTableRecords<table extends Table = Table> = { [key: string]: TableRecord<table> };
+export type MutableTableRecords<table extends Table = Table> = {
+  [key: string]: TableRecord<table>;
+};
 
 export type StoreRecords<config extends StoreConfig = StoreConfig> = {
   readonly [namespace in getNamespaces<config>]: {

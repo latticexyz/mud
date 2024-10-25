@@ -30,7 +30,7 @@ function NavigationLink({ href, children }: { href: string; children: React.Reac
 export function Navigation() {
   const { data, isFetched } = useWorldAbiQuery();
   return (
-    <div className="mb-8">
+    <div className="pb-4">
       <div className="flex items-center justify-between">
         <div className="-mx-3 flex">
           <NavigationLink href="explore">Explore</NavigationLink>

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store-indexer",
-  "version": "2.2.11",
+  "version": "2.2.14",
   "description": "Minimal Typescript indexer for Store",
   "repository": {
     "type": "git",

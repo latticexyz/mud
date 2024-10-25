@@ -1,5 +1,36 @@
 # Change Log
 
+## 2.2.14
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.14
+
+## 2.2.13
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.13
+
+## 2.2.12
+
+### Patch Changes
+
+- ea18f27: Bumped viem to v2.21.19.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.19
+  ```
+
+- 41a6e2f: Added Rhodolite devnet chain config and removed the old and now-defunct Lattice testnet chain config.
+- fe98442: The `transactionQueue` decorator internally keeps an updated reference for the recommended `baseFeePerGas` and `maxPriorityFeePerGas` from the connected chain to avoid having to fetch it right before sending a transaction.
+  However, due to the way the fee values were overridden, it wasn't possible for users to explicitly pass in custom fee values.
+  Now explicitly provided fee values have precedence over the internally estimated fee values.
+- Updated dependencies [ea18f27]
+  - @latticexyz/schema-type@2.2.12
+
 ## 2.2.11
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/common",
-  "version": "2.2.11",
+  "version": "2.2.14",
   "description": "Common low level logic shared between packages",
   "repository": {
     "type": "git",

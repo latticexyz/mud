@@ -13,7 +13,7 @@ import { RunQueryArgs, RunQueryOptions, RunQueryResult, runQuery } from "../acti
 import { SetRecordArgs, SetRecordResult, setRecord } from "../actions/setRecord";
 import { SetRecordsArgs, SetRecordsResult, setRecords } from "../actions/setRecords";
 import { SubscribeQueryArgs, SubscribeQueryResult, subscribeQuery } from "../actions/subscribeQuery";
-import { SubscribeStoreArgs, SubscribeStoreResult, subscribeStore } from "../actions/subscribeStore";
+import { SubscribeStashArgs, SubscribeStashResult, subscribeStash } from "../actions/subscribeStash";
 import { SubscribeTableArgs, SubscribeTableResult, subscribeTable } from "../actions/subscribeTable";
 import { Table } from "@latticexyz/config";
 
@@ -22,8 +22,8 @@ export type StashBoundDeleteRecordArgs<table extends Table> = Omit<DeleteRecordA
 export type StashBoundEncodeKeyArgs<table extends Table = Table> = EncodeKeyArgs<table>;
 export type StashBoundGetTableConfigArgs = Omit<GetTableConfigArgs, "stash">;
 export type StashBoundGetKeysArgs<table extends Table = Table> = Omit<GetKeysArgs<table>, "stash">;
-export type StashBoundGetRecordArgs<table extends Table = Table> = Omit<GetRecordArgs<table>, "stash">;
-export type StashBoundGetRecordsArgs<table extends Table = Table> = Omit<GetRecordsArgs<table>, "stash">;
+export type StashBoundGetRecordArgs<table extends Table = Table> = Omit<GetRecordArgs<table>, "stash" | "state">;
+export type StashBoundGetRecordsArgs<table extends Table = Table> = Omit<GetRecordsArgs<table>, "stash" | "state">;
 export type StashBoundGetTableArgs<table extends Table = Table> = Omit<GetTableArgs<table>, "stash">;
 export type StashBoundRegisterTableArgs<table extends Table = Table> = Omit<RegisterTableArgs<table>, "stash">;
 export type StashBoundRunQueryArgs<
@@ -33,8 +33,8 @@ export type StashBoundRunQueryArgs<
 export type StashBoundSetRecordArgs<table extends Table = Table> = Omit<SetRecordArgs<table>, "stash">;
 export type StashBoundSetRecordsArgs<table extends Table = Table> = Omit<SetRecordsArgs<table>, "stash">;
 export type StashBoundSubscribeQueryArgs<query extends Query = Query> = Omit<SubscribeQueryArgs<query>, "stash">;
-export type StashBoundSubscribeStoreArgs<config extends StoreConfig = StoreConfig> = Omit<
-  SubscribeStoreArgs<config>,
+export type StashBoundSubscribeStashArgs<config extends StoreConfig = StoreConfig> = Omit<
+  SubscribeStashArgs<config>,
   "stash"
 >;
 export type StashBoundSubscribeTableArgs<table extends Table = Table> = Omit<SubscribeTableArgs<table>, "stash">;
@@ -56,7 +56,7 @@ export type DefaultActions<config extends StoreConfig = StoreConfig> = {
   setRecord: <table extends Table>(args: StashBoundSetRecordArgs<table>) => SetRecordResult;
   setRecords: <table extends Table>(args: StashBoundSetRecordsArgs<table>) => SetRecordsResult;
   subscribeQuery: <query extends Query>(args: StashBoundSubscribeQueryArgs<query>) => SubscribeQueryResult<query>;
-  subscribeStore: (args: StashBoundSubscribeStoreArgs<config>) => SubscribeStoreResult;
+  subscribeStash: (args: StashBoundSubscribeStashArgs<config>) => SubscribeStashResult;
   subscribeTable: <table extends Table>(args: StashBoundSubscribeTableArgs<table>) => SubscribeTableResult;
 };
 
@@ -78,8 +78,8 @@ export function defaultActions<config extends StoreConfig>(stash: Stash<config>)
     setRecords: <table extends Table>(args: StashBoundSetRecordsArgs<table>) => setRecords({ stash, ...args }),
     subscribeQuery: <query extends Query>(args: StashBoundSubscribeQueryArgs<query>) =>
       subscribeQuery({ stash, ...args }),
-    subscribeStore: <config extends StoreConfig>(args: StashBoundSubscribeStoreArgs<config>) =>
-      subscribeStore({ stash, ...args }),
+    subscribeStash: <config extends StoreConfig>(args: StashBoundSubscribeStashArgs<config>) =>
+      subscribeStash({ stash, ...args }),
     subscribeTable: <table extends Table>(args: StashBoundSubscribeTableArgs<table>) =>
       subscribeTable({ stash, ...args }),
   };

@@ -1,7 +1,7 @@
 import { CommandModule } from "yargs";
 
-import gasReport from "@latticexyz/gas-report";
-import abiTs from "@latticexyz/abi-ts";
+import { command as gasReport } from "@latticexyz/gas-report/internal";
+import { command as abiTs } from "@latticexyz/abi-ts/internal";
 
 import build from "./build";
 import devnode from "./devnode";
@@ -21,7 +21,7 @@ export const commands: CommandModule<any, any>[] = [
   build,
   deploy,
   devnode,
-  gasReport as CommandModule,
+  gasReport,
   hello,
   tablegen,
   worldgen,

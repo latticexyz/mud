@@ -24,7 +24,7 @@ export type SubscribeQueryOptions<config extends StoreConfig = StoreConfig> = Co
   initialSubscribers?: QuerySubscriber<config>[];
 };
 
-type QueryTableUpdates<config extends StoreConfig = StoreConfig> = {
+export type QueryTableUpdates<config extends StoreConfig = StoreConfig> = {
   [namespace in getNamespaces<config>]: {
     [table in getNamespaceTables<config, namespace>]: TableUpdates<getConfig<config, namespace, table>>;
   };
@@ -33,10 +33,12 @@ type QueryTableUpdates<config extends StoreConfig = StoreConfig> = {
 export type QueryUpdate<config extends StoreConfig = StoreConfig> = {
   records: QueryTableUpdates<config>;
   keys: Keys;
-  types: { [key: string]: "enter" | "update" | "exit" };
+  types: {
+    [key: string]: "enter" | "update" | "exit";
+  };
 };
 
-type QuerySubscriber<config extends StoreConfig = StoreConfig> = (update: QueryUpdate<config>) => void;
+export type QuerySubscriber<config extends StoreConfig = StoreConfig> = (update: QueryUpdate<config>) => void;
 
 export type SubscribeQueryArgs<query extends Query = Query> = {
   stash: Stash;
@@ -90,8 +92,9 @@ export function subscribeQuery<query extends Query>({
     };
 
     for (const key of Object.keys(tableUpdates)) {
-      if (key in matching) {
-        update.keys[key] = matching[key];
+      const matchedKey = matching[key];
+      if (matchedKey != null) {
+        update.keys[key] = matchedKey;
         // If the key matched before, check if the relevant fragments (accessing this table) still match
         const relevantFragments = query.filter((f) => f.table.namespace === namespaceLabel && f.table.label === label);
         const match = relevantFragments.every((f) => f.pass(stash, key));
@@ -135,8 +138,7 @@ export function subscribeQuery<query extends Query>({
     const records: QueryTableUpdates = {};
     for (const namespace of Object.keys(initialRun.records)) {
       for (const table of Object.keys(initialRun.records[namespace])) {
-        records[namespace] ??= {};
-        records[namespace][table] = Object.fromEntries(
+        (records[namespace] ??= {})[table] = Object.fromEntries(
           Object.entries(initialRun.records[namespace][table]).map(([key, record]) => [
             key,
             { prev: undefined, current: record },
