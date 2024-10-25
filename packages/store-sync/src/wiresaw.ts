@@ -4,7 +4,7 @@ import { StorageAdapterBlock, StoreEventsLog } from "./common";
 import { storeEventsAbi } from "@latticexyz/store";
 import { logSort } from "@latticexyz/common";
 import { SocketRpcClient, getWebSocketRpcClient } from "viem/utils";
-import { debug } from "./debug";
+import { wait } from "@latticexyz/common/utils";
 
 type WatchLogsInput = {
   url: string;
@@ -23,6 +23,7 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
 
   let resumeBlock = fromBlock;
   let keepAliveInterval: ReturnType<typeof setTimeout> | undefined = undefined;
+
   const logs$ = new Observable<StorageAdapterBlock>((subscriber) => {
     let client: SocketRpcClient<WebSocket>;
 
@@ -35,9 +36,15 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
         keepAlive: false, // keepAlive is handled below
       }).then(async (_client) => {
         client = _client;
+
         client.socket.addEventListener("error", (error) =>
           subscriber.error({ code: -32603, message: "WebSocket error", data: error }),
         );
+
+        client.socket.addEventListener("close", () => {
+          console.log("Websocket closed, reconnecting...");
+          setupClient();
+        });
 
         // Start watching pending logs
         const subscriptionId: Hex = (
@@ -92,15 +99,14 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
           try {
             await Promise.race([
               client.requestAsync({ body: { method: "net_version" } }),
-              new Promise<void>((_, reject) => {
-                setTimeout(reject, 2000);
+              wait(2000).then(() => {
+                throw new Error("Timed out waiting for websocket RPC ping");
               }),
             ]);
           } catch {
-            debug("Detected unresponsive websocket, reconnecting...");
+            console.log("Detected unresponsive websocket, closing...");
             clearInterval(keepAliveInterval);
             client.close();
-            setupClient();
           }
         }, 3000);
       });
@@ -109,10 +115,8 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
     setupClient();
 
     return () => {
+      clearInterval(keepAliveInterval);
       client?.close();
-      if (keepAliveInterval != null) {
-        clearInterval(keepAliveInterval);
-      }
     };
   });
 
