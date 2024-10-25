@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { type } from "arktype";
-import { World } from "../config/v2";
+import { World } from "../config/v2/output";
 import { systemsManifestFilename } from "./common";
 import { SystemsManifest } from "./buildSystemsManifest";
 import { indent } from "@latticexyz/common/utils";

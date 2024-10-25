@@ -1,6 +1,6 @@
 import { isHex } from "viem";
 import { getSystemContracts } from "./getSystemContracts";
-import { System, World } from "../config/v2";
+import { System, World } from "../config/v2/output";
 import { resolveNamespace } from "../config/v2/namespace";
 import { resourceToLabel } from "@latticexyz/common";
 

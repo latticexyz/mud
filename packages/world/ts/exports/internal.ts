@@ -10,5 +10,14 @@ export * from "../callWithSignatureTypes";
 export * from "../getFunctions";
 export * from "../getWorldAbi";
 
-export { resolveTableId, resolveWithContext } from "../config/v2/dynamicResolution";
-export { ModuleInput } from "../config/v2/input";
+export * from "../config/v2/codegen";
+export * from "../config/v2/defaults";
+export * from "../config/v2/deploy";
+export * from "../config/v2/dynamicResolution";
+export * from "../config/v2/input";
+export * from "../config/v2/namespace";
+export * from "../config/v2/namespaces";
+export * from "../config/v2/output";
+export * from "../config/v2/system";
+export * from "../config/v2/systems";
+export * from "../config/v2/world";

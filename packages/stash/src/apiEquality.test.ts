@@ -22,7 +22,7 @@ describe("stash actions, bound table", () => {
       "getTables",
       "runQuery",
       "subscribeQuery",
-      "subscribeStore",
+      "subscribeStash",
       "subscribeTable", // renamed to subscribe in table API
       "_",
       "get",

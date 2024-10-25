@@ -76,9 +76,8 @@ export function runQuery<query extends Query, options extends RunQueryOptions>({
   const records: MutableStoreRecords = {};
   for (const { table } of query) {
     const { namespaceLabel, label } = table;
-    records[namespaceLabel] ??= {};
     const tableRecords = getRecords({ stash, table, keys: Object.values(keys) });
-    records[namespaceLabel][label] ??= tableRecords;
+    (records[namespaceLabel] ??= {})[label] ??= tableRecords;
   }
   return { keys, records } as never;
 }

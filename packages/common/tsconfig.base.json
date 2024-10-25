@@ -18,6 +18,8 @@
     "noErrorTruncation": true,
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
+    // TODO: enable this
+    // "noUncheckedIndexedAccess": true,
     "sourceMap": true
   }
 }

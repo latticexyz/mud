@@ -13,5 +13,5 @@ export * from "./runQuery";
 export * from "./setRecord";
 export * from "./setRecords";
 export * from "./subscribeQuery";
-export * from "./subscribeStore";
+export * from "./subscribeStash";
 export * from "./subscribeTable";

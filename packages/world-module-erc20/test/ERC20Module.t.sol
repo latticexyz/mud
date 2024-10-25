@@ -46,10 +46,7 @@ contract ERC20ModuleTest is Test, GasReporter {
     ResourceId erc20NamespaceId = WorldResourceIdLib.encodeNamespace(TestConstants.ERC20_NAMESPACE);
 
     // Token should retain access to the namespace
-    address token = ERC20Registry.get(
-      erc20RegistryTableId,
-      WorldResourceIdLib.encodeNamespace(TestConstants.ERC20_NAMESPACE)
-    );
+    address token = ERC20Registry.get(erc20RegistryTableId, erc20NamespaceId);
 
     // Module should grant the token access to the token namespace
     assertTrue(ResourceAccess.get(erc20NamespaceId, token), "Token does not have access to its namespace");

@@ -37,10 +37,12 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
   const account = useAccount();
 
   const valueSchema = getValueSchema(table);
-  const fieldType = valueSchema[name as never].type;
+  const fieldType = valueSchema?.[name as never]?.type;
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (newValue: unknown) => {
+      if (!fieldType) throw new Error("Field type not found");
+
       const fieldIndex = getFieldIndex<ValueSchema>(getSchemaTypes(valueSchema), name);
       const encodedFieldValue = encodeField(fieldType, newValue);
       const txHash = await writeContract(wagmiConfig, {

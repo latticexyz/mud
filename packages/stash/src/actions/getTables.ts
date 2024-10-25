@@ -23,9 +23,8 @@ export function getTables<config extends StoreConfig>({ stash }: GetTablesArgs<c
   const boundTables: MutableBoundTables = {};
   const config = stash.get().config;
   for (const namespace of Object.keys(config)) {
-    boundTables[namespace] ??= {};
-    for (const label of Object.keys(config[namespace])) {
-      boundTables[namespace][label] = getTable({ stash, table: config[namespace][label] }) as never;
+    for (const label of Object.keys(config[namespace]!)) {
+      (boundTables[namespace] ??= {})[label] = getTable({ stash, table: config[namespace]![label]! }) as never;
     }
   }
   return boundTables as never;
