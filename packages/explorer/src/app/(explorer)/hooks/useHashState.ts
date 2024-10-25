@@ -17,7 +17,7 @@ export function useHashState() {
   const setHash = (newHash: string) => {
     let updatedUrl = window.location.href;
     updatedUrl = queryString.stringifyUrl({
-      url: updatedUrl.split("#")[0],
+      url: updatedUrl.split("#")[0] ?? "",
       fragmentIdentifier: newHash,
     });
 
@@ -37,7 +37,6 @@ export function useHashState() {
 
   useEffect(() => {
     window.addEventListener("hashchange", handleHashChange);
-
     return () => {
       window.removeEventListener("hashchange", handleHashChange);
     };

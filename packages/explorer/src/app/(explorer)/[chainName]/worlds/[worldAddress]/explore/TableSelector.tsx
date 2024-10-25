@@ -39,7 +39,7 @@ export function TableSelector({ tables }: { tables?: Table[] }) {
   const selectedTableConfig = tables?.find(({ tableId }) => tableId === selectedTableId);
 
   useEffect(() => {
-    if (!selectedTableId && Array.isArray(tables) && tables.length > 0) {
+    if (!selectedTableId && tables?.[0]) {
       setTableId(tables[0].tableId);
     }
   }, [selectedTableId, setTableId, tables]);

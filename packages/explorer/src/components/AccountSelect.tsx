@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { TruncatedHex } from "./ui/TruncatedHex";
 
 function AccountSelectItem({ connector }: { connector: AnvilConnector }) {
-  const address = connector.accounts[0].address;
+  const address = connector.accounts[0]?.address;
   const { data: balance } = useBalance({
     address,
     query: {
