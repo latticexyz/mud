@@ -82,9 +82,9 @@ export function TransactionTableRow({ row }: { row: Row<ObservedTransaction> }) 
                 <div className="flex items-start gap-x-4">
                   <h3 className="w-[45px] flex-shrink-0 text-2xs font-bold uppercase">Inputs</h3>
 
-                  {data.calls && data.calls.length > 0 ? (
+                  {(Array.isArray(data.calls) && data.calls.length > 0) || data.calls ? (
                     <div className="flex w-full flex-col gap-y-4">
-                      {data.calls.map((call, idx) => {
+                      {(Array.isArray(data.calls) ? data.calls : [data.calls]).map((call, idx) => {
                         return (
                           <div key={idx} className="min-w-0 flex-grow border border-white/20 p-2 pt-1">
                             <span className="text-xs">{call.functionName}:</span>

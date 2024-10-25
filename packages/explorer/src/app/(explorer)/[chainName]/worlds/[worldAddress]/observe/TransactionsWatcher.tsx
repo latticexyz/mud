@@ -43,8 +43,6 @@ export function TransactionsWatcher() {
         if (!write) return;
 
         const receipt = write["events"].find((event) => event.type === "waitForUserOperationReceipt:result")?.receipt;
-        console.log("receipt:", receipt);
-
         if (!receipt) return;
 
         const hash = receipt.transactionHash;
@@ -172,7 +170,7 @@ export function TransactionsWatcher() {
           timestamp,
           transaction,
           status: "pending",
-          functionData: {
+          calls: {
             functionName,
             args,
           },
