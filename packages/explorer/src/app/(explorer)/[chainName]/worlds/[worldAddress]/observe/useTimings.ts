@@ -20,6 +20,8 @@ export function useTimings({ time: start, events }: Write) {
     return priorityA - priorityB;
   });
 
+  return []; // TODO: make it work
+
   return sortedEvents
     .map((event) => {
       const type = event.type as EventType;

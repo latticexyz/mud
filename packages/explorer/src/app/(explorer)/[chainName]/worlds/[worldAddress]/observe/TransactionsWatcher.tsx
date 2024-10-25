@@ -2054,92 +2054,93 @@ export function TransactionsWatcher() {
   const { transactions, setTransaction, updateTransaction } = useStore(worldStore);
   const observerWrites = useStore(observerStore, (state) => state.writes);
 
+  console.log("observerWrites", observerWrites);
+
+  const handleUserOperation = useCallback(async (userOpHash: Hash, timestamp: bigint) => {
+    console.log("handleUserOperation", userOpHash, timestamp);
+
+    // if (transaction.to?.toLowerCase() === entryPoint07Address.toLowerCase()) {
+    //   const decodedEntryPointCall = decodeFunctionData({
+    //     abi: entryPoint07Abi,
+    //     data: transaction.input,
+    //   });
+
+    //   const userOps = decodedEntryPointCall.args[0] as PackedUserOperation[];
+    //   const worldTo = decodedEntryPointCall.args[1] as Address;
+
+    //   // TODO: handle several userOps
+    //   for (const userOp of userOps) {
+    //     const decodedSmartAccountCall = decodeFunctionData({
+    //       abi: parseAbi([
+    //         "function execute(address target, uint256 value, bytes calldata data)",
+    //         "function executeBatch((address target,uint256 value,bytes data)[])",
+    //       ]),
+    //       data: userOp.callData,
+    //     });
+
+    //     const calls = decodedSmartAccountCall.args[0].map((worldFunction) => {
+    //       let functionName: string | undefined;
+    //       let args: readonly unknown[] | undefined;
+    //       let transactionError: BaseError | undefined; // TODO: what to do with this?
+    //       try {
+    //         const functionData = decodeFunctionData({ abi: doomWorldAbi, data: worldFunction.data });
+    //         functionName = functionData.functionName;
+    //         args = functionData.args;
+    //       } catch (error) {
+    //         transactionError = error as BaseError;
+    //         functionName = transaction.input.length > 10 ? transaction.input.slice(0, 10) : "unknown";
+    //       }
+
+    //       const functionAbiItem = getAbiItem({
+    //         abi: doomWorldAbi,
+    //         name: functionName,
+    //         args,
+    //       } as never);
+
+    //       return {
+    //         to: worldFunction.target,
+    //         functionSignature: functionAbiItem ? formatAbiItem(functionAbiItem) : "unknown",
+    //         functionName,
+    //         args,
+    //       };
+    //     });
+
+    //     const write = undefined; // TODO: add back
+    //     setTransaction({
+    //       hash,
+    //       writeId: write?.writeId ?? hash,
+    //       from: transaction.from,
+    //       timestamp,
+    //       transaction,
+    //       status: "pending",
+    //       calls,
+    //       value: transaction.value,
+    //     });
+
+    //     const receipt = await waitForTransactionReceipt(wagmiConfig, { hash });
+    //     const logs = parseEventLogs({
+    //       abi: [...abi, userOperationEventAbi],
+    //       logs: receipt?.logs || [],
+    //     });
+
+    //     updateTransaction(hash, {
+    //       receipt,
+    //       logs,
+    //       status: "success",
+    //       error: undefined, // TODO: transactionError as BaseError,
+    //     });
+    //   }
+    // }
+  }, []);
+
   const handleTransaction = useCallback(
     async (hash: Hex, timestamp: bigint) => {
+      console.log("handleTransaction", hash);
+
       if (!abi) return;
 
       const transaction = await getTransaction(wagmiConfig, { hash });
-      if (transaction.to?.toLowerCase() === entryPoint07Address.toLowerCase()) {
-        console.log("entry point call", transaction);
-
-        const decodedEntryPointCall = decodeFunctionData({
-          abi: entryPoint07Abi,
-          data: transaction.input,
-        });
-
-        console.log("decodedEntryPointCall", decodedEntryPointCall);
-
-        const userOps = decodedEntryPointCall.args[0] as PackedUserOperation[];
-        const worldTo = decodedEntryPointCall.args[1] as Address;
-
-        for (const userOp of userOps) {
-          const decodedSmartAccountCall = decodeFunctionData({
-            abi: parseAbi([
-              "function execute(address target, uint256 value, bytes calldata data)",
-              "function executeBatch((address target,uint256 value,bytes data)[])",
-            ]),
-            data: userOp.callData,
-          });
-
-          console.log("decodedSmartAccountCall (userOp) within loop:", decodedSmartAccountCall);
-
-          const calls = decodedSmartAccountCall.args[0].map((worldFunction) => {
-            let functionName: string | undefined;
-            let args: readonly unknown[] | undefined;
-            let transactionError: BaseError | undefined; // TODO: what to do with this?
-            try {
-              const functionData = decodeFunctionData({ abi: doomWorldAbi, data: worldFunction.data });
-              functionName = functionData.functionName;
-              args = functionData.args;
-            } catch (error) {
-              transactionError = error as BaseError;
-              functionName = transaction.input.length > 10 ? transaction.input.slice(0, 10) : "unknown";
-            }
-
-            const functionAbiItem = getAbiItem({
-              abi: doomWorldAbi,
-              name: functionName,
-              args,
-            } as never);
-
-            return {
-              to: worldFunction.target,
-              functionSignature: functionAbiItem ? formatAbiItem(functionAbiItem) : "unknown",
-              functionName,
-              args,
-            };
-          });
-
-          console.log("calls", calls);
-
-          const write = undefined; // TODO: add back
-          setTransaction({
-            hash,
-            writeId: write?.writeId ?? hash,
-            from: transaction.from,
-            timestamp,
-            transaction,
-            status: "pending",
-            calls,
-            value: transaction.value,
-          });
-
-          const receipt = await waitForTransactionReceipt(wagmiConfig, { hash });
-          const logs = parseEventLogs({
-            abi: [...abi, userOperationEventAbi],
-            logs: receipt?.logs || [],
-          });
-
-          console.log("logs:", logs);
-
-          updateTransaction(hash, {
-            receipt,
-            logs,
-            status: "success",
-            error: undefined, // TODO: transactionError as BaseError,
-          });
-        }
-      } else if (transaction.to === worldAddress) {
+      if (transaction.to === worldAddress) {
         let functionName: string | undefined;
         let args: readonly unknown[] | undefined;
         let transactionError: BaseError | undefined;
@@ -2212,30 +2213,33 @@ export function TransactionsWatcher() {
   );
 
   useEffect(() => {
-    // for (const write of Object.values(observerWrites)) {
-    //   const hash = write.hash;
-    //   if (hash) {
-    //     // TODO: add back -> && write.address.toLowerCase() === worldAddress.toLowerCase()
-    //     const transaction = transactions.find((transaction) => transaction.hash === hash);
-    //     if (!transaction) {
-    //       handleTransaction(hash, BigInt(write.time) / 1000n);
-    //     }
-    //   }
-    // }
-  }, [handleTransaction, observerWrites, transactions, worldAddress]);
-
-  useWatchBlocks({
-    onBlock(block) {
-      for (const hash of block.transactions) {
-        console.log("hash", hash);
-
-        if (transactions.find((transaction) => transaction.hash === hash)) continue;
-        handleTransaction(hash, block.timestamp);
+    for (const write of Object.values(observerWrites)) {
+      const hash = write.hash;
+      const userOpHash = write.userOpHash;
+      if (hash || userOpHash) {
+        // TODO: add back -> && write.address.toLowerCase() === worldAddress.toLowerCase()
+        const transaction = transactions.find((transaction) => transaction.hash === hash);
+        if (!transaction) {
+          if (hash) {
+            handleTransaction(hash, BigInt(write.time) / 1000n);
+          } else if (userOpHash) {
+            handleUserOperation(userOpHash, BigInt(write.time) / 1000n);
+          }
+        }
       }
-    },
-    chainId,
-    pollingInterval: 500,
-  });
+    }
+  }, [handleTransaction, handleUserOperation, observerWrites, transactions, worldAddress]);
+
+  // useWatchBlocks({
+  //   onBlock(block) {
+  //     for (const hash of block.transactions) {
+  //       if (transactions.find((transaction) => transaction.hash === hash)) continue;
+  //       handleTransaction(hash, block.timestamp);
+  //     }
+  //   },
+  //   chainId,
+  //   pollingInterval: 500,
+  // });
 
   return null;
 }

@@ -1,20 +1,12 @@
 import { Address, Hash, Log, TransactionReceipt } from "viem";
 import { ReceiptSummary } from "./common";
+import { UserOperation } from "./store";
 
 export type Messages = {
   ping: {};
-  // send: {
-  //   writeId: string;
-  //   calls: {
-  //     to: Address;
-  //     functionSignature: string;
-  //     args: unknown[];
-  //   }[];
-  // };
-  // "send:result": PromiseSettledResult<Hash> & { writeId: string };
   waitForUserOperationReceipt: {
     writeId: string;
-    hash: Hash;
+    userOpHash: Hash;
   };
   "waitForUserOperationReceipt:result": PromiseSettledResult<{
     actualGasCost: bigint;
@@ -34,10 +26,14 @@ export type Messages = {
   };
   write: {
     writeId: string;
-    address: Address;
+    address?: Address; // TODO: was required before, handle it
     from: Address;
-    functionSignature: string;
-    args: unknown[];
+
+    // TODO: improve types
+    functionSignature?: string;
+    args?: unknown[];
+    calls?: UserOperation["calls"];
+
     value?: bigint;
   };
   "write:result": PromiseSettledResult<Hash> & { writeId: string };

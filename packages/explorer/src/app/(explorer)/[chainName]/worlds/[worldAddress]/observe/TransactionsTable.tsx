@@ -46,16 +46,16 @@ export const columns = [
     },
   }),
   columnHelper.accessor("calls", {
-    header: "Function",
+    header: "Function(s)",
     cell: (row) => {
       const calls = row.getValue();
       const status = row.row.original.status;
       return (
         <div className="flex items-center">
           <div className="flex gap-2">
-            {calls?.map((call, idx) => (
+            {calls?.map(({ functionName }, idx) => (
               <Badge variant="secondary" key={idx}>
-                {call.functionName}
+                {functionName}
               </Badge>
             ))}
           </div>
@@ -103,8 +103,6 @@ export const columns = [
 export function TransactionsTable() {
   const transactions = useObservedTransactions();
   const [expanded, setExpanded] = useState<ExpandedState>({});
-
-  console.log("transactions", transactions);
 
   const table = useReactTable({
     data: transactions,

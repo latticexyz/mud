@@ -1,17 +1,7 @@
-import { Account, Chain, Client, Hex, Transport, WalletActions, decodeFunctionData, getAbiItem, parseAbi } from "viem";
-import {
-  BundlerActions,
-  entryPoint07Abi,
-  entryPoint07Address,
-  sendUserOperation,
-  waitForUserOperationReceipt,
-} from "viem/account-abstraction";
-import { getTransaction, waitForTransactionReceipt, writeContract } from "viem/actions";
+import { Account, Chain, Client, Hex, Transport, WalletActions, getAbiItem } from "viem";
+import { sendUserOperation, waitForUserOperationReceipt } from "viem/account-abstraction";
+import { waitForTransactionReceipt, writeContract } from "viem/actions";
 import { formatAbiItem, getAction } from "viem/utils";
-import {
-  doomWorldAbi,
-  userOperationEventAbi,
-} from "../app/(explorer)/[chainName]/worlds/[worldAddress]/observe/TransactionsWatcher";
 import { createBridge } from "./bridge";
 import { ReceiptSummary } from "./common";
 
@@ -30,23 +20,20 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
   account extends Account | undefined = Account | undefined,
 >(
   client: Client<transport, chain, account>,
-) => Pick<WalletActions<chain, account>, "writeContract"> & Pick<BundlerActions, "sendUserOperation"> {
+  // TODO: type BundlerActions properly, not working ( & Pick<BundlerActions, "sendUserOperation">)
+) => Pick<WalletActions<chain, account>, "writeContract"> {
   const emit = createBridge({ url: `${explorerUrl}/internal/observer-relay` });
 
   return (client) => {
     return {
       async sendUserOperation(args) {
-        console.log("observerWrite sendUserOperation args:", args);
-
-        const writeId = `${client.uid}-${++writeCounter}`; // TODO: rename write to send ?
+        const writeId = `${client.uid}-${++writeCounter}`;
         const write = getAction(client, sendUserOperation, "sendUserOperation")(args);
-        const calls = args.calls;
 
         emit("write", {
           writeId,
-          clientType: client.type,
           from: client.account!.address,
-          calls: calls.map((call) => {
+          calls: args.calls.map((call) => {
             const functionAbiItem = getAbiItem({
               abi: call.abi,
               name: call.functionName,
@@ -54,8 +41,8 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
             } as never)!;
 
             return {
-              to: call.to, // TODO: rename to `to`
-              functionSignature: formatAbiItem(functionAbiItem),
+              to: call.to,
+              functionSignature: formatAbiItem(functionAbiItem), // TODO: is it needed?
               functionName: call.functionName,
               args: call.args,
             };
@@ -65,12 +52,17 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
           emit("write:result", { ...result, writeId });
         });
 
-        write.then((hash) => {
-          const receipt = getAction(client, waitForUserOperationReceipt, "waitForUserOperationReceipt")({ hash });
+        write.then((userOpHash) => {
+          const receipt = getAction(
+            client,
+            waitForUserOperationReceipt,
+            "waitForUserOperationReceipt",
+          )({ hash: userOpHash });
 
-          emit("waitForUserOperationReceipt", { writeId, hash });
-          Promise.allSettled([receipt]).then(async ([result]) => {
+          emit("waitForUserOperationReceipt", { writeId, userOpHash });
+          Promise.allSettled([receipt]).then(([result]) => {
             emit("waitForUserOperationReceipt:result", {
+              // TODO: type .value
               ...result.value,
               hash: result.value.receipt.transactionHash,
               writeId,
@@ -94,7 +86,6 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
 
         emit("write", {
           writeId,
-          clientType: client.type,
           address: args.address,
           from: client.account!.address,
           functionSignature: formatAbiItem(functionAbiItem),
@@ -105,7 +96,7 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
           emit("write:result", { ...result, writeId });
         });
 
-        write.then(async (hash) => {
+        write.then((hash) => {
           const receipt = getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });
 
           emit("waitForTransactionReceipt", { writeId, hash });
