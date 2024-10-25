@@ -32,14 +32,12 @@ export function TransactionsWatcher() {
   const observerWrites = useStore(observerStore, (state) => state.writes);
 
   const handleTransaction = useCallback(
-    async ({ hash, writeId, timestamp }: { hash: Hash; writeId: string; timestamp: bigint }) => {
+    async ({ hash, writeId, timestamp }: { hash: Hash; timestamp: bigint; writeId?: string }) => {
       if (!abi) return;
 
       const transaction = await getTransaction(wagmiConfig, { hash });
-      console.log("transaction:", transaction);
-
       if (transaction.to && getAddress(transaction.to) === getAddress(entryPoint07Address)) {
-        const write = observerWrites[writeId];
+        const write = writeId ? observerWrites[writeId] : undefined;
         if (!write) return;
 
         const receipt = write["events"].find((event) => event.type === "waitForUserOperationReceipt:result")?.receipt;
@@ -224,7 +222,6 @@ export function TransactionsWatcher() {
   useEffect(() => {
     for (const { hash, writeId, time } of Object.values(observerWrites)) {
       if (hash) {
-        // TODO: add back -> && write.address.toLowerCase() === worldAddress.toLowerCase()
         const transaction = transactions.find((transaction) => transaction.hash === hash);
         if (!transaction) {
           handleTransaction({ hash, writeId, timestamp: BigInt(time) / 1000n });
@@ -233,16 +230,16 @@ export function TransactionsWatcher() {
     }
   }, [handleTransaction, observerWrites, transactions, worldAddress]);
 
-  // useWatchBlocks({
-  //   onBlock(block) {
-  //     for (const hash of block.transactions) {
-  //       if (transactions.find((transaction) => transaction.hash === hash)) continue;
-  //       handleTransaction({ hash, timestamp: block.timestamp });
-  //     }
-  //   },
-  //   chainId,
-  //   pollingInterval: 500,
-  // });
+  useWatchBlocks({
+    onBlock(block) {
+      for (const hash of block.transactions) {
+        if (transactions.find((transaction) => transaction.hash === hash)) continue;
+        handleTransaction({ hash, timestamp: block.timestamp });
+      }
+    },
+    chainId,
+    pollingInterval: 500,
+  });
 
   return null;
 }

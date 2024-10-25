@@ -30,17 +30,21 @@ export function useObservedTransactions() {
     const mergedMap = new Map<string | undefined, ObservedTransaction>();
 
     for (const write of Object.values(observerWrites)) {
-      // TODO: original
       // if (write.address.toLowerCase() !== worldAddress.toLowerCase()) continue; // TODO: filter entrypoint
 
       // const parsedAbiItem = parseAbiItem(`function ${write.functionSignature}`) as AbiFunction;
       const writeResult = write.events.find((event): event is Message<"write:result"> => event.type === "write:result");
+      const receiptEvent = write.events.find(
+        (event): event is Message<"waitForTransactionReceipt:result"> | Message<"waitForUserOperationReceipt:result"> =>
+          event.type === "waitForTransactionReceipt:result" || event.type === "waitForUserOperationReceipt:result",
+      );
 
       mergedMap.set(write.hash || write.writeId, {
         hash: write.hash,
         writeId: write.writeId,
         from: write.from,
         status: writeResult?.status === "rejected" ? "rejected" : "pending",
+        receipt: receiptEvent?.value,
         timestamp: BigInt(write.time) / 1000n,
         calls: write.calls, // TODO: fix
         value: write.value,
