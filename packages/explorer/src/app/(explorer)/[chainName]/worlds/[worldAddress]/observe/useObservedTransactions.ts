@@ -1,15 +1,5 @@
 import { useParams } from "next/navigation";
-import {
-  AbiFunction,
-  Address,
-  BaseError,
-  DecodeFunctionDataReturnType,
-  Hex,
-  Log,
-  Transaction,
-  TransactionReceipt,
-  parseAbiItem,
-} from "viem";
+import { Address, BaseError, DecodeFunctionDataReturnType, Hex, Log, Transaction, TransactionReceipt } from "viem";
 import { useStore } from "zustand";
 import { useMemo } from "react";
 import { Message } from "../../../../../../observer/messages";
@@ -73,13 +63,6 @@ export function useObservedTransactions() {
         from: write.from,
         status: writeResult?.status === "rejected" ? "rejected" : "pending",
         timestamp: BigInt(write.time) / 1000n,
-
-        // TODO: handle regular txs
-        // functionData: {
-        //   functionName: parsedAbiItem.name,
-        //   args: write.args,
-        // },
-
         calls: write.calls,
         value: write.value,
         error: writeResult && "reason" in writeResult ? (writeResult.reason as BaseError) : undefined,

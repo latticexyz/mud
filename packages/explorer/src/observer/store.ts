@@ -6,24 +6,16 @@ import { relayChannelName } from "./common";
 import { debug } from "./debug";
 import { Message, MessageType } from "./messages";
 
-// TODO: name better
-export type RegularTranasction = {
-  address: Address;
-  functionSignature: string;
-  calls?: never;
-};
-
-export type UserOperation = {
-  functionSignature?: never;
-  calls: {
-    to: Address;
-    functionSignature: string;
-    functionName: string;
-    args: unknown[];
-  }[];
-};
-
 export type Write = {
+  // address: Address;
+  // functionSignature?: never;
+  // calls: {
+  //   to: Address;
+  //   functionSignature: string;
+  //   functionName: string;
+  //   args: unknown[];
+  // }[];
+
   writeId: string;
   type: MessageType;
   hash?: Hash;
@@ -33,7 +25,7 @@ export type Write = {
   value?: bigint;
   events: Message<Exclude<MessageType, "ping">>[];
   error?: Error;
-} & (RegularTranasction | UserOperation);
+};
 
 export type State = {
   writes: {
@@ -53,13 +45,12 @@ channel.addEventListener("message", ({ data }: MessageEvent<Message>) => {
     const write = data.type === "write" ? ({ ...data, events: [] } satisfies Write) : state.writes[data.writeId];
     if (!write) return state;
 
-    const hash =
-      data.type === "waitForTransactionReceipt"
-        ? data.hash
-        : data.type === "waitForUserOperationReceipt:result"
-          ? data.receipt.transactionHash
-          : write.hash;
-    const userOpHash = data.type === "waitForUserOperationReceipt" ? data.userOpHash : write.userOpHash;
+    let hash = write.hash;
+    if (data.type === "waitForTransactionReceipt") {
+      hash = data.hash;
+    } else if (data.type === "waitForUserOperationReceipt:result") {
+      hash = "transactionHash" in data.value ? (data.value.transactionHash as Hash) : undefined;
+    }
 
     return {
       ...state,
@@ -69,7 +60,7 @@ channel.addEventListener("message", ({ data }: MessageEvent<Message>) => {
           ...write,
           type: data.type,
           hash,
-          userOpHash,
+          userOpHash: data.type === "waitForUserOperationReceipt" ? data.userOpHash : write.userOpHash,
           events: [...write.events, data],
         },
       },
