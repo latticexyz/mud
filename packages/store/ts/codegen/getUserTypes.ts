@@ -1,4 +1,4 @@
-import { Store } from "../config/v2";
+import { Store } from "../config/v2/output";
 import { AbiType } from "@latticexyz/config";
 import { getUserTypesFilename } from "./getUserTypesFilename";
 import { groupBy } from "@latticexyz/common/utils";

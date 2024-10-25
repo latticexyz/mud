@@ -19,17 +19,17 @@ export function deleteRecord<table extends Table>({ stash, table, key }: DeleteR
   }
 
   const encodedKey = encodeKey({ table, key });
-  const prevRecord = stash.get().records[namespaceLabel][label][encodedKey];
+  const prevRecord = stash.get().records[namespaceLabel]?.[label]?.[encodedKey];
 
   // Early return if this record doesn't exist
   if (prevRecord == null) return;
 
   // Delete record
-  delete stash._.state.records[namespaceLabel][label][encodedKey];
+  delete stash._.state.records[namespaceLabel]?.[label]?.[encodedKey];
 
   // Notify table subscribers
   const updates = { [encodedKey]: { prev: prevRecord && { ...prevRecord }, current: undefined } };
-  stash._.tableSubscribers[namespaceLabel][label].forEach((subscriber) => subscriber(updates));
+  stash._.tableSubscribers[namespaceLabel]?.[label]?.forEach((subscriber) => subscriber(updates));
 
   // Notify stash subscribers
   const storeUpdate = { config: {}, records: { [namespaceLabel]: { [label]: updates } } };

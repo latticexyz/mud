@@ -23,7 +23,7 @@ export function setRecords<table extends Table>({ stash, table, records }: SetRe
   const updates: TableUpdates = {};
   for (const record of records) {
     const encodedKey = encodeKey({ table, key: record as never });
-    const prevRecord = stash.get().records[namespaceLabel][label][encodedKey];
+    const prevRecord = stash.get().records[namespaceLabel]?.[label]?.[encodedKey];
     const newRecord = Object.fromEntries(
       Object.keys(schema).map((fieldName) => [
         fieldName,
@@ -38,11 +38,11 @@ export function setRecords<table extends Table>({ stash, table, records }: SetRe
 
   // Update records
   for (const [encodedKey, { current }] of Object.entries(updates)) {
-    stash._.state.records[namespaceLabel][label][encodedKey] = current as never;
+    ((stash._.state.records[namespaceLabel] ??= {})[label] ??= {})[encodedKey] = current as never;
   }
 
   // Notify table subscribers
-  stash._.tableSubscribers[namespaceLabel][label].forEach((subscriber) => subscriber(updates));
+  stash._.tableSubscribers[namespaceLabel]?.[label]?.forEach((subscriber) => subscriber(updates));
 
   // Notify stash subscribers
   const storeUpdate = { config: {}, records: { [namespaceLabel]: { [label]: updates } } };

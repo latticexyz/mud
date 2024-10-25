@@ -18,16 +18,13 @@ export function registerTable<table extends Table>({
   const tableConfig = { namespace, namespaceLabel, name, label, key, schema, type, tableId };
 
   // Set config for table
-  stash._.state.config[namespaceLabel] ??= {};
-  stash._.state.config[namespaceLabel][label] = tableConfig;
+  (stash._.state.config[namespaceLabel] ??= {})[label] = tableConfig;
 
   // Init records map for table
-  stash._.state.records[namespaceLabel] ??= {};
-  stash._.state.records[namespaceLabel][label] ??= {};
+  (stash._.state.records[namespaceLabel] ??= {})[label] ??= {};
 
   // Init subscribers set for table
-  stash._.tableSubscribers[namespaceLabel] ??= {};
-  stash._.tableSubscribers[namespaceLabel][label] ??= new Set();
+  (stash._.tableSubscribers[namespaceLabel] ??= {})[label] ??= new Set();
 
   // Notify stash subscribers
   const storeUpdate = {
