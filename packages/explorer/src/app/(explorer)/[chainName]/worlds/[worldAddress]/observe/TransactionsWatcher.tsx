@@ -2,6 +2,7 @@ import { useParams } from "next/navigation";
 import {
   Address,
   BaseError,
+  Hash,
   Hex,
   TransactionReceipt,
   decodeFunctionData,
@@ -9,12 +10,19 @@ import {
   parseAbi,
   parseEventLogs,
 } from "viem";
-import { PackedUserOperation, entryPoint07Abi, entryPoint07Address } from "viem/account-abstraction";
+import {
+  PackedUserOperation,
+  entryPoint07Abi,
+  entryPoint07Address,
+  getUserOperation,
+  getUserOperationReceipt,
+} from "viem/account-abstraction";
 import { formatAbiItem } from "viem/utils";
 import { useConfig, useWatchBlocks } from "wagmi";
 import { getTransaction, simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { useStore } from "zustand";
 import { useCallback, useEffect } from "react";
+import { useAppAccountClient } from "@latticexyz/entrykit/internal";
 import { store as observerStore } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
@@ -2059,78 +2067,85 @@ export function TransactionsWatcher() {
   const handleUserOperation = useCallback(async (userOpHash: Hash, timestamp: bigint) => {
     console.log("handleUserOperation", userOpHash, timestamp);
 
-    // if (transaction.to?.toLowerCase() === entryPoint07Address.toLowerCase()) {
-    //   const decodedEntryPointCall = decodeFunctionData({
-    //     abi: entryPoint07Abi,
-    //     data: transaction.input,
-    //   });
+    const receipt = await getUserOperationReceipt(wagmiConfig, { hash: userOpHash });
+    const userOp = await getUserOperation(wagmiConfig, { hash: userOpHash });
 
-    //   const userOps = decodedEntryPointCall.args[0] as PackedUserOperation[];
-    //   const worldTo = decodedEntryPointCall.args[1] as Address;
+    return;
 
-    //   // TODO: handle several userOps
-    //   for (const userOp of userOps) {
-    //     const decodedSmartAccountCall = decodeFunctionData({
-    //       abi: parseAbi([
-    //         "function execute(address target, uint256 value, bytes calldata data)",
-    //         "function executeBatch((address target,uint256 value,bytes data)[])",
-    //       ]),
-    //       data: userOp.callData,
-    //     });
+    const transaction = await getTransaction(wagmiConfig, { hash: userOpHash });
 
-    //     const calls = decodedSmartAccountCall.args[0].map((worldFunction) => {
-    //       let functionName: string | undefined;
-    //       let args: readonly unknown[] | undefined;
-    //       let transactionError: BaseError | undefined; // TODO: what to do with this?
-    //       try {
-    //         const functionData = decodeFunctionData({ abi: doomWorldAbi, data: worldFunction.data });
-    //         functionName = functionData.functionName;
-    //         args = functionData.args;
-    //       } catch (error) {
-    //         transactionError = error as BaseError;
-    //         functionName = transaction.input.length > 10 ? transaction.input.slice(0, 10) : "unknown";
-    //       }
+    if (worldAddress.toLowerCase() === entryPoint07Address.toLowerCase()) {
+      const decodedEntryPointCall = decodeFunctionData({
+        abi: entryPoint07Abi,
+        data: transaction.input,
+      });
 
-    //       const functionAbiItem = getAbiItem({
-    //         abi: doomWorldAbi,
-    //         name: functionName,
-    //         args,
-    //       } as never);
+      const userOps = decodedEntryPointCall.args[0] as PackedUserOperation[];
+      const worldTo = decodedEntryPointCall.args[1] as Address;
 
-    //       return {
-    //         to: worldFunction.target,
-    //         functionSignature: functionAbiItem ? formatAbiItem(functionAbiItem) : "unknown",
-    //         functionName,
-    //         args,
-    //       };
-    //     });
+      // TODO: handle several userOps
+      for (const userOp of userOps) {
+        const decodedSmartAccountCall = decodeFunctionData({
+          abi: parseAbi([
+            "function execute(address target, uint256 value, bytes calldata data)",
+            "function executeBatch((address target,uint256 value,bytes data)[])",
+          ]),
+          data: userOp.callData,
+        });
 
-    //     const write = undefined; // TODO: add back
-    //     setTransaction({
-    //       hash,
-    //       writeId: write?.writeId ?? hash,
-    //       from: transaction.from,
-    //       timestamp,
-    //       transaction,
-    //       status: "pending",
-    //       calls,
-    //       value: transaction.value,
-    //     });
+        const calls = decodedSmartAccountCall.args[0].map((worldFunction) => {
+          let functionName: string | undefined;
+          let args: readonly unknown[] | undefined;
+          let transactionError: BaseError | undefined; // TODO: what to do with this?
+          try {
+            const functionData = decodeFunctionData({ abi: doomWorldAbi, data: worldFunction.data });
+            functionName = functionData.functionName;
+            args = functionData.args;
+          } catch (error) {
+            transactionError = error as BaseError;
+            functionName = transaction.input.length > 10 ? transaction.input.slice(0, 10) : "unknown";
+          }
 
-    //     const receipt = await waitForTransactionReceipt(wagmiConfig, { hash });
-    //     const logs = parseEventLogs({
-    //       abi: [...abi, userOperationEventAbi],
-    //       logs: receipt?.logs || [],
-    //     });
+          const functionAbiItem = getAbiItem({
+            abi: doomWorldAbi,
+            name: functionName,
+            args,
+          } as never);
 
-    //     updateTransaction(hash, {
-    //       receipt,
-    //       logs,
-    //       status: "success",
-    //       error: undefined, // TODO: transactionError as BaseError,
-    //     });
-    //   }
-    // }
+          return {
+            to: worldFunction.target,
+            functionSignature: functionAbiItem ? formatAbiItem(functionAbiItem) : "unknown",
+            functionName,
+            args,
+          };
+        });
+
+        const write = undefined; // TODO: add back
+        setTransaction({
+          hash,
+          writeId: write?.writeId ?? hash,
+          from: transaction.from,
+          timestamp,
+          transaction,
+          status: "pending",
+          calls,
+          value: transaction.value,
+        });
+
+        const receipt = await waitForTransactionReceipt(wagmiConfig, { hash });
+        const logs = parseEventLogs({
+          abi: [...abi, userOperationEventAbi],
+          logs: receipt?.logs || [],
+        });
+
+        updateTransaction(hash, {
+          receipt,
+          logs,
+          status: "success",
+          error: undefined, // TODO: transactionError as BaseError,
+        });
+      }
+    }
   }, []);
 
   const handleTransaction = useCallback(
