@@ -1,21 +1,12 @@
 "use client";
 
-import { Address, Hash } from "viem";
+import { Address, DecodeFunctionDataReturnType, Hash } from "viem";
 import { createStore } from "zustand/vanilla";
 import { relayChannelName } from "./common";
 import { debug } from "./debug";
 import { Message, MessageType } from "./messages";
 
 export type Write = {
-  // address: Address;
-  // functionSignature?: never;
-  // calls: {
-  //   to: Address;
-  //   functionSignature: string;
-  //   functionName: string;
-  //   args: unknown[];
-  // }[];
-
   writeId: string;
   type: MessageType;
   hash?: Hash;
@@ -23,6 +14,8 @@ export type Write = {
   from: Address;
   time: number;
   value?: bigint;
+  // TODO: fix type
+  // calls: DecodeFunctionDataReturnType | DecodeFunctionDataReturnType[];
   events: Message<Exclude<MessageType, "ping">>[];
   error?: Error;
 };
@@ -49,7 +42,7 @@ channel.addEventListener("message", ({ data }: MessageEvent<Message>) => {
     if (data.type === "waitForTransactionReceipt") {
       hash = data.hash;
     } else if (data.type === "waitForUserOperationReceipt:result") {
-      hash = "transactionHash" in data.value ? (data.value.transactionHash as Hash) : undefined;
+      hash = data.receipt.transactionHash;
     }
 
     return {

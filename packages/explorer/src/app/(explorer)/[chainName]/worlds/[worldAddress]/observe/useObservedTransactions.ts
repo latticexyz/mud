@@ -12,10 +12,7 @@ export type ObservedTransaction = {
   from?: Address;
   timestamp?: bigint;
   transaction?: Transaction;
-  functionData?: DecodeFunctionDataReturnType;
-
-  calls?: DecodeFunctionDataReturnType[]; // TODO: rename to functions?
-
+  calls: DecodeFunctionDataReturnType | DecodeFunctionDataReturnType[];
   value?: bigint;
   receipt?: TransactionReceipt;
   status: "pending" | "success" | "reverted" | "rejected" | "unknown";
@@ -29,28 +26,10 @@ export function useObservedTransactions() {
   const transactions = useStore(worldStore, (state) => state.transactions);
   const observerWrites = useStore(observerStore, (state) => state.writes);
 
-  console.log("transactions", transactions);
-
   const mergedTransactions = useMemo((): ObservedTransaction[] => {
     const mergedMap = new Map<string | undefined, ObservedTransaction>();
 
     for (const write of Object.values(observerWrites)) {
-      // TODO: check this properly
-      // mergedMap.set(write.hash || write.writeId, {
-      //   hash: write.hash,
-      //   writeId: write.writeId,
-      //   from: write.from,
-      //   status: "pending",
-      //   timestamp: BigInt(write.time) / 1000n,
-      //   functionData: {
-      //     functionName: "multiple",
-      //     args: [],
-      //   },
-      //   calls: write.calls, // TODO: rename to functions?
-      //   value: 0n,
-      //   error: undefined,
-      // });
-
       // TODO: original
       // if (write.address.toLowerCase() !== worldAddress.toLowerCase()) continue; // TODO: filter entrypoint
 
@@ -63,7 +42,7 @@ export function useObservedTransactions() {
         from: write.from,
         status: writeResult?.status === "rejected" ? "rejected" : "pending",
         timestamp: BigInt(write.time) / 1000n,
-        calls: write.calls,
+        calls: write.calls, // TODO: fix
         value: write.value,
         error: writeResult && "reason" in writeResult ? (writeResult.reason as BaseError) : undefined,
         write,

@@ -81,7 +81,7 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
           emit("waitForUserOperationReceipt", { writeId, userOpHash });
           Promise.allSettled([receipt]).then(([result]) => {
             // @ts-ignore TODO: the result is actually { value: UserOperationReceipt }
-            emit("waitForUserOperationReceipt:result", { ...result, writeId });
+            emit("waitForUserOperationReceipt:result", { ...result.value, writeId });
           });
         });
 
@@ -103,7 +103,14 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
           writeId,
           address: args.address,
           from: client.account!.address,
-          functionSignature: formatAbiItem(functionAbiItem),
+          calls: [
+            {
+              to: args.address,
+              functionSignature: formatAbiItem(functionAbiItem),
+              functionName: args.functionName,
+              args: args.args,
+            },
+          ],
           args: (args.args ?? []) as never,
           value: args.value,
         });

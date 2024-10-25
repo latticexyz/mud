@@ -53,7 +53,7 @@ export const columns = [
       return (
         <div className="flex items-center">
           <div className="flex gap-2">
-            {calls?.map(({ functionName }, idx) => (
+            {(Array.isArray(calls) ? calls : [calls]).map(({ functionName }, idx) => (
               <Badge variant="secondary" key={idx}>
                 {functionName}
               </Badge>

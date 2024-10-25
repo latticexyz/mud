@@ -6,7 +6,7 @@ export type UserOperationCall = {
   to: Address;
   functionSignature: string;
   functionName: string;
-  args: unknown[];
+  args: unknown;
 };
 
 export type Messages = {
@@ -15,7 +15,7 @@ export type Messages = {
     writeId: string;
     userOpHash: Hash;
   };
-  "waitForUserOperationReceipt:result": PromiseSettledResult<UserOperationReceipt> & {
+  "waitForUserOperationReceipt:result": UserOperationReceipt & {
     writeId: string;
   };
   write: {
