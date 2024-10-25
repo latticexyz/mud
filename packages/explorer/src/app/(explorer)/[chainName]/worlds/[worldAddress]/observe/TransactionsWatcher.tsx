@@ -50,7 +50,7 @@ export function TransactionsWatcher() {
         });
 
         const userOps = decodedEntryPointCall.args[0] as PackedUserOperation[];
-        const worldTo = decodedEntryPointCall.args[1] as Address;
+        // const worldTo = decodedEntryPointCall.args[1] as Address;
         let calls;
 
         // TODO: handle several userOps
@@ -66,7 +66,7 @@ export function TransactionsWatcher() {
           const { functionName: decodedFunctionName, args: decodedArgs } = decodedSmartAccountCall;
           if (decodedFunctionName === "execute") {
             const target = decodedArgs[0];
-            const value = decodedArgs[1]; // TODO: handle value
+            // const value = decodedArgs[1]; // TODO: handle value
             const data = decodedArgs[2];
 
             let functionName: string | undefined;

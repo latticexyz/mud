@@ -80,7 +80,7 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
 
           emit("waitForUserOperationReceipt", { writeId, userOpHash });
           Promise.allSettled([receipt]).then(([result]) => {
-            // @ts-ignore TODO: the result is actually { value: UserOperationReceipt }
+            // @ts-expect-error TODO: the result is actually { value: UserOperationReceipt }
             emit("waitForUserOperationReceipt:result", { ...result.value, writeId });
           });
         });

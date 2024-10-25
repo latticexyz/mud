@@ -1,6 +1,6 @@
 "use client";
 
-import { Address, DecodeFunctionDataReturnType, Hash } from "viem";
+import { Address, Hash } from "viem";
 import { createStore } from "zustand/vanilla";
 import { relayChannelName } from "./common";
 import { debug } from "./debug";

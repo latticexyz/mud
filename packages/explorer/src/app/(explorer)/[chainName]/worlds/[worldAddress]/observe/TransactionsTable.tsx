@@ -1,6 +1,6 @@
 "use client";
 
-import { BoxIcon, CheckCheckIcon, ReceiptTextIcon, UserPenIcon, WalletIcon, XIcon } from "lucide-react";
+import { BoxIcon, CheckCheckIcon, ReceiptTextIcon, UserPenIcon, XIcon } from "lucide-react";
 import React, { useState } from "react";
 import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";

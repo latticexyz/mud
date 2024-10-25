@@ -1,4 +1,3 @@
-import { useParams } from "next/navigation";
 import { Address, BaseError, DecodeFunctionDataReturnType, Hex, Log, Transaction, TransactionReceipt } from "viem";
 import { useStore } from "zustand";
 import { useMemo } from "react";
@@ -22,7 +21,7 @@ export type ObservedTransaction = {
 };
 
 export function useObservedTransactions() {
-  const { worldAddress } = useParams<{ worldAddress: string }>();
+  // const { worldAddress } = useParams<{ worldAddress: string }>();
   const transactions = useStore(worldStore, (state) => state.transactions);
   const observerWrites = useStore(observerStore, (state) => state.writes);
 
