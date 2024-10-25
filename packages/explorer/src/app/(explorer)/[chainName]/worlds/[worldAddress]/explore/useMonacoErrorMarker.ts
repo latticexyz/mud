@@ -17,8 +17,9 @@ export function useMonacoErrorMarker() {
       startColumn: number;
       endColumn: number;
     }) => {
-      if (monaco) {
-        monaco.editor.setModelMarkers(monaco.editor.getModels()[0], "sql", [
+      const model = monaco?.editor.getModels()[0];
+      if (model) {
+        monaco.editor.setModelMarkers(model, "sql", [
           {
             severity: monaco.MarkerSeverity.Error,
             message,

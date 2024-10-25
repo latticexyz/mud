@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     const result = [];
     for (const { query } of queries) {
       const data = (await db?.prepare(query).all()) as SqliteTable;
-      if (!data) {
+      if (!data || !data[0]) {
         throw new Error("No data found");
       }
 

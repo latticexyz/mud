@@ -41,7 +41,7 @@ export function WorldsForm({ worlds }: { worlds: Address[] }) {
   function onLuckyWorld() {
     if (worlds.length > 0) {
       const luckyAddress = worlds[Math.floor(Math.random() * worlds.length)];
-      router.push(getWorldUrl(chainName as string, luckyAddress));
+      router.push(getWorldUrl(chainName as string, luckyAddress as Address));
     }
   }
 

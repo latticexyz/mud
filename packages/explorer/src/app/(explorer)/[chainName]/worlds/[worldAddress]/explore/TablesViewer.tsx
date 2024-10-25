@@ -1,8 +1,8 @@
 import { ArrowUpDownIcon, LoaderIcon, TriangleAlertIcon } from "lucide-react";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { useMemo } from "react";
-import { Schema, Table as TableType } from "@latticexyz/config";
-import { getKeySchema, getKeyTuple, getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
+import { Table as TableType } from "@latticexyz/config";
+import { getKeySchema, getKeyTuple } from "@latticexyz/protocol-parser/internal";
 import {
   ColumnDef,
   SortingState,
@@ -37,7 +37,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
 
-  const tableColumns: ColumnDef<getSchemaPrimitives<Schema>>[] = useMemo(() => {
+  const tableColumns: ColumnDef<Record<string, unknown>>[] = useMemo(() => {
     if (!table || !tableData) return [];
 
     return tableData.columns.map((name) => {

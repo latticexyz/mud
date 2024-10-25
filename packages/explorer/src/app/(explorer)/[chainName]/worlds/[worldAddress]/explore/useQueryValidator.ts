@@ -17,12 +17,15 @@ function findErrorPosition(query: string, target: string) {
   let currentPosition = 0;
 
   for (let i = 0; i < lines.length; i++) {
-    if (currentPosition + lines[i].length >= query.indexOf(target)) {
+    const len = lines[i]?.length;
+    if (!len) continue;
+
+    if (currentPosition + len >= query.indexOf(target)) {
       startLineNumber = i + 1;
       startColumn = query.indexOf(target) - currentPosition + 1;
       break;
     }
-    currentPosition += lines[i].length + 1;
+    currentPosition += len + 1;
   }
 
   return {
@@ -76,17 +79,21 @@ export function useQueryValidator(table?: Table) {
           }
         }
 
-        monaco.editor.setModelMarkers(monaco.editor.getModels()[0], "sql", []);
+        const model = monaco?.editor.getModels()[0];
+        if (model) {
+          monaco.editor.setModelMarkers(model, "sql", []);
+        }
         return true;
       } catch (error) {
         if (error instanceof Error) {
           const lines = decodedQuery.split("\n");
+          const lastLine = lines[lines.length - 1];
           setErrorMarker({
             message: error.message,
             startLineNumber: 1,
             endLineNumber: lines.length,
             startColumn: 1,
-            endColumn: lines[lines.length - 1].length + 1,
+            endColumn: lastLine ? lastLine.length + 1 : 1,
           });
         }
         return false;
