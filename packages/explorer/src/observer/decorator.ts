@@ -62,9 +62,7 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
           emit("waitForUserOperationReceipt", { writeId, userOpHash });
           Promise.allSettled([receipt]).then(([result]) => {
             emit("waitForUserOperationReceipt:result", {
-              // TODO: type .value
-              ...result.value,
-              hash: result.value.receipt.transactionHash,
+              receipt: result.value.receipt,
               writeId,
             });
           });
@@ -101,7 +99,7 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
 
           emit("waitForTransactionReceipt", { writeId, hash });
           Promise.allSettled([receipt]).then(([result]) => {
-            emit("waitForTransactionReceipt:result", { ...result, writeId });
+            emit("waitForTransactionReceipt:result", { writeId, receipt: result });
           });
         });
 

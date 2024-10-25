@@ -8,21 +8,9 @@ export type Messages = {
     writeId: string;
     userOpHash: Hash;
   };
-  "waitForUserOperationReceipt:result": PromiseSettledResult<{
-    actualGasCost: bigint;
-    actualGasUsed: bigint;
-    entryPoint: Address;
-    logs: Log<bigint, number, false>[];
-    nonce: bigint;
-    paymaster?: Address | undefined;
-    reason?: string | undefined;
-    receipt: TransactionReceipt<bigint, number, "success" | "reverted">;
-    sender: Address;
-    success: boolean;
-    userOpHash: Hash;
-    // TODO: improve ts
-  }> & {
+  "waitForUserOperationReceipt:result": {
     writeId: string;
+    receipt: TransactionReceipt;
   };
   write: {
     writeId: string;
@@ -41,8 +29,9 @@ export type Messages = {
     writeId: string;
     hash: Hash;
   };
-  "waitForTransactionReceipt:result": PromiseSettledResult<ReceiptSummary> & {
+  "waitForTransactionReceipt:result": {
     writeId: string;
+    receipt: ReceiptSummary;
   };
   waitForTransaction: {
     writeId: string;

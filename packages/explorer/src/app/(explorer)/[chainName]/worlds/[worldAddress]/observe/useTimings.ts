@@ -8,6 +8,8 @@ const eventConfig = {
   "waitForTransaction:result": { priority: 4 },
   waitForTransactionReceipt: { priority: 5, label: "transaction receipt" },
   "waitForTransactionReceipt:result": { priority: 6 },
+  waitForUserOperationReceipt: { priority: 5, label: "user operation receipt" },
+  "waitForUserOperationReceipt:result": { priority: 6 },
 } as const;
 
 type EventType = keyof typeof eventConfig;
@@ -19,8 +21,6 @@ export function useTimings({ time: start, events }: Write) {
     const priorityB = eventConfig[b.type as EventType]?.priority;
     return priorityA - priorityB;
   });
-
-  return []; // TODO: make it work
 
   return sortedEvents
     .map((event) => {

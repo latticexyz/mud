@@ -39,6 +39,8 @@ export function useObservedTransactions() {
   const transactions = useStore(worldStore, (state) => state.transactions);
   const observerWrites = useStore(observerStore, (state) => state.writes);
 
+  console.log("transactions", transactions);
+
   const mergedTransactions = useMemo((): ObservedTransaction[] => {
     const mergedMap = new Map<string | undefined, ObservedTransaction>();
 

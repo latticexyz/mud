@@ -52,6 +52,15 @@ channel.addEventListener("message", ({ data }: MessageEvent<Message>) => {
   store.setState((state) => {
     const write = data.type === "write" ? ({ ...data, events: [] } satisfies Write) : state.writes[data.writeId];
     if (!write) return state;
+
+    const hash =
+      data.type === "waitForTransactionReceipt"
+        ? data.hash
+        : data.type === "waitForUserOperationReceipt:result"
+          ? data.receipt.transactionHash
+          : write.hash;
+    const userOpHash = data.type === "waitForUserOperationReceipt" ? data.userOpHash : write.userOpHash;
+
     return {
       ...state,
       writes: {
@@ -59,8 +68,8 @@ channel.addEventListener("message", ({ data }: MessageEvent<Message>) => {
         [data.writeId]: {
           ...write,
           type: data.type,
-          hash: data.type === "waitForTransactionReceipt" ? data.hash : write.hash,
-          userOpHash: data.type === "waitForUserOperationReceipt" ? data.userOpHash : write.userOpHash,
+          hash,
+          userOpHash,
           events: [...write.events, data],
         },
       },
