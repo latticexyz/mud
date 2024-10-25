@@ -1,5 +1,6 @@
 import { useParams } from "next/navigation";
 import { Hex } from "viem";
+import { isDefined } from "@latticexyz/common/utils";
 import { Table } from "@latticexyz/config";
 import mudConfig from "@latticexyz/store/mud.config";
 import { useQuery } from "@tanstack/react-query";
@@ -42,6 +43,7 @@ export function useTablesQuery() {
       return data.result[0]
         .slice(1)
         .map((row: string[]) => {
+          if (!row[0] || !row[2] || !row[3] || !row[4] || !row[5]) return undefined;
           return decodeTable({
             tableId: row[0],
             keySchema: row[2],
@@ -50,6 +52,7 @@ export function useTablesQuery() {
             abiEncodedFieldNames: row[5],
           });
         })
+        .filter(isDefined)
         .sort(({ namespace }) => (internalNamespaces.includes(namespace) ? 1 : -1));
     },
     refetchInterval: 5000,

@@ -13,7 +13,7 @@ type Props = {
 
 export type TableData = {
   columns: string[];
-  rows: Record<string, string>[];
+  rows: Record<string, unknown>[];
 };
 
 export function useTableDataQuery({ table, query }: Props) {
@@ -45,21 +45,24 @@ export function useTableDataQuery({ table, query }: Props) {
 
       return data;
     },
-    select: (data: DozerResponse) => {
-      if (!table || !data?.result?.[0]) return;
+    select: (data: DozerResponse): TableData | undefined => {
+      if (!table || !data?.result?.[0]) return undefined;
 
-      const schemaKeys = Object.keys(table.schema);
       const result = data.result[0];
-      const columnKeys = result[0]
-        .map((columnKey) => {
-          const schemaKey = schemaKeys.find((schemaKey) => schemaKey.toLowerCase() === columnKey);
+      // if columns are undefined, the result is empty
+      if (!result[0]) return undefined;
+
+      const schema = Object.keys(table.schema);
+      const columns = result[0]
+        ?.map((columnKey) => {
+          const schemaKey = schema.find((schemaKey) => schemaKey.toLowerCase() === columnKey);
           return schemaKey || columnKey;
         })
-        .filter((key) => schemaKeys.includes(key));
-      const rows = result.slice(1).map((row) => Object.fromEntries(columnKeys.map((key, index) => [key, row[index]])));
+        .filter((key) => schema.includes(key));
 
+      const rows = result.slice(1).map((row) => Object.fromEntries(columns.map((key, index) => [key, row[index]])));
       return {
-        columns: columnKeys,
+        columns,
         rows,
       };
     },

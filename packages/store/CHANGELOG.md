@@ -1,5 +1,14 @@
 # Change Log
 
+## 2.2.14
+
+### Patch Changes
+
+- @latticexyz/common@2.2.14
+- @latticexyz/config@2.2.14
+- @latticexyz/protocol-parser@2.2.14
+- @latticexyz/schema-type@2.2.14
+
 ## 2.2.13
 
 ### Patch Changes
