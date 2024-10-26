@@ -1,4 +1,4 @@
-import { Client, decodeAbiParameters, parseAbiParameters } from "viem";
+import { Client, Hex, decodeAbiParameters, parseAbiParameters } from "viem";
 import { hexToResource } from "@latticexyz/common";
 import { WorldDeploy } from "./common";
 import { debug } from "./debug";
@@ -16,7 +16,12 @@ import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
 import { flattenStoreLogs, getStoreLogs } from "@latticexyz/store/internal";
 
 // TODO: add label and namespaceLabel once we register it onchain
-type DeployedTable = Omit<Table, "label" | "namespaceLabel">;
+type DeployedTable = Omit<Table, "label" | "namespaceLabel"> & {
+  readonly keySchema: Schema;
+  readonly keySchemaHex: Hex;
+  readonly valueSchema: Schema;
+  readonly valueSchemaHex: Hex;
+};
 
 export async function getTables({
   client,
@@ -49,12 +54,17 @@ export async function getTables({
       log.args.keyTuple,
     );
     const { type, namespace, name } = hexToResource(tableId);
-    const value = decodeValueArgs(getSchemaTypes(getValueSchema(storeConfig.namespaces.store.tables.Tables)), log.args);
+    const recordValue = decodeValueArgs(
+      getSchemaTypes(getValueSchema(storeConfig.namespaces.store.tables.Tables)),
+      log.args,
+    );
 
-    const solidityKeySchema = hexToSchema(value.keySchema);
-    const solidityValueSchema = hexToSchema(value.valueSchema);
-    const keyNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedKeyNames)[0];
-    const fieldNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedFieldNames)[0];
+    const keySchemaHex = recordValue.keySchema;
+    const valueSchemaHex = recordValue.valueSchema;
+    const solidityKeySchema = hexToSchema(keySchemaHex);
+    const solidityValueSchema = hexToSchema(valueSchemaHex);
+    const keyNames = decodeAbiParameters(parseAbiParameters("string[]"), recordValue.abiEncodedKeyNames)[0];
+    const fieldNames = decodeAbiParameters(parseAbiParameters("string[]"), recordValue.abiEncodedFieldNames)[0];
 
     const valueAbiTypes = [...solidityValueSchema.staticFields, ...solidityValueSchema.dynamicFields];
 
@@ -73,6 +83,10 @@ export async function getTables({
       tableId,
       schema: { ...keySchema, ...valueSchema },
       key: Object.keys(keySchema),
+      keySchema,
+      keySchemaHex,
+      valueSchema,
+      valueSchemaHex,
     };
   });
 
