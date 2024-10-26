@@ -8,12 +8,12 @@ import {
   getSchemaTypes,
   getValueSchema,
   getKeySchema,
-  KeySchema,
 } from "@latticexyz/protocol-parser/internal";
 import { debug } from "./debug";
 import { getTables } from "./getTables";
 import pRetry from "p-retry";
 import { Table } from "@latticexyz/config";
+import { isDefined } from "@latticexyz/common/utils";
 
 export async function ensureTables({
   client,
@@ -24,15 +24,56 @@ export async function ensureTables({
   readonly worldDeploy: WorldDeploy;
   readonly tables: readonly Table[];
 }): Promise<readonly Hex[]> {
-  const worldTables = await getTables({ client, worldDeploy });
-  const worldTableIds = worldTables.map((table) => table.tableId);
+  const configTables = new Map(
+    tables.map((table) => {
+      const keySchema = getSchemaTypes(getKeySchema(table));
+      const valueSchema = getSchemaTypes(getValueSchema(table));
+      const keySchemaHex = keySchemaToHex(keySchema);
+      const valueSchemaHex = valueSchemaToHex(valueSchema);
+      return [
+        table.tableId,
+        {
+          ...table,
+          keySchema,
+          keySchemaHex,
+          valueSchema,
+          valueSchemaHex,
+        },
+      ];
+    }),
+  );
 
-  const existingTables = tables.filter((table) => worldTableIds.includes(table.tableId));
+  const worldTables = await getTables({ client, worldDeploy });
+  const existingTables = worldTables.filter(({ tableId }) => configTables.has(tableId));
   if (existingTables.length) {
     debug("existing tables:", existingTables.map(resourceToLabel).join(", "));
+
+    const schemaErrors = existingTables
+      .map((table) => {
+        const configTable = configTables.get(table.tableId)!;
+        if (table.keySchemaHex !== configTable.keySchemaHex || table.valueSchemaHex !== configTable.valueSchemaHex) {
+          return [
+            `"${resourceToLabel(table)}" table:`,
+            `  Registered schema: ${JSON.stringify({ schema: getSchemaTypes(table.schema), key: table.key })}`,
+            `      Config schema: ${JSON.stringify({ schema: getSchemaTypes(configTable.schema), key: configTable.key })}`,
+          ].join("\n");
+        }
+      })
+      .filter(isDefined);
+
+    if (schemaErrors.length) {
+      throw new Error(
+        [
+          "Table schemas are immutable, but found registered tables with a different schema than what you have configured.",
+          ...schemaErrors,
+          "You can either update your config with the registered schema or change the table name to register a new table.",
+        ].join("\n\n") + "\n",
+      );
+    }
   }
 
-  const missingTables = tables.filter((table) => !worldTableIds.includes(table.tableId));
+  const existingTableIds = new Set(existingTables.map(({ tableId }) => tableId));
+  const missingTables = tables.filter((table) => !existingTableIds.has(table.tableId));
   if (missingTables.length) {
     debug("registering tables:", missingTables.map(resourceToLabel).join(", "));
     return await Promise.all(
@@ -50,7 +91,7 @@ export async function ensureTables({
               args: [
                 table.tableId,
                 valueSchemaToFieldLayoutHex(valueSchema),
-                keySchemaToHex(keySchema as KeySchema),
+                keySchemaToHex(keySchema),
                 valueSchemaToHex(valueSchema),
                 Object.keys(keySchema),
                 Object.keys(valueSchema),
