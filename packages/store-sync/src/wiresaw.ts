@@ -52,7 +52,7 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
 
         try {
           debug("keeping socket alive");
-          client.requestAsync({ body: { method: "net_version" }, timeout: 2000 });
+          await client.requestAsync({ body: { method: "net_version" }, timeout: 2000 });
         } catch (error) {
           debug("no response to keep alive, closing...", error);
           clearInterval(keepAliveInterval);
