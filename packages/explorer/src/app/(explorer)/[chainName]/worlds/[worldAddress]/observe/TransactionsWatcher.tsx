@@ -105,11 +105,14 @@ export function TransactionsWatcher() {
         abi: entryPoint07Abi,
         data: transaction.input,
       });
+      // decodedEntryPointCall.functionName === "handleOps"
+      // TODO: also handle incoming txs from blocks watcher that are "handleOps"
 
       const userOps = decodedEntryPointCall.args[0] as PackedUserOperation[];
       // const worldTo = decodedEntryPointCall.args[1] as Address;
 
-      // TODO: handle several userOps
+      console.log("userOps", decodedEntryPointCall, userOps);
+
       for (const userOp of userOps) {
         handleUserOperation({ hash, writeId, timestamp, receipt, transaction, userOp });
       }
@@ -160,7 +163,6 @@ export function TransactionsWatcher() {
         value: transaction.value,
       });
 
-      // TODO: reuse receipt from observer if tx successful
       let receipt: TransactionReceipt | undefined;
       try {
         receipt = await waitForTransactionReceipt(wagmiConfig, { hash });
