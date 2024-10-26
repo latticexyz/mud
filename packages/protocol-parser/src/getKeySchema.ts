@@ -15,7 +15,7 @@ export type getKeySchema<table extends PartialTable> = PartialTable extends tabl
   ? ResolvedKeySchema
   : {
       readonly [fieldName in Extract<keyof table["schema"], table["key"][number]>]: table["schema"][fieldName] & {
-        type: StaticAbiType;
+        readonly type: StaticAbiType;
       };
     };
 
