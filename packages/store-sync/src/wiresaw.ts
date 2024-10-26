@@ -61,9 +61,10 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
       }, 3000);
 
       client.socket.addEventListener("error", (error) => {
-        debug("socket error", error);
+        debug("socket error, closing", error);
         clearInterval(keepAliveInterval);
-        subscriber.error({ code: -32603, message: "WebSocket error", data: error });
+        client.close();
+        // subscriber.error({ code: -32603, message: "WebSocket error", data: error });
       });
 
       client.socket.addEventListener("close", async () => {
