@@ -101,18 +101,16 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
 
         emit("write", {
           writeId,
-          address: args.address,
           from: client.account!.address,
           calls: [
             {
               to: args.address,
               functionSignature: formatAbiItem(functionAbiItem),
               functionName: args.functionName,
-              args: args.args,
+              args: (args.args ?? []) as never,
             },
           ],
-          args: (args.args ?? []) as never,
-          value: args.value,
+          value: args.value, // TODO: how to handle value?
         });
         Promise.allSettled([write]).then(([result]) => {
           emit("write:result", { ...result, writeId });

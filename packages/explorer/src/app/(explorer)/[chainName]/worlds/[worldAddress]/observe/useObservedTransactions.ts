@@ -1,7 +1,7 @@
-import { Address, BaseError, DecodeFunctionDataReturnType, Hex, Log, Transaction, TransactionReceipt } from "viem";
+import { Address, BaseError, Hex, Log, Transaction, TransactionReceipt } from "viem";
 import { useStore } from "zustand";
 import { useMemo } from "react";
-import { Message } from "../../../../../../observer/messages";
+import { Message, UserOperationCall } from "../../../../../../observer/messages";
 import { type Write, store as observerStore } from "../../../../../../observer/store";
 import { store as worldStore } from "../store";
 
@@ -11,7 +11,7 @@ export type ObservedTransaction = {
   from?: Address;
   timestamp?: bigint;
   transaction?: Transaction;
-  calls: DecodeFunctionDataReturnType | DecodeFunctionDataReturnType[];
+  calls: UserOperationCall | UserOperationCall[];
   value?: bigint;
   receipt?: TransactionReceipt;
   status: "pending" | "success" | "reverted" | "rejected" | "unknown";
@@ -31,7 +31,6 @@ export function useObservedTransactions() {
     for (const write of Object.values(observerWrites)) {
       // if (write.address.toLowerCase() !== worldAddress.toLowerCase()) continue; // TODO: filter entrypoint
 
-      // const parsedAbiItem = parseAbiItem(`function ${write.functionSignature}`) as AbiFunction;
       const writeResult = write.events.find((event): event is Message<"write:result"> => event.type === "write:result");
       const receiptEvent = write.events.find(
         (event): event is Message<"waitForTransactionReceipt:result"> | Message<"waitForUserOperationReceipt:result"> =>
@@ -43,9 +42,9 @@ export function useObservedTransactions() {
         writeId: write.writeId,
         from: write.from,
         status: writeResult?.status === "rejected" ? "rejected" : "pending",
-        receipt: receiptEvent?.value,
+        receipt: receiptEvent?.value, // TODO: fix
         timestamp: BigInt(write.time) / 1000n,
-        calls: write.calls, // TODO: fix
+        calls: write.calls,
         value: write.value,
         error: writeResult && "reason" in writeResult ? (writeResult.reason as BaseError) : undefined,
         write,
