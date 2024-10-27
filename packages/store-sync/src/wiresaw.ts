@@ -52,9 +52,9 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
           await client.requestAsync({ body: { method: "net_version" }, timeout: pingTimeout });
         } catch (error) {
           debug("ping failed, closing...", error);
-          client.close();
+          // client.close();
           // TODO: try to close socket to see if it reconnects?
-          // client.socket.close()
+          client.socket.close();
           throw error;
         }
       }
