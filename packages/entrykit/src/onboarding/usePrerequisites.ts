@@ -53,6 +53,8 @@ export function usePrerequisites(userAddress: Address | undefined) {
   const { chainId, paymasterAddress, worldAddress } = useEntryKitConfig();
   const client = useClient({ chainId });
 
+  // TODO: rework this so it uses other hooks so we avoid having to clear two caches when e.g. topping up
+
   return useQuery(
     getPrequisitesQueryOptions({
       queryClient,

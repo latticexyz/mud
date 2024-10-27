@@ -1,8 +1,9 @@
-import { useSessionClient } from "../useSessionClient";
 import { Button } from "../ui/Button";
 import { useSetupSession } from "./useSetupSession";
 import { useAccountModal } from "../useAccountModal";
 import { ConnectedClient } from "../common";
+import { useEffect } from "react";
+import { useSessionAccount } from "../useSessionAccount";
 
 export type Props = {
   isActive: boolean;
@@ -14,10 +15,25 @@ export type Props = {
 
 export function Session({ isActive, isExpanded, userClient, registerSpender, registerDelegation }: Props) {
   const { closeAccountModal } = useAccountModal();
-  const sessionClient = useSessionClient(userClient.account.address);
+  const sessionAccount = useSessionAccount(userClient.account.address);
+  const sessionAddress = sessionAccount.data?.address;
   const setup = useSetupSession();
 
   const isReady = !registerDelegation && !registerDelegation;
+
+  useEffect(() => {
+    if (isActive && setup.status === "idle" && sessionAddress && !isReady) {
+      setup.mutate(
+        {
+          userClient,
+          sessionAddress,
+          registerSpender,
+          registerDelegation,
+        },
+        { onSuccess: closeAccountModal },
+      );
+    }
+  }, [closeAccountModal, isActive, isReady, registerDelegation, registerSpender, sessionAddress, setup, userClient]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -35,18 +51,21 @@ export function Session({ isActive, isExpanded, userClient, registerSpender, reg
           <Button
             variant={isActive ? "primary" : "secondary"}
             className="flex-shrink-0 text-sm p-1 w-28"
-            pending={!sessionClient.data || setup.status === "pending"}
+            pending={!sessionAddress || setup.status === "pending"}
             onClick={
-              sessionClient.data
-                ? async () => {
-                    await setup.mutateAsync({
-                      userClient,
-                      sessionAddress: sessionClient.data.account.address,
-                      registerSpender,
-                      registerDelegation,
-                    });
-                    closeAccountModal();
-                  }
+              sessionAddress
+                ? () =>
+                    setup.mutate(
+                      {
+                        userClient,
+                        sessionAddress,
+                        registerSpender,
+                        registerDelegation,
+                      },
+                      {
+                        onSuccess: closeAccountModal,
+                      },
+                    )
                 : undefined
             }
           >

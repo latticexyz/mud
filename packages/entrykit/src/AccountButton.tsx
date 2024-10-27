@@ -24,14 +24,23 @@ const secondaryInteractiveClassNames = twMerge(
 export function AccountButton() {
   const { openAccountModal, accountModalOpen } = useAccountModal();
   const { status, address } = useAccount();
-
   const prereqs = usePrerequisites(address);
-  prereqs;
-  // TODO: display icon when prereqs not ready
+
+  // TODO: fix flash of button state when signing in
+  const isConnected = status === "connected" || (status === "reconnecting" && address);
+  const isSignedIn = prereqs.isSuccess ? prereqs.data.complete : isConnected;
+
+  const buttonLabel = (() => {
+    if (prereqs.isSuccess) {
+      if (!prereqs.data.hasAllowance) return "Top up";
+      if (!prereqs.data.hasDelegation || !prereqs.data.isSpender) return "Set up";
+    }
+    return "Sign in";
+  })();
 
   return (
     <Shadow mode="child">
-      {status === "connected" || (status === "reconnecting" && address) ? (
+      {isSignedIn ? (
         <button
           // key is used to avoid triggering transitions between connected/disconnected states
           key="connected"
@@ -55,7 +64,6 @@ export function AccountButton() {
             "bg-orange-500 text-white font-medium",
             "hover:bg-orange-400",
             "active:bg-orange-600",
-            // "aria-busy:saturate-50",
           )}
           aria-busy={accountModalOpen}
           onClick={openAccountModal}
@@ -81,7 +89,7 @@ export function AccountButton() {
               <PendingIcon />
             </span>
           </span>
-          <span className="font-medium">Sign in</span>
+          <span className="font-medium">{buttonLabel}</span>
         </button>
       )}
     </Shadow>

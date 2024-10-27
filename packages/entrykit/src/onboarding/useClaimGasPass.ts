@@ -22,7 +22,11 @@ export function useClaimGasPass() {
         params: ["0x01", userAddress],
       });
 
-      await queryClient.invalidateQueries({ queryKey: ["readContract"] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["getAllowance"] }),
+        queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] }),
+      ]);
     },
+    retry: 0,
   });
 }

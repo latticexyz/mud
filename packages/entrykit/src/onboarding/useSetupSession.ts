@@ -99,8 +99,6 @@ export function useSetupSession() {
       const receipt = await getAction(userClient, waitForUserOperationReceipt, "waitForUserOperationReceipt")({ hash });
       console.log("got user op receipt", receipt);
 
-      await queryClient.invalidateQueries({ queryKey: ["readContract"] });
-
       // TODO: throw if revert?
       if (!receipt.success) return;
 
@@ -123,6 +121,8 @@ export function useSetupSession() {
         });
         queryClient.setQueryData(queryKey, true);
       }
+
+      await Promise.all([queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] })]);
     },
   });
 }
