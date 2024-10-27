@@ -1,23 +1,23 @@
-import { Transaction, decodeFunctionData, getAbiItem } from "viem";
+import { Address, Hex, Transaction, decodeFunctionData, getAbiItem } from "viem";
 import { formatAbiItem } from "viem/utils";
 import { doomWorldAbi } from "./abis";
 
 export function getCalls(decodedFunctionName: string, decodedArgs: readonly unknown[], transaction: Transaction) {
   if (decodedFunctionName === "execute") {
-    const target = decodedArgs[0] as string;
+    const target = decodedArgs[0] as Address;
     // const value = decodedArgs[1]; // TODO: handle value
-    const data = decodedArgs[2] as string;
+    const data = decodedArgs[2] as Hex;
 
     return getCall(target, data, transaction);
   } else if (decodedFunctionName === "executeBatch") {
-    return (decodedArgs[0] as { target: string; data: string }[]).map((worldFunction) =>
+    return (decodedArgs[0] as { target: Address; data: Hex }[]).map((worldFunction) =>
       getCall(worldFunction.target, worldFunction.data, transaction),
     );
   }
   return [];
 }
 
-function getCall(target: string, data: string, transaction: Transaction) {
+function getCall(target: Address, data: Hex, transaction: Transaction) {
   let functionName: string | undefined;
   let args: readonly unknown[] | undefined;
   try {
