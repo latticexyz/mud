@@ -4,7 +4,7 @@ import { ReceiptSummary } from "./common";
 
 // TODO: fix type, move elsewhere
 export type UserOperationCall = {
-  to: Address;
+  to: Address | null;
   functionSignature: string;
   functionName: string;
   args: unknown;

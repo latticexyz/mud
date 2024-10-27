@@ -11,7 +11,7 @@ import {
   parseAbi,
   parseEventLogs,
 } from "viem";
-import { PackedUserOperation, UserOperation, entryPoint07Abi, entryPoint07Address } from "viem/account-abstraction";
+import { UserOperation, entryPoint07Abi, entryPoint07Address } from "viem/account-abstraction";
 import { formatAbiItem } from "viem/utils";
 import { useConfig, useWatchBlocks } from "wagmi";
 import { getTransaction, simulateContract, waitForTransactionReceipt } from "wagmi/actions";
@@ -47,11 +47,9 @@ export function TransactionsWatcher() {
       timestamp: bigint;
       receipt: TransactionReceipt;
       transaction: Transaction;
-      userOperation: UserOperation; // TODO: type this
+      userOperation: UserOperation<"0.7">;
     }) => {
       if (!abi) return;
-
-      console.log("userOperation", userOperation, receipt);
 
       const decodedSmartAccountCall = decodeFunctionData({
         abi: parseAbi([
@@ -101,11 +99,9 @@ export function TransactionsWatcher() {
         data: transaction.input,
       });
 
-      const userOperations = decodedEntryPointCall.args[0] as PackedUserOperation[];
-      // const worldTo = decodedEntryPointCall.args[1] as Address;
-
-      console.log("userOperations", decodedEntryPointCall, userOperations);
-
+      // decodedEntryPointCall.args[0] is an array of UserOperation<"0.7">
+      // decodedEntryPointCall.args[1] is `beneficiary`
+      const userOperations = decodedEntryPointCall.args[0] as never as UserOperation<"0.7">[];
       for (const userOperation of userOperations) {
         handleUserOperation({ hash, writeId, timestamp, receipt, transaction, userOperation });
       }
