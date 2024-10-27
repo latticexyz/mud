@@ -24,7 +24,12 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
   ] as LogTopic[]; // https://github.com/wevm/viem/blob/63a5ac86eb9a2962f7323b4cc76ef54f9f5ef7ed/src/actions/public/getLogs.ts#L171
 
   let resumeBlock = fromBlock;
-  let keepAliveInterval: ReturnType<typeof setTimeout> | undefined = undefined;
+
+  let pingTimer: ReturnType<typeof setTimeout> | undefined = undefined;
+  // how often to ping to keep socket alive
+  const pingInterval = 3000;
+  // how long to wait for ping response before we attempt to reconnect
+  const pingTimeout = 5000;
 
   const logs$ = new Observable<StorageAdapterBlock>((subscriber) => {
     debug("logs$ subscribed");
@@ -38,43 +43,44 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
       let caughtUp = false;
       const logBuffer: StoreEventsLog[] = [];
 
-      client = await getWebSocketRpcClient(url, {
-        keepAlive: false, // keepAlive is handled below
-      });
+      client = await getWebSocketRpcClient(url, { keepAlive: false });
       debug("got websocket rpc client");
 
-      // Keep websocket alive and reconnect if it's not alive anymore
-      keepAliveInterval = setInterval(async () => {
-        if (client.socket.readyState !== client.socket.OPEN) {
-          debug("wanted to keep socket alive, but socket not open", client.socket.readyState);
-          return;
-        }
-
+      async function ping(): Promise<void> {
         try {
-          debug("keeping socket alive");
-          await client.requestAsync({ body: { method: "net_version" }, timeout: 2000 });
+          debug("pinging socket");
+          await client.requestAsync({ body: { method: "net_version" }, timeout: pingTimeout });
         } catch (error) {
-          debug("no response to keep alive, closing...", error);
-          clearInterval(keepAliveInterval);
+          debug("ping failed, closing...", error);
           client.close();
+          // TODO: try to close socket to see if it reconnects?
+          // client.socket.close()
+          throw error;
         }
-      }, 3000);
+      }
 
-      client.socket.addEventListener("error", (error) => {
-        debug("socket error, closing", error);
-        clearInterval(keepAliveInterval);
-        client.close();
-        // subscriber.error({ code: -32603, message: "WebSocket error", data: error });
-      });
+      function schedulePing(): void {
+        debug("scheduling ping");
+        pingTimer = setTimeout(() => ping().then(schedulePing), pingInterval);
+      }
 
-      client.socket.addEventListener("close", async () => {
-        debug("socket closed, trying to setup again...");
-        clearInterval(keepAliveInterval);
-        setupClient().catch((error) => {
-          debug("error trying to setup new client", error);
-          subscriber.error(error);
-        });
-      });
+      schedulePing();
+
+      // client.socket.addEventListener("error", (error) => {
+      //   debug("socket error, closing", error);
+      //   clearTimeout(keepAliveTimer);
+      //   client.close();
+      //   // subscriber.error({ code: -32603, message: "WebSocket error", data: error });
+      // });
+
+      // client.socket.addEventListener("close", async () => {
+      //   debug("socket closed, trying to setup again...");
+      //   clearTimeout(keepAliveTimer);
+      //   setupClient().catch((error) => {
+      //     debug("error trying to setup new client", error);
+      //     subscriber.error(error);
+      //   });
+      // });
 
       // Start watching pending logs
       const subscriptionId: Hex = (
@@ -142,7 +148,7 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
 
     return () => {
       debug("logs$ subscription closed");
-      clearInterval(keepAliveInterval);
+      clearTimeout(pingTimer);
       client?.close();
     };
   });
