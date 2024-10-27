@@ -52,34 +52,29 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
           await client.requestAsync({ body: { method: "net_version" }, timeout: pingTimeout });
         } catch (error) {
           debug("ping failed, closing...", error);
-          // client.close();
-          // TODO: try to close socket to see if it reconnects?
-          client.socket.close();
-          throw error;
+          client.close();
         }
       }
 
       function schedulePing(): void {
-        debug("scheduling ping");
+        debug("scheduling next ping");
         pingTimer = setTimeout(() => ping().then(schedulePing), pingInterval);
       }
 
       schedulePing();
 
       client.socket.addEventListener("error", (error) => {
-        debug("socket:error", error);
-        // clearTimeout(keepAliveTimer);
-        // client.close();
-        // subscriber.error({ code: -32603, message: "WebSocket error", data: error });
+        debug("socket error, closing...", error);
+        client.close();
       });
 
       client.socket.addEventListener("close", async () => {
-        debug("socket:close");
-        // clearTimeout(keepAliveTimer);
-        // setupClient().catch((error) => {
-        //   debug("error trying to setup new client", error);
-        //   subscriber.error(error);
-        // });
+        debug("socket close, setting up new client...");
+        clearTimeout(pingTimer);
+        setupClient().catch((error) => {
+          debug("error trying to setup new client", error);
+          subscriber.error(error);
+        });
       });
 
       // Start watching pending logs
