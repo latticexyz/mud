@@ -40,25 +40,25 @@ export function TransactionsWatcher() {
       timestamp,
       receipt,
       transaction,
-      userOp,
+      userOperation,
     }: {
       hash: Hash;
       writeId?: string;
       timestamp: bigint;
       receipt: TransactionReceipt;
       transaction: Transaction;
-      userOp: UserOperation; // TODO: type this
+      userOperation: UserOperation; // TODO: type this
     }) => {
       if (!abi) return;
 
-      console.log("userOp", userOp, receipt);
+      console.log("userOperation", userOperation, receipt);
 
       const decodedSmartAccountCall = decodeFunctionData({
         abi: parseAbi([
           "function execute(address target, uint256 value, bytes calldata data)",
           "function executeBatch((address target,uint256 value,bytes data)[])",
         ]),
-        data: userOp.callData,
+        data: userOperation.callData,
       });
 
       const { functionName: decodedFunctionName, args: decodedArgs } = decodedSmartAccountCall;
@@ -91,30 +91,23 @@ export function TransactionsWatcher() {
   );
 
   const handleUserOperations = useCallback(
-    ({ writeId, timestamp, transaction }: { writeId?: string; timestamp: bigint; transaction: Transaction }) => {
+    async ({ writeId, timestamp, transaction }: { writeId?: string; timestamp: bigint; transaction: Transaction }) => {
       if (!abi) return;
 
-      const write = writeId ? observerWrites[writeId] : undefined;
-      if (!write) return;
-
-      const receipt = write["events"].find((event) => event.type === "waitForUserOperationReceipt:result")?.receipt;
-      if (!receipt) return;
-
-      const hash = receipt.transactionHash;
+      const hash = transaction.hash;
+      const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: transaction.hash });
       const decodedEntryPointCall = decodeFunctionData({
         abi: entryPoint07Abi,
         data: transaction.input,
       });
-      // decodedEntryPointCall.functionName === "handleOps"
-      // TODO: also handle incoming txs from blocks watcher that are "handleOps"
 
-      const userOps = decodedEntryPointCall.args[0] as PackedUserOperation[];
+      const userOperations = decodedEntryPointCall.args[0] as PackedUserOperation[];
       // const worldTo = decodedEntryPointCall.args[1] as Address;
 
-      console.log("userOps", decodedEntryPointCall, userOps);
+      console.log("userOperations", decodedEntryPointCall, userOperations);
 
-      for (const userOp of userOps) {
-        handleUserOperation({ hash, writeId, timestamp, receipt, transaction, userOp });
+      for (const userOperation of userOperations) {
+        handleUserOperation({ hash, writeId, timestamp, receipt, transaction, userOperation });
       }
     },
     [abi, observerWrites, handleUserOperation],
@@ -210,6 +203,7 @@ export function TransactionsWatcher() {
       if (!abi) return;
 
       const transaction = await getTransaction(wagmiConfig, { hash });
+
       if (transaction.to && getAddress(transaction.to) === getAddress(entryPoint07Address)) {
         handleUserOperations({ writeId, timestamp, transaction });
       } else if (transaction.to && getAddress(transaction.to) === getAddress(worldAddress)) {
