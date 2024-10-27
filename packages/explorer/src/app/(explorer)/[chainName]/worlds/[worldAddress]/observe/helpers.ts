@@ -1,5 +1,4 @@
-import { Address, Hex, Transaction, decodeFunctionData, getAbiItem } from "viem";
-import { formatAbiItem } from "viem/utils";
+import { Address, Hex, Transaction, decodeFunctionData } from "viem";
 import { doomWorldAbi } from "./abis";
 
 export function getCalls(decodedFunctionName: string, decodedArgs: readonly unknown[], transaction: Transaction) {
@@ -28,15 +27,8 @@ function getCall(target: Address, data: Hex, transaction: Transaction) {
     functionName = transaction.input.length > 10 ? transaction.input.slice(0, 10) : "unknown";
   }
 
-  const functionAbiItem = getAbiItem({
-    abi: doomWorldAbi,
-    name: functionName,
-    args,
-  } as never);
-
   return {
     to: target,
-    functionSignature: functionAbiItem ? formatAbiItem(functionAbiItem) : "unknown",
     functionName,
     args,
   };

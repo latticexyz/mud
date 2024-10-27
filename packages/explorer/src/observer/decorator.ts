@@ -1,7 +1,7 @@
-import { Account, Chain, Client, Hex, Transport, WalletActions, getAbiItem } from "viem";
+import { Account, Chain, Client, Hex, Transport, WalletActions } from "viem";
 import { BundlerActions, sendUserOperation, waitForUserOperationReceipt } from "viem/account-abstraction";
 import { waitForTransactionReceipt, writeContract } from "viem/actions";
-import { formatAbiItem, getAction } from "viem/utils";
+import { getAction } from "viem/utils";
 import { isDefined } from "@latticexyz/common/utils";
 import { createBridge } from "./bridge";
 import { ReceiptSummary } from "./common";
@@ -35,23 +35,10 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
         if ("calls" in args && args.calls) {
           calls = args.calls
             .map((call) => {
-              if (
-                call &&
-                typeof call === "object" &&
-                "abi" in call &&
-                "functionName" in call &&
-                "args" in call &&
-                "to" in call
-              ) {
-                const functionAbiItem = getAbiItem({
-                  abi: call.abi,
-                  name: call.functionName,
-                  args: call.args,
-                } as never)!;
-
+              // TODO: make this nicer
+              if (call && typeof call === "object" && "functionName" in call && "args" in call && "to" in call) {
                 return {
                   to: call.to,
-                  functionSignature: formatAbiItem(functionAbiItem), // TODO: is it needed?
                   functionName: call.functionName,
                   args: call.args,
                 } as UserOperationCall;
@@ -92,20 +79,12 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
         const writeId = `${client.uid}-${++writeCounter}`;
         const write = getAction(client, writeContract, "writeContract")(args);
 
-        // `writeContract` above will throw if this isn't present
-        const functionAbiItem = getAbiItem({
-          abi: args.abi,
-          name: args.functionName,
-          args: args.args,
-        } as never)!;
-
         emit("write", {
           writeId,
           from: client.account!.address,
           calls: [
             {
               to: args.address,
-              functionSignature: formatAbiItem(functionAbiItem),
               functionName: args.functionName,
               args: (args.args ?? []) as never,
             },

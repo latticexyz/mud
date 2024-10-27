@@ -30,7 +30,6 @@ export function useObservedTransactions() {
 
     for (const write of Object.values(observerWrites)) {
       // if (write.address.toLowerCase() !== worldAddress.toLowerCase()) continue; // TODO: filter entrypoint
-
       const writeResult = write.events.find((event): event is Message<"write:result"> => event.type === "write:result");
       const receiptEvent = write.events.find(
         (event): event is Message<"waitForTransactionReceipt:result"> | Message<"waitForUserOperationReceipt:result"> =>

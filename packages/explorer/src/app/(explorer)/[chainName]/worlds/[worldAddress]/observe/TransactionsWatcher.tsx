@@ -6,13 +6,11 @@ import {
   Transaction,
   TransactionReceipt,
   decodeFunctionData,
-  getAbiItem,
   getAddress,
   parseAbi,
   parseEventLogs,
 } from "viem";
 import { UserOperation, entryPoint07Abi, entryPoint07Address } from "viem/account-abstraction";
-import { formatAbiItem } from "viem/utils";
 import { useConfig, useWatchBlocks } from "wagmi";
 import { getTransaction, simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { useStore } from "zustand";
@@ -61,6 +59,12 @@ export function TransactionsWatcher() {
 
       const { functionName: decodedFunctionName, args: decodedArgs } = decodedSmartAccountCall;
       const calls = getCalls(decodedFunctionName, decodedArgs, transaction);
+      const logs = parseEventLogs({
+        abi: [...abi, userOperationEventAbi],
+        logs: receipt.logs,
+      });
+
+      console.log("calls", calls);
 
       setTransaction({
         hash,
@@ -68,24 +72,15 @@ export function TransactionsWatcher() {
         from: transaction.from,
         timestamp,
         transaction,
-        status: "pending",
         calls,
-        value: transaction.value,
-      });
-
-      const logs = parseEventLogs({
-        abi: [...abi, userOperationEventAbi],
-        logs: receipt.logs,
-      });
-
-      updateTransaction(hash, {
         receipt,
         logs,
+        value: transaction.value,
         status: receipt.status, // TODO: correct status check
         error: undefined, // TODO: transactionError as BaseError,
       });
     },
-    [abi, setTransaction, updateTransaction],
+    [abi, setTransaction],
   );
 
   const handleUserOperations = useCallback(
@@ -106,10 +101,10 @@ export function TransactionsWatcher() {
         handleUserOperation({ hash, writeId, timestamp, receipt, transaction, userOperation });
       }
     },
-    [abi, observerWrites, handleUserOperation],
+    [abi, observerWrites, handleUserOperation, wagmiConfig],
   );
 
-  const handleRegularTransaction = useCallback(
+  const handleAuthenticTransaction = useCallback(
     async ({
       writeId,
       hash,
@@ -145,7 +140,6 @@ export function TransactionsWatcher() {
         status: "pending",
         calls: {
           to: transaction.to,
-          functionSignature: formatAbiItem(getAbiItem({ abi, name: functionName, args })!),
           functionName,
           args,
         },
@@ -199,14 +193,13 @@ export function TransactionsWatcher() {
       if (!abi) return;
 
       const transaction = await getTransaction(wagmiConfig, { hash });
-
       if (transaction.to && getAddress(transaction.to) === getAddress(entryPoint07Address)) {
         handleUserOperations({ writeId, timestamp, transaction });
       } else if (transaction.to && getAddress(transaction.to) === getAddress(worldAddress)) {
-        handleRegularTransaction({ hash, writeId, timestamp, transaction });
+        handleAuthenticTransaction({ hash, writeId, timestamp, transaction });
       }
     },
-    [abi, wagmiConfig, worldAddress, handleUserOperations, handleRegularTransaction],
+    [abi, wagmiConfig, worldAddress, handleUserOperations, handleAuthenticTransaction],
   );
 
   useEffect(() => {
