@@ -18,8 +18,8 @@ export type CallWithSignatureOptions = {
    * This should be bound to the same chain as `chainId` option.
    */
   publicClient: Client;
-  userAccountClient: ConnectedClient;
-  appAccountClient: ConnectedClient;
+  userClient: ConnectedClient;
+  sessionClient: ConnectedClient;
   nonce?: bigint | null;
 };
 
@@ -29,12 +29,12 @@ export async function callWithSignature({
   systemId,
   callData,
   publicClient,
-  userAccountClient,
-  appAccountClient,
+  userClient,
+  sessionClient,
   nonce,
 }: CallWithSignatureOptions) {
   const signature = await signCall({
-    userAccountClient,
+    userClient,
     chainId,
     worldAddress,
     systemId,
@@ -44,13 +44,13 @@ export async function callWithSignature({
   });
 
   return getAction(
-    appAccountClient,
+    sessionClient,
     viem_writeContract,
     "writeContract",
   )({
     address: worldAddress,
     abi: CallWithSignatureAbi,
     functionName: "callWithSignature",
-    args: [userAccountClient.account.address, systemId, callData, signature],
+    args: [userClient.account.address, systemId, callData, signature],
   } as never);
 }

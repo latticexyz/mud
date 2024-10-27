@@ -1,11 +1,11 @@
 // TODO: move to external exports once we're ready
 export type { EntryKitConfig } from "../config";
-export type { ConnectedClient, AppAccountClient } from "../common";
+export type { ConnectedClient, SessionClient } from "../common";
 export { EntryKitProvider } from "../EntryKitProvider";
 export { useEntryKitConfig } from "../EntryKitConfigProvider";
 export { AccountButton } from "../AccountButton";
 export { useAccountModal } from "../useAccountModal";
-export { usePreparedAppAccountClient as useAppAccountClient } from "../usePreparedAppAccountClient";
+export { usePreparedSessionClient as useSessionClient } from "../usePreparedSessionClient";
 export { createWagmiConfig, type CreateWagmiConfigOptions } from "../createWagmiConfig";
 
 // And some additional internal things

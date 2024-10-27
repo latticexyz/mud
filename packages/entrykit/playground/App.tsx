@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import { UserWrite } from "./UserWrite";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { AppAccountWrite } from "./AppAccountWrite";
+import { SessionWrite } from "./SessionWrite";
 import { useAccountModal } from "../src/useAccountModal";
 import { AccountButton } from "../src/AccountButton";
 
@@ -35,7 +35,7 @@ export function App() {
         <UserWrite />
       </div>
       <div>
-        <AppAccountWrite />
+        <SessionWrite />
       </div>
     </div>
   );

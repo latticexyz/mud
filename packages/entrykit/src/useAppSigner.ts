@@ -1,7 +1,7 @@
 import { useStore } from "zustand";
-import { store } from "./onboarding/store";
+import { store } from "./store";
 import { Address } from "viem/accounts";
-import { getAppSigner } from "./getAppSigner";
+import { getAppSigner } from "./getSessionSigner";
 import { useMemo } from "react";
 
 export function useAppSigner(userAddress: Address) {

@@ -1,5 +1,5 @@
 import { useEntryKitConfig } from "../src/EntryKitConfigProvider";
-import { usePreparedAppAccountClient } from "../src/usePreparedAppAccountClient";
+import { usePreparedSessionClient } from "../src/usePreparedSessionClient";
 import { getContract } from "viem";
 import { mockGameAbi } from "./mockGame";
 import { useMemo } from "react";
@@ -7,21 +7,21 @@ import { waitForTransactionReceipt } from "viem/actions";
 import { getAction } from "viem/utils";
 import { useClient } from "wagmi";
 
-export function AppAccountWrite() {
+export function SessionWrite() {
   const { chainId, worldAddress } = useEntryKitConfig();
   const client = useClient({ chainId });
-  const appAccountClient = usePreparedAppAccountClient();
+  const sessionClient = usePreparedSessionClient();
 
   const worldContract = useMemo(
     () =>
-      appAccountClient
+      sessionClient
         ? getContract({
-            client: appAccountClient,
+            client: sessionClient,
             address: worldAddress,
             abi: mockGameAbi,
           })
         : null,
-    [appAccountClient, worldAddress],
+    [sessionClient, worldAddress],
   );
 
   return (
@@ -39,10 +39,10 @@ export function AppAccountWrite() {
           console.log("got receipt", receipt);
         }}
       >
-        App account write
+        Session write
       </button>
       <p>world: {worldAddress}</p>
-      <p>app account: {appAccountClient?.account.address}</p>
+      <p>session: {sessionClient?.account.address}</p>
     </div>
   );
 }

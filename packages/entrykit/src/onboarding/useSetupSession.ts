@@ -18,21 +18,21 @@ function defineCall<abi extends Abi | readonly unknown[]>(
   return call;
 }
 
-export function useSetupAppAccount() {
+export function useSetupSession() {
   const { worldAddress, paymasterAddress } = useEntryKitConfig();
   const queryClient = useQueryClient();
 
   return useMutation({
     onError: (error) => console.error(error),
-    mutationKey: ["setupAppAccount"],
+    mutationKey: ["setupSession"],
     mutationFn: async ({
       userClient,
-      appAccountAddress,
+      sessionAddress,
       registerSpender,
       registerDelegation,
     }: {
       userClient: ConnectedClient;
-      appAccountAddress: Address;
+      sessionAddress: Address;
       registerSpender: boolean;
       registerDelegation: boolean;
     }): Promise<void> => {
@@ -48,7 +48,7 @@ export function useSetupAppAccount() {
           address: paymasterAddress,
           abi: paymasterAbi,
           functionName: "registerSpender",
-          args: [appAccountAddress],
+          args: [sessionAddress],
         });
         await getAction(
           userClient,
@@ -60,7 +60,7 @@ export function useSetupAppAccount() {
           address: worldAddress,
           abi: worldAbi,
           functionName: "registerDelegation",
-          args: [appAccountAddress, unlimitedDelegationControlId, "0x"],
+          args: [sessionAddress, unlimitedDelegationControlId, "0x"],
         });
       }
 
@@ -73,7 +73,7 @@ export function useSetupAppAccount() {
             to: paymasterAddress,
             abi: paymasterAbi,
             functionName: "registerSpender",
-            args: [appAccountAddress],
+            args: [sessionAddress],
           }),
         );
       }
@@ -85,7 +85,7 @@ export function useSetupAppAccount() {
             to: worldAddress,
             abi: worldAbi,
             functionName: "registerDelegation",
-            args: [appAccountAddress, unlimitedDelegationControlId, "0x"],
+            args: [sessionAddress, unlimitedDelegationControlId, "0x"],
           }),
         );
       }
@@ -109,7 +109,7 @@ export function useSetupAppAccount() {
           client: userClient,
           paymasterAddress,
           userAddress: userClient.account.address,
-          appAccountAddress,
+          sessionAddress,
         });
         queryClient.setQueryData(queryKey, true);
       }
@@ -119,7 +119,7 @@ export function useSetupAppAccount() {
           client: userClient,
           worldAddress,
           userAddress: userClient.account.address,
-          appAccountAddress,
+          sessionAddress,
         });
         queryClient.setQueryData(queryKey, true);
       }

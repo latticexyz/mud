@@ -1,20 +1,20 @@
 import { Address } from "viem";
-import { store } from "./onboarding/store";
+import { store } from "./store";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
-export function getAppSigner(userAddress: Address) {
-  const appSignerPrivateKey =
-    store.getState().appSigners[userAddress] ??
+export function getSessionSigner(userAddress: Address) {
+  const sessionSignerPrivateKey =
+    store.getState().signers[userAddress] ??
     (() => {
       const privateKey = generatePrivateKey();
       store.setState((state) => ({
-        appSigners: {
-          ...state.appSigners,
+        signers: {
+          ...state.signers,
           [userAddress]: privateKey,
         },
       }));
       return privateKey;
     })();
 
-  return privateKeyToAccount(appSignerPrivateKey);
+  return privateKeyToAccount(sessionSignerPrivateKey);
 }

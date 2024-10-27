@@ -5,7 +5,7 @@ import { useAccount } from "wagmi";
 import { twMerge } from "tailwind-merge";
 import { PendingIcon } from "./icons/PendingIcon";
 import { AccountName } from "./AccountName";
-import { usePreparedAppAccountClient } from "./usePreparedAppAccountClient";
+import { usePreparedSessionClient } from "./usePreparedSessionClient";
 
 const containerClassNames = twMerge(
   "w-48 inline-flex outline-none transition",
@@ -26,7 +26,7 @@ export function AccountButton() {
   const { status, address } = useAccount();
 
   // TODO: use this to show indicator when onboarding is not complete
-  usePreparedAppAccountClient();
+  usePreparedSessionClient();
 
   return (
     <Shadow mode="child">

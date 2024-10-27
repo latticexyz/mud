@@ -9,30 +9,30 @@ export function getDelegationQueryKey({
   client,
   worldAddress,
   userAddress,
-  appAccountAddress,
+  sessionAddress,
 }: {
   client: Client<Transport, Chain> | undefined;
   worldAddress: Address;
   userAddress: Address | undefined;
-  appAccountAddress: Address | undefined;
+  sessionAddress: Address | undefined;
 }) {
-  return ["delegation", client?.chain.id, worldAddress, userAddress, appAccountAddress];
+  return ["delegation", client?.chain.id, worldAddress, userAddress, sessionAddress];
 }
 
-export function useDelegation(userAddress: Address | undefined, appAccountAddress: Address | undefined) {
+export function useDelegation(userAddress: Address | undefined, sessionAddress: Address | undefined) {
   const { chainId, worldAddress } = useEntryKitConfig();
   const client = useClient({ chainId });
 
-  const queryKey = getDelegationQueryKey({ client, worldAddress, userAddress, appAccountAddress });
+  const queryKey = getDelegationQueryKey({ client, worldAddress, userAddress, sessionAddress });
   return useQuery(
-    client && userAddress && appAccountAddress
+    client && userAddress && sessionAddress
       ? {
           queryKey,
           queryFn: async () => {
             const record = await getRecord(client, {
               address: worldAddress,
               table: worldTables.UserDelegationControl,
-              key: { delegator: userAddress, delegatee: appAccountAddress },
+              key: { delegator: userAddress, delegatee: sessionAddress },
             });
             return record.delegationControlId === unlimitedDelegationControlId;
           },

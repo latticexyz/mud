@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { ConnectedClient } from "../common";
 import { Step, minGasBalance } from "./common";
 import { useAllowance } from "./useAllowance";
-import { useAppAccountClient } from "../useAppAccountClient";
+import { useSessionClient } from "../useSessionClient";
 import { useSpender } from "./useSpender";
 import { useDelegation } from "./useDelegation";
 import { Wallet } from "./Wallet";
@@ -12,12 +12,12 @@ import { Session } from "./Session";
 export function useSteps(userClient: ConnectedClient | undefined): readonly Step[] {
   const userAddress = userClient?.account.address;
   const allowance = useAllowance(userAddress);
-  const appAccountClient = useAppAccountClient(userAddress);
+  const sessionClient = useSessionClient(userAddress);
 
-  const spender = useSpender(userAddress, appAccountClient.data?.account.address);
+  const spender = useSpender(userAddress, sessionClient.data?.account.address);
   const isSpender = spender.data === true;
 
-  const delegation = useDelegation(userAddress, appAccountClient.data?.account.address);
+  const delegation = useDelegation(userAddress, sessionClient.data?.account.address);
   const hasDelegation = delegation.data === true;
 
   return useMemo(() => {

@@ -3,7 +3,7 @@ import { Client, Chain, Transport, Account, parseAbi, ClientConfig, Address } fr
 import worldConfig from "@latticexyz/world/mud.config";
 
 export type ConnectedClient<chain extends Chain = Chain> = Client<Transport, chain, Account>;
-export type AppAccountClient<chain extends Chain = Chain> = ConnectedClient<chain> & { readonly userAddress: Address };
+export type SessionClient<chain extends Chain = Chain> = ConnectedClient<chain> & { readonly userAddress: Address };
 
 export const defaultClientConfig = {
   pollingInterval: 250,

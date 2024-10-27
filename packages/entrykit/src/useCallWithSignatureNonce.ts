@@ -5,16 +5,16 @@ import modulesConfig from "@latticexyz/world-modules/internal/mud.config";
 
 export function useCallWithSignatureNonce() {
   const { chainId, worldAddress } = useEntryKitConfig();
-  const { data: userAccountClient } = useWalletClient({ chainId });
-  const userAccountAddress = userAccountClient?.account.address;
+  const { data: userClient } = useWalletClient({ chainId });
+  const userAddress = userClient?.account.address;
 
   const result = useRecord(
-    userAccountAddress
+    userAddress
       ? {
           chainId,
           address: worldAddress,
           table: modulesConfig.tables.CallWithSignatureNonces,
-          key: { signer: userAccountAddress },
+          key: { signer: userAddress },
           blockTag: "pending",
         }
       : {},

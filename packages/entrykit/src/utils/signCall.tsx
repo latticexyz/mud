@@ -11,7 +11,7 @@ import { ConnectedClient } from "../common";
 // TODO: nonce _or_ publicClient?
 
 export type SignCallOptions = {
-  userAccountClient: ConnectedClient;
+  userClient: ConnectedClient;
   chainId: number;
   worldAddress: Address;
   systemId: Hex;
@@ -24,7 +24,7 @@ export type SignCallOptions = {
 };
 
 export async function signCall({
-  userAccountClient,
+  userClient,
   chainId,
   worldAddress,
   systemId,
@@ -39,7 +39,7 @@ export async function signCall({
           await getRecord(publicClient, {
             address: worldAddress,
             table: modulesConfig.tables.CallWithSignatureNonces,
-            key: { signer: userAccountClient.account.address },
+            key: { signer: userClient.account.address },
             blockTag: "pending",
           })
         ).nonce
@@ -48,11 +48,11 @@ export async function signCall({
   const { namespace: systemNamespace, name: systemName } = hexToResource(systemId);
 
   return await getAction(
-    userAccountClient,
+    userClient,
     signTypedData,
     "signTypedData",
   )({
-    account: userAccountClient.account,
+    account: userClient.account,
     domain: {
       verifyingContract: worldAddress,
       salt: toHex(chainId, { size: 32 }),
@@ -60,7 +60,7 @@ export async function signCall({
     types: callWithSignatureTypes,
     primaryType: "Call",
     message: {
-      signer: userAccountClient.account.address,
+      signer: userClient.account.address,
       systemNamespace,
       systemName,
       callData,

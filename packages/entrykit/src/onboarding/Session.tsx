@@ -1,6 +1,6 @@
-import { useAppAccountClient } from "../useAppAccountClient";
+import { useSessionClient } from "../useSessionClient";
 import { Button } from "../ui/Button";
-import { useSetupAppAccount } from "./useSetupAppAccount";
+import { useSetupSession } from "./useSetupSession";
 import { useAccountModal } from "../useAccountModal";
 import { ConnectedClient } from "../common";
 
@@ -14,8 +14,8 @@ export type Props = {
 
 export function Session({ isActive, isExpanded, userClient, registerSpender, registerDelegation }: Props) {
   const { closeAccountModal } = useAccountModal();
-  const appAccountClient = useAppAccountClient(userClient.account.address);
-  const setup = useSetupAppAccount();
+  const sessionClient = useSessionClient(userClient.account.address);
+  const setup = useSetupSession();
 
   const isReady = !registerDelegation && !registerDelegation;
 
@@ -35,13 +35,13 @@ export function Session({ isActive, isExpanded, userClient, registerSpender, reg
           <Button
             variant={isActive ? "primary" : "secondary"}
             className="flex-shrink-0 text-sm p-1 w-28"
-            pending={!appAccountClient.data || setup.status === "pending"}
+            pending={!sessionClient.data || setup.status === "pending"}
             onClick={
-              appAccountClient.data
+              sessionClient.data
                 ? async () => {
                     await setup.mutateAsync({
                       userClient,
-                      appAccountAddress: appAccountClient.data.account.address,
+                      sessionAddress: sessionClient.data.account.address,
                       registerSpender,
                       registerDelegation,
                     });

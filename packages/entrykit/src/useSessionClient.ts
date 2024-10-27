@@ -2,20 +2,20 @@ import { Address } from "viem";
 import { useEntryKitConfig } from "./EntryKitConfigProvider";
 import { useClient } from "wagmi";
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
-import { getAppAccountClient } from "./getAppAccountClient";
-import { AppAccountClient } from "./common";
+import { getSessionClient } from "./getSessionClient";
+import { SessionClient } from "./common";
 
-export function useAppAccountClient(userAddress: Address | undefined): UseQueryResult<AppAccountClient> {
+export function useSessionClient(userAddress: Address | undefined): UseQueryResult<SessionClient> {
   const { chainId, bundlerTransport, paymasterAddress, worldAddress, explorerUrl } = useEntryKitConfig();
   const client = useClient({ chainId });
 
-  const queryKey = ["appAccountClient", client?.uid, userAddress];
+  const queryKey = ["sessionClient", client?.uid, userAddress];
   return useQuery(
     client && userAddress
       ? {
           queryKey,
           queryFn: async () => {
-            return await getAppAccountClient({
+            return await getSessionClient({
               worldAddress,
               userAddress,
               client,

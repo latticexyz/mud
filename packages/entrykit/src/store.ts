@@ -3,7 +3,7 @@ import { persist } from "zustand/middleware";
 import { Address, Hex } from "viem";
 
 export type State = {
-  readonly appSigners: {
+  readonly signers: {
     readonly [key in Address]?: Hex;
   };
 };
@@ -11,11 +11,11 @@ export type State = {
 export const store = createStore(
   persist<State>(
     () => ({
-      appSigners: {},
+      signers: {},
     }),
     {
       name: "mud:entrykit",
-      partialize: ({ appSigners }) => ({ appSigners }),
+      partialize: ({ signers }) => ({ signers }),
     },
   ),
 );

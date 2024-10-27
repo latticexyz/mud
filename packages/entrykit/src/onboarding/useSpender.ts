@@ -9,30 +9,30 @@ export function getSpenderQueryKey({
   client,
   paymasterAddress,
   userAddress,
-  appAccountAddress,
+  sessionAddress,
 }: {
   client: Client<Transport, Chain> | undefined;
   paymasterAddress: Address;
   userAddress: Address | undefined;
-  appAccountAddress: Address | undefined;
+  sessionAddress: Address | undefined;
 }) {
-  return ["spender", client?.chain.id, paymasterAddress, userAddress, appAccountAddress];
+  return ["spender", client?.chain.id, paymasterAddress, userAddress, sessionAddress];
 }
 
-export function useSpender(userAddress: Address | undefined, appAccountAddress: Address | undefined) {
+export function useSpender(userAddress: Address | undefined, sessionAddress: Address | undefined) {
   const { chainId, paymasterAddress } = useEntryKitConfig();
   const client = useClient({ chainId });
 
-  const queryKey = getSpenderQueryKey({ client, paymasterAddress, userAddress, appAccountAddress });
+  const queryKey = getSpenderQueryKey({ client, paymasterAddress, userAddress, sessionAddress });
   return useQuery(
-    client && userAddress && appAccountAddress
+    client && userAddress && sessionAddress
       ? {
           queryKey,
           queryFn: async () => {
             const record = await getRecord(client, {
               address: paymasterAddress,
               table: paymasterTables.Spender,
-              key: { spender: appAccountAddress },
+              key: { spender: sessionAddress },
             });
             return record.user.toLowerCase() === userAddress.toLowerCase();
           },
