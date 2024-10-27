@@ -82,23 +82,21 @@ export function TransactionTableRow({ row }: { row: Row<ObservedTransaction> }) 
                 <div className="flex items-start gap-x-4">
                   <h3 className="w-[45px] flex-shrink-0 text-2xs font-bold uppercase">Inputs</h3>
 
-                  {(Array.isArray(data.calls) && data.calls.length > 0) || data.calls ? (
+                  {data.calls.length > 0 ? (
                     <div className="flex w-full flex-col gap-y-4">
-                      {(Array.isArray(data.calls) ? data.calls : [data.calls]).map((call, idx) => {
-                        return (
-                          <div key={idx} className="min-w-0 flex-grow border border-white/20 p-2 pt-1">
-                            <span className="text-xs">{call.functionName}:</span>
-                            {call.args?.map((arg, idx) => (
-                              <div key={idx} className="flex">
-                                <span className="flex-shrink-0 text-xs text-white/60">arg {idx + 1}:</span>
-                                <span className="ml-2 break-all text-xs">
-                                  {typeof arg === "object" && arg !== null ? JSON.stringify(arg, null, 2) : String(arg)}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        );
-                      })}
+                      {data.calls.map((call, idx) => (
+                        <div key={idx} className="min-w-0 flex-grow border border-white/20 p-2 pt-1">
+                          <span className="text-xs">{call.functionName}:</span>
+                          {call.args?.map((arg, argIdx) => (
+                            <div key={argIdx} className="flex">
+                              <span className="flex-shrink-0 text-xs text-white/60">arg {argIdx + 1}:</span>
+                              <span className="ml-2 break-all text-xs">
+                                {typeof arg === "object" && arg !== null ? JSON.stringify(arg, null, 2) : String(arg)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      ))}
                     </div>
                   ) : (
                     <p className="text-2xs uppercase text-white/60">No inputs</p>

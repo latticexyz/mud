@@ -1,22 +1,41 @@
 import { Address, Hex, Transaction, decodeFunctionData } from "viem";
+import { DecodedUserOperationCall } from "../../../../../../observer/messages";
 import { doomWorldAbi } from "./abis";
 
-export function getCalls(decodedFunctionName: string, decodedArgs: readonly unknown[], transaction: Transaction) {
-  if (decodedFunctionName === "execute") {
+export function getDecodedUserOperationCalls({
+  functionName,
+  decodedArgs,
+  transaction,
+}: {
+  functionName: string;
+  decodedArgs: readonly unknown[];
+  transaction: Transaction;
+}) {
+  if (functionName === "execute") {
     const target = decodedArgs[0] as Address;
-    // const value = decodedArgs[1]; // TODO: handle value
+    const value = decodedArgs[1] as bigint;
     const data = decodedArgs[2] as Hex;
 
-    return getCall(target, data, transaction);
-  } else if (decodedFunctionName === "executeBatch") {
-    return (decodedArgs[0] as { target: Address; data: Hex }[]).map((worldFunction) =>
-      getCall(worldFunction.target, worldFunction.data, transaction),
+    return [getDecodedUserOperationCall({ target, data, transaction, value })];
+  } else if (functionName === "executeBatch") {
+    return (decodedArgs[0] as { target: Address; data: Hex; value: bigint }[]).map(({ target, data, value }) =>
+      getDecodedUserOperationCall({ target, data, transaction, value }),
     );
   }
   return [];
 }
 
-function getCall(target: Address, data: Hex, transaction: Transaction) {
+function getDecodedUserOperationCall({
+  target,
+  data,
+  transaction,
+  value,
+}: {
+  target: Address;
+  data: Hex;
+  transaction: Transaction;
+  value: bigint;
+}): DecodedUserOperationCall {
   let functionName: string | undefined;
   let args: readonly unknown[] | undefined;
   try {
@@ -31,5 +50,6 @@ function getCall(target: Address, data: Hex, transaction: Transaction) {
     to: target,
     functionName,
     args,
+    value,
   };
 }

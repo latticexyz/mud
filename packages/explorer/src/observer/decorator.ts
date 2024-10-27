@@ -2,10 +2,9 @@ import { Account, Chain, Client, Hex, Transport, WalletActions } from "viem";
 import { BundlerActions, sendUserOperation, waitForUserOperationReceipt } from "viem/account-abstraction";
 import { waitForTransactionReceipt, writeContract } from "viem/actions";
 import { getAction } from "viem/utils";
-import { isDefined } from "@latticexyz/common/utils";
 import { createBridge } from "./bridge";
 import { ReceiptSummary } from "./common";
-import { UserOperationCall } from "./messages";
+import { DecodedUserOperationCall } from "./messages";
 
 export type WaitForTransaction = (hash: Hex) => Promise<ReceiptSummary>;
 
@@ -31,22 +30,20 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
         const writeId = `${client.uid}-${++writeCounter}`;
         const write = getAction(client, sendUserOperation, "sendUserOperation")(args);
 
-        let calls: UserOperationCall[] = [];
+        let calls: DecodedUserOperationCall[] = [];
         if ("calls" in args && args.calls) {
-          calls = args.calls
-            .map((call) => {
-              // TODO: make this nicer
-              if (call && typeof call === "object" && "functionName" in call && "args" in call && "to" in call) {
-                return {
-                  to: call.to,
-                  functionName: call.functionName,
-                  args: call.args,
-                } as UserOperationCall;
-              }
-
-              return undefined;
-            })
-            .filter(isDefined);
+          calls = args.calls.map((call) => {
+            return {
+              // @ts-expect-error TODO: fix
+              to: call.to,
+              // @ts-expect-error TODO: fix
+              functionName: call.functionName,
+              // @ts-expect-error TODO: fix
+              args: call.args,
+              // @ts-expect-error TODO: fix
+              value: call.value,
+            };
+          });
         }
 
         emit("write", {
@@ -87,9 +84,9 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
               to: args.address,
               functionName: args.functionName,
               args: (args.args ?? []) as never,
+              value: args.value,
             },
           ],
-          value: args.value, // TODO: how to handle value?
         });
         Promise.allSettled([write]).then(([result]) => {
           emit("write:result", { ...result, writeId });

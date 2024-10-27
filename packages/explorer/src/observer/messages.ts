@@ -3,10 +3,11 @@ import { UserOperationReceipt } from "viem/account-abstraction";
 import { ReceiptSummary } from "./common";
 
 // TODO: fix type, move elsewhere
-export type UserOperationCall = {
-  to: Address | null;
+export type DecodedUserOperationCall = {
+  to?: Address;
   functionName: string;
-  args: unknown;
+  args: unknown[];
+  value?: bigint;
 };
 
 export type Messages = {
@@ -18,7 +19,7 @@ export type Messages = {
   write: {
     writeId: string;
     from: Address;
-    calls: UserOperationCall[];
+    calls: DecodedUserOperationCall[];
     value?: bigint;
   };
   "write:result": PromiseSettledResult<Hash> & { writeId: string };

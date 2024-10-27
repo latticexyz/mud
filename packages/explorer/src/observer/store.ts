@@ -4,7 +4,7 @@ import { Address, Hash } from "viem";
 import { createStore } from "zustand/vanilla";
 import { relayChannelName } from "./common";
 import { debug } from "./debug";
-import { Message, MessageType, UserOperationCall } from "./messages";
+import { DecodedUserOperationCall, Message, MessageType } from "./messages";
 
 export type Write = {
   writeId: string;
@@ -13,8 +13,7 @@ export type Write = {
   userOpHash?: Hash;
   from: Address;
   time: number;
-  calls: UserOperationCall | UserOperationCall[];
-  value?: bigint;
+  calls: DecodedUserOperationCall[];
   events: Message<Exclude<MessageType, "ping">>[];
   error?: Error;
 };

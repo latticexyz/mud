@@ -1,7 +1,7 @@
 import { Address, BaseError, Hex, Log, Transaction, TransactionReceipt } from "viem";
 import { useStore } from "zustand";
 import { useMemo } from "react";
-import { Message, UserOperationCall } from "../../../../../../observer/messages";
+import { DecodedUserOperationCall, Message } from "../../../../../../observer/messages";
 import { type Write, store as observerStore } from "../../../../../../observer/store";
 import { store as worldStore } from "../store";
 
@@ -11,7 +11,7 @@ export type ObservedTransaction = {
   from?: Address;
   timestamp?: bigint;
   transaction?: Transaction;
-  calls: UserOperationCall | UserOperationCall[];
+  calls: DecodedUserOperationCall[];
   value?: bigint;
   receipt?: TransactionReceipt;
   status: "pending" | "success" | "reverted" | "rejected" | "unknown";

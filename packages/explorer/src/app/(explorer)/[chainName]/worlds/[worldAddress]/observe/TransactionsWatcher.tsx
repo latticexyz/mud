@@ -20,7 +20,7 @@ import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { store as worldStore } from "../store";
 import { userOperationEventAbi } from "./abis";
-import { getCalls } from "./helpers";
+import { getDecodedUserOperationCalls } from "./helpers";
 
 export function TransactionsWatcher() {
   const { id: chainId } = useChain();
@@ -58,13 +58,19 @@ export function TransactionsWatcher() {
       });
 
       const { functionName: decodedFunctionName, args: decodedArgs } = decodedSmartAccountCall;
-      const calls = getCalls(decodedFunctionName, decodedArgs, transaction);
+      const calls = getDecodedUserOperationCalls({
+        functionName: decodedFunctionName,
+        decodedArgs,
+        transaction,
+      }).filter(({ to }) => to && getAddress(to) === getAddress(worldAddress)); // TODO: filter earlier
+      if (calls.length === 0) return;
+
       const logs = parseEventLogs({
         abi: [...abi, userOperationEventAbi],
         logs: receipt.logs,
       });
 
-      console.log("calls", calls);
+      console.log("RECEIPT", receipt);
 
       setTransaction({
         hash,
@@ -76,11 +82,11 @@ export function TransactionsWatcher() {
         receipt,
         logs,
         value: transaction.value,
-        status: receipt.status, // TODO: correct status check
+        status: receipt.status,
         error: undefined, // TODO: transactionError as BaseError,
       });
     },
-    [abi, setTransaction],
+    [abi, setTransaction, worldAddress],
   );
 
   const handleUserOperations = useCallback(
@@ -94,14 +100,12 @@ export function TransactionsWatcher() {
         data: transaction.input,
       });
 
-      // decodedEntryPointCall.args[0] is an array of UserOperation<"0.7">
-      // decodedEntryPointCall.args[1] is `beneficiary`
       const userOperations = decodedEntryPointCall.args[0] as never as UserOperation<"0.7">[];
       for (const userOperation of userOperations) {
         handleUserOperation({ hash, writeId, timestamp, receipt, transaction, userOperation });
       }
     },
-    [abi, observerWrites, handleUserOperation, wagmiConfig],
+    [abi, handleUserOperation, wagmiConfig],
   );
 
   const handleAuthenticTransaction = useCallback(
@@ -116,7 +120,7 @@ export function TransactionsWatcher() {
       timestamp: bigint;
       transaction: Transaction;
     }) => {
-      if (!abi) return;
+      if (!abi || !transaction.to) return;
 
       let functionName: string | undefined;
       let args: readonly unknown[] | undefined;
@@ -138,11 +142,13 @@ export function TransactionsWatcher() {
         timestamp,
         transaction,
         status: "pending",
-        calls: {
-          to: transaction.to,
-          functionName,
-          args,
-        },
+        calls: [
+          {
+            to: transaction.to,
+            functionName,
+            args,
+          },
+        ],
         value: transaction.value,
       });
 
