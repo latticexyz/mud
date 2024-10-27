@@ -5,7 +5,7 @@ export { EntryKitProvider } from "../EntryKitProvider";
 export { useEntryKitConfig } from "../EntryKitConfigProvider";
 export { AccountButton } from "../AccountButton";
 export { useAccountModal } from "../useAccountModal";
-export { usePreparedSessionClient as useSessionClient } from "../usePreparedSessionClient";
+export { useSessionClientReady as useSessionClient } from "../useSessionClientReady";
 export { createWagmiConfig, type CreateWagmiConfigOptions } from "../createWagmiConfig";
 
 // And some additional internal things

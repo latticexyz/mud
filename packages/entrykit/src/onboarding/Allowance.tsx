@@ -19,7 +19,7 @@ export function Allowance({ isActive, isExpanded, userAddress }: Props) {
 
   // TODO: improve pending state since this is kicked off automatically and showing a pending button is weird
   useEffect(() => {
-    if (isActive && claimGasPass.status === "idle" && allowance.data && allowance.data.allowance < minGasBalance) {
+    if (isActive && claimGasPass.status === "idle" && allowance.data != null && allowance.data < minGasBalance) {
       claimGasPass.mutate(userAddress);
     }
   }, [allowance.data, claimGasPass, isActive, userAddress]);
@@ -33,7 +33,7 @@ export function Allowance({ isActive, isExpanded, userAddress }: Props) {
         <div>
           <div>Allowance</div>
           <div className="font-mono text-white">
-            {allowance.data ? <Balance wei={allowance.data.allowance} /> : <PendingIcon />}
+            {allowance.data != null ? <Balance wei={allowance.data} /> : <PendingIcon className="text-sm" />}
           </div>
         </div>
         <Button

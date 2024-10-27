@@ -1,13 +1,13 @@
 import { Address, Chain, Client, Transport } from "viem";
-import { getSessionSigner } from "./getSessionSigner";
-import { toCoinbaseSmartAccount } from "./smart-account/toCoinbaseSmartAccount";
 import { smartAccountActions } from "permissionless";
 import { callFrom } from "@latticexyz/world/internal";
 import { createBundlerClient } from "./createBundlerClient";
 import { observer } from "@latticexyz/explorer/observer";
 import { SessionClient } from "./common";
+import { SmartAccount } from "viem/account-abstraction";
 
 export async function getSessionClient<chain extends Chain>({
+  sessionAccount,
   worldAddress,
   userAddress,
   client,
@@ -15,6 +15,7 @@ export async function getSessionClient<chain extends Chain>({
   paymasterAddress,
   explorerUrl,
 }: {
+  sessionAccount: SmartAccount;
   worldAddress: Address;
   userAddress: Address;
   client: Client<Transport, chain>;
@@ -22,14 +23,11 @@ export async function getSessionClient<chain extends Chain>({
   paymasterAddress: Address;
   explorerUrl?: string;
 }): Promise<SessionClient<chain>> {
-  const sessionSigner = getSessionSigner(userAddress);
-  const account = await toCoinbaseSmartAccount({ client, owners: [sessionSigner] });
-
   const sessionClient = createBundlerClient({
     paymasterAddress,
     transport: bundlerTransport,
     client,
-    account,
+    account: sessionAccount,
   })
     .extend(smartAccountActions())
     .extend(callFrom({ worldAddress, delegatorAddress: userAddress, publicClient: client }))

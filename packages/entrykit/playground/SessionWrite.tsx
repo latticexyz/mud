@@ -1,5 +1,5 @@
 import { useEntryKitConfig } from "../src/EntryKitConfigProvider";
-import { usePreparedSessionClient } from "../src/usePreparedSessionClient";
+import { useSessionClientReady } from "../src/useSessionClientReady";
 import { getContract } from "viem";
 import { mockGameAbi } from "./mockGame";
 import { useMemo } from "react";
@@ -10,7 +10,7 @@ import { useClient } from "wagmi";
 export function SessionWrite() {
   const { chainId, worldAddress } = useEntryKitConfig();
   const client = useClient({ chainId });
-  const sessionClient = usePreparedSessionClient();
+  const { data: sessionClient } = useSessionClientReady();
 
   const worldContract = useMemo(
     () =>
@@ -32,7 +32,7 @@ export function SessionWrite() {
           if (!client) throw new Error("Client not ready.");
           if (!worldContract) throw new Error("World contract not ready");
 
-          console.log("writing from app account");
+          console.log("writing from session account");
           const hash = await worldContract.write.move([2, 2]);
           console.log("got tx", hash);
           const receipt = await getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });

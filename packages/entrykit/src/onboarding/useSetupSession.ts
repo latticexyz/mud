@@ -6,8 +6,8 @@ import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { ConnectedClient, unlimitedDelegationControlId, worldAbi } from "../common";
 import { paymasterAbi } from "../paymaster";
 import { writeContract } from "viem/actions";
-import { getSpenderQueryKey } from "./useSpender";
-import { getDelegationQueryKey } from "./useDelegation";
+import { getSpenderQueryOptions } from "./useSpender";
+import { getDelegationQueryOptions } from "./useDelegation";
 
 function defineCall<abi extends Abi | readonly unknown[]>(
   call: Omit<ContractFunctionParameters<abi>, "address"> & {
@@ -105,7 +105,7 @@ export function useSetupSession() {
       if (!receipt.success) return;
 
       if (registerSpender) {
-        const queryKey = getSpenderQueryKey({
+        const { queryKey } = getSpenderQueryOptions({
           client: userClient,
           paymasterAddress,
           userAddress: userClient.account.address,
@@ -115,7 +115,7 @@ export function useSetupSession() {
       }
 
       if (registerDelegation) {
-        const queryKey = getDelegationQueryKey({
+        const { queryKey } = getDelegationQueryOptions({
           client: userClient,
           worldAddress,
           userAddress: userClient.account.address,

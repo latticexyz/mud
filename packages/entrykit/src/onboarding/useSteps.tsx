@@ -1,24 +1,16 @@
 import { useMemo } from "react";
 import { ConnectedClient } from "../common";
-import { Step, minGasBalance } from "./common";
-import { useAllowance } from "./useAllowance";
-import { useSessionClient } from "../useSessionClient";
-import { useSpender } from "./useSpender";
-import { useDelegation } from "./useDelegation";
+import { Step } from "./common";
 import { Wallet } from "./Wallet";
 import { Allowance } from "./Allowance";
 import { Session } from "./Session";
+import { usePrerequisites } from "./usePrerequisites";
 
 export function useSteps(userClient: ConnectedClient | undefined): readonly Step[] {
   const userAddress = userClient?.account.address;
-  const allowance = useAllowance(userAddress);
-  const sessionClient = useSessionClient(userAddress);
 
-  const spender = useSpender(userAddress, sessionClient.data?.account.address);
-  const isSpender = spender.data === true;
-
-  const delegation = useDelegation(userAddress, sessionClient.data?.account.address);
-  const hasDelegation = delegation.data === true;
+  const prerequisites = usePrerequisites(userAddress);
+  const { hasAllowance, isSpender, hasDelegation } = prerequisites.data ?? {};
 
   return useMemo(() => {
     if (!userAddress) {
@@ -42,13 +34,13 @@ export function useSteps(userClient: ConnectedClient | undefined): readonly Step
       {
         id: "allowance",
         label: "Top up",
-        isComplete: (allowance.data?.allowance ?? 0n) >= minGasBalance,
+        isComplete: !!hasAllowance,
         content: (props) => <Allowance {...props} userAddress={userAddress} />,
       },
       {
         id: "session",
         label: "Set up account",
-        isComplete: isSpender && hasDelegation,
+        isComplete: !!isSpender && !!hasDelegation,
         content: (props) => (
           <Session
             {...props}
@@ -59,5 +51,5 @@ export function useSteps(userClient: ConnectedClient | undefined): readonly Step
         ),
       },
     ];
-  }, [allowance.data?.allowance, hasDelegation, isSpender, userAddress, userClient]);
+  }, [hasAllowance, hasDelegation, isSpender, userAddress, userClient]);
 }

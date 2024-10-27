@@ -7,7 +7,7 @@ export type EntryKitConfig = {
   /**
    * The chain ID where the world is deployed.
    * There must be a matching chain entry in wagmi's configured chains.
-   * The app account client returned by EntryKit will be tied to this chain.
+   * The session client returned by EntryKit will be tied to this chain.
    */
   readonly chainId: number;
   /**

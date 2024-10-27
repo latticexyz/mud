@@ -1,11 +1,10 @@
 import { Address, Chain, Client, Transport } from "viem";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { useClient } from "wagmi";
-import { getRecord } from "../utils/getRecord";
-import { useQuery } from "@tanstack/react-query";
-import { unlimitedDelegationControlId, worldTables } from "../common";
+import { queryOptions, useQuery } from "@tanstack/react-query";
+import { getDelegation } from "./getDelegation";
 
-export function getDelegationQueryKey({
+export function getDelegationQueryOptions({
   client,
   worldAddress,
   userAddress,
@@ -16,27 +15,19 @@ export function getDelegationQueryKey({
   userAddress: Address | undefined;
   sessionAddress: Address | undefined;
 }) {
-  return ["delegation", client?.chain.id, worldAddress, userAddress, sessionAddress];
+  const queryKey = ["getDelegation", client?.chain.id, worldAddress, userAddress, sessionAddress];
+  return queryOptions(
+    client && userAddress && sessionAddress
+      ? {
+          queryKey,
+          queryFn: () => getDelegation({ client, worldAddress, userAddress, sessionAddress }),
+        }
+      : { queryKey, enabled: false },
+  );
 }
 
 export function useDelegation(userAddress: Address | undefined, sessionAddress: Address | undefined) {
   const { chainId, worldAddress } = useEntryKitConfig();
   const client = useClient({ chainId });
-
-  const queryKey = getDelegationQueryKey({ client, worldAddress, userAddress, sessionAddress });
-  return useQuery(
-    client && userAddress && sessionAddress
-      ? {
-          queryKey,
-          queryFn: async () => {
-            const record = await getRecord(client, {
-              address: worldAddress,
-              table: worldTables.UserDelegationControl,
-              key: { delegator: userAddress, delegatee: sessionAddress },
-            });
-            return record.delegationControlId === unlimitedDelegationControlId;
-          },
-        }
-      : { queryKey, enabled: false },
-  );
+  return useQuery(getDelegationQueryOptions({ client, worldAddress, userAddress, sessionAddress }));
 }
