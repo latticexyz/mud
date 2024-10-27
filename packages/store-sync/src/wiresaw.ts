@@ -66,21 +66,21 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
 
       schedulePing();
 
-      // client.socket.addEventListener("error", (error) => {
-      //   debug("socket error, closing", error);
-      //   clearTimeout(keepAliveTimer);
-      //   client.close();
-      //   // subscriber.error({ code: -32603, message: "WebSocket error", data: error });
-      // });
+      client.socket.addEventListener("error", (error) => {
+        debug("socket:error", error);
+        // clearTimeout(keepAliveTimer);
+        // client.close();
+        // subscriber.error({ code: -32603, message: "WebSocket error", data: error });
+      });
 
-      // client.socket.addEventListener("close", async () => {
-      //   debug("socket closed, trying to setup again...");
-      //   clearTimeout(keepAliveTimer);
-      //   setupClient().catch((error) => {
-      //     debug("error trying to setup new client", error);
-      //     subscriber.error(error);
-      //   });
-      // });
+      client.socket.addEventListener("close", async () => {
+        debug("socket:close");
+        // clearTimeout(keepAliveTimer);
+        // setupClient().catch((error) => {
+        //   debug("error trying to setup new client", error);
+        //   subscriber.error(error);
+        // });
+      });
 
       // Start watching pending logs
       const subscriptionId: Hex = (
