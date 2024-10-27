@@ -39,7 +39,7 @@ import { fromEventSource } from "./fromEventSource";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 import { isLogsApiResponse } from "./indexer-client/isLogsApiResponse";
 import { toStorageAdatperBlock } from "./indexer-client/toStorageAdapterBlock";
-import { watchLogs } from "./wiresaw";
+import { watchLogs } from "./watchLogs";
 
 const debug = parentDebug.extend("createStoreSync");
 
