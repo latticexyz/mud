@@ -1,10 +1,10 @@
-import { Account, Chain, Client, Hex, Transport, WalletActions } from "viem";
+import { Account, Address, Chain, Client, Hex, Transport, WalletActions } from "viem";
 import { BundlerActions, sendUserOperation, waitForUserOperationReceipt } from "viem/account-abstraction";
 import { waitForTransactionReceipt, writeContract } from "viem/actions";
 import { getAction } from "viem/utils";
+import { isDefined } from "@latticexyz/common/utils";
 import { createBridge } from "./bridge";
 import { ReceiptSummary } from "./common";
-import { DecodedUserOperationCall } from "./messages";
 
 export type WaitForTransaction = (hash: Hex) => Promise<ReceiptSummary>;
 
@@ -29,22 +29,24 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
       async sendUserOperation(args) {
         const writeId = `${client.uid}-${++writeCounter}`;
         const write = getAction(client, sendUserOperation, "sendUserOperation")(args);
+        if (!("calls" in args) || !args.calls) return write;
 
-        let calls: DecodedUserOperationCall[] = [];
-        if ("calls" in args && args.calls) {
-          calls = args.calls.map((call) => {
+        const calls = args.calls
+          .map((call) => {
+            if (!call || typeof call !== "object") return undefined;
+            if (!("to" in call) || typeof call.to !== "string") return undefined;
+            if (!("functionName" in call) || typeof call.functionName !== "string") return undefined;
+            if (!("args" in call) || !Array.isArray(call.args)) return undefined;
+
             return {
-              // @ts-expect-error TODO: fix
-              to: call.to,
-              // @ts-expect-error TODO: fix
+              to: call.to as Address,
               functionName: call.functionName,
-              // @ts-expect-error TODO: fix
               args: call.args,
-              // @ts-expect-error TODO: fix
-              value: call.value,
+              ...("value" in call && typeof call.value === "bigint" && { value: call.value }),
             };
-          });
-        }
+          })
+          .filter(isDefined);
+        if (calls.length === 0) return write;
 
         emit("write", {
           writeId,
@@ -64,8 +66,7 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
 
           emit("waitForUserOperationReceipt", { writeId, userOpHash });
           Promise.allSettled([receipt]).then(([result]) => {
-            // @ts-expect-error TODO: the result is actually { value: UserOperationReceipt }
-            emit("waitForUserOperationReceipt:result", { ...result.value, writeId });
+            emit("waitForUserOperationReceipt:result", { ...result, writeId });
           });
         });
 
@@ -84,7 +85,7 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
               to: args.address,
               functionName: args.functionName,
               args: (args.args ?? []) as never,
-              value: args.value,
+              ...(args.value && { value: args.value }),
             },
           ],
         });

@@ -1,5 +1,5 @@
 import { Abi, Address, Hex, decodeFunctionData } from "viem";
-import { DecodedUserOperationCall } from "../../../../../../observer/messages";
+import { DecodedUserOperationCall } from "../useObservedTransactions";
 
 export function getDecodedUserOperationCalls({
   abi,

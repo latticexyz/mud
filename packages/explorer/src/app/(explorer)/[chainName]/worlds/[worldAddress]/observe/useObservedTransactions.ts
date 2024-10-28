@@ -2,9 +2,16 @@ import { useParams } from "next/navigation";
 import { Address, BaseError, Hex, Log, Transaction, TransactionReceipt, getAddress } from "viem";
 import { useStore } from "zustand";
 import { useMemo } from "react";
-import { DecodedUserOperationCall, Message } from "../../../../../../observer/messages";
+import { Message } from "../../../../../../observer/messages";
 import { type Write, store as observerStore } from "../../../../../../observer/store";
 import { store as worldStore } from "../store";
+
+export type DecodedUserOperationCall = {
+  to?: Address;
+  functionName: string;
+  args?: readonly unknown[];
+  value?: bigint;
+};
 
 export type ObservedTransaction = {
   writeId: string;

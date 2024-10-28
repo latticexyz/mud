@@ -2,9 +2,10 @@
 
 import { Address, Hash } from "viem";
 import { createStore } from "zustand/vanilla";
+import { DecodedUserOperationCall } from "../app/(explorer)/[chainName]/worlds/[worldAddress]/observe/useObservedTransactions";
 import { relayChannelName } from "./common";
 import { debug } from "./debug";
-import { DecodedUserOperationCall, Message, MessageType } from "./messages";
+import { Message, MessageType } from "./messages";
 
 export type Write = {
   writeId: string;

@@ -19,8 +19,8 @@ import { store as observerStore } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { store as worldStore } from "../store";
-import { userOperationEventAbi } from "./abis";
-import { getDecodedUserOperationCalls } from "./helpers";
+import { userOperationEventAbi } from "./abis/userOperationEventAbi";
+import { getDecodedUserOperationCalls } from "./utils/getDecodedUserOperationCalls";
 
 export function TransactionsWatcher() {
   const { id: chainId } = useChain();

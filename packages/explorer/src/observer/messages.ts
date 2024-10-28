@@ -1,14 +1,7 @@
 import { Address, Hash } from "viem";
 import { UserOperationReceipt } from "viem/account-abstraction";
+import { DecodedUserOperationCall } from "../app/(explorer)/[chainName]/worlds/[worldAddress]/observe/useObservedTransactions";
 import { ReceiptSummary } from "./common";
-
-// TODO: fix type, move elsewhere
-export type DecodedUserOperationCall = {
-  to?: Address;
-  functionName: string;
-  args?: readonly unknown[];
-  value?: bigint;
-};
 
 export type Messages = {
   ping: {};
@@ -30,7 +23,7 @@ export type Messages = {
   "waitForTransactionReceipt:result": PromiseSettledResult<ReceiptSummary> & {
     writeId: string;
   };
-  "waitForUserOperationReceipt:result": UserOperationReceipt & {
+  "waitForUserOperationReceipt:result": PromiseSettledResult<UserOperationReceipt> & {
     writeId: string;
   };
   waitForTransaction: {
