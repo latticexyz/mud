@@ -3,10 +3,10 @@
 pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { StoreConsumer } from "@latticexyz/store-consumer/src/StoreConsumer.sol";
-import { Context } from "@latticexyz/store-consumer/src/Context.sol";
 
 import { Owner } from "./codegen/tables/Owner.sol";
+import { StoreConsumer } from "./StoreConsumer.sol";
+import { Context } from "./Context.sol";
 import { OwnableTableNames } from "./Constants.sol";
 
 /**

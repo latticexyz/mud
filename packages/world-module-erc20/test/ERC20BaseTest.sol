@@ -12,13 +12,14 @@ import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
+import { WithStore } from "@latticexyz/store-consumer/src/WithStore.sol";
+import { WithWorld } from "@latticexyz/store-consumer/src/WithWorld.sol";
+
 import { ERC20MetadataData } from "../src/codegen/tables/ERC20Metadata.sol";
 import { IERC20 } from "../src/interfaces/IERC20.sol";
 import { IERC20Metadata } from "../src/interfaces/IERC20Metadata.sol";
 import { IERC20Errors } from "../src/interfaces/IERC20Errors.sol";
 import { IERC20Events } from "../src/interfaces/IERC20Events.sol";
-import { WithStore } from "../src/WithStore.sol";
-import { WithWorld } from "../src/WithWorld.sol";
 import { MUDERC20 } from "../src/MUDERC20.sol";
 
 library TestConstants {

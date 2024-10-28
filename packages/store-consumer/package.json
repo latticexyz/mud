@@ -1,11 +1,11 @@
 {
-  "name": "@latticexyz/world-module-erc20",
+  "name": "@latticexyz/store-consumer",
   "version": "2.2.14",
-  "description": "ERC20 world module",
+  "description": "Store Consumer Contracts",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/world-module-erc20"
+    "directory": "packages/store-consumer"
   },
   "license": "MIT",
   "type": "module",
@@ -48,7 +48,6 @@
   "dependencies": {
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
-    "@latticexyz/store-consumer": "workspace:*",
     "@latticexyz/world": "workspace:*"
   },
   "devDependencies": {
