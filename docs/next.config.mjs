@@ -12,6 +12,11 @@ export default withNextra({
   async redirects() {
     return [
       {
+        source: "/day",
+        destination: "https://latticexyz.notion.site/MUD-DAY-AT-DEVCON-14-Nov-e62e5f83b8764b4eaf7b0d85f4ad03d5",
+        permanent: false,
+      },
+      {
         source: "/what-is-mud",
         destination: "/introduction",
         permanent: false,
