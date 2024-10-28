@@ -24,8 +24,7 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
 ) => Pick<WalletActions<chain, account>, "writeContract"> & Pick<BundlerActions, "sendUserOperation"> {
   const emit = createBridge({ url: `${explorerUrl}/internal/observer-relay` });
 
-  return (client) => {
-    return {
+  return (client) => ({
       async sendUserOperation(args) {
         const writeId = `${client.uid}-${++writeCounter}`;
         const write = getAction(client, sendUserOperation, "sendUserOperation")(args);
