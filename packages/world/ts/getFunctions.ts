@@ -1,8 +1,6 @@
-import { Client, parseAbiItem, Address } from "viem";
+import { Client, Address } from "viem";
 import { WorldFunction } from "./common";
 import { debug } from "./debug";
-import { storeSetRecordEvent } from "@latticexyz/store";
-import { getLogs } from "viem/actions";
 import {
   decodeKey,
   decodeValueArgs,
@@ -11,6 +9,8 @@ import {
   getValueSchema,
 } from "@latticexyz/protocol-parser/internal";
 import worldConfig from "../mud.config";
+import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
+import { flattenStoreLogs, getStoreLogs } from "@latticexyz/store/internal";
 
 export async function getFunctions({
   client,
@@ -25,14 +25,21 @@ export async function getFunctions({
 }): Promise<readonly WorldFunction[]> {
   // This assumes we only use `FunctionSelectors._set(...)`, which is true as of this writing.
   debug("looking up function selectors for", worldAddress);
-  const selectorLogs = await getLogs(client, {
-    strict: true,
+
+  const selectorBlocks = await fetchBlockLogs({
     fromBlock,
     toBlock,
-    address: worldAddress,
-    event: parseAbiItem(storeSetRecordEvent),
-    args: { tableId: worldConfig.namespaces.world.tables.FunctionSelectors.tableId },
+    maxBlockRange: 100_000n,
+    async getLogs({ fromBlock, toBlock }) {
+      return getStoreLogs(client, {
+        address: worldAddress,
+        fromBlock,
+        toBlock,
+        tableId: worldConfig.namespaces.world.tables.FunctionSelectors.tableId,
+      });
+    },
   });
+  const selectorLogs = flattenStoreLogs(selectorBlocks.flatMap((block) => block.logs));
 
   const selectors = selectorLogs.map((log) => {
     return {
@@ -50,14 +57,21 @@ export async function getFunctions({
 
   // This assumes we only use `FunctionSignatures._set(...)`, which is true as of this writing.
   debug("looking up function signatures for", worldAddress);
-  const signatureLogs = await getLogs(client, {
-    strict: true,
+
+  const signatureBlocks = await fetchBlockLogs({
     fromBlock,
     toBlock,
-    address: worldAddress,
-    event: parseAbiItem(storeSetRecordEvent),
-    args: { tableId: worldConfig.namespaces.world.tables.FunctionSignatures.tableId },
+    maxBlockRange: 100_000n,
+    async getLogs({ fromBlock, toBlock }) {
+      return getStoreLogs(client, {
+        address: worldAddress,
+        fromBlock,
+        toBlock,
+        tableId: worldConfig.namespaces.world.tables.FunctionSignatures.tableId,
+      });
+    },
   });
+  const signatureLogs = flattenStoreLogs(signatureBlocks.flatMap((block) => block.logs));
 
   const selectorToSignature = Object.fromEntries(
     signatureLogs.map((log) => {
