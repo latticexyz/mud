@@ -55,7 +55,7 @@ export async function sendTransaction<
 
   const nonceManager = await getNonceManager({
     client: opts.publicClient ?? client,
-    account,
+    address: account.address,
     queueConcurrency: opts.queueConcurrency,
   });
 

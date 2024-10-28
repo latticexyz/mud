@@ -1,4 +1,4 @@
-import { Account, BaseError, BlockTag, Client, NonceTooHighError, NonceTooLowError } from "viem";
+import { BaseError, BlockTag, Client, Hex, NonceTooHighError, NonceTooLowError } from "viem";
 import { debug as parentDebug } from "./debug";
 import { getNonceManagerId } from "./getNonceManagerId";
 import { getTransactionCount } from "viem/actions";
@@ -9,7 +9,7 @@ const debug = parentDebug.extend("createNonceManager");
 
 export type CreateNonceManagerOptions = {
   client: Client;
-  account: Account;
+  address: Hex;
   blockTag?: BlockTag;
   broadcastChannelName?: string;
   queueConcurrency?: number;
@@ -26,7 +26,7 @@ export type CreateNonceManagerResult = {
 
 export function createNonceManager({
   client,
-  account,
+  address, // TODO: rename to account?
   blockTag = "latest",
   broadcastChannelName,
   queueConcurrency = 1,
@@ -37,7 +37,7 @@ export function createNonceManager({
   if (typeof BroadcastChannel !== "undefined") {
     const channelName = broadcastChannelName
       ? Promise.resolve(broadcastChannelName)
-      : getNonceManagerId({ client, account, blockTag });
+      : getNonceManagerId({ client, address, blockTag });
     channelName.then((name) => {
       channel = new BroadcastChannel(name);
       // TODO: emit some sort of "connected" event so other channels can broadcast current nonce
@@ -67,11 +67,7 @@ export function createNonceManager({
 
   async function resetNonce(): Promise<void> {
     ref.noncePromise ??= (async (): Promise<void> => {
-      ref.nonce =
-        account.type === "smart"
-          ? // TODO: update nonce to bigints?
-            Number(await account.getNonce())
-          : await getAction(client, getTransactionCount, "getTransactionCount")({ address: account.address, blockTag });
+      ref.nonce = await getAction(client, getTransactionCount, "getTransactionCount")({ address, blockTag });
       ref.noncePromise = null;
       channel?.postMessage(JSON.stringify(ref.nonce));
       debug("reset nonce to", ref.nonce);
