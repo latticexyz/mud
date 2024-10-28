@@ -5,13 +5,13 @@ const nonceManagers = new Map<string, CreateNonceManagerResult>();
 
 export async function getNonceManager({
   client,
-  address, // TODO: rename to account?
+  account,
   blockTag = "latest",
   ...opts
 }: CreateNonceManagerOptions): Promise<CreateNonceManagerResult> {
-  const id = await getNonceManagerId({ client, address, blockTag });
+  const id = await getNonceManagerId({ client, account, blockTag });
 
-  const nonceManager = nonceManagers.get(id) ?? createNonceManager({ client, address, blockTag, ...opts });
+  const nonceManager = nonceManagers.get(id) ?? createNonceManager({ client, account, blockTag, ...opts });
   if (!nonceManagers.has(id)) {
     nonceManagers.set(id, nonceManager);
   }

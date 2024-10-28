@@ -59,7 +59,7 @@ export async function writeContract<
 
   const nonceManager = await getNonceManager({
     client: opts.publicClient ?? client,
-    address: account.address,
+    account,
     queueConcurrency: opts.queueConcurrency,
   });
 
