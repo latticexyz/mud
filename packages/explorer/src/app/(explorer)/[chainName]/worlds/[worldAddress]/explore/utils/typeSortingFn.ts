@@ -1,9 +1,8 @@
 import { bigIntSort } from "@latticexyz/common/utils";
 import { AbiType } from "@latticexyz/config";
 import { Row } from "@tanstack/react-table";
-import { RowData } from "../../../../../queries/useTableDataQuery";
 
-export function typeSortingFn(rowA: Row<RowData>, rowB: Row<RowData>, columnId: string, type?: AbiType) {
+export function typeSortingFn(rowA: Row<unknown>, rowB: Row<unknown>, columnId: string, type?: AbiType) {
   const a = rowA.getValue(columnId);
   const b = rowB.getValue(columnId);
 

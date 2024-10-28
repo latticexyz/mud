@@ -11,10 +11,9 @@ type Props = {
   query: string | undefined;
 };
 
-export type RowData = Record<string, unknown>;
 export type TableData = {
   columns: string[];
-  rows: RowData[];
+  rows: Record<string, unknown>[];
 };
 
 export function useTableDataQuery({ table, query }: Props) {

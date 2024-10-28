@@ -5,7 +5,6 @@ import { Table as TableType } from "@latticexyz/config";
 import { getKeySchema, getKeyTuple } from "@latticexyz/protocol-parser/internal";
 import {
   ColumnDef,
-  RowData,
   SortingState,
   flexRender,
   getCoreRowModel,
@@ -38,7 +37,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
 
-  const tableColumns: ColumnDef<RowData>[] = useMemo(() => {
+  const tableColumns: ColumnDef<Record<string, unknown>>[] = useMemo(() => {
     if (!table || !tableData) return [];
 
     return tableData.columns.map((name) => {
