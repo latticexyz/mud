@@ -23,7 +23,7 @@ export function useTableDataQuery({ table, query }: Props) {
   const decodedQuery = decodeURIComponent(query ?? "");
 
   return useQuery<DozerResponse, Error, TData | undefined>({
-    queryKey: ["TData", chainName, worldAddress, decodedQuery],
+    queryKey: ["tableData", chainName, worldAddress, decodedQuery],
     queryFn: async () => {
       const indexer = indexerForChainId(chainId);
       const response = await fetch(indexer.url, {
