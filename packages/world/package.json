@@ -56,6 +56,7 @@
   },
   "dependencies": {
     "@ark/util": "catalog:",
+    "@latticexyz/block-logs-stream": "workspace:*",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
