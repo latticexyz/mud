@@ -12,14 +12,14 @@ import {
 } from "viem";
 import { UserOperation, entryPoint07Abi, entryPoint07Address } from "viem/account-abstraction";
 import { useConfig, useWatchBlocks } from "wagmi";
-import { getTransaction, simulateContract, waitForTransactionReceipt } from "wagmi/actions";
+import { getTransaction, waitForTransactionReceipt } from "wagmi/actions";
 import { useStore } from "zustand";
 import { useCallback, useEffect } from "react";
 import { store as observerStore } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { store as worldStore } from "../store";
-import { userOperationEventAbi } from "./abis";
+import { doomWorldAbi, userOperationEventAbi } from "./abis";
 import { getDecodedUserOperationCalls } from "./helpers";
 
 export function TransactionsWatcher() {
@@ -59,18 +59,18 @@ export function TransactionsWatcher() {
 
       const { functionName: decodedFunctionName, args: decodedArgs } = decodedSmartAccountCall;
       const calls = getDecodedUserOperationCalls({
+        abi: doomWorldAbi,
         functionName: decodedFunctionName,
         decodedArgs,
-        transaction,
-      }).filter(({ to }) => to && getAddress(to) === getAddress(worldAddress)); // TODO: filter earlier
+      });
+      //.filter(({ to }) => to && getAddress(to) === getAddress(worldAddress)); // TODO: filter earlier
       if (calls.length === 0) return;
 
       const logs = parseEventLogs({
         abi: [...abi, userOperationEventAbi],
         logs: receipt.logs,
       });
-
-      console.log("RECEIPT", receipt);
+      const userOperationEvent = logs.find(({ eventName }) => eventName === "UserOperationEvent");
 
       setTransaction({
         hash,
@@ -82,8 +82,7 @@ export function TransactionsWatcher() {
         receipt,
         logs,
         value: transaction.value,
-        status: receipt.status,
-        error: undefined, // TODO: transactionError as BaseError,
+        status: userOperationEvent?.args.success ? "success" : "reverted",
       });
     },
     [abi, setTransaction, worldAddress],
@@ -160,22 +159,14 @@ export function TransactionsWatcher() {
       }
 
       if (receipt && receipt.status === "reverted" && functionName) {
-        try {
-          // Simulate the failed transaction to retrieve the revert reason
-          // Note, it only works for functions that are declared in the ABI
-          // See: https://github.com/wevm/viem/discussions/462
-          await simulateContract(wagmiConfig, {
-            account: transaction.from,
-            address: worldAddress,
-            abi,
-            value: transaction.value,
-            blockNumber: receipt.blockNumber,
-            functionName,
-            args,
-          });
-        } catch (error) {
-          transactionError = error as BaseError;
-        }
+        transactionError = (await simulateFailedTransaction(wagmiConfig, {
+          account: transaction.from,
+          address: worldAddress,
+          abi,
+          functionName,
+          blockNumber: receipt.blockNumber,
+          args,
+        })) as BaseError;
       }
 
       const status = receipt ? receipt.status : "unknown";

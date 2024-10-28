@@ -1,3 +1,5 @@
+import { Abi } from "viem";
+
 export const doomWorldAbi = [
   {
     name: "send",
@@ -16,7 +18,7 @@ export const doomWorldAbi = [
     ],
     outputs: [],
   },
-];
+] as Abi;
 
 export const userOperationEventAbi = {
   type: "event",

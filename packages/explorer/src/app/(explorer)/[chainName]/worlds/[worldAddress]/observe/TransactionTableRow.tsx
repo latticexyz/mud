@@ -95,6 +95,10 @@ export function TransactionTableRow({ row }: { row: Row<ObservedTransaction> }) 
                               </span>
                             </div>
                           ))}
+
+                          {call.value && call.value > 0n ? (
+                            <div className="text-xs text-white/60">value: {formatEther(call.value)} ETH</div>
+                          ) : null}
                         </div>
                       ))}
                     </div>

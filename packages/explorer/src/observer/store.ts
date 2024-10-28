@@ -36,11 +36,6 @@ channel.addEventListener("message", ({ data }: MessageEvent<Message>) => {
     const write = data.type === "write" ? ({ ...data, events: [] } satisfies Write) : state.writes[data.writeId];
     if (!write) return state;
 
-    // return {
-    //   ...state,
-    //   writes: {},
-    // };
-
     let hash = write.hash;
     if (data.type === "waitForTransactionReceipt") {
       hash = data.hash;

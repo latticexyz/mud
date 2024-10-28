@@ -6,7 +6,7 @@ import { ReceiptSummary } from "./common";
 export type DecodedUserOperationCall = {
   to?: Address;
   functionName: string;
-  args: unknown[];
+  args?: readonly unknown[];
   value?: bigint;
 };
 
