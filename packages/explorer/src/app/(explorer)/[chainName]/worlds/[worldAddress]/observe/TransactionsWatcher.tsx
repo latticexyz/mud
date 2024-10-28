@@ -62,8 +62,7 @@ export function TransactionsWatcher() {
         abi,
         functionName: decodedFunctionName,
         decodedArgs,
-      });
-      //.filter(({ to }) => to && getAddress(to) === getAddress(worldAddress)); // TODO: filter earlier
+      }).filter(({ to }) => to && getAddress(to) === getAddress(worldAddress));
       if (calls.length === 0) return;
 
       const logs = parseEventLogs({

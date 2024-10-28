@@ -27,7 +27,7 @@ function getDecodedUserOperationCall({
   abi,
   target,
   data,
-  value, // TODO: what to do with value?
+  value,
 }: {
   abi: Abi;
   target: Address;

@@ -1,4 +1,5 @@
-import { Address, BaseError, Hex, Log, Transaction, TransactionReceipt } from "viem";
+import { useParams } from "next/navigation";
+import { Address, BaseError, Hex, Log, Transaction, TransactionReceipt, getAddress } from "viem";
 import { useStore } from "zustand";
 import { useMemo } from "react";
 import { DecodedUserOperationCall, Message } from "../../../../../../observer/messages";
@@ -21,30 +22,30 @@ export type ObservedTransaction = {
 };
 
 export function useObservedTransactions() {
-  // const { worldAddress } = useParams<{ worldAddress: string }>();
+  const { worldAddress } = useParams<{ worldAddress: string }>();
   const transactions = useStore(worldStore, (state) => state.transactions);
   const observerWrites = useStore(observerStore, (state) => state.writes);
+  const filteredObserverWrites = useMemo(() => {
+    return Object.values(observerWrites)
+      .map((write) => ({
+        ...write,
+        calls: write.calls.filter((call) => call.to && getAddress(call.to) === getAddress(worldAddress)),
+      }))
+      .filter(({ calls }) => calls.length > 0);
+  }, [observerWrites, worldAddress]);
 
   const mergedTransactions = useMemo((): ObservedTransaction[] => {
     const mergedMap = new Map<string | undefined, ObservedTransaction>();
 
-    for (const write of Object.values(observerWrites)) {
-      // if (write.address.toLowerCase() !== worldAddress.toLowerCase()) continue; // TODO: filter entrypoint
+    for (const write of filteredObserverWrites) {
       const writeResult = write.events.find((event): event is Message<"write:result"> => event.type === "write:result");
-      const receiptEvent = write.events.find(
-        (event): event is Message<"waitForTransactionReceipt:result"> | Message<"waitForUserOperationReceipt:result"> =>
-          event.type === "waitForTransactionReceipt:result" || event.type === "waitForUserOperationReceipt:result",
-      );
-
       mergedMap.set(write.hash || write.writeId, {
         hash: write.hash,
         writeId: write.writeId,
         from: write.from,
         status: writeResult?.status === "rejected" ? "rejected" : "pending",
-        receipt: receiptEvent?.value, // TODO: fix
         timestamp: BigInt(write.time) / 1000n,
-        calls: write.calls,
-        value: write.value,
+        calls: write.calls.filter((call) => call.to === worldAddress),
         error: writeResult && "reason" in writeResult ? (writeResult.reason as BaseError) : undefined,
         write,
       });
