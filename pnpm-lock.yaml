@@ -1237,6 +1237,9 @@ importers:
       '@ark/util':
         specifier: 'catalog:'
         version: 0.2.2
+      '@latticexyz/block-logs-stream':
+        specifier: workspace:*
+        version: link:../block-logs-stream
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
