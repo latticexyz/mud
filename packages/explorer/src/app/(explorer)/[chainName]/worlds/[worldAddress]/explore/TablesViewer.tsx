@@ -26,15 +26,15 @@ const initialSortingState: SortingState = [];
 const initialRows: TData["rows"] = [];
 
 export function TablesViewer({ table, query }: { table?: TableType; query?: string }) {
-  const { data: TData, isLoading: isTDataLoading, isFetched, isError, error } = useTableDataQuery({ table, query });
+  const { data: tableData, isLoading: isTDataLoading, isFetched, isError, error } = useTableDataQuery({ table, query });
   const isLoading = isTDataLoading || !isFetched;
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
 
   const tableColumns: ColumnDef<TDataRow>[] = useMemo(() => {
-    if (!table || !TData) return [];
+    if (!table || !tableData) return [];
 
-    return TData.columns.map((name) => {
+    return tableData.columns.map((name) => {
       const schema = table?.schema[name];
       const type = schema?.type;
 
@@ -73,10 +73,10 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
         },
       };
     });
-  }, [table, TData]);
+  }, [table, tableData]);
 
   const reactTable = useReactTable({
-    data: TData?.rows ?? initialRows,
+    data: tableData?.rows ?? initialRows,
     columns: tableColumns,
     initialState: {
       pagination: {
@@ -104,7 +104,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
           value={globalFilter}
           onChange={(event) => reactTable.setGlobalFilter(event.target.value)}
           className="max-w-sm rounded border px-2 py-1"
-          disabled={!TData}
+          disabled={!tableData}
         />
       </div>
 
@@ -172,7 +172,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
 
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {TData && `Total rows: ${TData.rows.length.toLocaleString()}`}
+          {tableData && `Total rows: ${tableData.rows.length.toLocaleString()}`}
         </div>
 
         <div className="space-x-2">
