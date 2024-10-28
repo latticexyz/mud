@@ -13,6 +13,7 @@ export const rhodolite = {
   rpcUrls: {
     default: {
       http: ["https://rpc.rhodolitechain.com"],
+      webSocket: ["wss://rpc.rhodolitechain.com"],
     },
   },
   iconUrls: ["https://redstone.xyz/chain-icons/rhodolite.png"],
