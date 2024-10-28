@@ -68,7 +68,7 @@ export function useObservedTransactions() {
     }
 
     return Array.from(mergedMap.values()).sort((a, b) => Number(b.timestamp ?? 0n) - Number(a.timestamp ?? 0n));
-  }, [observerWrites, transactions]);
+  }, [transactions, filteredObserverWrites, worldAddress]);
 
   return mergedTransactions;
 }

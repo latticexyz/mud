@@ -3,9 +3,10 @@
 import { Address, Hash } from "viem";
 import { createStore } from "zustand/vanilla";
 import { DecodedUserOperationCall } from "../app/(explorer)/[chainName]/worlds/[worldAddress]/observe/useObservedTransactions";
+import { isPromiseFulfilled } from "../utils";
 import { relayChannelName } from "./common";
 import { debug } from "./debug";
-import { Message, MessageType } from "./messages";
+import { Message, MessageType, Messages } from "./messages";
 
 export type Write = {
   writeId: string;
@@ -40,8 +41,13 @@ channel.addEventListener("message", ({ data }: MessageEvent<Message>) => {
     let hash = write.hash;
     if (data.type === "waitForTransactionReceipt") {
       hash = data.hash;
-    } else if (data.type === "waitForUserOperationReceipt:result") {
-      hash = data.receipt.transactionHash;
+    } else if (
+      data.type === "waitForUserOperationReceipt:result" &&
+      isPromiseFulfilled<
+        Messages["waitForUserOperationReceipt:result"] extends PromiseSettledResult<infer T> ? T : never
+      >(data)
+    ) {
+      hash = data.value.receipt.transactionHash;
     }
 
     return {

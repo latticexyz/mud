@@ -15,3 +15,7 @@ export function formatBalance(wei: bigint) {
   const magnitude = Math.floor(parseFloat(formatted)).toString().length;
   return parseFloat(formatted).toLocaleString("en-US", { maximumFractionDigits: Math.max(0, 6 - magnitude) });
 }
+
+export function isPromiseFulfilled<T>(result: Partial<PromiseSettledResult<T>>): result is PromiseFulfilledResult<T> {
+  return result.status === "fulfilled";
+}
