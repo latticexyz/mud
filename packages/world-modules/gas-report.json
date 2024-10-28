@@ -3,7 +3,7 @@
     "file": "test/CallWithSignatureModule.t.sol:Unstable_CallWithSignatureModuleTest",
     "test": "testInstallRoot",
     "name": "install delegation module",
-    "gasUsed": 691133
+    "gasUsed": 691127
   },
   {
     "file": "test/CallWithSignatureModule.t.sol:Unstable_CallWithSignatureModuleTest",
@@ -87,13 +87,13 @@
     "file": "test/KeysInTableModule.t.sol:KeysInTableModuleTest",
     "test": "testInstallComposite",
     "name": "install keys in table module",
-    "gasUsed": 1463317
+    "gasUsed": 1463311
   },
   {
     "file": "test/KeysInTableModule.t.sol:KeysInTableModuleTest",
     "test": "testInstallGas",
     "name": "install keys in table module",
-    "gasUsed": 1463317
+    "gasUsed": 1463311
   },
   {
     "file": "test/KeysInTableModule.t.sol:KeysInTableModuleTest",
@@ -105,13 +105,13 @@
     "file": "test/KeysInTableModule.t.sol:KeysInTableModuleTest",
     "test": "testInstallSingleton",
     "name": "install keys in table module",
-    "gasUsed": 1463317
+    "gasUsed": 1463311
   },
   {
     "file": "test/KeysInTableModule.t.sol:KeysInTableModuleTest",
     "test": "testSetAndDeleteRecordHookCompositeGas",
     "name": "install keys in table module",
-    "gasUsed": 1463317
+    "gasUsed": 1463311
   },
   {
     "file": "test/KeysInTableModule.t.sol:KeysInTableModuleTest",
@@ -129,7 +129,7 @@
     "file": "test/KeysInTableModule.t.sol:KeysInTableModuleTest",
     "test": "testSetAndDeleteRecordHookGas",
     "name": "install keys in table module",
-    "gasUsed": 1463317
+    "gasUsed": 1463311
   },
   {
     "file": "test/KeysInTableModule.t.sol:KeysInTableModuleTest",
@@ -147,7 +147,7 @@
     "file": "test/KeysWithValueModule.t.sol:KeysWithValueModuleTest",
     "test": "testGetKeysWithValueGas",
     "name": "install keys with value module",
-    "gasUsed": 719012
+    "gasUsed": 719006
   },
   {
     "file": "test/KeysWithValueModule.t.sol:KeysWithValueModuleTest",
@@ -165,7 +165,7 @@
     "file": "test/KeysWithValueModule.t.sol:KeysWithValueModuleTest",
     "test": "testInstall",
     "name": "install keys with value module",
-    "gasUsed": 719012
+    "gasUsed": 719006
   },
   {
     "file": "test/KeysWithValueModule.t.sol:KeysWithValueModuleTest",
@@ -177,7 +177,7 @@
     "file": "test/KeysWithValueModule.t.sol:KeysWithValueModuleTest",
     "test": "testSetAndDeleteRecordHook",
     "name": "install keys with value module",
-    "gasUsed": 719012
+    "gasUsed": 719006
   },
   {
     "file": "test/KeysWithValueModule.t.sol:KeysWithValueModuleTest",
@@ -195,7 +195,7 @@
     "file": "test/KeysWithValueModule.t.sol:KeysWithValueModuleTest",
     "test": "testSetField",
     "name": "install keys with value module",
-    "gasUsed": 719012
+    "gasUsed": 719006
   },
   {
     "file": "test/KeysWithValueModule.t.sol:KeysWithValueModuleTest",
@@ -279,43 +279,43 @@
     "file": "test/StandardDelegationsModule.t.sol:StandardDelegationsModuleTest",
     "test": "testCallFromCallboundDelegation",
     "name": "register a callbound delegation",
-    "gasUsed": 138994
+    "gasUsed": 138979
   },
   {
     "file": "test/StandardDelegationsModule.t.sol:StandardDelegationsModuleTest",
     "test": "testCallFromCallboundDelegation",
     "name": "call a system via a callbound delegation",
-    "gasUsed": 67297
+    "gasUsed": 67291
   },
   {
     "file": "test/StandardDelegationsModule.t.sol:StandardDelegationsModuleTest",
     "test": "testCallFromSystemDelegation",
     "name": "register a systembound delegation",
-    "gasUsed": 136116
+    "gasUsed": 136101
   },
   {
     "file": "test/StandardDelegationsModule.t.sol:StandardDelegationsModuleTest",
     "test": "testCallFromSystemDelegation",
     "name": "call a system via a systembound delegation",
-    "gasUsed": 69661
+    "gasUsed": 69655
   },
   {
     "file": "test/StandardDelegationsModule.t.sol:StandardDelegationsModuleTest",
     "test": "testCallFromTimeboundDelegation",
     "name": "register a timebound delegation",
-    "gasUsed": 132659
+    "gasUsed": 132644
   },
   {
     "file": "test/StandardDelegationsModule.t.sol:StandardDelegationsModuleTest",
     "test": "testCallFromTimeboundDelegation",
     "name": "call a system via a timebound delegation",
-    "gasUsed": 58227
+    "gasUsed": 58221
   },
   {
     "file": "test/UniqueEntityModule.t.sol:UniqueEntityModuleTest",
     "test": "testInstall",
     "name": "install unique entity module",
-    "gasUsed": 718745
+    "gasUsed": 718739
   },
   {
     "file": "test/UniqueEntityModule.t.sol:UniqueEntityModuleTest",
@@ -327,7 +327,7 @@
     "file": "test/UniqueEntityModule.t.sol:UniqueEntityModuleTest",
     "test": "testInstallRoot",
     "name": "installRoot unique entity module",
-    "gasUsed": 689190
+    "gasUsed": 689184
   },
   {
     "file": "test/UniqueEntityModule.t.sol:UniqueEntityModuleTest",
