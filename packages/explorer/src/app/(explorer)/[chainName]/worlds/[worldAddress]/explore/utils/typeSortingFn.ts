@@ -2,7 +2,12 @@ import { bigIntSort } from "@latticexyz/common/utils";
 import { AbiType } from "@latticexyz/config";
 import { Row } from "@tanstack/react-table";
 
-export function typeSortingFn(rowA: Row<unknown>, rowB: Row<unknown>, columnId: string, type?: AbiType) {
+export function typeSortingFn(
+  rowA: Row<Record<string, unknown>>,
+  rowB: Row<Record<string, unknown>>,
+  columnId: string,
+  type?: AbiType,
+) {
   const a = rowA.getValue(columnId);
   const b = rowB.getValue(columnId);
 
