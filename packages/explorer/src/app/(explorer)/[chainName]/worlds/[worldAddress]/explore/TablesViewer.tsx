@@ -18,29 +18,23 @@ import { Button } from "../../../../../../components/ui/Button";
 import { Input } from "../../../../../../components/ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
 import { cn } from "../../../../../../utils";
-import { TableData, useTableDataQuery } from "../../../../queries/useTableDataQuery";
+import { TData, TDataRow, useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { EditableTableCell } from "./EditableTableCell";
 import { typeSortingFn } from "./utils/typeSortingFn";
 
 const initialSortingState: SortingState = [];
-const initialRows: TableData["rows"] = [];
+const initialRows: TData["rows"] = [];
 
 export function TablesViewer({ table, query }: { table?: TableType; query?: string }) {
-  const {
-    data: tableData,
-    isLoading: isTableDataLoading,
-    isFetched,
-    isError,
-    error,
-  } = useTableDataQuery({ table, query });
-  const isLoading = isTableDataLoading || !isFetched;
+  const { data: TData, isLoading: isTDataLoading, isFetched, isError, error } = useTableDataQuery({ table, query });
+  const isLoading = isTDataLoading || !isFetched;
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
 
-  const tableColumns: ColumnDef<Record<string, unknown>>[] = useMemo(() => {
-    if (!table || !tableData) return [];
+  const tableColumns: ColumnDef<TDataRow>[] = useMemo(() => {
+    if (!table || !TData) return [];
 
-    return tableData.columns.map((name) => {
+    return TData.columns.map((name) => {
       const schema = table?.schema[name];
       const type = schema?.type;
 
@@ -79,10 +73,10 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
         },
       };
     });
-  }, [table, tableData]);
+  }, [table, TData]);
 
   const reactTable = useReactTable({
-    data: tableData?.rows ?? initialRows,
+    data: TData?.rows ?? initialRows,
     columns: tableColumns,
     initialState: {
       pagination: {
@@ -110,7 +104,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
           value={globalFilter}
           onChange={(event) => reactTable.setGlobalFilter(event.target.value)}
           className="max-w-sm rounded border px-2 py-1"
-          disabled={!tableData}
+          disabled={!TData}
         />
       </div>
 
@@ -178,7 +172,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
 
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {tableData && `Total rows: ${tableData.rows.length.toLocaleString()}`}
+          {TData && `Total rows: ${TData.rows.length.toLocaleString()}`}
         </div>
 
         <div className="space-x-2">
