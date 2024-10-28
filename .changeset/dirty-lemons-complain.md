@@ -2,4 +2,4 @@
 "@latticexyz/explorer": patch
 ---
 
-All column data is now sorted correctly based on its type.
+The columns in the Explore tab table are now sorted correctly according to their types.
