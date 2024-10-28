@@ -12,14 +12,14 @@ import {
 } from "viem";
 import { UserOperation, entryPoint07Abi, entryPoint07Address } from "viem/account-abstraction";
 import { useConfig, useWatchBlocks } from "wagmi";
-import { getTransaction, waitForTransactionReceipt } from "wagmi/actions";
+import { getTransaction, simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { useStore } from "zustand";
 import { useCallback, useEffect } from "react";
 import { store as observerStore } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { store as worldStore } from "../store";
-import { doomWorldAbi, userOperationEventAbi } from "./abis";
+import { userOperationEventAbi } from "./abis";
 import { getDecodedUserOperationCalls } from "./helpers";
 
 export function TransactionsWatcher() {
@@ -59,7 +59,7 @@ export function TransactionsWatcher() {
 
       const { functionName: decodedFunctionName, args: decodedArgs } = decodedSmartAccountCall;
       const calls = getDecodedUserOperationCalls({
-        abi: doomWorldAbi,
+        abi,
         functionName: decodedFunctionName,
         decodedArgs,
       });
@@ -159,14 +159,22 @@ export function TransactionsWatcher() {
       }
 
       if (receipt && receipt.status === "reverted" && functionName) {
-        transactionError = (await simulateFailedTransaction(wagmiConfig, {
-          account: transaction.from,
-          address: worldAddress,
-          abi,
-          functionName,
-          blockNumber: receipt.blockNumber,
-          args,
-        })) as BaseError;
+        try {
+          // Simulate the failed transaction to retrieve the revert reason
+          // Note, it only works for functions that are declared in the ABI
+          // See: https://github.com/wevm/viem/discussions/462
+          await simulateContract(wagmiConfig, {
+            account: transaction.from,
+            address: worldAddress,
+            abi,
+            value: transaction.value,
+            blockNumber: receipt.blockNumber,
+            functionName,
+            args,
+          });
+        } catch (error) {
+          transactionError = error as BaseError;
+        }
       }
 
       const status = receipt ? receipt.status : "unknown";

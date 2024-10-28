@@ -1,25 +1,3 @@
-import { Abi } from "viem";
-
-export const doomWorldAbi = [
-  {
-    name: "send",
-    type: "function",
-    stateMutability: "nonpayable",
-    inputs: [
-      {
-        type: "uint256",
-      },
-      {
-        type: "uint32[]",
-      },
-      {
-        type: "bytes",
-      },
-    ],
-    outputs: [],
-  },
-] as Abi;
-
 export const userOperationEventAbi = {
   type: "event",
   name: "UserOperationEvent",
