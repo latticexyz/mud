@@ -6,8 +6,6 @@ import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { ConnectedClient, unlimitedDelegationControlId, worldAbi } from "../common";
 import { paymasterAbi } from "../paymaster";
 import { writeContract } from "viem/actions";
-import { getSpenderQueryOptions } from "./useSpender";
-import { getDelegationQueryOptions } from "./useDelegation";
 
 function defineCall<abi extends Abi | readonly unknown[]>(
   call: Omit<ContractFunctionParameters<abi>, "address"> & {
@@ -102,27 +100,11 @@ export function useSetupSession() {
       // TODO: throw if revert?
       if (!receipt.success) return;
 
-      if (registerSpender) {
-        const { queryKey } = getSpenderQueryOptions({
-          client: userClient,
-          paymasterAddress,
-          userAddress: userClient.account.address,
-          sessionAddress,
-        });
-        queryClient.setQueryData(queryKey, true);
-      }
-
-      if (registerDelegation) {
-        const { queryKey } = getDelegationQueryOptions({
-          client: userClient,
-          worldAddress,
-          userAddress: userClient.account.address,
-          sessionAddress,
-        });
-        queryClient.setQueryData(queryKey, true);
-      }
-
-      await Promise.all([queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] })]);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["getSpender"] }),
+        queryClient.invalidateQueries({ queryKey: ["getDelegation"] }),
+        queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] }),
+      ]);
     },
   });
 }

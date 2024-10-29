@@ -37,6 +37,11 @@ export function wiresaw<const transport extends Transport>(originalTransport: tr
         //   return receipt["transactionHash"];
         // }
 
+        // TODO: only route to wiresaw if using pending block tag
+        if (req.method === "eth_call") {
+          return originalRequest({ ...req, method: "wiresaw_call" });
+        }
+
         if (req.method === "eth_getTransactionReceipt") {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const hash = (req.params as any)[0] as Hash;
