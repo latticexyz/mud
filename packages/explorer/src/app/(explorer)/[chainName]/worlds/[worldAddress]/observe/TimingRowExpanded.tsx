@@ -19,7 +19,8 @@ export function TimingRowExpanded(write: Write) {
                   className={cn(`h-1`, {
                     "bg-[#5c9af6]": timing.type === "write",
                     "bg-[#4d7cc0]": timing.type === "waitForTransaction",
-                    "bg-[#3d5c8a]": timing.type === "waitForTransactionReceipt",
+                    "bg-[#3d5c8a]":
+                      timing.type === "waitForTransactionReceipt" || timing.type === "waitForUserOperationReceipt",
                   })}
                   style={{
                     width: `${timing.widthPercentage}%`,
