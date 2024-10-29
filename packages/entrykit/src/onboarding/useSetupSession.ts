@@ -20,9 +20,10 @@ export function useSetupSession() {
   const { worldAddress, paymasterAddress } = useEntryKitConfig();
   const queryClient = useQueryClient();
 
+  const mutationKey = ["setupSession"];
   return useMutation({
+    mutationKey,
     onError: (error) => console.error(error),
-    mutationKey: ["setupSession"],
     mutationFn: async ({
       userClient,
       sessionAddress,
@@ -106,5 +107,6 @@ export function useSetupSession() {
         queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] }),
       ]);
     },
+    retry: 0,
   });
 }

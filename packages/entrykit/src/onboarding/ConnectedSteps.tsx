@@ -1,16 +1,78 @@
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ConnectedClient } from "../common";
-import { useSteps } from "./useSteps";
 import { twMerge } from "tailwind-merge";
+import { usePrerequisites } from "./usePrerequisites";
+import { Wallet } from "./Wallet";
+import { Allowance } from "./Allowance";
+import { Session } from "./Session";
+import { Step } from "./common";
+import { Address } from "viem";
+import { useAccountModal } from "../useAccountModal";
 
 export type Props = {
   userClient: ConnectedClient;
+  initialAddress: Address | undefined;
 };
 
-export function ConnectedSteps({ userClient }: Props) {
-  const steps = useSteps(userClient);
+export function ConnectedSteps({ userClient, initialAddress }: Props) {
+  const userAddress = userClient.account.address;
+  const { data: prerequisites } = usePrerequisites(userAddress);
 
-  // TODO: detect if just connected and, if so, dismiss
+  const { closeAccountModal } = useAccountModal();
+  const isNewConnection = userAddress !== initialAddress;
+
+  const initialPrerequisites = useRef(prerequisites);
+  useEffect(() => {
+    if (prerequisites == null) return;
+    if (initialPrerequisites.current == null) {
+      initialPrerequisites.current = prerequisites;
+    }
+
+    if (prerequisites.complete) {
+      if (isNewConnection || !initialPrerequisites.current.complete) {
+        closeAccountModal();
+      }
+    }
+  }, [closeAccountModal, isNewConnection, prerequisites]);
+
+  const { hasAllowance, isSpender, hasDelegation } = prerequisites ?? {};
+
+  const steps = useMemo((): readonly Step[] => {
+    if (!userAddress) {
+      return [
+        {
+          id: "wallet",
+          isComplete: false,
+          content: () => null,
+        },
+      ];
+    }
+
+    return [
+      {
+        id: "wallet",
+        isComplete: true,
+        content: (props) => <Wallet {...props} userAddress={userAddress} />,
+      },
+      {
+        id: "allowance",
+        isComplete: !!hasAllowance,
+        content: (props) => <Allowance {...props} userAddress={userAddress} />,
+      },
+      {
+        id: "session",
+        isComplete: !!isSpender && !!hasDelegation,
+        content: (props) => (
+          <Session
+            {...props}
+            userClient={userClient}
+            registerSpender={!isSpender}
+            registerDelegation={!hasDelegation}
+          />
+        ),
+      },
+    ];
+  }, [hasAllowance, hasDelegation, isSpender, userAddress, userClient]);
 
   const [selectedStepId] = useState<null | string>(null);
   const nextStep = steps.find((step) => step.content != null && !step.isComplete);

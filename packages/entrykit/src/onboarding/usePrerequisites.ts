@@ -55,7 +55,7 @@ export function usePrerequisites(userAddress: Address | undefined) {
 
   // TODO: rework this so it uses other hooks so we avoid having to clear two caches when e.g. topping up
 
-  return useQuery(
+  const prereqs = useQuery(
     getPrequisitesQueryOptions({
       queryClient,
       client,
@@ -65,4 +65,6 @@ export function usePrerequisites(userAddress: Address | undefined) {
     }),
     queryClient,
   );
+  // console.log("prereqs", prereqs.isFetching, prereqs.isRefetching, prereqs.isFetchedAfterMount);
+  return prereqs;
 }

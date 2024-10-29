@@ -4,7 +4,7 @@ import { PendingIcon } from "../icons/PendingIcon";
 import { useClaimGasPass } from "./useClaimGasPass";
 import { Button } from "../ui/Button";
 import { Balance } from "../ui/Balance";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { minGasBalance } from "./common";
 
 export type Props = {
@@ -17,10 +17,25 @@ export function Allowance({ isActive, isExpanded, userAddress }: Props) {
   const allowance = useAllowance(userAddress);
   const claimGasPass = useClaimGasPass();
 
-  // TODO: improve pending state since this is kicked off automatically and showing a pending button is weird
+  // I assumed `queryClient.isMutating` would be useful to avoid multiple mutations at once,
+  // but it seems like it's doing something else internally where kicking off a mutation
+  // twice immediately (i.e. two renders) results in both returning 2 pending mutations.
+  //
+  // I also tried moving this into `useSetupSession` with `onMutate`, etc, but that seems
+  // to just mimick what I am seeing with the behavior of `useMutation`.
+  //
+  // Working around this with a ref :(
+  const isMutatingRef = useRef(false);
   useEffect(() => {
-    if (isActive && claimGasPass.status === "idle" && allowance.isSuccess && allowance.data < minGasBalance) {
-      claimGasPass.mutate(userAddress);
+    if (
+      isActive &&
+      claimGasPass.status === "idle" &&
+      allowance.isSuccess &&
+      allowance.data < minGasBalance &&
+      !isMutatingRef.current
+    ) {
+      isMutatingRef.current = true;
+      claimGasPass.mutate(userAddress, { onSettled: () => (isMutatingRef.current = false) });
     }
   }, [allowance.data, allowance.isSuccess, claimGasPass, isActive, userAddress]);
 
