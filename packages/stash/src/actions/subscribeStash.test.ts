@@ -119,7 +119,7 @@ describe("subscribeStash", () => {
     const stash = createStash(config);
     const subscriber = vi.fn();
 
-    subscribeStore({ stash, subscriber });
+    subscribeStash({ stash, subscriber });
 
     setRecord({ stash, table: config.tables.app__config, key: {}, value: { enabled: true } });
 

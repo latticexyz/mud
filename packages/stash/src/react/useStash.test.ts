@@ -159,4 +159,91 @@ describe("useStash", () => {
       ]
     `);
   });
+
+  it("memoizes results", async () => {
+    const config = defineStore({
+      namespaces: {
+        game: {
+          tables: {
+            Position: {
+              schema: { player: "address", x: "uint32", y: "uint32" },
+              key: ["player"],
+            },
+            Counter: {
+              schema: { count: "uint32" },
+              key: [],
+            },
+          },
+        },
+      },
+    });
+    const { Position, Counter } = config.namespaces.game.tables;
+    const stash = createStash(config);
+    const player: Hex = "0x00";
+
+    const { result } = renderHook(() =>
+      useStash(
+        stash,
+        (state) =>
+          Object.values(getRecords({ state, table: Position })).filter((position) => position.player === player),
+        { isEqual },
+      ),
+    );
+    expect(result.all.length).toBe(1);
+    expect(result.current).toMatchInlineSnapshot(`[]`);
+
+    act(() => {
+      stash.setRecord({ table: Counter, key: {}, value: { count: 1 } });
+      stash.setRecord({ table: Counter, key: {}, value: { count: 2 } });
+    });
+    act(() => {
+      stash.setRecord({ table: Counter, key: {}, value: { count: 3 } });
+      stash.setRecord({ table: Counter, key: {}, value: { count: 4 } });
+    });
+
+    expect(result.all.length).toBe(1);
+    expect(result.current).toMatchInlineSnapshot(`[]`);
+
+    act(() => {
+      stash.setRecord({ table: Position, key: { player }, value: { x: 1, y: 2 } });
+    });
+    expect(result.all.length).toBe(2);
+    expect(result.current).toMatchInlineSnapshot(`
+      [
+        {
+          "player": "0x00",
+          "x": 1,
+          "y": 2,
+        },
+      ]
+    `);
+
+    act(() => {
+      stash.setRecord({ table: Position, key: { player: "0x01" }, value: { x: 1, y: 2 } });
+    });
+    expect(result.all.length).toBe(2);
+    expect(result.current).toMatchInlineSnapshot(`
+      [
+        {
+          "player": "0x00",
+          "x": 1,
+          "y": 2,
+        },
+      ]
+    `);
+
+    act(() => {
+      stash.setRecord({ table: Position, key: { player }, value: { x: 1, y: 3 } });
+    });
+    expect(result.all.length).toBe(3);
+    expect(result.current).toMatchInlineSnapshot(`
+      [
+        {
+          "player": "0x00",
+          "x": 1,
+          "y": 3,
+        },
+      ]
+    `);
+  });
 });
