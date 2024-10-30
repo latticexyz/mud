@@ -124,10 +124,11 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
       try {
         debug("fetching initial logs");
         const initialLogs = await fetchInitialLogs({ client, address, fromBlock: resumeBlock, topics });
-        debug("got logs", initialLogs);
+        debug("got initial logs", initialLogs);
         const logs = [...initialLogs, ...logBuffer].sort(logSort);
+        debug("combining with log buffer", logs);
         const blockNumber = logs.at(-1)?.blockNumber ?? resumeBlock;
-        subscriber.next({ blockNumber, logs: initialLogs });
+        subscriber.next({ blockNumber, logs });
         resumeBlock = blockNumber + 1n;
         caughtUp = true;
       } catch (error) {
