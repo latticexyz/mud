@@ -18,30 +18,26 @@ import { Button } from "../../../../../../components/ui/Button";
 import { Input } from "../../../../../../components/ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
 import { cn } from "../../../../../../utils";
-import { TableData, useTableDataQuery } from "../../../../queries/useTableDataQuery";
+import { TData, TDataRow, useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { EditableTableCell } from "./EditableTableCell";
+import { typeSortingFn } from "./utils/typeSortingFn";
 
 const initialSortingState: SortingState = [];
-const initialRows: TableData["rows"] = [];
+const initialRows: TData["rows"] = [];
 
 export function TablesViewer({ table, query }: { table?: TableType; query?: string }) {
-  const {
-    data: tableData,
-    isLoading: isTableDataLoading,
-    isFetched,
-    isError,
-    error,
-  } = useTableDataQuery({ table, query });
-  const isLoading = isTableDataLoading || !isFetched;
-
+  const { data: tableData, isLoading: isTDataLoading, isFetched, isError, error } = useTableDataQuery({ table, query });
+  const isLoading = isTDataLoading || !isFetched;
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
 
-  const tableColumns: ColumnDef<Record<string, unknown>>[] = useMemo(() => {
+  const tableColumns: ColumnDef<TDataRow>[] = useMemo(() => {
     if (!table || !tableData) return [];
 
     return tableData.columns.map((name) => {
-      const type = table?.schema[name]?.type;
+      const schema = table?.schema[name];
+      const type = schema?.type;
+
       return {
         accessorKey: name,
         header: ({ column }) => {
@@ -57,6 +53,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
             </Button>
           );
         },
+        sortingFn: (rowA, rowB, columnId) => typeSortingFn(rowA, rowB, columnId, type),
         cell: ({ row }) => {
           const namespace = table?.namespace;
           const keySchema = getKeySchema(table);

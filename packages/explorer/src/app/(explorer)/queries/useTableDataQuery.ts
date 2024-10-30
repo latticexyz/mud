@@ -11,9 +11,10 @@ type Props = {
   query: string | undefined;
 };
 
-export type TableData = {
+export type TDataRow = Record<string, unknown>;
+export type TData = {
   columns: string[];
-  rows: Record<string, unknown>[];
+  rows: TDataRow[];
 };
 
 export function useTableDataQuery({ table, query }: Props) {
@@ -21,7 +22,7 @@ export function useTableDataQuery({ table, query }: Props) {
   const { id: chainId } = useChain();
   const decodedQuery = decodeURIComponent(query ?? "");
 
-  return useQuery<DozerResponse, Error, TableData | undefined>({
+  return useQuery<DozerResponse, Error, TData | undefined>({
     queryKey: ["tableData", chainName, worldAddress, decodedQuery],
     queryFn: async () => {
       const indexer = indexerForChainId(chainId);
@@ -45,7 +46,7 @@ export function useTableDataQuery({ table, query }: Props) {
 
       return data;
     },
-    select: (data: DozerResponse): TableData | undefined => {
+    select: (data: DozerResponse): TData | undefined => {
       if (!table || !data?.result?.[0]) return undefined;
 
       const result = data.result[0];
