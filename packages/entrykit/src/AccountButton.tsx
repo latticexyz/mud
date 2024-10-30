@@ -6,9 +6,10 @@ import { twMerge } from "tailwind-merge";
 import { PendingIcon } from "./icons/PendingIcon";
 import { AccountName } from "./AccountName";
 import { usePrerequisites } from "./onboarding/usePrerequisites";
+import { useRef } from "react";
 
 const containerClassNames = twMerge(
-  "w-48 inline-flex outline-none transition",
+  "w-48 p-3 inline-flex outline-none transition",
   "border border-transparent",
   "text-base leading-none",
 );
@@ -24,11 +25,14 @@ const secondaryInteractiveClassNames = twMerge(
 export function AccountButton() {
   const { openAccountModal, accountModalOpen } = useAccountModal();
   const { status, address } = useAccount();
+  const initialAddress = useRef(address);
+
   const prereqs = usePrerequisites(address);
 
-  // TODO: fix flash of button state when signing in
+  // TODO: fix flash of button state signed in but incomplete onboarding
   const isConnected = status === "connected" || (status === "reconnecting" && address);
-  const isSignedIn = prereqs.isSuccess ? prereqs.data.complete : isConnected;
+  const isNewConnection = address !== initialAddress.current;
+  const isSignedIn = prereqs.isSuccess ? prereqs.data.complete : isNewConnection ? false : isConnected;
 
   const buttonLabel = (() => {
     if (prereqs.isSuccess) {
@@ -45,7 +49,7 @@ export function AccountButton() {
           // key is used to avoid triggering transitions between connected/disconnected states
           key="connected"
           type="button"
-          className={twMerge(containerClassNames, secondaryClassNames, secondaryInteractiveClassNames, "p-3")}
+          className={twMerge(containerClassNames, secondaryClassNames, secondaryInteractiveClassNames)}
           onClick={openAccountModal}
         >
           <span className="flex-grow inline-flex gap-2.5 items-center text-left font-medium">
@@ -60,7 +64,7 @@ export function AccountButton() {
           className={twMerge(
             containerClassNames,
             "group",
-            "items-center justify-center gap-2.5 p-3",
+            "items-center justify-center gap-2.5",
             "bg-orange-500 text-white font-medium",
             "hover:bg-orange-400",
             "active:bg-orange-600",

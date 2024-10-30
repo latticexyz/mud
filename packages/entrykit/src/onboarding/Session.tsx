@@ -52,8 +52,7 @@ export function Session({ isActive, isExpanded, userClient, registerSpender, reg
         </div>
         {hasSession ? (
           <Button variant={isActive ? "primary" : "secondary"} className="flex-shrink-0 text-sm p-1 w-28" disabled>
-            {/* TODO: revoke */}
-            Disable
+            Enabled
           </Button>
         ) : (
           <Button

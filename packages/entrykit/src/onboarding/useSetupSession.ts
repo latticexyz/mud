@@ -99,7 +99,10 @@ export function useSetupSession() {
       console.log("got user op receipt", receipt);
 
       // TODO: throw if revert?
-      if (!receipt.success) return;
+      if (!receipt.success) {
+        console.error("not successful?", receipt);
+        return;
+      }
 
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["getSpender"] }),
