@@ -1,21 +1,21 @@
 "use client";
 
-import { Address, Hex } from "viem";
+import { Address, Hash } from "viem";
 import { createStore } from "zustand/vanilla";
+import { DecodedUserOperationCall } from "../app/(explorer)/[chainName]/worlds/[worldAddress]/observe/useObservedTransactions";
+import { isPromiseFulfilled } from "../utils";
 import { relayChannelName } from "./common";
 import { debug } from "./debug";
-import { Message, MessageType } from "./messages";
+import { Message, MessageType, Messages } from "./messages";
 
 export type Write = {
   writeId: string;
   type: MessageType;
-  hash?: Hex;
-  from?: Address;
-  address: Address;
-  functionSignature: string;
-  args: unknown[];
-  value?: bigint;
+  hash?: Hash;
+  userOpHash?: Hash;
+  from: Address;
   time: number;
+  calls: DecodedUserOperationCall[];
   events: Message<Exclude<MessageType, "ping">>[];
   error?: Error;
 };
@@ -37,13 +37,28 @@ channel.addEventListener("message", ({ data }: MessageEvent<Message>) => {
   store.setState((state) => {
     const write = data.type === "write" ? ({ ...data, events: [] } satisfies Write) : state.writes[data.writeId];
     if (!write) return state;
+
+    let hash = write.hash;
+    if (data.type === "waitForTransactionReceipt") {
+      hash = data.hash;
+    } else if (
+      data.type === "waitForUserOperationReceipt:result" &&
+      isPromiseFulfilled<
+        Messages["waitForUserOperationReceipt:result"] extends PromiseSettledResult<infer T> ? T : never
+      >(data)
+    ) {
+      hash = data.value.receipt.transactionHash;
+    }
+
     return {
+      ...state,
       writes: {
         ...state.writes,
         [data.writeId]: {
           ...write,
           type: data.type,
-          hash: data.type === "waitForTransactionReceipt" ? data.hash : write.hash,
+          hash,
+          userOpHash: data.type === "waitForUserOperationReceipt" ? data.userOpHash : write.userOpHash,
           events: [...write.events, data],
         },
       },

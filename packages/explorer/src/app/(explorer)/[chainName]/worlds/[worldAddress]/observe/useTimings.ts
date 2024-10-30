@@ -8,6 +8,8 @@ const eventConfig = {
   "waitForTransaction:result": { priority: 4 },
   waitForTransactionReceipt: { priority: 5, label: "transaction receipt" },
   "waitForTransactionReceipt:result": { priority: 6 },
+  waitForUserOperationReceipt: { priority: 5, label: "user operation receipt" },
+  "waitForUserOperationReceipt:result": { priority: 6 },
 } as const;
 
 type EventType = keyof typeof eventConfig;
