@@ -187,7 +187,7 @@ library UserDelegationControl {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(address delegator, address delegatee) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
@@ -198,7 +198,7 @@ library UserDelegationControl {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(address delegator, address delegatee) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);

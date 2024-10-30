@@ -145,7 +145,7 @@ library Winner {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(uint256 game) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -155,7 +155,7 @@ library Winner {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(uint256 game) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);

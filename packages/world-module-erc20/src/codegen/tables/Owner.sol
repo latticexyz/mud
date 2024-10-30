@@ -133,7 +133,7 @@ library Owner {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(ResourceId _tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -142,7 +142,7 @@ library Owner {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(ResourceId _tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);

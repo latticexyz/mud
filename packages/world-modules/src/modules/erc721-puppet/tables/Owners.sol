@@ -142,7 +142,7 @@ library Owners {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(ResourceId _tableId, uint256 tokenId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -152,7 +152,7 @@ library Owners {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(ResourceId _tableId, uint256 tokenId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);

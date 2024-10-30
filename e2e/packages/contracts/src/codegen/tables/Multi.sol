@@ -309,7 +309,7 @@ library Multi {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(uint32 a, bool b, uint256 c, int120 d) internal {
     bytes32[] memory _keyTuple = new bytes32[](4);
@@ -322,7 +322,7 @@ library Multi {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(uint32 a, bool b, uint256 c, int120 d) internal {
     bytes32[] memory _keyTuple = new bytes32[](4);
