@@ -42,7 +42,7 @@ abstract contract MockERC20Base is MUDERC20 {
 contract MockERC20WithInternalStore is WithStore(address(this)), MockERC20Base {}
 
 contract MockERC20WithWorld is WithWorld, MockERC20Base {
-  constructor() WithWorld(createWorld(), TestConstants.ERC20_NAMESPACE) {}
+  constructor() WithWorld(createWorld(), TestConstants.ERC20_NAMESPACE, true) {}
 }
 
 abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Errors {

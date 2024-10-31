@@ -17,7 +17,7 @@ contract ERC20WithWorld is WithWorld, MUDERC20, ERC20Pausable, ERC20Burnable {
     bytes14 namespace,
     string memory name,
     string memory symbol
-  ) WithWorld(world, namespace) MUDERC20(name, symbol) {
+  ) WithWorld(world, namespace, true) MUDERC20(name, symbol) {
     // Transfer namespace ownership to the creator
     world.transferOwnership(getNamespaceId(), _msgSender());
   }

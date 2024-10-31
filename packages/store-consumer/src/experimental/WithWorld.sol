@@ -13,6 +13,8 @@ abstract contract WithWorld is WithStore {
   bytes14 public immutable namespace;
 
   error WithWorld_RootNamespaceNotAllowed();
+  error WithWorld_NamespaceAlreadyExists();
+  error WithWorld_NamespaceDoesNotExists();
   error WithWorld_CallerHasNoNamespaceAccess();
 
   modifier onlyNamespace() {
@@ -23,7 +25,7 @@ abstract contract WithWorld is WithStore {
     _;
   }
 
-  constructor(IBaseWorld world, bytes14 _namespace) WithStore(address(world)) {
+  constructor(IBaseWorld _world, bytes14 _namespace, bool registerNamespace) WithStore(address(_world)) {
     if (_namespace == bytes14(0)) {
       revert WithWorld_RootNamespaceNotAllowed();
     }
@@ -32,13 +34,25 @@ abstract contract WithWorld is WithStore {
 
     ResourceId namespaceId = getNamespaceId();
 
-    if (!ResourceIds.getExists(namespaceId)) {
-      world.registerNamespace(namespaceId);
+    bool namespaceExists = ResourceIds.getExists(namespaceId);
+
+    if (registerNamespace) {
+      if (namespaceExists) {
+        revert WithWorld_NamespaceAlreadyExists();
+      }
+
+      _world.registerNamespace(namespaceId);
+    } else if (!namespaceExists) {
+      revert WithWorld_NamespaceDoesNotExists();
     }
   }
 
   function getNamespaceId() public view returns (ResourceId) {
     return WorldResourceIdLib.encodeNamespace(namespace);
+  }
+
+  function getWorld() public view returns (IBaseWorld) {
+    return IBaseWorld(getStore());
   }
 
   function _encodeResourceId(bytes2 typeId, bytes16 name) internal view virtual override returns (ResourceId) {
