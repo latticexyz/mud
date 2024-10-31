@@ -7,7 +7,7 @@ import { Schema } from "@latticexyz/config";
 /**
  * @internal
  */
-export function logToTable(log: StorageAdapterLog & { eventName: "Store_SetRecord" }): Table {
+export function logToTable(log: Extract<StorageAdapterLog, { eventName: "Store_SetRecord" }>): Table {
   const [tableId, ...otherKeys] = log.args.keyTuple;
   if (otherKeys.length) {
     console.warn("registerSchema event is expected to have only one key in key tuple, but got multiple", log);
