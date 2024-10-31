@@ -3,11 +3,13 @@ pragma solidity >=0.8.24;
 
 // Adapted example from OpenZeppelin's Contract Wizard: https://wizard.openzeppelin.com/
 
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
-import { WithWorld } from "@latticexyz/store-consumer/src/WithWorld.sol";
-import { ERC20Pausable } from "../ERC20Pausable.sol";
-import { ERC20Burnable } from "../ERC20Burnable.sol";
-import { MUDERC20 } from "../MUDERC20.sol";
+import { WithWorld } from "@latticexyz/store-consumer/src/experimental/WithWorld.sol";
+
+import { ERC20Pausable } from "../experimental/ERC20Pausable.sol";
+import { ERC20Burnable } from "../experimental/ERC20Burnable.sol";
+import { MUDERC20 } from "../experimental/MUDERC20.sol";
 
 contract ERC20WithWorld is WithWorld, MUDERC20, ERC20Pausable, ERC20Burnable {
   constructor(

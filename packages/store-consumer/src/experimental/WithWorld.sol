@@ -24,10 +24,8 @@ abstract contract WithWorld is WithStore {
   constructor(IBaseWorld world, bytes14 _namespace) WithStore(address(world)) {
     namespace = _namespace;
 
-    ResourceId namespaceId = getNamespaceId();
-
     // This will revert if namespace already exists
-    world.registerNamespace(namespaceId);
+    world.registerNamespace(getNamespaceId());
   }
 
   function getNamespaceId() public view returns (ResourceId) {

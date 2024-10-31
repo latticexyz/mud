@@ -3,11 +3,11 @@ pragma solidity >=0.8.24;
 
 // Adapted example from OpenZeppelin's Contract Wizard: https://wizard.openzeppelin.com/
 
-import { WithStore } from "@latticexyz/store-consumer/src/WithStore.sol";
-import { Ownable } from "../Ownable.sol";
-import { ERC20Pausable } from "../ERC20Pausable.sol";
-import { ERC20Burnable } from "../ERC20Burnable.sol";
-import { MUDERC20 } from "../MUDERC20.sol";
+import { WithStore } from "@latticexyz/store-consumer/src/experimental/WithStore.sol";
+import { Ownable } from "../experimental/Ownable.sol";
+import { ERC20Pausable } from "../experimental/ERC20Pausable.sol";
+import { ERC20Burnable } from "../experimental/ERC20Burnable.sol";
+import { MUDERC20 } from "../experimental/MUDERC20.sol";
 
 contract ERC20WithInternalStore is WithStore(address(this)), MUDERC20, ERC20Pausable, ERC20Burnable, Ownable {
   constructor() MUDERC20("MyERC20", "MTK") Ownable(_msgSender()) {}

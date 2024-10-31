@@ -3,17 +3,17 @@
 pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { StoreConsumer } from "@latticexyz/store-consumer/src/StoreConsumer.sol";
-import { Context } from "@latticexyz/store-consumer/src/Context.sol";
+import { StoreConsumer } from "@latticexyz/store-consumer/src/experimental/StoreConsumer.sol";
+import { Context } from "@latticexyz/store-consumer/src/experimental/Context.sol";
 
-import { ERC20Metadata, ERC20MetadataData } from "./codegen/tables/ERC20Metadata.sol";
-import { TotalSupply } from "./codegen/tables/TotalSupply.sol";
-import { Balances } from "./codegen/tables/Balances.sol";
-import { Allowances } from "./codegen/tables/Allowances.sol";
+import { ERC20Metadata, ERC20MetadataData } from "../codegen/tables/ERC20Metadata.sol";
+import { TotalSupply } from "../codegen/tables/TotalSupply.sol";
+import { Balances } from "../codegen/tables/Balances.sol";
+import { Allowances } from "../codegen/tables/Allowances.sol";
 
-import { IERC20 } from "./interfaces/IERC20.sol";
-import { IERC20Metadata } from "./interfaces/IERC20Metadata.sol";
-import { IERC20Errors } from "./interfaces/IERC20Errors.sol";
+import { IERC20 } from "../interfaces/IERC20.sol";
+import { IERC20Metadata } from "../interfaces/IERC20Metadata.sol";
+import { IERC20Errors } from "../interfaces/IERC20Errors.sol";
 
 import { ERC20TableNames } from "./Constants.sol";
 

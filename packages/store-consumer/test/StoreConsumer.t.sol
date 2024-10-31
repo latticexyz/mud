@@ -16,9 +16,9 @@ import { Tables, ResourceIds } from "@latticexyz/store/src/codegen/index.sol";
 import { StoreCore } from "@latticexyz/store/src/Store.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
-import { StoreConsumer } from "../src/StoreConsumer.sol";
-import { WithStore } from "../src/WithStore.sol";
-import { WithWorld } from "../src/WithWorld.sol";
+import { StoreConsumer } from "../src/experimental/StoreConsumer.sol";
+import { WithStore } from "../src/experimental/WithStore.sol";
+import { WithWorld } from "../src/experimental/WithWorld.sol";
 
 abstract contract MockStoreConsumer is StoreConsumer {
   function getStoreAddress() public view virtual returns (address) {

@@ -3,10 +3,10 @@
 pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { StoreConsumer } from "@latticexyz/store-consumer/src/StoreConsumer.sol";
-import { Context } from "@latticexyz/store-consumer/src/Context.sol";
+import { StoreConsumer } from "@latticexyz/store-consumer/src/experimental/StoreConsumer.sol";
+import { Context } from "@latticexyz/store-consumer/src/experimental/Context.sol";
 
-import { Paused as PausedTable } from "./codegen/tables/Paused.sol";
+import { Paused as PausedTable } from "../codegen/tables/Paused.sol";
 import { PausableTableNames } from "./Constants.sol";
 
 /**
