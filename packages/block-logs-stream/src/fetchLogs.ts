@@ -1,5 +1,4 @@
-import { AbiEvent } from "abitype";
-import { Address, Client, BlockNumber, GetLogsReturnType, OneOf } from "viem";
+import { Address, Client, BlockNumber, GetLogsReturnType, OneOf, AbiEvent } from "viem";
 import { bigIntMax, bigIntMin, wait } from "@latticexyz/common/utils";
 import { debug } from "./debug";
 import { getAction } from "viem/utils";
