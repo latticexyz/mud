@@ -34,7 +34,6 @@
   },
   "dependencies": {
     "@latticexyz/common": "workspace:*",
-    "abitype": "catalog:",
     "debug": "^4.3.4",
     "rxjs": "7.5.5",
     "viem": "catalog:"

@@ -132,9 +132,6 @@ importers:
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
-      abitype:
-        specifier: 'catalog:'
-        version: 1.0.6(typescript@5.4.2)(zod@3.23.8)
       debug:
         specifier: ^4.3.4
         version: 4.3.4
