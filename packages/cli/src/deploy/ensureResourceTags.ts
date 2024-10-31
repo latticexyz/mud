@@ -12,8 +12,7 @@ import { createPrepareDeploy } from "./createPrepareDeploy";
 import { waitForTransactions } from "./waitForTransactions";
 import { LibraryMap } from "./getLibraryMap";
 import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
-import { getStoreLogs, flattenStoreLogs } from "@latticexyz/store/internal";
-import { logToRecord } from "@latticexyz/store-sync";
+import { getStoreLogs, flattenStoreLogs, logToRecord } from "@latticexyz/store/internal";
 import { getKeyTuple, getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
 
 const metadataModuleArtifact = getContractArtifact(metadataModule);

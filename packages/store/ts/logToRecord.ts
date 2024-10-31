@@ -7,13 +7,14 @@ import {
   getSchemaTypes,
   getValueSchema,
 } from "@latticexyz/protocol-parser/internal";
-import { StorageAdapterLog } from "./common";
+import { StoreLog } from "./storeLog";
 
 type PartialTable = Pick<Table, "schema" | "key">;
+type PartialLog = Pick<Extract<StoreLog, { eventName: "Store_SetRecord" }>, "args">;
 
 export type LogToRecordArgs<table extends PartialTable> = {
   table: table;
-  log: Extract<StorageAdapterLog, { eventName: "Store_SetRecord" }>;
+  log: PartialLog;
 };
 
 export function logToRecord<table extends PartialTable>({
