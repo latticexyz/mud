@@ -46,13 +46,16 @@
     "debug": "^4.3.4",
     "dotenv": "^16.0.3",
     "fastify": "^4.21.0",
-    "viem": "catalog:",
     "zod": "3.23.8"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
     "tsup": "^6.7.0",
+    "viem": "catalog:",
     "vitest": "0.34.6"
+  },
+  "peerDependencies": {
+    "viem": "2.x"
   },
   "publishConfig": {
     "access": "public"

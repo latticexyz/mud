@@ -64,8 +64,7 @@
     "@latticexyz/store": "workspace:*",
     "abitype": "catalog:",
     "arktype": "catalog:",
-    "debug": "^4.3.4",
-    "viem": "catalog:"
+    "debug": "^4.3.4"
   },
   "devDependencies": {
     "@latticexyz/abi-ts": "workspace:*",
@@ -79,6 +78,15 @@
     "glob": "^10.4.2",
     "solhint": "^3.3.7",
     "tsup": "^6.7.0",
+    "viem": "catalog:",
     "vitest": "0.34.6"
+  },
+  "peerDependencies": {
+    "viem": "2.x"
+  },
+  "peerDependenciesMeta": {
+    "viem": {
+      "optional": true
+    }
   }
 }

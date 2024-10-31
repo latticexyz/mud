@@ -87,7 +87,6 @@
     "rxjs": "7.5.5",
     "sql.js": "^1.8.0",
     "superjson": "^1.12.4",
-    "viem": "catalog:",
     "zod": "3.23.8",
     "zustand": "^4.3.7"
   },
@@ -98,7 +97,11 @@
     "@viem/anvil": "^0.0.7",
     "mock-game-contracts": "workspace:*",
     "tsup": "^6.7.0",
+    "viem": "catalog:",
     "vitest": "0.34.6"
+  },
+  "peerDependencies": {
+    "viem": "2.x"
   },
   "publishConfig": {
     "access": "public"

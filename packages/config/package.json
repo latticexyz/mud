@@ -44,10 +44,13 @@
     "@latticexyz/common": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "esbuild": "^0.17.15",
-    "find-up": "^6.3.0",
-    "viem": "catalog:"
+    "find-up": "^6.3.0"
   },
   "devDependencies": {
-    "tsup": "^6.7.0"
+    "tsup": "^6.7.0",
+    "viem": "catalog:"
+  },
+  "peerDependencies": {
+    "viem": "2.x"
   }
 }

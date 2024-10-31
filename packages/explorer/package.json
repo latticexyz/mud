@@ -74,7 +74,6 @@
     "sql-autocomplete": "^1.1.1",
     "tailwind-merge": "^1.12.0",
     "tsup": "^6.7.0",
-    "viem": "catalog:",
     "wagmi": "catalog:",
     "yargs": "^17.7.1",
     "zod": "3.23.8",
@@ -94,7 +93,11 @@
     "prettier": "3.2.5",
     "prettier-plugin-tailwindcss": "^0.6.5",
     "tailwindcss": "^3.4.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "viem": "catalog:"
+  },
+  "peerDependencies": {
+    "viem": "2.x"
   },
   "packageManager": "pnpm@9.6.0",
   "engines": {
