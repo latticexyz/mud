@@ -1,7 +1,7 @@
 import { Chain, Transport } from "viem";
 import { EntryKitConfig } from "./config";
 import { WalletList, connectorsForWallets, getDefaultWallets } from "@rainbow-me/rainbowkit";
-import { createConfig } from "wagmi";
+import { Config, CreateConfigParameters, createConfig } from "wagmi";
 import { passkeyWallet } from "./passkey/passkeyWallet";
 
 export type CreateWagmiConfigOptions<
@@ -14,12 +14,12 @@ export type CreateWagmiConfigOptions<
   readonly appInfo: {
     readonly name: string;
   };
-};
+} & Pick<CreateConfigParameters<chains, transports>, "pollingInterval">;
 
 export function createWagmiConfig<
   const chains extends readonly [Chain, ...Chain[]],
   transports extends Record<chains[number]["id"], Transport>,
->(config: CreateWagmiConfigOptions<chains, transports>) {
+>(config: CreateWagmiConfigOptions<chains, transports>): Config<chains, transports> {
   const { wallets: defaultWallets } = getDefaultWallets();
   const wallets: WalletList = [
     {
@@ -45,5 +45,6 @@ export function createWagmiConfig<
     connectors,
     chains: config.chains,
     transports: config.transports,
-  });
+    pollingInterval: config.pollingInterval,
+  }) as never;
 }
