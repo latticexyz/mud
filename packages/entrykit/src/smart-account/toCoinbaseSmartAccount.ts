@@ -110,6 +110,8 @@ export async function toCoinbaseSmartAccount(
     throw new Error("`signer` must be one of `owners`.");
   }
 
+  let counter = 0n;
+
   return toSmartAccount({
     client,
     entryPoint,
@@ -148,6 +150,17 @@ export async function toCoinbaseSmartAccount(
         args: [owners.map(accountToBytes), nonce],
       });
       return address;
+    },
+
+    async getNonce() {
+      // allows for 256 nonces per ms
+      const counterBits = 8n;
+      counter = (counter + 1n) % (1n << counterBits);
+
+      const timestamp = BigInt(Date.now());
+      const nonce = ((timestamp << counterBits) + counter) << 64n;
+
+      return nonce;
     },
 
     async getFactoryArgs() {
