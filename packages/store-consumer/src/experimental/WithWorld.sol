@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
+import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { ResourceAccess } from "@latticexyz/world/src/codegen/tables/ResourceAccess.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
@@ -11,6 +12,7 @@ import { WithStore } from "./WithStore.sol";
 abstract contract WithWorld is WithStore {
   bytes14 public immutable namespace;
 
+  error WithWorld_RootNamespaceNotAllowed();
   error WithWorld_CallerHasNoNamespaceAccess();
 
   modifier onlyNamespace() {
@@ -22,10 +24,17 @@ abstract contract WithWorld is WithStore {
   }
 
   constructor(IBaseWorld world, bytes14 _namespace) WithStore(address(world)) {
+    if (_namespace == bytes14(0)) {
+      revert WithWorld_RootNamespaceNotAllowed();
+    }
+
     namespace = _namespace;
 
-    // This will revert if namespace already exists
-    world.registerNamespace(getNamespaceId());
+    ResourceId namespaceId = getNamespaceId();
+
+    if (!ResourceIds.getExists(namespaceId)) {
+      world.registerNamespace(namespaceId);
+    }
   }
 
   function getNamespaceId() public view returns (ResourceId) {
