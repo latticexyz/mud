@@ -1,5 +1,4 @@
 import {
-  SchemaToPrimitives,
   encodeKey,
   encodeValueArgs,
   getKeySchema,
@@ -7,6 +6,7 @@ import {
   getValueSchema,
   getKey,
   getValue,
+  getSchemaPrimitives,
 } from "@latticexyz/protocol-parser/internal";
 import { StorageAdapterLog } from "./common";
 import { Table } from "@latticexyz/config";
@@ -17,14 +17,14 @@ type PartialTable = Pick<Table, "schema" | "key">;
 type RecordToLogArgs<table extends PartialTable> = {
   address: Hex;
   table: table;
-  record: SchemaToPrimitives<getSchemaTypes<table["schema"]>>;
+  record: getSchemaPrimitives<table["schema"]>;
 };
 
 export function recordToLog<table extends Table>({
   table,
   record,
   address,
-}: RecordToLogArgs<table>): StorageAdapterLog & { eventName: "Store_SetRecord" } {
+}: RecordToLogArgs<table>): Extract<StorageAdapterLog, { eventName: "Store_SetRecord" }> {
   const keySchema = getSchemaTypes(getKeySchema(table));
   const valueSchema = getSchemaTypes(getValueSchema(table));
 
