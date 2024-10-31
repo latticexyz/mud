@@ -40,11 +40,11 @@
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "abitype": "catalog:"
+    "abitype": "1.0.6"
   },
   "devDependencies": {
     "tsup": "^6.7.0",
-    "viem": "catalog:",
+    "viem": "2.21.19",
     "vitest": "0.34.6"
   },
   "peerDependencies": {

@@ -68,7 +68,7 @@
   "dependencies": {
     "@latticexyz/schema-type": "workspace:*",
     "@solidity-parser/parser": "^0.16.0",
-    "abitype": "catalog:",
+    "abitype": "1.0.6",
     "debug": "^4.3.4",
     "execa": "^7.0.0",
     "p-queue": "^7.4.1",
@@ -81,7 +81,7 @@
     "@types/node": "^18.15.11",
     "@viem/anvil": "^0.0.7",
     "tsup": "^6.7.0",
-    "viem": "catalog:",
+    "viem": "2.21.19",
     "vitest": "0.34.6"
   },
   "peerDependencies": {

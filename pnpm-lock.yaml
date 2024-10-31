@@ -4,33 +4,12 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-catalogs:
-  default:
-    '@ark/attest':
-      specifier: 0.12.1
-      version: 0.12.1
-    '@ark/util':
-      specifier: 0.2.2
-      version: 0.2.2
-    abitype:
-      specifier: 1.0.6
-      version: 1.0.6
-    arktype:
-      specifier: 2.0.0-beta.6
-      version: 2.0.0-beta.6
-    viem:
-      specifier: 2.21.19
-      version: 2.21.19
-    wagmi:
-      specifier: 2.12.11
-      version: 2.12.11
-
 importers:
 
   .:
     devDependencies:
       '@ark/attest':
-        specifier: 'catalog:'
+        specifier: 0.12.1
         version: 0.12.1(typescript@5.4.2)
       '@changesets/cli':
         specifier: ^2.27.7
@@ -87,7 +66,7 @@ importers:
         specifier: 5.4.2
         version: 5.4.2
       viem:
-        specifier: 'catalog:'
+        specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
       vitest:
         specifier: 2.1.2
@@ -146,7 +125,7 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
       viem:
-        specifier: 'catalog:'
+        specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
       vitest:
         specifier: 0.34.6
@@ -155,7 +134,7 @@ importers:
   packages/cli:
     dependencies:
       '@ark/util':
-        specifier: 'catalog:'
+        specifier: 0.2.2
         version: 0.2.2
       '@aws-sdk/client-kms':
         specifier: ^3.556.0
@@ -194,7 +173,7 @@ importers:
         specifier: workspace:*
         version: link:../world-module-metadata
       abitype:
-        specifier: 'catalog:'
+        specifier: 1.0.6
         version: 1.0.6(typescript@5.4.2)(zod@3.23.8)
       asn1.js:
         specifier: ^5.4.1
@@ -285,7 +264,7 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
       viem:
-        specifier: 'catalog:'
+        specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
       vitest:
         specifier: 0.34.6
@@ -303,7 +282,7 @@ importers:
         specifier: ^0.16.0
         version: 0.16.0
       abitype:
-        specifier: 'catalog:'
+        specifier: 1.0.6
         version: 1.0.6(typescript@5.4.2)(zod@3.23.8)
       asn1.js:
         specifier: 5.x
@@ -340,7 +319,7 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
       viem:
-        specifier: 'catalog:'
+        specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
       vitest:
         specifier: 0.34.6
@@ -349,7 +328,7 @@ importers:
   packages/config:
     dependencies:
       '@ark/util':
-        specifier: 'catalog:'
+        specifier: 0.2.2
         version: 0.2.2
       '@latticexyz/common':
         specifier: workspace:*
@@ -368,7 +347,7 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
       viem:
-        specifier: 'catalog:'
+        specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
 
   packages/create-mud:
@@ -457,7 +436,7 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.4.2)
       viem:
-        specifier: 'catalog:'
+        specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
       vitest:
         specifier: 0.34.6
@@ -466,7 +445,7 @@ importers:
   packages/entrykit:
     dependencies:
       '@ark/util':
-        specifier: 'catalog:'
+        specifier: 0.2.2
         version: 0.2.2
       '@latticexyz/common':
         specifier: workspace:*
@@ -557,10 +536,10 @@ importers:
         specifier: ^8.4.47
         version: 8.4.47
       react:
-        specifier: ^18.2.0
+        specifier: 18.2.0
         version: 18.2.0
       react-dom:
-        specifier: ^18.2.0
+        specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       tailwindcss:
         specifier: ^3.4.13
@@ -569,7 +548,7 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
       viem:
-        specifier: 'catalog:'
+        specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
       vite:
         specifier: ^5.4.1
@@ -584,7 +563,7 @@ importers:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.34.1)
       wagmi:
-        specifier: 'catalog:'
+        specifier: 2.12.11
         version: 2.12.11(@tanstack/query-core@5.56.2)(@tanstack/react-query@5.56.2(react@18.2.0))(@types/react@18.2.22)(bufferutil@4.0.8)(encoding@0.1.13)(react-dom@18.2.0(react@18.2.0))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.22)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.2.0)(typescript@5.4.2)(utf-8-validate@5.0.10))(react@18.2.0)(rollup@4.22.5)(typescript@5.4.2)(utf-8-validate@5.0.10)(viem@2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8))(zod@3.23.8)
 
   packages/explorer:
@@ -707,7 +686,7 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.4.2)
       wagmi:
-        specifier: 'catalog:'
+        specifier: 2.12.11
         version: 2.12.11(@tanstack/query-core@5.56.2)(@tanstack/react-query@5.52.0(react@18.2.0))(@types/react@18.2.22)(bufferutil@4.0.8)(encoding@0.1.13)(react-dom@18.2.0(react@18.2.0))(react-native@0.75.2(@babel/core@7.25.7)(@babel/preset-env@7.25.3(@babel/core@7.25.7))(@types/react@18.2.22)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.2.0)(typescript@5.4.2)(utf-8-validate@5.0.10))(react@18.2.0)(rollup@4.22.5)(typescript@5.4.2)(utf-8-validate@5.0.10)(viem@2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8))(zod@3.23.8)
       yargs:
         specifier: ^17.7.1
@@ -762,7 +741,7 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.10)
       viem:
-        specifier: 'catalog:'
+        specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
 
   packages/faucet:
@@ -802,7 +781,7 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
       viem:
-        specifier: 'catalog:'
+        specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
       vitest:
         specifier: 0.34.6
@@ -866,14 +845,14 @@ importers:
         specifier: workspace:*
         version: link:../schema-type
       abitype:
-        specifier: 'catalog:'
+        specifier: 1.0.6
         version: 1.0.6(typescript@5.4.2)(zod@3.23.8)
     devDependencies:
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
       viem:
-        specifier: 'catalog:'
+        specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
       vitest:
         specifier: 0.34.6
@@ -968,7 +947,7 @@ importers:
   packages/schema-type:
     dependencies:
       abitype:
-        specifier: 'catalog:'
+        specifier: 1.0.6
         version: 1.0.6(typescript@5.4.2)(zod@3.23.8)
     devDependencies:
       '@latticexyz/gas-report':
@@ -984,7 +963,7 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
       viem:
-        specifier: 'catalog:'
+        specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
       vitest:
         specifier: 0.34.6
@@ -1012,7 +991,7 @@ importers:
   packages/stash:
     dependencies:
       '@ark/util':
-        specifier: 'catalog:'
+        specifier: 0.2.2
         version: 0.2.2
       '@latticexyz/common':
         specifier: workspace:*
@@ -1049,22 +1028,22 @@ importers:
         specifier: ^3.1.3
         version: 3.1.3
       react:
-        specifier: ^18.2.0
+        specifier: 18.2.0
         version: 18.2.0
       react-dom:
-        specifier: ^18.2.0
+        specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
       viem:
-        specifier: 'catalog:'
+        specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
 
   packages/store:
     dependencies:
       '@ark/util':
-        specifier: 'catalog:'
+        specifier: 0.2.2
         version: 0.2.2
       '@latticexyz/common':
         specifier: workspace:*
@@ -1079,10 +1058,10 @@ importers:
         specifier: workspace:*
         version: link:../schema-type
       abitype:
-        specifier: 'catalog:'
+        specifier: 1.0.6
         version: 1.0.6(typescript@5.4.2)(zod@3.23.8)
       arktype:
-        specifier: 'catalog:'
+        specifier: 2.0.0-beta.6
         version: 2.0.0-beta.6
       debug:
         specifier: ^4.3.4
@@ -1116,7 +1095,7 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
       viem:
-        specifier: 'catalog:'
+        specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
 
   packages/store-indexer:
@@ -1225,7 +1204,7 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
       viem:
-        specifier: 'catalog:'
+        specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
       vitest:
         specifier: 0.34.6
@@ -1234,7 +1213,7 @@ importers:
   packages/store-sync:
     dependencies:
       '@ark/util':
-        specifier: 'catalog:'
+        specifier: 0.2.2
         version: 0.2.2
       '@latticexyz/block-logs-stream':
         specifier: workspace:*
@@ -1322,7 +1301,7 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
       viem:
-        specifier: 'catalog:'
+        specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
       vitest:
         specifier: 0.34.6
@@ -1356,7 +1335,7 @@ importers:
   packages/world:
     dependencies:
       '@ark/util':
-        specifier: 'catalog:'
+        specifier: 0.2.2
         version: 0.2.2
       '@latticexyz/block-logs-stream':
         specifier: workspace:*
@@ -1377,10 +1356,10 @@ importers:
         specifier: workspace:*
         version: link:../store
       abitype:
-        specifier: 'catalog:'
+        specifier: 1.0.6
         version: 1.0.6(typescript@5.4.2)(zod@3.23.8)
       arktype:
-        specifier: 'catalog:'
+        specifier: 2.0.0-beta.6
         version: 2.0.0-beta.6
       debug:
         specifier: ^4.3.4
@@ -1420,7 +1399,7 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
       viem:
-        specifier: 'catalog:'
+        specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
       vitest:
         specifier: 0.34.6
@@ -1624,7 +1603,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/world
       viem:
-        specifier: 'catalog:'
+        specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
       vite:
         specifier: ^4.2.1

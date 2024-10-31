@@ -66,7 +66,7 @@
     "test:ci": "vitest --run"
   },
   "dependencies": {
-    "@ark/util": "catalog:",
+    "@ark/util": "0.2.2",
     "@latticexyz/block-logs-stream": "workspace:*",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
@@ -97,7 +97,7 @@
     "@viem/anvil": "^0.0.7",
     "mock-game-contracts": "workspace:*",
     "tsup": "^6.7.0",
-    "viem": "catalog:",
+    "viem": "2.21.19",
     "vitest": "0.34.6"
   },
   "peerDependencies": {

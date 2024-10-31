@@ -39,7 +39,7 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@ark/util": "catalog:",
+    "@ark/util": "0.2.2",
     "@aws-sdk/client-kms": "^3.556.0",
     "@latticexyz/abi-ts": "workspace:*",
     "@latticexyz/block-logs-stream": "workspace:*",
@@ -52,7 +52,7 @@
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
     "@latticexyz/world-module-metadata": "workspace:*",
-    "abitype": "catalog:",
+    "abitype": "1.0.6",
     "asn1.js": "^5.4.1",
     "chalk": "^5.0.1",
     "chokidar": "^3.5.3",
@@ -84,7 +84,7 @@
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
     "tsup": "^6.7.0",
-    "viem": "catalog:",
+    "viem": "2.21.19",
     "vitest": "0.34.6"
   },
   "peerDependencies": {
