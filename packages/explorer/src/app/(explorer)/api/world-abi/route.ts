@@ -1,5 +1,6 @@
 import { Address, Hex, createWalletClient, http, parseAbi } from "viem";
-import { getBlockNumber, getLogs } from "viem/actions";
+import { getBlockNumber } from "viem/actions";
+import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
 import { getWorldAbi } from "@latticexyz/world/internal";
@@ -20,16 +21,18 @@ async function getClient(chainId: supportedChainId) {
 async function getParameters(chainId: supportedChainId, worldAddress: Address) {
   const client = await getClient(chainId);
   const toBlock = await getBlockNumber(client);
-  const logs = await getLogs(client, {
-    strict: true,
+  const logs = await fetchBlockLogs({
+    fromBlock: 0n,
+    toBlock,
+    maxBlockRange: 100_000n,
+    publicClient: client,
     address: worldAddress,
     events: parseAbi([helloStoreEvent, helloWorldEvent] as const),
-    fromBlock: "earliest",
-    toBlock,
   });
+
   const fromBlock = logs[0]?.blockNumber ?? 0n;
   // world is considered loaded when both events are emitted
-  const isWorldDeployed = logs.length === 2;
+  const isWorldDeployed = logs[0]?.logs.length === 2;
 
   return { fromBlock, toBlock, isWorldDeployed };
 }
