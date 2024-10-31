@@ -1,6 +1,5 @@
 // Forked from https://github.com/wevm/viem/blob/main/src/account-abstraction/accounts/implementations/toCoinbaseSmartAccount.ts
 // to match our forked contracts (upgrade to v0.7 entrypoint)
-import { BaseError, type Address, type TypedData } from "abitype";
 import {
   Client,
   OneOf,
@@ -18,6 +17,9 @@ import {
   size,
   encodePacked,
   parseSignature,
+  Address,
+  TypedData,
+  BaseError,
 } from "viem";
 import {
   WebAuthnAccount,
