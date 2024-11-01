@@ -1,6 +1,6 @@
 import { Address, EIP1193RequestFn, Hex, Transport, http } from "viem";
 
-export type IssuerRpcSchema = [
+export type QuarryPassIssuerRpcSchema = [
   {
     Method: "quarry_issuePass";
     Parameters: [passId: Hex, receiver: Address];
@@ -13,13 +13,13 @@ export type IssuerRpcSchema = [
   },
 ];
 
-export function issuer(): Transport<"http", {}, EIP1193RequestFn<IssuerRpcSchema>> {
+export function quarryPassIssuer(): Transport<"http", {}, EIP1193RequestFn<QuarryPassIssuerRpcSchema>> {
   return ({ chain }) => {
     if (!chain) throw new Error("No chain provided to issuer transport.");
 
-    const url = "issuer" in chain.rpcUrls ? chain.rpcUrls.issuer.http[0] : undefined;
-    // TODO: add fallback for anvil to do what issuer does internally
-    if (!url) throw new Error(`No issuer RPC URL found for chain ${chain.id}.`);
+    const url = "quarryPassIssuer" in chain.rpcUrls ? chain.rpcUrls.quarryPassIssuer.http[0] : undefined;
+    // TODO: add fallback for anvil to do what quarryPassIssuer does internally
+    if (!url) throw new Error(`No \`quarryPassIssuer\` RPC URL found for chain ${chain.id}.`);
 
     return http(url)({ chain, retryCount: 0 });
   };

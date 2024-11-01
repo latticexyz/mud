@@ -1,7 +1,7 @@
 import { Address } from "viem";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { issuer } from "../transports/issuer";
+import { quarryPassIssuer } from "../transports/quarryPassIssuer";
 
 export function useClaimGasPass() {
   const queryClient = useQueryClient();
@@ -12,7 +12,7 @@ export function useClaimGasPass() {
     mutationKey,
     onError: (error) => console.error(error),
     mutationFn: async (userAddress: Address) => {
-      const transport = issuer()({ chain });
+      const transport = quarryPassIssuer()({ chain });
       await transport.request({
         method: "quarry_issuePass",
         params: ["0x01", userAddress],
