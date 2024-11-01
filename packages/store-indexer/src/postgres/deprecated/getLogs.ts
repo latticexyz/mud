@@ -22,7 +22,7 @@ export async function getLogs(
     readonly address?: Hex;
     readonly filters?: readonly SyncFilter[];
   },
-): Promise<{ blockNumber: bigint; logs: (StorageAdapterLog & { eventName: "Store_SetRecord" })[] }> {
+): Promise<{ blockNumber: bigint; logs: Extract<StorageAdapterLog, { eventName: "Store_SetRecord" }>[] }> {
   const benchmark = createBenchmark("drizzleGetLogs");
 
   const conditions = filters.length
