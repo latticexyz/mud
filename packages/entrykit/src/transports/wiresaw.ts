@@ -1,80 +1,91 @@
-import { Hash, Hex, RpcTransactionReceipt, RpcUserOperationReceipt, Transport } from "viem";
+import {
+  BundlerRpcSchema,
+  Hash,
+  Hex,
+  PublicRpcSchema,
+  RpcTransactionReceipt,
+  RpcUserOperationReceipt,
+  Transport,
+  http,
+} from "viem";
+import { getRpcMethod, getRpcSchema, TransportRequestFn, TransportRequestFnMapped } from "./common";
 
-export const wiresawChainIds = new Set([17420, 31337]);
+export type WiresawRpcSchema = [
+  {
+    Method: "wiresaw_call";
+    Parameters: getRpcMethod<PublicRpcSchema, "eth_call">["Parameters"];
+    ReturnType: getRpcMethod<PublicRpcSchema, "eth_call">["ReturnType"];
+  },
+  {
+    Method: "wiresaw_sendUserOperation";
+    Parameters: getRpcMethod<BundlerRpcSchema, "eth_sendUserOperation">["Parameters"];
+    ReturnType: {
+      userOpHash: Hex;
+      txHash: Hex;
+    };
+  },
+];
 
-export function wiresaw<const transport extends Transport>(originalTransport: transport): transport {
-  return ((opts) => {
-    const { request: originalRequest, ...rest } = originalTransport(opts);
+export type OverriddenMethods = [
+  ...getRpcSchema<PublicRpcSchema, "eth_chainId" | "eth_call" | "eth_getTransactionReceipt">,
+  ...getRpcSchema<BundlerRpcSchema, "eth_sendUserOperation" | "eth_getUserOperationReceipt">,
+];
+
+export function wiresaw<const transport extends Transport>(getTransport: transport): transport {
+  return ((args) => {
+    const getWiresawTransport =
+      args.chain?.rpcUrls && "wiresaw" in args.chain.rpcUrls ? http(args.chain.rpcUrls.wiresaw.http[0]) : undefined;
+    if (!getWiresawTransport) return getTransport(args);
+
+    const transport = getTransport(args) as { request: TransportRequestFn<OverriddenMethods> };
+    const wiresawTransport = getWiresawTransport(args) as { request: TransportRequestFn<WiresawRpcSchema> };
 
     let chainId: Hex | null = null;
-    const receipts = new Map<Hash, RpcTransactionReceipt | RpcUserOperationReceipt>();
+    const receipts = new Map<Hash, RpcTransactionReceipt>();
+    const userOpReceipts = new Map<Hash, RpcUserOperationReceipt>();
 
-    return {
-      ...rest,
-      async request(req) {
-        // console.log("wiresaw: got rpc call", req.method, JSON.stringify(req.params ?? []));
+    const request: TransportRequestFnMapped<OverriddenMethods> = async ({ method, params }, opts) => {
+      if (method === "eth_chainId") {
+        if (chainId != null) return chainId;
+        return (chainId = await transport.request({ method, params }, opts));
+      }
 
-        if (req.method === "eth_chainId") {
-          if (chainId != null) return chainId;
-          return (chainId = await originalRequest(req));
-        }
+      // TODO: only route to wiresaw if using pending block tag
+      if (method === "eth_call") {
+        return wiresawTransport.request({ method: "wiresaw_call", params });
+      }
 
-        // if (req.method === "eth_estimateGas") {
-        //   return originalRequest({ ...req, method: "wiresaw_estimateGas" });
-        // }
+      if (method === "eth_getTransactionReceipt") {
+        const [hash] = params;
+        const receipt = receipts.get(hash) ?? (await transport.request({ method, params }));
+        if (!receipts.has(hash) && receipt) receipts.set(hash, receipt);
+        return receipt;
+      }
 
-        // if (req.method === "eth_sendRawTransaction") {
-        //   const receipt = (await originalRequest({
-        //     ...req,
-        //     method: "wiresaw_sendRawTransaction",
-        //     // TODO: type `request` so we don't have to cast
-        //   })) as RpcTransactionReceipt;
-        //   // TODO: wiresaw should return an appropriate error here
-        //   if (receipt == null) {
-        //     throw new Error("Failed to include transaction.");
-        //   }
-        //   receipts.set(receipt["transactionHash"], receipt);
-        //   return receipt["transactionHash"];
-        // }
+      if (method === "eth_sendUserOperation") {
+        const result = await wiresawTransport.request({
+          method: "wiresaw_sendUserOperation",
+          params,
+        });
+        // :haroldsmile:
+        userOpReceipts.set(result.userOpHash, {
+          success: true,
+          userOpHash: result.userOpHash,
+          receipt: { transactionHash: result.txHash },
+        } as RpcUserOperationReceipt);
+        return result.userOpHash;
+      }
 
-        // TODO: only route to wiresaw if using pending block tag
-        if (req.method === "eth_call") {
-          return originalRequest({ ...req, method: "wiresaw_call" });
-        }
+      if (method === "eth_getUserOperationReceipt") {
+        const [hash] = params;
+        const receipt = userOpReceipts.get(hash) ?? (await transport.request({ method, params }));
+        if (!userOpReceipts.has(hash) && receipt) userOpReceipts.set(hash, receipt);
+        return receipt;
+      }
 
-        if (req.method === "eth_getTransactionReceipt") {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const hash = (req.params as any)[0] as Hash;
-          const receipt = receipts.get(hash) ?? ((await originalRequest(req)) as RpcTransactionReceipt);
-          if (!receipts.has(hash)) receipts.set(hash, receipt);
-          return receipt;
-        }
-
-        if (req.method === "eth_sendUserOperation") {
-          // TODO: type `request` so we don't have to cast
-          const result = (await originalRequest({
-            ...req,
-            method: "wiresaw_sendUserOperation",
-          })) as { txHash: Hex; userOpHash: Hex };
-          // :haroldsmile:
-          receipts.set(result.userOpHash, {
-            success: true,
-            userOpHash: result.userOpHash,
-            receipt: { transactionHash: result.txHash },
-          } as RpcUserOperationReceipt);
-          return result.userOpHash;
-        }
-
-        if (req.method === "eth_getUserOperationReceipt") {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const hash = (req.params as any)[0] as Hash;
-          const receipt = receipts.get(hash) ?? ((await originalRequest(req)) as RpcUserOperationReceipt);
-          if (!receipts.has(hash)) receipts.set(hash, receipt);
-          return receipt;
-        }
-
-        return originalRequest(req);
-      },
+      return await transport.request({ method, params }, opts);
     };
+
+    return { ...transport, request };
   }) as transport;
 }
