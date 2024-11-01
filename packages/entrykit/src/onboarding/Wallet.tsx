@@ -27,8 +27,9 @@ export function Wallet({ isActive, isExpanded, userAddress }: Props) {
           <div className="font-mono text-white">{ens.name ?? <TruncatedHex hex={userAddress} />}</div>
         </div>
         <Button
-          variant={isActive ? "primary" : "secondary"}
+          variant={isActive ? "primary" : "tertiary"}
           className="flex-shrink-0 text-sm p-1 w-28"
+          autoFocus={isActive}
           pending={disconnectIsPending}
           onClick={() => {
             closeAccountModal();

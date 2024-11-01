@@ -31,7 +31,7 @@ export function ConnectWallet() {
   const buttons = [
     <Button
       key="create"
-      variant={hasPasskey ? "secondary" : "primary"}
+      variant={hasPasskey ? "tertiary" : "secondary"}
       className="self-auto flex justify-center"
       pending={createPasskey.status === "pending"}
       onClick={() => createPasskey.mutate()}
@@ -41,7 +41,7 @@ export function ConnectWallet() {
     </Button>,
     <Button
       key="signin"
-      variant={hasPasskey ? "primary" : "secondary"}
+      variant={hasPasskey ? "secondary" : "tertiary"}
       className="self-auto flex justify-center"
       pending={reusePasskey.status === "pending"}
       onClick={() => reusePasskey.mutate()}

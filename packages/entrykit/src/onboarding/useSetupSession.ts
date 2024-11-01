@@ -33,6 +33,8 @@ export function useSetupSession({ userClient }: { userClient: ConnectedClient })
       if (!client) throw new Error("Client not ready.");
       const sessionAddress = sessionClient.account.address;
 
+      console.log("setting up session");
+
       if (userClient.account.type !== "smart") {
         const txs: Hex[] = [];
 
@@ -79,7 +81,7 @@ export function useSetupSession({ userClient }: { userClient: ConnectedClient })
           const receipt = await getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });
           console.log("got tx receipt", receipt);
           if (receipt.status === "reverted") {
-            throw new Error(`Transaction reverted: ${hash}`);
+            console.error("tx reverted?", receipt);
           }
         }
       } else {
@@ -122,10 +124,8 @@ export function useSetupSession({ userClient }: { userClient: ConnectedClient })
         )({ hash });
         console.log("got user op receipt", receipt);
 
-        // TODO: throw if revert?
         if (!receipt.success) {
           console.error("not successful?", receipt);
-          return;
         }
       }
 

@@ -7,13 +7,13 @@ import { PendingIcon } from "../icons/PendingIcon";
 // TODO: add error state with popover/tooltip
 
 type ButtonClassNameOptions = {
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "tertiary";
   pending?: boolean;
 };
 
-const buttonClassName = ({ variant = "primary" }: ButtonClassNameOptions = {}) =>
+const buttonClassName = ({ variant = "secondary" }: ButtonClassNameOptions = {}) =>
   twMerge(
-    "group self-center leading-none outline-none border-4 border-transparent",
+    "group/button self-center leading-none outline-none border-4 border-transparent",
     "transition hover:brightness-125 active:brightness-150",
     "focus:border-orange-500",
     "aria-disabled:pointer-events-none aria-busy:pointer-events-none",
@@ -21,8 +21,9 @@ const buttonClassName = ({ variant = "primary" }: ButtonClassNameOptions = {}) =
     "aria-disabled:opacity-50",
     "p-[.75em] font-medium",
     {
-      primary: twMerge("bg-neutral-700 text-white"),
-      secondary: twMerge("bg-neutral-800 text-white"),
+      primary: twMerge("bg-orange-600 text-white focus:border-yellow-400"),
+      secondary: twMerge("bg-neutral-700 text-white focus:border-orange-500"),
+      tertiary: twMerge("bg-neutral-800 text-white focus:border-orange-500"),
     }[variant],
   );
 
@@ -45,7 +46,7 @@ export const Button = ({ pending, variant, type, className, children, disabled, 
     >
       <span className="grid grid-cols-[1fr_auto_1fr] gap-2">
         <span className="flex items-center justify-end text-[.75em]">
-          <span className="transition opacity-0 translate-x-2 group-aria-busy:opacity-100 group-aria-busy:translate-x-0 duration-100 group-aria-busy:duration-300">
+          <span className="transition opacity-0 translate-x-2 group-aria-busy/button:opacity-100 group-aria-busy/button:translate-x-0 duration-100 group-aria-busy/button:duration-300">
             <PendingIcon />
           </span>
         </span>

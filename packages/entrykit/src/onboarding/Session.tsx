@@ -1,7 +1,7 @@
 import { Button } from "../ui/Button";
 import { useSetupSession } from "./useSetupSession";
 import { ConnectedClient } from "../common";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useSessionClient } from "../useSessionClient";
 
 export type Props = {
@@ -15,31 +15,24 @@ export type Props = {
 export function Session({ isActive, isExpanded, userClient, registerSpender, registerDelegation }: Props) {
   const { data: sessionClient } = useSessionClient(userClient.account.address);
   const setup = useSetupSession({ userClient });
-
   const hasSession = !registerDelegation && !registerDelegation;
 
-  // I assumed `queryClient.isMutating` would be useful to avoid multiple mutations at once,
-  // but it seems like it's doing something else internally where kicking off a mutation
-  // twice immediately (i.e. two renders) results in both returning 2 pending mutations.
-  //
-  // I also tried moving this into `useSetupSession` with `onMutate`, etc, but that seems
-  // to just mimick what I am seeing with the behavior of `useMutation`.
-  //
-  // Working around this with a ref :(
-  const isMutatingRef = useRef(false);
   useEffect(() => {
-    if (isActive && setup.status === "idle" && sessionClient && !hasSession && !isMutatingRef.current) {
-      isMutatingRef.current = true;
-      setup.mutate(
-        {
+    // There seems to be a tanstack-query bug(?) where multiple simultaneous renders loses
+    // state between the two mutations. They're not treated as shared state but rather
+    // individual mutations, even though the keys match. And the one we want the status of
+    // seems to stay pending. This is sorta resolved by triggering this after a timeout.
+    const timer = setTimeout(() => {
+      if (isActive && setup.status === "idle" && sessionClient && !hasSession) {
+        setup.mutate({
           sessionClient,
           registerSpender,
           registerDelegation,
-        },
-        { onSettled: () => (isMutatingRef.current = false) },
-      );
-    }
-  }, [isActive, hasSession, registerDelegation, registerSpender, sessionClient, setup, userClient]);
+        });
+      }
+    });
+    return () => clearTimeout(timer);
+  }, [hasSession, isActive, registerDelegation, registerSpender, sessionClient, setup]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -49,13 +42,14 @@ export function Session({ isActive, isExpanded, userClient, registerSpender, reg
           <div className="font-mono text-white">{hasSession ? "Enabled" : "Set up"}</div>
         </div>
         {hasSession ? (
-          <Button variant={isActive ? "primary" : "secondary"} className="flex-shrink-0 text-sm p-1 w-28" disabled>
+          <Button variant="tertiary" className="flex-shrink-0 text-sm p-1 w-28" autoFocus={isActive} disabled>
             Enabled
           </Button>
         ) : (
           <Button
-            variant={isActive ? "primary" : "secondary"}
+            variant={isActive ? "primary" : "tertiary"}
             className="flex-shrink-0 text-sm p-1 w-28"
+            autoFocus={isActive}
             pending={!sessionClient || setup.status === "pending"}
             onClick={
               sessionClient

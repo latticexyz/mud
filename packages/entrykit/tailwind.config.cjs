@@ -6,9 +6,7 @@ import { links } from "./tailwindcss-plugins/links";
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./src/**/*.{html,js,jsx,ts,tsx}"],
-  theme: {
-    extend: {},
-  },
+  theme: {},
   plugins: [animate, borderGradient, gridDivideFix, links],
   darkMode: ["selector", ['[data-theme="dark"]']],
 };

@@ -13,6 +13,7 @@ export function useClaimGasPass() {
     onError: (error) => console.error(error),
     mutationFn: async (userAddress: Address) => {
       const transport = quarryPassIssuer()({ chain });
+      // TODO: handle case where you already have a pass?
       await transport.request({
         method: "quarry_issuePass",
         params: ["0x01", userAddress],
