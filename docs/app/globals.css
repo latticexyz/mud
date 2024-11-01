@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+body::-webkit-scrollbar,
+div::-webkit-scrollbar,
+pre::-webkit-scrollbar {
+  display: none;
+}
+
+body,
+div,
+pre {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+html {
+  background-color: black;
+}
+
+pre {
+  font-size: 0.5;
+  background-color: #222;
+  border-color: #222;
+  border-width: 1rem;
+  border-radius: 0.4rem;
+  overflow-x: scroll;
+  margin-bottom: 18px;
+}
+
+summary {
+  margin-bottom: 16px;
+}
+
+summary > p {
+  display: inline;
+}

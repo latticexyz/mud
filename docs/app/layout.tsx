@@ -1,9 +1,8 @@
-import "tailwindcss/tailwind.css";
-
 import { Metadata } from "next";
 import { ReactNode } from "react";
-import { twMerge } from "tailwind-merge";
 import localFont from "next/font/local";
+import "./globals.css";
+import { cn } from "../lib/cn";
 
 const supplyMono = localFont({
   src: "../public/fonts/PPSupplyMono-Regular.woff2",
@@ -37,7 +36,7 @@ type Props = { children: ReactNode };
 export default function Layout({ children }: Props) {
   return (
     <html lang="en">
-      <body className={twMerge("bg-mud text-white", supplyMono.variable)}>{children}</body>
+      <body className={cn("bg-mud text-white", supplyMono.variable)}>{children}</body>
     </html>
   );
 }
