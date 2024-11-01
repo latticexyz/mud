@@ -111,7 +111,7 @@ export function watchLogs({ url, address, fromBlock }: WatchLogsInput): WatchLog
           const formattedLogs = result.logs.map((log) => formatLog(log));
           const parsedLogs = parseEventLogs({ abi: storeEventsAbi, logs: formattedLogs });
           const blockNumber = BigInt(result.blockNumber);
-          debug("got logs", parsedLogs, "for block", blockNumber);
+          debug("got logs", parsedLogs, "for pending block", blockNumber);
           if (caughtUp) {
             debug("handing off logs to subscriber");
             subscriber.next({ blockNumber, logs: parsedLogs });
@@ -176,7 +176,7 @@ async function fetchInitialLogs({
   ).result;
 
   // Request all logs from `fromBlock` to the latest block number
-  const gapLogs: RpcLog[] = await client
+  const rawInitialLogs: RpcLog[] = await client
     .requestAsync({
       body: {
         method: "eth_getLogs",
@@ -186,6 +186,6 @@ async function fetchInitialLogs({
     .then((res) => res.result);
 
   // Return all logs from `fromBlock` until the current pending block state as initial result
-  const formattedLogs = gapLogs.map((log) => formatLog(log));
+  const formattedLogs = rawInitialLogs.map((log) => formatLog(log));
   return { blockNumber: BigInt(latestBlockNumber), logs: parseEventLogs({ abi: storeEventsAbi, logs: formattedLogs }) };
 }
