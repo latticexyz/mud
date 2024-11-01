@@ -1,55 +1,29 @@
-import { Hex, Client, Address } from "viem";
+import { Chain } from "viem";
 import { writeContract as viem_writeContract } from "viem/actions";
 import { getAction } from "viem/utils";
-import { signCall } from "./signCall";
-import CallWithSignatureAbi from "@latticexyz/world-modules/out/IUnstable_CallWithSignatureSystem.sol/IUnstable_CallWithSignatureSystem.abi.json";
+import { SignCallOptions, signCall } from "./signCall";
+import CallWithSignatureAbi from "@latticexyz/world-modules/out/Unstable_CallWithSignatureSystem.sol/Unstable_CallWithSignatureSystem.abi.json";
 import { ConnectedClient } from "../common";
 
 // TODO: move this to world package or similar
-// TODO: nonce _or_ publicClient?
 
-export type CallWithSignatureOptions = {
-  chainId: number;
-  worldAddress: Address;
-  systemId: Hex;
-  callData: Hex;
-  /**
-   * This should be bound to the same chain as `chainId` option.
-   */
-  publicClient: Client;
-  userClient: ConnectedClient;
+export type CallWithSignatureOptions<chain extends Chain = Chain> = SignCallOptions<chain> & {
   sessionClient: ConnectedClient;
-  nonce?: bigint | null;
 };
 
-export async function callWithSignature({
-  chainId,
-  worldAddress,
-  systemId,
-  callData,
-  publicClient,
-  userClient,
+export async function callWithSignature<chain extends Chain = Chain>({
   sessionClient,
-  nonce,
-}: CallWithSignatureOptions) {
-  const signature = await signCall({
-    userClient,
-    chainId,
-    worldAddress,
-    systemId,
-    callData,
-    nonce,
-    publicClient,
-  });
-
+  ...opts
+}: CallWithSignatureOptions<chain>) {
+  const signature = await signCall(opts);
   return getAction(
     sessionClient,
     viem_writeContract,
     "writeContract",
   )({
-    address: worldAddress,
+    address: opts.worldAddress,
     abi: CallWithSignatureAbi,
     functionName: "callWithSignature",
-    args: [userClient.account.address, systemId, callData, signature],
+    args: [opts.userClient.account.address, opts.systemId, opts.callData, signature],
   } as never);
 }

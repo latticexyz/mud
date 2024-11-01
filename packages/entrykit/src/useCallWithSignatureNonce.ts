@@ -1,27 +1,37 @@
-import { useWalletClient } from "wagmi";
+import { Address, Chain, Client, Transport } from "viem";
 import { useEntryKitConfig } from "./EntryKitConfigProvider";
-import { useRecord } from "./useRecord";
-import modulesConfig from "@latticexyz/world-modules/internal/mud.config";
+import { useClient } from "wagmi";
+import { queryOptions, useQuery } from "@tanstack/react-query";
+import { getCallWithSignatureNonce } from "./getCallWithSignatureNonce";
 
-export function useCallWithSignatureNonce() {
-  const { chainId, worldAddress } = useEntryKitConfig();
-  const { data: userClient } = useWalletClient({ chainId });
-  const userAddress = userClient?.account.address;
-
-  const result = useRecord(
-    userAddress
+export function getCallWithSignatureNonceQueryOptions({
+  client,
+  worldAddress,
+  userAddress,
+}: {
+  client: Client<Transport, Chain> | undefined;
+  worldAddress: Address;
+  userAddress: Address | undefined;
+}) {
+  const queryKey = ["getCallWithSignatureNonce", client?.chain.id, worldAddress, userAddress];
+  return queryOptions(
+    client && userAddress
       ? {
-          chainId,
-          address: worldAddress,
-          table: modulesConfig.tables.CallWithSignatureNonces,
-          key: { signer: userAddress },
-          blockTag: "pending",
+          queryKey,
+          queryFn: () => getCallWithSignatureNonce({ client, worldAddress, userAddress }),
         }
-      : {},
+      : { queryKey, enabled: false },
   );
+}
 
-  return {
-    ...result,
-    nonce: result.data?.nonce,
-  };
+export function useCallWithSignatureNonce({
+  worldAddress,
+  userAddress,
+}: {
+  worldAddress: Address;
+  userAddress: Address | undefined;
+}) {
+  const { chainId } = useEntryKitConfig();
+  const client = useClient({ chainId });
+  return useQuery(getCallWithSignatureNonceQueryOptions({ client, worldAddress, userAddress }));
 }

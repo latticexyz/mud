@@ -13,6 +13,7 @@ export async function getAllowance({ client, paymasterAddress, userAddress }: Ge
     address: paymasterAddress,
     table: paymasterTables.Allowance,
     key: { user: userAddress },
+    blockTag: "pending",
   });
   return record.allowance;
 }

@@ -14,6 +14,7 @@ export async function getDelegation({ client, worldAddress, userAddress, session
     address: worldAddress,
     table: worldTables.UserDelegationControl,
     key: { delegator: userAddress, delegatee: sessionAddress },
+    blockTag: "pending",
   });
   return record.delegationControlId === unlimitedDelegationControlId;
 }

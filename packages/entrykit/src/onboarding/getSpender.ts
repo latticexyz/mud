@@ -14,6 +14,7 @@ export async function getSpender({ client, paymasterAddress, userAddress, sessio
     address: paymasterAddress,
     table: paymasterTables.Spender,
     key: { spender: sessionAddress },
+    blockTag: "pending",
   });
   return record.user.toLowerCase() === userAddress.toLowerCase();
 }

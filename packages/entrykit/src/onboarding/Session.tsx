@@ -2,7 +2,7 @@ import { Button } from "../ui/Button";
 import { useSetupSession } from "./useSetupSession";
 import { ConnectedClient } from "../common";
 import { useEffect, useRef } from "react";
-import { useSessionAccount } from "../useSessionAccount";
+import { useSessionClient } from "../useSessionClient";
 
 export type Props = {
   isActive: boolean;
@@ -13,9 +13,8 @@ export type Props = {
 };
 
 export function Session({ isActive, isExpanded, userClient, registerSpender, registerDelegation }: Props) {
-  const sessionAccount = useSessionAccount(userClient.account.address);
-  const sessionAddress = sessionAccount.data?.address;
-  const setup = useSetupSession();
+  const { data: sessionClient } = useSessionClient(userClient.account.address);
+  const setup = useSetupSession({ userClient });
 
   const hasSession = !registerDelegation && !registerDelegation;
 
@@ -29,19 +28,18 @@ export function Session({ isActive, isExpanded, userClient, registerSpender, reg
   // Working around this with a ref :(
   const isMutatingRef = useRef(false);
   useEffect(() => {
-    if (isActive && setup.status === "idle" && sessionAddress && !hasSession && !isMutatingRef.current) {
+    if (isActive && setup.status === "idle" && sessionClient && !hasSession && !isMutatingRef.current) {
       isMutatingRef.current = true;
       setup.mutate(
         {
-          userClient,
-          sessionAddress,
+          sessionClient,
           registerSpender,
           registerDelegation,
         },
         { onSettled: () => (isMutatingRef.current = false) },
       );
     }
-  }, [isActive, hasSession, registerDelegation, registerSpender, sessionAddress, setup, userClient]);
+  }, [isActive, hasSession, registerDelegation, registerSpender, sessionClient, setup, userClient]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -58,13 +56,12 @@ export function Session({ isActive, isExpanded, userClient, registerSpender, reg
           <Button
             variant={isActive ? "primary" : "secondary"}
             className="flex-shrink-0 text-sm p-1 w-28"
-            pending={!sessionAddress || setup.status === "pending"}
+            pending={!sessionClient || setup.status === "pending"}
             onClick={
-              sessionAddress
+              sessionClient
                 ? () =>
                     setup.mutate({
-                      userClient,
-                      sessionAddress,
+                      sessionClient,
                       registerSpender,
                       registerDelegation,
                     })

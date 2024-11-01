@@ -1,4 +1,4 @@
-import { Address, Client, Hex, toHex } from "viem";
+import { Address, Chain, Client, Hex, OneOf, Transport, toHex } from "viem";
 import { signTypedData } from "viem/actions";
 import { callWithSignatureTypes } from "@latticexyz/world/internal";
 import { getRecord } from "./getRecord";
@@ -8,35 +8,27 @@ import { getAction } from "viem/utils";
 import { ConnectedClient } from "../common";
 
 // TODO: move this to world package or similar
-// TODO: nonce _or_ publicClient?
 
-export type SignCallOptions = {
-  userClient: ConnectedClient;
-  chainId: number;
+export type SignCallOptions<chain extends Chain = Chain> = {
+  userClient: ConnectedClient<chain>;
   worldAddress: Address;
   systemId: Hex;
   callData: Hex;
-  nonce?: bigint | null;
-  /**
-   * This should be bound to the same chain as `chainId` option.
-   */
-  publicClient?: Client;
-};
+} & OneOf<{ nonce: bigint } | { client: Client<Transport, chain> }>;
 
-export async function signCall({
+export async function signCall<chain extends Chain = Chain>({
   userClient,
-  chainId,
   worldAddress,
   systemId,
   callData,
   nonce: initialNonce,
-  publicClient,
-}: SignCallOptions) {
+  client,
+}: SignCallOptions<chain>) {
   const nonce =
     initialNonce ??
-    (publicClient
+    (client
       ? (
-          await getRecord(publicClient, {
+          await getRecord(client, {
             address: worldAddress,
             table: modulesConfig.tables.CallWithSignatureNonces,
             key: { signer: userClient.account.address },
@@ -55,7 +47,7 @@ export async function signCall({
     account: userClient.account,
     domain: {
       verifyingContract: worldAddress,
-      salt: toHex(chainId, { size: 32 }),
+      salt: toHex(userClient.chain.id, { size: 32 }),
     },
     types: callWithSignatureTypes,
     primaryType: "Call",
