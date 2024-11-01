@@ -1,8 +1,7 @@
-import { EntryKitConfig } from "./config";
 import { WalletList, getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { passkeyWallet } from "./passkey/passkeyWallet";
 
-export function getWallets(config: EntryKitConfig): WalletList {
+export function getWallets(config: { readonly chainId: number }): WalletList {
   const { wallets: defaultWallets } = getDefaultWallets();
   return [
     {
@@ -11,8 +10,6 @@ export function getWallets(config: EntryKitConfig): WalletList {
         passkeyWallet({
           // TODO: allow any chain ID
           chainId: config.chainId,
-          bundlerTransport: config.bundlerTransport,
-          paymasterAddress: config.paymasterAddress,
         }),
       ],
     },

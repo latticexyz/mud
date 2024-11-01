@@ -1,5 +1,4 @@
 import { Chain, Transport } from "viem";
-import { EntryKitConfig } from "./config";
 import { WalletList, connectorsForWallets, getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { Config, CreateConfigParameters, createConfig } from "wagmi";
 import { passkeyWallet } from "./passkey/passkeyWallet";
@@ -7,13 +6,16 @@ import { passkeyWallet } from "./passkey/passkeyWallet";
 export type CreateWagmiConfigOptions<
   chains extends readonly [Chain, ...Chain[]] = readonly [Chain, ...Chain[]],
   transports extends Record<chains[number]["id"], Transport> = Record<chains[number]["id"], Transport>,
-> = Pick<EntryKitConfig, "chainId" | "bundlerTransport" | "paymasterAddress"> & {
+> = {
+  readonly chainId: number;
   readonly chains: chains;
   readonly transports: transports;
+  /**
+   * WalletConnect project ID, obtained from your WalletConnect dashboard.
+   */
+  // TODO: make optional and hide wallet options if so?
   readonly walletConnectProjectId: string;
-  readonly appInfo: {
-    readonly name: string;
-  };
+  readonly appName: string;
 } & Pick<CreateConfigParameters<chains, transports>, "pollingInterval">;
 
 export function createWagmiConfig<
@@ -28,8 +30,6 @@ export function createWagmiConfig<
         passkeyWallet({
           // TODO: allow any chain ID
           chainId: config.chainId,
-          bundlerTransport: config.bundlerTransport,
-          paymasterAddress: config.paymasterAddress,
         }),
       ],
     },
@@ -37,7 +37,7 @@ export function createWagmiConfig<
   ];
 
   const connectors = connectorsForWallets(wallets, {
-    appName: config.appInfo.name,
+    appName: config.appName,
     projectId: config.walletConnectProjectId,
   });
 

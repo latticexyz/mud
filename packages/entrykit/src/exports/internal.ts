@@ -1,5 +1,9 @@
 // TODO: move to external exports once we're ready
-export type { EntryKitConfig } from "../config";
+
+export type { EntryKitConfigInput } from "../config/input";
+export type { EntryKitConfig } from "../config/output";
+export { defineConfig } from "../config/defineConfig";
+
 export type { ConnectedClient, SessionClient } from "../common";
 export { EntryKitProvider } from "../EntryKitProvider";
 export { useEntryKitConfig } from "../EntryKitConfigProvider";

@@ -1,19 +1,18 @@
 import { Address } from "viem";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { issuer } from "../transports/issuer";
 
 export function useClaimGasPass() {
   const queryClient = useQueryClient();
-  // TODO: add types for RPC methods
-  // TODO: use client.request once this is behind proxyd
-  const { passIssuerTransport } = useEntryKitConfig();
+  const { chain } = useEntryKitConfig();
 
-  const mutationKey = ["claimGasPass"];
+  const mutationKey = ["claimGasPass", chain.id];
   return useMutation({
     mutationKey,
     onError: (error) => console.error(error),
     mutationFn: async (userAddress: Address) => {
-      const transport = passIssuerTransport({ retryCount: 0 });
+      const transport = issuer()({ chain });
       await transport.request({
         method: "quarry_issuePass",
         params: ["0x01", userAddress],

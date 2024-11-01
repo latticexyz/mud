@@ -4,7 +4,6 @@ import { useClient } from "wagmi";
 import { UseQueryResult, queryOptions, useQuery } from "@tanstack/react-query";
 import { getSessionClient } from "./getSessionClient";
 import { SessionClient } from "./common";
-import { EntryKitConfig } from "./config";
 import { SmartAccount } from "viem/account-abstraction";
 import { useSessionAccount } from "./useSessionAccount";
 
@@ -12,25 +11,16 @@ export function getSessionClientQueryOptions({
   sessionAccount,
   client,
   userAddress,
-  bundlerTransport,
-  paymasterAddress,
   worldAddress,
-  explorerUrl,
+  paymasterAddress,
 }: {
   sessionAccount: SmartAccount | undefined;
   client: Client<Transport, Chain> | undefined;
   userAddress: Address | undefined;
-} & Pick<EntryKitConfig, "bundlerTransport" | "paymasterAddress" | "worldAddress" | "explorerUrl">) {
-  // TODO: figure out how to get bundlerTransport in here
-  const queryKey = [
-    "getSessionClient",
-    client?.uid,
-    userAddress,
-    sessionAccount?.address,
-    worldAddress,
-    paymasterAddress,
-    explorerUrl,
-  ];
+  worldAddress: Address;
+  paymasterAddress: Address;
+}) {
+  const queryKey = ["getSessionClient", client?.uid, userAddress, sessionAccount?.address, worldAddress];
   return queryOptions(
     client && userAddress && sessionAccount
       ? {
@@ -41,9 +31,7 @@ export function getSessionClientQueryOptions({
               client,
               userAddress,
               worldAddress,
-              bundlerTransport,
               paymasterAddress,
-              explorerUrl,
             }),
           staleTime: Infinity,
         }
@@ -52,7 +40,7 @@ export function getSessionClientQueryOptions({
 }
 
 export function useSessionClient(userAddress: Address | undefined): UseQueryResult<SessionClient> {
-  const { chainId, bundlerTransport, paymasterAddress, worldAddress, explorerUrl } = useEntryKitConfig();
+  const { chainId, worldAddress, paymasterAddress } = useEntryKitConfig();
   const client = useClient({ chainId });
   const { data: sessionAccount } = useSessionAccount(userAddress);
   return useQuery(
@@ -60,10 +48,8 @@ export function useSessionClient(userAddress: Address | undefined): UseQueryResu
       sessionAccount,
       userAddress,
       client,
-      bundlerTransport,
-      paymasterAddress,
       worldAddress,
-      explorerUrl,
+      paymasterAddress,
     }),
   );
 }

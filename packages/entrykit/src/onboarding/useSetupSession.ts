@@ -91,7 +91,7 @@ export function useSetupSession() {
 
       if (!calls.length) return;
 
-      console.log("setting up account with", calls);
+      console.log("setting up account with", calls, userClient);
       const hash = await getAction(userClient, sendUserOperation, "sendUserOperation")({ calls });
       console.log("got user op hash", hash);
 

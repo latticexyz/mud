@@ -8,8 +8,6 @@ import {
   SwitchChainError,
   Client,
   ProviderConnectInfo,
-  Transport,
-  Address,
 } from "viem";
 import { ChainNotConfiguredError, createConnector, CreateConnectorFn } from "wagmi";
 import { cache } from "./cache";
@@ -20,18 +18,19 @@ import { createPasskey } from "./createPasskey";
 import { defaultClientConfig } from "../common";
 import { createBundlerClient } from "../createBundlerClient";
 import { observer } from "@latticexyz/explorer/observer";
+import { gasEstimator } from "../transports/gasEstimator";
+import { getPaymasterAddress } from "../getPaymasterAddress";
+import { getBundlerTransport } from "../getBundlerTransport";
 
 export type PasskeyConnectorOptions = {
   // TODO: figure out what we wanna do across chains
   chainId: number;
-  bundlerTransport: Transport;
-  paymasterAddress: Address;
-  explorerUrl?: string;
 };
 
 export type PasskeyProvider = {
   request: EIP1193RequestFn<EIP1474Methods>;
 };
+
 export type PasskeyConnectorProperties = {
   createPasskey(): Promise<void>;
   reusePasskey(): Promise<void>;
@@ -46,14 +45,9 @@ export type PasskeyConnector = ReturnType<CreatePasskeyConnector>;
 
 passkeyConnector.type = "passkey" as const;
 
-export function passkeyConnector({
-  chainId,
-  bundlerTransport,
-  paymasterAddress,
-  explorerUrl,
-}: PasskeyConnectorOptions): CreatePasskeyConnector {
+export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePasskeyConnector {
   return createConnector((config) => {
-    // TODO: figure out how to use with config's `client` option
+    // TODO: figure out how to use with config's `client` option?
     if (!config.transports) {
       throw new Error(`Wagmi must be configured with transports to use the passkey connector.`);
     }
@@ -61,10 +55,18 @@ export function passkeyConnector({
     const chain = config.chains.find((c) => c.id === chainId);
     if (!chain) throw new Error(`Could not find configured chain for chain ID ${chainId}.`);
 
-    const transport = config.transports[chain.id];
-    if (!transport) {
+    // TODO: wrap transports in wiresaw
+    // TODO: adapt wiresaw transport to check chain config and conditionally make its own transport from wiresaw chain config and swap out methods
+
+    const configTransport = config.transports[chain.id];
+    if (!configTransport) {
       throw new Error(`Could not find configured transport for chain ID ${chainId}.`);
     }
+    const transport = gasEstimator(configTransport);
+
+    const paymasterAddress = getPaymasterAddress(chain);
+    const bundlerTransport = getBundlerTransport(chain);
+
     const client = createClient({ ...defaultClientConfig, chain, transport });
 
     let connected = cache.getState().activeCredential != null;
@@ -199,7 +201,7 @@ export function passkeyConnector({
           account,
         })
           .extend(smartAccountActions())
-          .extend((client) => (explorerUrl ? observer({ explorerUrl })(client) : {}));
+          .extend(observer());
       },
 
       async getProvider(_params) {

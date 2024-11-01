@@ -5,24 +5,23 @@ import { createBundlerClient } from "./createBundlerClient";
 import { observer } from "@latticexyz/explorer/observer";
 import { SessionClient } from "./common";
 import { SmartAccount } from "viem/account-abstraction";
+import { getBundlerTransport } from "./getBundlerTransport";
 
 export async function getSessionClient<chain extends Chain>({
+  client,
+  userAddress,
   sessionAccount,
   worldAddress,
-  userAddress,
-  client,
-  bundlerTransport,
   paymasterAddress,
-  explorerUrl,
 }: {
+  client: Client<Transport, chain>;
+  userAddress: Address;
   sessionAccount: SmartAccount;
   worldAddress: Address;
-  userAddress: Address;
-  client: Client<Transport, chain>;
-  bundlerTransport: Transport;
   paymasterAddress: Address;
-  explorerUrl?: string;
 }): Promise<SessionClient<chain>> {
+  const bundlerTransport = getBundlerTransport(client.chain);
+
   const sessionClient = createBundlerClient({
     paymasterAddress,
     transport: bundlerTransport,
@@ -31,7 +30,7 @@ export async function getSessionClient<chain extends Chain>({
   })
     .extend(smartAccountActions())
     .extend(callFrom({ worldAddress, delegatorAddress: userAddress, publicClient: client }))
-    .extend((client) => (explorerUrl ? observer({ explorerUrl })(client) : {}))
+    .extend(observer())
     .extend(() => ({ userAddress }));
 
   return sessionClient;

@@ -1,6 +1,6 @@
 import { type ReactNode } from "react";
 import { AccountModal } from "./AccountModal";
-import { EntryKitConfig } from "./config";
+import { EntryKitConfig } from "./config/output";
 import { EntryKitConfigProvider } from "./EntryKitConfigProvider";
 
 // We separate the config provider and wrap it here to always include the modal.
