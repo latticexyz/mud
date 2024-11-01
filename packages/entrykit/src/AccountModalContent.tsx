@@ -7,11 +7,12 @@ import { useRef } from "react";
 export function AccountModalContent() {
   const { chainId } = useEntryKitConfig();
   const userClient = useConnectorClient({ chainId });
-  const initialAddress = useRef(useAccount().address);
+  const { address: userAddress } = useAccount();
+  const initialUserAddress = useRef(userAddress);
 
   if (userClient.status !== "success") {
     return <ConnectWallet />;
   }
-
-  return <ConnectedSteps userClient={userClient.data} initialAddress={initialAddress.current} />;
+  console.log("rendering connected steps");
+  return <ConnectedSteps userClient={userClient.data} initialUserAddress={initialUserAddress.current} />;
 }

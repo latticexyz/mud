@@ -24,14 +24,14 @@ const secondaryInteractiveClassNames = twMerge(
 
 export function AccountButton() {
   const { openAccountModal, accountModalOpen } = useAccountModal();
-  const { status, address } = useAccount();
-  const initialAddress = useRef(address);
+  const { status, address: userAddress } = useAccount();
+  const initialUserAddress = useRef(userAddress);
 
-  const prereqs = usePrerequisites(address);
+  const prereqs = usePrerequisites(userAddress);
 
   // TODO: fix flash of button state signed in but incomplete onboarding
-  const isConnected = status === "connected" || (status === "reconnecting" && address);
-  const isNewConnection = address !== initialAddress.current;
+  const isConnected = status === "connected" || (status === "reconnecting" && userAddress);
+  const isNewConnection = userAddress !== initialUserAddress.current;
   const isSignedIn = prereqs.isSuccess ? prereqs.data.complete : isNewConnection ? false : isConnected;
 
   const buttonLabel = (() => {
@@ -53,7 +53,7 @@ export function AccountButton() {
           onClick={openAccountModal}
         >
           <span className="flex-grow inline-flex gap-2.5 items-center text-left font-medium">
-            <AccountName address={address} />
+            {userAddress ? <AccountName address={userAddress} /> : null}
           </span>
         </button>
       ) : (

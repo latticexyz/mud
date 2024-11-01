@@ -11,12 +11,7 @@ export function useENS(address: Hex | undefined) {
   }>({
     enabled: !!normalizedAddress,
     queryKey: ["ens", normalizedAddress],
-    initialData: {
-      address: undefined,
-      name: undefined,
-      displayName: undefined,
-      avatar: undefined,
-    },
+
     queryFn: async () => {
       // TODO: typed response
       const data = await fetch(`https://api.ensideas.com/ens/resolve/${normalizedAddress}`).then((res) => res.json());

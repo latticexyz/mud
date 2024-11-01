@@ -11,15 +11,15 @@ import { useAccountModal } from "../useAccountModal";
 
 export type Props = {
   userClient: ConnectedClient;
-  initialAddress: Address | undefined;
+  initialUserAddress: Address | undefined;
 };
 
-export function ConnectedSteps({ userClient, initialAddress }: Props) {
+export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
   const userAddress = userClient.account.address;
   const { data: prerequisites } = usePrerequisites(userAddress);
 
   const { closeAccountModal } = useAccountModal();
-  const isNewConnection = userAddress !== initialAddress;
+  const isNewConnection = userAddress !== initialUserAddress;
 
   const initialPrerequisites = useRef(prerequisites);
   useEffect(() => {

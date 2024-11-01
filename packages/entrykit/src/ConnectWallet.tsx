@@ -13,6 +13,7 @@ export function ConnectWallet() {
   const { openConnectModal, connectModalOpen } = useConnectModal();
 
   // TODO: show error states
+  // TODO: fix passkey issue where pending state disappears but we don't transition right away
 
   const passkeyConnector = usePasskeyConnector();
   const createPasskey = useMutation({
@@ -33,7 +34,7 @@ export function ConnectWallet() {
       key="create"
       variant={hasPasskey ? "tertiary" : "secondary"}
       className="self-auto flex justify-center"
-      pending={createPasskey.status === "pending"}
+      pending={createPasskey.status === "pending" || createPasskey.status === "success"}
       onClick={() => createPasskey.mutate()}
       autoFocus={!hasPasskey}
     >
@@ -43,7 +44,7 @@ export function ConnectWallet() {
       key="signin"
       variant={hasPasskey ? "secondary" : "tertiary"}
       className="self-auto flex justify-center"
-      pending={reusePasskey.status === "pending"}
+      pending={reusePasskey.status === "pending" || reusePasskey.status === "success"}
       onClick={() => reusePasskey.mutate()}
       autoFocus={hasPasskey}
     >

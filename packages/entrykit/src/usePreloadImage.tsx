@@ -7,7 +7,7 @@ export function usePreloadImage(url: string | undefined) {
     retryOnMount: false,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
-    queryKey: [url],
+    queryKey: ["preloadImage", url],
     queryFn: () =>
       new Promise<InstanceType<typeof Image>>((resolve, reject) => {
         if (!url) throw new Error("usePreloadImage: Must provide `url` to preload image.");

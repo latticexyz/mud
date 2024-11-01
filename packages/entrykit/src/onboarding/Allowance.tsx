@@ -46,7 +46,7 @@ export function Allowance({ isActive, isExpanded, userAddress }: Props) {
           variant={isActive ? "primary" : "tertiary"}
           className="flex-shrink-0 text-sm p-1 w-28"
           autoFocus={isActive || isExpanded}
-          pending={claimGasPass.status === "pending"}
+          pending={allowance.status === "pending" || claimGasPass.status === "pending"}
           onClick={() => claimGasPass.mutate(userAddress)}
         >
           Top up

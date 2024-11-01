@@ -24,7 +24,7 @@ export function Wallet({ isActive, isExpanded, userAddress }: Props) {
       <div className="flex justify-between gap-4">
         <div>
           <div>Account</div>
-          <div className="font-mono text-white">{ens.name ?? <TruncatedHex hex={userAddress} />}</div>
+          <div className="font-mono text-white">{ens?.name ?? <TruncatedHex hex={userAddress} />}</div>
         </div>
         <Button
           variant={isActive ? "primary" : "tertiary"}
