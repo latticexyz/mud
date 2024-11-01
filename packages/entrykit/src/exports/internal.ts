@@ -19,3 +19,4 @@ export * from "../smart-account/toCoinbaseSmartAccount";
 export * from "../smart-account/isCoinbaseSmartAccount";
 export * from "../getConnectors";
 export * from "../getWallets";
+export * from "../transports/wiresaw";

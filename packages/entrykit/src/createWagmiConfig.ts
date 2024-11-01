@@ -2,6 +2,8 @@ import { Chain, Transport } from "viem";
 import { WalletList, connectorsForWallets, getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { Config, CreateConfigParameters, createConfig } from "wagmi";
 import { passkeyWallet } from "./passkey/passkeyWallet";
+import { mapObject } from "@latticexyz/common/utils";
+import { wiresaw } from "./transports/wiresaw";
 
 export type CreateWagmiConfigOptions<
   chains extends readonly [Chain, ...Chain[]] = readonly [Chain, ...Chain[]],
@@ -44,7 +46,7 @@ export function createWagmiConfig<
   return createConfig({
     connectors,
     chains: config.chains,
-    transports: config.transports,
+    transports: mapObject(config.transports, (transport) => wiresaw(transport)),
     pollingInterval: config.pollingInterval,
   }) as never;
 }
