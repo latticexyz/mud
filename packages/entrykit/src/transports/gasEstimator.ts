@@ -1,12 +1,12 @@
 import { BundlerRpcSchema, Transport } from "viem";
 import { estimateUserOperationGas } from "./methods/estimateUserOperationGas";
-import { TransportRequestFn, RpcMethods } from "./common";
+import { TransportRequestFn, getRpcSchema } from "./common";
 
 export function gasEstimator<const transport extends Transport>(getTransport: transport): transport {
   return ((opts) => {
     const { request: originalRequest, ...rest } = getTransport(opts);
 
-    const request: TransportRequestFn<RpcMethods<BundlerRpcSchema, "eth_estimateUserOperationGas">> = async (
+    const request: TransportRequestFn<getRpcSchema<BundlerRpcSchema, "eth_estimateUserOperationGas">> = async (
       { method, params },
       options,
     ) => {

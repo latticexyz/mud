@@ -18,9 +18,9 @@ import { createPasskey } from "./createPasskey";
 import { defaultClientConfig } from "../common";
 import { createBundlerClient } from "../createBundlerClient";
 import { observer } from "@latticexyz/explorer/observer";
-import { gasEstimator } from "../transports/gasEstimator";
 import { getPaymasterAddress } from "../getPaymasterAddress";
 import { getBundlerTransport } from "../getBundlerTransport";
+import { wiresaw } from "../transports/wiresaw";
 
 export type PasskeyConnectorOptions = {
   // TODO: figure out what we wanna do across chains
@@ -62,7 +62,7 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePa
     if (!configTransport) {
       throw new Error(`Could not find configured transport for chain ID ${chainId}.`);
     }
-    const transport = gasEstimator(configTransport);
+    const transport = wiresaw(configTransport);
 
     const paymasterAddress = getPaymasterAddress(chain);
     const bundlerTransport = getBundlerTransport(chain);
