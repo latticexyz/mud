@@ -12,5 +12,5 @@ procs:
   issuer:
     cwd: ../../../quarry-paymaster/packages/issuer
     shell: pnpm start
-  explorer:
-    shell: pnpm explorer
+  # explorer:
+  #   shell: pnpm explorer

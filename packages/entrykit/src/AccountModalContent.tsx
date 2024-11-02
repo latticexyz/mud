@@ -13,6 +13,6 @@ export function AccountModalContent() {
   if (userClient.status !== "success") {
     return <ConnectWallet />;
   }
-  console.log("rendering connected steps");
+
   return <ConnectedSteps userClient={userClient.data} initialUserAddress={initialUserAddress.current} />;
 }
