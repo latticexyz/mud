@@ -29,6 +29,36 @@ const formSchema = z.object({
   value: z.string().optional(),
 });
 
+const formatInputs = (functionAbi: AbiFunction, inputs: string[]) => {
+  return inputs.map((input, idx) => {
+    const inputAbi = functionAbi.inputs[idx];
+    if (!inputAbi) {
+      return input;
+    }
+
+    const type = inputAbi?.type;
+    if (type.startsWith("int") || type.startsWith("uint")) {
+      return BigInt(input);
+    }
+
+    if (type === "tuple") {
+      const cleanedInput = input.replace(/^\[|\]$|^\(|\)$/g, "").trim();
+      const values = cleanedInput.split(",").map((v) => v.trim());
+
+      return values.map((value) => {
+        const type = inputAbi.components[idx].type;
+        if (type.startsWith("int") || type.startsWith("uint")) {
+          return BigInt(JSON.parse(value));
+        }
+
+        return value;
+      });
+    }
+
+    return input;
+  });
+};
+
 export function FunctionField({ worldAbi, functionAbi }: Props) {
   const operationType: FunctionType =
     functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure"
@@ -52,7 +82,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
     }
 
     const mutationResult = await mutation.mutateAsync({
-      inputs: values.inputs,
+      inputs: formatInputs(functionAbi, values.inputs),
       value: values.value,
     });
 
@@ -61,7 +91,15 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
     }
   }
 
-  const inputsLabel = functionAbi?.inputs.map((input) => input.type).join(", ");
+  const formatType = (type: string) => {
+    if (type === "tuple") {
+      return `tuple (${functionAbi.inputs.map((input) => input.type).join(", ")})`;
+    }
+    return type;
+  };
+
+  const inputsLabel = functionAbi?.inputs.map((input) => formatType(input.type)).join(", ");
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} id={functionAbi.name} className="space-y-4 pb-4">
@@ -86,7 +124,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
               <FormItem>
                 <FormLabel>{input.name}</FormLabel>
                 <FormControl>
-                  <Input placeholder={input.type} {...field} />
+                  <Input placeholder={formatType(input.type)} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
