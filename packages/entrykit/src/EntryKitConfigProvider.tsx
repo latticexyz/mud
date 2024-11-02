@@ -33,7 +33,6 @@ export function EntryKitConfigProvider({ config, children }: Props) {
 
   return (
     <RainbowKitProvider
-      initialChain={config.chainId}
       appInfo={{
         appName: config.appName,
         // TODO: learn more and disclaimer
