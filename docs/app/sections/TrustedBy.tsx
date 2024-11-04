@@ -17,8 +17,14 @@ const contributors = [
 
 export default function TrustedBy() {
   return (
-    <Section className="bg-[#E56A10] border-t border-t-white/20">
+    <Section className="bg-[#E56A10] border-t border-t-white/20 py-12">
       <Container>
+        <div className="flex gap-[22px] items-center">
+          <h2 className="text-xl uppercase font-mono">Trusted by many</h2>
+          <span className="bg-white/30 w-[1px] h-[50px] inline-block" />
+          <p className="text-md">MUD is well established and trusted by leading teams across the industry.</p>
+        </div>
+
         <div className="mt-[50px] flex items-center gap-[82px]">
           <div>
             <div className="flex h-[42px] items-center">

@@ -10,7 +10,7 @@ export default function Hero() {
       <Container>
         <div
           className={cn(
-            "min-h-screen flex flex-col animate-in animate-duration-500 fade-in",
+            "flex flex-col animate-in animate-duration-500 fade-in mt-12 mb-16",
             "gap-12",
             "sm:justify-between",
             "md:gap-16",
@@ -29,7 +29,8 @@ export default function Hero() {
               <LatticeIcon />
             </a>
           </div>
-          <div className={cn("grow flex flex-col md:flex-row-reverse", "gap-12", "md:gap-y-16")}>
+
+          <div className={cn("grow flex flex-col mt-[190px] md:flex-row-reverse gap-12 md:gap-y-16")}>
             <div className="grow md:grow-0 flex items-center md:items-end justify-center">
               <img
                 src="/images/logos/mud-white.svg"
@@ -38,11 +39,11 @@ export default function Hero() {
             </div>
             <div className="space-y-8 md:grow md:self-end">
               <div className="space-y-4">
-                <div className="max-w-2xl font-mono text-3xl sm:text-3xl md:text-4xl lg:text-5xl uppercase [text-wrap:balance]">
-                  Battle-tested onchain framework for developers.
+                <div className="max-w-2xl font-mono text-2xl  uppercase [text-wrap:balance]">
+                  Open-source engine for autonomous worlds
                 </div>
-                <p className="max-w-lg text-xl md:text-2xl [text-wrap:balance]">
-                  MUD provides you with the tools to build ambitious onchain applications.
+                <p className="max-w-2xl text-md [text-wrap:balance]">
+                  MUD reduces the complexity of building Ethereum apps with a tightly integrated software stack.
                 </p>
               </div>
               <div className="flex gap-4">

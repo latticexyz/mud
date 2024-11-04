@@ -10,11 +10,20 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
+        sans: ["var(--font-basier-circle)"],
         mono: ["var(--font-supply-mono)"],
+        "mono-secondary": ["var(--font-berkeley-mono)"],
+      },
+      fontSize: {
+        // TODO: set based on media queries
+        sm: ["18px", "25px"],
+        md: ["22px", "31px"],
+        xl: ["33px", "40px"],
+        "2xl": ["44px", "54px"],
       },
       colors: {
-        // #FF7612
         mud: "rgb(255, 118, 18)",
+        "light-gray": "#1A1A1A",
       },
     },
   },

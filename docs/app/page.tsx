@@ -3,7 +3,6 @@ import Hero from "./sections/Hero";
 import FindUs from "./sections/FindUs";
 import Resources from "./sections/Resources";
 import TrustedBy from "./sections/TrustedBy";
-import Projects from "./sections/Projects";
 import Installation from "./sections/Installation";
 import Architecture from "./sections/Architecture";
 import Integrations from "./sections/Integrations";
@@ -30,7 +29,6 @@ export default async function HomePage() {
       <Ecosystem />
       <Changelog />
       <Resources />
-      <Projects />
       <FindUs />
       <Newsletter />
     </>

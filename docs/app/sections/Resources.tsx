@@ -10,15 +10,16 @@ import { Container } from "../../components/ui/Container";
 
 export default function Resources() {
   return (
-    <Section>
+    <Section className="bg-light-gray pt-10 pb-12">
       <Container>
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <div className="font-mono uppercase text-2xl">Resources</div>
-            <p className="text-lg text-white/60">
+        <div className="space-y-8">
+          <div className="space-y-3">
+            <h2 className="font-mono uppercase text-xl">Resources</h2>
+            <p className="text-white/70 text-md">
               Discover more about the open source framework powering complex games & apps on Ethereum.
             </p>
           </div>
+
           <div className="grid md:grid-cols-2 gap-4">
             <a
               href="https://github.com/latticexyz/mud"
