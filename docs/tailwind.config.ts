@@ -16,14 +16,15 @@ const config: Config = {
       },
       fontSize: {
         // TODO: set based on media queries
-        sm: ["18px", "25px"],
+        sm: ["18px", "24px"],
         md: ["22px", "31px"],
         xl: ["33px", "40px"],
         "2xl": ["44px", "54px"],
       },
       colors: {
-        mud: "rgb(255, 118, 18)",
-        "light-gray": "#1A1A1A",
+        mud: "#ff7612",
+        "mud-dark": "#e56a10",
+        "light-gray": "#1a1a1a",
       },
     },
   },

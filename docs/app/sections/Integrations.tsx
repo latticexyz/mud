@@ -1,10 +1,11 @@
+import Image from "next/image";
 import { Container } from "../../components/ui/Container";
 import { Section } from "../../components/ui/Section";
 
 export default function Integrations() {
   return (
-    <Section className="bg-black py-12">
-      <Container className="flex flex-col gap-[50px]">
+    <Section className="bg-black pt-12 pb-16">
+      <Container className="space-y-12">
         <div className="space-y-4">
           <h3 className="uppercase text-sm text-white/50 font-mono">Integrations</h3>
           <div>
@@ -18,7 +19,9 @@ export default function Integrations() {
           </p>
         </div>
 
-        <div>{/* TODO: add diagram */}</div>
+        <div>
+          <Image src="/images/diagrams/swi.svg" alt="Standard World Interface" width={1148} height={401} />
+        </div>
       </Container>
     </Section>
   );

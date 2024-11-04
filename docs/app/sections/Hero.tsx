@@ -3,6 +3,7 @@ import Link from "next/link";
 import { cn } from "../../lib/cn";
 import { Section } from "../../components/ui/Section";
 import { Container } from "../../components/ui/Container";
+import Image from "next/image";
 
 export default function Hero() {
   return (
@@ -49,16 +50,17 @@ export default function Hero() {
               <div className="flex gap-4">
                 <Link
                   href="/introduction"
-                  className="bg-white p-4 font-mono uppercase leading-none text-mud transition hover:bg-black hover:text-white"
+                  className="bg-white leading-[54px] px-4 font-mono uppercase text-mud transition"
                 >
                   Documentation
                 </Link>
                 <a
                   href="https://github.com/latticexyz/mud"
-                  className="hover: bg-white/20 p-4 font-mono uppercase leading-none transition hover:bg-black hover:text-white"
+                  className="px-4 font-mono uppercase leading-[54px] transition bg-transparent border hover:text-white flex items-center gap-3 border-white/50"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
+                  <Image src="/images/icons/github.svg" alt="GitHub" width={22} height={22} />
                   Source
                 </a>
               </div>

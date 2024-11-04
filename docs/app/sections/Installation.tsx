@@ -1,5 +1,9 @@
+"use client";
+
+import Image from "next/image";
 import { Container } from "../../components/ui/Container";
 import { Section } from "../../components/ui/Section";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 export default function Installation() {
   return (
@@ -9,10 +13,21 @@ export default function Installation() {
           <div className="space-y-8">
             <div className="space-y-2">
               <h2 className="uppercase text-sm text-white/50 font-mono">Get started</h2>
-              <h3 className="font-mono text-xl">
-                &gt; pnpm install <span className="text-mud">mud</span>
+              <h3 className="font-mono text-xl flex items-center gap-5">
+                <span>
+                  &gt; pnpm install <span className="text-mud">mud</span>
+                </span>
+                {/* TODO: add copy to clipboard */}
+                <CopyToClipboard text="pnpm install mud" onCopy={() => {}}>
+                  <Image
+                    src="/images/icons/clipboard.svg"
+                    alt="pnpm install mud"
+                    width={28}
+                    height={28}
+                    className="cursor-pointer"
+                  />
+                </CopyToClipboard>
               </h3>
-              {/* TODO: add copy to clipboard */}
             </div>
 
             <p className="text-sm">

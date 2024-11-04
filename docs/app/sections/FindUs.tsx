@@ -1,21 +1,17 @@
+import Image from "next/image";
 import { Container } from "../../components/ui/Container";
 import { Section } from "../../components/ui/Section";
 import { cn } from "../../lib/cn";
 
-function FindUsItem({ title, href, icon }: { title: string; href: string; icon: string }) {
+function FindUsItem({ title, href, icon }: { title: string; href: string; icon: React.ReactNode }) {
   return (
-    // <div className="">
-    //   {icon}
-    //   {title}
-    // </div>
-
     <a
       href={href}
-      // TODO: add new tab
-      // eslint-disable-next-line max-len
+      rel="noopener noreferrer"
+      target="_blank"
       className={cn(
-        "bg-light-gray border border-white/20 pl-9 pr-3 py-7 font-mono uppercase text-lg leading-none text-[25px]",
-        "transition hover:bg-[#331804] hover:border-[#703408]",
+        "bg-light-gray border border-white/20 pl-9 pr-3 py-7 font-mono uppercase text-lg leading-none text-[25px] h-[165px] flex flex-col justify-between",
+        "transition hover:bg-mud/20 hover:border-mud/30",
       )}
     >
       {icon}
@@ -35,10 +31,26 @@ export default function FindUs() {
           </div>
 
           <div className="grid grid-cols-4 gap-4">
-            <FindUsItem href="#" title="Newsletter" icon="#" />
-            <FindUsItem href="#" title="Discord" icon="#" />
-            <FindUsItem href="#" title="Twitter" icon="#" />
-            <FindUsItem href="#" title="YouTube" icon="#" />
+            <FindUsItem
+              href="#"
+              title="Newsletter"
+              icon={<Image src="/images/icons/magazine.svg" alt="Magazine" width={32} height={32} />}
+            />
+            <FindUsItem
+              href="#"
+              title="Discord"
+              icon={<Image src="/images/icons/discord.svg" alt="Discord" width={36} height={36} />}
+            />
+            <FindUsItem
+              href="#"
+              title="Twitter"
+              icon={<Image src="/images/icons/twitter.svg" alt="Twitter" width={32} height={32} />}
+            />
+            <FindUsItem
+              href="#"
+              title="YouTube"
+              icon={<Image src="/images/icons/youtube.svg" alt="YouTube" width={38} height={38} />}
+            />
           </div>
         </div>
       </Container>
