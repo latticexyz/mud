@@ -15,7 +15,7 @@ export default function Installation() {
               <h2 className="uppercase text-sm text-white/50 font-mono">Get started</h2>
               <h3 className="font-mono text-xl flex items-center gap-5">
                 <span>
-                  &gt; pnpm install <span className="text-mud">mud</span>
+                  &gt; pnpm create <span className="text-mud">mud</span>
                 </span>
                 {/* TODO: add copy to clipboard */}
                 <CopyToClipboard text="pnpm install mud" onCopy={() => {}}>

@@ -1,21 +1,32 @@
-"use client";
-
 import { Container } from "../../components/ui/Container";
 import { Section } from "../../components/ui/Section";
 import Image from "next/image";
 
-// TODO: fetch dynamically
-const contributors = [
-  "/avatars/alvarius.png",
-  "/avatars/tdot.png",
-  "/avatars/frolic.png",
-  "/avatars/kumpis.jpeg",
-  "/avatars/tux.jpg",
-  "/avatars/vdrg.png",
-  "/avatars/ludens.png",
-];
+async function getContributors() {
+  const response = await fetch("https://api.github.com/repos/latticexyz/mud/contributors");
+  const allContributors = await response.json();
 
-export default function TrustedBy() {
+  const userContributors = allContributors
+    .filter((contributor: { type: string }) => contributor.type === "User")
+    .map((contributor) => {
+      const weightedContributions = Math.log(contributor.contributions + 1) * 10;
+      const index = Math.random() * weightedContributions;
+      const score = weightedContributions - index;
+      return {
+        ...contributor,
+        score,
+      };
+    })
+    .sort((a, b) => b.score - a.score);
+
+  return {
+    count: userContributors.length,
+    contributors: userContributors.slice(0, 7),
+  };
+}
+
+export default async function TrustedBy() {
+  const { count: contributorsCount, contributors } = await getContributors();
   return (
     <Section className="bg-[#E56A10] border-t border-t-white/20 py-12">
       <Container>
@@ -39,26 +50,26 @@ export default function TrustedBy() {
           <div>
             <div className="flex h-[42px] items-center">
               {contributors.map((contributor) => (
-                <Image
-                  key={contributor}
-                  src={contributor}
-                  alt="frolic"
-                  width="41"
-                  height="41"
-                  className="-ml-2.5 overflow-hidden rounded-full border-[3px] border-[#E56A10]"
-                />
+                <a
+                  href={contributor.url}
+                  key={contributor.id}
+                  className="-ml-2.5 cursor-pointer overflow-hidden rounded-full border-[3px] bg-white border-[#E56A10]"
+                >
+                  <Image src={contributor.avatar_url} alt="frolic" width="35" height="35" />
+                </a>
               ))}
             </div>
 
             <p className="font-mono-secondary mt-[16px] text-[19px]">
-              <span className="font-bold">146</span>
+              <span className="font-bold">{contributorsCount}</span>
               <span className="opacity-50"> contributors</span>
             </p>
           </div>
 
           <div>
             <div className="flex h-[42px] items-center">
-              <Image src="/projects/mud/small-brain-games.svg" alt="graph" width="291" height="26" />
+              {/* <Image src="/projects/mud/small-brain-games.svg" alt="graph" width="291" height="26" /> */}
+              <p className="text-[29px] font-bold uppercase font-mono">Small Brain Games</p>
             </div>
             <p className="font-mono-secondary mt-[16px] text-[19px]">
               <span className="font-bold">30+</span>
