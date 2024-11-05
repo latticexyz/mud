@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Container } from "../../components/ui/Container";
 import { Section } from "../../components/ui/Section";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import Link from "next/link";
 
 export default function Installation() {
   return (
@@ -48,9 +49,12 @@ export default function Installation() {
               </p>
             </div>
 
-            <a href="#" className="text-sm px-5 py-4 leading-none font-mono uppercase bg-light-gray inline-block">
+            <Link
+              href="/introduction"
+              className="text-sm px-5 py-4 leading-none font-mono uppercase bg-light-gray inline-block"
+            >
               Curious to learn more? <span className="text-mud">Read the docs →</span>
-            </a>
+            </Link>
           </div>
 
           <div>

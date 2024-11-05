@@ -32,22 +32,22 @@ export default function FindUs() {
 
           <div className="grid grid-cols-4 gap-4">
             <FindUsItem
-              href="#"
+              href="https://newsletter.lattice.xyz/"
               title="Newsletter"
               icon={<Image src="/images/icons/magazine.svg" alt="Magazine" width={32} height={32} />}
             />
             <FindUsItem
-              href="#"
+              href="https://lattice.xyz/discord"
               title="Discord"
               icon={<Image src="/images/icons/discord.svg" alt="Discord" width={36} height={36} />}
             />
             <FindUsItem
-              href="#"
+              href="https://x.com/latticexyz"
               title="Twitter"
               icon={<Image src="/images/icons/twitter.svg" alt="Twitter" width={32} height={32} />}
             />
             <FindUsItem
-              href="#"
+              href="https://www.youtube.com/@latticexyz"
               title="YouTube"
               icon={<Image src="/images/icons/youtube.svg" alt="YouTube" width={38} height={38} />}
             />

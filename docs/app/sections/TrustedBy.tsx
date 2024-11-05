@@ -50,13 +50,14 @@ export default async function TrustedBy() {
           <div>
             <div className="flex h-[42px] items-center">
               {contributors.map((contributor) => (
-                <a
-                  href={contributor.url}
+                <Image
                   key={contributor.id}
+                  src={contributor.avatar_url}
+                  alt="frolic"
+                  width="35"
+                  height="35"
                   className="-ml-2.5 cursor-pointer overflow-hidden rounded-full border-[3px] bg-white border-[#E56A10]"
-                >
-                  <Image src={contributor.avatar_url} alt="frolic" width="35" height="35" />
-                </a>
+                />
               ))}
             </div>
 
