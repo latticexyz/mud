@@ -6,8 +6,6 @@ import { useEffect } from "react";
 
 export default function Newsletter() {
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).CustomSubstackWidget = {
       substackUrl: "newsletter.lattice.xyz",

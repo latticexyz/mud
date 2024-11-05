@@ -1,12 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
 import { Container } from "../../components/ui/Container";
-import { Section } from "../../components/ui/Section";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import Link from "next/link";
+import { Section } from "../../components/ui/Section";
+import { Stream } from "@cloudflare/stream-react";
 
 export default function Installation() {
+  const videoIdOrSignedToken = "e1f3aad0255e44a726d53ef19db8e185";
+
   return (
     <Section className="bg-black pt-10 pb-12">
       <Container>
@@ -58,7 +61,10 @@ export default function Installation() {
           </div>
 
           <div>
-            <div className="h-[313px] w-full bg-light-gray"></div>
+            <div className="h-[313px] w-full bg-light-gray">
+              <p>Hello</p>
+              <Stream controls src={videoIdOrSignedToken} />
+            </div>
           </div>
         </div>
       </Container>

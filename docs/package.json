@@ -12,6 +12,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@cloudflare/stream-react": "^1.9.1",
     "clsx": "^2.1.1",
     "next": "^13.3.0",
     "nextra": "^2.10.0",
