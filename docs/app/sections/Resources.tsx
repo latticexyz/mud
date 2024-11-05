@@ -10,12 +10,12 @@ import { Container } from "../../components/ui/Container";
 
 export default function Resources() {
   return (
-    <Section className="bg-light-gray pt-10 pb-12">
+    <Section className="bg-light-gray py-8 md:pt-10 md:pb-12">
       <Container>
         <div className="space-y-8">
           <div className="space-y-3">
-            <h2 className="font-mono uppercase text-xl">Resources</h2>
-            <p className="text-white/70 text-md">
+            <h2 className="font-mono uppercase text-lg md:text-xl">Resources</h2>
+            <p className="text-white/70 text-sm md:text-md">
               Discover more about the open source framework powering complex games & apps on Ethereum.
             </p>
           </div>
@@ -26,7 +26,7 @@ export default function Resources() {
               target="_blank"
               rel="noopener noreferrer"
               // eslint-disable-next-line max-len
-              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
+              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-sm md:text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
               <SourceIcon />
               Source code
@@ -34,7 +34,7 @@ export default function Resources() {
             <Link
               href="/changelog"
               // eslint-disable-next-line max-len
-              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
+              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-sm md:text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
               <ChangelogIcon />
               Changelog
@@ -42,7 +42,7 @@ export default function Resources() {
             <Link
               href="/introduction"
               // eslint-disable-next-line max-len
-              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
+              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-sm md:text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
               <DocsIcon />
               Documentation
@@ -52,7 +52,7 @@ export default function Resources() {
               target="_blank"
               rel="noopener noreferrer"
               // eslint-disable-next-line max-len
-              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
+              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-sm md:text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
               <ContributeIcon />
               Contribute
@@ -62,7 +62,7 @@ export default function Resources() {
               target="_blank"
               rel="noopener noreferrer"
               // eslint-disable-next-line max-len
-              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
+              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-sm md:text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
               <StatusIcon />
               Status
@@ -72,7 +72,7 @@ export default function Resources() {
               target="_blank"
               rel="noopener noreferrer"
               // eslint-disable-next-line max-len
-              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-lg leading-none transition hover:bg-mud hover:border-transparent"
+              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-sm md:text-lg leading-none transition hover:bg-mud hover:border-transparent"
             >
               <CalendarIcon />
               Roadmap

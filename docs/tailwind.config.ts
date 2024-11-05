@@ -16,8 +16,10 @@ const config: Config = {
       },
       fontSize: {
         // TODO: set based on media queries
+        xs: ["14px", "20px"],
         sm: ["18px", "24px"],
         md: ["22px", "31px"],
+        lg: ["25px", "35px"],
         xl: ["33px", "40px"],
         "2xl": ["44px", "54px"],
       },

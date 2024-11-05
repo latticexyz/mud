@@ -34,54 +34,60 @@ async function getContributors() {
 export default async function TrustedBy() {
   const { count: contributorsCount, contributors } = await getContributors();
   return (
-    <Section className="bg-[#E56A10] border-t border-t-white/20 py-12">
+    <Section className="bg-[#E56A10] border-t border-t-white/20 py-8 lg:py-8">
       <Container>
-        <div className="flex gap-[22px] items-center">
-          <h2 className="text-xl uppercase font-mono">Trusted by many</h2>
-          <span className="bg-white/30 w-[1px] h-[50px] inline-block" />
-          <p className="text-md">MUD is well established and trusted by leading teams across the industry.</p>
-        </div>
-
-        <div className="mt-[50px] flex items-center gap-[82px]">
-          <div>
-            <div className="flex h-[42px] items-center">
-              <Image src="/illustrations/github-stars-graph.svg" alt="stars" width="173" height="38" />
-            </div>
-            <p className="font-mono-secondary mt-[16px] text-[19px]">
-              <span className="font-bold">3,325</span>
-              <span className="ml-3 font-light opacity-50">stars</span>
+        <div className="space-y-8">
+          <div className="flex gap-2 md:gap-[22px] lg:items-center flex-col lg:flex-row">
+            <h2 className="text-lg md:text-xl uppercase font-mono">Trusted by many</h2>
+            <span className="bg-white/30 w-[1px] h-[50px] hidden lg:inline-block" />
+            <p className="text-sm md:text-md">
+              MUD is well established and trusted by leading teams across the industry.
             </p>
           </div>
 
-          <div>
-            <div className="flex h-[42px] items-center">
-              {contributors.map((contributor) => (
-                <Image
-                  key={contributor.id}
-                  src={contributor.avatar_url}
-                  alt="frolic"
-                  width="35"
-                  height="35"
-                  className="-ml-2.5 cursor-pointer overflow-hidden rounded-full border-[3px] bg-white border-[#E56A10]"
-                />
-              ))}
+          {/* <div className="grid grid-cols-1 sm:grid-cols-2 sm:grid-rows-2 gap-12 sm:gap-4 w-full"> */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-4 w-full">
+            <div>
+              <div className="flex h-[42px] items-center">
+                <Image src="/illustrations/github-stars-graph.svg" alt="stars" width="173" height="38" />
+              </div>
+              <p className="font-mono-secondary mt-[16px] text-[19px]">
+                <span className="font-bold">3,325</span>
+                <span className="ml-3 font-light opacity-50">stars</span>
+              </p>
             </div>
 
-            <p className="font-mono-secondary mt-[16px] text-[19px]">
-              <span className="font-bold">{contributorsCount}</span>
-              <span className="opacity-50"> contributors</span>
-            </p>
-          </div>
+            <div>
+              <div className="flex h-[42px] items-center">
+                {contributors.map((contributor) => (
+                  <Image
+                    key={contributor.id}
+                    src={contributor.avatar_url}
+                    alt="frolic"
+                    width="35"
+                    height="35"
+                    className="-ml-2.5 cursor-pointer overflow-hidden rounded-full border-[3px] bg-white border-[#E56A10]"
+                  />
+                ))}
+              </div>
 
-          <div>
-            <div className="flex h-[42px] items-center">
-              {/* <Image src="/projects/mud/small-brain-games.svg" alt="graph" width="291" height="26" /> */}
-              <p className="text-[29px] font-bold uppercase font-mono">Small Brain Games</p>
+              <p className="font-mono-secondary mt-[16px] text-[19px]">
+                <span className="font-bold">{contributorsCount}</span>
+                <span className="opacity-50"> contributors</span>
+              </p>
             </div>
-            <p className="font-mono-secondary mt-[16px] text-[19px]">
-              <span className="font-bold">30+</span>
-              <span className="opacity-50"> projects</span>
-            </p>
+
+            {/* <div className="sm:col-span-2 sm:row-start-2"> */}
+            <div>
+              <div className="flex h-[42px] items-center">
+                {/* <Image src="/projects/mud/small-brain-games.svg" alt="graph" width="291" height="26" /> */}
+                <p className="text-[29px] font-bold uppercase font-mono">Small Brain Games</p>
+              </div>
+              <p className="font-mono-secondary mt-[16px] text-[19px]">
+                <span className="font-bold">30+</span>
+                <span className="opacity-50"> projects</span>
+              </p>
+            </div>
           </div>
         </div>
       </Container>

@@ -10,13 +10,13 @@ const videoId = "4aad163e745549176a20fe0c2518eb16";
 
 export default function Installation() {
   return (
-    <Section className="bg-black pt-10 pb-12">
+    <Section className="bg-black py-8 md:pt-10 md:pb-12">
       <Container>
-        <div className="grid grid-cols-2 gap-[60px] lg:gap-[80px]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-[60px] xl:gap-[80px]">
           <div className="space-y-8">
             <div className="space-y-2">
               <h2 className="uppercase text-sm text-white/50 font-mono">Get started</h2>
-              <h3 className="font-mono text-xl flex items-center gap-5">
+              <h3 className="font-mono text-md sm:text-xl flex items-center gap-5">
                 <span>
                   &gt; pnpm create <span className="text-mud">mud</span>
                 </span>
@@ -45,9 +45,9 @@ export default function Installation() {
 
             <Link
               href="/introduction"
-              className="text-sm px-5 py-4 leading-none font-mono uppercase bg-light-gray inline-block"
+              className="text-sm px-5 w-full md:w-fit py-3 leading-8 font-mono uppercase bg-light-gray inline-block"
             >
-              Curious to learn more? <span className="text-mud">Read the docs →</span>
+              Curious to learn more? <span className="text-mud whitespace-nowrap">Read the docs →</span>
             </Link>
           </div>
 

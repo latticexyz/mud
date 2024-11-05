@@ -10,11 +10,14 @@ function FindUsItem({ title, href, icon }: { title: string; href: string; icon: 
       rel="noopener noreferrer"
       target="_blank"
       className={cn(
-        "bg-light-gray border border-white/20 pl-9 pr-3 py-7 font-mono uppercase text-lg leading-none text-[25px] h-[165px] flex flex-col justify-between",
+        "flex md:flex-col gap-4 items-center md:items-start md:justify-between md:h-[165px]",
+        "md:pl-9 pl-6 pr-3 py-5 md:py-7",
+        "font-mono uppercase leading-none text-sm md:text-lg",
+        "bg-light-gray border border-white/20",
         "transition hover:bg-mud/20 hover:border-mud/30",
       )}
     >
-      {icon}
+      <span className="w-[20px] md:w-full">{icon}</span>
       {title}
     </a>
   );
@@ -26,11 +29,13 @@ export default function FindUs() {
       <Container>
         <div className="space-y-8">
           <div className="space-y-3">
-            <h2 className="font-mono uppercase text-xl">Find us</h2>
-            <p className="text-white/70 text-md">Discover more MUD resources, and join our community online.</p>
+            <h2 className="font-mono uppercase text-lg md:text-xl">Find us</h2>
+            <p className="text-white/70 text-sm md:text-md">
+              Discover more MUD resources, and join our community online.
+            </p>
           </div>
 
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
             <FindUsItem
               href="https://newsletter.lattice.xyz/"
               title="Newsletter"

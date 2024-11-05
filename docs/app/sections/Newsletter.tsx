@@ -33,12 +33,12 @@ export default function Newsletter() {
   }, []);
 
   return (
-    <Section className="bg-light-gray pt-12 pb-16">
+    <Section className="bg-light-gray py-8 md:pt-12 md:pb-16">
       <Container>
-        <div className="flex flex-col gap-[30px] justify-between items-center md:flex-row">
+        <div className="flex flex-col gap-[30px] md:justify-between md:items-center md:flex-row">
           <div className="space-y-3">
-            <h2 className="font-mono uppercase text-xl">Newsletter</h2>
-            <p className="text-white/70 text-md">Sign up to receive regular updates about MUD.</p>
+            <h2 className="font-mono uppercase text-lg md:text-xl">Newsletter</h2>
+            <p className="text-white/70 text-sm md:text-md">Sign up to receive regular updates about MUD.</p>
           </div>
 
           <div id="custom-substack-embed" />

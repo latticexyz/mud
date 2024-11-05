@@ -4,15 +4,15 @@ import { Section } from "../../components/ui/Section";
 
 export default function Integrations() {
   return (
-    <Section className="bg-black pt-12 pb-16">
+    <Section className="bg-black py-8 lg:pt-12 lg:pb-16">
       <Container>
-        <div className="flex justify-between">
+        <div className="flex flex-col lg:flex-row justify-between">
           <div className="space-y-3">
             <h3 className="uppercase text-sm text-white/50 font-mono">Integrations</h3>
-            <h2 className="text-xl font-mono uppercase">Standard World Interface</h2>
+            <h2 className="text-lg md:text-xl font-mono uppercase">Standard World Interface</h2>
           </div>
 
-          <div className="flex gap-4 h-[50px]">
+          <div className="flex gap-4 h-[50px] mt-8 lg:mt-0">
             <a
               href="https://lattice.xyz/quarry"
               rel="noopener noreferrer"
@@ -34,7 +34,7 @@ export default function Integrations() {
           </div>
         </div>
 
-        <p className="text-white/70 text-sm mt-4 w-full lg:max-w-xl">
+        <p className="text-white/70 text-sm mt-8 lg:mt-4 w-full lg:max-w-xl">
           Quarry leverages MUD’s Standard World Interfaces (SWI), which are fully open-source under the mud_* JSON-RPC
           namespace. The SWI covers everything from indexing to pre-confirmations. Quarry is Lattice’s full-stack
           implementation of the Standard World Interface.
@@ -45,7 +45,7 @@ export default function Integrations() {
           alt="Standard World Interface"
           width={1148}
           height={401}
-          className="mt-12"
+          className="mt-6 lg:mt-12"
         />
       </Container>
     </Section>

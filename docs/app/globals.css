@@ -41,6 +41,7 @@ summary > p {
 /* Substack subscribe widget */
 #custom-substack-embed {
   max-width: 530px !important;
+  flex-direction: column !important;
 }
 
 #custom-substack-embed p {
@@ -58,7 +59,8 @@ summary > p {
 }
 
 .custom-substack-widget input {
-  width: 400px !important;
+  flex-basis: 100% !important;
+  width: 100% !important;
   padding-left: 20px !important;
   padding-right: 20px !important;
   font-size: 20px !important;
@@ -76,7 +78,7 @@ summary > p {
   flex-shrink: 0 !important;
   flex-grow: 0 !important;
   width: 122px !important;
-  flex-basis: 122px !important;
+  /* flex-basis: 122px !important; */
   border: none !important;
   padding: 23px 25px !important;
   margin-left: 15px !important;
