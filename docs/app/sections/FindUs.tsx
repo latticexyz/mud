@@ -3,7 +3,17 @@ import { Container } from "../../components/ui/Container";
 import { Section } from "../../components/ui/Section";
 import { cn } from "../../lib/cn";
 
-function FindUsItem({ title, href, icon }: { title: string; href: string; icon: React.ReactNode }) {
+function FindUsItem({
+  title,
+  href,
+  icon,
+  className,
+}: {
+  title: string;
+  href: string;
+  icon: React.ReactNode;
+  className?: string;
+}) {
   return (
     <a
       href={href}
@@ -14,7 +24,8 @@ function FindUsItem({ title, href, icon }: { title: string; href: string; icon: 
         "md:pl-9 pl-6 pr-3 py-5 md:py-7",
         "font-mono uppercase leading-none text-sm md:text-lg",
         "bg-light-gray border border-white/20",
-        "transition hover:bg-mud/20 hover:border-mud/30",
+        "transition",
+        className,
       )}
     >
       <span className="w-[20px] md:w-full">{icon}</span>
@@ -40,21 +51,25 @@ export default function FindUs() {
               href="https://newsletter.lattice.xyz/"
               title="Newsletter"
               icon={<Image src="/images/icons/magazine.svg" alt="Magazine" width={32} height={32} />}
+              className="hover:bg-mud/20 hover:border-mud/30"
             />
             <FindUsItem
               href="https://lattice.xyz/discord"
               title="Discord"
               icon={<Image src="/images/icons/discord.svg" alt="Discord" width={36} height={36} />}
+              className="hover:bg-[#9656ce]/20 hover:border-[#9656ce]/30"
             />
             <FindUsItem
               href="https://x.com/latticexyz"
               title="Twitter"
               icon={<Image src="/images/icons/twitter.svg" alt="Twitter" width={32} height={32} />}
+              className="hover:bg-[#1DA1F2]/20 hover:border-[#1DA1F2]/30"
             />
             <FindUsItem
               href="https://www.youtube.com/@latticexyz"
               title="YouTube"
               icon={<Image src="/images/icons/youtube.svg" alt="YouTube" width={38} height={38} />}
+              className="hover:bg-[#FF0000]/20 hover:border-[#FF0000]/30"
             />
           </div>
         </div>
