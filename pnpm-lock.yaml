@@ -984,8 +984,8 @@ importers:
         specifier: ^4.3.4
         version: 4.3.7
       ox:
-        specifier: 0.0.0-canary-20241102003735
-        version: 0.0.0-canary-20241102003735(typescript@5.4.2)(zod@3.23.8)
+        specifier: 0.0.0-canary-20241105004728
+        version: 0.0.0-canary-20241105004728(typescript@5.4.2)(zod@3.23.8)
       webauthn-p256:
         specifier: ^0.0.10
         version: 0.0.10
@@ -9663,8 +9663,8 @@ packages:
   outdent@0.5.0:
     resolution: {integrity: sha512-/jHxFIzoMXdqPzTaCpFzAAWhpkSjZPF4Vsn6jAfNpmbH/ymsmd7Qc6VE9BGn0L6YMj6uwpQLxCECpus4ukKS9Q==}
 
-  ox@0.0.0-canary-20241102003735:
-    resolution: {integrity: sha512-iupV7Qm2gV7SM8kWi8cxPYHYnVEULyj4sBU68d3feWBkeIOVBT4mdrbXbNLc3EkXgIBSCrhY1a84XJtNh/V6WA==}
+  ox@0.0.0-canary-20241105004728:
+    resolution: {integrity: sha512-70B9nOXh7tNB8S95iO2BCYxLpDrHshOoxFLRdGh7iNLNIgR45gNU0i3mE48vvNy2F/YHxSOS37vjqXLTmMo45Q==}
     peerDependencies:
       typescript: '>=5.4.0'
     peerDependenciesMeta:
@@ -22578,7 +22578,7 @@ snapshots:
 
   outdent@0.5.0: {}
 
-  ox@0.0.0-canary-20241102003735(typescript@5.4.2)(zod@3.23.8):
+  ox@0.0.0-canary-20241105004728(typescript@5.4.2)(zod@3.23.8):
     dependencies:
       '@adraffy/ens-normalize': 1.11.0
       '@noble/curves': 1.6.0

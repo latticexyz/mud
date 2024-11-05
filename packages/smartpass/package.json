@@ -43,7 +43,7 @@
     "@ark/util": "0.2.2",
     "@noble/curves": "^1.6.0",
     "debug": "^4.3.4",
-    "ox": "0.0.0-canary-20241102003735",
+    "ox": "0.0.0-canary-20241105004728",
     "webauthn-p256": "^0.0.10"
   },
   "devDependencies": {

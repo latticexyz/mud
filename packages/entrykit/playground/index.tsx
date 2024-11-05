@@ -10,6 +10,7 @@ import { wagmiConfig } from "./wagmiConfig";
 import { chainId, worldAddress } from "./common";
 import { App } from "./App";
 // import { wait } from "@latticexyz/common/utils";
+import { parse, store } from "../../smartpass/src/rpc/ox";
 
 const queryClient = new QueryClient();
 // const channel = new MessageChannel();
@@ -79,14 +80,16 @@ root.render(
               const port = await connected;
               console.log("ready!");
 
-              const id = 0;
+              // TODO: timeout, but only for endpoints that don't need human interaction?
               const reply = new Promise((resolve) => {
+                const request = store.prepare({ method: "create" });
                 port.addEventListener("message", (event) => {
-                  if (event.data.id === id) {
-                    resolve(event.data);
+                  const response = parse(event.data, request);
+                  if (response.id === request.id) {
+                    resolve(response);
                   }
                 });
-                port.postMessage({ id, method: "create" });
+                port.postMessage(request);
               });
 
               console.log("reply", await reply);
