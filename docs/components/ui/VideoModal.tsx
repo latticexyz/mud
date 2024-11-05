@@ -11,7 +11,7 @@ type VideoThumbnailProps = {
   onClick: () => void;
 };
 
-const VideoThumbnail: React.FC<VideoThumbnailProps> = ({ onClick }) => (
+const VideoThumbnail = ({ onClick }: VideoThumbnailProps) => (
   <button onClick={onClick} className="w-full h-full flex items-center justify-center">
     <div className="bg-[#484848] h-[79px] w-[79px] flex items-center justify-center">
       <Image src="/images/icons/play.svg" alt="Play" width={32} height={32} />
@@ -25,7 +25,7 @@ type VideoModalProps = {
   videoId: string;
 };
 
-const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, videoId }) => (
+const VideoModal = ({ isOpen, onClose, videoId }: VideoModalProps) => (
   <DialogPrimitive.Root open={isOpen} onOpenChange={onClose}>
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm" />
