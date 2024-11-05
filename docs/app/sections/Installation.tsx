@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { Container } from "../../components/ui/Container";
 import { Section } from "../../components/ui/Section";
-import { Stream } from "@cloudflare/stream-react";
 import CopyButton from "../../components/ui/CopyButton";
+import VideoPlayer from "../../components/ui/VideoModal";
+
+const videoId = "4aad163e745549176a20fe0c2518eb16";
 
 export default function Installation() {
-  const videoIdOrSignedToken = "e1f3aad0255e44a726d53ef19db8e185";
-
   return (
     <Section className="bg-black pt-10 pb-12">
       <Container>
@@ -52,9 +52,8 @@ export default function Installation() {
           </div>
 
           <div>
-            <div className="h-[313px] w-full bg-light-gray">
-              <p>Hello</p>
-              <Stream controls src={videoIdOrSignedToken} />
+            <div className="h-[313px] w-full bg-light-gray mt-10">
+              <VideoPlayer videoId={videoId} thumbnailUrl="/videos/mud-create.png" />
             </div>
           </div>
         </div>
