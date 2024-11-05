@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { Container } from "../../components/ui/Container";
-import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Section } from "../../components/ui/Section";
 import { Stream } from "@cloudflare/stream-react";
+import CopyButton from "../../components/ui/CopyButton";
 
 export default function Installation() {
   const videoIdOrSignedToken = "e1f3aad0255e44a726d53ef19db8e185";
@@ -21,16 +20,8 @@ export default function Installation() {
                 <span>
                   &gt; pnpm create <span className="text-mud">mud</span>
                 </span>
-                {/* TODO: add copy to clipboard */}
-                <CopyToClipboard text="pnpm install mud" onCopy={() => {}}>
-                  <Image
-                    src="/images/icons/clipboard.svg"
-                    alt="pnpm install mud"
-                    width={28}
-                    height={28}
-                    className="cursor-pointer"
-                  />
-                </CopyToClipboard>
+
+                <CopyButton value="pnpm create mud" />
               </h3>
             </div>
 
