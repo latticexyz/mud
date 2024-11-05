@@ -5,9 +5,15 @@ import Image from "next/image";
 async function getContributors() {
   const response = await fetch("https://api.github.com/repos/latticexyz/mud/contributors");
   const allContributors = await response.json();
+  if (!Array.isArray(allContributors)) {
+    return {
+      count: 0,
+      contributors: [],
+    };
+  }
 
   const userContributors = allContributors
-    .filter((contributor: { type: string }) => contributor.type === "User")
+    ?.filter((contributor: { type: string }) => contributor.type === "User")
     .map((contributor) => {
       const weightedContributions = Math.log(contributor.contributions + 1) * 10;
       const index = Math.random() * weightedContributions;
@@ -21,7 +27,7 @@ async function getContributors() {
 
   return {
     count: userContributors.length,
-    contributors: userContributors.slice(0, 7),
+    contributors: userContributors?.slice(0, 7),
   };
 }
 
