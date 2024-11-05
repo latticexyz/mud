@@ -3,6 +3,7 @@ import { methods } from "./methods";
 import { RequestData, ResponseData } from "./schema";
 
 export function onPostMessage(event: MessageEvent<"bridge:connect">) {
+  console.log("got postmessage", event);
   if (event.data === "bridge:connect") {
     debug("bridge:connect", event);
     const [port] = event.ports;
@@ -11,7 +12,7 @@ export function onPostMessage(event: MessageEvent<"bridge:connect">) {
     debug("attaching onPortMessage");
     port.addEventListener("message", onPortMessage);
     port.start();
-    port.postMessage("bridge:ready");
+    port.postMessage("bridge:connected");
   }
 }
 
@@ -24,7 +25,6 @@ async function onPortMessage(event: MessageEvent<RequestData>) {
   debug("onPortMessage", event);
   const port = event.target;
   if (!(port instanceof MessagePort)) return debug("event.target is not a MessagePort, ignoring");
-  port.postMessage("reply");
 
   if (event.data.method === "create") {
     debug("calling", event.data);
