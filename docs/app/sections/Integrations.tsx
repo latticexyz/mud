@@ -4,7 +4,7 @@ import { Section } from "../../components/ui/Section";
 
 export default function Integrations() {
   return (
-    <Section className="bg-black py-8 lg:pt-12 lg:pb-16">
+    <Section className="bg-black py-8 lg:pt-12 lg:pb-14">
       <Container>
         <div className="flex flex-col lg:flex-row justify-between">
           <div className="space-y-3">
@@ -47,6 +47,10 @@ export default function Integrations() {
           height={401}
           className="mt-6 lg:mt-12"
         />
+
+        <p className="text-xs mt-2 md:mt-4 lg:mt-6 md:text-sm opacity-50 text-center">
+          Some description of the diagram goes here.
+        </p>
       </Container>
     </Section>
   );
