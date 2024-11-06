@@ -6,7 +6,7 @@ import { Section } from "../../components/ui/Section";
 import CopyButton from "../../components/ui/CopyButton";
 import VideoPlayer from "../../components/ui/VideoModal";
 
-const videoId = "4aad163e745549176a20fe0c2518eb16";
+const videoId = "07b2e147a732cb52ffff39165f35a498";
 
 export default function Installation() {
   return (
