@@ -12,7 +12,6 @@ import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { SQLEditor } from "./SQLEditor";
 import { TableSelector } from "./TableSelector";
 import { TablesViewer } from "./TablesViewer";
-import { postgresKeywords } from "./consts";
 
 export function Explorer() {
   const { worldAddress } = useParams();
@@ -30,12 +29,10 @@ export function Explorer() {
       const tableName = constructTableName(table, worldAddress as Hex, chainId);
 
       if (indexer.type === "sqlite") {
-        setQuery(`SELECT * FROM "${tableName}"`);
+        setQuery(`SELECT * FROM "${tableName}";`);
       } else {
-        const columns = Object.keys(table.schema).map((column) =>
-          postgresKeywords.includes(column.toLowerCase()) ? `"${column}"` : column,
-        );
-        setQuery(`SELECT ${columns.join(", ")} FROM ${tableName}`);
+        const columns = Object.keys(table.schema).map((column) => `"${column}"`);
+        setQuery(`SELECT ${columns.join(", ")} FROM ${tableName};`);
       }
     }
   }, [chainId, setQuery, selectedTableId, table, worldAddress, prevSelectedTableId, query, indexer.type]);
