@@ -5,7 +5,6 @@ import {
   SmartAccount,
   createBundlerClient as viem_createBundlerClient,
 } from "viem/account-abstraction";
-import { defaultClientConfig } from "./common";
 
 const knownChainFees = new Set([
   // anvil hardcodes fee returned by `eth_maxPriorityFeePerGas`
@@ -38,7 +37,6 @@ export function createBundlerClient<
 > {
   const chain = config.chain ?? config.client?.chain;
   return viem_createBundlerClient({
-    ...defaultClientConfig,
     paymaster: {
       getPaymasterData: async () => ({
         paymaster: paymasterAddress,
@@ -51,7 +49,7 @@ export function createBundlerClient<
         chain && knownChainFees.has(chain.id)
           ? async () => ({
               maxFeePerGas: 100_000n,
-              maxPriorityFeePerGas: 0n,
+              maxPriorityFeePerGas: 1n,
             })
           : undefined,
     },

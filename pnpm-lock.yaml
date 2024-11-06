@@ -157,6 +157,9 @@ importers:
       '@latticexyz/protocol-parser':
         specifier: workspace:*
         version: link:../protocol-parser
+      '@latticexyz/quarry':
+        specifier: workspace:*
+        version: link:../quarry
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
@@ -211,6 +214,9 @@ importers:
       path:
         specifier: ^0.12.7
         version: 0.12.7
+      permissionless:
+        specifier: ^0.2.3
+        version: 0.2.3(viem@2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8))
       rxjs:
         specifier: 7.5.5
         version: 7.5.5
@@ -223,6 +229,9 @@ importers:
       typescript:
         specifier: 5.4.2
         version: 5.4.2
+      viem:
+        specifier: 2.21.19
+        version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
       yargs:
         specifier: ^17.7.1
         version: 17.7.1
@@ -263,9 +272,6 @@ importers:
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
-      viem:
-        specifier: 2.21.19
-        version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
       vitest:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.34.1)
@@ -860,6 +866,31 @@ importers:
       vitest:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.34.1)
+
+  packages/quarry:
+    dependencies:
+      '@latticexyz/common':
+        specifier: workspace:*
+        version: link:../common
+      '@latticexyz/store':
+        specifier: workspace:*
+        version: link:../store
+      debug:
+        specifier: ^4.3.4
+        version: 4.3.7
+      webauthn-p256:
+        specifier: ^0.0.10
+        version: 0.0.10
+    devDependencies:
+      '@types/debug':
+        specifier: ^4.1.7
+        version: 4.1.7
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
+      viem:
+        specifier: 2.21.19
+        version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
 
   packages/react:
     dependencies:
@@ -10543,11 +10574,6 @@ packages:
       rollup:
         optional: true
 
-  rollup@3.21.8:
-    resolution: {integrity: sha512-SSFV2T2fWtQ/vvBip85u2Nr0GNKireabH9d7nXswBg+XSH+jbVDSYptRAEbCEsquhs503rpPA9POYAp0/Jhasw==}
-    engines: {node: '>=14.18.0', npm: '>=8.0.0'}
-    hasBin: true
-
   rollup@3.29.4:
     resolution: {integrity: sha512-oWzmBZwvYrU0iJHtDmhsm662rC15FRXmcjCk1xD771dFDx5jJ02ufAQQTn0etB2emNk4J9EZg/yWKpsn9BWGRw==}
     engines: {node: '>=14.18.0', npm: '>=8.0.0'}
@@ -15230,7 +15256,7 @@ snapshots:
       '@jest/test-result': 29.5.0
       '@jest/transform': 29.5.0
       '@jest/types': 29.5.0
-      '@jridgewell/trace-mapping': 0.3.18
+      '@jridgewell/trace-mapping': 0.3.25
       '@types/node': 18.19.50
       chalk: 4.1.2
       collect-v8-coverage: 1.0.1
@@ -15284,7 +15310,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.25.2
       '@jest/types': 29.5.0
-      '@jridgewell/trace-mapping': 0.3.18
+      '@jridgewell/trace-mapping': 0.3.25
       babel-plugin-istanbul: 6.1.1
       chalk: 4.1.2
       convert-source-map: 2.0.0
@@ -20439,7 +20465,7 @@ snapshots:
       debug: 4.3.7
       enhanced-resolve: 5.17.1
       eslint: 8.57.0
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0))(eslint@8.57.0)
       eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.5
@@ -20451,7 +20477,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-module-utils@2.8.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0):
+  eslint-module-utils@2.8.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0))(eslint@8.57.0):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
@@ -20472,7 +20498,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0))(eslint@8.57.0)
       hasown: 2.0.2
       is-core-module: 2.15.0
       is-glob: 4.0.3
@@ -21195,7 +21221,7 @@ snapshots:
 
   glob@10.3.10:
     dependencies:
-      foreground-child: 3.2.1
+      foreground-child: 3.3.0
       jackspeak: 2.3.6
       minimatch: 9.0.5
       minipass: 7.1.2
@@ -24387,10 +24413,6 @@ snapshots:
     optionalDependencies:
       rollup: 4.22.5
 
-  rollup@3.21.8:
-    optionalDependencies:
-      fsevents: 2.3.3
-
   rollup@3.29.4:
     optionalDependencies:
       fsevents: 2.3.3
@@ -25305,17 +25327,17 @@ snapshots:
     dependencies:
       bundle-require: 4.0.1(esbuild@0.17.17)
       cac: 6.7.14
-      chokidar: 3.5.3
-      debug: 4.3.4
+      chokidar: 3.6.0
+      debug: 4.3.7
       esbuild: 0.17.17
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
       postcss-load-config: 3.1.4(postcss@8.4.23)
       resolve-from: 5.0.0
-      rollup: 3.21.8
+      rollup: 3.29.4
       source-map: 0.8.0-beta.0
-      sucrase: 3.32.0
+      sucrase: 3.35.0
       tree-kill: 1.2.2
     optionalDependencies:
       postcss: 8.4.23
@@ -25328,17 +25350,17 @@ snapshots:
     dependencies:
       bundle-require: 4.0.1(esbuild@0.17.17)
       cac: 6.7.14
-      chokidar: 3.5.3
-      debug: 4.3.4
+      chokidar: 3.6.0
+      debug: 4.3.7
       esbuild: 0.17.17
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
       postcss-load-config: 3.1.4(postcss@8.4.47)
       resolve-from: 5.0.0
-      rollup: 3.21.8
+      rollup: 3.29.4
       source-map: 0.8.0-beta.0
-      sucrase: 3.32.0
+      sucrase: 3.35.0
       tree-kill: 1.2.2
     optionalDependencies:
       postcss: 8.4.47
@@ -25619,7 +25641,7 @@ snapshots:
 
   v8-to-istanbul@9.1.0:
     dependencies:
-      '@jridgewell/trace-mapping': 0.3.18
+      '@jridgewell/trace-mapping': 0.3.25
       '@types/istanbul-lib-coverage': 2.0.4
       convert-source-map: 1.9.0
 

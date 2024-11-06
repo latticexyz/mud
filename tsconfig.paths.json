@@ -23,6 +23,7 @@
       "@latticexyz/gas-report/internal": ["./packages/gas-report/ts/exports/internal.ts"],
       "@latticexyz/protocol-parser": ["./packages/protocol-parser/src/index.ts"],
       "@latticexyz/protocol-parser/*": ["./packages/protocol-parser/src/exports/*.ts"],
+      "@latticexyz/quarry/internal": ["./packages/quarry/src/exports/internal.ts"],
       "@latticexyz/react": ["./packages/react/src/index.ts"],
       "@latticexyz/recs": ["./packages/recs/src/index.ts"],
       "@latticexyz/recs/deprecated": ["./packages/recs/src/deprecated/index.ts"],

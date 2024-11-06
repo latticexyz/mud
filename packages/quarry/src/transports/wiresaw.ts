@@ -1,10 +1,10 @@
 import {
   BundlerRpcSchema,
-  // Hash,
+  Hash,
   Hex,
   PublicRpcSchema,
-  // RpcTransactionReceipt,
-  // RpcUserOperationReceipt,
+  RpcTransactionReceipt,
+  RpcUserOperationReceipt,
   Transport,
   http,
 } from "viem";
@@ -41,8 +41,8 @@ export function wiresaw<const transport extends Transport>(getTransport: transpo
     const wiresawTransport = getWiresawTransport(args) as { request: TransportRequestFn<WiresawRpcSchema> };
 
     let chainId: Hex | null = null;
-    // const receipts = new Map<Hash, RpcTransactionReceipt>();
-    // const userOpReceipts = new Map<Hash, RpcUserOperationReceipt>();
+    const receipts = new Map<Hash, RpcTransactionReceipt>();
+    const userOpReceipts = new Map<Hash, RpcUserOperationReceipt>();
 
     const request: TransportRequestFnMapped<OverriddenMethods> = async ({ method, params }, opts) => {
       if (method === "eth_chainId") {
@@ -55,12 +55,12 @@ export function wiresaw<const transport extends Transport>(getTransport: transpo
         return wiresawTransport.request({ method: "wiresaw_call", params });
       }
 
-      // if (method === "eth_getTransactionReceipt") {
-      //   const [hash] = params;
-      //   const receipt = receipts.get(hash) ?? (await transport.request({ method, params }));
-      //   if (!receipts.has(hash) && receipt) receipts.set(hash, receipt);
-      //   return receipt;
-      // }
+      if (method === "eth_getTransactionReceipt") {
+        const [hash] = params;
+        const receipt = receipts.get(hash) ?? (await transport.request({ method, params }));
+        if (!receipts.has(hash) && receipt) receipts.set(hash, receipt);
+        return receipt;
+      }
 
       if (method === "eth_sendUserOperation") {
         const result = await wiresawTransport.request({
@@ -68,20 +68,20 @@ export function wiresaw<const transport extends Transport>(getTransport: transpo
           params,
         });
         // :haroldsmile:
-        // userOpReceipts.set(result.userOpHash, {
-        //   success: true,
-        //   userOpHash: result.userOpHash,
-        //   receipt: { transactionHash: result.txHash },
-        // } as RpcUserOperationReceipt);
+        userOpReceipts.set(result.userOpHash, {
+          success: true,
+          userOpHash: result.userOpHash,
+          receipt: { transactionHash: result.txHash },
+        } as RpcUserOperationReceipt);
         return result.userOpHash;
       }
 
-      // if (method === "eth_getUserOperationReceipt") {
-      //   const [hash] = params;
-      //   const receipt = userOpReceipts.get(hash) ?? (await transport.request({ method, params }));
-      //   if (!userOpReceipts.has(hash) && receipt) userOpReceipts.set(hash, receipt);
-      //   return receipt;
-      // }
+      if (method === "eth_getUserOperationReceipt") {
+        const [hash] = params;
+        const receipt = userOpReceipts.get(hash) ?? (await transport.request({ method, params }));
+        if (!userOpReceipts.has(hash) && receipt) userOpReceipts.set(hash, receipt);
+        return receipt;
+      }
 
       return await transport.request({ method, params }, opts);
     };
