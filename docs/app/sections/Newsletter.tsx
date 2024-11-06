@@ -26,9 +26,11 @@ export default function Newsletter() {
     document.body.appendChild(script);
 
     return () => {
-      document.body.removeChild(script);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      delete (window as any).CustomSubstackWidget;
+      if (script) {
+        document.body.removeChild(script);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        delete (window as any).CustomSubstackWidget;
+      }
     };
   }, []);
 

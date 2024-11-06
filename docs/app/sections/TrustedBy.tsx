@@ -1,38 +1,25 @@
 import { Container } from "../../components/ui/Container";
+// import { Graph } from "../../components/ui/Graph";
 import { Section } from "../../components/ui/Section";
 import Image from "next/image";
 
+async function getStargazers() {
+  // TODO: get full url
+  const response = await fetch("http://localhost:3000/api/stargazers");
+  const data = await response.json();
+  return data;
+}
+
 async function getContributors() {
-  const response = await fetch("https://api.github.com/repos/latticexyz/mud/contributors");
-  const allContributors = await response.json();
-  if (!Array.isArray(allContributors)) {
-    return {
-      count: 0,
-      contributors: [],
-    };
-  }
-
-  const userContributors = allContributors
-    ?.filter((contributor: { type: string }) => contributor.type === "User")
-    .map((contributor) => {
-      const weightedContributions = Math.log(contributor.contributions + 1) * 10;
-      const index = Math.random() * weightedContributions;
-      const score = weightedContributions - index;
-      return {
-        ...contributor,
-        score,
-      };
-    })
-    .sort((a, b) => b.score - a.score);
-
-  return {
-    count: userContributors.length,
-    contributors: userContributors?.slice(0, 7),
-  };
+  const response = await fetch("http://localhost:3000/api/contributors");
+  const data = await response.json();
+  return data;
 }
 
 export default async function TrustedBy() {
-  const { count: contributorsCount, contributors } = await getContributors();
+  const stargazersCount = await getStargazers();
+  const { contributors, count: contributorsCount } = await getContributors();
+
   return (
     <Section className="bg-[#E56A10] border-t border-t-white/20 py-8 lg:py-8">
       <Container>
@@ -48,12 +35,15 @@ export default async function TrustedBy() {
           {/* <div className="grid grid-cols-1 sm:grid-cols-2 sm:grid-rows-2 gap-12 sm:gap-4 w-full"> */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-4 w-full">
             <div>
-              <div className="flex h-[42px] items-center">
-                <Image src="/illustrations/github-stars-graph.svg" alt="stars" width="173" height="38" />
+              <div className="flex w-[173px] h-[42px] items-center text-center justify-center">
+                {/* <Image src="/illustrations/github-stars-graph.svg" alt="stars" width="173" height="38" /> */}
+                {/* <Graph /> */}
+
+                <p className="text-[29px] font-bold uppercase font-mono text-center">{stargazersCount}</p>
               </div>
               <p className="font-mono-secondary mt-[16px] text-[19px]">
-                <span className="font-bold">3,325</span>
-                <span className="ml-3 font-light opacity-50">stars</span>
+                {/* <span className="font-bold">GitHub stars</span> */}
+                <span className="ml-3 font-light opacity-50">GitHub stars</span>
               </p>
             </div>
 
