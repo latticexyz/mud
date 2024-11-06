@@ -1,14 +1,7 @@
-import { Container } from "../../components/ui/Container";
-// import { Graph } from "../../components/ui/Graph";
-import { Section } from "../../components/ui/Section";
 import Image from "next/image";
-
-async function getStargazers() {
-  // TODO: get full url
-  const response = await fetch("http://localhost:3000/api/stargazers");
-  const data = await response.json();
-  return data;
-}
+import { Container } from "../../components/ui/Container";
+import { Section } from "../../components/ui/Section";
+import { GitHubStars } from "../../components/GitHubStars";
 
 async function getContributors() {
   const response = await fetch("http://localhost:3000/api/contributors");
@@ -17,7 +10,6 @@ async function getContributors() {
 }
 
 export default async function TrustedBy() {
-  const stargazersCount = await getStargazers();
   const { contributors, count: contributorsCount } = await getContributors();
 
   return (
@@ -39,7 +31,7 @@ export default async function TrustedBy() {
                 {/* <Image src="/illustrations/github-stars-graph.svg" alt="stars" width="173" height="38" /> */}
                 {/* <Graph /> */}
 
-                <p className="text-[29px] font-bold uppercase font-mono text-center">{stargazersCount}</p>
+                <GitHubStars />
               </div>
               <p className="font-mono-secondary mt-[16px] text-[19px]">
                 {/* <span className="font-bold">GitHub stars</span> */}
