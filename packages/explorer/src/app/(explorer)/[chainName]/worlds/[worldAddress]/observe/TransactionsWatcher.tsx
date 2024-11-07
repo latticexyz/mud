@@ -11,6 +11,7 @@ import {
   parseEventLogs,
 } from "viem";
 import { UserOperation, entryPoint07Abi, entryPoint07Address } from "viem/account-abstraction";
+import { anvil } from "viem/chains";
 import { useConfig, useWatchBlocks } from "wagmi";
 import { getTransaction, simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { useStore } from "zustand";
@@ -225,7 +226,7 @@ export function TransactionsWatcher() {
       }
     },
     chainId,
-    pollingInterval: 500,
+    pollingInterval: chainId === anvil.id ? 10 : 500,
   });
 
   return null;
