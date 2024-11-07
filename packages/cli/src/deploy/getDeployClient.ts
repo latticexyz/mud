@@ -1,6 +1,6 @@
 import { transactionQueue } from "@latticexyz/common/actions";
 import { rhodolite } from "@latticexyz/common/chains";
-import { claimGasPass, getAllowance, hasPassIssuer } from "@latticexyz/paymaster/internal";
+import { claimGasPass, getAllowance, hasPassIssuer, gasEstimator } from "@latticexyz/paymaster/internal";
 import { wiresaw } from "@latticexyz/wiresaw/internal";
 import { smartAccountActions } from "permissionless";
 import { toSimpleSmartAccount } from "permissionless/accounts";
@@ -55,12 +55,20 @@ export async function getDeployClient(opts: {
     const account = await toSimpleSmartAccount({ client, owner: opts.account });
     const bundlerClient = createBundlerClient({
       chain,
-      transport: wiresaw(http(bundlerHttpUrl)),
+      // TODO: figure out how to remove gas estimator (currently times out if not present)
+      transport: gasEstimator(wiresaw(http(bundlerHttpUrl))),
       account,
       paymaster: {
         getPaymasterData: async () => ({
           paymaster: paymasterAddress,
           paymasterData: "0x",
+        }),
+      },
+      userOperation: {
+        // TODO: move this to gas estimator transport?
+        estimateFeesPerGas: async () => ({
+          maxFeePerGas: 100_000n,
+          maxPriorityFeePerGas: 1n,
         }),
       },
     }).extend(smartAccountActions());
@@ -70,17 +78,21 @@ export async function getDeployClient(opts: {
 
     if (hasPassIssuer(chain)) {
       const allowance = await getAllowance({ client, paymasterAddress, userAddress: account.address });
-      if (allowance < parseEther("0.01")) {
+      if (allowance >= parseEther("0.01")) {
+        debug("deployer smart account should have enough gas allowance");
+      } else {
         debug("claimimg gas pass for deployer smart account");
         await claimGasPass({ chain: rhodolite, userAddress: account.address });
-
-        // send empty tx to create the smart account, otherwise the first tx may fail due to bad gas estimation
-        debug("creating deployer smart account");
-        const hash = await bundlerClient.sendTransaction({ to: zeroAddress, data: "0x" });
-        debug("tx:", hash);
-        const receipt = await getAction(bundlerClient, getTransactionReceipt, "getTransactionReceipt")({ hash });
-        debug("receipt:", receipt.status);
       }
+    }
+
+    if (!(await account.isDeployed())) {
+      // send empty tx to create the smart account, otherwise the first tx may fail due to bad gas estimation
+      debug("creating deployer smart account at", account.address);
+      const hash = await bundlerClient.sendTransaction({ to: zeroAddress });
+      debug("tx:", hash);
+      const receipt = await getAction(bundlerClient, getTransactionReceipt, "getTransactionReceipt")({ hash });
+      debug("receipt:", receipt.status);
     }
 
     return bundlerClient;
