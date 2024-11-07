@@ -17,7 +17,7 @@ export default function Integrations() {
               href="https://lattice.xyz/quarry"
               rel="noopener noreferrer"
               target="_blank"
-              className="text-sm p-4 leading-none font-mono uppercase bg-[#08C35E] text-white inline-flex justify-between items-center gap-3.5"
+              className="text-sm p-4 leading-none font-mono uppercase bg-[#F1A50E] text-white inline-flex justify-between items-center gap-3.5"
             >
               <Image src="/images/logos/quarry-white.svg" alt="Quarry" width={21} height={21} />
               Explore Quarry

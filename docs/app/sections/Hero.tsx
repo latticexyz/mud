@@ -36,7 +36,7 @@ export default function Hero() {
               <div className="space-y-5">
                 <a
                   href="https://lattice.xyz"
-                  className="shrink-0 flex items-center gap-3 p-3 -m-3 font-mono text-sm uppercase leading-none"
+                  className="shrink-0 flex items-center gap-3 p-3 -m-3 font-mono text-sm uppercase leading-none mt-5 md:mt-0"
                 >
                   <span className="text-lg">
                     <LatticeIcon />
