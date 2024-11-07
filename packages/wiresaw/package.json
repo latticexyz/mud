@@ -1,11 +1,10 @@
 {
-  "name": "@latticexyz/quarry",
+  "name": "@latticexyz/wiresaw",
   "version": "2.2.14",
-  "description": "TODO",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/quarry"
+    "directory": "packages/wiresaw"
   },
   "license": "MIT",
   "type": "module",
@@ -30,10 +29,7 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@latticexyz/common": "workspace:*",
-    "@latticexyz/store": "workspace:*",
-    "debug": "^4.3.4",
-    "webauthn-p256": "^0.0.10"
+    "debug": "^4.3.4"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
