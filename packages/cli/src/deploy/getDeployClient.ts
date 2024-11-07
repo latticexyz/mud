@@ -1,72 +1,105 @@
 import { transactionQueue } from "@latticexyz/common/actions";
 import { rhodolite } from "@latticexyz/common/chains";
-import { getBundlerTransport, toCoinbaseSmartAccount, createBundlerClient } from "@latticexyz/quarry/internal";
+import { claimGasPass, getAllowance, hasPassIssuer, wiresaw } from "@latticexyz/wiresaw/internal";
 import { smartAccountActions } from "permissionless";
-import { Account, Chain, ChainContract, Client, LocalAccount, Transport, createClient, http, zeroAddress } from "viem";
-import { getChainId } from "viem/actions";
+import { toSimpleSmartAccount } from "permissionless/accounts";
+import {
+  Account,
+  Chain,
+  ChainContract,
+  Client,
+  ClientConfig,
+  LocalAccount,
+  Transport,
+  createClient,
+  http,
+  zeroAddress,
+  parseEther,
+} from "viem";
+import { getChainId, getTransactionReceipt, setBalance } from "viem/actions";
 import { anvil } from "viem/chains";
-import { fundAccount } from "./fundAccount";
+import { createBundlerClient } from "viem/account-abstraction";
+import { debug } from "./debug";
+import { getAction } from "viem/utils";
 
-const knownChains = [
-  rhodolite,
-  {
-    ...anvil,
-    contracts: {
-      ...anvil.contracts,
-      // quarryPaymaster: {
-      //   address:
-      // }
-    },
-  },
-];
+const knownChains = [rhodolite, anvil] as const;
 
 export async function getDeployClient(opts: {
   rpcUrl: string;
   rpcBatch?: boolean;
   account: LocalAccount;
 }): Promise<Client<Transport, Chain | undefined, Account>> {
-  const transport = http(opts.rpcUrl, {
-    batch: opts.rpcBatch
-      ? {
-          batchSize: 100,
-          wait: 1000,
-        }
-      : undefined,
-  });
+  const chainId = await getChainId(createClient({ transport: http(opts.rpcUrl) }));
+  const chain: Chain | undefined = knownChains.find((c) => c.id === chainId);
 
-  const chainId = await getChainId(createClient({ transport }));
-  const chain = knownChains.find((c) => c.id === chainId);
+  const transport = wiresaw(
+    http(opts.rpcUrl, {
+      batch: opts.rpcBatch ? { batchSize: 100, wait: 1000 } : undefined,
+    }),
+  );
 
+  const clientOptions = {
+    chain,
+    transport,
+    pollingInterval: chainId === 31337 ? 10 : 500,
+  } as const satisfies ClientConfig;
+
+  const bundlerHttpUrl = chain?.rpcUrls.bundler?.http[0];
+  // It would be nice to use viem's `getChainContractAddress` here, but it throws
   const paymasterContract = chain?.contracts?.quarryPaymaster as ChainContract | undefined;
   const paymasterAddress = paymasterContract?.address;
 
-  if (chain && paymasterAddress) {
-    const client = createClient({ chain, transport });
-    const account = await toCoinbaseSmartAccount({ client, owners: [opts.account] });
+  if (bundlerHttpUrl && paymasterAddress) {
+    const client = createClient(clientOptions);
+    const account = await toSimpleSmartAccount({ client, owner: opts.account });
     const bundlerClient = createBundlerClient({
       chain,
-      transport: getBundlerTransport(chain),
+      transport: wiresaw(http(bundlerHttpUrl)),
       account,
-      paymasterAddress,
+      paymaster: {
+        getPaymasterData: async () => ({
+          paymaster: paymasterAddress,
+          paymasterData: "0x",
+        }),
+      },
     }).extend(smartAccountActions());
 
-    // doing public actions may fail for other chains
-    // TODO: add publicActions bound to client (had deep TS errors)
+    // using bundler client for public actions may fail for other chains
+    // TODO: add publicActions bound to client (had deep TS errors) or use separate read/write clients in deployer
 
-    await fundAccount({ client: bundlerClient });
-    // send empty tx to create the smart account, otherwise the first tx will fail due to bad gas estimation
-    const tx = await bundlerClient.sendTransaction({ to: zeroAddress, data: "0x" });
-    console.log("created smart account at tx", tx);
-    // TODO: wait for tx receipt?
+    if (hasPassIssuer(chain)) {
+      const allowance = await getAllowance({ client, paymasterAddress, userAddress: account.address });
+      if (allowance < parseEther("0.01")) {
+        debug("claimimg gas pass for deployer smart account");
+        await claimGasPass({ chain: rhodolite, userAddress: account.address });
+
+        // send empty tx to create the smart account, otherwise the first tx may fail due to bad gas estimation
+        debug("creating deployer smart account");
+        const hash = await bundlerClient.sendTransaction({ to: zeroAddress, data: "0x" });
+        debug("tx:", hash);
+        const receipt = await getAction(bundlerClient, getTransactionReceipt, "getTransactionReceipt")({ hash });
+        debug("receipt:", receipt.status);
+      }
+    }
 
     return bundlerClient;
   }
 
   const client = createClient({
-    chain,
-    transport,
+    ...clientOptions,
     account: opts.account,
   }).extend(transactionQueue());
-  await fundAccount({ client });
+
+  if (chainId == 31337) {
+    debug("Setting anvil balance");
+    await setBalance(
+      client.extend(() => ({ mode: "anvil" })),
+      {
+        address: client.account.address,
+        value: parseEther("100"),
+      },
+    );
+  }
+
   return client;
 }

@@ -1,11 +1,10 @@
 {
-  "name": "@latticexyz/quarry",
+  "name": "@latticexyz/wiresaw",
   "version": "2.2.14",
-  "description": "TODO",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/quarry"
+    "directory": "packages/wiresaw"
   },
   "license": "MIT",
   "type": "module",

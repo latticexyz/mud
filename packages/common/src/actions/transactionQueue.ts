@@ -2,7 +2,7 @@ import type { Transport, Chain, Account, WalletActions, Client } from "viem";
 import { writeContract as mud_writeContract } from "../writeContract";
 import { sendTransaction as mud_sendTransaction } from "../sendTransaction";
 
-export type TransactionQueueOptions<chain extends Chain> = {
+export type TransactionQueueOptions<chain extends Chain | undefined> = {
   /**
    * `publicClient` can be provided to be used in place of the extended viem client for making public action calls
    * (`getChainId`, `getTransactionCount`, `simulateContract`, `call`). This helps in cases where the extended
@@ -19,7 +19,7 @@ export type TransactionQueueOptions<chain extends Chain> = {
   queueConcurrency?: number;
 };
 
-export function transactionQueue<chain extends Chain>(
+export function transactionQueue<chain extends Chain | undefined>(
   opts: TransactionQueueOptions<chain> = {},
 ): <transport extends Transport, account extends Account | undefined = Account | undefined>(
   client: Client<transport, chain, account>,
