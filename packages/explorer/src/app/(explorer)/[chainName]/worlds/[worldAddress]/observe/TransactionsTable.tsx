@@ -12,7 +12,7 @@ import { BlockExplorerLink } from "./BlockExplorerLink";
 import { TimeAgo } from "./TimeAgo";
 import { TimingRowHeader } from "./TimingRowHeader";
 import { TransactionTableRow } from "./TransactionTableRow";
-import { ObservedTransaction, useObservedTransactions } from "./useObservedTransactions";
+import { ObservedTransaction, useMergedTransactions } from "./useMergedTransactions";
 
 const columnHelper = createColumnHelper<ObservedTransaction>();
 export const columns = [
@@ -101,7 +101,7 @@ export const columns = [
 ];
 
 export function TransactionsTable() {
-  const transactions = useObservedTransactions();
+  const transactions = useMergedTransactions();
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const table = useReactTable({

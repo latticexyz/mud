@@ -74,7 +74,7 @@ export function TransactionsWatcher() {
       setTransaction({
         hash,
         writeId: writeId ?? hash,
-        from: transaction.from,
+        from: calls[0]?.from ?? transaction.from,
         timestamp,
         transaction,
         calls,

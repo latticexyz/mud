@@ -2,7 +2,7 @@
 
 import { Address, Hash } from "viem";
 import { createStore } from "zustand/vanilla";
-import { DecodedUserOperationCall } from "../app/(explorer)/[chainName]/worlds/[worldAddress]/observe/useObservedTransactions";
+import { DecodedUserOperationCall } from "../app/(explorer)/[chainName]/worlds/[worldAddress]/observe/useMergedTransactions";
 import { isPromiseFulfilled } from "../utils";
 import { relayChannelName } from "./common";
 import { debug } from "./debug";
@@ -12,8 +12,8 @@ export type Write = {
   writeId: string;
   type: MessageType;
   hash?: Hash;
+  from?: Address;
   userOpHash?: Hash;
-  from: Address;
   time: number;
   calls: DecodedUserOperationCall[];
   events: Message<Exclude<MessageType, "ping">>[];
