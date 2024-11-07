@@ -44,9 +44,6 @@ export function useObservedTransactions() {
   const mergedTransactions = useMemo((): ObservedTransaction[] => {
     const mergedMap = new Map<string | undefined, ObservedTransaction>();
 
-    console.log("useObservedTransactions local", filteredObserverWrites);
-    console.log("useObservedTransactions chain", transactions);
-
     for (const write of filteredObserverWrites) {
       const writeResult = write.events.find((event): event is Message<"write:result"> => event.type === "write:result");
       mergedMap.set(write.hash || write.writeId, {
@@ -63,7 +60,6 @@ export function useObservedTransactions() {
 
     for (const transaction of transactions) {
       const existing = mergedMap.get(transaction.hash);
-      // console.log("useObservedTransactions merging", existing, transaction);
       if (existing) {
         mergedMap.set(transaction.hash, { ...transaction, hash: existing.write?.hash, write: existing.write });
       } else {
@@ -73,8 +69,6 @@ export function useObservedTransactions() {
 
     return Array.from(mergedMap.values()).sort((a, b) => Number(b.timestamp ?? 0n) - Number(a.timestamp ?? 0n));
   }, [transactions, filteredObserverWrites, worldAddress]);
-
-  console.log("useObservedTransactions merged", mergedTransactions);
 
   return mergedTransactions;
 }

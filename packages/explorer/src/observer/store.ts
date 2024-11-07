@@ -69,12 +69,11 @@ function processMessages(): void {
         writes: {
           ...updated.writes,
           [data.writeId]: {
-            ...updated.writes[data.writeId],
             ...write,
             type: data.type,
             hash,
             userOpHash: data.type === "waitForUserOperationReceipt" ? data.userOpHash : write.userOpHash,
-            events: [...(updated.writes[data.writeId]?.events ?? []), ...write.events, data],
+            events: [...write.events, data],
           },
         },
       };
@@ -84,7 +83,6 @@ function processMessages(): void {
     messages.length = 0;
     console.log("updated", updated);
     return updated;
-    // return state;
   });
 }
 
