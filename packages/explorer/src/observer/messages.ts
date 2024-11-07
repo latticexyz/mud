@@ -1,4 +1,4 @@
-import { Hash } from "viem";
+import { Address, Hash } from "viem";
 import { UserOperationReceipt } from "viem/account-abstraction";
 import { DecodedUserOperationCall } from "../app/(explorer)/[chainName]/worlds/[worldAddress]/observe/useMergedTransactions";
 import { ReceiptSummary } from "./common";
@@ -11,6 +11,7 @@ export type Messages = {
   };
   write: {
     writeId: string;
+    from: Address;
     calls: DecodedUserOperationCall[];
     value?: bigint;
   };
