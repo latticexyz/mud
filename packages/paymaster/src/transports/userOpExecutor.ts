@@ -15,6 +15,8 @@ import { TransportRequestFn } from "./common";
 import { estimateUserOperationGas } from "./methods/estimateUserOperationGas";
 import { sendUserOperation } from "./methods/sendUserOperation";
 
+// TODO: move to common package?
+
 export function userOpExecutor({ executor }: { executor: Client<Transport, Chain, Account> }): Transport {
   return () => {
     const receipts = new Map<Hash, RpcUserOperationReceipt<"0.7">>();

@@ -1,10 +1,10 @@
 {
-  "name": "@latticexyz/wiresaw",
+  "name": "@latticexyz/paymaster",
   "version": "2.2.14",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/wiresaw"
+    "directory": "packages/paymaster"
   },
   "license": "MIT",
   "type": "module",
@@ -29,7 +29,10 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "debug": "^4.3.4"
+    "@latticexyz/common": "workspace:*",
+    "@latticexyz/store": "workspace:*",
+    "debug": "^4.3.4",
+    "webauthn-p256": "^0.0.10"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",

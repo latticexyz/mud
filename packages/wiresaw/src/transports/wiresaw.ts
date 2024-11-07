@@ -1,6 +1,6 @@
 import { BundlerRpcSchema, Hash, Hex, PublicRpcSchema, RpcTransactionReceipt, Transport, http } from "viem";
 import { getRpcMethod, getRpcSchema, TransportRequestFn, TransportRequestFnMapped } from "./common";
-import { getUserOperationReceipt } from "./methods/getUserOperationReceipt";
+import { getUserOperationReceipt } from "../getUserOperationReceipt";
 
 export type WiresawRpcSchema = [
   {

@@ -845,6 +845,31 @@ importers:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.34.1)
 
+  packages/paymaster:
+    dependencies:
+      '@latticexyz/common':
+        specifier: workspace:*
+        version: link:../common
+      '@latticexyz/store':
+        specifier: workspace:*
+        version: link:../store
+      debug:
+        specifier: ^4.3.4
+        version: 4.3.7
+      webauthn-p256:
+        specifier: ^0.0.10
+        version: 0.0.10
+    devDependencies:
+      '@types/debug':
+        specifier: ^4.1.7
+        version: 4.1.7
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
+      viem:
+        specifier: 2.21.19
+        version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
+
   packages/protocol-parser:
     dependencies:
       '@latticexyz/common':
@@ -1346,18 +1371,9 @@ importers:
 
   packages/wiresaw:
     dependencies:
-      '@latticexyz/common':
-        specifier: workspace:*
-        version: link:../common
-      '@latticexyz/store':
-        specifier: workspace:*
-        version: link:../store
       debug:
         specifier: ^4.3.4
         version: 4.3.7
-      webauthn-p256:
-        specifier: ^0.0.10
-        version: 0.0.10
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7

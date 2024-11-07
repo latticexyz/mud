@@ -1,7 +1,8 @@
 import { defineStore } from "@latticexyz/store";
 import { parseAbi } from "viem";
 
-// TODO: whole ABI
+// TODO: move the whole paymaster in here so we can just re-export ABI + MUD config
+
 export const paymasterAbi = parseAbi([
   "error SpenderSystem_AlreadyRegistered(address spender, address user)",
   "error SpenderSystem_HasOwnBalance(address spender)",

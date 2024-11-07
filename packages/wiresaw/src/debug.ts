@@ -1,3 +1,3 @@
 import createDebug from "debug";
 
-export const debug = createDebug("mud:quarry");
+export const debug = createDebug("mud:wiresaw");

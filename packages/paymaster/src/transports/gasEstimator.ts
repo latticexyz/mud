@@ -2,6 +2,8 @@ import { BundlerRpcSchema, Transport } from "viem";
 import { estimateUserOperationGas } from "./methods/estimateUserOperationGas";
 import { TransportRequestFn, getRpcSchema } from "./common";
 
+// TODO: move to common package?
+
 export function gasEstimator<const transport extends Transport>(getTransport: transport): transport {
   return ((opts) => {
     const { request: originalRequest, ...rest } = getTransport(opts);
