@@ -1,6 +1,7 @@
 import { transactionQueue } from "@latticexyz/common/actions";
 import { rhodolite } from "@latticexyz/common/chains";
-import { claimGasPass, getAllowance, hasPassIssuer, wiresaw } from "@latticexyz/wiresaw/internal";
+import { claimGasPass, getAllowance, hasPassIssuer } from "@latticexyz/paymaster/internal";
+import { wiresaw } from "@latticexyz/wiresaw/internal";
 import { smartAccountActions } from "permissionless";
 import { toSimpleSmartAccount } from "permissionless/accounts";
 import {
