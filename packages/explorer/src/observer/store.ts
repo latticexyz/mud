@@ -31,20 +31,21 @@ export const store = createStore<State>(() => ({
 }));
 
 debug("listening for relayed messages", relayChannelName);
-const messages: MessageEvent<Message>[] = [];
+const messageBuffer: MessageEvent<Message>[] = [];
 const channel = new BroadcastChannel(relayChannelName);
+
 channel.addEventListener("message", (message: MessageEvent<Message>) => {
   if (message.data.type === "ping") return;
-  messages.push(message);
+  messageBuffer.push(message);
 });
 
-function processMessages(): void {
-  if (messages.length === 0) return;
+function flushMessageBuffer(): void {
+  if (messageBuffer.length === 0) return;
 
   store.setState((state) => {
     let updated = state;
 
-    for (const { data } of messages) {
+    for (const { data } of messageBuffer) {
       if (data.type === "ping") continue;
 
       const write = data.type === "write" ? ({ ...data, events: [] } satisfies Write) : updated.writes[data.writeId];
@@ -78,10 +79,10 @@ function processMessages(): void {
     }
 
     // Clear messages after processing
-    messages.length = 0;
+    messageBuffer.length = 0;
     return updated;
   });
 }
 
-const processInterval = 100;
-setInterval(processMessages, processInterval);
+const bufferInterval = 100;
+setInterval(flushMessageBuffer, bufferInterval);
