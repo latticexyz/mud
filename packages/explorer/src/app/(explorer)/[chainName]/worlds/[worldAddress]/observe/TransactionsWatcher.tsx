@@ -208,6 +208,7 @@ export function TransactionsWatcher() {
 
   useEffect(() => {
     for (const { hash, writeId, time } of Object.values(observerWrites)) {
+      console.log("observe transaction x", hash);
       if (hash) {
         const transaction = transactions.find((transaction) => transaction.hash === hash);
         if (!transaction) {
@@ -220,12 +221,13 @@ export function TransactionsWatcher() {
   useWatchBlocks({
     onBlock(block) {
       for (const hash of block.transactions) {
+        console.log("handle transaction", hash);
         if (transactions.find((transaction) => transaction.hash === hash)) continue;
         handleTransaction({ hash, timestamp: block.timestamp });
       }
     },
     chainId,
-    pollingInterval: 500,
+    pollingInterval: 10,
   });
 
   return null;

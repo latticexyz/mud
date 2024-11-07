@@ -47,7 +47,7 @@ function processMessages(): void {
     for (const { data } of messages) {
       if (data.type === "ping") continue;
 
-      const write = data.type === "write" ? ({ ...data, events: [] } satisfies Write) : state.writes[data.writeId];
+      const write = data.type === "write" ? ({ ...data, events: [] } satisfies Write) : updated.writes[data.writeId];
       if (!write) continue;
 
       let hash = write.hash;
@@ -69,11 +69,12 @@ function processMessages(): void {
         writes: {
           ...updated.writes,
           [data.writeId]: {
+            ...updated.writes[data.writeId],
             ...write,
             type: data.type,
             hash,
             userOpHash: data.type === "waitForUserOperationReceipt" ? data.userOpHash : write.userOpHash,
-            events: [...write.events, data],
+            events: [...(updated.writes[data.writeId]?.events ?? []), ...write.events, data],
           },
         },
       };
