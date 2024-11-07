@@ -18,17 +18,7 @@ export default function Hero() {
           )}
         >
           <div className="flex items-center justify-between">
-            <div className="font-mono text-3xl uppercase sm:text-4xl">MUD</div>
-            <a
-              href="https://lattice.xyz"
-              className="shrink-0 flex md:flex-row-reverse items-center gap-3 p-3 -m-3 font-mono md:text-lg uppercase leading-none transition hover:bg-white hover:text-mud"
-            >
-              <span>
-                Built by
-                <span className="hidden md:inline"> Lattice</span>
-              </span>
-              <LatticeIcon />
-            </a>
+            <h1 className="font-mono text-3xl uppercase sm:text-4xl">MUD</h1>
           </div>
 
           <div className="grow flex flex-col mt-[30px] lg:mt-[190px] md:flex-row-reverse gap-6 md:gap-y-16">
@@ -43,7 +33,17 @@ export default function Hero() {
             </div>
 
             <div className="space-y-8 md:grow md:self-end">
-              <div className="space-y-4">
+              <div className="space-y-5">
+                <a
+                  href="https://lattice.xyz"
+                  className="shrink-0 flex items-center gap-3 p-3 -m-3 font-mono text-sm uppercase leading-none"
+                >
+                  <span className="text-lg">
+                    <LatticeIcon />
+                  </span>
+                  <span>Built by Lattice</span>
+                </a>
+
                 <div className="max-w-2xl font-mono text-xl sm:text-2xl uppercase text-wrap:balance">
                   Open-source engine for autonomous worlds
                 </div>

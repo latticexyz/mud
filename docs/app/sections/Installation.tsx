@@ -53,7 +53,7 @@ export default function Installation() {
 
           <div>
             <div className="h-[313px] w-full bg-light-gray mt-10">
-              <VideoPlayer videoId={videoId} thumbnailUrl="/videos/mud-create.png" />
+              <VideoPlayer videoId={videoId} thumbnailUrl="/images/mud-video-thumbnail.jpg" />
             </div>
           </div>
         </div>
