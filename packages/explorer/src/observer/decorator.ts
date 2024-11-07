@@ -84,7 +84,9 @@ export function observer({ explorerUrl: initialExplorerUrl, waitForTransaction }
 
         emit("write", {
           writeId,
-          from: client.account!.address,
+          // TODO: type as SessionClient once available from entrykit
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          from: (client as any).userAddress ?? client.account!.address,
           calls: [
             {
               to: args.address,
