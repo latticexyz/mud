@@ -4,7 +4,7 @@ import { Section } from "../../components/ui/Section";
 
 const ChangelogItem = () => {
   return (
-    <div className="inline-block h-full w-[485px]">
+    <div className="inline-block h-full flex-shrink-0 flex-basis-[485px]">
       <div className="border border-white/20 bg-light-gray px-6 py-6 text-white">
         <div className="flex items-center justify-between">
           <div className="inline-block w-[59px] bg-white text-black text-center font-mono text-sm uppercase leading-[41px]">
@@ -23,6 +23,14 @@ const ChangelogItem = () => {
     </div>
   );
 };
+
+function OverflowContainer({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="overflow-x-auto -mx-4 sm:-mx-6 xl:-mx-[calc((100%-1152px)/2)]">
+      <div className="pl-6 pr-6">{children}</div>
+    </div>
+  );
+}
 
 export default function Changelog() {
   return (
@@ -46,14 +54,14 @@ export default function Changelog() {
             </a>
           </div>
 
-          <div className="overflow-x-auto">
-            <div className="grid grid-flow-col gap-4">
+          <OverflowContainer>
+            <div className="flex gap-4">
               <ChangelogItem />
               <ChangelogItem />
               <ChangelogItem />
               <ChangelogItem />
             </div>
-          </div>
+          </OverflowContainer>
         </div>
       </Container>
     </Section>
