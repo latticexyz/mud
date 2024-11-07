@@ -15,106 +15,111 @@ export type ObserverOptions = {
 
 let writeCounter = 0;
 
-export function observer({ explorerUrl = "http://localhost:13690", waitForTransaction }: ObserverOptions = {}): <
+export function observer({ explorerUrl: initialExplorerUrl, waitForTransaction }: ObserverOptions = {}): <
   transport extends Transport,
   chain extends Chain | undefined = Chain | undefined,
   account extends Account | undefined = Account | undefined,
 >(
   client: Client<transport, chain, account>,
 ) => Pick<WalletActions<chain, account>, "writeContract"> & Pick<BundlerActions, "sendUserOperation"> {
-  const emit = createBridge({ url: `${explorerUrl}/internal/observer-relay` });
+  return (client) => {
+    const explorerUrl = initialExplorerUrl ?? client.chain?.blockExplorers?.worldsExplorer?.url;
+    if (!explorerUrl) return {} as never;
 
-  return (client) => ({
-    async sendUserOperation(args) {
-      const writeId = `${client.uid}-${++writeCounter}`;
-      const write = getAction(client, sendUserOperation, "sendUserOperation")(args);
-      if (!("calls" in args) || !args.calls) return write;
+    const emit = createBridge({ url: new URL("/internal/observer-relay", explorerUrl).toString() });
 
-      const calls = args.calls
-        .map((call) => {
-          if (!call || typeof call !== "object") return undefined;
-          if (!("to" in call) || typeof call.to !== "string") return undefined;
-          if (!("functionName" in call) || typeof call.functionName !== "string") return undefined;
-          if (!("args" in call) || !Array.isArray(call.args)) return undefined;
+    return {
+      async sendUserOperation(args) {
+        const writeId = `${client.uid}-${++writeCounter}`;
+        const write = getAction(client, sendUserOperation, "sendUserOperation")(args);
+        if (!("calls" in args) || !args.calls) return write;
 
-          return {
-            to: call.to as Address,
-            functionName: call.functionName,
-            args: call.args,
-            ...("value" in call && typeof call.value === "bigint" && { value: call.value }),
-          };
-        })
-        .filter(isDefined);
-      if (calls.length === 0) return write;
+        const calls = args.calls
+          .map((call) => {
+            if (!call || typeof call !== "object") return undefined;
+            if (!("to" in call) || typeof call.to !== "string") return undefined;
+            if (!("functionName" in call) || typeof call.functionName !== "string") return undefined;
+            if (!("args" in call) || !Array.isArray(call.args)) return undefined;
 
-      emit("write", {
-        writeId,
-        // TODO: type as SessionClient once available from entrykit
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        from: (client as any).userAddress ?? client.account!.address,
-        calls,
-      });
-      Promise.allSettled([write]).then(([result]) => {
-        emit("write:result", { ...result, writeId });
-      });
+            return {
+              to: call.to as Address,
+              functionName: call.functionName,
+              args: call.args,
+              ...("value" in call && typeof call.value === "bigint" && { value: call.value }),
+            };
+          })
+          .filter(isDefined);
+        if (calls.length === 0) return write;
 
-      write.then((userOpHash) => {
-        const receipt = getAction(
-          client,
-          waitForUserOperationReceipt,
-          "waitForUserOperationReceipt",
-        )({ hash: userOpHash });
-
-        emit("waitForUserOperationReceipt", { writeId, userOpHash });
-        Promise.allSettled([receipt]).then(([result]) => {
-          emit("waitForUserOperationReceipt:result", { ...result, writeId });
+        emit("write", {
+          writeId,
+          // TODO: type as SessionClient once available from entrykit
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          from: (client as any).userAddress ?? client.account!.address,
+          calls,
         });
-      });
-
-      return write;
-    },
-
-    async writeContract(args) {
-      const writeId = `${client.uid}-${++writeCounter}`;
-      const write = getAction(client, writeContract, "writeContract")(args);
-
-      emit("write", {
-        writeId,
-        from: client.account!.address,
-        calls: [
-          {
-            to: args.address,
-            functionName: args.functionName,
-            args: (args.args ?? []) as never,
-            ...(args.value && { value: args.value }),
-          },
-        ],
-      });
-      Promise.allSettled([write]).then(([result]) => {
-        emit("write:result", { ...result, writeId });
-      });
-
-      write.then((hash) => {
-        const receipt = getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });
-
-        emit("waitForTransactionReceipt", { writeId, hash });
-        Promise.allSettled([receipt]).then(([result]) => {
-          emit("waitForTransactionReceipt:result", { ...result, writeId });
+        Promise.allSettled([write]).then(([result]) => {
+          emit("write:result", { ...result, writeId });
         });
-      });
 
-      if (waitForTransaction) {
-        write.then((hash) => {
-          const receipt = waitForTransaction(hash);
+        write.then((userOpHash) => {
+          const receipt = getAction(
+            client,
+            waitForUserOperationReceipt,
+            "waitForUserOperationReceipt",
+          )({ hash: userOpHash });
 
-          emit("waitForTransaction", { writeId });
+          emit("waitForUserOperationReceipt", { writeId, userOpHash });
           Promise.allSettled([receipt]).then(([result]) => {
-            emit("waitForTransaction:result", { ...result, writeId });
+            emit("waitForUserOperationReceipt:result", { ...result, writeId });
           });
         });
-      }
 
-      return write;
-    },
-  });
+        return write;
+      },
+
+      async writeContract(args) {
+        const writeId = `${client.uid}-${++writeCounter}`;
+        const write = getAction(client, writeContract, "writeContract")(args);
+
+        emit("write", {
+          writeId,
+          from: client.account!.address,
+          calls: [
+            {
+              to: args.address,
+              functionName: args.functionName,
+              args: (args.args ?? []) as never,
+              ...(args.value && { value: args.value }),
+            },
+          ],
+        });
+        Promise.allSettled([write]).then(([result]) => {
+          emit("write:result", { ...result, writeId });
+        });
+
+        write.then((hash) => {
+          const receipt = getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });
+
+          emit("waitForTransactionReceipt", { writeId, hash });
+          Promise.allSettled([receipt]).then(([result]) => {
+            emit("waitForTransactionReceipt:result", { ...result, writeId });
+          });
+        });
+
+        if (waitForTransaction) {
+          write.then((hash) => {
+            const receipt = waitForTransaction(hash);
+
+            emit("waitForTransaction", { writeId });
+            Promise.allSettled([receipt]).then(([result]) => {
+              emit("waitForTransaction:result", { ...result, writeId });
+            });
+          });
+        }
+
+        return write;
+      },
+    };
+  };
 }
