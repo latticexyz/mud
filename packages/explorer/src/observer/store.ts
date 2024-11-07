@@ -12,7 +12,7 @@ export type Write = {
   writeId: string;
   type: MessageType;
   hash?: Hash;
-  from?: Address;
+  from: Address;
   userOpHash?: Hash;
   time: number;
   calls: DecodedUserOperationCall[];
