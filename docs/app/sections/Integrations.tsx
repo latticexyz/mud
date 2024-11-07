@@ -12,12 +12,12 @@ export default function Integrations() {
             <h2 className="text-lg md:text-xl font-mono uppercase">Standard World Interface</h2>
           </div>
 
-          <div className="flex gap-4 h-[50px] mt-8 lg:mt-0">
+          <div className="flex flex-col sm:flex-row gap-4 sm:h-[50px] mt-8 lg:mt-0">
             <a
               href="https://lattice.xyz/quarry"
               rel="noopener noreferrer"
               target="_blank"
-              className="text-sm p-4 leading-none font-mono uppercase bg-[#F1A50E] text-white inline-flex justify-between items-center gap-3.5"
+              className="text-sm p-4 leading-none font-mono uppercase bg-[#F1A50E] text-white inline-flex items-center gap-3.5"
             >
               <Image src="/images/logos/quarry-white.svg" alt="Quarry" width={21} height={21} />
               Explore Quarry
@@ -26,7 +26,7 @@ export default function Integrations() {
               href="https://mud.dev/introduction"
               rel="noopener noreferrer"
               target="_blank"
-              className="text-sm p-4 leading-none font-mono uppercase inline-flex justify-between items-center gap-3.5 border border-mud text-mud"
+              className="text-sm p-4 leading-none font-mono uppercase inline-flex items-center gap-3.5 border border-mud text-mud"
             >
               <Image src="/images/logos/mud-transparent.svg" alt="MUD" width={21} height={21} />
               Read MUD docs
