@@ -62,8 +62,6 @@ function processMessages(): void {
         hash = data.value.receipt.transactionHash;
       }
 
-      console.log("processMessages", data.type, data.writeId, hash);
-
       updated = {
         ...updated,
         writes: {
@@ -81,7 +79,6 @@ function processMessages(): void {
 
     // Clear messages after processing
     messages.length = 0;
-    console.log("updated", updated);
     return updated;
   });
 }

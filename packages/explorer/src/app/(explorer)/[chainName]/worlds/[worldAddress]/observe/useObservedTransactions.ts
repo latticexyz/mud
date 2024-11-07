@@ -61,7 +61,7 @@ export function useObservedTransactions() {
     for (const transaction of transactions) {
       const existing = mergedMap.get(transaction.hash);
       if (existing) {
-        mergedMap.set(transaction.hash, { ...transaction, hash: existing.write?.hash, write: existing.write });
+        mergedMap.set(transaction.hash, { ...transaction, write: existing.write });
       } else {
         mergedMap.set(transaction.hash, { ...transaction });
       }
