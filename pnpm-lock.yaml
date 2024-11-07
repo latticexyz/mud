@@ -468,12 +468,18 @@ importers:
       '@latticexyz/explorer':
         specifier: workspace:*
         version: link:../explorer
+      '@latticexyz/paymaster':
+        specifier: workspace:*
+        version: link:../paymaster
       '@latticexyz/protocol-parser':
         specifier: workspace:*
         version: link:../protocol-parser
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
+      '@latticexyz/wiresaw':
+        specifier: workspace:*
+        version: link:../wiresaw
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../world

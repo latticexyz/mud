@@ -1,7 +1,7 @@
 import { Address, Chain, Client, Transport } from "viem";
-import { getSessionSigner } from "./getSessionSigner";
-import { toCoinbaseSmartAccount } from "./smart-account/toCoinbaseSmartAccount";
 import { SmartAccount } from "viem/account-abstraction";
+import { toCoinbaseSmartAccount } from "@latticexyz/common/accounts";
+import { getSessionSigner } from "./getSessionSigner";
 
 export async function getSessionAccount<chain extends Chain>({
   client,

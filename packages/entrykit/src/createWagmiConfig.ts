@@ -3,7 +3,7 @@ import { WalletList, connectorsForWallets, getDefaultWallets } from "@rainbow-me
 import { Config, CreateConfigParameters, createConfig } from "wagmi";
 import { passkeyWallet } from "./passkey/passkeyWallet";
 import { mapObject } from "@latticexyz/common/utils";
-import { wiresaw } from "./transports/wiresaw";
+import { wiresaw } from "@latticexyz/wiresaw/internal";
 
 export type CreateWagmiConfigOptions<
   chains extends readonly [Chain, ...Chain[]] = readonly [Chain, ...Chain[]],

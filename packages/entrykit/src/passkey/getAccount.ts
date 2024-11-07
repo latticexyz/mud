@@ -2,7 +2,7 @@ import { Client } from "viem";
 import { toWebAuthnAccount } from "viem/account-abstraction";
 import { cache } from "./cache";
 import { P256Credential } from "webauthn-p256";
-import { toCoinbaseSmartAccount, ToCoinbaseSmartAccountReturnType } from "../smart-account/toCoinbaseSmartAccount";
+import { toCoinbaseSmartAccount, ToCoinbaseSmartAccountReturnType } from "@latticexyz/common/accounts";
 
 export async function getAccount(client: Client, id: P256Credential["id"]): Promise<ToCoinbaseSmartAccountReturnType> {
   const { publicKeys } = cache.getState();

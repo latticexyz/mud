@@ -1,7 +1,7 @@
 import { Address } from "viem";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { quarryPassIssuer } from "../transports/quarryPassIssuer";
+import { claimGasPass } from "@latticexyz/paymaster/internal";
 
 export function useClaimGasPass() {
   const queryClient = useQueryClient();
@@ -12,16 +12,9 @@ export function useClaimGasPass() {
     mutationKey,
     onError: (error) => console.error(error),
     mutationFn: async (userAddress: Address) => {
-      const transport = quarryPassIssuer()({ chain });
       // TODO: handle case where you already have a pass?
-      await transport.request({
-        method: "quarry_issuePass",
-        params: ["0x01", userAddress],
-      });
-      await transport.request({
-        method: "quarry_claimAllowance",
-        params: ["0x01", userAddress],
-      });
+      // TODO: get returned tx hashes to check if success
+      await claimGasPass({ chain, userAddress });
 
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["getAllowance"] }),
