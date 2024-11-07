@@ -1,5 +1,5 @@
 import { createStore } from "zustand";
-import { ObservedTransaction } from "./observe/useObservedTransactions";
+import { ObservedTransaction } from "./observe/useMergedTransactions";
 
 export type State = {
   transactions: ObservedTransaction[];

@@ -1,5 +1,5 @@
 import { Abi, Address, Hex, decodeFunctionData } from "viem";
-import { DecodedUserOperationCall } from "../useObservedTransactions";
+import { DecodedUserOperationCall } from "../useMergedTransactions";
 
 export function getDecodedUserOperationCalls({
   abi,
@@ -36,16 +36,27 @@ function getDecodedUserOperationCall({
 }): DecodedUserOperationCall {
   let functionName: string | undefined;
   let args: readonly unknown[] | undefined;
+  let from: Address | undefined;
+
   try {
     const functionData = decodeFunctionData({ abi, data: data });
     functionName = functionData.functionName;
     args = functionData.args;
+
+    if (functionName === "callFrom") {
+      const [delegator, , data] = args as [Address, Hex, Hex];
+      const decodedCallData = decodeFunctionData({ abi, data });
+      functionName = decodedCallData.functionName;
+      args = decodedCallData.args;
+      from = delegator;
+    }
   } catch (error) {
     functionName = data.length > 10 ? data.slice(0, 10) : "unknown";
   }
 
   return {
     to: target,
+    from,
     functionName,
     args,
     value,

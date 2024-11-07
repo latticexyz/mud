@@ -49,7 +49,9 @@ export function observer({ explorerUrl = "http://localhost:13690", waitForTransa
 
       emit("write", {
         writeId,
-        from: client.account!.address,
+        // TODO: type as SessionClient once available from entrykit
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        from: (client as any).userAddress ?? client.account!.address,
         calls,
       });
       Promise.allSettled([write]).then(([result]) => {
