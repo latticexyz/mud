@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Container } from "../../components/ui/Container";
 import { Section } from "../../components/ui/Section";
 
@@ -28,9 +29,21 @@ export default function Changelog() {
     <Section className="bg-black py-8 md:pt-12 md:pb-14">
       <Container>
         <div className="space-y-8">
-          <div>
-            <h2 className="font-mono uppercase text-lg md:text-xl">Changelog</h2>
-            <p className="text-white/70 text-sm md:text-md mt-3">Learn what’s changed in recent releases of MUD.</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="font-mono uppercase text-lg md:text-xl">Changelog</h2>
+              <p className="text-white/70 text-sm md:text-md mt-3">Learn what’s changed in recent releases of MUD.</p>
+            </div>
+
+            <a
+              href="https://github.com/latticexyz/mud"
+              rel="noopener noreferrer"
+              target="_blank"
+              className="text-sm font-mono uppercase inline-flex items-center gap-[10px] py-3 px-3 border border-white/50"
+            >
+              <Image src="/images/icons/github.svg" alt="GitHub" width={22} height={22} />
+              Github
+            </a>
           </div>
 
           <div className="overflow-x-auto">

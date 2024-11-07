@@ -49,6 +49,7 @@ export default function Integrations() {
         />
 
         <p className="text-xs mt-2 md:mt-4 lg:mt-6 md:text-sm opacity-50 text-center">
+          {/* TODO: add description of the diagram */}
           Some description of the diagram goes here.
         </p>
       </Container>

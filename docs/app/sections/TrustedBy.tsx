@@ -48,7 +48,7 @@ export default async function TrustedBy() {
                     alt="frolic"
                     width="35"
                     height="35"
-                    className="-ml-2.5 cursor-pointer overflow-hidden rounded-full border-[3px] bg-white border-[#E56A10]"
+                    className="-ml-2.5 overflow-hidden rounded-full border-[3px] bg-white border-[#E56A10]"
                   />
                 ))}
               </div>
