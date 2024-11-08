@@ -1,5 +1,8 @@
 import {
+  Account,
   BundlerRpcSchema,
+  Chain,
+  Client,
   EIP1193RequestFn,
   Hash,
   RpcUserOperationReceipt,
@@ -11,12 +14,14 @@ import { entryPoint07Address } from "viem/account-abstraction";
 import { TransportRequestFn } from "./common";
 import { estimateUserOperationGas } from "./methods/estimateUserOperationGas";
 import { sendUserOperation } from "./methods/sendUserOperation";
-import { ConnectedClient } from "../common";
 
-export function userOpExecutor({ executor }: { executor: ConnectedClient }): Transport {
+// TODO: move to common package?
+
+export function userOpExecutor({ executor }: { executor: Client<Transport, Chain, Account> }): Transport {
   return () => {
     const receipts = new Map<Hash, RpcUserOperationReceipt<"0.7">>();
 
+    // @ts-expect-error TODO
     const request: TransportRequestFn<BundlerRpcSchema> = async ({ method, params }) => {
       // TODO: move chain/ID into args and executors as accounts instead of clients?
       if (method === "eth_chainId") {

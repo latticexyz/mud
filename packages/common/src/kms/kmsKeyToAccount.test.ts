@@ -3,8 +3,8 @@ import { KmsAccount, kmsKeyToAccount } from "./kmsKeyToAccount";
 import { CreateKeyCommand, KMSClient } from "@aws-sdk/client-kms";
 import { parseGwei, http, verifyMessage, verifyTypedData, createClient, parseEther } from "viem";
 import { foundry } from "viem/chains";
-import { anvilRpcUrl, testClient } from "../../../test/common";
-import { waitForTransaction } from "../../test/waitForTransaction";
+import { anvilRpcUrl, testClient } from "../../test/common";
+import { waitForTransaction } from "../test/waitForTransaction";
 import { getTransactionReceipt, sendTransaction } from "viem/actions";
 
 describe("kmsKeyToAccount", () => {

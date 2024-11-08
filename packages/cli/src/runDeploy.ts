@@ -2,7 +2,7 @@ import path from "node:path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { InferredOptionTypes, Options } from "yargs";
 import { deploy } from "./deploy/deploy";
-import { createWalletClient, http, Hex, isHex } from "viem";
+import { Hex, isHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
@@ -18,6 +18,9 @@ import { kmsKeyToAccount } from "@latticexyz/common/kms";
 import { configToModules } from "./deploy/configToModules";
 import { findContractArtifacts } from "@latticexyz/world/node";
 import { enableAutomine } from "./utils/enableAutomine";
+import { getDeployClient } from "./deploy/getDeployClient";
+import { debug } from "./debug";
+import { getAction } from "viem/utils";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the MUD config file" },
@@ -124,19 +127,14 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     }
   })();
 
-  const client = createWalletClient({
-    transport: http(rpc, {
-      batch: opts.rpcBatch
-        ? {
-            batchSize: 100,
-            wait: 1000,
-          }
-        : undefined,
-    }),
+  console.log("Deploying from", account.address);
+  debug("Deploying from", account.address);
+
+  const client = await getDeployClient({
+    rpcUrl: rpc,
+    rpcBatch: opts.rpcBatch,
     account,
   });
-
-  console.log("Deploying from", client.account.address);
 
   // Attempt to enable automine for the duration of the deploy. Noop if automine is not available.
   const automine = await enableAutomine(client);
@@ -155,14 +153,18 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     artifacts,
   });
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
-    await postDeploy(
-      config.deploy.postDeployScript,
-      worldDeploy.address,
-      rpc,
-      profile,
-      opts.forgeScriptOptions,
-      opts.kms ? true : false,
-    );
+    if (client.account.type === "smart") {
+      console.log("Skipping post deploy for smart account (feature coming soon)");
+    } else {
+      await postDeploy(
+        config.deploy.postDeployScript,
+        worldDeploy.address,
+        rpc,
+        profile,
+        opts.forgeScriptOptions,
+        opts.kms ? true : false,
+      );
+    }
   }
 
   // Reset mining mode after deploy
@@ -176,7 +178,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   };
 
   if (opts.saveDeployment) {
-    const chainId = await getChainId(client);
+    const chainId = client.chain?.id ?? (await getAction(client, getChainId, "getChainId")({}));
     const deploysDir = path.join(config.deploy.deploysDirectory, chainId.toString());
     mkdirSync(deploysDir, { recursive: true });
     writeFileSync(path.join(deploysDir, "latest.json"), JSON.stringify(deploymentInfo, null, 2));

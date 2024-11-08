@@ -20,7 +20,7 @@ import { createBundlerClient } from "../createBundlerClient";
 import { observer } from "@latticexyz/explorer/observer";
 import { getPaymasterAddress } from "../getPaymasterAddress";
 import { getBundlerTransport } from "../getBundlerTransport";
-import { wiresaw } from "../transports/wiresaw";
+import { wiresaw } from "@latticexyz/wiresaw/internal";
 
 export type PasskeyConnectorOptions = {
   // TODO: figure out what we wanna do across chains

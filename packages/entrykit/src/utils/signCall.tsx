@@ -1,7 +1,7 @@
 import { Address, Chain, Client, Hex, OneOf, Transport, toHex } from "viem";
 import { signTypedData } from "viem/actions";
 import { callWithSignatureTypes } from "@latticexyz/world/internal";
-import { getRecord } from "./getRecord";
+import { getRecord } from "@latticexyz/store/internal";
 import modulesConfig from "@latticexyz/world-modules/internal/mud.config";
 import { hexToResource } from "@latticexyz/common";
 import { getAction } from "viem/utils";

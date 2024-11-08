@@ -1,5 +1,5 @@
 import { Address, Chain, Client, Transport } from "viem";
-import { getRecord } from "./utils/getRecord";
+import { getRecord } from "@latticexyz/store/internal";
 import modulesConfig from "@latticexyz/world-modules/internal/mud.config";
 
 export type GetCallWithSignatureNonceParams = {

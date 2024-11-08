@@ -41,14 +41,13 @@ export function createBundlerClient<
     ...defaultClientConfig,
     paymaster: {
       getPaymasterData: async () => ({
-        // TODO: source this from the chain config instead
         paymaster: paymasterAddress,
         paymasterData: "0x",
       }),
     },
     userOperation: {
       estimateFeesPerGas:
-        // TODO: source this from the chain config instead
+        // TODO: move this to gas estimator transport
         chain && knownChainFees.has(chain.id)
           ? async () => ({
               maxFeePerGas: 100_000n,

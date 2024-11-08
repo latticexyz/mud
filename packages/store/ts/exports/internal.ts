@@ -2,6 +2,7 @@ export * from "../common";
 export * from "../getStoreLogs";
 export * from "../flattenStoreLogs";
 export * from "../logToRecord";
+export * from "../getRecord";
 
 export * from "../config/v2/codegen";
 export * from "../config/v2/defaults";

@@ -9,6 +9,8 @@ import {
 import { setBalance, writeContract } from "viem/actions";
 import { getAction } from "viem/utils";
 
+// TODO: move to common package?
+
 // TODO: move this into a generic to support other versions?
 const entryPointVersion = "0.7";
 type entryPointVersion = typeof entryPointVersion;

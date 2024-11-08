@@ -1,0 +1,48 @@
+{
+  "name": "@latticexyz/paymaster",
+  "version": "2.2.14",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git",
+    "directory": "packages/paymaster"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./internal": "./dist/internal.js"
+  },
+  "typesVersions": {
+    "*": {
+      "internal": [
+        "./dist/internal.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "shx rm -rf dist",
+    "dev": "tsup --watch",
+    "test": "tsc -p tsconfig.test.json --noEmit && vitest --run",
+    "test:ci": "pnpm run test"
+  },
+  "dependencies": {
+    "@latticexyz/common": "workspace:*",
+    "@latticexyz/store": "workspace:*",
+    "debug": "^4.3.4",
+    "webauthn-p256": "^0.0.10"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.7",
+    "tsup": "^6.7.0",
+    "viem": "2.21.19"
+  },
+  "peerDependencies": {
+    "viem": "2.x"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

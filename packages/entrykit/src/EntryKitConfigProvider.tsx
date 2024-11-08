@@ -33,6 +33,10 @@ export function EntryKitConfigProvider({ config, children }: Props) {
 
   return (
     <RainbowKitProvider
+      // Prevent RainbowKit/Wagmi trying to switch chains after connection
+      // https://github.com/rainbow-me/rainbowkit/blob/d76bb28a67609d9855b8045e5f5f4641dff1e032/packages/rainbowkit/src/wallets/useWalletConnectors.ts#L58-L67
+      // https://github.com/wevm/wagmi/blob/cb58b1ea3ad40e77210f24eb598f9d2306db998c/packages/core/src/connectors/injected.ts#L176-L184
+      initialChain={0}
       appInfo={{
         appName: config.appName,
         // TODO: learn more and disclaimer

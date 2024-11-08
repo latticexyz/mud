@@ -44,7 +44,7 @@ export function useMonacoSuggestions(table?: Table) {
           .map(({ value, optionType }) => ({
             label: value,
             kind: monaco.languages.CompletionItemKind[monacoSuggestionsMap[optionType]],
-            insertText: value,
+            insertText: `"${value}"`,
             range,
             // move keyword optionType to the top of suggestions list
             sortText: optionType !== "KEYWORD" ? "0" : "1",

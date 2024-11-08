@@ -1,7 +1,7 @@
 import { Hex, Client, Transport, Chain, Account, stringToHex, BaseError, concatHex } from "viem";
 import { WorldDeploy } from "./common";
 import { debug } from "./debug";
-import { hexToResource, writeContract } from "@latticexyz/common";
+import { hexToResource } from "@latticexyz/common";
 import { identity, isDefined } from "@latticexyz/common/utils";
 import metadataConfig from "@latticexyz/world-module-metadata/mud.config";
 import metadataAbi from "@latticexyz/world-module-metadata/out/IMetadataSystem.sol/IMetadataSystem.abi.json" assert { type: "json" };
@@ -14,6 +14,8 @@ import { LibraryMap } from "./getLibraryMap";
 import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
 import { getStoreLogs, flattenStoreLogs, logToRecord } from "@latticexyz/store/internal";
 import { getKeyTuple, getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
+import { getAction } from "viem/utils";
+import { writeContract } from "viem/actions";
 
 const metadataModuleArtifact = getContractArtifact(metadataModule);
 
@@ -117,8 +119,13 @@ export async function ensureResourceTags<const value>({
         const resourceString = `${resource.type}:${resource.namespace}:${resource.name}`;
         debug(`tagging ${resourceString} with ${tag.tag}: ${JSON.stringify(tag.value)}`);
         try {
-          return await writeContract(client, {
+          return await getAction(
+            client,
+            writeContract,
+            "writeContract",
+          )({
             chain: client.chain ?? null,
+            account: client.account,
             address: worldDeploy.address,
             abi: metadataAbi,
             // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)

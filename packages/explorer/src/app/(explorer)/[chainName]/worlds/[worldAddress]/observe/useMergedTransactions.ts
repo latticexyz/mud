@@ -8,6 +8,7 @@ import { store as worldStore } from "../store";
 
 export type DecodedUserOperationCall = {
   to?: Address;
+  from?: Address;
   functionName: string;
   args?: readonly unknown[];
   value?: bigint;
@@ -28,7 +29,7 @@ export type ObservedTransaction = {
   error?: BaseError;
 };
 
-export function useObservedTransactions() {
+export function useMergedTransactions() {
   const { worldAddress } = useParams<{ worldAddress: string }>();
   const transactions = useStore(worldStore, (state) => state.transactions);
   const observerWrites = useStore(observerStore, (state) => state.writes);

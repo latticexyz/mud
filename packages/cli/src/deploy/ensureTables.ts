@@ -1,5 +1,5 @@
 import { Client, Transport, Chain, Account, Hex } from "viem";
-import { resourceToLabel, writeContract } from "@latticexyz/common";
+import { resourceToLabel } from "@latticexyz/common";
 import { WorldDeploy, worldAbi } from "./common";
 import {
   valueSchemaToFieldLayoutHex,
@@ -14,6 +14,8 @@ import { getTables } from "./getTables";
 import pRetry from "p-retry";
 import { Table } from "@latticexyz/config";
 import { isDefined } from "@latticexyz/common/utils";
+import { writeContract } from "viem/actions";
+import { getAction } from "viem/utils";
 
 export async function ensureTables({
   client,
@@ -82,8 +84,13 @@ export async function ensureTables({
         const valueSchema = getSchemaTypes(getValueSchema(table));
         return pRetry(
           () =>
-            writeContract(client, {
+            getAction(
+              client,
+              writeContract,
+              "writeContract",
+            )({
               chain: client.chain ?? null,
+              account: client.account,
               address: worldDeploy.address,
               abi: worldAbi,
               // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)

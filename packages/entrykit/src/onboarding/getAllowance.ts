@@ -1,6 +1,8 @@
 import { Address, Chain, Client, Transport } from "viem";
 import { paymasterTables } from "../paymaster";
-import { getRecord } from "../utils/getRecord";
+import { getRecord } from "@latticexyz/store/internal";
+
+// TODO: dedupe this (exists in cli and entrykit)
 
 export type GetAllowanceParams = {
   client: Client<Transport, Chain>;

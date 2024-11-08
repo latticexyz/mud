@@ -15,8 +15,5 @@ export { createWagmiConfig, type CreateWagmiConfigOptions } from "../createWagmi
 // And some additional internal things
 export * from "../passkey/passkeyWallet";
 export * from "../passkey/passkeyConnector";
-export * from "../smart-account/toCoinbaseSmartAccount";
-export * from "../smart-account/isCoinbaseSmartAccount";
 export * from "../getConnectors";
 export * from "../getWallets";
-export * from "../transports/wiresaw";

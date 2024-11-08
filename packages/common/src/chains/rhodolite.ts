@@ -25,9 +25,8 @@ export const rhodolite = {
   contracts: {
     ...chainConfig.contracts,
     quarryPaymaster: {
-      // https://github.com/latticexyz/quarry-paymaster/blob/a8bb2f3630c086f91ec3c283fac555ac441899b3/packages/contracts/worlds.json#L3
-      address: "0x37257e51a4a496bb921fb634c2cbe20e945e7da8",
-      blockCreated: 301260,
+      address: "0x61f22c3827d90c390e0e2aaf220971524ac0a68d",
+      blockCreated: 11262,
     },
   },
   blockExplorers: {

@@ -4,6 +4,7 @@ import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
 import { WorldDeploy, worldDeployEvents } from "./common";
 import { debug } from "./debug";
 import { logsToWorldDeploy } from "./logsToWorldDeploy";
+import { getAction } from "viem/utils";
 
 const deploys = new Map<Address, WorldDeploy>();
 
@@ -14,15 +15,15 @@ export async function getWorldDeploy(client: Client, worldAddress: Address): Pro
   if (deploy != null) {
     return {
       ...deploy,
-      stateBlock: (await getBlock(client, { blockTag: "latest" })).number,
+      stateBlock: (await getAction(client, getBlock, "getBlock")({ blockTag: "latest" })).number,
     };
   }
 
   debug("looking up world deploy for", address);
 
   const [fromBlock, toBlock] = await Promise.all([
-    getBlock(client, { blockTag: "earliest" }),
-    getBlock(client, { blockTag: "latest" }),
+    getAction(client, getBlock, "getBlock")({ blockTag: "earliest" }),
+    getAction(client, getBlock, "getBlock")({ blockTag: "latest" }),
   ]);
 
   const blockLogs = await fetchBlockLogs({

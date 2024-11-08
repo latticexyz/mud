@@ -1,6 +1,8 @@
 import { defineStore } from "@latticexyz/store";
 import { parseAbi } from "viem";
 
+// TODO: dedupe this (exists in cli and entrykit)
+
 // TODO: whole ABI
 export const paymasterAbi = parseAbi([
   "error SpenderSystem_AlreadyRegistered(address spender, address user)",

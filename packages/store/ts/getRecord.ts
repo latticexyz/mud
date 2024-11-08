@@ -11,8 +11,6 @@ import {
 import { readContract } from "viem/actions";
 import { getAction } from "viem/utils";
 
-// TODO: move this to store package or similar
-
 export type GetRecordOptions<table extends Table> = {
   address: Address;
   table: table;
