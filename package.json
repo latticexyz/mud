@@ -12,6 +12,7 @@
     "bench": "pnpm run --recursive bench",
     "build": "turbo run build --concurrency=100%",
     "changelog:generate": "tsx scripts/changelog.ts",
+    "changelog:convert": "tsx scripts/convert-changelog.ts",
     "clean": "turbo run clean --concurrency=100%",
     "dev": "turbo run dev --concurrency=999",
     "dist-tag-rm": "pnpm recursive exec -- sh -c 'npm dist-tag rm $(cat package.json | jq -r \".name\") $TAG || true'",
