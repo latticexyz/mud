@@ -33,11 +33,17 @@ const ChangelogItem = ({ version, date, changes }: ChangelogItem) => {
         </div>
 
         <ul className="mt-6 list-disc pl-5 text-[18px] text-white/70">
-          {allChanges.slice(0, 4).map((change) => (
+          {allChanges.slice(0, 3).map((change) => (
             <li key={change.title} title={change.title}>
               <span className="truncate block max-w-[400px]">{change.title}</span>
             </li>
           ))}
+
+          {allChanges.length > 3 && (
+            <li className="text-white/50">
+              <span>and {allChanges.length - 3} more...</span>
+            </li>
+          )}
         </ul>
       </div>
     </Link>
@@ -49,7 +55,7 @@ export default function Changelog() {
     <Section className="bg-black py-8 md:pt-12 md:pb-14">
       <Container>
         <div className="space-y-8">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-6 sm:gap-0 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="font-mono uppercase text-lg md:text-xl">Changelog</h2>
               <p className="text-white/70 text-sm md:text-md mt-3">Learn what’s changed in recent releases of MUD.</p>
