@@ -29,6 +29,16 @@ const changeTypes = {
   major: ChangeType.MAJOR,
 } as const;
 
+type ChangelogEntry = {
+  version: string;
+  date: Date;
+  changes: {
+    patch: (ChangelogItem & GitMetadata)[];
+    minor: (ChangelogItem & GitMetadata)[];
+    major: (ChangelogItem & GitMetadata)[];
+  };
+};
+
 type ChangelogItem = {
   packages: {
     package: string;
@@ -73,23 +83,18 @@ async function appendChangelogJSON() {
   const date = new Date();
 
   // Read existing JSON file if it exists
-  let existingData = [];
+  let existingData: ChangelogEntry[] = [];
   try {
     const existingContent = readFileSync(CHANGELOG_JSON_PATH, "utf8");
     existingData = JSON.parse(existingContent);
   } catch (error) {
-    // File doesn't exist or is invalid JSON, start with empty array
     existingData = [];
   }
 
-  // Find index of existing version entry
   const existingIndex = existingData.findIndex((entry) => entry.version === version);
-
   if (existingIndex !== -1) {
-    // Override existing entry
     existingData[existingIndex] = { version, date, changes };
   } else {
-    // Add new entry to the beginning of the array
     existingData.unshift({ version, date, changes });
   }
 
