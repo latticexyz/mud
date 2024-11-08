@@ -1,10 +1,9 @@
+import { useEntryKitConfig } from "./EntryKitConfigProvider";
 import { Logo } from "./icons/Logo";
-import { useAppInfo } from "./useAppInfo";
 import { usePreloadImage } from "./usePreloadImage";
 
 export function AppInfo() {
-  const { appName, appIcon } = useAppInfo();
-
+  const { appName, appIcon } = useEntryKitConfig();
   const { data: hasAppIcon, isLoading: appIconLoading } = usePreloadImage(appIcon);
 
   return (
