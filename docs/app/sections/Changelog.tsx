@@ -55,7 +55,7 @@ export default function Changelog() {
     <Section className="bg-black py-8 md:pt-12 md:pb-14">
       <Container>
         <div className="space-y-8">
-          <div className="flex flex-col gap-6 sm:gap-0 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-6 sm:gap-0 sm:flex-row items-start sm:items-center sm:justify-between">
             <div>
               <h2 className="font-mono uppercase text-lg md:text-xl">Changelog</h2>
               <p className="text-white/70 text-sm md:text-md mt-3">Learn what’s changed in recent releases of MUD.</p>

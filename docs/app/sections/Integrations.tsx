@@ -39,20 +39,27 @@ export default function Integrations() {
           namespace. The SWI covers everything from indexing to pre-confirmations. Quarry is Lattice’s full-stack
           implementation of the Standard World Interface.
         </p>
-
-        <Image
-          src="/images/diagrams/swi.svg"
-          alt="Standard World Interface"
-          width={1148}
-          height={401}
-          className="mt-6 lg:mt-12"
-        />
-
-        <p className="text-xs mt-2 md:mt-4 lg:mt-6 md:text-sm opacity-50 text-center">
-          {/* TODO: add description of the diagram */}
-          Some description of the diagram goes here.
-        </p>
       </Container>
+
+      <div>
+        <div className="w-full overflow-x-auto mt-8 lg:mt-12">
+          <Container>
+            <Image
+              src="/images/diagrams/swi.svg"
+              alt="Standard World Interface"
+              width={1148}
+              height={401}
+              className="max-w-[1148px] pr-4 sm:pr-6 md:pr-0 md:w-full"
+            />
+
+            <p className="text-xs mt-2 md:mt-4 lg:mt-6 md:text-sm opacity-50 text-center hidden md:block">
+              {/* TODO: add description of the diagram */}
+              Some description of the diagram goes here.
+            </p>
+          </Container>
+        </div>
+        <p className="text-sm text-white/30 text-center mt-4 text-[19px] md:hidden">← Scroll to explore →</p>
+      </div>
     </Section>
   );
 }

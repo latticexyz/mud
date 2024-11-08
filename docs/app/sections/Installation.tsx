@@ -54,13 +54,19 @@ export default function Installation() {
 
           <div>
             <VideoPlayer videoId={videoId}>
-              <div className="h-[313px] w-full bg-light-gray mt-10 relative">
+              <div className="w-full bg-light-gray mt-10 relative">
                 <div className="absolute inset-0 bg-black/30 z-10" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/80 h-[79px] w-[79px] flex items-center justify-center z-20">
                   <Image src="/images/icons/play.svg" alt="Play" width={32} height={32} />
                 </div>
 
-                <Image src="/images/mud-video-thumbnail.jpg" alt="mud video thumbnail" width={560} height={313} />
+                <Image
+                  src="/images/mud-video-thumbnail.jpg"
+                  alt="mud video thumbnail"
+                  width={560}
+                  height={313}
+                  className="w-full"
+                />
               </div>
             </VideoPlayer>
           </div>
