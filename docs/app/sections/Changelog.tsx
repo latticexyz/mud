@@ -2,25 +2,42 @@ import Image from "next/image";
 import { Container } from "../../components/ui/Container";
 import { Section } from "../../components/ui/Section";
 
-const ChangelogItem = () => {
+import changelog from "../../data/changelog.json";
+import Link from "next/link";
+
+type ChangelogItem = (typeof changelog)[number];
+
+const ChangelogItem = ({ version, date, changes }: ChangelogItem) => {
+  const allChanges = [...changes.patch, ...changes.minor, ...changes.major];
+  if (allChanges.length === 0) {
+    return null;
+  }
+
   return (
-    <div className="inline-block h-full flex-shrink-0 flex-basis-[485px]">
+    <Link href="https://mud.dev/changelog#version-229" target="_blank" className="flex h-full flex-shrink-0">
       <div className="border border-white/20 bg-light-gray px-6 py-6 text-white">
         <div className="flex items-center justify-between">
-          <div className="inline-block w-[59px] bg-white text-black text-center font-mono text-sm uppercase leading-[41px]">
-            2.0
+          <div className="inline-block px-2 bg-white text-black text-center font-mono text-sm uppercase leading-[41px]">
+            {version}
           </div>
-          <p className="font-mono text-sm uppercase text-white/50">may 1, 2024</p>
+          <p className="font-mono text-sm uppercase text-white/50">
+            {new Date(date).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </p>
         </div>
 
-        <ul className="mt-6 list-disc pl-5 text-[18px] text-white/70 flex flex-col gap-[8px]">
-          <li>Some thing that was updated goes here</li>
-          <li>Some thing that was updated goes here</li>
-          <li>Some thing that was updated goes here</li>
-          <li>Some thing that was updated goes here</li>
+        <ul className="mt-6 list-disc pl-5 text-[18px] text-white/70">
+          {allChanges.slice(0, 4).map((change) => (
+            <li key={change.title} title={change.title}>
+              <span className="truncate block max-w-[400px]">{change.title}</span>
+            </li>
+          ))}
         </ul>
       </div>
-    </div>
+    </Link>
   );
 };
 
@@ -55,11 +72,10 @@ export default function Changelog() {
           </div>
 
           <OverflowContainer>
-            <div className="flex gap-4">
-              <ChangelogItem />
-              <ChangelogItem />
-              <ChangelogItem />
-              <ChangelogItem />
+            <div className="grid grid-rows-1 grid-flow-col gap-4">
+              {changelog.map((item) => (
+                <ChangelogItem key={item.version} {...item} />
+              ))}
             </div>
           </OverflowContainer>
         </div>
