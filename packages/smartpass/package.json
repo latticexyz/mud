@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/smartpass",
-  "version": "2.2.8",
+  "version": "0.0.0",
   "description": "Passkey-based smart accounts",
   "repository": {
     "type": "git",
@@ -10,16 +10,12 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/tsup/index.js",
-    "./internal": "./dist/tsup/internal.js"
+    "./internal": "./dist/internal.js"
   },
   "typesVersions": {
     "*": {
-      "index": [
-        "./dist/tsup/index.d.ts"
-      ],
       "internal": [
-        "./dist/tsup/internal.d.ts"
+        "./dist/internal.d.ts"
       ]
     }
   },
@@ -27,35 +23,24 @@
     "dist"
   ],
   "scripts": {
-    "build": "pnpm run build:js",
-    "build:js": "tsup",
-    "clean": "pnpm run clean:js",
-    "clean:js": "shx rm -rf dist",
+    "build": "tsup",
+    "clean": "shx rm -rf dist",
     "dev": "tsup --watch",
-    "playground": "mprocs",
-    "playground:deploy": "mprocs --config mprocs.deploy.yaml",
-    "snapshot:push": "gh workflow run snapshot.yml --ref entrykit",
-    "snapshot:status": "gh run list --workflow snapshot.yml --limit 5",
-    "test": "tsc --noEmit && vitest",
-    "test:ci": "tsc --noEmit && vitest --run"
+    "test": "tsc --noEmit && vitest --run",
+    "test:ci": "pnpm run test"
   },
   "dependencies": {
     "@ark/util": "0.2.2",
-    "@noble/curves": "^1.6.0",
     "debug": "^4.3.4",
-    "ox": "0.0.0-canary-20241105004728",
-    "webauthn-p256": "^0.0.10"
+    "ox": "0.1.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
     "mprocs": "^0.7.1",
-    "viem": "2.21.19",
+    "tsup": "^6.7.0",
     "vite": "^5.4.1",
     "vite-plugin-dts": "^4.2.4",
     "vite-plugin-externalize-deps": "^0.8.0"
-  },
-  "peerDependencies": {
-    "viem": "2.x"
   },
   "//publishConfig": {
     "access": "public"

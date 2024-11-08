@@ -1,18 +1,25 @@
-import { Hex } from "viem";
-import { createCredential, sign } from "webauthn-p256";
+import { WebAuthnP256, PublicKey, Signature, Hex } from "ox";
+import { SmartPassCredential } from "../common";
+import { SignMetadata } from "ox/WebAuthnP256";
 
 export const methods = {
-  async create(): Promise<{ id: string; publicKey: Hex }> {
-    const credential = await createCredential({ name: "SmartPass" });
+  async create(): Promise<SmartPassCredential> {
+    const credential = await WebAuthnP256.createCredential({ name: "SmartPass" });
     return {
-      id: credential.id,
-      publicKey: credential.publicKey,
+      credentialId: credential.id,
+      publicKey: PublicKey.toHex(credential.publicKey),
     };
   },
-  async sign(params: { credentialId?: string; hash: Hex }): Promise<{ signature: Hex; credentialId: string }> {
-    const { signature, raw: credential } = await sign(params);
-
-    return { signature, credentialId: credential.id };
+  async sign(params: {
+    credentialId?: SmartPassCredential["credentialId"];
+    challenge: Hex.Hex;
+  }): Promise<{ credentialId: SmartPassCredential["credentialId"]; signature: Hex.Hex; metadata: SignMetadata }> {
+    const { raw: credential, signature, metadata } = await WebAuthnP256.sign(params);
+    return {
+      credentialId: credential.id,
+      signature: Signature.toHex(signature),
+      metadata,
+    };
   },
 };
 

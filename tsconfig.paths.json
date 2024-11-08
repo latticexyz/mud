@@ -30,6 +30,7 @@
       "@latticexyz/recs/deprecated": ["./packages/recs/src/deprecated/index.ts"],
       "@latticexyz/schema-type": ["./packages/schema-type/src/typescript/index.ts"],
       "@latticexyz/schema-type/*": ["./packages/schema-type/src/typescript/exports/*.ts"],
+      "@latticexyz/smartpass/internal": ["./packages/smartpass/src/exports/internal.ts"],
       "@latticexyz/stash": ["./packages/stash/ts/exports/index.ts"],
       "@latticexyz/stash/internal": ["./packages/stash/ts/exports/internal.ts"],
       "@latticexyz/stash/react": ["./packages/stash/ts/exports/react.ts"],

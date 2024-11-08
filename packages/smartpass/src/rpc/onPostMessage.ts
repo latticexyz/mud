@@ -12,6 +12,7 @@ export function onPostMessage(event: MessageEvent<"bridge:connect">) {
     debug("attaching onPortMessage");
     port.addEventListener("message", onPortMessage);
     port.start();
+    // TODO: detect support and emit a different message?
     port.postMessage("bridge:connected");
   }
 }

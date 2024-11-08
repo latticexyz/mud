@@ -46,6 +46,7 @@
     "@latticexyz/explorer": "workspace:*",
     "@latticexyz/paymaster": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
+    "@latticexyz/smartpass": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/wiresaw": "workspace:*",
     "@latticexyz/world": "workspace:*",

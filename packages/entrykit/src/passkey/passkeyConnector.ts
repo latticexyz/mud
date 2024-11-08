@@ -79,14 +79,14 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePa
       // supportsSimulation: true,
 
       async createPasskey() {
-        const { id } = await createPasskey();
-        const account = await getAccount(client, id);
+        const { credentialId } = await createPasskey();
+        const account = await getAccount(client, credentialId);
         this.onAccountsChanged([account.address]);
         this.onConnect?.({ chainId: numberToHex(chainId) });
       },
       async reusePasskey() {
-        const { id } = await reusePasskey();
-        const account = await getAccount(client, id);
+        const { credentialId } = await reusePasskey();
+        const account = await getAccount(client, credentialId);
         this.onAccountsChanged([account.address]);
         this.onConnect?.({ chainId: numberToHex(chainId) });
       },

@@ -1,49 +1,54 @@
 import { bytesToHex, hashMessage } from "viem";
-import { sign } from "webauthn-p256";
 import { cache } from "./cache";
 import { getMessageHash } from "./getMessageHash";
-import { recoverPasskeyPublicKey } from "./recoverPasskeyPublicKey";
-import { P256Credential } from "viem/account-abstraction";
+import { findPublicKey } from "./findPublicKey";
+import { SmartPassCredential, createBridge } from "@latticexyz/smartpass/internal";
 
-export async function reusePasskey(): Promise<P256Credential> {
-  const randomChallenge = bytesToHex(crypto.getRandomValues(new Uint8Array(256)));
-  const messageHash = hashMessage(randomChallenge);
-  const { signature, webauthn, raw: credential } = await sign({ hash: messageHash });
+export async function reusePasskey(): Promise<SmartPassCredential> {
+  const bridge = await createBridge({ message: "Signing in…" });
+  try {
+    const challenge = hashMessage(bytesToHex(crypto.getRandomValues(new Uint8Array(256))));
+    const { credentialId, signature, metadata } = await bridge.request("sign", { challenge });
 
-  const publicKey = await (async () => {
-    const publicKey = cache.getState().publicKeys[credential.id];
-    if (publicKey) return publicKey;
+    const publicKey = await (async () => {
+      const cachedPublicKey = cache.getState().publicKeys[credentialId];
+      if (cachedPublicKey) return cachedPublicKey;
 
-    // TODO: look up account/public key by credential ID once we store it onchain
+      // TODO: look up account/public key by credential ID once we store it onchain
 
-    const webauthnHash = await getMessageHash(webauthn);
-    const passkey = await recoverPasskeyPublicKey({
-      credentialId: credential.id,
-      messageHash: webauthnHash,
-      signatureHex: signature,
-    });
-    if (!passkey) {
-      throw new Error("recovery failed");
-    }
-    if (passkey.credential.id !== credential.id) {
-      throw new Error("wrong credential");
-    }
+      const messageHash = await getMessageHash(metadata);
+      const challenge2 = hashMessage(signature);
+      const signature2 = await bridge.request("sign", { credentialId, challenge: challenge2 });
+      if (signature2.credentialId !== credentialId) {
+        throw new Error("wrong credential");
+      }
 
-    cache.setState((state) => ({
-      publicKeys: {
-        ...state.publicKeys,
-        [credential.id]: passkey.publicKey,
-      },
+      const publicKey = findPublicKey([
+        { messageHash, signatureHex: signature },
+        { messageHash: await getMessageHash(signature2.metadata), signatureHex: signature2.signature },
+      ]);
+      if (!publicKey) {
+        throw new Error("recovery failed");
+      }
+
+      cache.setState((state) => ({
+        publicKeys: {
+          ...state.publicKeys,
+          [credentialId]: publicKey,
+        },
+      }));
+
+      return publicKey;
+    })();
+
+    console.log("recovered passkey", credentialId, publicKey);
+
+    cache.setState(() => ({
+      activeCredential: credentialId,
     }));
 
-    return passkey.publicKey;
-  })();
-
-  console.log("recovered passkey", credential.id, publicKey);
-
-  cache.setState(() => ({
-    activeCredential: credential.id,
-  }));
-
-  return { id: credential.id, publicKey, raw: credential };
+    return { credentialId, publicKey };
+  } finally {
+    bridge.close();
+  }
 }

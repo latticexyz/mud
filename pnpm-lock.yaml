@@ -474,6 +474,9 @@ importers:
       '@latticexyz/protocol-parser':
         specifier: workspace:*
         version: link:../protocol-parser
+      '@latticexyz/smartpass':
+        specifier: workspace:*
+        version: link:../smartpass
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
@@ -1020,18 +1023,12 @@ importers:
       '@ark/util':
         specifier: 0.2.2
         version: 0.2.2
-      '@noble/curves':
-        specifier: ^1.6.0
-        version: 1.6.0
       debug:
         specifier: ^4.3.4
         version: 4.3.7
       ox:
-        specifier: 0.0.0-canary-20241105004728
-        version: 0.0.0-canary-20241105004728(typescript@5.4.2)(zod@3.23.8)
-      webauthn-p256:
-        specifier: ^0.0.10
-        version: 0.0.10
+        specifier: 0.1.0
+        version: 0.1.0(typescript@5.4.2)(zod@3.23.8)
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -1039,9 +1036,9 @@ importers:
       mprocs:
         specifier: ^0.7.1
         version: 0.7.1
-      viem:
-        specifier: 2.21.19
-        version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
       vite:
         specifier: ^5.4.1
         version: 5.4.8(@types/node@22.7.4)(terser@5.34.1)
@@ -9722,8 +9719,8 @@ packages:
   outdent@0.5.0:
     resolution: {integrity: sha512-/jHxFIzoMXdqPzTaCpFzAAWhpkSjZPF4Vsn6jAfNpmbH/ymsmd7Qc6VE9BGn0L6YMj6uwpQLxCECpus4ukKS9Q==}
 
-  ox@0.0.0-canary-20241105004728:
-    resolution: {integrity: sha512-70B9nOXh7tNB8S95iO2BCYxLpDrHshOoxFLRdGh7iNLNIgR45gNU0i3mE48vvNy2F/YHxSOS37vjqXLTmMo45Q==}
+  ox@0.1.0:
+    resolution: {integrity: sha512-xs+STnBP8XG38N+7W5c/5LRN68XOleiTfKJlSBw5rcorIfGvpJPB45lRE3AlziiiuZ+KrEd/1ZLrD+LkN5XFzQ==}
     peerDependencies:
       typescript: '>=5.4.0'
     peerDependenciesMeta:
@@ -23524,7 +23521,7 @@ snapshots:
 
   outdent@0.5.0: {}
 
-  ox@0.0.0-canary-20241105004728(typescript@5.4.2)(zod@3.23.8):
+  ox@0.1.0(typescript@5.4.2)(zod@3.23.8):
     dependencies:
       '@adraffy/ens-normalize': 1.11.0
       '@noble/curves': 1.6.0
