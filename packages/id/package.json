@@ -1,11 +1,11 @@
 {
-  "name": "@latticexyz/smartpass",
+  "name": "@latticexyz/id",
   "version": "0.0.0",
-  "description": "Passkey-based smart accounts",
+  "description": "Simple MUD accounts with passkeys",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/smartpass"
+    "directory": "packages/id"
   },
   "license": "MIT",
   "type": "module",
@@ -38,11 +38,9 @@
     "@types/debug": "^4.1.7",
     "mprocs": "^0.7.1",
     "tsup": "^6.7.0",
-    "vite": "^5.4.1",
-    "vite-plugin-dts": "^4.2.4",
-    "vite-plugin-externalize-deps": "^0.8.0"
+    "vite": "^5.4.1"
   },
-  "//publishConfig": {
+  "publishConfig": {
     "access": "public"
   }
 }

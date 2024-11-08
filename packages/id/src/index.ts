@@ -1,6 +1,6 @@
 import { onPostMessage } from "./rpc/onPostMessage";
 
-console.log("hello from smartpass");
+console.log("hello from MUD ID");
 window.addEventListener("message", onPostMessage);
 
 const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));

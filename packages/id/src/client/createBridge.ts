@@ -2,7 +2,7 @@ import { methods } from "../rpc/methods";
 import { RequestData, ResponseData } from "../rpc/schema";
 import { createPort } from "./createPort";
 
-export type SmartPassBridge = {
+export type PasskeyBridge = {
   request: <method extends keyof methods>(
     method: method,
     ...params: RequestData<method>["params"]
@@ -11,9 +11,9 @@ export type SmartPassBridge = {
 };
 
 export async function createBridge({
-  url: initialUrl = "https://smartpass.tunnel.offchain.dev",
+  url: initialUrl = "https://id.mud.dev",
   message,
-}: { url?: string; message?: string } = {}): Promise<SmartPassBridge> {
+}: { url?: string; message?: string } = {}): Promise<PasskeyBridge> {
   const url = new URL(initialUrl);
 
   const hashParams = new URLSearchParams({
@@ -42,7 +42,7 @@ export async function createBridge({
 
   let bridge = window.open(url, "_blank", "popup,width=600,height=400");
   if (!bridge) {
-    throw new Error(`Could not open SmartPass window at "${url}".`);
+    throw new Error(`Could not open window for MUD ID bridge at "${url}".`);
   }
 
   // TODO: close window if timed out
@@ -57,7 +57,7 @@ export async function createBridge({
       // TODO: detect if window was closed by user
       //       maybe can use `window.opener == null` but that may be blocked in some security contexts?
       if (!bridge) {
-        throw new Error("SmartPass bridge was closed.");
+        throw new Error("MUD ID bridge was closed.");
       }
 
       // TODO: maybe don't need message IDs if we use a port per request?

@@ -468,15 +468,15 @@ importers:
       '@latticexyz/explorer':
         specifier: workspace:*
         version: link:../explorer
+      '@latticexyz/id':
+        specifier: workspace:*
+        version: link:../id
       '@latticexyz/paymaster':
         specifier: workspace:*
         version: link:../paymaster
       '@latticexyz/protocol-parser':
         specifier: workspace:*
         version: link:../protocol-parser
-      '@latticexyz/smartpass':
-        specifier: workspace:*
-        version: link:../smartpass
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
@@ -857,6 +857,31 @@ importers:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.34.1)
 
+  packages/id:
+    dependencies:
+      '@ark/util':
+        specifier: 0.2.2
+        version: 0.2.2
+      debug:
+        specifier: ^4.3.4
+        version: 4.3.7
+      ox:
+        specifier: 0.1.0
+        version: 0.1.0(typescript@5.4.2)(zod@3.23.8)
+    devDependencies:
+      '@types/debug':
+        specifier: ^4.1.7
+        version: 4.1.7
+      mprocs:
+        specifier: ^0.7.1
+        version: 0.7.1
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
+      vite:
+        specifier: ^5.4.1
+        version: 5.4.8(@types/node@22.7.4)(terser@5.34.1)
+
   packages/paymaster:
     dependencies:
       '@latticexyz/common':
@@ -868,9 +893,6 @@ importers:
       debug:
         specifier: ^4.3.4
         version: 4.3.7
-      webauthn-p256:
-        specifier: ^0.0.10
-        version: 0.0.10
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -1017,37 +1039,6 @@ importers:
       vitest:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.34.1)
-
-  packages/smartpass:
-    dependencies:
-      '@ark/util':
-        specifier: 0.2.2
-        version: 0.2.2
-      debug:
-        specifier: ^4.3.4
-        version: 4.3.7
-      ox:
-        specifier: 0.1.0
-        version: 0.1.0(typescript@5.4.2)(zod@3.23.8)
-    devDependencies:
-      '@types/debug':
-        specifier: ^4.1.7
-        version: 4.1.7
-      mprocs:
-        specifier: ^0.7.1
-        version: 0.7.1
-      tsup:
-        specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
-      vite:
-        specifier: ^5.4.1
-        version: 5.4.8(@types/node@22.7.4)(terser@5.34.1)
-      vite-plugin-dts:
-        specifier: ^4.2.4
-        version: 4.2.4(@types/node@22.7.4)(rollup@4.22.5)(typescript@5.4.2)(vite@5.4.8(@types/node@22.7.4)(terser@5.34.1))
-      vite-plugin-externalize-deps:
-        specifier: ^0.8.0
-        version: 0.8.0(vite@5.4.8(@types/node@22.7.4)(terser@5.34.1))
 
   packages/solhint-config-mud:
     devDependencies:

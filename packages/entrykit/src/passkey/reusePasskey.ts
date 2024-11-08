@@ -2,9 +2,9 @@ import { bytesToHex, hashMessage } from "viem";
 import { cache } from "./cache";
 import { getMessageHash } from "./getMessageHash";
 import { findPublicKey } from "./findPublicKey";
-import { SmartPassCredential, createBridge } from "@latticexyz/smartpass/internal";
+import { PasskeyCredential, createBridge } from "@latticexyz/id/internal";
 
-export async function reusePasskey(): Promise<SmartPassCredential> {
+export async function reusePasskey(): Promise<PasskeyCredential> {
   const bridge = await createBridge({ message: "Signing in…" });
   try {
     const challenge = hashMessage(bytesToHex(crypto.getRandomValues(new Uint8Array(256))));

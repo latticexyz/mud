@@ -1,6 +1,6 @@
 import { Hex } from "ox";
 
-export type SmartPassCredential = {
+export type PasskeyCredential = {
   credentialId: string;
   publicKey: Hex.Hex;
 };

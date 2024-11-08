@@ -1,7 +1,7 @@
 import { cache } from "./cache";
-import { createBridge, SmartPassCredential } from "@latticexyz/smartpass/internal";
+import { createBridge, PasskeyCredential } from "@latticexyz/id/internal";
 
-export async function createPasskey(): Promise<SmartPassCredential> {
+export async function createPasskey(): Promise<PasskeyCredential> {
   const bridge = await createBridge({ message: "Creating account…" });
   try {
     const credential = await bridge.request("create");

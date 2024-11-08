@@ -37,7 +37,7 @@ async function onPortMessage(event: MessageEvent<RequestData>) {
         result,
       });
     } catch (error) {
-      console.error("[smartpass error]", error);
+      console.error("[mud id error]", error);
       reply(port, {
         id: event.data.id,
         method: event.data.method,
@@ -56,7 +56,7 @@ async function onPortMessage(event: MessageEvent<RequestData>) {
         result,
       });
     } catch (error) {
-      console.error("[smartpass error]", error);
+      console.error("[mud id error]", error);
       reply(port, {
         id: event.data.id,
         method: event.data.method,
