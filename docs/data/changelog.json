@@ -1,0 +1,153 @@
+[
+  {
+    "version": "2.2.14",
+    "date": "2024-11-08T10:53:26.923Z",
+    "changes": {
+      "patch": [
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe columns in the Explore tab table are now sorted correctly according to their types.\n",
+          "type": 0,
+          "commitHash": "722f4b4c48b9e49509a47e5a23f1ce45dbe9999d",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): type-based sorting (#3340)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded support for ERC-4337 bundled transactions, monitoring them by either listening to chain blocks or using the `observer` transport wrapper. Each user operation within a bundled transaction is displayed as an individual transaction in the Observe tab.\n",
+          "type": 0,
+          "commitHash": "059240612a3ba74d3e16dfb3b1b2c7276a6ebe1d",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): bundled transactions support (#3313)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            }
+          ],
+          "description": "\nDeployer now retrieves resource tags by fetching logs to work around RPC rate limiting issues.\n",
+          "type": 0,
+          "commitHash": "3168f1f56abce047a639582b50bf1aa2c7906c90",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "chore: add changeset for cli PR #3350 (#3353)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixed a bug in `watchLogs` where logs from the buffer were not applied during the initial sync.\n",
+          "type": 0,
+          "commitHash": "cd9fd0abd859f1d83baafc93a91e238d81726928",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "fix(store-sync): apply logs from buffer in watchLogs (#3346)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            }
+          ],
+          "description": "\nDeployer will now throw an error if it detects an already registered table with a different schema than the one you are trying to deploy.\n",
+          "type": 0,
+          "commitHash": "ee388ed599b051400a6f1fc5d4c5d369e466ad92",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(cli): throw error on schema changes (#3336)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nWhen accessing a new table in Explore tab, the SQL editor now encloses column names that are also PostgreSQL keywords in double quotes in order to prevent invalid queries.\n",
+          "type": 0,
+          "commitHash": "9c1ca41560e2b3b319976794a73807f391e78b1b",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): format default sql query (#3307)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/abi-ts",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUsing a TS extension (rather than DTS) now correctly includes `as const` in the TS output.\n",
+          "type": 0,
+          "commitHash": "534039428496bcededc62d2e450d29d7bac42475",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(abi-ts): ts output should use as const (#3348)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\n`getFunctions` now internally uses `fetchLogs` for better handling of block range errors.\n",
+          "type": 0,
+          "commitHash": "22674ad244f59afd6bd364a3dd44df36992dd35f",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(world): use fetchLogs in getFunctions (#3338)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nExperimental pending logs watcher now reconnects if it loses connection or times out.\n",
+          "type": 0,
+          "commitHash": "9ddc874ecbe8671c197619a23bdeac2bee57174e",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "fix(store-sync): reconnect unresponsive watchLogs socket (#3301)"
+        }
+      ],
+      "minor": [],
+      "major": [
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "major"
+            }
+          ],
+          "description": "\nFixed world ABI fetching in Rhodolite.\n",
+          "type": 2,
+          "commitHash": "2be543f7f0936f5dc94c13613da679d8634dfc27",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): switch to fetchBlockLogs (#3352)"
+        }
+      ]
+    }
+  }
+]

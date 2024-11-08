@@ -20,8 +20,8 @@ export default async function TrustedBy() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-4 w-full">
-            <GitHubStars />
-            <Contributors />
+            {/* <GitHubStars />
+            <Contributors /> */}
             <Projects />
           </div>
         </div>
