@@ -14,7 +14,11 @@ const ChangelogItem = ({ version, date, changes }: ChangelogItem) => {
   }
 
   return (
-    <Link href="https://mud.dev/changelog#version-229" target="_blank" className="flex h-full flex-shrink-0">
+    <Link
+      href={`https://mud.dev/changelog#version-${version.replace(/\./g, "")}`}
+      target="_blank"
+      className="flex h-full flex-shrink-0"
+    >
       <div className="border border-white/20 bg-light-gray px-6 py-6 text-white">
         <div className="flex items-center justify-between">
           <div className="inline-block px-2 bg-white text-black text-center font-mono text-sm uppercase leading-[41px]">
