@@ -4,9 +4,14 @@ import React from "react";
 
 async function getStargazers() {
   // TODO: get full url
-  const response = await fetch("http://localhost:3000/api/stargazers");
-  const data = await response.json();
-  return data;
+  try {
+    const response = await fetch("http://localhost:3000/api/stargazers");
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    return 0;
+  }
 }
 
 export async function GitHubStars() {

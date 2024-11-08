@@ -55,7 +55,8 @@ export const metadata: Metadata = {
     "MUD provides you with the tools to build onchain applications and autonomous worlds, with a framework and protocol that simplifies development on Ethereum and other EVM chains.",
   icons: "/images/logos/circle/mud.svg",
   openGraph: {
-    images: "/images/og-img-mud.png",
+    // TODO: add OG image
+    // images: "/images/og-img-mud.png",
   },
 };
 

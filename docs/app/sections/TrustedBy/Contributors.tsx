@@ -1,9 +1,14 @@
 import Image from "next/image";
 
 async function getContributors() {
-  const response = await fetch("http://localhost:3000/api/contributors");
-  const data = await response.json();
-  return data;
+  try {
+    const response = await fetch("http://localhost:3000/api/contributors");
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 }
 
 export default async function Contributors() {

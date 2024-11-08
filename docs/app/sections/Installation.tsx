@@ -5,6 +5,7 @@ import { Container } from "../../components/ui/Container";
 import { Section } from "../../components/ui/Section";
 import CopyButton from "../../components/ui/CopyButton";
 import VideoPlayer from "../../components/ui/VideoModal";
+import Image from "next/image";
 
 const videoId = "07b2e147a732cb52ffff39165f35a498";
 
@@ -52,9 +53,16 @@ export default function Installation() {
           </div>
 
           <div>
-            <div className="h-[313px] w-full bg-light-gray mt-10">
-              <VideoPlayer videoId={videoId} thumbnailUrl="/images/mud-video-thumbnail.jpg" />
-            </div>
+            <VideoPlayer videoId={videoId}>
+              <div className="h-[313px] w-full bg-light-gray mt-10 relative">
+                <div className="absolute inset-0 bg-black/30 z-10" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/80 h-[79px] w-[79px] flex items-center justify-center z-20">
+                  <Image src="/images/icons/play.svg" alt="Play" width={32} height={32} />
+                </div>
+
+                <Image src="/images/mud-video-thumbnail.jpg" alt="mud video thumbnail" width={560} height={313} />
+              </div>
+            </VideoPlayer>
           </div>
         </div>
       </Container>
