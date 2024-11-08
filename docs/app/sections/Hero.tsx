@@ -11,17 +11,16 @@ export default function Hero() {
       <Container>
         <div
           className={cn(
-            "flex flex-col animate-in animate-duration-500 fade-in mt-8 mb-8",
-            "gap-12",
+            "flex flex-col animate-in animate-duration-500 fade-in mt-8 pb-8",
             "sm:justify-between",
-            "md:gap-16 md:mt-12 md:mb-16",
+            "md:pb-[74px]",
           )}
         >
           <div className="flex items-center justify-between">
             <h1 className="font-mono text-3xl uppercase sm:text-4xl">MUD</h1>
           </div>
 
-          <div className="grow flex flex-col mt-[30px] lg:mt-[190px] md:flex-row-reverse gap-6 md:gap-y-16">
+          <div className="grow flex flex-col mt-[90px] lg:mt-[190px] md:flex-row-reverse gap-6 md:gap-y-16">
             <div className="grow md:grow-0 flex items-center md:items-end md:justify-center">
               <Image
                 src="/images/logos/mud-white.svg"
