@@ -48,6 +48,7 @@ export async function getMessageHash(
   const match = clientDataJSON.slice(Number(challengeIndex)).match(/^"challenge":"(.*?)"/);
   if (!match) throw new Error("Invalid clientDataJSON");
 
+  // TODO: switch to ox, then maybe don't need async/await here
   const clientDataJSONHash = new Uint8Array(await crypto.subtle.digest("SHA-256", utf8ToBytes(clientDataJSON)));
   const messageHash = new Uint8Array(
     await crypto.subtle.digest("SHA-256", concatBytes(hexToBytes(authenticatorData), clientDataJSONHash)),

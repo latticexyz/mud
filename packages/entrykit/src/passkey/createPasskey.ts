@@ -1,18 +1,22 @@
-import { createCredential } from "webauthn-p256";
 import { cache } from "./cache";
-import { P256Credential } from "viem/account-abstraction";
+import { createBridge, PasskeyCredential } from "@latticexyz/id/internal";
 
-export async function createPasskey(): Promise<P256Credential> {
-  const credential = await createCredential({ name: "MUD Account" });
-  console.log("created passkey", credential);
+export async function createPasskey(): Promise<PasskeyCredential> {
+  const bridge = await createBridge({ message: "Creating account…" });
+  try {
+    const credential = await bridge.request("create");
+    console.log("created passkey", credential);
 
-  cache.setState((state) => ({
-    activeCredential: credential.id,
-    publicKeys: {
-      ...state.publicKeys,
-      [credential.id]: credential.publicKey,
-    },
-  }));
+    cache.setState((state) => ({
+      activeCredential: credential.credentialId,
+      publicKeys: {
+        ...state.publicKeys,
+        [credential.credentialId]: credential.publicKey,
+      },
+    }));
 
-  return credential;
+    return credential;
+  } finally {
+    bridge.close();
+  }
 }

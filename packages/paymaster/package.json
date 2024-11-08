@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/paymaster",
-  "version": "2.2.14",
+  "version": "0.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
@@ -31,8 +31,7 @@
   "dependencies": {
     "@latticexyz/common": "workspace:*",
     "@latticexyz/store": "workspace:*",
-    "debug": "^4.3.4",
-    "webauthn-p256": "^0.0.10"
+    "debug": "^4.3.4"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",

@@ -1,4 +1,4 @@
-import { Chain, webSocket } from "viem";
+import { Chain, http } from "viem";
 import { anvil } from "viem/chains";
 import { createWagmiConfig } from "../src/createWagmiConfig";
 import { chainId } from "./common";
@@ -23,7 +23,7 @@ const chains = [
 ] as const satisfies Chain[];
 
 const transports = {
-  [anvil.id]: webSocket(),
+  [anvil.id]: http(),
 } as const;
 
 export const wagmiConfig = createWagmiConfig({
@@ -33,6 +33,6 @@ export const wagmiConfig = createWagmiConfig({
   chains,
   transports,
   pollingInterval: {
-    [anvil.id]: 2000,
+    [anvil.id]: 500,
   },
 });

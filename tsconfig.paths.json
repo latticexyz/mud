@@ -22,6 +22,7 @@
       "@latticexyz/entrykit/internal": ["./packages/entrykit/src/exports/internal.ts"],
       "@latticexyz/explorer/observer": ["./packages/explorer/src/exports/observer.ts"],
       "@latticexyz/gas-report/internal": ["./packages/gas-report/ts/exports/internal.ts"],
+      "@latticexyz/id/internal": ["./packages/id/src/exports/internal.ts"],
       "@latticexyz/paymaster/internal": ["./packages/paymaster/src/exports/internal.ts"],
       "@latticexyz/protocol-parser": ["./packages/protocol-parser/src/index.ts"],
       "@latticexyz/protocol-parser/*": ["./packages/protocol-parser/src/exports/*.ts"],

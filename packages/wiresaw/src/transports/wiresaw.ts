@@ -50,7 +50,10 @@ function getCache(chainId: Hex) {
 export function wiresaw<const transport extends Transport>(getTransport: transport): transport {
   return ((args) => {
     const getWiresawTransport =
-      args.chain?.rpcUrls && "wiresaw" in args.chain.rpcUrls ? http(args.chain.rpcUrls.wiresaw.http[0]) : undefined;
+      args.chain?.rpcUrls && "wiresaw" in args.chain.rpcUrls
+        ? // TODO: enable WS
+          http(args.chain.rpcUrls.wiresaw.http[0], { batch: true })
+        : undefined;
     if (!getWiresawTransport) return getTransport(args);
 
     const transport = getTransport(args) as { request: TransportRequestFn<OverriddenMethods> };
@@ -84,7 +87,7 @@ export function wiresaw<const transport extends Transport>(getTransport: transpo
 
       // We intentionally don't reroute `eth_sendRawTransaction` because Wiresaw
       // already handles this method within the RPC spec, where it returns the
-      // tx receipt, which can be fetched immediately with `eth_getTransactionReceipt`.
+      // tx hash, which can be fetched immediately with `eth_getTransactionReceipt`.
 
       if (method === "eth_getTransactionReceipt") {
         const { receipts } = getCache(await getChainId());

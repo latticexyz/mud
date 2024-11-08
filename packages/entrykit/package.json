@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/entrykit",
-  "version": "2.2.8",
-  "description": "User onboarding flows for MUD projects",
+  "version": "0.0.0",
+  "description": "User onboarding flows for MUD apps",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
@@ -44,6 +44,7 @@
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/explorer": "workspace:*",
+    "@latticexyz/id": "workspace:*",
     "@latticexyz/paymaster": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/store": "workspace:*",
