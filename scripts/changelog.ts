@@ -15,7 +15,7 @@ const CHANGELOG_PATH = process.env.CHANGELOG_PATH ?? "CHANGELOG.md";
 const CHANGELOG_DOCS_PATH = process.env.CHANGELOG_DOCS_PATH ?? "docs/pages/changelog.mdx";
 const CHANGELOG_JSON_PATH = process.env.CHANGELOG_JSON_PATH ?? "docs/data/changelog.json";
 const VERSION_PATH = process.env.VERSION_PATH ?? path.join(process.cwd(), "packages/world/package.json");
-const INCLUDE_CHANGESETS = "all"; // (process.env.INCLUDE_CHANGESETS as "diff" | "all") ?? "diff"; // "diff" to only include new changesets, "all" to use all changesets
+const INCLUDE_CHANGESETS = (process.env.INCLUDE_CHANGESETS as "diff" | "all") ?? "diff"; // "diff" to only include new changesets, "all" to use all changesets
 
 enum ChangeType {
   PATCH,
