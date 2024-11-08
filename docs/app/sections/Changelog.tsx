@@ -1,9 +1,8 @@
+import Link from "next/link";
 import Image from "next/image";
 import { Container } from "../../components/ui/Container";
 import { Section } from "../../components/ui/Section";
-
 import changelog from "../../data/changelog.json";
-import Link from "next/link";
 
 type ChangelogItem = (typeof changelog)[number];
 
@@ -17,7 +16,7 @@ const ChangelogItem = ({ version, date, changes }: ChangelogItem) => {
     <Link
       href={`https://mud.dev/changelog#version-${version.replace(/\./g, "")}`}
       target="_blank"
-      className="flex h-full flex-shrink-0"
+      className="flex h-full flex-shrink-0 pr-4"
     >
       <div className="border border-white/20 bg-light-gray px-6 py-6 text-white">
         <div className="flex items-center justify-between">
@@ -45,14 +44,6 @@ const ChangelogItem = ({ version, date, changes }: ChangelogItem) => {
   );
 };
 
-function OverflowContainer({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="overflow-x-auto -mx-4 sm:-mx-6 xl:-mx-[calc((100%-1152px)/2)]">
-      <div className="pl-6 pr-6">{children}</div>
-    </div>
-  );
-}
-
 export default function Changelog() {
   return (
     <Section className="bg-black py-8 md:pt-12 md:pb-14">
@@ -74,16 +65,18 @@ export default function Changelog() {
               Github
             </a>
           </div>
-
-          <OverflowContainer>
-            <div className="grid grid-rows-1 grid-flow-col gap-4">
-              {changelog.map((item) => (
-                <ChangelogItem key={item.version} {...item} />
-              ))}
-            </div>
-          </OverflowContainer>
         </div>
       </Container>
+
+      <div className="w-full overflow-x-auto mt-8">
+        <Container>
+          <div className="grid grid-rows-1 grid-flow-col">
+            {changelog.map((item) => (
+              <ChangelogItem key={item.version} {...item} />
+            ))}
+          </div>
+        </Container>
+      </div>
     </Section>
   );
 }
