@@ -1,4 +1,13 @@
-import { Client, Transport, Chain, Account, RpcUserOperation, RpcUserOperationReceipt, parseEther } from "viem";
+import {
+  Client,
+  Transport,
+  Chain,
+  Account,
+  RpcUserOperation,
+  RpcUserOperationReceipt,
+  parseEther,
+  parseEventLogs,
+} from "viem";
 import {
   formatUserOperation,
   toPackedUserOperation,
@@ -6,7 +15,7 @@ import {
   entryPoint07Address,
   entryPoint07Abi,
 } from "viem/account-abstraction";
-import { setBalance, writeContract } from "viem/actions";
+import { setBalance, waitForTransactionReceipt, writeContract } from "viem/actions";
 import { getAction } from "viem/utils";
 
 // TODO: move to common package?
@@ -67,9 +76,22 @@ export async function sendUserOperation({
     gas,
   });
 
+  const receipt = await getAction(
+    executor,
+    waitForTransactionReceipt,
+    "waitForTransactionReceipt",
+  )({ hash: transactionHash });
+
+  // TODO: replace with `getUserOperationReceipt`?
+  const parsedLogs = parseEventLogs({
+    logs: receipt.logs,
+    abi: entryPoint07Abi,
+    eventName: "UserOperationEvent" as const,
+  });
+
   return {
-    success: true,
+    success: parsedLogs[0]!.args.success,
     userOpHash,
-    receipt: { transactionHash },
+    receipt,
   };
 }
