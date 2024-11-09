@@ -1,7 +1,7 @@
 import createDebug from "debug";
 
-export const debug = createDebug("mud:entry");
-export const error = createDebug("mud:entry");
+export const debug = createDebug("mud:entrykit");
+export const error = createDebug("mud:entrykit");
 
 // Pipe debug output to stdout instead of stderr
 debug.log = console.debug.bind(console);

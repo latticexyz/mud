@@ -11,7 +11,8 @@ export type PasskeyBridge = {
 };
 
 export async function createBridge({
-  url: initialUrl = "https://id.mud.dev",
+  // url: initialUrl = "https://id.mud.dev",
+  url: initialUrl = "https://id.tunnel.offchain.dev",
   message,
 }: { url?: string; message?: string } = {}): Promise<PasskeyBridge> {
   const url = new URL(initialUrl);

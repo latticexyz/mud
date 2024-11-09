@@ -32,7 +32,7 @@
   "dependencies": {
     "@ark/util": "0.2.2",
     "debug": "^4.3.4",
-    "ox": "0.1.0"
+    "webauthn-p256": "^0.0.10"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",

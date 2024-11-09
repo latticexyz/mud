@@ -1,23 +1,26 @@
-import { WebAuthnP256, PublicKey, Signature, Hex } from "ox";
 import { PasskeyCredential } from "../common";
-import { SignMetadata } from "ox/WebAuthnP256";
+import { createCredential, sign, WebAuthnData, Hex } from "webauthn-p256";
 
 export const methods = {
   async create(): Promise<PasskeyCredential> {
-    const credential = await WebAuthnP256.createCredential({ name: "MUD ID" });
+    const credential = await createCredential({ name: "MUD ID" });
     return {
       credentialId: credential.id,
-      publicKey: PublicKey.toHex(credential.publicKey),
+      publicKey: credential.publicKey,
     };
   },
   async sign(params: {
     credentialId?: PasskeyCredential["credentialId"];
-    challenge: Hex.Hex;
-  }): Promise<{ credentialId: PasskeyCredential["credentialId"]; signature: Hex.Hex; metadata: SignMetadata }> {
-    const { raw: credential, signature, metadata } = await WebAuthnP256.sign(params);
+    challenge: Hex;
+  }): Promise<{ credentialId: PasskeyCredential["credentialId"]; signature: Hex; metadata: WebAuthnData }> {
+    const {
+      raw: credential,
+      signature,
+      webauthn: metadata,
+    } = await sign({ credentialId: params.credentialId, hash: params.challenge });
     return {
       credentialId: credential.id,
-      signature: Signature.toHex(signature),
+      signature,
       metadata,
     };
   },

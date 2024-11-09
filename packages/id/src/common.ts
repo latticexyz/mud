@@ -1,6 +1,6 @@
-import { Hex } from "ox";
+import { Hex } from "webauthn-p256";
 
 export type PasskeyCredential = {
   credentialId: string;
-  publicKey: Hex.Hex;
+  publicKey: Hex;
 };

@@ -1,3 +1,4 @@
+scrollback: 10000
 procs:
   anvil:
     shell: anvil --dump-state playground/anvil-state.json

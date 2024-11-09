@@ -51,6 +51,11 @@ export const deployOptions = {
     type: "boolean",
     desc: "Deploy the World with an AWS KMS key instead of local private key.",
   },
+  smartAccount: {
+    type: "boolean",
+    desc: "Deploy using a smart account. A smart account will be created, owned by the provided private key, and use gas sponsorship when possible.",
+    default: false,
+  },
 } as const satisfies Record<string, Options>;
 
 export type DeployOptions = InferredOptionTypes<typeof deployOptions>;
@@ -87,6 +92,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   // Run build
   if (!opts.skipBuild) {
     await build({ rootDir, config, foundryProfile: profile });
+    console.log();
   }
 
   const { systems, libraries } = await resolveConfig({
@@ -128,12 +134,13 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   })();
 
   console.log("Deploying from", account.address);
-  debug("Deploying from", account.address);
+  debug("deploying from", account.address);
 
   const client = await getDeployClient({
     rpcUrl: rpc,
     rpcBatch: opts.rpcBatch,
     account,
+    useSmartAccount: opts.smartAccount,
   });
 
   // Attempt to enable automine for the duration of the deploy. Noop if automine is not available.

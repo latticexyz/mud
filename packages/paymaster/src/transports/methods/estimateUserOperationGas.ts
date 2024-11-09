@@ -11,7 +11,7 @@ export async function estimateUserOperationGas(
   _params: rpcMethod["Parameters"],
 ): Promise<rpcMethod["ReturnType"]> {
   return formatUserOperationRequest({
-    callGasLimit: 20_000_000n,
+    callGasLimit: 50_000_000n,
     preVerificationGas: 200_000n,
     verificationGasLimit: 2_000_000n,
     paymasterVerificationGasLimit: 200_000n,

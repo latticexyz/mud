@@ -865,9 +865,9 @@ importers:
       debug:
         specifier: ^4.3.4
         version: 4.3.7
-      ox:
-        specifier: 0.1.0
-        version: 0.1.0(typescript@5.4.2)(zod@3.23.8)
+      webauthn-p256:
+        specifier: ^0.0.10
+        version: 0.0.10
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -9709,14 +9709,6 @@ packages:
 
   outdent@0.5.0:
     resolution: {integrity: sha512-/jHxFIzoMXdqPzTaCpFzAAWhpkSjZPF4Vsn6jAfNpmbH/ymsmd7Qc6VE9BGn0L6YMj6uwpQLxCECpus4ukKS9Q==}
-
-  ox@0.1.0:
-    resolution: {integrity: sha512-xs+STnBP8XG38N+7W5c/5LRN68XOleiTfKJlSBw5rcorIfGvpJPB45lRE3AlziiiuZ+KrEd/1ZLrD+LkN5XFzQ==}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
 
   p-filter@2.1.0:
     resolution: {integrity: sha512-ZBxxZ5sL2HghephhpGAQdoskxplTwr7ICaehZwLIlfL6acuVgZPm8yBNuRAFBGEqtD/hmUeq9eqLg2ys9Xr/yw==}
@@ -23511,20 +23503,6 @@ snapshots:
   os-tmpdir@1.0.2: {}
 
   outdent@0.5.0: {}
-
-  ox@0.1.0(typescript@5.4.2)(zod@3.23.8):
-    dependencies:
-      '@adraffy/ens-normalize': 1.11.0
-      '@noble/curves': 1.6.0
-      '@noble/hashes': 1.5.0
-      '@scure/bip32': 1.5.0
-      '@scure/bip39': 1.4.0
-      abitype: 1.0.6(typescript@5.4.2)(zod@3.23.8)
-      eventemitter3: 5.0.1
-    optionalDependencies:
-      typescript: 5.4.2
-    transitivePeerDependencies:
-      - zod
 
   p-filter@2.1.0:
     dependencies:
