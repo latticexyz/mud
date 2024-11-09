@@ -14,12 +14,10 @@ export async function createBridge({
   url: initialUrl,
   message,
 }: { url?: string; message?: string } = {}): Promise<PasskeyBridge> {
-  const url = new URL(initialUrl ?? "https://id.mud.dev");
-
-  const hashParams = new URLSearchParams({
+  const urlParams = new URLSearchParams({
     ...(message ? { message } : {}),
   });
-  url.hash = hashParams.toString();
+  const url = new URL(`/#${urlParams}`, initialUrl ?? "https://id.mud.dev");
 
   // Ideally we'd use a hidden iframe for this, but this doesn't work in Safari.
   // And there seems to be no way to detect Safari support in a hidden iframe, so
@@ -42,7 +40,7 @@ export async function createBridge({
 
   let bridge = window.open(url, "MUD ID", "popup,width=600,height=400");
   if (!bridge) {
-    throw new Error(`Could not open window for MUD ID bridge at "${url}".`);
+    throw new Error(`Could not open window for MUD ID bridge at "${url.origin}".`);
   }
 
   // TODO: close window if timed out
