@@ -70,6 +70,17 @@ export async function getDeployClient(opts: {
             paymasterData: "0x",
           }),
         },
+        // TODO: figure out why viem isn't falling back to `chain.fees.estimateFeesPerGas` when this isn't set
+        userOperation: {
+          estimateFeesPerGas:
+            // TODO: move this to gas estimator transport?
+            chain
+              ? async () => ({
+                  maxFeePerGas: 100_000n,
+                  maxPriorityFeePerGas: 0n,
+                })
+              : undefined,
+        },
       }).extend(smartAccountActions());
 
       // using bundler client for public actions may fail for other chains
