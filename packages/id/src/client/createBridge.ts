@@ -40,7 +40,7 @@ export async function createBridge({
   //   document.body.appendChild(iframe);
   // });
 
-  let bridge = window.open(url, "_blank", "popup,width=600,height=400");
+  let bridge = window.open(url, "MUD ID", "popup,width=600,height=400");
   if (!bridge) {
     throw new Error(`Could not open window for MUD ID bridge at "${url}".`);
   }
