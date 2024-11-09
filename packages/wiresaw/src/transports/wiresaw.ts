@@ -1,6 +1,14 @@
-import { BundlerRpcSchema, Hash, Hex, PublicRpcSchema, RpcTransactionReceipt, Transport, http } from "viem";
+import {
+  BundlerRpcSchema,
+  Hash,
+  Hex,
+  PublicRpcSchema,
+  RpcTransactionReceipt,
+  RpcUserOperationReceipt,
+  Transport,
+  http,
+} from "viem";
 import { getRpcMethod, getRpcSchema, TransportRequestFn, TransportRequestFnMapped } from "./common";
-import { getUserOperationReceipt } from "../getUserOperationReceipt";
 
 export type WiresawRpcSchema = [
   {
@@ -52,7 +60,7 @@ export function wiresaw<const transport extends Transport>(getTransport: transpo
     const getWiresawTransport =
       args.chain?.rpcUrls && "wiresaw" in args.chain.rpcUrls
         ? // TODO: enable WS
-          http(args.chain.rpcUrls.wiresaw.http[0], { batch: true })
+          http(args.chain.rpcUrls.wiresaw.http[0])
         : undefined;
     if (!getWiresawTransport) return getTransport(args);
 
@@ -106,7 +114,7 @@ export function wiresaw<const transport extends Transport>(getTransport: transpo
       }
 
       if (method === "eth_getUserOperationReceipt") {
-        const { receipts, userOps } = getCache(await getChainId());
+        const { userOps } = getCache(await getChainId());
         const [userOpHash] = params;
         const transactionHash = userOps.get(userOpHash);
 
@@ -116,10 +124,20 @@ export function wiresaw<const transport extends Transport>(getTransport: transpo
           throw new Error(`Could not find transaction hash for user op hash "${userOpHash}".`);
         }
 
-        const receipt = await getReceipt(transactionHash, receipts);
-        if (!receipt) return null;
+        // return instant/partial receipt for now until we can find a good way
+        // to opt-in to this when using things like permissionless actions, which
+        // call out to `waitForUserOperationReceipt`
+        return {
+          success: true,
+          userOpHash,
+          receipt: {
+            transactionHash,
+          },
+        } as RpcUserOperationReceipt;
 
-        return getUserOperationReceipt(userOpHash, receipt);
+        // const receipt = await getReceipt(transactionHash, receipts);
+        // if (!receipt) return null;
+        // return getUserOperationReceipt(userOpHash, receipt);
       }
 
       return await transport.request({ method, params }, opts);

@@ -17,7 +17,6 @@ import { reusePasskey } from "./reusePasskey";
 import { createPasskey } from "./createPasskey";
 import { defaultClientConfig } from "../common";
 import { createBundlerClient } from "../createBundlerClient";
-import { observer } from "@latticexyz/explorer/observer";
 import { getPaymasterAddress } from "../getPaymasterAddress";
 import { getBundlerTransport } from "../getBundlerTransport";
 import { wiresaw } from "@latticexyz/wiresaw/internal";
@@ -199,9 +198,8 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePa
           transport: bundlerTransport,
           client,
           account,
-        })
-          .extend(smartAccountActions())
-          .extend(observer());
+        }).extend(smartAccountActions());
+        // TODO: add observer once we conditionally fetch receipts while bridge is open
       },
 
       async getProvider(_params) {
