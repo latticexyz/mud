@@ -41,6 +41,7 @@ export const rhodolite = {
   },
   iconUrls: ["https://redstone.xyz/chain-icons/rhodolite.png"],
   indexerUrl: "https://indexer.mud.rhodolitechain.com",
+  mudIdUrl: "https://id.mud.dev",
   fees: {
     estimateFeesPerGas: async () => ({
       maxFeePerGas: 100_000n,

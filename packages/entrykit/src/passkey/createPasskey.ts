@@ -1,8 +1,9 @@
 import { cache } from "./cache";
 import { createBridge, PasskeyCredential } from "@latticexyz/id/internal";
+import { MUDChain } from "@latticexyz/common/chains";
 
-export async function createPasskey(): Promise<PasskeyCredential> {
-  const bridge = await createBridge({ message: "Creating account…" });
+export async function createPasskey(chain: MUDChain): Promise<PasskeyCredential> {
+  const bridge = await createBridge({ url: chain.mudIdUrl, message: "Creating account…" });
   try {
     const credential = await bridge.request("create");
     console.log("created passkey", credential);

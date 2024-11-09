@@ -3,9 +3,10 @@ import { cache } from "./cache";
 import { getMessageHash } from "./getMessageHash";
 import { findPublicKey } from "./findPublicKey";
 import { PasskeyCredential, createBridge } from "@latticexyz/id/internal";
+import { MUDChain } from "@latticexyz/common/chains";
 
-export async function reusePasskey(): Promise<PasskeyCredential> {
-  const bridge = await createBridge({ message: "Signing in…" });
+export async function reusePasskey(chain: MUDChain): Promise<PasskeyCredential> {
+  const bridge = await createBridge({ url: chain.mudIdUrl, message: "Signing in…" });
   try {
     const challenge = hashMessage(bytesToHex(crypto.getRandomValues(new Uint8Array(256))));
     const { credentialId, signature, metadata } = await bridge.request("sign", { challenge });

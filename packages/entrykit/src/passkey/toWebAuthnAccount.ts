@@ -12,6 +12,7 @@ export type ToWebAuthnAccountParameters = {
     id: P256Credential["id"];
     publicKey: P256Credential["publicKey"];
   };
+  bridgeUrl?: string;
 };
 
 export type ToWebAuthnAccountReturnType = WebAuthnAccount;
@@ -28,7 +29,7 @@ export function toWebAuthnAccount(parameters: ToWebAuthnAccountParameters): WebA
   return {
     publicKey,
     async sign({ hash }) {
-      const bridge = await createBridge({ message: "Requesting signature…" });
+      const bridge = await createBridge({ message: "Requesting signature…", url: parameters.bridgeUrl });
       try {
         const { signature, metadata: webauthn } = await bridge.request("sign", { credentialId: id, challenge: hash });
         return {
