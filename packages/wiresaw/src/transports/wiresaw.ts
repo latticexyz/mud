@@ -6,7 +6,9 @@ import {
   RpcTransactionReceipt,
   RpcUserOperationReceipt,
   Transport,
+  fallback,
   http,
+  webSocket,
 } from "viem";
 import { getRpcMethod, getRpcSchema, TransportRequestFn, TransportRequestFnMapped } from "./common";
 
@@ -59,8 +61,9 @@ export function wiresaw<const transport extends Transport>(getTransport: transpo
   return ((args) => {
     const getWiresawTransport =
       args.chain?.rpcUrls && "wiresaw" in args.chain.rpcUrls
-        ? // TODO: enable WS
-          http(args.chain.rpcUrls.wiresaw.http[0])
+        ? args.chain.rpcUrls.wiresaw.webSocket
+          ? fallback([webSocket(args.chain.rpcUrls.wiresaw.webSocket[0]), http(args.chain.rpcUrls.wiresaw.http[0])])
+          : http(args.chain.rpcUrls.wiresaw.http[0])
         : undefined;
     if (!getWiresawTransport) return getTransport(args);
 
