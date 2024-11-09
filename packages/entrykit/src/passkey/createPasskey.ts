@@ -1,21 +1,23 @@
 import { cache } from "./cache";
-import { PasskeyCredential } from "@latticexyz/id/internal";
-import { createCredential } from "webauthn-p256";
+import { createBridge, PasskeyCredential } from "@latticexyz/id/internal";
+import { MUDChain } from "@latticexyz/common/chains";
 
-export async function createPasskey(): Promise<PasskeyCredential> {
-  const credential = await createCredential({ name: "MUD Account" });
-  console.log("created passkey", credential);
+export async function createPasskey(chain: MUDChain): Promise<PasskeyCredential> {
+  const bridge = await createBridge({ url: chain.mudIdUrl, message: "Creating account…" });
+  try {
+    const credential = await bridge.request("create");
+    console.log("created passkey", credential);
 
-  cache.setState((state) => ({
-    activeCredential: credential.id,
-    publicKeys: {
-      ...state.publicKeys,
-      [credential.id]: credential.publicKey,
-    },
-  }));
+    cache.setState((state) => ({
+      activeCredential: credential.credentialId,
+      publicKeys: {
+        ...state.publicKeys,
+        [credential.credentialId]: credential.publicKey,
+      },
+    }));
 
-  return {
-    credentialId: credential.id,
-    publicKey: credential.publicKey,
-  };
+    return credential;
+  } finally {
+    bridge.close();
+  }
 }

@@ -78,13 +78,13 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePa
       // supportsSimulation: true,
 
       async createPasskey() {
-        const { credentialId } = await createPasskey();
+        const { credentialId } = await createPasskey(chain);
         const account = await getAccount(client, credentialId);
         this.onAccountsChanged([account.address]);
         this.onConnect?.({ chainId: numberToHex(chainId) });
       },
       async reusePasskey() {
-        const { credentialId } = await reusePasskey();
+        const { credentialId } = await reusePasskey(chain);
         const account = await getAccount(client, credentialId);
         this.onAccountsChanged([account.address]);
         this.onConnect?.({ chainId: numberToHex(chainId) });
@@ -103,7 +103,7 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePa
         // attempt to reuse credential if this is called directly
         // TODO: move this into wallet so it's only triggered via rainbowkit?
         if (!cache.getState().activeCredential && !params?.isReconnecting) {
-          await reusePasskey();
+          await reusePasskey(chain);
         }
 
         const accounts = await this.getAccounts();

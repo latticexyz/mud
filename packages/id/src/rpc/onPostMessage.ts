@@ -41,9 +41,8 @@ async function onPortMessage(event: MessageEvent<RequestData>) {
       reply(port, {
         id: event.data.id,
         method: event.data.method,
-        // TODO: send the whole error object back, should be fine
         error: {
-          message: error instanceof Error ? `${error.message}\n\n${error.stack}` : String(error),
+          message: String(error),
         },
       });
     }
@@ -61,9 +60,8 @@ async function onPortMessage(event: MessageEvent<RequestData>) {
       reply(port, {
         id: event.data.id,
         method: event.data.method,
-        // TODO: send the whole error object back, should be fine
         error: {
-          message: error instanceof Error ? `${error.message}\n\n${error.stack}` : String(error),
+          message: String(error),
         },
       });
     }
