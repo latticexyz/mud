@@ -113,15 +113,6 @@ export function useSetupSession({ userClient }: { userClient: ConnectedClient })
 
         if (!calls.length) return;
 
-        // if (!(await userClient.account.isDeployed())) {
-        //   // send empty tx to create the smart account, otherwise the first tx may fail due to bad gas estimation
-        //   console.log("creating smart account at", userClient.account.address);
-        //   const hash = await getAction(userClient, sendUserOperation, "sendUserOperation")({ calls: [] });
-        //   console.log("tx:", hash);
-        //   const receipt = await getAction(userClient, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });
-        //   console.log("receipt:", receipt.status);
-        // }
-
         console.log("setting up account with", calls, userClient);
         const hash = await getAction(userClient, sendUserOperation, "sendUserOperation")({ calls });
         console.log("got user op hash", hash);

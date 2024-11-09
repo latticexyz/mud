@@ -2,13 +2,13 @@ import { transactionQueue } from "@latticexyz/common/actions";
 import { Chain, createClient, fallback, http, webSocket } from "viem";
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
 import { wiresaw } from "@latticexyz/wiresaw/internal";
-import { userOpExecutor } from "@latticexyz/paymaster/internal";
+import { gasEstimator, userOpExecutor } from "@latticexyz/paymaster/internal";
 
 export function getBundlerTransport(chain: Chain) {
   const bundlerHttpUrl = chain.rpcUrls.bundler?.http[0];
   // TODO: bundler websocket
   const bundlerTransport = bundlerHttpUrl
-    ? wiresaw(http(bundlerHttpUrl))
+    ? gasEstimator(wiresaw(http(bundlerHttpUrl)))
     : chain.id === 31337
       ? userOpExecutor({
           executor: createClient({

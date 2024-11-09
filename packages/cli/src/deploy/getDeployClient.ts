@@ -1,6 +1,6 @@
 import { transactionQueue } from "@latticexyz/common/actions";
 import { rhodolite } from "@latticexyz/common/chains";
-import { claimGasPass, getAllowance, hasPassIssuer } from "@latticexyz/paymaster/internal";
+import { claimGasPass, getAllowance, hasPassIssuer, gasEstimator } from "@latticexyz/paymaster/internal";
 import { wiresaw } from "@latticexyz/wiresaw/internal";
 import { smartAccountActions } from "permissionless";
 import { toSimpleSmartAccount } from "permissionless/accounts";
@@ -61,7 +61,8 @@ export async function getDeployClient(opts: {
       const account = await toSimpleSmartAccount({ client, owner: opts.account });
       const bundlerClient = createBundlerClient({
         chain,
-        transport: wiresaw(http(bundlerHttpUrl)),
+        // TODO: figure out how to remove gas estimator (currently times out if not present)
+        transport: gasEstimator(wiresaw(http(bundlerHttpUrl))),
         account,
         paymaster: {
           getPaymasterData: async () => ({
