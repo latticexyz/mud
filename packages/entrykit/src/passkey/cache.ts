@@ -18,7 +18,7 @@ export const cache = createStore(
       publicKeys: {},
       activeCredential: null,
     }),
-    { name: "mud:id:cache" },
+    { name: "mud:passkey:cache" },
   ),
 );
 
