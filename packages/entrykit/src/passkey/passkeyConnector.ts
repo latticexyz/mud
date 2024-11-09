@@ -20,10 +20,12 @@ import { createBundlerClient } from "../createBundlerClient";
 import { getPaymasterAddress } from "../getPaymasterAddress";
 import { getBundlerTransport } from "../getBundlerTransport";
 import { wiresaw } from "@latticexyz/wiresaw/internal";
+import { CredentialOptions } from "./common";
 
 export type PasskeyConnectorOptions = {
   // TODO: figure out what we wanna do across chains
   chainId: number;
+  credentialOptions?: CredentialOptions;
 };
 
 export type PasskeyProvider = {
@@ -44,7 +46,7 @@ export type PasskeyConnector = ReturnType<CreatePasskeyConnector>;
 
 passkeyConnector.type = "passkey" as const;
 
-export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePasskeyConnector {
+export function passkeyConnector({ chainId, credentialOptions = {} }: PasskeyConnectorOptions): CreatePasskeyConnector {
   return createConnector((config) => {
     // TODO: figure out how to use with config's `client` option?
     if (!config.transports) {
@@ -78,14 +80,14 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePa
       // supportsSimulation: true,
 
       async createPasskey() {
-        const { credentialId } = await createPasskey();
-        const account = await getAccount(client, credentialId);
+        const { credentialId } = await createPasskey(credentialOptions);
+        const account = await getAccount(client, credentialId, credentialOptions);
         this.onAccountsChanged([account.address]);
         this.onConnect?.({ chainId: numberToHex(chainId) });
       },
       async reusePasskey() {
-        const { credentialId } = await reusePasskey();
-        const account = await getAccount(client, credentialId);
+        const { credentialId } = await reusePasskey(credentialOptions);
+        const account = await getAccount(client, credentialId, credentialOptions);
         this.onAccountsChanged([account.address]);
         this.onConnect?.({ chainId: numberToHex(chainId) });
       },
@@ -103,7 +105,7 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePa
         // attempt to reuse credential if this is called directly
         // TODO: move this into wallet so it's only triggered via rainbowkit?
         if (!cache.getState().activeCredential && !params?.isReconnecting) {
-          await reusePasskey();
+          await reusePasskey(credentialOptions);
         }
 
         const accounts = await this.getAccounts();
@@ -123,7 +125,7 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePa
 
         try {
           console.log("getting account for credential", id);
-          const account = await getAccount(client, id);
+          const account = await getAccount(client, id, credentialOptions);
           console.log("got account", account);
           return [account.address];
         } catch (error) {
@@ -191,7 +193,7 @@ export function passkeyConnector({ chainId }: PasskeyConnectorOptions): CreatePa
         const credentialId = cache.getState().activeCredential;
         if (!credentialId) throw new Error("Not connected.");
 
-        const account = await getAccount(client, credentialId);
+        const account = await getAccount(client, credentialId, credentialOptions);
 
         return createBundlerClient({
           paymasterAddress,

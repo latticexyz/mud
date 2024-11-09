@@ -4,6 +4,7 @@ import { Config, CreateConfigParameters, createConfig } from "wagmi";
 import { passkeyWallet } from "./passkey/passkeyWallet";
 import { mapObject } from "@latticexyz/common/utils";
 import { wiresaw } from "@latticexyz/wiresaw/internal";
+import { CredentialOptions } from "./passkey/common";
 
 export type CreateWagmiConfigOptions<
   chains extends readonly [Chain, ...Chain[]] = readonly [Chain, ...Chain[]],
@@ -18,6 +19,7 @@ export type CreateWagmiConfigOptions<
   // TODO: make optional and hide wallet options if so?
   readonly walletConnectProjectId: string;
   readonly appName: string;
+  readonly credentialOptions?: CredentialOptions;
 } & Pick<CreateConfigParameters<chains, transports>, "pollingInterval">;
 
 export function createWagmiConfig<
@@ -32,6 +34,7 @@ export function createWagmiConfig<
         passkeyWallet({
           // TODO: allow any chain ID
           chainId: config.chainId,
+          credentialOptions: config.credentialOptions,
         }),
       ],
     },

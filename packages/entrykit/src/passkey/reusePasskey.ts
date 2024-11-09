@@ -4,14 +4,15 @@ import { getMessageHash } from "./getMessageHash";
 import { findPublicKey } from "./findPublicKey";
 import { PasskeyCredential } from "@latticexyz/id/internal";
 import { sign } from "webauthn-p256";
+import { CredentialOptions } from "./common";
 
-export async function reusePasskey(): Promise<PasskeyCredential> {
+export async function reusePasskey(opts: CredentialOptions): Promise<PasskeyCredential> {
   const challenge = hashMessage(bytesToHex(crypto.getRandomValues(new Uint8Array(256))));
   const {
     raw: { id: credentialId },
     signature,
     webauthn: metadata,
-  } = await sign({ hash: challenge });
+  } = await sign({ hash: challenge, rpId: opts.rp?.id });
 
   const publicKey = await (async () => {
     const cachedPublicKey = cache.getState().publicKeys[credentialId];
@@ -21,7 +22,7 @@ export async function reusePasskey(): Promise<PasskeyCredential> {
 
     const messageHash = await getMessageHash(metadata);
     const challenge2 = hashMessage(signature);
-    const signature2 = await sign({ credentialId, hash: challenge2 });
+    const signature2 = await sign({ credentialId, hash: challenge2, rpId: opts.rp?.id });
     if (signature2.raw.id !== credentialId) {
       throw new Error("wrong credential");
     }
