@@ -15,6 +15,7 @@ export function getBundlerTransport(chain: Chain) {
             chain,
             transport: fallback([webSocket(), http()]),
             account: privateKeyToAccount(generatePrivateKey()),
+            pollingInterval: 10,
           }).extend(transactionQueue()),
         })
       : null;
