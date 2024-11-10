@@ -3,7 +3,6 @@
 import React from "react";
 
 async function getStargazers() {
-  // TODO: get full url
   try {
     const response = await fetch("http://localhost:3000/api/stargazers");
     const data = await response.json();

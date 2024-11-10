@@ -1,12 +1,10 @@
-"use client";
-
 import { Container } from "../../../components/ui/Container";
 import { Section } from "../../../components/ui/Section";
 import { GitHubStars } from "./GitHubStars";
 import Contributors from "./Contributors";
 import Projects from "./Projects";
 
-export default async function TrustedBy() {
+export default function TrustedBy() {
   return (
     <Section className="bg-[#E56A10] border-t border-t-white/20 py-8 lg:py-8">
       <Container>
@@ -20,8 +18,8 @@ export default async function TrustedBy() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-4 w-full">
-            {/* <GitHubStars />
-            <Contributors /> */}
+            <GitHubStars />
+            <Contributors />
             <Projects />
           </div>
         </div>
