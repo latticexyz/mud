@@ -46,13 +46,6 @@ export async function sendUserOperation({
   }
 
   const userOp = formatUserOperation(rpcUserOp);
-  const gas =
-    userOp.preVerificationGas +
-    userOp.verificationGasLimit +
-    (userOp.paymasterVerificationGasLimit ?? 0n) +
-    (userOp.paymasterPostOpGasLimit ?? 0n) +
-    userOp.callGasLimit;
-
   const packedUserOp = toPackedUserOperation(userOp);
 
   const userOpHash = getUserOperationHash({
@@ -73,7 +66,6 @@ export async function sendUserOperation({
     args: [[packedUserOp], executor.account.address],
     chain: executor.chain,
     account: executor.account,
-    gas,
   });
 
   const receipt = await getAction(
