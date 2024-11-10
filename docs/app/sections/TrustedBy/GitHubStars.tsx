@@ -1,17 +1,5 @@
-"use client";
-
 import React from "react";
-
-async function getStargazers() {
-  try {
-    const response = await fetch("http://localhost:3000/api/stargazers");
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(error);
-    return 0;
-  }
-}
+import { getStargazers } from "../../api/stargazers/getStargazers";
 
 export async function GitHubStars() {
   const stargazersCount = await getStargazers();
