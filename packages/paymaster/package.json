@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@latticexyz/common": "workspace:*",
+    "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "debug": "^4.3.4"
   },
