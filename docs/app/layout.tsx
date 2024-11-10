@@ -4,7 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "../lib/cn";
 
-export const basierCircle = localFont({
+const basierCircle = localFont({
   src: [
     {
       path: "../public/fonts/BasierCircle-Regular.otf",

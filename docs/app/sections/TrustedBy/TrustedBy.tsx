@@ -18,7 +18,9 @@ export default function TrustedBy() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-4 w-full">
+            {/* @ts-expect-error Server Component */}
             <GitHubStars />
+            {/* @ts-expect-error Server Component */}
             <Contributors />
             <Projects />
           </div>
