@@ -15,8 +15,11 @@ export type ApplyUpdatesArgs = {
   updates: Update[];
 };
 
+const pendingUpdates = new Map<Stash, StoreUpdates>();
+
 export function applyUpdates({ stash, updates }: ApplyUpdatesArgs): void {
-  const storeUpdate: StoreUpdates = { config: {}, records: {} };
+  const storeUpdates = pendingUpdates.get(stash) ?? { config: {}, records: {} };
+  if (!pendingUpdates.has(stash)) pendingUpdates.set(stash, storeUpdates);
 
   for (const { table, key, value } of updates) {
     if (stash.get().config[table.namespaceLabel]?.[table.label] == null) {
@@ -47,19 +50,29 @@ export function applyUpdates({ stash, updates }: ApplyUpdatesArgs): void {
     }
 
     // apply update to store update for notifying subscribers
-    ((storeUpdate.records[table.namespaceLabel] ??= {})[table.label] ??= {})[encodedKey] = {
+    ((storeUpdates.records[table.namespaceLabel] ??= {})[table.label] ??= {})[encodedKey] = {
       prev: prevRecord,
       current: nextRecord,
     };
   }
 
+  queueMicrotask(() => {
+    notifySubscribers(stash);
+  });
+}
+
+function notifySubscribers(stash: Stash) {
+  const storeUpdates = pendingUpdates.get(stash);
+  if (!storeUpdates) return;
+
   // Notify table subscribers
-  for (const [namespaceLabel, tableUpdates] of Object.entries(storeUpdate.records)) {
+  for (const [namespaceLabel, tableUpdates] of Object.entries(storeUpdates.records)) {
     for (const [label, updates] of Object.entries(tableUpdates)) {
       stash._.tableSubscribers[namespaceLabel]?.[label]?.forEach((subscriber) => subscriber(updates));
     }
   }
-
   // Notify stash subscribers
-  stash._.storeSubscribers.forEach((subscriber) => subscriber(storeUpdate));
+  stash._.storeSubscribers.forEach((subscriber) => subscriber(storeUpdates));
+
+  pendingUpdates.delete(stash);
 }

@@ -6,7 +6,9 @@ import { setRecord } from "./setRecord";
 import { deleteRecord } from "./deleteRecord";
 
 describe("subscribeStash", () => {
-  it("should notify subscriber of any stash change", () => {
+  it("should notify subscriber of any stash change", async () => {
+    vi.useFakeTimers({ toFake: ["queueMicrotask"] });
+
     const config = defineStore({
       namespaces: {
         namespace1: {
@@ -34,6 +36,7 @@ describe("subscribeStash", () => {
     subscribeStash({ stash, subscriber });
 
     setRecord({ stash, table: config.tables.namespace1__table1, key: { a: "0x00" }, value: { b: 1n, c: 2 } });
+    vi.advanceTimersToNextTimer();
 
     expect(subscriber).toHaveBeenCalledTimes(1);
     expect(subscriber).toHaveBeenNthCalledWith(1, {
@@ -51,6 +54,7 @@ describe("subscribeStash", () => {
     });
 
     setRecord({ stash, table: config.tables.namespace2__table2, key: { a: "0x01" }, value: { b: 1n, c: 2 } });
+    vi.advanceTimersToNextTimer();
 
     expect(subscriber).toHaveBeenCalledTimes(2);
     expect(subscriber).toHaveBeenNthCalledWith(2, {
@@ -68,6 +72,7 @@ describe("subscribeStash", () => {
     });
 
     setRecord({ stash, table: config.tables.namespace2__table2, key: { a: "0x01" }, value: { b: 1n, c: 3 } });
+    vi.advanceTimersToNextTimer();
 
     expect(subscriber).toHaveBeenCalledTimes(3);
     expect(subscriber).toHaveBeenNthCalledWith(3, {
@@ -85,6 +90,7 @@ describe("subscribeStash", () => {
     });
 
     deleteRecord({ stash, table: config.tables.namespace2__table2, key: { a: "0x01" } });
+    vi.advanceTimersToNextTimer();
 
     expect(subscriber).toHaveBeenCalledTimes(4);
     expect(subscriber).toHaveBeenNthCalledWith(4, {
@@ -103,6 +109,8 @@ describe("subscribeStash", () => {
   });
 
   it("should notify subscriber of singleton table changes", () => {
+    vi.useFakeTimers({ toFake: ["queueMicrotask"] });
+
     const config = defineStore({
       namespaces: {
         app: {
@@ -122,6 +130,7 @@ describe("subscribeStash", () => {
     subscribeStash({ stash, subscriber });
 
     setRecord({ stash, table: config.tables.app__config, key: {}, value: { enabled: true } });
+    vi.advanceTimersToNextTimer();
 
     expect(subscriber).toHaveBeenCalledTimes(1);
     expect(subscriber).toHaveBeenNthCalledWith(1, {
@@ -139,6 +148,7 @@ describe("subscribeStash", () => {
     });
 
     setRecord({ stash, table: config.tables.app__config, key: {}, value: { enabled: false } });
+    vi.advanceTimersToNextTimer();
 
     expect(subscriber).toHaveBeenCalledTimes(2);
     expect(subscriber).toHaveBeenNthCalledWith(2, {
@@ -156,6 +166,7 @@ describe("subscribeStash", () => {
     });
 
     deleteRecord({ stash, table: config.tables.app__config, key: {} });
+    vi.advanceTimersToNextTimer();
 
     expect(subscriber).toHaveBeenCalledTimes(3);
     expect(subscriber).toHaveBeenNthCalledWith(3, {
