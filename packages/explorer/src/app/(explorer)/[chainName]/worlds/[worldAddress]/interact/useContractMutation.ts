@@ -42,10 +42,7 @@ export function useContractMutation({ worldAbi, functionAbi, operationType }: Us
           chainId,
         });
 
-        const receipt = await waitForTransactionReceipt(wagmiConfig, {
-          hash: txHash,
-          pollingInterval: 100,
-        });
+        const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
 
         return { txHash, receipt };
       }
