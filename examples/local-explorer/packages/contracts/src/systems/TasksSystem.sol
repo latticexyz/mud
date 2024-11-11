@@ -21,8 +21,4 @@ contract TasksSystem is System {
   function deleteTask(bytes32 id) public {
     Tasks.deleteRecord(id);
   }
-
-  function deleteTask11(bytes32 id) public {
-    Tasks.deleteRecord(id);
-  }
 }
