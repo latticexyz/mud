@@ -53,10 +53,7 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
         chainId,
       });
 
-      const receipt = await waitForTransactionReceipt(wagmiConfig, {
-        hash: txHash,
-        pollingInterval: 100,
-      });
+      const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
 
       return { txHash, receipt };
     },
