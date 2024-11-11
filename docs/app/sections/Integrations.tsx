@@ -35,9 +35,14 @@ export default function Integrations() {
         </div>
 
         <p className="text-white/70 text-sm mt-8 lg:mt-4 w-full lg:max-w-xl">
-          Quarry leverages MUD’s Standard World Interfaces (SWI), which are fully open-source under the mud_* JSON-RPC
-          namespace. The SWI covers everything from indexing to pre-confirmations. Quarry is Lattice’s full-stack
-          implementation of the Standard World Interface.
+          Not only is the MUD codebase fully open-source under the MIT license, all of its interfaces with peripheral
+          services and execution environments—indexers, blockchains, ERC-4337 bundlers—are openly accessible and under
+          standardization.
+        </p>
+
+        <p className="text-white/70 text-sm mt-8 lg:mt-4 w-full lg:max-w-xl">
+          Launch with Lattice’s Quarry environment to get 7ms ultra-low latency and seamless onboarding, or design your
+          own stack with any EVM blockchain, an open-source ERC-4337 bundler, and the open-source MUD indexer.
         </p>
       </Container>
 
@@ -53,8 +58,7 @@ export default function Integrations() {
             />
 
             <p className="text-xs mt-2 md:mt-4 lg:mt-6 md:text-sm opacity-50 text-center hidden md:block">
-              {/* TODO: add description of the diagram */}
-              Some description of the diagram goes here.
+              The Standard World Interface enables custom-built, low-latency environments like Lattice's Quarry.
             </p>
           </Container>
         </div>

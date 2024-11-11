@@ -27,22 +27,15 @@ export default function Installation() {
             </div>
 
             <p className="text-sm">
-              Building a complex onchain game has never been easier. You can get going in seconds with the MUD starter
-              project, which has everything you need to start coding.
+              MUD powers some of the most complex and fascinating applications onchain. But getting started is as easy
+              as running pnpm create mud, to create your very own MUD project.
             </p>
 
-            <div className="border-l border-l-mud pl-4 space-y-2">
-              <h4 className="font-mono uppercase text-[16px] text-white/50">packages/contracts</h4>
-              <p className="text-sm">All of your onchain logic will live here.</p>
-            </div>
-
-            <div className="border-l border-l-mud pl-4 space-y-2">
-              <h4 className="font-mono uppercase text-[16px] text-white/50 ">packages/client</h4>
-              <p className="text-sm">
-                The user interface for your onchain app, served via <b>vite</b>, with a set of developer tools to help
-                you inspect current state.
-              </p>
-            </div>
+            <p className="text-sm">
+              From there, choose one of the frontend templates—from React to Three.js—to visualize your world. Then,
+              start building your world and see it come to life with a built-in development server and automatic
+              contract hot reloading.
+            </p>
 
             <Link
               href="/introduction"

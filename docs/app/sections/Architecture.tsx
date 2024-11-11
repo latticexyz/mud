@@ -8,18 +8,18 @@ export default function Architecture() {
       <Container>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-12">
           <div className="lg:col-span-4 flex flex-col gap-[18px]">
-            <h2 className="text-lg md:text-xl uppercase font-mono">Open source & extensible</h2>
+            <h2 className="text-lg md:text-xl uppercase font-mono">Tried and tested</h2>
             <p className="text-sm">
-              There is no other framework that offers as much out-of-the-box utility for developers of games & other
-              complex onchain apps.
+              First released in 2022, MUD has been used by countless onchain developers—from solo devs to 50-strong game
+              studios—to build applications in production.
             </p>
             <p className="text-sm">
-              From developer experience to efficient data storage, MUD is designed to scale with the success of your
-              team & project.
+              The MUD automatic indexer, MUD-native account abstraction, support for token standards… all of MUD has
+              been tried and tested by production worlds with millions of onchain entities and thousands of users.
             </p>
             <p className="text-sm">
-              All of MUD’s interfaces, from pre-confirmations to indexing, are also open under the mud_* JSON-RPC
-              namespace, which lets you swap out any components as needed.
+              And it is still continuously evolving. New modules and updates are constantly being worked on by MUD core
+              devs and contributors, bringing new features and performance improvements.
             </p>
           </div>
 

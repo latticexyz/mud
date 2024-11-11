@@ -12,9 +12,7 @@ export default function TrustedBy() {
           <div className="flex gap-2 md:gap-[22px] lg:items-center flex-col lg:flex-row">
             <h2 className="text-lg md:text-xl uppercase font-mono">Trusted by many</h2>
             <span className="bg-white/30 w-[1px] h-[50px] hidden lg:inline-block" />
-            <p className="text-sm md:text-md">
-              MUD is well established and trusted by leading teams across the industry.
-            </p>
+            <p className="text-sm md:text-md">Used and built by developers and teams across the world</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-4 w-full">
