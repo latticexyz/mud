@@ -4,7 +4,7 @@ import { encodeKey } from "./encodeKey";
 import { Table } from "@latticexyz/config";
 import { registerTable } from "./registerTable";
 
-export type Update<table extends Table = Table> = {
+export type StashUpdate<table extends Table = Table> = {
   table: table;
   key: Key<table>;
   value: undefined | Partial<TableRecord<table>>;
@@ -12,7 +12,7 @@ export type Update<table extends Table = Table> = {
 
 export type ApplyUpdatesArgs = {
   stash: Stash;
-  updates: Update[];
+  updates: StashUpdate[];
 };
 
 const pendingUpdates = new Map<Stash, StoreUpdates>();
