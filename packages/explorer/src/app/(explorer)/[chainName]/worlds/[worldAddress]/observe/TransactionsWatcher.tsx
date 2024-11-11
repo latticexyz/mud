@@ -12,7 +12,7 @@ import {
 } from "viem";
 import { UserOperation, entryPoint07Abi, entryPoint07Address } from "viem/account-abstraction";
 import { useConfig, useWatchBlocks } from "wagmi";
-import { getTransaction, simulateContract, waitForTransactionReceipt } from "wagmi/actions";
+import { getBlock, getTransaction, simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { useStore } from "zustand";
 import { useCallback, useEffect } from "react";
 import { store as observerStore } from "../../../../../../observer/store";
@@ -218,13 +218,17 @@ export function TransactionsWatcher() {
   }, [handleTransaction, observerWrites, transactions, worldAddress]);
 
   useWatchBlocks({
-    onBlock(block) {
-      for (const hash of block.transactions) {
+    chainId,
+    async onBlock(block) {
+      // workaround for https://github.com/wevm/viem/issues/2995
+      // TODO: remove once fixed and we upgrade viem
+      const blockTxs =
+        block.transactions ?? (await getBlock(wagmiConfig, { chainId, blockHash: block.hash })).transactions;
+      for (const hash of blockTxs) {
         if (transactions.find((transaction) => transaction.hash === hash)) continue;
         handleTransaction({ hash, timestamp: block.timestamp });
       }
     },
-    chainId,
   });
 
   return null;
