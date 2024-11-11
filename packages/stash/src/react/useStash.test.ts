@@ -4,8 +4,9 @@ import { useStash } from "./useStash";
 import { defineStore } from "@latticexyz/store";
 import { createStash } from "../createStash";
 import isEqual from "fast-deep-equal";
-import { getRecord, getRecords } from "../actions";
 import { Hex } from "viem";
+import { getRecords } from "../actions/getRecords";
+import { getRecord } from "../actions/getRecord";
 
 // TODO: migrate to ark/attest snapshots for better formatting + typechecking
 

@@ -5,8 +5,8 @@ import { createStash } from "../createStash";
 import { defineTable } from "@latticexyz/store/internal";
 import { In } from "../queryFragments";
 import { Hex } from "viem";
-import { runQuery } from "../actions";
 import { StoreRecords, getQueryConfig } from "../common";
+import { runQuery } from "../actions/runQuery";
 
 describe("stash with default actions", () => {
   describe("decodeKey", () => {
