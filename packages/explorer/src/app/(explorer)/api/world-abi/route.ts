@@ -1,4 +1,5 @@
 import { Address, Hex, createPublicClient, http, parseAbi } from "viem";
+import { getBlockNumber } from "viem/actions";
 import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
@@ -19,7 +20,7 @@ async function getClient(chainId: supportedChainId) {
 
 async function getParameters(chainId: supportedChainId, worldAddress: Address) {
   const client = await getClient(chainId);
-  const toBlock = await client.getBlockNumber();
+  const toBlock = await getBlockNumber(client, { cacheTime: 0 });
   const logs = await fetchBlockLogs({
     fromBlock: 0n,
     toBlock,

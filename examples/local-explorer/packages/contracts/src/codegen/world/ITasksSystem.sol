@@ -16,4 +16,6 @@ interface ITasksSystem {
   function app__resetTask(bytes32 id) external;
 
   function app__deleteTask(bytes32 id) external;
+
+  function app__deleteTask11(bytes32 id) external;
 }
