@@ -19,7 +19,7 @@ export function setRecords<table extends Table>({ stash, table, records }: SetRe
     registerTable({ stash, table });
   }
 
-  // Construct table updates
+  // Update records and build table updates
   const updates: TableUpdates = {};
   for (const record of records) {
     const encodedKey = encodeKey({ table, key: record as never });
@@ -34,11 +34,7 @@ export function setRecords<table extends Table>({ stash, table, records }: SetRe
       ]),
     );
     updates[encodedKey] = { prev: prevRecord, current: newRecord };
-  }
-
-  // Update records
-  for (const [encodedKey, { current }] of Object.entries(updates)) {
-    ((stash._.state.records[namespaceLabel] ??= {})[label] ??= {})[encodedKey] = current as never;
+    ((stash._.state.records[namespaceLabel] ??= {})[label] ??= {})[encodedKey] = newRecord;
   }
 
   // Notify table subscribers
