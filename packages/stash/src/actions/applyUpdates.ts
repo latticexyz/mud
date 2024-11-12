@@ -49,11 +49,15 @@ export function applyUpdates({ stash, updates }: ApplyUpdatesArgs): void {
       delete tableState[encodedKey];
     }
 
-    // apply update to store update for notifying subscribers
-    ((storeUpdates.records[table.namespaceLabel] ??= {})[table.label] ??= {})[encodedKey] = {
-      prev: prevRecord,
+    // add update to pending updates for notifying subscribers
+    const prevUpdate = storeUpdates.records[table.namespaceLabel]?.[table.label]?.[encodedKey];
+    const update = {
+      // preserve the initial prev state if we already have a pending update
+      // TODO: change subscribers to an array of updates instead of an object
+      prev: prevUpdate ? prevUpdate.prev : prevRecord,
       current: nextRecord,
     };
+    ((storeUpdates.records[table.namespaceLabel] ??= {})[table.label] ??= {})[encodedKey] ??= update;
   }
 
   queueMicrotask(() => {
