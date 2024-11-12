@@ -30,8 +30,6 @@ import {
   throwError,
   mergeWith,
   ignoreElements,
-  observeOn,
-  queueScheduler,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
@@ -216,11 +214,7 @@ export async function createStoreSync({
   const pendingLogsWebSocketUrl = publicClient.chain?.rpcUrls?.wiresaw?.webSocket?.[0];
   const storedPendingLogs$ = pendingLogsWebSocketUrl
     ? startBlock$.pipe(
-        mergeMap((startBlock) =>
-          watchLogs({ url: pendingLogsWebSocketUrl, address, fromBlock: startBlock }).logs$.pipe(
-            observeOn(queueScheduler),
-          ),
-        ),
+        mergeMap((startBlock) => watchLogs({ url: pendingLogsWebSocketUrl, address, fromBlock: startBlock }).logs$),
         concatMap(async (block) => {
           await storageAdapter(block);
           return block;
