@@ -6,7 +6,7 @@ import TrustedBy from "./sections/TrustedBy/TrustedBy";
 import Installation from "./sections/Installation";
 import Architecture from "./sections/Architecture";
 import Integrations from "./sections/Integrations";
-import Ecosystem from "./sections/Ecosystem";
+import Ecosystem from "./sections/Ecosystem/Ecosystem";
 import Changelog from "./sections/Changelog";
 import Newsletter from "./sections/Newsletter";
 

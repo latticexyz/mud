@@ -16,8 +16,6 @@ export default function TextFader({ texts, interval = 3000 }: TextFaderProps) {
 
     const timer = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % texts.length);
-
-      console.log(currentIndex);
     }, interval);
 
     return () => clearInterval(timer);

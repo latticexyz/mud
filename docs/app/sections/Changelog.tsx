@@ -33,8 +33,8 @@ const ChangelogItem = ({ version, date, changes }: ChangelogItem) => {
         </div>
 
         <ul className="mt-6 list-disc pl-5 text-[18px] text-white/70">
-          {allChanges.slice(0, 3).map((change) => (
-            <li key={change.title} title={change.title}>
+          {allChanges.slice(0, 3).map((change, index) => (
+            <li key={`${change.title}-${index}`} title={change.title}>
               <span className="truncate block max-w-[400px]">{change.title}</span>
             </li>
           ))}
@@ -77,8 +77,8 @@ export default function Changelog() {
       <div className="w-full overflow-x-auto mt-8">
         <Container>
           <div className="grid grid-rows-1 grid-flow-col">
-            {changelog.map((item) => (
-              <ChangelogItem key={item.version} {...item} />
+            {changelog.map((item, index) => (
+              <ChangelogItem key={`${item.version}-${index}`} {...item} />
             ))}
           </div>
         </Container>
