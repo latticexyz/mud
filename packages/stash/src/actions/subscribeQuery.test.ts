@@ -53,7 +53,7 @@ describe("defineQuery", () => {
 
     setRecord({ stash, table: Health, key: { player: `0x2` }, value: { health: 2 } });
 
-    attest(result.keys).snap({ "0x3": { player: "0x3" }, "0x4": { player: "0x4" } });
+    attest(result.keys).snap({ "0x3": { player: "0x3" }, "0x4": { player: "0x4" }, "0x2": { player: "0x2" } });
   });
 
   it("should notify subscribers when a matching key is updated", () => {
