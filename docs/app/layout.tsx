@@ -37,7 +37,16 @@ type Props = { children: ReactNode };
 export default function Layout({ children }: Props) {
   return (
     <html lang="en">
-      <body className={twMerge("bg-mud text-white", supplyMono.variable)}>{children}</body>
+      <body className={twMerge("bg-mud text-white", supplyMono.variable)}>
+        <div className="bg-black/20 text-white p-4 text-center">
+          Hello Devcon! Come learn about MUD at{" "}
+          <a href="https://mud.dev/day" className="underline font-semibold">
+            MUD Day
+          </a>{" "}
+          on Thursday in Classroom A.
+        </div>
+        {children}
+      </body>
     </html>
   );
 }
