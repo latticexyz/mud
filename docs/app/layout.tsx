@@ -4,6 +4,7 @@ import { Metadata } from "next";
 import { ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
 import localFont from "next/font/local";
+import { DevconBanner } from "./DevconBanner";
 
 const supplyMono = localFont({
   src: "../public/fonts/PPSupplyMono-Regular.woff2",
@@ -38,13 +39,7 @@ export default function Layout({ children }: Props) {
   return (
     <html lang="en">
       <body className={twMerge("bg-mud text-white", supplyMono.variable)}>
-        <div className="bg-black/20 text-white p-4 text-center">
-          Hello Devcon! Come learn about MUD at{" "}
-          <a href="https://mud.dev/day" className="underline font-semibold">
-            MUD Day
-          </a>{" "}
-          on Thursday in Classroom A.
-        </div>
+        <DevconBanner />
         {children}
       </body>
     </html>
