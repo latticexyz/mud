@@ -64,7 +64,14 @@ type Props = { children: ReactNode };
 export default function Layout({ children }: Props) {
   return (
     <html lang="en">
-      <body className={cn("text-white font-sans", basierCircle.variable, supplyMono.variable, berkeleyMono.variable)}>
+      <body
+        className={cn(
+          "text-white font-sans overflow-x-hidden",
+          basierCircle.variable,
+          supplyMono.variable,
+          berkeleyMono.variable,
+        )}
+      >
         {children}
       </body>
     </html>
