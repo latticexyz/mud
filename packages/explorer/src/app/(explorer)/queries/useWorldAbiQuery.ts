@@ -28,6 +28,6 @@ export function useWorldAbiQuery(): UseQueryResult<AbiQueryResult> {
         isWorldDeployed: data.isWorldDeployed,
       };
     },
-    refetchInterval: 15000,
+    refetchInterval: 5000,
   });
 }

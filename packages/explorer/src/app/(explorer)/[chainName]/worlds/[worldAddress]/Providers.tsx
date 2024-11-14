@@ -1,6 +1,6 @@
 "use client";
 
-import { WagmiProvider, createConfig, http } from "wagmi";
+import { WagmiProvider, createConfig, fallback, http, webSocket } from "wagmi";
 import { injected, metaMask, safe } from "wagmi/connectors";
 import { ReactNode, useMemo } from "react";
 import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
@@ -27,9 +27,14 @@ export function Providers({ children }: { children: ReactNode }) {
         ...getDefaultAnvilConnectors(chain.id),
       ],
       transports: {
-        [chain.id]: http(),
+        [chain.id]: chain.rpcUrls.default.webSocket
+          ? fallback([webSocket(chain.rpcUrls.default.webSocket[0]), http(chain.rpcUrls.default.http[0])])
+          : http(chain.rpcUrls.default.http[0]),
       },
       ssr: true,
+      pollingInterval: {
+        [chain.id]: chain.id === 31337 ? 100 : 500,
+      },
     });
   }, [chain]);
 
