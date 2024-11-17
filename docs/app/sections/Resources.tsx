@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { SourceIcon } from "../../src/icons/SourceIcon";
 import { DocsIcon } from "../../src/icons/DocsIcon";
-import { StatusIcon } from "../../src/icons/StatusIcon";
-import { CalendarIcon } from "../../src/icons/CalendarIcon";
 import { ContributeIcon } from "../../src/icons/ContributeIcon";
 import { ChangelogIcon } from "../../src/icons/ChangelogIcon";
 import { Section } from "../../components/ui/Section";
@@ -56,26 +54,6 @@ export default function Resources() {
             >
               <ContributeIcon />
               Contribute
-            </a>
-            <a
-              href="https://status.mud.dev/"
-              target="_blank"
-              rel="noopener noreferrer"
-              // eslint-disable-next-line max-len
-              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-sm md:text-lg leading-none transition hover:bg-mud hover:border-transparent"
-            >
-              <StatusIcon />
-              Status
-            </a>
-            <a
-              href="https://roadmap.mud.dev/"
-              target="_blank"
-              rel="noopener noreferrer"
-              // eslint-disable-next-line max-len
-              className="flex items-center gap-4 bg-white/10 border border-white/20 p-6 font-mono uppercase text-sm md:text-lg leading-none transition hover:bg-mud hover:border-transparent"
-            >
-              <CalendarIcon />
-              Roadmap
             </a>
           </div>
         </div>
