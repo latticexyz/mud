@@ -24,9 +24,11 @@ export default function Ecosystem() {
                 rel="noopener noreferrer"
                 target="_blank"
                 className={cn(
-                  "relative flex flex-col justify-between",
-                  "w-full md:h-[96px] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-15px)]",
+                  "flex flex-col justify-center items-center md:justify-between",
+                  "w-full h-[104px] md:h-[96px] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-15px)]",
                   "text-white",
+                  "border-b-2 border-white/10 md:border md:hover:border-white/30",
+                  "md:relative",
                 )}
               >
                 <Image
@@ -40,13 +42,9 @@ export default function Ecosystem() {
 
                 <div
                   className={cn(
-                    "absolute left-0 top-0 h-full w-full",
-                    "flex flex-col justify-between",
-                    "h-[96px] w-full",
-                    "py-[28px] md:px-[27px] md:py-[24px]",
-                    "bg-black/90 hover:bg-black/60",
-                    "border-b-2 border-white/10 md:border md:hover:border-white/30",
+                    "w-full",
                     "transition-bg transition-border duration-300",
+                    "md:px-[27px] md:py-[24px] md:bg-black/90 md:hover:bg-black/60 md:h-full",
                   )}
                   style={{ zIndex: "2" }}
                 >

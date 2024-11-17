@@ -7,6 +7,7 @@ export async function GET() {
     const response = await octokit.request("GET /repos/{owner}/{repo}/contributors", {
       owner: "latticexyz",
       repo: "mud",
+      per_page: 1000,
     });
 
     const allContributors = response.data;
