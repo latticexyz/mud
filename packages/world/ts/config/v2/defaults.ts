@@ -26,6 +26,7 @@ export type MODULE_DEFAULTS = typeof MODULE_DEFAULTS;
 export const CODEGEN_DEFAULTS = {
   worldInterfaceName: "IWorld",
   worldgenDirectory: "world",
+  systemLibrariesDirectory: "libraries",
   worldImportPath: "@latticexyz/world/src",
 } as const satisfies CodegenInput;
 

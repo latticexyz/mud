@@ -113,6 +113,8 @@ export type Codegen = {
   readonly worldInterfaceName: string;
   /** Directory to output system and world interfaces of `worldgen` (Default "world") */
   readonly worldgenDirectory: string;
+  /** Directory to output system libraries (Default "libraries") */
+  readonly systemLibrariesDirectory: string;
   /**
    * @internal
    * Absolute import path for a package import or starting with `.` for an import relative to project root dir.
