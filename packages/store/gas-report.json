@@ -183,13 +183,13 @@
     "file": "test/Gas.t.sol:GasTest",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "pass abi encoded bytes to external contract",
-    "gasUsed": 29493
+    "gasUsed": 29505
   },
   {
     "file": "test/Gas.t.sol:GasTest",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "pass custom encoded bytes to external contract",
-    "gasUsed": 23310
+    "gasUsed": 23322
   },
   {
     "file": "test/Gas.t.sol:GasTest",
@@ -363,7 +363,7 @@
     "file": "test/Mixed.t.sol:MixedTest",
     "test": "testCompareSolidity",
     "name": "store Mixed struct in storage (native solidity)",
-    "gasUsed": 92007
+    "gasUsed": 92004
   },
   {
     "file": "test/Mixed.t.sol:MixedTest",
@@ -807,7 +807,7 @@
     "file": "test/StoreCoreGas.t.sol:StoreCoreGasTest",
     "test": "testSetAndGetDynamicData",
     "name": "compare: Set complex record with dynamic data using native solidity",
-    "gasUsed": 116845
+    "gasUsed": 116842
   },
   {
     "file": "test/StoreCoreGas.t.sol:StoreCoreGasTest",
@@ -1053,13 +1053,13 @@
     "file": "test/StoreSwitch.t.sol:StoreSwitchTest",
     "test": "testDelegatecall",
     "name": "get Store address",
-    "gasUsed": 2170
+    "gasUsed": 2182
   },
   {
     "file": "test/StoreSwitch.t.sol:StoreSwitchTest",
     "test": "testNoDelegatecall",
     "name": "get Store address",
-    "gasUsed": 2173
+    "gasUsed": 2185
   },
   {
     "file": "test/tightcoder/DecodeSlice.t.sol:DecodeSliceTest",

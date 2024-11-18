@@ -69,13 +69,13 @@
     "file": "test/World.t.sol:WorldTest",
     "test": "testCall",
     "name": "call a system via the World",
-    "gasUsed": 40081
+    "gasUsed": 40072
   },
   {
     "file": "test/World.t.sol:WorldTest",
     "test": "testCallFromNamespaceDelegation",
     "name": "call a system via a namespace fallback delegation",
-    "gasUsed": 59816
+    "gasUsed": 59807
   },
   {
     "file": "test/World.t.sol:WorldTest",
@@ -87,7 +87,7 @@
     "file": "test/World.t.sol:WorldTest",
     "test": "testCallFromUnlimitedDelegation",
     "name": "call a system via an unlimited delegation",
-    "gasUsed": 40663
+    "gasUsed": 40654
   },
   {
     "file": "test/World.t.sol:WorldTest",
@@ -141,7 +141,7 @@
     "file": "test/World.t.sol:WorldTest",
     "test": "testSetField",
     "name": "Write data to a table field",
-    "gasUsed": 60884
+    "gasUsed": 60872
   },
   {
     "file": "test/World.t.sol:WorldTest",
@@ -165,13 +165,13 @@
     "file": "test/WorldDynamicUpdate.t.sol:UpdateInDynamicFieldTest",
     "test": "testPopFromDynamicField",
     "name": "pop 1 address (cold)",
-    "gasUsed": 51686
+    "gasUsed": 51685
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol:UpdateInDynamicFieldTest",
     "test": "testPopFromDynamicField",
     "name": "pop 1 address (warm)",
-    "gasUsed": 45632
+    "gasUsed": 45631
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol:UpdateInDynamicFieldTest",
@@ -189,13 +189,13 @@
     "file": "test/WorldProxy.t.sol:WorldProxyTest",
     "test": "testCall",
     "name": "call a system via the World",
-    "gasUsed": 45004
+    "gasUsed": 44995
   },
   {
     "file": "test/WorldProxy.t.sol:WorldProxyTest",
     "test": "testCallFromNamespaceDelegation",
     "name": "call a system via a namespace fallback delegation",
-    "gasUsed": 64745
+    "gasUsed": 64736
   },
   {
     "file": "test/WorldProxy.t.sol:WorldProxyTest",
@@ -207,7 +207,7 @@
     "file": "test/WorldProxy.t.sol:WorldProxyTest",
     "test": "testCallFromUnlimitedDelegation",
     "name": "call a system via an unlimited delegation",
-    "gasUsed": 45592
+    "gasUsed": 45583
   },
   {
     "file": "test/WorldProxy.t.sol:WorldProxyTest",
@@ -261,7 +261,7 @@
     "file": "test/WorldProxy.t.sol:WorldProxyTest",
     "test": "testSetField",
     "name": "Write data to a table field",
-    "gasUsed": 65822
+    "gasUsed": 65810
   },
   {
     "file": "test/WorldProxy.t.sol:WorldProxyTest",
@@ -315,6 +315,6 @@
     "file": "test/WorldResourceId.t.sol:WorldResourceIdTest",
     "test": "testToString",
     "name": "convert resource ID to string",
-    "gasUsed": 2390
+    "gasUsed": 2364
   }
 ]
