@@ -7,7 +7,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { ISystemHook } from "../../ISystemHook.sol";
 import { System } from "../../System.sol";
 import { revertWithBytes } from "../../revertWithBytes.sol";
-import { IBaseWorld } from "../../codegen/interfaces/IBaseWorld.sol";
+import { IWorldCall } from "../../IWorldKernel.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 type WorldRegistrationSystemType is bytes32;
@@ -125,8 +125,8 @@ library WorldRegistrationSystemLib {
     return WorldRegistrationSystemType.wrap(resourceId.unwrap());
   }
 
-  function _world() private view returns (IBaseWorld) {
-    return IBaseWorld(StoreSwitch.getStoreAddress());
+  function _world() private view returns (IWorldCall) {
+    return IWorldCall(StoreSwitch.getStoreAddress());
   }
 }
 

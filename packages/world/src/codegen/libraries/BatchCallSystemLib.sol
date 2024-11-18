@@ -5,7 +5,7 @@ pragma solidity >=0.8.24;
 
 import { SystemCallData, SystemCallFromData } from "../../modules/init/types.sol";
 import { revertWithBytes } from "../../revertWithBytes.sol";
-import { IBaseWorld } from "../../codegen/interfaces/IBaseWorld.sol";
+import { IWorldCall } from "../../IWorldKernel.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
@@ -45,8 +45,8 @@ library BatchCallSystemLib {
     return BatchCallSystemType.wrap(resourceId.unwrap());
   }
 
-  function _world() private view returns (IBaseWorld) {
-    return IBaseWorld(StoreSwitch.getStoreAddress());
+  function _world() private view returns (IWorldCall) {
+    return IWorldCall(StoreSwitch.getStoreAddress());
   }
 }
 

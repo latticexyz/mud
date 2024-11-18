@@ -27,8 +27,8 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
       path: `${worldImportPath}/revertWithBytes.sol`,
     },
     {
-      symbol: "IBaseWorld",
-      path: `${worldImportPath}/codegen/interfaces/IBaseWorld.sol`,
+      symbol: "IWorldCall",
+      path: `${worldImportPath}/IWorldKernel.sol`,
     },
     {
       symbol: "ResourceId",
@@ -70,8 +70,8 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
         return ${userTypeName}.wrap(resourceId.unwrap());
       }
 
-      function _world() private view returns (IBaseWorld) {
-        return IBaseWorld(StoreSwitch.getStoreAddress());
+      function _world() private view returns (IWorldCall) {
+        return IWorldCall(StoreSwitch.getStoreAddress());
       }
     }
 
@@ -102,7 +102,7 @@ function renderFunction(userTypeName: string, fn: ContractInterfaceFunction) {
         ${userTypeName} __systemId,
         ${renderArguments(parameters)}
       ) internal ${stateMutability} ${renderReturnParameters(returnParameters)} {
-        bytes memory worldCall = abi.encodeCall(IBaseWorld.call, (__systemId.toResourceId(), ${renderAbiEncode(parameters)}))
+        bytes memory worldCall = abi.encodeCall(IWorldCall.call, (__systemId.toResourceId(), ${renderAbiEncode(parameters)}));
         (bool success, bytes memory result) = address(_world()).staticcall(worldCall);
         if (!success) revertWithBytes(result);
 

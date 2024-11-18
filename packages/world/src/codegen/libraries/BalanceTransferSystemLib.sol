@@ -5,7 +5,7 @@ pragma solidity >=0.8.24;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { revertWithBytes } from "../../revertWithBytes.sol";
-import { IBaseWorld } from "../../codegen/interfaces/IBaseWorld.sol";
+import { IWorldCall } from "../../IWorldKernel.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 type BalanceTransferSystemType is bytes32;
@@ -48,8 +48,8 @@ library BalanceTransferSystemLib {
     return BalanceTransferSystemType.wrap(resourceId.unwrap());
   }
 
-  function _world() private view returns (IBaseWorld) {
-    return IBaseWorld(StoreSwitch.getStoreAddress());
+  function _world() private view returns (IWorldCall) {
+    return IWorldCall(StoreSwitch.getStoreAddress());
   }
 }
 

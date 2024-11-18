@@ -5,7 +5,7 @@ pragma solidity >=0.8.24;
 
 import { IModule } from "../../IModule.sol";
 import { revertWithBytes } from "../../revertWithBytes.sol";
-import { IBaseWorld } from "../../codegen/interfaces/IBaseWorld.sol";
+import { IWorldCall } from "../../IWorldKernel.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
@@ -34,8 +34,8 @@ library ModuleInstallationSystemLib {
     return ModuleInstallationSystemType.wrap(resourceId.unwrap());
   }
 
-  function _world() private view returns (IBaseWorld) {
-    return IBaseWorld(StoreSwitch.getStoreAddress());
+  function _world() private view returns (IWorldCall) {
+    return IWorldCall(StoreSwitch.getStoreAddress());
   }
 }
 
