@@ -24,28 +24,25 @@ export async function worldgen({
     config.codegen.worldgenDirectory,
   );
 
-  const libraryOutDir = path.join(
-    rootDir,
-    config.sourceDirectory,
-    config.codegen.outputDirectory,
-    config.codegen.systemLibrariesDirectory,
-  );
-
-  if (clean) {
-    await Promise.all([
-      fs.rm(worldgenOutDir, { recursive: true, force: true }),
-      fs.rm(libraryOutDir, { recursive: true, force: true }),
-    ]);
-  }
-
-  const outputPath = path.join(worldgenOutDir, config.codegen.worldInterfaceName + ".sol");
-
   const systems = (await resolveSystems({ rootDir, config }))
     // TODO: move to codegen option or generate "system manifest" and codegen from that
     .filter((system) => system.deploy.registerWorldFunctions)
     .map((system) => {
       const interfaceName = `I${system.label}`;
       const libraryName = `${system.label}Lib`;
+
+      const sourceDir = config.multipleNamespaces
+        ? path.join(config.sourceDirectory, "namespaces", system.namespaceLabel)
+        : config.sourceDirectory;
+
+      const libraryOutDir = path.join(
+        sourceDir,
+        config.codegen.outputDirectory,
+        config.codegen.systemLibrariesDirectory,
+      );
+
+      console.log(libraryOutDir);
+
       return {
         ...system,
         interfaceName,
@@ -54,6 +51,17 @@ export async function worldgen({
         libraryPath: path.join(libraryOutDir, `${libraryName}.sol`),
       };
     });
+
+  if (clean) {
+    const libraryDirs = [...new Set(systems.map(({ libraryPath }) => path.dirname(libraryPath)))];
+
+    await Promise.all([
+      fs.rm(worldgenOutDir, { recursive: true, force: true }),
+      ...libraryDirs.map((dir) => fs.rm(dir, { recursive: true, force: true })),
+    ]);
+  }
+
+  const outputPath = path.join(worldgenOutDir, config.codegen.worldInterfaceName + ".sol");
 
   const worldImports = systems.map(
     (system): ImportDatum => ({
@@ -92,13 +100,20 @@ export async function worldgen({
       // write to file
       await formatAndWriteSolidity(systemInterface, system.interfacePath, "Generated system interface");
 
+      const systemImport = {
+        symbol: system.label,
+        path: "./" + path.relative(path.dirname(system.libraryPath), system.sourcePath),
+      };
+
       const systemLibrary = renderSystemLibrary({
         libraryName: system.libraryName,
+        interfaceName: system.interfaceName,
         systemLabel: system.label,
         resourceId: resourceToHex({ type: "system", namespace: system.namespace, name: system.name }),
         functions,
         errors,
-        imports,
+        // we know it's defined because we generated the map from the world imports
+        imports: [systemImport, ...imports],
         storeImportPath,
         worldImportPath,
       });

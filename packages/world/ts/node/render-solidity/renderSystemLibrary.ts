@@ -58,9 +58,19 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
      * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
      */
     library ${libraryName} {
+      struct CallFromWrapper {
+        ${userTypeName} systemId;
+        address from;
+      }
+
       ${renderList(errors, ({ name, parameters }) => `error ${name}(${renderArguments(parameters)});`)}
 
-      ${renderList(functions, (fn) => renderFunction(userTypeName, fn))}
+      ${renderList(functions, (fn) => renderFunction(systemLabel, userTypeName, fn))}
+
+      // TODO: rename to callFrom?
+      function from(${userTypeName} systemId, address _from) internal pure returns (CallFromWrapper memory) {
+        return CallFromWrapper({ systemId: systemId, from: _from });
+      }
 
       function toResourceId(${userTypeName} systemId) internal pure returns (ResourceId) {
         return ResourceId.wrap(${userTypeName}.unwrap(systemId));
@@ -83,28 +93,31 @@ function renderResourceIdBinding(userTypeName: string, systemLabel: string, reso
   return `${userTypeName} constant ${systemLabel} = ${userTypeName}.wrap(${resourceId});`;
 }
 
-function renderFunction(userTypeName: string, fn: ContractInterfaceFunction) {
+function renderFunction(systemLabel: string, userTypeName: string, fn: ContractInterfaceFunction) {
   const { name, parameters, stateMutability, returnParameters } = fn;
+
+  const allParameters = [`${userTypeName} __systemId`, ...parameters];
 
   if (stateMutability === "") {
     return `
       function ${name}(
-        ${userTypeName} __systemId,
-        ${renderArguments(parameters)}
+        ${renderArguments(allParameters)}
       ) internal ${renderReturnParameters(returnParameters)} {
-        bytes memory result = _world().call(__systemId.toResourceId(), ${renderAbiEncode(parameters)});
+        bytes memory systemCall = ${renderEncodeSystemCall(systemLabel, name, parameters)};
+        bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
         ${renderAbiDecode(returnParameters)}
       }
     `;
   } else {
     return `
       function ${name}(
-        ${userTypeName} __systemId,
-        ${renderArguments(parameters)}
+        ${renderArguments(allParameters)}
       ) internal ${stateMutability} ${renderReturnParameters(returnParameters)} {
-        bytes memory worldCall = abi.encodeCall(IWorldCall.call, (__systemId.toResourceId(), ${renderAbiEncode(parameters)}));
-        (bool success, bytes memory result) = address(_world()).staticcall(worldCall);
-        if (!success) revertWithBytes(result);
+        bytes memory systemCall = ${renderEncodeSystemCall(systemLabel, name, parameters)};
+        bytes memory worldCall = abi.encodeCall(IWorldCall.call, (__systemId.toResourceId(), systemCall));
+        (bool success, bytes memory returnData) = address(_world()).staticcall(worldCall);
+        if (!success) revertWithBytes(returnData);
+        bytes memory result = abi.decode(returnData, (bytes));
 
         ${renderAbiDecode(returnParameters)}
       }
@@ -112,9 +125,8 @@ function renderFunction(userTypeName: string, fn: ContractInterfaceFunction) {
   }
 }
 
-function renderAbiEncode(parameters: string[]) {
-  if (parameters.length === 0) return '""';
-  return `abi.encode(${parameters.map((param) => param.split(" ").slice(-1)[0]).join(", ")})`;
+function renderEncodeSystemCall(interfaceName: string, functionName: string, parameters: string[]) {
+  return `abi.encodeCall(${interfaceName}.${functionName}, (${parameters.map((param) => param.split(" ").slice(-1)[0]).join(", ")}))`;
 }
 
 function renderAbiDecode(returnParameters: string[]) {
