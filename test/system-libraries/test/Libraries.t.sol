@@ -21,6 +21,7 @@ contract LibrariesTest is MudTest {
     uint256 value = 0xDEADBEEF;
     aSystem.setValue(value);
     assertEq(Value.get(), value);
+    assertEq(aSystem.getValue(), value);
   }
 
   function testCanCallSystemFromOtherSystem() public {

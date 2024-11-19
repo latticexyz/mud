@@ -41,8 +41,6 @@ export async function worldgen({
         config.codegen.systemLibrariesDirectory,
       );
 
-      console.log(libraryOutDir);
-
       return {
         ...system,
         interfaceName,
@@ -112,7 +110,6 @@ export async function worldgen({
         resourceId: resourceToHex({ type: "system", namespace: system.namespace, name: system.name }),
         functions,
         errors,
-        // we know it's defined because we generated the map from the world imports
         imports: [systemImport, ...imports],
         storeImportPath,
         worldImportPath,
