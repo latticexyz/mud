@@ -21,20 +21,10 @@ MoveSystemType constant moveSystem = MoveSystemType.wrap(
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library MoveSystemLib {
-  struct CallFromWrapper {
-    MoveSystemType systemId;
-    address from;
-  }
-
   function move(MoveSystemType __systemId, int32 x, int32 y) internal {
     bytes memory systemCall = abi.encodeCall(MoveSystem.move, (x, y));
     bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
     result;
-  }
-
-  // TODO: rename to callFrom?
-  function from(MoveSystemType systemId, address _from) internal pure returns (CallFromWrapper memory) {
-    return CallFromWrapper({ systemId: systemId, from: _from });
   }
 
   function toResourceId(MoveSystemType systemId) internal pure returns (ResourceId) {

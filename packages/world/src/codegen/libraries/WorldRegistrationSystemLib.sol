@@ -23,11 +23,6 @@ WorldRegistrationSystemType constant worldRegistrationSystem = WorldRegistration
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library WorldRegistrationSystemLib {
-  struct CallFromWrapper {
-    WorldRegistrationSystemType systemId;
-    address from;
-  }
-
   function registerNamespace(WorldRegistrationSystemType __systemId, ResourceId namespaceId) internal {
     bytes memory systemCall = abi.encodeCall(WorldRegistrationSystem.registerNamespace, (namespaceId));
     bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
@@ -134,11 +129,6 @@ library WorldRegistrationSystemLib {
     bytes memory systemCall = abi.encodeCall(WorldRegistrationSystem.unregisterNamespaceDelegation, (namespaceId));
     bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
     result;
-  }
-
-  // TODO: rename to callFrom?
-  function from(WorldRegistrationSystemType systemId, address _from) internal pure returns (CallFromWrapper memory) {
-    return CallFromWrapper({ systemId: systemId, from: _from });
   }
 
   function toResourceId(WorldRegistrationSystemType systemId) internal pure returns (ResourceId) {

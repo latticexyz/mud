@@ -21,16 +21,6 @@ RegistrationSystemType constant registrationSystem = RegistrationSystemType.wrap
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library RegistrationSystemLib {
-  struct CallFromWrapper {
-    RegistrationSystemType systemId;
-    address from;
-  }
-
-  // TODO: rename to callFrom?
-  function from(RegistrationSystemType systemId, address _from) internal pure returns (CallFromWrapper memory) {
-    return CallFromWrapper({ systemId: systemId, from: _from });
-  }
-
   function toResourceId(RegistrationSystemType systemId) internal pure returns (ResourceId) {
     return ResourceId.wrap(RegistrationSystemType.unwrap(systemId));
   }

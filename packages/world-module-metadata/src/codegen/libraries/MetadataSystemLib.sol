@@ -21,11 +21,6 @@ MetadataSystemType constant metadataSystem = MetadataSystemType.wrap(
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library MetadataSystemLib {
-  struct CallFromWrapper {
-    MetadataSystemType systemId;
-    address from;
-  }
-
   function getResourceTag(
     MetadataSystemType __systemId,
     ResourceId resource,
@@ -55,11 +50,6 @@ library MetadataSystemLib {
     bytes memory systemCall = abi.encodeCall(MetadataSystem.deleteResourceTag, (resource, tag));
     bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
     result;
-  }
-
-  // TODO: rename to callFrom?
-  function from(MetadataSystemType systemId, address _from) internal pure returns (CallFromWrapper memory) {
-    return CallFromWrapper({ systemId: systemId, from: _from });
   }
 
   function toResourceId(MetadataSystemType systemId) internal pure returns (ResourceId) {

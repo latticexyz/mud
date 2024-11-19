@@ -21,11 +21,6 @@ BalanceTransferSystemType constant balanceTransferSystem = BalanceTransferSystem
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library BalanceTransferSystemLib {
-  struct CallFromWrapper {
-    BalanceTransferSystemType systemId;
-    address from;
-  }
-
   function transferBalanceToNamespace(
     BalanceTransferSystemType __systemId,
     ResourceId fromNamespaceId,
@@ -52,11 +47,6 @@ library BalanceTransferSystemLib {
     );
     bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
     result;
-  }
-
-  // TODO: rename to callFrom?
-  function from(BalanceTransferSystemType systemId, address _from) internal pure returns (CallFromWrapper memory) {
-    return CallFromWrapper({ systemId: systemId, from: _from });
   }
 
   function toResourceId(BalanceTransferSystemType systemId) internal pure returns (ResourceId) {

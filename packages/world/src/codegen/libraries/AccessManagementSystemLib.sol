@@ -22,11 +22,6 @@ AccessManagementSystemType constant accessManagementSystem = AccessManagementSys
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library AccessManagementSystemLib {
-  struct CallFromWrapper {
-    AccessManagementSystemType systemId;
-    address from;
-  }
-
   function grantAccess(AccessManagementSystemType __systemId, ResourceId resourceId, address grantee) internal {
     bytes memory systemCall = abi.encodeCall(AccessManagementSystem.grantAccess, (resourceId, grantee));
     bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
@@ -49,11 +44,6 @@ library AccessManagementSystemLib {
     bytes memory systemCall = abi.encodeCall(AccessManagementSystem.renounceOwnership, (namespaceId));
     bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
     result;
-  }
-
-  // TODO: rename to callFrom?
-  function from(AccessManagementSystemType systemId, address _from) internal pure returns (CallFromWrapper memory) {
-    return CallFromWrapper({ systemId: systemId, from: _from });
   }
 
   function toResourceId(AccessManagementSystemType systemId) internal pure returns (ResourceId) {

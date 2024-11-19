@@ -21,11 +21,6 @@ LibWrapperSystemType constant libWrapperSystem = LibWrapperSystemType.wrap(
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library LibWrapperSystemLib {
-  struct CallFromWrapper {
-    LibWrapperSystemType systemId;
-    address from;
-  }
-
   function callLib(LibWrapperSystemType __systemId) internal view returns (string memory) {
     bytes memory systemCall = abi.encodeCall(LibWrapperSystem.callLib, ());
     bytes memory worldCall = abi.encodeCall(IWorldCall.call, (__systemId.toResourceId(), systemCall));
@@ -44,11 +39,6 @@ library LibWrapperSystemLib {
     bytes memory result = abi.decode(returnData, (bytes));
 
     return abi.decode(result, (string));
-  }
-
-  // TODO: rename to callFrom?
-  function from(LibWrapperSystemType systemId, address _from) internal pure returns (CallFromWrapper memory) {
-    return CallFromWrapper({ systemId: systemId, from: _from });
   }
 
   function toResourceId(LibWrapperSystemType systemId) internal pure returns (ResourceId) {

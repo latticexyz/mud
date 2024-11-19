@@ -66,19 +66,9 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
      * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
      */
     library ${libraryName} {
-      struct CallFromWrapper {
-        ${userTypeName} systemId;
-        address from;
-      }
-
       ${renderList(errors, ({ name, parameters }) => `error ${name}(${renderArguments(parameters)});`)}
 
       ${renderList(functionsToRender, (fn) => renderFunction(systemLabel, userTypeName, fn))}
-
-      // TODO: rename to callFrom?
-      function from(${userTypeName} systemId, address _from) internal pure returns (CallFromWrapper memory) {
-        return CallFromWrapper({ systemId: systemId, from: _from });
-      }
 
       function toResourceId(${userTypeName} systemId) internal pure returns (ResourceId) {
         return ResourceId.wrap(${userTypeName}.unwrap(systemId));

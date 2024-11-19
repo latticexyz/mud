@@ -22,11 +22,6 @@ BatchCallSystemType constant batchCallSystem = BatchCallSystemType.wrap(
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library BatchCallSystemLib {
-  struct CallFromWrapper {
-    BatchCallSystemType systemId;
-    address from;
-  }
-
   function batchCall(
     BatchCallSystemType __systemId,
     SystemCallData[] calldata systemCalls
@@ -43,11 +38,6 @@ library BatchCallSystemLib {
     bytes memory systemCall = abi.encodeCall(BatchCallSystem.batchCallFrom, (systemCalls));
     bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
     return abi.decode(result, (bytes[]));
-  }
-
-  // TODO: rename to callFrom?
-  function from(BatchCallSystemType systemId, address _from) internal pure returns (CallFromWrapper memory) {
-    return CallFromWrapper({ systemId: systemId, from: _from });
   }
 
   function toResourceId(BatchCallSystemType systemId) internal pure returns (ResourceId) {

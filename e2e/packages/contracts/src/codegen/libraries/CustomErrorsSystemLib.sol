@@ -22,11 +22,6 @@ CustomErrorsSystemType constant customErrorsSystem = CustomErrorsSystemType.wrap
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library CustomErrorsSystemLib {
-  struct CallFromWrapper {
-    CustomErrorsSystemType systemId;
-    address from;
-  }
-
   error TestError1();
   error TestError2(Position position, uint256 value, string name, bool flag);
 
@@ -38,11 +33,6 @@ library CustomErrorsSystemLib {
     bytes memory result = abi.decode(returnData, (bytes));
 
     return abi.decode(result, (uint256));
-  }
-
-  // TODO: rename to callFrom?
-  function from(CustomErrorsSystemType systemId, address _from) internal pure returns (CallFromWrapper memory) {
-    return CallFromWrapper({ systemId: systemId, from: _from });
   }
 
   function toResourceId(CustomErrorsSystemType systemId) internal pure returns (ResourceId) {

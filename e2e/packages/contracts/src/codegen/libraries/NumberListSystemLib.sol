@@ -21,11 +21,6 @@ NumberListSystemType constant numberListSystem = NumberListSystemType.wrap(
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library NumberListSystemLib {
-  struct CallFromWrapper {
-    NumberListSystemType systemId;
-    address from;
-  }
-
   function set(NumberListSystemType __systemId, uint32[] memory list) internal {
     bytes memory systemCall = abi.encodeCall(NumberListSystem.set, (list));
     bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
@@ -48,11 +43,6 @@ library NumberListSystemLib {
     bytes memory systemCall = abi.encodeCall(NumberListSystem.pop, ());
     bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
     result;
-  }
-
-  // TODO: rename to callFrom?
-  function from(NumberListSystemType systemId, address _from) internal pure returns (CallFromWrapper memory) {
-    return CallFromWrapper({ systemId: systemId, from: _from });
   }
 
   function toResourceId(NumberListSystemType systemId) internal pure returns (ResourceId) {

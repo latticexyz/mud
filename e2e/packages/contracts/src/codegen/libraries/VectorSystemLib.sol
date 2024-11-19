@@ -21,20 +21,10 @@ VectorSystemType constant vectorSystem = VectorSystemType.wrap(
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library VectorSystemLib {
-  struct CallFromWrapper {
-    VectorSystemType systemId;
-    address from;
-  }
-
   function setVector(VectorSystemType __systemId, uint32 key, int32 x, int32 y) internal {
     bytes memory systemCall = abi.encodeCall(VectorSystem.setVector, (key, x, y));
     bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
     result;
-  }
-
-  // TODO: rename to callFrom?
-  function from(VectorSystemType systemId, address _from) internal pure returns (CallFromWrapper memory) {
-    return CallFromWrapper({ systemId: systemId, from: _from });
   }
 
   function toResourceId(VectorSystemType systemId) internal pure returns (ResourceId) {

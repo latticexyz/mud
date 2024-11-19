@@ -21,20 +21,10 @@ NumberSystemType constant numberSystem = NumberSystemType.wrap(
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library NumberSystemLib {
-  struct CallFromWrapper {
-    NumberSystemType systemId;
-    address from;
-  }
-
   function setNumber(NumberSystemType __systemId, uint32 key, uint32 value) internal {
     bytes memory systemCall = abi.encodeCall(NumberSystem.setNumber, (key, value));
     bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
     result;
-  }
-
-  // TODO: rename to callFrom?
-  function from(NumberSystemType systemId, address _from) internal pure returns (CallFromWrapper memory) {
-    return CallFromWrapper({ systemId: systemId, from: _from });
   }
 
   function toResourceId(NumberSystemType systemId) internal pure returns (ResourceId) {
