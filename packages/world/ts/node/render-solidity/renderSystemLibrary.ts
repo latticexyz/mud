@@ -43,6 +43,14 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
   const camelCaseSystemLabel = systemLabel.charAt(0).toLowerCase() + systemLabel.slice(1);
   const userTypeName = `${systemLabel}Type`;
 
+  // use view state mutability for pure functions (otherwise we can't use staticcall)
+  // TODO: a better alternative would be to actually just copy the pure function's code,
+  // as it is not really necessary to call the system
+  const functionsToRender = functions.map((fn) => ({
+    ...fn,
+    stateMutability: fn.stateMutability === "pure" ? "view" : fn.stateMutability,
+  }));
+
   return `
     ${renderedSolidityHeader}
 
@@ -65,7 +73,7 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
 
       ${renderList(errors, ({ name, parameters }) => `error ${name}(${renderArguments(parameters)});`)}
 
-      ${renderList(functions, (fn) => renderFunction(systemLabel, userTypeName, fn))}
+      ${renderList(functionsToRender, (fn) => renderFunction(systemLabel, userTypeName, fn))}
 
       // TODO: rename to callFrom?
       function from(${userTypeName} systemId, address _from) internal pure returns (CallFromWrapper memory) {
