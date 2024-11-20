@@ -1,7 +1,7 @@
 # MUD
 
 <div align="center">
-
+a
 ![MUD logo](./docs/public/mud-cover-photo.png)
 
 <div  style="margin: 0 0 30px 0;"></div>
