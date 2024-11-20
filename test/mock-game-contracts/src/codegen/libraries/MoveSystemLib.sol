@@ -27,17 +27,23 @@ struct CallWrapper {
  */
 library MoveSystemLib {
   function move(MoveSystemType self, int32 x, int32 y) internal {
-    CallWrapper(self.toResourceId(), address(0)).move(x, y);
+    return CallWrapper(self.toResourceId(), address(0)).move(x, y);
   }
 
   function move(CallWrapper memory self, int32 x, int32 y) internal {
     bytes memory systemCall = abi.encodeCall(MoveSystem.move, (x, y));
-    bytes memory result = _world().call(self.systemId, systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     result;
   }
 
-  function toResourceId(MoveSystemType systemId) internal pure returns (ResourceId) {
-    return ResourceId.wrap(MoveSystemType.unwrap(systemId));
+  function callFrom(MoveSystemType self, address from) internal pure returns (CallWrapper memory) {
+    return CallWrapper(self.toResourceId(), from);
+  }
+
+  function toResourceId(MoveSystemType self) internal pure returns (ResourceId) {
+    return ResourceId.wrap(MoveSystemType.unwrap(self));
   }
 
   function fromResourceId(ResourceId resourceId) internal pure returns (MoveSystemType) {

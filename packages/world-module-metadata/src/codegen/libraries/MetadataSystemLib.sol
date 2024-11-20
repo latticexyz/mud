@@ -31,15 +31,15 @@ library MetadataSystemLib {
     ResourceId resource,
     bytes32 tag
   ) internal view returns (bytes memory) {
-    CallWrapper(self.toResourceId(), address(0)).getResourceTag(resource, tag);
+    return CallWrapper(self.toResourceId(), address(0)).getResourceTag(resource, tag);
   }
 
   function setResourceTag(MetadataSystemType self, ResourceId resource, bytes32 tag, bytes memory value) internal {
-    CallWrapper(self.toResourceId(), address(0)).setResourceTag(resource, tag, value);
+    return CallWrapper(self.toResourceId(), address(0)).setResourceTag(resource, tag, value);
   }
 
   function deleteResourceTag(MetadataSystemType self, ResourceId resource, bytes32 tag) internal {
-    CallWrapper(self.toResourceId(), address(0)).deleteResourceTag(resource, tag);
+    return CallWrapper(self.toResourceId(), address(0)).deleteResourceTag(resource, tag);
   }
 
   function getResourceTag(
@@ -48,7 +48,9 @@ library MetadataSystemLib {
     bytes32 tag
   ) internal view returns (bytes memory) {
     bytes memory systemCall = abi.encodeCall(MetadataSystem.getResourceTag, (resource, tag));
-    bytes memory worldCall = abi.encodeCall(IWorldCall.call, (self.systemId, systemCall));
+    bytes memory worldCall = self.from == address(0)
+      ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
+      : abi.encodeCall(IWorldCall.callFrom, (self.from, self.systemId, systemCall));
     (bool success, bytes memory returnData) = address(_world()).staticcall(worldCall);
     if (!success) revertWithBytes(returnData);
     bytes memory result = abi.decode(returnData, (bytes));
@@ -57,18 +59,26 @@ library MetadataSystemLib {
 
   function setResourceTag(CallWrapper memory self, ResourceId resource, bytes32 tag, bytes memory value) internal {
     bytes memory systemCall = abi.encodeCall(MetadataSystem.setResourceTag, (resource, tag, value));
-    bytes memory result = _world().call(self.systemId, systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     result;
   }
 
   function deleteResourceTag(CallWrapper memory self, ResourceId resource, bytes32 tag) internal {
     bytes memory systemCall = abi.encodeCall(MetadataSystem.deleteResourceTag, (resource, tag));
-    bytes memory result = _world().call(self.systemId, systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     result;
   }
 
-  function toResourceId(MetadataSystemType systemId) internal pure returns (ResourceId) {
-    return ResourceId.wrap(MetadataSystemType.unwrap(systemId));
+  function callFrom(MetadataSystemType self, address from) internal pure returns (CallWrapper memory) {
+    return CallWrapper(self.toResourceId(), from);
+  }
+
+  function toResourceId(MetadataSystemType self) internal pure returns (ResourceId) {
+    return ResourceId.wrap(MetadataSystemType.unwrap(self));
   }
 
   function fromResourceId(ResourceId resourceId) internal pure returns (MetadataSystemType) {
