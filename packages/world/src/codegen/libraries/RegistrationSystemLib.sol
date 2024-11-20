@@ -15,14 +15,23 @@ RegistrationSystemType constant registrationSystem = RegistrationSystemType.wrap
   0x73790000000000000000000000000000526567697374726174696f6e53797374
 );
 
+struct CallWrapper {
+  ResourceId systemId;
+  address from;
+}
+
 /**
  * @title RegistrationSystemLib
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library RegistrationSystemLib {
-  function toResourceId(RegistrationSystemType systemId) internal pure returns (ResourceId) {
-    return ResourceId.wrap(RegistrationSystemType.unwrap(systemId));
+  function callFrom(RegistrationSystemType self, address from) internal pure returns (CallWrapper memory) {
+    return CallWrapper(self.toResourceId(), from);
+  }
+
+  function toResourceId(RegistrationSystemType self) internal pure returns (ResourceId) {
+    return ResourceId.wrap(RegistrationSystemType.unwrap(self));
   }
 
   function fromResourceId(ResourceId resourceId) internal pure returns (RegistrationSystemType) {
@@ -35,3 +44,4 @@ library RegistrationSystemLib {
 }
 
 using RegistrationSystemLib for RegistrationSystemType global;
+using RegistrationSystemLib for CallWrapper global;

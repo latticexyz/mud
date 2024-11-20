@@ -13,40 +13,65 @@ type ASystemType is bytes32;
 
 ASystemType constant aSystem = ASystemType.wrap(0x737961000000000000000000000000004153797374656d000000000000000000);
 
+struct CallWrapper {
+  ResourceId systemId;
+  address from;
+}
+
 /**
  * @title ASystemLib
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library ASystemLib {
-  struct CallFromWrapper {
-    ASystemType systemId;
-    address from;
+  function setValue(ASystemType self, uint256 value) internal {
+    return CallWrapper(self.toResourceId(), address(0)).setValue(value);
   }
 
-  function setValue(ASystemType __systemId, uint256 value) internal {
+  function getValue(ASystemType self) internal view returns (uint256) {
+    return CallWrapper(self.toResourceId(), address(0)).getValue();
+  }
+
+  function getTwoValues(ASystemType self) internal view returns (uint256, uint256) {
+    return CallWrapper(self.toResourceId(), address(0)).getTwoValues();
+  }
+
+  function setValue(CallWrapper memory self, uint256 value) internal {
     bytes memory systemCall = abi.encodeCall(ASystem.setValue, (value));
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     result;
   }
 
-  function getValue(ASystemType __systemId) internal view returns (uint256) {
+  function getValue(CallWrapper memory self) internal view returns (uint256) {
     bytes memory systemCall = abi.encodeCall(ASystem.getValue, ());
-    bytes memory worldCall = abi.encodeCall(IWorldCall.call, (__systemId.toResourceId(), systemCall));
+    bytes memory worldCall = self.from == address(0)
+      ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
+      : abi.encodeCall(IWorldCall.callFrom, (self.from, self.systemId, systemCall));
     (bool success, bytes memory returnData) = address(_world()).staticcall(worldCall);
     if (!success) revertWithBytes(returnData);
     bytes memory result = abi.decode(returnData, (bytes));
-
     return abi.decode(result, (uint256));
   }
 
-  // TODO: rename to callFrom?
-  function from(ASystemType systemId, address _from) internal pure returns (CallFromWrapper memory) {
-    return CallFromWrapper({ systemId: systemId, from: _from });
+  function getTwoValues(CallWrapper memory self) internal view returns (uint256, uint256) {
+    bytes memory systemCall = abi.encodeCall(ASystem.getTwoValues, ());
+    bytes memory worldCall = self.from == address(0)
+      ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
+      : abi.encodeCall(IWorldCall.callFrom, (self.from, self.systemId, systemCall));
+    (bool success, bytes memory returnData) = address(_world()).staticcall(worldCall);
+    if (!success) revertWithBytes(returnData);
+    bytes memory result = abi.decode(returnData, (bytes));
+    return abi.decode(result, (uint256, uint256));
   }
 
-  function toResourceId(ASystemType systemId) internal pure returns (ResourceId) {
-    return ResourceId.wrap(ASystemType.unwrap(systemId));
+  function callFrom(ASystemType self, address from) internal pure returns (CallWrapper memory) {
+    return CallWrapper(self.toResourceId(), from);
+  }
+
+  function toResourceId(ASystemType self) internal pure returns (ResourceId) {
+    return ResourceId.wrap(ASystemType.unwrap(self));
   }
 
   function fromResourceId(ResourceId resourceId) internal pure returns (ASystemType) {
@@ -59,3 +84,4 @@ library ASystemLib {
 }
 
 using ASystemLib for ASystemType global;
+using ASystemLib for CallWrapper global;

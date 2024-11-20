@@ -16,38 +16,71 @@ AccessManagementSystemType constant accessManagementSystem = AccessManagementSys
   0x737900000000000000000000000000004163636573734d616e6167656d656e74
 );
 
+struct CallWrapper {
+  ResourceId systemId;
+  address from;
+}
+
 /**
  * @title AccessManagementSystemLib
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library AccessManagementSystemLib {
-  function grantAccess(AccessManagementSystemType __systemId, ResourceId resourceId, address grantee) internal {
+  function grantAccess(AccessManagementSystemType self, ResourceId resourceId, address grantee) internal {
+    return CallWrapper(self.toResourceId(), address(0)).grantAccess(resourceId, grantee);
+  }
+
+  function revokeAccess(AccessManagementSystemType self, ResourceId resourceId, address grantee) internal {
+    return CallWrapper(self.toResourceId(), address(0)).revokeAccess(resourceId, grantee);
+  }
+
+  function transferOwnership(AccessManagementSystemType self, ResourceId namespaceId, address newOwner) internal {
+    return CallWrapper(self.toResourceId(), address(0)).transferOwnership(namespaceId, newOwner);
+  }
+
+  function renounceOwnership(AccessManagementSystemType self, ResourceId namespaceId) internal {
+    return CallWrapper(self.toResourceId(), address(0)).renounceOwnership(namespaceId);
+  }
+
+  function grantAccess(CallWrapper memory self, ResourceId resourceId, address grantee) internal {
     bytes memory systemCall = abi.encodeCall(AccessManagementSystem.grantAccess, (resourceId, grantee));
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     result;
   }
 
-  function revokeAccess(AccessManagementSystemType __systemId, ResourceId resourceId, address grantee) internal {
+  function revokeAccess(CallWrapper memory self, ResourceId resourceId, address grantee) internal {
     bytes memory systemCall = abi.encodeCall(AccessManagementSystem.revokeAccess, (resourceId, grantee));
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     result;
   }
 
-  function transferOwnership(AccessManagementSystemType __systemId, ResourceId namespaceId, address newOwner) internal {
+  function transferOwnership(CallWrapper memory self, ResourceId namespaceId, address newOwner) internal {
     bytes memory systemCall = abi.encodeCall(AccessManagementSystem.transferOwnership, (namespaceId, newOwner));
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     result;
   }
 
-  function renounceOwnership(AccessManagementSystemType __systemId, ResourceId namespaceId) internal {
+  function renounceOwnership(CallWrapper memory self, ResourceId namespaceId) internal {
     bytes memory systemCall = abi.encodeCall(AccessManagementSystem.renounceOwnership, (namespaceId));
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     result;
   }
 
-  function toResourceId(AccessManagementSystemType systemId) internal pure returns (ResourceId) {
-    return ResourceId.wrap(AccessManagementSystemType.unwrap(systemId));
+  function callFrom(AccessManagementSystemType self, address from) internal pure returns (CallWrapper memory) {
+    return CallWrapper(self.toResourceId(), from);
+  }
+
+  function toResourceId(AccessManagementSystemType self) internal pure returns (ResourceId) {
+    return ResourceId.wrap(AccessManagementSystemType.unwrap(self));
   }
 
   function fromResourceId(ResourceId resourceId) internal pure returns (AccessManagementSystemType) {
@@ -60,3 +93,4 @@ library AccessManagementSystemLib {
 }
 
 using AccessManagementSystemLib for AccessManagementSystemType global;
+using AccessManagementSystemLib for CallWrapper global;

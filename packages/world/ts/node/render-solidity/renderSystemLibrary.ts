@@ -6,6 +6,7 @@ import {
   ContractInterfaceFunction,
 } from "@latticexyz/common/codegen";
 import { RenderSystemLibraryOptions } from "./types";
+import { ContractInterfaceError } from "@latticexyz/common/codegen";
 
 export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
   const {
@@ -43,14 +44,6 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
   const camelCaseSystemLabel = systemLabel.charAt(0).toLowerCase() + systemLabel.slice(1);
   const userTypeName = `${systemLabel}Type`;
 
-  // use view state mutability for pure functions (otherwise we can't use staticcall)
-  // TODO: a better alternative would be to actually just copy the pure function's code,
-  // as it is not really necessary to call the system
-  const functionsToRender = functions.map((fn) => ({
-    ...fn,
-    stateMutability: fn.stateMutability === "pure" ? "view" : fn.stateMutability,
-  }));
-
   return `
     ${renderedSolidityHeader}
 
@@ -60,18 +53,29 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
 
     ${renderResourceIdBinding(userTypeName, camelCaseSystemLabel, resourceId)}
 
+    struct CallWrapper {
+      ResourceId systemId;
+      address from;
+    }
+
     /**
      * @title ${libraryName}
      * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
      * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
      */
     library ${libraryName} {
-      ${renderList(errors, ({ name, parameters }) => `error ${name}(${renderArguments(parameters)});`)}
+      ${renderErrors(errors)}
 
-      ${renderList(functionsToRender, (fn) => renderFunction(systemLabel, userTypeName, fn))}
+      ${renderUserTypeFunctions(functions, userTypeName)}
 
-      function toResourceId(${userTypeName} systemId) internal pure returns (ResourceId) {
-        return ResourceId.wrap(${userTypeName}.unwrap(systemId));
+      ${renderCallWrapperFunctions(functions, systemLabel)}
+
+      function callFrom(${userTypeName} self, address from) internal pure returns (CallWrapper memory) {
+        return CallWrapper(self.toResourceId(), from);
+      }
+
+      function toResourceId(${userTypeName} self) internal pure returns (ResourceId) {
+        return ResourceId.wrap(${userTypeName}.unwrap(self));
       }
 
       function fromResourceId(ResourceId resourceId) internal pure returns (${userTypeName}) {
@@ -84,6 +88,7 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
     }
 
     using ${libraryName} for ${userTypeName} global;
+    using ${libraryName} for CallWrapper global;
   `;
 }
 
@@ -91,51 +96,110 @@ function renderResourceIdBinding(userTypeName: string, systemLabel: string, reso
   return `${userTypeName} constant ${systemLabel} = ${userTypeName}.wrap(${resourceId});`;
 }
 
-function renderFunction(systemLabel: string, userTypeName: string, fn: ContractInterfaceFunction) {
-  const { name, parameters, stateMutability, returnParameters } = fn;
+function renderErrors(errors: ContractInterfaceError[]) {
+  return renderList(errors, ({ name, parameters }) => `  error ${name}(${renderArguments(parameters)});`);
+}
 
-  const allParameters = [`${userTypeName} __systemId`, ...parameters];
+function renderUserTypeFunctions(functions: ContractInterfaceFunction[], userTypeName: string) {
+  return renderList(functions, (contractFunction) => renderUserTypeFunction(contractFunction, userTypeName));
+}
+
+function renderUserTypeFunction(contractFunction: ContractInterfaceFunction, userTypeName: string) {
+  const { name, parameters, stateMutability, returnParameters } = contractFunction;
+
+  const allParameters = [`${userTypeName} self`, ...parameters];
+
+  const functionSignature = `
+    function ${name}(
+      ${renderArguments(allParameters)}
+    ) internal
+      ${stateMutability === "pure" ? "view" : stateMutability}
+      ${renderReturnParameters(returnParameters)}
+  `;
+
+  const functionBody = renderUserTypeFunctionBody(contractFunction);
+
+  return `
+    ${functionSignature} {
+      ${functionBody}
+    }
+  `;
+}
+
+function renderUserTypeFunctionBody(contractFunction: ContractInterfaceFunction) {
+  const { name, parameters } = contractFunction;
+
+  const callWrapperArguments = parameters.map((param) => param.split(" ").slice(-1)[0]).join(", ");
+  return `
+    return CallWrapper(self.toResourceId(), address(0)).${name}(${callWrapperArguments});
+  `;
+}
+
+function renderCallWrapperFunctions(functions: ContractInterfaceFunction[], systemLabel: string) {
+  return renderList(functions, (contractFunction) => renderCallWrapperFunction(contractFunction, systemLabel));
+}
+
+function renderCallWrapperFunction(contractFunction: ContractInterfaceFunction, systemLabel: string) {
+  const { name, parameters, stateMutability, returnParameters } = contractFunction;
+
+  const allParameters = [`CallWrapper memory self`, ...parameters];
+
+  const functionSignature = `
+    function ${name}(
+      ${renderArguments(allParameters)}
+    ) internal
+      ${stateMutability === "pure" ? "view" : stateMutability}
+      ${renderReturnParameters(returnParameters)}
+  `;
+
+  const functionBody = renderCallWrapperFunctionBody(contractFunction, systemLabel);
+
+  return `
+    ${functionSignature} {
+      ${functionBody}
+    }
+  `;
+}
+
+function renderCallWrapperFunctionBody(contractFunction: ContractInterfaceFunction, systemLabel: string) {
+  const { name, parameters, stateMutability, returnParameters } = contractFunction;
+
+  const encodedSystemCall = renderEncodeSystemCall(systemLabel, name, parameters);
 
   if (stateMutability === "") {
     return `
-      function ${name}(
-        ${renderArguments(allParameters)}
-      ) internal ${renderReturnParameters(returnParameters)} {
-        bytes memory systemCall = ${renderEncodeSystemCall(systemLabel, name, parameters)};
-        bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
-        ${renderAbiDecode(returnParameters)}
-      }
+      bytes memory systemCall = ${encodedSystemCall};
+      bytes memory result = self.from == address(0) ? _world().call(self.systemId, systemCall) : _world().callFrom(self.from, self.systemId, systemCall);
+      ${renderAbiDecode(returnParameters)}
     `;
   } else {
     return `
-      function ${name}(
-        ${renderArguments(allParameters)}
-      ) internal ${stateMutability} ${renderReturnParameters(returnParameters)} {
-        bytes memory systemCall = ${renderEncodeSystemCall(systemLabel, name, parameters)};
-        bytes memory worldCall = abi.encodeCall(IWorldCall.call, (__systemId.toResourceId(), systemCall));
-        (bool success, bytes memory returnData) = address(_world()).staticcall(worldCall);
-        if (!success) revertWithBytes(returnData);
-        bytes memory result = abi.decode(returnData, (bytes));
-
-        ${renderAbiDecode(returnParameters)}
-      }
+      bytes memory systemCall = ${encodedSystemCall};
+      bytes memory worldCall = self.from == address(0)
+        ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
+        : abi.encodeCall(IWorldCall.callFrom, (self.from, self.systemId, systemCall));
+      (bool success, bytes memory returnData) = address(_world()).staticcall(worldCall);
+      if (!success) revertWithBytes(returnData);
+      bytes memory result = abi.decode(returnData, (bytes));
+      ${renderAbiDecode(returnParameters)}
     `;
   }
 }
 
 function renderEncodeSystemCall(interfaceName: string, functionName: string, parameters: string[]) {
-  return `abi.encodeCall(${interfaceName}.${functionName}, (${parameters.map((param) => param.split(" ").slice(-1)[0]).join(", ")}))`;
+  const paramNames = parameters.map((param) => param.split(" ").slice(-1)[0]).join(", ");
+  return `abi.encodeCall(${interfaceName}.${functionName}, (${paramNames}))`;
 }
 
 function renderAbiDecode(returnParameters: string[]) {
   if (returnParameters.length === 0) return "result;";
-  return `return abi.decode(result, (${returnParameters.map((param) => param.split(" ")[0]).join(", ")}));`;
+
+  const returnTypes = returnParameters.map((param) => param.split(" ")[0]).join(", ");
+  return `return abi.decode(result, (${returnTypes}));`;
 }
 
 function renderReturnParameters(returnParameters: string[]) {
-  if (returnParameters.length > 0) {
-    return `returns (${renderArguments(returnParameters)})`;
-  } else {
-    return "";
-  }
+  if (returnParameters.length == 0) return "";
+
+  return `returns (${renderArguments(returnParameters)})`;
 }

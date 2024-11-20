@@ -15,15 +15,24 @@ MoveSystemType constant moveSystem = MoveSystemType.wrap(
   0x737900000000000000000000000000004d6f766553797374656d000000000000
 );
 
+struct CallWrapper {
+  ResourceId systemId;
+  address from;
+}
+
 /**
  * @title MoveSystemLib
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library MoveSystemLib {
-  function move(MoveSystemType __systemId, int32 x, int32 y) internal {
+  function move(MoveSystemType self, int32 x, int32 y) internal {
+    CallWrapper(self.toResourceId(), address(0)).move(x, y);
+  }
+
+  function move(CallWrapper memory self, int32 x, int32 y) internal {
     bytes memory systemCall = abi.encodeCall(MoveSystem.move, (x, y));
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = _world().call(self.systemId, systemCall);
     result;
   }
 
@@ -41,3 +50,4 @@ library MoveSystemLib {
 }
 
 using MoveSystemLib for MoveSystemType global;
+using MoveSystemLib for CallWrapper global;

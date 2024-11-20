@@ -16,6 +16,11 @@ BatchCallSystemType constant batchCallSystem = BatchCallSystemType.wrap(
   0x73790000000000000000000000000000426174636843616c6c53797374656d00
 );
 
+struct CallWrapper {
+  ResourceId systemId;
+  address from;
+}
+
 /**
  * @title BatchCallSystemLib
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
@@ -23,25 +28,47 @@ BatchCallSystemType constant batchCallSystem = BatchCallSystemType.wrap(
  */
 library BatchCallSystemLib {
   function batchCall(
-    BatchCallSystemType __systemId,
+    BatchCallSystemType self,
+    SystemCallData[] calldata systemCalls
+  ) internal returns (bytes[] memory returnDatas) {
+    return CallWrapper(self.toResourceId(), address(0)).batchCall(systemCalls);
+  }
+
+  function batchCallFrom(
+    BatchCallSystemType self,
+    SystemCallFromData[] calldata systemCalls
+  ) internal returns (bytes[] memory returnDatas) {
+    return CallWrapper(self.toResourceId(), address(0)).batchCallFrom(systemCalls);
+  }
+
+  function batchCall(
+    CallWrapper memory self,
     SystemCallData[] calldata systemCalls
   ) internal returns (bytes[] memory returnDatas) {
     bytes memory systemCall = abi.encodeCall(BatchCallSystem.batchCall, (systemCalls));
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     return abi.decode(result, (bytes[]));
   }
 
   function batchCallFrom(
-    BatchCallSystemType __systemId,
+    CallWrapper memory self,
     SystemCallFromData[] calldata systemCalls
   ) internal returns (bytes[] memory returnDatas) {
     bytes memory systemCall = abi.encodeCall(BatchCallSystem.batchCallFrom, (systemCalls));
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     return abi.decode(result, (bytes[]));
   }
 
-  function toResourceId(BatchCallSystemType systemId) internal pure returns (ResourceId) {
-    return ResourceId.wrap(BatchCallSystemType.unwrap(systemId));
+  function callFrom(BatchCallSystemType self, address from) internal pure returns (CallWrapper memory) {
+    return CallWrapper(self.toResourceId(), from);
+  }
+
+  function toResourceId(BatchCallSystemType self) internal pure returns (ResourceId) {
+    return ResourceId.wrap(BatchCallSystemType.unwrap(self));
   }
 
   function fromResourceId(ResourceId resourceId) internal pure returns (BatchCallSystemType) {
@@ -54,3 +81,4 @@ library BatchCallSystemLib {
 }
 
 using BatchCallSystemLib for BatchCallSystemType global;
+using BatchCallSystemLib for CallWrapper global;

@@ -114,6 +114,7 @@ export async function worldgen({
         storeImportPath,
         worldImportPath,
       });
+      console.log(systemLibrary);
       // write to file
       await formatAndWriteSolidity(systemLibrary, system.libraryPath, "Generated system library");
     }),

@@ -15,6 +15,11 @@ BalanceTransferSystemType constant balanceTransferSystem = BalanceTransferSystem
   0x7379000000000000000000000000000042616c616e63655472616e7366657253
 );
 
+struct CallWrapper {
+  ResourceId systemId;
+  address from;
+}
+
 /**
  * @title BalanceTransferSystemLib
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
@@ -22,7 +27,26 @@ BalanceTransferSystemType constant balanceTransferSystem = BalanceTransferSystem
  */
 library BalanceTransferSystemLib {
   function transferBalanceToNamespace(
-    BalanceTransferSystemType __systemId,
+    BalanceTransferSystemType self,
+    ResourceId fromNamespaceId,
+    ResourceId toNamespaceId,
+    uint256 amount
+  ) internal {
+    return
+      CallWrapper(self.toResourceId(), address(0)).transferBalanceToNamespace(fromNamespaceId, toNamespaceId, amount);
+  }
+
+  function transferBalanceToAddress(
+    BalanceTransferSystemType self,
+    ResourceId fromNamespaceId,
+    address toAddress,
+    uint256 amount
+  ) internal {
+    return CallWrapper(self.toResourceId(), address(0)).transferBalanceToAddress(fromNamespaceId, toAddress, amount);
+  }
+
+  function transferBalanceToNamespace(
+    CallWrapper memory self,
     ResourceId fromNamespaceId,
     ResourceId toNamespaceId,
     uint256 amount
@@ -31,12 +55,14 @@ library BalanceTransferSystemLib {
       BalanceTransferSystem.transferBalanceToNamespace,
       (fromNamespaceId, toNamespaceId, amount)
     );
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     result;
   }
 
   function transferBalanceToAddress(
-    BalanceTransferSystemType __systemId,
+    CallWrapper memory self,
     ResourceId fromNamespaceId,
     address toAddress,
     uint256 amount
@@ -45,12 +71,18 @@ library BalanceTransferSystemLib {
       BalanceTransferSystem.transferBalanceToAddress,
       (fromNamespaceId, toAddress, amount)
     );
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     result;
   }
 
-  function toResourceId(BalanceTransferSystemType systemId) internal pure returns (ResourceId) {
-    return ResourceId.wrap(BalanceTransferSystemType.unwrap(systemId));
+  function callFrom(BalanceTransferSystemType self, address from) internal pure returns (CallWrapper memory) {
+    return CallWrapper(self.toResourceId(), from);
+  }
+
+  function toResourceId(BalanceTransferSystemType self) internal pure returns (ResourceId) {
+    return ResourceId.wrap(BalanceTransferSystemType.unwrap(self));
   }
 
   function fromResourceId(ResourceId resourceId) internal pure returns (BalanceTransferSystemType) {
@@ -63,3 +95,4 @@ library BalanceTransferSystemLib {
 }
 
 using BalanceTransferSystemLib for BalanceTransferSystemType global;
+using BalanceTransferSystemLib for CallWrapper global;

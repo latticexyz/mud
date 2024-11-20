@@ -17,20 +17,111 @@ WorldRegistrationSystemType constant worldRegistrationSystem = WorldRegistration
   0x73790000000000000000000000000000576f726c64526567697374726174696f
 );
 
+struct CallWrapper {
+  ResourceId systemId;
+  address from;
+}
+
 /**
  * @title WorldRegistrationSystemLib
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library WorldRegistrationSystemLib {
-  function registerNamespace(WorldRegistrationSystemType __systemId, ResourceId namespaceId) internal {
+  function registerNamespace(WorldRegistrationSystemType self, ResourceId namespaceId) internal {
+    return CallWrapper(self.toResourceId(), address(0)).registerNamespace(namespaceId);
+  }
+
+  function registerSystemHook(
+    WorldRegistrationSystemType self,
+    ResourceId systemId,
+    ISystemHook hookAddress,
+    uint8 enabledHooksBitmap
+  ) internal {
+    return CallWrapper(self.toResourceId(), address(0)).registerSystemHook(systemId, hookAddress, enabledHooksBitmap);
+  }
+
+  function unregisterSystemHook(
+    WorldRegistrationSystemType self,
+    ResourceId systemId,
+    ISystemHook hookAddress
+  ) internal {
+    return CallWrapper(self.toResourceId(), address(0)).unregisterSystemHook(systemId, hookAddress);
+  }
+
+  function registerSystem(
+    WorldRegistrationSystemType self,
+    ResourceId systemId,
+    System system,
+    bool publicAccess
+  ) internal {
+    return CallWrapper(self.toResourceId(), address(0)).registerSystem(systemId, system, publicAccess);
+  }
+
+  function registerFunctionSelector(
+    WorldRegistrationSystemType self,
+    ResourceId systemId,
+    string memory systemFunctionSignature
+  ) internal returns (bytes4 worldFunctionSelector) {
+    return CallWrapper(self.toResourceId(), address(0)).registerFunctionSelector(systemId, systemFunctionSignature);
+  }
+
+  function registerRootFunctionSelector(
+    WorldRegistrationSystemType self,
+    ResourceId systemId,
+    string memory worldFunctionSignature,
+    string memory systemFunctionSignature
+  ) internal returns (bytes4 worldFunctionSelector) {
+    return
+      CallWrapper(self.toResourceId(), address(0)).registerRootFunctionSelector(
+        systemId,
+        worldFunctionSignature,
+        systemFunctionSignature
+      );
+  }
+
+  function registerDelegation(
+    WorldRegistrationSystemType self,
+    address delegatee,
+    ResourceId delegationControlId,
+    bytes memory initCallData
+  ) internal {
+    return
+      CallWrapper(self.toResourceId(), address(0)).registerDelegation(delegatee, delegationControlId, initCallData);
+  }
+
+  function unregisterDelegation(WorldRegistrationSystemType self, address delegatee) internal {
+    return CallWrapper(self.toResourceId(), address(0)).unregisterDelegation(delegatee);
+  }
+
+  function registerNamespaceDelegation(
+    WorldRegistrationSystemType self,
+    ResourceId namespaceId,
+    ResourceId delegationControlId,
+    bytes memory initCallData
+  ) internal {
+    return
+      CallWrapper(self.toResourceId(), address(0)).registerNamespaceDelegation(
+        namespaceId,
+        delegationControlId,
+        initCallData
+      );
+  }
+
+  function unregisterNamespaceDelegation(WorldRegistrationSystemType self, ResourceId namespaceId) internal {
+    return CallWrapper(self.toResourceId(), address(0)).unregisterNamespaceDelegation(namespaceId);
+  }
+
+  function registerNamespace(CallWrapper memory self, ResourceId namespaceId) internal {
     bytes memory systemCall = abi.encodeCall(WorldRegistrationSystem.registerNamespace, (namespaceId));
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     result;
   }
 
   function registerSystemHook(
-    WorldRegistrationSystemType __systemId,
+    CallWrapper memory self,
     ResourceId systemId,
     ISystemHook hookAddress,
     uint8 enabledHooksBitmap
@@ -39,33 +130,30 @@ library WorldRegistrationSystemLib {
       WorldRegistrationSystem.registerSystemHook,
       (systemId, hookAddress, enabledHooksBitmap)
     );
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     result;
   }
 
-  function unregisterSystemHook(
-    WorldRegistrationSystemType __systemId,
-    ResourceId systemId,
-    ISystemHook hookAddress
-  ) internal {
+  function unregisterSystemHook(CallWrapper memory self, ResourceId systemId, ISystemHook hookAddress) internal {
     bytes memory systemCall = abi.encodeCall(WorldRegistrationSystem.unregisterSystemHook, (systemId, hookAddress));
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     result;
   }
 
-  function registerSystem(
-    WorldRegistrationSystemType __systemId,
-    ResourceId systemId,
-    System system,
-    bool publicAccess
-  ) internal {
+  function registerSystem(CallWrapper memory self, ResourceId systemId, System system, bool publicAccess) internal {
     bytes memory systemCall = abi.encodeCall(WorldRegistrationSystem.registerSystem, (systemId, system, publicAccess));
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     result;
   }
 
   function registerFunctionSelector(
-    WorldRegistrationSystemType __systemId,
+    CallWrapper memory self,
     ResourceId systemId,
     string memory systemFunctionSignature
   ) internal returns (bytes4 worldFunctionSelector) {
@@ -73,12 +161,14 @@ library WorldRegistrationSystemLib {
       WorldRegistrationSystem.registerFunctionSelector,
       (systemId, systemFunctionSignature)
     );
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     return abi.decode(result, (bytes4));
   }
 
   function registerRootFunctionSelector(
-    WorldRegistrationSystemType __systemId,
+    CallWrapper memory self,
     ResourceId systemId,
     string memory worldFunctionSignature,
     string memory systemFunctionSignature
@@ -87,12 +177,14 @@ library WorldRegistrationSystemLib {
       WorldRegistrationSystem.registerRootFunctionSelector,
       (systemId, worldFunctionSignature, systemFunctionSignature)
     );
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     return abi.decode(result, (bytes4));
   }
 
   function registerDelegation(
-    WorldRegistrationSystemType __systemId,
+    CallWrapper memory self,
     address delegatee,
     ResourceId delegationControlId,
     bytes memory initCallData
@@ -101,18 +193,22 @@ library WorldRegistrationSystemLib {
       WorldRegistrationSystem.registerDelegation,
       (delegatee, delegationControlId, initCallData)
     );
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     result;
   }
 
-  function unregisterDelegation(WorldRegistrationSystemType __systemId, address delegatee) internal {
+  function unregisterDelegation(CallWrapper memory self, address delegatee) internal {
     bytes memory systemCall = abi.encodeCall(WorldRegistrationSystem.unregisterDelegation, (delegatee));
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     result;
   }
 
   function registerNamespaceDelegation(
-    WorldRegistrationSystemType __systemId,
+    CallWrapper memory self,
     ResourceId namespaceId,
     ResourceId delegationControlId,
     bytes memory initCallData
@@ -121,18 +217,26 @@ library WorldRegistrationSystemLib {
       WorldRegistrationSystem.registerNamespaceDelegation,
       (namespaceId, delegationControlId, initCallData)
     );
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     result;
   }
 
-  function unregisterNamespaceDelegation(WorldRegistrationSystemType __systemId, ResourceId namespaceId) internal {
+  function unregisterNamespaceDelegation(CallWrapper memory self, ResourceId namespaceId) internal {
     bytes memory systemCall = abi.encodeCall(WorldRegistrationSystem.unregisterNamespaceDelegation, (namespaceId));
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     result;
   }
 
-  function toResourceId(WorldRegistrationSystemType systemId) internal pure returns (ResourceId) {
-    return ResourceId.wrap(WorldRegistrationSystemType.unwrap(systemId));
+  function callFrom(WorldRegistrationSystemType self, address from) internal pure returns (CallWrapper memory) {
+    return CallWrapper(self.toResourceId(), from);
+  }
+
+  function toResourceId(WorldRegistrationSystemType self) internal pure returns (ResourceId) {
+    return ResourceId.wrap(WorldRegistrationSystemType.unwrap(self));
   }
 
   function fromResourceId(ResourceId resourceId) internal pure returns (WorldRegistrationSystemType) {
@@ -145,3 +249,4 @@ library WorldRegistrationSystemLib {
 }
 
 using WorldRegistrationSystemLib for WorldRegistrationSystemType global;
+using WorldRegistrationSystemLib for CallWrapper global;

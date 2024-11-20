@@ -16,20 +16,35 @@ ModuleInstallationSystemType constant moduleInstallationSystem = ModuleInstallat
   0x737900000000000000000000000000004d6f64756c65496e7374616c6c617469
 );
 
+struct CallWrapper {
+  ResourceId systemId;
+  address from;
+}
+
 /**
  * @title ModuleInstallationSystemLib
  * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library ModuleInstallationSystemLib {
-  function installModule(ModuleInstallationSystemType __systemId, IModule module, bytes memory encodedArgs) internal {
+  function installModule(ModuleInstallationSystemType self, IModule module, bytes memory encodedArgs) internal {
+    return CallWrapper(self.toResourceId(), address(0)).installModule(module, encodedArgs);
+  }
+
+  function installModule(CallWrapper memory self, IModule module, bytes memory encodedArgs) internal {
     bytes memory systemCall = abi.encodeCall(ModuleInstallationSystem.installModule, (module, encodedArgs));
-    bytes memory result = _world().call(__systemId.toResourceId(), systemCall);
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
     result;
   }
 
-  function toResourceId(ModuleInstallationSystemType systemId) internal pure returns (ResourceId) {
-    return ResourceId.wrap(ModuleInstallationSystemType.unwrap(systemId));
+  function callFrom(ModuleInstallationSystemType self, address from) internal pure returns (CallWrapper memory) {
+    return CallWrapper(self.toResourceId(), from);
+  }
+
+  function toResourceId(ModuleInstallationSystemType self) internal pure returns (ResourceId) {
+    return ResourceId.wrap(ModuleInstallationSystemType.unwrap(self));
   }
 
   function fromResourceId(ResourceId resourceId) internal pure returns (ModuleInstallationSystemType) {
@@ -42,3 +57,4 @@ library ModuleInstallationSystemLib {
 }
 
 using ModuleInstallationSystemLib for ModuleInstallationSystemType global;
+using ModuleInstallationSystemLib for CallWrapper global;

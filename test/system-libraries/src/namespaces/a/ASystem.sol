@@ -12,4 +12,8 @@ contract ASystem is System {
   function getValue() external view returns (uint256) {
     return Value.get();
   }
+
+  function getTwoValues() external view returns (uint256, uint256) {
+    return (Value.get(), Value.get());
+  }
 }
