@@ -26,6 +26,15 @@
         "mock-game-contracts#clean"
       ],
       "cache": false
-    }  },
+    },
+    "@latticexyz/world#clean": {
+      "dependsOn": [
+        "@latticexyz/world-module-metadata",
+        "@latticexyz/world-module-erc20#clean",
+        "@latticexyz/world-modules#clean"
+      ],
+      "cache": false
+    }
+  },
   "globalPassThroughEnv": ["COREPACK_HOME"]
 }
