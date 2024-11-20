@@ -27,6 +27,7 @@ export const CODEGEN_DEFAULTS = {
   worldInterfaceName: "IWorld",
   worldgenDirectory: "world",
   systemLibrariesDirectory: "libraries",
+  generateSystemLibraries: false,
   worldImportPath: "@latticexyz/world/src",
 } as const satisfies CodegenInput;
 

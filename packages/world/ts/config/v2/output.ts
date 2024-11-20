@@ -115,6 +115,8 @@ export type Codegen = {
   readonly worldgenDirectory: string;
   /** Directory to output system libraries (Default "libraries") */
   readonly systemLibrariesDirectory: string;
+  /** Generate libraries for each system */
+  readonly generateSystemLibraries: boolean;
   /**
    * @internal
    * Absolute import path for a package import or starting with `.` for an import relative to project root dir.

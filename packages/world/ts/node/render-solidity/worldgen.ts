@@ -103,20 +103,21 @@ export async function worldgen({
         path: "./" + path.relative(path.dirname(system.libraryPath), system.sourcePath),
       };
 
-      const systemLibrary = renderSystemLibrary({
-        libraryName: system.libraryName,
-        interfaceName: system.interfaceName,
-        systemLabel: system.label,
-        resourceId: resourceToHex({ type: "system", namespace: system.namespace, name: system.name }),
-        functions,
-        errors,
-        imports: [systemImport, ...imports],
-        storeImportPath,
-        worldImportPath,
-      });
-      console.log(systemLibrary);
-      // write to file
-      await formatAndWriteSolidity(systemLibrary, system.libraryPath, "Generated system library");
+      if (config.codegen.generateSystemLibraries) {
+        const systemLibrary = renderSystemLibrary({
+          libraryName: system.libraryName,
+          interfaceName: system.interfaceName,
+          systemLabel: system.label,
+          resourceId: resourceToHex({ type: "system", namespace: system.namespace, name: system.name }),
+          functions,
+          errors,
+          imports: [systemImport, ...imports],
+          storeImportPath,
+          worldImportPath,
+        });
+        // write to file
+        await formatAndWriteSolidity(systemLibrary, system.libraryPath, "Generated system library");
+      }
     }),
   );
 

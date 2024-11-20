@@ -15,4 +15,7 @@ export default defineWorld({
 
     b: {},
   },
+  codegen: {
+    generateSystemLibraries: true,
+  },
 });
