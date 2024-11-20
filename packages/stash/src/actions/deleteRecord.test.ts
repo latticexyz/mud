@@ -45,7 +45,17 @@ describe("deleteRecord", () => {
       key: { field2: 1, field3: 2 },
     });
 
-    attest(stash.get().records).snap({ namespace1: { table1: { "3|1": { field1: "world", field2: 3, field3: 1 } } } });
+    attest(stash.get().records).snap({
+      namespace1: {
+        table1: {
+          "3|1": {
+            field1: "world",
+            field2: 3,
+            field3: 1,
+          },
+        },
+      },
+    });
   });
 
   it("should throw a type error if an invalid key is provided", () => {

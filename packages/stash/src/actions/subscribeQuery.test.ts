@@ -49,11 +49,18 @@ describe("defineQuery", () => {
 
   it("should return the matching keys and keep it updated", () => {
     const result = subscribeQuery({ stash, query: [In(Position), In(Health)] });
-    attest(result.keys).snap({ "0x3": { player: "0x3" }, "0x4": { player: "0x4" } });
+    attest(result.keys).snap({
+      "0x3": { player: "0x3" },
+      "0x4": { player: "0x4" },
+    });
 
     setRecord({ stash, table: Health, key: { player: `0x2` }, value: { health: 2 } });
 
-    attest(result.keys).snap({ "0x3": { player: "0x3" }, "0x4": { player: "0x4" }, "0x2": { player: "0x2" } });
+    attest(result.keys).snap({
+      "0x3": { player: "0x3" },
+      "0x4": { player: "0x4" },
+      "0x2": { player: "0x2" },
+    });
   });
 
   it("should notify subscribers when a matching key is updated", () => {
@@ -74,7 +81,12 @@ describe("defineQuery", () => {
     attest(lastUpdate).snap({
       records: {
         namespace1: {
-          Position: { "0x4": { prev: { player: "0x4", x: 4, y: 1 }, current: { player: "0x4", x: 4, y: 2 } } },
+          Position: {
+            "0x4": {
+              prev: { player: "0x4", x: 4, y: 1 },
+              current: { player: "0x4", x: 4, y: 2 },
+            },
+          },
         },
       },
       keys: { "0x4": { player: "0x4" } },
@@ -91,14 +103,23 @@ describe("defineQuery", () => {
     result.subscribe(subscriber);
 
     vi.advanceTimersToNextTimer();
-    expect(subscriber).toBeCalledTimes(2);
+    expect(subscriber).toBeCalledTimes(0);
 
     setRecord({ stash, table: Health, key: { player: `0x2` }, value: { health: 2 } });
     vi.advanceTimersToNextTimer();
 
-    expect(subscriber).toBeCalledTimes(3);
+    expect(subscriber).toBeCalledTimes(1);
     attest(lastUpdate).snap({
-      records: { namespace1: { Health: { "0x2": { prev: "(undefined)", current: { player: "0x2", health: 2 } } } } },
+      records: {
+        namespace1: {
+          Health: {
+            "0x2": {
+              prev: undefined,
+              current: { player: "0x2", health: 2 },
+            },
+          },
+        },
+      },
       keys: { "0x2": { player: "0x2" } },
       types: { "0x2": "enter" },
     });
@@ -113,14 +134,23 @@ describe("defineQuery", () => {
     result.subscribe(subscriber);
 
     vi.advanceTimersToNextTimer();
-    expect(subscriber).toBeCalledTimes(2);
+    expect(subscriber).toBeCalledTimes(0);
 
     deleteRecord({ stash, table: Position, key: { player: `0x3` } });
     vi.advanceTimersToNextTimer();
 
-    expect(subscriber).toBeCalledTimes(3);
+    expect(subscriber).toBeCalledTimes(1);
     attest(lastUpdate).snap({
-      records: { namespace1: { Position: { "0x3": { prev: { player: "0x3", x: 3, y: 2 }, current: "(undefined)" } } } },
+      records: {
+        namespace1: {
+          Position: {
+            "0x3": {
+              prev: { player: "0x3", x: 3, y: 2 },
+              current: undefined,
+            },
+          },
+        },
+      },
       keys: { "0x3": { player: "0x3" } },
       types: { "0x3": "exit" },
     });
@@ -135,16 +165,19 @@ describe("defineQuery", () => {
 
     expect(subscriber).toBeCalledTimes(1);
     attest(lastUpdate).snap({
-      keys: { "0x3": { player: "0x3" }, "0x4": { player: "0x4" } },
+      keys: {
+        "0x3": { player: "0x3" },
+        "0x4": { player: "0x4" },
+      },
       records: {
         namespace1: {
           Position: {
-            "0x3": { prev: "(undefined)", current: { player: "0x3", x: 3, y: 2 } },
-            "0x4": { prev: "(undefined)", current: { player: "0x4", x: 4, y: 1 } },
+            "0x3": { prev: undefined, current: { player: "0x3", x: 3, y: 2 } },
+            "0x4": { prev: undefined, current: { player: "0x4", x: 4, y: 1 } },
           },
           Health: {
-            "0x3": { prev: "(undefined)", current: { player: "0x3", health: 3 } },
-            "0x4": { prev: "(undefined)", current: { player: "0x4", health: 4 } },
+            "0x3": { prev: undefined, current: { player: "0x3", health: 3 } },
+            "0x4": { prev: undefined, current: { player: "0x4", health: 4 } },
           },
         },
       },

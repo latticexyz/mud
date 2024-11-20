@@ -70,7 +70,12 @@ describe("runQuery", () => {
 
   it("should return all keys that are in the Position and Health table", () => {
     const result = runQuery({ stash, query: [In(Position), In(Health)] });
-    attest(result).snap({ keys: { "0x3": { player: "0x3" }, "0x4": { player: "0x4" } } });
+    attest(result).snap({
+      keys: {
+        "0x3": { player: "0x3" },
+        "0x4": { player: "0x4" },
+      },
+    });
   });
 
   it("should return all keys that have Position.x = 4 and are included in Health", () => {
@@ -80,7 +85,13 @@ describe("runQuery", () => {
 
   it("should return all keys that are in Position but not Health", () => {
     const result = runQuery({ stash, query: [In(Position), Not(In(Health))] });
-    attest(result).snap({ keys: { "0x0": { player: "0x0" }, "0x1": { player: "0x1" }, "0x2": { player: "0x2" } } });
+    attest(result).snap({
+      keys: {
+        "0x0": { player: "0x0" },
+        "0x1": { player: "0x1" },
+        "0x2": { player: "0x2" },
+      },
+    });
   });
 
   it("should return all keys that don't include a gold item in the Inventory table", () => {
@@ -105,10 +116,23 @@ describe("runQuery", () => {
   it("should include all matching records from the tables if includeRecords is set", () => {
     const result = runQuery({ stash, query: [In(Position), In(Health)], options: { includeRecords: true } });
     attest(result).snap({
-      keys: { "0x3": { player: "0x3" }, "0x4": { player: "0x4" } },
+      keys: {
+        "0x3": { player: "0x3" },
+        "0x4": { player: "0x4" },
+      },
       records: {
-        namespace1: { Position: { "0x3": { player: "0x3", x: 3, y: 2 }, "0x4": { player: "0x4", x: 4, y: 1 } } },
-        namespace2: { Health: { "0x3": { player: "0x3", health: 3 }, "0x4": { player: "0x4", health: 4 } } },
+        namespace1: {
+          Position: {
+            "0x3": { player: "0x3", x: 3, y: 2 },
+            "0x4": { player: "0x4", x: 4, y: 1 },
+          },
+        },
+        namespace2: {
+          Health: {
+            "0x3": { player: "0x3", health: 3 },
+            "0x4": { player: "0x4", health: 4 },
+          },
+        },
       },
     });
   });
