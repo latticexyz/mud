@@ -60,9 +60,9 @@ export function applyUpdates({ stash, updates }: ApplyUpdatesArgs): void {
     ((storeUpdates.records[table.namespaceLabel] ??= {})[table.label] ??= {})[encodedKey] ??= update;
   }
 
-  // queueMicrotask(() => {
-  notifySubscribers(stash);
-  // });
+  queueMicrotask(() => {
+    notifySubscribers(stash);
+  });
 }
 
 function notifySubscribers(stash: Stash) {

@@ -32,6 +32,7 @@ describe("defineQuery", () => {
 
   beforeEach(() => {
     stash = createStash(config);
+    vi.useFakeTimers({ toFake: ["queueMicrotask"] });
 
     // Add some mock data
     const items = ["0xgold", "0xsilver"] as const;
@@ -45,6 +46,8 @@ describe("defineQuery", () => {
         setRecord({ stash, table: Inventory, key: { player: `0x${String(i)}`, item }, value: { amount: i } });
       }
     }
+
+    vi.advanceTimersToNextTimer();
   });
 
   it("should return the matching keys and keep it updated", () => {
@@ -55,23 +58,22 @@ describe("defineQuery", () => {
     });
 
     setRecord({ stash, table: Health, key: { player: `0x2` }, value: { health: 2 } });
+    vi.advanceTimersToNextTimer();
 
-    attest(result.keys).snap({
-      "0x3": { player: "0x3" },
-      "0x4": { player: "0x4" },
-      "0x2": { player: "0x2" },
-    });
+    attest(result.keys).snap({ "0x3": { player: "0x3" }, "0x4": { player: "0x4" }, "0x2": { player: "0x2" } });
   });
 
   it("should notify subscribers when a matching key is updated", () => {
-    vi.useFakeTimers({ toFake: ["queueMicrotask"] });
-
     let lastUpdate: unknown;
     const subscriber = vi.fn((update: QueryUpdate) => (lastUpdate = update));
-    const result = subscribeQuery({ stash, query: [Matches(Position, { x: 4 }), In(Health)] });
-    result.subscribe(subscriber);
 
+    const result = subscribeQuery({
+      stash,
+      query: [Matches(Position, { x: 4 }), In(Health)],
+    });
+    result.subscribe(subscriber);
     vi.advanceTimersToNextTimer();
+
     expect(subscriber).toBeCalledTimes(0);
 
     setRecord({ stash, table: Position, key: { player: "0x4" }, value: { y: 2 } });
@@ -95,8 +97,6 @@ describe("defineQuery", () => {
   });
 
   it("should notify subscribers when a new key matches", () => {
-    vi.useFakeTimers({ toFake: ["queueMicrotask"] });
-
     let lastUpdate: unknown;
     const subscriber = vi.fn((update: QueryUpdate) => (lastUpdate = update));
     const result = subscribeQuery({ stash, query: [In(Position), In(Health)] });
@@ -126,8 +126,6 @@ describe("defineQuery", () => {
   });
 
   it("should notify subscribers when a key doesn't match anymore", () => {
-    vi.useFakeTimers({ toFake: ["queueMicrotask"] });
-
     let lastUpdate: unknown;
     const subscriber = vi.fn((update: QueryUpdate) => (lastUpdate = update));
     const result = subscribeQuery({ stash, query: [In(Position), In(Health)] });
@@ -157,8 +155,6 @@ describe("defineQuery", () => {
   });
 
   it("should notify initial subscribers with initial query result", () => {
-    vi.useFakeTimers({ toFake: ["queueMicrotask"] });
-
     let lastUpdate: unknown;
     const subscriber = vi.fn((update: QueryUpdate) => (lastUpdate = update));
     subscribeQuery({ stash, query: [In(Position), In(Health)], options: { initialSubscribers: [subscriber] } });
