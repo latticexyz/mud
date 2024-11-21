@@ -29,9 +29,9 @@ contract GasReporter is Test {
   function endGasReport() internal {
     uint256 gas = gasleft();
     if (!vm.envOr("GAS_REPORTER_ENABLED", false)) return;
-    // subtract 160 gas used by the GasReporter itself
+    // subtract 159 gas used by the GasReporter itself
     // add 1 gas so we can later check that this is set
-    uint256 gasUsed = __currentGasReportValue - gas - 160 + 1;
+    uint256 gasUsed = __currentGasReportValue - gas - 159 + 1;
     require(gasUsed > 0, "gas report didn't use gas");
     __gasReports[__currentGasReportName] = gasUsed;
     __gasReportNames.push(__currentGasReportName);
