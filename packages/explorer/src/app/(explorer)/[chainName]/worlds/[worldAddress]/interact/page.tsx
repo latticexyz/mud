@@ -6,5 +6,9 @@ export const metadata: Metadata = {
 };
 
 export default async function InteractPage() {
-  return <InteractForm />;
+  return (
+    <div className="flex h-[calc(100vh-70px)] flex-col">
+      <InteractForm />
+    </div>
+  );
 }
