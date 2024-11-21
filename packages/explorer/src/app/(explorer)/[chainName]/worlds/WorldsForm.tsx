@@ -73,8 +73,9 @@ export function WorldsForm({ worlds }: { worlds: Address[] }) {
                         }}
                         onFocus={() => setOpen(true)}
                         placeholder="Enter world address..."
+                        // Need to manually trigger form submission as CommandPrimitive.Input captures Enter key events
                         onKeyDown={(e) => {
-                          if (e.key === "Enter") {
+                          if (!open && e.key === "Enter") {
                             e.preventDefault();
                             form.handleSubmit(onSubmit)();
                           }
