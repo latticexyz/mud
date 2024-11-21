@@ -1,5 +1,7 @@
-import { ArrowUpDownIcon, LoaderIcon, TriangleAlertIcon } from "lucide-react";
+import { ArrowUpDownIcon, DownloadIcon, LoaderIcon, TriangleAlertIcon } from "lucide-react";
+import { useParams } from "next/navigation";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
+import { Hex } from "viem";
 import { useMemo } from "react";
 import { Table as TableType } from "@latticexyz/config";
 import { getKeySchema, getKeyTuple } from "@latticexyz/protocol-parser/internal";
@@ -15,21 +17,33 @@ import {
 } from "@tanstack/react-table";
 import { internalNamespaces } from "../../../../../../common";
 import { Button } from "../../../../../../components/ui/Button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../../../../components/ui/DropdownMenu";
 import { Input } from "../../../../../../components/ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
-import { cn } from "../../../../../../utils";
+import { cn, snakeCase } from "../../../../../../utils";
+import { useChain } from "../../../../hooks/useChain";
 import { TData, TDataRow, useTableDataQuery } from "../../../../queries/useTableDataQuery";
+import { constructTableName } from "../../../../utils/constructTableName";
 import { EditableTableCell } from "./EditableTableCell";
+import { exportTableData } from "./utils/exportTableData";
 import { typeSortingFn } from "./utils/typeSortingFn";
 
 const initialSortingState: SortingState = [];
 const initialRows: TData["rows"] = [];
 
 export function TablesViewer({ table, query }: { table?: TableType; query?: string }) {
+  const { worldAddress } = useParams();
+  const { id: chainId } = useChain();
   const { data: tableData, isLoading: isTDataLoading, isFetched, isError, error } = useTableDataQuery({ table, query });
   const isLoading = isTDataLoading || !isFetched;
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
+  const tableName = snakeCase(constructTableName(table, worldAddress as Hex, chainId));
 
   const tableColumns: ColumnDef<TDataRow>[] = useMemo(() => {
     if (!table || !tableData) return [];
@@ -106,6 +120,45 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
           className="max-w-sm rounded border px-2 py-1"
           disabled={!tableData}
         />
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" disabled={!tableData || isLoading}>
+              <DownloadIcon className="mr-2 h-4 w-4" />
+              Export
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem
+              onClick={() => {
+                const csv = tableData?.rows.map((row) => tableData.columns.map((col) => row[col]).join(",")).join("\n");
+                const header = tableData?.columns.join(",") + "\n";
+                exportTableData(header + csv, `${tableName}.csv`, "text/csv");
+              }}
+            >
+              CSV
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                const json = JSON.stringify(tableData?.rows, null, 2);
+                exportTableData(json, `${tableName}.json`, "application/json");
+              }}
+            >
+              JSON
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                const txt = tableData?.rows
+                  .map((row) => tableData.columns.map((col) => row[col]).join("\t"))
+                  .join("\n");
+                const header = tableData?.columns.join("\t") + "\n";
+                exportTableData(header + txt, `${tableName}.txt`, "text/plain");
+              }}
+            >
+              TXT
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div
