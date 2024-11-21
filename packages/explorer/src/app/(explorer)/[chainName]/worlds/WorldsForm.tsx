@@ -73,6 +73,12 @@ export function WorldsForm({ worlds }: { worlds: Address[] }) {
                         }}
                         onFocus={() => setOpen(true)}
                         placeholder="Enter world address..."
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            form.handleSubmit(onSubmit)();
+                          }
+                        }}
                       >
                         <Input className="h-12" />
                       </CommandPrimitive.Input>
