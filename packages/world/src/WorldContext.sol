@@ -140,6 +140,22 @@ library WorldContextProviderLib {
   }
 
   /**
+   * @notice Makes a staticcall to the target contract with context values appended to the calldata.
+   * @param msgSender The address of the transaction sender.
+   * @param target The address of the contract to call.
+   * @param callData The calldata for the call.
+   * @return success A boolean indicating whether the call was successful or not.
+   * @return data The abi encoded return data from the call.
+   */
+  function staticcallWithContext(
+    address msgSender,
+    address target,
+    bytes memory callData
+  ) internal view returns (bool success, bytes memory data) {
+    (success, data) = target.staticcall(appendContext({ callData: callData, msgSender: msgSender, msgValue: 0 }));
+  }
+
+  /**
    * @notice Makes a delegatecall to the target contract with context values appended to the calldata.
    * @param msgSender The address of the transaction sender.
    * @param msgValue The amount of ether sent with the original transaction.
