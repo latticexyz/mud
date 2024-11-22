@@ -114,6 +114,7 @@ export function WorldsForm({ worlds }: { worlds: Address[] }) {
                                   shouldValidate: true,
                                 });
                                 setOpen(false);
+                                form.handleSubmit(onSubmit)();
                               }}
                               className="cursor-pointer font-mono"
                             >
