@@ -143,9 +143,9 @@ library WorldContextProviderLib {
    * @notice Makes a staticcall to the target contract with context values appended to the calldata.
    * @param msgSender The address of the transaction sender.
    * @param target The address of the contract to call.
-   * @param callData The calldata for the call.
-   * @return success A boolean indicating whether the call was successful or not.
-   * @return data The abi encoded return data from the call.
+   * @param callData The calldata for the staticcall.
+   * @return success A boolean indicating whether the staticcall was successful or not.
+   * @return data The abi encoded return data from the staticcall.
    */
   function staticcallWithContext(
     address msgSender,
