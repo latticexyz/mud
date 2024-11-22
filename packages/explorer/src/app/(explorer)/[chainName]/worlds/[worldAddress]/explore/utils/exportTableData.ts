@@ -1,9 +1,18 @@
-export function exportTableData(content: string, fileName: string, contentType: string) {
+export function exportTableData(content: string, filename: string, contentType: string) {
   const blob = new Blob([content], { type: contentType });
-  const url = URL.createObjectURL(blob);
+
+  console.log("filename", filename);
+
   const link = document.createElement("a");
-  link.href = url;
-  link.download = fileName;
+  if (link.download === undefined) {
+    console.warn("Browser does not support HTML5 download attribute");
+    return;
+  }
+
+  const url = URL.createObjectURL(blob);
+  link.setAttribute("href", url);
+  link.setAttribute("download", filename);
+  link.style.visibility = "hidden";
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

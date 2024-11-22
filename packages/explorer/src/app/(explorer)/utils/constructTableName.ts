@@ -3,8 +3,7 @@ import { Table } from "@latticexyz/config";
 import { snakeCase } from "../../../utils";
 import { indexerForChainId } from "./indexerForChainId";
 
-export function constructTableName(table: Table | undefined, worldAddress: Hex, chainId: number) {
-  if (!table) return "";
+export function constructTableName(table: Table, worldAddress: Hex, chainId: number) {
   const indexer = indexerForChainId(chainId);
   return indexer.type === "sqlite" ? constructSqliteTableName(table, worldAddress) : constructDozerTableName(table);
 }
