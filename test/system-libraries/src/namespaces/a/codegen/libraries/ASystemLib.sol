@@ -6,6 +6,7 @@ pragma solidity >=0.8.24;
 import { ASystem } from "../../ASystem.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 import { IWorldCall } from "@latticexyz/world/src/IWorldKernel.sol";
+import { SystemCall } from "@latticexyz/world/src/SystemCall.sol";
 import { Systems } from "@latticexyz/world/src/codegen/tables/Systems.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
@@ -15,6 +16,11 @@ type ASystemType is bytes32;
 ASystemType constant aSystem = ASystemType.wrap(0x737961000000000000000000000000004153797374656d000000000000000000);
 
 struct CallWrapper {
+  ResourceId systemId;
+  address from;
+}
+
+struct RootCallWrapper {
   ResourceId systemId;
   address from;
 }
@@ -79,8 +85,32 @@ library ASystemLib {
     return abi.decode(result, (address));
   }
 
+  function setValue(RootCallWrapper memory self, uint256 value) internal {
+    bytes memory systemCall = abi.encodeCall(ASystem.setValue, (value));
+    bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
+    result;
+  }
+
+  function getValue(RootCallWrapper memory) internal pure returns (uint256) {
+    revert("Static calls not implemented for root systems");
+  }
+
+  function getTwoValues(RootCallWrapper memory) internal pure returns (uint256, uint256) {
+    revert("Static calls not implemented for root systems");
+  }
+
+  function setAddress(RootCallWrapper memory self) internal returns (address) {
+    bytes memory systemCall = abi.encodeCall(ASystem.setAddress, ());
+    bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
+    return abi.decode(result, (address));
+  }
+
   function callFrom(ASystemType self, address from) internal pure returns (CallWrapper memory) {
     return CallWrapper(self.toResourceId(), from);
+  }
+
+  function asRoot(ASystemType self) internal pure returns (RootCallWrapper memory) {
+    return RootCallWrapper(self.toResourceId(), address(0));
   }
 
   function toResourceId(ASystemType self) internal pure returns (ResourceId) {
@@ -102,3 +132,4 @@ library ASystemLib {
 
 using ASystemLib for ASystemType global;
 using ASystemLib for CallWrapper global;
+using ASystemLib for RootCallWrapper global;

@@ -16,6 +16,7 @@ import { Value } from "../src/namespaces/a/codegen/tables/Value.sol";
 import { AddressValue } from "../src/namespaces/a/codegen/tables/AddressValue.sol";
 import { aSystem } from "../src/namespaces/a/codegen/libraries/ASystemLib.sol";
 import { bSystem } from "../src/namespaces/b/codegen/libraries/BSystemLib.sol";
+import { rootSystem } from "../src/namespaces/root/codegen/libraries/RootSystemLib.sol";
 
 contract LibrariesTest is MudTest {
   function testNamespaceIdExists() public {
@@ -40,7 +41,6 @@ contract LibrariesTest is MudTest {
   function testCallFrom() public {
     address alice = address(0xDEADBEEF);
 
-    console.log(address(this));
     // Alice delegates control to the test contract to call the aSystem on her behalf
     vm.prank(alice);
     IBaseWorld(worldAddress).registerDelegation(
@@ -52,5 +52,12 @@ contract LibrariesTest is MudTest {
     address sender = aSystem.callFrom(alice).setAddress();
     assertEq(sender, alice);
     assertEq(AddressValue.get(), alice);
+  }
+
+  function testCanCallFromRootSystemWithLibrary() public {
+    uint256 value = 0xDEADBEEF;
+    rootSystem.setValueInA(value);
+    assertEq(Value.get(), value);
+    assertEq(aSystem.getValue(), value);
   }
 }

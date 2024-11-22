@@ -6,6 +6,7 @@ pragma solidity >=0.8.24;
 import { BSystem } from "../../BSystem.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 import { IWorldCall } from "@latticexyz/world/src/IWorldKernel.sol";
+import { SystemCall } from "@latticexyz/world/src/SystemCall.sol";
 import { Systems } from "@latticexyz/world/src/codegen/tables/Systems.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
@@ -15,6 +16,11 @@ type BSystemType is bytes32;
 BSystemType constant bSystem = BSystemType.wrap(0x737962000000000000000000000000004253797374656d000000000000000000);
 
 struct CallWrapper {
+  ResourceId systemId;
+  address from;
+}
+
+struct RootCallWrapper {
   ResourceId systemId;
   address from;
 }
@@ -52,8 +58,22 @@ library BSystemLib {
     return abi.decode(result, (uint256));
   }
 
+  function setValueInA(RootCallWrapper memory self, uint256 value) internal {
+    bytes memory systemCall = abi.encodeCall(BSystem.setValueInA, (value));
+    bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
+    result;
+  }
+
+  function getValueFromA(RootCallWrapper memory) internal pure returns (uint256) {
+    revert("Static calls not implemented for root systems");
+  }
+
   function callFrom(BSystemType self, address from) internal pure returns (CallWrapper memory) {
     return CallWrapper(self.toResourceId(), from);
+  }
+
+  function asRoot(BSystemType self) internal pure returns (RootCallWrapper memory) {
+    return RootCallWrapper(self.toResourceId(), address(0));
   }
 
   function toResourceId(BSystemType self) internal pure returns (ResourceId) {
@@ -75,3 +95,4 @@ library BSystemLib {
 
 using BSystemLib for BSystemType global;
 using BSystemLib for CallWrapper global;
+using BSystemLib for RootCallWrapper global;

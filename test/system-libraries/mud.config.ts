@@ -18,8 +18,10 @@ export default defineWorld({
         },
       },
     },
-
     b: {},
+    root: {
+      namespace: "",
+    },
   },
   codegen: {
     generateSystemLibraries: true,

@@ -15,7 +15,7 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
     systemLabel,
     resourceId,
     functions,
-    errors,
+    errors: systemErrors,
     worldImportPath,
     storeImportPath,
   } = options;
@@ -32,6 +32,10 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
       path: `${worldImportPath}/IWorldKernel.sol`,
     },
     {
+      symbol: "SystemCall",
+      path: `${worldImportPath}/SystemCall.sol`,
+    },
+    {
       symbol: "Systems",
       path: `${worldImportPath}/codegen/tables/Systems.sol`,
     },
@@ -44,6 +48,8 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
       path: `${storeImportPath}/StoreSwitch.sol`,
     },
   ];
+
+  const errors = [...systemErrors];
 
   const camelCaseSystemLabel = systemLabel.charAt(0).toLowerCase() + systemLabel.slice(1);
   const userTypeName = `${systemLabel}Type`;
@@ -62,6 +68,11 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
       address from;
     }
 
+    struct RootCallWrapper {
+      ResourceId systemId;
+      address from;
+    }
+
     /**
      * @title ${libraryName}
      * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
@@ -74,8 +85,14 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
 
       ${renderCallWrapperFunctions(functions, systemLabel)}
 
+      ${renderRootCallWrapperFunctions(functions, systemLabel)}
+
       function callFrom(${userTypeName} self, address from) internal pure returns (CallWrapper memory) {
         return CallWrapper(self.toResourceId(), from);
+      }
+
+      function asRoot(${userTypeName} self) internal pure returns (RootCallWrapper memory) {
+        return RootCallWrapper(self.toResourceId(), address(0));
       }
 
       function toResourceId(${userTypeName} self) internal pure returns (ResourceId) {
@@ -97,6 +114,7 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
 
     using ${libraryName} for ${userTypeName} global;
     using ${libraryName} for CallWrapper global;
+    using ${libraryName} for RootCallWrapper global;
   `;
 }
 
@@ -125,21 +143,12 @@ function renderUserTypeFunction(contractFunction: ContractInterfaceFunction, use
       ${renderReturnParameters(returnParameters)}
   `;
 
-  const functionBody = renderUserTypeFunctionBody(contractFunction);
+  const callWrapperArguments = parameters.map((param) => param.split(" ").slice(-1)[0]).join(", ");
 
   return `
     ${functionSignature} {
-      ${functionBody}
+      return CallWrapper(self.toResourceId(), address(0)).${name}(${callWrapperArguments});
     }
-  `;
-}
-
-function renderUserTypeFunctionBody(contractFunction: ContractInterfaceFunction) {
-  const { name, parameters } = contractFunction;
-
-  const callWrapperArguments = parameters.map((param) => param.split(" ").slice(-1)[0]).join(", ");
-  return `
-    return CallWrapper(self.toResourceId(), address(0)).${name}(${callWrapperArguments});
   `;
 }
 
@@ -150,46 +159,74 @@ function renderCallWrapperFunctions(functions: ContractInterfaceFunction[], syst
 function renderCallWrapperFunction(contractFunction: ContractInterfaceFunction, systemLabel: string) {
   const { name, parameters, stateMutability, returnParameters } = contractFunction;
 
-  const allParameters = [`CallWrapper memory self`, ...parameters];
+  const functionArguments = [`CallWrapper memory self`, ...parameters];
 
   const functionSignature = `
     function ${name}(
-      ${renderArguments(allParameters)}
+      ${renderArguments(functionArguments)}
     ) internal
       ${stateMutability === "pure" ? "view" : stateMutability}
       ${renderReturnParameters(returnParameters)}
   `;
 
-  const functionBody = renderCallWrapperFunctionBody(contractFunction, systemLabel);
+  const encodedSystemCall = renderEncodeSystemCall(systemLabel, name, parameters);
 
-  return `
-    ${functionSignature} {
-      ${functionBody}
-    }
-  `;
+  if (stateMutability === "") {
+    return `
+      ${functionSignature} {
+        bytes memory systemCall = ${encodedSystemCall};
+        bytes memory result = self.from == address(0) ? _world().call(self.systemId, systemCall) : _world().callFrom(self.from, self.systemId, systemCall);
+        ${renderAbiDecode(returnParameters)}
+      }
+    `;
+  } else {
+    return `
+      ${functionSignature} {
+        bytes memory systemCall = ${encodedSystemCall};
+        bytes memory worldCall = self.from == address(0)
+          ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
+          : abi.encodeCall(IWorldCall.callFrom, (self.from, self.systemId, systemCall));
+        (bool success, bytes memory returnData) = address(_world()).staticcall(worldCall);
+        if (!success) revertWithBytes(returnData);
+        bytes memory result = abi.decode(returnData, (bytes));
+        ${renderAbiDecode(returnParameters)}
+      }
+    `;
+  }
 }
 
-function renderCallWrapperFunctionBody(contractFunction: ContractInterfaceFunction, systemLabel: string) {
+function renderRootCallWrapperFunctions(functions: ContractInterfaceFunction[], systemLabel: string) {
+  return renderList(functions, (contractFunction) => renderRootCallWrapperFunction(contractFunction, systemLabel));
+}
+
+function renderRootCallWrapperFunction(contractFunction: ContractInterfaceFunction, systemLabel: string) {
   const { name, parameters, stateMutability, returnParameters } = contractFunction;
+
+  const functionArguments = [`RootCallWrapper memory ${stateMutability === "" ? "self" : ""}`, ...parameters];
+
+  const functionSignature = `
+    function ${name}(
+      ${renderArguments(functionArguments)}
+    ) internal
+      ${stateMutability === "view" ? "pure" : stateMutability}
+      ${renderReturnParameters(returnParameters)}
+  `;
 
   const encodedSystemCall = renderEncodeSystemCall(systemLabel, name, parameters);
 
   if (stateMutability === "") {
     return `
-      bytes memory systemCall = ${encodedSystemCall};
-      bytes memory result = self.from == address(0) ? _world().call(self.systemId, systemCall) : _world().callFrom(self.from, self.systemId, systemCall);
-      ${renderAbiDecode(returnParameters)}
+      ${functionSignature} {
+        bytes memory systemCall = ${encodedSystemCall};
+        bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
+        ${renderAbiDecode(returnParameters)}
+      }
     `;
   } else {
     return `
-      bytes memory systemCall = ${encodedSystemCall};
-      bytes memory worldCall = self.from == address(0)
-        ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
-        : abi.encodeCall(IWorldCall.callFrom, (self.from, self.systemId, systemCall));
-      (bool success, bytes memory returnData) = address(_world()).staticcall(worldCall);
-      if (!success) revertWithBytes(returnData);
-      bytes memory result = abi.decode(returnData, (bytes));
-      ${renderAbiDecode(returnParameters)}
+      ${functionSignature} {
+        revert("Static calls not implemented for root systems");
+      }
     `;
   }
 }
