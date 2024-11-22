@@ -6,6 +6,7 @@ pragma solidity >=0.8.24;
 import { ASystem } from "../../ASystem.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 import { IWorldCall } from "@latticexyz/world/src/IWorldKernel.sol";
+import { Systems } from "@latticexyz/world/src/codegen/tables/Systems.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
@@ -34,6 +35,10 @@ library ASystemLib {
 
   function getTwoValues(ASystemType self) internal view returns (uint256, uint256) {
     return CallWrapper(self.toResourceId(), address(0)).getTwoValues();
+  }
+
+  function setAddress(ASystemType self) internal returns (address) {
+    return CallWrapper(self.toResourceId(), address(0)).setAddress();
   }
 
   function setValue(CallWrapper memory self, uint256 value) internal {
@@ -66,6 +71,14 @@ library ASystemLib {
     return abi.decode(result, (uint256, uint256));
   }
 
+  function setAddress(CallWrapper memory self) internal returns (address) {
+    bytes memory systemCall = abi.encodeCall(ASystem.setAddress, ());
+    bytes memory result = self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
+    return abi.decode(result, (address));
+  }
+
   function callFrom(ASystemType self, address from) internal pure returns (CallWrapper memory) {
     return CallWrapper(self.toResourceId(), from);
   }
@@ -76,6 +89,10 @@ library ASystemLib {
 
   function fromResourceId(ResourceId resourceId) internal pure returns (ASystemType) {
     return ASystemType.wrap(resourceId.unwrap());
+  }
+
+  function getAddress(ASystemType self) internal view returns (address) {
+    return Systems.getSystem(self.toResourceId());
   }
 
   function _world() private view returns (IWorldCall) {

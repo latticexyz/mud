@@ -32,6 +32,10 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
       path: `${worldImportPath}/IWorldKernel.sol`,
     },
     {
+      symbol: "Systems",
+      path: `${worldImportPath}/codegen/tables/Systems.sol`,
+    },
+    {
       symbol: "ResourceId",
       path: `${storeImportPath}/ResourceId.sol`,
     },
@@ -80,6 +84,10 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
 
       function fromResourceId(ResourceId resourceId) internal pure returns (${userTypeName}) {
         return ${userTypeName}.wrap(resourceId.unwrap());
+      }
+
+      function getAddress(${userTypeName} self) internal view returns(address) {
+        return Systems.getSystem(self.toResourceId());
       }
 
       function _world() private view returns (IWorldCall) {

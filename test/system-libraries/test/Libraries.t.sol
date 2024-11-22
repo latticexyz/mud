@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
+
+import { console } from "forge-std/console.sol";
 import { ResourceIds } from "@latticexyz/store/src/codegen/index.sol";
 
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
@@ -7,7 +9,11 @@ import { ResourceId, WorldResourceIdLib } from "@latticexyz/world/src/WorldResou
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 import { MudTest } from "@latticexyz/world/test/MudTest.t.sol";
 
+import { SystemboundDelegationControl } from "@latticexyz/world-modules/src/modules/std-delegations/SystemboundDelegationControl.sol";
+import { SYSTEMBOUND_DELEGATION } from "@latticexyz/world-modules/src/modules/std-delegations/StandardDelegationsModule.sol";
+
 import { Value } from "../src/namespaces/a/codegen/tables/Value.sol";
+import { AddressValue } from "../src/namespaces/a/codegen/tables/AddressValue.sol";
 import { aSystem } from "../src/namespaces/a/codegen/libraries/ASystemLib.sol";
 import { bSystem } from "../src/namespaces/b/codegen/libraries/BSystemLib.sol";
 
@@ -29,5 +35,22 @@ contract LibrariesTest is MudTest {
     bSystem.setValueInA(value);
     assertEq(Value.get(), value, "Value.get");
     assertEq(bSystem.getValueFromA(), value, "getValueFromA");
+  }
+
+  function testCallFrom() public {
+    address alice = address(0xDEADBEEF);
+
+    console.log(address(this));
+    // Alice delegates control to the test contract to call the aSystem on her behalf
+    vm.prank(alice);
+    IBaseWorld(worldAddress).registerDelegation(
+      address(this),
+      SYSTEMBOUND_DELEGATION,
+      abi.encodeCall(SystemboundDelegationControl.initDelegation, (address(this), aSystem.toResourceId(), 2))
+    );
+
+    address sender = aSystem.callFrom(alice).setAddress();
+    assertEq(sender, alice);
+    assertEq(AddressValue.get(), alice);
   }
 }

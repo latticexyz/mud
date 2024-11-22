@@ -6,6 +6,7 @@ pragma solidity >=0.8.24;
 import { BSystem } from "../../BSystem.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 import { IWorldCall } from "@latticexyz/world/src/IWorldKernel.sol";
+import { Systems } from "@latticexyz/world/src/codegen/tables/Systems.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
@@ -61,6 +62,10 @@ library BSystemLib {
 
   function fromResourceId(ResourceId resourceId) internal pure returns (BSystemType) {
     return BSystemType.wrap(resourceId.unwrap());
+  }
+
+  function getAddress(BSystemType self) internal view returns (address) {
+    return Systems.getSystem(self.toResourceId());
   }
 
   function _world() private view returns (IWorldCall) {

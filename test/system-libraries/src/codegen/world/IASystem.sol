@@ -14,4 +14,6 @@ interface IASystem {
   function a__getValue() external view returns (uint256);
 
   function a__getTwoValues() external view returns (uint256, uint256);
+
+  function a__setAddress() external returns (address);
 }

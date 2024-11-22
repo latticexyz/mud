@@ -10,6 +10,12 @@ export default defineWorld({
           },
           key: [],
         },
+        AddressValue: {
+          schema: {
+            value: "address",
+          },
+          key: [],
+        },
       },
     },
 
@@ -18,4 +24,11 @@ export default defineWorld({
   codegen: {
     generateSystemLibraries: true,
   },
+  modules: [
+    {
+      artifactPath: "@latticexyz/world-modules/out/StandardDelegationsModule.sol/StandardDelegationsModule.json",
+      root: true,
+      args: [],
+    },
+  ],
 });

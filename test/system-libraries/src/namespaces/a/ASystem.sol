@@ -3,6 +3,7 @@ pragma solidity >=0.8.28;
 
 import { System } from "@latticexyz/world/src/System.sol";
 import { Value } from "./codegen/tables/Value.sol";
+import { AddressValue } from "./codegen/tables/AddressValue.sol";
 
 contract ASystem is System {
   function setValue(uint256 value) external {
@@ -15,5 +16,11 @@ contract ASystem is System {
 
   function getTwoValues() external view returns (uint256, uint256) {
     return (Value.get(), Value.get());
+  }
+
+  function setAddress() external returns (address) {
+    address addr = _msgSender();
+    AddressValue.set(addr);
+    return addr;
   }
 }
