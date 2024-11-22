@@ -109,8 +109,12 @@ library ASystemLib {
     return CallWrapper(self.toResourceId(), from);
   }
 
-  function asRoot(ASystemType self) internal pure returns (RootCallWrapper memory) {
-    return RootCallWrapper(self.toResourceId(), address(0));
+  function callAsRoot(ASystemType self) internal view returns (RootCallWrapper memory) {
+    return RootCallWrapper(self.toResourceId(), msg.sender);
+  }
+
+  function callAsRootFrom(ASystemType self, address from) internal pure returns (RootCallWrapper memory) {
+    return RootCallWrapper(self.toResourceId(), from);
   }
 
   function toResourceId(ASystemType self) internal pure returns (ResourceId) {

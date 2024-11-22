@@ -6,6 +6,6 @@ import { aSystem } from "../a/codegen/libraries/ASystemLib.sol";
 
 contract RootSystem is System {
   function setValueInA(uint256 value) external {
-    aSystem.asRoot().setValue(value);
+    aSystem.callAsRoot().setValue(value);
   }
 }

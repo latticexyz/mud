@@ -55,8 +55,12 @@ library RootSystemLib {
     return CallWrapper(self.toResourceId(), from);
   }
 
-  function asRoot(RootSystemType self) internal pure returns (RootCallWrapper memory) {
-    return RootCallWrapper(self.toResourceId(), address(0));
+  function callAsRoot(RootSystemType self) internal view returns (RootCallWrapper memory) {
+    return RootCallWrapper(self.toResourceId(), msg.sender);
+  }
+
+  function callAsRootFrom(RootSystemType self, address from) internal pure returns (RootCallWrapper memory) {
+    return RootCallWrapper(self.toResourceId(), from);
   }
 
   function toResourceId(RootSystemType self) internal pure returns (ResourceId) {

@@ -72,8 +72,12 @@ library BSystemLib {
     return CallWrapper(self.toResourceId(), from);
   }
 
-  function asRoot(BSystemType self) internal pure returns (RootCallWrapper memory) {
-    return RootCallWrapper(self.toResourceId(), address(0));
+  function callAsRoot(BSystemType self) internal view returns (RootCallWrapper memory) {
+    return RootCallWrapper(self.toResourceId(), msg.sender);
+  }
+
+  function callAsRootFrom(BSystemType self, address from) internal pure returns (RootCallWrapper memory) {
+    return RootCallWrapper(self.toResourceId(), from);
   }
 
   function toResourceId(BSystemType self) internal pure returns (ResourceId) {

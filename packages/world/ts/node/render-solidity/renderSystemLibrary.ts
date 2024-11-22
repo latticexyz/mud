@@ -91,8 +91,12 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
         return CallWrapper(self.toResourceId(), from);
       }
 
-      function asRoot(${userTypeName} self) internal pure returns (RootCallWrapper memory) {
-        return RootCallWrapper(self.toResourceId(), address(0));
+      function callAsRoot(${userTypeName} self) internal view returns (RootCallWrapper memory) {
+        return RootCallWrapper(self.toResourceId(), msg.sender);
+      }
+
+      function callAsRootFrom(${userTypeName} self, address from) internal pure returns (RootCallWrapper memory) {
+        return RootCallWrapper(self.toResourceId(), from);
       }
 
       function toResourceId(${userTypeName} self) internal pure returns (ResourceId) {
