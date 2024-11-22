@@ -45,6 +45,12 @@ export function WorldsForm({ worlds }: { worlds: Address[] }) {
     }
   }
 
+  const handleOpenOptions = () => {
+    if (!open && worlds.length > 0) {
+      setOpen(true);
+    }
+  };
+
   return (
     <div className="mx-auto flex min-h-screen w-[450px] flex-col items-center justify-center p-4">
       <h1 className="flex items-center gap-6 self-start font-mono text-4xl font-bold uppercase">
@@ -71,8 +77,15 @@ export function WorldsForm({ worlds }: { worlds: Address[] }) {
                           field.onBlur();
                           setOpen(false);
                         }}
-                        onFocus={() => setOpen(true)}
+                        onFocus={handleOpenOptions}
                         placeholder="Enter world address..."
+                        // Need to manually trigger form submission as CommandPrimitive.Input captures Enter key events
+                        onKeyDown={(e) => {
+                          if (!open && e.key === "Enter") {
+                            e.preventDefault();
+                            form.handleSubmit(onSubmit)();
+                          }
+                        }}
                       >
                         <Input className="h-12" />
                       </CommandPrimitive.Input>
@@ -101,6 +114,7 @@ export function WorldsForm({ worlds }: { worlds: Address[] }) {
                                   shouldValidate: true,
                                 });
                                 setOpen(false);
+                                form.handleSubmit(onSubmit)();
                               }}
                               className="cursor-pointer font-mono"
                             >
