@@ -31,6 +31,8 @@ struct RootCallWrapper {
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library BSystemLib {
+  error BSystemLib_CallingFromRootSystem();
+
   function setValueInA(BSystemType self, uint256 value) internal {
     return CallWrapper(self.toResourceId(), address(0)).setValueInA(value);
   }
@@ -40,6 +42,9 @@ library BSystemLib {
   }
 
   function setValueInA(CallWrapper memory self, uint256 value) internal {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert BSystemLib_CallingFromRootSystem();
+
     bytes memory systemCall = abi.encodeCall(BSystem.setValueInA, (value));
     bytes memory result = self.from == address(0)
       ? _world().call(self.systemId, systemCall)
@@ -48,6 +53,9 @@ library BSystemLib {
   }
 
   function getValueFromA(CallWrapper memory self) internal view returns (uint256) {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert BSystemLib_CallingFromRootSystem();
+
     bytes memory systemCall = abi.encodeCall(BSystem.getValueFromA, ());
     bytes memory worldCall = self.from == address(0)
       ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
@@ -64,8 +72,10 @@ library BSystemLib {
     result;
   }
 
-  function getValueFromA(RootCallWrapper memory) internal pure returns (uint256) {
-    revert("Static calls not implemented for root systems");
+  function getValueFromA(RootCallWrapper memory self) internal view returns (uint256) {
+    bytes memory systemCall = abi.encodeCall(BSystem.getValueFromA, ());
+    bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
+    return abi.decode(result, (uint256));
   }
 
   function callFrom(BSystemType self, address from) internal pure returns (CallWrapper memory) {

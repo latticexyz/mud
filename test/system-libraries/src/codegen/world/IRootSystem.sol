@@ -10,4 +10,6 @@ pragma solidity >=0.8.24;
  */
 interface IRootSystem {
   function setValueInA(uint256 value) external;
+
+  function getValueFromA() external view returns (uint256);
 }

@@ -14,7 +14,8 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
     libraryName,
     systemLabel,
     resourceId,
-    functions,
+    namespace,
+    functions: systemFunctions,
     errors: systemErrors,
     worldImportPath,
     storeImportPath,
@@ -49,10 +50,14 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
     },
   ];
 
-  const errors = [...systemErrors];
+  const callingFromRootSystemErrorName = `${libraryName}_CallingFromRootSystem`;
+  const errors = [{ name: callingFromRootSystemErrorName, parameters: [] }, ...systemErrors];
 
   const camelCaseSystemLabel = systemLabel.charAt(0).toLowerCase() + systemLabel.slice(1);
   const userTypeName = `${systemLabel}Type`;
+
+  // Remove view functions for root systems
+  const functions = systemFunctions.filter(({ stateMutability }) => namespace !== "" || stateMutability === "");
 
   return `
     ${renderedSolidityHeader}
@@ -81,11 +86,11 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
     library ${libraryName} {
       ${renderErrors(errors)}
 
-      ${renderUserTypeFunctions(functions, userTypeName)}
+      ${renderList(functions, (contractFunction) => renderUserTypeFunction(contractFunction, userTypeName))}
 
-      ${renderCallWrapperFunctions(functions, systemLabel)}
+      ${renderList(functions, (contractFunction) => renderCallWrapperFunction(contractFunction, systemLabel, callingFromRootSystemErrorName))}
 
-      ${renderRootCallWrapperFunctions(functions, systemLabel)}
+      ${renderList(functions, (contractFunction) => renderRootCallWrapperFunction(contractFunction, systemLabel))}
 
       function callFrom(${userTypeName} self, address from) internal pure returns (CallWrapper memory) {
         return CallWrapper(self.toResourceId(), from);
@@ -130,10 +135,6 @@ function renderErrors(errors: ContractInterfaceError[]) {
   return renderList(errors, ({ name, parameters }) => `  error ${name}(${renderArguments(parameters)});`);
 }
 
-function renderUserTypeFunctions(functions: ContractInterfaceFunction[], userTypeName: string) {
-  return renderList(functions, (contractFunction) => renderUserTypeFunction(contractFunction, userTypeName));
-}
-
 function renderUserTypeFunction(contractFunction: ContractInterfaceFunction, userTypeName: string) {
   const { name, parameters, stateMutability, returnParameters } = contractFunction;
 
@@ -156,11 +157,11 @@ function renderUserTypeFunction(contractFunction: ContractInterfaceFunction, use
   `;
 }
 
-function renderCallWrapperFunctions(functions: ContractInterfaceFunction[], systemLabel: string) {
-  return renderList(functions, (contractFunction) => renderCallWrapperFunction(contractFunction, systemLabel));
-}
-
-function renderCallWrapperFunction(contractFunction: ContractInterfaceFunction, systemLabel: string) {
+function renderCallWrapperFunction(
+  contractFunction: ContractInterfaceFunction,
+  systemLabel: string,
+  callingFromRootSystemErrorName: string,
+) {
   const { name, parameters, stateMutability, returnParameters } = contractFunction;
 
   const functionArguments = [`CallWrapper memory self`, ...parameters];
@@ -173,11 +174,17 @@ function renderCallWrapperFunction(contractFunction: ContractInterfaceFunction, 
       ${renderReturnParameters(returnParameters)}
   `;
 
+  const rootSystemCheck = `
+    // if the contract calling this function is a root system, it should use \`callAsRoot\`
+    if (address(_world()) == address(this)) revert ${callingFromRootSystemErrorName}();
+  `;
+
   const encodedSystemCall = renderEncodeSystemCall(systemLabel, name, parameters);
 
   if (stateMutability === "") {
     return `
       ${functionSignature} {
+        ${rootSystemCheck}
         bytes memory systemCall = ${encodedSystemCall};
         bytes memory result = self.from == address(0) ? _world().call(self.systemId, systemCall) : _world().callFrom(self.from, self.systemId, systemCall);
         ${renderAbiDecode(returnParameters)}
@@ -186,6 +193,7 @@ function renderCallWrapperFunction(contractFunction: ContractInterfaceFunction, 
   } else {
     return `
       ${functionSignature} {
+        ${rootSystemCheck}
         bytes memory systemCall = ${encodedSystemCall};
         bytes memory worldCall = self.from == address(0)
           ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
@@ -199,20 +207,16 @@ function renderCallWrapperFunction(contractFunction: ContractInterfaceFunction, 
   }
 }
 
-function renderRootCallWrapperFunctions(functions: ContractInterfaceFunction[], systemLabel: string) {
-  return renderList(functions, (contractFunction) => renderRootCallWrapperFunction(contractFunction, systemLabel));
-}
-
 function renderRootCallWrapperFunction(contractFunction: ContractInterfaceFunction, systemLabel: string) {
   const { name, parameters, stateMutability, returnParameters } = contractFunction;
 
-  const functionArguments = [`RootCallWrapper memory ${stateMutability === "" ? "self" : ""}`, ...parameters];
+  const functionArguments = ["RootCallWrapper memory self", ...parameters];
 
   const functionSignature = `
     function ${name}(
       ${renderArguments(functionArguments)}
     ) internal
-      ${stateMutability === "view" ? "pure" : stateMutability}
+      ${stateMutability === "pure" ? "view" : stateMutability}
       ${renderReturnParameters(returnParameters)}
   `;
 
@@ -229,7 +233,9 @@ function renderRootCallWrapperFunction(contractFunction: ContractInterfaceFuncti
   } else {
     return `
       ${functionSignature} {
-        revert("Static calls not implemented for root systems");
+        bytes memory systemCall = ${encodedSystemCall};
+        bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
+        ${renderAbiDecode(returnParameters)}
       }
     `;
   }

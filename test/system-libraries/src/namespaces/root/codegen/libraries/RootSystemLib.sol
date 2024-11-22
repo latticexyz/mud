@@ -33,11 +33,16 @@ struct RootCallWrapper {
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library RootSystemLib {
+  error RootSystemLib_CallingFromRootSystem();
+
   function setValueInA(RootSystemType self, uint256 value) internal {
     return CallWrapper(self.toResourceId(), address(0)).setValueInA(value);
   }
 
   function setValueInA(CallWrapper memory self, uint256 value) internal {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert RootSystemLib_CallingFromRootSystem();
+
     bytes memory systemCall = abi.encodeCall(RootSystem.setValueInA, (value));
     bytes memory result = self.from == address(0)
       ? _world().call(self.systemId, systemCall)

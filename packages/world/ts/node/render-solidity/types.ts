@@ -16,6 +16,7 @@ export interface RenderSystemLibraryOptions {
   interfaceName: string;
   libraryName: string;
   resourceId: string;
+  namespace: string;
   functions: ContractInterfaceFunction[];
   errors: ContractInterfaceError[];
 

@@ -34,8 +34,8 @@ contract LibrariesTest is MudTest {
   function testCanCallSystemFromOtherSystem() public {
     uint256 value = 0xDEADBEEF;
     bSystem.setValueInA(value);
-    assertEq(Value.get(), value, "Value.get");
-    assertEq(bSystem.getValueFromA(), value, "getValueFromA");
+    assertEq(Value.get(), value);
+    assertEq(bSystem.getValueFromA(), value);
   }
 
   function testCallFrom() public {
@@ -56,6 +56,7 @@ contract LibrariesTest is MudTest {
 
   function testCanCallFromRootSystemWithLibrary() public {
     uint256 value = 0xDEADBEEF;
+    // internally, rootSystem uses callAsRoot to call aSystem
     rootSystem.setValueInA(value);
     assertEq(Value.get(), value);
     assertEq(aSystem.getValue(), value);

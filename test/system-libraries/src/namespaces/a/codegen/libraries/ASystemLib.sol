@@ -31,6 +31,8 @@ struct RootCallWrapper {
  * @dev This library is automatically generated from the corresponding system contract. Do not edit manually.
  */
 library ASystemLib {
+  error ASystemLib_CallingFromRootSystem();
+
   function setValue(ASystemType self, uint256 value) internal {
     return CallWrapper(self.toResourceId(), address(0)).setValue(value);
   }
@@ -48,6 +50,9 @@ library ASystemLib {
   }
 
   function setValue(CallWrapper memory self, uint256 value) internal {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
+
     bytes memory systemCall = abi.encodeCall(ASystem.setValue, (value));
     bytes memory result = self.from == address(0)
       ? _world().call(self.systemId, systemCall)
@@ -56,6 +61,9 @@ library ASystemLib {
   }
 
   function getValue(CallWrapper memory self) internal view returns (uint256) {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
+
     bytes memory systemCall = abi.encodeCall(ASystem.getValue, ());
     bytes memory worldCall = self.from == address(0)
       ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
@@ -67,6 +75,9 @@ library ASystemLib {
   }
 
   function getTwoValues(CallWrapper memory self) internal view returns (uint256, uint256) {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
+
     bytes memory systemCall = abi.encodeCall(ASystem.getTwoValues, ());
     bytes memory worldCall = self.from == address(0)
       ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
@@ -78,6 +89,9 @@ library ASystemLib {
   }
 
   function setAddress(CallWrapper memory self) internal returns (address) {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
+
     bytes memory systemCall = abi.encodeCall(ASystem.setAddress, ());
     bytes memory result = self.from == address(0)
       ? _world().call(self.systemId, systemCall)
@@ -91,12 +105,16 @@ library ASystemLib {
     result;
   }
 
-  function getValue(RootCallWrapper memory) internal pure returns (uint256) {
-    revert("Static calls not implemented for root systems");
+  function getValue(RootCallWrapper memory self) internal view returns (uint256) {
+    bytes memory systemCall = abi.encodeCall(ASystem.getValue, ());
+    bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
+    return abi.decode(result, (uint256));
   }
 
-  function getTwoValues(RootCallWrapper memory) internal pure returns (uint256, uint256) {
-    revert("Static calls not implemented for root systems");
+  function getTwoValues(RootCallWrapper memory self) internal view returns (uint256, uint256) {
+    bytes memory systemCall = abi.encodeCall(ASystem.getTwoValues, ());
+    bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
+    return abi.decode(result, (uint256, uint256));
   }
 
   function setAddress(RootCallWrapper memory self) internal returns (address) {

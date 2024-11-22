@@ -109,6 +109,7 @@ export async function worldgen({
           interfaceName: system.interfaceName,
           systemLabel: system.label,
           resourceId: resourceToHex({ type: "system", namespace: system.namespace, name: system.name }),
+          namespace: system.namespace,
           functions,
           errors,
           imports: [systemImport, ...imports],
