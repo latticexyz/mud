@@ -1,5 +1,5 @@
 import { Client, Transport, Chain, Account, Hex, getAddress, Address } from "viem";
-import { writeContract, resourceToLabel } from "@latticexyz/common";
+import { resourceToLabel } from "@latticexyz/common";
 import { System, WorldDeploy, worldAbi } from "./common";
 import { debug } from "./debug";
 import { getSystems } from "./getSystems";
@@ -7,6 +7,8 @@ import { getResourceAccess } from "./getResourceAccess";
 import pRetry from "p-retry";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { LibraryMap } from "./getLibraryMap";
+import { getAction } from "viem/utils";
+import { writeContract } from "viem/actions";
 
 // TODO: move each system registration+access to batch call to be atomic
 
@@ -77,8 +79,13 @@ export async function ensureSystems({
     missingSystems.map((system) =>
       pRetry(
         () =>
-          writeContract(client, {
+          getAction(
+            client,
+            writeContract,
+            "writeContract",
+          )({
             chain: client.chain ?? null,
+            account: client.account,
             address: worldDeploy.address,
             abi: worldAbi,
             // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)
@@ -140,8 +147,13 @@ export async function ensureSystems({
     ...accessToRemove.map((access) =>
       pRetry(
         () =>
-          writeContract(client, {
+          getAction(
+            client,
+            writeContract,
+            "writeContract",
+          )({
             chain: client.chain ?? null,
+            account: client.account,
             address: worldDeploy.address,
             abi: worldAbi,
             functionName: "revokeAccess",
@@ -156,8 +168,13 @@ export async function ensureSystems({
     ...accessToAdd.map((access) =>
       pRetry(
         () =>
-          writeContract(client, {
+          getAction(
+            client,
+            writeContract,
+            "writeContract",
+          )({
             chain: client.chain ?? null,
+            account: client.account,
             address: worldDeploy.address,
             abi: worldAbi,
             functionName: "grantAccess",

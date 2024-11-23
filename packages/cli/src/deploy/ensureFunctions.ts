@@ -1,9 +1,11 @@
 import { Client, Transport, Chain, Account, Hex } from "viem";
-import { hexToResource, writeContract } from "@latticexyz/common";
+import { hexToResource } from "@latticexyz/common";
 import { getFunctions } from "@latticexyz/world/internal";
 import { WorldDeploy, WorldFunction, worldAbi } from "./common";
 import { debug } from "./debug";
 import pRetry from "p-retry";
+import { getAction } from "viem/utils";
+import { writeContract } from "viem/actions";
 
 export async function ensureFunctions({
   client,
@@ -65,8 +67,13 @@ export async function ensureFunctions({
 
       return pRetry(
         () =>
-          writeContract(client, {
+          getAction(
+            client,
+            writeContract,
+            "writeContract",
+          )({
             chain: client.chain ?? null,
+            account: client.account,
             address: worldDeploy.address,
             abi: worldAbi,
             ...params,

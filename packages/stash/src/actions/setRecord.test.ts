@@ -39,10 +39,7 @@ describe("setRecord", () => {
 
     attest(stash.get().records).snap({
       namespace1: {
-        table1: {
-          "1|2": { field1: "hello", field2: 1, field3: 2 },
-          "2|1": { field1: "world", field2: 2, field3: 1 },
-        },
+        table1: { "1|2": { field1: "hello", field2: 1, field3: 2 }, "2|1": { field1: "world", field2: 2, field3: 1 } },
       },
     });
   });

@@ -95,6 +95,8 @@ describe("createStash", () => {
 
   describe("subscribeTable", () => {
     it("should notify listeners on table updates", () => {
+      vi.useFakeTimers({ toFake: ["queueMicrotask"] });
+
       const config = defineStore({
         namespace: "namespace1",
         tables: {
@@ -124,6 +126,7 @@ describe("createStash", () => {
         key: { field2: 1, field3: 2 },
         value: { field1: "hello" },
       });
+      vi.advanceTimersToNextTimer();
 
       expect(listener).toHaveBeenNthCalledWith(1, {
         "1|2": {
@@ -137,6 +140,7 @@ describe("createStash", () => {
         key: { field2: 1, field3: 2 },
         value: { field1: "world" },
       });
+      vi.advanceTimersToNextTimer();
 
       expect(listener).toHaveBeenNthCalledWith(2, {
         "1|2": {
@@ -149,6 +153,7 @@ describe("createStash", () => {
         table,
         key: { field2: 1, field3: 2 },
       });
+      vi.advanceTimersToNextTimer();
 
       expect(listener).toHaveBeenNthCalledWith(3, {
         "1|2": {
@@ -159,6 +164,8 @@ describe("createStash", () => {
     });
 
     it("should not notify listeners after they have been removed", () => {
+      vi.useFakeTimers({ toFake: ["queueMicrotask"] });
+
       const config = defineStore({
         namespace: "namespace1",
         tables: {
@@ -188,6 +195,7 @@ describe("createStash", () => {
         key: { field2: 1, field3: 2 },
         value: { field1: "hello" },
       });
+      vi.advanceTimersToNextTimer();
 
       expect(subscriber).toHaveBeenNthCalledWith(1, {
         "1|2": {
@@ -203,6 +211,7 @@ describe("createStash", () => {
         key: { field2: 1, field3: 2 },
         value: { field1: "world" },
       });
+      vi.advanceTimersToNextTimer();
 
       expect(subscriber).toBeCalledTimes(1);
     });
@@ -210,6 +219,8 @@ describe("createStash", () => {
 
   describe("subscribeStash", () => {
     it("should notify listeners on stash updates", () => {
+      vi.useFakeTimers({ toFake: ["queueMicrotask"] });
+
       const config = defineStore({
         namespace: "namespace1",
         tables: {
@@ -236,6 +247,7 @@ describe("createStash", () => {
         key: { field2: 1, field3: 2 },
         value: { field1: "hello" },
       });
+      vi.advanceTimersToNextTimer();
 
       expect(subscriber).toHaveBeenNthCalledWith(1, {
         config: {},
@@ -256,6 +268,7 @@ describe("createStash", () => {
         key: { field2: 1, field3: 2 },
         value: { field1: "world" },
       });
+      vi.advanceTimersToNextTimer();
 
       expect(subscriber).toHaveBeenNthCalledWith(2, {
         config: {},
@@ -275,6 +288,7 @@ describe("createStash", () => {
         table,
         key: { field2: 1, field3: 2 },
       });
+      vi.advanceTimersToNextTimer();
 
       expect(subscriber).toHaveBeenNthCalledWith(3, {
         config: {},
@@ -298,6 +312,7 @@ describe("createStash", () => {
           key: ["field1"],
         }),
       });
+      vi.advanceTimersToNextTimer();
 
       expect(subscriber).toHaveBeenNthCalledWith(4, {
         config: {
@@ -331,6 +346,8 @@ describe("createStash", () => {
     });
 
     it("should not notify listeners after they have been removed", () => {
+      vi.useFakeTimers({ toFake: ["queueMicrotask"] });
+
       const config = defineStore({
         namespace: "namespace1",
         tables: {
@@ -359,6 +376,7 @@ describe("createStash", () => {
         key: { field2: 1, field3: 2 },
         value: { field1: "hello" },
       });
+      vi.advanceTimersToNextTimer();
 
       expect(subscriber).toHaveBeenNthCalledWith(1, {
         config: {},
@@ -381,6 +399,7 @@ describe("createStash", () => {
         key: { field2: 1, field3: 2 },
         value: { field1: "world" },
       });
+      vi.advanceTimersToNextTimer();
 
       expect(subscriber).toBeCalledTimes(1);
     });

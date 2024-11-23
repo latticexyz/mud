@@ -12,6 +12,9 @@ import { readContract } from "viem/actions";
 import { Table } from "@latticexyz/config";
 import { mapObject } from "@latticexyz/common/utils";
 import { show } from "@ark/util";
+import { getAction } from "viem/utils";
+
+// TODO: replace calls to this with store's getRecord
 
 export async function getRecord<table extends Table>({
   client,
@@ -24,7 +27,11 @@ export async function getRecord<table extends Table>({
   readonly table: table;
   readonly key: getSchemaPrimitives<getKeySchema<table>>;
 }): Promise<show<getSchemaPrimitives<table["schema"]>>> {
-  const [staticData, encodedLengths, dynamicData] = (await readContract(client, {
+  const [staticData, encodedLengths, dynamicData] = (await getAction(
+    client,
+    readContract,
+    "readContract",
+  )({
     blockNumber: worldDeploy.stateBlock,
     address: worldDeploy.address,
     abi: worldAbi,

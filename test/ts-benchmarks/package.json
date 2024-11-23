@@ -12,7 +12,7 @@
     "@latticexyz/recs": "workspace:*",
     "@latticexyz/store-sync": "workspace:*",
     "@latticexyz/world": "workspace:*",
-    "viem": "catalog:",
+    "viem": "2.21.19",
     "vite": "^4.2.1"
   }
 }

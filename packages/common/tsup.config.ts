@@ -11,6 +11,7 @@ export default defineConfig((opts) => ({
     "type-utils": "src/type-utils/index.ts",
     utils: "src/utils/index.ts",
     kms: "src/exports/kms.ts",
+    accounts: "src/exports/accounts.ts",
   },
   target: "esnext",
   format: ["esm"],

@@ -1,11 +1,12 @@
 import { Client, Transport, Chain, Account, Hex, BaseError } from "viem";
-import { writeContract } from "@latticexyz/common";
 import { Module, WorldDeploy, worldAbi } from "./common";
 import { debug } from "./debug";
 import { isDefined } from "@latticexyz/common/utils";
 import pRetry from "p-retry";
 import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { LibraryMap } from "./getLibraryMap";
+import { getAction } from "viem/utils";
+import { writeContract } from "viem/actions";
 
 export async function ensureModules({
   client,
@@ -46,8 +47,13 @@ export async function ensureModules({
               const params = mod.installAsRoot
                 ? ({ functionName: "installRootModule", args: [moduleAddress, mod.installData] } as const)
                 : ({ functionName: "installModule", args: [moduleAddress, mod.installData] } as const);
-              return await writeContract(client, {
+              return await getAction(
+                client,
+                writeContract,
+                "writeContract",
+              )({
                 chain: client.chain ?? null,
+                account: client.account,
                 address: worldDeploy.address,
                 abi,
                 ...params,
