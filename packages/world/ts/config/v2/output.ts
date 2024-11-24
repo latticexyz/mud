@@ -115,7 +115,7 @@ export type Codegen = {
   readonly worldgenDirectory: string;
   /** Directory to output system libraries (Default "libraries") */
   readonly systemLibrariesDirectory: string;
-  /** Generate libraries for each system */
+  /** Generate libraries for each system (Default false) */
   readonly generateSystemLibraries: boolean;
   /**
    * @internal

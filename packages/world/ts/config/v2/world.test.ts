@@ -244,6 +244,8 @@ describe("defineWorld", () => {
   } & {
     readonly worldInterfaceName: "IWorld"
     readonly worldgenDirectory: "world"
+    readonly systemLibrariesDirectory: "libraries"
+    readonly generateSystemLibraries: false
     readonly worldImportPath: "@latticexyz/world/src"
   }
   readonly sourceDirectory: "src"
