@@ -89,7 +89,7 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
 
       ${renderList(functions, (contractFunction) => renderCallWrapperFunction(contractFunction, systemLabel, callingFromRootSystemErrorName))}
 
-      ${renderList(functions, (contractFunction) => renderRootCallWrapperFunction(contractFunction, systemLabel))}
+      ${renderList(functions, (contractFunction) => renderRootCallWrapperFunction(contractFunction, systemLabel, namespace))}
 
       function callFrom(${userTypeName} self, address from) internal pure returns (CallWrapper memory) {
         return CallWrapper(self.toResourceId(), from);
@@ -203,8 +203,18 @@ function renderCallWrapperFunction(
   }
 }
 
-function renderRootCallWrapperFunction(contractFunction: ContractInterfaceFunction, systemLabel: string) {
+function renderRootCallWrapperFunction(
+  contractFunction: ContractInterfaceFunction,
+  systemLabel: string,
+  namespace: string,
+) {
   const { name, parameters, stateMutability, returnParameters } = contractFunction;
+
+  // Staticcalls are not supported between root systems yet, due to the additional
+  // complexity of checking that we are in a staticall context at runtime
+  if (namespace === "" && stateMutability != "") {
+    return "";
+  }
 
   const functionArguments = ["RootCallWrapper memory self", ...parameters];
 

@@ -74,13 +74,6 @@ library RootSystemLib {
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 
-  function getValueFromA(RootCallWrapper memory self) internal view returns (uint256) {
-    bytes memory systemCall = abi.encodeCall(RootSystem.getValueFromA, ());
-
-    bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
-    return abi.decode(result, (uint256));
-  }
-
   function callFrom(RootSystemType self, address from) internal pure returns (CallWrapper memory) {
     return CallWrapper(self.toResourceId(), from);
   }
