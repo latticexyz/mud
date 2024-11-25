@@ -94,7 +94,8 @@ library SystemCall {
     // Check if the system exists
     if (systemAddress == address(0)) revert IWorldErrors.World_ResourceNotFound(systemId, systemId.toString());
 
-    // Staticcalls are not supported for root systems
+    // Staticcalls are not supported for root systems yet, as it would require a runtime check
+    // that we are in the context of a staticcall
     if (systemId.getNamespace() == ROOT_NAMESPACE) revert IWorldErrors.World_InvalidNamespace(ROOT_NAMESPACE);
 
     // Allow access if the system is public or the caller has access to the namespace or name
