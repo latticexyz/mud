@@ -13,10 +13,11 @@ export interface RenderSystemLibraryOptions {
   /** List of symbols to import, and their file paths */
   imports: ImportDatum[];
   systemLabel: string;
+  systemName: string;
+  namespace: string;
   interfaceName: string;
   libraryName: string;
   resourceId: string;
-  namespace: string;
   functions: ContractInterfaceFunction[];
   errors: ContractInterfaceError[];
 

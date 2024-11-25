@@ -60,5 +60,6 @@ contract LibrariesTest is MudTest {
     rootSystem.setValueInA(value);
     assertEq(Value.get(), value);
     assertEq(aSystem.getValue(), value);
+    assertEq(rootSystem.getValueFromA(), value);
   }
 }

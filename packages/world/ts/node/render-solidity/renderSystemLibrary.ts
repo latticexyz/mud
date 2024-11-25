@@ -13,9 +13,10 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
     imports: systemImports,
     libraryName,
     systemLabel,
-    resourceId,
+    systemName,
     namespace,
-    functions: systemFunctions,
+    resourceId,
+    functions,
     errors: systemErrors,
     worldImportPath,
     storeImportPath,
@@ -56,9 +57,6 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
   const camelCaseSystemLabel = systemLabel.charAt(0).toLowerCase() + systemLabel.slice(1);
   const userTypeName = `${systemLabel}Type`;
 
-  // Remove view functions for root systems
-  const functions = systemFunctions.filter(({ stateMutability }) => namespace !== "" || stateMutability === "");
-
   return `
     ${renderedSolidityHeader}
 
@@ -66,7 +64,8 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
 
     type ${userTypeName} is bytes32;
 
-    ${renderResourceIdBinding(userTypeName, camelCaseSystemLabel, resourceId)}
+    // equivalent to WorldResourceIdLib.encode({  typeId: RESOURCE_SYSTEM, namespace: "${namespace}", name: "${systemName}" }))
+    ${userTypeName} constant ${camelCaseSystemLabel} = ${userTypeName}.wrap(${resourceId});
 
     struct CallWrapper {
       ResourceId systemId;
@@ -127,10 +126,6 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
   `;
 }
 
-function renderResourceIdBinding(userTypeName: string, systemLabel: string, resourceId: string) {
-  return `${userTypeName} constant ${systemLabel} = ${userTypeName}.wrap(${resourceId});`;
-}
-
 function renderErrors(errors: ContractInterfaceError[]) {
   return renderList(errors, ({ name, parameters }) => `  error ${name}(${renderArguments(parameters)});`);
 }
@@ -186,8 +181,10 @@ function renderCallWrapperFunction(
       ${functionSignature} {
         ${rootSystemCheck}
         bytes memory systemCall = ${encodedSystemCall};
-        bytes memory result = self.from == address(0) ? _world().call(self.systemId, systemCall) : _world().callFrom(self.from, self.systemId, systemCall);
-        ${renderAbiDecode(returnParameters)}
+        ${renderAbiDecode(
+          "self.from == address(0) ? _world().call(self.systemId, systemCall) : _world().callFrom(self.from, self.systemId, systemCall)",
+          returnParameters,
+        )}
       }
     `;
   } else {
@@ -200,8 +197,7 @@ function renderCallWrapperFunction(
           : abi.encodeCall(IWorldCall.callFrom, (self.from, self.systemId, systemCall));
         (bool success, bytes memory returnData) = address(_world()).staticcall(worldCall);
         if (!success) revertWithBytes(returnData);
-        bytes memory result = abi.decode(returnData, (bytes));
-        ${renderAbiDecode(returnParameters)}
+        ${renderAbiDecode("abi.decode(returnData, (bytes))", returnParameters)}
       }
     `;
   }
@@ -226,16 +222,17 @@ function renderRootCallWrapperFunction(contractFunction: ContractInterfaceFuncti
     return `
       ${functionSignature} {
         bytes memory systemCall = ${encodedSystemCall};
-        bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
-        ${renderAbiDecode(returnParameters)}
+        ${renderAbiDecode(
+          "SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value)",
+          returnParameters,
+        )}
       }
     `;
   } else {
     return `
       ${functionSignature} {
         bytes memory systemCall = ${encodedSystemCall};
-        bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
-        ${renderAbiDecode(returnParameters)}
+        ${renderAbiDecode("SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall)", returnParameters)}
       }
     `;
   }
@@ -246,11 +243,14 @@ function renderEncodeSystemCall(interfaceName: string, functionName: string, par
   return `abi.encodeCall(${interfaceName}.${functionName}, (${paramNames}))`;
 }
 
-function renderAbiDecode(returnParameters: string[]) {
-  if (returnParameters.length === 0) return "result;";
+function renderAbiDecode(expression: string, returnParameters: string[]) {
+  if (returnParameters.length === 0) return `${expression};`;
 
   const returnTypes = returnParameters.map((param) => param.split(" ")[0]).join(", ");
-  return `return abi.decode(result, (${returnTypes}));`;
+  return `
+    bytes memory result = ${expression};
+    return abi.decode(result, (${returnTypes}));
+  `;
 }
 
 function renderReturnParameters(returnParameters: string[]) {

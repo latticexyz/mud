@@ -13,6 +13,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 type RootSystemType is bytes32;
 
+// equivalent to WorldResourceIdLib.encode({  typeId: RESOURCE_SYSTEM, namespace: "", name: "RootSystem" }))
 RootSystemType constant rootSystem = RootSystemType.wrap(
   0x73790000000000000000000000000000526f6f7453797374656d000000000000
 );
@@ -39,21 +40,45 @@ library RootSystemLib {
     return CallWrapper(self.toResourceId(), address(0)).setValueInA(value);
   }
 
+  function getValueFromA(RootSystemType self) internal view returns (uint256) {
+    return CallWrapper(self.toResourceId(), address(0)).getValueFromA();
+  }
+
   function setValueInA(CallWrapper memory self, uint256 value) internal {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert RootSystemLib_CallingFromRootSystem();
 
     bytes memory systemCall = abi.encodeCall(RootSystem.setValueInA, (value));
-    bytes memory result = self.from == address(0)
+    self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
-    result;
+  }
+
+  function getValueFromA(CallWrapper memory self) internal view returns (uint256) {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert RootSystemLib_CallingFromRootSystem();
+
+    bytes memory systemCall = abi.encodeCall(RootSystem.getValueFromA, ());
+    bytes memory worldCall = self.from == address(0)
+      ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
+      : abi.encodeCall(IWorldCall.callFrom, (self.from, self.systemId, systemCall));
+    (bool success, bytes memory returnData) = address(_world()).staticcall(worldCall);
+    if (!success) revertWithBytes(returnData);
+
+    bytes memory result = abi.decode(returnData, (bytes));
+    return abi.decode(result, (uint256));
   }
 
   function setValueInA(RootCallWrapper memory self, uint256 value) internal {
     bytes memory systemCall = abi.encodeCall(RootSystem.setValueInA, (value));
-    bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
-    result;
+    SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
+  }
+
+  function getValueFromA(RootCallWrapper memory self) internal view returns (uint256) {
+    bytes memory systemCall = abi.encodeCall(RootSystem.getValueFromA, ());
+
+    bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
+    return abi.decode(result, (uint256));
   }
 
   function callFrom(RootSystemType self, address from) internal pure returns (CallWrapper memory) {

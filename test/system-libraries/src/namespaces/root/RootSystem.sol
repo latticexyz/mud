@@ -9,7 +9,6 @@ contract RootSystem is System {
     aSystem.callAsRoot().setValue(value);
   }
 
-  // this function should not be present in the library (staticcalls disabled for root system)
   function getValueFromA() external view returns (uint256) {
     return aSystem.callAsRoot().getValue();
   }
