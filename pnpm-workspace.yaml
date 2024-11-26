@@ -2,6 +2,7 @@ packages:
   - packages/*
   - test/mock-game-contracts
   - test/puppet-modules
+  - test/system-libraries
   - test/ts-benchmarks
 
 catalog:
