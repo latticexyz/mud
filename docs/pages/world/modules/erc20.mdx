@@ -58,14 +58,15 @@ For example, run this script.
 
 <CollapseCode>
 
-```solidity filename="ManageERC20.s.sol" copy showLineNumbers {15,33-37,42,47-55}
+```solidity filename="ManageERC20.s.sol" copy showLineNumbers {16,34-38,43,48-56}
+import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { ERC20Registry } from "@latticexyz/world-module-erc20/src/codegen/index.sol";
-import { ERC20WithWorld as ERC20 } from "@latticexyz/world-modules-erc20/src/examples/ERC20WithWorld.sol";
+import { ERC20WithWorld as ERC20 } from "@latticexyz/world-module-erc20/src/examples/ERC20WithWorld.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 
