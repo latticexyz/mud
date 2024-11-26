@@ -998,6 +998,40 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
 
+  packages/store-consumer:
+    dependencies:
+      '@latticexyz/schema-type':
+        specifier: workspace:*
+        version: link:../schema-type
+      '@latticexyz/store':
+        specifier: workspace:*
+        version: link:../store
+      '@latticexyz/world':
+        specifier: workspace:*
+        version: link:../world
+    devDependencies:
+      '@latticexyz/abi-ts':
+        specifier: workspace:*
+        version: link:../abi-ts
+      '@latticexyz/gas-report':
+        specifier: workspace:*
+        version: link:../gas-report
+      '@types/node':
+        specifier: ^18.15.11
+        version: 18.19.50
+      forge-std:
+        specifier: https://github.com/foundry-rs/forge-std.git#1eea5bae12ae557d589f9f0f0edae2faa47cb262
+        version: https://codeload.github.com/foundry-rs/forge-std/tar.gz/1eea5bae12ae557d589f9f0f0edae2faa47cb262
+      solhint:
+        specifier: ^3.3.7
+        version: 3.3.7
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
+      vitest:
+        specifier: 0.34.6
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
+
   packages/store-indexer:
     dependencies:
       '@koa/cors':
@@ -1313,6 +1347,9 @@ importers:
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
+      '@latticexyz/store-consumer':
+        specifier: workspace:*
+        version: link:../store-consumer
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../world
@@ -7477,6 +7514,10 @@ packages:
   foreground-child@3.2.1:
     resolution: {integrity: sha512-PXUUyLqrR2XCWICfv6ukppP96sdFwWbNEnfEMt7jNsISjMsvaLNinAHNDYyvkyU+SZG2BTSbT5NjG+vZslfGTA==}
     engines: {node: '>=14'}
+
+  forge-std@https://codeload.github.com/foundry-rs/forge-std/tar.gz/1eea5bae12ae557d589f9f0f0edae2faa47cb262:
+    resolution: {tarball: https://codeload.github.com/foundry-rs/forge-std/tar.gz/1eea5bae12ae557d589f9f0f0edae2faa47cb262}
+    version: 1.9.4
 
   forge-std@https://codeload.github.com/foundry-rs/forge-std/tar.gz/74cfb77e308dd188d2f58864aaf44963ae6b88b1:
     resolution: {tarball: https://codeload.github.com/foundry-rs/forge-std/tar.gz/74cfb77e308dd188d2f58864aaf44963ae6b88b1}
@@ -16376,7 +16417,7 @@ snapshots:
 
   '@types/accepts@1.3.7':
     dependencies:
-      '@types/node': 18.15.11
+      '@types/node': 18.19.50
 
   '@types/aria-query@5.0.4': {}
 
@@ -16411,7 +16452,7 @@ snapshots:
 
   '@types/better-sqlite3@7.6.4':
     dependencies:
-      '@types/node': 18.15.11
+      '@types/node': 18.19.50
 
   '@types/body-parser@1.19.5':
     dependencies:
@@ -16515,7 +16556,7 @@ snapshots:
       '@types/http-errors': 2.0.4
       '@types/keygrip': 1.0.6
       '@types/koa-compose': 3.2.8
-      '@types/node': 18.15.11
+      '@types/node': 18.19.50
 
   '@types/koa__cors@4.0.3':
     dependencies:
@@ -16595,7 +16636,7 @@ snapshots:
   '@types/sql.js@1.4.4':
     dependencies:
       '@types/emscripten': 1.39.6
-      '@types/node': 18.15.11
+      '@types/node': 18.19.50
 
   '@types/stack-utils@2.0.1': {}
 
@@ -19481,6 +19522,8 @@ snapshots:
     dependencies:
       cross-spawn: 7.0.3
       signal-exit: 4.1.0
+
+  forge-std@https://codeload.github.com/foundry-rs/forge-std/tar.gz/1eea5bae12ae557d589f9f0f0edae2faa47cb262: {}
 
   forge-std@https://codeload.github.com/foundry-rs/forge-std/tar.gz/74cfb77e308dd188d2f58864aaf44963ae6b88b1: {}
 
@@ -23849,7 +23892,7 @@ snapshots:
       debug: 4.3.7
       mlly: 1.7.1
       pathe: 1.1.2
-      picocolors: 1.0.1
+      picocolors: 1.1.0
       vite: 4.5.5(@types/node@18.19.50)(terser@5.33.0)
     transitivePeerDependencies:
       - '@types/node'
@@ -23926,7 +23969,7 @@ snapshots:
       local-pkg: 0.4.3
       magic-string: 0.30.11
       pathe: 1.1.2
-      picocolors: 1.0.1
+      picocolors: 1.1.0
       std-env: 3.7.0
       strip-literal: 1.3.0
       tinybench: 2.9.0

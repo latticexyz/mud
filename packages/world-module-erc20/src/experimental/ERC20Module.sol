@@ -9,8 +9,8 @@ import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
-import { ERC20Registry } from "./codegen/tables/ERC20Registry.sol";
-import { ERC20WithWorld } from "./examples/ERC20WithWorld.sol";
+import { ERC20Registry } from "../codegen/tables/ERC20Registry.sol";
+import { ERC20WithWorld } from "../examples/ERC20WithWorld.sol";
 import { ModuleConstants } from "./Constants.sol";
 
 contract ERC20Module is Module {

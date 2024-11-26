@@ -12,14 +12,15 @@ import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
+import { WithStore } from "@latticexyz/store-consumer/src/experimental/WithStore.sol";
+import { WithWorld } from "@latticexyz/store-consumer/src/experimental/WithWorld.sol";
+
 import { ERC20MetadataData } from "../src/codegen/tables/ERC20Metadata.sol";
 import { IERC20 } from "../src/interfaces/IERC20.sol";
 import { IERC20Metadata } from "../src/interfaces/IERC20Metadata.sol";
 import { IERC20Errors } from "../src/interfaces/IERC20Errors.sol";
 import { IERC20Events } from "../src/interfaces/IERC20Events.sol";
-import { WithStore } from "../src/WithStore.sol";
-import { WithWorld } from "../src/WithWorld.sol";
-import { MUDERC20 } from "../src/MUDERC20.sol";
+import { MUDERC20 } from "../src/experimental/MUDERC20.sol";
 
 library TestConstants {
   bytes14 constant ERC20_NAMESPACE = "mockerc20ns";
@@ -41,7 +42,7 @@ abstract contract MockERC20Base is MUDERC20 {
 contract MockERC20WithInternalStore is WithStore(address(this)), MockERC20Base {}
 
 contract MockERC20WithWorld is WithWorld, MockERC20Base {
-  constructor() WithWorld(createWorld(), TestConstants.ERC20_NAMESPACE) {}
+  constructor() WithWorld(createWorld(), TestConstants.ERC20_NAMESPACE, true) {}
 }
 
 abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Errors {

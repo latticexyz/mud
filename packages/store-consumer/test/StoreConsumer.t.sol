@@ -16,9 +16,9 @@ import { Tables, ResourceIds } from "@latticexyz/store/src/codegen/index.sol";
 import { StoreCore } from "@latticexyz/store/src/Store.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
-import { StoreConsumer } from "../src/StoreConsumer.sol";
-import { WithStore } from "../src/WithStore.sol";
-import { WithWorld } from "../src/WithWorld.sol";
+import { StoreConsumer } from "../src/experimental/StoreConsumer.sol";
+import { WithStore } from "../src/experimental/WithStore.sol";
+import { WithWorld } from "../src/experimental/WithWorld.sol";
 
 abstract contract MockStoreConsumer is StoreConsumer {
   function getStoreAddress() public view virtual returns (address) {
@@ -37,14 +37,21 @@ contract MockWithStore is WithStore, MockStoreConsumer {
 contract MockWithInternalStore is MockWithStore(address(this)) {}
 
 contract MockWithWorld is WithWorld, MockStoreConsumer {
-  constructor(IBaseWorld world, bytes14 namespace) WithWorld(world, namespace) {
-    ResourceId namespaceId = getNamespaceId();
-    world.grantAccess(namespaceId, address(this));
+  constructor(
+    IBaseWorld world,
+    bytes14 namespace,
+    bool registerNamespace
+  ) WithWorld(world, namespace, registerNamespace) {}
 
-    // Transfer ownership to the creator so we can test `onlyNamespace`
-    world.transferOwnership(namespaceId, _msgSender());
+  function grantNamespaceAccess(address to) external {
+    getWorld().grantAccess(getNamespaceId(), to);
   }
-  function onlyCallableByNamespace() public view onlyNamespace {}
+
+  function transferNamespaceOwnership(address to) external {
+    getWorld().transferOwnership(getNamespaceId(), to);
+  }
+
+  function onlyCallableByNamespace() external view onlyNamespace {}
 }
 
 contract StoreConsumerTest is Test, GasReporter {
@@ -61,7 +68,7 @@ contract StoreConsumerTest is Test, GasReporter {
   function testWithWorld() public {
     IBaseWorld world = createWorld();
     bytes14 namespace = "myNamespace";
-    MockWithWorld mock = new MockWithWorld(world, namespace);
+    MockWithWorld mock = new MockWithWorld(world, namespace, true);
     assertEq(mock.getStoreAddress(), address(world));
 
     StoreSwitch.setStoreAddress(address(world));
@@ -72,10 +79,12 @@ contract StoreConsumerTest is Test, GasReporter {
 
   function testOnlyNamespace() public {
     IBaseWorld world = createWorld();
+    StoreSwitch.setStoreAddress(address(world));
+
     bytes14 namespace = "myNamespace";
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
-    MockWithWorld mock = new MockWithWorld(world, namespace);
-    StoreSwitch.setStoreAddress(address(world));
+    MockWithWorld mock = new MockWithWorld(world, namespace, true);
+    mock.transferNamespaceOwnership(address(this));
 
     address alice = address(0x1234);
 

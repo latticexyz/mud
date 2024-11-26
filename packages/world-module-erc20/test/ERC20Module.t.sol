@@ -17,8 +17,8 @@ import { IModuleErrors } from "@latticexyz/world/src/IModuleErrors.sol";
 import { NamespaceOwner } from "@latticexyz/world/src/codegen/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "@latticexyz/world/src/codegen/tables/ResourceAccess.sol";
 
-import { ModuleConstants } from "../src/Constants.sol";
-import { ERC20Module } from "../src/ERC20Module.sol";
+import { ModuleConstants } from "../src/experimental/Constants.sol";
+import { ERC20Module } from "../src/experimental/ERC20Module.sol";
 import { ERC20Registry } from "../src/codegen/tables/ERC20Registry.sol";
 
 library TestConstants {
