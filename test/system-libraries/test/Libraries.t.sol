@@ -14,9 +14,9 @@ import { SYSTEMBOUND_DELEGATION } from "@latticexyz/world-modules/src/modules/st
 
 import { Value } from "../src/namespaces/a/codegen/tables/Value.sol";
 import { AddressValue } from "../src/namespaces/a/codegen/tables/AddressValue.sol";
-import { aSystem } from "../src/namespaces/a/codegen/libraries/ASystemLib.sol";
-import { bSystem } from "../src/namespaces/b/codegen/libraries/BSystemLib.sol";
-import { rootSystem } from "../src/namespaces/root/codegen/libraries/RootSystemLib.sol";
+import { aSystem } from "../src/namespaces/a/codegen/systems/ASystemLib.sol";
+import { bSystem } from "../src/namespaces/b/codegen/systems/BSystemLib.sol";
+import { rootSystem } from "../src/namespaces/root/codegen/systems/RootSystemLib.sol";
 
 contract LibrariesTest is MudTest {
   function testNamespaceIdExists() public {

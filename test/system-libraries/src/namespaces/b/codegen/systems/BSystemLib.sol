@@ -13,7 +13,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 type BSystemType is bytes32;
 
-// equivalent to WorldResourceIdLib.encode({  typeId: RESOURCE_SYSTEM, namespace: "b", name: "BSystem" }))
+// equivalent to WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "b", name: "BSystem" }))
 BSystemType constant bSystem = BSystemType.wrap(0x737962000000000000000000000000004253797374656d000000000000000000);
 
 struct CallWrapper {

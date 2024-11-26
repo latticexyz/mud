@@ -13,7 +13,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 type RootSystemType is bytes32;
 
-// equivalent to WorldResourceIdLib.encode({  typeId: RESOURCE_SYSTEM, namespace: "", name: "RootSystem" }))
+// equivalent to WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "", name: "RootSystem" }))
 RootSystemType constant rootSystem = RootSystemType.wrap(
   0x73790000000000000000000000000000526f6f7453797374656d000000000000
 );
