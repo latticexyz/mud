@@ -64,7 +64,7 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
 
     type ${userTypeName} is bytes32;
 
-    // equivalent to WorldResourceIdLib.encode({  typeId: RESOURCE_SYSTEM, namespace: "${namespace}", name: "${systemName}" }))
+    // equivalent to WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "${namespace}", name: "${systemName}" }))
     ${userTypeName} constant ${camelCaseSystemLabel} = ${userTypeName}.wrap(${resourceId});
 
     struct CallWrapper {
