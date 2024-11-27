@@ -27,11 +27,9 @@ export function registerTable<table extends Table>({
   (stash._.tableSubscribers[namespaceLabel] ??= {})[label] ??= new Set();
 
   // Notify stash subscribers
-  const storeUpdate = {
-    config: { [namespaceLabel]: { [label]: { previous: undefined, current: tableConfig } } },
-    records: {},
-  };
-  stash._.storeSubscribers.forEach((subscriber) => subscriber(storeUpdate));
+  stash._.storeSubscribers.forEach((subscriber) =>
+    subscriber({ type: "config", updates: [{ previous: undefined, current: tableConfig }] }),
+  );
 
   return getTable({ stash, table });
 }
