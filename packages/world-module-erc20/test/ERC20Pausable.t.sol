@@ -12,7 +12,7 @@ import { IERC20Errors } from "../src/interfaces/IERC20Errors.sol";
 import { IERC20Events } from "../src/interfaces/IERC20Events.sol";
 import { MUDERC20 } from "../src/experimental/MUDERC20.sol";
 import { Pausable, ERC20Pausable } from "../src/experimental/ERC20Pausable.sol";
-import { MockERC20Base, MockERC20WithInternalStore, MockERC20WithWorld, ERC20BehaviorTest, ERC20WithInternalStoreBehaviorTest, ERC20WithWorldBehaviorTest } from "./ERC20BaseTest.sol";
+import { MockERC20Base, MockERC20WithInternalStore, MockERC20WithWorld, ERC20BehaviorTest, ERC20WithInternalStoreBehaviorTest, ERC20WithWorldBehaviorTest } from "./ERC20BaseTest.t.sol";
 
 // Mock to include mint and burn functions
 abstract contract MockERC20Pausable is MUDERC20, ERC20Pausable {
