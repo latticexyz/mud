@@ -11,9 +11,8 @@ import { getContractArtifact } from "../utils/getContractArtifact";
 import { createPrepareDeploy } from "./createPrepareDeploy";
 import { waitForTransactions } from "./waitForTransactions";
 import { LibraryMap } from "./getLibraryMap";
-import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
-import { getStoreLogs, flattenStoreLogs, logToRecord } from "@latticexyz/store/internal";
 import { getKeyTuple, getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
+import { getRecords } from "@latticexyz/store-sync";
 
 const metadataModuleArtifact = getContractArtifact(metadataModule);
 
@@ -40,23 +39,15 @@ export async function ensureResourceTags<const value>({
   ? { readonly valueToHex?: (value: value) => Hex }
   : { readonly valueToHex: (value: value) => Hex })): Promise<readonly Hex[]> {
   debug("ensuring", tags.length, "resource tags");
-
   debug("looking up existing resource tags");
-  const blockLogs = await fetchBlockLogs({
-    fromBlock: worldDeploy.deployBlock,
-    toBlock: worldDeploy.stateBlock,
-    maxBlockRange: 100_000n,
-    async getLogs({ fromBlock, toBlock }) {
-      return getStoreLogs(client, {
-        address: worldDeploy.address,
-        fromBlock,
-        toBlock,
-        tableId: metadataConfig.tables.metadata__ResourceTag.tableId,
-      });
-    },
+
+  const { records } = await getRecords({
+    table: metadataConfig.tables.metadata__ResourceTag,
+    worldAddress: worldDeploy.address,
+    indexerUrl: "https://indexer.mud.garnetchain.com",
+    chainId: 17069,
   });
-  const logs = flattenStoreLogs(blockLogs.flatMap((block) => block.logs));
-  const records = logs.map((log) => logToRecord({ log, table: metadataConfig.tables.metadata__ResourceTag }));
+
   debug("found", records.length, "resource tags");
 
   const existingTags = new Map(

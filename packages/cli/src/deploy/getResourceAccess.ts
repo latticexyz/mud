@@ -1,14 +1,10 @@
 import { Client, Hex, Address, getAddress } from "viem";
 import { WorldDeploy } from "./common";
 import { debug } from "./debug";
-import { decodeKey, getKeySchema, getSchemaTypes } from "@latticexyz/protocol-parser/internal";
-import { getTableValue } from "./getTableValue";
 import worldConfig from "@latticexyz/world/mud.config";
-import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
-import { flattenStoreLogs, getStoreLogs } from "@latticexyz/store/internal";
+import { getRecords } from "@latticexyz/store-sync";
 
 export async function getResourceAccess({
-  client,
   worldDeploy,
 }: {
   readonly client: Client;
@@ -16,45 +12,17 @@ export async function getResourceAccess({
 }): Promise<readonly { readonly resourceId: Hex; readonly address: Address }[]> {
   debug("looking up resource access for", worldDeploy.address);
 
-  const blockLogs = await fetchBlockLogs({
-    fromBlock: worldDeploy.deployBlock,
-    toBlock: worldDeploy.stateBlock,
-    maxBlockRange: 100_000n,
-    async getLogs({ fromBlock, toBlock }) {
-      return getStoreLogs(client, {
-        address: worldDeploy.address,
-        fromBlock,
-        toBlock,
-        tableId: worldConfig.namespaces.world.tables.ResourceAccess.tableId,
-      });
-    },
+  const { records } = await getRecords({
+    table: worldConfig.namespaces.world.tables.ResourceAccess,
+    worldAddress: worldDeploy.address,
+    indexerUrl: "https://indexer.mud.garnetchain.com",
+    chainId: 17069,
   });
-  const logs = flattenStoreLogs(blockLogs.flatMap((block) => block.logs));
-
-  const keys = logs.map((log) =>
-    decodeKey(getSchemaTypes(getKeySchema(worldConfig.namespaces.world.tables.ResourceAccess)), log.args.keyTuple),
-  );
-
-  const access = (
-    await Promise.all(
-      keys.map(
-        async (key) =>
-          [
-            key,
-            await getTableValue({
-              client,
-              worldDeploy,
-              table: worldConfig.namespaces.world.tables.ResourceAccess,
-              key,
-            }),
-          ] as const,
-      ),
-    )
-  )
-    .filter(([, value]) => value.access)
-    .map(([key]) => ({
-      resourceId: key.resourceId,
-      address: getAddress(key.caller),
+  const access = records
+    .filter((record) => record.access)
+    .map((record) => ({
+      resourceId: record.resourceId,
+      address: getAddress(record.caller),
     }));
 
   debug("found", access.length, "resource<>address access pairs");
