@@ -1025,12 +1025,6 @@ importers:
       solhint:
         specifier: ^3.3.7
         version: 3.3.7
-      tsup:
-        specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
-      vitest:
-        specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
 
   packages/store-indexer:
     dependencies:
