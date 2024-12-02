@@ -7,9 +7,6 @@ export * from "../actions/callFrom";
 
 export * from "../callWithSignatureTypes";
 
-export * from "../getFunctions";
-export * from "../getWorldAbi";
-
 export * from "../config/v2/codegen";
 export * from "../config/v2/defaults";
 export * from "../config/v2/deploy";

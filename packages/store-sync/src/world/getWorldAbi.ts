@@ -1,5 +1,5 @@
 import { Client, Abi, AbiItem, AbiFunction, Address, getAddress, toFunctionSelector } from "viem";
-import IBaseWorldAbi from "../out/IBaseWorld.sol/IBaseWorld.abi.json";
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import { functionSignatureToAbiItem } from "./functionSignatureToAbiItem";
 import { getFunctions } from "./getFunctions";
 import { isDefined } from "@latticexyz/common/utils";
@@ -38,5 +38,5 @@ export async function getWorldAbi({
     .filter((abiItem) => !baseFunctionSelectors.includes(toFunctionSelector(abiItem)));
   const abi = [...IBaseWorldAbi, ...worldFunctionsAbi];
 
-  return abi;
+  return abi as never;
 }

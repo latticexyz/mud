@@ -1,7 +1,7 @@
 import { DeployedSystem, WorldDeploy } from "./common";
 import { Client } from "viem";
 import { hexToResource, resourceToLabel } from "@latticexyz/common";
-import { getFunctions } from "@latticexyz/world/internal";
+import { getFunctions } from "@latticexyz/store-sync/world";
 import { getResourceIds } from "./getResourceIds";
 import { getTableValue } from "./getTableValue";
 import { debug } from "./debug";

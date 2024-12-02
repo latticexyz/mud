@@ -1,6 +1,6 @@
 import { Client, Transport, Chain, Account, Hex } from "viem";
 import { hexToResource, writeContract } from "@latticexyz/common";
-import { getFunctions } from "@latticexyz/world/internal";
+import { getFunctions } from "@latticexyz/store-sync/world";
 import { WorldDeploy, WorldFunction, worldAbi } from "./common";
 import { debug } from "./debug";
 import pRetry from "p-retry";

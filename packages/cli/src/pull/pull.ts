@@ -8,7 +8,7 @@ import { getRecord } from "../deploy/getRecord";
 import path from "node:path";
 import fs from "node:fs/promises";
 import { getResourceIds } from "../deploy/getResourceIds";
-import { getFunctions } from "@latticexyz/world/internal";
+import { getFunctions } from "@latticexyz/store-sync/world";
 import { abiToInterface, formatSolidity, formatTypescript } from "@latticexyz/common/codegen";
 import { debug } from "./debug";
 import { defineWorld } from "@latticexyz/world";

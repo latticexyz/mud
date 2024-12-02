@@ -3,8 +3,8 @@ import { getBlockNumber } from "viem/actions";
 import { getAction } from "viem/utils";
 import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
 import { helloStoreEvent } from "@latticexyz/store";
+import { getWorldAbi } from "@latticexyz/store-sync/world";
 import { helloWorldEvent } from "@latticexyz/world";
-import { getWorldAbi } from "@latticexyz/world/internal";
 import { chainIdToName, supportedChainId, supportedChains, validateChainId } from "../../../../common";
 
 export const dynamic = "force-dynamic";
