@@ -1,21 +1,24 @@
 import { Client, Hex } from "viem";
-import { WorldDeploy } from "./common";
+import { CommonDeployOptions } from "./common";
 import { debug } from "./debug";
 import storeConfig from "@latticexyz/store/mud.config";
 import { getRecords } from "@latticexyz/store-sync";
 
 export async function getResourceIds({
+  client,
   worldDeploy,
-}: {
-  readonly client: Client;
-  readonly worldDeploy: WorldDeploy;
-}): Promise<readonly Hex[]> {
+  indexerUrl,
+  chainId,
+}: Omit<CommonDeployOptions, "client"> & { client: Client }): Promise<readonly Hex[]> {
   debug("looking up resource IDs for", worldDeploy.address);
   const { records } = await getRecords({
     table: storeConfig.namespaces.store.tables.ResourceIds,
     worldAddress: worldDeploy.address,
-    indexerUrl: "https://indexer.mud.garnetchain.com",
-    chainId: 17069,
+    indexerUrl,
+    chainId,
+    client,
+    fromBlock: worldDeploy.deployBlock,
+    toBlock: worldDeploy.stateBlock,
   });
   const resourceIds = records.map((record) => record.resourceId);
 

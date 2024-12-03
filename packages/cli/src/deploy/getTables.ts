@@ -1,6 +1,6 @@
 import { Client, Hex, decodeAbiParameters, parseAbiParameters } from "viem";
 import { hexToResource } from "@latticexyz/common";
-import { WorldDeploy } from "./common";
+import { CommonDeployOptions } from "./common";
 import { debug } from "./debug";
 import { hexToSchema } from "@latticexyz/protocol-parser/internal";
 import { Schema, Table } from "@latticexyz/config";
@@ -16,18 +16,21 @@ type DeployedTable = Omit<Table, "label" | "namespaceLabel"> & {
 };
 
 export async function getTables({
+  client,
   worldDeploy,
-}: {
-  readonly client: Client;
-  readonly worldDeploy: WorldDeploy;
-}): Promise<readonly Omit<DeployedTable, "label">[]> {
+  indexerUrl,
+  chainId,
+}: Omit<CommonDeployOptions, "client"> & { client: Client }): Promise<readonly Omit<DeployedTable, "label">[]> {
   debug("looking up tables for", worldDeploy.address);
 
   const { records } = await getRecords({
     table: storeConfig.namespaces.store.tables.Tables,
     worldAddress: worldDeploy.address,
-    indexerUrl: "https://indexer.mud.garnetchain.com",
-    chainId: 17069,
+    indexerUrl,
+    chainId,
+    client,
+    fromBlock: worldDeploy.deployBlock,
+    toBlock: worldDeploy.stateBlock,
   });
 
   // TODO: combine with store-sync logToTable and export from somewhere

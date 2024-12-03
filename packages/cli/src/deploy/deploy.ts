@@ -1,8 +1,16 @@
-import { Account, Address, Chain, Client, Hex, Transport, stringToHex } from "viem";
+import { Address, Hex, stringToHex } from "viem";
 import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
-import { Library, Module, System, WorldDeploy, supportedStoreVersions, supportedWorldVersions } from "./common";
+import {
+  CommonDeployOptions,
+  Library,
+  Module,
+  System,
+  WorldDeploy,
+  supportedStoreVersions,
+  supportedWorldVersions,
+} from "./common";
 import { ensureSystems } from "./ensureSystems";
 import { getWorldDeploy } from "./getWorldDeploy";
 import { ensureFunctions } from "./ensureFunctions";
@@ -23,7 +31,6 @@ import { getLibraryMap } from "./getLibraryMap";
 
 type DeployOptions = {
   config: World;
-  client: Client<Transport, Chain | undefined, Account>;
   tables: readonly Table[];
   systems: readonly System[];
   libraries: readonly Library[];
@@ -39,7 +46,7 @@ type DeployOptions = {
    */
   deployerAddress?: Hex;
   withWorldProxy?: boolean;
-};
+} & Omit<CommonDeployOptions, "worldDeploy">;
 
 /**
  * Given a viem client and MUD config, we attempt to introspect the world
@@ -58,6 +65,8 @@ export async function deploy({
   salt,
   worldAddress: existingWorldAddress,
   deployerAddress: initialDeployerAddress,
+  indexerUrl,
+  chainId,
 }: DeployOptions): Promise<WorldDeploy> {
   const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
 
@@ -77,6 +86,13 @@ export async function deploy({
           config.deploy.upgradeableWorldImplementation,
         );
 
+  const commonDeployOptions = {
+    client,
+    indexerUrl,
+    chainId,
+    worldDeploy,
+  } satisfies CommonDeployOptions;
+
   if (!supportedStoreVersions.includes(worldDeploy.storeVersion)) {
     throw new Error(`Unsupported Store version: ${worldDeploy.storeVersion}`);
   }
@@ -86,7 +102,7 @@ export async function deploy({
 
   const libraryMap = getLibraryMap(libraries);
   await ensureContractsDeployed({
-    client,
+    ...commonDeployOptions,
     deployerAddress,
     contracts: [
       ...libraries.map((library) => ({
@@ -108,8 +124,7 @@ export async function deploy({
   });
 
   const namespaceTxs = await ensureNamespaceOwner({
-    client,
-    worldDeploy,
+    ...commonDeployOptions,
     resourceIds: [...tables.map(({ tableId }) => tableId), ...systems.map(({ systemId }) => systemId)],
   });
   // Wait for namespaces to be available, otherwise referencing them below may fail.
@@ -117,15 +132,13 @@ export async function deploy({
   await waitForTransactions({ client, hashes: namespaceTxs, debugLabel: "namespace registrations" });
 
   const tableTxs = await ensureTables({
-    client,
-    worldDeploy,
+    ...commonDeployOptions,
     tables,
   });
   const systemTxs = await ensureSystems({
-    client,
+    ...commonDeployOptions,
     deployerAddress,
     libraryMap,
-    worldDeploy,
     systems,
   });
   // Wait for tables and systems to be available, otherwise referencing their resource IDs below may fail.
@@ -137,15 +150,13 @@ export async function deploy({
   });
 
   const functionTxs = await ensureFunctions({
-    client,
-    worldDeploy,
+    ...commonDeployOptions,
     functions: systems.flatMap((system) => system.worldFunctions),
   });
   const moduleTxs = await ensureModules({
-    client,
+    ...commonDeployOptions,
     deployerAddress,
     libraryMap,
-    worldDeploy,
     modules,
   });
 
@@ -174,10 +185,9 @@ export async function deploy({
   ]);
 
   const tagTxs = await ensureResourceTags({
-    client,
+    ...commonDeployOptions,
     deployerAddress,
     libraryMap,
-    worldDeploy,
     tags: [...namespaceTags, ...tableTags, ...systemTags],
     valueToHex: stringToHex,
   });

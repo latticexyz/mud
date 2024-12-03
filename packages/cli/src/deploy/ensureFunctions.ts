@@ -1,7 +1,7 @@
-import { Client, Transport, Chain, Account, Hex } from "viem";
+import { Hex } from "viem";
 import { hexToResource, writeContract } from "@latticexyz/common";
 import { getFunctions } from "@latticexyz/store-sync/world";
-import { WorldDeploy, WorldFunction, worldAbi } from "./common";
+import { CommonDeployOptions, WorldFunction, worldAbi } from "./common";
 import { debug } from "./debug";
 import pRetry from "p-retry";
 
@@ -9,9 +9,9 @@ export async function ensureFunctions({
   client,
   worldDeploy,
   functions,
-}: {
-  readonly client: Client<Transport, Chain | undefined, Account>;
-  readonly worldDeploy: WorldDeploy;
+  indexerUrl,
+  chainId,
+}: CommonDeployOptions & {
   readonly functions: readonly WorldFunction[];
 }): Promise<readonly Hex[]> {
   const worldFunctions = await getFunctions({
@@ -19,6 +19,8 @@ export async function ensureFunctions({
     worldAddress: worldDeploy.address,
     fromBlock: worldDeploy.deployBlock,
     toBlock: worldDeploy.stateBlock,
+    indexerUrl,
+    chainId,
   });
   const worldSelectorToFunction = Object.fromEntries(worldFunctions.map((func) => [func.selector, func]));
 

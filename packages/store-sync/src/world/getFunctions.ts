@@ -5,21 +5,31 @@ import { WorldFunction } from "./common";
 import { getRecords } from "../getRecords";
 
 export async function getFunctions({
+  client,
   worldAddress,
+  fromBlock,
+  toBlock,
+  indexerUrl,
+  chainId,
 }: {
   readonly client: Client;
   readonly worldAddress: Address;
   readonly fromBlock: bigint;
   readonly toBlock: bigint;
+  readonly indexerUrl?: string;
+  readonly chainId?: number;
 }): Promise<readonly WorldFunction[]> {
   // This assumes we only use `FunctionSelectors._set(...)`, which is true as of this writing.
   debug("looking up function selectors for", worldAddress);
 
   const { records: selectors } = await getRecords({
-    indexerUrl: "https://indexer.mud.garnetchain.com",
-    chainId: 17069,
+    indexerUrl,
+    chainId,
+    client,
     table: worldConfig.namespaces.world.tables.FunctionSelectors,
     worldAddress,
+    fromBlock,
+    toBlock,
   });
 
   debug("found", selectors.length, "function selectors for", worldAddress);
@@ -28,10 +38,13 @@ export async function getFunctions({
   debug("looking up function signatures for", worldAddress);
 
   const { records: signatures } = await getRecords({
-    indexerUrl: "https://indexer.mud.garnetchain.com",
-    chainId: 17069,
+    indexerUrl,
+    chainId,
+    client,
     table: worldConfig.namespaces.world.tables.FunctionSignatures,
     worldAddress,
+    fromBlock,
+    toBlock,
   });
 
   const selectorToSignature = Object.fromEntries(

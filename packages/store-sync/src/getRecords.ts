@@ -2,7 +2,9 @@ import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
 import { Table } from "@latticexyz/config";
 import { getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
 import { LogToRecordArgs, flattenStoreLogs, getStoreLogs, logToRecord } from "@latticexyz/store/internal";
-import { Address, createPublicClient, http } from "viem";
+import { Address, Client, createPublicClient, http } from "viem";
+import { getAction } from "viem/utils";
+import { getBlockNumber } from "viem/actions";
 import { debug } from "./debug";
 import { getSnapshot } from "./getSnapshot";
 import { StorageAdapterLog } from "./common";
@@ -10,15 +12,26 @@ import { StorageAdapterLog } from "./common";
 type GetRecordsOptions<table extends Table = Table> = {
   table: table;
   worldAddress: Address;
+  fromBlock?: bigint;
+  toBlock?: bigint;
 } & (
   | {
       indexerUrl: string;
       chainId: number;
+      rpcUrl?: string;
+      client?: Client;
     }
   | {
+      indexerUrl?: string;
+      chainId?: number;
       rpcUrl: string;
-      fromBlock?: bigint;
-      toBlock?: bigint;
+      client?: Client;
+    }
+  | {
+      indexerUrl?: string;
+      chainId?: number;
+      rpcUrl?: string;
+      client: Client;
     }
 );
 
@@ -31,7 +44,7 @@ export async function getRecords<table extends Table>(
   options: GetRecordsOptions<table>,
 ): Promise<GetRecordsResult<table>> {
   async function getLogs(): Promise<readonly StorageAdapterLog[]> {
-    if ("indexerUrl" in options) {
+    if (options.indexerUrl && options.chainId) {
       debug("fetching records for", options.table.label, "via indexer from", options.indexerUrl);
       const logs = await getSnapshot({
         chainId: options.chainId,
@@ -44,13 +57,15 @@ export async function getRecords<table extends Table>(
       // See https://github.com/latticexyz/mud/issues/3386.
       return logs?.logs.filter((log) => log.args.tableId === options.table.tableId) ?? [];
     } else {
-      debug("fetching records for", options.table.label, "via RPC from", options.rpcUrl);
-      const client = createPublicClient({
-        transport: http(options.rpcUrl),
-      });
+      const client =
+        options.client ??
+        createPublicClient({
+          transport: http(options.rpcUrl),
+        });
+      debug("fetching records for", options.table.label, "via RPC from", client.transport.url);
       const blockLogs = await fetchBlockLogs({
         fromBlock: options.fromBlock ?? 0n,
-        toBlock: options.toBlock ?? (await client.getBlockNumber()),
+        toBlock: options.toBlock ?? (await getAction(client, getBlockNumber, "getBlockNumber")({})),
         maxBlockRange: 100_000n,
         async getLogs({ fromBlock, toBlock }) {
           return getStoreLogs(client, {
