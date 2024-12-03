@@ -17,6 +17,7 @@ contract CrosschainSystem is System {
   // TODO: rename errors and events
   error WrongWorld();
   error NotCrosschainRead();
+  error MoreRecentRecordExists();
 
   event World_CrosschainRead(
     ResourceId indexed tableId,
@@ -42,12 +43,21 @@ contract CrosschainSystem is System {
 
     (bytes32 selector, ResourceId tableId) = abi.decode(_crosschainRead[:64], (bytes32, ResourceId));
     if (selector != World_CrosschainRead.selector) revert NotCrosschainRead();
+
     // TODO: check tableId resource type?
 
     (bytes32[] memory keyTuple, bytes memory staticData, EncodedLengths encodedLengths, bytes memory dynamicData) = abi
       .decode(_crosschainRead[64:], (bytes32[], bytes, EncodedLengths, bytes));
 
     bytes32 recordId = keccak256(abi.encode(tableId, keyTuple));
+
+    uint256 timestamp = CrosschainRecordMetadata.getTimestamp(recordId);
+
+    // TODO: improve validation, maybe split metadata by chainId?
+    if (identifier.timestamp < timestamp) {
+      revert MoreRecentRecordExists();
+    }
+
     CrosschainRecordMetadata.set(
       recordId,
       CrosschainRecordMetadataData({
