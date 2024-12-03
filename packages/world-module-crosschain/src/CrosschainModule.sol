@@ -2,6 +2,7 @@
 pragma solidity >=0.8.24;
 
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
+import { System } from "@latticexyz/world/src/System.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 import { Module } from "@latticexyz/world/src/Module.sol";
 import { AccessControl } from "@latticexyz/world/src/AccessControl.sol";
@@ -19,27 +20,39 @@ contract CrosschainModule is Module {
   CrosschainSystem private immutable crosschainSystem = new CrosschainSystem();
 
   function installRoot(bytes memory) public {
-    IBaseWorld world = IBaseWorld(_world());
-
     if (!ResourceIds.getExists(CrosschainRecordMetadata._tableId)) {
       CrosschainRecordMetadata.register();
     }
 
     ResourceId crosschainSystemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, ROOT_NAMESPACE, "CrosschainSystem");
     if (!ResourceIds.getExists(crosschainSystemId)) {
-      (bool registrationSuccess, bytes memory registrationReturnData) = address(world).delegatecall(
-        abi.encodeCall(world.registerSystem, (crosschainSystemId, crosschainSystem, true))
+      _registerSystem(crosschainSystemId, crosschainSystem);
+      _registerRootFunctionSelector(crosschainSystemId, "crosschainRead(bytes32,bytes32[])");
+      _registerRootFunctionSelector(
+        crosschainSystemId,
+        "crosschainWrite((address,uint256,uint256,uint256,uint256),bytes)"
       );
-      if (!registrationSuccess) revertWithBytes(registrationReturnData);
-      // world.registerFunctionSelector(crosschainSystemId, "crosschainRead(bytes32,bytes32[])");
-      // world.registerFunctionSelector(
-      //   crosschainSystemId,
-      //   "crosschainWrite((address,uint256,uint256,uint256,uint256),bytes)"
-      // );
     }
   }
 
   function install(bytes memory) public pure {
     revert Module_NonRootInstallNotSupported();
+  }
+
+  function _registerSystem(ResourceId systemId, System system) internal {
+    address world = _world();
+    (bool success, bytes memory returnData) = world.delegatecall(
+      abi.encodeCall(IBaseWorld(world).registerSystem, (systemId, system, true))
+    );
+    if (!success) revertWithBytes(returnData);
+  }
+
+  function _registerRootFunctionSelector(ResourceId systemId, string memory functionSignature) internal {
+    address world = _world();
+    (bool success, bytes memory returnData) = world.delegatecall(
+      abi.encodeCall(IBaseWorld(world).registerRootFunctionSelector, (systemId, functionSignature, functionSignature))
+    );
+
+    if (!success) revertWithBytes(returnData);
   }
 }
