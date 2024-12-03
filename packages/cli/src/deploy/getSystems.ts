@@ -21,6 +21,8 @@ export async function getSystems({
       worldAddress: worldDeploy.address,
       fromBlock: worldDeploy.deployBlock,
       toBlock: worldDeploy.stateBlock,
+      indexerUrl,
+      chainId,
     }),
     getResourceAccess({ client, worldDeploy, indexerUrl, chainId }),
   ]);

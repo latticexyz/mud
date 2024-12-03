@@ -13,17 +13,23 @@ export async function getWorldAbi({
   worldAddress,
   fromBlock,
   toBlock,
+  indexerUrl,
+  chainId,
 }: {
   readonly client: Client;
   readonly worldAddress: Address;
   readonly fromBlock: bigint;
   readonly toBlock: bigint;
+  readonly indexerUrl?: string;
+  readonly chainId?: number;
 }): Promise<Abi> {
   const worldFunctions = await getFunctions({
     client,
     worldAddress: getAddress(worldAddress),
     fromBlock,
     toBlock,
+    indexerUrl,
+    chainId,
   });
   const baseFunctionSelectors = (IBaseWorldAbi as Abi).filter(isAbiFunction).map(toFunctionSelector);
   const worldFunctionsAbi = worldFunctions

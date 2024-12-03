@@ -19,6 +19,11 @@ async function getClient(chainId: supportedChainId) {
   return client;
 }
 
+function getIndexerUrl(chainId: supportedChainId) {
+  const chain = supportedChains[chainIdToName[chainId]];
+  return "indexerUrl" in chain ? chain.indexerUrl : undefined;
+}
+
 async function getParameters(chainId: supportedChainId, worldAddress: Address) {
   const client = await getClient(chainId);
   const toBlock = await getAction(client, getBlockNumber, "getBlockNumber")({});
@@ -56,6 +61,8 @@ export async function GET(req: Request) {
       worldAddress,
       fromBlock,
       toBlock,
+      indexerUrl: getIndexerUrl(chainId),
+      chainId,
     });
 
     return Response.json({ abi, isWorldDeployed });
