@@ -1,5 +1,5 @@
-import { Address, Hex, createClient, http, parseAbi } from "viem";
-import { getBlockNumber } from "viem/actions";
+import { Address, Hex, createClient, http, parseAbi, size } from "viem";
+import { getBlockNumber, getCode } from "viem/actions";
 import { getAction } from "viem/utils";
 import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
 import { helloStoreEvent } from "@latticexyz/store";
@@ -55,6 +55,22 @@ export async function GET(req: Request) {
 
   try {
     const client = await getClient(chainId);
+    const indexerUrl = getIndexerUrl(chainId);
+
+    if (indexerUrl) {
+      const [code, abi] = await Promise.all([
+        getCode(client, { address: worldAddress }),
+        getWorldAbi({
+          client,
+          worldAddress,
+          indexerUrl,
+          chainId,
+        }),
+      ]);
+
+      return Response.json({ abi, isWorldDeployed: code && size(code) > 0 });
+    }
+
     const { fromBlock, toBlock, isWorldDeployed } = await getParameters(chainId, worldAddress);
     const abi = await getWorldAbi({
       client,

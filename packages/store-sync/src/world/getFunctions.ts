@@ -14,8 +14,8 @@ export async function getFunctions({
 }: {
   readonly client: Client;
   readonly worldAddress: Address;
-  readonly fromBlock: bigint;
-  readonly toBlock: bigint;
+  readonly fromBlock?: bigint;
+  readonly toBlock?: bigint;
   readonly indexerUrl?: string;
   readonly chainId?: number;
 }): Promise<readonly WorldFunction[]> {
