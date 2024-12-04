@@ -1,5 +1,335 @@
 [
   {
+    "version": "2.2.15",
+    "date": "2024-12-04T15:57:27.281Z",
+    "changes": {
+      "patch": [
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nImproved the performance of the explorer's `Interact` tab by fetching the ABI from an indexer instead of from an Ethereum RPC if available.",
+          "type": 0,
+          "commitHash": "b819749268918559589c12451d88ec1f933182d8",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat: add `getRecords` util to fetch records from indexer, update deployer and explorer to use indexer (#3385)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe transactions list in the explorer is now updated every 100ms instead of on every incoming transaction, to improve performance when there are many incoming transactions.",
+          "type": 0,
+          "commitHash": "07b6be82ace9654ce043e616e28b347f3121f415",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat(explorer): buffer transactions (#3365)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe columns in the Explore tab table are now sorted correctly according to their types.",
+          "type": 0,
+          "commitHash": "722f4b4c48b9e49509a47e5a23f1ce45dbe9999d",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): type-based sorting (#3340)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded support for ERC-4337 bundled transactions, monitoring them by either listening to chain blocks or using the `observer` transport wrapper. Each user operation within a bundled transaction is displayed as an individual transaction in the Observe tab.",
+          "type": 0,
+          "commitHash": "059240612a3ba74d3e16dfb3b1b2c7276a6ebe1d",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): bundled transactions support (#3313)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nWhen accessing a new table in Explore tab, the SQL editor now encloses all column names in double quotes in order to prevent invalid queries.",
+          "type": 0,
+          "commitHash": "0facee02cd70b7f8cd09a7faec59972ba95453d1",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): format default sql query (#3363)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            }
+          ],
+          "description": "\nDeployer now retrieves resource tags by fetching logs to work around RPC rate limiting issues.",
+          "type": 0,
+          "commitHash": "3168f1f56abce047a639582b50bf1aa2c7906c90",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "chore: add changeset for cli PR #3350 (#3353)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe latest ABI changes are now consistently fetched correctly.",
+          "type": 0,
+          "commitHash": "3258a6d66251aa87514e5e63456f989a34bd1b8b",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): fetch latest abi (#3370)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixed world ABI fetching in Rhodolite.",
+          "type": 0,
+          "commitHash": "2be543f7f0936f5dc94c13613da679d8634dfc27",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): switch to fetchBlockLogs (#3352)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixed a bug in `watchLogs` where logs from the buffer were not applied during the initial sync.",
+          "type": 0,
+          "commitHash": "cd9fd0abd859f1d83baafc93a91e238d81726928",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "fix(store-sync): apply logs from buffer in watchLogs (#3346)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nTransactions in `Observe` tab now display decoded `callFrom` function calls.",
+          "type": 0,
+          "commitHash": "d542357350b85654bc65f3befad22a3509c4ddb6",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): decoded callFrom transactions (#3364)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            }
+          ],
+          "description": "\nDeployer will now throw an error if it detects an already registered table with a different schema than the one you are trying to deploy.",
+          "type": 0,
+          "commitHash": "ee388ed599b051400a6f1fc5d4c5d369e466ad92",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(cli): throw error on schema changes (#3336)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-consumer",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world-module-erc20",
+              "type": "patch"
+            }
+          ],
+          "description": "\nExtracted StoreConsumer base contracts into an independent package.\nAdded a `registerNamespace` boolean to `WithWorld` to provide more control over namespace registration.",
+          "type": 0,
+          "commitHash": "d17a9be933cf4dbf869e26e6f9ee070444048312",
+          "authorName": "V",
+          "authorEmail": "vdrg@protonmail.ch",
+          "title": "feat(store-consumer): extract store consumer contracts (#3345)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nObserver transport now uses the `blockExplorers.worldsExplorer.url` from the chain config if no `explorerUrl` is provided.",
+          "type": 0,
+          "commitHash": "88b9daf1e01bd8675e31c455155759a3ef2af4f8",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(explorer): get observer url from chain config (#3366)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nWhen accessing a new table in Explore tab, the SQL editor now encloses column names that are also PostgreSQL keywords in double quotes in order to prevent invalid queries.",
+          "type": 0,
+          "commitHash": "9c1ca41560e2b3b319976794a73807f391e78b1b",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): format default sql query (#3307)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded a `getRecords` util to fetch table records from an indexer or RPC.\n\nMigrated the `getFunctions` and `getWorldAbi` utils from `@latticexyz/world` to `@latticexyz/store-sync/world` to allow `getFunctions` and `getWorldAbi` to use `getRecords` internally without circular dependencies.",
+          "type": 0,
+          "commitHash": "b819749268918559589c12451d88ec1f933182d8",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat: add `getRecords` util to fetch records from indexer, update deployer and explorer to use indexer (#3385)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded an `indexerUrl` option to the `mud deploy` and `mud pull` CLI commands to read table records from an indexer instead of fetching logs from an Ethereum RPC.",
+          "type": 0,
+          "commitHash": "b819749268918559589c12451d88ec1f933182d8",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat: add `getRecords` util to fetch records from indexer, update deployer and explorer to use indexer (#3385)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/abi-ts",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUsing a TS extension (rather than DTS) now correctly includes `as const` in the TS output.",
+          "type": 0,
+          "commitHash": "534039428496bcededc62d2e450d29d7bac42475",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(abi-ts): ts output should use as const (#3348)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\n`getFunctions` now internally uses `fetchLogs` for better handling of block range errors.",
+          "type": 0,
+          "commitHash": "22674ad244f59afd6bd364a3dd44df36992dd35f",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(world): use fetchLogs in getFunctions (#3338)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nExperimental pending logs watcher now reconnects if it loses connection or times out.",
+          "type": 0,
+          "commitHash": "9ddc874ecbe8671c197619a23bdeac2bee57174e",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "fix(store-sync): reconnect unresponsive watchLogs socket (#3301)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdds an experimental feature to automatically generate Solidity libraries from systems, making it easier to perform calls between systems.",
+          "type": 0,
+          "commitHash": "09536b0614a03478fa0f53ec8beefef80455387d",
+          "authorName": "V",
+          "authorEmail": "3252614+vdrg@users.noreply.github.com",
+          "title": "feat: system libraries (#3374)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/common",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUpdated Rhodolite chain config.",
+          "type": 0,
+          "commitHash": "88b9daf1e01bd8675e31c455155759a3ef2af4f8",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(explorer): get observer url from chain config (#3366)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdd a SystemCall.staticcall function that performs a staticcall without executing hooks.",
+          "type": 0,
+          "commitHash": "275c867182df9f1e22a6d4f0901a494c40e29f9a",
+          "authorName": "V",
+          "authorEmail": "3252614+vdrg@users.noreply.github.com",
+          "title": "feat(world): add SystemCall.staticcall (#3381)"
+        }
+      ],
+      "minor": [],
+      "major": []
+    }
+  },
+  {
     "version": "2.2.14",
     "date": "2024-10-24T00:00:00.000Z",
     "changes": {
