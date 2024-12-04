@@ -22,7 +22,7 @@ contract CrosschainSystem is System {
   error WrongWorld();
   error NotCrosschainRecord();
   error MoreRecentRecordExists();
-  error RecordDoesNotExist();
+  error RecordNotOwned();
   error RecordAlreadyExists();
   error RecordBridgedToADifferentChain();
 
@@ -32,7 +32,6 @@ contract CrosschainSystem is System {
     bytes staticData,
     EncodedLengths encodedLengths,
     bytes dynamicData,
-    // 0 means broadcast so it can be consumed by any world
     uint256 toChainId
   );
 
@@ -40,27 +39,37 @@ contract CrosschainSystem is System {
     AccessControl._requireAccess(tableId.getNamespaceId(), _msgSender());
 
     bytes32 keyHash = keccak256(abi.encode(keyTuple));
-    uint256 blockNumber = CrosschainRecord.getBlockNumber(block.chainid, tableId, keyHash);
-    if (blockNumber != 0) {
+
+    CrosschainRecordData memory data = CrosschainRecord.get(tableId, keyHash);
+    if (data.blockNumber > 0) {
       revert RecordAlreadyExists();
     }
 
-    CrosschainRecordData memory data = CrosschainRecordData({ blockNumber: block.number, timestamp: block.timestamp });
+    data.blockNumber = block.number;
+    data.timestamp = block.timestamp;
+    data.owned = true;
 
-    CrosschainRecord.set(block.chainid, tableId, keyHash, data);
+    CrosschainRecord.set(tableId, keyHash, data);
   }
 
   function bridge(ResourceId tableId, bytes32[] memory keyTuple, uint256 targetChain) external {
     AccessControl._requireAccess(tableId.getNamespaceId(), _msgSender());
 
     bytes32 keyHash = keccak256(abi.encode(keyTuple));
-    uint256 blockNumber = CrosschainRecord.getBlockNumber(block.chainid, tableId, keyHash);
-    if (blockNumber == 0) {
-      revert RecordDoesNotExist();
+    CrosschainRecordData memory data = CrosschainRecord.get(tableId, keyHash);
+
+    // We can only bridge records we own
+    if (!data.owned) {
+      revert RecordNotOwned();
     }
 
+    data.blockNumber = block.number;
+    data.timestamp = block.timestamp;
+
     // We don't own this record anymore
-    CrosschainRecord.deleteRecord(block.chainid, tableId, keyHash);
+    data.owned = false;
+
+    CrosschainRecord.set(tableId, keyHash, data);
 
     (bytes memory staticData, EncodedLengths encodedLengths, bytes memory dynamicData) = StoreCore.getRecord(
       tableId,
@@ -70,26 +79,29 @@ contract CrosschainSystem is System {
     emit World_CrosschainRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, targetChain);
   }
 
-  // Anyone can call this method so other chains can consume the record data
+  /**
+   * @dev Anyone can call this method so other chains can consume the record data.
+   * Can only be called for records owned by this world
+   */
   function crosschainRead(ResourceId tableId, bytes32[] calldata keyTuple) external {
     (bytes memory staticData, EncodedLengths encodedLengths, bytes memory dynamicData) = StoreCore.getRecord(
       tableId,
       keyTuple
     );
 
-    emit World_CrosschainRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, 0);
+    // using toChainId == block.chainid means that other chains can't own this record
+    emit World_CrosschainRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, block.chainid);
   }
 
   // Anyone can call this to verify a crosschain record and store it
   function crosschainWrite(Identifier calldata identifier, bytes calldata _crosschainRead) external {
     if (identifier.origin != address(this)) revert WrongWorld();
 
+    // TODO: check tableId resource type?
     (bytes32 selector, ResourceId tableId) = abi.decode(_crosschainRead[:64], (bytes32, ResourceId));
     if (selector != World_CrosschainRecord.selector) revert NotCrosschainRecord();
 
     ICrossL2Inbox(Predeploys.CROSS_L2_INBOX).validateMessage(identifier, keccak256(_crosschainRead));
-
-    // TODO: check tableId resource type?
 
     (
       bytes32[] memory keyTuple,
@@ -102,26 +114,24 @@ contract CrosschainSystem is System {
     bytes32 keyHash = keccak256(abi.encode(keyTuple));
 
     // If we own the record, then writes are not allowed as it would override it
-    uint256 ownedTimestamp = CrosschainRecord.getTimestamp(block.chainid, tableId, keyHash);
-    if (ownedTimestamp > 0) {
+    CrosschainRecordData memory data = CrosschainRecord.get(tableId, keyHash);
+    if (data.owned) {
       revert RecordAlreadyExists();
     }
 
-    // If toChainId == 0 it means it was broadcasted and not bridged
-    if (toChainId == 0) {
-      if (identifier.timestamp < CrosschainRecord.getTimestamp(0, tableId, keyHash)) {
-        revert MoreRecentRecordExists();
-      }
-    } else if (toChainId != block.chainid) {
-      revert RecordBridgedToADifferentChain();
+    // If toChainId == block.chainId it means it was bridged to this world
+    // If toChainId != block.chainid it means it we can consume but we don't own it
+    if (toChainId == block.chainid) {
+      data.owned = true;
+      // TODO: should we also store and check against originating chain id?
+    } else if (identifier.timestamp < data.timestamp) {
+      revert MoreRecentRecordExists();
     }
 
-    CrosschainRecordData memory data = CrosschainRecordData({
-      blockNumber: identifier.blockNumber,
-      timestamp: identifier.timestamp
-    });
+    data.blockNumber = identifier.blockNumber;
+    data.timestamp = identifier.timestamp;
 
-    CrosschainRecord.set(toChainId, tableId, keyHash, data);
+    CrosschainRecord.set(tableId, keyHash, data);
 
     StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
   }

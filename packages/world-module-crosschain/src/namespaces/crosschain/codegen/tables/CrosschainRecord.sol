@@ -22,6 +22,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 struct CrosschainRecordData {
   uint256 blockNumber;
   uint256 timestamp;
+  bool owned;
 }
 
 library CrosschainRecord {
@@ -29,22 +30,21 @@ library CrosschainRecord {
   ResourceId constant _tableId = ResourceId.wrap(0x746263726f7373636861696e0000000043726f7373636861696e5265636f7264);
 
   FieldLayout constant _fieldLayout =
-    FieldLayout.wrap(0x0040020020200000000000000000000000000000000000000000000000000000);
+    FieldLayout.wrap(0x0041030020200100000000000000000000000000000000000000000000000000);
 
-  // Hex-encoded key schema of (uint256, bytes32, bytes32)
-  Schema constant _keySchema = Schema.wrap(0x006003001f5f5f00000000000000000000000000000000000000000000000000);
-  // Hex-encoded value schema of (uint256, uint256)
-  Schema constant _valueSchema = Schema.wrap(0x004002001f1f0000000000000000000000000000000000000000000000000000);
+  // Hex-encoded key schema of (bytes32, bytes32)
+  Schema constant _keySchema = Schema.wrap(0x004002005f5f0000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint256, uint256, bool)
+  Schema constant _valueSchema = Schema.wrap(0x004103001f1f6000000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
    * @return keyNames An array of strings with the names of key fields.
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
-    keyNames = new string[](3);
-    keyNames[0] = "chainId";
-    keyNames[1] = "tableId";
-    keyNames[2] = "keyHash";
+    keyNames = new string[](2);
+    keyNames[0] = "tableId";
+    keyNames[1] = "keyHash";
   }
 
   /**
@@ -52,9 +52,10 @@ library CrosschainRecord {
    * @return fieldNames An array of strings with the names of value fields.
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
-    fieldNames = new string[](2);
+    fieldNames = new string[](3);
     fieldNames[0] = "blockNumber";
     fieldNames[1] = "timestamp";
+    fieldNames[2] = "owned";
   }
 
   /**
@@ -74,15 +75,10 @@ library CrosschainRecord {
   /**
    * @notice Get blockNumber.
    */
-  function getBlockNumber(
-    uint256 chainId,
-    ResourceId tableId,
-    bytes32 keyHash
-  ) internal view returns (uint256 blockNumber) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(chainId));
-    _keyTuple[1] = ResourceId.unwrap(tableId);
-    _keyTuple[2] = keyHash;
+  function getBlockNumber(ResourceId tableId, bytes32 keyHash) internal view returns (uint256 blockNumber) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
@@ -91,15 +87,10 @@ library CrosschainRecord {
   /**
    * @notice Get blockNumber.
    */
-  function _getBlockNumber(
-    uint256 chainId,
-    ResourceId tableId,
-    bytes32 keyHash
-  ) internal view returns (uint256 blockNumber) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(chainId));
-    _keyTuple[1] = ResourceId.unwrap(tableId);
-    _keyTuple[2] = keyHash;
+  function _getBlockNumber(ResourceId tableId, bytes32 keyHash) internal view returns (uint256 blockNumber) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
@@ -108,11 +99,10 @@ library CrosschainRecord {
   /**
    * @notice Set blockNumber.
    */
-  function setBlockNumber(uint256 chainId, ResourceId tableId, bytes32 keyHash, uint256 blockNumber) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(chainId));
-    _keyTuple[1] = ResourceId.unwrap(tableId);
-    _keyTuple[2] = keyHash;
+  function setBlockNumber(ResourceId tableId, bytes32 keyHash, uint256 blockNumber) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((blockNumber)), _fieldLayout);
   }
@@ -120,11 +110,10 @@ library CrosschainRecord {
   /**
    * @notice Set blockNumber.
    */
-  function _setBlockNumber(uint256 chainId, ResourceId tableId, bytes32 keyHash, uint256 blockNumber) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(chainId));
-    _keyTuple[1] = ResourceId.unwrap(tableId);
-    _keyTuple[2] = keyHash;
+  function _setBlockNumber(ResourceId tableId, bytes32 keyHash, uint256 blockNumber) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((blockNumber)), _fieldLayout);
   }
@@ -132,15 +121,10 @@ library CrosschainRecord {
   /**
    * @notice Get timestamp.
    */
-  function getTimestamp(
-    uint256 chainId,
-    ResourceId tableId,
-    bytes32 keyHash
-  ) internal view returns (uint256 timestamp) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(chainId));
-    _keyTuple[1] = ResourceId.unwrap(tableId);
-    _keyTuple[2] = keyHash;
+  function getTimestamp(ResourceId tableId, bytes32 keyHash) internal view returns (uint256 timestamp) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return (uint256(bytes32(_blob)));
@@ -149,15 +133,10 @@ library CrosschainRecord {
   /**
    * @notice Get timestamp.
    */
-  function _getTimestamp(
-    uint256 chainId,
-    ResourceId tableId,
-    bytes32 keyHash
-  ) internal view returns (uint256 timestamp) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(chainId));
-    _keyTuple[1] = ResourceId.unwrap(tableId);
-    _keyTuple[2] = keyHash;
+  function _getTimestamp(ResourceId tableId, bytes32 keyHash) internal view returns (uint256 timestamp) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return (uint256(bytes32(_blob)));
@@ -166,11 +145,10 @@ library CrosschainRecord {
   /**
    * @notice Set timestamp.
    */
-  function setTimestamp(uint256 chainId, ResourceId tableId, bytes32 keyHash, uint256 timestamp) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(chainId));
-    _keyTuple[1] = ResourceId.unwrap(tableId);
-    _keyTuple[2] = keyHash;
+  function setTimestamp(ResourceId tableId, bytes32 keyHash, uint256 timestamp) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((timestamp)), _fieldLayout);
   }
@@ -178,27 +156,67 @@ library CrosschainRecord {
   /**
    * @notice Set timestamp.
    */
-  function _setTimestamp(uint256 chainId, ResourceId tableId, bytes32 keyHash, uint256 timestamp) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(chainId));
-    _keyTuple[1] = ResourceId.unwrap(tableId);
-    _keyTuple[2] = keyHash;
+  function _setTimestamp(ResourceId tableId, bytes32 keyHash, uint256 timestamp) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
 
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((timestamp)), _fieldLayout);
   }
 
   /**
+   * @notice Get owned.
+   */
+  function getOwned(ResourceId tableId, bytes32 keyHash) internal view returns (bool owned) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /**
+   * @notice Get owned.
+   */
+  function _getOwned(ResourceId tableId, bytes32 keyHash) internal view returns (bool owned) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /**
+   * @notice Set owned.
+   */
+  function setOwned(ResourceId tableId, bytes32 keyHash, bool owned) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
+
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((owned)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set owned.
+   */
+  function _setOwned(ResourceId tableId, bytes32 keyHash, bool owned) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
+
+    StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((owned)), _fieldLayout);
+  }
+
+  /**
    * @notice Get the full data.
    */
-  function get(
-    uint256 chainId,
-    ResourceId tableId,
-    bytes32 keyHash
-  ) internal view returns (CrosschainRecordData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(chainId));
-    _keyTuple[1] = ResourceId.unwrap(tableId);
-    _keyTuple[2] = keyHash;
+  function get(ResourceId tableId, bytes32 keyHash) internal view returns (CrosschainRecordData memory _table) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
 
     (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
@@ -211,15 +229,10 @@ library CrosschainRecord {
   /**
    * @notice Get the full data.
    */
-  function _get(
-    uint256 chainId,
-    ResourceId tableId,
-    bytes32 keyHash
-  ) internal view returns (CrosschainRecordData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(chainId));
-    _keyTuple[1] = ResourceId.unwrap(tableId);
-    _keyTuple[2] = keyHash;
+  function _get(ResourceId tableId, bytes32 keyHash) internal view returns (CrosschainRecordData memory _table) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
 
     (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
@@ -232,16 +245,15 @@ library CrosschainRecord {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(uint256 chainId, ResourceId tableId, bytes32 keyHash, uint256 blockNumber, uint256 timestamp) internal {
-    bytes memory _staticData = encodeStatic(blockNumber, timestamp);
+  function set(ResourceId tableId, bytes32 keyHash, uint256 blockNumber, uint256 timestamp, bool owned) internal {
+    bytes memory _staticData = encodeStatic(blockNumber, timestamp, owned);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(chainId));
-    _keyTuple[1] = ResourceId.unwrap(tableId);
-    _keyTuple[2] = keyHash;
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
@@ -249,16 +261,15 @@ library CrosschainRecord {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(uint256 chainId, ResourceId tableId, bytes32 keyHash, uint256 blockNumber, uint256 timestamp) internal {
-    bytes memory _staticData = encodeStatic(blockNumber, timestamp);
+  function _set(ResourceId tableId, bytes32 keyHash, uint256 blockNumber, uint256 timestamp, bool owned) internal {
+    bytes memory _staticData = encodeStatic(blockNumber, timestamp, owned);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(chainId));
-    _keyTuple[1] = ResourceId.unwrap(tableId);
-    _keyTuple[2] = keyHash;
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -266,16 +277,15 @@ library CrosschainRecord {
   /**
    * @notice Set the full data using the data struct.
    */
-  function set(uint256 chainId, ResourceId tableId, bytes32 keyHash, CrosschainRecordData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.blockNumber, _table.timestamp);
+  function set(ResourceId tableId, bytes32 keyHash, CrosschainRecordData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.blockNumber, _table.timestamp, _table.owned);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(chainId));
-    _keyTuple[1] = ResourceId.unwrap(tableId);
-    _keyTuple[2] = keyHash;
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
@@ -283,16 +293,15 @@ library CrosschainRecord {
   /**
    * @notice Set the full data using the data struct.
    */
-  function _set(uint256 chainId, ResourceId tableId, bytes32 keyHash, CrosschainRecordData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.blockNumber, _table.timestamp);
+  function _set(ResourceId tableId, bytes32 keyHash, CrosschainRecordData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.blockNumber, _table.timestamp, _table.owned);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(chainId));
-    _keyTuple[1] = ResourceId.unwrap(tableId);
-    _keyTuple[2] = keyHash;
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -300,10 +309,12 @@ library CrosschainRecord {
   /**
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
-  function decodeStatic(bytes memory _blob) internal pure returns (uint256 blockNumber, uint256 timestamp) {
+  function decodeStatic(bytes memory _blob) internal pure returns (uint256 blockNumber, uint256 timestamp, bool owned) {
     blockNumber = (uint256(Bytes.getBytes32(_blob, 0)));
 
     timestamp = (uint256(Bytes.getBytes32(_blob, 32)));
+
+    owned = (_toBool(uint8(Bytes.getBytes1(_blob, 64))));
   }
 
   /**
@@ -317,17 +328,16 @@ library CrosschainRecord {
     EncodedLengths,
     bytes memory
   ) internal pure returns (CrosschainRecordData memory _table) {
-    (_table.blockNumber, _table.timestamp) = decodeStatic(_staticData);
+    (_table.blockNumber, _table.timestamp, _table.owned) = decodeStatic(_staticData);
   }
 
   /**
    * @notice Delete all data for given keys.
    */
-  function deleteRecord(uint256 chainId, ResourceId tableId, bytes32 keyHash) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(chainId));
-    _keyTuple[1] = ResourceId.unwrap(tableId);
-    _keyTuple[2] = keyHash;
+  function deleteRecord(ResourceId tableId, bytes32 keyHash) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -335,11 +345,10 @@ library CrosschainRecord {
   /**
    * @notice Delete all data for given keys.
    */
-  function _deleteRecord(uint256 chainId, ResourceId tableId, bytes32 keyHash) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(chainId));
-    _keyTuple[1] = ResourceId.unwrap(tableId);
-    _keyTuple[2] = keyHash;
+  function _deleteRecord(ResourceId tableId, bytes32 keyHash) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
@@ -348,8 +357,8 @@ library CrosschainRecord {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(uint256 blockNumber, uint256 timestamp) internal pure returns (bytes memory) {
-    return abi.encodePacked(blockNumber, timestamp);
+  function encodeStatic(uint256 blockNumber, uint256 timestamp, bool owned) internal pure returns (bytes memory) {
+    return abi.encodePacked(blockNumber, timestamp, owned);
   }
 
   /**
@@ -360,9 +369,10 @@ library CrosschainRecord {
    */
   function encode(
     uint256 blockNumber,
-    uint256 timestamp
+    uint256 timestamp,
+    bool owned
   ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
-    bytes memory _staticData = encodeStatic(blockNumber, timestamp);
+    bytes memory _staticData = encodeStatic(blockNumber, timestamp, owned);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
@@ -373,16 +383,23 @@ library CrosschainRecord {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
-  function encodeKeyTuple(
-    uint256 chainId,
-    ResourceId tableId,
-    bytes32 keyHash
-  ) internal pure returns (bytes32[] memory) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(chainId));
-    _keyTuple[1] = ResourceId.unwrap(tableId);
-    _keyTuple[2] = keyHash;
+  function encodeKeyTuple(ResourceId tableId, bytes32 keyHash) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = ResourceId.unwrap(tableId);
+    _keyTuple[1] = keyHash;
 
     return _keyTuple;
+  }
+}
+
+/**
+ * @notice Cast a value to a bool.
+ * @dev Boolean values are encoded as uint8 (1 = true, 0 = false), but Solidity doesn't allow casting between uint8 and bool.
+ * @param value The uint8 value to convert.
+ * @return result The boolean value.
+ */
+function _toBool(uint8 value) pure returns (bool result) {
+  assembly {
+    result := value
   }
 }

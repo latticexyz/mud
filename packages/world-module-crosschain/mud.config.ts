@@ -15,13 +15,13 @@ export default defineWorld({
       tables: {
         CrosschainRecord: {
           schema: {
-            chainId: "uint256",
             tableId: "ResourceId",
             keyHash: "bytes32",
             blockNumber: "uint256",
             timestamp: "uint256",
+            owned: "bool",
           },
-          key: ["chainId", "tableId", "keyHash"],
+          key: ["tableId", "keyHash"],
         },
       },
     },

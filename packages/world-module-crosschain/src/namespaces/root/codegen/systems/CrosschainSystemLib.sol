@@ -39,7 +39,7 @@ library CrosschainSystemLib {
   error WrongWorld();
   error NotCrosschainRecord();
   error MoreRecentRecordExists();
-  error RecordDoesNotExist();
+  error RecordNotOwned();
   error RecordAlreadyExists();
   error RecordBridgedToADifferentChain();
 
