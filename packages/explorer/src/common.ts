@@ -1,9 +1,42 @@
+import { defineChain } from "viem";
 import { anvil } from "viem/chains";
 import { garnet, redstone, rhodolite } from "@latticexyz/common/chains";
 
+export const OPChainA = defineChain({
+  id: 901,
+  name: "OPChainA",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    default: {
+      http: ["http://127.0.0.1:9545"],
+      webSocket: ["ws://127.0.0.1:9545"],
+    },
+  },
+});
+
+export const OPChainB = defineChain({
+  id: 902,
+  name: "OPChainB",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ether",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    default: {
+      http: ["http://127.0.0.1:9546"],
+      webSocket: ["ws://127.0.0.1:9546"],
+    },
+  },
+});
+
 export const internalNamespaces = ["world", "store", "metadata", "puppet", "erc20-puppet", "erc721-puppet"];
 
-export const supportedChains = { anvil, rhodolite, garnet, redstone } as const;
+export const supportedChains = { anvil, rhodolite, garnet, redstone, OPChainA, OPChainB } as const;
 export type supportedChains = typeof supportedChains;
 
 export type supportedChainName = keyof supportedChains;

@@ -5,7 +5,7 @@ import { chainIdToName, supportedChains, validateChainId } from "../../../common
 export function indexerForChainId(chainId: number): { type: "sqlite" | "hosted"; url: string } {
   validateChainId(chainId);
 
-  if (chainId === anvil.id) {
+  if (chainId === anvil.id || chainId === 901 || chainId === 902) {
     return { type: "sqlite", url: "/api/sqlite-indexer" };
   }
 
