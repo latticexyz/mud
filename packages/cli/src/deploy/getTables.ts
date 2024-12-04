@@ -33,7 +33,6 @@ export async function getTables({
     toBlock: worldDeploy.stateBlock,
   });
 
-  // TODO: combine with store-sync logToTable and export from somewhere
   const tables = records.map((record) => {
     const { type, namespace, name } = hexToResource(record.tableId);
 
