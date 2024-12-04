@@ -13,9 +13,17 @@ import { Identifier } from "@contracts-bedrock/L2/interfaces/ICrossL2Inbox.sol";
  */
 interface ICrosschainSystem {
   error WrongWorld();
-  error NotCrosschainRead();
+  error NotCrosschainRecord();
+  error MoreRecentRecordExists();
+  error RecordDoesNotExist();
+  error RecordAlreadyExists();
+  error RecordBridgedToADifferentChain();
 
-  function root__crosschainRead(ResourceId tableId, bytes32[] calldata keyTuple) external;
+  function create(ResourceId tableId, bytes32[] memory keyTuple) external;
 
-  function root__crosschainWrite(Identifier calldata identifier, bytes calldata _crosschainRead) external;
+  function bridge(ResourceId tableId, bytes32[] memory keyTuple, uint256 targetChain) external;
+
+  function crosschainRead(ResourceId tableId, bytes32[] calldata keyTuple) external;
+
+  function crosschainWrite(Identifier calldata identifier, bytes calldata _crosschainRead) external;
 }
