@@ -145,7 +145,7 @@ library ERC20Registry {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(ResourceId _tableId, ResourceId namespaceId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -155,7 +155,7 @@ library ERC20Registry {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(ResourceId _tableId, ResourceId namespaceId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);

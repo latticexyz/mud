@@ -163,7 +163,7 @@ export function renderDeleteRecordMethods(options: RenderTableOptions) {
 
       return `
         /** 
-         * @notice Delete all data for given keys${_commentSuffix}.
+         * @notice Delete all data for given key${_commentSuffix}.
          */
         function ${_methodNamePrefix}deleteRecord(${externalArguments}) internal {
           ${_keyTupleDefinition}

@@ -728,7 +728,7 @@ library UserTyped {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(
     TestTypeAddress k1,
@@ -748,7 +748,7 @@ library UserTyped {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(
     TestTypeAddress k1,
