@@ -21,6 +21,8 @@ interface ICrosschainSystem {
 
   function create(ResourceId tableId, bytes32[] memory keyTuple) external;
 
+  function remove(ResourceId tableId, bytes32[] memory keyTuple) external;
+
   function bridge(ResourceId tableId, bytes32[] memory keyTuple, uint256 targetChain) external;
 
   function crosschainRead(ResourceId tableId, bytes32[] calldata keyTuple) external;

@@ -35,6 +35,8 @@ contract CrosschainSystem is System {
     uint256 toChainId
   );
 
+  event World_CrosschainRecordRemoved(ResourceId indexed tableId, bytes32[] keyTuple);
+
   function create(ResourceId tableId, bytes32[] memory keyTuple) external {
     AccessControl._requireAccess(tableId.getNamespaceId(), _msgSender());
 
@@ -52,10 +54,26 @@ contract CrosschainSystem is System {
     CrosschainRecord.set(tableId, keyHash, data);
   }
 
+  function remove(ResourceId tableId, bytes32[] memory keyTuple) external {
+    AccessControl._requireAccess(tableId.getNamespaceId(), _msgSender());
+
+    bytes32 keyHash = keccak256(abi.encode(keyTuple));
+
+    CrosschainRecordData memory data = CrosschainRecord.get(tableId, keyHash);
+    if (!data.owned) {
+      revert RecordNotOwned();
+    }
+
+    CrosschainRecord.deleteRecord(tableId, keyHash);
+
+    emit World_CrosschainRecordRemoved(tableId, keyTuple);
+  }
+
   function bridge(ResourceId tableId, bytes32[] memory keyTuple, uint256 targetChain) external {
     AccessControl._requireAccess(tableId.getNamespaceId(), _msgSender());
 
     bytes32 keyHash = keccak256(abi.encode(keyTuple));
+
     CrosschainRecordData memory data = CrosschainRecord.get(tableId, keyHash);
 
     // We can only bridge records we own
@@ -84,6 +102,16 @@ contract CrosschainSystem is System {
    * Can only be called for records owned by this world
    */
   function crosschainRead(ResourceId tableId, bytes32[] calldata keyTuple) external {
+    bytes32 keyHash = keccak256(abi.encode(keyTuple));
+    CrosschainRecordData memory data = CrosschainRecord.get(tableId, keyHash);
+
+    // We can only bridge records we own
+    if (!data.owned) {
+      revert RecordNotOwned();
+    }
+
+    // TODO: should we update metadata?
+
     (bytes memory staticData, EncodedLengths encodedLengths, bytes memory dynamicData) = StoreCore.getRecord(
       tableId,
       keyTuple
@@ -92,6 +120,8 @@ contract CrosschainSystem is System {
     // using toChainId == block.chainid means that other chains can't own this record
     emit World_CrosschainRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, block.chainid);
   }
+
+  // TODO: add crosschainRemove or add that logic to crosschainWrite (depending on the selector)
 
   // Anyone can call this to verify a crosschain record and store it
   function crosschainWrite(Identifier calldata identifier, bytes calldata _crosschainRead) external {

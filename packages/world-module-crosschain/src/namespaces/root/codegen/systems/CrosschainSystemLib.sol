@@ -47,6 +47,10 @@ library CrosschainSystemLib {
     return CallWrapper(self.toResourceId(), address(0)).create(tableId, keyTuple);
   }
 
+  function remove(CrosschainSystemType self, ResourceId tableId, bytes32[] memory keyTuple) internal {
+    return CallWrapper(self.toResourceId(), address(0)).remove(tableId, keyTuple);
+  }
+
   function bridge(
     CrosschainSystemType self,
     ResourceId tableId,
@@ -73,6 +77,16 @@ library CrosschainSystemLib {
     if (address(_world()) == address(this)) revert CrosschainSystemLib_CallingFromRootSystem();
 
     bytes memory systemCall = abi.encodeCall(CrosschainSystem.create, (tableId, keyTuple));
+    self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
+  }
+
+  function remove(CallWrapper memory self, ResourceId tableId, bytes32[] memory keyTuple) internal {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert CrosschainSystemLib_CallingFromRootSystem();
+
+    bytes memory systemCall = abi.encodeCall(CrosschainSystem.remove, (tableId, keyTuple));
     self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
@@ -119,6 +133,11 @@ library CrosschainSystemLib {
 
   function create(RootCallWrapper memory self, ResourceId tableId, bytes32[] memory keyTuple) internal {
     bytes memory systemCall = abi.encodeCall(CrosschainSystem.create, (tableId, keyTuple));
+    SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
+  }
+
+  function remove(RootCallWrapper memory self, ResourceId tableId, bytes32[] memory keyTuple) internal {
+    bytes memory systemCall = abi.encodeCall(CrosschainSystem.remove, (tableId, keyTuple));
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 
