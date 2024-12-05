@@ -1,22 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
-import { Store } from "../src/Store.sol";
-import { Schema } from "../src/Schema.sol";
-import { IStore } from "../src/IStore.sol";
-import { StoreRead } from "../src/StoreRead.sol";
-import { StoreCore } from "../src/StoreCore.sol";
-import { IStoreRead } from "../src/IStoreRead.sol";
-import { ResourceId } from "../src/ResourceId.sol";
-import { IStoreHook } from "../src/IStoreHook.sol";
-import { StoreSwitch } from "../src/StoreSwitch.sol";
-import { FieldLayout } from "../src/FieldLayout.sol";
-import { EncodedLengths } from "../src/EncodedLengths.sol";
+import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { IStore } from "@latticexyz/store/src/IStore.sol";
+import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
+import { StoreRead } from "@latticexyz/store/src/StoreRead.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
+import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { EncodedLengths } from "@latticexyz/store/src/EncodedLengths.sol";
 
-/**
- * StoreMock is a contract wrapper around the StoreCore library for testing purposes.
- */
-contract StoreMock is Store {
+contract Store {
   constructor() {
     StoreCore.initialize();
     StoreCore.registerInternalTables();
@@ -101,7 +96,7 @@ contract StoreMock is Store {
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
-  ) public view virtual override(IStoreRead, StoreRead) returns (bytes32 data) {
+  ) public view virtual returns (bytes32 data) {
     data = StoreCore.getStaticField(tableId, keyTuple, fieldIndex, fieldLayout);
   }
 
@@ -113,6 +108,90 @@ contract StoreMock is Store {
     bytes calldata data
   ) public virtual {
     StoreCore.setDynamicField(tableId, keyTuple, dynamicFieldIndex, data);
+  }
+
+  /**
+   * @notice Retrieves data for a specific dynamic (variable length) field in a record.
+   * @param tableId The ID of the table.
+   * @param keyTuple The tuple used as a key to fetch the dynamic field.
+   * @param dynamicFieldIndex Index of the dynamic field to retrieve.
+   * @return data The dynamic data of the specified field.
+   */
+  function getDynamicField(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex
+  ) public view virtual returns (bytes memory data) {
+    data = StoreCore.getDynamicField(tableId, keyTuple, dynamicFieldIndex);
+  }
+
+  /**
+   * @notice Calculates the length of a specified field in a record.
+   * @dev This overload loads the FieldLayout from storage. If the table's FieldLayout is known
+   * to the caller, it should be passed in to the other overload to avoid the storage read.
+   * @param tableId The ID of the table.
+   * @param keyTuple The tuple used as a key.
+   * @param fieldIndex Index of the field to measure.
+   * @return The length of the specified field.
+   */
+  function getFieldLength(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex
+  ) public view virtual returns (uint256) {
+    return StoreCore.getFieldLength(tableId, keyTuple, fieldIndex);
+  }
+
+  /**
+   * @notice Calculates the length of a specified field in a record.
+   * @param tableId The ID of the table.
+   * @param keyTuple The tuple used as a key.
+   * @param fieldIndex Index of the field to measure.
+   * @param fieldLayout The layout of fields for measurement.
+   * @return The length of the specified field.
+   */
+  function getFieldLength(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex,
+    FieldLayout fieldLayout
+  ) public view virtual returns (uint256) {
+    return StoreCore.getFieldLength(tableId, keyTuple, fieldIndex, fieldLayout);
+  }
+
+  /**
+   * @notice Calculates the length of a specified dynamic (variable length) field in a record.
+   * @param tableId The ID of the table.
+   * @param keyTuple The tuple used as a key.
+   * @param dynamicFieldIndex Index of the dynamic field to measure.
+   * @return The length of the specified dynamic field.
+   */
+  function getDynamicFieldLength(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex
+  ) public view virtual returns (uint256) {
+    return StoreCore.getDynamicFieldLength(tableId, keyTuple, dynamicFieldIndex);
+  }
+
+  /**
+   * @notice Retrieves a slice of a dynamic (variable length) field.
+   * @param tableId The ID of the table.
+   * @param keyTuple The tuple used as a key to fetch the dynamic field slice.
+   * @param dynamicFieldIndex Index of the dynamic field to slice.
+   * @param start The starting position of the slice.
+   * @param end The ending position of the slice.
+   * @return The sliced data from the specified dynamic field.
+   */
+
+  function getDynamicFieldSlice(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint256 start,
+    uint256 end
+  ) public view virtual returns (bytes memory) {
+    return StoreCore.getDynamicFieldSlice(tableId, keyTuple, dynamicFieldIndex, start, end);
   }
 
   // Push encoded items to the dynamic field at field index
@@ -133,21 +212,6 @@ contract StoreMock is Store {
     uint256 byteLengthToPop
   ) public virtual {
     StoreCore.popFromDynamicField(tableId, keyTuple, dynamicFieldIndex, byteLengthToPop);
-  }
-
-  /**
-   * @notice Retrieves data for a specific dynamic (variable length) field in a record.
-   * @param tableId The ID of the table.
-   * @param keyTuple The tuple used as a key to fetch the dynamic field.
-   * @param dynamicFieldIndex Index of the dynamic field to retrieve.
-   * @return data The dynamic data of the specified field.
-   */
-  function getDynamicField(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    uint8 dynamicFieldIndex
-  ) public view virtual override(IStoreRead, StoreRead) returns (bytes memory data) {
-    data = StoreCore.getDynamicField(tableId, keyTuple, dynamicFieldIndex);
   }
 
   // Set full record (including full dynamic data)
