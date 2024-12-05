@@ -20,12 +20,7 @@ import { getTable } from "./getTable";
 import { runQuery } from "./runQuery";
 import { encodeKey } from "./encodeKey";
 
-export type SubscribeQueryOptions<config extends StoreConfig = StoreConfig> = CommonQueryOptions & {
-  // Skip the initial `runQuery` to initialize the query result.
-  // Only updates after the query was defined are considered in the result.
-  skipInitialRun?: boolean;
-  initialSubscribers?: QuerySubscriber<config>[];
-};
+export type SubscribeQueryOptions = CommonQueryOptions;
 
 export type QueryTableUpdates<config extends StoreConfig = StoreConfig> = {
   [namespace in getNamespaces<config>]: {
@@ -50,7 +45,8 @@ export type QuerySubscriber<config extends StoreConfig = StoreConfig> = (
 export type SubscribeQueryArgs<query extends Query = Query> = {
   stash: Stash;
   query: query;
-  options?: SubscribeQueryOptions<getQueryConfig<query>>;
+  subscriber?: QuerySubscriber<getQueryConfig<query>>;
+  options?: SubscribeQueryOptions;
 };
 
 export type SubscribeQueryResult<query extends Query = Query> = CommonQueryResult & {
@@ -69,22 +65,20 @@ export type SubscribeQueryResult<query extends Query = Query> = CommonQueryResul
 export function subscribeQuery<query extends Query>({
   stash,
   query,
+  subscriber,
   options,
 }: SubscribeQueryArgs<query>): SubscribeQueryResult<query> {
-  const initialRun = options?.skipInitialRun
-    ? undefined
-    : runQuery({
-        stash,
-        query,
-        options: {
-          // Pass the initial keys
-          initialKeys: options?.initialKeys,
-          // Request initial records if there are initial subscribers
-          includeRecords: options?.initialSubscribers && options.initialSubscribers.length > 0,
-        },
-      });
+  const initialRun = runQuery({
+    stash,
+    query,
+    options: {
+      // Pass the initial keys
+      initialKeys: options?.initialKeys,
+      includeRecords: false,
+    },
+  });
   const matching: Keys = initialRun?.keys ?? {};
-  const subscribers = new Set<QuerySubscriber>(options?.initialSubscribers as QuerySubscriber[]);
+  const subscribers = new Set<QuerySubscriber>(subscriber ? [subscriber as QuerySubscriber] : []);
 
   const subscribe = (subscriber: QuerySubscriber<getQueryConfig<query>>): Unsubscribe => {
     subscribers.add(subscriber as QuerySubscriber);

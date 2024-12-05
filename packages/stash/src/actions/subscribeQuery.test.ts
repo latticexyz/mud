@@ -67,19 +67,20 @@ describe("defineQuery", () => {
     let lastUpdates: unknown;
     const subscriber = vi.fn((updates: QueryUpdates) => (lastUpdates = updates));
 
-    const result = subscribeQuery({
+    subscribeQuery({
       stash,
       query: [Matches(Position, { x: 4 }), In(Health)],
+      subscriber,
     });
-    result.subscribe(subscriber);
     vi.advanceTimersToNextTimer();
 
-    expect(subscriber).toBeCalledTimes(0);
+    expect(subscriber).toBeCalledTimes(1);
+    attest(lastUpdates).snap([{ key: { player: "0x4" }, type: "enter" }]);
 
     setRecord({ stash, table: Position, key: { player: "0x4" }, value: { y: 2 } });
     vi.advanceTimersToNextTimer();
 
-    expect(subscriber).toBeCalledTimes(1);
+    expect(subscriber).toBeCalledTimes(2);
     attest(lastUpdates).snap([
       {
         table: {
@@ -109,16 +110,19 @@ describe("defineQuery", () => {
   it("should notify subscribers when a new key matches", () => {
     let lastUpdates: unknown;
     const subscriber = vi.fn((updates: QueryUpdates) => (lastUpdates = updates));
-    const result = subscribeQuery({ stash, query: [In(Position), In(Health)] });
-    result.subscribe(subscriber);
+    subscribeQuery({ stash, query: [In(Position), In(Health)], subscriber });
 
     vi.advanceTimersToNextTimer();
-    expect(subscriber).toBeCalledTimes(0);
+    expect(subscriber).toBeCalledTimes(1);
+    attest(lastUpdates).snap([
+      { key: { player: "0x3" }, type: "enter" },
+      { key: { player: "0x4" }, type: "enter" },
+    ]);
 
     setRecord({ stash, table: Health, key: { player: `0x2` }, value: { health: 2 } });
     vi.advanceTimersToNextTimer();
 
-    expect(subscriber).toBeCalledTimes(1);
+    expect(subscriber).toBeCalledTimes(2);
     attest(lastUpdates).snap([
       {
         table: {
@@ -147,16 +151,19 @@ describe("defineQuery", () => {
   it("should notify subscribers when a key doesn't match anymore", () => {
     let lastUpdates: unknown;
     const subscriber = vi.fn((updates: QueryUpdates) => (lastUpdates = updates));
-    const result = subscribeQuery({ stash, query: [In(Position), In(Health)] });
-    result.subscribe(subscriber);
+    subscribeQuery({ stash, query: [In(Position), In(Health)], subscriber });
 
     vi.advanceTimersToNextTimer();
-    expect(subscriber).toBeCalledTimes(0);
+    expect(subscriber).toBeCalledTimes(1);
+    attest(lastUpdates).snap([
+      { key: { player: "0x3" }, type: "enter" },
+      { key: { player: "0x4" }, type: "enter" },
+    ]);
 
     deleteRecord({ stash, table: Position, key: { player: `0x3` } });
     vi.advanceTimersToNextTimer();
 
-    expect(subscriber).toBeCalledTimes(1);
+    expect(subscriber).toBeCalledTimes(2);
     attest(lastUpdates).snap([
       {
         table: {
@@ -186,7 +193,7 @@ describe("defineQuery", () => {
   it("should notify initial subscribers with initial query result", () => {
     let lastUpdates: unknown;
     const subscriber = vi.fn((updates: QueryUpdates) => (lastUpdates = updates));
-    subscribeQuery({ stash, query: [In(Position), In(Health)], options: { initialSubscribers: [subscriber] } });
+    subscribeQuery({ stash, query: [In(Position), In(Health)], subscriber });
 
     expect(subscriber).toBeCalledTimes(1);
     attest(lastUpdates).snap([
