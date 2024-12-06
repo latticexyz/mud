@@ -113,10 +113,10 @@ export function subscribeQuery<query extends Query>({
           updates.push({ ...update, type: "enter" });
         }
       }
-
-      // Notify subscribers
-      subscribers.forEach((subscriber) => subscriber(updates));
     }
+
+    // Notify subscribers
+    subscribers.forEach((subscriber) => subscriber(updates));
   };
 
   // Subscribe to each table's update stream and return the unsubscribers
