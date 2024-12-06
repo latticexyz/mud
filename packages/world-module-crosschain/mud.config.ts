@@ -19,7 +19,6 @@ export default defineWorld({
             keyHash: "bytes32",
             blockNumber: "uint256",
             timestamp: "uint256",
-            // chainId: "uint256",
             owned: "bool",
           },
           key: ["tableId", "keyHash"],

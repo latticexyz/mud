@@ -42,6 +42,7 @@ library CrosschainSystemLib {
   error RecordNotOwned();
   error RecordAlreadyExists();
   error RecordBridgedToADifferentChain();
+  error InvalidRecordTimestamp();
 
   function create(CrosschainSystemType self, ResourceId tableId, bytes32[] memory keyTuple) internal {
     return CallWrapper(self.toResourceId(), address(0)).create(tableId, keyTuple);

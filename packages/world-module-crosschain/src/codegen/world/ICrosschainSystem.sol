@@ -18,6 +18,7 @@ interface ICrosschainSystem {
   error RecordNotOwned();
   error RecordAlreadyExists();
   error RecordBridgedToADifferentChain();
+  error InvalidRecordTimestamp();
 
   function create(ResourceId tableId, bytes32[] memory keyTuple) external;
 

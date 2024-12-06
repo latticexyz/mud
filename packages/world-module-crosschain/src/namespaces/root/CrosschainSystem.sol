@@ -25,6 +25,7 @@ contract CrosschainSystem is System {
   error RecordNotOwned();
   error RecordAlreadyExists();
   error RecordBridgedToADifferentChain();
+  error InvalidRecordTimestamp();
 
   event World_CrosschainRecord(
     ResourceId indexed tableId,
@@ -153,8 +154,15 @@ contract CrosschainSystem is System {
     // If toChainId != block.chainid it means it we can consume but we don't own it
     if (toChainId == block.chainid) {
       data.owned = true;
-      // TODO: should we also store and check against originating chain id?
-    } else if (identifier.timestamp < data.timestamp) {
+    }
+
+    // If timestamp is in the future, revert
+    // This also creates a total ordering across chains
+    if (block.timestamp < identifier.timestamp) {
+      revert InvalidRecordTimestamp();
+    }
+
+    if (identifier.timestamp < data.timestamp) {
       revert MoreRecentRecordExists();
     }
 
