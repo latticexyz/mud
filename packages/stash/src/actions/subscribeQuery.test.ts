@@ -201,4 +201,68 @@ describe("defineQuery", () => {
       { key: { player: "0x4" }, type: "enter" },
     ]);
   });
+
+  it("should notify once for multiple updates", () => {
+    let lastUpdates: unknown;
+    const subscriber = vi.fn((updates: QueryUpdates) => (lastUpdates = updates));
+    subscribeQuery({ stash, query: [In(Position), In(Health)], subscriber });
+
+    vi.advanceTimersToNextTimer();
+    expect(subscriber).toBeCalledTimes(1);
+    attest(lastUpdates).snap([
+      { key: { player: "0x3" }, type: "enter" },
+      { key: { player: "0x4" }, type: "enter" },
+    ]);
+
+    // Update multiple records but only advance timer once
+    setRecord({ stash, table: Health, key: { player: `0x2` }, value: { health: 2 } });
+    setRecord({ stash, table: Health, key: { player: `0x1` }, value: { health: 1 } });
+    vi.advanceTimersToNextTimer();
+
+    expect(subscriber).toBeCalledTimes(2);
+    attest(lastUpdates).snap([
+      {
+        table: {
+          label: "Health",
+          type: "table",
+          namespace: "namespace1",
+          namespaceLabel: "namespace1",
+          name: "Health",
+          tableId: "0x74626e616d65737061636531000000004865616c746800000000000000000000",
+          schema: {
+            player: { type: "bytes32", internalType: "bytes32" },
+            health: { type: "uint32", internalType: "uint32" },
+          },
+          key: ["player"],
+          codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: false },
+          deploy: { disabled: false },
+        },
+        key: { player: "0x2" },
+        previous: "(undefined)",
+        current: { player: "0x2", health: 2 },
+        type: "enter",
+      },
+      {
+        table: {
+          label: "Health",
+          type: "table",
+          namespace: "namespace1",
+          namespaceLabel: "namespace1",
+          name: "Health",
+          tableId: "0x74626e616d65737061636531000000004865616c746800000000000000000000",
+          schema: {
+            player: { type: "bytes32", internalType: "bytes32" },
+            health: { type: "uint32", internalType: "uint32" },
+          },
+          key: ["player"],
+          codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: false },
+          deploy: { disabled: false },
+        },
+        key: { player: "0x1" },
+        previous: "(undefined)",
+        current: { player: "0x1", health: 1 },
+        type: "enter",
+      },
+    ]);
+  });
 });
