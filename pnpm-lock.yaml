@@ -1345,8 +1345,8 @@ importers:
         specifier: workspace:*
         version: link:../world
       optimism:
-        specifier: https://github.com/ethereum-optimism/optimism
-        version: https://codeload.github.com/ethereum-optimism/optimism/tar.gz/3f43f039a9e68b777045d7e2446947acbd9b0592
+        specifier: https://github.com/ethereum-optimism/optimism#ecdb788a18022d4b78d6288c1f6ec94c152d02f8
+        version: optimism#ecdb788a18022d4b78d6288c1f6ec94c152d02f8@https://codeload.github.com/ethereum-optimism/optimism/tar.gz/ecdb788a18022d4b78d6288c1f6ec94c152d02f8
     devDependencies:
       '@latticexyz/abi-ts':
         specifier: workspace:*
@@ -9355,8 +9355,8 @@ packages:
   openurl@1.1.1:
     resolution: {integrity: sha512-d/gTkTb1i1GKz5k3XE3XFV/PxQ1k45zDqGP2OA7YhgsaLoqm6qRvARAZOFer1fcXritWlGBRCu/UgeS4HAnXAA==}
 
-  optimism@https://codeload.github.com/ethereum-optimism/optimism/tar.gz/3f43f039a9e68b777045d7e2446947acbd9b0592:
-    resolution: {tarball: https://codeload.github.com/ethereum-optimism/optimism/tar.gz/3f43f039a9e68b777045d7e2446947acbd9b0592}
+  optimism#ecdb788a18022d4b78d6288c1f6ec94c152d02f8@https://codeload.github.com/ethereum-optimism/optimism/tar.gz/ecdb788a18022d4b78d6288c1f6ec94c152d02f8:
+    resolution: {tarball: https://codeload.github.com/ethereum-optimism/optimism/tar.gz/ecdb788a18022d4b78d6288c1f6ec94c152d02f8}
     version: 0.0.0
 
   optionator@0.8.3:
@@ -21841,7 +21841,7 @@ snapshots:
 
   openurl@1.1.1: {}
 
-  optimism@https://codeload.github.com/ethereum-optimism/optimism/tar.gz/3f43f039a9e68b777045d7e2446947acbd9b0592: {}
+  optimism#ecdb788a18022d4b78d6288c1f6ec94c152d02f8@https://codeload.github.com/ethereum-optimism/optimism/tar.gz/ecdb788a18022d4b78d6288c1f6ec94c152d02f8: {}
 
   optionator@0.8.3:
     dependencies:
