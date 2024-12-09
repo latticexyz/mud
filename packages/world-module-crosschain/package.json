@@ -45,7 +45,7 @@
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/world": "workspace:*",
-    "optimism": "https://github.com/ethereum-optimism/optimism"
+    "optimism": "https://github.com/ethereum-optimism/optimism#ecdb788a18022d4b78d6288c1f6ec94c152d02f8"
   },
   "devDependencies": {
     "@latticexyz/abi-ts": "workspace:*",
