@@ -4,10 +4,11 @@ pragma solidity >=0.8.28;
 import { System } from "@latticexyz/world/src/System.sol";
 import { Value } from "./codegen/tables/Value.sol";
 import { AddressValue } from "./codegen/tables/AddressValue.sol";
+import { ASystemThing } from "./ASystemTypes.sol";
 
 contract ASystem is System {
-  function setValue(uint256 value) external {
-    Value.set(value);
+  function setValue(ASystemThing memory value) external {
+    Value.set(value.a);
   }
 
   function getValue() external view returns (uint256) {
