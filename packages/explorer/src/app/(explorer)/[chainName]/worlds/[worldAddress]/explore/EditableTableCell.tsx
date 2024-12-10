@@ -22,7 +22,7 @@ import { useChain } from "../../../../hooks/useChain";
 
 type Props = {
   name: string;
-  value: string | undefined;
+  value: unknown;
   table: Table;
   keyTuple: readonly Hex[];
 };
@@ -89,26 +89,20 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
     if (!account.isConnected) {
       return openConnectModal?.();
     }
-
-    if (newValue !== defaultValue) {
-      mutate(newValue);
-    }
+    mutate(newValue);
   };
 
   if (fieldType === "bool") {
     return (
-      <>
+      <div className="flex items-center gap-1">
         <Checkbox
           id={`checkbox-${name}`}
-          checked={value === "1" || value === "true"}
-          onCheckedChange={(checked) => {
-            const newValue = checked ? "1" : "0";
-            handleSubmit(newValue);
-          }}
+          checked={Boolean(value)}
+          onCheckedChange={handleSubmit}
           disabled={isPending}
         />
         {isPending && <Loader className="h-4 w-4 animate-spin" />}
-      </>
+      </div>
     );
   }
 
@@ -127,9 +121,7 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
         >
           <input
             className="w-full bg-transparent"
-            onChange={(evt: ChangeEvent<HTMLInputElement>) => {
-              setValue(evt.target.value);
-            }}
+            onChange={(evt: ChangeEvent<HTMLInputElement>) => setValue(evt.target.value)}
             onBlur={(evt) => handleSubmit(evt.target.value)}
             value={String(value)}
             disabled={isPending}
