@@ -1,5 +1,25 @@
 # Change Log
 
+## 2.2.15
+
+### Patch Changes
+
+- b819749: Added a `getRecords` util to fetch table records from an indexer or RPC.
+
+  Migrated the `getFunctions` and `getWorldAbi` utils from `@latticexyz/world` to `@latticexyz/store-sync/world` to allow `getFunctions` and `getWorldAbi` to use `getRecords` internally without circular dependencies.
+
+- 22674ad: `getFunctions` now internally uses `fetchLogs` for better handling of block range errors.
+- 09536b0: Adds an experimental feature to automatically generate Solidity libraries from systems, making it easier to perform calls between systems.
+- 275c867: Add a SystemCall.staticcall function that performs a staticcall without executing hooks.
+- Updated dependencies [09536b0]
+- Updated dependencies [88b9daf]
+  - @latticexyz/store@2.2.15
+  - @latticexyz/common@2.2.15
+  - @latticexyz/block-logs-stream@2.2.15
+  - @latticexyz/config@2.2.15
+  - @latticexyz/protocol-parser@2.2.15
+  - @latticexyz/schema-type@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes

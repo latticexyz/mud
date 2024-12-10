@@ -1,5 +1,20 @@
 # @latticexyz/store-indexer
 
+## 2.2.15
+
+### Patch Changes
+
+- Updated dependencies [cd9fd0a]
+- Updated dependencies [b819749]
+- Updated dependencies [9ddc874]
+- Updated dependencies [09536b0]
+- Updated dependencies [88b9daf]
+  - @latticexyz/store-sync@2.2.15
+  - @latticexyz/store@2.2.15
+  - @latticexyz/common@2.2.15
+  - @latticexyz/block-logs-stream@2.2.15
+  - @latticexyz/protocol-parser@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes
