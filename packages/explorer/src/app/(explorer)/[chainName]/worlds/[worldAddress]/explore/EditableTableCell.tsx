@@ -100,7 +100,7 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
       <>
         <Checkbox
           id={`checkbox-${name}`}
-          checked={value === "1"}
+          checked={value === "1" || value === "true"}
           onCheckedChange={(checked) => {
             const newValue = checked ? "1" : "0";
             handleSubmit(newValue);
