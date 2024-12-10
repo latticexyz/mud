@@ -1,5 +1,30 @@
 # @latticexyz/store-sync
 
+## 2.2.15
+
+### Patch Changes
+
+- cd9fd0a: Fixed a bug in `watchLogs` where logs from the buffer were not applied during the initial sync.
+- b819749: Added a `getRecords` util to fetch table records from an indexer or RPC.
+
+  Migrated the `getFunctions` and `getWorldAbi` utils from `@latticexyz/world` to `@latticexyz/store-sync/world` to allow `getFunctions` and `getWorldAbi` to use `getRecords` internally without circular dependencies.
+
+- 9ddc874: Experimental pending logs watcher now reconnects if it loses connection or times out.
+- Updated dependencies [b819749]
+- Updated dependencies [22674ad]
+- Updated dependencies [09536b0]
+- Updated dependencies [88b9daf]
+- Updated dependencies [275c867]
+  - @latticexyz/world@2.2.15
+  - @latticexyz/store@2.2.15
+  - @latticexyz/common@2.2.15
+  - @latticexyz/stash@2.2.15
+  - @latticexyz/block-logs-stream@2.2.15
+  - @latticexyz/config@2.2.15
+  - @latticexyz/protocol-parser@2.2.15
+  - @latticexyz/recs@2.2.15
+  - @latticexyz/schema-type@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes

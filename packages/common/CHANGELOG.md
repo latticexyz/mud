@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.2.15
+
+### Patch Changes
+
+- 88b9daf: Updated Rhodolite chain config.
+  - @latticexyz/schema-type@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes
