@@ -133,7 +133,6 @@ async function startStoreIndexer() {
     env: {
       DEBUG: "mud:*",
       RPC_HTTP_URL: rpcHttpUrl,
-      RPC_WS_URL: rpcWsUrl,
       FOLLOW_BLOCK_TAG: "latest",
       SQLITE_FILENAME: indexerDatabase,
       ...process.env,

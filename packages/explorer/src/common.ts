@@ -80,7 +80,13 @@ const customDefinedChain = constructCustomDefinedChain();
 
 export const internalNamespaces = ["world", "store", "metadata", "puppet", "erc20-puppet", "erc721-puppet"];
 
-export const supportedChains = { anvil, rhodolite, garnet, redstone, customDefinedChain } as const;
+export const supportedChains = {
+  anvil,
+  rhodolite,
+  garnet,
+  redstone,
+  [customDefinedChain.name]: customDefinedChain,
+} as const;
 export type supportedChains = typeof supportedChains;
 
 export type supportedChainName = keyof supportedChains;
