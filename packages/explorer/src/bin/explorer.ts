@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import { rm, writeFile } from "fs/promises";
+import { rm } from "fs/promises";
 import path from "path";
 import process from "process";
 import { fileURLToPath } from "url";
-import { anvil } from "viem/chains";
+// import { anvil } from "viem/chains";
 import yargs from "yargs";
 import { ChildProcess, spawn } from "child_process";
 import { validateChainId } from "../common";
@@ -63,7 +63,11 @@ const argv = yargs(process.argv.slice(2))
     },
   })
   .check((argv) => {
-    // validateChainId(Number(argv.chainId)); // TODO: skip validation if RPC provided
+    // skip chainId validation if custom configs are provided
+    if (argv.rpcHttpUrl || argv.rpcWsUrl) {
+      return true;
+    }
+    validateChainId(Number(argv.chainId));
     return true;
   })
   .parseSync();
@@ -87,11 +91,6 @@ async function startExplorer() {
     NEXT_PUBLIC_CHAIN_NAME: chainName,
     NEXT_PUBLIC_RPC_HTTP_URL: rpcHttpUrl,
     NEXT_PUBLIC_RPC_WS_URL: rpcWsUrl,
-
-    // NEXT_PUBLIC_CHAIN_ID: chainId.toString(),
-    // NEXT_PUBLIC_CHAIN_NAME: chainName,
-    // NEXT_PUBLIC_RPC_HTTP_URL: rpcHttpUrl,
-    // NEXT_PUBLIC_RPC_WS_URL: rpcWsUrl,
   };
 
   if (dev) {

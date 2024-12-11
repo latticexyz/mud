@@ -10,7 +10,7 @@ import { chainIdToName, supportedChainId, supportedChains, validateChainId } fro
 export const dynamic = "force-dynamic";
 
 async function getClient(chainId: supportedChainId) {
-  const chain = supportedChains[chainIdToName[chainId]];
+  const chain = supportedChains[chainIdToName[chainId]]; // TODO: fix types
   const client = createClient({
     chain,
     transport: http(),
@@ -20,7 +20,7 @@ async function getClient(chainId: supportedChainId) {
 }
 
 function getIndexerUrl(chainId: supportedChainId) {
-  const chain = supportedChains[chainIdToName[chainId]];
+  const chain = supportedChains[chainIdToName[chainId]!]; // TODO: fix types
   return "indexerUrl" in chain ? chain.indexerUrl : undefined;
 }
 

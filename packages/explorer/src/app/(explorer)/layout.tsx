@@ -31,16 +31,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const chainId = process.env.CHAIN_ID;
-  // const chainName = process.env.CHAIN_NAME;
-  // const rpcHttpUrl = process.env.RPC_HTTP_URL;
-  // const rpcWsUrl = process.env.RPC_WS_URL;
-
-  // console.log("chainId", chainId);
-  // console.log("chainName", chainName);
-  // console.log("rpcHttpUrl", rpcHttpUrl);
-  // console.log("rpcWsUrl", rpcWsUrl);
-
   return (
     <html lang="en">
       <head>
