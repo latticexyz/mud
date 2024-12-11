@@ -5,6 +5,8 @@ import chalk from "chalk";
 import { WriteFileExistsError, pull } from "../pull/pull";
 import path from "node:path";
 import { build } from "../build";
+import { getChainId } from "viem/actions";
+import { defaultChains } from "../defaultChains";
 
 const options = {
   worldAddress: { type: "string", required: true, desc: "Remote world address" },
@@ -17,6 +19,11 @@ const options = {
   replace: {
     type: "boolean",
     desc: "Replace existing files and directories with data from remote world.",
+  },
+  indexerUrl: {
+    type: "string",
+    desc: "The indexer URL to pull from.",
+    required: false,
   },
 } as const;
 
@@ -44,6 +51,8 @@ const commandModule: CommandModule<Options, Options> = {
           : undefined,
       }),
     });
+    const chainId = await getChainId(client);
+    const indexerUrl = opts.indexerUrl ?? defaultChains.find((chain) => chain.id === chainId)?.indexerUrl;
 
     console.log(chalk.bgBlue(chalk.whiteBright(`\n Pulling MUD config from world at ${opts.worldAddress} \n`)));
     const rootDir = process.cwd();
@@ -53,6 +62,8 @@ const commandModule: CommandModule<Options, Options> = {
         rootDir,
         client,
         worldAddress: opts.worldAddress as Address,
+        indexerUrl,
+        chainId,
         replace: opts.replace,
       });
       await build({ rootDir, config, foundryProfile: profile });
