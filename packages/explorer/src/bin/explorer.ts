@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { rm } from "fs/promises";
+import { rm, writeFile } from "fs/promises";
 import path from "path";
 import process from "process";
 import { fileURLToPath } from "url";
@@ -31,6 +31,24 @@ const argv = yargs(process.argv.slice(2))
       type: "number",
       default: process.env.CHAIN_ID || 31337,
     },
+    chainName: {
+      alias: "n",
+      description: "Chain name",
+      type: "string",
+      default: process.env.CHAIN_NAME || "custom",
+    },
+    rpcHttpUrl: {
+      alias: ["rpc", "rpcUrl", "rpcHttpUrl"],
+      description: "RPC HTTP URL",
+      type: "string",
+      default: process.env.RPC_HTTP_URL || "http://127.0.0.1:8545",
+    },
+    rpcWsUrl: {
+      alias: ["rpcWs", "rpcWsUrl"],
+      description: "RPC WebSocket URL",
+      type: "string",
+      default: process.env.RPC_WS_URL || "ws://127.0.0.1:8545",
+    },
     indexerDatabase: {
       alias: "i",
       description: "Path to the indexer database",
@@ -45,12 +63,12 @@ const argv = yargs(process.argv.slice(2))
     },
   })
   .check((argv) => {
-    validateChainId(Number(argv.chainId));
+    // validateChainId(Number(argv.chainId)); // TODO: skip validation if RPC provided
     return true;
   })
   .parseSync();
 
-const { port, hostname, chainId, indexerDatabase, dev } = argv;
+const { port, hostname, chainId, chainName, rpcHttpUrl, rpcWsUrl, indexerDatabase, dev } = argv;
 const indexerDatabasePath = path.join(packageRoot, indexerDatabase);
 
 let explorerProcess: ChildProcess;
@@ -60,7 +78,20 @@ async function startExplorer() {
   const env = {
     ...process.env,
     CHAIN_ID: chainId.toString(),
+    CHAIN_NAME: chainName,
+    RPC_HTTP_URL: rpcHttpUrl,
+    RPC_WS_URL: rpcWsUrl,
     INDEXER_DATABASE: indexerDatabasePath,
+
+    NEXT_PUBLIC_CHAIN_ID: chainId.toString(),
+    NEXT_PUBLIC_CHAIN_NAME: chainName,
+    NEXT_PUBLIC_RPC_HTTP_URL: rpcHttpUrl,
+    NEXT_PUBLIC_RPC_WS_URL: rpcWsUrl,
+
+    // NEXT_PUBLIC_CHAIN_ID: chainId.toString(),
+    // NEXT_PUBLIC_CHAIN_NAME: chainName,
+    // NEXT_PUBLIC_RPC_HTTP_URL: rpcHttpUrl,
+    // NEXT_PUBLIC_RPC_WS_URL: rpcWsUrl,
   };
 
   if (dev) {
@@ -87,20 +118,22 @@ async function startExplorer() {
 }
 
 async function startStoreIndexer() {
-  if (chainId !== anvil.id) {
-    console.log("Skipping SQLite indexer for non-anvil chain ID", chainId);
-    return;
-  }
+  // TODO: make conditional skipping
+  // if (chainId !== anvil.id) {
+  //   console.log("Skipping SQLite indexer for non-anvil chain ID", chainId);
+  //   return;
+  // }
 
   await rm(indexerDatabasePath, { recursive: true, force: true });
 
-  console.log("Running SQLite indexer for anvil...");
+  console.log("Running SQLite indexer for anvil..."); // TODO: running for custom chain
   indexerProcess = spawn("sh", ["node_modules/.bin/sqlite-indexer"], {
     cwd: packageRoot,
     stdio: "inherit",
     env: {
       DEBUG: "mud:*",
-      RPC_HTTP_URL: "http://127.0.0.1:8545",
+      RPC_HTTP_URL: rpcHttpUrl,
+      RPC_WS_URL: rpcWsUrl,
       FOLLOW_BLOCK_TAG: "latest",
       SQLITE_FILENAME: indexerDatabase,
       ...process.env,

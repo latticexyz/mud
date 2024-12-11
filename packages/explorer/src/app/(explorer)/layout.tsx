@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PublicEnvScript } from "next-runtime-env";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { Theme } from "@radix-ui/themes";
@@ -30,8 +31,21 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // const chainId = process.env.CHAIN_ID;
+  // const chainName = process.env.CHAIN_NAME;
+  // const rpcHttpUrl = process.env.RPC_HTTP_URL;
+  // const rpcWsUrl = process.env.RPC_WS_URL;
+
+  // console.log("chainId", chainId);
+  // console.log("chainName", chainName);
+  // console.log("rpcHttpUrl", rpcHttpUrl);
+  // console.log("rpcWsUrl", rpcWsUrl);
+
   return (
     <html lang="en">
+      <head>
+        <PublicEnvScript />
+      </head>
       <body className={`${inter.variable} ${jetbrains.variable} dark`}>
         <Theme appearance="dark">
           <div className="container">{children}</div>

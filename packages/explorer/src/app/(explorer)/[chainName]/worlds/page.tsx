@@ -52,9 +52,14 @@ type Props = {
 };
 
 export default async function WorldsPage({ params: { chainName } }: Props) {
-  const worlds = await fetchWorlds(chainName);
-  if (worlds.length === 1) {
-    return redirect(`/${chainName}/worlds/${worlds[0]}`);
-  }
-  return <WorldsForm worlds={worlds} />;
+  // TODO: validate chain here as well
+
+  // const worlds = await fetchWorlds(chainName);
+  // if (worlds.length === 1) {
+  //   return redirect(`/${chainName}/worlds/${worlds[0]}`);
+  // }
+  // return <WorldsForm worlds={worlds} />;
+
+  // return <div>Hello</div>;
+  return <WorldsForm worlds={[]} />; // TODO: adjust
 }
