@@ -57,8 +57,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
         cell: ({ row }) => {
           const namespace = table?.namespace;
           const keySchema = getKeySchema(table);
-          const value = row.getValue(name)?.toString();
-
+          const value = row.getValue(name);
           if (!table || Object.keys(keySchema).includes(name) || internalNamespaces.includes(namespace)) {
             return value;
           }

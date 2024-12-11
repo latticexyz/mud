@@ -9,6 +9,7 @@ export default defineConfig((opts) => ({
     "src/recs/index.ts",
     "src/trpc-indexer/index.ts",
     "src/indexer-client/index.ts",
+    "src/world/index.ts",
     "src/zustand/index.ts",
     "src/exports/internal.ts",
   ],

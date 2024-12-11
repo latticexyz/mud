@@ -18,6 +18,7 @@ import { kmsKeyToAccount } from "@latticexyz/common/kms";
 import { configToModules } from "./deploy/configToModules";
 import { findContractArtifacts } from "@latticexyz/world/node";
 import { enableAutomine } from "./utils/enableAutomine";
+import { defaultChains } from "./defaultChains";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the MUD config file" },
@@ -47,6 +48,11 @@ export const deployOptions = {
   kms: {
     type: "boolean",
     desc: "Deploy the World with an AWS KMS key instead of local private key.",
+  },
+  indexerUrl: {
+    type: "string",
+    desc: "The indexer URL to use.",
+    required: false,
   },
 } as const satisfies Record<string, Options>;
 
@@ -136,6 +142,9 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     account,
   });
 
+  const chainId = await getChainId(client);
+  const indexerUrl = opts.indexerUrl ?? defaultChains.find((chain) => chain.id === chainId)?.indexerUrl;
+
   console.log("Deploying from", client.account.address);
 
   // Attempt to enable automine for the duration of the deploy. Noop if automine is not available.
@@ -153,6 +162,8 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     libraries,
     modules,
     artifacts,
+    indexerUrl,
+    chainId,
   });
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
     await postDeploy(
@@ -176,7 +187,6 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   };
 
   if (opts.saveDeployment) {
-    const chainId = await getChainId(client);
     const deploysDir = path.join(config.deploy.deploysDirectory, chainId.toString());
     mkdirSync(deploysDir, { recursive: true });
     writeFileSync(path.join(deploysDir, "latest.json"), JSON.stringify(deploymentInfo, null, 2));
