@@ -55,6 +55,16 @@ export const getChain = (chainName: supportedChainName | string) => {
   return null;
 };
 
+export const getChainById = (chainId: supportedChainId | number) => {
+  if (chainId === customChain?.id) {
+    return customChain;
+  } else if (chainId in supportedChains) {
+    // @ts-expect-error ignore for now TODO: fix types
+    return supportedChains[chainId];
+  }
+  return null;
+};
+
 export const chainIdToName = Object.fromEntries(
   Object.entries(supportedChains).map(([chainName, chain]) => [chain.id, chainName]),
 ) as Record<supportedChainId, supportedChainName>;

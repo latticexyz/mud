@@ -5,12 +5,12 @@ import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
 import { helloStoreEvent } from "@latticexyz/store";
 import { getWorldAbi } from "@latticexyz/store-sync/world";
 import { helloWorldEvent } from "@latticexyz/world";
-import { chainIdToName, supportedChainId, supportedChains, validateChainId } from "../../../../common";
+import { getChainById, supportedChainId, validateChainId } from "../../../../common";
 
 export const dynamic = "force-dynamic";
 
 async function getClient(chainId: supportedChainId) {
-  const chain = supportedChains[chainIdToName[chainId]]; // TODO: fix types
+  const chain = getChainById(chainId);
   const client = createClient({
     chain,
     transport: http(),
@@ -20,7 +20,7 @@ async function getClient(chainId: supportedChainId) {
 }
 
 function getIndexerUrl(chainId: supportedChainId) {
-  const chain = supportedChains[chainIdToName[chainId]!]; // TODO: fix types
+  const chain = getChainById(chainId);
   return "indexerUrl" in chain ? chain.indexerUrl : undefined;
 }
 

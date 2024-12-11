@@ -125,7 +125,7 @@ async function startStoreIndexer() {
 
   await rm(indexerDatabasePath, { recursive: true, force: true });
 
-  console.log("Running SQLite indexer for anvil..."); // TODO: running for custom chain
+  console.log("Running SQLite indexer..."); // TODO: running for custom chain
   indexerProcess = spawn("sh", ["node_modules/.bin/sqlite-indexer"], {
     cwd: packageRoot,
     stdio: "inherit",
