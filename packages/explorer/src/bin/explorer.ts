@@ -55,6 +55,12 @@ const argv = yargs(process.argv.slice(2))
       type: "string",
       default: process.env.INDEXER_DATABASE || "indexer.db",
     },
+    indexerPort: {
+      alias: "ip",
+      description: "Port number for the indexer",
+      type: "number",
+      default: process.env.INDEXER_PORT || 3001,
+    },
     dev: {
       alias: "D",
       description: "Run in development mode",
@@ -72,7 +78,7 @@ const argv = yargs(process.argv.slice(2))
   })
   .parseSync();
 
-const { port, hostname, chainId, chainName, rpcHttpUrl, rpcWsUrl, indexerDatabase, dev } = argv;
+const { port, hostname, chainId, chainName, rpcHttpUrl, rpcWsUrl, indexerDatabase, indexerPort, dev } = argv;
 const indexerDatabasePath = path.join(packageRoot, indexerDatabase);
 
 let explorerProcess: ChildProcess;
@@ -134,6 +140,7 @@ async function startStoreIndexer() {
       RPC_HTTP_URL: rpcHttpUrl,
       FOLLOW_BLOCK_TAG: "latest",
       SQLITE_FILENAME: indexerDatabase,
+      PORT: indexerPort.toString(),
       ...process.env,
     },
   });
