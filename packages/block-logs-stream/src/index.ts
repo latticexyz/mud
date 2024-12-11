@@ -3,3 +3,5 @@ export * from "./createBlockStream";
 export * from "./fetchBlockLogs";
 export * from "./fetchLogs";
 export * from "./groupLogsByBlockNumber";
+export * from "./getLogsFromLoadBalancedRpc";
+export * from "./common";

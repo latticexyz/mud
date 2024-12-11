@@ -1,5 +1,5 @@
 import { storeEventsAbi } from "@latticexyz/store";
-import { GetTransactionReceiptErrorType, Hex } from "viem";
+import { GetTransactionReceiptErrorType, Hex, createPublicClient, http } from "viem";
 import {
   StorageAdapter,
   StorageAdapterBlock,
@@ -59,7 +59,6 @@ type CreateStoreSyncOptions = SyncOptions & {
 export async function createStoreSync({
   storageAdapter,
   onProgress,
-  publicClient,
   address,
   filters: initialFilters = [],
   tableIds = [],
@@ -69,7 +68,11 @@ export async function createStoreSync({
   initialState,
   initialBlockLogs,
   indexerUrl: initialIndexerUrl,
+  ...opts
 }: CreateStoreSyncOptions): Promise<SyncResult> {
+  const publicClient =
+    "publicClient" in opts ? opts.publicClient : createPublicClient({ transport: http(opts.httpRpcUrl) });
+
   const filters: SyncFilter[] =
     initialFilters.length || tableIds.length
       ? [...initialFilters, ...tableIds.map((tableId) => ({ tableId })), ...defaultFilters]
@@ -257,7 +260,6 @@ export async function createStoreSync({
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
     concatMap((range) => {
       const storedBlocks = fetchAndStoreLogs({
-        publicClient,
         address,
         events: storeEventsAbi,
         maxBlockRange,
@@ -267,6 +269,7 @@ export async function createStoreSync({
         toBlock: range.endBlock,
         logFilter,
         storageAdapter,
+        ...opts,
       });
 
       return from(storedBlocks);
