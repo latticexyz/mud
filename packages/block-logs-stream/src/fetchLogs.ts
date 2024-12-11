@@ -3,6 +3,8 @@ import { bigIntMax, bigIntMin, wait } from "@latticexyz/common/utils";
 import { debug } from "./debug";
 import { getAction } from "viem/utils";
 import { getLogs as viem_getLogs } from "viem/actions";
+import { getLogsFromLoadBalancedRpc } from "./getLogsFromLoadBalancedRpc";
+import { blockNotFoundMessage } from "./common";
 
 export type FetchLogsOptions<abiEvents extends readonly AbiEvent[]> = {
   /**
@@ -38,6 +40,25 @@ export type FetchLogsOptions<abiEvents extends readonly AbiEvent[]> = {
        * [0]: https://viem.sh/docs/clients/public.html
        */
       publicClient: Client;
+      /**
+       * Optional contract address(es) to fetch logs for.
+       */
+      address?: Address | Address[];
+      /**
+       * Events to fetch logs for.
+       */
+      events: abiEvents;
+    }
+  | {
+      /**
+       * Explicitly handle potentially unsynced load balanced RPCs by using a batch call with `eth_getLogs` and `eth_getBlockByNumber`.
+       * See https://indexsupply.com/shovel/docs/#unsynchronized-ethereum-nodes
+       */
+      handleUnsyncedLoadBalancedRpc: true;
+      /**
+       * The HTTP URL of the load balanced RPC.
+       */
+      rpcUrl: string;
       /**
        * Optional contract address(es) to fetch logs for.
        */
@@ -89,6 +110,8 @@ const BLOCK_RANGE_ERRORS = [
   "query exceeds max results",
 ];
 
+const UNSYNCED_RPC_ERRORS = [blockNotFoundMessage];
+
 /**
  * An asynchronous generator function that fetches logs from the blockchain in a range of blocks.
  *
@@ -113,12 +136,21 @@ export async function* fetchLogs<abiEvents extends readonly AbiEvent[]>({
 }: FetchLogsOptions<abiEvents>): AsyncGenerator<FetchLogsResult<abiEvents>> {
   const getLogs =
     opts.getLogs ??
-    (async (blockRange): Promise<GetLogsReturnType<undefined, abiEvents, true, BlockNumber, BlockNumber>> =>
-      getAction(
-        opts.publicClient,
-        viem_getLogs,
-        "getLogs",
-      )({ ...blockRange, address: opts.address, events: opts.events, strict: true }));
+    (opts.handleUnsyncedLoadBalancedRpc
+      ? async (blockRange): Promise<GetLogsReturnType<undefined, abiEvents, true, BlockNumber, BlockNumber>> =>
+          getLogsFromLoadBalancedRpc({
+            ...blockRange,
+            rpcUrl: opts.rpcUrl,
+            address: opts.address,
+            events: opts.events,
+            strict: true,
+          })
+      : async (blockRange): Promise<GetLogsReturnType<undefined, abiEvents, true, BlockNumber, BlockNumber>> =>
+          getAction(
+            opts.publicClient,
+            viem_getLogs,
+            "getLogs",
+          )({ ...blockRange, address: opts.address, events: opts.events, strict: true }));
 
   let fromBlock = initialFromBlock;
   let blockRange = bigIntMin(maxBlockRange, initialToBlock - fromBlock);
@@ -155,6 +187,12 @@ export async function* fetchLogs<abiEvents extends readonly AbiEvent[]>({
           maxBlockRange = blockRange;
         }
         debug(`got block range error, retrying with ${blockRange} blocks, ${maxBlockRange} max`);
+        continue;
+      }
+
+      if (opts.handleUnsyncedLoadBalancedRpc && UNSYNCED_RPC_ERRORS.some((e) => error.message.includes(e))) {
+        debug(`got unsynced rpc error, retrying`);
+        await wait(1000);
         continue;
       }
 
