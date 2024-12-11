@@ -14,7 +14,7 @@ import {
   toHex,
   Block,
 } from "viem";
-import { blockNotFoundMessage } from "./common";
+import { HttpRpcUrl, blockNotFoundMessage } from "./common";
 
 /**
  * Mostly equivalent to viem's `getLogs` action, but using a batch rpc call to check if the RPC has the requested block.
@@ -30,7 +30,7 @@ export async function getLogsFromLoadBalancedRpc<
   fromBlock extends BlockNumber | BlockTag | undefined = undefined,
   toBlock extends BlockNumber | BlockTag | undefined = undefined,
 >({
-  rpcUrl,
+  httpRpcUrl,
   address,
   fromBlock,
   toBlock,
@@ -38,9 +38,9 @@ export async function getLogsFromLoadBalancedRpc<
   events: events_,
   args,
   strict: strict_,
-}: Omit<GetLogsParameters<abiEvent, abiEvents, strict, fromBlock, toBlock>, "blockHash"> & { rpcUrl: string }): Promise<
-  GetLogsReturnType<abiEvent, abiEvents, strict, fromBlock, toBlock>
-> {
+}: Omit<GetLogsParameters<abiEvent, abiEvents, strict, fromBlock, toBlock>, "blockHash"> & {
+  httpRpcUrl: HttpRpcUrl;
+}): Promise<GetLogsReturnType<abiEvent, abiEvents, strict, fromBlock, toBlock>> {
   const strict = strict_ ?? false;
   const events = events_ ?? (event ? [event] : undefined);
 
@@ -80,7 +80,7 @@ export async function getLogsFromLoadBalancedRpc<
     },
   ];
 
-  const results: [Block | undefined, RpcLog[]] = await fetch(rpcUrl, {
+  const results: [Block | undefined, RpcLog[]] = await fetch(httpRpcUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

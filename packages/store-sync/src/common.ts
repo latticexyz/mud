@@ -13,6 +13,7 @@ import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { Table as ConfigTable, Schema } from "@latticexyz/config";
 import { configToTables } from "./configToTables";
+import { HttpRpcUrl } from "@latticexyz/block-logs-stream";
 
 export const mudTables = {
   ...configToTables(storeConfig),
@@ -67,12 +68,6 @@ export type SyncFilter = {
 
 export type SyncOptions = {
   /**
-   * [viem `PublicClient`][0] used for fetching logs from the RPC.
-   *
-   * [0]: https://viem.sh/docs/clients/public.html
-   */
-  publicClient: PublicClient;
-  /**
    * MUD Store/World contract address
    */
   address?: Address;
@@ -115,7 +110,27 @@ export type SyncOptions = {
     blockNumber: bigint;
     logs: readonly StorageAdapterLog[];
   };
-};
+} & (
+  | {
+      /**
+       * [viem `PublicClient`][0] used for fetching logs from the RPC.
+       *
+       * [0]: https://viem.sh/docs/clients/public.html
+       */
+      publicClient: PublicClient;
+    }
+  | {
+      /**
+       * Explicitly handle potentially unsynced load balanced RPCs by using a batch call with `eth_getLogs` and `eth_getBlockByNumber`.
+       * See https://indexsupply.com/shovel/docs/#unsynchronized-ethereum-nodes
+       */
+      handleUnsyncedLoadBalancedRpc: true;
+      /**
+       * The HTTP URL of the load balanced RPC.
+       */
+      httpRpcUrl: HttpRpcUrl;
+    }
+);
 
 export type WaitForTransactionResult = Pick<TransactionReceipt, "blockNumber" | "status" | "transactionHash">;
 

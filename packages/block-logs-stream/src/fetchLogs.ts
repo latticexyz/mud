@@ -4,7 +4,7 @@ import { debug } from "./debug";
 import { getAction } from "viem/utils";
 import { getLogs as viem_getLogs } from "viem/actions";
 import { getLogsFromLoadBalancedRpc } from "./getLogsFromLoadBalancedRpc";
-import { blockNotFoundMessage } from "./common";
+import { HttpRpcUrl, blockNotFoundMessage } from "./common";
 
 export type FetchLogsOptions<abiEvents extends readonly AbiEvent[]> = {
   /**
@@ -58,7 +58,7 @@ export type FetchLogsOptions<abiEvents extends readonly AbiEvent[]> = {
       /**
        * The HTTP URL of the load balanced RPC.
        */
-      rpcUrl: string;
+      httpRpcUrl: HttpRpcUrl;
       /**
        * Optional contract address(es) to fetch logs for.
        */
@@ -140,7 +140,7 @@ export async function* fetchLogs<abiEvents extends readonly AbiEvent[]>({
       ? async (blockRange): Promise<GetLogsReturnType<undefined, abiEvents, true, BlockNumber, BlockNumber>> =>
           getLogsFromLoadBalancedRpc({
             ...blockRange,
-            rpcUrl: opts.rpcUrl,
+            httpRpcUrl: opts.httpRpcUrl,
             address: opts.address,
             events: opts.events,
             strict: true,
