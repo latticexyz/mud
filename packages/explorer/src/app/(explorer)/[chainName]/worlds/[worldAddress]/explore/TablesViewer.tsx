@@ -158,7 +158,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
                         const keyHash = keccak256(encodeAbiParameters([{ type: "bytes32[]" }], [keySchemaValues]));
                         const crosschainRecord = crosschainRecords.rows.find((record) => record.keyHash === keyHash);
 
-                        if (crosschainRecord && crosschainRecord.owned) {
+                        if (crosschainRecord && !crosschainRecord.owned) {
                           return (
                             <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="relative">
                               {row.getVisibleCells().map((cell) => (
