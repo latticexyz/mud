@@ -29,13 +29,7 @@ const initialRows: TData["rows"] = [];
 
 export function TablesViewer({ table, query }: { table?: TableType; query?: string }) {
   const { data: tableData, isLoading: isTDataLoading, isFetched, isError, error } = useTableDataQuery({ table, query });
-  const {
-    data: crosschainRecords,
-    isLoading: isCrosschainRecordsLoading,
-    isFetched: isCrosschainRecordsFetched,
-    isError: isCrosschainRecordsError,
-    error: crosschainRecordsError,
-  } = useCrosschainRecordsQuery(table);
+  const { data: crosschainRecords } = useCrosschainRecordsQuery(table);
   const isLoading = isTDataLoading || !isFetched;
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
