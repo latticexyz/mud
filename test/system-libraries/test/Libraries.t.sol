@@ -14,7 +14,7 @@ import { SYSTEMBOUND_DELEGATION } from "@latticexyz/world-modules/src/modules/st
 
 import { Value } from "../src/namespaces/a/codegen/tables/Value.sol";
 import { AddressValue } from "../src/namespaces/a/codegen/tables/AddressValue.sol";
-import { aSystem } from "../src/namespaces/a/codegen/systems/ASystemLib.sol";
+import { aSystem, ASystemThing } from "../src/namespaces/a/codegen/systems/ASystemLib.sol";
 import { bSystem } from "../src/namespaces/b/codegen/systems/BSystemLib.sol";
 import { rootSystem } from "../src/namespaces/root/codegen/systems/RootSystemLib.sol";
 
@@ -26,14 +26,16 @@ contract LibrariesTest is MudTest {
 
   function testCanCallSystemWithLibrary() public {
     uint256 value = 0xDEADBEEF;
-    aSystem.setValue(value);
+    ASystemThing memory thing = ASystemThing(value);
+    aSystem.setValue(thing);
     assertEq(Value.get(), value);
     assertEq(aSystem.getValue(), value);
   }
 
   function testCanCallSystemFromOtherSystem() public {
     uint256 value = 0xDEADBEEF;
-    bSystem.setValueInA(value);
+    ASystemThing memory thing = ASystemThing(value);
+    bSystem.setValueInA(thing);
     assertEq(Value.get(), value);
     assertEq(bSystem.getValueFromA(), value);
   }
@@ -56,8 +58,9 @@ contract LibrariesTest is MudTest {
 
   function testCanCallFromRootSystemWithLibrary() public {
     uint256 value = 0xDEADBEEF;
+    ASystemThing memory thing = ASystemThing(value);
     // internally, rootSystem uses callAsRoot to call aSystem
-    rootSystem.setValueInA(value);
+    rootSystem.setValueInA(thing);
     assertEq(Value.get(), value);
     assertEq(aSystem.getValue(), value);
     assertEq(rootSystem.getValueFromA(), value);
