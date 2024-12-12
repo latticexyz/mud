@@ -501,6 +501,9 @@ importers:
       '@monaco-editor/react':
         specifier: ^4.6.0
         version: 4.6.0(monaco-editor@0.52.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@next/env':
+        specifier: ^15.1.0
+        version: 15.1.0
       '@radix-ui/react-checkbox':
         specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@18.2.7)(@types/react@18.2.22)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -558,6 +561,9 @@ importers:
       next:
         specifier: 14.2.5
         version: 14.2.5(@babel/core@7.25.2)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      next-runtime-env:
+        specifier: ^3.2.2
+        version: 3.2.2(next@14.2.5(@babel/core@7.25.2)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)
       node-sql-parser:
         specifier: ^5.3.3
         version: 5.3.3
@@ -836,10 +842,10 @@ importers:
         version: 8.3.4
       jest:
         specifier: ^29.3.1
-        version: 29.5.0(@types/node@18.19.50)
+        version: 29.5.0(@types/node@20.12.12)
       ts-jest:
         specifier: ^29.0.5
-        version: 29.0.5(@babel/core@7.21.4)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.21.4))(jest@29.5.0(@types/node@18.19.50))(typescript@5.4.2)
+        version: 29.0.5(@babel/core@7.25.2)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.25.2))(jest@29.5.0(@types/node@20.12.12))(typescript@5.4.2)
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
@@ -1252,10 +1258,10 @@ importers:
         version: 27.4.1
       jest:
         specifier: ^29.3.1
-        version: 29.5.0(@types/node@20.12.12)
+        version: 29.5.0(@types/node@18.19.50)
       ts-jest:
         specifier: ^29.0.5
-        version: 29.0.5(@babel/core@7.25.2)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.25.2))(jest@29.5.0(@types/node@20.12.12))(typescript@5.4.2)
+        version: 29.0.5(@babel/core@7.21.4)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.21.4))(jest@29.5.0(@types/node@18.19.50))(typescript@5.4.2)
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
@@ -1323,6 +1329,46 @@ importers:
       glob:
         specifier: ^10.4.2
         version: 10.4.2
+      solhint:
+        specifier: ^3.3.7
+        version: 3.3.7
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
+      vitest:
+        specifier: 0.34.6
+        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.33.0)
+
+  packages/world-module-crosschain:
+    dependencies:
+      '@latticexyz/schema-type':
+        specifier: workspace:*
+        version: link:../schema-type
+      '@latticexyz/store':
+        specifier: workspace:*
+        version: link:../store
+      '@latticexyz/world':
+        specifier: workspace:*
+        version: link:../world
+      optimism:
+        specifier: https://github.com/ethereum-optimism/optimism#ecdb788a18022d4b78d6288c1f6ec94c152d02f8
+        version: optimism#ecdb788a18022d4b78d6288c1f6ec94c152d02f8@https://codeload.github.com/ethereum-optimism/optimism/tar.gz/ecdb788a18022d4b78d6288c1f6ec94c152d02f8
+    devDependencies:
+      '@latticexyz/abi-ts':
+        specifier: workspace:*
+        version: link:../abi-ts
+      '@latticexyz/gas-report':
+        specifier: workspace:*
+        version: link:../gas-report
+      '@types/node':
+        specifier: ^18.15.11
+        version: 18.19.50
+      ds-test:
+        specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
+        version: https://codeload.github.com/dapphub/ds-test/tar.gz/e282159d5170298eb2455a6c05280ab5a73a4ef0
+      forge-std:
+        specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
+        version: https://codeload.github.com/foundry-rs/forge-std/tar.gz/74cfb77e308dd188d2f58864aaf44963ae6b88b1
       solhint:
         specifier: ^3.3.7
         version: 3.3.7
@@ -3675,6 +3721,9 @@ packages:
 
   '@next/env@14.2.5':
     resolution: {integrity: sha512-/zZGkrTOsraVfYjGP8uM0p6r0BDT6xWpkjdVbcz66PJVSpwXX3yNiRycxAuDfBKGWBrZBXRuK/YVlkNgxHGwmA==}
+
+  '@next/env@15.1.0':
+    resolution: {integrity: sha512-UcCO481cROsqJuszPPXJnb7GGuLq617ve4xuAyyNG4VSSocJNtMU5Fsx+Lp6mlN8c7W58aZLc5y6D/2xNmaK+w==}
 
   '@next/eslint-plugin-next@14.2.3':
     resolution: {integrity: sha512-L3oDricIIjgj1AVnRdRor21gI7mShlSwU/1ZGHmqM3LzHhXXhdkrfeNY5zif25Bi5Dd7fiJHsbhoZCHfXYvlAw==}
@@ -6895,6 +6944,7 @@ packages:
 
   eciesjs@0.3.20:
     resolution: {integrity: sha512-Rz5AB8v9+xmMdS/R7RzWPe/R8DP5QfyrkA6ce4umJopoB5su2H2aDy/GcgIfwhmCwxnBkqGf/PbGzmKcGtIgGA==}
+    deprecated: Please upgrade to v0.4+
 
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
@@ -9048,6 +9098,12 @@ packages:
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
+  next-runtime-env@3.2.2:
+    resolution: {integrity: sha512-S5S6NxIf3XeaVc9fLBN2L5Jzu+6dLYCXeOaPQa1RzKRYlG2BBayxXOj6A4VsciocyNkJMazW1VAibtbb1/ZjAw==}
+    peerDependencies:
+      next: ^14
+      react: ^18
+
   next-tick@1.1.0:
     resolution: {integrity: sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==}
 
@@ -9313,6 +9369,10 @@ packages:
 
   openurl@1.1.1:
     resolution: {integrity: sha512-d/gTkTb1i1GKz5k3XE3XFV/PxQ1k45zDqGP2OA7YhgsaLoqm6qRvARAZOFer1fcXritWlGBRCu/UgeS4HAnXAA==}
+
+  optimism#ecdb788a18022d4b78d6288c1f6ec94c152d02f8@https://codeload.github.com/ethereum-optimism/optimism/tar.gz/ecdb788a18022d4b78d6288c1f6ec94c152d02f8:
+    resolution: {tarball: https://codeload.github.com/ethereum-optimism/optimism/tar.gz/ecdb788a18022d4b78d6288c1f6ec94c152d02f8}
+    version: 0.0.0
 
   optionator@0.8.3:
     resolution: {integrity: sha512-+IW9pACdk3XWmmTXG8m3upGUJst5XRGzxMRjXzAuJ1XnIFNvfhjjIuYkDvysnPQ7qzqVzLt78BCruntqRhWQbA==}
@@ -14526,6 +14586,8 @@ snapshots:
 
   '@next/env@14.2.5': {}
 
+  '@next/env@15.1.0': {}
+
   '@next/eslint-plugin-next@14.2.3':
     dependencies:
       glob: 10.3.10
@@ -18907,7 +18969,7 @@ snapshots:
       debug: 4.3.7
       enhanced-resolve: 5.17.1
       eslint: 8.57.0
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0))(eslint@8.57.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
       eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.5
@@ -18919,7 +18981,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-module-utils@2.8.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0))(eslint@8.57.0):
+  eslint-module-utils@2.8.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
@@ -18940,7 +19002,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0))(eslint@8.57.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.1.1(eslint@8.57.0)(typescript@5.4.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
       hasown: 2.0.2
       is-core-module: 2.15.0
       is-glob: 4.0.3
@@ -21526,6 +21588,11 @@ snapshots:
 
   neo-async@2.6.2: {}
 
+  next-runtime-env@3.2.2(next@14.2.5(@babel/core@7.25.2)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0):
+    dependencies:
+      next: 14.2.5(@babel/core@7.25.2)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      react: 18.2.0
+
   next-tick@1.1.0: {}
 
   next@14.2.5(@babel/core@7.25.2)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
@@ -21795,6 +21862,8 @@ snapshots:
       is-wsl: 2.2.0
 
   openurl@1.1.1: {}
+
+  optimism#ecdb788a18022d4b78d6288c1f6ec94c152d02f8@https://codeload.github.com/ethereum-optimism/optimism/tar.gz/ecdb788a18022d4b78d6288c1f6ec94c152d02f8: {}
 
   optionator@0.8.3:
     dependencies:

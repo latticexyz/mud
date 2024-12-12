@@ -1,7 +1,7 @@
 import { useParams } from "next/navigation";
 import { AbiFunction, Hex } from "viem";
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
-import { supportedChains, validateChainName } from "../../../common";
+import { getChain, validateChainName } from "../../../common";
 
 type AbiQueryResult = {
   abi: AbiFunction[];
@@ -11,7 +11,7 @@ type AbiQueryResult = {
 export function useWorldAbiQuery(): UseQueryResult<AbiQueryResult> {
   const { chainName, worldAddress } = useParams();
   validateChainName(chainName);
-  const { id: chainId } = supportedChains[chainName];
+  const { id: chainId } = getChain(chainName);
 
   return useQuery({
     queryKey: ["worldAbi", chainName, worldAddress],
