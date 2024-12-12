@@ -7,7 +7,7 @@ import { aSystem } from "../a/codegen/systems/ASystemLib.sol";
 
 contract BSystem is System {
   function setValueInA(ASystemThing memory value) external {
-    aSystem.setValue(value.a);
+    aSystem.setValue(value);
   }
 
   function getValueFromA() external view returns (uint256) {
