@@ -6,24 +6,37 @@ import { useChain } from "../hooks/useChain";
 import { DozerResponse } from "../types";
 import { indexerForChainId } from "../utils/indexerForChainId";
 
-type Props = {
-  table: Table | undefined;
-  query: string | undefined;
-};
-
 export type TDataRow = Record<string, unknown>;
 export type TData = {
   columns: string[];
   rows: TDataRow[];
 };
 
-export function useTableDataQuery({ table, query }: Props) {
+export function useCrosschainRecordsQuery(viewedTable: Table | undefined) {
   const { chainName, worldAddress } = useParams();
   const { id: chainId } = useChain();
-  const decodedQuery = decodeURIComponent(query ?? "");
+
+  const tableName = "crosschain__crosschain_record";
+  const decodedQuery = `SELECT * FROM "${worldAddress}__${tableName}"`;
+  const table = {
+    tableId: "0x746263726f7373636861696e0000000043726f7373636861696e5265636f7264",
+    name: "CrosschainRecord",
+    namespace: "crosschain",
+    label: "CrosschainRecord",
+    namespaceLabel: "crosschain",
+    type: "table",
+    schema: {
+      tableId: { type: "bytes32", internalType: "bytes32" },
+      keyHash: { type: "bytes32", internalType: "bytes32" },
+      blockNumber: { type: "uint256", internalType: "uint256" },
+      timestamp: { type: "uint256", internalType: "uint256" },
+      owned: { type: "bool", internalType: "bool" },
+    },
+    key: ["tableId", "keyHash"],
+  } as const;
 
   return useQuery<DozerResponse, Error, TData | undefined>({
-    queryKey: ["tableData", chainName, worldAddress, decodedQuery],
+    queryKey: ["crosschainRecords", chainName, worldAddress, decodedQuery],
     queryFn: async () => {
       const indexer = indexerForChainId(chainId);
       const response = await fetch(indexer.url, {
@@ -47,7 +60,7 @@ export function useTableDataQuery({ table, query }: Props) {
       return data;
     },
     select: (data: DozerResponse): TData | undefined => {
-      if (!table || !data?.result?.[0]) return undefined;
+      if (!data?.result?.[0]) return undefined;
 
       const indexer = indexerForChainId(chainId);
       const result = data.result[0];
@@ -62,24 +75,27 @@ export function useTableDataQuery({ table, query }: Props) {
         })
         .filter((key) => schema.includes(key));
 
-      const rows = result.slice(1).map((row) =>
-        Object.fromEntries(
-          columns.map((key, index) => {
-            const value = row[index];
-            const type = table?.schema[key];
-            if (type?.type === "bool") {
-              return [key, indexer.type === "sqlite" ? value === "1" : value];
-            }
-            return [key, value];
-          }),
-        ),
-      );
+      const rows = result
+        .slice(1)
+        .map((row) =>
+          Object.fromEntries(
+            columns.map((key, index) => {
+              const value = row[index];
+              const type = table.schema[key as keyof typeof table.schema];
+              if (type?.type === "bool") {
+                return [key, indexer.type === "sqlite" ? value === "1" : value];
+              }
+              return [key, value];
+            }),
+          ),
+        )
+        .filter((row) => row.tableId === viewedTable?.tableId);
+
       return {
         columns,
         rows,
       };
     },
-    enabled: !!table && !!query,
     refetchInterval: (query) => {
       if (query.state.error) return false;
       return 500;
