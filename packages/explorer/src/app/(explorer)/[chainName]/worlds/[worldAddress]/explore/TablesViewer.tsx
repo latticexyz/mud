@@ -1,4 +1,4 @@
-import { ArrowUpDownIcon, LoaderIcon, TriangleAlertIcon } from "lucide-react";
+import { ArrowUpDownIcon, LoaderIcon, LockIcon, TriangleAlertIcon } from "lucide-react";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { Hex, encodeAbiParameters, keccak256, pad } from "viem";
 import { useMemo } from "react";
@@ -160,7 +160,11 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
                                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                 </TableCell>
                               ))}
-                              <td className="pointer-events-none absolute inset-0 bg-black/30 backdrop-blur-sm" />
+                              <td className="pointer-events-none absolute inset-0 bg-black/30 backdrop-blur-sm">
+                                <div className="ml-[160px] flex h-full items-center font-mono text-xs uppercase">
+                                  Bridged <LockIcon className="ml-2 h-3 w-3" />
+                                </div>
+                              </td>
                             </TableRow>
                           );
                         }
