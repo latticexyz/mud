@@ -11,7 +11,7 @@ import { ASystemThing } from "../../namespaces/a/ASystemTypes.sol";
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IBSystem {
-  function b__setValueInA(ASystemThing memory value) external;
+  function b__setValueInA(ASystemThing memory thing) external;
 
   function b__getValueFromA() external view returns (uint256);
 }

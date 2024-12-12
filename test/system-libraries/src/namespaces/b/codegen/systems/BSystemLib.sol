@@ -35,19 +35,19 @@ struct RootCallWrapper {
 library BSystemLib {
   error BSystemLib_CallingFromRootSystem();
 
-  function setValueInA(BSystemType self, ASystemThing memory value) internal {
-    return CallWrapper(self.toResourceId(), address(0)).setValueInA(value);
+  function setValueInA(BSystemType self, ASystemThing memory thing) internal {
+    return CallWrapper(self.toResourceId(), address(0)).setValueInA(thing);
   }
 
   function getValueFromA(BSystemType self) internal view returns (uint256) {
     return CallWrapper(self.toResourceId(), address(0)).getValueFromA();
   }
 
-  function setValueInA(CallWrapper memory self, ASystemThing memory value) internal {
+  function setValueInA(CallWrapper memory self, ASystemThing memory thing) internal {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert BSystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeCall(BSystem.setValueInA, (value));
+    bytes memory systemCall = abi.encodeCall(BSystem.setValueInA, (thing));
     self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
@@ -68,8 +68,8 @@ library BSystemLib {
     return abi.decode(result, (uint256));
   }
 
-  function setValueInA(RootCallWrapper memory self, ASystemThing memory value) internal {
-    bytes memory systemCall = abi.encodeCall(BSystem.setValueInA, (value));
+  function setValueInA(RootCallWrapper memory self, ASystemThing memory thing) internal {
+    bytes memory systemCall = abi.encodeCall(BSystem.setValueInA, (thing));
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 
