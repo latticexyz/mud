@@ -33,7 +33,7 @@ export function Providers({ children }: { children: ReactNode }) {
       },
       ssr: true,
       pollingInterval: {
-        [chain.id]: chain.id === 31337 ? 100 : 500,
+        [chain.id]: 5000000,
       },
     });
   }, [chain]);
