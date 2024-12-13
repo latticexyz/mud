@@ -52,6 +52,7 @@ type Props = {
 };
 
 export default async function WorldsPage({ params: { chainName } }: Props) {
+  // TODO: make sure it works with custom chain
   const worlds = await fetchWorlds(chainName);
   if (worlds.length === 1) {
     return redirect(`/${chainName}/worlds/${worlds[0]}`);

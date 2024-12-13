@@ -1,5 +1,6 @@
-import { ArrowUpDownIcon, LoaderIcon, TriangleAlertIcon } from "lucide-react";
+import { ArrowUpDownIcon, LoaderIcon, LockIcon, TriangleAlertIcon } from "lucide-react";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
+import { Hex, encodeAbiParameters, keccak256, pad } from "viem";
 import { useMemo } from "react";
 import { Table as TableType } from "@latticexyz/config";
 import { getKeySchema, getKeyTuple } from "@latticexyz/protocol-parser/internal";
@@ -18,6 +19,7 @@ import { Button } from "../../../../../../components/ui/Button";
 import { Input } from "../../../../../../components/ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
 import { cn } from "../../../../../../utils";
+import { useCrosschainRecordsQuery } from "../../../../queries/useCrosschainRecordsQuery";
 import { TData, TDataRow, useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { EditableTableCell } from "./EditableTableCell";
 import { ExportButton } from "./ExportButton";
@@ -28,6 +30,7 @@ const initialRows: TData["rows"] = [];
 
 export function TablesViewer({ table, query }: { table?: TableType; query?: string }) {
   const { data: tableData, isLoading: isTDataLoading, isFetched, isError, error } = useTableDataQuery({ table, query });
+  const { data: crosschainRecords } = useCrosschainRecordsQuery(table);
   const isLoading = isTDataLoading || !isFetched;
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
@@ -141,13 +144,56 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
               </TableHeader>
               <TableBody>
                 {!isError && reactTable.getRowModel().rows?.length ? (
-                  reactTable.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                      ))}
-                    </TableRow>
-                  ))
+                  reactTable.getRowModel().rows.map((row) => {
+                    if (!table) return null;
+
+                    try {
+                      if (crosschainRecords?.rows) {
+                        const keySchema = getKeySchema(table);
+                        const keys = Object.keys(keySchema);
+                        const keySchemaValues = keys.map((key) => pad(row.original[key!] as Hex));
+                        const keyHash = keccak256(encodeAbiParameters([{ type: "bytes32[]" }], [keySchemaValues]));
+                        const crosschainRecord = crosschainRecords.rows.find((record) => record.keyHash === keyHash);
+
+                        if (crosschainRecord && !crosschainRecord.owned) {
+                          return (
+                            <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="relative">
+                              {row.getVisibleCells().map((cell) => (
+                                <TableCell key={cell.id}>
+                                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                </TableCell>
+                              ))}
+                              <td className="pointer-events-none absolute inset-0 bg-black/30 backdrop-blur-sm">
+                                <div className="ml-[160px] flex h-full items-center font-mono text-xs uppercase">
+                                  Bridged <LockIcon className="ml-2 h-3 w-3" />
+                                </div>
+                              </td>
+                            </TableRow>
+                          );
+                        }
+                      }
+                    } catch (error) {
+                      return (
+                        <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                          {row.getVisibleCells().map((cell) => (
+                            <TableCell key={cell.id}>
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      );
+                    }
+
+                    return (
+                      <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    );
+                  })
                 ) : (
                   <TableRow>
                     <TableCell
