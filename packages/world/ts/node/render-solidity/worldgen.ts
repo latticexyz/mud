@@ -108,14 +108,13 @@ export async function worldgen({
         const libraryImports = symbolImports.map(
           ({ symbol, path: importPath }): ImportDatum => ({
             symbol,
-            path:
-              importPath.startsWith(".") || importPath.startsWith("..")
-                ? "./" +
-                  path.relative(
-                    path.dirname(system.libraryPath),
-                    path.join(rootDir, path.dirname(system.sourcePath), importPath),
-                  )
-                : importPath,
+            path: importPath.startsWith(".")
+              ? "./" +
+                path.relative(
+                  path.dirname(system.libraryPath),
+                  path.join(rootDir, path.dirname(system.sourcePath), importPath),
+                )
+              : importPath,
           }),
         );
 
