@@ -99,25 +99,26 @@ export async function worldgen({
       // write to file
       await formatAndWriteSolidity(systemInterface, system.interfacePath, "Generated system interface");
 
-      const systemImport = {
-        symbol: system.label,
-        path: "./" + path.relative(path.dirname(system.libraryPath), system.sourcePath),
-      };
-
-      const libraryImports = symbolImports.map(
-        ({ symbol, path: importPath }): ImportDatum => ({
-          symbol,
-          path: importPath.startsWith(".")
-            ? "./" +
-              path.relative(
-                path.dirname(system.libraryPath),
-                path.join(rootDir, path.dirname(system.sourcePath), importPath),
-              )
-            : importPath,
-        }),
-      );
-
       if (config.codegen.generateSystemLibraries) {
+        const systemImport = {
+          symbol: system.label,
+          path: "./" + path.relative(path.dirname(system.libraryPath), system.sourcePath),
+        };
+
+        const libraryImports = symbolImports.map(
+          ({ symbol, path: importPath }): ImportDatum => ({
+            symbol,
+            path:
+              importPath.startsWith(".") || importPath.startsWith("..")
+                ? "./" +
+                  path.relative(
+                    path.dirname(system.libraryPath),
+                    path.join(rootDir, path.dirname(system.sourcePath), importPath),
+                  )
+                : importPath,
+          }),
+        );
+
         const systemLibrary = renderSystemLibrary({
           libraryName: system.libraryName,
           interfaceName: system.interfaceName,
