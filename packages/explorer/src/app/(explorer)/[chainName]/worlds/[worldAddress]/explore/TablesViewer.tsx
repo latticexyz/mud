@@ -20,6 +20,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { cn } from "../../../../../../utils";
 import { TData, TDataRow, useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { EditableTableCell } from "./EditableTableCell";
+import { ExportButton } from "./ExportButton";
 import { typeSortingFn } from "./utils/typeSortingFn";
 
 const initialSortingState: SortingState = [];
@@ -105,6 +106,8 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
           className="max-w-sm rounded border px-2 py-1"
           disabled={!tableData}
         />
+
+        <ExportButton tableData={tableData} isLoading={isLoading} />
       </div>
 
       <div
