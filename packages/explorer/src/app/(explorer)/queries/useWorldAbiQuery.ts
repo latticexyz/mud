@@ -29,5 +29,6 @@ export function useWorldAbiQuery(): UseQueryResult<AbiQueryResult> {
       };
     },
     refetchInterval: 5000,
+    enabled: false,
   });
 }
