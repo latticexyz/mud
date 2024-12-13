@@ -47,7 +47,7 @@ const argv = yargs(process.argv.slice(2))
       alias: ["rpcWs", "rpcWsUrl"],
       description: "RPC WebSocket URL",
       type: "string",
-      default: process.env.RPC_WS_URL || "ws://127.0.0.1:8545",
+      default: process.env.RPC_WS_URL,
     },
     indexerDatabase: {
       alias: "i",
