@@ -297,6 +297,8 @@ describe("getTable", () => {
 
   describe("subscribe", () => {
     it("should notify subscriber of table change", () => {
+      vi.useFakeTimers({ toFake: ["queueMicrotask"] });
+
       const config1 = defineTable({
         label: "table1",
         schema: { a: "address", b: "uint256", c: "uint32" },
@@ -315,28 +317,36 @@ describe("getTable", () => {
       table1.subscribe({ subscriber });
 
       table1.setRecord({ key: { a: "0x00" }, value: { b: 1n, c: 2 } });
+      vi.advanceTimersToNextTimer();
 
       expect(subscriber).toHaveBeenCalledTimes(1);
-      expect(subscriber).toHaveBeenNthCalledWith(1, {
-        "0x00": {
-          prev: undefined,
+      expect(subscriber).toHaveBeenNthCalledWith(1, [
+        {
+          table: config1,
+          key: { a: "0x00" },
+          previous: undefined,
           current: { a: "0x00", b: 1n, c: 2 },
         },
-      });
+      ]);
 
       // Expect unrelated updates to not notify subscribers
       table2.setRecord({ key: { a: "0x01" }, value: { b: 1n, c: 2 } });
+      vi.advanceTimersToNextTimer();
+
       expect(subscriber).toHaveBeenCalledTimes(1);
 
       table1.setRecord({ key: { a: "0x00" }, value: { b: 1n, c: 3 } });
+      vi.advanceTimersToNextTimer();
 
       expect(subscriber).toHaveBeenCalledTimes(2);
-      expect(subscriber).toHaveBeenNthCalledWith(2, {
-        "0x00": {
-          prev: { a: "0x00", b: 1n, c: 2 },
+      expect(subscriber).toHaveBeenNthCalledWith(2, [
+        {
+          table: config1,
+          key: { a: "0x00" },
+          previous: { a: "0x00", b: 1n, c: 2 },
           current: { a: "0x00", b: 1n, c: 3 },
         },
-      });
+      ]);
     });
   });
 });
