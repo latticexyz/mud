@@ -13,6 +13,8 @@ import { ASystemThing } from "../../namespaces/a/ASystemTypes.sol";
 interface IASystem {
   function a__setValue(ASystemThing memory value) external;
 
+  function a__setValue(uint256 value) external;
+
   function a__getValue() external view returns (uint256);
 
   function a__getTwoValues() external view returns (uint256, uint256);
