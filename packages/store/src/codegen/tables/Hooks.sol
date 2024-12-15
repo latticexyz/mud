@@ -385,7 +385,7 @@ library Hooks {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(ResourceId _tableId, ResourceId resourceId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -395,7 +395,7 @@ library Hooks {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(ResourceId _tableId, ResourceId resourceId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);

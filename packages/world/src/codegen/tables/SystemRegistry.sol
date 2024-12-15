@@ -148,7 +148,7 @@ library SystemRegistry {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(address system) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -158,7 +158,7 @@ library SystemRegistry {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(address system) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);

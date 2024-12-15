@@ -594,7 +594,7 @@ library KeysWithValue {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(ResourceId _tableId, bytes32 valueHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -604,7 +604,7 @@ library KeysWithValue {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(ResourceId _tableId, bytes32 valueHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -614,7 +614,7 @@ library KeysWithValue {
   }
 
   /**
-   * @notice Delete all data for given keys (using the specified store).
+   * @notice Delete all data for given key (using the specified store).
    */
   function deleteRecord(IStore _store, ResourceId _tableId, bytes32 valueHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);

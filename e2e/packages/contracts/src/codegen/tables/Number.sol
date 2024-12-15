@@ -145,7 +145,7 @@ library Number {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(uint32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -155,7 +155,7 @@ library Number {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(uint32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
