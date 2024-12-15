@@ -49,7 +49,7 @@ library RootSystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert RootSystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeWithSelector(bytes4(keccak256("RootSystem.setValueInA")), (thing));
+    bytes memory systemCall = abi.encodeWithSelector(bytes4(keccak256("RootSystem.setValueInA")), thing);
     self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
@@ -71,7 +71,7 @@ library RootSystemLib {
   }
 
   function setValueInA(RootCallWrapper memory self, ASystemThing memory thing) internal {
-    bytes memory systemCall = abi.encodeWithSelector(bytes4(keccak256("RootSystem.setValueInA")), (thing));
+    bytes memory systemCall = abi.encodeWithSelector(bytes4(keccak256("RootSystem.setValueInA")), thing);
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 

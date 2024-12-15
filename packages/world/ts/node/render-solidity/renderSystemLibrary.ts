@@ -250,7 +250,7 @@ function renderRootCallWrapperFunction(
 
 function renderEncodeSystemCall(interfaceName: string, functionName: string, parameters: string[]) {
   const paramNames = parameters.map((param) => param.split(" ").slice(-1)[0]).join(", ");
-  return `abi.encodeWithSelector(bytes4(keccak256("${interfaceName}.${functionName}"))${paramNames ? `, (${paramNames})` : ""})`;
+  return `abi.encodeWithSelector(bytes4(keccak256("${interfaceName}.${functionName}"))${paramNames ? `, ${paramNames}` : ""})`;
 }
 
 function renderAbiDecode(expression: string, returnParameters: string[]) {
