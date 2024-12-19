@@ -16,6 +16,12 @@ export default defineWorld({
           },
           key: [],
         },
+        NameValue: {
+          schema: {
+            value: "string",
+          },
+          key: [],
+        },
       },
     },
     b: {},

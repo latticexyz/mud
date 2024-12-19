@@ -257,20 +257,40 @@ function renderEncodeSystemCall(
   parameters: string[],
   symbolDefinitions: Record<string, ContractInterfaceStruct>,
 ) {
-  const paramNames = parameters.map((param) => param.split(" ").slice(-1)[0]).join(", ");
-  const paramTypes = parameters
-    .map((param) => param.split(" ")[0])
-    .map((paramType) => {
-      // If param is a struct, we need to break it down into its component types for the function signature
-      if (symbolDefinitions[paramType]) {
-        const typeList = symbolDefinitions[paramType].members.map((member) => member.type).join(", ");
-        return `(${typeList})`;
+  const { paramNames, paramTypes } = parameters.reduce(
+    (res, param) => {
+      const paramArray = param.split(" ");
+      let name = paramArray.slice(-1)[0];
+      let type = paramArray[0];
+
+      const symbolDefinition = symbolDefinitions[type];
+      if (symbolDefinition) {
+        const typeList = symbolDefinition.members.map((member) => member.type).join(",");
+        type = `(${typeList})`;
+
+        const nameList = symbolDefinition.members
+          .map((member) => {
+            return `${name}.${member.name}`;
+          })
+          .join(",");
+        name = `${nameList}`;
       }
 
-      return paramType;
-    });
+      res.paramNames.push(name);
+      res.paramTypes.push(type);
 
-  return `abi.encodeWithSignature("${functionName}(${paramTypes})"${paramNames.length > 0 ? `, (${paramNames})` : ""})`;
+      return res;
+    },
+    {
+      paramNames: [] as string[],
+      paramTypes: [] as string[],
+    },
+  );
+
+  const selector = `bytes4(keccak256("${functionName}(${paramTypes})"))`;
+  const systemCall = `abi.encodeWithSelector(${selector}${paramNames.length > 0 ? `, ${paramNames.join(", ")}` : ""})`;
+
+  return systemCall;
 }
 
 function renderAbiDecode(expression: string, returnParameters: string[]) {

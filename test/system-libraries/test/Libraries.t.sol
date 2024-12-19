@@ -14,7 +14,8 @@ import { SYSTEMBOUND_DELEGATION } from "@latticexyz/world-modules/src/modules/st
 
 import { Value } from "../src/namespaces/a/codegen/tables/Value.sol";
 import { AddressValue } from "../src/namespaces/a/codegen/tables/AddressValue.sol";
-import { aSystem, ASystemThing } from "../src/namespaces/a/codegen/systems/ASystemLib.sol";
+import { NameValue } from "../src/namespaces/a/codegen/tables/NameValue.sol";
+import { aSystem, ASystemThing, ASystemThing2 } from "../src/namespaces/a/codegen/systems/ASystemLib.sol";
 import { bSystem } from "../src/namespaces/b/codegen/systems/BSystemLib.sol";
 import { rootSystem } from "../src/namespaces/root/codegen/systems/RootSystemLib.sol";
 
@@ -38,6 +39,13 @@ contract LibrariesTest is MudTest {
     bSystem.setValueInA(thing);
     assertEq(Value.get(), value);
     assertEq(bSystem.getValueFromA(), value);
+  }
+
+  function testCanCallSystemWithComplexStruct() public {
+    ASystemThing2 memory thing = ASystemThing2(1, 2, 3);
+    aSystem.setComplexValue(thing, "test");
+    assertEq(Value.get(), 1, "Value should be 1");
+    assertEq(NameValue.get(), "test", "NameValue should be test");
   }
 
   function testCallFrom() public {

@@ -93,6 +93,11 @@ export async function worldgen({
       );
 
       for (const symbolImportPath of uniqueSymbolImportPaths) {
+        // TODO: import structs from non-relative paths
+        if (!symbolImportPath.startsWith(".")) {
+          continue;
+        }
+
         const symbolPath = path.resolve(rootDir, path.dirname(system.sourcePath), symbolImportPath);
         const symbolImportSource = await fs.readFile(symbolPath, "utf8");
         const structs = extractStructs(symbolImportSource);

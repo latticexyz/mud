@@ -5,3 +5,4 @@ pragma solidity >=0.8.24;
 
 import { Value } from "./tables/Value.sol";
 import { AddressValue } from "./tables/AddressValue.sol";
+import { NameValue } from "./tables/NameValue.sol";
