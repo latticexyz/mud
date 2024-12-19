@@ -47,7 +47,7 @@ library BSystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert BSystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeWithSelector(bytes4(keccak256("BSystem.setValueInA")), thing);
+    bytes memory systemCall = abi.encodeWithSignature("setValueInA((uint256))", (thing));
     self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
@@ -57,7 +57,7 @@ library BSystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert BSystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeWithSelector(bytes4(keccak256("BSystem.getValueFromA")));
+    bytes memory systemCall = abi.encodeWithSignature("getValueFromA()");
     bytes memory worldCall = self.from == address(0)
       ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
       : abi.encodeCall(IWorldCall.callFrom, (self.from, self.systemId, systemCall));
@@ -69,12 +69,12 @@ library BSystemLib {
   }
 
   function setValueInA(RootCallWrapper memory self, ASystemThing memory thing) internal {
-    bytes memory systemCall = abi.encodeWithSelector(bytes4(keccak256("BSystem.setValueInA")), thing);
+    bytes memory systemCall = abi.encodeWithSignature("setValueInA((uint256))", (thing));
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 
   function getValueFromA(RootCallWrapper memory self) internal view returns (uint256) {
-    bytes memory systemCall = abi.encodeWithSelector(bytes4(keccak256("BSystem.getValueFromA")));
+    bytes memory systemCall = abi.encodeWithSignature("getValueFromA()");
 
     bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
     return abi.decode(result, (uint256));

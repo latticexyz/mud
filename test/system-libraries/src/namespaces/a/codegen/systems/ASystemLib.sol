@@ -59,7 +59,7 @@ library ASystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeWithSelector(bytes4(keccak256("ASystem.setValue")), value);
+    bytes memory systemCall = abi.encodeWithSignature("setValue((uint256))", (value));
     self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
@@ -69,7 +69,7 @@ library ASystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeWithSelector(bytes4(keccak256("ASystem.setValue")), value);
+    bytes memory systemCall = abi.encodeWithSignature("setValue(uint256)", (value));
     self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
@@ -79,7 +79,7 @@ library ASystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeWithSelector(bytes4(keccak256("ASystem.getValue")));
+    bytes memory systemCall = abi.encodeWithSignature("getValue()");
     bytes memory worldCall = self.from == address(0)
       ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
       : abi.encodeCall(IWorldCall.callFrom, (self.from, self.systemId, systemCall));
@@ -94,7 +94,7 @@ library ASystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeWithSelector(bytes4(keccak256("ASystem.getTwoValues")));
+    bytes memory systemCall = abi.encodeWithSignature("getTwoValues()");
     bytes memory worldCall = self.from == address(0)
       ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
       : abi.encodeCall(IWorldCall.callFrom, (self.from, self.systemId, systemCall));
@@ -109,7 +109,7 @@ library ASystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeWithSelector(bytes4(keccak256("ASystem.setAddress")));
+    bytes memory systemCall = abi.encodeWithSignature("setAddress()");
 
     bytes memory result = self.from == address(0)
       ? _world().call(self.systemId, systemCall)
@@ -118,31 +118,31 @@ library ASystemLib {
   }
 
   function setValue(RootCallWrapper memory self, ASystemThing memory value) internal {
-    bytes memory systemCall = abi.encodeWithSelector(bytes4(keccak256("ASystem.setValue")), value);
+    bytes memory systemCall = abi.encodeWithSignature("setValue((uint256))", (value));
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 
   function setValue(RootCallWrapper memory self, uint256 value) internal {
-    bytes memory systemCall = abi.encodeWithSelector(bytes4(keccak256("ASystem.setValue")), value);
+    bytes memory systemCall = abi.encodeWithSignature("setValue(uint256)", (value));
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 
   function getValue(RootCallWrapper memory self) internal view returns (uint256) {
-    bytes memory systemCall = abi.encodeWithSelector(bytes4(keccak256("ASystem.getValue")));
+    bytes memory systemCall = abi.encodeWithSignature("getValue()");
 
     bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
     return abi.decode(result, (uint256));
   }
 
   function getTwoValues(RootCallWrapper memory self) internal view returns (uint256, uint256) {
-    bytes memory systemCall = abi.encodeWithSelector(bytes4(keccak256("ASystem.getTwoValues")));
+    bytes memory systemCall = abi.encodeWithSignature("getTwoValues()");
 
     bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
     return abi.decode(result, (uint256, uint256));
   }
 
   function setAddress(RootCallWrapper memory self) internal returns (address) {
-    bytes memory systemCall = abi.encodeWithSelector(bytes4(keccak256("ASystem.setAddress")));
+    bytes memory systemCall = abi.encodeWithSignature("setAddress()");
 
     bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
     return abi.decode(result, (address));

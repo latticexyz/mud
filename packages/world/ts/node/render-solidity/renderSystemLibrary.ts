@@ -4,6 +4,7 @@ import {
   renderedSolidityHeader,
   renderImports,
   ContractInterfaceFunction,
+  ContractInterfaceStruct,
 } from "@latticexyz/common/codegen";
 import { RenderSystemLibraryOptions } from "./types";
 import { ContractInterfaceError } from "@latticexyz/common/codegen";
@@ -20,6 +21,7 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
     errors: systemErrors,
     worldImportPath,
     storeImportPath,
+    symbolDefinitions,
   } = options;
 
   // Add required imports, if they are already included they will get removed in renderImports
@@ -87,9 +89,9 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
 
       ${renderList(functions, (contractFunction) => renderUserTypeFunction(contractFunction, userTypeName))}
 
-      ${renderList(functions, (contractFunction) => renderCallWrapperFunction(contractFunction, systemLabel, callingFromRootSystemErrorName))}
+      ${renderList(functions, (contractFunction) => renderCallWrapperFunction(contractFunction, systemLabel, callingFromRootSystemErrorName, symbolDefinitions))}
 
-      ${renderList(functions, (contractFunction) => renderRootCallWrapperFunction(contractFunction, systemLabel, namespace))}
+      ${renderList(functions, (contractFunction) => renderRootCallWrapperFunction(contractFunction, systemLabel, namespace, symbolDefinitions))}
 
       function callFrom(${userTypeName} self, address from) internal pure returns (CallWrapper memory) {
         return CallWrapper(self.toResourceId(), from);
@@ -156,6 +158,7 @@ function renderCallWrapperFunction(
   contractFunction: ContractInterfaceFunction,
   systemLabel: string,
   callingFromRootSystemErrorName: string,
+  symbolDefinitions: Record<string, ContractInterfaceStruct>,
 ) {
   const { name, parameters, stateMutability, returnParameters } = contractFunction;
 
@@ -174,7 +177,7 @@ function renderCallWrapperFunction(
     if (address(_world()) == address(this)) revert ${callingFromRootSystemErrorName}();
   `;
 
-  const encodedSystemCall = renderEncodeSystemCall(systemLabel, name, parameters);
+  const encodedSystemCall = renderEncodeSystemCall(name, parameters, symbolDefinitions);
 
   if (stateMutability === "") {
     return `
@@ -207,6 +210,7 @@ function renderRootCallWrapperFunction(
   contractFunction: ContractInterfaceFunction,
   systemLabel: string,
   namespace: string,
+  symbolDefinitions: Record<string, ContractInterfaceStruct>,
 ) {
   const { name, parameters, stateMutability, returnParameters } = contractFunction;
 
@@ -226,7 +230,7 @@ function renderRootCallWrapperFunction(
       ${renderReturnParameters(returnParameters)}
   `;
 
-  const encodedSystemCall = renderEncodeSystemCall(systemLabel, name, parameters);
+  const encodedSystemCall = renderEncodeSystemCall(name, parameters, symbolDefinitions);
 
   if (stateMutability === "") {
     return `
@@ -248,9 +252,25 @@ function renderRootCallWrapperFunction(
   }
 }
 
-function renderEncodeSystemCall(interfaceName: string, functionName: string, parameters: string[]) {
+function renderEncodeSystemCall(
+  functionName: string,
+  parameters: string[],
+  symbolDefinitions: Record<string, ContractInterfaceStruct>,
+) {
   const paramNames = parameters.map((param) => param.split(" ").slice(-1)[0]).join(", ");
-  return `abi.encodeWithSelector(bytes4(keccak256("${interfaceName}.${functionName}"))${paramNames ? `, ${paramNames}` : ""})`;
+  const paramTypes = parameters
+    .map((param) => param.split(" ")[0])
+    .map((paramType) => {
+      // If param is a struct, we need to break it down into its component types for the function signature
+      if (symbolDefinitions[paramType]) {
+        const typeList = symbolDefinitions[paramType].members.map((member) => member.type).join(", ");
+        return `(${typeList})`;
+      }
+
+      return paramType;
+    });
+
+  return `abi.encodeWithSignature("${functionName}(${paramTypes})"${paramNames.length > 0 ? `, (${paramNames})` : ""})`;
 }
 
 function renderAbiDecode(expression: string, returnParameters: string[]) {

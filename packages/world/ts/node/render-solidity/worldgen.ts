@@ -1,6 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { formatAndWriteSolidity, contractToInterface, type ImportDatum } from "@latticexyz/common/codegen";
+import {
+  formatAndWriteSolidity,
+  contractToInterface,
+  type ImportDatum,
+  extractStructs,
+  ContractInterfaceStruct,
+} from "@latticexyz/common/codegen";
 import { renderSystemInterface } from "./renderSystemInterface";
 import { renderWorldInterface } from "./renderWorldInterface";
 import { renderSystemLibrary } from "./renderSystemLibrary";
@@ -80,6 +86,21 @@ export async function worldgen({
       const source = await fs.readFile(path.join(rootDir, system.sourcePath), "utf8");
       // get external functions from a contract
       const { functions, errors, symbolImports } = contractToInterface(source, system.label);
+
+      const symbolDefinitions: Record<string, ContractInterfaceStruct> = {};
+      const uniqueSymbolImportPaths = new Set(
+        symbolImports.map(({ path }) => path).filter((path) => !path.includes("codegen")),
+      );
+
+      for (const symbolImportPath of uniqueSymbolImportPaths) {
+        const symbolPath = path.resolve(rootDir, path.dirname(system.sourcePath), symbolImportPath);
+        const symbolImportSource = await fs.readFile(symbolPath, "utf8");
+        const structs = extractStructs(symbolImportSource);
+        for (const struct of structs) {
+          symbolDefinitions[struct.name] = struct;
+        }
+      }
+
       const interfaceImports = symbolImports.map(
         ({ symbol, path: importPath }): ImportDatum => ({
           symbol,
@@ -130,6 +151,7 @@ export async function worldgen({
           imports: [systemImport, ...libraryImports],
           storeImportPath,
           worldImportPath,
+          symbolDefinitions,
         });
         // write to file
         await formatAndWriteSolidity(systemLibrary, system.libraryPath, "Generated system library");
