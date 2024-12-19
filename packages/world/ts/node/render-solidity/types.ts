@@ -1,4 +1,9 @@
-import type { ImportDatum, ContractInterfaceFunction, ContractInterfaceError } from "@latticexyz/common/codegen";
+import type {
+  ImportDatum,
+  ContractInterfaceFunction,
+  ContractInterfaceError,
+  ContractInterfaceStruct,
+} from "@latticexyz/common/codegen";
 
 export interface RenderSystemInterfaceOptions {
   /** List of symbols to import, and their file paths */
@@ -25,4 +30,6 @@ export interface RenderSystemLibraryOptions {
   storeImportPath: string;
   /** Path for world package imports */
   worldImportPath: string;
+
+  symbolDefinitions: Record<string, ContractInterfaceStruct>;
 }

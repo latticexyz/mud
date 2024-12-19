@@ -4,6 +4,7 @@ import {
   renderedSolidityHeader,
   renderImports,
   ContractInterfaceFunction,
+  ContractInterfaceStruct,
 } from "@latticexyz/common/codegen";
 import { RenderSystemLibraryOptions } from "./types";
 import { ContractInterfaceError } from "@latticexyz/common/codegen";
@@ -20,6 +21,7 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
     errors: systemErrors,
     worldImportPath,
     storeImportPath,
+    symbolDefinitions,
   } = options;
 
   // Add required imports, if they are already included they will get removed in renderImports
@@ -87,9 +89,9 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
 
       ${renderList(functions, (contractFunction) => renderUserTypeFunction(contractFunction, userTypeName))}
 
-      ${renderList(functions, (contractFunction) => renderCallWrapperFunction(contractFunction, systemLabel, callingFromRootSystemErrorName))}
+      ${renderList(functions, (contractFunction) => renderCallWrapperFunction(contractFunction, systemLabel, callingFromRootSystemErrorName, symbolDefinitions))}
 
-      ${renderList(functions, (contractFunction) => renderRootCallWrapperFunction(contractFunction, systemLabel, namespace))}
+      ${renderList(functions, (contractFunction) => renderRootCallWrapperFunction(contractFunction, systemLabel, namespace, symbolDefinitions))}
 
       function callFrom(${userTypeName} self, address from) internal pure returns (CallWrapper memory) {
         return CallWrapper(self.toResourceId(), from);
@@ -156,6 +158,7 @@ function renderCallWrapperFunction(
   contractFunction: ContractInterfaceFunction,
   systemLabel: string,
   callingFromRootSystemErrorName: string,
+  symbolDefinitions: Record<string, ContractInterfaceStruct>,
 ) {
   const { name, parameters, stateMutability, returnParameters } = contractFunction;
 
@@ -174,7 +177,7 @@ function renderCallWrapperFunction(
     if (address(_world()) == address(this)) revert ${callingFromRootSystemErrorName}();
   `;
 
-  const encodedSystemCall = renderEncodeSystemCall(systemLabel, name, parameters);
+  const encodedSystemCall = renderEncodeSystemCall(name, parameters, symbolDefinitions);
 
   if (stateMutability === "") {
     return `
@@ -207,6 +210,7 @@ function renderRootCallWrapperFunction(
   contractFunction: ContractInterfaceFunction,
   systemLabel: string,
   namespace: string,
+  symbolDefinitions: Record<string, ContractInterfaceStruct>,
 ) {
   const { name, parameters, stateMutability, returnParameters } = contractFunction;
 
@@ -226,7 +230,7 @@ function renderRootCallWrapperFunction(
       ${renderReturnParameters(returnParameters)}
   `;
 
-  const encodedSystemCall = renderEncodeSystemCall(systemLabel, name, parameters);
+  const encodedSystemCall = renderEncodeSystemCall(name, parameters, symbolDefinitions);
 
   if (stateMutability === "") {
     return `
@@ -248,9 +252,45 @@ function renderRootCallWrapperFunction(
   }
 }
 
-function renderEncodeSystemCall(interfaceName: string, functionName: string, parameters: string[]) {
-  const paramNames = parameters.map((param) => param.split(" ").slice(-1)[0]).join(", ");
-  return `abi.encodeCall(${interfaceName}.${functionName}, (${paramNames}))`;
+function renderEncodeSystemCall(
+  functionName: string,
+  parameters: string[],
+  symbolDefinitions: Record<string, ContractInterfaceStruct>,
+) {
+  const { paramNames, paramTypes } = parameters.reduce(
+    (res, param) => {
+      const paramArray = param.split(" ");
+      let name = paramArray.slice(-1)[0];
+      let type = paramArray[0];
+
+      const symbolDefinition = symbolDefinitions[type];
+      if (symbolDefinition) {
+        const typeList = symbolDefinition.members.map((member) => member.type).join(",");
+        type = `(${typeList})`;
+
+        const nameList = symbolDefinition.members
+          .map((member) => {
+            return `${name}.${member.name}`;
+          })
+          .join(",");
+        name = `${nameList}`;
+      }
+
+      res.paramNames.push(name);
+      res.paramTypes.push(type);
+
+      return res;
+    },
+    {
+      paramNames: [] as string[],
+      paramTypes: [] as string[],
+    },
+  );
+
+  const selector = `bytes4(keccak256("${functionName}(${paramTypes})"))`;
+  const systemCall = `abi.encodeWithSelector(${selector}${paramNames.length > 0 ? `, ${paramNames.join(", ")}` : ""})`;
+
+  return systemCall;
 }
 
 function renderAbiDecode(expression: string, returnParameters: string[]) {

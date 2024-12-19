@@ -19,9 +19,36 @@ export interface ContractInterfaceError {
   parameters: string[];
 }
 
+export interface ContractInterfaceStruct {
+  name: string;
+  members: { name: string; type: string }[];
+}
+
 interface SymbolImport {
   symbol: string;
   path: string;
+}
+
+export function extractStructs(source: string): ContractInterfaceStruct[] {
+  const ast = parse(source);
+  const structs: ContractInterfaceStruct[] = [];
+
+  visit(ast, {
+    StructDefinition({ name, members }) {
+      structs.push({
+        name,
+        members: members.map((member) => {
+          const [type, name] = parseParameter(member).split(" ");
+          return {
+            name,
+            type,
+          };
+        }),
+      });
+    },
+  });
+
+  return structs;
 }
 
 /**
