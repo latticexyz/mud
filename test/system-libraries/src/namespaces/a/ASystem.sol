@@ -11,6 +11,10 @@ contract ASystem is System {
     Value.set(value.a);
   }
 
+  function setValue(uint256 value) external {
+    Value.set(value);
+  }
+
   function getValue() external view returns (uint256) {
     return Value.get();
   }
