@@ -39,6 +39,10 @@ library ASystemLib {
     return CallWrapper(self.toResourceId(), address(0)).setValue(value);
   }
 
+  function setValue(ASystemType self, uint256 value) internal {
+    return CallWrapper(self.toResourceId(), address(0)).setValue(value);
+  }
+
   function getValue(ASystemType self) internal view returns (uint256) {
     return CallWrapper(self.toResourceId(), address(0)).getValue();
   }
@@ -55,7 +59,17 @@ library ASystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeCall(ASystem.setValue, (value));
+    bytes memory systemCall = abi.encodeCall(_IsetValue_ASystemThing.setValue, (value));
+    self.from == address(0)
+      ? _world().call(self.systemId, systemCall)
+      : _world().callFrom(self.from, self.systemId, systemCall);
+  }
+
+  function setValue(CallWrapper memory self, uint256 value) internal {
+    // if the contract calling this function is a root system, it should use `callAsRoot`
+    if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
+
+    bytes memory systemCall = abi.encodeCall(_IsetValue_uint256.setValue, (value));
     self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
@@ -65,7 +79,7 @@ library ASystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeCall(ASystem.getValue, ());
+    bytes memory systemCall = abi.encodeCall(_IgetValue.getValue, ());
     bytes memory worldCall = self.from == address(0)
       ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
       : abi.encodeCall(IWorldCall.callFrom, (self.from, self.systemId, systemCall));
@@ -80,7 +94,7 @@ library ASystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeCall(ASystem.getTwoValues, ());
+    bytes memory systemCall = abi.encodeCall(_IgetTwoValues.getTwoValues, ());
     bytes memory worldCall = self.from == address(0)
       ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
       : abi.encodeCall(IWorldCall.callFrom, (self.from, self.systemId, systemCall));
@@ -95,7 +109,7 @@ library ASystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeCall(ASystem.setAddress, ());
+    bytes memory systemCall = abi.encodeCall(_IsetAddress.setAddress, ());
 
     bytes memory result = self.from == address(0)
       ? _world().call(self.systemId, systemCall)
@@ -104,26 +118,31 @@ library ASystemLib {
   }
 
   function setValue(RootCallWrapper memory self, ASystemThing memory value) internal {
-    bytes memory systemCall = abi.encodeCall(ASystem.setValue, (value));
+    bytes memory systemCall = abi.encodeCall(_IsetValue_ASystemThing.setValue, (value));
+    SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
+  }
+
+  function setValue(RootCallWrapper memory self, uint256 value) internal {
+    bytes memory systemCall = abi.encodeCall(_IsetValue_uint256.setValue, (value));
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 
   function getValue(RootCallWrapper memory self) internal view returns (uint256) {
-    bytes memory systemCall = abi.encodeCall(ASystem.getValue, ());
+    bytes memory systemCall = abi.encodeCall(_IgetValue.getValue, ());
 
     bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
     return abi.decode(result, (uint256));
   }
 
   function getTwoValues(RootCallWrapper memory self) internal view returns (uint256, uint256) {
-    bytes memory systemCall = abi.encodeCall(ASystem.getTwoValues, ());
+    bytes memory systemCall = abi.encodeCall(_IgetTwoValues.getTwoValues, ());
 
     bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
     return abi.decode(result, (uint256, uint256));
   }
 
   function setAddress(RootCallWrapper memory self) internal returns (address) {
-    bytes memory systemCall = abi.encodeCall(ASystem.setAddress, ());
+    bytes memory systemCall = abi.encodeCall(_IsetAddress.setAddress, ());
 
     bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
     return abi.decode(result, (address));
@@ -156,6 +175,30 @@ library ASystemLib {
   function _world() private view returns (IWorldCall) {
     return IWorldCall(StoreSwitch.getStoreAddress());
   }
+}
+
+/**
+ * These interfaces are used to support overloaded functions
+ */
+
+interface _IsetValue_ASystemThing {
+  function setValue(ASystemThing memory value) external;
+}
+
+interface _IsetValue_uint256 {
+  function setValue(uint256 value) external;
+}
+
+interface _IgetValue {
+  function getValue() external;
+}
+
+interface _IgetTwoValues {
+  function getTwoValues() external;
+}
+
+interface _IsetAddress {
+  function setAddress() external;
 }
 
 using ASystemLib for ASystemType global;

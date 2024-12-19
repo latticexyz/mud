@@ -87,9 +87,9 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
 
       ${renderList(functions, (contractFunction) => renderUserTypeFunction(contractFunction, userTypeName))}
 
-      ${renderList(functions, (contractFunction) => renderCallWrapperFunction(contractFunction, systemLabel, callingFromRootSystemErrorName))}
+      ${renderList(functions, (contractFunction) => renderCallWrapperFunction(contractFunction, callingFromRootSystemErrorName))}
 
-      ${renderList(functions, (contractFunction) => renderRootCallWrapperFunction(contractFunction, systemLabel, namespace))}
+      ${renderList(functions, (contractFunction) => renderRootCallWrapperFunction(contractFunction, namespace))}
 
       function callFrom(${userTypeName} self, address from) internal pure returns (CallWrapper memory) {
         return CallWrapper(self.toResourceId(), from);
@@ -119,6 +119,12 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
         return IWorldCall(StoreSwitch.getStoreAddress());
       }
     }
+
+    /**
+     * These interfaces are used to support overloaded functions
+     */
+    ${renderList(functions, (contractFunction) => renderFunctionInterface(contractFunction))}
+
 
     using ${libraryName} for ${userTypeName} global;
     using ${libraryName} for CallWrapper global;
@@ -154,7 +160,6 @@ function renderUserTypeFunction(contractFunction: ContractInterfaceFunction, use
 
 function renderCallWrapperFunction(
   contractFunction: ContractInterfaceFunction,
-  systemLabel: string,
   callingFromRootSystemErrorName: string,
 ) {
   const { name, parameters, stateMutability, returnParameters } = contractFunction;
@@ -174,7 +179,7 @@ function renderCallWrapperFunction(
     if (address(_world()) == address(this)) revert ${callingFromRootSystemErrorName}();
   `;
 
-  const encodedSystemCall = renderEncodeSystemCall(systemLabel, name, parameters);
+  const encodedSystemCall = renderEncodeSystemCall(contractFunction);
 
   if (stateMutability === "") {
     return `
@@ -203,11 +208,7 @@ function renderCallWrapperFunction(
   }
 }
 
-function renderRootCallWrapperFunction(
-  contractFunction: ContractInterfaceFunction,
-  systemLabel: string,
-  namespace: string,
-) {
+function renderRootCallWrapperFunction(contractFunction: ContractInterfaceFunction, namespace: string) {
   const { name, parameters, stateMutability, returnParameters } = contractFunction;
 
   // Staticcalls are not supported between root systems yet, due to the additional
@@ -226,7 +227,7 @@ function renderRootCallWrapperFunction(
       ${renderReturnParameters(returnParameters)}
   `;
 
-  const encodedSystemCall = renderEncodeSystemCall(systemLabel, name, parameters);
+  const encodedSystemCall = renderEncodeSystemCall(contractFunction);
 
   if (stateMutability === "") {
     return `
@@ -248,9 +249,28 @@ function renderRootCallWrapperFunction(
   }
 }
 
-function renderEncodeSystemCall(interfaceName: string, functionName: string, parameters: string[]) {
+function renderFunctionInterface(contractFunction: ContractInterfaceFunction) {
+  const { name, parameters } = contractFunction;
+
+  return `
+    interface ${functionInterfaceName(contractFunction)} {
+      function ${name}(
+        ${renderArguments(parameters)}
+      ) external;
+    }
+  `;
+}
+
+function functionInterfaceName(contractFunction: ContractInterfaceFunction) {
+  const { name, parameters } = contractFunction;
+  const paramTypes = parameters.map((param) => param.split(" ")[0]).join("_");
+  return `_I${name}${paramTypes.length === 0 ? "" : `_${paramTypes}`}`;
+}
+
+function renderEncodeSystemCall(contractFunction: ContractInterfaceFunction) {
+  const { name, parameters } = contractFunction;
   const paramNames = parameters.map((param) => param.split(" ").slice(-1)[0]).join(", ");
-  return `abi.encodeCall(${interfaceName}.${functionName}, (${paramNames}))`;
+  return `abi.encodeCall(${functionInterfaceName(contractFunction)}.${name}, (${paramNames}))`;
 }
 
 function renderAbiDecode(expression: string, returnParameters: string[]) {
