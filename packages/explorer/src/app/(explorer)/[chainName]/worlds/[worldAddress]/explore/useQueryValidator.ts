@@ -36,6 +36,10 @@ function findErrorPosition(query: string, target: string) {
   };
 }
 
+function formatQuery(query: string) {
+  return query.endsWith(";") ? query : `${query};`;
+}
+
 export function useQueryValidator(table?: Table) {
   const monaco = useMonaco();
   const { worldAddress } = useParams();
@@ -46,7 +50,7 @@ export function useQueryValidator(table?: Table) {
     (query: string) => {
       if (!monaco || !table) return true;
 
-      const decodedQuery = decodeURIComponent(query);
+      const decodedQuery = formatQuery(decodeURIComponent(query));
       try {
         const ast = sqlParser.astify(decodedQuery);
         if ("columns" in ast && Array.isArray(ast.columns)) {
