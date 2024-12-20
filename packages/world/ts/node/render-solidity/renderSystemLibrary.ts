@@ -263,7 +263,10 @@ function renderFunctionInterface(contractFunction: ContractInterfaceFunction) {
 
 function functionInterfaceName(contractFunction: ContractInterfaceFunction) {
   const { name, parameters } = contractFunction;
-  const paramTypes = parameters.map((param) => param.split(" ")[0]).join("_");
+  const paramTypes = parameters
+    .map((param) => param.split(" ")[0])
+    .map((type) => type.replace("[]", "Array"))
+    .join("_");
   return `_I${name}${paramTypes.length === 0 ? "" : `_${paramTypes}`}`;
 }
 
