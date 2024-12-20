@@ -17,6 +17,8 @@ import { AddressValue } from "../src/namespaces/a/codegen/tables/AddressValue.so
 import { aSystem, ASystemThing } from "../src/namespaces/a/codegen/systems/ASystemLib.sol";
 import { bSystem } from "../src/namespaces/b/codegen/systems/BSystemLib.sol";
 import { rootSystem } from "../src/namespaces/root/codegen/systems/RootSystemLib.sol";
+import { PositionValue } from "../src/namespaces/a/codegen/tables/PositionValue.sol";
+import { Position } from "../src/namespaces/a/ASystemTypes.sol";
 
 contract LibrariesTest is MudTest {
   function testNamespaceIdExists() public {
@@ -30,6 +32,27 @@ contract LibrariesTest is MudTest {
     aSystem.setValue(thing);
     assertEq(Value.get(), value);
     assertEq(aSystem.getValue(), value);
+  }
+
+  function testCanCallSystemWithComplexArgumentTypes() public {
+    Position memory position = Position(1, 2, 3);
+    aSystem.setPosition(position);
+    assertEq(PositionValue.getX(), position.x);
+    assertEq(PositionValue.getY(), position.y);
+    assertEq(PositionValue.getZ(), position.z);
+
+    aSystem.setPosition(1, 2, 3);
+    assertEq(PositionValue.getX(), 1);
+    assertEq(PositionValue.getY(), 2);
+    assertEq(PositionValue.getZ(), 3);
+
+    Position[] memory positions = new Position[](2);
+    positions[0] = Position(1, 2, 3);
+    positions[1] = Position(4, 5, 6);
+    aSystem.setPositions(positions);
+    assertEq(PositionValue.getX(), 4);
+    assertEq(PositionValue.getY(), 5);
+    assertEq(PositionValue.getZ(), 6);
   }
 
   function testCanCallSystemFromOtherSystem() public {
