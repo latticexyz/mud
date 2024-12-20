@@ -80,7 +80,7 @@ export async function worldgen({
       const source = await fs.readFile(path.join(rootDir, system.sourcePath), "utf8");
       // get external functions from a contract
       const { functions, errors, symbolImports } = contractToInterface(source, system.label);
-      const imports = symbolImports.map(
+      const interfaceImports = symbolImports.map(
         ({ symbol, path: importPath }): ImportDatum => ({
           symbol,
           path: importPath.startsWith(".")
@@ -88,22 +88,36 @@ export async function worldgen({
             : importPath,
         }),
       );
+
       const systemInterface = renderSystemInterface({
         name: system.interfaceName,
         functionPrefix: system.namespace === "" ? "" : `${system.namespace}__`,
         functions,
         errors,
-        imports,
+        imports: interfaceImports,
       });
       // write to file
       await formatAndWriteSolidity(systemInterface, system.interfacePath, "Generated system interface");
 
-      const systemImport = {
-        symbol: system.label,
-        path: "./" + path.relative(path.dirname(system.libraryPath), system.sourcePath),
-      };
-
       if (config.codegen.generateSystemLibraries) {
+        const systemImport = {
+          symbol: system.label,
+          path: "./" + path.relative(path.dirname(system.libraryPath), system.sourcePath),
+        };
+
+        const libraryImports = symbolImports.map(
+          ({ symbol, path: importPath }): ImportDatum => ({
+            symbol,
+            path: importPath.startsWith(".")
+              ? "./" +
+                path.relative(
+                  path.dirname(system.libraryPath),
+                  path.join(rootDir, path.dirname(system.sourcePath), importPath),
+                )
+              : importPath,
+          }),
+        );
+
         const systemLibrary = renderSystemLibrary({
           libraryName: system.libraryName,
           interfaceName: system.interfaceName,
@@ -113,7 +127,7 @@ export async function worldgen({
           resourceId: resourceToHex({ type: "system", namespace: system.namespace, name: system.name }),
           functions,
           errors,
-          imports: [systemImport, ...imports],
+          imports: [systemImport, ...libraryImports],
           storeImportPath,
           worldImportPath,
         });
