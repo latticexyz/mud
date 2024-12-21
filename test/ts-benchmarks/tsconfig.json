@@ -1,6 +1,7 @@
 {
   "extends": ["../../tsconfig.json"],
   "exclude": ["**/dist", "**/node_modules", "**/docs", "**/e2e"],
+  "include": ["*.ts", "../../templates/**/*.ts"],
   "compilerOptions": {
     "outDir": "dist"
   }
