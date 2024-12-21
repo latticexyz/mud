@@ -26,7 +26,8 @@ library Memory {
 
   /**
    * @notice Copies memory from one location to another.
-   * @dev Safely copies memory in chunks of 32 bytes, then handles any residual bytes.
+   * @dev Length does not have to be a multiple of 32, mcopy safely handles unaligned words.
+   * Copying takes place as if an intermediate buffer was used, allowing the destination and source to overlap.
    * @param fromPointer The memory location to copy from.
    * @param toPointer The memory location to copy to.
    * @param length The number of bytes to copy.
