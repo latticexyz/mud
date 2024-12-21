@@ -1796,7 +1796,8 @@ function dataPointer(bytes memory data) internal pure returns (uint256 memoryPoi
 
 Copies memory from one location to another.
 
-_Safely copies memory in chunks of 32 bytes, then handles any residual bytes._
+_Length does not have to be a multiple of 32, mcopy safely handles unaligned words.
+Copying takes place as if an intermediate buffer was used, allowing the destination and source to overlap._
 
 ```solidity
 function copy(uint256 fromPointer, uint256 toPointer, uint256 length) internal pure;
