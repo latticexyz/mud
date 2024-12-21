@@ -648,7 +648,7 @@ library Statics {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
@@ -663,7 +663,7 @@ library Statics {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);

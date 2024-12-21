@@ -115,7 +115,7 @@ library MessageTable {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord() internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -124,7 +124,7 @@ library MessageTable {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord() internal {
     bytes32[] memory _keyTuple = new bytes32[](0);

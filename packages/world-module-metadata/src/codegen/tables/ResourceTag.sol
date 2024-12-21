@@ -417,7 +417,7 @@ library ResourceTag {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(ResourceId resource, bytes32 tag) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
@@ -428,7 +428,7 @@ library ResourceTag {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(ResourceId resource, bytes32 tag) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);

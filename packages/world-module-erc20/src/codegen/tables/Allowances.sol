@@ -151,7 +151,7 @@ library Allowances {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(ResourceId _tableId, address account, address spender) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
@@ -162,7 +162,7 @@ library Allowances {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(ResourceId _tableId, address account, address spender) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);

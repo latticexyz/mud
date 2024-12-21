@@ -154,7 +154,7 @@ library Score {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(address player, uint256 game) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
@@ -165,7 +165,7 @@ library Score {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(address player, uint256 game) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
