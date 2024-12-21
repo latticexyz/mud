@@ -5,8 +5,8 @@ import { createStash } from "../createStash";
 import { defineTable } from "@latticexyz/store/internal";
 import { In } from "../queryFragments";
 import { Hex } from "viem";
-import { runQuery } from "../actions";
 import { StoreRecords, getQueryConfig } from "../common";
+import { runQuery } from "../actions/runQuery";
 
 describe("stash with default actions", () => {
   describe("decodeKey", () => {
@@ -462,6 +462,8 @@ describe("stash with default actions", () => {
 
   describe("subscribeStash", () => {
     it("should notify subscriber of any stash change", () => {
+      vi.useFakeTimers({ toFake: ["queueMicrotask"] });
+
       const config = defineStore({
         namespaces: {
           namespace1: {
@@ -481,26 +483,27 @@ describe("stash with default actions", () => {
       stash.subscribeStash({ subscriber });
 
       stash.setRecord({ table: config.tables.namespace1__table1, key: { a: "0x00" }, value: { b: 1n, c: 2 } });
+      vi.advanceTimersToNextTimer();
 
       expect(subscriber).toHaveBeenCalledTimes(1);
       expect(subscriber).toHaveBeenNthCalledWith(1, {
-        config: {},
-        records: {
-          namespace1: {
-            table1: {
-              "0x00": {
-                prev: undefined,
-                current: { a: "0x00", b: 1n, c: 2 },
-              },
-            },
+        type: "records",
+        updates: [
+          {
+            table: config.tables.namespace1__table1,
+            key: { a: "0x00" },
+            previous: undefined,
+            current: { a: "0x00", b: 1n, c: 2 },
           },
-        },
+        ],
       });
     });
   });
 
   describe("subscribeTable", () => {
     it("should notify subscriber of table change", () => {
+      vi.useFakeTimers({ toFake: ["queueMicrotask"] });
+
       const config = defineStore({
         namespaces: {
           namespace1: {
@@ -530,28 +533,36 @@ describe("stash with default actions", () => {
       stash.subscribeTable({ table: table1, subscriber });
 
       stash.setRecord({ table: table1, key: { a: "0x00" }, value: { b: 1n, c: 2 } });
+      vi.advanceTimersToNextTimer();
 
       expect(subscriber).toHaveBeenCalledTimes(1);
-      expect(subscriber).toHaveBeenNthCalledWith(1, {
-        "0x00": {
-          prev: undefined,
+      expect(subscriber).toHaveBeenNthCalledWith(1, [
+        {
+          table: table1,
+          key: { a: "0x00" },
+          previous: undefined,
           current: { a: "0x00", b: 1n, c: 2 },
         },
-      });
+      ]);
 
       // Expect unrelated updates to not notify subscribers
       stash.setRecord({ table: table2, key: { a: "0x01" }, value: { b: 1n, c: 2 } });
+      vi.advanceTimersToNextTimer();
+
       expect(subscriber).toHaveBeenCalledTimes(1);
 
       stash.setRecord({ table: table1, key: { a: "0x00" }, value: { b: 1n, c: 3 } });
+      vi.advanceTimersToNextTimer();
 
       expect(subscriber).toHaveBeenCalledTimes(2);
-      expect(subscriber).toHaveBeenNthCalledWith(2, {
-        "0x00": {
-          prev: { a: "0x00", b: 1n, c: 2 },
+      expect(subscriber).toHaveBeenNthCalledWith(2, [
+        {
+          table: table1,
+          key: { a: "0x00" },
+          previous: { a: "0x00", b: 1n, c: 2 },
           current: { a: "0x00", b: 1n, c: 3 },
         },
-      });
+      ]);
     });
   });
 });
