@@ -75,6 +75,10 @@ export async function configToModules<config extends World>(
         prepareDeploy: createPrepareDeploy(artifact.bytecode, artifact.placeholders),
         deployedBytecodeSize: artifact.deployedBytecodeSize,
         abi: artifact.abi,
+        dependencies: artifact.placeholders.map((placeholder) => ({
+          name: placeholder.name,
+          path: placeholder.path,
+        })),
       };
     }),
   );
