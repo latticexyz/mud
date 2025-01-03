@@ -75,11 +75,11 @@ export type Library = DeterministicContract & {
   /**
    * Path to library source file, e.g. `src/libraries/SomeLib.sol`
    */
-  path: string;
+  readonly path: string;
   /**
    * Library name, e.g. `SomeLib`
    */
-  name: string;
+  readonly name: string;
 };
 
 export type System = DeterministicContract & {
@@ -100,6 +100,10 @@ export type System = DeterministicContract & {
   // human readable ABIs to register onchain
   readonly abi: readonly string[];
   readonly worldAbi: readonly string[];
+  readonly dependencies: {
+    readonly name: string;
+    readonly path: string;
+  }[];
 };
 
 export type DeployedSystem = Omit<
@@ -113,6 +117,10 @@ export type Module = DeterministicContract & {
   readonly name: string;
   readonly installAsRoot: boolean;
   readonly installData: Hex; // TODO: figure out better naming for this
+  readonly dependencies: {
+    readonly name: string;
+    readonly path: string;
+  }[];
   /**
    * @internal
    * Optional modules warn instead of throw if they revert while being installed.

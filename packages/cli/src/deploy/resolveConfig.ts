@@ -39,7 +39,7 @@ export async function resolveConfig({
   });
 
   const libraries = [forgeOutDir, ...moduleOutDirs].flatMap((outDir) =>
-    findLibraries(outDir).map((library): Library => {
+    findLibraries(outDir).map((library) => {
       // foundry/solc flattens artifacts, so we just use the path basename
       const contractData = getContractData(path.basename(library.path), library.name, outDir);
       return {
@@ -110,6 +110,10 @@ export async function resolveConfig({
         worldFunctions,
         abi: manifest.abi,
         worldAbi: manifest.worldAbi,
+        dependencies: contractData.placeholders.map((placeholder) => ({
+          name: placeholder.name,
+          path: placeholder.path,
+        })),
       };
     });
 
