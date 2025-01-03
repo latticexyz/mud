@@ -16,6 +16,14 @@ export default defineWorld({
           },
           key: [],
         },
+        PositionValue: {
+          schema: {
+            x: "uint256",
+            y: "uint256",
+            z: "uint256",
+          },
+          key: [],
+        },
       },
     },
     b: {},
