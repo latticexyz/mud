@@ -13,7 +13,13 @@ export function getContractData(
   filename: string,
   contractName: string,
   forgeOutDirectory: string,
-): { bytecode: Hex; placeholders: readonly LibraryPlaceholder[]; abi: Abi; deployedBytecodeSize: number } {
+): {
+  bytecode: Hex;
+  placeholders: readonly LibraryPlaceholder[];
+  abi: Abi;
+  deployedBytecodeSize: number;
+  path: string;
+} {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let data: any;
   const contractDataPath = path.join(forgeOutDirectory, filename, contractName + ".json");
@@ -34,5 +40,5 @@ export function getContractData(
 
   const placeholders = findPlaceholders(data?.bytecode?.linkReferences ?? {});
 
-  return { abi, bytecode, placeholders, deployedBytecodeSize: size(deployedBytecode as Hex) };
+  return { abi, bytecode, placeholders, deployedBytecodeSize: size(deployedBytecode as Hex), path: contractDataPath };
 }
