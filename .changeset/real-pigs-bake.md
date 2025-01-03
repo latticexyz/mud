@@ -2,4 +2,4 @@
 "@latticexyz/world": patch
 ---
 
-Fix relative system imports in system libraries.
+Fixes relative system imports in system libraries, and adds support for overloaded system functions.
