@@ -80,10 +80,6 @@ export type Library = DeterministicContract & {
    * Library name, e.g. `SomeLib`
    */
   readonly name: string;
-  /**
-   * Dependent contracts (contracts that use this deployed library)
-   */
-  readonly dependents: { path: string; name: string }[];
 };
 
 export type System = DeterministicContract & {
@@ -122,8 +118,8 @@ export type Module = DeterministicContract & {
   readonly installAsRoot: boolean;
   readonly installData: Hex; // TODO: figure out better naming for this
   readonly dependencies: {
-    name: string;
-    path: string;
+    readonly name: string;
+    readonly path: string;
   }[];
   /**
    * @internal
