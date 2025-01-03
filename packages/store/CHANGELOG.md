@@ -1,5 +1,16 @@
 # Change Log
 
+## 2.2.15
+
+### Patch Changes
+
+- 09536b0: Adds an experimental feature to automatically generate Solidity libraries from systems, making it easier to perform calls between systems.
+- Updated dependencies [88b9daf]
+  - @latticexyz/common@2.2.15
+  - @latticexyz/config@2.2.15
+  - @latticexyz/protocol-parser@2.2.15
+  - @latticexyz/schema-type@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes
