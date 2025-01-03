@@ -49,7 +49,7 @@ library RootSystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert RootSystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeCall(_IsetValueInA_ASystemThing.setValueInA, (thing));
+    bytes memory systemCall = abi.encodeCall(_setValueInA_ASystemThing.setValueInA, (thing));
     self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
@@ -59,7 +59,7 @@ library RootSystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert RootSystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeCall(_IgetValueFromA.getValueFromA, ());
+    bytes memory systemCall = abi.encodeCall(_getValueFromA.getValueFromA, ());
     bytes memory worldCall = self.from == address(0)
       ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
       : abi.encodeCall(IWorldCall.callFrom, (self.from, self.systemId, systemCall));
@@ -71,7 +71,7 @@ library RootSystemLib {
   }
 
   function setValueInA(RootCallWrapper memory self, ASystemThing memory thing) internal {
-    bytes memory systemCall = abi.encodeCall(_IsetValueInA_ASystemThing.setValueInA, (thing));
+    bytes memory systemCall = abi.encodeCall(_setValueInA_ASystemThing.setValueInA, (thing));
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 
@@ -105,14 +105,19 @@ library RootSystemLib {
 }
 
 /**
- * These interfaces are used to support overloaded functions
+ * System Function Interfaces
+ *
+ * We generate an interface for each system function, which is then used for encoding system calls.
+ * This is necessary to handle function overloading correctly (which abi.encodeCall cannot).
+ *
+ * Each interface is uniquely named based on the function name and parameters to prevent collisions.
  */
 
-interface _IsetValueInA_ASystemThing {
+interface _setValueInA_ASystemThing {
   function setValueInA(ASystemThing memory thing) external;
 }
 
-interface _IgetValueFromA {
+interface _getValueFromA {
   function getValueFromA() external;
 }
 

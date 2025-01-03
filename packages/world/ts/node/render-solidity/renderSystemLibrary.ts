@@ -120,9 +120,18 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
       }
     }
 
-    /**
-     * These interfaces are used to support overloaded functions
-     */
+    ${
+      functions.length > 0
+        ? `/**
+         * System Function Interfaces
+         *
+         * We generate an interface for each system function, which is then used for encoding system calls.
+         * This is necessary to handle function overloading correctly (which abi.encodeCall cannot).
+         *
+         * Each interface is uniquely named based on the function name and parameters to prevent collisions.
+         */`
+        : ""
+    }
     ${renderList(functions, (contractFunction) => renderFunctionInterface(contractFunction))}
 
 
@@ -267,7 +276,7 @@ function functionInterfaceName(contractFunction: ContractInterfaceFunction) {
     .map((param) => param.split(" ")[0])
     .map((type) => type.replace("[]", "Array"))
     .join("_");
-  return `_I${name}${paramTypes.length === 0 ? "" : `_${paramTypes}`}`;
+  return `_${name}${paramTypes.length === 0 ? "" : `_${paramTypes}`}`;
 }
 
 function renderEncodeSystemCall(contractFunction: ContractInterfaceFunction) {

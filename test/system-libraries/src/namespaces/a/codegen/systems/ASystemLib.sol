@@ -71,7 +71,7 @@ library ASystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeCall(_IsetValue_ASystemThing.setValue, (value));
+    bytes memory systemCall = abi.encodeCall(_setValue_ASystemThing.setValue, (value));
     self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
@@ -81,7 +81,7 @@ library ASystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeCall(_IsetValue_uint256.setValue, (value));
+    bytes memory systemCall = abi.encodeCall(_setValue_uint256.setValue, (value));
     self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
@@ -91,7 +91,7 @@ library ASystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeCall(_IsetPosition_Position.setPosition, (position));
+    bytes memory systemCall = abi.encodeCall(_setPosition_Position.setPosition, (position));
     self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
@@ -101,7 +101,7 @@ library ASystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeCall(_IsetPosition_uint256_uint256_uint256.setPosition, (x, y, z));
+    bytes memory systemCall = abi.encodeCall(_setPosition_uint256_uint256_uint256.setPosition, (x, y, z));
     self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
@@ -111,7 +111,7 @@ library ASystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeCall(_IsetPositions_PositionArray.setPositions, (positions));
+    bytes memory systemCall = abi.encodeCall(_setPositions_PositionArray.setPositions, (positions));
     self.from == address(0)
       ? _world().call(self.systemId, systemCall)
       : _world().callFrom(self.from, self.systemId, systemCall);
@@ -121,7 +121,7 @@ library ASystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeCall(_IgetValue.getValue, ());
+    bytes memory systemCall = abi.encodeCall(_getValue.getValue, ());
     bytes memory worldCall = self.from == address(0)
       ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
       : abi.encodeCall(IWorldCall.callFrom, (self.from, self.systemId, systemCall));
@@ -136,7 +136,7 @@ library ASystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeCall(_IgetTwoValues.getTwoValues, ());
+    bytes memory systemCall = abi.encodeCall(_getTwoValues.getTwoValues, ());
     bytes memory worldCall = self.from == address(0)
       ? abi.encodeCall(IWorldCall.call, (self.systemId, systemCall))
       : abi.encodeCall(IWorldCall.callFrom, (self.from, self.systemId, systemCall));
@@ -151,7 +151,7 @@ library ASystemLib {
     // if the contract calling this function is a root system, it should use `callAsRoot`
     if (address(_world()) == address(this)) revert ASystemLib_CallingFromRootSystem();
 
-    bytes memory systemCall = abi.encodeCall(_IsetAddress.setAddress, ());
+    bytes memory systemCall = abi.encodeCall(_setAddress.setAddress, ());
 
     bytes memory result = self.from == address(0)
       ? _world().call(self.systemId, systemCall)
@@ -160,46 +160,46 @@ library ASystemLib {
   }
 
   function setValue(RootCallWrapper memory self, ASystemThing memory value) internal {
-    bytes memory systemCall = abi.encodeCall(_IsetValue_ASystemThing.setValue, (value));
+    bytes memory systemCall = abi.encodeCall(_setValue_ASystemThing.setValue, (value));
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 
   function setValue(RootCallWrapper memory self, uint256 value) internal {
-    bytes memory systemCall = abi.encodeCall(_IsetValue_uint256.setValue, (value));
+    bytes memory systemCall = abi.encodeCall(_setValue_uint256.setValue, (value));
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 
   function setPosition(RootCallWrapper memory self, Position memory position) internal {
-    bytes memory systemCall = abi.encodeCall(_IsetPosition_Position.setPosition, (position));
+    bytes memory systemCall = abi.encodeCall(_setPosition_Position.setPosition, (position));
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 
   function setPosition(RootCallWrapper memory self, uint256 x, uint256 y, uint256 z) internal {
-    bytes memory systemCall = abi.encodeCall(_IsetPosition_uint256_uint256_uint256.setPosition, (x, y, z));
+    bytes memory systemCall = abi.encodeCall(_setPosition_uint256_uint256_uint256.setPosition, (x, y, z));
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 
   function setPositions(RootCallWrapper memory self, Position[] memory positions) internal {
-    bytes memory systemCall = abi.encodeCall(_IsetPositions_PositionArray.setPositions, (positions));
+    bytes memory systemCall = abi.encodeCall(_setPositions_PositionArray.setPositions, (positions));
     SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
   }
 
   function getValue(RootCallWrapper memory self) internal view returns (uint256) {
-    bytes memory systemCall = abi.encodeCall(_IgetValue.getValue, ());
+    bytes memory systemCall = abi.encodeCall(_getValue.getValue, ());
 
     bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
     return abi.decode(result, (uint256));
   }
 
   function getTwoValues(RootCallWrapper memory self) internal view returns (uint256, uint256) {
-    bytes memory systemCall = abi.encodeCall(_IgetTwoValues.getTwoValues, ());
+    bytes memory systemCall = abi.encodeCall(_getTwoValues.getTwoValues, ());
 
     bytes memory result = SystemCall.staticcallOrRevert(self.from, self.systemId, systemCall);
     return abi.decode(result, (uint256, uint256));
   }
 
   function setAddress(RootCallWrapper memory self) internal returns (address) {
-    bytes memory systemCall = abi.encodeCall(_IsetAddress.setAddress, ());
+    bytes memory systemCall = abi.encodeCall(_setAddress.setAddress, ());
 
     bytes memory result = SystemCall.callWithHooksOrRevert(self.from, self.systemId, systemCall, msg.value);
     return abi.decode(result, (address));
@@ -235,38 +235,43 @@ library ASystemLib {
 }
 
 /**
- * These interfaces are used to support overloaded functions
+ * System Function Interfaces
+ *
+ * We generate an interface for each system function, which is then used for encoding system calls.
+ * This is necessary to handle function overloading correctly (which abi.encodeCall cannot).
+ *
+ * Each interface is uniquely named based on the function name and parameters to prevent collisions.
  */
 
-interface _IsetValue_ASystemThing {
+interface _setValue_ASystemThing {
   function setValue(ASystemThing memory value) external;
 }
 
-interface _IsetValue_uint256 {
+interface _setValue_uint256 {
   function setValue(uint256 value) external;
 }
 
-interface _IsetPosition_Position {
+interface _setPosition_Position {
   function setPosition(Position memory position) external;
 }
 
-interface _IsetPosition_uint256_uint256_uint256 {
+interface _setPosition_uint256_uint256_uint256 {
   function setPosition(uint256 x, uint256 y, uint256 z) external;
 }
 
-interface _IsetPositions_PositionArray {
+interface _setPositions_PositionArray {
   function setPositions(Position[] memory positions) external;
 }
 
-interface _IgetValue {
+interface _getValue {
   function getValue() external;
 }
 
-interface _IgetTwoValues {
+interface _getTwoValues {
   function getTwoValues() external;
 }
 
-interface _IsetAddress {
+interface _setAddress {
   function setAddress() external;
 }
 
