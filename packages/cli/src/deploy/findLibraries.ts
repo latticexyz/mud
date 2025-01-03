@@ -6,7 +6,6 @@ import { LinkReferences } from "../utils/findPlaceholders";
 export function findLibraries(forgeOutDir: string): readonly {
   readonly path: string;
   readonly name: string;
-  readonly dependents: { path: string; name: string }[];
 }[] {
   const artifacts = globSync(`${forgeOutDir}/**/*.json`, { ignore: "**/*.abi.json" })
     .sort()
@@ -21,8 +20,8 @@ export function findLibraries(forgeOutDir: string): readonly {
     const contractName = artifact.metadata.settings.compilationTarget[contractPath];
     const linkReferences = artifact.bytecode.linkReferences as LinkReferences;
 
-    Object.entries(linkReferences).forEach(([libraryPath, reference]) => {
-      Object.keys(reference).forEach((libraryName) => {
+    for (const [libraryPath, reference] of Object.entries(linkReferences)) {
+      for (const libraryName of Object.keys(reference)) {
         const key = `${libraryPath}:${libraryName}`;
         if (!librariesMap.has(key)) {
           librariesMap.set(key, {
@@ -35,8 +34,8 @@ export function findLibraries(forgeOutDir: string): readonly {
           path: contractPath,
           name: contractName,
         });
-      });
-    });
+      }
+    }
   });
 
   const libraries = Array.from(librariesMap.values());

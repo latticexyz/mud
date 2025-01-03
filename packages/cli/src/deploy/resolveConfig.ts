@@ -45,7 +45,6 @@ export async function resolveConfig({
       return {
         path: library.path,
         name: library.name,
-        dependents: library.dependents,
         abi: contractData.abi,
         prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
         deployedBytecodeSize: contractData.deployedBytecodeSize,
