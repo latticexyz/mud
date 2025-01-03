@@ -2,7 +2,6 @@ import { Metadata } from "next";
 import { ReactNode } from "react";
 import localFont from "next/font/local";
 import { cn } from "../lib/cn";
-import { DevconBanner } from "./DevconBanner";
 import "./globals.css";
 
 const basierCircle = localFont({
@@ -73,7 +72,6 @@ export default function Layout({ children }: Props) {
           berkeleyMono.variable,
         )}
       >
-        <DevconBanner />
         {children}
       </body>
     </html>
