@@ -67,7 +67,7 @@ export function getTable<table extends Table>({ stash, table }: GetTableArgs<tab
     getRecords: (args?: TableBoundGetRecordsArgs<table>) => getRecords({ stash, table, ...args }),
     setRecord: (args: TableBoundSetRecordArgs<table>) => setRecord({ stash, table, ...args }),
     setRecords: (args: TableBoundSetRecordsArgs<table>) => setRecords({ stash, table, ...args }),
-    subscribe: (args: TableBoundSubscribeTableArgs) => subscribeTable({ stash, table, ...args }),
+    subscribe: (args: TableBoundSubscribeTableArgs<table>) => subscribeTable({ stash, table, ...args }),
 
     // TODO: dynamically add setters and getters for individual fields of the table
   };

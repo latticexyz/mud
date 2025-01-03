@@ -1,5 +1,5 @@
 import { beforeEach, describe, it, vi, expect } from "vitest";
-import { QueryUpdate, subscribeQuery } from "./subscribeQuery";
+import { QueryUpdates, subscribeQuery } from "./subscribeQuery";
 import { attest } from "@ark/attest";
 import { defineStore } from "@latticexyz/store";
 import { In, Matches } from "../queryFragments";
@@ -32,6 +32,7 @@ describe("defineQuery", () => {
 
   beforeEach(() => {
     stash = createStash(config);
+    vi.useFakeTimers({ toFake: ["queueMicrotask"] });
 
     // Add some mock data
     const items = ["0xgold", "0xsilver"] as const;
@@ -45,6 +46,8 @@ describe("defineQuery", () => {
         setRecord({ stash, table: Inventory, key: { player: `0x${String(i)}`, item }, value: { amount: i } });
       }
     }
+
+    vi.advanceTimersToNextTimer();
   });
 
   it("should return the matching keys and keep it updated", () => {
@@ -55,113 +58,211 @@ describe("defineQuery", () => {
     });
 
     setRecord({ stash, table: Health, key: { player: `0x2` }, value: { health: 2 } });
+    vi.advanceTimersToNextTimer();
 
-    attest(result.keys).snap({
-      "0x2": { player: "0x2" },
-      "0x3": { player: "0x3" },
-      "0x4": { player: "0x4" },
-    });
+    attest(result.keys).snap({ "0x3": { player: "0x3" }, "0x4": { player: "0x4" }, "0x2": { player: "0x2" } });
   });
 
   it("should notify subscribers when a matching key is updated", () => {
-    let lastUpdate: unknown;
-    const subscriber = vi.fn((update: QueryUpdate) => (lastUpdate = update));
-    const result = subscribeQuery({ stash, query: [Matches(Position, { x: 4 }), In(Health)] });
-    result.subscribe(subscriber);
+    let lastUpdates: unknown;
+    const subscriber = vi.fn((updates: QueryUpdates) => (lastUpdates = updates));
 
-    setRecord({ stash, table: Position, key: { player: "0x4" }, value: { y: 2 } });
+    subscribeQuery({
+      stash,
+      query: [Matches(Position, { x: 4 }), In(Health)],
+      subscriber,
+    });
+    vi.advanceTimersToNextTimer();
 
     expect(subscriber).toBeCalledTimes(1);
-    attest(lastUpdate).snap({
-      records: {
-        namespace1: {
-          Position: {
-            "0x4": {
-              prev: { player: "0x4", x: 4, y: 1 },
-              current: { player: "0x4", x: 4, y: 2 },
-            },
+    attest(lastUpdates).snap([{ key: { player: "0x4" }, type: "enter" }]);
+
+    setRecord({ stash, table: Position, key: { player: "0x4" }, value: { y: 2 } });
+    vi.advanceTimersToNextTimer();
+
+    expect(subscriber).toBeCalledTimes(2);
+    attest(lastUpdates).snap([
+      {
+        table: {
+          label: "Position",
+          type: "table",
+          namespace: "namespace1",
+          namespaceLabel: "namespace1",
+          name: "Position",
+          tableId: "0x74626e616d6573706163653100000000506f736974696f6e0000000000000000",
+          schema: {
+            player: { type: "bytes32", internalType: "bytes32" },
+            x: { type: "int32", internalType: "int32" },
+            y: { type: "int32", internalType: "int32" },
           },
+          key: ["player"],
+          codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: true },
+          deploy: { disabled: false },
         },
+        key: { player: "0x4" },
+        previous: { player: "0x4", x: 4, y: 1 },
+        current: { player: "0x4", x: 4, y: 2 },
+        type: "update",
       },
-      keys: { "0x4": { player: "0x4" } },
-      types: { "0x4": "update" },
-    });
+    ]);
   });
 
   it("should notify subscribers when a new key matches", () => {
-    let lastUpdate: unknown;
-    const subscriber = vi.fn((update: QueryUpdate) => (lastUpdate = update));
-    const result = subscribeQuery({ stash, query: [In(Position), In(Health)] });
-    result.subscribe(subscriber);
+    let lastUpdates: unknown;
+    const subscriber = vi.fn((updates: QueryUpdates) => (lastUpdates = updates));
+    subscribeQuery({ stash, query: [In(Position), In(Health)], subscriber });
+
+    vi.advanceTimersToNextTimer();
+    expect(subscriber).toBeCalledTimes(1);
+    attest(lastUpdates).snap([
+      { key: { player: "0x3" }, type: "enter" },
+      { key: { player: "0x4" }, type: "enter" },
+    ]);
 
     setRecord({ stash, table: Health, key: { player: `0x2` }, value: { health: 2 } });
+    vi.advanceTimersToNextTimer();
 
-    expect(subscriber).toBeCalledTimes(1);
-    attest(lastUpdate).snap({
-      records: {
-        namespace1: {
-          Health: {
-            "0x2": {
-              prev: undefined,
-              current: { player: `0x2`, health: 2 },
-            },
+    expect(subscriber).toBeCalledTimes(2);
+    attest(lastUpdates).snap([
+      {
+        table: {
+          label: "Health",
+          type: "table",
+          namespace: "namespace1",
+          namespaceLabel: "namespace1",
+          name: "Health",
+          tableId: "0x74626e616d65737061636531000000004865616c746800000000000000000000",
+          schema: {
+            player: { type: "bytes32", internalType: "bytes32" },
+            health: { type: "uint32", internalType: "uint32" },
           },
+          key: ["player"],
+          codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: false },
+          deploy: { disabled: false },
         },
+        key: { player: "0x2" },
+        previous: "(undefined)",
+        current: { player: "0x2", health: 2 },
+        type: "enter",
       },
-      keys: { "0x2": { player: "0x2" } },
-      types: { "0x2": "enter" },
-    });
+    ]);
   });
 
   it("should notify subscribers when a key doesn't match anymore", () => {
-    let lastUpdate: unknown;
-    const subscriber = vi.fn((update: QueryUpdate) => (lastUpdate = update));
-    const result = subscribeQuery({ stash, query: [In(Position), In(Health)] });
-    result.subscribe(subscriber);
+    let lastUpdates: unknown;
+    const subscriber = vi.fn((updates: QueryUpdates) => (lastUpdates = updates));
+    subscribeQuery({ stash, query: [In(Position), In(Health)], subscriber });
+
+    vi.advanceTimersToNextTimer();
+    expect(subscriber).toBeCalledTimes(1);
+    attest(lastUpdates).snap([
+      { key: { player: "0x3" }, type: "enter" },
+      { key: { player: "0x4" }, type: "enter" },
+    ]);
 
     deleteRecord({ stash, table: Position, key: { player: `0x3` } });
+    vi.advanceTimersToNextTimer();
 
-    expect(subscriber).toBeCalledTimes(1);
-    attest(lastUpdate).snap({
-      records: {
-        namespace1: {
-          Position: {
-            "0x3": {
-              prev: { player: "0x3", x: 3, y: 2 },
-              current: undefined,
-            },
+    expect(subscriber).toBeCalledTimes(2);
+    attest(lastUpdates).snap([
+      {
+        table: {
+          label: "Position",
+          type: "table",
+          namespace: "namespace1",
+          namespaceLabel: "namespace1",
+          name: "Position",
+          tableId: "0x74626e616d6573706163653100000000506f736974696f6e0000000000000000",
+          schema: {
+            player: { type: "bytes32", internalType: "bytes32" },
+            x: { type: "int32", internalType: "int32" },
+            y: { type: "int32", internalType: "int32" },
           },
+          key: ["player"],
+          codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: true },
+          deploy: { disabled: false },
         },
+        key: { player: "0x3" },
+        previous: { player: "0x3", x: 3, y: 2 },
+        current: "(undefined)",
+        type: "exit",
       },
-      keys: { "0x3": { player: "0x3" } },
-      types: { "0x3": "exit" },
-    });
+    ]);
   });
 
   it("should notify initial subscribers with initial query result", () => {
-    let lastUpdate: unknown;
-    const subscriber = vi.fn((update: QueryUpdate) => (lastUpdate = update));
-    subscribeQuery({ stash, query: [In(Position), In(Health)], options: { initialSubscribers: [subscriber] } });
+    let lastUpdates: unknown;
+    const subscriber = vi.fn((updates: QueryUpdates) => (lastUpdates = updates));
+    subscribeQuery({ stash, query: [In(Position), In(Health)], subscriber });
 
     expect(subscriber).toBeCalledTimes(1);
-    attest(lastUpdate).snap({
-      keys: {
-        "0x3": { player: "0x3" },
-        "0x4": { player: "0x4" },
-      },
-      records: {
-        namespace1: {
-          Position: {
-            "0x3": { prev: undefined, current: { player: "0x3", x: 3, y: 2 } },
-            "0x4": { prev: undefined, current: { player: "0x4", x: 4, y: 1 } },
+    attest(lastUpdates).snap([
+      { key: { player: "0x3" }, type: "enter" },
+      { key: { player: "0x4" }, type: "enter" },
+    ]);
+  });
+
+  it("should notify once for multiple updates", () => {
+    let lastUpdates: unknown;
+    const subscriber = vi.fn((updates: QueryUpdates) => (lastUpdates = updates));
+    subscribeQuery({ stash, query: [In(Position), In(Health)], subscriber });
+
+    vi.advanceTimersToNextTimer();
+    expect(subscriber).toBeCalledTimes(1);
+    attest(lastUpdates).snap([
+      { key: { player: "0x3" }, type: "enter" },
+      { key: { player: "0x4" }, type: "enter" },
+    ]);
+
+    // Update multiple records but only advance timer once
+    setRecord({ stash, table: Health, key: { player: `0x2` }, value: { health: 2 } });
+    setRecord({ stash, table: Health, key: { player: `0x1` }, value: { health: 1 } });
+    vi.advanceTimersToNextTimer();
+
+    expect(subscriber).toBeCalledTimes(2);
+    attest(lastUpdates).snap([
+      {
+        table: {
+          label: "Health",
+          type: "table",
+          namespace: "namespace1",
+          namespaceLabel: "namespace1",
+          name: "Health",
+          tableId: "0x74626e616d65737061636531000000004865616c746800000000000000000000",
+          schema: {
+            player: { type: "bytes32", internalType: "bytes32" },
+            health: { type: "uint32", internalType: "uint32" },
           },
-          Health: {
-            "0x3": { prev: undefined, current: { player: "0x3", health: 3 } },
-            "0x4": { prev: undefined, current: { player: "0x4", health: 4 } },
-          },
+          key: ["player"],
+          codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: false },
+          deploy: { disabled: false },
         },
+        key: { player: "0x2" },
+        previous: "(undefined)",
+        current: { player: "0x2", health: 2 },
+        type: "enter",
       },
-      types: { "0x3": "enter", "0x4": "enter" },
-    });
+      {
+        table: {
+          label: "Health",
+          type: "table",
+          namespace: "namespace1",
+          namespaceLabel: "namespace1",
+          name: "Health",
+          tableId: "0x74626e616d65737061636531000000004865616c746800000000000000000000",
+          schema: {
+            player: { type: "bytes32", internalType: "bytes32" },
+            health: { type: "uint32", internalType: "uint32" },
+          },
+          key: ["player"],
+          codegen: { outputDirectory: "tables", tableIdArgument: false, storeArgument: false, dataStruct: false },
+          deploy: { disabled: false },
+        },
+        key: { player: "0x1" },
+        previous: "(undefined)",
+        current: { player: "0x1", health: 1 },
+        type: "enter",
+      },
+    ]);
   });
 });
