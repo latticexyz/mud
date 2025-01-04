@@ -1,10 +1,10 @@
 "use client";
 
-import { Loader } from "lucide-react";
+// import { Loader } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useWorldUrl } from "../app/(explorer)/hooks/useWorldUrl";
-import { useWorldAbiQuery } from "../app/(explorer)/queries/useWorldAbiQuery";
+// import { useWorldAbiQuery } from "../app/(explorer)/queries/useWorldAbiQuery";
 import { LatestBlock } from "../components/LatestBlock";
 import { Separator } from "../components/ui/Separator";
 import { cn } from "../utils";
@@ -28,7 +28,7 @@ function NavigationLink({ href, children }: { href: string; children: React.Reac
 }
 
 export function Navigation() {
-  const { data, isFetched } = useWorldAbiQuery();
+  // const { data, isFetched } = useWorldAbiQuery();
   return (
     <div className="pb-4">
       <div className="flex items-center justify-between">
@@ -38,11 +38,11 @@ export function Navigation() {
           <NavigationLink href="observe">Observe</NavigationLink>
         </div>
 
-        {isFetched && !data?.isWorldDeployed && (
+        {/* {isFetched && !data?.isWorldDeployed && (
           <h4 className="font-mono text-sm font-bold uppercase opacity-70">
             Waiting for world deploy <Loader className="inline-block h-4 w-4 animate-spin" />
           </h4>
-        )}
+        )} */}
 
         <div className="flex items-center gap-x-4">
           <LatestBlock />

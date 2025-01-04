@@ -3,7 +3,7 @@ import { rm } from "fs/promises";
 import path from "path";
 import process from "process";
 import { fileURLToPath } from "url";
-import { anvil } from "viem/chains";
+// import { anvil } from "viem/chains";
 import yargs from "yargs";
 import { ChildProcess, spawn } from "child_process";
 import { validateChainId } from "../common";
@@ -31,11 +31,35 @@ const argv = yargs(process.argv.slice(2))
       type: "number",
       default: process.env.CHAIN_ID || 31337,
     },
+    chainName: {
+      alias: "n",
+      description: "Chain name",
+      type: "string",
+      default: process.env.CHAIN_NAME || "custom",
+    },
+    rpcHttpUrl: {
+      alias: ["rpc", "rpcUrl", "rpcHttpUrl"],
+      description: "RPC HTTP URL",
+      type: "string",
+      default: process.env.RPC_HTTP_URL || "http://127.0.0.1:8545",
+    },
+    rpcWsUrl: {
+      alias: ["rpcWs", "rpcWsUrl"],
+      description: "RPC WebSocket URL",
+      type: "string",
+      default: process.env.RPC_WS_URL,
+    },
     indexerDatabase: {
       alias: "i",
       description: "Path to the indexer database",
       type: "string",
       default: process.env.INDEXER_DATABASE || "indexer.db",
+    },
+    indexerPort: {
+      alias: "ip",
+      description: "Port number for the indexer",
+      type: "number",
+      default: process.env.INDEXER_PORT || 3001,
     },
     dev: {
       alias: "D",
@@ -45,12 +69,16 @@ const argv = yargs(process.argv.slice(2))
     },
   })
   .check((argv) => {
+    // skip chainId validation if custom configs are provided
+    if (argv.rpcHttpUrl || argv.rpcWsUrl) {
+      return true;
+    }
     validateChainId(Number(argv.chainId));
     return true;
   })
   .parseSync();
 
-const { port, hostname, chainId, indexerDatabase, dev } = argv;
+const { port, hostname, chainId, chainName, rpcHttpUrl, rpcWsUrl, indexerDatabase, indexerPort, dev } = argv;
 const indexerDatabasePath = path.join(packageRoot, indexerDatabase);
 
 let explorerProcess: ChildProcess;
@@ -60,7 +88,15 @@ async function startExplorer() {
   const env = {
     ...process.env,
     CHAIN_ID: chainId.toString(),
+    CHAIN_NAME: chainName,
+    RPC_HTTP_URL: rpcHttpUrl,
+    RPC_WS_URL: rpcWsUrl,
     INDEXER_DATABASE: indexerDatabasePath,
+
+    NEXT_PUBLIC_CHAIN_ID: chainId.toString(),
+    NEXT_PUBLIC_CHAIN_NAME: chainName,
+    NEXT_PUBLIC_RPC_HTTP_URL: rpcHttpUrl,
+    NEXT_PUBLIC_RPC_WS_URL: rpcWsUrl,
   };
 
   if (dev) {
@@ -87,22 +123,24 @@ async function startExplorer() {
 }
 
 async function startStoreIndexer() {
-  if (chainId !== anvil.id) {
-    console.log("Skipping SQLite indexer for non-anvil chain ID", chainId);
-    return;
-  }
+  // TODO: make conditional skipping
+  // if (chainId !== anvil.id) {
+  //   console.log("Skipping SQLite indexer for non-anvil chain ID", chainId);
+  //   return;
+  // }
 
   await rm(indexerDatabasePath, { recursive: true, force: true });
 
-  console.log("Running SQLite indexer for anvil...");
+  console.log("Running SQLite indexer..."); // TODO: running for custom chain
   indexerProcess = spawn("sh", ["node_modules/.bin/sqlite-indexer"], {
     cwd: packageRoot,
     stdio: "inherit",
     env: {
       DEBUG: "mud:*",
-      RPC_HTTP_URL: "http://127.0.0.1:8545",
+      RPC_HTTP_URL: rpcHttpUrl,
       FOLLOW_BLOCK_TAG: "latest",
       SQLITE_FILENAME: indexerDatabase,
+      PORT: indexerPort.toString(),
       ...process.env,
     },
   });

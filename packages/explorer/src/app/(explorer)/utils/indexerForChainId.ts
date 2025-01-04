@@ -9,7 +9,12 @@ export function indexerForChainId(chainId: number): { type: "sqlite" | "hosted";
     return { type: "sqlite", url: "/api/sqlite-indexer" };
   }
 
+  // TODO: improve logic
   const chainName = chainIdToName[chainId];
+  if (!chainName) {
+    return { type: "sqlite", url: "/api/sqlite-indexer" };
+  }
+
   const chain = supportedChains[chainName] as MUDChain;
   return { type: "hosted", url: new URL("/q", chain.indexerUrl).toString() };
 }

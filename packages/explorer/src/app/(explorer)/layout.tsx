@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PublicEnvScript } from "next-runtime-env";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { Theme } from "@radix-ui/themes";
@@ -32,6 +33,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <PublicEnvScript />
+      </head>
       <body className={`${inter.variable} ${jetbrains.variable} dark`}>
         <Theme appearance="dark">
           <div className="container">{children}</div>

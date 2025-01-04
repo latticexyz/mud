@@ -12,7 +12,7 @@ export function blockExplorerTransactionUrl({
   validateChainId(chainId);
 
   const chainName = chainIdToName[chainId];
-  const chain = supportedChains[chainName];
+  const chain = supportedChains[chainName!]; // TODO: fix types
   const explorerUrl = "blockExplorers" in chain && chain.blockExplorers?.default.url;
   if (!explorerUrl) return undefined;
   return `${explorerUrl}/tx/${hash}`;

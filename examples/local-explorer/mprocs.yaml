@@ -1,13 +1,20 @@
 procs:
-  client:
-    cwd: packages/client
-    shell: pnpm run dev
-  contracts:
+  # client:
+  #   cwd: packages/client
+  #   shell: pnpm run dev
+  # contracts:
+  #   cwd: packages/contracts
+  #   shell: pnpm mud dev-contracts --rpc http://127.0.0.1:8545
+  # anvil:
+  #   cwd: packages/contracts
+  #   shell: anvil --base-fee 0 --block-time 2
+  # explorer:
+  #   cwd: packages/contracts
+  #   shell: pnpm explorer --dev
+
+  explorer1:
     cwd: packages/contracts
-    shell: pnpm mud dev-contracts --rpc http://127.0.0.1:8545
-  anvil:
+    shell: pnpm explorer --chainId 901 --chainName customA --rpc http://127.0.0.1:9545 --port 19545 --indexerPort 13001 --indexerDatabase indexer19545.db
+  explorer2:
     cwd: packages/contracts
-    shell: anvil --base-fee 0 --block-time 2
-  explorer:
-    cwd: packages/contracts
-    shell: pnpm explorer --dev
+    shell: pnpm explorer --chainId 902 --chainName customB --rpc http://127.0.0.1:9546 --port 19546 --indexerPort 13002 --indexerDatabase indexer19546.db
