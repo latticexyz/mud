@@ -1,29 +1,30 @@
-import { DeployedSystem, WorldDeploy } from "./common";
-import { Client } from "viem";
+import { CommonDeployOptions, DeployedSystem } from "./common";
 import { hexToResource, resourceToLabel } from "@latticexyz/common";
-import { getFunctions } from "@latticexyz/world/internal";
+import { getFunctions } from "@latticexyz/store-sync/world";
 import { getResourceIds } from "./getResourceIds";
 import { getTableValue } from "./getTableValue";
 import { debug } from "./debug";
 import { getResourceAccess } from "./getResourceAccess";
 import worldConfig from "@latticexyz/world/mud.config";
+import { Client } from "viem";
 
 export async function getSystems({
   client,
   worldDeploy,
-}: {
-  readonly client: Client;
-  readonly worldDeploy: WorldDeploy;
-}): Promise<readonly DeployedSystem[]> {
+  indexerUrl,
+  chainId,
+}: Omit<CommonDeployOptions, "client"> & { client: Client }): Promise<readonly DeployedSystem[]> {
   const [resourceIds, functions, resourceAccess] = await Promise.all([
-    getResourceIds({ client, worldDeploy }),
+    getResourceIds({ client, worldDeploy, indexerUrl, chainId }),
     getFunctions({
       client,
       worldAddress: worldDeploy.address,
       fromBlock: worldDeploy.deployBlock,
       toBlock: worldDeploy.stateBlock,
+      indexerUrl,
+      chainId,
     }),
-    getResourceAccess({ client, worldDeploy }),
+    getResourceAccess({ client, worldDeploy, indexerUrl, chainId }),
   ]);
   const systems = resourceIds.map(hexToResource).filter((resource) => resource.type === "system");
 

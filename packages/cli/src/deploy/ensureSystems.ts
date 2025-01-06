@@ -1,6 +1,6 @@
-import { Client, Transport, Chain, Account, Hex, getAddress, Address } from "viem";
+import { Hex, getAddress, Address } from "viem";
 import { resourceToLabel } from "@latticexyz/common";
-import { System, WorldDeploy, worldAbi } from "./common";
+import { CommonDeployOptions, System, worldAbi } from "./common";
 import { debug } from "./debug";
 import { getSystems } from "./getSystems";
 import { getResourceAccess } from "./getResourceAccess";
@@ -18,16 +18,16 @@ export async function ensureSystems({
   libraryMap,
   worldDeploy,
   systems,
-}: {
-  readonly client: Client<Transport, Chain | undefined, Account>;
+  indexerUrl,
+  chainId,
+}: CommonDeployOptions & {
   readonly deployerAddress: Hex;
   readonly libraryMap: LibraryMap;
-  readonly worldDeploy: WorldDeploy;
   readonly systems: readonly System[];
 }): Promise<readonly Hex[]> {
   const [worldSystems, worldAccess] = await Promise.all([
-    getSystems({ client, worldDeploy }),
-    getResourceAccess({ client, worldDeploy }),
+    getSystems({ client, worldDeploy, indexerUrl, chainId }),
+    getResourceAccess({ client, worldDeploy, indexerUrl, chainId }),
   ]);
 
   // Register or replace systems

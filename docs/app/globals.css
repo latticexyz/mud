@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+body::-webkit-scrollbar,
+div::-webkit-scrollbar,
+pre::-webkit-scrollbar {
+  display: none;
+}
+
+body,
+div,
+pre {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+html {
+  background-color: black;
+}
+
+pre {
+  font-size: 0.5;
+  background-color: #222;
+  border-color: #222;
+  border-width: 1rem;
+  border-radius: 0.4rem;
+  overflow-x: scroll;
+  margin-bottom: 18px;
+}
+
+summary {
+  margin-bottom: 16px;
+}
+
+summary > p {
+  display: inline;
+}
+
+/* Substack subscribe widget */
+#custom-substack-embed {
+  max-width: 530px !important;
+  flex-direction: column !important;
+}
+
+#custom-substack-embed p {
+  position: absolute !important;
+  max-width: 530px !important;
+  font-family: var(--font-supply-mono) !important;
+  text-transform: uppercase !important;
+}
+
+.custom-substack-widget {
+  flex-wrap: nowrap !important;
+  max-width: 600px !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+.custom-substack-widget input {
+  flex-basis: 100% !important;
+  width: 100% !important;
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+  font-size: 20px !important;
+  font-family: var(--font-supply-mono) !important;
+  text-transform: uppercase !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-sizing: border-box !important;
+}
+
+.custom-substack-widget input::placeholder {
+  opacity: 0.3 !important;
+}
+
+.custom-substack-widget button {
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
+  width: 122px !important;
+  /* flex-basis: 122px !important; */
+  border: none !important;
+  padding: 23px 25px !important;
+  margin-left: 15px !important;
+  font-size: 20px !important;
+  font-family: var(--font-supply-mono) !important;
+  text-transform: uppercase !important;
+}

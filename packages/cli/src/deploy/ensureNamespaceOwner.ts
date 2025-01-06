@@ -1,5 +1,5 @@
-import { Account, Chain, Client, Hex, Transport, getAddress } from "viem";
-import { WorldDeploy, worldAbi } from "./common";
+import { Hex, getAddress } from "viem";
+import { CommonDeployOptions, worldAbi } from "./common";
 import { hexToResource, resourceToHex } from "@latticexyz/common";
 import { getResourceIds } from "./getResourceIds";
 import { getTableValue } from "./getTableValue";
@@ -12,13 +12,13 @@ export async function ensureNamespaceOwner({
   client,
   worldDeploy,
   resourceIds,
-}: {
-  readonly client: Client<Transport, Chain | undefined, Account>;
-  readonly worldDeploy: WorldDeploy;
+  indexerUrl,
+  chainId,
+}: CommonDeployOptions & {
   readonly resourceIds: readonly Hex[];
 }): Promise<readonly Hex[]> {
   const desiredNamespaces = Array.from(new Set(resourceIds.map((resourceId) => hexToResource(resourceId).namespace)));
-  const existingResourceIds = await getResourceIds({ client, worldDeploy });
+  const existingResourceIds = await getResourceIds({ client, worldDeploy, indexerUrl, chainId });
   const existingNamespaces = new Set(existingResourceIds.map((resourceId) => hexToResource(resourceId).namespace));
   if (existingNamespaces.size) {
     debug(

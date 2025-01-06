@@ -21,6 +21,7 @@ import { enableAutomine } from "./utils/enableAutomine";
 import { getDeployClient } from "./deploy/getDeployClient";
 import { debug } from "./debug";
 import { getAction } from "viem/utils";
+import { defaultChains } from "./defaultChains";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the MUD config file" },
@@ -55,6 +56,11 @@ export const deployOptions = {
     type: "boolean",
     desc: "Deploy using a smart account. A smart account will be created, owned by the provided private key, and use gas sponsorship when possible.",
     default: false,
+  },
+  indexerUrl: {
+    type: "string",
+    desc: "The indexer URL to use.",
+    required: false,
   },
 } as const satisfies Record<string, Options>;
 
@@ -143,6 +149,11 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     useSmartAccount: opts.smartAccount,
   });
 
+  const chainId = await getChainId(client);
+  const indexerUrl = opts.indexerUrl ?? defaultChains.find((chain) => chain.id === chainId)?.indexerUrl;
+
+  console.log("Deploying from", client.account.address);
+
   // Attempt to enable automine for the duration of the deploy. Noop if automine is not available.
   const automine = await enableAutomine(client);
 
@@ -158,6 +169,8 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     libraries,
     modules,
     artifacts,
+    indexerUrl,
+    chainId,
   });
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
     if (client.account.type === "smart") {

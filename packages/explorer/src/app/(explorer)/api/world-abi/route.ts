@@ -1,10 +1,10 @@
-import { Address, Hex, createClient, http, parseAbi } from "viem";
-import { getBlockNumber } from "viem/actions";
+import { Address, Hex, createClient, http, parseAbi, size } from "viem";
+import { getBlockNumber, getCode } from "viem/actions";
 import { getAction } from "viem/utils";
 import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
 import { helloStoreEvent } from "@latticexyz/store";
+import { getWorldAbi } from "@latticexyz/store-sync/world";
 import { helloWorldEvent } from "@latticexyz/world";
-import { getWorldAbi } from "@latticexyz/world/internal";
 import { chainIdToName, supportedChainId, supportedChains, validateChainId } from "../../../../common";
 
 export const dynamic = "force-dynamic";
@@ -17,6 +17,11 @@ async function getClient(chainId: supportedChainId) {
   });
 
   return client;
+}
+
+function getIndexerUrl(chainId: supportedChainId) {
+  const chain = supportedChains[chainIdToName[chainId]];
+  return "indexerUrl" in chain ? chain.indexerUrl : undefined;
 }
 
 async function getParameters(chainId: supportedChainId, worldAddress: Address) {
@@ -50,12 +55,30 @@ export async function GET(req: Request) {
 
   try {
     const client = await getClient(chainId);
+    const indexerUrl = getIndexerUrl(chainId);
+
+    if (indexerUrl) {
+      const [code, abi] = await Promise.all([
+        getCode(client, { address: worldAddress }),
+        getWorldAbi({
+          client,
+          worldAddress,
+          indexerUrl,
+          chainId,
+        }),
+      ]);
+
+      return Response.json({ abi, isWorldDeployed: code && size(code) > 0 });
+    }
+
     const { fromBlock, toBlock, isWorldDeployed } = await getParameters(chainId, worldAddress);
     const abi = await getWorldAbi({
       client,
       worldAddress,
       fromBlock,
       toBlock,
+      indexerUrl: getIndexerUrl(chainId),
+      chainId,
     });
 
     return Response.json({ abi, isWorldDeployed });

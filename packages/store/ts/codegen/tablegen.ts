@@ -8,6 +8,7 @@ import { uniqueBy } from "@latticexyz/common/utils";
 import { getUserTypes } from "./getUserTypes";
 import { getUserTypesFilename } from "./getUserTypesFilename";
 import { getTableOptions } from "./getTableOptions";
+import debug from "debug";
 
 export type TablegenOptions = {
   /**
@@ -65,4 +66,6 @@ export async function tablegen({ rootDir, config }: TablegenOptions) {
       }
     }),
   );
+
+  debug("Generated tables");
 }

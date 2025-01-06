@@ -50,6 +50,7 @@
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
+    "@latticexyz/store-sync": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/wiresaw": "workspace:*",
     "@latticexyz/world": "workspace:*",

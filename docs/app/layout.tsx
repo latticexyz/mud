@@ -1,9 +1,29 @@
-import "tailwindcss/tailwind.css";
-
 import { Metadata } from "next";
 import { ReactNode } from "react";
-import { twMerge } from "tailwind-merge";
 import localFont from "next/font/local";
+import { cn } from "../lib/cn";
+import "./globals.css";
+
+const basierCircle = localFont({
+  src: [
+    {
+      path: "../public/fonts/BasierCircle-Regular.otf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/BasierCircle-SemiBold.otf",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/BasierCircle-Bold.otf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-basier-circle",
+});
 
 const supplyMono = localFont({
   src: "../public/fonts/PPSupplyMono-Regular.woff2",
@@ -19,6 +39,13 @@ const supplyMono = localFont({
     '"Courier New"',
     "monospace",
   ],
+});
+
+const berkeleyMono = localFont({
+  src: "../public/fonts/BerkeleyMono-Regular.otf",
+  preload: true,
+  variable: "--font-berkeley-mono",
+  fallback: ["ui-monospace"],
 });
 
 export const metadata: Metadata = {
@@ -37,7 +64,16 @@ type Props = { children: ReactNode };
 export default function Layout({ children }: Props) {
   return (
     <html lang="en">
-      <body className={twMerge("bg-mud text-white", supplyMono.variable)}>{children}</body>
+      <body
+        className={cn(
+          "text-white font-sans overflow-x-hidden",
+          basierCircle.variable,
+          supplyMono.variable,
+          berkeleyMono.variable,
+        )}
+      >
+        {children}
+      </body>
     </html>
   );
 }

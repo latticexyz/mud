@@ -93,6 +93,7 @@ const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof
             worldAddress,
             salt: "0x",
             kms: undefined,
+            indexerUrl: undefined,
           });
           worldAddress = deploy.address;
           // if there were changes while we were deploying, trigger it again

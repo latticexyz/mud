@@ -1,6 +1,6 @@
-import { Client, Transport, Chain, Account, Hex } from "viem";
+import { Hex } from "viem";
 import { resourceToLabel } from "@latticexyz/common";
-import { WorldDeploy, worldAbi } from "./common";
+import { CommonDeployOptions, WorldDeploy, worldAbi } from "./common";
 import {
   valueSchemaToFieldLayoutHex,
   keySchemaToHex,
@@ -21,8 +21,9 @@ export async function ensureTables({
   client,
   worldDeploy,
   tables,
-}: {
-  readonly client: Client<Transport, Chain | undefined, Account>;
+  indexerUrl,
+  chainId,
+}: CommonDeployOptions & {
   readonly worldDeploy: WorldDeploy;
   readonly tables: readonly Table[];
 }): Promise<readonly Hex[]> {
@@ -45,7 +46,7 @@ export async function ensureTables({
     }),
   );
 
-  const worldTables = await getTables({ client, worldDeploy });
+  const worldTables = await getTables({ client, worldDeploy, indexerUrl, chainId });
   const existingTables = worldTables.filter(({ tableId }) => configTables.has(tableId));
   if (existingTables.length) {
     debug("existing tables:", existingTables.map(resourceToLabel).join(", "));

@@ -1,4 +1,4 @@
-import { Abi, Address, Hex, padHex } from "viem";
+import { Abi, Account, Address, Chain, Client, Hex, Transport, padHex } from "viem";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
@@ -118,4 +118,11 @@ export type Module = DeterministicContract & {
    * Optional modules warn instead of throw if they revert while being installed.
    */
   readonly optional?: boolean;
+};
+
+export type CommonDeployOptions = {
+  readonly client: Client<Transport, Chain | undefined, Account>;
+  readonly worldDeploy: WorldDeploy;
+  readonly indexerUrl?: string;
+  readonly chainId?: number;
 };
