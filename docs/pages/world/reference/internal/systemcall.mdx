@@ -42,6 +42,61 @@ function call(
 | `success` | `bool`  | A flag indicating whether the system call was successful. |
 | `data`    | `bytes` | The return data from the system call.                     |
 
+#### staticcall
+
+Makes a staticcall to a system identified by its Resource ID while ensuring necessary access controls.
+
+_This function does not revert if the system staticcall fails. Instead, it returns a success flag._
+
+```solidity
+function staticcall(
+  address caller,
+  ResourceId systemId,
+  bytes memory callData
+) internal view returns (bool success, bytes memory data);
+```
+
+**Parameters**
+
+| Name       | Type         | Description                                        |
+| ---------- | ------------ | -------------------------------------------------- |
+| `caller`   | `address`    | The address initiating the system staticcall.      |
+| `systemId` | `ResourceId` | The unique Resource ID of the system being called. |
+| `callData` | `bytes`      | The calldata to be executed in the system.         |
+
+**Returns**
+
+| Name      | Type    | Description                                                     |
+| --------- | ------- | --------------------------------------------------------------- |
+| `success` | `bool`  | A flag indicating whether the system staticcall was successful. |
+| `data`    | `bytes` | The return data from the system staticcall.                     |
+
+#### staticcallOrRevert
+
+Makes a staticcall to a system identified by its Resource ID, ensures access controls, and reverts on failure.
+
+```solidity
+function staticcallOrRevert(
+  address caller,
+  ResourceId systemId,
+  bytes memory callData
+) internal view returns (bytes memory data);
+```
+
+**Parameters**
+
+| Name       | Type         | Description                                        |
+| ---------- | ------------ | -------------------------------------------------- |
+| `caller`   | `address`    | The address initiating the system staticcall.      |
+| `systemId` | `ResourceId` | The unique Resource ID of the system being called. |
+| `callData` | `bytes`      | The calldata to be executed in the system.         |
+
+**Returns**
+
+| Name   | Type    | Description                                 |
+| ------ | ------- | ------------------------------------------- |
+| `data` | `bytes` | The return data from the system staticcall. |
+
 #### callWithHooks
 
 Calls a system identified by its Resource ID, ensuring access controls, and triggers associated system hooks.

@@ -49,6 +49,7 @@ export function useTableDataQuery({ table, query }: Props) {
     select: (data: DozerResponse): TData | undefined => {
       if (!table || !data?.result?.[0]) return undefined;
 
+      const indexer = indexerForChainId(chainId);
       const result = data.result[0];
       // if columns are undefined, the result is empty
       if (!result[0]) return undefined;
@@ -61,7 +62,18 @@ export function useTableDataQuery({ table, query }: Props) {
         })
         .filter((key) => schema.includes(key));
 
-      const rows = result.slice(1).map((row) => Object.fromEntries(columns.map((key, index) => [key, row[index]])));
+      const rows = result.slice(1).map((row) =>
+        Object.fromEntries(
+          columns.map((key, index) => {
+            const value = row[index];
+            const type = table?.schema[key];
+            if (type?.type === "bool") {
+              return [key, indexer.type === "sqlite" ? value === "1" : value];
+            }
+            return [key, value];
+          }),
+        ),
+      );
       return {
         columns,
         rows,

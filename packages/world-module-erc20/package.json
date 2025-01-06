@@ -48,6 +48,7 @@
   "dependencies": {
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
+    "@latticexyz/store-consumer": "workspace:*",
     "@latticexyz/world": "workspace:*"
   },
   "devDependencies": {

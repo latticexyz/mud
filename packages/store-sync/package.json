@@ -18,6 +18,7 @@
     "./recs": "./dist/recs/index.js",
     "./sqlite": "./dist/sqlite/index.js",
     "./trpc-indexer": "./dist/trpc-indexer/index.js",
+    "./world": "./dist/world/index.js",
     "./zustand": "./dist/zustand/index.js"
   },
   "typesVersions": {
@@ -46,6 +47,9 @@
       "trpc-indexer": [
         "./dist/trpc-indexer/index.d.ts"
       ],
+      "world": [
+        "./dist/world/index.d.ts"
+      ],
       "zustand": [
         "./dist/zustand/index.d.ts"
       ]
@@ -66,7 +70,7 @@
     "test:ci": "vitest --run"
   },
   "dependencies": {
-    "@ark/util": "catalog:",
+    "@ark/util": "0.2.2",
     "@latticexyz/block-logs-stream": "workspace:*",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
@@ -87,7 +91,6 @@
     "rxjs": "7.5.5",
     "sql.js": "^1.8.0",
     "superjson": "^1.12.4",
-    "viem": "catalog:",
     "zod": "3.23.8",
     "zustand": "^4.3.7"
   },
@@ -96,9 +99,12 @@
     "@types/node": "20.12.12",
     "@types/sql.js": "^1.4.4",
     "@viem/anvil": "^0.0.7",
-    "mock-game-contracts": "workspace:*",
     "tsup": "^6.7.0",
+    "viem": "2.21.19",
     "vitest": "0.34.6"
+  },
+  "peerDependencies": {
+    "viem": "2.x"
   },
   "publishConfig": {
     "access": "public"

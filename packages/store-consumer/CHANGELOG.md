@@ -1,0 +1,1 @@
+# @latticexyz/store-consumer

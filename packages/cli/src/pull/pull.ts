@@ -8,7 +8,7 @@ import { getRecord } from "../deploy/getRecord";
 import path from "node:path";
 import fs from "node:fs/promises";
 import { getResourceIds } from "../deploy/getResourceIds";
-import { getFunctions } from "@latticexyz/world/internal";
+import { getFunctions } from "@latticexyz/store-sync/world";
 import { abiToInterface, formatSolidity, formatTypescript } from "@latticexyz/common/codegen";
 import { debug } from "./debug";
 import { defineWorld } from "@latticexyz/world";
@@ -37,15 +37,17 @@ export type PullOptions = {
    * Defaults to `true` if `rootDir` is within a git repo, otherwise `false`.
    * */
   replace?: boolean;
+  indexerUrl?: string;
+  chainId?: number;
 };
 
-export async function pull({ rootDir, client, worldAddress, replace }: PullOptions) {
+export async function pull({ rootDir, client, worldAddress, replace, indexerUrl, chainId }: PullOptions) {
   const replaceFiles = replace ?? (await findUp(".git", { cwd: rootDir })) != null;
 
   const worldDeploy = await getWorldDeploy(client, worldAddress);
-  const resourceIds = await getResourceIds({ client, worldDeploy });
+  const resourceIds = await getResourceIds({ client, worldDeploy, indexerUrl, chainId });
   const resources = resourceIds.map(hexToResource).filter((resource) => !ignoredNamespaces.has(resource.namespace));
-  const tables = await getTables({ client, worldDeploy });
+  const tables = await getTables({ client, worldDeploy, indexerUrl, chainId });
 
   const labels = Object.fromEntries(
     (
@@ -71,6 +73,8 @@ export async function pull({ rootDir, client, worldAddress, replace }: PullOptio
     worldAddress: worldDeploy.address,
     fromBlock: worldDeploy.deployBlock,
     toBlock: worldDeploy.stateBlock,
+    indexerUrl,
+    chainId,
   });
 
   const namespaces = resources.filter((resource) => resource.type === "namespace");

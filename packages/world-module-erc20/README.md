@@ -4,15 +4,11 @@
 
 ## ERC20 contracts
 
-In order to achieve a similar level of composability to [`OpenZeppelin` ERC20 contract extensions](https://docs.openzeppelin.com/contracts/5.x/api/token/erc20), we provide a way to abstract the underlying Store being used. This allows developers to easily create ERC20 tokens that can either use its own storage as the Store, or attach themselves to an existing World.
+In order to achieve a similar level of composability to [`OpenZeppelin` ERC20 contract extensions](https://docs.openzeppelin.com/contracts/5.x/api/token/erc20), we use our experimental [`StoreConsumer` contract](../store-consumer) to abstract the underlying Store being used. This allows developers to easily create ERC20 tokens that can either use its own storage as the Store, or attach themselves to an existing World.
 
-- `StoreConsumer`: all contracts inherit from `StoreConsumer`, which abstracts the way in which `ResourceId`s are encoded. This allows us to have composable contracts whose implementations don't depend on the type of Store being used.
-- `WithStore(address) is StoreConsumer`: this contract initializes the store, using the contract's internal storage or the provided external `Store`. It encodes `ResourceId`s using `ResourceIdLib` from the `@latticexyz/store` package.
-- `WithWorld(IBaseWorld, bytes14) is WithStore`: initializes the store and also registers the provided namespace in the provided World. It encodes `ResourceId`s using `WorldResourceIdLib` (using the namespace). It also provides an `onlyNamespace` modifier, which can be used to restrict access to certain functions, only allowing calls from addresses that have access to the namespace.
+The `MUDERC20` contract is the base ERC20 implementation adapted from Openzeppelin's ERC20. Contains the ERC20 logic, reads/writes to the store through MUD's codegen libraries and initializes the tables it needs. As these libraries use `StoreSwitch` internally, this contract doesn't need to know about the store it's interacting with (it can be internal storage, an external `Store` or a `World`).
 
-- `MUDERC20`: base ERC20 implementation adapted from Openzeppelin's ERC20. Contains the ERC20 logic, reads/writes to the store through MUD's codegen libraries and initializes the tables it needs. As these libraries use `StoreSwitch` internally, this contract doesn't need to know about the store it's interacting with (it can be internal storage, an external `Store` or a `World`).
-
-- Extensions and other contracts: contracts like `Ownable`, `Pausable`, `ERC20Burnable`, etc are adapted from `OpenZeppelin` contracts to use MUD's codegen libraries to read and write from a `Store`. They inherit from `StoreConsumer`, so they can obtain the `ResourceId` for the tables they use using `_encodeResourceId()`.
+Extensions and other contracts: contracts like `Ownable`, `Pausable`, `ERC20Burnable`, etc are adapted from `OpenZeppelin` contracts to use MUD's codegen libraries to read and write from a `Store`. They inherit from `StoreConsumer`, so they can obtain the `ResourceId` for the tables they use using `_encodeResourceId()`.
 
 ### Example 1: Using the contract's storage
 
@@ -53,7 +49,7 @@ contract ERC20WithWorld is WithWorld, MUDERC20, ERC20Pausable, ERC20Burnable {
     bytes14 namespace,
     string memory name,
     string memory symbol
-  ) WithWorld(world, namespace) MUDERC20(name, symbol) {
+  ) WithWorld(world, namespace, true) MUDERC20(name, symbol) {
     // transfer namespace ownership to the creator
     world.transferOwnership(getNamespaceId(), _msgSender());
   }

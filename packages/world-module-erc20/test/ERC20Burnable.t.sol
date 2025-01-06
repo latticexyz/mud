@@ -13,9 +13,9 @@ import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { ERC20MetadataData } from "../src/codegen/tables/ERC20Metadata.sol";
 import { IERC20Errors } from "../src/interfaces/IERC20Errors.sol";
 import { IERC20Events } from "../src/interfaces/IERC20Events.sol";
-import { MUDERC20 } from "../src/MUDERC20.sol";
-import { ERC20Burnable } from "../src/ERC20Burnable.sol";
-import { MockERC20Base, MockERC20WithInternalStore, MockERC20WithWorld, ERC20BehaviorTest, ERC20WithInternalStoreBehaviorTest, ERC20WithWorldBehaviorTest } from "./ERC20BaseTest.sol";
+import { MUDERC20 } from "../src/experimental/MUDERC20.sol";
+import { ERC20Burnable } from "../src/experimental/ERC20Burnable.sol";
+import { MockERC20Base, MockERC20WithInternalStore, MockERC20WithWorld, ERC20BehaviorTest, ERC20WithInternalStoreBehaviorTest, ERC20WithWorldBehaviorTest } from "./ERC20BaseTest.t.sol";
 
 contract MockERC20WithInternalStoreBurnable is MockERC20WithInternalStore, ERC20Burnable {}
 
