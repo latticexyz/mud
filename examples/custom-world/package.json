@@ -30,6 +30,7 @@
     "shx": "^0.3.4",
     "solhint": "^3.3.7",
     "solhint-config-mud": "link:../../packages/solhint-config-mud",
-    "solhint-plugin-mud": "link:../../packages/solhint-plugin-mud"
+    "solhint-plugin-mud": "link:../../packages/solhint-plugin-mud",
+    "typescript": "5.4.2"
   }
 }
