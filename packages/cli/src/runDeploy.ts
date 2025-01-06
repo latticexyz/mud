@@ -144,6 +144,13 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   const chainId = await getChainId(client);
   const indexerUrl = opts.indexerUrl ?? defaultChains.find((chain) => chain.id === chainId)?.indexerUrl;
+  const worldDeployBlock = opts.worldAddress
+    ? getWorldDeployBlock({
+        worldAddress: opts.worldAddress,
+        worldsFile: config.deploy.worldsFile,
+        chainId,
+      })
+    : undefined;
 
   console.log("Deploying from", client.account.address);
 
@@ -156,6 +163,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     deployerAddress: opts.deployerAddress as Hex | undefined,
     salt,
     worldAddress: opts.worldAddress as Hex | undefined,
+    worldDeployBlock,
     client,
     tables,
     systems,
@@ -214,4 +222,18 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   console.log(deploymentInfo);
 
   return worldDeploy;
+}
+
+function getWorldDeployBlock({
+  chainId,
+  worldAddress,
+  worldsFile,
+}: {
+  chainId: number;
+  worldAddress: string;
+  worldsFile: string;
+}): bigint | undefined {
+  const deploys = existsSync(worldsFile) ? JSON.parse(readFileSync(worldsFile, "utf-8")) : {};
+  const worldDeployBlock = deploys[chainId]?.address === worldAddress ? deploys[chainId].blockNumber : undefined;
+  return worldDeployBlock ? BigInt(worldDeployBlock) : undefined;
 }

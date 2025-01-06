@@ -7,7 +7,11 @@ import { logsToWorldDeploy } from "./logsToWorldDeploy";
 
 const deploys = new Map<Address, WorldDeploy>();
 
-export async function getWorldDeploy(client: Client, worldAddress: Address): Promise<WorldDeploy> {
+export async function getWorldDeploy(
+  client: Client,
+  worldAddress: Address,
+  deployBlock?: bigint,
+): Promise<WorldDeploy> {
   const address = getAddress(worldAddress);
 
   let deploy = deploys.get(address);
@@ -20,10 +24,9 @@ export async function getWorldDeploy(client: Client, worldAddress: Address): Pro
 
   debug("looking up world deploy for", address);
 
-  const [fromBlock, toBlock] = await Promise.all([
-    getBlock(client, { blockTag: "earliest" }),
-    getBlock(client, { blockTag: "latest" }),
-  ]);
+  const [fromBlock, toBlock] = deployBlock
+    ? [{ number: deployBlock }, { number: deployBlock }]
+    : await Promise.all([getBlock(client, { blockTag: "earliest" }), getBlock(client, { blockTag: "latest" })]);
 
   const blockLogs = await fetchBlockLogs({
     publicClient: client,
@@ -33,6 +36,10 @@ export async function getWorldDeploy(client: Client, worldAddress: Address): Pro
     toBlock: toBlock.number,
     maxBlockRange: 100_000n,
   });
+
+  if (blockLogs.length === 0) {
+    throw new Error("could not find `HelloWorld` or `HelloStore` event");
+  }
 
   deploy = {
     ...logsToWorldDeploy(blockLogs.flatMap((block) => block.logs)),
