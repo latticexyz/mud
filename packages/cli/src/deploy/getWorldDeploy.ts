@@ -37,6 +37,10 @@ export async function getWorldDeploy(
     maxBlockRange: 100_000n,
   });
 
+  if (blockLogs.length === 0) {
+    throw new Error("could not find `HelloWorld` or `HelloStore` event");
+  }
+
   deploy = {
     ...logsToWorldDeploy(blockLogs.flatMap((block) => block.logs)),
     stateBlock: toBlock.number,
