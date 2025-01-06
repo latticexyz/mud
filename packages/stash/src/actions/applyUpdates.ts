@@ -1,10 +1,10 @@
 import { schemaAbiTypeToDefaultValue } from "@latticexyz/schema-type/internal";
-import { Key, Stash, StoreUpdates, TableRecord } from "../common";
+import { Key, Stash, TableRecord, TableUpdates } from "../common";
 import { encodeKey } from "./encodeKey";
 import { Table } from "@latticexyz/config";
 import { registerTable } from "./registerTable";
 
-export type StashUpdate<table extends Table = Table> = {
+export type PendingStashUpdate<table extends Table = Table> = {
   table: table;
   key: Key<table>;
   value: undefined | Partial<TableRecord<table>>;
@@ -12,14 +12,20 @@ export type StashUpdate<table extends Table = Table> = {
 
 export type ApplyUpdatesArgs = {
   stash: Stash;
-  updates: StashUpdate[];
+  updates: PendingStashUpdate[];
 };
 
-const pendingUpdates = new Map<Stash, StoreUpdates>();
+type PendingUpdates = {
+  [namespaceLabel: string]: {
+    [tableLabel: string]: TableUpdates;
+  };
+};
+
+const pendingStashUpdates = new Map<Stash, PendingUpdates>();
 
 export function applyUpdates({ stash, updates }: ApplyUpdatesArgs): void {
-  const storeUpdates = pendingUpdates.get(stash) ?? { config: {}, records: {} };
-  if (!pendingUpdates.has(stash)) pendingUpdates.set(stash, storeUpdates);
+  const pendingUpdates = pendingStashUpdates.get(stash) ?? {};
+  if (!pendingStashUpdates.has(stash)) pendingStashUpdates.set(stash, pendingUpdates);
 
   for (const { table, key, value } of updates) {
     if (stash.get().config[table.namespaceLabel]?.[table.label] == null) {
@@ -28,6 +34,7 @@ export function applyUpdates({ stash, updates }: ApplyUpdatesArgs): void {
     const tableState = ((stash._.state.records[table.namespaceLabel] ??= {})[table.label] ??= {});
     const encodedKey = encodeKey({ table, key });
     const prevRecord = tableState[encodedKey];
+
     // create new record, preserving field order
     const nextRecord =
       value == null
@@ -50,33 +57,35 @@ export function applyUpdates({ stash, updates }: ApplyUpdatesArgs): void {
     }
 
     // add update to pending updates for notifying subscribers
-    const prevUpdate = storeUpdates.records[table.namespaceLabel]?.[table.label]?.[encodedKey];
-    const update = {
-      // preserve the initial prev state if we already have a pending update
-      // TODO: change subscribers to an array of updates instead of an object
-      prev: prevUpdate ? prevUpdate.prev : prevRecord,
+    const tableUpdates = ((pendingUpdates[table.namespaceLabel] ??= {})[table.label] ??= []);
+    tableUpdates.push({
+      table,
+      key,
+      previous: prevRecord,
       current: nextRecord,
-    };
-    ((storeUpdates.records[table.namespaceLabel] ??= {})[table.label] ??= {})[encodedKey] ??= update;
+    });
   }
 
-  // queueMicrotask(() => {
-  notifySubscribers(stash);
-  // });
+  queueMicrotask(() => {
+    notifySubscribers(stash);
+  });
 }
 
 function notifySubscribers(stash: Stash) {
-  const storeUpdates = pendingUpdates.get(stash);
-  if (!storeUpdates) return;
+  const pendingUpdates = pendingStashUpdates.get(stash);
+  if (!pendingUpdates) return;
 
   // Notify table subscribers
-  for (const [namespaceLabel, tableUpdates] of Object.entries(storeUpdates.records)) {
-    for (const [label, updates] of Object.entries(tableUpdates)) {
-      stash._.tableSubscribers[namespaceLabel]?.[label]?.forEach((subscriber) => subscriber(updates));
+  for (const [namespaceLabel, namespaceUpdates] of Object.entries(pendingUpdates)) {
+    for (const [tableLabel, tableUpdates] of Object.entries(namespaceUpdates)) {
+      stash._.tableSubscribers[namespaceLabel]?.[tableLabel]?.forEach((subscriber) => subscriber(tableUpdates));
     }
   }
   // Notify stash subscribers
-  stash._.storeSubscribers.forEach((subscriber) => subscriber(storeUpdates));
+  const updates = Object.values(pendingUpdates)
+    .map((namespaceUpdates) => Object.values(namespaceUpdates))
+    .flat(2);
+  stash._.storeSubscribers.forEach((subscriber) => subscriber({ type: "records", updates }));
 
-  pendingUpdates.delete(stash);
+  pendingStashUpdates.delete(stash);
 }

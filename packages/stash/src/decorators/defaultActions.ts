@@ -1,4 +1,4 @@
-import { Query, Stash, StoreConfig } from "../common";
+import { Query, Stash, StoreConfig, StoreUpdatesSubscriber } from "../common";
 import { DecodeKeyArgs, DecodeKeyResult, decodeKey } from "../actions/decodeKey";
 import { DeleteRecordArgs, DeleteRecordResult, deleteRecord } from "../actions/deleteRecord";
 import { EncodeKeyArgs, EncodeKeyResult, encodeKey } from "../actions/encodeKey";
@@ -79,7 +79,7 @@ export function defaultActions<config extends StoreConfig>(stash: Stash<config>)
     subscribeQuery: <query extends Query>(args: StashBoundSubscribeQueryArgs<query>) =>
       subscribeQuery({ stash, ...args }),
     subscribeStash: <config extends StoreConfig>(args: StashBoundSubscribeStashArgs<config>) =>
-      subscribeStash({ stash, ...args }),
+      subscribeStash({ stash, subscriber: args.subscriber as StoreUpdatesSubscriber }),
     subscribeTable: <table extends Table>(args: StashBoundSubscribeTableArgs<table>) =>
       subscribeTable({ stash, ...args }),
   };

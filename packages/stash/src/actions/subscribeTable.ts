@@ -21,6 +21,6 @@ export function subscribeTable<table extends Table>({
     registerTable({ stash, table });
   }
 
-  stash._.tableSubscribers[namespaceLabel]?.[label]?.add(subscriber);
-  return () => stash._.tableSubscribers[namespaceLabel]?.[label]?.delete(subscriber);
+  stash._.tableSubscribers[namespaceLabel]?.[label]?.add(subscriber as TableUpdatesSubscriber);
+  return () => stash._.tableSubscribers[namespaceLabel]?.[label]?.delete(subscriber as TableUpdatesSubscriber);
 }

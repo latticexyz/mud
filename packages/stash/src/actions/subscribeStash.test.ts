@@ -39,18 +39,16 @@ describe("subscribeStash", () => {
     vi.advanceTimersToNextTimer();
 
     expect(subscriber).toHaveBeenCalledTimes(1);
-    expect(subscriber).toHaveBeenNthCalledWith(1, {
-      config: {},
-      records: {
-        namespace1: {
-          table1: {
-            "0x00": {
-              prev: undefined,
-              current: { a: "0x00", b: 1n, c: 2 },
-            },
-          },
+    expect(subscriber).toHaveBeenCalledWith({
+      type: "records",
+      updates: [
+        {
+          table: config.tables.namespace1__table1,
+          key: { a: "0x00" },
+          previous: undefined,
+          current: { a: "0x00", b: 1n, c: 2 },
         },
-      },
+      ],
     });
 
     setRecord({ stash, table: config.tables.namespace2__table2, key: { a: "0x01" }, value: { b: 1n, c: 2 } });
@@ -58,17 +56,15 @@ describe("subscribeStash", () => {
 
     expect(subscriber).toHaveBeenCalledTimes(2);
     expect(subscriber).toHaveBeenNthCalledWith(2, {
-      config: {},
-      records: {
-        namespace2: {
-          table2: {
-            "0x01": {
-              prev: undefined,
-              current: { a: "0x01", b: 1n, c: 2 },
-            },
-          },
+      type: "records",
+      updates: [
+        {
+          table: config.tables.namespace2__table2,
+          key: { a: "0x01" },
+          previous: undefined,
+          current: { a: "0x01", b: 1n, c: 2 },
         },
-      },
+      ],
     });
 
     setRecord({ stash, table: config.tables.namespace2__table2, key: { a: "0x01" }, value: { b: 1n, c: 3 } });
@@ -76,17 +72,15 @@ describe("subscribeStash", () => {
 
     expect(subscriber).toHaveBeenCalledTimes(3);
     expect(subscriber).toHaveBeenNthCalledWith(3, {
-      config: {},
-      records: {
-        namespace2: {
-          table2: {
-            "0x01": {
-              prev: { a: "0x01", b: 1n, c: 2 },
-              current: { a: "0x01", b: 1n, c: 3 },
-            },
-          },
+      type: "records",
+      updates: [
+        {
+          table: config.tables.namespace2__table2,
+          key: { a: "0x01" },
+          previous: { a: "0x01", b: 1n, c: 2 },
+          current: { a: "0x01", b: 1n, c: 3 },
         },
-      },
+      ],
     });
 
     deleteRecord({ stash, table: config.tables.namespace2__table2, key: { a: "0x01" } });
@@ -94,17 +88,15 @@ describe("subscribeStash", () => {
 
     expect(subscriber).toHaveBeenCalledTimes(4);
     expect(subscriber).toHaveBeenNthCalledWith(4, {
-      config: {},
-      records: {
-        namespace2: {
-          table2: {
-            "0x01": {
-              prev: { a: "0x01", b: 1n, c: 3 },
-              current: undefined,
-            },
-          },
+      type: "records",
+      updates: [
+        {
+          table: config.tables.namespace2__table2,
+          key: { a: "0x01" },
+          previous: { a: "0x01", b: 1n, c: 3 },
+          current: undefined,
         },
-      },
+      ],
     });
   });
 
@@ -134,17 +126,15 @@ describe("subscribeStash", () => {
 
     expect(subscriber).toHaveBeenCalledTimes(1);
     expect(subscriber).toHaveBeenNthCalledWith(1, {
-      config: {},
-      records: {
-        app: {
-          config: {
-            "": {
-              prev: undefined,
-              current: { enabled: true },
-            },
-          },
+      type: "records",
+      updates: [
+        {
+          table: config.tables.app__config,
+          key: {},
+          previous: undefined,
+          current: { enabled: true },
         },
-      },
+      ],
     });
 
     setRecord({ stash, table: config.tables.app__config, key: {}, value: { enabled: false } });
@@ -152,17 +142,15 @@ describe("subscribeStash", () => {
 
     expect(subscriber).toHaveBeenCalledTimes(2);
     expect(subscriber).toHaveBeenNthCalledWith(2, {
-      config: {},
-      records: {
-        app: {
-          config: {
-            "": {
-              prev: { enabled: true },
-              current: { enabled: false },
-            },
-          },
+      type: "records",
+      updates: [
+        {
+          table: config.tables.app__config,
+          key: {},
+          previous: { enabled: true },
+          current: { enabled: false },
         },
-      },
+      ],
     });
 
     deleteRecord({ stash, table: config.tables.app__config, key: {} });
@@ -170,17 +158,15 @@ describe("subscribeStash", () => {
 
     expect(subscriber).toHaveBeenCalledTimes(3);
     expect(subscriber).toHaveBeenNthCalledWith(3, {
-      config: {},
-      records: {
-        app: {
-          config: {
-            "": {
-              prev: { enabled: false },
-              current: undefined,
-            },
-          },
+      type: "records",
+      updates: [
+        {
+          table: config.tables.app__config,
+          key: {},
+          previous: { enabled: false },
+          current: undefined,
         },
-      },
+      ],
     });
   });
 });

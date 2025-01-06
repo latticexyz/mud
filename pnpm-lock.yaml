@@ -1013,10 +1013,10 @@ importers:
         version: 8.3.4
       jest:
         specifier: ^29.3.1
-        version: 29.5.0(@types/node@18.19.50)
+        version: 29.5.0(@types/node@22.7.4)
       ts-jest:
         specifier: ^29.0.5
-        version: 29.0.5(@babel/core@7.25.7)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.25.7))(jest@29.5.0(@types/node@18.19.50))(typescript@5.4.2)
+        version: 29.0.5(@babel/core@7.25.7)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.25.7))(jest@29.5.0(@types/node@22.7.4))(typescript@5.4.2)
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
@@ -1429,10 +1429,10 @@ importers:
         version: 27.4.1
       jest:
         specifier: ^29.3.1
-        version: 29.5.0(@types/node@22.7.4)
+        version: 29.5.0(@types/node@18.19.50)
       ts-jest:
         specifier: ^29.0.5
-        version: 29.0.5(@babel/core@7.25.7)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.25.7))(jest@29.5.0(@types/node@22.7.4))(typescript@5.4.2)
+        version: 29.0.5(@babel/core@7.25.7)(@jest/types@29.6.3)(babel-jest@29.5.0(@babel/core@7.25.7))(jest@29.5.0(@types/node@18.19.50))(typescript@5.4.2)
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
