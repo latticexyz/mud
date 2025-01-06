@@ -1,6 +1,6 @@
 import path from "path";
 import { loadSystemsManifest, resolveSystems } from "@latticexyz/world/node";
-import { Library, System, WorldFunction } from "./common";
+import { Library, Module, System, WorldFunction } from "./common";
 import { Hex, isHex, toFunctionSelector, toFunctionSignature } from "viem";
 import { getContractData } from "../utils/getContractData";
 import { groupBy } from "@latticexyz/common/utils";
@@ -9,6 +9,7 @@ import { createPrepareDeploy } from "./createPrepareDeploy";
 import { World } from "@latticexyz/world";
 import { findUp } from "find-up";
 import { createRequire } from "node:module";
+import { configToModules } from "./configToModules";
 
 // TODO: replace this with a manifest/combined config output
 
@@ -23,6 +24,7 @@ export async function resolveConfig({
 }): Promise<{
   readonly systems: readonly System[];
   readonly libraries: readonly Library[];
+  readonly modules: readonly Module[];
 }> {
   const requirePath = await findUp("package.json");
   if (!requirePath) throw new Error("Could not find package.json to import relative to.");
@@ -38,7 +40,7 @@ export async function resolveConfig({
     return [moduleOutDir];
   });
 
-  const libraries = [forgeOutDir, ...moduleOutDirs].flatMap((outDir) =>
+  const allLibraries = [forgeOutDir, ...moduleOutDirs].flatMap((outDir) =>
     findLibraries(outDir).map((library) => {
       // foundry/solc flattens artifacts, so we just use the path basename
       const contractData = getContractData(path.basename(library.path), library.name, outDir);
@@ -62,7 +64,7 @@ export async function resolveConfig({
 
   const systems = configSystems
     .filter((system) => !system.deploy.disabled)
-    .map((system): System => {
+    .map((system): System & { placeholderPaths: string[] } => {
       const manifest = systemsManifest.systems.find(({ systemId }) => systemId === system.systemId);
       if (!manifest) {
         throw new Error(
@@ -110,10 +112,7 @@ export async function resolveConfig({
         worldFunctions,
         abi: manifest.abi,
         worldAbi: manifest.worldAbi,
-        dependencies: contractData.placeholders.map((placeholder) => ({
-          name: placeholder.name,
-          path: placeholder.path,
-        })),
+        placeholderPaths: contractData.placeholders.map((placeholder) => placeholder.path),
       };
     });
 
@@ -132,8 +131,19 @@ export async function resolveConfig({
     );
   }
 
+  // TODO: pass artifacts into configToModules (https://github.com/latticexyz/mud/issues/3153)
+  const modules = await configToModules(config, forgeOutDir);
+
+  const dependencyPaths = [
+    ...systems.flatMap((system) => system.placeholderPaths),
+    ...modules.flatMap((mod) => mod.placeholderPaths),
+  ];
+
+  const libraries = allLibraries.filter((lib) => dependencyPaths.includes(lib.path));
+
   return {
     systems,
     libraries,
+    modules,
   };
 }

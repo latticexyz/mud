@@ -15,7 +15,6 @@ import { postDeploy } from "./utils/postDeploy";
 import { WorldDeploy } from "./deploy/common";
 import { build } from "./build";
 import { kmsKeyToAccount } from "@latticexyz/common/kms";
-import { configToModules } from "./deploy/configToModules";
 import { findContractArtifacts } from "@latticexyz/world/node";
 import { enableAutomine } from "./utils/enableAutomine";
 import { defaultChains } from "./defaultChains";
@@ -92,22 +91,13 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     await build({ rootDir, config, foundryProfile: profile });
   }
 
-  const { systems, libraries: allLibraries } = await resolveConfig({
+  const { systems, libraries } = await resolveConfig({
     rootDir,
     config,
     forgeOutDir: outDir,
   });
 
   const artifacts = await findContractArtifacts({ forgeOutDir: outDir });
-  // TODO: pass artifacts into configToModules (https://github.com/latticexyz/mud/issues/3153)
-  const modules = await configToModules(config, outDir);
-
-  const dependencyPaths = [
-    ...systems.flatMap((system) => system.dependencies.flatMap((dep) => dep.path)),
-    ...modules.flatMap((mod) => mod.dependencies.flatMap((dep) => dep.path)),
-  ];
-
-  const libraries = allLibraries.filter((lib) => dependencyPaths.includes(lib.path));
 
   const tables = Object.values(config.namespaces)
     .flatMap((namespace) => Object.values(namespace.tables))

@@ -21,9 +21,9 @@ export async function configToModules<config extends World>(
   config: config,
   // TODO: remove/replace `forgeOutDir`
   forgeOutDir: string,
-): Promise<readonly Module[]> {
+): Promise<readonly (Module & { placeholderPaths: string[] })[]> {
   const modules = await Promise.all(
-    config.modules.map(async (mod): Promise<Module> => {
+    config.modules.map(async (mod) => {
       let artifactPath = mod.artifactPath;
 
       // Backwards compatibility
@@ -75,10 +75,7 @@ export async function configToModules<config extends World>(
         prepareDeploy: createPrepareDeploy(artifact.bytecode, artifact.placeholders),
         deployedBytecodeSize: artifact.deployedBytecodeSize,
         abi: artifact.abi,
-        dependencies: artifact.placeholders.map((placeholder) => ({
-          name: placeholder.name,
-          path: placeholder.path,
-        })),
+        placeholderPaths: artifact.placeholders.map((placeholder) => placeholder.path),
       };
     }),
   );
