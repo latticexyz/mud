@@ -46,6 +46,7 @@ type DeployOptions = {
    */
   deployerAddress?: Hex;
   withWorldProxy?: boolean;
+  deployBlock?: bigint;
 } & Omit<CommonDeployOptions, "worldDeploy">;
 
 /**
@@ -67,24 +68,25 @@ export async function deploy({
   deployerAddress: initialDeployerAddress,
   indexerUrl,
   chainId,
+  deployBlock,
 }: DeployOptions): Promise<WorldDeploy> {
   const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
 
   const worldDeploy = existingWorldAddress
-    ? await getWorldDeploy(client, existingWorldAddress)
+    ? await getWorldDeploy(client, existingWorldAddress, deployBlock)
     : config.deploy.customWorld
-      ? await deployCustomWorld({
-          client,
-          deployerAddress,
-          artifacts,
-          customWorld: config.deploy.customWorld,
-        })
-      : await deployWorld(
-          client,
-          deployerAddress,
-          salt ?? `0x${randomBytes(32).toString("hex")}`,
-          config.deploy.upgradeableWorldImplementation,
-        );
+    ? await deployCustomWorld({
+        client,
+        deployerAddress,
+        artifacts,
+        customWorld: config.deploy.customWorld,
+      })
+    : await deployWorld(
+        client,
+        deployerAddress,
+        salt ?? `0x${randomBytes(32).toString("hex")}`,
+        config.deploy.upgradeableWorldImplementation
+      );
 
   const commonDeployOptions = {
     client,
@@ -169,7 +171,7 @@ export async function deploy({
         tag: "label",
         value: namespaceLabel,
       })),
-    (tag) => tag.resourceId,
+    (tag) => tag.resourceId
   );
 
   const tableTags = tables
