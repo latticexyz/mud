@@ -41,3 +41,56 @@ export const monacoOptions: editor.IStandaloneEditorConstructionOptions = {
   automaticLayout: true,
   fixedOverflowWidgets: true,
 };
+
+export const monacoSuggestionsMap = {
+  KEYWORD: "Keyword",
+  TABLE: "Field",
+  COLUMN: "Field",
+} as const;
+
+export const suggestedSQLKeywords = [
+  // Basic queries
+  "SELECT",
+  "FROM",
+  "WHERE",
+  "GROUP BY",
+  "ORDER BY",
+  "LIMIT",
+  "OFFSET",
+  // Joins
+  "JOIN",
+  "INNER JOIN",
+  "LEFT JOIN",
+  "RIGHT JOIN",
+  "FULL JOIN",
+  "ON",
+  // Aggregates
+  "COUNT",
+  "SUM",
+  "AVG",
+  "MAX",
+  "MIN",
+  // Conditions
+  "AND",
+  "OR",
+  "NOT",
+  "IN",
+  "BETWEEN",
+  "LIKE",
+  "IS NULL",
+  "IS NOT NULL",
+  // Other clauses
+  "HAVING",
+  "DISTINCT",
+  "AS",
+  "WITH",
+  // Sorting
+  "ASC",
+  "DESC",
+  // Set operations
+  "UNION",
+  "UNION ALL",
+  "INTERSECT",
+  "EXCEPT",
+] as const;
+export type SuggestedSQLKeyword = (typeof suggestedSQLKeywords)[number];
