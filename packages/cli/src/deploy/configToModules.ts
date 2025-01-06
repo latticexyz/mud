@@ -1,5 +1,5 @@
 import path from "node:path";
-import { Module } from "./common";
+import { Module, WithPath } from "./common";
 import { encodeField } from "@latticexyz/protocol-parser/internal";
 import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type/internal";
 import { bytesToHex } from "viem";
@@ -21,7 +21,7 @@ export async function configToModules<config extends World>(
   config: config,
   // TODO: remove/replace `forgeOutDir`
   forgeOutDir: string,
-): Promise<readonly (Module & { placeholderPaths: string[] })[]> {
+): Promise<readonly WithPath<Module>[]> {
   const modules = await Promise.all(
     config.modules.map(async (mod) => {
       let artifactPath = mod.artifactPath;
@@ -69,13 +69,13 @@ export async function configToModules<config extends World>(
       }
 
       return {
+        sourcePath: artifactPath,
         name,
         installAsRoot: mod.root,
         installData: installArgs.length === 0 ? "0x" : installArgs[0],
         prepareDeploy: createPrepareDeploy(artifact.bytecode, artifact.placeholders),
         deployedBytecodeSize: artifact.deployedBytecodeSize,
         abi: artifact.abi,
-        placeholderPaths: artifact.placeholders.map((placeholder) => placeholder.path),
       };
     }),
   );

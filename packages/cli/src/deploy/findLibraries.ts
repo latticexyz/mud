@@ -1,11 +1,11 @@
 import { readFileSync } from "fs";
 import { globSync } from "glob";
-import { orderByDependencies } from "./orderByDependencies";
 import { LinkReferences } from "../utils/findPlaceholders";
 
 export function findLibraries(forgeOutDir: string): readonly {
   readonly path: string;
   readonly name: string;
+  readonly dependents: { path: string; name: string }[];
 }[] {
   const artifacts = globSync(`${forgeOutDir}/**/*.json`, { ignore: "**/*.abi.json" })
     .sort()
@@ -38,11 +38,5 @@ export function findLibraries(forgeOutDir: string): readonly {
     }
   });
 
-  const libraries = Array.from(librariesMap.values());
-
-  return orderByDependencies(
-    libraries,
-    (lib) => `${lib.path}:${lib.name}`,
-    (lib) => lib.dependents.map((dep) => `${dep.path}:${dep.name}`),
-  );
+  return Array.from(librariesMap.values());
 }

@@ -126,3 +126,5 @@ export type CommonDeployOptions = {
   readonly indexerUrl?: string;
   readonly chainId?: number;
 };
+
+export type WithPath<T> = T & { sourcePath: string };
