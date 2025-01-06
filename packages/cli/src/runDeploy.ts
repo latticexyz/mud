@@ -91,7 +91,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     await build({ rootDir, config, foundryProfile: profile });
   }
 
-  const { systems, libraries } = await resolveConfig({
+  const { systems, libraries, modules } = await resolveConfig({
     rootDir,
     config,
     forgeOutDir: outDir,
