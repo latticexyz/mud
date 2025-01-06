@@ -83,8 +83,8 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   const rpc = opts.rpc ?? (await getRpcUrl(profile));
   console.log(
     chalk.bgBlue(
-      chalk.whiteBright(`\n Deploying MUD contracts${profile ? " with profile " + profile : ""} to RPC ${rpc} \n`)
-    )
+      chalk.whiteBright(`\n Deploying MUD contracts${profile ? " with profile " + profile : ""} to RPC ${rpc} \n`),
+    ),
   );
 
   // Run build
@@ -111,7 +111,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
       const keyId = process.env.AWS_KMS_KEY_ID;
       if (!keyId) {
         throw new MUDError(
-          "Missing `AWS_KMS_KEY_ID` environment variable. This is required when using with `--kms` option."
+          "Missing `AWS_KMS_KEY_ID` environment variable. This is required when using with `--kms` option.",
         );
       }
 
@@ -122,7 +122,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
         throw new MUDError(
           `Missing PRIVATE_KEY environment variable.
   Run 'echo "PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" > .env'
-  in your contracts directory to use the default anvil private key.`
+  in your contracts directory to use the default anvil private key.`,
         );
       }
 
@@ -144,22 +144,18 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   const chainId = await getChainId(client);
   const indexerUrl = opts.indexerUrl ?? defaultChains.find((chain) => chain.id === chainId)?.indexerUrl;
+  const worldDeployBlock = opts.worldAddress
+    ? getWorldDeployBlock({
+        worldAddress: opts.worldAddress,
+        worldsFile: config.deploy.worldsFile,
+        chainId,
+      })
+    : undefined;
 
   console.log("Deploying from", client.account.address);
 
   // Attempt to enable automine for the duration of the deploy. Noop if automine is not available.
   const automine = await enableAutomine(client);
-
-  // Read saved deployments
-  const deploys = existsSync(config.deploy.worldsFile)
-    ? JSON.parse(readFileSync(config.deploy.worldsFile, "utf-8"))
-    : {};
-
-  // If a previously deployed world is found for this chain, use its blockNumber
-  let deployBlock: bigint | undefined;
-  if (typeof deploys[chainId] !== "undefined" && typeof deploys[chainId].blockNumber === "number") {
-    deployBlock = BigInt(deploys[chainId].blockNumber);
-  }
 
   const startTime = Date.now();
   const worldDeploy = await deploy({
@@ -167,6 +163,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     deployerAddress: opts.deployerAddress as Hex | undefined,
     salt,
     worldAddress: opts.worldAddress as Hex | undefined,
+    worldDeployBlock,
     client,
     tables,
     systems,
@@ -175,7 +172,6 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     artifacts,
     indexerUrl,
     chainId,
-    deployBlock,
   });
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
     await postDeploy(
@@ -184,7 +180,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
       rpc,
       profile,
       opts.forgeScriptOptions,
-      opts.kms ? true : false
+      opts.kms ? true : false,
     );
   }
 
@@ -218,12 +214,26 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
     console.log(
       chalk.bgGreen(
-        chalk.whiteBright(`\n Deployment result (written to ${config.deploy.worldsFile} and ${deploysDir}): \n`)
-      )
+        chalk.whiteBright(`\n Deployment result (written to ${config.deploy.worldsFile} and ${deploysDir}): \n`),
+      ),
     );
   }
 
   console.log(deploymentInfo);
 
   return worldDeploy;
+}
+
+function getWorldDeployBlock({
+  chainId,
+  worldAddress,
+  worldsFile,
+}: {
+  chainId: number;
+  worldAddress: string;
+  worldsFile: string;
+}): bigint | undefined {
+  const deploys = existsSync(worldsFile) ? JSON.parse(readFileSync(worldsFile, "utf-8")) : {};
+  const worldDeployBlock = deploys[chainId]?.address === worldAddress ? deploys[chainId].blockNumber : undefined;
+  return worldDeployBlock ? BigInt(worldDeployBlock) : undefined;
 }

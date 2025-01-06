@@ -39,6 +39,11 @@ type DeployOptions = {
   salt?: Hex;
   worldAddress?: Address;
   /**
+   * Block number of an existing world deployment.
+   * Only used if `worldAddress` is provided.
+   */
+  worldDeployBlock?: bigint;
+  /**
    * Address of determinstic deployment proxy: https://github.com/Arachnid/deterministic-deployment-proxy
    * By default, we look for a deployment at 0x4e59b44847b379578588920ca78fbf26c0b4956c and, if not, deploy one.
    * If the target chain does not support legacy transactions, we deploy the proxy bytecode anyway, but it will
@@ -46,7 +51,6 @@ type DeployOptions = {
    */
   deployerAddress?: Hex;
   withWorldProxy?: boolean;
-  deployBlock?: bigint;
 } & Omit<CommonDeployOptions, "worldDeploy">;
 
 /**
@@ -65,28 +69,28 @@ export async function deploy({
   artifacts,
   salt,
   worldAddress: existingWorldAddress,
+  worldDeployBlock,
   deployerAddress: initialDeployerAddress,
   indexerUrl,
   chainId,
-  deployBlock,
 }: DeployOptions): Promise<WorldDeploy> {
   const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
 
   const worldDeploy = existingWorldAddress
-    ? await getWorldDeploy(client, existingWorldAddress, deployBlock)
+    ? await getWorldDeploy(client, existingWorldAddress, worldDeployBlock)
     : config.deploy.customWorld
-    ? await deployCustomWorld({
-        client,
-        deployerAddress,
-        artifacts,
-        customWorld: config.deploy.customWorld,
-      })
-    : await deployWorld(
-        client,
-        deployerAddress,
-        salt ?? `0x${randomBytes(32).toString("hex")}`,
-        config.deploy.upgradeableWorldImplementation
-      );
+      ? await deployCustomWorld({
+          client,
+          deployerAddress,
+          artifacts,
+          customWorld: config.deploy.customWorld,
+        })
+      : await deployWorld(
+          client,
+          deployerAddress,
+          salt ?? `0x${randomBytes(32).toString("hex")}`,
+          config.deploy.upgradeableWorldImplementation,
+        );
 
   const commonDeployOptions = {
     client,
@@ -171,7 +175,7 @@ export async function deploy({
         tag: "label",
         value: namespaceLabel,
       })),
-    (tag) => tag.resourceId
+    (tag) => tag.resourceId,
   );
 
   const tableTags = tables

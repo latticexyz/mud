@@ -10,7 +10,7 @@ const deploys = new Map<Address, WorldDeploy>();
 export async function getWorldDeploy(
   client: Client,
   worldAddress: Address,
-  deployBlock?: bigint
+  deployBlock?: bigint,
 ): Promise<WorldDeploy> {
   const address = getAddress(worldAddress);
 
@@ -24,17 +24,9 @@ export async function getWorldDeploy(
 
   debug("looking up world deploy for", address);
 
-  let fromBlock, toBlock;
-  if (typeof deployBlock === "bigint") {
-    const block = await getBlock(client, { blockNumber: deployBlock });
-    fromBlock = block;
-    toBlock = block;
-  } else {
-    [fromBlock, toBlock] = await Promise.all([
-      getBlock(client, { blockTag: "earliest" }),
-      getBlock(client, { blockTag: "latest" }),
-    ]);
-  }
+  const [fromBlock, toBlock] = deployBlock
+    ? [{ number: deployBlock }, { number: deployBlock }]
+    : await Promise.all([getBlock(client, { blockTag: "earliest" }), getBlock(client, { blockTag: "latest" })]);
 
   const blockLogs = await fetchBlockLogs({
     publicClient: client,
