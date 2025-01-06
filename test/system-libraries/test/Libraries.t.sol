@@ -14,9 +14,11 @@ import { SYSTEMBOUND_DELEGATION } from "@latticexyz/world-modules/src/modules/st
 
 import { Value } from "../src/namespaces/a/codegen/tables/Value.sol";
 import { AddressValue } from "../src/namespaces/a/codegen/tables/AddressValue.sol";
-import { aSystem } from "../src/namespaces/a/codegen/systems/ASystemLib.sol";
+import { aSystem, ASystemThing } from "../src/namespaces/a/codegen/systems/ASystemLib.sol";
 import { bSystem } from "../src/namespaces/b/codegen/systems/BSystemLib.sol";
 import { rootSystem } from "../src/namespaces/root/codegen/systems/RootSystemLib.sol";
+import { PositionValue } from "../src/namespaces/a/codegen/tables/PositionValue.sol";
+import { Position } from "../src/namespaces/a/ASystemTypes.sol";
 
 contract LibrariesTest is MudTest {
   function testNamespaceIdExists() public {
@@ -26,14 +28,37 @@ contract LibrariesTest is MudTest {
 
   function testCanCallSystemWithLibrary() public {
     uint256 value = 0xDEADBEEF;
-    aSystem.setValue(value);
+    ASystemThing memory thing = ASystemThing(value);
+    aSystem.setValue(thing);
     assertEq(Value.get(), value);
     assertEq(aSystem.getValue(), value);
   }
 
+  function testCanCallSystemWithComplexArgumentTypes() public {
+    Position memory position = Position(1, 2, 3);
+    aSystem.setPosition(position);
+    assertEq(PositionValue.getX(), position.x);
+    assertEq(PositionValue.getY(), position.y);
+    assertEq(PositionValue.getZ(), position.z);
+
+    aSystem.setPosition(1, 2, 3);
+    assertEq(PositionValue.getX(), 1);
+    assertEq(PositionValue.getY(), 2);
+    assertEq(PositionValue.getZ(), 3);
+
+    Position[] memory positions = new Position[](2);
+    positions[0] = Position(1, 2, 3);
+    positions[1] = Position(4, 5, 6);
+    aSystem.setPositions(positions);
+    assertEq(PositionValue.getX(), 4);
+    assertEq(PositionValue.getY(), 5);
+    assertEq(PositionValue.getZ(), 6);
+  }
+
   function testCanCallSystemFromOtherSystem() public {
     uint256 value = 0xDEADBEEF;
-    bSystem.setValueInA(value);
+    ASystemThing memory thing = ASystemThing(value);
+    bSystem.setValueInA(thing);
     assertEq(Value.get(), value);
     assertEq(bSystem.getValueFromA(), value);
   }
@@ -56,8 +81,9 @@ contract LibrariesTest is MudTest {
 
   function testCanCallFromRootSystemWithLibrary() public {
     uint256 value = 0xDEADBEEF;
+    ASystemThing memory thing = ASystemThing(value);
     // internally, rootSystem uses callAsRoot to call aSystem
-    rootSystem.setValueInA(value);
+    rootSystem.setValueInA(thing);
     assertEq(Value.get(), value);
     assertEq(aSystem.getValue(), value);
     assertEq(rootSystem.getValueFromA(), value);
