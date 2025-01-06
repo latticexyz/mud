@@ -10,7 +10,7 @@
     "lint": "pnpm run prettier && pnpm run solhint",
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
-    "test": "mud test"
+    "test": "tsc --noEmit && mud test"
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../packages/cli",
