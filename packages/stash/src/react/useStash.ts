@@ -1,8 +1,8 @@
 import { useDebugValue, useSyncExternalStore } from "react";
-import { subscribeStash } from "../actions";
 import { StoreConfig, Stash, State } from "../common";
 import { isEqual } from "./isEqual";
 import { memoize } from "./memoize";
+import { subscribeStash } from "../actions/subscribeStash";
 
 export type UseStashOptions<T> = {
   /**

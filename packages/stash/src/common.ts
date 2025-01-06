@@ -19,6 +19,18 @@ export type getNamespaceTables<
   namespace extends keyof config["namespaces"],
 > = keyof config["namespaces"][namespace]["tables"];
 
+type namespacedTableLabels<config extends StoreConfig> = keyof {
+  [key in keyof config["namespaces"] as `${key & string}__${keyof config["namespaces"][key]["tables"] & string}`]: null;
+};
+
+type namespacedTables<config extends StoreConfig> = {
+  [key in namespacedTableLabels<config>]: key extends `${infer namespaceLabel}__${infer tableLabel}`
+    ? config["namespaces"][namespaceLabel]["tables"][tableLabel]
+    : never;
+};
+
+export type getAllTables<config extends StoreConfig> = namespacedTables<config>[keyof namespacedTables<config>];
+
 export type getConfig<
   config extends StoreConfig,
   namespace extends keyof config["namespaces"] | undefined,
@@ -118,38 +130,33 @@ export type MutableState<config extends StoreConfig = StoreConfig> = {
 };
 
 export type TableUpdate<table extends Table = Table> = {
-  prev: TableRecord<table> | undefined;
+  table: table;
+  key: Key<table>;
+  previous: TableRecord<table> | undefined;
   current: TableRecord<table> | undefined;
 };
 
-export type TableUpdates<table extends Table = Table> = { [key: string]: TableUpdate<table> };
+export type TableUpdates<table extends Table = Table> = TableUpdate<table>[];
 
 export type TableUpdatesSubscriber<table extends Table = Table> = (updates: TableUpdates<table>) => void;
 
 export type TableSubscribers = {
-  [namespace: string]: {
-    [table: string]: Set<TableUpdatesSubscriber>;
+  [namespaceLabel: string]: {
+    [tableLabel: string]: Set<TableUpdatesSubscriber>;
   };
 };
 
-export type ConfigUpdate = { prev: Table | undefined; current: Table };
+export type ConfigUpdate = { previous: Table | undefined; current: Table };
 
-export type StoreUpdates<config extends StoreConfig = StoreConfig> = {
-  config: {
-    [namespace: string]: {
-      [table: string]: ConfigUpdate;
+export type StoreUpdates<config extends StoreConfig = StoreConfig> =
+  | {
+      type: "config";
+      updates: ConfigUpdate[];
+    }
+  | {
+      type: "records";
+      updates: TableUpdates<getAllTables<config>>;
     };
-  };
-  records: {
-    [namespace in getNamespaces<config>]: {
-      [table in getNamespaceTables<config, namespace>]: TableUpdates<getConfig<config, namespace, table>>;
-    };
-  } & {
-    [namespace: string]: {
-      [table: string]: TableUpdates;
-    };
-  };
-};
 
 export type StoreUpdatesSubscriber<config extends StoreConfig = StoreConfig> = (updates: StoreUpdates<config>) => void;
 
