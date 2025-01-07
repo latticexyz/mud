@@ -52,7 +52,6 @@ contract GenerousPaymasterTest is Test {
   }
 
   function testCallWithPaymaster() external {
-    vm.deal(address(account), 1e18);
     PackedUserOperation memory op = fillUserOp(
       account,
       userKey,
@@ -67,6 +66,7 @@ contract GenerousPaymasterTest is Test {
     assertEq(beneficiary.balance, 0);
     submitUserOp(op);
     assertEq(counter.counters(address(account)), 1);
+    assertLt(entryPoint.balanceOf(address(paymaster)), paymasterDeposit);
   }
 
   function fillUserOp(

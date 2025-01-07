@@ -6,12 +6,17 @@ import { IEntryPoint } from "@account-abstraction/contracts/interfaces/IEntryPoi
 import { PackedUserOperation } from "@account-abstraction/contracts/interfaces/PackedUserOperation.sol";
 import { BasePaymaster } from "@account-abstraction/contracts/core/BasePaymaster.sol";
 
+/**
+ * @title Generous Paymaster
+ * @author MUD (https://mud.dev) by Lattice (https://lattice.xyz)
+ * @dev This contract is a simple paymaster that sponsors all user operations.
+ *      It is intended for local development purposes.
+ */
 contract GenerousPaymaster is BasePaymaster {
   constructor(IEntryPoint _entryPoint) BasePaymaster(_entryPoint) {}
 
   /**
    * Payment validation: check if paymaster agrees to pay.
-   * Must verify sender is the entryPoint.
    * Revert to reject this request.
    * Note that bundlers will reject this method if it changes the state, unless the paymaster is trusted (whitelisted).
    * The paymaster pre-pays using its deposit, and receive back a refund after the postOp method returns.
@@ -37,7 +42,6 @@ contract GenerousPaymaster is BasePaymaster {
 
   /**
    * Post-operation handler.
-   * Must verify sender is the entryPoint.
    * @param mode          - Enum with the following options:
    *                        opSucceeded - User operation succeeded.
    *                        opReverted  - User op reverted. The paymaster still has to pay for gas.
