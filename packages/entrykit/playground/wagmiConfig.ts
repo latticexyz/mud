@@ -8,9 +8,6 @@ const chains = [
     ...anvil,
     rpcUrls: {
       ...anvil.rpcUrls,
-      bundler: {
-        http: ["http://127.0.0.1:4337"],
-      },
       // TODO: automatically grant allowance in anvil instead of requiring the service
       quarryPassIssuer: {
         http: ["http://127.0.0.1:3003/rpc"],
