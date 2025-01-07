@@ -1,8 +1,11 @@
 "use client";
 
-import { Coins, Eye, Send } from "lucide-react";
-import { Abi, AbiFunction } from "viem";
-import { useAccount } from "wagmi";
+import { Coins, Eye, LoaderIcon, Send } from "lucide-react";
+import { useParams } from "next/navigation";
+import { toast } from "sonner";
+import { Abi, AbiFunction, Address, decodeEventLog } from "viem";
+import { useAccount, useConfig } from "wagmi";
+import { readContract, waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { z } from "zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -12,7 +15,7 @@ import { Button } from "../../../../../../components/ui/Button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../../../../../components/ui/Form";
 import { Input } from "../../../../../../components/ui/Input";
 import { Separator } from "../../../../../../components/ui/Separator";
-import { useContractMutation } from "./useContractMutation";
+import { useChain } from "../../../../hooks/useChain";
 
 export enum FunctionType {
   READ,
@@ -34,10 +37,13 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
     functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure"
       ? FunctionType.READ
       : FunctionType.WRITE;
-  const [result, setResult] = useState<string | null>(null);
   const { openConnectModal } = useConnectModal();
-  const mutation = useContractMutation({ worldAbi, functionAbi, operationType });
+  const wagmiConfig = useConfig();
   const account = useAccount();
+  const { worldAddress } = useParams();
+  const { id: chainId } = useChain();
+  const [result, setResult] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,13 +57,44 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
       return openConnectModal?.();
     }
 
-    const mutationResult = await mutation.mutateAsync({
-      inputs: values.inputs,
-      value: values.value,
-    });
+    setIsLoading(true);
+    let toastId;
+    try {
+      if (operationType === FunctionType.READ) {
+        const result = await readContract(wagmiConfig, {
+          abi: worldAbi,
+          address: worldAddress as Address,
+          functionName: functionAbi.name,
+          args: values.inputs,
+          chainId,
+        });
 
-    if (operationType === FunctionType.READ && "result" in mutationResult) {
-      setResult(JSON.stringify(mutationResult.result, null, 2));
+        setResult(JSON.stringify(result, null, 2));
+      } else {
+        toastId = toast.loading("Transaction submitted");
+        const txHash = await writeContract(wagmiConfig, {
+          abi: worldAbi,
+          address: worldAddress as Address,
+          functionName: functionAbi.name,
+          args: values.inputs,
+          ...(values.value && { value: BigInt(values.value) }),
+          chainId,
+        });
+        const receipt = await waitForTransactionReceipt(wagmiConfig, { hash: txHash });
+        const events = receipt?.logs.map((log) => decodeEventLog({ ...log, abi: worldAbi }));
+
+        setResult(JSON.stringify(events, null, 2));
+        toast.success(`Transaction successful with hash: ${txHash}`, {
+          id: toastId,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error((error as Error).message || "Something went wrong. Please try again.", {
+        id: toastId,
+      });
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -110,9 +147,9 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
           />
         )}
 
-        <Button type="submit" disabled={mutation.isPending}>
-          {(functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure") && "Read"}
-          {(functionAbi.stateMutability === "payable" || functionAbi.stateMutability === "nonpayable") && "Write"}
+        <Button type="submit" disabled={isLoading || !account.isConnected}>
+          {isLoading && <LoaderIcon className="-ml-2 mr-2 h-4 w-4 animate-spin" />}
+          {operationType === FunctionType.READ ? "Read" : "Write"}
         </Button>
 
         {result && <pre className="text-md rounded border p-3 text-sm">{result}</pre>}
