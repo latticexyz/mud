@@ -16,7 +16,7 @@
     "*": {}
   },
   "files": [
-    "out",
+    "out/GenerousPaymaster.sol",
     "src"
   ],
   "scripts": {
