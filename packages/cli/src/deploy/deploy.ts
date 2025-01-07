@@ -1,5 +1,4 @@
 import { Address, Hex, stringToHex } from "viem";
-import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
 import {
@@ -18,16 +17,15 @@ import { ensureModules } from "./ensureModules";
 import { ensureNamespaceOwner } from "./ensureNamespaceOwner";
 import { debug } from "./debug";
 import { resourceToHex, resourceToLabel } from "@latticexyz/common";
-import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";
 import { Table } from "@latticexyz/config";
 import { ensureResourceTags } from "./ensureResourceTags";
-import { waitForTransactions } from "./waitForTransactions";
 import { ContractArtifact } from "@latticexyz/world/node";
 import { World } from "@latticexyz/world";
 import { deployCustomWorld } from "./deployCustomWorld";
 import { uniqueBy } from "@latticexyz/common/utils";
 import { getLibraryMap } from "./getLibraryMap";
+import { ensureContractsDeployed, ensureDeployer, waitForTransactions } from "@latticexyz/common/internal";
 
 type DeployOptions = {
   config: World;

@@ -4,36 +4,33 @@ import batchCallSystemBuild from "@latticexyz/world/out/BatchCallSystem.sol/Batc
 import registrationSystemBuild from "@latticexyz/world/out/RegistrationSystem.sol/RegistrationSystem.json" assert { type: "json" };
 import initModuleBuild from "@latticexyz/world/out/InitModule.sol/InitModule.json" assert { type: "json" };
 import initModuleAbi from "@latticexyz/world/out/InitModule.sol/InitModule.abi.json" assert { type: "json" };
-import { Hex, getCreate2Address, encodeDeployData, size } from "viem";
-import { salt } from "./common";
+import { Hex, encodeDeployData, size } from "viem";
+import { getContractAddress } from "@latticexyz/common/internal";
 
 export function getWorldContracts(deployerAddress: Hex) {
   const accessManagementSystemDeployedBytecodeSize = size(accessManagementSystemBuild.deployedBytecode.object as Hex);
   const accessManagementSystemBytecode = accessManagementSystemBuild.bytecode.object as Hex;
-  const accessManagementSystem = getCreate2Address({
-    from: deployerAddress,
+  const accessManagementSystem = getContractAddress({
+    deployerAddress,
     bytecode: accessManagementSystemBytecode,
-    salt,
   });
 
   const balanceTransferSystemDeployedBytecodeSize = size(balanceTransferSystemBuild.deployedBytecode.object as Hex);
   const balanceTransferSystemBytecode = balanceTransferSystemBuild.bytecode.object as Hex;
-  const balanceTransferSystem = getCreate2Address({
-    from: deployerAddress,
+  const balanceTransferSystem = getContractAddress({
+    deployerAddress,
     bytecode: balanceTransferSystemBytecode,
-    salt,
   });
 
   const batchCallSystemDeployedBytecodeSize = size(batchCallSystemBuild.deployedBytecode.object as Hex);
   const batchCallSystemBytecode = batchCallSystemBuild.bytecode.object as Hex;
-  const batchCallSystem = getCreate2Address({ from: deployerAddress, bytecode: batchCallSystemBytecode, salt });
+  const batchCallSystem = getContractAddress({ deployerAddress, bytecode: batchCallSystemBytecode });
 
   const registrationDeployedBytecodeSize = size(registrationSystemBuild.deployedBytecode.object as Hex);
   const registrationBytecode = registrationSystemBuild.bytecode.object as Hex;
-  const registration = getCreate2Address({
-    from: deployerAddress,
+  const registration = getContractAddress({
+    deployerAddress,
     bytecode: registrationBytecode,
-    salt,
   });
 
   const initModuleDeployedBytecodeSize = size(initModuleBuild.deployedBytecode.object as Hex);
@@ -42,7 +39,7 @@ export function getWorldContracts(deployerAddress: Hex) {
     abi: initModuleAbi,
     args: [accessManagementSystem, balanceTransferSystem, batchCallSystem, registration],
   });
-  const initModule = getCreate2Address({ from: deployerAddress, bytecode: initModuleBytecode, salt });
+  const initModule = getContractAddress({ deployerAddress, bytecode: initModuleBytecode });
 
   return {
     AccessManagementSystem: {
