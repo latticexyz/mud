@@ -4,9 +4,6 @@ import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
 import { LibraryMap } from "./getLibraryMap";
 
-// https://eips.ethereum.org/EIPS/eip-170
-export const contractSizeLimit = parseInt("6000", 16);
-
 export const worldDeployEvents = [helloStoreEvent, helloWorldEvent] as const;
 
 export const worldAbi = IBaseWorldAbi;
