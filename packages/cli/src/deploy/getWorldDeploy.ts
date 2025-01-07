@@ -13,8 +13,6 @@ export async function getWorldDeploy(
   deployBlock?: bigint,
 ): Promise<WorldDeploy> {
   const address = getAddress(worldAddress);
-
-  // Fetch latest block to set the range of blocks for logs retrieval.
   const stateBlock = await getBlock(client, { blockTag: "latest" });
 
   let deploy = deploys.get(address);
