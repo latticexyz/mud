@@ -2,6 +2,12 @@ import { formatEther } from "viem";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+Object.defineProperty(BigInt.prototype, "toJSON", {
+  get() {
+    return () => String(this);
+  },
+});
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
