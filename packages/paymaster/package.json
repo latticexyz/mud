@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/paymaster",
   "version": "2.2.14",
-  "description": "Paymaster Contracts",
+  "description": "Paymaster contracts",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",

@@ -1,3 +1,3 @@
-# Paymaster Contracts
+# Paymaster contracts
 
 > :warning: **Important note: these contracts have not been audited yet, so any production use is discouraged for now.**
