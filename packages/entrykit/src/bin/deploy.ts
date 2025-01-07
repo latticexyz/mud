@@ -6,6 +6,7 @@ import { getRpcUrl } from "@latticexyz/common/foundry";
 import { ensureContractsDeployed, ensureDeployer, getContractAddress } from "@latticexyz/common/internal";
 import entryPointArtifact from "@account-abstraction/contracts/artifacts/EntryPoint.json" assert { type: "json" };
 import simpleAccountFactoryArtifact from "@account-abstraction/contracts/artifacts/SimpleAccountFactory.json" assert { type: "json" };
+import paymasterArtifact from "@latticexyz/paymaster/out/GenerousPaymaster.sol/GenerousPaymaster.json" assert { type: "json" };
 
 // TODO: parse env with arktype (to avoid zod dep) and throw when absent
 
@@ -35,6 +36,13 @@ const client = createWalletClient({
 const deployerAddress = await ensureDeployer(client);
 
 const entryPointAddress = getContractAddress({ deployerAddress, bytecode: entryPointArtifact.bytecode as Hex });
+const paymasterBytecode = concatHex([
+  paymasterArtifact.bytecode.object as Hex,
+  encodeAbiParameters(parseAbiParameters("address"), [entryPointAddress]),
+]);
+const paymasterAddress = getContractAddress({ deployerAddress, bytecode: paymasterBytecode });
+
+// TODO: figure out how to deploy these so that we end up with the expected addresses of entrypoint and simple account factory
 
 await ensureContractsDeployed({
   client,
@@ -46,7 +54,6 @@ await ensureContractsDeployed({
       debugLabel: "EntryPoint v0.7",
     },
     {
-      // TODO: add support for deploying with constructor args instead of concating here
       bytecode: concatHex([
         simpleAccountFactoryArtifact.bytecode as Hex,
         encodeAbiParameters(parseAbiParameters("address"), [entryPointAddress]),
@@ -54,8 +61,17 @@ await ensureContractsDeployed({
       deployedBytecodeSize: size(simpleAccountFactoryArtifact.deployedBytecode as Hex),
       debugLabel: "SimpleAccountFactory",
     },
+    {
+      bytecode: paymasterBytecode,
+      deployedBytecodeSize: size(paymasterArtifact.deployedBytecode.object as Hex),
+      debugLabel: "GenerousPaymaster",
+    },
   ],
 });
 
 console.log("\nEntryKit prerequisites are deployed!\n");
+
+// TODO: fund paymaster
+console.log("TODO: fund paymaster at", paymasterAddress);
+
 process.exit(0);
