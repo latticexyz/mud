@@ -35,6 +35,7 @@ export function TransactionTableRow({ row }: { row: Row<ObservedTransaction> }) 
   const status = data.status;
   const logs = data?.logs;
   const receipt = data?.receipt;
+  const calls = data?.calls.filter((call) => call.args && call.args.length > 0);
 
   return (
     <>
@@ -78,34 +79,42 @@ export function TransactionTableRow({ row }: { row: Row<ObservedTransaction> }) 
                   </TransactionTableRowDataCell>
                 </div>
 
-                <Separator className="my-5" />
-                <div className="flex items-start gap-x-4">
-                  <h3 className="w-[45px] flex-shrink-0 text-2xs font-bold uppercase">Inputs</h3>
+                {calls.length > 0 ? (
+                  <>
+                    <Separator className="my-5" />
+                    <div className="flex items-start gap-x-4">
+                      <h3 className="w-[45px] flex-shrink-0 text-2xs font-bold uppercase">Inputs</h3>
 
-                  {data.calls.length > 0 ? (
-                    <div className="flex w-full flex-col gap-y-4">
-                      {data.calls.map((call, idx) => (
-                        <div key={idx} className="min-w-0 flex-grow border border-white/20 p-2 pt-1">
-                          <span className="text-xs">{call.functionName}:</span>
-                          {call.args?.map((arg, argIdx) => (
-                            <div key={argIdx} className="flex">
-                              <span className="flex-shrink-0 text-xs text-white/60">arg {argIdx + 1}:</span>
-                              <span className="ml-2 break-all text-xs">
-                                {typeof arg === "object" && arg !== null ? JSON.stringify(arg, null, 2) : String(arg)}
-                              </span>
+                      <div className="flex w-full flex-col gap-y-4">
+                        {calls.map((call, idx) => {
+                          if (!call.args || call.args.length === 0) {
+                            return null;
+                          }
+
+                          return (
+                            <div key={idx} className="min-w-0 flex-grow border border-white/20 p-2 pt-1">
+                              <span className="text-xs">{call.functionName}:</span>
+                              {call.args?.map((arg, argIdx) => (
+                                <div key={argIdx} className="flex">
+                                  <span className="flex-shrink-0 text-xs text-white/60">arg {argIdx + 1}:</span>
+                                  <span className="ml-2 break-all text-xs">
+                                    {typeof arg === "object" && arg !== null
+                                      ? JSON.stringify(arg, null, 2)
+                                      : String(arg)}
+                                  </span>
+                                </div>
+                              ))}
+
+                              {call.value && call.value > 0n ? (
+                                <div className="text-xs text-white/60">value: {formatEther(call.value)} ETH</div>
+                              ) : null}
                             </div>
-                          ))}
-
-                          {call.value && call.value > 0n ? (
-                            <div className="text-xs text-white/60">value: {formatEther(call.value)} ETH</div>
-                          ) : null}
-                        </div>
-                      ))}
+                          );
+                        })}
+                      </div>
                     </div>
-                  ) : (
-                    <p className="text-2xs uppercase text-white/60">No inputs</p>
-                  )}
-                </div>
+                  </>
+                ) : null}
 
                 {data.error ? (
                   <>

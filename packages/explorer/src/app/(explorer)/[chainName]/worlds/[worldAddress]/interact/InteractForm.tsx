@@ -44,7 +44,7 @@ export function InteractForm() {
             {!isFetched &&
               Array.from({ length: 10 }).map((_, index) => {
                 return (
-                  <li key={index} className="pt-2">
+                  <li key={index} className="pr-4 pt-2">
                     <Skeleton className="h-[25px]" />
                   </li>
                 );
