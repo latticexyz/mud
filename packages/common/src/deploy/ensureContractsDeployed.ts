@@ -1,7 +1,7 @@
 import { Client, Transport, Chain, Account, Hex } from "viem";
 import { Contract, ensureContract } from "./ensureContract";
-import { uniqueBy } from "@latticexyz/common/utils";
-import { waitForTransactions } from "./waitForTransactions";
+import { waitForTransactions } from "../waitForTransactions";
+import { uniqueBy } from "../utils/uniqueBy";
 
 export async function ensureContractsDeployed({
   client,

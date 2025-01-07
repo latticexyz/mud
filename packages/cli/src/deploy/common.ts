@@ -1,13 +1,8 @@
-import { Abi, Account, Address, Chain, Client, Hex, Transport, padHex } from "viem";
+import { Abi, Account, Address, Chain, Client, Hex, Transport } from "viem";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
 import { LibraryMap } from "./getLibraryMap";
-
-export const salt = padHex("0x", { size: 32 });
-
-// https://eips.ethereum.org/EIPS/eip-170
-export const contractSizeLimit = parseInt("6000", 16);
 
 export const worldDeployEvents = [helloStoreEvent, helloWorldEvent] as const;
 

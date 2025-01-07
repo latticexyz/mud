@@ -1,9 +1,8 @@
 import { Client, Transport, Chain, Account, concatHex, getCreate2Address, Hex } from "viem";
-import { getBytecode } from "viem/actions";
-import { contractSizeLimit, salt } from "./common";
-import { sendTransaction } from "@latticexyz/common";
+import { getCode } from "viem/actions";
+import { contractSizeLimit, singletonSalt } from "./common";
 import { debug } from "./debug";
-import pRetry from "p-retry";
+import { sendTransaction } from "../sendTransaction";
 
 export type Contract = {
   bytecode: Hex;
@@ -25,9 +24,9 @@ export async function ensureContract({
     throw new Error(`Found unlinked public library in ${debugLabel} bytecode`);
   }
 
-  const address = getCreate2Address({ from: deployerAddress, salt, bytecode });
+  const address = getCreate2Address({ from: deployerAddress, salt: singletonSalt, bytecode });
 
-  const contractCode = await getBytecode(client, { address, blockTag: "pending" });
+  const contractCode = await getCode(client, { address, blockTag: "pending" });
   if (contractCode) {
     debug("found", debugLabel, "at", address);
     return [];
@@ -48,17 +47,10 @@ export async function ensureContract({
 
   debug("deploying", debugLabel, "at", address);
   return [
-    await pRetry(
-      () =>
-        sendTransaction(client, {
-          chain: client.chain ?? null,
-          to: deployerAddress,
-          data: concatHex([salt, bytecode]),
-        }),
-      {
-        retries: 3,
-        onFailedAttempt: () => debug(`failed to deploy ${debugLabel}, retrying...`),
-      },
-    ),
+    await sendTransaction(client, {
+      chain: client.chain ?? null,
+      to: deployerAddress,
+      data: concatHex([singletonSalt, bytecode]),
+    }),
   ];
 }
