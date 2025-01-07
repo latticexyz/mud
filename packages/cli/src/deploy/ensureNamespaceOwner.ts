@@ -1,12 +1,10 @@
 import { Hex, getAddress } from "viem";
 import { CommonDeployOptions, worldAbi } from "./common";
-import { hexToResource, resourceToHex } from "@latticexyz/common";
+import { hexToResource, resourceToHex, writeContract } from "@latticexyz/common";
 import { getResourceIds } from "./getResourceIds";
 import { getTableValue } from "./getTableValue";
 import { debug } from "./debug";
 import worldConfig from "@latticexyz/world/mud.config";
-import { getAction } from "viem/utils";
-import { writeContract } from "viem/actions";
 
 export async function ensureNamespaceOwner({
   client,
@@ -60,13 +58,8 @@ export async function ensureNamespaceOwner({
   }
   const registrationTxs = Promise.all(
     missingNamespaces.map((namespace) =>
-      getAction(
-        client,
-        writeContract,
-        "writeContract",
-      )({
+      writeContract(client, {
         chain: client.chain ?? null,
-        account: client.account,
         address: worldDeploy.address,
         abi: worldAbi,
         functionName: "registerNamespace",

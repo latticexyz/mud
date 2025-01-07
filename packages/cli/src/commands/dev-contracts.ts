@@ -18,7 +18,6 @@ const devOptions = {
   alwaysRunPostDeploy: deployOptions.alwaysRunPostDeploy,
   forgeScriptOptions: deployOptions.forgeScriptOptions,
   worldAddress: deployOptions.worldAddress,
-  smartAccount: deployOptions.smartAccount,
 };
 
 const commandModule: CommandModule<typeof devOptions, InferredOptionTypes<typeof devOptions>> = {

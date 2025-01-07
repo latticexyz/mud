@@ -1,9 +1,9 @@
 import { Client, Transport, Chain, Account, concatHex, getCreate2Address, Hex } from "viem";
-import { getCode, sendTransaction } from "viem/actions";
+import { getBytecode } from "viem/actions";
 import { contractSizeLimit, salt } from "./common";
+import { sendTransaction } from "@latticexyz/common";
 import { debug } from "./debug";
 import pRetry from "p-retry";
-import { getAction } from "viem/utils";
 
 export type Contract = {
   bytecode: Hex;
@@ -27,7 +27,7 @@ export async function ensureContract({
 
   const address = getCreate2Address({ from: deployerAddress, salt, bytecode });
 
-  const contractCode = await getAction(client, getCode, "getCode")({ address, blockTag: "pending" });
+  const contractCode = await getBytecode(client, { address, blockTag: "pending" });
   if (contractCode) {
     debug("found", debugLabel, "at", address);
     return [];
@@ -50,13 +50,8 @@ export async function ensureContract({
   return [
     await pRetry(
       () =>
-        getAction(
-          client,
-          sendTransaction,
-          "sendTransaction",
-        )({
+        sendTransaction(client, {
           chain: client.chain ?? null,
-          account: client.account,
           to: deployerAddress,
           data: concatHex([salt, bytecode]),
         }),

@@ -10,9 +10,6 @@ import { WorldDeploy, worldAbi } from "./common";
 import { Client, Hex } from "viem";
 import { readContract } from "viem/actions";
 import { Table } from "@latticexyz/config";
-import { getAction } from "viem/utils";
-
-// TODO: replace calls to this with store's getRecord
 
 export async function getTableValue<table extends Table>({
   client,
@@ -25,11 +22,7 @@ export async function getTableValue<table extends Table>({
   readonly table: table;
   readonly key: getSchemaPrimitives<getKeySchema<table>>;
 }): Promise<getSchemaPrimitives<getValueSchema<table>>> {
-  const [staticData, encodedLengths, dynamicData] = (await getAction(
-    client,
-    readContract,
-    "readContract",
-  )({
+  const [staticData, encodedLengths, dynamicData] = (await readContract(client, {
     blockNumber: worldDeploy.stateBlock,
     address: worldDeploy.address,
     abi: worldAbi,

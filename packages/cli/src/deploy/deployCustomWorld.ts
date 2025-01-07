@@ -1,6 +1,6 @@
 import { Account, Chain, Client, Hex, Transport, concatHex, encodeDeployData, getCreate2Address, isHex } from "viem";
-import { waitForTransactionReceipt, writeContract, sendTransaction } from "viem/actions";
-import { resourceToHex } from "@latticexyz/common";
+import { waitForTransactionReceipt } from "viem/actions";
+import { resourceToHex, sendTransaction, writeContract } from "@latticexyz/common";
 import { debug } from "./debug";
 import { logsToWorldDeploy } from "./logsToWorldDeploy";
 import { WorldDeploy, salt, worldAbi } from "./common";
@@ -9,7 +9,6 @@ import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { ContractArtifact, ReferenceIdentifier } from "@latticexyz/world/node";
 import { World } from "@latticexyz/world";
 import { waitForTransactions } from "./waitForTransactions";
-import { getAction } from "viem/utils";
 
 function findArtifact(ref: ReferenceIdentifier, artifacts: readonly ContractArtifact[]): ContractArtifact {
   const artifact = artifacts.find((a) => a.sourcePath === ref.sourcePath && a.name === ref.name);
@@ -79,23 +78,17 @@ export async function deployCustomWorld({
 
   // Deploy custom world without deterministic deployer for now
   debug("deploying custom world");
-  const deployTx = await getAction(
-    client,
-    sendTransaction,
-    "sendTransaction",
-  )({
+  const deployTx = await sendTransaction(client, {
     chain: client.chain ?? null,
-    account: client.account,
     data: encodeDeployData({
       abi: worldArtifact.abi,
       args: [], // TODO (https://github.com/latticexyz/mud/issues/3150)
       bytecode: getDeployable(deployerAddress, worldArtifact, artifacts),
     }),
-    gas: 10_000_000n,
   });
 
-  debug("waiting for custom world deploy at tx", deployTx);
-  const receipt = await getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash: deployTx });
+  debug("waiting for custom world deploy");
+  const receipt = await waitForTransactionReceipt(client, { hash: deployTx });
   if (receipt.status !== "success") {
     console.error("world deploy failed", receipt);
     throw new Error("world deploy failed");
@@ -105,13 +98,8 @@ export async function deployCustomWorld({
   debug("deployed custom world to", deploy.address, "at block", deploy.deployBlock);
 
   // initialize world via init module
-  const initTx = await getAction(
-    client,
-    writeContract,
-    "writeContract",
-  )({
+  const initTx = await writeContract(client, {
     chain: client.chain ?? null,
-    account: client.account,
     address: deploy.address,
     abi: worldAbi,
     functionName: "initialize",
@@ -120,13 +108,8 @@ export async function deployCustomWorld({
   await waitForTransactions({ client, hashes: [initTx], debugLabel: "world init" });
 
   // transfer root namespace to deployer after init module is installed so `transferOwnership` method is available
-  const transferOwnershipTx = await getAction(
-    client,
-    writeContract,
-    "writeContract",
-  )({
+  const transferOwnershipTx = await writeContract(client, {
     chain: client.chain ?? null,
-    account: client.account,
     address: deploy.address,
     abi: worldAbi,
     functionName: "transferOwnership",

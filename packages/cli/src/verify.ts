@@ -8,7 +8,6 @@ import { MUDError } from "@latticexyz/common/errors";
 import { Module, salt } from "./deploy/common";
 import { getStorageAt } from "viem/actions";
 import { execa } from "execa";
-import { getAction } from "viem/utils";
 
 type VerifyOptions = {
   client: Client<Transport, Chain | undefined>;
@@ -44,11 +43,7 @@ export async function verify({
   }
 
   // If the proxy implementation storage slot is set on the World, the World was deployed as a proxy.
-  const implementationStorage = await getAction(
-    client,
-    getStorageAt,
-    "getStorageAt",
-  )({
+  const implementationStorage = await getStorageAt(client, {
     address: worldAddress,
     slot: ERC1967_IMPLEMENTATION_SLOT,
   });

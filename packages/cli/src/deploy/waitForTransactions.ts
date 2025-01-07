@@ -1,7 +1,6 @@
 import { Client, Transport, Chain, Account, Hex } from "viem";
 import { debug } from "./debug";
 import { waitForTransactionReceipt } from "viem/actions";
-import { getAction } from "viem/utils";
 
 export async function waitForTransactions({
   client,
@@ -17,7 +16,7 @@ export async function waitForTransactions({
   debug(`waiting for ${debugLabel} to confirm`);
   // wait for each tx separately/serially, because parallelizing results in RPC errors
   for (const hash of hashes) {
-    const receipt = await getAction(client, waitForTransactionReceipt, "waitForTransactionReceipt")({ hash });
+    const receipt = await waitForTransactionReceipt(client, { hash });
     if (receipt.status === "reverted") {
       throw new Error(`Transaction reverted: ${hash}`);
     }

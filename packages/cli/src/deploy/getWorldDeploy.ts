@@ -4,27 +4,29 @@ import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
 import { WorldDeploy, worldDeployEvents } from "./common";
 import { debug } from "./debug";
 import { logsToWorldDeploy } from "./logsToWorldDeploy";
-import { getAction } from "viem/utils";
 
 const deploys = new Map<Address, WorldDeploy>();
 
-export async function getWorldDeploy(client: Client, worldAddress: Address): Promise<WorldDeploy> {
+export async function getWorldDeploy(
+  client: Client,
+  worldAddress: Address,
+  deployBlock?: bigint,
+): Promise<WorldDeploy> {
   const address = getAddress(worldAddress);
 
   let deploy = deploys.get(address);
   if (deploy != null) {
     return {
       ...deploy,
-      stateBlock: (await getAction(client, getBlock, "getBlock")({ blockTag: "latest" })).number,
+      stateBlock: (await getBlock(client, { blockTag: "latest" })).number,
     };
   }
 
   debug("looking up world deploy for", address);
 
-  const [fromBlock, toBlock] = await Promise.all([
-    getAction(client, getBlock, "getBlock")({ blockTag: "earliest" }),
-    getAction(client, getBlock, "getBlock")({ blockTag: "latest" }),
-  ]);
+  const [fromBlock, toBlock] = deployBlock
+    ? [{ number: deployBlock }, { number: deployBlock }]
+    : await Promise.all([getBlock(client, { blockTag: "earliest" }), getBlock(client, { blockTag: "latest" })]);
 
   const blockLogs = await fetchBlockLogs({
     publicClient: client,
@@ -34,6 +36,10 @@ export async function getWorldDeploy(client: Client, worldAddress: Address): Pro
     toBlock: toBlock.number,
     maxBlockRange: 100_000n,
   });
+
+  if (blockLogs.length === 0) {
+    throw new Error("could not find `HelloWorld` or `HelloStore` event");
+  }
 
   deploy = {
     ...logsToWorldDeploy(blockLogs.flatMap((block) => block.logs)),

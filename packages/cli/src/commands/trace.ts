@@ -10,7 +10,6 @@ import { getChainId, readContract } from "viem/actions";
 import { World as WorldConfig } from "@latticexyz/world";
 import { resolveSystems } from "@latticexyz/world/node";
 import { worldAbi } from "../deploy/common";
-import { getAction } from "viem/utils";
 
 const systemsTableId = worldConfig.namespaces.world.tables.Systems.tableId;
 
@@ -64,7 +63,7 @@ const commandModule: CommandModule<Options, Options> = {
     const config = (await loadConfig(configPath)) as WorldConfig;
 
     const client = createClient({ transport: http(rpc) });
-    const chainId = await getAction(client, getChainId, "getChainId")({});
+    const chainId = await getChainId(client);
     const worldAddress = (args.worldAddress ?? getWorldAddress(config.deploy.worldsFile, chainId)) as Hex;
 
     const systems = await resolveSystems({ rootDir, config });
@@ -72,11 +71,7 @@ const commandModule: CommandModule<Options, Options> = {
     const labels = await Promise.all(
       systems.map(async (system) => ({
         label: system.label,
-        address: await getAction(
-          client,
-          readContract,
-          "readContract",
-        )({
+        address: await readContract(client, {
           abi: worldAbi,
           address: worldAddress,
           functionName: "getField",
