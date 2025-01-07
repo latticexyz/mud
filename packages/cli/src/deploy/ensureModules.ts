@@ -4,8 +4,8 @@ import { Module, WorldDeploy, worldAbi } from "./common";
 import { debug } from "./debug";
 import { isDefined } from "@latticexyz/common/utils";
 import pRetry from "p-retry";
-import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { LibraryMap } from "./getLibraryMap";
+import { ensureContractsDeployed } from "@latticexyz/common/internal";
 
 export async function ensureModules({
   client,

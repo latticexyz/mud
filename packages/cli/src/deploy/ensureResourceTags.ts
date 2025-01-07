@@ -8,11 +8,11 @@ import { ensureModules } from "./ensureModules";
 import metadataModule from "@latticexyz/world-module-metadata/out/MetadataModule.sol/MetadataModule.json" assert { type: "json" };
 import { getContractArtifact } from "../utils/getContractArtifact";
 import { createPrepareDeploy } from "./createPrepareDeploy";
-import { waitForTransactions } from "./waitForTransactions";
 import { LibraryMap } from "./getLibraryMap";
 import { getKeyTuple, getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
 import { getRecords } from "@latticexyz/store-sync";
 import { CommonDeployOptions } from "./common";
+import { waitForTransactions } from "@latticexyz/common/internal";
 
 const metadataModuleArtifact = getContractArtifact(metadataModule);
 

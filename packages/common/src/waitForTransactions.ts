@@ -1,5 +1,5 @@
 import { Client, Transport, Chain, Account, Hex } from "viem";
-import { debug } from "./deploy/debug";
+import { debug } from "./debug";
 import { waitForTransactionReceipt } from "viem/actions";
 
 export async function waitForTransactions({
