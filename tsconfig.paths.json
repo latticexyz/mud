@@ -40,7 +40,6 @@
       "@latticexyz/store-sync": ["./packages/store-sync/src/index.ts"],
       "@latticexyz/store-sync/*": ["./packages/store-sync/src/*"],
       "@latticexyz/utils": ["./packages/utils/src/index.ts"],
-      "@latticexyz/wiresaw/internal": ["./packages/wiresaw/src/exports/internal.ts"],
       "@latticexyz/world": ["./packages/world/ts/exports/index.ts"],
       "@latticexyz/world/mud.config": ["./packages/world/mud.config.ts"],
       "@latticexyz/world/node": ["./packages/world/ts/node/index.ts"],

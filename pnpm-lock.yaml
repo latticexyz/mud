@@ -462,18 +462,12 @@ importers:
       '@latticexyz/explorer':
         specifier: workspace:*
         version: link:../explorer
-      '@latticexyz/id':
-        specifier: workspace:*
-        version: link:../id
       '@latticexyz/protocol-parser':
         specifier: workspace:*
         version: link:../protocol-parser
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
-      '@latticexyz/wiresaw':
-        specifier: workspace:*
-        version: link:../wiresaw
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../world
@@ -850,31 +844,6 @@ importers:
       vitest:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.34.1)
-
-  packages/id:
-    dependencies:
-      '@ark/util':
-        specifier: 0.2.2
-        version: 0.2.2
-      debug:
-        specifier: ^4.3.4
-        version: 4.3.7
-      webauthn-p256:
-        specifier: ^0.0.10
-        version: 0.0.10
-    devDependencies:
-      '@types/debug':
-        specifier: ^4.1.7
-        version: 4.1.7
-      mprocs:
-        specifier: ^0.7.1
-        version: 0.7.1
-      tsup:
-        specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
-      vite:
-        specifier: ^5.4.1
-        version: 5.4.8(@types/node@22.7.4)(terser@5.34.1)
 
   packages/protocol-parser:
     dependencies:
@@ -1399,22 +1368,6 @@ importers:
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
-
-  packages/wiresaw:
-    dependencies:
-      debug:
-        specifier: ^4.3.4
-        version: 4.3.7
-    devDependencies:
-      '@types/debug':
-        specifier: ^4.1.7
-        version: 4.1.7
-      tsup:
-        specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.47)(typescript@5.4.2)
-      viem:
-        specifier: 2.21.19
-        version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
 
   packages/world:
     dependencies:
