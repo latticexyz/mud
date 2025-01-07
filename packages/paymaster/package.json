@@ -26,7 +26,6 @@
     "clean": "pnpm run clean:abi",
     "clean:abi": "forge clean",
     "dev": "echo 'nothing to watch'",
-    "gas-report": "gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "test": "forge test",
     "test:ci": "pnpm run test"
