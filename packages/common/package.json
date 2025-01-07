@@ -78,8 +78,7 @@
     "p-queue": "^7.4.1",
     "p-retry": "^5.1.2",
     "prettier": "3.2.5",
-    "prettier-plugin-solidity": "1.3.1",
-    "webauthn-p256": "^0.0.10"
+    "prettier-plugin-solidity": "1.3.1"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
