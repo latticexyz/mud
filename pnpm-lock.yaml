@@ -726,9 +726,6 @@ importers:
       '@latticexyz/abi-ts':
         specifier: workspace:*
         version: link:../abi-ts
-      '@latticexyz/gas-report':
-        specifier: workspace:*
-        version: link:../gas-report
       '@openzeppelin/contracts':
         specifier: 5.1.0
         version: 5.1.0
