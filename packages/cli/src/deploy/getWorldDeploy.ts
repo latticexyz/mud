@@ -14,11 +14,14 @@ export async function getWorldDeploy(
 ): Promise<WorldDeploy> {
   const address = getAddress(worldAddress);
 
+  // Fetch latest block to set the range of blocks for logs retrieval.
+  const stateBlock = await getBlock(client, { blockTag: "latest" });
+
   let deploy = deploys.get(address);
   if (deploy != null) {
     return {
       ...deploy,
-      stateBlock: (await getBlock(client, { blockTag: "latest" })).number,
+      stateBlock: stateBlock.number,
     };
   }
 
@@ -26,7 +29,7 @@ export async function getWorldDeploy(
 
   const [fromBlock, toBlock] = deployBlock
     ? [{ number: deployBlock }, { number: deployBlock }]
-    : await Promise.all([getBlock(client, { blockTag: "earliest" }), getBlock(client, { blockTag: "latest" })]);
+    : [await getBlock(client, { blockTag: "earliest" }), stateBlock];
 
   const blockLogs = await fetchBlockLogs({
     publicClient: client,
@@ -43,7 +46,7 @@ export async function getWorldDeploy(
 
   deploy = {
     ...logsToWorldDeploy(blockLogs.flatMap((block) => block.logs)),
-    stateBlock: toBlock.number,
+    stateBlock: stateBlock.number,
   };
   deploys.set(address, deploy);
 
