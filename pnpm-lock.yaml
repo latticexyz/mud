@@ -848,6 +848,24 @@ importers:
         specifier: 0.34.6
         version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.34.1)
 
+  packages/paymaster:
+    devDependencies:
+      '@account-abstraction/contracts':
+        specifier: 0.7.0
+        version: 0.7.0
+      '@latticexyz/abi-ts':
+        specifier: workspace:*
+        version: link:../abi-ts
+      '@openzeppelin/contracts':
+        specifier: 5.1.0
+        version: 5.1.0
+      forge-std:
+        specifier: https://github.com/foundry-rs/forge-std.git#1eea5bae12ae557d589f9f0f0edae2faa47cb262
+        version: https://codeload.github.com/foundry-rs/forge-std/tar.gz/1eea5bae12ae557d589f9f0f0edae2faa47cb262
+      solhint:
+        specifier: ^3.3.7
+        version: 3.3.7
+
   packages/protocol-parser:
     dependencies:
       '@latticexyz/common':
@@ -10701,10 +10719,6 @@ packages:
 
   semver@5.7.2:
     resolution: {integrity: sha512-cBznnQ9KjJqU67B52RMC65CMarK2600WFnbkcaiwWq3xy/5haFJlshgnpjovMVJ+Hff49d8GEn0b87C5pDQ10g==}
-    hasBin: true
-
-  semver@6.3.0:
-    resolution: {integrity: sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==}
     hasBin: true
 
   semver@6.3.1:
@@ -20620,7 +20634,7 @@ snapshots:
 
   eslint@5.16.0:
     dependencies:
-      '@babel/code-frame': 7.21.4
+      '@babel/code-frame': 7.24.7
       ajv: 6.12.6
       chalk: 2.4.2
       cross-spawn: 6.0.5
@@ -24482,8 +24496,6 @@ snapshots:
 
   semver@5.7.2: {}
 
-  semver@6.3.0: {}
-
   semver@6.3.1: {}
 
   semver@7.5.0:
@@ -24684,7 +24696,7 @@ snapshots:
       ignore: 4.0.6
       js-yaml: 3.14.1
       lodash: 4.17.21
-      semver: 6.3.0
+      semver: 6.3.1
     optionalDependencies:
       prettier: 1.19.1
     transitivePeerDependencies:
