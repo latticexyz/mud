@@ -15,8 +15,5 @@ procs:
     shell: pnpm start
   # explorer:
   #   shell: pnpm explorer
-  id:
-    cwd: ../id
-    shell: pnpm vite --port 5155
   tunnel:
     shell: cloudflared tunnel run

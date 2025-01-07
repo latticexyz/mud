@@ -1,3 +1,0 @@
-procs:
-  client:
-    shell: pnpm vite

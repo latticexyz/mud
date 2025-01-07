@@ -1,10 +1,8 @@
 import { Chain, Transport } from "viem";
 import { WalletList, connectorsForWallets, getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { Config, CreateConfigParameters, createConfig } from "wagmi";
-import { passkeyWallet } from "./passkey/passkeyWallet";
 import { mapObject } from "@latticexyz/common/utils";
 import { wiresaw } from "@latticexyz/wiresaw/internal";
-import { CredentialOptions } from "./passkey/common";
 
 export type CreateWagmiConfigOptions<
   chains extends readonly [Chain, ...Chain[]] = readonly [Chain, ...Chain[]],
@@ -19,7 +17,6 @@ export type CreateWagmiConfigOptions<
   // TODO: make optional and hide wallet options if so?
   readonly walletConnectProjectId: string;
   readonly appName: string;
-  readonly credentialOptions?: CredentialOptions;
 } & Pick<CreateConfigParameters<chains, transports>, "pollingInterval">;
 
 export function createWagmiConfig<
@@ -28,16 +25,7 @@ export function createWagmiConfig<
 >(config: CreateWagmiConfigOptions<chains, transports>): Config<chains, transports> {
   const { wallets: defaultWallets } = getDefaultWallets();
   const wallets: WalletList = [
-    {
-      groupName: "Recommended",
-      wallets: [
-        passkeyWallet({
-          // TODO: allow any chain ID
-          chainId: config.chainId,
-          credentialOptions: config.credentialOptions,
-        }),
-      ],
-    },
+    // TODO: passkey wallet
     ...defaultWallets,
   ];
 
