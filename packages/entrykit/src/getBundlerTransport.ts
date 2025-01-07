@@ -2,7 +2,8 @@ import { transactionQueue } from "@latticexyz/common/actions";
 import { Chain, createClient, fallback, http, webSocket } from "viem";
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
 import { wiresaw } from "@latticexyz/wiresaw/internal";
-import { gasEstimator, userOpExecutor } from "@latticexyz/paymaster/internal";
+import { gasEstimator } from "./paymaster/transports/gasEstimator";
+import { userOpExecutor } from "./paymaster/transports/userOpExecutor";
 
 export function getBundlerTransport(chain: Chain) {
   const bundlerHttpUrl = chain.rpcUrls.bundler?.http[0];

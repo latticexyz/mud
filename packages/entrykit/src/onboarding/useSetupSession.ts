@@ -4,7 +4,7 @@ import { getAction } from "viem/utils";
 import { sendUserOperation, waitForUserOperationReceipt } from "viem/account-abstraction";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { ConnectedClient, unlimitedDelegationControlId, worldAbi } from "../common";
-import { paymasterAbi } from "../paymaster";
+import { paymasterAbi } from "../paymaster/common";
 import { waitForTransactionReceipt } from "viem/actions";
 import { defineCall } from "../utils/defineCall";
 import { useClient } from "wagmi";

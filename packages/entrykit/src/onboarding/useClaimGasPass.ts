@@ -1,7 +1,8 @@
 import { Address, parseEther } from "viem";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { claimGasPass, setAllowanceSlot } from "@latticexyz/paymaster/internal";
+import { claimGasPass } from "../paymaster/claimGasPass";
+import { setAllowanceSlot } from "../paymaster/getAllowance";
 import { useClient } from "wagmi";
 
 export function useClaimGasPass() {

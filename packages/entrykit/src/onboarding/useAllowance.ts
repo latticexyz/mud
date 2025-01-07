@@ -2,7 +2,7 @@ import { Address, Chain, Client, Transport } from "viem";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { useClient } from "wagmi";
 import { queryOptions, useQuery } from "@tanstack/react-query";
-import { getAllowance } from "@latticexyz/paymaster/internal";
+import { getAllowance } from "../paymaster/getAllowance";
 
 export function getAllowanceQueryOptions({
   client,

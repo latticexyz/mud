@@ -4,7 +4,7 @@ import { RainbowKitProvider, lightTheme, midnightTheme } from "@rainbow-me/rainb
 import { EntryKitConfig } from "./config/output";
 import { Address, Chain } from "viem";
 import { useChains } from "wagmi";
-import { getPaymasterAddress } from "./getPaymasterAddress";
+import { getPaymasterAddress } from "./paymaster/getPaymasterAddress";
 
 type ContextValue = EntryKitConfig & {
   chain: Chain;

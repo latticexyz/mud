@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    // disable paths so we don't check deps using `noUncheckedIndexedAccess`
-    // TODO: remove this file once all packages pass `noUncheckedIndexedAccess`
-    "paths": {}
-  }
-}

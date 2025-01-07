@@ -1,5 +1,5 @@
 import { Address, Client, numberToHex } from "viem";
-import { paymasterTables } from "./paymaster";
+import { paymasterTables } from "./common";
 import { getRecord, getStaticDataLocation } from "@latticexyz/store/internal";
 import { getKeyTuple } from "@latticexyz/protocol-parser/internal";
 import { setStorageAt } from "viem/actions";

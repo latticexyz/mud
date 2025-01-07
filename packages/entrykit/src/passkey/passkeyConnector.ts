@@ -17,7 +17,7 @@ import { reusePasskey } from "./reusePasskey";
 import { createPasskey } from "./createPasskey";
 import { defaultClientConfig } from "../common";
 import { createBundlerClient } from "../createBundlerClient";
-import { getPaymasterAddress } from "../getPaymasterAddress";
+import { getPaymasterAddress } from "../paymaster/getPaymasterAddress";
 import { getBundlerTransport } from "../getBundlerTransport";
 import { wiresaw } from "@latticexyz/wiresaw/internal";
 import { CredentialOptions } from "./common";

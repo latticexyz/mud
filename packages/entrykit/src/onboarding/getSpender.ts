@@ -1,5 +1,5 @@
 import { Address, Chain, Client, Transport } from "viem";
-import { paymasterTables } from "../paymaster";
+import { paymasterTables } from "../paymaster/common";
 import { getRecord } from "@latticexyz/store/internal";
 
 export type GetSpenderParams = {
