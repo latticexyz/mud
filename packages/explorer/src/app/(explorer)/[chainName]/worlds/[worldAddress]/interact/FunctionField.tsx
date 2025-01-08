@@ -35,9 +35,13 @@ type DecodedEvent = {
 };
 
 const formSchema = z.object({
-  inputs: z.array(z.string()),
+  inputs: z.array(z.union([z.string(), z.array(z.any()), z.record(z.any())])),
   value: z.string().optional(),
 });
+
+function isArrayOrTuple(type: string) {
+  return type.includes("[]") || type.includes("tuple");
+}
 
 export function FunctionField({ worldAbi, functionAbi }: Props) {
   const operationType: FunctionType =
@@ -55,12 +59,25 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
   const [txHash, setTxHash] = useState<Hex>();
   const txUrl = blockExplorerTransactionUrl({ hash: txHash, chainId });
 
+  console.log(functionAbi);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       inputs: [],
     },
   });
+
+  const parseInput = (value: string, type: string) => {
+    try {
+      if (isArrayOrTuple(type)) {
+        return JSON.parse(value);
+      }
+      return value;
+    } catch (e) {
+      return value;
+    }
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!account.isConnected) {
@@ -70,12 +87,16 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
     setIsLoading(true);
     let toastId;
     try {
+      const parsedInputs = values.inputs.map((input, index) =>
+        parseInput(input as string, functionAbi.inputs[index].type),
+      );
+
       if (operationType === FunctionType.READ) {
         const result = await readContract(wagmiConfig, {
           abi: worldAbi,
           address: worldAddress as Address,
           functionName: functionAbi.name,
-          args: values.inputs,
+          args: parsedInputs,
           chainId,
         });
 
@@ -86,7 +107,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
           abi: worldAbi,
           address: worldAddress as Address,
           functionName: functionAbi.name,
-          args: values.inputs,
+          args: parsedInputs,
           ...(values.value && { value: BigInt(values.value) }),
           chainId,
         });
@@ -134,7 +155,12 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
               name={`inputs.${index}`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{input.name}</FormLabel>
+                  <FormLabel>
+                    {input.name}
+                    {isArrayOrTuple(input.type) && (
+                      <span className="ml-2 text-xs text-muted-foreground">(Enter as JSON array)</span>
+                    )}
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder={input.type} {...field} />
                   </FormControl>
