@@ -13,13 +13,16 @@ export function useSetBalance() {
   const client = useClient({ chainId });
 
   return useMutation({
-    mutationKey: ["setBalance"],
+    mutationKey: ["setBalance", chainId],
     onError: (error) => console.error(error),
     mutationFn: async (params: SetBalanceParameters) => {
       if (!client) return null;
 
       await setBalance({ ...(client as TestClient), mode: "anvil" }, params);
-      queryClient.invalidateQueries({ queryKey: ["balance"] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["balance"] }),
+        queryClient.invalidateQueries({ queryKey: ["getPrerequisites"] }),
+      ]);
 
       return null;
     },

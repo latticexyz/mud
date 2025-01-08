@@ -101,8 +101,8 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
   return (
     <div
       className={twMerge(
-        // TODO: set min height based on number of steps
-        "min-h-[26rem] px-8 flex flex-col divide-y divide-neutral-800",
+        // steps.length === 2 ? "min-h-[22rem]" : "min-h-[26rem]",
+        "px-8 flex flex-col divide-y divide-neutral-800",
         "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
       )}
     >
