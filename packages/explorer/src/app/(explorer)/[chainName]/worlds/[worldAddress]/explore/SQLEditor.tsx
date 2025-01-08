@@ -1,7 +1,7 @@
 "use client";
 
-import { PlayIcon } from "lucide-react";
-import { editor } from "monaco-editor/esm/vs/editor/editor.api";
+import { CommandIcon, CornerDownLeft } from "lucide-react";
+import { KeyCode, KeyMod, editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -77,6 +77,14 @@ export function SQLEditor({ table }: Props) {
                 onChange={(value) => field.onChange(encodeURIComponent(value ?? ""))}
                 onMount={(editor) => {
                   editorRef.current = editor;
+                  editor.addAction({
+                    id: "executeSQL",
+                    label: "Execute SQL command",
+                    keybindings: [KeyMod.CtrlCmd | KeyCode.Enter],
+                    run: () => {
+                      handleSubmit();
+                    },
+                  });
 
                   updateHeight();
                   editor.onDidContentSizeChange(updateHeight);
@@ -89,8 +97,21 @@ export function SQLEditor({ table }: Props) {
           )}
         />
 
-        <Button className="absolute bottom-1 right-1 h-8 px-4" type="submit">
-          <PlayIcon className="mr-1.5 h-3 w-3" /> Run
+        <Button className="absolute bottom-1 right-1 ml-2 flex h-8 items-center gap-2 pl-4 pr-3" type="submit">
+          Run
+          <span className="flex items-center gap-0.5 text-white/60">
+            {navigator.platform.toLowerCase().includes("mac") ? (
+              <>
+                <CommandIcon className="h-3 w-3" />
+                <CornerDownLeft className="h-3 w-3" />
+              </>
+            ) : (
+              <>
+                <span className="text-xs">CTRL</span>
+                <CornerDownLeft className="h-3 w-3" />
+              </>
+            )}
+          </span>
         </Button>
       </form>
     </Form>
