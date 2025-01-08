@@ -28,8 +28,8 @@ export function SQLEditor({ table }: Props) {
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
 
   // TODO: update offset/limit based on page/pageSize
-  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
-  const [pageSize, setPageSize] = useQueryState("pageSize", parseAsInteger.withDefault(10));
+  const [page] = useQueryState("page", parseAsInteger.withDefault(0));
+  const [pageSize] = useQueryState("pageSize", parseAsInteger.withDefault(10));
 
   const validateQuery = useQueryValidator(table);
   useMonacoSuggestions(table);

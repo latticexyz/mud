@@ -33,8 +33,8 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
 
-  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
-  const [pageSize, setPageSize] = useQueryState("pageSize", parseAsInteger.withDefault(10));
+  const [, setPage] = useQueryState("page", parseAsInteger.withDefault(0));
+  const [, setPageSize] = useQueryState("pageSize", parseAsInteger.withDefault(10));
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
@@ -43,7 +43,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
   useEffect(() => {
     setPage(pagination.pageIndex);
     setPageSize(pagination.pageSize);
-  }, [pagination]);
+  }, [pagination, setPage, setPageSize]);
 
   // TODO: fetch actual total rows
   const TOTAL_ROWS = 22;
