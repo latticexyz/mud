@@ -21,7 +21,6 @@ import {
   encodeKey,
 } from "@latticexyz/protocol-parser/internal";
 import worldConfig from "../../mud.config";
-import IStoreReadAbi from "../../out/IStoreRead.sol/IStoreRead.abi.json";
 
 type CallFromParameters = {
   worldAddress: Hex;
@@ -134,7 +133,42 @@ async function retrieveSystemFunctionFromContract(
 
   const [staticData, encodedLengths, dynamicData] = await _readContract({
     address: worldAddress,
-    abi: IStoreReadAbi,
+    abi: [
+      {
+        type: "function",
+        name: "getRecord",
+        inputs: [
+          {
+            name: "tableId",
+            type: "bytes32",
+            internalType: "ResourceId",
+          },
+          {
+            name: "keyTuple",
+            type: "bytes32[]",
+            internalType: "bytes32[]",
+          },
+        ],
+        outputs: [
+          {
+            name: "staticData",
+            type: "bytes",
+            internalType: "bytes",
+          },
+          {
+            name: "encodedLengths",
+            type: "bytes32",
+            internalType: "EncodedLengths",
+          },
+          {
+            name: "dynamicData",
+            type: "bytes",
+            internalType: "bytes",
+          },
+        ],
+        stateMutability: "view",
+      },
+    ],
     functionName: "getRecord",
     args: [table.tableId, encodeKey(keySchema, { worldFunctionSelector })],
   });
