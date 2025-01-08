@@ -38,8 +38,6 @@
     "dev": "tsup --watch",
     "playground": "mprocs",
     "playground:deploy": "mprocs --config mprocs.deploy.yaml",
-    "snapshot:push": "gh workflow run snapshot.yml --ref entrykit",
-    "snapshot:status": "gh run list --workflow snapshot.yml --limit 5",
     "test": "tsc --noEmit && vitest",
     "test:ci": "tsc --noEmit && vitest --run"
   },
