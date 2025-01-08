@@ -1,6 +1,6 @@
 "use client";
 
-import { Coins, ExternalLinkIcon, Eye, LoaderIcon, Send } from "lucide-react";
+import { Coins, ExternalLinkIcon, Eye, LoaderIcon, PlusCircle, Send, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
@@ -59,12 +59,22 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
   const [txHash, setTxHash] = useState<Hex>();
   const txUrl = blockExplorerTransactionUrl({ hash: txHash, chainId });
 
-  console.log(functionAbi);
+  const createEmptyInput = (input: (typeof functionAbi.inputs)[0]) => {
+    if (input.type.includes("[]") && input.components) {
+      return input.components.reduce((acc: Record<string, string>, component) => {
+        acc[component.name] = "";
+        return acc;
+      }, {});
+    }
+    return "";
+  };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      inputs: [],
+      inputs: functionAbi.inputs.map((input) =>
+        input.type.includes("[]") && input.components ? [createEmptyInput(input)] : "",
+      ),
     },
   });
 
@@ -132,6 +142,64 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
   }
 
   const inputsLabel = functionAbi?.inputs.map((input) => input.type).join(", ");
+
+  const renderArrayInputs = (input: (typeof functionAbi.inputs)[0], fieldArrayName: string) => {
+    const values = form.watch(fieldArrayName) || [];
+
+    return (
+      <div className="space-y-2">
+        {values.map((_, itemIndex) => (
+          <div key={itemIndex} className="flex gap-2">
+            {input.components?.map((component, componentIndex) => (
+              <FormField
+                key={`${itemIndex}-${component.name}`}
+                control={form.control}
+                name={`${fieldArrayName}.${itemIndex}.${component.name}`}
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel className="text-xs">{component.name}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={component.type} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ))}
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="self-end"
+              onClick={() => {
+                const currentValues = form.getValues(fieldArrayName) as any[];
+                form.setValue(
+                  fieldArrayName,
+                  currentValues.filter((_, idx) => idx !== itemIndex),
+                );
+              }}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        ))}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="w-full"
+          onClick={() => {
+            const currentValues = form.getValues(fieldArrayName) || [];
+            form.setValue(fieldArrayName, [...currentValues, createEmptyInput(input)]);
+          }}
+        >
+          <PlusCircle className="mr-2 h-4 w-4" />
+          Add Item
+        </Button>
+      </div>
+    );
+  };
+
   return (
     <div className="pb-6">
       <Form {...form}>
@@ -157,12 +225,20 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
                 <FormItem>
                   <FormLabel>
                     {input.name}
-                    {isArrayOrTuple(input.type) && (
-                      <span className="ml-2 text-xs text-muted-foreground">(Enter as JSON array)</span>
+                    {input.type.includes("[]") && (
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        {/* (Array of {input.type.replace("[]", "")}) */}
+                        (SystemCallData[])
+                        {/* -> (bytes32 systemId, bytes callData)[] */}
+                      </span>
                     )}
                   </FormLabel>
                   <FormControl>
-                    <Input placeholder={input.type} {...field} />
+                    {input.type.includes("[]") && input.components ? (
+                      renderArrayInputs(input, `inputs.${index}`)
+                    ) : (
+                      <Input placeholder={input.type} {...field} />
+                    )}
                   </FormControl>
                   <FormMessage />
                 </FormItem>
