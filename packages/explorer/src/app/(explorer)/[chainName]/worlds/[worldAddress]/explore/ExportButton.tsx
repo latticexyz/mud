@@ -13,9 +13,8 @@ export function ExportButton({ tableData, isLoading }: { tableData?: TData; isLo
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" disabled={!tableData || isLoading}>
-          <DownloadIcon className="mr-2 h-4 w-4" />
-          Export
+        <Button variant="outline" size="icon" disabled={!tableData || isLoading}>
+          <DownloadIcon className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
