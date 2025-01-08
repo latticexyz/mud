@@ -24,7 +24,7 @@
     }
   },
   "bin": {
-    "deploy": "./bin/deploy.js"
+    "deploy-local-prereqs": "./bin/deploy-local-prereqs.js"
   },
   "files": [
     "dist"

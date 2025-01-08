@@ -1,3 +1,3 @@
 #!/usr/bin/env node
 // workaround for https://github.com/pnpm/pnpm/issues/1801
-import "../dist/tsup/bin/deploy.js";
+import "../dist/tsup/bin/deploy-local-prereqs.js";
