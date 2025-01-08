@@ -2,4 +2,4 @@
 "@latticexyz/store": patch
 ---
 
-Added internal `getRecord` helper.
+Added internal `getRecord` and `getStaticDataLocation` helpers.
