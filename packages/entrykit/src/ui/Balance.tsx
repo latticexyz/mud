@@ -2,7 +2,7 @@ import { EthIcon } from "../icons/EthIcon";
 import { formatBalance } from "../formatBalance";
 import { formatEther } from "viem";
 
-type Props = {
+export type Props = {
   wei: bigint;
 };
 
