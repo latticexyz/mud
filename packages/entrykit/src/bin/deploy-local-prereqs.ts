@@ -54,14 +54,20 @@ const chainId = await getChainId(client);
 // TODO: deployer address flag/env var?
 const deployerAddress = await ensureDeployer(client);
 
-const entryPointAddress = getContractAddress({ deployerAddress, bytecode: entryPointArtifact.bytecode as Hex });
+// https://github.com/eth-infinitism/account-abstraction/blob/b3bae63bd9bc0ed394dfca8668008213127adb62/hardhat.config.ts#L11
+const entryPointSalt = "0x90d8084deab30c2a37c45e8d47f49f2f7965183cb6990a98943ef94940681de3";
+const entryPointAddress = getContractAddress({
+  deployerAddress,
+  bytecode: entryPointArtifact.bytecode as Hex,
+  salt: entryPointSalt,
+});
+// TODO: assert that this matches Viem's entryPoint07Address
+
 const paymasterBytecode = concatHex([
   paymasterArtifact.bytecode.object as Hex,
   encodeAbiParameters(parseAbiParameters("address"), [entryPointAddress]),
 ]);
 const paymasterAddress = getContractAddress({ deployerAddress, bytecode: paymasterBytecode });
-
-// TODO: figure out how to deploy these so that we end up with the expected addresses of entrypoint and simple account factory
 
 await ensureContractsDeployed({
   client,
@@ -69,6 +75,7 @@ await ensureContractsDeployed({
   contracts: [
     {
       bytecode: entryPointArtifact.bytecode as Hex,
+      salt: entryPointSalt,
       deployedBytecodeSize: size(entryPointArtifact.deployedBytecode as Hex),
       debugLabel: "EntryPoint v0.7",
     },
@@ -88,9 +95,9 @@ await ensureContractsDeployed({
   ],
 });
 
-console.log("Contracts deployed!");
+console.log("\nContracts deployed!\n");
 
-if (chainId === 31337000) {
+if (chainId === 31337) {
   const tx = await writeContract(client, {
     chain: null,
     address: entryPointAddress,
@@ -108,7 +115,7 @@ if (chainId === 31337000) {
     value: parseEther("100"),
   });
   await waitForTransactions({ client, hashes: [tx] });
-  console.log("Funded paymaster at:", paymasterAddress);
+  console.log("\nFunded paymaster at:", paymasterAddress, "\n");
 } else {
   console.log(`
 Be sure to fund the paymaster by making a deposit in the entrypoint contract. For example:
@@ -117,5 +124,5 @@ Be sure to fund the paymaster by making a deposit in the entrypoint contract. Fo
 `);
 }
 
-console.log("EntryKit prerequisites complete!\n");
+console.log("\nEntryKit prerequisites complete!\n");
 process.exit(0);
