@@ -42,7 +42,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 50,
+    pageSize: 20,
   });
 
   const tableColumns: ColumnDef<TDataRow>[] = useMemo(() => {
@@ -116,6 +116,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
     <>
       <div className="flex items-center justify-between gap-4 pb-4">
         <Input
+          type="search"
           placeholder="Filter..."
           value={globalFilter}
           onChange={(event) => reactTable.setGlobalFilter(event.target.value)}
