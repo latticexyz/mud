@@ -86,7 +86,7 @@ export function TransactionTableRow({ row }: { row: Row<ObservedTransaction> }) 
                     <div className="flex items-start gap-x-4">
                       <h3 className="w-[45px] flex-shrink-0 text-2xs font-bold uppercase">Inputs</h3>
 
-                      <div className="rela flex w-full flex-col gap-y-4">
+                      <div className="relative flex w-full flex-col gap-y-4">
                         {calls.map((call, idx) => {
                           if (!call.args || call.args.length === 0) {
                             return null;
