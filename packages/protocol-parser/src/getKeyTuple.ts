@@ -7,7 +7,7 @@ type PartialTable = Pick<Table, "schema" | "key">;
 
 export type getKeyTuple<table extends PartialTable, key extends readonly unknown[] = table["key"]> = {
   [i in keyof key]: Hex;
-};
+} & unknown;
 
 export function getKeyTuple<const table extends PartialTable>(
   table: table,
