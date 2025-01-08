@@ -9,7 +9,7 @@ export async function waitForTransactions({
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
   readonly hashes: readonly Hex[];
-  readonly debugLabel: string;
+  readonly debugLabel?: string;
 }): Promise<void> {
   if (!hashes.length) return;
 

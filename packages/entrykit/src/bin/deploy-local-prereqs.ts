@@ -1,12 +1,29 @@
 #!/usr/bin/env node
 import "dotenv/config";
-import { Hex, concatHex, createWalletClient, http, isHex, parseAbiParameters, encodeAbiParameters, size } from "viem";
+import {
+  Hex,
+  concatHex,
+  createWalletClient,
+  http,
+  isHex,
+  parseAbiParameters,
+  encodeAbiParameters,
+  size,
+  parseEther,
+} from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { getRpcUrl } from "@latticexyz/common/foundry";
-import { ensureContractsDeployed, ensureDeployer, getContractAddress } from "@latticexyz/common/internal";
+import {
+  ensureContractsDeployed,
+  ensureDeployer,
+  getContractAddress,
+  waitForTransactions,
+} from "@latticexyz/common/internal";
 import entryPointArtifact from "@account-abstraction/contracts/artifacts/EntryPoint.json" assert { type: "json" };
 import simpleAccountFactoryArtifact from "@account-abstraction/contracts/artifacts/SimpleAccountFactory.json" assert { type: "json" };
 import paymasterArtifact from "@latticexyz/paymaster/out/GenerousPaymaster.sol/GenerousPaymaster.json" assert { type: "json" };
+import { getChainId } from "viem/actions";
+import { writeContract } from "@latticexyz/common";
 
 // TODO: parse env with arktype (to avoid zod dep) and throw when absent
 
@@ -14,11 +31,11 @@ const privateKey = process.env.PRIVATE_KEY;
 if (!isHex(privateKey)) {
   // TODO: detect anvil and automatically put this env var where it needs to go?
   throw new Error(
-    `Missing \`PRIVATE_KEY\` environment variable. If you're using Anvil, use
+    `Missing \`PRIVATE_KEY\` environment variable. If you're using Anvil, run
 
   echo "PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" > .env
 
-in your contracts directory to use a default Anvil account.`,
+to use a prefunded Anvil account.`,
   );
 }
 const account = privateKeyToAccount(privateKey);
@@ -31,6 +48,8 @@ const client = createWalletClient({
   transport: http(rpc),
   account,
 });
+
+const chainId = await getChainId(client);
 
 // TODO: deployer address flag/env var?
 const deployerAddress = await ensureDeployer(client);
@@ -69,9 +88,34 @@ await ensureContractsDeployed({
   ],
 });
 
-console.log("\nEntryKit prerequisites are deployed!\n");
+console.log("Contracts deployed!");
 
-// TODO: fund paymaster
-console.log("TODO: fund paymaster at", paymasterAddress);
+if (chainId === 31337000) {
+  const tx = await writeContract(client, {
+    chain: null,
+    address: entryPointAddress,
+    abi: [
+      {
+        inputs: [{ name: "account", type: "address" }],
+        name: "depositTo",
+        outputs: [],
+        stateMutability: "payable",
+        type: "function",
+      },
+    ],
+    functionName: "depositTo",
+    args: [paymasterAddress],
+    value: parseEther("100"),
+  });
+  await waitForTransactions({ client, hashes: [tx] });
+  console.log("Funded paymaster at:", paymasterAddress);
+} else {
+  console.log(`
+Be sure to fund the paymaster by making a deposit in the entrypoint contract. For example:
 
+  cast send ${entryPointAddress} "depositTo(address)" ${paymasterAddress} --value 1ether
+`);
+}
+
+console.log("EntryKit prerequisites complete!\n");
 process.exit(0);
