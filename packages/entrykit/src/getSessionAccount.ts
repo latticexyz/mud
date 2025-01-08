@@ -1,6 +1,6 @@
 import { Address, Chain, Client, Transport } from "viem";
 import { SmartAccount } from "viem/account-abstraction";
-import { toCoinbaseSmartAccount } from "@latticexyz/common/accounts";
+import { toSimpleSmartAccount } from "permissionless/accounts";
 import { getSessionSigner } from "./getSessionSigner";
 
 export async function getSessionAccount<chain extends Chain>({
@@ -11,5 +11,5 @@ export async function getSessionAccount<chain extends Chain>({
   userAddress: Address;
 }): Promise<SmartAccount> {
   const sessionSigner = getSessionSigner(userAddress);
-  return await toCoinbaseSmartAccount({ client, owners: [sessionSigner] });
+  return await toSimpleSmartAccount({ client, owner: sessionSigner });
 }
