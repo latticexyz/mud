@@ -1,24 +1,38 @@
 import {
-  Account,
   BundlerRpcSchema,
-  Chain,
-  Client,
   EIP1193RequestFn,
   Hash,
   RpcUserOperationReceipt,
   Transport,
   createTransport,
   numberToHex,
+  parseEther,
 } from "viem";
 import { entryPoint07Address } from "viem/account-abstraction";
 import { TransportRequestFn } from "./common";
 import { estimateUserOperationGas } from "./methods/estimateUserOperationGas";
 import { sendUserOperation } from "./methods/sendUserOperation";
+import { ConnectedClient } from "../../common";
+import { debug } from "../debug";
+import { setBalance } from "viem/actions";
 
 // TODO: move to common package?
 
-export function userOpExecutor({ executor }: { executor: Client<Transport, Chain, Account> }): Transport {
+export function userOpExecutor({ executor }: { executor: ConnectedClient }): Transport {
   return () => {
+    debug("using a local user op executor", executor.account.address);
+
+    if (executor.chain.id === 31337) {
+      debug("setting executor balance");
+      setBalance(
+        executor.extend(() => ({ mode: "anvil" })),
+        {
+          address: executor.account.address,
+          value: parseEther("100"),
+        },
+      );
+    }
+
     const receipts = new Map<Hash, RpcUserOperationReceipt<"0.7">>();
 
     // @ts-expect-error TODO

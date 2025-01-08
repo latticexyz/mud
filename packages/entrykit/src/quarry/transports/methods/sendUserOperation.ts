@@ -1,13 +1,4 @@
-import {
-  Client,
-  Transport,
-  Chain,
-  Account,
-  RpcUserOperation,
-  RpcUserOperationReceipt,
-  parseEther,
-  parseEventLogs,
-} from "viem";
+import { RpcUserOperation, RpcUserOperationReceipt, parseEventLogs } from "viem";
 import {
   formatUserOperation,
   toPackedUserOperation,
@@ -15,8 +6,9 @@ import {
   entryPoint07Address,
   entryPoint07Abi,
 } from "viem/account-abstraction";
-import { setBalance, waitForTransactionReceipt, writeContract } from "viem/actions";
+import { waitForTransactionReceipt, writeContract } from "viem/actions";
 import { getAction } from "viem/utils";
+import { ConnectedClient } from "../../../common";
 
 // TODO: move to common package?
 
@@ -28,23 +20,13 @@ export async function sendUserOperation({
   executor,
   rpcUserOp,
 }: {
-  executor: Client<Transport, Chain, Account>;
+  executor: ConnectedClient;
   rpcUserOp: RpcUserOperation<entryPointVersion>;
 }): Promise<
   Pick<RpcUserOperationReceipt<entryPointVersion>, "success" | "userOpHash"> & {
     receipt: Pick<RpcUserOperationReceipt<entryPointVersion>["receipt"], "transactionHash">;
   }
 > {
-  if (executor.chain.id === 31337) {
-    await setBalance(
-      executor.extend(() => ({ mode: "anvil" })),
-      {
-        address: executor.account.address,
-        value: parseEther("100"),
-      },
-    );
-  }
-
   const userOp = formatUserOperation(rpcUserOp);
   const packedUserOp = toPackedUserOperation(userOp);
 

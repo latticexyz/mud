@@ -1,3 +1,3 @@
-import createDebug from "debug";
+import { debug as parentDebug } from "../debug";
 
-export const debug = createDebug("mud:paymaster");
+export const debug = parentDebug.extend("quarry");
