@@ -31,7 +31,7 @@ export function InteractForm() {
           <div className="pr-4">
             <h4 className="py-4 text-xs font-semibold uppercase opacity-70">Jump to:</h4>
             <Input
-              type="text"
+              type="search"
               placeholder="Filter functions..."
               value={deferredFilterValue}
               onChange={(evt) => {
