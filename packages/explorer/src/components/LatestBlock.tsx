@@ -13,7 +13,7 @@ export function LatestBlock() {
   });
 
   return (
-    <div className="inline-block w-[50px]">
+    <div className="inline-block">
       {block ? (
         <div className="flex items-center justify-end gap-x-2 text-xs font-extrabold text-green-600">
           <span className="inline-block h-[8px] w-[8px] animate-pulse rounded-full bg-success"></span>
