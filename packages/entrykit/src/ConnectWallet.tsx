@@ -3,14 +3,23 @@ import { Button } from "./ui/Button";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { AppInfo } from "./AppInfo";
 import { twMerge } from "tailwind-merge";
+import { useEffect, useState } from "react";
 
 export function ConnectWallet() {
   const userAccount = useAccount();
-  const { openConnectModal } = useConnectModal();
+  const { openConnectModal, connectModalOpen } = useConnectModal();
+  const [hasAutoOpened, setHasAutoOpened] = useState(false);
+
+  // automatically open connect modal once
+  // TODO: remove this once we have more than "connect wallet" as an option
+  useEffect(() => {
+    if (!connectModalOpen && !hasAutoOpened) {
+      openConnectModal?.();
+      setHasAutoOpened(true);
+    }
+  }, [connectModalOpen, hasAutoOpened, openConnectModal]);
 
   // TODO: show error states?
-  // TODO: automatically open connect modal instead of showing a button
-  //       (doing it like this for now for ease of modal states, ESC key, etc)
 
   return (
     <div
