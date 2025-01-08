@@ -11,18 +11,15 @@ export async function getSessionClient<chain extends Chain>({
   userAddress,
   sessionAccount,
   worldAddress,
-  paymasterAddress,
 }: {
   client: Client<Transport, chain>;
   userAddress: Address;
   sessionAccount: SmartAccount;
   worldAddress: Address;
-  paymasterAddress: Address;
 }): Promise<SessionClient<chain>> {
   const bundlerTransport = getBundlerTransport(client.chain);
 
   const sessionClient = createBundlerClient({
-    paymasterAddress,
     transport: bundlerTransport,
     client,
     account: sessionAccount,

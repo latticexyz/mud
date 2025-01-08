@@ -6,28 +6,26 @@ import { getSpender } from "./getSpender";
 
 export function getSpenderQueryOptions({
   client,
-  paymasterAddress,
   userAddress,
   sessionAddress,
 }: {
   client: Client<Transport, Chain> | undefined;
-  paymasterAddress: Address;
   userAddress: Address | undefined;
   sessionAddress: Address | undefined;
 }) {
-  const queryKey = ["getSpender", client?.chain.id, paymasterAddress, userAddress, sessionAddress];
+  const queryKey = ["getSpender", client?.chain.id, userAddress, sessionAddress];
   return queryOptions(
     client && userAddress && sessionAddress
       ? {
           queryKey,
-          queryFn: () => getSpender({ client, paymasterAddress, userAddress, sessionAddress }),
+          queryFn: () => getSpender({ client, userAddress, sessionAddress }),
         }
       : { queryKey, enabled: false },
   );
 }
 
 export function useSpender(userAddress: Address | undefined, sessionAddress: Address | undefined) {
-  const { chainId, paymasterAddress } = useEntryKitConfig();
+  const { chainId } = useEntryKitConfig();
   const client = useClient({ chainId });
-  return useQuery(getSpenderQueryOptions({ client, paymasterAddress, userAddress, sessionAddress }));
+  return useQuery(getSpenderQueryOptions({ client, userAddress, sessionAddress }));
 }

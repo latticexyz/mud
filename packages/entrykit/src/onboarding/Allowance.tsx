@@ -23,7 +23,13 @@ export function Allowance({ isActive, isExpanded, userAddress }: Props) {
     // individual mutations, even though the keys match. And the one we want the status of
     // seems to stay pending. This is sorta resolved by triggering this after a timeout.
     const timer = setTimeout(() => {
-      if (isActive && claimGasPass.status === "idle" && allowance.isSuccess && allowance.data < minGasBalance) {
+      if (
+        isActive &&
+        claimGasPass.status === "idle" &&
+        allowance.isSuccess &&
+        allowance.data != null &&
+        allowance.data < minGasBalance
+      ) {
         claimGasPass.mutate(userAddress);
       }
     });

@@ -12,13 +12,11 @@ export function getPrequisitesQueryOptions({
   queryClient,
   client,
   userAddress,
-  paymasterAddress,
   worldAddress,
 }: {
   queryClient: QueryClient;
   client: Client<Transport, Chain> | undefined;
   userAddress: Address | undefined;
-  paymasterAddress: Address;
   worldAddress: Address;
 }) {
   const queryKey = ["getPrerequisites", client?.chain.id, userAddress];
@@ -30,12 +28,14 @@ export function getPrequisitesQueryOptions({
             const { address: sessionAddress } = await queryClient.fetchQuery(
               getSessionAccountQueryOptions({ client, userAddress }),
             );
-            const [allowance, isSpender, hasDelegation] = await Promise.all([
-              queryClient.fetchQuery(getAllowanceQueryOptions({ client, paymasterAddress, userAddress })),
-              queryClient.fetchQuery(getSpenderQueryOptions({ client, paymasterAddress, userAddress, sessionAddress })),
+            const [allowance, spender, hasDelegation] = await Promise.all([
+              queryClient.fetchQuery(getAllowanceQueryOptions({ client, userAddress })),
+              queryClient.fetchQuery(getSpenderQueryOptions({ client, userAddress, sessionAddress })),
               queryClient.fetchQuery(getDelegationQueryOptions({ client, worldAddress, userAddress, sessionAddress })),
             ]);
-            const hasAllowance = allowance >= minGasBalance;
+            // TODO: figure out better approach than null for allowance/spender when no quarry paymaster
+            const hasAllowance = allowance == null || allowance >= minGasBalance;
+            const isSpender = spender == null ? true : spender;
             return {
               hasAllowance,
               isSpender,
@@ -50,7 +50,7 @@ export function getPrequisitesQueryOptions({
 
 export function usePrerequisites(userAddress: Address | undefined) {
   const queryClient = useQueryClient();
-  const { chainId, paymasterAddress, worldAddress } = useEntryKitConfig();
+  const { chainId, worldAddress } = useEntryKitConfig();
   const client = useClient({ chainId });
 
   // TODO: rework this so it uses other hooks so we avoid having to clear two caches when e.g. topping up
@@ -60,7 +60,6 @@ export function usePrerequisites(userAddress: Address | undefined) {
       queryClient,
       client,
       userAddress,
-      paymasterAddress,
       worldAddress,
     }),
     queryClient,

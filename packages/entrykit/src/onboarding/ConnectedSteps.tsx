@@ -8,6 +8,8 @@ import { Session } from "./Session";
 import { Step } from "./common";
 import { Address } from "viem";
 import { useAccountModal } from "../useAccountModal";
+import { useEntryKitConfig } from "../EntryKitConfigProvider";
+import { getPaymaster } from "../getPaymaster";
 
 export type Props = {
   userClient: ConnectedClient;
@@ -15,6 +17,9 @@ export type Props = {
 };
 
 export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
+  const { chain } = useEntryKitConfig();
+  const paymaster = getPaymaster(chain);
+
   const userAddress = userClient.account.address;
   const { data: prerequisites } = usePrerequisites(userAddress);
 
@@ -48,31 +53,32 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
       ];
     }
 
-    return [
+    const steps: Step[] = [
       {
         id: "wallet",
         isComplete: true,
         content: (props) => <Wallet {...props} userAddress={userAddress} />,
       },
-      {
+    ];
+
+    if (paymaster?.type === "quarry") {
+      steps.push({
         id: "allowance",
         isComplete: !!hasAllowance,
         content: (props) => <Allowance {...props} userAddress={userAddress} />,
-      },
-      {
-        id: "session",
-        isComplete: !!isSpender && !!hasDelegation,
-        content: (props) => (
-          <Session
-            {...props}
-            userClient={userClient}
-            registerSpender={!isSpender}
-            registerDelegation={!hasDelegation}
-          />
-        ),
-      },
-    ];
-  }, [hasAllowance, hasDelegation, isSpender, userAddress, userClient]);
+      });
+    }
+
+    steps.push({
+      id: "session",
+      isComplete: !!isSpender && !!hasDelegation,
+      content: (props) => (
+        <Session {...props} userClient={userClient} registerSpender={!isSpender} registerDelegation={!hasDelegation} />
+      ),
+    });
+
+    return steps;
+  }, [hasAllowance, hasDelegation, isSpender, paymaster?.type, userAddress, userClient]);
 
   const [selectedStepId] = useState<null | string>(null);
   const nextStep = steps.find((step) => step.content != null && !step.isComplete);

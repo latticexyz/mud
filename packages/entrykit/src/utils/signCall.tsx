@@ -24,6 +24,7 @@ export async function signCall<chain extends Chain = Chain>({
   nonce: initialNonce,
   client,
 }: SignCallOptions<chain>) {
+  console.log("getting nonce", worldAddress);
   const nonce =
     initialNonce ??
     (client
@@ -36,6 +37,7 @@ export async function signCall<chain extends Chain = Chain>({
           })
         ).nonce
       : 0n);
+  console.log("got nonce", nonce);
 
   const { namespace: systemNamespace, name: systemName } = hexToResource(systemId);
 

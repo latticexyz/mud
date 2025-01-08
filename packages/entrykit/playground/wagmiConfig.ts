@@ -9,14 +9,16 @@ const chains = [
     rpcUrls: {
       ...anvil.rpcUrls,
       // TODO: automatically grant allowance in anvil instead of requiring the service
-      quarryPassIssuer: {
-        http: ["http://127.0.0.1:3003/rpc"],
-      },
+      // quarryPassIssuer: {
+      //   http: ["http://127.0.0.1:3003/rpc"],
+      // },
     },
     contracts: {
-      // TODO: make optional in entrykit?
-      quarryPaymaster: {
-        address: "0x8D8b6b8414E1e3DcfD4168561b9be6bD3bF6eC4B",
+      // quarryPaymaster: {
+      //   address: "0x8D8b6b8414E1e3DcfD4168561b9be6bD3bF6eC4B",
+      // },
+      paymaster: {
+        address: "0xf03E61E7421c43D9068Ca562882E98d1be0a6b6e",
       },
     },
   },

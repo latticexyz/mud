@@ -1,18 +1,21 @@
-import { Address, Client, numberToHex } from "viem";
+import { Address, Chain, Client, Transport, numberToHex } from "viem";
 import { paymasterTables } from "./common";
 import { getRecord, getStaticDataLocation } from "@latticexyz/store/internal";
 import { getKeyTuple } from "@latticexyz/protocol-parser/internal";
 import { setStorageAt } from "viem/actions";
+import { getPaymaster } from "../getPaymaster";
 
 export type GetAllowanceParams = {
-  client: Client;
-  paymasterAddress: Address;
+  client: Client<Transport, Chain>;
   userAddress: Address;
 };
 
-export async function getAllowance({ client, paymasterAddress, userAddress }: GetAllowanceParams) {
+export async function getAllowance({ client, userAddress }: GetAllowanceParams) {
+  const paymaster = getPaymaster(client.chain);
+  if (paymaster?.type !== "quarry") return null;
+
   const record = await getRecord(client, {
-    address: paymasterAddress,
+    address: paymaster.address,
     table: paymasterTables.Allowance,
     key: { user: userAddress },
     blockTag: "pending",
@@ -28,12 +31,10 @@ export function getAllowanceSlot({ userAddress }: { userAddress: Address }) {
 }
 
 // TODO: move this into some sort of store util to `setField`
-export async function setAllowanceSlot({
-  client,
-  paymasterAddress,
-  userAddress,
-  allowance,
-}: GetAllowanceParams & { allowance: bigint }) {
+export async function setAllowanceSlot({ client, userAddress, allowance }: GetAllowanceParams & { allowance: bigint }) {
+  const paymaster = getPaymaster(client.chain);
+  if (paymaster?.type !== "quarry") return;
+
   const slot = getStaticDataLocation(
     paymasterTables.Allowance.tableId,
     getKeyTuple(paymasterTables.Allowance, { user: userAddress }),
@@ -42,7 +43,7 @@ export async function setAllowanceSlot({
   await setStorageAt(
     client.extend(() => ({ mode: "anvil" })),
     {
-      address: paymasterAddress,
+      address: paymaster.address,
       index: slot,
       value: numberToHex(allowance, { size: 32 }),
     },

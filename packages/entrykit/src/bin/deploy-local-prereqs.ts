@@ -63,12 +63,7 @@ const entryPointAddress = getContractAddress({
 });
 // TODO: assert that this matches Viem's entryPoint07Address
 
-const paymasterBytecode = concatHex([
-  paymasterArtifact.bytecode.object as Hex,
-  encodeAbiParameters(parseAbiParameters("address"), [entryPointAddress]),
-]);
-const paymasterAddress = getContractAddress({ deployerAddress, bytecode: paymasterBytecode });
-
+// Deploy entrypoint first, because following deploys need to be able to call it.
 await ensureContractsDeployed({
   client,
   deployerAddress,
@@ -79,6 +74,19 @@ await ensureContractsDeployed({
       deployedBytecodeSize: size(entryPointArtifact.deployedBytecode as Hex),
       debugLabel: "EntryPoint v0.7",
     },
+  ],
+});
+
+const paymasterBytecode = concatHex([
+  paymasterArtifact.bytecode.object as Hex,
+  encodeAbiParameters(parseAbiParameters("address"), [entryPointAddress]),
+]);
+const paymasterAddress = getContractAddress({ deployerAddress, bytecode: paymasterBytecode });
+
+await ensureContractsDeployed({
+  client,
+  deployerAddress,
+  contracts: [
     {
       bytecode: concatHex([
         simpleAccountFactoryArtifact.bytecode as Hex,
