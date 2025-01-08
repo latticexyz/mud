@@ -3,13 +3,14 @@ import { ConnectedClient } from "../common";
 import { twMerge } from "tailwind-merge";
 import { usePrerequisites } from "./usePrerequisites";
 import { Wallet } from "./Wallet";
-import { Allowance } from "./Allowance";
+import { Allowance } from "./quarry/Allowance";
 import { Session } from "./Session";
 import { Step } from "./common";
 import { Address } from "viem";
 import { useAccountModal } from "../useAccountModal";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import { getPaymaster } from "../getPaymaster";
+import { GasBalance } from "./GasBalance";
 
 export type Props = {
   userClient: ConnectedClient;
@@ -40,7 +41,7 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
     }
   }, [closeAccountModal, isNewConnection, prerequisites]);
 
-  const { hasAllowance, isSpender, hasDelegation } = prerequisites ?? {};
+  const { sessionAddress, hasAllowance, isSpender, hasDelegation, hasGasBalance } = prerequisites ?? {};
 
   const steps = useMemo((): readonly Step[] => {
     if (!userAddress) {
@@ -61,7 +62,15 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
       },
     ];
 
-    if (paymaster?.type === "quarry") {
+    if (!paymaster) {
+      if (sessionAddress != null) {
+        steps.push({
+          id: "gasBalance",
+          isComplete: !!hasGasBalance,
+          content: (props) => <GasBalance {...props} sessionAddress={sessionAddress} />,
+        });
+      }
+    } else if (paymaster.type === "quarry") {
       steps.push({
         id: "allowance",
         isComplete: !!hasAllowance,
@@ -78,7 +87,7 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
     });
 
     return steps;
-  }, [hasAllowance, hasDelegation, isSpender, paymaster?.type, userAddress, userClient]);
+  }, [hasAllowance, hasDelegation, hasGasBalance, isSpender, paymaster, sessionAddress, userAddress, userClient]);
 
   const [selectedStepId] = useState<null | string>(null);
   const nextStep = steps.find((step) => step.content != null && !step.isComplete);
@@ -92,6 +101,7 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
   return (
     <div
       className={twMerge(
+        // TODO: set min height based on number of steps
         "min-h-[26rem] px-8 flex flex-col divide-y divide-neutral-800",
         "animate-in animate-duration-300 fade-in slide-in-from-bottom-8",
       )}

@@ -1,7 +1,7 @@
 import { Address, Chain, Client, Transport } from "viem";
-import { paymasterTables } from "../quarry/common";
+import { paymasterTables } from "../../quarry/common";
 import { getRecord } from "@latticexyz/store/internal";
-import { getPaymaster } from "../getPaymaster";
+import { getPaymaster } from "../../getPaymaster";
 
 export type GetSpenderParams = {
   client: Client<Transport, Chain>;

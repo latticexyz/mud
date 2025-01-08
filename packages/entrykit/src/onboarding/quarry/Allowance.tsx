@@ -1,11 +1,11 @@
 import { Hex } from "viem";
 import { useAllowance } from "./useAllowance";
-import { PendingIcon } from "../icons/PendingIcon";
+import { PendingIcon } from "../../icons/PendingIcon";
 import { useClaimGasPass } from "./useClaimGasPass";
-import { Button } from "../ui/Button";
-import { Balance } from "../ui/Balance";
+import { Button } from "../../ui/Button";
+import { Balance } from "../../ui/Balance";
 import { useEffect } from "react";
-import { minGasBalance } from "./common";
+import { minGasBalance } from "../common";
 
 export type Props = {
   isExpanded: boolean;

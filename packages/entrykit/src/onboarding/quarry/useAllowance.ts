@@ -1,8 +1,8 @@
 import { Address, Chain, Client, Transport } from "viem";
-import { useEntryKitConfig } from "../EntryKitConfigProvider";
+import { useEntryKitConfig } from "../../EntryKitConfigProvider";
 import { useClient } from "wagmi";
 import { queryOptions, useQuery } from "@tanstack/react-query";
-import { getAllowance } from "../quarry/getAllowance";
+import { getAllowance } from "../../quarry/getAllowance";
 
 export function getAllowanceQueryOptions({
   client,
