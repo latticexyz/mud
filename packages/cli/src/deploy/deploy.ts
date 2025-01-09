@@ -1,5 +1,4 @@
 import { Address, Hex, stringToHex } from "viem";
-import { ensureDeployer } from "./ensureDeployer";
 import { deployWorld } from "./deployWorld";
 import { ensureTables } from "./ensureTables";
 import {
@@ -18,16 +17,15 @@ import { ensureModules } from "./ensureModules";
 import { ensureNamespaceOwner } from "./ensureNamespaceOwner";
 import { debug } from "./debug";
 import { resourceToHex, resourceToLabel } from "@latticexyz/common";
-import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { randomBytes } from "crypto";
 import { Table } from "@latticexyz/config";
 import { ensureResourceTags } from "./ensureResourceTags";
-import { waitForTransactions } from "./waitForTransactions";
 import { ContractArtifact } from "@latticexyz/world/node";
 import { World } from "@latticexyz/world";
 import { deployCustomWorld } from "./deployCustomWorld";
 import { uniqueBy } from "@latticexyz/common/utils";
 import { getLibraryMap } from "./getLibraryMap";
+import { ensureContractsDeployed, ensureDeployer, waitForTransactions } from "@latticexyz/common/internal";
 
 type DeployOptions = {
   config: World;
@@ -38,6 +36,11 @@ type DeployOptions = {
   artifacts: readonly ContractArtifact[];
   salt?: Hex;
   worldAddress?: Address;
+  /**
+   * Block number of an existing world deployment.
+   * Only used if `worldAddress` is provided.
+   */
+  worldDeployBlock?: bigint;
   /**
    * Address of determinstic deployment proxy: https://github.com/Arachnid/deterministic-deployment-proxy
    * By default, we look for a deployment at 0x4e59b44847b379578588920ca78fbf26c0b4956c and, if not, deploy one.
@@ -64,6 +67,7 @@ export async function deploy({
   artifacts,
   salt,
   worldAddress: existingWorldAddress,
+  worldDeployBlock,
   deployerAddress: initialDeployerAddress,
   indexerUrl,
   chainId,
@@ -71,7 +75,7 @@ export async function deploy({
   const deployerAddress = initialDeployerAddress ?? (await ensureDeployer(client));
 
   const worldDeploy = existingWorldAddress
-    ? await getWorldDeploy(client, existingWorldAddress)
+    ? await getWorldDeploy(client, existingWorldAddress, worldDeployBlock)
     : config.deploy.customWorld
       ? await deployCustomWorld({
           client,

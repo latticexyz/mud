@@ -2,14 +2,13 @@ import { Address, Chain, Client, Transport, sliceHex } from "viem";
 import { getCode } from "viem/actions";
 import deployment from "./create2/deployment.json";
 import { debug } from "./debug";
-import { getAction } from "viem/utils";
 
 const deployer = `0x${deployment.address}` as const;
 
 export async function getDeployer(client: Client<Transport, Chain | undefined>): Promise<Address | undefined> {
-  const bytecode = await getAction(client, getCode, "getCode")({ address: deployer });
+  const bytecode = await getCode(client, { address: deployer });
   if (bytecode) {
-    debug("found CREATE2 deployer at", deployer);
+    debug("found deployer bytecode at", deployer);
     // check if deployed bytecode is the same as the expected bytecode (minus 14-bytes creation code prefix)
     if (bytecode !== sliceHex(`0x${deployment.creationCode}`, 14)) {
       console.warn(

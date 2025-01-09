@@ -13,7 +13,7 @@
       "@latticexyz/common/type-utils": ["./packages/common/src/type-utils/index.ts"],
       "@latticexyz/common/utils": ["./packages/common/src/utils/index.ts"],
       "@latticexyz/common/kms": ["./packages/common/src/exports/kms.ts"],
-      "@latticexyz/common/accounts": ["./packages/common/src/exports/accounts.ts"],
+      "@latticexyz/common/internal": ["./packages/common/src/exports/internal.ts"],
       "@latticexyz/config": ["./packages/config/src/exports/index.ts"],
       "@latticexyz/config/*": ["./packages/config/src/exports/*.ts"],
       "@latticexyz/config/node": ["./packages/config/src/deprecated/node"],

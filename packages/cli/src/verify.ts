@@ -1,14 +1,13 @@
-import { Chain, Client, Hex, Transport, getCreate2Address, sliceHex, zeroHash } from "viem";
+import { Chain, Client, Hex, Transport, sliceHex, zeroHash } from "viem";
 import { getWorldFactoryContracts } from "./deploy/getWorldFactoryContracts";
 import { verifyContract } from "./verify/verifyContract";
 import PQueue from "p-queue";
 import { getWorldProxyFactoryContracts } from "./deploy/getWorldProxyFactoryContracts";
-import { getDeployer } from "./deploy/getDeployer";
 import { MUDError } from "@latticexyz/common/errors";
-import { Module, salt } from "./deploy/common";
+import { Module } from "./deploy/common";
 import { getStorageAt } from "viem/actions";
 import { execa } from "execa";
-import { getAction } from "viem/utils";
+import { getContractAddress, getDeployer } from "@latticexyz/common/internal";
 
 type VerifyOptions = {
   client: Client<Transport, Chain | undefined>;
@@ -44,11 +43,7 @@ export async function verify({
   }
 
   // If the proxy implementation storage slot is set on the World, the World was deployed as a proxy.
-  const implementationStorage = await getAction(
-    client,
-    getStorageAt,
-    "getStorageAt",
-  )({
+  const implementationStorage = await getStorageAt(client, {
     address: worldAddress,
     slot: ERC1967_IMPLEMENTATION_SLOT,
   });
@@ -63,10 +58,9 @@ export async function verify({
         rpc,
         verifier,
         verifierUrl,
-        address: getCreate2Address({
-          from: deployerAddress,
+        address: getContractAddress({
+          deployerAddress,
           bytecode: bytecode,
-          salt,
         }),
       }).catch((error) => {
         console.error(`Error verifying system contract ${name}:`, error);
@@ -98,10 +92,9 @@ export async function verify({
           rpc,
           verifier,
           verifierUrl,
-          address: getCreate2Address({
-            from: deployerAddress,
+          address: getContractAddress({
+            deployerAddress,
             bytecode: bytecode,
-            salt,
           }),
         }).catch((error) => {
           console.error(`Error verifying world factory contract ${name}:`, error);

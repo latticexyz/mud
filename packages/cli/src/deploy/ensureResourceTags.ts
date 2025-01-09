@@ -1,6 +1,6 @@
 import { Hex, stringToHex, BaseError, concatHex } from "viem";
 import { debug } from "./debug";
-import { hexToResource } from "@latticexyz/common";
+import { hexToResource, writeContract } from "@latticexyz/common";
 import { identity, isDefined } from "@latticexyz/common/utils";
 import metadataConfig from "@latticexyz/world-module-metadata/mud.config";
 import metadataAbi from "@latticexyz/world-module-metadata/out/IMetadataSystem.sol/IMetadataSystem.abi.json" assert { type: "json" };
@@ -8,13 +8,11 @@ import { ensureModules } from "./ensureModules";
 import metadataModule from "@latticexyz/world-module-metadata/out/MetadataModule.sol/MetadataModule.json" assert { type: "json" };
 import { getContractArtifact } from "../utils/getContractArtifact";
 import { createPrepareDeploy } from "./createPrepareDeploy";
-import { waitForTransactions } from "./waitForTransactions";
 import { LibraryMap } from "./getLibraryMap";
 import { getKeyTuple, getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
-import { getAction } from "viem/utils";
-import { writeContract } from "viem/actions";
 import { getRecords } from "@latticexyz/store-sync";
 import { CommonDeployOptions } from "./common";
+import { waitForTransactions } from "@latticexyz/common/internal";
 
 const metadataModuleArtifact = getContractArtifact(metadataModule);
 
@@ -113,13 +111,8 @@ export async function ensureResourceTags<const value>({
         const resourceString = `${resource.type}:${resource.namespace}:${resource.name}`;
         debug(`tagging ${resourceString} with ${tag.tag}: ${JSON.stringify(tag.value)}`);
         try {
-          return await getAction(
-            client,
-            writeContract,
-            "writeContract",
-          )({
+          return await writeContract(client, {
             chain: client.chain ?? null,
-            account: client.account,
             address: worldDeploy.address,
             abi: metadataAbi,
             // TODO: replace with batchCall (https://github.com/latticexyz/mud/issues/1645)

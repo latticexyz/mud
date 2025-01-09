@@ -19,11 +19,11 @@ export async function enableAutomine(client: Client): Promise<EnableAutomineResu
   // doesn't support automine or is already in automine
   if (!miningMode || miningMode.type === "automine") return;
 
-  debug("enabling automine");
+  debug("Enabling automine");
   await setMiningMode(client, { type: "automine" });
   return {
     reset: () => {
-      debug("disabling automine");
+      debug("Disabling automine");
       return setMiningMode(client, miningMode);
     },
   };

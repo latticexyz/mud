@@ -1,14 +1,14 @@
 import { Client, Transport, Chain, Account, concatHex, getCreate2Address, Hex } from "viem";
-import { getCode, sendTransaction } from "viem/actions";
-import { contractSizeLimit, salt } from "./common";
+import { getCode } from "viem/actions";
+import { contractSizeLimit, singletonSalt } from "./common";
 import { debug } from "./debug";
-import pRetry from "p-retry";
-import { getAction } from "viem/utils";
+import { sendTransaction } from "../sendTransaction";
 
 export type Contract = {
   bytecode: Hex;
   deployedBytecodeSize?: number;
   debugLabel?: string;
+  salt?: Hex;
 };
 
 export async function ensureContract({
@@ -17,6 +17,7 @@ export async function ensureContract({
   bytecode,
   deployedBytecodeSize,
   debugLabel = "contract",
+  salt = singletonSalt,
 }: {
   readonly client: Client<Transport, Chain | undefined, Account>;
   readonly deployerAddress: Hex;
@@ -27,7 +28,7 @@ export async function ensureContract({
 
   const address = getCreate2Address({ from: deployerAddress, salt, bytecode });
 
-  const contractCode = await getAction(client, getCode, "getCode")({ address, blockTag: "pending" });
+  const contractCode = await getCode(client, { address, blockTag: "pending" });
   if (contractCode) {
     debug("found", debugLabel, "at", address);
     return [];
@@ -48,22 +49,10 @@ export async function ensureContract({
 
   debug("deploying", debugLabel, "at", address);
   return [
-    await pRetry(
-      () =>
-        getAction(
-          client,
-          sendTransaction,
-          "sendTransaction",
-        )({
-          chain: client.chain ?? null,
-          account: client.account,
-          to: deployerAddress,
-          data: concatHex([salt, bytecode]),
-        }),
-      {
-        retries: 3,
-        onFailedAttempt: () => debug(`failed to deploy ${debugLabel}, retrying...`),
-      },
-    ),
+    await sendTransaction(client, {
+      chain: client.chain ?? null,
+      to: deployerAddress,
+      data: concatHex([salt, bytecode]),
+    }),
   ];
 }
