@@ -1,20 +1,19 @@
 import { transactionQueue } from "@latticexyz/common/actions";
-import { Chain, createClient, fallback, http, webSocket } from "viem";
-import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
-import { wiresaw } from "@latticexyz/wiresaw/internal";
-import { gasEstimator, userOpExecutor } from "@latticexyz/paymaster/internal";
+import { Chain, createClient, fallback, http, keccak256, stringToHex, webSocket } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
+import { userOpExecutor } from "./quarry/transports/userOpExecutor";
 
 export function getBundlerTransport(chain: Chain) {
   const bundlerHttpUrl = chain.rpcUrls.bundler?.http[0];
   // TODO: bundler websocket
   const bundlerTransport = bundlerHttpUrl
-    ? gasEstimator(wiresaw(http(bundlerHttpUrl)))
+    ? http(bundlerHttpUrl)
     : chain.id === 31337
       ? userOpExecutor({
           executor: createClient({
             chain,
             transport: fallback([webSocket(), http()]),
-            account: privateKeyToAccount(generatePrivateKey()),
+            account: privateKeyToAccount(keccak256(stringToHex("local user op executor"))),
             pollingInterval: 10,
           }).extend(transactionQueue()),
         })

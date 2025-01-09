@@ -2,19 +2,32 @@ scrollback: 10000
 procs:
   anvil:
     shell: anvil --dump-state playground/anvil-state.json
-  deploy-factory:
+
+  deploy-csw-factory:
     cwd: ../../../coinbase-smart-wallet
     shell: make deploy-local
-  deploy-bundler:
-    cwd: ../../../alto
-    shell: pnpm ts-node scripts/localDeployer/index.ts
-  deploy-paymaster:
-    cwd: ../../../quarry-paymaster/packages/contracts
-    # TODO: pick or mine a nice salt for paymaster
-    shell: pnpm mud deploy --salt 0x && pnpm fund:paymaster:local && pnpm fund:issuer:local
+
+  deploy-prereqs:
+    shell: ./bin/deploy-local-prereqs.js
+    env:
+      DEBUG: "mud:*"
+      # Anvil default account (0x70997970C51812dc3A010C7d01b50e0d17dc79C8)
+      PRIVATE_KEY: "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"
+
+  # deploy-quarry-paymaster:
+  #   cwd: ../../../quarry-paymaster/packages/contracts
+  #   shell: pnpm mud deploy --salt 0x && pnpm fund:paymaster:local && pnpm fund:issuer:local
+  #   env:
+  #     DEBUG: "mud:*"
+
   deploy-game:
     cwd: ../../test/mock-game-contracts
     shell: pnpm deploy:local --salt 0x
     env:
+      DEBUG: "mud:*"
       # Anvil default account (0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc)
       PRIVATE_KEY: "0x8b3a350cf5c34c9194ca85829a2df0ec3153be0318b5e2d3348e872092edffba"
+
+  # deploy-bundler:
+  #   cwd: ../../../alto
+  #   shell: pnpm ts-node scripts/localDeployer/index.ts

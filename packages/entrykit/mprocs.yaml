@@ -4,19 +4,15 @@ procs:
     shell: pnpm vite dev playground
   anvil:
     shell: anvil --block-time 2 --load-state playground/anvil-state.json
+
   # mud:
   #   cwd: ../..
   #   shell: pnpm run dev --filter=!@latticexyz/entrykit
-  bundler:
-    cwd: ../../../alto
-    shell: pnpm ts-node src --config ../mud/packages/entrykit/playground/alto.config.json
-  issuer:
-    cwd: ../../../quarry-paymaster/packages/issuer
-    shell: pnpm start
-  # explorer:
-  #   shell: pnpm explorer
-  id:
-    cwd: ../id
-    shell: pnpm vite --port 5155
-  tunnel:
-    shell: cloudflared tunnel run
+
+  # quarry-issuer:
+  #   cwd: ../../../quarry-paymaster/packages/issuer
+  #   shell: pnpm start
+
+  # bundler:
+  #   cwd: ../../../alto
+  #   shell: pnpm ts-node src --config ../mud/packages/entrykit/playground/alto.config.json

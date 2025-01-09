@@ -25,7 +25,8 @@ export function AccountModalErrorBoundary({ children }: Props) {
             <button
               type="button"
               onClick={async (event) => {
-                // fake pending state while we retry so that if the same error occurs,
+                // if we retry and the same error occurs, it'll look like the button click did nothing
+                // so we'll fake a pending state here to give users an indication something is happening
                 event.currentTarget.ariaBusy = "true";
                 await wait(1000);
                 resetErrorBoundary();

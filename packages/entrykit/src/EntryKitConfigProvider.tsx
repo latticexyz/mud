@@ -2,13 +2,11 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { createContext, useContext, type ReactNode } from "react";
 import { RainbowKitProvider, lightTheme, midnightTheme } from "@rainbow-me/rainbowkit";
 import { EntryKitConfig } from "./config/output";
-import { Address, Chain } from "viem";
+import { Chain } from "viem";
 import { useChains } from "wagmi";
-import { getPaymasterAddress } from "./getPaymasterAddress";
 
 type ContextValue = EntryKitConfig & {
   chain: Chain;
-  paymasterAddress: Address;
 };
 
 /** @internal */
@@ -28,8 +26,6 @@ export function EntryKitConfigProvider({ config, children }: Props) {
   const chains = useChains();
   const chain = chains.find(({ id }) => id === config.chainId);
   if (!chain) throw new Error(`Could not find configured chain for chain ID ${config.chainId}.`);
-
-  const paymasterAddress = getPaymasterAddress(chain);
 
   return (
     <RainbowKitProvider
@@ -52,7 +48,7 @@ export function EntryKitConfigProvider({ config, children }: Props) {
               }
       }
     >
-      <Context.Provider value={{ ...config, chain, paymasterAddress }}>{children}</Context.Provider>
+      <Context.Provider value={{ ...config, chain }}>{children}</Context.Provider>
     </RainbowKitProvider>
   );
 }

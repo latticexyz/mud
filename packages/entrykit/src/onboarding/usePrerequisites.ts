@@ -1,24 +1,26 @@
 import { minGasBalance } from "./common";
-import { getAllowanceQueryOptions } from "./useAllowance";
-import { getSpenderQueryOptions } from "./useSpender";
+import { getAllowanceQueryOptions } from "./quarry/useAllowance";
+import { getSpenderQueryOptions } from "./quarry/useSpender";
 import { getDelegationQueryOptions } from "./useDelegation";
 import { QueryClient, queryOptions, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
-import { useClient } from "wagmi";
+import { Config, useClient, useConfig } from "wagmi";
 import { Address, Chain, Client, Transport } from "viem";
 import { getSessionAccountQueryOptions } from "../useSessionAccount";
+import { getPaymaster } from "../getPaymaster";
+import { getBalanceQueryOptions } from "wagmi/query";
 
 export function getPrequisitesQueryOptions({
   queryClient,
+  config,
   client,
   userAddress,
-  paymasterAddress,
   worldAddress,
 }: {
   queryClient: QueryClient;
+  config: Config;
   client: Client<Transport, Chain> | undefined;
   userAddress: Address | undefined;
-  paymasterAddress: Address;
   worldAddress: Address;
 }) {
   const queryKey = ["getPrerequisites", client?.chain.id, userAddress];
@@ -27,18 +29,33 @@ export function getPrequisitesQueryOptions({
       ? {
           queryKey,
           queryFn: async () => {
+            const paymaster = getPaymaster(client.chain);
             const { address: sessionAddress } = await queryClient.fetchQuery(
               getSessionAccountQueryOptions({ client, userAddress }),
             );
-            const [allowance, isSpender, hasDelegation] = await Promise.all([
-              queryClient.fetchQuery(getAllowanceQueryOptions({ client, paymasterAddress, userAddress })),
-              queryClient.fetchQuery(getSpenderQueryOptions({ client, paymasterAddress, userAddress, sessionAddress })),
+            const [sessionBalance, allowance, spender, hasDelegation] = await Promise.all([
+              !paymaster
+                ? queryClient.fetchQuery(
+                    getBalanceQueryOptions(config, { chainId: client.chain.id, address: sessionAddress }),
+                  )
+                : null,
+              paymaster?.type === "quarry"
+                ? queryClient.fetchQuery(getAllowanceQueryOptions({ client, userAddress }))
+                : null,
+              paymaster?.type === "quarry"
+                ? queryClient.fetchQuery(getSpenderQueryOptions({ client, userAddress, sessionAddress }))
+                : null,
               queryClient.fetchQuery(getDelegationQueryOptions({ client, worldAddress, userAddress, sessionAddress })),
             ]);
-            const hasAllowance = allowance >= minGasBalance;
+            // TODO: figure out better approach than null for allowance/spender when no quarry paymaster
+            const hasAllowance = allowance == null || allowance >= minGasBalance;
+            const isSpender = spender == null ? true : spender;
+            const hasGasBalance = sessionBalance == null || sessionBalance.value >= minGasBalance;
             return {
+              sessionAddress,
               hasAllowance,
               isSpender,
+              hasGasBalance,
               hasDelegation,
               complete: hasAllowance && isSpender && hasDelegation,
             };
@@ -50,17 +67,18 @@ export function getPrequisitesQueryOptions({
 
 export function usePrerequisites(userAddress: Address | undefined) {
   const queryClient = useQueryClient();
-  const { chainId, paymasterAddress, worldAddress } = useEntryKitConfig();
+  const { chainId, worldAddress } = useEntryKitConfig();
+  const config = useConfig();
   const client = useClient({ chainId });
 
   // TODO: rework this so it uses other hooks so we avoid having to clear two caches when e.g. topping up
 
   const prereqs = useQuery(
     getPrequisitesQueryOptions({
+      config,
       queryClient,
       client,
       userAddress,
-      paymasterAddress,
       worldAddress,
     }),
     queryClient,

@@ -1,18 +1,14 @@
 import { useAccount } from "wagmi";
 import { Button } from "./ui/Button";
-import { useAccountModal } from "./useAccountModal";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { useMutation } from "@tanstack/react-query";
-import { usePasskeyConnector } from "./usePasskeyConnector";
 import { AppInfo } from "./AppInfo";
 import { twMerge } from "tailwind-merge";
 
 export function ConnectWallet() {
   const userAccount = useAccount();
-  const { accountModalOpen } = useAccountModal();
   const { openConnectModal, connectModalOpen } = useConnectModal();
 
-  // TODO: show error states
+  // TODO: show error states?
   // TODO: fix passkey issue where pending state disappears but we don't transition right away
 
   const passkeyConnector = usePasskeyConnector();

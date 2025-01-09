@@ -1,4 +1,4 @@
-import { Transport, Chain, Client, RpcSchema, Address } from "viem";
+import { Transport, Chain, Client, RpcSchema } from "viem";
 import {
   BundlerClient,
   BundlerClientConfig,
@@ -6,6 +6,7 @@ import {
   createBundlerClient as viem_createBundlerClient,
 } from "viem/account-abstraction";
 import { defaultClientConfig } from "./common";
+import { getPaymaster } from "./getPaymaster";
 
 const knownChainFees = new Set([
   // anvil hardcodes fee returned by `eth_maxPriorityFeePerGas`
@@ -26,25 +27,21 @@ export function createBundlerClient<
   account extends SmartAccount | undefined = undefined,
   client extends Client | undefined = undefined,
   rpcSchema extends RpcSchema | undefined = undefined,
->({
-  paymasterAddress,
-  ...config
-}: BundlerClientConfig<transport, chain, account, client, rpcSchema> & { paymasterAddress: Address }): BundlerClient<
-  transport,
-  chain,
-  account,
-  client,
-  rpcSchema
-> {
+>(
+  config: BundlerClientConfig<transport, chain, account, client, rpcSchema>,
+): BundlerClient<transport, chain, account, client, rpcSchema> {
   const chain = config.chain ?? config.client?.chain;
+  const paymaster = chain ? getPaymaster(chain) : undefined;
   return viem_createBundlerClient({
     ...defaultClientConfig,
-    paymaster: {
-      getPaymasterData: async () => ({
-        paymaster: paymasterAddress,
-        paymasterData: "0x",
-      }),
-    },
+    paymaster: paymaster
+      ? {
+          getPaymasterData: async () => ({
+            paymaster: paymaster.address,
+            paymasterData: "0x",
+          }),
+        }
+      : undefined,
     // TODO: figure out why viem isn't falling back to `chain.fees.estimateFeesPerGas` when this isn't set
     userOperation: {
       estimateFeesPerGas:

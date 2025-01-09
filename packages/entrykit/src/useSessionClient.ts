@@ -12,13 +12,11 @@ export function getSessionClientQueryOptions({
   client,
   userAddress,
   worldAddress,
-  paymasterAddress,
 }: {
   sessionAccount: SmartAccount | undefined;
   client: Client<Transport, Chain> | undefined;
   userAddress: Address | undefined;
   worldAddress: Address;
-  paymasterAddress: Address;
 }) {
   const queryKey = ["getSessionClient", client?.uid, userAddress, sessionAccount?.address, worldAddress];
   return queryOptions(
@@ -31,7 +29,6 @@ export function getSessionClientQueryOptions({
               client,
               userAddress,
               worldAddress,
-              paymasterAddress,
             }),
           staleTime: Infinity,
         }
@@ -40,7 +37,7 @@ export function getSessionClientQueryOptions({
 }
 
 export function useSessionClient(userAddress: Address | undefined): UseQueryResult<SessionClient> {
-  const { chainId, worldAddress, paymasterAddress } = useEntryKitConfig();
+  const { chainId, worldAddress } = useEntryKitConfig();
   const client = useClient({ chainId });
   const { data: sessionAccount } = useSessionAccount(userAddress);
   return useQuery(
@@ -49,7 +46,6 @@ export function useSessionClient(userAddress: Address | undefined): UseQueryResu
       userAddress,
       client,
       worldAddress,
-      paymasterAddress,
     }),
   );
 }

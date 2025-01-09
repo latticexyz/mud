@@ -1,7 +1,6 @@
 import { Chain, Transport } from "viem";
-import { WalletList, connectorsForWallets, getDefaultWallets } from "@rainbow-me/rainbowkit";
+import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import { Config, CreateConfigParameters, createConfig } from "wagmi";
-import { passkeyWallet } from "./passkey/passkeyWallet";
 import { mapObject } from "@latticexyz/common/utils";
 import { wiresaw } from "@latticexyz/wiresaw/internal";
 import { CredentialOptions } from "./passkey/common";
@@ -26,20 +25,7 @@ export function createWagmiConfig<
   const chains extends readonly [Chain, ...Chain[]],
   transports extends Record<chains[number]["id"], Transport>,
 >(config: CreateWagmiConfigOptions<chains, transports>): Config<chains, transports> {
-  const { wallets: defaultWallets } = getDefaultWallets();
-  const wallets: WalletList = [
-    {
-      groupName: "Recommended",
-      wallets: [
-        passkeyWallet({
-          // TODO: allow any chain ID
-          chainId: config.chainId,
-          credentialOptions: config.credentialOptions,
-        }),
-      ],
-    },
-    ...defaultWallets,
-  ];
+  const wallets = getWallets(config);
 
   const connectors = connectorsForWallets(wallets, {
     appName: config.appName,
