@@ -114,7 +114,9 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
 
   return (
     <>
-      <div className="flex items-center justify-between gap-4 pb-4">
+      {/* {indexer.type !== "sqlite" && <SQLEditor table={table} />} */}
+
+      {/* <div className="flex items-center justify-between gap-4 pb-4">
         <Input
           type="search"
           placeholder="Filter..."
@@ -125,10 +127,10 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
         />
 
         <ExportButton tableData={tableData} isLoading={isLoading} />
-      </div>
+      </div> */}
 
       <div
-        className={cn("rounded-md border", {
+        className={cn("mt-4 rounded-md border", {
           "border-red-400": isError,
         })}
       >
@@ -193,7 +195,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
         <div className="flex-1 text-sm">
           {tableData && (
             <>
-              <span className="text-muted-foreground">Total</span> {totalRows}
+              <span className="text-muted-foreground">Total rows</span> {totalRows}
             </>
           )}
         </div>

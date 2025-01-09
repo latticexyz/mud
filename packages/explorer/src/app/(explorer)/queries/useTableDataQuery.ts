@@ -9,6 +9,7 @@ import { indexerForChainId } from "../utils/indexerForChainId";
 type Props = {
   table: Table | undefined;
   query: string | undefined;
+  enabled: boolean;
 };
 
 export type TDataRow = Record<string, unknown>;
@@ -18,7 +19,7 @@ export type TData = {
   executionTime: number;
 };
 
-export function useTableDataQuery({ table, query }: Props) {
+export function useTableDataQuery({ table, query, enabled }: Props) {
   const { chainName, worldAddress } = useParams();
   const { id: chainId } = useChain();
   const decodedQuery = decodeURIComponent(query ?? "");
@@ -84,7 +85,7 @@ export function useTableDataQuery({ table, query }: Props) {
         executionTime: data.executionTime,
       };
     },
-    enabled: !!table && !!query,
+    enabled: enabled && !!table && !!query,
     refetchInterval: (query) => {
       if (query.state.error) return false;
       return 1000;
