@@ -12,9 +12,9 @@ import { BlockExplorerLink } from "./BlockExplorerLink";
 import { TimeAgo } from "./TimeAgo";
 import { TimingRowHeader } from "./TimingRowHeader";
 import { TransactionTableRow } from "./TransactionTableRow";
-import { WatchedTransaction, useTransactionWatcher } from "./useTransactionWatcher";
+import { ObservedTransaction, useMergedTransactions } from "./useMergedTransactions";
 
-const columnHelper = createColumnHelper<WatchedTransaction>();
+const columnHelper = createColumnHelper<ObservedTransaction>();
 export const columns = [
   columnHelper.accessor("receipt.blockNumber", {
     header: "Block",
@@ -45,14 +45,21 @@ export const columns = [
       );
     },
   }),
-  columnHelper.accessor("functionData.functionName", {
-    header: "Function",
+  columnHelper.accessor("calls", {
+    header: "Function(s)",
     cell: (row) => {
-      const functionName = row.getValue();
+      const calls = row.getValue();
       const status = row.row.original.status;
       return (
         <div className="flex items-center">
-          <Badge variant="secondary">{functionName}</Badge>
+          <div className="flex gap-2">
+            {calls.map(({ functionName }, idx) => (
+              <Badge variant="secondary" key={idx}>
+                {functionName}
+              </Badge>
+            ))}
+          </div>
+
           {status === "pending" && <CheckCheckIcon className="ml-2 h-4 w-4 text-white/60" />}
           {status === "success" && <CheckCheckIcon className="ml-2 h-4 w-4 text-green-400" />}
           {(status === "reverted" || status === "rejected") && <XIcon className="ml-2 h-4 w-4 text-red-400" />}
@@ -94,7 +101,7 @@ export const columns = [
 ];
 
 export function TransactionsTable() {
-  const transactions = useTransactionWatcher();
+  const transactions = useMergedTransactions();
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const table = useReactTable({

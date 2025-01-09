@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/world",
-  "version": "2.2.11",
+  "version": "2.2.14",
   "description": "World framework",
   "repository": {
     "type": "git",
@@ -13,7 +13,6 @@
     ".": "./dist/index.js",
     "./internal": "./dist/internal.js",
     "./mud.config": "./dist/mud.config.js",
-    "./config/v2": "./dist/config/v2.js",
     "./node": "./dist/node.js",
     "./out/*": "./out/*"
   },
@@ -27,9 +26,6 @@
       ],
       "mud.config": [
         "./dist/mud.config.d.ts"
-      ],
-      "config/v2": [
-        "./dist/config/v2.d.ts"
       ],
       "node": [
         "./dist/node.d.ts"
@@ -59,16 +55,16 @@
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@ark/util": "catalog:",
+    "@ark/util": "0.2.2",
+    "@latticexyz/block-logs-stream": "workspace:*",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
-    "abitype": "catalog:",
-    "arktype": "catalog:",
-    "debug": "^4.3.4",
-    "viem": "catalog:"
+    "abitype": "1.0.6",
+    "arktype": "2.0.0-beta.6",
+    "debug": "^4.3.4"
   },
   "devDependencies": {
     "@latticexyz/abi-ts": "workspace:*",
@@ -82,6 +78,15 @@
     "glob": "^10.4.2",
     "solhint": "^3.3.7",
     "tsup": "^6.7.0",
+    "viem": "2.21.19",
     "vitest": "0.34.6"
+  },
+  "peerDependencies": {
+    "viem": "2.x"
+  },
+  "peerDependenciesMeta": {
+    "viem": {
+      "optional": true
+    }
   }
 }

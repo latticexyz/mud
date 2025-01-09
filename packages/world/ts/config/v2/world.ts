@@ -8,7 +8,7 @@ import {
   validateStore,
   flattenNamespacedTables,
   CONFIG_DEFAULTS as STORE_CONFIG_DEFAULTS,
-} from "@latticexyz/store/config/v2";
+} from "@latticexyz/store/internal";
 import { SystemsInput, WorldInput } from "./input";
 import { CONFIG_DEFAULTS, MODULE_DEFAULTS } from "./defaults";
 import { resolveSystems, validateSystems } from "./systems";
@@ -16,7 +16,7 @@ import { resolveNamespaces, validateNamespaces } from "./namespaces";
 import { resolveCodegen } from "./codegen";
 import { resolveDeploy } from "./deploy";
 import type { World } from "./output.js";
-import { StoreInput } from "@latticexyz/store/config/v2";
+import { StoreInput } from "@latticexyz/store";
 
 export type validateWorld<input> = {
   readonly [key in keyof input]: key extends "namespaces"

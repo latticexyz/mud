@@ -1,7 +1,7 @@
 import path from "node:path";
 import { resolveConfigPath } from "@latticexyz/config/node";
 import { tablegen } from "@latticexyz/store/codegen";
-import { defineWorld } from "../config/v2";
+import { defineWorld } from "../config/v2/world";
 import { worldgen } from "../node";
 import config, { configInput } from "../../mud.config";
 

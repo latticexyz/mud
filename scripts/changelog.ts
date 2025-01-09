@@ -13,6 +13,7 @@ import { globSync } from "glob";
 const REPO_URL = process.env.REPO_URL ?? "https://github.com/latticexyz/mud";
 const CHANGELOG_PATH = process.env.CHANGELOG_PATH ?? "CHANGELOG.md";
 const CHANGELOG_DOCS_PATH = process.env.CHANGELOG_DOCS_PATH ?? "docs/pages/changelog.mdx";
+const CHANGELOG_JSON_PATH = process.env.CHANGELOG_JSON_PATH ?? "docs/data/changelog.json";
 const VERSION_PATH = process.env.VERSION_PATH ?? path.join(process.cwd(), "packages/world/package.json");
 const INCLUDE_CHANGESETS = (process.env.INCLUDE_CHANGESETS as "diff" | "all") ?? "diff"; // "diff" to only include new changesets, "all" to use all changesets
 
@@ -27,6 +28,16 @@ const changeTypes = {
   minor: ChangeType.MINOR,
   major: ChangeType.MAJOR,
 } as const;
+
+type ChangelogEntry = {
+  version: string;
+  date: Date;
+  changes: {
+    patch: (ChangelogItem & GitMetadata)[];
+    minor: (ChangelogItem & GitMetadata)[];
+    major: (ChangelogItem & GitMetadata)[];
+  };
+};
 
 type ChangelogItem = {
   packages: {
@@ -45,6 +56,7 @@ type GitMetadata = {
 };
 
 await appendChangelog();
+await appendChangelogJSON();
 
 //----------- UTILS
 
@@ -57,8 +69,36 @@ async function appendChangelog() {
 
   // Append the new changelog at the up
   const newChangelog = await renderChangelog();
+
   writeFileSync(CHANGELOG_PATH, `${newChangelog}\n${currentChangelog}`);
   writeFileSync(CHANGELOG_DOCS_PATH, `${newChangelog}\n${currentChangelog}`);
+}
+
+async function appendChangelogJSON() {
+  // Reset current changelog to version on main
+  await execa("git", ["checkout", "main", "--", CHANGELOG_PATH]);
+
+  const changes = await getChanges(INCLUDE_CHANGESETS);
+  const version = await getVersion();
+  const date = new Date();
+
+  // Read existing JSON file if it exists
+  let existingData: ChangelogEntry[] = [];
+  try {
+    const existingContent = readFileSync(CHANGELOG_JSON_PATH, "utf8");
+    existingData = JSON.parse(existingContent);
+  } catch (error) {
+    existingData = [];
+  }
+
+  const existingIndex = existingData.findIndex((entry) => entry.version === version);
+  if (existingIndex !== -1) {
+    existingData[existingIndex] = { version, date, changes };
+  } else {
+    existingData.unshift({ version, date, changes });
+  }
+
+  writeFileSync(CHANGELOG_JSON_PATH, JSON.stringify(existingData, null, 2));
 }
 
 async function renderChangelog() {

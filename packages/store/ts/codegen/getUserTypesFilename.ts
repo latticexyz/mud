@@ -1,5 +1,5 @@
 import path from "node:path";
-import { Store } from "../config/v2";
+import { Store } from "../config/v2/output";
 
 /**
  * @returns File path for codegen'ed user types, relative to source dir

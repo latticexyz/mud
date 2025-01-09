@@ -1,5 +1,15 @@
 # @latticexyz/abi-ts
 
+## 2.2.14
+
+## 2.2.13
+
+### Patch Changes
+
+- 75e93ba: Added an `--extension` option to customize the resulting TS or DTS output. It defaults to the previous behavior of `.json.d.ts`, but can now be set to `.d.json.ts` for compatibility with newer TS versions and `.json.ts` or just `.ts` for a pure TS file.
+
+## 2.2.12
+
 ## 2.2.11
 
 ## 2.2.10

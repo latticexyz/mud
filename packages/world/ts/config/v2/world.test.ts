@@ -143,8 +143,8 @@ describe("defineWorld", () => {
             Example: {
               label: "Example",
               type: "table",
-              namespaceLabel: "",
               namespace: "",
+              namespaceLabel: "",
               name: "Example",
               tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
               schema: {
@@ -164,8 +164,8 @@ describe("defineWorld", () => {
         Example: {
           label: "Example",
           type: "table",
-          namespaceLabel: "",
           namespace: "",
+          namespaceLabel: "",
           name: "Example",
           tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
           schema: {
@@ -189,6 +189,8 @@ describe("defineWorld", () => {
         indexFilename: "index.sol",
         worldInterfaceName: "IWorld",
         worldgenDirectory: "world",
+        systemLibrariesDirectory: "systems",
+        generateSystemLibraries: false,
         worldImportPath: "@latticexyz/world/src",
       },
       systems: {},
@@ -242,6 +244,8 @@ describe("defineWorld", () => {
   } & {
     readonly worldInterfaceName: "IWorld"
     readonly worldgenDirectory: "world"
+    readonly systemLibrariesDirectory: "systems"
+    readonly generateSystemLibraries: false
     readonly worldImportPath: "@latticexyz/world/src"
   }
   readonly sourceDirectory: "src"
@@ -326,8 +330,8 @@ describe("defineWorld", () => {
             Example: {
               label: "Example",
               type: "table",
-              namespaceLabel: "root",
               namespace: "",
+              namespaceLabel: "root",
               name: "Example",
               tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
               schema: {
@@ -347,8 +351,8 @@ describe("defineWorld", () => {
         root__Example: {
           label: "Example",
           type: "table",
-          namespaceLabel: "root",
           namespace: "",
+          namespaceLabel: "root",
           name: "Example",
           tableId: "0x746200000000000000000000000000004578616d706c65000000000000000000",
           schema: {
@@ -372,6 +376,8 @@ describe("defineWorld", () => {
         indexFilename: "index.sol",
         worldInterfaceName: "IWorld",
         worldgenDirectory: "world",
+        systemLibrariesDirectory: "systems",
+        generateSystemLibraries: false,
         worldImportPath: "@latticexyz/world/src",
       },
       systems: {},
@@ -425,6 +431,8 @@ describe("defineWorld", () => {
   } & {
     readonly worldInterfaceName: "IWorld"
     readonly worldgenDirectory: "world"
+    readonly systemLibrariesDirectory: "systems"
+    readonly generateSystemLibraries: false
     readonly worldImportPath: "@latticexyz/world/src"
   }
   readonly sourceDirectory: "src"

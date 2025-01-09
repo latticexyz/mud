@@ -1,14 +1,16 @@
 import { defineConfig } from "tsup";
 
-export default defineConfig({
-  entry: {
-    index: "src/exports/index.ts",
-    internal: "src/exports/internal.ts",
-  },
+export default defineConfig((opts) => ({
+  entry: ["src/exports/index.ts", "src/exports/internal.ts", "src/exports/react.ts"],
   target: "esnext",
   format: ["esm"],
-  dts: !process.env.TSUP_SKIP_DTS,
   sourcemap: true,
-  clean: true,
   minify: true,
-});
+  // don't generate DTS during watch mode because it's slow
+  // we're likely using TS source in this mode anyway
+  dts: !opts.watch,
+  // don't clean during watch mode to avoid removing
+  // previously-built DTS files, which other build tasks
+  // depend on
+  clean: !opts.watch,
+}));

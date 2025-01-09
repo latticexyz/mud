@@ -3,7 +3,7 @@ import { createStash } from "./createStash";
 import { attest } from "@ark/attest";
 import { BoundTable } from "./actions/getTable";
 import { DefaultActions } from "./decorators/defaultActions";
-import { defineTable } from "@latticexyz/store/config/v2";
+import { defineTable } from "@latticexyz/store/internal";
 
 describe("stash actions, bound table", () => {
   const stash = createStash();
@@ -22,7 +22,7 @@ describe("stash actions, bound table", () => {
       "getTables",
       "runQuery",
       "subscribeQuery",
-      "subscribeStore",
+      "subscribeStash",
       "subscribeTable", // renamed to subscribe in table API
       "_",
       "get",

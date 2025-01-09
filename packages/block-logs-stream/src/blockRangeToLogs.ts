@@ -1,7 +1,6 @@
 import { EMPTY, OperatorFunction, concatMap, from, pipe, tap } from "rxjs";
 import { FetchLogsOptions, FetchLogsResult, fetchLogs } from "./fetchLogs";
-import { AbiEvent } from "abitype";
-import { BlockNumber, UnionOmit } from "viem";
+import { AbiEvent, BlockNumber, UnionOmit } from "viem";
 import { debug } from "./debug";
 
 export type BlockRangeToLogsOptions<abiEvents extends readonly AbiEvent[]> = UnionOmit<

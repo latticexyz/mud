@@ -3,7 +3,11 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
+import { store } from "../../observer/store";
 import "./globals.css";
+
+// Reference to imported store observer so the listener is established when this component is used.
+store;
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,9 +33,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${jetbrains.variable} dark`}>
-        <Theme>
+        <Theme appearance="dark">
           <div className="container">{children}</div>
-          <Toaster richColors closeButton duration={10000} />
+          <Toaster richColors closeButton duration={10000} theme="dark" />
         </Theme>
       </body>
     </html>

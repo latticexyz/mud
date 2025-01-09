@@ -1,14 +1,18 @@
 import { Address, Hash } from "viem";
+import { UserOperationReceipt } from "viem/account-abstraction";
+import { DecodedUserOperationCall } from "../app/(explorer)/[chainName]/worlds/[worldAddress]/observe/useMergedTransactions";
 import { ReceiptSummary } from "./common";
 
 export type Messages = {
   ping: {};
+  waitForUserOperationReceipt: {
+    writeId: string;
+    userOpHash: Hash;
+  };
   write: {
     writeId: string;
-    address: Address;
     from: Address;
-    functionSignature: string;
-    args: unknown[];
+    calls: DecodedUserOperationCall[];
     value?: bigint;
   };
   "write:result": PromiseSettledResult<Hash> & { writeId: string };
@@ -17,6 +21,9 @@ export type Messages = {
     hash: Hash;
   };
   "waitForTransactionReceipt:result": PromiseSettledResult<ReceiptSummary> & {
+    writeId: string;
+  };
+  "waitForUserOperationReceipt:result": PromiseSettledResult<UserOperationReceipt> & {
     writeId: string;
   };
   waitForTransaction: {

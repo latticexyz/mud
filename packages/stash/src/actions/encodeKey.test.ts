@@ -1,7 +1,7 @@
 import { attest } from "@ark/attest";
 import { describe, it } from "vitest";
 import { encodeKey } from "./encodeKey";
-import { defineTable } from "@latticexyz/store/config/v2";
+import { defineTable } from "@latticexyz/store/internal";
 
 describe("encodeKey", () => {
   it("should encode a key to a string", () => {

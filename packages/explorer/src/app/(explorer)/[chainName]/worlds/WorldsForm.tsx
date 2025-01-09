@@ -41,9 +41,15 @@ export function WorldsForm({ worlds }: { worlds: Address[] }) {
   function onLuckyWorld() {
     if (worlds.length > 0) {
       const luckyAddress = worlds[Math.floor(Math.random() * worlds.length)];
-      router.push(getWorldUrl(chainName as string, luckyAddress));
+      router.push(getWorldUrl(chainName as string, luckyAddress as Address));
     }
   }
+
+  const handleOpenOptions = () => {
+    if (!open && worlds.length > 0) {
+      setOpen(true);
+    }
+  };
 
   return (
     <div className="mx-auto flex min-h-screen w-[450px] flex-col items-center justify-center p-4">
@@ -71,8 +77,15 @@ export function WorldsForm({ worlds }: { worlds: Address[] }) {
                           field.onBlur();
                           setOpen(false);
                         }}
-                        onFocus={() => setOpen(true)}
+                        onFocus={handleOpenOptions}
                         placeholder="Enter world address..."
+                        // Need to manually trigger form submission as CommandPrimitive.Input captures Enter key events
+                        onKeyDown={(e) => {
+                          if (!open && e.key === "Enter") {
+                            e.preventDefault();
+                            form.handleSubmit(onSubmit)();
+                          }
+                        }}
                       >
                         <Input className="h-12" />
                       </CommandPrimitive.Input>
@@ -84,7 +97,7 @@ export function WorldsForm({ worlds }: { worlds: Address[] }) {
 
               <div className="relative">
                 <CommandList>
-                  {open ? (
+                  {open && worlds.length > 0 ? (
                     <div className="absolute top-3 z-10 max-h-[200px] w-full overflow-y-auto rounded-md border bg-popover text-popover-foreground outline-none animate-in">
                       <CommandGroup>
                         {worlds?.map((world) => {
@@ -101,6 +114,7 @@ export function WorldsForm({ worlds }: { worlds: Address[] }) {
                                   shouldValidate: true,
                                 });
                                 setOpen(false);
+                                form.handleSubmit(onSubmit)();
                               }}
                               className="cursor-pointer font-mono"
                             >

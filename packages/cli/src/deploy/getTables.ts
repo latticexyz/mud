@@ -1,60 +1,45 @@
-import { Client, decodeAbiParameters, parseAbiParameters } from "viem";
+import { Client, Hex, decodeAbiParameters, parseAbiParameters } from "viem";
 import { hexToResource } from "@latticexyz/common";
-import { WorldDeploy } from "./common";
+import { CommonDeployOptions } from "./common";
 import { debug } from "./debug";
-import {
-  decodeKey,
-  decodeValueArgs,
-  getKeySchema,
-  getSchemaTypes,
-  getValueSchema,
-  hexToSchema,
-} from "@latticexyz/protocol-parser/internal";
+import { hexToSchema } from "@latticexyz/protocol-parser/internal";
 import { Schema, Table } from "@latticexyz/config";
 import storeConfig from "@latticexyz/store/mud.config";
-import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
-import { flattenStoreLogs, getStoreLogs } from "@latticexyz/store/internal";
+import { getRecords } from "@latticexyz/store-sync";
 
 // TODO: add label and namespaceLabel once we register it onchain
-type DeployedTable = Omit<Table, "label" | "namespaceLabel">;
+type DeployedTable = Omit<Table, "label" | "namespaceLabel"> & {
+  readonly keySchema: Schema;
+  readonly keySchemaHex: Hex;
+  readonly valueSchema: Schema;
+  readonly valueSchemaHex: Hex;
+};
 
 export async function getTables({
   client,
   worldDeploy,
-}: {
-  readonly client: Client;
-  readonly worldDeploy: WorldDeploy;
-}): Promise<readonly Omit<DeployedTable, "label">[]> {
+  indexerUrl,
+  chainId,
+}: Omit<CommonDeployOptions, "client"> & { client: Client }): Promise<readonly Omit<DeployedTable, "label">[]> {
   debug("looking up tables for", worldDeploy.address);
 
-  const blockLogs = await fetchBlockLogs({
+  const { records } = await getRecords({
+    table: storeConfig.namespaces.store.tables.Tables,
+    worldAddress: worldDeploy.address,
+    indexerUrl,
+    chainId,
+    client,
     fromBlock: worldDeploy.deployBlock,
     toBlock: worldDeploy.stateBlock,
-    maxBlockRange: 100_000n,
-    async getLogs({ fromBlock, toBlock }) {
-      return getStoreLogs(client, {
-        address: worldDeploy.address,
-        fromBlock,
-        toBlock,
-        tableId: storeConfig.namespaces.store.tables.Tables.tableId,
-      });
-    },
   });
-  const logs = flattenStoreLogs(blockLogs.flatMap((block) => block.logs));
 
-  // TODO: combine with store-sync logToTable and export from somewhere
-  const tables = logs.map((log): DeployedTable => {
-    const { tableId } = decodeKey(
-      getSchemaTypes(getKeySchema(storeConfig.namespaces.store.tables.Tables)),
-      log.args.keyTuple,
-    );
-    const { type, namespace, name } = hexToResource(tableId);
-    const value = decodeValueArgs(getSchemaTypes(getValueSchema(storeConfig.namespaces.store.tables.Tables)), log.args);
+  const tables = records.map((record) => {
+    const { type, namespace, name } = hexToResource(record.tableId);
 
-    const solidityKeySchema = hexToSchema(value.keySchema);
-    const solidityValueSchema = hexToSchema(value.valueSchema);
-    const keyNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedKeyNames)[0];
-    const fieldNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedFieldNames)[0];
+    const solidityKeySchema = hexToSchema(record.keySchema);
+    const solidityValueSchema = hexToSchema(record.valueSchema);
+    const keyNames = decodeAbiParameters(parseAbiParameters("string[]"), record.abiEncodedKeyNames)[0];
+    const fieldNames = decodeAbiParameters(parseAbiParameters("string[]"), record.abiEncodedFieldNames)[0];
 
     const valueAbiTypes = [...solidityValueSchema.staticFields, ...solidityValueSchema.dynamicFields];
 
@@ -70,9 +55,13 @@ export async function getTables({
       type: type as never,
       namespace,
       name,
-      tableId,
+      tableId: record.tableId,
       schema: { ...keySchema, ...valueSchema },
       key: Object.keys(keySchema),
+      keySchema,
+      keySchemaHex: record.keySchema,
+      valueSchema,
+      valueSchemaHex: record.valueSchema,
     };
   });
 

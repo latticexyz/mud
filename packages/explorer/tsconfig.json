@@ -4,6 +4,7 @@
     "allowJs": true,
     "incremental": true,
     "isolatedModules": true,
+    "noUncheckedIndexedAccess": true,
     "jsx": "preserve",
     "plugins": [
       {

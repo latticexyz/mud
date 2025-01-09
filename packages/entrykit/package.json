@@ -1,0 +1,98 @@
+{
+  "name": "@latticexyz/entrykit",
+  "version": "2.2.14",
+  "description": "User onboarding flows for MUD apps",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git",
+    "directory": "packages/entrykit"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./dist/tsup/exports/index.js",
+    "./internal": "./dist/tsup/exports/internal.js"
+  },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/tsup/exports/index.d.ts"
+      ],
+      "internal": [
+        "./dist/tsup/exports/internal.d.ts"
+      ]
+    }
+  },
+  "bin": {
+    "deploy-local-prereqs": "./bin/deploy-local-prereqs.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "pnpm run build:js",
+    "build:js": "tsup",
+    "clean": "pnpm run clean:js",
+    "clean:js": "shx rm -rf dist",
+    "data:relay-chains": "tsx src/scripts/get-relay-chains.ts",
+    "dev": "tsup --watch",
+    "playground": "mprocs",
+    "playground:deploy": "mprocs --config mprocs.deploy.yaml",
+    "test": "tsc --noEmit && vitest",
+    "test:ci": "tsc --noEmit && vitest --run"
+  },
+  "dependencies": {
+    "@account-abstraction/contracts": "^0.7.0",
+    "@ark/util": "0.2.2",
+    "@latticexyz/common": "workspace:*",
+    "@latticexyz/config": "workspace:*",
+    "@latticexyz/paymaster": "workspace:*",
+    "@latticexyz/protocol-parser": "workspace:*",
+    "@latticexyz/store": "workspace:*",
+    "@latticexyz/world": "workspace:*",
+    "@latticexyz/world-modules": "workspace:*",
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@rainbow-me/rainbowkit": "2.1.7",
+    "debug": "^4.3.4",
+    "dotenv": "^16.0.3",
+    "permissionless": "^0.2.3",
+    "react-error-boundary": "^4.0.13",
+    "react-merge-refs": "^2.1.1",
+    "tailwind-merge": "^1.12.0",
+    "usehooks-ts": "^3.1.0",
+    "zustand": "^4.5.2"
+  },
+  "devDependencies": {
+    "@tanstack/react-query": "^5.56.2",
+    "@types/debug": "^4.1.7",
+    "@types/react": "18.2.22",
+    "@types/react-dom": "18.2.7",
+    "@types/ws": "^8.5.4",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.20",
+    "eslint-plugin-react": "7.31.11",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "mprocs": "^0.7.1",
+    "postcss": "^8.4.47",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "tailwindcss": "^3.4.13",
+    "tsup": "^6.7.0",
+    "viem": "2.21.19",
+    "vite": "^5.4.1",
+    "vite-plugin-dts": "^4.2.4",
+    "vite-plugin-externalize-deps": "^0.8.0",
+    "vitest": "0.34.6",
+    "wagmi": "2.12.11"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "5.x",
+    "react": "18.x",
+    "react-dom": "18.x",
+    "viem": "2.x",
+    "wagmi": "2.x"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

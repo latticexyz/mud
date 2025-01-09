@@ -1,8 +1,8 @@
 import { ArrowUpDownIcon, LoaderIcon, TriangleAlertIcon } from "lucide-react";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { useMemo } from "react";
-import { Schema, Table as TableType } from "@latticexyz/config";
-import { getKeySchema, getKeyTuple, getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
+import { Table as TableType } from "@latticexyz/config";
+import { getKeySchema, getKeyTuple } from "@latticexyz/protocol-parser/internal";
 import {
   ColumnDef,
   SortingState,
@@ -18,30 +18,27 @@ import { Button } from "../../../../../../components/ui/Button";
 import { Input } from "../../../../../../components/ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
 import { cn } from "../../../../../../utils";
-import { TableData, useTableDataQuery } from "../../../../queries/useTableDataQuery";
+import { TData, TDataRow, useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { EditableTableCell } from "./EditableTableCell";
+import { ExportButton } from "./ExportButton";
+import { typeSortingFn } from "./utils/typeSortingFn";
 
 const initialSortingState: SortingState = [];
-const initialRows: TableData["rows"] = [];
+const initialRows: TData["rows"] = [];
 
 export function TablesViewer({ table, query }: { table?: TableType; query?: string }) {
-  const {
-    data: tableData,
-    isLoading: isTableDataLoading,
-    isFetched,
-    isError,
-    error,
-  } = useTableDataQuery({ table, query });
-  const isLoading = isTableDataLoading || !isFetched;
-
+  const { data: tableData, isLoading: isTDataLoading, isFetched, isError, error } = useTableDataQuery({ table, query });
+  const isLoading = isTDataLoading || !isFetched;
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
 
-  const tableColumns: ColumnDef<getSchemaPrimitives<Schema>>[] = useMemo(() => {
+  const tableColumns: ColumnDef<TDataRow>[] = useMemo(() => {
     if (!table || !tableData) return [];
 
     return tableData.columns.map((name) => {
-      const type = table?.schema[name]?.type;
+      const schema = table?.schema[name];
+      const type = schema?.type;
+
       return {
         accessorKey: name,
         header: ({ column }) => {
@@ -57,11 +54,11 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
             </Button>
           );
         },
+        sortingFn: (rowA, rowB, columnId) => typeSortingFn(rowA, rowB, columnId, type),
         cell: ({ row }) => {
           const namespace = table?.namespace;
           const keySchema = getKeySchema(table);
-          const value = row.getValue(name)?.toString();
-
+          const value = row.getValue(name);
           if (!table || Object.keys(keySchema).includes(name) || internalNamespaces.includes(namespace)) {
             return value;
           }
@@ -109,6 +106,8 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
           className="max-w-sm rounded border px-2 py-1"
           disabled={!tableData}
         />
+
+        <ExportButton tableData={tableData} isLoading={isLoading} />
       </div>
 
       <div
@@ -125,22 +124,23 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
           <div className="relative w-full overflow-auto">
             <Table>
               <TableHeader>
-                {reactTable.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <TableHead key={header.id}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(header.column.columnDef.header, header.getContext())}
-                        </TableHead>
-                      );
-                    })}
-                  </TableRow>
-                ))}
+                {!isError &&
+                  reactTable.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => {
+                        return (
+                          <TableHead key={header.id}>
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(header.column.columnDef.header, header.getContext())}
+                          </TableHead>
+                        );
+                      })}
+                    </TableRow>
+                  ))}
               </TableHeader>
               <TableBody>
-                {reactTable.getRowModel().rows?.length ? (
+                {!isError && reactTable.getRowModel().rows?.length ? (
                   reactTable.getRowModel().rows.map((row) => (
                     <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                       {row.getVisibleCells().map((cell) => (
@@ -173,6 +173,10 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
       </div>
 
       <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+          {tableData && `Total rows: ${tableData.rows.length.toLocaleString()}`}
+        </div>
+
         <div className="space-x-2">
           <Button
             variant="outline"

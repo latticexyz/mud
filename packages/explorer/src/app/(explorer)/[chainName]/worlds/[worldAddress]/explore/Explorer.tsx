@@ -29,16 +29,17 @@ export function Explorer() {
       const tableName = constructTableName(table, worldAddress as Hex, chainId);
 
       if (indexer.type === "sqlite") {
-        setQuery(`SELECT * FROM "${tableName}"`);
+        setQuery(`SELECT * FROM "${tableName}";`);
       } else {
-        setQuery(`SELECT ${Object.keys(table.schema).join(", ")} FROM ${tableName}`);
+        const columns = Object.keys(table.schema).map((column) => `"${column}"`);
+        setQuery(`SELECT ${columns.join(", ")} FROM ${tableName};`);
       }
     }
   }, [chainId, setQuery, selectedTableId, table, worldAddress, prevSelectedTableId, query, indexer.type]);
 
   return (
     <>
-      {indexer.type !== "sqlite" && <SQLEditor />}
+      {indexer.type !== "sqlite" && <SQLEditor table={table} />}
       <TableSelector tables={tables} />
       <TablesViewer table={table} query={query} />
     </>

@@ -18,6 +18,7 @@ import { kmsKeyToAccount } from "@latticexyz/common/kms";
 import { configToModules } from "./deploy/configToModules";
 import { findContractArtifacts } from "@latticexyz/world/node";
 import { enableAutomine } from "./utils/enableAutomine";
+import { defaultChains } from "./defaultChains";
 
 export const deployOptions = {
   configPath: { type: "string", desc: "Path to the MUD config file" },
@@ -47,6 +48,11 @@ export const deployOptions = {
   kms: {
     type: "boolean",
     desc: "Deploy the World with an AWS KMS key instead of local private key.",
+  },
+  indexerUrl: {
+    type: "string",
+    desc: "The indexer URL to use.",
+    required: false,
   },
 } as const satisfies Record<string, Options>;
 
@@ -91,6 +97,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     config,
     forgeOutDir: outDir,
   });
+
   const artifacts = await findContractArtifacts({ forgeOutDir: outDir });
   // TODO: pass artifacts into configToModules (https://github.com/latticexyz/mud/issues/3153)
   const modules = await configToModules(config, outDir);
@@ -135,6 +142,16 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     account,
   });
 
+  const chainId = await getChainId(client);
+  const indexerUrl = opts.indexerUrl ?? defaultChains.find((chain) => chain.id === chainId)?.indexerUrl;
+  const worldDeployBlock = opts.worldAddress
+    ? getWorldDeployBlock({
+        worldAddress: opts.worldAddress,
+        worldsFile: config.deploy.worldsFile,
+        chainId,
+      })
+    : undefined;
+
   console.log("Deploying from", client.account.address);
 
   // Attempt to enable automine for the duration of the deploy. Noop if automine is not available.
@@ -146,12 +163,15 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     deployerAddress: opts.deployerAddress as Hex | undefined,
     salt,
     worldAddress: opts.worldAddress as Hex | undefined,
+    worldDeployBlock,
     client,
     tables,
     systems,
     libraries,
     modules,
     artifacts,
+    indexerUrl,
+    chainId,
   });
   if (opts.worldAddress == null || opts.alwaysRunPostDeploy) {
     await postDeploy(
@@ -175,7 +195,6 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   };
 
   if (opts.saveDeployment) {
-    const chainId = await getChainId(client);
     const deploysDir = path.join(config.deploy.deploysDirectory, chainId.toString());
     mkdirSync(deploysDir, { recursive: true });
     writeFileSync(path.join(deploysDir, "latest.json"), JSON.stringify(deploymentInfo, null, 2));
@@ -203,4 +222,18 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   console.log(deploymentInfo);
 
   return worldDeploy;
+}
+
+function getWorldDeployBlock({
+  chainId,
+  worldAddress,
+  worldsFile,
+}: {
+  chainId: number;
+  worldAddress: string;
+  worldsFile: string;
+}): bigint | undefined {
+  const deploys = existsSync(worldsFile) ? JSON.parse(readFileSync(worldsFile, "utf-8")) : {};
+  const worldDeployBlock = deploys[chainId]?.address === worldAddress ? deploys[chainId].blockNumber : undefined;
+  return worldDeployBlock ? BigInt(worldDeployBlock) : undefined;
 }

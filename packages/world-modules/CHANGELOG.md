@@ -1,5 +1,39 @@
 # Change Log
 
+## 2.2.14
+
+### Patch Changes
+
+- 8eaad30: Changed ERC20 and ERC721 related modules to use public library methods instead of manual `delegatecall`s.
+  - @latticexyz/common@2.2.14
+  - @latticexyz/config@2.2.14
+  - @latticexyz/schema-type@2.2.14
+  - @latticexyz/store@2.2.14
+  - @latticexyz/world@2.2.14
+
+## 2.2.13
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.13
+- @latticexyz/store@2.2.13
+- @latticexyz/world@2.2.13
+- @latticexyz/common@2.2.13
+- @latticexyz/config@2.2.13
+
+## 2.2.12
+
+### Patch Changes
+
+- Updated dependencies [ea18f27]
+- Updated dependencies [41a6e2f]
+- Updated dependencies [fe98442]
+  - @latticexyz/common@2.2.12
+  - @latticexyz/config@2.2.12
+  - @latticexyz/schema-type@2.2.12
+  - @latticexyz/store@2.2.12
+  - @latticexyz/world@2.2.12
+
 ## 2.2.11
 
 ### Patch Changes

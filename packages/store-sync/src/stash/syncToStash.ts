@@ -1,6 +1,6 @@
 import { getRecord, setRecord, registerTable, Stash } from "@latticexyz/stash/internal";
 import { createStorageAdapter } from "./createStorageAdapter";
-import { defineTable } from "@latticexyz/store/config/v2";
+import { defineTable } from "@latticexyz/store/internal";
 import { SyncStep } from "../SyncStep";
 import { SyncOptions, SyncResult } from "../common";
 import { createStoreSync } from "../createStoreSync";

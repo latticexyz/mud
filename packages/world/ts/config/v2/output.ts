@@ -1,5 +1,5 @@
 import { Store } from "@latticexyz/store";
-import { Namespace as StoreNamespace } from "@latticexyz/store/config/v2";
+import { Namespace as StoreNamespace } from "@latticexyz/store/internal";
 import { DynamicResolution, ValueWithType } from "./dynamicResolution";
 import { Hex } from "viem";
 
@@ -113,6 +113,10 @@ export type Codegen = {
   readonly worldInterfaceName: string;
   /** Directory to output system and world interfaces of `worldgen` (Default "world") */
   readonly worldgenDirectory: string;
+  /** Directory to output system libraries (Default "libraries") */
+  readonly systemLibrariesDirectory: string;
+  /** Generate libraries for each system (Default false) */
+  readonly generateSystemLibraries: boolean;
   /**
    * @internal
    * Absolute import path for a package import or starting with `.` for an import relative to project root dir.

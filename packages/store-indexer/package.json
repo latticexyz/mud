@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store-indexer",
-  "version": "2.2.11",
+  "version": "2.2.14",
   "description": "Minimal Typescript indexer for Store",
   "repository": {
     "type": "git",
@@ -15,17 +15,18 @@
   "typesVersions": {
     "*": {
       "index": [
-        "./dist/src/index.d.ts"
+        "./dist/index.d.ts"
       ]
     }
   },
   "bin": {
-    "postgres-decoded-indexer": "./dist/bin/postgres-decoded-indexer.js",
-    "postgres-frontend": "./dist/bin/postgres-frontend.js",
-    "postgres-indexer": "./dist/bin/postgres-indexer.js",
-    "sqlite-indexer": "./dist/bin/sqlite-indexer.js"
+    "postgres-decoded-indexer": "./bin/postgres-decoded-indexer.js",
+    "postgres-frontend": "./bin/postgres-frontend.js",
+    "postgres-indexer": "./bin/postgres-indexer.js",
+    "sqlite-indexer": "./bin/sqlite-indexer.js"
   },
   "files": [
+    "bin",
     "dist"
   ],
   "scripts": {
@@ -72,7 +73,6 @@
     "rxjs": "7.5.5",
     "superjson": "^1.12.4",
     "trpc-koa-adapter": "^1.1.3",
-    "viem": "catalog:",
     "zod": "3.23.8"
   },
   "devDependencies": {
@@ -85,7 +85,11 @@
     "@types/koa__router": "^12.0.4",
     "concurrently": "^8.2.2",
     "tsup": "^6.7.0",
+    "viem": "2.21.19",
     "vitest": "0.34.6"
+  },
+  "peerDependencies": {
+    "viem": "2.x"
   },
   "publishConfig": {
     "access": "public"

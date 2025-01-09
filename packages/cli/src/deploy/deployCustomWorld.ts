@@ -1,14 +1,13 @@
-import { Account, Chain, Client, Hex, Transport, concatHex, encodeDeployData, getCreate2Address, isHex } from "viem";
+import { Account, Chain, Client, Hex, Transport, concatHex, encodeDeployData, isHex } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
 import { resourceToHex, sendTransaction, writeContract } from "@latticexyz/common";
 import { debug } from "./debug";
 import { logsToWorldDeploy } from "./logsToWorldDeploy";
-import { WorldDeploy, salt, worldAbi } from "./common";
+import { WorldDeploy, worldAbi } from "./common";
 import { getWorldContracts } from "./getWorldContracts";
-import { ensureContractsDeployed } from "./ensureContractsDeployed";
+import { ensureContractsDeployed, getContractAddress, waitForTransactions } from "@latticexyz/common/internal";
 import { ContractArtifact, ReferenceIdentifier } from "@latticexyz/world/node";
 import { World } from "@latticexyz/world";
-import { waitForTransactions } from "./waitForTransactions";
 
 function findArtifact(ref: ReferenceIdentifier, artifacts: readonly ContractArtifact[]): ContractArtifact {
   const artifact = artifacts.find((a) => a.sourcePath === ref.sourcePath && a.name === ref.name);
@@ -31,9 +30,8 @@ function getDeployable(deployerAddress: Hex, artifact: ContractArtifact, artifac
   return concatHex(
     artifact.bytecode.map((ref): Hex => {
       if (isHex(ref)) return ref;
-      return getCreate2Address({
-        from: deployerAddress,
-        salt,
+      return getContractAddress({
+        deployerAddress,
         bytecode: getDeployable(deployerAddress, findArtifact(ref, artifacts), artifacts),
       });
     }),

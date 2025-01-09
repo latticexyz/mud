@@ -1,15 +1,17 @@
-import { Address, Hex, createWalletClient, http, parseAbi } from "viem";
-import { getBlockNumber, getLogs } from "viem/actions";
+import { Address, Hex, createClient, http, parseAbi, size } from "viem";
+import { getBlockNumber, getCode } from "viem/actions";
+import { getAction } from "viem/utils";
+import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
 import { helloStoreEvent } from "@latticexyz/store";
+import { getWorldAbi } from "@latticexyz/store-sync/world";
 import { helloWorldEvent } from "@latticexyz/world";
-import { getWorldAbi } from "@latticexyz/world/internal";
 import { chainIdToName, supportedChainId, supportedChains, validateChainId } from "../../../../common";
 
 export const dynamic = "force-dynamic";
 
 async function getClient(chainId: supportedChainId) {
   const chain = supportedChains[chainIdToName[chainId]];
-  const client = createWalletClient({
+  const client = createClient({
     chain,
     transport: http(),
   });
@@ -17,19 +19,26 @@ async function getClient(chainId: supportedChainId) {
   return client;
 }
 
+function getIndexerUrl(chainId: supportedChainId) {
+  const chain = supportedChains[chainIdToName[chainId]];
+  return "indexerUrl" in chain ? chain.indexerUrl : undefined;
+}
+
 async function getParameters(chainId: supportedChainId, worldAddress: Address) {
   const client = await getClient(chainId);
-  const toBlock = await getBlockNumber(client);
-  const logs = await getLogs(client, {
-    strict: true,
+  const toBlock = await getAction(client, getBlockNumber, "getBlockNumber")({});
+  const logs = await fetchBlockLogs({
+    fromBlock: 0n,
+    toBlock,
+    maxBlockRange: 100_000n,
+    publicClient: client,
     address: worldAddress,
     events: parseAbi([helloStoreEvent, helloWorldEvent] as const),
-    fromBlock: "earliest",
-    toBlock,
   });
+
   const fromBlock = logs[0]?.blockNumber ?? 0n;
   // world is considered loaded when both events are emitted
-  const isWorldDeployed = logs.length === 2;
+  const isWorldDeployed = logs[0]?.logs.length === 2;
 
   return { fromBlock, toBlock, isWorldDeployed };
 }
@@ -46,12 +55,30 @@ export async function GET(req: Request) {
 
   try {
     const client = await getClient(chainId);
+    const indexerUrl = getIndexerUrl(chainId);
+
+    if (indexerUrl) {
+      const [code, abi] = await Promise.all([
+        getCode(client, { address: worldAddress }),
+        getWorldAbi({
+          client,
+          worldAddress,
+          indexerUrl,
+          chainId,
+        }),
+      ]);
+
+      return Response.json({ abi, isWorldDeployed: code && size(code) > 0 });
+    }
+
     const { fromBlock, toBlock, isWorldDeployed } = await getParameters(chainId, worldAddress);
     const abi = await getWorldAbi({
       client,
       worldAddress,
       fromBlock,
       toBlock,
+      indexerUrl: getIndexerUrl(chainId),
+      chainId,
     });
 
     return Response.json({ abi, isWorldDeployed });

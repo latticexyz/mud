@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.2.14
+
+## 2.2.13
+
+### Patch Changes
+
+- d5c2700: Gas report output now include contract name as part of the `file` to help with stable ordering when sorting output.
+
+## 2.2.12
+
 ## 2.2.11
 
 ## 2.2.10

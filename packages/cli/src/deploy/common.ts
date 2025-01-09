@@ -1,13 +1,8 @@
-import { Abi, Address, Hex, padHex } from "viem";
+import { Abi, Account, Address, Chain, Client, Hex, Transport } from "viem";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import { helloStoreEvent } from "@latticexyz/store";
 import { helloWorldEvent } from "@latticexyz/world";
 import { LibraryMap } from "./getLibraryMap";
-
-export const salt = padHex("0x", { size: 32 });
-
-// https://eips.ethereum.org/EIPS/eip-170
-export const contractSizeLimit = parseInt("6000", 16);
 
 export const worldDeployEvents = [helloStoreEvent, helloWorldEvent] as const;
 
@@ -118,4 +113,11 @@ export type Module = DeterministicContract & {
    * Optional modules warn instead of throw if they revert while being installed.
    */
   readonly optional?: boolean;
+};
+
+export type CommonDeployOptions = {
+  readonly client: Client<Transport, Chain | undefined, Account>;
+  readonly worldDeploy: WorldDeploy;
+  readonly indexerUrl?: string;
+  readonly chainId?: number;
 };

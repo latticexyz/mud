@@ -1,8 +1,7 @@
 /* eslint-disable max-len */
 import { describe, it, expect } from "vitest";
 import { recordToLog } from "./recordToLog";
-import { defineTable } from "@latticexyz/store/config/v2";
-import { logToRecord } from "./logToRecord";
+import { defineTable, logToRecord } from "@latticexyz/store/internal";
 
 describe("recordToLog", () => {
   it("should convert table record into a Store_SetRecord log", async () => {
