@@ -38,6 +38,10 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
       path: `${worldImportPath}/SystemCall.sol`,
     },
     {
+      symbol: "WorldContextConsumerLib",
+      path: `${worldImportPath}/WorldContext.sol`,
+    },
+    {
       symbol: "Systems",
       path: `${worldImportPath}/codegen/tables/Systems.sol`,
     },
@@ -96,7 +100,7 @@ export function renderSystemLibrary(options: RenderSystemLibraryOptions) {
       }
 
       function callAsRoot(${userTypeName} self) internal view returns (RootCallWrapper memory) {
-        return RootCallWrapper(self.toResourceId(), msg.sender);
+        return RootCallWrapper(self.toResourceId(), WorldContextConsumerLib._msgSender());
       }
 
       function callAsRootFrom(${userTypeName} self, address from) internal pure returns (RootCallWrapper memory) {
