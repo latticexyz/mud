@@ -2,7 +2,7 @@ import path from "node:path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { InferredOptionTypes, Options } from "yargs";
 import { deploy } from "./deploy/deploy";
-import { createWalletClient, http, Hex, isHex } from "viem";
+import { createWalletClient, http, Hex, isHex, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
@@ -63,10 +63,7 @@ export type DeployOptions = InferredOptionTypes<typeof deployOptions>;
  * This is used by the deploy, test, and dev-contracts CLI commands.
  */
 export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
-  const salt = opts.salt;
-  if (salt != null && !isHex(salt)) {
-    throw new MUDError("Expected hex string for salt");
-  }
+  const salt = opts.salt != null ? (isHex(opts.salt) ? opts.salt : stringToHex(opts.salt)) : undefined;
 
   const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
 
