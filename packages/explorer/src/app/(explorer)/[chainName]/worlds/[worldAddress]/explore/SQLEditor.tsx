@@ -10,6 +10,7 @@ import Editor from "@monaco-editor/react";
 import { Button } from "../../../../../../components/ui/Button";
 import { Form, FormField } from "../../../../../../components/ui/Form";
 import { cn } from "../../../../../../utils";
+import { useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { monacoOptions } from "./consts";
 import { useMonacoSuggestions } from "./useMonacoSuggestions";
 import { useQueryValidator } from "./useQueryValidator";
@@ -24,6 +25,7 @@ export function SQLEditor({ table }: Props) {
   const [isFocused, setIsFocused] = useState(false);
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
   const validateQuery = useQueryValidator(table);
+  const { data } = useTableDataQuery({ table, query });
   useMonacoSuggestions(table);
 
   const form = useForm({
@@ -97,22 +99,31 @@ export function SQLEditor({ table }: Props) {
           )}
         />
 
-        <Button className="absolute bottom-1 right-1 ml-2 flex h-8 items-center gap-2 pl-4 pr-3" type="submit">
-          Run
-          <span className="flex items-center gap-0.5 text-white/60">
-            {navigator.platform.toLowerCase().includes("mac") ? (
-              <>
-                <CommandIcon className="h-3 w-3" />
-                <CornerDownLeft className="h-3 w-3" />
-              </>
-            ) : (
-              <>
-                <span className="text-xs">CTRL</span>
-                <CornerDownLeft className="h-3 w-3" />
-              </>
-            )}
-          </span>
-        </Button>
+        <div className="absolute bottom-1 right-1 flex items-center gap-2">
+          {data?.executionTime && (
+            <span className="flex items-center gap-1.5 text-xs text-white/60">
+              <span className="inline-block h-[6px] w-[6px] animate-pulse rounded-full bg-success" />
+              <span>{Math.round(data.executionTime)}ms</span>
+            </span>
+          )}
+
+          <Button className="ml-2 h-8 gap-2 pl-4 pr-3" type="submit">
+            Run
+            <span className="flex items-center gap-0.5 text-white/60">
+              {navigator.platform.toLowerCase().includes("mac") ? (
+                <>
+                  <CommandIcon className="h-3 w-3" />
+                  <CornerDownLeft className="h-3 w-3" />
+                </>
+              ) : (
+                <>
+                  <span className="text-xs">CTRL</span>
+                  <CornerDownLeft className="h-3 w-3" />
+                </>
+              )}
+            </span>
+          </Button>
+        </div>
       </form>
     </Form>
   );

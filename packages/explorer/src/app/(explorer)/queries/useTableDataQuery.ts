@@ -15,6 +15,7 @@ export type TDataRow = Record<string, unknown>;
 export type TData = {
   columns: string[];
   rows: TDataRow[];
+  executionTime: number;
 };
 
 export function useTableDataQuery({ table, query }: Props) {
@@ -22,9 +23,10 @@ export function useTableDataQuery({ table, query }: Props) {
   const { id: chainId } = useChain();
   const decodedQuery = decodeURIComponent(query ?? "");
 
-  return useQuery<DozerResponse, Error, TData | undefined>({
+  return useQuery<DozerResponse & { executionTime: number }, Error, TData | undefined>({
     queryKey: ["tableData", chainName, worldAddress, decodedQuery],
     queryFn: async () => {
+      const startTime = performance.now();
       const indexer = indexerForChainId(chainId);
       const response = await fetch(indexer.url, {
         method: "POST",
@@ -40,13 +42,15 @@ export function useTableDataQuery({ table, query }: Props) {
       });
 
       const data = await response.json();
+      const executionTime = performance.now() - startTime;
+
       if (!response.ok) {
         throw new Error(data.msg || "Network response was not ok");
       }
 
-      return data;
+      return { ...data, executionTime };
     },
-    select: (data: DozerResponse): TData | undefined => {
+    select: (data: DozerResponse & { executionTime: number }): TData | undefined => {
       if (!table || !data?.result?.[0]) return undefined;
 
       const indexer = indexerForChainId(chainId);
@@ -77,6 +81,7 @@ export function useTableDataQuery({ table, query }: Props) {
       return {
         columns,
         rows,
+        executionTime: data.executionTime,
       };
     },
     enabled: !!table && !!query,
