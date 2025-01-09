@@ -13,6 +13,6 @@ procs:
   #   cwd: ../../../quarry-paymaster/packages/issuer
   #   shell: pnpm start
 
-  bundler:
-    cwd: ../../../alto
-    shell: pnpm ts-node src --config ../mud/packages/entrykit/playground/alto.config.json
+  # bundler:
+  #   cwd: ../../../alto
+  #   shell: pnpm ts-node src --config ../mud/packages/entrykit/playground/alto.config.json
