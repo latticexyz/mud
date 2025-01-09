@@ -7,6 +7,7 @@ import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import relayChains from "../data/relayChains.json";
 import { useSetBalance } from "./useSetBalance";
 import { minGasBalance } from "./common";
+import { TruncatedHex } from "../ui/TruncatedHex";
 
 export type Props = {
   isExpanded: boolean;
@@ -15,15 +16,15 @@ export type Props = {
 };
 
 export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
-  const { chainId } = useEntryKitConfig();
+  const { chain } = useEntryKitConfig();
 
-  // TODO: refetch on some interval (block?)
-  const balance = useBalance({ chainId, address: sessionAddress });
+  // TODO: refetch on block rather than interval?
+  const balance = useBalance({ chainId: chain.id, address: sessionAddress, query: { refetchInterval: 2000 } });
   const setBalance = useSetBalance();
 
   // TODO: show error if balance/setBalance fails?
 
-  const relayChainName = (relayChains as Record<number, string>)[chainId];
+  const relayChainName = (relayChains as Partial<Record<number, string>>)[chain.id];
 
   return (
     <div className="flex flex-col gap-4">
@@ -35,7 +36,7 @@ export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
           </div>
         </div>
 
-        {chainId === 31337 ? (
+        {chain.id === 31337 ? (
           <Button
             variant={isActive ? "primary" : "tertiary"}
             className="flex-shrink-0 text-sm p-1 w-28"
@@ -50,11 +51,10 @@ export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
           >
             Top up
           </Button>
-        ) : (
+        ) : relayChainName != null ? (
           // TODO: convert this to a <ButtonLink>
           <a
-            // TODO: is redstone a fine fallback if chain is not supported or not in our JSON?
-            href={`https://relay.link/bridge/${relayChainName ?? "redstone"}?${new URLSearchParams({
+            href={`https://relay.link/bridge/${relayChainName}?${new URLSearchParams({
               toAddress: sessionAddress,
             })}`}
             target="_blank"
@@ -69,10 +69,22 @@ export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
               Top up
             </Button>
           </a>
-        )}
+        ) : null}
       </div>
       {isExpanded ? (
-        <p className="text-sm">Your session&apos;s gas balance is used to pay for onchain computation.</p>
+        <>
+          <p className="text-sm">Your session&apos;s gas balance is used to pay for onchain computation.</p>
+          {relayChainName == null ? (
+            // TODO: consider replacing this with a "Top up" button that leads to a docs page
+            <p className="text-sm">
+              Send funds to{" "}
+              <span className="font-mono text-white">
+                <TruncatedHex hex={sessionAddress} />
+              </span>{" "}
+              on {chain.name} to top up your session balance.
+            </p>
+          ) : null}
+        </>
       ) : null}
     </div>
   );
