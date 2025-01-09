@@ -1,5 +1,5 @@
 import { Chain, Transport } from "viem";
-import { WalletList, connectorsForWallets, getDefaultWallets } from "@rainbow-me/rainbowkit";
+import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import { Config, CreateConfigParameters, createConfig } from "wagmi";
 
 export type CreateWagmiConfigOptions<
@@ -21,12 +21,7 @@ export function createWagmiConfig<
   const chains extends readonly [Chain, ...Chain[]],
   transports extends Record<chains[number]["id"], Transport>,
 >(config: CreateWagmiConfigOptions<chains, transports>): Config<chains, transports> {
-  const { wallets: defaultWallets } = getDefaultWallets();
-  const wallets: WalletList = [
-    // TODO: passkey wallet
-    ...defaultWallets,
-  ];
-
+  const wallets = getWallets();
   const connectors = connectorsForWallets(wallets, {
     appName: config.appName,
     projectId: config.walletConnectProjectId,
