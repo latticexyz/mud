@@ -64,7 +64,7 @@ export function userOpExecutor({ executor }: { executor: ConnectedClient }): Tra
         return await estimateUserOperationGas(params);
       }
 
-      throw new Error("Not implemented");
+      throw new Error("Method not implemented.");
     };
 
     return createTransport({
