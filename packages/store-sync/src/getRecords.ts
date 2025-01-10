@@ -2,7 +2,7 @@ import { fetchBlockLogs } from "@latticexyz/block-logs-stream";
 import { Table } from "@latticexyz/config";
 import { getSchemaPrimitives } from "@latticexyz/protocol-parser/internal";
 import { LogToRecordArgs, flattenStoreLogs, getStoreLogs, logToRecord } from "@latticexyz/store/internal";
-import { Address, Client, createPublicClient, http } from "viem";
+import { Address, Client, createClient, http } from "viem";
 import { getAction } from "viem/utils";
 import { getBlockNumber } from "viem/actions";
 import { debug } from "./debug";
@@ -59,7 +59,7 @@ export async function getRecords<table extends Table>(
     } else {
       const client =
         options.client ??
-        createPublicClient({
+        createClient({
           transport: http(options.rpcUrl),
         });
       debug("fetching records for", options.table.label, "via RPC from", client.transport.url);

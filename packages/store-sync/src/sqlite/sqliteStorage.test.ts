@@ -6,7 +6,7 @@ import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { buildTable } from "./buildTable";
 import initSqlJs from "sql.js";
 import { drizzle } from "drizzle-orm/sql-js";
-import { Hex, RpcLog, createPublicClient, decodeEventLog, formatLog, http } from "viem";
+import { Hex, RpcLog, createClient, decodeEventLog, formatLog, http } from "viem";
 import { foundry } from "viem/chains";
 import worldRpcLogs from "../../../../test-data/world-logs.json";
 import { storeEventsAbi } from "@latticexyz/store";
@@ -32,7 +32,7 @@ describe("sqliteStorage", async () => {
   const SqlJs = await initSqlJs();
   let db: BaseSQLiteDatabase<"sync", void>;
 
-  const publicClient = createPublicClient({
+  const publicClient = createClient({
     chain: foundry,
     transport: http(),
   });
