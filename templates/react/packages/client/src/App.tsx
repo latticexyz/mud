@@ -1,105 +1,43 @@
-import { useMUD } from "./MUDContext";
+import { stash } from "./mud/stash";
+import { useSyncProgress } from "./mud/useSyncProgress";
+import { useRecords } from "./mud/useRecords";
+import { AccountButton } from "@latticexyz/entrykit/internal";
+import { Direction } from "./common";
+import mudConfig from "contracts/mud.config";
+import { useMemo } from "react";
+import { GameMap } from "./GameMap";
+import { useWorldContract } from "./mud/useWorldContract";
 
-const styleUnset = { all: "unset" } as const;
+export function App() {
+  const { isLive, message, percentage } = useSyncProgress();
 
-export const App = () => {
-  const {
-    network: { tables, useStore },
-    systemCalls: { addTask, toggleTask, deleteTask },
-  } = useMUD();
+  const players = useRecords({ stash, table: mudConfig.tables.app__Position });
 
-  const tasks = useStore((state) => {
-    const records = Object.values(state.getRecords(tables.Tasks));
-    records.sort((a, b) => Number(a.value.createdAt - b.value.createdAt));
-    return records;
-  });
+  const worldContract = useWorldContract();
+  const onMove = useMemo(
+    () =>
+      worldContract
+        ? async (direction: Direction) => {
+            await worldContract.write.app__move([mudConfig.enums.Direction.indexOf(direction)]);
+          }
+        : undefined,
+    [worldContract],
+  );
 
   return (
     <>
-      <table>
-        <tbody>
-          {tasks.map((task) => (
-            <tr key={task.id}>
-              <td align="right">
-                <input
-                  type="checkbox"
-                  checked={task.value.completedAt > 0n}
-                  title={task.value.completedAt === 0n ? "Mark task as completed" : "Mark task as incomplete"}
-                  onChange={async (event) => {
-                    event.preventDefault();
-                    const checkbox = event.currentTarget;
-
-                    checkbox.disabled = true;
-                    try {
-                      await toggleTask(task.key.id);
-                    } finally {
-                      checkbox.disabled = false;
-                    }
-                  }}
-                />
-              </td>
-              <td>{task.value.completedAt > 0n ? <s>{task.value.description}</s> : <>{task.value.description}</>}</td>
-              <td align="right">
-                <button
-                  type="button"
-                  title="Delete task"
-                  style={styleUnset}
-                  onClick={async (event) => {
-                    event.preventDefault();
-                    if (!window.confirm("Are you sure you want to delete this task?")) return;
-
-                    const button = event.currentTarget;
-                    button.disabled = true;
-                    try {
-                      await deleteTask(task.key.id);
-                    } finally {
-                      button.disabled = false;
-                    }
-                  }}
-                >
-                  &times;
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td>
-              <input type="checkbox" disabled />
-            </td>
-            <td colSpan={2}>
-              <form
-                onSubmit={async (event) => {
-                  event.preventDefault();
-                  const form = event.currentTarget;
-                  const fieldset = form.querySelector("fieldset");
-                  if (!(fieldset instanceof HTMLFieldSetElement)) return;
-
-                  const formData = new FormData(form);
-                  const desc = formData.get("description");
-                  if (typeof desc !== "string") return;
-
-                  fieldset.disabled = true;
-                  try {
-                    await addTask(desc);
-                    form.reset();
-                  } finally {
-                    fieldset.disabled = false;
-                  }
-                }}
-              >
-                <fieldset style={styleUnset}>
-                  <input type="text" name="description" />{" "}
-                  <button type="submit" title="Add task">
-                    Add
-                  </button>
-                </fieldset>
-              </form>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
+      <div className="fixed inset-0 grid place-items-center p-4">
+        {isLive ? (
+          <GameMap players={players} onMove={onMove} />
+        ) : (
+          <div className="tabular-nums">
+            {message} ({percentage.toFixed(1)}%)…
+          </div>
+        )}
+      </div>
+      <div className="fixed top-2 right-2">
+        <AccountButton />
+      </div>
     </>
   );
-};
+}
