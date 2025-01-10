@@ -36,6 +36,8 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
   const { id: chainId } = useChain();
   const account = useAccount();
 
+  console.log("value", value);
+
   const valueSchema = getValueSchema(table);
   const fieldType = valueSchema?.[name as never]?.type;
 
@@ -123,7 +125,8 @@ export function EditableTableCell({ name, table, keyTuple, value: defaultValue }
             className="w-full bg-transparent"
             onChange={(evt: ChangeEvent<HTMLInputElement>) => setValue(evt.target.value)}
             onBlur={(evt) => handleSubmit(evt.target.value)}
-            value={String(value)}
+            value={value == null ? "" : String(value)}
+            placeholder={value == null ? "null" : undefined}
             disabled={isPending}
           />
         </form>
