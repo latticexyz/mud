@@ -16,12 +16,12 @@
     "test": "tsc --noEmit && mud test"
   },
   "dependencies": {
-    "@latticexyz/cli": "link:../../../../packages/cli",
-    "@latticexyz/entrykit": "link:../../../../packages/entrykit",
-    "@latticexyz/schema-type": "link:../../../../packages/schema-type",
-    "@latticexyz/store": "link:../../../../packages/store",
-    "@latticexyz/world": "link:../../../../packages/world",
-    "@latticexyz/world-modules": "link:../../../../packages/world-modules"
+    "@latticexyz/cli": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
+    "@latticexyz/entrykit": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
+    "@latticexyz/schema-type": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
+    "@latticexyz/store": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
+    "@latticexyz/world": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
+    "@latticexyz/world-modules": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
@@ -30,7 +30,7 @@
     "prettier": "3.2.5",
     "prettier-plugin-solidity": "1.3.1",
     "solhint": "^3.3.7",
-    "solhint-config-mud": "link:../../../../packages/solhint-config-mud",
-    "solhint-plugin-mud": "link:../../../../packages/solhint-plugin-mud"
+    "solhint-config-mud": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
+    "solhint-plugin-mud": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea"
   }
 }

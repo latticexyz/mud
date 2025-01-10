@@ -12,10 +12,10 @@
     "test": "pnpm recursive run test"
   },
   "devDependencies": {
-    "@latticexyz/cli": "link:../../packages/cli",
-    "@latticexyz/common": "link:../../packages/common",
-    "@latticexyz/explorer": "link:../../packages/explorer",
-    "@latticexyz/store-indexer": "link:../../packages/store-indexer",
+    "@latticexyz/cli": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
+    "@latticexyz/common": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
+    "@latticexyz/explorer": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
+    "@latticexyz/store-indexer": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
     "@types/debug": "4.1.7",
     "@typescript-eslint/eslint-plugin": "7.1.1",
     "@typescript-eslint/parser": "7.1.1",
@@ -27,29 +27,5 @@
   "engines": {
     "node": "^18",
     "pnpm": "^8 || ^9"
-  },
-  "pnpm": {
-    "overrides": {
-      "@latticexyz/abi-ts": "file:../../packages/abi-ts",
-      "@latticexyz/block-logs-stream": "file:../../packages/block-logs-stream",
-      "@latticexyz/cli": "file:../../packages/cli",
-      "@latticexyz/common": "file:../../packages/common",
-      "@latticexyz/config": "file:../../packages/config",
-      "@latticexyz/entrykit": "file:../../packages/entrykit",
-      "@latticexyz/explorer": "file:../../packages/explorer",
-      "@latticexyz/gas-report": "file:../../packages/gas-report",
-      "@latticexyz/paymaster": "file:../../packages/paymaster",
-      "@latticexyz/protocol-parser": "file:../../packages/protocol-parser",
-      "@latticexyz/recs": "file:../../packages/recs",
-      "@latticexyz/schema-type": "file:../../packages/schema-type",
-      "@latticexyz/stash": "file:../../packages/stash",
-      "@latticexyz/store": "file:../../packages/store",
-      "@latticexyz/store-indexer": "file:../../packages/store-indexer",
-      "@latticexyz/store-sync": "file:../../packages/store-sync",
-      "@latticexyz/utils": "file:../../packages/utils",
-      "@latticexyz/world": "file:../../packages/world",
-      "@latticexyz/world-module-metadata": "file:../../packages/world-module-metadata",
-      "@latticexyz/world-modules": "file:../../packages/world-modules"
-    }
   }
 }

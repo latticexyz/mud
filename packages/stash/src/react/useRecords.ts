@@ -1,9 +1,10 @@
-import { getRecords, Key, Stash, TableRecord } from "@latticexyz/stash/internal";
 import { Table } from "@latticexyz/config";
-import { useStash } from "@latticexyz/stash/react";
-import isEqual from "fast-deep-equal";
+import { Key, Stash, TableRecord } from "../common";
+import { useStash } from "./useStash";
+import { getRecords } from "../actions/getRecords";
+import { isArrayEqual } from "./isArrayEqual";
 
-export type UseRecordsArgs<table extends Table = Table> = {
+export type UseRecordsOptions<table extends Table = Table> = {
   stash: Stash;
   table: table;
   keys?: readonly Key<table>[];
@@ -14,8 +15,8 @@ export type UseRecordsResult<table extends Table = Table> = readonly TableRecord
 export function useRecords<const table extends Table>({
   stash,
   ...args
-}: UseRecordsArgs<table>): UseRecordsResult<table> {
+}: UseRecordsOptions<table>): UseRecordsResult<table> {
   return useStash(stash, (state) => Object.values(getRecords({ state, ...args })), {
-    isEqual,
+    isEqual: isArrayEqual,
   });
 }

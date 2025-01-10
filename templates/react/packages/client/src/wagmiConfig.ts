@@ -2,7 +2,7 @@ import { Chain, http, webSocket } from "viem";
 import { anvil } from "viem/chains";
 import { createWagmiConfig } from "@latticexyz/entrykit/internal";
 import { rhodolite, garnet, redstone } from "@latticexyz/common/chains";
-import { chainId } from "../common";
+import { chainId } from "./common";
 
 const chains = [
   redstone,

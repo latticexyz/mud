@@ -2,7 +2,7 @@ import { stash } from "./stash";
 import { initialProgress, SyncProgress } from "@latticexyz/store-sync/internal";
 import { SyncStep } from "@latticexyz/store-sync";
 import { useMemo } from "react";
-import { useRecord } from "./useRecord";
+import { useRecord } from "@latticexyz/stash/react";
 
 export function useSyncProgress() {
   const progress = useRecord({
