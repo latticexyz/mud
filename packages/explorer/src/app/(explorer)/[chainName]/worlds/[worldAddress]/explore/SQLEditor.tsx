@@ -148,7 +148,7 @@ export function SQLEditor({ table }: Props) {
               </span>
             )}
 
-            <Tooltip text={isPaused ? "Resume live SQL query" : "Pause live SQL query"}>
+            <Tooltip text={isPaused ? "Resume live query" : "Pause live query"}>
               <Button type="button" variant="outline" size="sm" onClick={() => setIsPaused(!isPaused)}>
                 {isPaused ? <PlayIcon className="h-4 w-4" /> : <PauseIcon className="h-4 w-4" />}
               </Button>
