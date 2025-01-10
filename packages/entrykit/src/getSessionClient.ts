@@ -18,13 +18,14 @@ export async function getSessionClient<chain extends Chain>({
   worldAddress: Address;
 }): Promise<SessionClient<chain>> {
   const bundlerTransport = getBundlerTransport(client.chain);
-
-  const sessionClient = createBundlerClient({
+  const bundlerClient = createBundlerClient({
     transport: bundlerTransport,
     client,
     account: sessionAccount,
-  })
-    .extend(smartAccountActions())
+  });
+
+  const sessionClient = bundlerClient
+    .extend(smartAccountActions)
     .extend(callFrom({ worldAddress, delegatorAddress: userAddress, publicClient: client }))
     // TODO: add observer once we conditionally fetch receipts while bridge is open
     .extend(() => ({ userAddress }));

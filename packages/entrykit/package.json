@@ -55,7 +55,7 @@
     "@rainbow-me/rainbowkit": "2.1.7",
     "debug": "^4.3.4",
     "dotenv": "^16.0.3",
-    "permissionless": "^0.2.3",
+    "permissionless": "0.2.25",
     "react-error-boundary": "^4.0.13",
     "react-merge-refs": "^2.1.1",
     "tailwind-merge": "^1.12.0",

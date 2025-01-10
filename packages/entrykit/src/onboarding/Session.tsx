@@ -13,7 +13,7 @@ export type Props = {
 };
 
 export function Session({ isActive, isExpanded, userClient, registerSpender, registerDelegation }: Props) {
-  const { data: sessionClient } = useSessionClient(userClient.account.address);
+  const sessionClient = useSessionClient(userClient.account.address);
   const setup = useSetupSession({ userClient });
   const hasSession = !registerDelegation && !registerDelegation;
 
@@ -23,9 +23,9 @@ export function Session({ isActive, isExpanded, userClient, registerSpender, reg
     // individual mutations, even though the keys match. And the one we want the status of
     // seems to stay pending. This is sorta resolved by triggering this after a timeout.
     const timer = setTimeout(() => {
-      if (isActive && setup.status === "idle" && sessionClient && !hasSession) {
+      if (isActive && setup.status === "idle" && sessionClient.data && !hasSession) {
         setup.mutate({
-          sessionClient,
+          sessionClient: sessionClient.data,
           registerSpender,
           registerDelegation,
         });
@@ -50,12 +50,12 @@ export function Session({ isActive, isExpanded, userClient, registerSpender, reg
             variant={isActive ? "primary" : "tertiary"}
             className="flex-shrink-0 text-sm p-1 w-28"
             autoFocus={isActive}
-            pending={!sessionClient || setup.status === "pending"}
+            pending={!sessionClient.data || setup.status === "pending"}
             onClick={
-              sessionClient
+              sessionClient.data
                 ? () =>
                     setup.mutate({
-                      sessionClient,
+                      sessionClient: sessionClient.data,
                       registerSpender,
                       registerDelegation,
                     })
