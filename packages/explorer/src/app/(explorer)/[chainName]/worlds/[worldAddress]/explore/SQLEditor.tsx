@@ -2,7 +2,8 @@
 
 import { PlayIcon } from "lucide-react";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
-import { useQueryState } from "nuqs";
+import { Parser } from "node-sql-parser";
+import { parseAsInteger, useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Table } from "@latticexyz/config";
@@ -14,6 +15,8 @@ import { monacoOptions } from "./consts";
 import { useMonacoSuggestions } from "./useMonacoSuggestions";
 import { useQueryValidator } from "./useQueryValidator";
 
+const sqlParser = new Parser();
+
 type Props = {
   table?: Table;
 };
@@ -23,6 +26,11 @@ export function SQLEditor({ table }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
+
+  // TODO: update offset/limit based on page/pageSize
+  const [page] = useQueryState("page", parseAsInteger.withDefault(0));
+  const [pageSize] = useQueryState("pageSize", parseAsInteger.withDefault(10));
+
   const validateQuery = useQueryValidator(table);
   useMonacoSuggestions(table);
 
@@ -41,6 +49,34 @@ export function SQLEditor({ table }: Props) {
   useEffect(() => {
     form.reset({ query });
   }, [query, form]);
+
+  useEffect(() => {
+    const offset = page * pageSize;
+    const limit = pageSize;
+    const decodedQuery = decodeURIComponent(query);
+
+    const ast = sqlParser.astify(decodedQuery);
+    console.log(ast);
+
+    // Only modify if we have a valid AST array with at least one query
+    if ("limit" in ast) {
+      ast.limit = {
+        seperator: "offset",
+        value: [
+          { type: "number", value: limit },
+          { type: "number", value: offset },
+        ],
+      };
+
+      // Generate the new SQL query from the modified AST
+      const updatedQuery = sqlParser.sqlify(ast, {
+        database: "Postgresql",
+      });
+
+      // TODO: temporary fix for double-quotes while testing
+      setQuery(updatedQuery.replace('"world__FunctionSelector"', "world__FunctionSelector"));
+    }
+  }, [table, page, pageSize, setQuery, query]);
 
   const updateHeight = () => {
     if (editorRef.current) {
