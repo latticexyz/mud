@@ -3,7 +3,7 @@ import { syncToStash, SyncToStashResult } from "@latticexyz/store-sync/internal"
 import { createContext, ReactNode, useContext, useEffect } from "react";
 import { useClient } from "wagmi";
 import { chainId } from "../common";
-import { Address, publicActions, PublicClient } from "viem";
+import { Address } from "viem";
 import { useQuery } from "@tanstack/react-query";
 
 /** @internal */
@@ -35,7 +35,7 @@ export function StashSyncProvider({ address, startBlock, stash, children }: Prop
       // TODO: clear stash
       syncToStash({
         stash,
-        publicClient: client.extend(publicActions) as PublicClient,
+        publicClient: client,
         address,
         startBlock,
       }),
