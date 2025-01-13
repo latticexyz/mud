@@ -1,7 +1,7 @@
 "use client";
 
-import { PlayIcon } from "lucide-react";
-import { editor } from "monaco-editor/esm/vs/editor/editor.api";
+import { CommandIcon, CornerDownLeft } from "lucide-react";
+import { KeyCode, KeyMod, editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -58,40 +58,64 @@ export function SQLEditor({ table }: Props) {
 
   return (
     <Form {...form}>
-      <form
-        className={cn("relative w-full rounded-md border bg-black px-3 py-2 ring-offset-background", {
-          "outline-none ring-2 ring-ring ring-offset-2": isFocused,
-        })}
-        onSubmit={handleSubmit}
-      >
-        <FormField
-          name="query"
-          render={({ field }) => (
-            <div ref={containerRef} className="min-h-[21px] w-full">
-              <Editor
-                width="100%"
-                theme="hc-black"
-                value={decodeURIComponent(field.value)}
-                options={monacoOptions}
-                language="sql"
-                onChange={(value) => field.onChange(encodeURIComponent(value ?? ""))}
-                onMount={(editor) => {
-                  editorRef.current = editor;
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div
+          className={cn("relative w-full rounded-md border bg-black px-3 py-2 ring-offset-background", {
+            "outline-none ring-2 ring-ring ring-offset-2": isFocused,
+          })}
+        >
+          <FormField
+            name="query"
+            render={({ field }) => (
+              <div ref={containerRef} className="min-h-[21px] w-full">
+                <Editor
+                  width="100%"
+                  theme="hc-black"
+                  value={decodeURIComponent(field.value)}
+                  options={monacoOptions}
+                  language="sql"
+                  onChange={(value) => field.onChange(encodeURIComponent(value ?? ""))}
+                  onMount={(editor) => {
+                    editorRef.current = editor;
+                    editor.addAction({
+                      id: "executeSQL",
+                      label: "Execute SQL command",
+                      keybindings: [KeyMod.CtrlCmd | KeyCode.Enter],
+                      run: () => {
+                        handleSubmit();
+                      },
+                    });
 
-                  updateHeight();
-                  editor.onDidContentSizeChange(updateHeight);
-                  editor.onDidFocusEditorText(() => setIsFocused(true));
-                  editor.onDidBlurEditorText(() => setIsFocused(false));
-                }}
-                loading={null}
-              />
-            </div>
-          )}
-        />
+                    updateHeight();
+                    editor.onDidContentSizeChange(updateHeight);
+                    editor.onDidFocusEditorText(() => setIsFocused(true));
+                    editor.onDidBlurEditorText(() => setIsFocused(false));
+                  }}
+                  loading={null}
+                />
+              </div>
+            )}
+          />
+        </div>
 
-        <Button className="absolute bottom-1 right-1 h-8 px-4" type="submit">
-          <PlayIcon className="mr-1.5 h-3 w-3" /> Run
-        </Button>
+        <div className="flex justify-end">
+          <Button className="flex gap-2 pl-4 pr-3" type="submit">
+            Run
+            <span className="flex items-center gap-0.5 text-white/60">
+              {navigator.platform.toLowerCase().includes("mac") ? (
+                <>
+                  <CommandIcon className="h-3 w-3" />
+                  <CornerDownLeft className="h-3 w-3" />
+                </>
+              ) : (
+                <>
+                  <span className="text-xs">CTRL</span>
+                  <CornerDownLeft className="h-3 w-3" />
+                </>
+              )}
+            </span>
+          </Button>
+        </div>
       </form>
     </Form>
   );

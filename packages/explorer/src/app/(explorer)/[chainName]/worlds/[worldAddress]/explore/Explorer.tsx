@@ -38,10 +38,10 @@ export function Explorer() {
   }, [chainId, setQuery, selectedTableId, table, worldAddress, prevSelectedTableId, query, indexer.type]);
 
   return (
-    <>
-      {indexer.type !== "sqlite" && <SQLEditor table={table} />}
+    <div className="space-y-4">
       <TableSelector tables={tables} />
+      {indexer.type !== "sqlite" && <SQLEditor table={table} />}
       <TablesViewer table={table} query={query} />
-    </>
+    </div>
   );
 }

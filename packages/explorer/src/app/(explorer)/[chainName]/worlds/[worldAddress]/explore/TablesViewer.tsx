@@ -97,8 +97,8 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
   });
 
   return (
-    <>
-      <div className="flex items-center justify-between gap-4 pb-4">
+    <div className="!-mt-10 space-y-4">
+      <div className="flex w-1/2 items-center gap-4">
         <Input
           placeholder="Filter..."
           value={globalFilter}
@@ -172,7 +172,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
         )}
       </div>
 
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-end space-x-2">
         <div className="flex-1 text-sm text-muted-foreground">
           {tableData && `Total rows: ${tableData.rows.length.toLocaleString()}`}
         </div>
@@ -196,6 +196,6 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
           </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 }
