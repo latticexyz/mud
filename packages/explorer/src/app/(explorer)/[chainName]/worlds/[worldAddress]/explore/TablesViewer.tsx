@@ -26,8 +26,20 @@ import { typeSortingFn } from "./utils/typeSortingFn";
 const initialSortingState: SortingState = [];
 const initialRows: TData["rows"] = [];
 
-export function TablesViewer({ table, query }: { table?: TableType; query?: string }) {
-  const { data: tableData, isLoading: isTDataLoading, isFetched, isError, error } = useTableDataQuery({ table, query });
+type Props = {
+  table?: TableType;
+  query?: string;
+  isPaused: boolean;
+};
+
+export function TablesViewer({ table, query, isPaused }: Props) {
+  const {
+    data: tableData,
+    isLoading: isTDataLoading,
+    isFetched,
+    isError,
+    error,
+  } = useTableDataQuery({ table, query, isPaused });
   const isLoading = isTDataLoading || !isFetched;
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));

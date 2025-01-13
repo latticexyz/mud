@@ -1,6 +1,6 @@
 "use client";
 
-import { CommandIcon, CornerDownLeft } from "lucide-react";
+import { CommandIcon, CornerDownLeft, PauseIcon, PlayIcon } from "lucide-react";
 import { KeyCode, KeyMod, editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
@@ -16,9 +16,11 @@ import { useQueryValidator } from "./useQueryValidator";
 
 type Props = {
   table?: Table;
+  isPaused: boolean;
+  setIsPaused: (isPaused: boolean) => void;
 };
 
-export function SQLEditor({ table }: Props) {
+export function SQLEditor({ table, isPaused, setIsPaused }: Props) {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
@@ -98,7 +100,11 @@ export function SQLEditor({ table }: Props) {
           />
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-2">
+          <Button variant="ghost" size="icon" onClick={() => setIsPaused(!isPaused)}>
+            {isPaused ? <PlayIcon className="h-4 w-4" /> : <PauseIcon className="h-4 w-4" />}
+          </Button>
+
           <Button className="flex gap-2 pl-4 pr-3" type="submit">
             Run
             <span className="flex items-center gap-0.5 text-white/60">
