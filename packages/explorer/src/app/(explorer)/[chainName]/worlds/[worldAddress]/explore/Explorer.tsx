@@ -17,7 +17,7 @@ export function Explorer() {
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
   const indexer = indexerForChainId(chainId);
-  const [isLiveQuery, setIsLiveQuery] = useState(true);
+  const [isLiveQuery, setIsLiveQuery] = useState(false);
   const [query, setQuery] = useQueryState("query", parseAsString.withDefault(""));
   const [selectedTableId] = useQueryState("tableId");
   const prevSelectedTableId = usePrevious(selectedTableId);
