@@ -45,7 +45,7 @@ export function TableSelector({ tables }: { tables?: Table[] }) {
   }, [selectedTableId, setTableId, tables]);
 
   return (
-    <div className="w-full py-4">
+    <div className="w-full">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
