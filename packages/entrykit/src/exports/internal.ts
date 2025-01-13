@@ -13,5 +13,7 @@ export { useSessionClientReady as useSessionClient } from "../useSessionClientRe
 export { createWagmiConfig, type CreateWagmiConfigOptions } from "../createWagmiConfig";
 
 // And some additional internal things
+export * from "../passkey/passkeyWallet";
+export * from "../passkey/passkeyConnector";
 export * from "../getConnectors";
 export * from "../getWallets";

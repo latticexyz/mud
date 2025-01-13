@@ -3,6 +3,10 @@ procs:
   anvil:
     shell: anvil --dump-state playground/anvil-state.json
 
+  deploy-csw-factory:
+    cwd: ../../../coinbase-smart-wallet
+    shell: make deploy-local
+
   deploy-prereqs:
     shell: ./bin/deploy-local-prereqs.js
     env:

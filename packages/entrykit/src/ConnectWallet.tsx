@@ -3,23 +3,54 @@ import { Button } from "./ui/Button";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { AppInfo } from "./AppInfo";
 import { twMerge } from "tailwind-merge";
-import { useEffect, useState } from "react";
 
 export function ConnectWallet() {
   const userAccount = useAccount();
   const { openConnectModal, connectModalOpen } = useConnectModal();
-  const [hasAutoOpened, setHasAutoOpened] = useState(false);
-
-  // automatically open connect modal once
-  // TODO: remove this once we have more than "connect wallet" as an option
-  useEffect(() => {
-    if (!connectModalOpen && !hasAutoOpened) {
-      openConnectModal?.();
-      setHasAutoOpened(true);
-    }
-  }, [connectModalOpen, hasAutoOpened, openConnectModal]);
 
   // TODO: show error states?
+  // TODO: fix passkey issue where pending state disappears but we don't transition right away
+
+  const passkeyConnector = usePasskeyConnector();
+  const createPasskey = useMutation({
+    onError: (error) => console.error(error),
+    mutationKey: ["createPasskey", passkeyConnector.id, accountModalOpen, connectModalOpen, userAccount.status],
+    mutationFn: () => passkeyConnector.createPasskey(),
+  });
+  const reusePasskey = useMutation({
+    onError: (error) => console.error(error),
+    mutationKey: ["reusePasskey", passkeyConnector.id, accountModalOpen, connectModalOpen, userAccount.status],
+    mutationFn: () => passkeyConnector.reusePasskey(),
+  });
+
+  const hasPasskey = passkeyConnector.hasPasskey();
+
+  const buttons = [
+    <Button
+      key="create"
+      variant={hasPasskey ? "tertiary" : "secondary"}
+      className="self-auto flex justify-center"
+      pending={createPasskey.status === "pending" || createPasskey.status === "success"}
+      onClick={() => createPasskey.mutate()}
+      autoFocus={!hasPasskey}
+    >
+      Create account
+    </Button>,
+    <Button
+      key="signin"
+      variant={hasPasskey ? "secondary" : "tertiary"}
+      className="self-auto flex justify-center"
+      pending={reusePasskey.status === "pending" || reusePasskey.status === "success"}
+      onClick={() => reusePasskey.mutate()}
+      autoFocus={hasPasskey}
+    >
+      Sign in
+    </Button>,
+  ];
+
+  if (hasPasskey) {
+    buttons.reverse();
+  }
 
   return (
     <div
@@ -30,16 +61,15 @@ export function ConnectWallet() {
         <AppInfo />
       </div>
       <div className="self-center flex flex-col gap-2 w-60">
-        <Button
-          key="create"
-          variant="secondary"
-          className="self-auto flex justify-center"
+        {buttons}
+        <button
+          className="text-sm self-center transition text-neutral-500 hover:text-white p-2"
           disabled={userAccount.status === "connecting"}
+          // TODO: figure out how to prevent this from switching chains after connecting
           onClick={openConnectModal}
-          autoFocus
         >
-          Connect wallet
-        </Button>
+          Already have a wallet?
+        </button>
       </div>
     </div>
   );
