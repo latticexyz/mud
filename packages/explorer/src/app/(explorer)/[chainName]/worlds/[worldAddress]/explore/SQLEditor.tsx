@@ -31,6 +31,8 @@ export function SQLEditor({ table }: Props) {
       query,
     },
   });
+  const currentQuery = form.watch("query");
+  const hasUnsavedChanges = currentQuery !== query;
 
   const handleSubmit = form.handleSubmit((data) => {
     if (validateQuery(data.query)) {
@@ -96,6 +98,12 @@ export function SQLEditor({ table }: Props) {
               </div>
             )}
           />
+
+          {hasUnsavedChanges ? (
+            <span className="absolute right-1 top-[-6px] text-5xl text-primary">
+              <span className="text-5xl text-primary">·</span>
+            </span>
+          ) : null}
         </div>
 
         <div className="flex justify-end">
