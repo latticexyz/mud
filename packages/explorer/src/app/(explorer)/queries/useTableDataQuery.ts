@@ -79,6 +79,7 @@ export function useTableDataQuery({ table, query }: Props) {
         rows,
       };
     },
+    retry: false,
     enabled: !!table && !!query,
     refetchInterval: (query) => {
       if (query.state.error) return false;
