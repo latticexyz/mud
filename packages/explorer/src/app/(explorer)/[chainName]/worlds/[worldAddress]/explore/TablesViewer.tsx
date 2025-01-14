@@ -1,4 +1,4 @@
-import { ArrowUpDownIcon, LoaderIcon, TriangleAlertIcon } from "lucide-react";
+import { ArrowUpDownIcon, KeyIcon, LoaderIcon, TriangleAlertIcon } from "lucide-react";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { useMemo } from "react";
 import { Table as TableType } from "@latticexyz/config";
@@ -38,6 +38,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
     return tableData.columns.map((name) => {
       const schema = table?.schema[name];
       const type = schema?.type;
+      const keySchema = getKeySchema(table);
 
       return {
         accessorKey: name,
@@ -48,6 +49,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
               className="-ml-4"
               onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             >
+              {Object.keys(keySchema).includes(name) && <KeyIcon className="mr-2 h-3 w-3" />}
               <span className="text-orange-500">{name}</span>
               <span className="ml-1 opacity-70">({type})</span>
               <ArrowUpDownIcon className="ml-2 h-4 w-4" />
