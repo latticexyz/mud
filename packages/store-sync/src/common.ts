@@ -126,6 +126,8 @@ export type SyncResult = {
   waitForTransaction: (tx: Hex) => Promise<WaitForTransactionResult>;
 };
 
+export type SyncAdapter = (opts: SyncOptions) => Promise<SyncResult>;
+
 // TODO: add optional, original log to this?
 export type StorageAdapterLog = Partial<StoreEventsLog> & UnionPick<StoreEventsLog, "address" | "eventName" | "args">;
 export type StorageAdapterBlock = { blockNumber: BlockLogs["blockNumber"]; logs: readonly StorageAdapterLog[] };

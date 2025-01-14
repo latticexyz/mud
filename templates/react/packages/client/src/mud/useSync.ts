@@ -1,11 +1,11 @@
 import { useContext } from "react";
-import { StashSyncContext } from "./StashSyncProvider";
-import { SyncToStashResult } from "@latticexyz/store-sync/internal";
+import { SyncContext } from "./SyncProvider";
+import { SyncResult } from "@latticexyz/store-sync";
 
-export function useSync(): Partial<SyncToStashResult> {
-  const value = useContext(StashSyncContext);
+export function useSync(): Partial<SyncResult> {
+  const value = useContext(SyncContext);
   if (value == null) {
-    throw new Error("`useSync` must be used inside a `StashSyncProvider`.");
+    throw new Error("`useSync` must be used inside a `SyncProvider`.");
   }
   const { sync } = value;
   return sync ?? {};
