@@ -17,7 +17,7 @@ export function Explorer() {
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
   const indexer = indexerForChainId(chainId);
-  const [isPaused, setIsPaused] = useState(false);
+  const [isPaused, setIsPaused] = useState(true);
   const [query, setQuery] = useQueryState("query", parseAsString.withDefault(""));
   const [selectedTableId] = useQueryState("tableId");
   const prevSelectedTableId = usePrevious(selectedTableId);
