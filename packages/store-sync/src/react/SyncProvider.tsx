@@ -2,7 +2,7 @@ import { ReactNode, createContext, useContext, useEffect } from "react";
 import { useConfig } from "wagmi";
 import { getClient } from "wagmi/actions";
 import { useQuery } from "@tanstack/react-query";
-import { SyncAdapter, SyncOptions, SyncResult } from "@latticexyz/store-sync";
+import { SyncAdapter, SyncOptions, SyncResult } from "../common";
 
 /** @internal */
 export const SyncContext = createContext<{
@@ -15,6 +15,7 @@ export type Props = Omit<SyncOptions, "publicClient"> & {
   children: ReactNode;
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function SyncProvider({ chainId, adapter, children, ...syncOptions }: Props) {
   const existingValue = useContext(SyncContext);
   if (existingValue != null) {
@@ -47,7 +48,7 @@ export function SyncProvider({ chainId, adapter, children, ...syncOptions }: Pro
       error: (error) => console.error("got sync error", error),
     });
 
-    return () => {
+    return (): void => {
       sub.unsubscribe();
     };
   }, [sync]);

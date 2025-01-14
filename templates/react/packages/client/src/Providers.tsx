@@ -2,7 +2,7 @@ import { WagmiProvider } from "wagmi";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { ReactNode } from "react";
 import { createSyncAdapter } from "@latticexyz/store-sync/internal";
-import { SyncProvider } from "./mud/SyncProvider";
+import { SyncProvider } from "@latticexyz/store-sync/react";
 import { stash } from "./mud/stash";
 import { Address } from "viem";
 import { defineConfig, EntryKitProvider } from "@latticexyz/entrykit/internal";

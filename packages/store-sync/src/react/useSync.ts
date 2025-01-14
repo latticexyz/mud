@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { SyncContext } from "./SyncProvider";
-import { SyncResult } from "@latticexyz/store-sync";
+import { SyncResult } from "../common";
 
 export function useSync(): Partial<SyncResult> {
   const value = useContext(SyncContext);
