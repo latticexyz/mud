@@ -117,15 +117,23 @@
     "wagmi": "2.12.11"
   },
   "peerDependencies": {
+    "@tanstack/react-query": "5.x",
     "react": "18.x",
-    "viem": "2.x"
+    "viem": "2.x",
+    "wagmi": "2.x"
+  },
+  "peerDependenciesMeta": {
+    "@tanstack/react-query": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "wagmi": {
+      "optional": true
+    }
   },
   "publishConfig": {
     "access": "public"
-  },
-  "optionalPeerDependencies": {
-    "@tanstack/react-query": "5.x",
-    "react": "18.x",
-    "wagmi": "2.x"
   }
 }
