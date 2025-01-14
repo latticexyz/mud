@@ -12,10 +12,10 @@
     "test": "pnpm recursive run test"
   },
   "devDependencies": {
-    "@latticexyz/cli": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
-    "@latticexyz/common": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
-    "@latticexyz/explorer": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
-    "@latticexyz/store-indexer": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
+    "@latticexyz/cli": "2.2.15-9cd6d7f1602629053be11ecec35ca08c0c848bd8",
+    "@latticexyz/common": "2.2.15-9cd6d7f1602629053be11ecec35ca08c0c848bd8",
+    "@latticexyz/explorer": "2.2.15-9cd6d7f1602629053be11ecec35ca08c0c848bd8",
+    "@latticexyz/store-indexer": "2.2.15-9cd6d7f1602629053be11ecec35ca08c0c848bd8",
     "@types/debug": "4.1.7",
     "@typescript-eslint/eslint-plugin": "7.1.1",
     "@typescript-eslint/parser": "7.1.1",
@@ -28,7 +28,7 @@
     "node": "^18",
     "pnpm": "^8 || ^9"
   },
-  "pnpm": {
+  "//pnpm": {
     "overrides": {
       "@latticexyz/abi-ts": "file:../../packages/abi-ts",
       "@latticexyz/block-logs-stream": "file:../../packages/block-logs-stream",

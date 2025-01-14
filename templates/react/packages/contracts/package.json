@@ -16,12 +16,12 @@
     "test": "tsc --noEmit && mud test"
   },
   "dependencies": {
-    "@latticexyz/cli": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
-    "@latticexyz/entrykit": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
-    "@latticexyz/schema-type": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
-    "@latticexyz/store": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
-    "@latticexyz/world": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
-    "@latticexyz/world-modules": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea"
+    "@latticexyz/cli": "2.2.15-9cd6d7f1602629053be11ecec35ca08c0c848bd8",
+    "@latticexyz/entrykit": "2.2.15-9cd6d7f1602629053be11ecec35ca08c0c848bd8",
+    "@latticexyz/schema-type": "2.2.15-9cd6d7f1602629053be11ecec35ca08c0c848bd8",
+    "@latticexyz/store": "2.2.15-9cd6d7f1602629053be11ecec35ca08c0c848bd8",
+    "@latticexyz/world": "2.2.15-9cd6d7f1602629053be11ecec35ca08c0c848bd8",
+    "@latticexyz/world-modules": "2.2.15-9cd6d7f1602629053be11ecec35ca08c0c848bd8"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
@@ -30,7 +30,7 @@
     "prettier": "3.2.5",
     "prettier-plugin-solidity": "1.3.1",
     "solhint": "^3.3.7",
-    "solhint-config-mud": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea",
-    "solhint-plugin-mud": "2.2.15-f9de085862ac62ce15fe3b7743916cfd631592ea"
+    "solhint-config-mud": "2.2.15-9cd6d7f1602629053be11ecec35ca08c0c848bd8",
+    "solhint-plugin-mud": "2.2.15-9cd6d7f1602629053be11ecec35ca08c0c848bd8"
   }
 }
