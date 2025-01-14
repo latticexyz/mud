@@ -49,7 +49,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
               onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             >
               <span className="text-orange-500">{name}</span>
-              <span className="ml-1 opacity-70">({type})</span>
+              {type && <span className="ml-1 opacity-70">({type})</span>}
               <ArrowUpDownIcon className="ml-2 h-4 w-4" />
             </Button>
           );
@@ -67,7 +67,6 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
             const keyTuple = getKeyTuple(table, row.original as never);
             return <EditableTableCell name={name} table={table} value={value} keyTuple={keyTuple} />;
           } catch (e) {
-            console.error(e);
             return value;
           }
         },
