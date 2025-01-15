@@ -1,8 +1,8 @@
 import { useClient } from "wagmi";
-import { chainId } from "../common";
+import { chainId, worldAddress } from "../common";
 import { Account, Chain, Client, GetContractReturnType, Transport, getContract } from "viem";
 import { useQuery } from "@tanstack/react-query";
-import { useSessionClient, useEntryKitConfig } from "@latticexyz/entrykit/internal";
+import { useSessionClient } from "@latticexyz/entrykit/internal";
 import { observer } from "@latticexyz/explorer/observer";
 import worldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 
@@ -15,15 +15,17 @@ export function useWorldContract():
       }
     >
   | undefined {
-  const { worldAddress } = useEntryKitConfig();
   const client = useClient({ chainId });
   const { data: sessionClient } = useSessionClient();
 
   const { data: worldContract } = useQuery({
-    queryKey: ["worldContract", worldAddress, client?.uid, sessionClient?.uid],
+    queryKey: ["worldContract", client?.uid, worldAddress, sessionClient?.uid],
     queryFn: () => {
       if (!client || !sessionClient) {
         throw new Error("Not connected.");
+      }
+      if (!worldAddress) {
+        throw new Error("World not ready.");
       }
 
       return getContract({

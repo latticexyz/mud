@@ -1,5 +1,4 @@
 import { stash } from "./mud/stash";
-import { useSyncProgress } from "./mud/useSyncProgress";
 import { useRecords } from "@latticexyz/stash/react";
 import { AccountButton } from "@latticexyz/entrykit/internal";
 import { Direction } from "./common";
@@ -7,10 +6,11 @@ import mudConfig from "contracts/mud.config";
 import { useMemo } from "react";
 import { GameMap } from "./GameMap";
 import { useWorldContract } from "./mud/useWorldContract";
+import { Loading } from "./mud/Loading";
+
+console.log("env", import.meta.env);
 
 export function App() {
-  const { isLive, message, percentage } = useSyncProgress();
-
   const players = useRecords({ stash, table: mudConfig.tables.app__Position });
 
   const worldContract = useWorldContract();
@@ -27,13 +27,9 @@ export function App() {
   return (
     <>
       <div className="fixed inset-0 grid place-items-center p-4">
-        {isLive ? (
+        <Loading>
           <GameMap players={players} onMove={onMove} />
-        ) : (
-          <div className="tabular-nums">
-            {message} ({percentage.toFixed(1)}%)…
-          </div>
-        )}
+        </Loading>
       </div>
       <div className="fixed top-2 right-2">
         <AccountButton />

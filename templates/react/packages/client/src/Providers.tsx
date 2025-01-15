@@ -4,35 +4,29 @@ import { ReactNode } from "react";
 import { createSyncAdapter } from "@latticexyz/store-sync/internal";
 import { SyncProvider } from "@latticexyz/store-sync/react";
 import { stash } from "./mud/stash";
-import { Address } from "viem";
 import { defineConfig, EntryKitProvider } from "@latticexyz/entrykit/internal";
 import { wagmiConfig } from "./wagmiConfig";
-import { chainId } from "./common";
+import { chainId, startBlock, worldAddress } from "./common";
 
 const queryClient = new QueryClient();
 
 export type Props = {
-  worldDeploy: {
-    address: Address;
-    blockNumber: bigint | null;
-  };
   children: ReactNode;
 };
 
-export function Providers({ worldDeploy, children }: Props) {
+export function Providers({ children }: Props) {
+  if (!worldAddress) {
+    return "No world address configured. Is the world still deploying?";
+  }
+
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <EntryKitProvider
-          config={defineConfig({
-            chainId,
-            worldAddress: worldDeploy.address,
-          })}
-        >
+        <EntryKitProvider config={defineConfig({ chainId, worldAddress })}>
           <SyncProvider
             chainId={chainId}
-            address={worldDeploy.address}
-            startBlock={worldDeploy.blockNumber ?? undefined}
+            address={worldAddress}
+            startBlock={startBlock}
             adapter={createSyncAdapter({ stash })}
           >
             {children}
