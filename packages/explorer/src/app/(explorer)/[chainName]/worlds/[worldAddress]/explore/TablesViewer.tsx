@@ -49,7 +49,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
               className="-ml-4"
               onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             >
-              {Object.keys(keySchema).includes(name) && <KeyIcon className="mr-2 h-3 w-3" />}
+              {name in keySchema && <KeyIcon className="mr-2 h-3 w-3" />}
               <span className="text-orange-500">{name}</span>
               <span className="ml-1 opacity-70">({type})</span>
               <ArrowUpDownIcon className="ml-2 h-4 w-4" />
