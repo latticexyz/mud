@@ -30,8 +30,6 @@
       "@latticexyz/schema-type": ["./packages/schema-type/src/typescript/index.ts"],
       "@latticexyz/schema-type/*": ["./packages/schema-type/src/typescript/exports/*.ts"],
       "@latticexyz/stash": ["./packages/stash/src/exports/index.ts"],
-      "@latticexyz/stash/internal": ["./packages/stash/src/exports/internal.ts"],
-      "@latticexyz/stash/react": ["./packages/stash/src/exports/react.ts"],
       "@latticexyz/store": ["./packages/store/ts/exports/index.ts"],
       "@latticexyz/store/mud.config": ["./packages/store/mud.config.ts"],
       "@latticexyz/store/codegen": ["./packages/store/ts/codegen/index.ts"],
