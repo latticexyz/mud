@@ -6,7 +6,7 @@ Added an experimental `@latticexyz/store-sync/react` export with a `SyncProvider
 
 Note that this is currently only usable with Stash and assumes you are also using Wagmi in your React app.
 
-```ts
+```tsx
 import { WagmiProvider } from "wagmi";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { SyncProvider } from "@latticexyz/store-sync/react";
