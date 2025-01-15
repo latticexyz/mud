@@ -39,6 +39,8 @@
       "@latticexyz/store/*": ["./packages/store/ts/exports/*.ts"],
       "@latticexyz/store-sync": ["./packages/store-sync/src/index.ts"],
       "@latticexyz/store-sync/*": ["./packages/store-sync/src/*"],
+      "@latticexyz/store-sync/internal": ["./packages/store-sync/src/exports/internal.ts"],
+      "@latticexyz/store-sync/react": ["./packages/store-sync/src/exports/react.ts"],
       "@latticexyz/utils": ["./packages/utils/src/index.ts"],
       "@latticexyz/world": ["./packages/world/ts/exports/index.ts"],
       "@latticexyz/world/mud.config": ["./packages/world/mud.config.ts"],
