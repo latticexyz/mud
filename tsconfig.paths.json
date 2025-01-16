@@ -30,8 +30,6 @@
       "@latticexyz/schema-type": ["./packages/schema-type/src/typescript/index.ts"],
       "@latticexyz/schema-type/*": ["./packages/schema-type/src/typescript/exports/*.ts"],
       "@latticexyz/stash": ["./packages/stash/src/exports/index.ts"],
-      "@latticexyz/stash/internal": ["./packages/stash/src/exports/internal.ts"],
-      "@latticexyz/stash/react": ["./packages/stash/src/exports/react.ts"],
       "@latticexyz/store": ["./packages/store/ts/exports/index.ts"],
       "@latticexyz/store/mud.config": ["./packages/store/mud.config.ts"],
       "@latticexyz/store/codegen": ["./packages/store/ts/codegen/index.ts"],
@@ -50,7 +48,8 @@
       "@latticexyz/world-module-metadata/mud.config": ["./packages/world-module-metadata/mud.config.ts"],
       "@latticexyz/world-module-metadata/out/*": ["./packages/world-module-metadata/out/*"],
       "@latticexyz/world-modules/internal/mud.config": ["./packages/world-modules/mud.config.ts"],
-      "@latticexyz/world-modules/out/*": ["./packages/world-modules/out/*"]
+      "@latticexyz/world-modules/out/*": ["./packages/world-modules/out/*"],
+      "vite-plugin-mud": ["./packages/vite-plugin-mud/src/exports/index.ts"]
     }
   }
 }
