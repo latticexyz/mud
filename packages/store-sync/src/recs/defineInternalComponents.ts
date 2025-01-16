@@ -3,7 +3,6 @@ import { Table } from "../common";
 
 export type InternalComponents = ReturnType<typeof defineInternalComponents>;
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function defineInternalComponents(world: World) {
   return {
     RegisteredTables: defineComponent<{ table: Type.T }, Metadata, Table>(

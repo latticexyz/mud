@@ -2,6 +2,7 @@
   "extends": ["../../.eslintrc", "plugin:react/recommended", "plugin:react-hooks/recommended"],
   "plugins": ["react", "react-hooks"],
   "rules": {
+    "@typescript-eslint/explicit-function-return-type": "warn",
     "react/react-in-jsx-scope": "off"
   }
 }
