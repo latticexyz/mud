@@ -29,17 +29,17 @@ const initialRows: TData["rows"] = [];
 type Props = {
   table?: TableType;
   query?: string;
-  isPaused: boolean;
+  isLiveQuery: boolean;
 };
 
-export function TablesViewer({ table, query, isPaused }: Props) {
+export function TablesViewer({ table, query, isLiveQuery }: Props) {
   const {
     data: tableData,
     isLoading: isTDataLoading,
     isFetched,
     isError,
     error,
-  } = useTableDataQuery({ table, query, isPaused });
+  } = useTableDataQuery({ table, query, isLiveQuery });
   const isLoading = isTDataLoading || !isFetched;
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));

@@ -17,7 +17,7 @@ export function Explorer() {
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
   const indexer = indexerForChainId(chainId);
-  const [isPaused, setIsPaused] = useState(true);
+  const [isLiveQuery, setIsLiveQuery] = useState(true);
   const [query, setQuery] = useQueryState("query", parseAsString.withDefault(""));
   const [selectedTableId] = useQueryState("tableId");
   const prevSelectedTableId = usePrevious(selectedTableId);
@@ -41,8 +41,10 @@ export function Explorer() {
   return (
     <div className="space-y-4">
       <TableSelector tables={tables} />
-      {indexer.type !== "sqlite" && <SQLEditor table={table} isPaused={isPaused} setIsPaused={setIsPaused} />}
-      <TablesViewer table={table} query={query} isPaused={isPaused} />
+      {indexer.type !== "sqlite" && (
+        <SQLEditor table={table} isLiveQuery={isLiveQuery} setIsLiveQuery={setIsLiveQuery} />
+      )}
+      <TablesViewer table={table} query={query} isLiveQuery={isLiveQuery} />
     </div>
   );
 }
