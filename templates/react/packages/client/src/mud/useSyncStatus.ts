@@ -4,7 +4,7 @@ import { SyncStep } from "@latticexyz/store-sync";
 import { useMemo } from "react";
 import { useRecord } from "@latticexyz/stash/react";
 
-export function useSyncProgress() {
+export function useSyncStatus() {
   const progress = useRecord({
     stash,
     table: SyncProgress,

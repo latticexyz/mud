@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { twMerge } from "tailwind-merge";
-import { useEntryKitConfig } from "@latticexyz/entrykit/internal";
+import { getChain, getWorldAddress } from "../common";
 import { MUDIcon } from "../ui/icons/MUDIcon";
 
 export function Explorer() {
   const [open, setOpen] = useState(false);
-  const { chain, worldAddress } = useEntryKitConfig();
+
+  const chain = getChain();
+  const worldAddress = getWorldAddress();
+
   const explorerUrl = chain.blockExplorers?.worldsExplorer?.url;
   if (!explorerUrl) return null;
 
@@ -24,9 +26,7 @@ export function Explorer() {
           </>
         )}
       </button>
-      {open ? (
-        <iframe src={`${explorerUrl}/${worldAddress}`} className={twMerge("bg-black", open ? "h-[50vh]" : "h-0")} />
-      ) : null}
+      {open ? <iframe src={`${explorerUrl}/${worldAddress}`} className="bg-black h-[50vh]" /> : null}
     </div>
   );
 }

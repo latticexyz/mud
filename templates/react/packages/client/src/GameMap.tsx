@@ -5,6 +5,8 @@ import { ArrowDownIcon } from "./ui/icons/ArrowDownIcon";
 import { twMerge } from "tailwind-merge";
 import { Direction } from "./common";
 import mudConfig from "contracts/mud.config";
+import { AsyncButton } from "./ui/AsyncButton";
+import { useAccountModal } from "@latticexyz/entrykit/internal";
 
 export type Props = {
   readonly players?: readonly {
@@ -13,7 +15,7 @@ export type Props = {
     readonly y: number;
   }[];
 
-  readonly onMove?: (direction: Direction) => void;
+  readonly onMove?: (direction: Direction) => Promise<void>;
 };
 
 const size = 40;
@@ -31,7 +33,9 @@ const rotateClassName = {
 } as const satisfies Record<Direction, `${"" | "-"}rotate-${number}`>;
 
 export function GameMap({ players = [], onMove }: Props) {
+  const { openAccountModal } = useAccountModal();
   const { address: userAddress } = useAccount();
+  const currentPlayer = players.find((player) => player.player.toLowerCase() === userAddress?.toLowerCase());
   useKeyboardMovement(onMove);
   return (
     <div className="aspect-square w-full max-w-[40rem]">
@@ -67,11 +71,31 @@ export function GameMap({ players = [], onMove }: Props) {
             }}
             title={serialize(player, null, 2)}
           >
-            {player.player.toLowerCase() === userAddress?.toLowerCase() ? (
-              <div className="w-full h-full bg-current animate-ping opacity-50" />
-            ) : null}
+            {player === currentPlayer ? <div className="w-full h-full bg-current animate-ping opacity-50" /> : null}
           </div>
         ))}
+
+        {!currentPlayer ? (
+          onMove ? (
+            <div className="absolute inset-0 grid place-items-center">
+              <AsyncButton
+                className="group outline-0 p-4 border-4 border-green-400 transition ring-green-300 hover:ring-4 active:scale-95 rounded-lg text-lg font-medium aria-busy:pointer-events-none aria-busy:animate-pulse"
+                onClick={() => onMove("North")}
+              >
+                Spawn<span className="hidden group-aria-busy:inline">ing…</span>
+              </AsyncButton>
+            </div>
+          ) : (
+            <div className="absolute inset-0 grid place-items-center">
+              <button
+                className="group outline-0 p-4 border-4 border-green-400 transition ring-green-300 hover:ring-4 active:scale-95 rounded-lg text-lg font-medium aria-busy:pointer-events-none aria-busy:animate-pulse"
+                onClick={openAccountModal}
+              >
+                Sign in to play
+              </button>
+            </div>
+          )
+        ) : null}
       </div>
     </div>
   );

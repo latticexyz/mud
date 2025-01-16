@@ -4,7 +4,7 @@ import { createWagmiConfig } from "@latticexyz/entrykit/internal";
 import { rhodolite, garnet, redstone } from "@latticexyz/common/chains";
 import { chainId } from "./common";
 
-const chains = [
+export const chains = [
   redstone,
   garnet,
   rhodolite,
@@ -26,7 +26,7 @@ const chains = [
   },
 ] as const satisfies Chain[];
 
-const transports = {
+export const transports = {
   [anvil.id]: webSocket(),
   [garnet.id]: http(),
   [rhodolite.id]: http(),

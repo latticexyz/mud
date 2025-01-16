@@ -6,30 +6,37 @@ import mudConfig from "contracts/mud.config";
 import { useMemo } from "react";
 import { GameMap } from "./GameMap";
 import { useWorldContract } from "./mud/useWorldContract";
-import { Loading } from "./mud/Loading";
-
-console.log("env", import.meta.env);
+import { Synced } from "./mud/Synced";
+import { useSync } from "@latticexyz/store-sync/react";
 
 export function App() {
   const players = useRecords({ stash, table: mudConfig.tables.app__Position });
 
+  const sync = useSync();
   const worldContract = useWorldContract();
   const onMove = useMemo(
     () =>
-      worldContract
+      sync.data && worldContract
         ? async (direction: Direction) => {
-            await worldContract.write.app__move([mudConfig.enums.Direction.indexOf(direction)]);
+            const tx = await worldContract.write.app__move([mudConfig.enums.Direction.indexOf(direction)]);
+            await sync.data.waitForTransaction(tx);
           }
         : undefined,
-    [worldContract],
+    [sync.data, worldContract],
   );
 
   return (
     <>
       <div className="fixed inset-0 grid place-items-center p-4">
-        <Loading>
+        <Synced
+          fallback={({ message, percentage }) => (
+            <div className="tabular-nums">
+              {message} ({percentage.toFixed(1)}%)…
+            </div>
+          )}
+        >
           <GameMap players={players} onMove={onMove} />
-        </Loading>
+        </Synced>
       </div>
       <div className="fixed top-2 right-2">
         <AccountButton />
