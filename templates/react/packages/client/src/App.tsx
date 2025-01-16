@@ -4,7 +4,7 @@ import { AccountButton } from "@latticexyz/entrykit/internal";
 import { Direction } from "./common";
 import mudConfig from "contracts/mud.config";
 import { useMemo } from "react";
-import { GameMap } from "./GameMap";
+import { GameMap } from "./game/GameMap";
 import { useWorldContract } from "./mud/useWorldContract";
 import { Synced } from "./mud/Synced";
 import { useSync } from "@latticexyz/store-sync/react";

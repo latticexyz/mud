@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Direction } from "./common";
+import { Direction } from "../common";
 
 const keys = new Map<KeyboardEvent["key"], Direction>([
   ["ArrowUp", "North"],

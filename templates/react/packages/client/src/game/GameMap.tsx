@@ -1,11 +1,11 @@
 import { serialize, useAccount } from "wagmi";
 import { useKeyboardMovement } from "./useKeyboardMovement";
 import { Address, Hex, hexToBigInt, keccak256 } from "viem";
-import { ArrowDownIcon } from "./ui/icons/ArrowDownIcon";
+import { ArrowDownIcon } from "../ui/icons/ArrowDownIcon";
 import { twMerge } from "tailwind-merge";
-import { Direction } from "./common";
+import { Direction } from "../common";
 import mudConfig from "contracts/mud.config";
-import { AsyncButton } from "./ui/AsyncButton";
+import { AsyncButton } from "../ui/AsyncButton";
 import { useAccountModal } from "@latticexyz/entrykit/internal";
 
 export type Props = {
