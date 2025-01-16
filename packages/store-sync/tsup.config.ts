@@ -12,6 +12,7 @@ export default defineConfig((opts) => ({
     "src/world/index.ts",
     "src/zustand/index.ts",
     "src/exports/internal.ts",
+    "src/exports/react.ts",
   ],
   target: "esnext",
   format: ["esm"],
