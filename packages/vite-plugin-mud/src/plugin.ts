@@ -2,19 +2,11 @@ import { Plugin } from "vite";
 import { loadEnv } from "vite";
 import path from "node:path";
 import fs from "node:fs/promises";
+import { isReadable } from "./isReadable";
 
 export function mud(opts: { worldsFile: string }): Plugin {
   const rootDir = process.cwd();
   const worldsFile = path.resolve(rootDir, opts.worldsFile);
-
-  async function isReadable(filename: string) {
-    try {
-      await fs.access(filename, fs.constants.R_OK);
-      return true;
-    } catch {
-      return false;
-    }
-  }
 
   return {
     name: "vite-plugin-mud",

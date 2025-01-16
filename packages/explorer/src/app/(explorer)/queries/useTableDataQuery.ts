@@ -55,12 +55,10 @@ export function useTableDataQuery({ table, query }: Props) {
       if (!result[0]) return undefined;
 
       const schema = Object.keys(table.schema);
-      const columns = result[0]
-        ?.map((columnKey) => {
-          const schemaKey = schema.find((schemaKey) => schemaKey.toLowerCase() === columnKey);
-          return schemaKey || columnKey;
-        })
-        .filter((key) => schema.includes(key));
+      const columns = result[0]?.map((columnKey) => {
+        const schemaKey = schema.find((schemaKey) => schemaKey.toLowerCase() === columnKey);
+        return schemaKey || columnKey;
+      });
 
       const rows = result.slice(1).map((row) =>
         Object.fromEntries(
@@ -79,6 +77,7 @@ export function useTableDataQuery({ table, query }: Props) {
         rows,
       };
     },
+    retry: false,
     enabled: !!table && !!query,
     refetchInterval: (query) => {
       if (query.state.error) return false;
