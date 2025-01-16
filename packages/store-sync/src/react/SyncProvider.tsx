@@ -1,13 +1,11 @@
 import { ReactNode, createContext, useContext, useEffect } from "react";
 import { useConfig } from "wagmi";
 import { getClient } from "wagmi/actions";
-import { useQuery } from "@tanstack/react-query";
+import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { SyncAdapter, SyncOptions, SyncResult } from "../common";
 
 /** @internal */
-export const SyncContext = createContext<{
-  sync?: SyncResult;
-} | null>(null);
+export const SyncContext = createContext<UseQueryResult<SyncResult> | null>(null);
 
 export type Props = Omit<SyncOptions, "publicClient"> & {
   chainId: number;
@@ -15,7 +13,6 @@ export type Props = Omit<SyncOptions, "publicClient"> & {
   children: ReactNode;
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function SyncProvider({ chainId, adapter, children, ...syncOptions }: Props) {
   const existingValue = useContext(SyncContext);
   if (existingValue != null) {
@@ -24,34 +21,29 @@ export function SyncProvider({ chainId, adapter, children, ...syncOptions }: Pro
 
   const config = useConfig();
 
-  const { data: sync, error: syncError } = useQuery({
+  const result = useQuery({
     queryKey: ["sync", chainId],
     queryFn: async () => {
       const client = getClient(config, { chainId });
       if (!client) {
         throw new Error(`Unable to retrieve Viem client for chain ${chainId}.`);
       }
-
-      return adapter({ publicClient: client, ...syncOptions });
+      return await adapter({ publicClient: client, ...syncOptions });
     },
     staleTime: Infinity,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
-  if (syncError) throw syncError;
 
   useEffect(() => {
-    if (!sync) return;
-
-    const sub = sync.storedBlockLogs$.subscribe({
+    const sub = result.data?.storedBlockLogs$.subscribe({
       error: (error) => console.error("got sync error", error),
     });
-
     return (): void => {
-      sub.unsubscribe();
+      sub?.unsubscribe();
     };
-  }, [sync]);
+  }, [result.data?.storedBlockLogs$]);
 
-  return <SyncContext.Provider value={{ sync }}>{children}</SyncContext.Provider>;
+  return <SyncContext.Provider value={result}>{children}</SyncContext.Provider>;
 }
