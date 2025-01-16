@@ -13,7 +13,6 @@ export type Props = Omit<SyncOptions, "publicClient"> & {
   children: ReactNode;
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function SyncProvider({ chainId, adapter, children, ...syncOptions }: Props) {
   const existingValue = useContext(SyncContext);
   if (existingValue != null) {

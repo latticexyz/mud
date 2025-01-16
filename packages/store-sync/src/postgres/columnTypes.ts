@@ -2,7 +2,6 @@ import { customType } from "drizzle-orm/pg-core";
 import superjson from "superjson";
 import { Address, ByteArray, bytesToHex, getAddress, Hex, hexToBytes } from "viem";
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const asJson = <TData>(name: string) =>
   customType<{ data: TData; driverData: string }>({
     dataType() {
@@ -17,7 +16,6 @@ export const asJson = <TData>(name: string) =>
     },
   })(name);
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const asNumber = (name: string, columnType: string) =>
   customType<{ data: number; driverData: string }>({
     dataType() {
@@ -31,7 +29,6 @@ export const asNumber = (name: string, columnType: string) =>
     },
   })(name);
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const asBigInt = (name: string, columnType: string) =>
   customType<{ data: bigint; driverData: string }>({
     dataType() {
@@ -45,7 +42,6 @@ export const asBigInt = (name: string, columnType: string) =>
     },
   })(name);
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const asHex = (name: string) =>
   customType<{ data: Hex; driverData: ByteArray }>({
     dataType() {
@@ -59,7 +55,6 @@ export const asHex = (name: string) =>
     },
   })(name);
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const asAddress = (name: string) =>
   customType<{ data: Address; driverData: ByteArray }>({
     dataType() {
@@ -73,7 +68,6 @@ export const asAddress = (name: string) =>
     },
   })(name);
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const asBoolArray = (name: string) =>
   customType<{ data: boolean[]; driverData: string[] }>({
     dataType() {
@@ -87,7 +81,6 @@ export const asBoolArray = (name: string) =>
     },
   })(name);
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const asNumberArray = (name: string, columnType: string) =>
   customType<{ data: number[]; driverData: string[] }>({
     dataType() {
@@ -101,7 +94,6 @@ export const asNumberArray = (name: string, columnType: string) =>
     },
   })(name);
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const asBigIntArray = (name: string, columnType: string) =>
   customType<{ data: bigint[]; driverData: string[] }>({
     dataType() {

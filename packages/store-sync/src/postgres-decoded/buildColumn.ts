@@ -12,7 +12,6 @@ import {
   asNumberArray,
 } from "../postgres/columnTypes";
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function buildColumn(name: string, schemaAbiType: SchemaAbiType) {
   switch (schemaAbiType) {
     case "bool":
