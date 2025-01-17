@@ -35,7 +35,6 @@
     "clean:js": "shx rm -rf dist"
   },
   "devDependencies": {
-    "tsup": "^6.7.0",
     "vite": "^6.0.7"
   },
   "peerDependencies": {

@@ -26,10 +26,6 @@
   "dependencies": {
     "create-create-app": "git+https://github.com/holic/create-create-app#74376c59b48a04aabbe94d9cacfe9cb1cecccd63"
   },
-  "devDependencies": {
-    "execa": "^7.0.0",
-    "tsup": "^6.7.0"
-  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
