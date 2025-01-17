@@ -1,5 +1,22 @@
 # @latticexyz/explorer
 
+## 2.2.16
+
+### Patch Changes
+
+- 59389b1: Fixed an issue where live queries were running while paused and vice versa.
+- 54e5c06: Added 'Copy to Clipboard' button to relevant sections for easier data copying.
+- 05c7298: SQL query execution time in Explore table is now measured and displayed.
+  - @latticexyz/block-logs-stream@2.2.16
+  - @latticexyz/common@2.2.16
+  - @latticexyz/config@2.2.16
+  - @latticexyz/protocol-parser@2.2.16
+  - @latticexyz/schema-type@2.2.16
+  - @latticexyz/store@2.2.16
+  - @latticexyz/store-indexer@2.2.16
+  - @latticexyz/store-sync@2.2.16
+  - @latticexyz/world@2.2.16
+
 ## 2.2.15
 
 ### Patch Changes

@@ -1,5 +1,22 @@
 # Change Log
 
+## 2.2.16
+
+### Patch Changes
+
+- @latticexyz/abi-ts@2.2.16
+- @latticexyz/block-logs-stream@2.2.16
+- @latticexyz/common@2.2.16
+- @latticexyz/config@2.2.16
+- @latticexyz/gas-report@2.2.16
+- @latticexyz/protocol-parser@2.2.16
+- @latticexyz/schema-type@2.2.16
+- @latticexyz/store@2.2.16
+- @latticexyz/store-sync@2.2.16
+- @latticexyz/utils@2.2.16
+- @latticexyz/world@2.2.16
+- @latticexyz/world-module-metadata@2.2.16
+
 ## 2.2.15
 
 ### Patch Changes
