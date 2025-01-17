@@ -1,5 +1,5 @@
 import { Client, Abi, AbiItem, AbiFunction, Address, getAddress, toFunctionSelector } from "viem";
-import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" with { type: "json" };
 import { functionSignatureToAbiItem } from "./functionSignatureToAbiItem";
 import { getFunctions } from "./getFunctions";
 import { isDefined } from "@latticexyz/common/utils";
