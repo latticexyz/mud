@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.2.15
+
+### Patch Changes
+
+- Updated dependencies [09e9bd5]
+  - @latticexyz/schema-type@2.2.15
+  - @latticexyz/utils@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/stash",
-  "version": "2.2.14",
+  "version": "2.2.15",
   "description": "High performance client store and query engine for MUD",
   "repository": {
     "type": "git",

@@ -1,5 +1,37 @@
 # @latticexyz/stash
 
+## 2.2.15
+
+### Patch Changes
+
+- 09e9bd5: Moved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.
+- 96f1473: Consolidated how state changes are applied and subscribers notified. Stash subscribers now receive an ordered list of state updates rather than an object.
+- 16242b7: Added `useRecord` and `useRecords` hooks for convenience.
+
+  ```ts
+  import { useRecords } from "@latticexyz/stash/react";
+
+  const players = useRecords({ stash, table: Position });
+  ```
+
+  ```ts
+  import { useRecord } from "@latticexyz/stash/react";
+
+  const player = useRecord({ stash, table: Position, key: { player: "0x..." } });
+  ```
+
+- Updated dependencies [9580d29]
+- Updated dependencies [09e9bd5]
+- Updated dependencies [1b477d4]
+- Updated dependencies [9d71887]
+- Updated dependencies [09536b0]
+- Updated dependencies [88b9daf]
+  - @latticexyz/config@2.2.15
+  - @latticexyz/common@2.2.15
+  - @latticexyz/protocol-parser@2.2.15
+  - @latticexyz/schema-type@2.2.15
+  - @latticexyz/store@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes

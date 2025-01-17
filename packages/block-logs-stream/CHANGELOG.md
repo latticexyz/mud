@@ -1,5 +1,15 @@
 # @latticexyz/block-logs-stream
 
+## 2.2.15
+
+### Patch Changes
+
+- 09e9bd5: Moved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.
+- Updated dependencies [09e9bd5]
+- Updated dependencies [9d71887]
+- Updated dependencies [88b9daf]
+  - @latticexyz/common@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes
