@@ -1,5 +1,57 @@
 [
   {
+    "version": "2.2.16",
+    "date": "2025-01-17T16:14:48.470Z",
+    "changes": {
+      "patch": [
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixed an issue where live queries were running while paused and vice versa.",
+          "type": 0,
+          "commitHash": "59389b1e37bc84664972231989ce7fdc739cce42",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "docs: add changeset for bug fix (#3463)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded 'Copy to Clipboard' button to relevant sections for easier data copying.",
+          "type": 0,
+          "commitHash": "54e5c06dd4606d2484a790cd1d531931d634d7a1",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): copy button (#3423)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nSQL query execution time in Explore table is now measured and displayed.",
+          "type": 0,
+          "commitHash": "05c7298412805fbc5a2eae489d567ec405414abc",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): query execution time (#3444)"
+        }
+      ],
+      "minor": [],
+      "major": []
+    }
+  },
+  {
     "version": "2.2.15",
     "date": "2025-01-17T11:35:44.397Z",
     "changes": {

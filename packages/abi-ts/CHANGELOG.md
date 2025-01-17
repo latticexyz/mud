@@ -1,5 +1,7 @@
 # @latticexyz/abi-ts
 
+## 2.2.16
+
 ## 2.2.15
 
 ### Patch Changes
