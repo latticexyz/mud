@@ -84,7 +84,6 @@
     "@types/koa__cors": "^4.0.3",
     "@types/koa__router": "^12.0.4",
     "concurrently": "^8.2.2",
-    "tsup": "^6.7.0",
     "viem": "2.21.19",
     "vitest": "0.34.6"
   },
