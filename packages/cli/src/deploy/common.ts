@@ -92,14 +92,17 @@ export type System = DeterministicContract & {
   // world registration
   // TODO: replace this with system manifest data
   readonly worldFunctions: readonly WorldFunction[];
-  // human readable ABIs to register onchain
-  readonly abi: readonly string[];
-  readonly worldAbi: readonly string[];
+  // metadata to register onchain
+  readonly metadata: {
+    // human readable ABIs
+    readonly abi: readonly string[];
+    readonly worldAbi: readonly string[];
+  };
 };
 
 export type DeployedSystem = Omit<
   System,
-  "label" | "namespaceLabel" | "abi" | "worldAbi" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"
+  "label" | "namespaceLabel" | "abi" | "metadata" | "prepareDeploy" | "deployedBytecodeSize" | "allowedSystemIds"
 > & {
   address: Address;
 };
