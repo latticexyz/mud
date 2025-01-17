@@ -1,5 +1,71 @@
 # @latticexyz/store-sync
 
+## 2.2.15
+
+### Patch Changes
+
+- 1770620: Updated the `watchLogs` util to accept the updated RPC response type.
+- 5f493cd: Added an experimental `@latticexyz/store-sync/react` export with a `SyncProvider` and `useSync` hook. This allows for easier syncing MUD data to React apps.
+
+  Note that this is currently only usable with Stash and assumes you are also using Wagmi in your React app.
+
+  ```tsx
+  import { WagmiProvider } from "wagmi";
+  import { QueryClientProvider } from "@tanstack/react-query";
+  import { SyncProvider } from "@latticexyz/store-sync/react";
+  import { createSyncAdapter } from "@latticexyz/store-sync/internal";
+
+  export function App() {
+    return (
+      <WagmiProvider config={wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
+          <SyncProvider
+            chainId={chainId}
+            address={worldAddress}
+            startBlock={startBlock}
+            adapter={createSyncAdapter({ stash })}
+          >
+            {children}
+          </SyncProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    );
+  }
+  ```
+
+- cd9fd0a: Fixed a bug in `watchLogs` where logs from the buffer were not applied during the initial sync.
+- 09e9bd5: Moved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.
+- b819749: Added a `getRecords` util to fetch table records from an indexer or RPC.
+
+  Migrated the `getFunctions` and `getWorldAbi` utils from `@latticexyz/world` to `@latticexyz/store-sync/world` to allow `getFunctions` and `getWorldAbi` to use `getRecords` internally without circular dependencies.
+
+- 9ddc874: Experimental pending logs watcher now reconnects if it loses connection or times out.
+- a6fe15c: All sync methods using a `publicClient` argument now accept a plain Viem `Client` rather than a decorated `PublicClient`, allowing for more flexibility and better tree-shaking for lighter bundles.
+- Updated dependencies [9580d29]
+- Updated dependencies [653f378]
+- Updated dependencies [2d2aa08]
+- Updated dependencies [09e9bd5]
+- Updated dependencies [96f1473]
+- Updated dependencies [ba5191c]
+- Updated dependencies [1b477d4]
+- Updated dependencies [b819749]
+- Updated dependencies [16242b7]
+- Updated dependencies [22674ad]
+- Updated dependencies [9d71887]
+- Updated dependencies [509a3cc]
+- Updated dependencies [09536b0]
+- Updated dependencies [88b9daf]
+- Updated dependencies [275c867]
+  - @latticexyz/config@2.2.15
+  - @latticexyz/world@2.2.15
+  - @latticexyz/block-logs-stream@2.2.15
+  - @latticexyz/common@2.2.15
+  - @latticexyz/protocol-parser@2.2.15
+  - @latticexyz/schema-type@2.2.15
+  - @latticexyz/stash@2.2.15
+  - @latticexyz/store@2.2.15
+  - @latticexyz/recs@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes

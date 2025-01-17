@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/paymaster",
-  "version": "2.2.14",
+  "version": "2.2.15",
   "description": "Paymaster contracts",
   "repository": {
     "type": "git",
