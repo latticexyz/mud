@@ -1,5 +1,5 @@
 import { useParams } from "next/navigation";
-import { Hex } from "viem";
+import { Hex, stringify } from "viem";
 import { Table } from "@latticexyz/config";
 import { useQuery } from "@tanstack/react-query";
 import { useChain } from "../hooks/useChain";
@@ -32,7 +32,7 @@ export function useTableDataQuery({ table, query, isLiveQuery }: Props) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify([
+        body: stringify([
           {
             address: worldAddress as Hex,
             query: decodedQuery,
