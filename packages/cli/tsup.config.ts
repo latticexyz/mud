@@ -19,7 +19,7 @@ const mudPackages: MudPackages = Object.fromEntries(
 
 export default defineConfig((opts) => ({
   entry: ["src/index.ts", "src/mud.ts"],
-  target: "esnext",
+  target: "es2021",
   format: ["esm"],
   sourcemap: true,
   minify: true,
