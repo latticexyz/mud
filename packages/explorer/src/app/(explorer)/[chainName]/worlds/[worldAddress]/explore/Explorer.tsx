@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { parseAsString, useQueryState } from "nuqs";
 import { Hex } from "viem";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useChain } from "../../../../hooks/useChain";
 import { usePrevious } from "../../../../hooks/usePrevious";
 import { useTablesQuery } from "../../../../queries/useTablesQuery";
@@ -17,6 +17,7 @@ export function Explorer() {
   const { worldAddress } = useParams();
   const { id: chainId } = useChain();
   const indexer = indexerForChainId(chainId);
+  const [isLiveQuery, setIsLiveQuery] = useState(true);
   const [query, setQuery] = useQueryState("query", parseAsString.withDefault(""));
   const [selectedTableId] = useQueryState("tableId");
   const prevSelectedTableId = usePrevious(selectedTableId);
@@ -40,8 +41,10 @@ export function Explorer() {
   return (
     <div className="space-y-4">
       <TableSelector tables={tables} />
-      {indexer.type !== "sqlite" && <SQLEditor table={table} />}
-      <TablesViewer table={table} query={query} />
+      {indexer.type !== "sqlite" && (
+        <SQLEditor table={table} isLiveQuery={isLiveQuery} setIsLiveQuery={setIsLiveQuery} />
+      )}
+      <TablesViewer table={table} query={query} isLiveQuery={isLiveQuery} />
     </div>
   );
 }
