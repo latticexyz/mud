@@ -169,7 +169,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
       </Form>
 
       {result && (
-        <pre className="text-md relative rounded border p-3 text-sm">
+        <pre className="text-md relative mt-4 rounded border p-3 text-sm">
           {result}
           <CopyButton value={result} className="absolute right-1.5 top-1.5" />
         </pre>
