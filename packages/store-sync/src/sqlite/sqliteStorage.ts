@@ -1,4 +1,4 @@
-import { Hex, PublicClient, concatHex, getAddress, size } from "viem";
+import { Client, Hex, concatHex, getAddress, size } from "viem";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
@@ -13,6 +13,8 @@ import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
 import { KeySchema, decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
+import { getChainId } from "viem/actions";
+import { getAction } from "viem/utils";
 
 // TODO: upgrade drizzle and use async sqlite interface for consistency
 
@@ -21,9 +23,9 @@ export async function sqliteStorage({
   publicClient,
 }: {
   database: BaseSQLiteDatabase<"sync", void>;
-  publicClient: PublicClient;
+  publicClient: Client;
 }): Promise<StorageAdapter> {
-  const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+  const chainId = publicClient.chain?.id ?? (await getAction(publicClient, getChainId, "getChainId")({}));
 
   // TODO: should these run lazily before first `registerTables`?
   database.run(sql.raw(sqliteTableToSql(chainState)));

@@ -1,4 +1,4 @@
-import { PublicClient, encodePacked, size } from "viem";
+import { Client, encodePacked, size } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { and, eq } from "drizzle-orm";
 import { debug } from "./debug";
@@ -7,6 +7,8 @@ import { spliceHex } from "@latticexyz/common";
 import { setupTables } from "./setupTables";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
 import { version } from "./version";
+import { getAction } from "viem/utils";
+import { getChainId } from "viem/actions";
 
 // Currently assumes one DB per chain ID
 
@@ -21,11 +23,11 @@ export async function createStorageAdapter({
   publicClient,
 }: {
   database: PgDatabase<QueryResultHKT>;
-  publicClient: PublicClient;
+  publicClient: Client;
 }): Promise<PostgresStorageAdapter> {
   const cleanUp: (() => Promise<void>)[] = [];
 
-  const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+  const chainId = publicClient.chain?.id ?? (await getAction(publicClient, getChainId, "getChainId")({}));
 
   cleanUp.push(await setupTables(database, Object.values(tables)));
 

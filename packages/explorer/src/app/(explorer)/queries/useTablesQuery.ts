@@ -55,6 +55,7 @@ export function useTablesQuery() {
         .filter(isDefined)
         .sort(({ namespace }) => (internalNamespaces.includes(namespace) ? 1 : -1));
     },
+    retry: false,
     refetchInterval: 5000,
   });
 }

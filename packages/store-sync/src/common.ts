@@ -1,4 +1,4 @@
-import { Address, Block, Hex, Log, PublicClient, TransactionReceipt } from "viem";
+import { Address, Block, Client, Hex, Log, TransactionReceipt } from "viem";
 import { StoreEventsAbiItem, StoreEventsAbi } from "@latticexyz/store";
 import { Observable } from "rxjs";
 import { UnionPick } from "@latticexyz/common/type-utils";
@@ -67,11 +67,11 @@ export type SyncFilter = {
 
 export type SyncOptions = {
   /**
-   * [viem `PublicClient`][0] used for fetching logs from the RPC.
+   * [viem `Client`][0] used for fetching logs from the RPC.
    *
-   * [0]: https://viem.sh/docs/clients/public.html
+   * [0]: https://viem.sh/docs/clients/custom
    */
-  publicClient: PublicClient;
+  publicClient: Client;
   /**
    * MUD Store/World contract address
    */
@@ -125,6 +125,8 @@ export type SyncResult = {
   storedBlockLogs$: Observable<StorageAdapterBlock>;
   waitForTransaction: (tx: Hex) => Promise<WaitForTransactionResult>;
 };
+
+export type SyncAdapter = (opts: SyncOptions) => Promise<SyncResult>;
 
 // TODO: add optional, original log to this?
 export type StorageAdapterLog = Partial<StoreEventsLog> & UnionPick<StoreEventsLog, "address" | "eventName" | "args">;

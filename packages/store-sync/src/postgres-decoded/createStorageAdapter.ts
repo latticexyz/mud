@@ -1,4 +1,4 @@
-import { Hex, PublicClient, concatHex, getAddress } from "viem";
+import { Client, Hex, concatHex, getAddress } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { and, eq } from "drizzle-orm";
 import { buildTable } from "./buildTable";
@@ -26,7 +26,7 @@ export async function createStorageAdapter({
   publicClient,
 }: {
   database: PgDatabase<QueryResultHKT>;
-  publicClient: PublicClient;
+  publicClient: Client;
 }): Promise<PostgresStorageAdapter> {
   const bytesStorageAdapter = await createBytesStorageAdapter({ database, publicClient });
   const cleanUp: (() => Promise<void>)[] = [];

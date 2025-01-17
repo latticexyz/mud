@@ -1,4 +1,4 @@
-import { ArrowUpDownIcon, LoaderIcon, TriangleAlertIcon } from "lucide-react";
+import { ArrowUpDownIcon, KeyIcon, LoaderIcon, TriangleAlertIcon } from "lucide-react";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { useMemo } from "react";
 import { Table as TableType } from "@latticexyz/config";
@@ -38,6 +38,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
     return tableData.columns.map((name) => {
       const schema = table?.schema[name];
       const type = schema?.type;
+      const keySchema = getKeySchema(table);
 
       return {
         accessorKey: name,
@@ -48,8 +49,9 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
               className="-ml-4"
               onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             >
+              {name in keySchema && <KeyIcon className="mr-2 h-3 w-3" />}
               <span className="text-orange-500">{name}</span>
-              <span className="ml-1 opacity-70">({type})</span>
+              {type && <span className="ml-1 opacity-70">({type})</span>}
               <ArrowUpDownIcon className="ml-2 h-4 w-4" />
             </Button>
           );
@@ -67,7 +69,6 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
             const keyTuple = getKeyTuple(table, row.original as never);
             return <EditableTableCell name={name} table={table} value={value} keyTuple={keyTuple} />;
           } catch (e) {
-            console.error(e);
             return value;
           }
         },
@@ -97,8 +98,8 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
   });
 
   return (
-    <>
-      <div className="flex items-center justify-between gap-4 pb-4">
+    <div className="!-mt-10 space-y-4">
+      <div className="flex w-1/2 items-center gap-4">
         <Input
           placeholder="Filter..."
           value={globalFilter}
@@ -172,7 +173,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
         )}
       </div>
 
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-end space-x-2">
         <div className="flex-1 text-sm text-muted-foreground">
           {tableData && `Total rows: ${tableData.rows.length.toLocaleString()}`}
         </div>
@@ -196,6 +197,6 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
           </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 }
