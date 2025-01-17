@@ -41,7 +41,7 @@
   "devDependencies": {
     "@ark/attest": "0.12.1",
     "@changesets/cli": "^2.27.7",
-    "@types/node": "^18",
+    "@types/node": "^20.12.12",
     "@typescript-eslint/eslint-plugin": "7.1.1",
     "@typescript-eslint/parser": "7.1.1",
     "@viem/anvil": "^0.0.7",
@@ -62,9 +62,9 @@
     "viem": "2.21.19",
     "vitest": "2.1.2"
   },
-  "packageManager": "pnpm@9.6.0",
+  "packageManager": "pnpm@9.15.4",
   "engines": {
-    "node": "18.x || 20.x",
-    "pnpm": "^9.6.0"
+    "node": "^20",
+    "pnpm": "^9"
   }
 }

@@ -100,9 +100,9 @@
   "peerDependencies": {
     "viem": "2.x"
   },
-  "packageManager": "pnpm@9.6.0",
+  "packageManager": "pnpm@9.15.4",
   "engines": {
-    "node": "18.x || 20.x",
-    "pnpm": "^9.6.0"
+    "node": "20.x",
+    "pnpm": "^9"
   }
 }
