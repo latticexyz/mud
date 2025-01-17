@@ -220,9 +220,6 @@ importers:
       toposort:
         specifier: ^2.0.2
         version: 2.0.2
-      typescript:
-        specifier: 5.4.2
-        version: 5.4.2
       viem:
         specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
