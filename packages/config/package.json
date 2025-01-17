@@ -43,8 +43,8 @@
     "@ark/util": "0.2.2",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "esbuild": "^0.17.15",
-    "find-up": "^6.3.0"
+    "find-up": "^6.3.0",
+    "tsx": "^4.19.1"
   },
   "devDependencies": {
     "tsup": "^6.7.0",
