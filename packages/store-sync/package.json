@@ -103,7 +103,6 @@
     "@testing-library/react": "^16.0.0",
     "@testing-library/react-hooks": "^8.0.1",
     "@types/debug": "^4.1.7",
-    "@types/node": "20.12.12",
     "@types/react": "18.2.22",
     "@types/sql.js": "^1.4.4",
     "@viem/anvil": "^0.0.7",
