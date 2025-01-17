@@ -4,7 +4,7 @@ import { Coins, ExternalLinkIcon, Eye, LoaderIcon, Send } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
-import { Abi, AbiFunction, Address, Hex, decodeEventLog } from "viem";
+import { Abi, AbiFunction, Address, Hex, decodeEventLog, stringify } from "viem";
 import { useAccount, useConfig } from "wagmi";
 import { readContract, waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { z } from "zod";
@@ -80,7 +80,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
           chainId,
         });
 
-        setResult(JSON.stringify(result, null, 2));
+        setResult(stringify(result, null, 2));
       } else {
         toastId = toast.loading("Transaction submitted");
         const txHash = await writeContract(wagmiConfig, {
@@ -195,7 +195,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
             ))}
           </ul>
 
-          <CopyButton value={JSON.stringify(events, null, 2)} className="absolute right-1.5 top-1.5" />
+          <CopyButton value={stringify(events, null, 2)} className="absolute right-1.5 top-1.5" />
         </div>
       )}
       {txUrl && (

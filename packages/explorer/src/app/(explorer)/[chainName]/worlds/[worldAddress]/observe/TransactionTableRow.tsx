@@ -1,5 +1,5 @@
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import { formatEther } from "viem";
+import { formatEther, stringify } from "viem";
 import { Row, flexRender } from "@tanstack/react-table";
 import { CopyButton } from "../../../../../../components/CopyButton";
 import { Separator } from "../../../../../../components/ui/Separator";
@@ -99,9 +99,7 @@ export function TransactionTableRow({ row }: { row: Row<ObservedTransaction> }) 
                                 <div key={argIdx} className="flex">
                                   <span className="flex-shrink-0 text-xs text-white/60">arg {argIdx + 1}:</span>
                                   <span className="ml-2 break-all text-xs">
-                                    {typeof arg === "object" && arg !== null
-                                      ? JSON.stringify(arg, null, 2)
-                                      : String(arg)}
+                                    {typeof arg === "object" && arg !== null ? stringify(arg, null, 2) : String(arg)}
                                   </span>
                                 </div>
                               ))}
@@ -113,10 +111,7 @@ export function TransactionTableRow({ row }: { row: Row<ObservedTransaction> }) 
                           );
                         })}
 
-                        <CopyButton
-                          value={JSON.stringify(data.calls, null, 2)}
-                          className="absolute right-1.5 top-1.5"
-                        />
+                        <CopyButton value={stringify(data.calls, null, 2)} className="absolute right-1.5 top-1.5" />
                       </div>
                     </div>
                   </>
@@ -164,7 +159,7 @@ export function TransactionTableRow({ row }: { row: Row<ObservedTransaction> }) 
                             })}
                           </ul>
 
-                          <CopyButton value={JSON.stringify(logs, null, 2)} className="absolute right-1.5 top-1.5" />
+                          <CopyButton value={stringify(logs, null, 2)} className="absolute right-1.5 top-1.5" />
                         </div>
                       ) : status === "pending" ? (
                         <Skeleton className="h-4 w-full" />
