@@ -181,11 +181,11 @@ export async function deploy({
     .filter((table) => table.label !== table.name)
     .map(({ tableId: resourceId, label }) => ({ resourceId, tag: "label", value: label }));
 
-  const systemTags = systems.flatMap(({ name, systemId: resourceId, label, abi, worldAbi }) => [
+  const systemTags = systems.flatMap(({ name, systemId: resourceId, label, metadata }) => [
     // only register labels if they differ from the resource ID
     ...(label !== name ? [{ resourceId, tag: "label", value: label }] : []),
-    { resourceId, tag: "abi", value: abi.join("\n") },
-    { resourceId, tag: "worldAbi", value: worldAbi.join("\n") },
+    { resourceId, tag: "abi", value: metadata.abi.join("\n") },
+    { resourceId, tag: "worldAbi", value: metadata.worldAbi.join("\n") },
   ]);
 
   const tagTxs = await ensureResourceTags({

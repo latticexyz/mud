@@ -1,29 +1,38 @@
 "use client";
 
-import { CommandIcon, CornerDownLeft } from "lucide-react";
+import { CommandIcon, CornerDownLeft, PauseIcon, PlayIcon } from "lucide-react";
 import { KeyCode, KeyMod, editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Table } from "@latticexyz/config";
 import Editor from "@monaco-editor/react";
+import { Tooltip } from "../../../../../../components/Tooltip";
 import { Button } from "../../../../../../components/ui/Button";
 import { Form, FormField } from "../../../../../../components/ui/Form";
 import { cn } from "../../../../../../utils";
+import { useTableDataQuery } from "../../../../queries/useTableDataQuery";
 import { monacoOptions } from "./consts";
 import { useMonacoSuggestions } from "./useMonacoSuggestions";
 import { useQueryValidator } from "./useQueryValidator";
 
 type Props = {
   table?: Table;
+  isLiveQuery: boolean;
+  setIsLiveQuery: (isLiveQuery: boolean) => void;
 };
 
-export function SQLEditor({ table }: Props) {
+export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
   const validateQuery = useQueryValidator(table);
+  const { data: tableData } = useTableDataQuery({
+    table,
+    query,
+    isLiveQuery,
+  });
   useMonacoSuggestions(table);
 
   const form = useForm({
@@ -31,6 +40,7 @@ export function SQLEditor({ table }: Props) {
       query,
     },
   });
+  const currentQuery = form.watch("query");
 
   const handleSubmit = form.handleSubmit((data) => {
     if (validateQuery(data.query)) {
@@ -96,9 +106,42 @@ export function SQLEditor({ table }: Props) {
               </div>
             )}
           />
+
+          {currentQuery !== query ? (
+            <span className="absolute right-1 top-[-6px] text-5xl text-primary">
+              <span className="text-5xl text-primary">·</span>
+            </span>
+          ) : null}
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-4">
+          {tableData ? (
+            <>
+              <span className="flex items-center gap-1.5 text-xs text-white/60">
+                <Tooltip text="Execution time for the SQL query">
+                  <span className="flex items-center gap-1.5">
+                    <span
+                      className={cn("inline-block h-[6px] w-[6px] rounded-full bg-success", {
+                        "animate-pulse": isLiveQuery,
+                      })}
+                    />
+                    <span>{tableData ? Math.round(tableData.queryDuration) : 0}ms</span>
+                  </span>
+                </Tooltip>
+                ·
+                <span>
+                  {tableData?.rows.length ?? 0} row{tableData?.rows.length !== 1 ? "s" : ""}
+                </span>
+              </span>
+
+              <Tooltip text={isLiveQuery ? "Pause live query" : "Start live query"}>
+                <Button variant="outline" size="icon" onClick={() => setIsLiveQuery(!isLiveQuery)}>
+                  {isLiveQuery ? <PauseIcon className="h-4 w-4" /> : <PlayIcon className="h-4 w-4" />}
+                </Button>
+              </Tooltip>
+            </>
+          ) : null}
+
           <Button className="flex gap-2 pl-4 pr-3" type="submit">
             Run
             <span className="flex items-center gap-0.5 text-white/60">

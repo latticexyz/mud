@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.2.15
+
+### Patch Changes
+
+- 09e9bd5: Moved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.
+- 9d71887: Loosened `publicClient` type for `transactionQueue` action decorator and `writeContract` and `sendTransaction` actions so that they can be used with plain, undecorated Viem clients.
+- 88b9daf: Updated Rhodolite chain config.
+- Updated dependencies [09e9bd5]
+  - @latticexyz/schema-type@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes

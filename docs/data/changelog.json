@@ -1,5 +1,747 @@
 [
   {
+    "version": "2.2.15",
+    "date": "2025-01-17T11:35:44.397Z",
+    "changes": {
+      "patch": [
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nImproved the performance of the explorer's `Interact` tab by fetching the ABI from an indexer instead of from an Ethereum RPC if available.",
+          "type": 0,
+          "commitHash": "b819749268918559589c12451d88ec1f933182d8",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat: add `getRecords` util to fetch records from indexer, update deployer and explorer to use indexer (#3385)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe transactions list in the explorer is now updated every 100ms instead of on every incoming transaction, to improve performance when there are many incoming transactions.",
+          "type": 0,
+          "commitHash": "07b6be82ace9654ce043e616e28b347f3121f415",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat(explorer): buffer transactions (#3365)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/config",
+              "type": "patch"
+            }
+          ],
+          "description": "\nReplaced esbuild with tsx to load MUD config in an effort to resolve issues with loading multiple MUD configs in parallel.",
+          "type": 0,
+          "commitHash": "9580d29aa0a181e3ded9c79de185ff1778c6daf0",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(config): import mud config with tsx (#3290)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            }
+          ],
+          "description": "\nWhen upgrading an existing world, the deployer now attempts to read the deploy block number from the `worlds.json` file. If it is found, the `HelloWorld` and `HelloStore` event are fetched from this block instead of searching for the events starting from the genesis block.",
+          "type": 0,
+          "commitHash": "1e092407da570f8ba52e89e73dda50cdff161a93",
+          "authorName": "Jackie Xu",
+          "authorEmail": "jackie@jackiexu.com",
+          "title": "feat(cli): fetch world deploy block number if available (#3417)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe SQL editor now shows an indicator if the query has changed since it was last run.",
+          "type": 0,
+          "commitHash": "53f7906b37b8f6ae27bee3236f62787ffca35806",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): indicate unsaved query changes (#3446)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nInitial, experimental release of EntryKit.",
+          "type": 0,
+          "commitHash": "971ffedb9cb88982bab1f03f4f3818dbae11c68a",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(entrykit): initial release (#3419)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe columns in the Explore tab table are now sorted correctly according to their types.",
+          "type": 0,
+          "commitHash": "722f4b4c48b9e49509a47e5a23f1ce45dbe9999d",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): type-based sorting (#3340)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUpdated the `watchLogs` util to accept the updated RPC response type.",
+          "type": 0,
+          "commitHash": "1770620af19746578b99a996f380f5117bfdd053",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat(store-sync): update watchLogs rpc response type (#3356)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nSQL live queries in the Explore view table can now be paused and resumed.",
+          "type": 0,
+          "commitHash": "35cb94ae06a24157303ec3311f2639f36d4e2e6f",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): pause/resume live query (#3445)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nIndicated MUD schema key columns in the table view of the Explore tab.",
+          "type": 0,
+          "commitHash": "7fa68f6717ecd3fc2c734ca31c842c1242175cbe",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): key columns indicator (#3447)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe functions in the Interact tab now display the emitted logs with the block explorer URL for the submitted transaction.",
+          "type": 0,
+          "commitHash": "1a2b3c8f585e72b0f8aae42a1c11abef7193059b",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): show event logs for interact function (#3418)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded support for ERC-4337 bundled transactions, monitoring them by either listening to chain blocks or using the `observer` transport wrapper. Each user operation within a bundled transaction is displayed as an individual transaction in the Observe tab.",
+          "type": 0,
+          "commitHash": "059240612a3ba74d3e16dfb3b1b2c7276a6ebe1d",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): bundled transactions support (#3313)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUse `WorldContextConsumerLib._msgSender()` instead of `msg.sender` in system libraries.",
+          "type": 0,
+          "commitHash": "653f378403c7e4f234f87dec20c9dfe523f0def0",
+          "authorName": "V",
+          "authorEmail": "vdrg@lattice.xyz",
+          "title": "fix(world): use WorldContextConsumerLib._msgSender() instead of msg.sender (#3436)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nWhen accessing a new table in Explore tab, the SQL editor now encloses all column names in double quotes in order to prevent invalid queries.",
+          "type": 0,
+          "commitHash": "0facee02cd70b7f8cd09a7faec59972ba95453d1",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): format default sql query (#3363)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            }
+          ],
+          "description": "\nDeployer now retrieves resource tags by fetching logs to work around RPC rate limiting issues.",
+          "type": 0,
+          "commitHash": "3168f1f56abce047a639582b50bf1aa2c7906c90",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "chore: add changeset for cli PR #3350 (#3353)"
+        },
+        {
+          "packages": [
+            {
+              "package": "vite-plugin-mud",
+              "type": "patch"
+            }
+          ],
+          "description": "\nInitial release of Vite plugin for MUD projects.\n\nThis will soon be included by default in MUD templates, but you can add to an existing MUD project with:\n\n```\npnpm add -D vite@^6 vite-plugin-mud\n```\n\nAnd use like:\n\n```ts\n// vite.config.ts\nimport { defineConfig } from \"vite\";\nimport { mud } from \"vite-plugin-mud\";\n\nexport default defineConfig({\n  plugins: [mud({ worldsFile: \"worlds.json\" })],\n});\n```\n\n```json\n// tsconfig.json\n{\n  \"compilerOptions\": {\n    \"types\": [\"vite/client\", \"vite-plugin-mud/env\"]\n  }\n}\n```",
+          "type": 0,
+          "commitHash": "70f224ac8214c54c9c55b170f9c900030967f1b1",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(vite-plugin-mud): add MUD vite plugin (#3449)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe latest ABI changes are now consistently fetched correctly.",
+          "type": 0,
+          "commitHash": "3258a6d66251aa87514e5e63456f989a34bd1b8b",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): fetch latest abi (#3370)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixed world ABI fetching in Rhodolite.",
+          "type": 0,
+          "commitHash": "2be543f7f0936f5dc94c13613da679d8634dfc27",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): switch to fetchBlockLogs (#3352)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nMoved TS utils over to using hardcoded ABIs instead of ones imported from `.abi.json` files to fix some internal type resolution issues.",
+          "type": 0,
+          "commitHash": "2d2aa0867580dd910cc772b5cdd42c802e8652e3",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(world): switch to TS for ABIs in utils (#3429)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded an experimental `@latticexyz/store-sync/react` export with a `SyncProvider` and `useSync` hook. This allows for easier syncing MUD data to React apps.\n\nNote that this is currently only usable with Stash and assumes you are also using Wagmi in your React app.\n\n```tsx\nimport { WagmiProvider } from \"wagmi\";\nimport { QueryClientProvider } from \"@tanstack/react-query\";\nimport { SyncProvider } from \"@latticexyz/store-sync/react\";\nimport { createSyncAdapter } from \"@latticexyz/store-sync/internal\";\n\nexport function App() {\n  return (\n    <WagmiProvider config={wagmiConfig}>\n      <QueryClientProvider client={queryClient}>\n        <SyncProvider\n          chainId={chainId}\n          address={worldAddress}\n          startBlock={startBlock}\n          adapter={createSyncAdapter({ stash })}\n        >\n          {children}\n        </SyncProvider>\n      </QueryClientProvider>\n    </WagmiProvider>\n  );\n}\n```",
+          "type": 0,
+          "commitHash": "5f493cd8368e6571ef196d607dcd6de2815f799e",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(store-sync): add react provider and hook (#3451)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixed a bug in `watchLogs` where logs from the buffer were not applied during the initial sync.",
+          "type": 0,
+          "commitHash": "cd9fd0abd859f1d83baafc93a91e238d81726928",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "fix(store-sync): apply logs from buffer in watchLogs (#3346)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nTransactions in `Observe` tab now display decoded `callFrom` function calls.",
+          "type": 0,
+          "commitHash": "d542357350b85654bc65f3befad22a3509c4ddb6",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): decoded callFrom transactions (#3364)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/block-logs-stream",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/common",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/config",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/dev-tools",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/faucet",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/protocol-parser",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/schema-type",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/stash",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/store-indexer",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/store",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nMoved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.",
+          "type": 0,
+          "commitHash": "09e9bd533704e7c1885872a8a1f9dca9e78bda4b",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "chore: remove catalog usage, move viem to peer deps (#3405)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            }
+          ],
+          "description": "\nDeployer will now throw an error if it detects an already registered table with a different schema than the one you are trying to deploy.",
+          "type": 0,
+          "commitHash": "ee388ed599b051400a6f1fc5d4c5d369e466ad92",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(cli): throw error on schema changes (#3336)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-consumer",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world-module-erc20",
+              "type": "patch"
+            }
+          ],
+          "description": "\nExtracted StoreConsumer base contracts into an independent package.\nAdded a `registerNamespace` boolean to `WithWorld` to provide more control over namespace registration.",
+          "type": 0,
+          "commitHash": "d17a9be933cf4dbf869e26e6f9ee070444048312",
+          "authorName": "V",
+          "authorEmail": "vdrg@protonmail.ch",
+          "title": "feat(store-consumer): extract store consumer contracts (#3345)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nObserver transport now uses the `blockExplorers.worldsExplorer.url` from the chain config if no `explorerUrl` is provided.",
+          "type": 0,
+          "commitHash": "88b9daf1e01bd8675e31c455155759a3ef2af4f8",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(explorer): get observer url from chain config (#3366)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nSQL queries can be executed using the Cmd/Ctrl + Enter shortcut.",
+          "type": 0,
+          "commitHash": "cfdfcc1c8e1d21a6336c608760bb76aa04aebefd",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): run query shortcut (#3443)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nWhen accessing a new table in Explore tab, the SQL editor now encloses column names that are also PostgreSQL keywords in double quotes in order to prevent invalid queries.",
+          "type": 0,
+          "commitHash": "9c1ca41560e2b3b319976794a73807f391e78b1b",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): format default sql query (#3307)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/stash",
+              "type": "patch"
+            }
+          ],
+          "description": "\nConsolidated how state changes are applied and subscribers notified. Stash subscribers now receive an ordered list of state updates rather than an object.",
+          "type": 0,
+          "commitHash": "96f1473887e609cab366a4ba6caab9b62033cfb6",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat(stash): clean up mutations, emit updates as a list (#3376)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixes relative system imports in system libraries and adds support for overloaded system functions.",
+          "type": 0,
+          "commitHash": "ba5191c3d6f74b3c4982afd465cf449d23d70bb7",
+          "authorName": "V",
+          "authorEmail": "vdrg@lattice.xyz",
+          "title": "fix(world): library imports and overloaded system functions (#3395)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            }
+          ],
+          "description": "\nIn addition to a hex `--salt`, deploy commands now accept a string salt for world deployment, which will get converted to a hex.\n\n```\npnpm mud deploy --salt hello\n```",
+          "type": 0,
+          "commitHash": "74090950d81c6713d981806af5c1197e804b56bf",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(cli): allow deploy salt to be a string (#3432)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixed an issue with overloaded system ABI types.",
+          "type": 0,
+          "commitHash": "8fcf9c8f508ec818696f366a41f2b8a2e42c11b1",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(cli): don't overload system abi type (#3455)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded internal `getRecord` and `getStaticDataLocation` helpers.",
+          "type": 0,
+          "commitHash": "1b477d476a666ccffafc6eb266d1732b90bc28f9",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(store): add getRecord and getStaticDataLocation helpers (#3430)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded a `getRecords` util to fetch table records from an indexer or RPC.\n\nMigrated the `getFunctions` and `getWorldAbi` utils from `@latticexyz/world` to `@latticexyz/store-sync/world` to allow `getFunctions` and `getWorldAbi` to use `getRecords` internally without circular dependencies.",
+          "type": 0,
+          "commitHash": "b819749268918559589c12451d88ec1f933182d8",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat: add `getRecords` util to fetch records from indexer, update deployer and explorer to use indexer (#3385)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded an `indexerUrl` option to the `mud deploy` and `mud pull` CLI commands to read table records from an indexer instead of fetching logs from an Ethereum RPC.",
+          "type": 0,
+          "commitHash": "b819749268918559589c12451d88ec1f933182d8",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat: add `getRecords` util to fetch records from indexer, update deployer and explorer to use indexer (#3385)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/stash",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded `useRecord` and `useRecords` hooks for convenience.\n\n```ts\nimport { useRecords } from \"@latticexyz/stash/react\";\n\nconst players = useRecords({ stash, table: Position });\n```\n\n```ts\nimport { useRecord } from \"@latticexyz/stash/react\";\n\nconst player = useRecord({ stash, table: Position, key: { player: \"0x...\" } });\n```",
+          "type": 0,
+          "commitHash": "16242b74d5985720b4efca26e1e22e38bb463788",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(stash): add useRecord and useRecords hooks (#3450)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/abi-ts",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUsing a TS extension (rather than DTS) now correctly includes `as const` in the TS output.",
+          "type": 0,
+          "commitHash": "534039428496bcededc62d2e450d29d7bac42475",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(abi-ts): ts output should use as const (#3348)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\n`getFunctions` now internally uses `fetchLogs` for better handling of block range errors.",
+          "type": 0,
+          "commitHash": "22674ad244f59afd6bd364a3dd44df36992dd35f",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(world): use fetchLogs in getFunctions (#3338)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded support for exporting table data in CSV, JSON, and TXT formats.",
+          "type": 0,
+          "commitHash": "b0b42a9e0cca0e31fb31d1e00b78c3015b6f5663",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): export table data (#3380)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/common",
+              "type": "patch"
+            }
+          ],
+          "description": "\nLoosened `publicClient` type for `transactionQueue` action decorator and `writeContract` and `sendTransaction` actions so that they can be used with plain, undecorated Viem clients.",
+          "type": 0,
+          "commitHash": "9d7188754ad7f6df6b190bf6618b598cb1d895c4",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(common): loosen client type in tx queue (#3408)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nReworked `callFrom` action to use `getAction` internally, rather than a decorated Viem client, and updated types to better match Viem.",
+          "type": 0,
+          "commitHash": "509a3ccbac9b552a086f93b735d48e739153bead",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(world): rework types for callFrom viem action (#3414)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nIn the Explore tab, the view table now displays results generated by SQL query functions.",
+          "type": 0,
+          "commitHash": "c681aa6250eb8c3914a75fd45cdf32abc2d60746",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): show results from query functions (#3448)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nExperimental pending logs watcher now reconnects if it loses connection or times out.",
+          "type": 0,
+          "commitHash": "9ddc874ecbe8671c197619a23bdeac2bee57174e",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "fix(store-sync): reconnect unresponsive watchLogs socket (#3301)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdds an experimental feature to automatically generate Solidity libraries from systems, making it easier to perform calls between systems.",
+          "type": 0,
+          "commitHash": "09536b0614a03478fa0f53ec8beefef80455387d",
+          "authorName": "V",
+          "authorEmail": "3252614+vdrg@users.noreply.github.com",
+          "title": "feat: system libraries (#3374)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAll sync methods using a `publicClient` argument now accept a plain Viem `Client` rather than a decorated `PublicClient`, allowing for more flexibility and better tree-shaking for lighter bundles.",
+          "type": 0,
+          "commitHash": "a6fe15cc524a7a2ed39a1f93d3e4f41a4e251697",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(store-sync): use client instead of decorated public client (#3441)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/common",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUpdated Rhodolite chain config.",
+          "type": 0,
+          "commitHash": "88b9daf1e01bd8675e31c455155759a3ef2af4f8",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(explorer): get observer url from chain config (#3366)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdd a SystemCall.staticcall function that performs a staticcall without executing hooks.",
+          "type": 0,
+          "commitHash": "275c867182df9f1e22a6d4f0901a494c40e29f9a",
+          "authorName": "V",
+          "authorEmail": "3252614+vdrg@users.noreply.github.com",
+          "title": "feat(world): add SystemCall.staticcall (#3381)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/paymaster",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded `GenerousPaymaster`, a simple paymaster that sponsors all user operations for local development purposes.",
+          "type": 0,
+          "commitHash": "a7625b97410346b1187e66803dde5194084312fd",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "feat(paymaster): add simple GenerousPaymaster for local development (#3422)"
+        }
+      ],
+      "minor": [],
+      "major": []
+    }
+  },
+  {
     "version": "2.2.14",
     "date": "2024-10-24T00:00:00.000Z",
     "changes": {

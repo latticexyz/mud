@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store-sync",
-  "version": "2.2.14",
+  "version": "2.2.15",
   "description": "Utilities to sync MUD Store events with a client or cache",
   "repository": {
     "type": "git",
@@ -103,7 +103,6 @@
     "@testing-library/react": "^16.0.0",
     "@testing-library/react-hooks": "^8.0.1",
     "@types/debug": "^4.1.7",
-    "@types/node": "20.12.12",
     "@types/react": "18.2.22",
     "@types/sql.js": "^1.4.4",
     "@viem/anvil": "^0.0.7",
@@ -111,7 +110,6 @@
     "eslint-plugin-react-hooks": "4.6.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "tsup": "^6.7.0",
     "viem": "2.21.19",
     "vitest": "0.34.6",
     "wagmi": "2.12.11"

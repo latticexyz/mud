@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/common",
-  "version": "2.2.14",
+  "version": "2.2.15",
   "description": "Common low level logic shared between packages",
   "repository": {
     "type": "git",
@@ -82,9 +82,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "@types/node": "^18.15.11",
     "@viem/anvil": "^0.0.7",
-    "tsup": "^6.7.0",
     "viem": "2.21.19",
     "vitest": "0.34.6"
   },

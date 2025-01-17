@@ -1,5 +1,34 @@
 # Change Log
 
+## 2.2.15
+
+### Patch Changes
+
+- 653f378: Use `WorldContextConsumerLib._msgSender()` instead of `msg.sender` in system libraries.
+- 2d2aa08: Moved TS utils over to using hardcoded ABIs instead of ones imported from `.abi.json` files to fix some internal type resolution issues.
+- 09e9bd5: Moved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.
+- ba5191c: Fixes relative system imports in system libraries and adds support for overloaded system functions.
+- b819749: Added a `getRecords` util to fetch table records from an indexer or RPC.
+
+  Migrated the `getFunctions` and `getWorldAbi` utils from `@latticexyz/world` to `@latticexyz/store-sync/world` to allow `getFunctions` and `getWorldAbi` to use `getRecords` internally without circular dependencies.
+
+- 22674ad: `getFunctions` now internally uses `fetchLogs` for better handling of block range errors.
+- 509a3cc: Reworked `callFrom` action to use `getAction` internally, rather than a decorated Viem client, and updated types to better match Viem.
+- 09536b0: Adds an experimental feature to automatically generate Solidity libraries from systems, making it easier to perform calls between systems.
+- 275c867: Add a SystemCall.staticcall function that performs a staticcall without executing hooks.
+- Updated dependencies [9580d29]
+- Updated dependencies [09e9bd5]
+- Updated dependencies [1b477d4]
+- Updated dependencies [9d71887]
+- Updated dependencies [09536b0]
+- Updated dependencies [88b9daf]
+  - @latticexyz/config@2.2.15
+  - @latticexyz/block-logs-stream@2.2.15
+  - @latticexyz/common@2.2.15
+  - @latticexyz/protocol-parser@2.2.15
+  - @latticexyz/schema-type@2.2.15
+  - @latticexyz/store@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes

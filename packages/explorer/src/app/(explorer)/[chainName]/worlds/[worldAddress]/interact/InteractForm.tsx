@@ -2,7 +2,7 @@
 
 import { Coins, Eye, Send } from "lucide-react";
 import { useQueryState } from "nuqs";
-import { AbiFunction } from "viem";
+import { AbiFunction, stringify } from "viem";
 import { useDeferredValue, useMemo } from "react";
 import { Input } from "../../../../../../components/ui/Input";
 import { Separator } from "../../../../../../components/ui/Separator";
@@ -92,7 +92,7 @@ export function InteractForm() {
 
           {data?.abi &&
             filteredFunctions.map((abi) => (
-              <FunctionField key={JSON.stringify(abi)} worldAbi={data.abi} functionAbi={abi} />
+              <FunctionField key={stringify(abi)} worldAbi={data.abi} functionAbi={abi} />
             ))}
         </div>
       </div>

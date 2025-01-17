@@ -1,4 +1,5 @@
 import { DownloadIcon } from "lucide-react";
+import { stringify } from "viem";
 import { Button } from "../../../../../../components/ui/Button";
 import {
   DropdownMenu,
@@ -29,7 +30,7 @@ export function ExportButton({ tableData, isLoading }: { tableData?: TData; isLo
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => {
-            const json = JSON.stringify(tableData?.rows, null, 2);
+            const json = stringify(tableData?.rows, null, 2);
             exportTableData(json, "data.json", "application/json");
           }}
         >

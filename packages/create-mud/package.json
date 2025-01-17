@@ -1,6 +1,6 @@
 {
   "name": "create-mud",
-  "version": "2.2.14",
+  "version": "2.2.15",
   "description": "Create a new MUD project",
   "license": "MIT",
   "author": "Lattice <mud@lattice.xyz>",
@@ -27,9 +27,7 @@
     "create-create-app": "git+https://github.com/holic/create-create-app#74376c59b48a04aabbe94d9cacfe9cb1cecccd63"
   },
   "devDependencies": {
-    "@types/node": "^18.15.11",
-    "execa": "^7.0.0",
-    "tsup": "^6.7.0"
+    "execa": "^7.0.0"
   },
   "publishConfig": {
     "access": "public",
