@@ -12,7 +12,6 @@
   "devDependencies": {
     "@mapeditor/tiled-api": "^1.8.2",
     "@types/ejs": "^3.1.1",
-    "@types/node": "^18.0.3",
     "ejs": "^3.1.10",
     "free-tex-packer-cli": "^0.3.0",
     "free-tex-packer-core": "^0.3.4",
