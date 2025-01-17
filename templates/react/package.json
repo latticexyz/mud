@@ -25,7 +25,7 @@
     "typescript": "5.4.2"
   },
   "engines": {
-    "node": "^18",
-    "pnpm": "^8 || ^9"
+    "node": "^20",
+    "pnpm": "^9"
   }
 }
