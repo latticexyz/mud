@@ -108,8 +108,11 @@ export async function resolveConfig({
         prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
         deployedBytecodeSize: contractData.deployedBytecodeSize,
         worldFunctions,
-        abi: manifest.abi,
-        worldAbi: manifest.worldAbi,
+        abi: contractData.abi,
+        metadata: {
+          abi: manifest.abi,
+          worldAbi: manifest.worldAbi,
+        },
       };
     });
 
