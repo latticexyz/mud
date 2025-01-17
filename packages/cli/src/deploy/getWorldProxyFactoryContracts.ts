@@ -1,5 +1,5 @@
-import worldProxyFactoryBuild from "@latticexyz/world/out/WorldProxyFactory.sol/WorldProxyFactory.json" with { type: "json" };
-import worldProxyFactoryAbi from "@latticexyz/world/out/WorldProxyFactory.sol/WorldProxyFactory.abi.json" with { type: "json" };
+import worldProxyFactoryBuild from "@latticexyz/world/out/WorldProxyFactory.sol/WorldProxyFactory.json" assert { type: "json" };
+import worldProxyFactoryAbi from "@latticexyz/world/out/WorldProxyFactory.sol/WorldProxyFactory.abi.json" assert { type: "json" };
 import { Hex, encodeDeployData, size } from "viem";
 import { getWorldContracts } from "./getWorldContracts";
 import { getContractAddress } from "@latticexyz/common/internal";

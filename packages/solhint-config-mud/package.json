@@ -26,6 +26,9 @@
     "clean": "pnpm run clean:js",
     "clean:js": "shx rm -rf dist"
   },
+  "devDependencies": {
+    "tsup": "^6.7.0"
+  },
   "publishConfig": {
     "access": "public"
   }

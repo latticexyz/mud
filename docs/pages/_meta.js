@@ -1,4 +1,4 @@
-import worldPackageJson from "../../packages/world/package.json" with { type: "json" };
+import worldPackageJson from "../../packages/world/package.json" assert { type: "json" };
 
 export default {
   introduction: {

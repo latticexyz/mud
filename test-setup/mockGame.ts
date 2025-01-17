@@ -2,7 +2,7 @@ import { execa } from "execa";
 import { anvilRpcUrl } from "./common";
 import { Hex, isHex } from "viem";
 import config from "../test/mock-game-contracts/mud.config";
-import worldAbi from "../test/mock-game-contracts/out/IWorld.sol/IWorld.abi.json" with { type: "json" };
+import worldAbi from "../test/mock-game-contracts/out/IWorld.sol/IWorld.abi.json";
 
 export { config, worldAbi };
 
