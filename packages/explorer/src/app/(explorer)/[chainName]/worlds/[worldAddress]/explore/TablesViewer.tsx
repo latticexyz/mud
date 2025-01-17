@@ -18,7 +18,9 @@ import { Button } from "../../../../../../components/ui/Button";
 import { Input } from "../../../../../../components/ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
 import { cn } from "../../../../../../utils";
+import { useChain } from "../../../../hooks/useChain";
 import { TData, TDataRow, useTableDataQuery } from "../../../../queries/useTableDataQuery";
+import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { EditableTableCell } from "./EditableTableCell";
 import { ExportButton } from "./ExportButton";
 import { typeSortingFn } from "./utils/typeSortingFn";
@@ -33,6 +35,8 @@ type Props = {
 };
 
 export function TablesViewer({ table, query, isLiveQuery }: Props) {
+  const { id: chainId } = useChain();
+  const indexer = indexerForChainId(chainId);
   const {
     data: tableData,
     isLoading: isTDataLoading,
@@ -110,7 +114,11 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
   });
 
   return (
-    <div className="!-mt-10 space-y-4">
+    <div
+      className={cn("space-y-4", {
+        "!-mt-10": indexer.type === "hosted",
+      })}
+    >
       <div className="flex w-1/2 items-center gap-4">
         <Input
           placeholder="Filter..."
