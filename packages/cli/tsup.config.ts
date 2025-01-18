@@ -1,9 +1,12 @@
 import { defineConfig } from "tsup";
 import { globSync } from "glob";
 import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { MudPackages } from "./src/common";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const mudWorkspace = path.normalize(`${__dirname}/../..`);
 
 const mudPackages: MudPackages = Object.fromEntries(
