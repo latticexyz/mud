@@ -3,7 +3,7 @@ import { verify } from "../verify";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
 import { resolveSystems } from "@latticexyz/world/node";
-import { getOutDirectory, getRpcUrl } from "@latticexyz/common/foundry";
+import { FoundryExecOptions, getOutDirectory, getRpcUrl } from "@latticexyz/common/foundry";
 import { getContractData } from "../utils/getContractData";
 import { Hex, createWalletClient, http } from "viem";
 import chalk from "chalk";
@@ -49,9 +49,14 @@ const commandModule: CommandModule<Options, Options> = {
 
     const config = (await loadConfig(configPath)) as WorldConfig;
 
-    const outDir = await getOutDirectory(profile);
+    const foundryExecOptions: FoundryExecOptions = {
+      profile,
+      cwd: rootDir,
+    };
 
-    const rpc = opts.rpc ?? (await getRpcUrl(profile));
+    const outDir = await getOutDirectory(foundryExecOptions);
+
+    const rpc = opts.rpc ?? (await getRpcUrl(foundryExecOptions));
     console.log(
       chalk.bgBlue(
         chalk.whiteBright(`\n Verifying MUD contracts${profile ? " with profile " + profile : ""} to RPC ${rpc} \n`),

@@ -40,7 +40,7 @@ const commandModule: CommandModule<Options, Options> = {
 
   async handler(opts) {
     const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
-    const rpc = opts.rpc ?? (await getRpcUrl(profile));
+    const rpc = opts.rpc ?? (await getRpcUrl({ profile }));
     const client = createClient({
       transport: http(rpc, {
         batch: opts.rpcBatch

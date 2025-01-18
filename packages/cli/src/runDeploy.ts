@@ -6,7 +6,7 @@ import { createWalletClient, http, Hex, isHex, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
-import { getOutDirectory, getRpcUrl } from "@latticexyz/common/foundry";
+import { FoundryExecOptions, getOutDirectory, getRpcUrl } from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import { MUDError } from "@latticexyz/common/errors";
 import { resolveConfig } from "./deploy/resolveConfig";
@@ -75,9 +75,14 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     console.log(chalk.green("\nResolved config:\n"), JSON.stringify(config, null, 2));
   }
 
-  const outDir = await getOutDirectory(profile);
+  const foundryExecOptions: FoundryExecOptions = {
+    profile,
+    cwd: rootDir,
+  };
 
-  const rpc = opts.rpc ?? (await getRpcUrl(profile));
+  const outDir = await getOutDirectory(foundryExecOptions);
+
+  const rpc = opts.rpc ?? (await getRpcUrl(foundryExecOptions));
   console.log(
     chalk.bgBlue(
       chalk.whiteBright(`\n Deploying MUD contracts${profile ? " with profile " + profile : ""} to RPC ${rpc} \n`),
@@ -92,7 +97,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   const { systems, libraries } = await resolveConfig({
     rootDir,
     config,
-    forgeOutDir: outDir,
+    forgeOutDir: path.join(rootDir, outDir),
   });
 
   const artifacts = await findContractArtifacts({ forgeOutDir: outDir });

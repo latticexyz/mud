@@ -7,7 +7,9 @@ import { findPlaceholders } from "./findPlaceholders";
 
 /**
  * Load the contract's abi and bytecode from the file system
- * @param contractName: Name of the contract to load
+ * @param filename Filename of the contract to load
+ * @param contractName Name of the contract to load
+ * @param forgeOutDirectory Directory where the contract was compiled
  */
 export function getContractData(
   filename: string,

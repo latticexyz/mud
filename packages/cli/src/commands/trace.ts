@@ -58,7 +58,7 @@ const commandModule: CommandModule<Options, Options> = {
     const rootDir = path.dirname(configPath);
 
     const profile = args.profile ?? process.env.FOUNDRY_PROFILE;
-    const rpc = args.rpc ?? (await getRpcUrl(profile));
+    const rpc = args.rpc ?? (await getRpcUrl({ profile, cwd: rootDir }));
 
     const config = (await loadConfig(configPath)) as WorldConfig;
 
