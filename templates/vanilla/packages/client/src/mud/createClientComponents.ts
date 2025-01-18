@@ -11,9 +11,9 @@
 
 import { SetupNetworkResult } from "./setupNetwork";
 
-export type ClientComponents = ReturnType<typeof createClientComponents>;
+export type ClientComponents = SetupNetworkResult["components"];
 
-export function createClientComponents({ components }: SetupNetworkResult) {
+export function createClientComponents({ components }: SetupNetworkResult): ClientComponents {
   return {
     ...components,
     // add your client components or overrides here
