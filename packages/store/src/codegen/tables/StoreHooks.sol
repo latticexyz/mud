@@ -388,7 +388,7 @@ library StoreHooks {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(ResourceId tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -398,7 +398,7 @@ library StoreHooks {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(ResourceId tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);

@@ -192,7 +192,7 @@ library SystemboundDelegations {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(address delegator, address delegatee, ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](3);
@@ -204,7 +204,7 @@ library SystemboundDelegations {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(address delegator, address delegatee, ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](3);

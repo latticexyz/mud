@@ -157,7 +157,7 @@ library ResourceAccess {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(ResourceId resourceId, address caller) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
@@ -168,7 +168,7 @@ library ResourceAccess {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(ResourceId resourceId, address caller) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);

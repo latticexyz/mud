@@ -118,7 +118,7 @@ library FunctionSignatures {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(bytes4 functionSelector) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -128,7 +128,7 @@ library FunctionSignatures {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(bytes4 functionSelector) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);

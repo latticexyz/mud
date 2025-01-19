@@ -157,7 +157,7 @@ library Terrain {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(int32 x, int32 y) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
@@ -168,7 +168,7 @@ library Terrain {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(int32 x, int32 y) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);

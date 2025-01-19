@@ -151,7 +151,7 @@ library OperatorApproval {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(ResourceId _tableId, address owner, address operator) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
@@ -162,7 +162,7 @@ library OperatorApproval {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(ResourceId _tableId, address owner, address operator) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);

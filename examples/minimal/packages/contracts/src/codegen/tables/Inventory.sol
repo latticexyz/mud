@@ -163,7 +163,7 @@ library Inventory {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(address owner, uint32 item, uint32 itemVariant) internal {
     bytes32[] memory _keyTuple = new bytes32[](3);
@@ -175,7 +175,7 @@ library Inventory {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(address owner, uint32 item, uint32 itemVariant) internal {
     bytes32[] memory _keyTuple = new bytes32[](3);

@@ -388,7 +388,7 @@ library SystemHooks {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function deleteRecord(ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -398,7 +398,7 @@ library SystemHooks {
   }
 
   /**
-   * @notice Delete all data for given keys.
+   * @notice Delete all data for given key.
    */
   function _deleteRecord(ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
