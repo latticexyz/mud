@@ -56,6 +56,13 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
   const [txHash, setTxHash] = useState<Hex>();
   const txUrl = blockExplorerTransactionUrl({ hash: txHash, chainId });
 
+  // Tuples are mapped to e.g. "[int16, int16, int16]" to inform the user what to input
+  const inputLabels = functionAbi.inputs.map((input) =>
+    input.type === "tuple" && "components" in input
+      ? `[${input.components.map((c) => c.type).join(", ")}]`
+      : input.type,
+  );
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -87,7 +94,9 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
           abi: worldAbi,
           address: worldAddress as Address,
           functionName: functionAbi.name,
-          args: values.inputs,
+          args: values.inputs.map((value, index) =>
+            functionAbi.inputs[index]?.type === "tuple" ? JSON.parse(value) : value,
+          ),
           ...(values.value && { value: BigInt(values.value) }),
           chainId,
         });
@@ -111,14 +120,13 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
     }
   }
 
-  const inputsLabel = functionAbi?.inputs.map((input) => input.type).join(", ");
   return (
     <div className="pb-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} id={functionAbi.name} className="space-y-4">
           <h3 className="font-semibold">
-            <span className="text-orange-500">{functionAbi?.name}</span>
-            <span className="opacity-50">{inputsLabel && ` (${inputsLabel})`}</span>
+            <span className="text-orange-500">{functionAbi.name}</span>
+            <span className="opacity-50">({inputLabels.join(", ")})</span>
             <span className="ml-2 opacity-50">
               {functionAbi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
               {(functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure") && (
@@ -128,7 +136,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
             </span>
           </h3>
 
-          {functionAbi?.inputs.map((input, index) => (
+          {functionAbi.inputs.map((input, index) => (
             <FormField
               key={index}
               control={form.control}
@@ -137,7 +145,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
                 <FormItem>
                   <FormLabel>{input.name}</FormLabel>
                   <FormControl>
-                    <Input placeholder={input.type} {...field} />
+                    <Input placeholder={inputLabels[index]} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
