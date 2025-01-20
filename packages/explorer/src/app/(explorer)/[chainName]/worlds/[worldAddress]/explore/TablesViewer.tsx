@@ -40,11 +40,12 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
   const {
     data: tableData,
     isLoading: isTDataLoading,
+    isRefetching,
     isFetched,
     isError,
     error,
   } = useTableDataQuery({ table, query, isLiveQuery });
-  const isLoading = isTDataLoading || !isFetched;
+  const isLoading = isTDataLoading || isRefetching || !isFetched;
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
 

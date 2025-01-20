@@ -28,7 +28,7 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   const [isFocused, setIsFocused] = useState(false);
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
   const validateQuery = useQueryValidator(table);
-  const { data: tableData } = useTableDataQuery({
+  const { data: tableData, refetch } = useTableDataQuery({
     table,
     query,
     isLiveQuery,
@@ -45,6 +45,7 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   const handleSubmit = form.handleSubmit((data) => {
     if (validateQuery(data.query)) {
       setQuery(data.query);
+      refetch();
     }
   });
 
