@@ -41,6 +41,7 @@
   "devDependencies": {
     "@ark/attest": "0.12.1",
     "@changesets/cli": "^2.27.7",
+    "@smushytaco/unicorn-magic": "1.0.2",
     "@types/node": "^20.12.12",
     "@typescript-eslint/eslint-plugin": "7.1.1",
     "@typescript-eslint/parser": "7.1.1",
@@ -66,5 +67,10 @@
   "engines": {
     "node": "^22",
     "pnpm": "^9"
+  },
+  "pnpm": {
+    "overrides": {
+      "unicorn-magic": "link:node_modules/@smushytaco/unicorn-magic"
+    }
   }
 }
