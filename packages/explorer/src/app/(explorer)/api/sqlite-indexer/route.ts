@@ -19,8 +19,17 @@ export async function POST(request: Request) {
     const result = [];
     for (const { query } of queries) {
       const data = (await db?.prepare(query).all()) as SqliteTable;
-      if (!data || !data[0]) {
-        throw new Error("No data found");
+
+      if (!data || !Array.isArray(data)) {
+        throw new Error("Invalid query result");
+      }
+
+      if (data.length === 0) {
+        return Response.json({ result: [] });
+      }
+
+      if (!data[0]) {
+        throw new Error("Invalid row data");
       }
 
       const columns = Object.keys(data[0]).map((key) => key.replaceAll("_", "").toLowerCase());
