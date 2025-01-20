@@ -25,7 +25,8 @@ export async function POST(request: Request) {
       }
 
       if (data.length === 0) {
-        return Response.json({ result: [] });
+        result.push([]);
+        continue;
       }
 
       if (!data[0]) {
