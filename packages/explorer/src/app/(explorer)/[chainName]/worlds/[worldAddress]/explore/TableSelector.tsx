@@ -36,6 +36,7 @@ export function TableSelector({ tables }: { tables?: Table[] }) {
   const { id: chainId } = useChain();
   const [selectedTableId, setTableId] = useQueryState("tableId");
   const [open, setOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
   const selectedTableConfig = tables?.find(({ tableId }) => tableId === selectedTableId);
 
   useEffect(() => {
@@ -68,7 +69,12 @@ export function TableSelector({ tables }: { tables?: Table[] }) {
 
         <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
           <Command>
-            <CommandInput placeholder="Search tables..." className="font-mono" />
+            <CommandInput
+              placeholder="Search tables..."
+              className="font-mono"
+              value={searchValue}
+              onValueChange={setSearchValue}
+            />
             <CommandList>
               <CommandEmpty className="py-4 text-center font-mono text-sm">No table found.</CommandEmpty>
               <CommandGroup>
