@@ -3,6 +3,7 @@ import path from "node:path";
 import { execa } from "execa";
 import glob from "fast-glob";
 import { fileURLToPath } from "node:url";
+import { exists } from "../src/exists";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,7 +24,9 @@ const __dirname = path.dirname(__filename);
   const destDir = path.join(packageDir, "templates");
 
   // clean
-  await fs.rm(destDir, { recursive: true });
+  if (await exists(destDir)) {
+    await fs.rm(destDir, { recursive: true });
+  }
 
   const files = (await execa("git", ["ls-files"], { cwd: sourceDir })).stdout.trim().split("\n");
 
