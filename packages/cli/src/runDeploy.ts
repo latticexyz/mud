@@ -1,5 +1,6 @@
 import path from "node:path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import packageJson from "../package.json";
 import { InferredOptionTypes, Options } from "yargs";
 import { deploy } from "./deploy/deploy";
 import { createWalletClient, http, Hex, isHex, stringToHex } from "viem";
@@ -70,6 +71,8 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   const configPath = await resolveConfigPath(opts.configPath);
   const config = (await loadConfig(configPath)) as WorldConfig;
   const rootDir = path.dirname(configPath);
+
+  console.log(chalk.green(`\nUsing ${packageJson.name}@${packageJson.version}`));
 
   if (opts.printConfig) {
     console.log(chalk.green("\nResolved config:\n"), JSON.stringify(config, null, 2));
