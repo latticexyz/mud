@@ -1,3 +1,4 @@
+scrollback: 10000
 procs:
   client:
     cwd: packages/client
@@ -5,9 +6,16 @@ procs:
   contracts:
     cwd: packages/contracts
     shell: pnpm mud dev-contracts --rpc http://127.0.0.1:8545
+  deploy-prereqs:
+    cwd: packages/contracts
+    shell: pnpm deploy-local-prereqs
+    env:
+      DEBUG: "mud:*"
+      # Anvil default account (0x70997970C51812dc3A010C7d01b50e0d17dc79C8)
+      PRIVATE_KEY: "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"
   anvil:
     cwd: packages/contracts
-    shell: anvil --base-fee 0 --block-time 2
+    shell: anvil --block-time 2
   explorer:
     cwd: packages/contracts
     shell: pnpm explorer
