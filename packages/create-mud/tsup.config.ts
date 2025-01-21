@@ -1,7 +1,9 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig((opts) => ({
-  entry: ["src/cli.ts"],
+  entry: ["src/bin/cli.ts"],
+  target: "esnext",
+  format: ["esm"],
   minify: true,
   sourcemap: true,
   // don't generate DTS during watch mode because it's slow
@@ -10,5 +12,5 @@ export default defineConfig((opts) => ({
   // don't clean during watch mode to avoid removing
   // previously-built DTS files, which other build tasks
   // depend on
-  clean: !opts.watch,
+  clean: false,
 }));
