@@ -12,6 +12,7 @@ const __dirname = path.dirname(__filename);
   const packageDir = path.resolve(__dirname, "..");
   const rootDir = path.resolve(packageDir, "../..");
 
+  // TODO: could swap this with `pnpm m ls --json --depth=-1`
   const mudPackageNames = await (async () => {
     const files = await glob("packages/*/package.json", { cwd: rootDir });
     const packages = await Promise.all(
@@ -36,16 +37,17 @@ const __dirname = path.dirname(__filename);
 
     await fs.mkdir(path.dirname(destPath), { recursive: true });
 
-    // Replace all MUD package links with mustache placeholder used by create-create-app
-    // that will be replaced with the latest MUD version number when the template is used.
     if (/package\.json$/.test(destPath)) {
-      const source = await fs.readFile(sourcePath, "utf-8");
-      await fs.writeFile(
-        destPath,
-        source.replace(/"([^"]+)":\s*"(link|file):[^"]+"/g, (match, packageName) =>
-          mudPackageNames.includes(packageName) ? `"${packageName}": "{{mud-version}}"` : match,
-        ),
+      let source = await fs.readFile(sourcePath, "utf-8");
+      // Replace all MUD package links with mustache placeholder used by create-create-app
+      // that will be replaced with the latest MUD version number when the template is used.
+      source = source.replace(/"([^"]+)":\s*"(link|file):[^"]+"/g, (match, packageName) =>
+        mudPackageNames.includes(packageName) ? `"${packageName}": "{{mud-version}}"` : match,
       );
+      const json = JSON.parse(source);
+      // Strip out pnpm overrides
+      delete json.pnpm;
+      await fs.writeFile(destPath, JSON.stringify(json, null, 2) + "\n");
     }
     // Replace template workspace root `tsconfig.json` files (which have paths relative to monorepo)
     // with one that inherits our base tsconfig.
