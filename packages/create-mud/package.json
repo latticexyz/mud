@@ -21,11 +21,11 @@
     "prepublishOnly": "npm run clean && npm run build",
     "test": "pnpm run copy-templates && pnpm vitest --run && pnpm run test:vanilla && pnpm run test:react && pnpm run test:react-ecs && pnpm run test:phaser && pnpm run test:threejs",
     "test:ci": "pnpm run test",
-    "test:phaser": "bin/cli.js --name test-project --template phaser && shx rm -rf test-project",
-    "test:react": "bin/cli.js --name test-project --template react && shx rm -rf test-project",
-    "test:react-ecs": "bin/cli.js --name test-project --template react-ecs && shx rm -rf test-project",
-    "test:threejs": "bin/cli.js --name test-project --template threejs && shx rm -rf test-project",
-    "test:vanilla": "bin/cli.js --name test-project --template vanilla && shx rm -rf test-project"
+    "test:phaser": "bin/cli.js --name test-project --template phaser && pnpm --dir test-project install && shx rm -rf test-project",
+    "test:react": "bin/cli.js --name test-project --template react && pnpm --dir test-project install && shx rm -rf test-project",
+    "test:react-ecs": "bin/cli.js --name test-project --template react-ecs && pnpm --dir test-project install && shx rm -rf test-project",
+    "test:threejs": "bin/cli.js --name test-project --template threejs && pnpm --dir test-project install && shx rm -rf test-project",
+    "test:vanilla": "bin/cli.js --name test-project --template vanilla && pnpm --dir test-project install && shx rm -rf test-project"
   },
   "dependencies": {
     "fast-glob": "^3.3.3",

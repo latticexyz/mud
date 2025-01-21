@@ -32,5 +32,6 @@ jobs:
 
       - name: Test
         run: |
-          pnpm create mud@${{ inputs.tag-or-version }} project --template ${{ matrix.template }}
+          pnpm create mud@${{ inputs.tag-or-version }} --name project --template ${{ matrix.template }}
+          pnpm --dir project install
           pnpm --dir project run test

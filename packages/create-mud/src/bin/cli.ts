@@ -55,7 +55,15 @@ async function run() {
         }
       }
 
-      console.log(`\nDone! Play in the MUD with \`cd ${args.name}\` and \`pnpm run dev\`\n`);
+      console.log(`
+New project created! Run it with:
+
+  cd ${args.name}
+  pnpm install
+  pnpm dev
+
+Have fun! For more info, check the docs at https://mud.dev/
+`);
     });
 }
 
