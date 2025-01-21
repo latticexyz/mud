@@ -6,7 +6,7 @@ describe("templates", () => {
   it("matches what is in the file system", async () => {
     const availableTemplates = await glob("*", {
       maxDepth: 1,
-      cwd: `${__dirname}/../dist/templates`,
+      cwd: `${__dirname}/../templates`,
     });
     expect(templates).toEqual(expect.arrayContaining(availableTemplates));
     expect(availableTemplates).toEqual(expect.arrayContaining(templates));
