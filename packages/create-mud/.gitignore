@@ -99,6 +99,7 @@ public/
 
 # End of https://www.gitignore.io/api/node
 
+templates
 
 # Created by `pnpm test`
 test-project

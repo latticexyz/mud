@@ -4,29 +4,35 @@
   "description": "Create a new MUD project",
   "license": "MIT",
   "author": "Lattice <mud@lattice.xyz>",
-  "bin": "dist/cli.js",
+  "type": "module",
+  "bin": "bin/cli.js",
   "files": [
-    "dist"
+    "bin",
+    "dist",
+    "templates"
   ],
   "scripts": {
     "build": "pnpm run build:js",
-    "build:js": "tsup && tsx ./scripts/copy-templates.ts",
+    "build:js": "tsup && pnpm run copy-templates",
     "clean": "pnpm run clean:js",
     "clean:js": "shx rm -rf dist",
+    "copy-templates": "tsx ./scripts/copy-templates.ts",
     "dev": "tsup --watch",
     "prepublishOnly": "npm run clean && npm run build",
-    "test": "pnpm run test:vanilla && pnpm run test:react && pnpm run test:react-ecs && pnpm run test:phaser && pnpm run test:threejs",
+    "test": "pnpm run copy-templates && pnpm vitest --run && pnpm run test:vanilla && pnpm run test:react && pnpm run test:react-ecs && pnpm run test:phaser && pnpm run test:threejs",
     "test:ci": "pnpm run test",
-    "test:phaser": "dist/cli.js test-project --template phaser && shx rm -rf test-project",
-    "test:react": "dist/cli.js test-project --template react && shx rm -rf test-project",
-    "test:react-ecs": "dist/cli.js test-project --template react-ecs && shx rm -rf test-project",
-    "test:threejs": "dist/cli.js test-project --template threejs && shx rm -rf test-project",
-    "test:vanilla": "dist/cli.js test-project --template vanilla && shx rm -rf test-project"
+    "test:phaser": "bin/cli.js --name test-project --template phaser && pnpm --dir test-project install && shx rm -rf test-project",
+    "test:react": "bin/cli.js --name test-project --template react && pnpm --dir test-project install && shx rm -rf test-project",
+    "test:react-ecs": "bin/cli.js --name test-project --template react-ecs && pnpm --dir test-project install && shx rm -rf test-project",
+    "test:threejs": "bin/cli.js --name test-project --template threejs && pnpm --dir test-project install && shx rm -rf test-project",
+    "test:vanilla": "bin/cli.js --name test-project --template vanilla && pnpm --dir test-project install && shx rm -rf test-project"
   },
   "dependencies": {
-    "create-create-app": "git+https://github.com/holic/create-create-app#74376c59b48a04aabbe94d9cacfe9cb1cecccd63"
+    "fast-glob": "^3.3.3",
+    "yargs-interactive": "^3.0.1"
   },
   "devDependencies": {
+    "@types/yargs-interactive": "^2.1.6",
     "execa": "^7.0.0"
   },
   "publishConfig": {
