@@ -33,9 +33,9 @@ async function run() {
     .then(async (args) => {
       if (!args.name) throw new Error("No project name provided.");
 
-      const targetDir = path.join(process.cwd(), args.name);
-      if (await exists(targetDir)) {
-        throw new Error(`Target directory "${targetDir}" already exists.`);
+      const destDir = path.join(process.cwd(), args.name);
+      if (await exists(destDir)) {
+        throw new Error(`Target directory "${destDir}" already exists.`);
       }
 
       const sourceDir = path.join(__dirname, "..", "templates", args.template);
@@ -43,15 +43,15 @@ async function run() {
 
       for (const filename of files) {
         const sourceFile = path.join(sourceDir, filename);
-        const targetFile = path.join(targetDir, filename);
+        const destFile = path.join(destDir, filename);
 
-        await fs.mkdir(path.dirname(targetFile), { recursive: true });
+        await fs.mkdir(path.dirname(destFile), { recursive: true });
 
         if (/package\.json$/.test(sourceFile)) {
           const source = await fs.readFile(sourceFile, "utf-8");
-          await fs.writeFile(targetFile, source.replaceAll(/{{mud-version}}/g, args.mudVersion), "utf-8");
+          await fs.writeFile(destFile, source.replaceAll(/{{mud-version}}/g, args.mudVersion), "utf-8");
         } else {
-          await fs.copyFile(sourceFile, targetFile);
+          await fs.copyFile(sourceFile, destFile);
         }
       }
 

@@ -19,11 +19,17 @@ const __dirname = path.dirname(__filename);
     return packages.filter((p) => !p.private).map((p) => p.name);
   })();
 
-  const files = (await execa("git", ["ls-files", "templates"], { cwd: rootDir })).stdout.trim().split("\n");
+  const sourceDir = path.join(rootDir, "templates");
+  const destDir = path.join(packageDir, "templates");
+
+  // clean
+  await fs.rm(destDir, { recursive: true });
+
+  const files = (await execa("git", ["ls-files"], { cwd: sourceDir })).stdout.trim().split("\n");
 
   for (const file of files) {
-    const sourcePath = path.resolve(rootDir, file);
-    const destPath = path.resolve(packageDir, file);
+    const sourcePath = path.resolve(sourceDir, file);
+    const destPath = path.resolve(destDir, file);
 
     await fs.mkdir(path.dirname(destPath), { recursive: true });
 

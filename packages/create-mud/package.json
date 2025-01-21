@@ -16,7 +16,7 @@
     "build:js": "tsup && pnpm run copy-templates",
     "clean": "pnpm run clean:js",
     "clean:js": "shx rm -rf dist",
-    "copy-templates": "shx rm -rf templates && tsx ./scripts/copy-templates.ts",
+    "copy-templates": "tsx ./scripts/copy-templates.ts",
     "dev": "tsup --watch",
     "prepublishOnly": "npm run clean && npm run build",
     "test": "pnpm run copy-templates && pnpm vitest && pnpm run test:vanilla && pnpm run test:react && pnpm run test:react-ecs && pnpm run test:phaser && pnpm run test:threejs",
