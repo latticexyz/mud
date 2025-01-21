@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "types": ["vite/client", "vite-plugin-mud/env"],
+    "types": ["vite/client"],
     "target": "ESNext",
     "lib": ["ESNext", "DOM"],
     "jsx": "react-jsx",
