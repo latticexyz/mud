@@ -30,7 +30,7 @@ You can see MUD's features, both those available and those still in development,
 ## Quickstart
 
 ```
-pnpm create mud my-project
+pnpm create mud@latest
 ```
 
 Then follow the directions onscreen.
