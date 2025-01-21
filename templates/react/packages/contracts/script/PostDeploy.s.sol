@@ -6,7 +6,6 @@ import { console } from "forge-std/console.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { Tasks, TasksData } from "../src/codegen/index.sol";
 
 contract PostDeploy is Script {
   function run(address worldAddress) external {
@@ -19,14 +18,7 @@ contract PostDeploy is Script {
     // Start broadcasting transactions from the deployer account
     vm.startBroadcast(deployerPrivateKey);
 
-    // We can set table records directly
-    Tasks.set("1", TasksData({ description: "Walk the dog", createdAt: block.timestamp, completedAt: 0 }));
-
-    // Or we can call our own systems
-    IWorld(worldAddress).app__addTask("Take out the trash");
-
-    bytes32 key = IWorld(worldAddress).app__addTask("Do the dishes");
-    IWorld(worldAddress).app__completeTask(key);
+    // TODO
 
     vm.stopBroadcast();
   }
