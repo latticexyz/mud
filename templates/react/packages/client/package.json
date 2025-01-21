@@ -6,39 +6,31 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite",
+    "dev": "wait-port localhost:8545 && vite",
     "preview": "vite preview",
     "test": "tsc --noEmit"
   },
   "dependencies": {
     "@latticexyz/common": "link:../../../../packages/common",
-    "@latticexyz/entrykit": "link:../../../../packages/entrykit",
-    "@latticexyz/explorer": "link:../../../../packages/explorer",
+    "@latticexyz/dev-tools": "link:../../../../packages/dev-tools",
     "@latticexyz/react": "link:../../../../packages/react",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
-    "@latticexyz/stash": "link:../../../../packages/stash",
     "@latticexyz/store-sync": "link:../../../../packages/store-sync",
     "@latticexyz/utils": "link:../../../../packages/utils",
     "@latticexyz/world": "link:../../../../packages/world",
-    "@tanstack/react-query": "^5.63.0",
     "contracts": "workspace:*",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-error-boundary": "5.0.0",
-    "tailwind-merge": "^2.6.0",
-    "viem": "2.21.19",
-    "wagmi": "2.12.11"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rxjs": "7.5.5",
+    "viem": "2.21.19"
   },
   "devDependencies": {
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
-    "@vitejs/plugin-react": "^4.3.4",
-    "autoprefixer": "^10.4.20",
+    "@vitejs/plugin-react": "^3.1.0",
     "eslint-plugin-react": "7.31.11",
     "eslint-plugin-react-hooks": "4.6.0",
-    "postcss": "^8.4.49",
-    "tailwindcss": "^3.4.17",
-    "vite": "^6.0.7",
-    "vite-plugin-mud": "link:../../../../packages/vite-plugin-mud"
+    "vite": "^4.2.1",
+    "wait-port": "^1.0.4"
   }
 }
