@@ -12,5 +12,5 @@ export default defineConfig((opts) => ({
   // don't clean during watch mode to avoid removing
   // previously-built DTS files, which other build tasks
   // depend on
-  clean: false,
+  clean: !opts.watch,
 }));
