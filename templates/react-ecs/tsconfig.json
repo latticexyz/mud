@@ -1,0 +1,6 @@
+// For local development, each template workspace extends the monorepo's `tsconfig.json`, which includes `paths` to resolve TS source.
+// To strip out the `paths`, we replace the template workspace root `tsconfig.json` with a new base tsconfig that extends only
+// @latticexyz/common/tsconfig.base.json
+{
+  "extends": "../../tsconfig.json"
+}
