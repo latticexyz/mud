@@ -87,8 +87,7 @@ async function appendChangelogJSON() {
   // Read existing JSON file if it exists
   let existingData: ChangelogEntry[] = [];
   try {
-    const existingContent = readFileSync(CHANGELOG_JSON_PATH, "utf8");
-    existingData = JSON.parse(existingContent);
+    existingData = JSON.parse(readFileSync(CHANGELOG_JSON_PATH, "utf8"));
   } catch (error) {
     existingData = [];
   }
