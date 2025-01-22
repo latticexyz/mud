@@ -2,14 +2,15 @@ import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
   namespace: "app",
+  userTypes: {
+    Entity: { type: "bytes32", filePath: "./src/Entity.sol" },
+  },
   enums: {
     Direction: ["North", "East", "South", "West"],
   },
   tables: {
-    Position: {
-      schema: { player: "address", x: "int32", y: "int32" },
-      key: ["player"],
-    },
+    Owner: { id: "Entity", owner: "address" },
+    Position: { id: "Entity", x: "int32", y: "int32" },
   },
   modules: [
     {

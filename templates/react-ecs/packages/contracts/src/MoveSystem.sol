@@ -4,12 +4,16 @@ pragma solidity >=0.8.24;
 import { System } from "@latticexyz/world/src/System.sol";
 
 import { Direction } from "./codegen/common.sol";
+import { Owner } from "./codegen/tables/Owner.sol";
 import { Position, PositionData } from "./codegen/tables/Position.sol";
+import { Entity } from "./Entity.sol";
 
 contract MoveSystem is System {
-  function move(Direction direction) public {
-    address player = _msgSender();
-    PositionData memory position = Position.get(player);
+  function move(Entity entity, Direction direction) public {
+    address owner = Owner.get(entity);
+    require(owner == _msgSender(), "You cannot move this entity.");
+
+    PositionData memory position = Position.get(entity);
 
     if (direction == Direction.North) {
       position.y += 1;
@@ -21,6 +25,6 @@ contract MoveSystem is System {
       position.x -= 1;
     }
 
-    Position.set(player, position);
+    Position.set(entity, position);
   }
 }
