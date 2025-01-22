@@ -19,12 +19,7 @@ export function App() {
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <SyncProvider
-          chainId={chainId}
-          address={worldAddress}
-          startBlock={startBlock}
-          adapter={syncAdapter}
-        >
+        <SyncProvider chainId={chainId} address={worldAddress} startBlock={startBlock} adapter={syncAdapter}>
           {children}
         </SyncProvider>
       </QueryClientProvider>
