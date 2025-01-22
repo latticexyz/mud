@@ -55,33 +55,35 @@ type GitMetadata = {
   title: string;
 };
 
+await execa("git", ["checkout", "main", "--", CHANGELOG_PATH]);
+const changes = await getChanges(INCLUDE_CHANGESETS);
+const version = await getVersion();
+const date = new Date();
+
 await appendChangelog();
 await appendChangelogJSON();
 
 //----------- UTILS
 
 async function appendChangelog() {
-  // Reset current changelog to version on main
-  await execa("git", ["checkout", "main", "--", CHANGELOG_PATH]);
-
   // Load the current changelog
   const currentChangelog = readFileSync(CHANGELOG_PATH).toString();
 
   // Append the new changelog at the up
-  const newChangelog = await renderChangelog();
+  const newChangelog = `## Version ${version}
+Release date: ${date.toDateString()}
+${await renderChangelogItems("Major changes", changes.major)}
+${await renderChangelogItems("Minor changes", changes.minor)}
+${await renderChangelogItems("Patch changes", changes.patch)}
+---
+
+`;
 
   writeFileSync(CHANGELOG_PATH, `${newChangelog}\n${currentChangelog}`);
   writeFileSync(CHANGELOG_DOCS_PATH, `${newChangelog}\n${currentChangelog}`);
 }
 
 async function appendChangelogJSON() {
-  // Reset current changelog to version on main
-  await execa("git", ["checkout", "main", "--", CHANGELOG_PATH]);
-
-  const changes = await getChanges(INCLUDE_CHANGESETS);
-  const version = await getVersion();
-  const date = new Date();
-
   // Read existing JSON file if it exists
   let existingData: ChangelogEntry[] = [];
   try {
@@ -99,21 +101,6 @@ async function appendChangelogJSON() {
   }
 
   writeFileSync(CHANGELOG_JSON_PATH, JSON.stringify(existingData, null, 2));
-}
-
-async function renderChangelog() {
-  const changes = await getChanges(INCLUDE_CHANGESETS);
-  const version = await getVersion();
-  const date = new Date();
-
-  return `## Version ${version}
-Release date: ${date.toDateString()}
-${await renderChangelogItems("Major changes", changes.major)}
-${await renderChangelogItems("Minor changes", changes.minor)}
-${await renderChangelogItems("Patch changes", changes.patch)}
----
-
-`;
 }
 
 async function renderChangelogItems(headline: string, changelogItems: (ChangelogItem & GitMetadata)[]) {
