@@ -1,6 +1,8 @@
 import { Client } from "pg";
 import { Hex } from "viem";
 
+export const dynamic = "force-dynamic";
+
 const postgresConnectionUrl = process.env.DATABASE_URL;
 
 export async function GET(req: Request) {
@@ -9,7 +11,6 @@ export async function GET(req: Request) {
   const worldAddress = searchParams.get("worldAddress") as Hex;
   const offset = Number(searchParams.get("offset")) || 0;
   const limit = Number(searchParams.get("limit")) || 10;
-  const columns = searchParams.get("columns") || "*";
 
   if (!worldAddress) {
     return Response.json({ error: "Missing worldAddress" }, { status: 400 });
@@ -17,15 +18,12 @@ export async function GET(req: Request) {
 
   try {
     await client.connect();
-
-    const transactions = await client.query(
-      `SELECT ${columns} FROM transactions WHERE tx_to = decode($1, 'hex') ORDER BY block_num DESC OFFSET $2 LIMIT $3`,
-      [worldAddress, offset, limit],
+    const blocks = await client.query(
+      `SELECT DISTINCT encode(block_hash, 'hex') as block_hash, block_num, block_time FROM transactions WHERE tx_to = decode($1, 'hex') ORDER BY block_num DESC OFFSET $2 LIMIT $3`,
+      [worldAddress.replace("0x", ""), offset, limit],
     );
 
-    return Response.json({
-      transactions: transactions.rows,
-    });
+    return Response.json({ blocks: blocks.rows });
   } catch (error) {
     console.error("Database error:", error);
     return Response.json({ error: "Failed to fetch transactions" }, { status: 500 });

@@ -3,6 +3,7 @@ import {
   Address,
   BaseError,
   Hash,
+  Hex,
   Transaction,
   TransactionReceipt,
   decodeFunctionData,
@@ -17,7 +18,9 @@ import { useStore } from "zustand";
 import { useCallback, useEffect } from "react";
 import { store as observerStore } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
+import { useBlocksQuery } from "../../../../queries/useBlocksQuery";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
+import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { store as worldStore } from "../store";
 import { userOperationEventAbi } from "./abis/userOperationEventAbi";
 import { getDecodedUserOperationCalls } from "./utils/getDecodedUserOperationCalls";
@@ -25,9 +28,11 @@ import { getDecodedUserOperationCalls } from "./utils/getDecodedUserOperationCal
 export function TransactionsWatcher() {
   const { id: chainId } = useChain();
   const { worldAddress } = useParams<{ worldAddress: Address }>();
+  const indexer = indexerForChainId(chainId);
   const wagmiConfig = useConfig();
   const { data: worldAbiData } = useWorldAbiQuery();
   const abi = worldAbiData?.abi;
+  const { data: blocks } = useBlocksQuery();
   const { transactions, setTransaction, updateTransaction } = useStore(worldStore);
   const observerWrites = useStore(observerStore, (state) => state.writes);
 
@@ -217,6 +222,23 @@ export function TransactionsWatcher() {
     }
   }, [handleTransaction, observerWrites, transactions, worldAddress]);
 
+  useEffect(() => {
+    const handleBlock = async (blockHash: Hex, blockTime: bigint) => {
+      const block = await getBlock(wagmiConfig, { chainId, blockHash });
+      const blockTxs = block.transactions;
+      for (const hash of blockTxs) {
+        if (transactions.find((transaction) => transaction.hash === hash)) continue;
+        handleTransaction({ hash, timestamp: blockTime });
+      }
+    };
+
+    if (blocks) {
+      for (const { block_hash, block_time } of blocks) {
+        handleBlock(`0x${block_hash}`, BigInt(block_time));
+      }
+    }
+  }, [blocks, chainId, handleTransaction, transactions, wagmiConfig]);
+
   useWatchBlocks({
     chainId,
     async onBlock(block) {
@@ -229,6 +251,7 @@ export function TransactionsWatcher() {
         handleTransaction({ hash, timestamp: block.timestamp });
       }
     },
+    enabled: indexer.type === "sqlite",
   });
 
   return null;
