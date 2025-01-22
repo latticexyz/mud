@@ -63,7 +63,6 @@ export function App() {
             </div>
           )}
         >
-          <></>
           <GameMap players={players} onMove={onMove} onSpawn={onSpawn} />
         </Synced>
       </div>
