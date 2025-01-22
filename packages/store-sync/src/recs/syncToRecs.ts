@@ -1,13 +1,11 @@
 import { Tables } from "@latticexyz/config";
 import { Store as StoreConfig } from "@latticexyz/store";
 import { Component as RecsComponent, World as RecsWorld, getComponentValue, setComponent } from "@latticexyz/recs";
-import { SyncOptions, SyncResult, mudTables } from "../common";
-import { CreateStorageAdapterResult, createStorageAdapter } from "./createStorageAdapter";
+import { SyncOptions, SyncResult } from "../common";
+import { createStorageAdapter } from "./createStorageAdapter";
 import { createStoreSync } from "../createStoreSync";
 import { singletonEntity } from "./singletonEntity";
 import { SyncStep } from "../SyncStep";
-import { configToTables } from "../configToTables";
-import { merge } from "@ark/util";
 import { registerComponents } from "./registerComponents";
 
 export type SyncToRecsOptions<
@@ -21,11 +19,11 @@ export type SyncToRecsOptions<
 };
 
 export type SyncToRecsResult<config extends StoreConfig, extraTables extends Tables> = SyncResult & {
-  components: CreateStorageAdapterResult<merge<merge<configToTables<config>, extraTables>, mudTables>>["components"];
+  components: registerComponents<config, extraTables>;
   stopSync: () => void;
 };
 
-export async function syncToRecs<config extends StoreConfig, extraTables extends Tables = {}>({
+export async function syncToRecs<const config extends StoreConfig, const extraTables extends Tables = {}>({
   world,
   config,
   tables: extraTables = {} as extraTables,
