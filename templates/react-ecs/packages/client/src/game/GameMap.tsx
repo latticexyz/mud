@@ -3,19 +3,21 @@ import { useKeyboardMovement } from "./useKeyboardMovement";
 import { Address, Hex, hexToBigInt, keccak256 } from "viem";
 import { ArrowDownIcon } from "../ui/icons/ArrowDownIcon";
 import { twMerge } from "tailwind-merge";
-import { Direction } from "../common";
+import { Direction, Entity } from "../common";
 import mudConfig from "contracts/mud.config";
 import { AsyncButton } from "../ui/AsyncButton";
 import { useAccountModal } from "@latticexyz/entrykit/internal";
+import { useMemo } from "react";
 
 export type Props = {
-  readonly players?: readonly {
-    readonly player: Address;
+  readonly players?: {
+    readonly entity: Entity;
+    readonly owner: Address;
     readonly x: number;
     readonly y: number;
   }[];
-
-  readonly onMove?: (direction: Direction) => Promise<void>;
+  readonly onMove?: (entity: Entity, direction: Direction) => Promise<void>;
+  readonly onSpawn?: () => Promise<void>;
 };
 
 const size = 40;
@@ -32,15 +34,23 @@ const rotateClassName = {
   West: "-rotate-90",
 } as const satisfies Record<Direction, `${"" | "-"}rotate-${number}`>;
 
-export function GameMap({ players = [], onMove }: Props) {
+export function GameMap({ players = [], onMove, onSpawn }: Props) {
   const { openAccountModal } = useAccountModal();
   const { address: userAddress } = useAccount();
-  const currentPlayer = players.find((player) => player.player.toLowerCase() === userAddress?.toLowerCase());
-  useKeyboardMovement(onMove);
+
+  const currentPlayer = players.find((player) => player.owner.toLowerCase() === userAddress?.toLowerCase());
+
+  useKeyboardMovement(
+    useMemo(
+      () => (onMove && currentPlayer ? (direction: Direction) => onMove(currentPlayer.entity, direction) : undefined),
+      [currentPlayer, onMove],
+    ),
+  );
+
   return (
     <div className="aspect-square w-full max-w-[40rem]">
       <div className="relative w-full h-full border-8 border-black/10">
-        {onMove
+        {currentPlayer && onMove
           ? mudConfig.enums.Direction.map((direction) => (
               <button
                 key={direction}
@@ -51,7 +61,7 @@ export function GameMap({ players = [], onMove }: Props) {
                   "transition bg-gradient-to-t from-transparent via-transparent to-blue-50 text-blue-400 opacity-0 hover:opacity-40 active:opacity-100",
                 )}
                 style={{ clipPath: "polygon(0% 0%, 100% 0%, 50% 50%)" }}
-                onClick={() => onMove(direction)}
+                onClick={() => onMove(currentPlayer.entity, direction)}
               >
                 <ArrowDownIcon className="rotate-180 text-4xl self-start justify-self-center" />
               </button>
@@ -60,10 +70,10 @@ export function GameMap({ players = [], onMove }: Props) {
 
         {players.map((player) => (
           <div
-            key={player.player}
+            key={player.entity}
             className="absolute bg-current"
             style={{
-              color: `hwb(${getColorAngle(player.player)} 40% 20%)`,
+              color: `hwb(${getColorAngle(player.owner)} 40% 20%)`,
               width: `${scale}%`,
               height: `${scale}%`,
               left: `${((((player.x + size / 2) % size) + size) % size) * scale}%`,
@@ -76,11 +86,11 @@ export function GameMap({ players = [], onMove }: Props) {
         ))}
 
         {!currentPlayer ? (
-          onMove ? (
+          onSpawn ? (
             <div className="absolute inset-0 grid place-items-center">
               <AsyncButton
                 className="group outline-0 p-4 border-4 border-green-400 transition ring-green-300 hover:ring-4 active:scale-95 rounded-lg text-lg font-medium aria-busy:pointer-events-none aria-busy:animate-pulse"
-                onClick={() => onMove("North")}
+                onClick={() => onSpawn()}
               >
                 Spawn<span className="hidden group-aria-busy:inline">ing…</span>
               </AsyncButton>

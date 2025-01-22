@@ -19,6 +19,19 @@
   },
   {
     "type": "function",
+    "name": "app__spawn",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "entity",
+        "type": "bytes32",
+        "internalType": "Entity"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "batchCall",
     "inputs": [
       {

@@ -8,6 +8,7 @@ import { singletonEntity } from "./singletonEntity";
 import { SyncStep } from "../SyncStep";
 import { configToTables } from "../configToTables";
 import { merge } from "@ark/util";
+import { registerComponents } from "./registerComponents";
 
 export type SyncToRecsOptions<
   config extends StoreConfig = StoreConfig,
@@ -31,15 +32,11 @@ export async function syncToRecs<config extends StoreConfig, extraTables extends
   startSync = true,
   ...syncOptions
 }: SyncToRecsOptions<config, extraTables>): Promise<SyncToRecsResult<config, extraTables>> {
-  const tables = {
-    ...configToTables(config),
-    ...extraTables,
-    ...mudTables,
-  };
+  const components = registerComponents({ world, config, extraTables });
 
-  const { storageAdapter, components } = createStorageAdapter({
+  const { storageAdapter } = createStorageAdapter({
     world,
-    tables,
+    tables: {},
     shouldSkipUpdateStream: (): boolean =>
       getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE,
   });

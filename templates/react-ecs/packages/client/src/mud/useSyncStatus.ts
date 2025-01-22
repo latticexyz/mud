@@ -1,16 +1,12 @@
-import { stash } from "./stash";
-import { initialProgress, SyncProgress } from "@latticexyz/store-sync/internal";
+import { initialProgress } from "@latticexyz/store-sync/internal";
 import { SyncStep } from "@latticexyz/store-sync";
 import { useMemo } from "react";
-import { useRecord } from "@latticexyz/stash/react";
+import { useComponentValue } from "@latticexyz/react";
+import { singletonEntity } from "@latticexyz/store-sync/recs";
+import { components } from "./recs";
 
 export function useSyncStatus() {
-  const progress = useRecord({
-    stash,
-    table: SyncProgress,
-    key: {},
-    defaultValue: initialProgress,
-  });
+  const progress = useComponentValue(components.SyncProgress, singletonEntity, initialProgress);
   return useMemo(
     () => ({
       ...progress,

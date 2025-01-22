@@ -5,6 +5,9 @@ export type InternalComponents = ReturnType<typeof defineInternalComponents>;
 
 export function defineInternalComponents(world: World) {
   return {
+    /**
+     * @deprecated
+     */
     RegisteredTables: defineComponent<{ table: Type.T }, Metadata, Table>(
       world,
       { table: Type.T },

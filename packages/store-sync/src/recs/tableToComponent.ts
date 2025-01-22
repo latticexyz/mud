@@ -16,6 +16,7 @@ export type tableToComponent<table extends Table> = Component<
   StoreComponentMetadata & {
     componentName: table["label"];
     tableName: table["label"];
+    table: table;
     keySchema: getSchemaTypes<getKeySchema<table>>;
     valueSchema: getSchemaTypes<getValueSchema<table>>;
   }
@@ -37,6 +38,7 @@ export function tableToComponent<table extends Table>(world: World, table: table
       metadata: {
         componentName: table.label,
         tableName: table.label,
+        table,
         keySchema,
         valueSchema,
       },
