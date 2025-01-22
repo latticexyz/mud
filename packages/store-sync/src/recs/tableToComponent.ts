@@ -4,6 +4,7 @@ import { SchemaAbiTypeToRecsType, schemaAbiTypeToRecsType } from "./schemaAbiTyp
 import { Table } from "@latticexyz/config";
 import { mapObject } from "@latticexyz/common/utils";
 import { getKeySchema, getSchemaTypes, getValueSchema } from "@latticexyz/protocol-parser/internal";
+import { satisfy } from "@ark/util";
 
 export type tableToComponent<table extends Table> = Component<
   {
@@ -13,13 +14,16 @@ export type tableToComponent<table extends Table> = Component<
   } & {
     [fieldName in keyof getValueSchema<table>]: Type & SchemaAbiTypeToRecsType<table["schema"][fieldName]["type"]>;
   },
-  StoreComponentMetadata & {
-    componentName: table["label"];
-    tableName: table["label"];
-    table: table;
-    keySchema: getSchemaTypes<getKeySchema<table>>;
-    valueSchema: getSchemaTypes<getValueSchema<table>>;
-  }
+  satisfy<
+    StoreComponentMetadata,
+    {
+      componentName: table["label"];
+      tableName: table["label"];
+      table: table;
+      keySchema: getSchemaTypes<getKeySchema<table>>;
+      valueSchema: getSchemaTypes<getValueSchema<table>>;
+    }
+  >
 >;
 
 export function tableToComponent<table extends Table>(world: World, table: table): tableToComponent<table> {
