@@ -7,6 +7,8 @@ export type StoreComponentMetadata = Metadata & {
   tableName: string;
   table: Table;
   // TODO: migrate to store's KeySchema/ValueSchema
+  /** @deprecated Derive this schema from `component.metadata.table` instead. */
   keySchema: KeySchema;
+  /** @deprecated Derive this schema from `component.metadata.table` instead. */
   valueSchema: ValueSchema;
 };
