@@ -1,9 +1,8 @@
 import { getRecord, setRecord, registerTable, Stash } from "@latticexyz/stash/internal";
 import { createStorageAdapter } from "./createStorageAdapter";
-import { SyncStep } from "../SyncStep";
 import { SyncAdapter } from "../common";
 import { createStoreSync } from "../createStoreSync";
-import { SyncProgress } from "./common";
+import { SyncProgress, SyncStep } from "../SyncProgress";
 
 export type CreateSyncAdapterOptions = { stash: Stash };
 

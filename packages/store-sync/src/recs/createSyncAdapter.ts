@@ -48,6 +48,9 @@ export function createSyncAdapter<const config extends StoreConfig>({
           latestBlockNumber,
           lastBlockNumberProcessed,
           message,
+          __staticData: undefined,
+          __encodedLengths: undefined,
+          __dynamicData: undefined,
         });
 
         // when we switch to live, trigger update for all entities in all components
