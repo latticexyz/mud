@@ -32,7 +32,7 @@ export function TransactionsWatcher() {
   const wagmiConfig = useConfig();
   const { data: worldAbiData } = useWorldAbiQuery();
   const abi = worldAbiData?.abi;
-  const { data: blocks } = useBlocksQuery();
+  const { data: blocks, error: blocksError } = useBlocksQuery();
   const { transactions, setTransaction, updateTransaction } = useStore(worldStore);
   const observerWrites = useStore(observerStore, (state) => state.writes);
 
@@ -251,7 +251,7 @@ export function TransactionsWatcher() {
         handleTransaction({ hash, timestamp: block.timestamp });
       }
     },
-    enabled: indexer.type === "sqlite",
+    enabled: indexer.type === "sqlite" || !!blocksError,
   });
 
   return null;
