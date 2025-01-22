@@ -1,6 +1,12 @@
 import { defineTable } from "@latticexyz/store/internal";
-import { SyncStep } from "../SyncStep";
 import { getSchemaPrimitives, getValueSchema } from "@latticexyz/protocol-parser/internal";
+
+export enum SyncStep {
+  INITIALIZE = "initialize",
+  SNAPSHOT = "snapshot",
+  RPC = "rpc",
+  LIVE = "live",
+}
 
 export const SyncProgress = defineTable({
   namespaceLabel: "syncToStash",

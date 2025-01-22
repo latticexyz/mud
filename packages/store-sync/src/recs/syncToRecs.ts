@@ -52,6 +52,9 @@ export async function syncToRecs<const config extends StoreConfig, const extraTa
         latestBlockNumber,
         lastBlockNumberProcessed,
         message,
+        __staticData: undefined,
+        __encodedLengths: undefined,
+        __dynamicData: undefined,
       });
 
       // when we switch to live, trigger update for all entities in all components
