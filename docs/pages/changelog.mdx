@@ -18,6 +18,278 @@ SQL query execution time in Explore table is now measured and displayed.
 
 ---
 
+## Version 2.2.15
+
+Release date: Fri Jan 17 2025
+
+### Patch changes
+
+**[feat: add `getRecords` util to fetch records from indexer, update deployer and explorer to use indexer (#3385)](https://github.com/latticexyz/mud/commit/b819749268918559589c12451d88ec1f933182d8)** (@latticexyz/explorer)
+
+Improved the performance of the explorer's `Interact` tab by fetching the ABI from an indexer instead of from an Ethereum RPC if available.
+
+**[feat(explorer): buffer transactions (#3365)](https://github.com/latticexyz/mud/commit/07b6be82ace9654ce043e616e28b347f3121f415)** (@latticexyz/explorer)
+
+The transactions list in the explorer is now updated every 100ms instead of on every incoming transaction, to improve performance when there are many incoming transactions.
+
+**[feat(config): import mud config with tsx (#3290)](https://github.com/latticexyz/mud/commit/9580d29aa0a181e3ded9c79de185ff1778c6daf0)** (@latticexyz/config)
+
+Replaced esbuild with tsx to load MUD config in an effort to resolve issues with loading multiple MUD configs in parallel.
+
+**[feat(cli): fetch world deploy block number if available (#3417)](https://github.com/latticexyz/mud/commit/1e092407da570f8ba52e89e73dda50cdff161a93)** (@latticexyz/cli)
+
+When upgrading an existing world, the deployer now attempts to read the deploy block number from the `worlds.json` file. If it is found, the `HelloWorld` and `HelloStore` event are fetched from this block instead of searching for the events starting from the genesis block.
+
+**[feat(explorer): indicate unsaved query changes (#3446)](https://github.com/latticexyz/mud/commit/53f7906b37b8f6ae27bee3236f62787ffca35806)** (@latticexyz/explorer)
+
+The SQL editor now shows an indicator if the query has changed since it was last run.
+
+**[feat(entrykit): initial release (#3419)](https://github.com/latticexyz/mud/commit/971ffedb9cb88982bab1f03f4f3818dbae11c68a)** (@latticexyz/entrykit)
+
+Initial, experimental release of EntryKit.
+
+**[fix(explorer): type-based sorting (#3340)](https://github.com/latticexyz/mud/commit/722f4b4c48b9e49509a47e5a23f1ce45dbe9999d)** (@latticexyz/explorer)
+
+The columns in the Explore tab table are now sorted correctly according to their types.
+
+**[feat(store-sync): update watchLogs rpc response type (#3356)](https://github.com/latticexyz/mud/commit/1770620af19746578b99a996f380f5117bfdd053)** (@latticexyz/store-sync)
+
+Updated the `watchLogs` util to accept the updated RPC response type.
+
+**[feat(explorer): pause/resume live query (#3445)](https://github.com/latticexyz/mud/commit/35cb94ae06a24157303ec3311f2639f36d4e2e6f)** (@latticexyz/explorer)
+
+SQL live queries in the Explore view table can now be paused and resumed.
+
+**[feat(explorer): key columns indicator (#3447)](https://github.com/latticexyz/mud/commit/7fa68f6717ecd3fc2c734ca31c842c1242175cbe)** (@latticexyz/explorer)
+
+Indicated MUD schema key columns in the table view of the Explore tab.
+
+**[feat(explorer): show event logs for interact function (#3418)](https://github.com/latticexyz/mud/commit/1a2b3c8f585e72b0f8aae42a1c11abef7193059b)** (@latticexyz/explorer)
+
+The functions in the Interact tab now display the emitted logs with the block explorer URL for the submitted transaction.
+
+**[feat(explorer): bundled transactions support (#3313)](https://github.com/latticexyz/mud/commit/059240612a3ba74d3e16dfb3b1b2c7276a6ebe1d)** (@latticexyz/explorer)
+
+Added support for ERC-4337 bundled transactions, monitoring them by either listening to chain blocks or using the `observer` transport wrapper. Each user operation within a bundled transaction is displayed as an individual transaction in the Observe tab.
+
+**[fix(world): use WorldContextConsumerLib.\_msgSender() instead of msg.sender (#3436)](https://github.com/latticexyz/mud/commit/653f378403c7e4f234f87dec20c9dfe523f0def0)** (@latticexyz/world)
+
+Use `WorldContextConsumerLib._msgSender()` instead of `msg.sender` in system libraries.
+
+**[fix(explorer): format default sql query (#3363)](https://github.com/latticexyz/mud/commit/0facee02cd70b7f8cd09a7faec59972ba95453d1)** (@latticexyz/explorer)
+
+When accessing a new table in Explore tab, the SQL editor now encloses all column names in double quotes in order to prevent invalid queries.
+
+**[chore: add changeset for cli PR #3350 (#3353)](https://github.com/latticexyz/mud/commit/3168f1f56abce047a639582b50bf1aa2c7906c90)** (@latticexyz/cli)
+
+Deployer now retrieves resource tags by fetching logs to work around RPC rate limiting issues.
+
+**[feat(vite-plugin-mud): add MUD vite plugin (#3449)](https://github.com/latticexyz/mud/commit/70f224ac8214c54c9c55b170f9c900030967f1b1)** (vite-plugin-mud)
+
+Initial release of Vite plugin for MUD projects.
+
+This will soon be included by default in MUD templates, but you can add to an existing MUD project with:
+
+```
+pnpm add -D vite@^6 vite-plugin-mud
+```
+
+And use like:
+
+```ts
+// vite.config.ts
+import { defineConfig } from "vite";
+import { mud } from "vite-plugin-mud";
+
+export default defineConfig({
+  plugins: [mud({ worldsFile: "worlds.json" })],
+});
+```
+
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "types": ["vite/client", "vite-plugin-mud/env"]
+  }
+}
+```
+
+**[fix(explorer): fetch latest abi (#3370)](https://github.com/latticexyz/mud/commit/3258a6d66251aa87514e5e63456f989a34bd1b8b)** (@latticexyz/explorer)
+
+The latest ABI changes are now consistently fetched correctly.
+
+**[fix(explorer): switch to fetchBlockLogs (#3352)](https://github.com/latticexyz/mud/commit/2be543f7f0936f5dc94c13613da679d8634dfc27)** (@latticexyz/explorer)
+
+Fixed world ABI fetching in Rhodolite.
+
+**[fix(world): switch to TS for ABIs in utils (#3429)](https://github.com/latticexyz/mud/commit/2d2aa0867580dd910cc772b5cdd42c802e8652e3)** (@latticexyz/world)
+
+Moved TS utils over to using hardcoded ABIs instead of ones imported from `.abi.json` files to fix some internal type resolution issues.
+
+**[feat(store-sync): add react provider and hook (#3451)](https://github.com/latticexyz/mud/commit/5f493cd8368e6571ef196d607dcd6de2815f799e)** (@latticexyz/store-sync)
+
+Added an experimental `@latticexyz/store-sync/react` export with a `SyncProvider` and `useSync` hook. This allows for easier syncing MUD data to React apps.
+
+Note that this is currently only usable with Stash and assumes you are also using Wagmi in your React app.
+
+```tsx
+import { WagmiProvider } from "wagmi";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { SyncProvider } from "@latticexyz/store-sync/react";
+import { createSyncAdapter } from "@latticexyz/store-sync/internal";
+
+export function App() {
+  return (
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <SyncProvider
+          chainId={chainId}
+          address={worldAddress}
+          startBlock={startBlock}
+          adapter={createSyncAdapter({ stash })}
+        >
+          {children}
+        </SyncProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+```
+
+**[fix(store-sync): apply logs from buffer in watchLogs (#3346)](https://github.com/latticexyz/mud/commit/cd9fd0abd859f1d83baafc93a91e238d81726928)** (@latticexyz/store-sync)
+
+Fixed a bug in `watchLogs` where logs from the buffer were not applied during the initial sync.
+
+**[feat(explorer): decoded callFrom transactions (#3364)](https://github.com/latticexyz/mud/commit/d542357350b85654bc65f3befad22a3509c4ddb6)** (@latticexyz/explorer)
+
+Transactions in `Observe` tab now display decoded `callFrom` function calls.
+
+**[chore: remove catalog usage, move viem to peer deps (#3405)](https://github.com/latticexyz/mud/commit/09e9bd533704e7c1885872a8a1f9dca9e78bda4b)** (@latticexyz/block-logs-stream, @latticexyz/common, @latticexyz/config, @latticexyz/dev-tools, @latticexyz/explorer, @latticexyz/faucet, @latticexyz/protocol-parser, @latticexyz/schema-type, @latticexyz/stash, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world)
+
+Moved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.
+
+**[fix(cli): throw error on schema changes (#3336)](https://github.com/latticexyz/mud/commit/ee388ed599b051400a6f1fc5d4c5d369e466ad92)** (@latticexyz/cli)
+
+Deployer will now throw an error if it detects an already registered table with a different schema than the one you are trying to deploy.
+
+**[feat(store-consumer): extract store consumer contracts (#3345)](https://github.com/latticexyz/mud/commit/d17a9be933cf4dbf869e26e6f9ee070444048312)** (@latticexyz/store-consumer, @latticexyz/world-module-erc20)
+
+Extracted StoreConsumer base contracts into an independent package.
+Added a `registerNamespace` boolean to `WithWorld` to provide more control over namespace registration.
+
+**[feat(explorer): get observer url from chain config (#3366)](https://github.com/latticexyz/mud/commit/88b9daf1e01bd8675e31c455155759a3ef2af4f8)** (@latticexyz/explorer)
+
+Observer transport now uses the `blockExplorers.worldsExplorer.url` from the chain config if no `explorerUrl` is provided.
+
+**[feat(explorer): run query shortcut (#3443)](https://github.com/latticexyz/mud/commit/cfdfcc1c8e1d21a6336c608760bb76aa04aebefd)** (@latticexyz/explorer)
+
+SQL queries can be executed using the Cmd/Ctrl + Enter shortcut.
+
+**[fix(explorer): format default sql query (#3307)](https://github.com/latticexyz/mud/commit/9c1ca41560e2b3b319976794a73807f391e78b1b)** (@latticexyz/explorer)
+
+When accessing a new table in Explore tab, the SQL editor now encloses column names that are also PostgreSQL keywords in double quotes in order to prevent invalid queries.
+
+**[feat(stash): clean up mutations, emit updates as a list (#3376)](https://github.com/latticexyz/mud/commit/96f1473887e609cab366a4ba6caab9b62033cfb6)** (@latticexyz/stash)
+
+Consolidated how state changes are applied and subscribers notified. Stash subscribers now receive an ordered list of state updates rather than an object.
+
+**[fix(world): library imports and overloaded system functions (#3395)](https://github.com/latticexyz/mud/commit/ba5191c3d6f74b3c4982afd465cf449d23d70bb7)** (@latticexyz/world)
+
+Fixes relative system imports in system libraries and adds support for overloaded system functions.
+
+**[feat(cli): allow deploy salt to be a string (#3432)](https://github.com/latticexyz/mud/commit/74090950d81c6713d981806af5c1197e804b56bf)** (@latticexyz/cli)
+
+In addition to a hex `--salt`, deploy commands now accept a string salt for world deployment, which will get converted to a hex.
+
+```
+pnpm mud deploy --salt hello
+```
+
+**[fix(cli): don't overload system abi type (#3455)](https://github.com/latticexyz/mud/commit/8fcf9c8f508ec818696f366a41f2b8a2e42c11b1)** (@latticexyz/cli)
+
+Fixed an issue with overloaded system ABI types.
+
+**[feat(store): add getRecord and getStaticDataLocation helpers (#3430)](https://github.com/latticexyz/mud/commit/1b477d476a666ccffafc6eb266d1732b90bc28f9)** (@latticexyz/store)
+
+Added internal `getRecord` and `getStaticDataLocation` helpers.
+
+**[feat: add `getRecords` util to fetch records from indexer, update deployer and explorer to use indexer (#3385)](https://github.com/latticexyz/mud/commit/b819749268918559589c12451d88ec1f933182d8)** (@latticexyz/store-sync, @latticexyz/world)
+
+Added a `getRecords` util to fetch table records from an indexer or RPC.
+
+Migrated the `getFunctions` and `getWorldAbi` utils from `@latticexyz/world` to `@latticexyz/store-sync/world` to allow `getFunctions` and `getWorldAbi` to use `getRecords` internally without circular dependencies.
+
+**[feat: add `getRecords` util to fetch records from indexer, update deployer and explorer to use indexer (#3385)](https://github.com/latticexyz/mud/commit/b819749268918559589c12451d88ec1f933182d8)** (@latticexyz/cli)
+
+Added an `indexerUrl` option to the `mud deploy` and `mud pull` CLI commands to read table records from an indexer instead of fetching logs from an Ethereum RPC.
+
+**[feat(stash): add useRecord and useRecords hooks (#3450)](https://github.com/latticexyz/mud/commit/16242b74d5985720b4efca26e1e22e38bb463788)** (@latticexyz/stash)
+
+Added `useRecord` and `useRecords` hooks for convenience.
+
+```ts
+import { useRecords } from "@latticexyz/stash/react";
+
+const players = useRecords({ stash, table: Position });
+```
+
+```ts
+import { useRecord } from "@latticexyz/stash/react";
+
+const player = useRecord({ stash, table: Position, key: { player: "0x..." } });
+```
+
+**[fix(abi-ts): ts output should use as const (#3348)](https://github.com/latticexyz/mud/commit/534039428496bcededc62d2e450d29d7bac42475)** (@latticexyz/abi-ts)
+
+Using a TS extension (rather than DTS) now correctly includes `as const` in the TS output.
+
+**[fix(world): use fetchLogs in getFunctions (#3338)](https://github.com/latticexyz/mud/commit/22674ad244f59afd6bd364a3dd44df36992dd35f)** (@latticexyz/world)
+
+`getFunctions` now internally uses `fetchLogs` for better handling of block range errors.
+
+**[feat(explorer): export table data (#3380)](https://github.com/latticexyz/mud/commit/b0b42a9e0cca0e31fb31d1e00b78c3015b6f5663)** (@latticexyz/explorer)
+
+Added support for exporting table data in CSV, JSON, and TXT formats.
+
+**[feat(common): loosen client type in tx queue (#3408)](https://github.com/latticexyz/mud/commit/9d7188754ad7f6df6b190bf6618b598cb1d895c4)** (@latticexyz/common)
+
+Loosened `publicClient` type for `transactionQueue` action decorator and `writeContract` and `sendTransaction` actions so that they can be used with plain, undecorated Viem clients.
+
+**[feat(world): rework types for callFrom viem action (#3414)](https://github.com/latticexyz/mud/commit/509a3ccbac9b552a086f93b735d48e739153bead)** (@latticexyz/world)
+
+Reworked `callFrom` action to use `getAction` internally, rather than a decorated Viem client, and updated types to better match Viem.
+
+**[feat(explorer): show results from query functions (#3448)](https://github.com/latticexyz/mud/commit/c681aa6250eb8c3914a75fd45cdf32abc2d60746)** (@latticexyz/explorer)
+
+In the Explore tab, the view table now displays results generated by SQL query functions.
+
+**[fix(store-sync): reconnect unresponsive watchLogs socket (#3301)](https://github.com/latticexyz/mud/commit/9ddc874ecbe8671c197619a23bdeac2bee57174e)** (@latticexyz/store-sync)
+
+Experimental pending logs watcher now reconnects if it loses connection or times out.
+
+**[feat: system libraries (#3374)](https://github.com/latticexyz/mud/commit/09536b0614a03478fa0f53ec8beefef80455387d)** (@latticexyz/store, @latticexyz/world)
+
+Adds an experimental feature to automatically generate Solidity libraries from systems, making it easier to perform calls between systems.
+
+**[feat(store-sync): use client instead of decorated public client (#3441)](https://github.com/latticexyz/mud/commit/a6fe15cc524a7a2ed39a1f93d3e4f41a4e251697)** (@latticexyz/store-sync)
+
+All sync methods using a `publicClient` argument now accept a plain Viem `Client` rather than a decorated `PublicClient`, allowing for more flexibility and better tree-shaking for lighter bundles.
+
+**[feat(explorer): get observer url from chain config (#3366)](https://github.com/latticexyz/mud/commit/88b9daf1e01bd8675e31c455155759a3ef2af4f8)** (@latticexyz/common)
+
+Updated Rhodolite chain config.
+
+**[feat(world): add SystemCall.staticcall (#3381)](https://github.com/latticexyz/mud/commit/275c867182df9f1e22a6d4f0901a494c40e29f9a)** (@latticexyz/world)
+
+Add a SystemCall.staticcall function that performs a staticcall without executing hooks.
+
+**[feat(paymaster): add simple GenerousPaymaster for local development (#3422)](https://github.com/latticexyz/mud/commit/a7625b97410346b1187e66803dde5194084312fd)** (@latticexyz/paymaster)
+
+Added `GenerousPaymaster`, a simple paymaster that sponsors all user operations for local development purposes.
+
+---
+
 ## Version 2.2.14
 
 Release date: Thu Oct 24 2024
