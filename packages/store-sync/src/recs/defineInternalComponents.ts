@@ -1,16 +1,9 @@
 import { World, defineComponent, Type, Component, Schema, Metadata } from "@latticexyz/recs";
-import { Table } from "../common";
 
 export type InternalComponents = ReturnType<typeof defineInternalComponents>;
 
 export function defineInternalComponents(world: World) {
   return {
-    /** @deprecated */
-    RegisteredTables: defineComponent<{ table: Type.T }, Metadata, Table>(
-      world,
-      { table: Type.T },
-      { metadata: { componentName: "RegisteredTables" } },
-    ),
     SyncProgress: defineComponent(
       world,
       {
