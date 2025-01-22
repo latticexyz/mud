@@ -37,13 +37,15 @@ export function SyncProvider({ chainId, adapter, children, ...syncOptions }: Pro
   });
 
   useEffect(() => {
-    const sub = result.data?.storedBlockLogs$.subscribe({
+    if (!result.data) return;
+
+    const sub = result.data.storedBlockLogs$.subscribe({
       error: (error) => console.error("got sync error", error),
     });
     return (): void => {
-      sub?.unsubscribe();
+      sub.unsubscribe();
     };
-  }, [result.data?.storedBlockLogs$]);
+  }, [result.data]);
 
   return <SyncContext.Provider value={result}>{children}</SyncContext.Provider>;
 }
