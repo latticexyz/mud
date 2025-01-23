@@ -1,17 +1,5 @@
 [
   {
-    "file": "test/CallWithSignatureModule.t.sol:Unstable_CallWithSignatureModuleTest",
-    "test": "testInstallRoot",
-    "name": "install delegation module",
-    "gasUsed": 690311
-  },
-  {
-    "file": "test/CallWithSignatureModule.t.sol:Unstable_CallWithSignatureModuleTest",
-    "test": "testRegisterDelegationWithSignature",
-    "name": "register an unlimited delegation with signature",
-    "gasUsed": 138240
-  },
-  {
     "file": "test/ERC20.t.sol:ERC20Test",
     "test": "testApprove",
     "name": "approve",
