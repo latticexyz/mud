@@ -4,7 +4,7 @@ import { Coins, ExternalLinkIcon, Eye, LoaderIcon, Send } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
-import { Abi, AbiFunction, Address, Hex, decodeEventLog, stringify } from "viem";
+import { Abi, AbiFunction, AbiParameter, Address, Hex, decodeEventLog, stringify } from "viem";
 import { useAccount, useConfig } from "wagmi";
 import { readContract, waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { z } from "zod";
@@ -40,6 +40,20 @@ const formSchema = z.object({
   value: z.string().optional(),
 });
 
+const getInputLabel = (input: AbiParameter): string => {
+  if (!("components" in input)) {
+    return input.type;
+  }
+
+  const componentsString = input.components.map(getInputLabel).join(", ");
+  if (input.type === "tuple") {
+    return `[${componentsString}]`;
+  } else if (input.type === "tuple[]") {
+    return `[${componentsString}][]`;
+  }
+  return input.type;
+};
+
 export function FunctionField({ worldAbi, functionAbi }: Props) {
   const operationType: FunctionType =
     functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure"
@@ -55,15 +69,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
   const [events, setEvents] = useState<DecodedEvent[]>();
   const [txHash, setTxHash] = useState<Hex>();
   const txUrl = blockExplorerTransactionUrl({ hash: txHash, chainId });
-
-  const inputLabels = functionAbi.inputs.map((input) => {
-    if (input.type === "tuple" && "components" in input) {
-      return `[${input.components.map((c) => c.type).join(", ")}]`;
-    } else if (input.type === "tuple[]" && "components" in input) {
-      return `[${input.components.map((c) => c.type).join(", ")}][]`;
-    }
-    return input.type;
-  });
+  const inputLabels = functionAbi.inputs.map(getInputLabel);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -128,7 +134,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
         <form onSubmit={form.handleSubmit(onSubmit)} id={functionAbi.name} className="space-y-4">
           <h3 className="font-semibold">
             <span className="text-orange-500">{functionAbi.name}</span>
-            <span className="opacity-50">({inputLabels.join(", ")})</span>
+            <span className="opacity-50"> ({inputLabels.join(", ")})</span>
             <span className="ml-2 opacity-50">
               {functionAbi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
               {(functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure") && (
