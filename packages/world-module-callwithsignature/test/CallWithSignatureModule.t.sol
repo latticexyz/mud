@@ -19,17 +19,17 @@ import { REGISTRATION_SYSTEM_ID } from "@latticexyz/world/src/modules/init/const
 import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 import { WorldTestSystem } from "@latticexyz/world/test/World.t.sol";
 
-import { Unstable_CallWithSignatureModule } from "../src/modules/callwithsignature/Unstable_CallWithSignatureModule.sol";
-import { Unstable_CallWithSignatureSystem } from "../src/modules/callwithsignature/Unstable_CallWithSignatureSystem.sol";
-import { IUnstable_CallWithSignatureErrors } from "../src/modules/callwithsignature/IUnstable_CallWithSignatureErrors.sol";
-import { getSignedMessageHash } from "../src/modules/callwithsignature/getSignedMessageHash.sol";
-import { ECDSA } from "../src/modules/callwithsignature/ECDSA.sol";
+import { CallWithSignatureModule } from "../src/CallWithSignatureModule.sol";
+import { CallWithSignatureSystem } from "../src/CallWithSignatureSystem.sol";
+import { ICallWithSignatureErrors } from "../src/ICallWithSignatureErrors.sol";
+import { getSignedMessageHash } from "../src/getSignedMessageHash.sol";
+import { ECDSA } from "../src/ECDSA.sol";
 
-contract Unstable_CallWithSignatureModuleTest is Test, GasReporter {
+contract CallWithSignatureModuleTest is Test, GasReporter {
   using WorldResourceIdInstance for ResourceId;
 
   IBaseWorld world;
-  Unstable_CallWithSignatureModule callWithSignatureModule = new Unstable_CallWithSignatureModule();
+  CallWithSignatureModule callWithSignatureModule = new CallWithSignatureModule();
 
   function setUp() public {
     world = createWorld();
@@ -66,8 +66,8 @@ contract Unstable_CallWithSignatureModuleTest is Test, GasReporter {
     bytes memory signature = abi.encodePacked(r, s, v);
 
     // Attempt to register a limited delegation using an empty signature
-    vm.expectRevert(abi.encodeWithSelector(IUnstable_CallWithSignatureErrors.InvalidSignature.selector));
-    Unstable_CallWithSignatureSystem(address(world)).callWithSignature(
+    vm.expectRevert(abi.encodeWithSelector(ICallWithSignatureErrors.InvalidSignature.selector));
+    CallWithSignatureSystem(address(world)).callWithSignature(
       delegator,
       REGISTRATION_SYSTEM_ID,
       callData,
@@ -75,12 +75,7 @@ contract Unstable_CallWithSignatureModuleTest is Test, GasReporter {
     );
 
     startGasReport("register an unlimited delegation with signature");
-    Unstable_CallWithSignatureSystem(address(world)).callWithSignature(
-      delegator,
-      REGISTRATION_SYSTEM_ID,
-      callData,
-      signature
-    );
+    CallWithSignatureSystem(address(world)).callWithSignature(delegator, REGISTRATION_SYSTEM_ID, callData, signature);
     endGasReport();
 
     // Call a system from the delegatee on behalf of the delegator
@@ -101,13 +96,8 @@ contract Unstable_CallWithSignatureModuleTest is Test, GasReporter {
     world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Attempt to register a limited delegation using an old signature
-    vm.expectRevert(abi.encodeWithSelector(IUnstable_CallWithSignatureErrors.InvalidSignature.selector));
-    Unstable_CallWithSignatureSystem(address(world)).callWithSignature(
-      delegator,
-      REGISTRATION_SYSTEM_ID,
-      callData,
-      signature
-    );
+    vm.expectRevert(abi.encodeWithSelector(ICallWithSignatureErrors.InvalidSignature.selector));
+    CallWithSignatureSystem(address(world)).callWithSignature(delegator, REGISTRATION_SYSTEM_ID, callData, signature);
 
     // Expect a revert when attempting to perform a call via callFrom after a delegation was unregistered
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_DelegationNotFound.selector, delegator, delegatee));
@@ -119,12 +109,7 @@ contract Unstable_CallWithSignatureModuleTest is Test, GasReporter {
     (v, r, s) = vm.sign(delegatorPk, hash);
     signature = abi.encodePacked(r, s, v);
 
-    Unstable_CallWithSignatureSystem(address(world)).callWithSignature(
-      delegator,
-      REGISTRATION_SYSTEM_ID,
-      callData,
-      signature
-    );
+    CallWithSignatureSystem(address(world)).callWithSignature(delegator, REGISTRATION_SYSTEM_ID, callData, signature);
 
     // Call a system from the delegatee on behalf of the delegator
     vm.prank(delegatee);

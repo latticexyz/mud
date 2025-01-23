@@ -6,13 +6,13 @@ import { System } from "@latticexyz/world/src/System.sol";
 import { SystemCall } from "@latticexyz/world/src/SystemCall.sol";
 import { createDelegation } from "@latticexyz/world/src/modules/init/implementations/createDelegation.sol";
 
-import { CallWithSignatureNonces } from "./tables/CallWithSignatureNonces.sol";
+import { CallWithSignatureNonces } from "./codegen/tables/CallWithSignatureNonces.sol";
 import { getSignedMessageHash } from "./getSignedMessageHash.sol";
 import { ECDSA } from "./ECDSA.sol";
 import { validateCallWithSignature } from "./validateCallWithSignature.sol";
-import { IUnstable_CallWithSignatureErrors } from "./IUnstable_CallWithSignatureErrors.sol";
+import { ICallWithSignatureErrors } from "./ICallWithSignatureErrors.sol";
 
-contract Unstable_CallWithSignatureSystem is System, IUnstable_CallWithSignatureErrors {
+contract CallWithSignatureSystem is System, ICallWithSignatureErrors {
   /**
    * @notice Calls a system with a given system ID using the given signature.
    * @param signer The address on whose behalf the system is called.

@@ -6,13 +6,13 @@ import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.
 import { Module } from "@latticexyz/world/src/Module.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
-import { CallWithSignatureNonces } from "./tables/CallWithSignatureNonces.sol";
-import { Unstable_CallWithSignatureSystem } from "./Unstable_CallWithSignatureSystem.sol";
+import { CallWithSignatureNonces } from "./codegen/tables/CallWithSignatureNonces.sol";
+import { CallWithSignatureSystem } from "./CallWithSignatureSystem.sol";
 
 import { DELEGATION_SYSTEM_ID } from "./constants.sol";
 
-contract Unstable_CallWithSignatureModule is Module {
-  Unstable_CallWithSignatureSystem private immutable callWithSignatureSystem = new Unstable_CallWithSignatureSystem();
+contract CallWithSignatureModule is Module {
+  CallWithSignatureSystem private immutable callWithSignatureSystem = new CallWithSignatureSystem();
 
   function installRoot(bytes memory encodedArgs) public {
     requireNotInstalled(__self, encodedArgs);
