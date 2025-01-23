@@ -169,6 +169,9 @@ importers:
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../world
+      '@latticexyz/world-module-callwithsignature':
+        specifier: workspace:*
+        version: link:../world-module-callwithsignature
       '@latticexyz/world-module-metadata':
         specifier: workspace:*
         version: link:../world-module-metadata
