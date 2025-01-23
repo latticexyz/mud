@@ -74,6 +74,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.52.1",
+    "react-intersection-observer": "^9.15.1",
     "sonner": "^1.5.0",
     "sql-autocomplete": "^1.1.1",
     "tailwind-merge": "^1.12.0",

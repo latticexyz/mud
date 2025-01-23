@@ -1,7 +1,8 @@
 "use client";
 
 import { BoxIcon, CheckCheckIcon, ReceiptTextIcon, UserPenIcon, XIcon } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
 import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Badge } from "../../../../../../components/ui/Badge";
@@ -111,27 +112,16 @@ export const columns = [
 ];
 
 export function TransactionsTable() {
+  const { ref, inView } = useInView();
   const transactions = useMergedTransactions();
   const { isLoading, fetchNextPage } = useTransactionsQuery();
   const [expanded, setExpanded] = useState<ExpandedState>({});
-  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
+    if (inView) {
+      fetchNextPage();
     }
-
-    return () => observer.disconnect();
-  }, []);
+  }, [fetchNextPage, inView]);
 
   const table = useReactTable({
     data: transactions,
@@ -181,7 +171,7 @@ export function TransactionsTable() {
         <TableRow>
           <TableCell colSpan={columns.length}>
             <div
-              ref={loadMoreRef}
+              ref={ref}
               className={cn(
                 "hidden items-center justify-center gap-3 py-4 font-mono text-xs font-bold uppercase text-muted-foreground",
                 {
