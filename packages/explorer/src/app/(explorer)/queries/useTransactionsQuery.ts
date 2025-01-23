@@ -25,13 +25,18 @@ export function useTransactionsQuery() {
         },
       );
 
-      return response.json();
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.msg || "Network response was not ok");
+      }
+
+      return data;
     },
     select: (data) => {
       return data.transactions;
     },
     retry: false,
     enabled: !!worldAddress && indexer.type === "hosted",
-    refetchInterval: 2000,
+    refetchInterval: (query) => (!query.state.error ? 2000 : false),
   });
 }
