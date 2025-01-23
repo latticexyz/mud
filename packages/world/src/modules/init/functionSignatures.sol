@@ -62,11 +62,11 @@ function getFunctionSignaturesRegistration() pure returns (string[14] memory) {
 }
 
 /**
- * @dev Function signatures for delegation system
+ * @dev Function signatures for call with signature system
  */
-function getFunctionSignaturesDelegation() pure returns (string[1] memory) {
+function getFunctionSignaturesCallWithSignature() pure returns (string[1] memory) {
   return [
     // --- CallWithSignatureSystem ---
-    "callWithSignature(address,bytes32,bytes,uint256)"
+    "callWithSignature(address,bytes32,bytes,bytes)"
   ];
 }
