@@ -7,14 +7,16 @@ import { createPrepareDeploy } from "./createPrepareDeploy";
 import { World } from "@latticexyz/world";
 import { importContractArtifact } from "../utils/importContractArtifact";
 import { resolveWithContext } from "@latticexyz/world/internal";
+import callWithSignatureModule from "@latticexyz/world-module-callwithsignature/out/CallWithSignatureModule.sol/CallWithSignatureModule.json" assert { type: "json" };
+import { getContractArtifact } from "../utils/getContractArtifact";
+
+const callWithSignatureModuleArtifact = getContractArtifact(callWithSignatureModule);
 
 /** Please don't add to this list! These are kept for backwards compatibility and assumes the downstream project has this module installed as a dependency. */
 const knownModuleArtifacts = {
   KeysWithValueModule: "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json",
   KeysInTableModule: "@latticexyz/world-modules/out/KeysInTableModule.sol/KeysInTableModule.json",
   UniqueEntityModule: "@latticexyz/world-modules/out/UniqueEntityModule.sol/UniqueEntityModule.json",
-  Unstable_CallWithSignatureModule:
-    "@latticexyz/world-modules/out/Unstable_CallWithSignatureModule.sol/Unstable_CallWithSignatureModule.json",
 };
 
 export async function configToModules<config extends World>(
@@ -22,6 +24,24 @@ export async function configToModules<config extends World>(
   // TODO: remove/replace `forgeOutDir`
   forgeOutDir: string,
 ): Promise<readonly Module[]> {
+  // metadata module is installed inside `ensureResourceTags`
+  const defaultModules: Module[] = [
+    {
+      // optional for now
+      // TODO: figure out approach to install on existing worlds where deployer may not own root namespace
+      optional: true,
+      name: "CallWithSignatureModule",
+      installAsRoot: true,
+      installData: "0x",
+      prepareDeploy: createPrepareDeploy(
+        callWithSignatureModuleArtifact.bytecode,
+        callWithSignatureModuleArtifact.placeholders,
+      ),
+      deployedBytecodeSize: callWithSignatureModuleArtifact.deployedBytecodeSize,
+      abi: callWithSignatureModuleArtifact.abi,
+    },
+  ];
+
   const modules = await Promise.all(
     config.modules.map(async (mod): Promise<Module> => {
       let artifactPath = mod.artifactPath;
@@ -79,5 +99,5 @@ export async function configToModules<config extends World>(
     }),
   );
 
-  return modules;
+  return [...defaultModules, ...modules];
 }
