@@ -118,7 +118,8 @@ export function TransactionsTable() {
   const { id: chainId } = useChain();
   const indexer = indexerForChainId(chainId);
   const transactions = useMergedTransactions();
-  const { isLoading, fetchNextPage } = useTransactionsQuery();
+  const { data: indexedTransactions, fetchNextPage } = useTransactionsQuery();
+  const loadedInitialTransactions = Array.isArray(indexedTransactions) && indexedTransactions.length > 0;
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
   useEffect(() => {
@@ -171,7 +172,9 @@ export function TransactionsTable() {
 
       {indexer.type === "hosted" && (
         <TableFooter
-          className={cn("border-t-transparent bg-transparent hover:bg-transparent", { "border-t-muted": !isLoading })}
+          className={cn("border-t-transparent bg-transparent hover:bg-transparent", {
+            "border-t-muted": loadedInitialTransactions,
+          })}
         >
           <TableRow>
             <TableCell colSpan={columns.length}>
@@ -180,7 +183,7 @@ export function TransactionsTable() {
                 className={cn(
                   "hidden items-center justify-center gap-3 py-4 font-mono text-xs font-bold uppercase text-muted-foreground",
                   {
-                    flex: !isLoading,
+                    flex: loadedInitialTransactions,
                   },
                 )}
               >

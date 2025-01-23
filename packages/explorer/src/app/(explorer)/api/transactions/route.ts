@@ -23,7 +23,6 @@ export async function GET(req: Request) {
         SELECT
           block_num,
           '0x' || encode(tx_hash, 'hex') as tx_hash,
-          '0x' || encode(block_hash, 'hex') as block_hash,
           '0x' || encode(tx_to, 'hex') as tx_to,
           '0x' || encode(tx_signer, 'hex') as tx_signer,
           '0x' || encode(tx_input, 'hex') as tx_input,
