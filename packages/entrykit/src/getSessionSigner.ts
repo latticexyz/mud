@@ -8,7 +8,7 @@ export function getSessionSigner(userAddress: Address) {
     (() => {
       const privateKey =
         // attempt to reuse previous AccountKit session
-        localStorage.get(`mud:appSigner:privateKey:${userAddress.toLowerCase()}`) ??
+        localStorage.getItem(`mud:appSigner:privateKey:${userAddress.toLowerCase()}`) ??
         // otherwise create a fresh one
         generatePrivateKey();
       store.setState((state) => ({
