@@ -4,18 +4,18 @@ import { useQuery } from "@tanstack/react-query";
 import { useChain } from "../hooks/useChain";
 import { indexerForChainId } from "../utils/indexerForChainId";
 
-export function useBlocksQuery() {
+export function useTransactionsQuery() {
   const { worldAddress, chainName } = useParams();
   const { id: chainId } = useChain();
   const indexer = indexerForChainId(chainId);
 
   return useQuery({
-    queryKey: ["blocks", worldAddress, chainName],
+    queryKey: ["transactions", worldAddress, chainName],
     queryFn: async () => {
       const offset = 0;
       const limit = 20;
       const response = await fetch(
-        `/api/blocks?${new URLSearchParams({
+        `/api/transactions?${new URLSearchParams({
           worldAddress: worldAddress as Hex,
           offset: offset.toString(),
           limit: limit.toString(),
@@ -28,7 +28,7 @@ export function useBlocksQuery() {
       return response.json();
     },
     select: (data) => {
-      return data.blocks;
+      return data.transactions;
     },
     retry: false,
     enabled: !!worldAddress && indexer.type === "hosted",

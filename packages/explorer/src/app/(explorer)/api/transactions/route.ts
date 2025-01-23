@@ -18,7 +18,7 @@ export async function GET(req: Request) {
 
   try {
     await client.connect();
-    const blocks = await client.query(
+    const transactions = await client.query(
       `
         SELECT
           block_num,
@@ -35,7 +35,7 @@ export async function GET(req: Request) {
       [worldAddress.replace("0x", ""), offset, limit],
     );
 
-    return Response.json({ blocks: blocks.rows });
+    return Response.json({ transactions: transactions.rows });
   } catch (error) {
     console.error("Database error:", error);
     return Response.json({ error: "Failed to fetch transactions" }, { status: 500 });

@@ -17,7 +17,7 @@ import { useStore } from "zustand";
 import { useCallback, useEffect } from "react";
 import { store as observerStore } from "../../../../../../observer/store";
 import { useChain } from "../../../../hooks/useChain";
-import { useBlocksQuery } from "../../../../queries/useBlocksQuery";
+import { useTransactionsQuery } from "../../../../queries/useTransactionsQuery";
 import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { store as worldStore } from "../store";
@@ -32,7 +32,7 @@ export function TransactionsWatcher() {
   const wagmiConfig = useConfig();
   const { data: worldAbiData } = useWorldAbiQuery();
   const abi = worldAbiData?.abi;
-  const { data: indexedTransactions, error: indexedTransactionsError } = useBlocksQuery();
+  const { data: indexedTransactions, error: indexedTransactionsError } = useTransactionsQuery();
   const { transactions, setTransaction, updateTransaction } = useStore(worldStore);
   const observerWrites = useStore(observerStore, (state) => state.writes);
 
