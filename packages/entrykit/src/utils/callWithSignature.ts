@@ -2,7 +2,7 @@ import { Chain } from "viem";
 import { writeContract as viem_writeContract } from "viem/actions";
 import { getAction } from "viem/utils";
 import { SignCallOptions, signCall } from "./signCall";
-import CallWithSignatureAbi from "@latticexyz/world-modules/out/Unstable_CallWithSignatureSystem.sol/Unstable_CallWithSignatureSystem.abi.json";
+import CallWithSignatureAbi from "@latticexyz/world-module-callwithsignature/out/CallWithSignatureSystem.sol/CallWithSignatureSystem.abi.json";
 import { ConnectedClient } from "../common";
 
 // TODO: move this to world package or similar

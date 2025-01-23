@@ -2,10 +2,10 @@
 pragma solidity >=0.8.24;
 import { ResourceId } from "@latticexyz/world/src/WorldResourceId.sol";
 import { WorldContextConsumerLib } from "@latticexyz/world/src/WorldContext.sol";
-import { CallWithSignatureNonces } from "./tables/CallWithSignatureNonces.sol";
+import { CallWithSignatureNonces } from "./codegen/tables/CallWithSignatureNonces.sol";
 import { getSignedMessageHash } from "./getSignedMessageHash.sol";
 import { ECDSA } from "./ECDSA.sol";
-import { IUnstable_CallWithSignatureErrors } from "./IUnstable_CallWithSignatureErrors.sol";
+import { ICallWithSignatureErrors } from "./ICallWithSignatureErrors.sol";
 import { SignatureChecker } from "./SignatureChecker.sol";
 
 /**
@@ -26,6 +26,6 @@ function validateCallWithSignature(
   bytes32 hash = getSignedMessageHash(signer, systemId, callData, nonce, WorldContextConsumerLib._world());
 
   if (!SignatureChecker.isValidSignatureNow(signer, hash, signature)) {
-    revert IUnstable_CallWithSignatureErrors.InvalidSignature();
+    revert ICallWithSignatureErrors.InvalidSignature();
   }
 }

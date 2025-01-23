@@ -1,8 +1,8 @@
 import { Address, Chain, Client, Hex, OneOf, Transport, toHex } from "viem";
 import { signTypedData } from "viem/actions";
-import { callWithSignatureTypes } from "@latticexyz/world/internal";
+import { callWithSignatureTypes } from "@latticexyz/world-module-callwithsignature/internal";
 import { getRecord } from "@latticexyz/store/internal";
-import modulesConfig from "@latticexyz/world-modules/internal/mud.config";
+import moduleConfig from "@latticexyz/world-module-callwithsignature/mud.config";
 import { hexToResource } from "@latticexyz/common";
 import { getAction } from "viem/utils";
 import { ConnectedClient } from "../common";
@@ -30,7 +30,7 @@ export async function signCall<chain extends Chain = Chain>({
       ? (
           await getRecord(client, {
             address: worldAddress,
-            table: modulesConfig.tables.CallWithSignatureNonces,
+            table: moduleConfig.tables.CallWithSignatureNonces,
             key: { signer: userClient.account.address },
             blockTag: "pending",
           })

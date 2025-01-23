@@ -150,6 +150,9 @@ importers:
       '@latticexyz/world':
         specifier: link:../../../packages/world
         version: link:../../../packages/world
+      '@latticexyz/world-module-callwithsignature':
+        specifier: link:../../../packages/world-module-callwithsignature
+        version: link:../../../packages/world-module-callwithsignature
       '@latticexyz/world-modules':
         specifier: link:../../../packages/world-modules
         version: link:../../../packages/world-modules

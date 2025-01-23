@@ -52,6 +52,7 @@
     "@latticexyz/store-sync": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
+    "@latticexyz/world-module-callwithsignature": "workspace:*",
     "@latticexyz/world-module-metadata": "workspace:*",
     "abitype": "1.0.6",
     "asn1.js": "^5.4.1",

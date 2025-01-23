@@ -11,7 +11,7 @@ import { mudFoundry } from "@latticexyz/common/chains";
 import { encodeEntity } from "@latticexyz/store-sync/recs";
 import { callPageFunction } from "./data/callPageFunction";
 import worldConfig from "@latticexyz/world/mud.config";
-import { callWithSignatureTypes } from "@latticexyz/world/internal";
+import { callWithSignatureTypes } from "@latticexyz/world-module-callwithsignature/internal";
 import { getWorld } from "./data/getWorld";
 import { callWithSignature } from "./data/callWithSignature";
 import IWorldAbi from "../contracts/out/IWorld.sol/IWorld.abi.json";

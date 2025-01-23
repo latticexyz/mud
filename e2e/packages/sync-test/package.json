@@ -21,6 +21,7 @@
     "@latticexyz/store-sync": "link:../../../packages/store-sync",
     "@latticexyz/utils": "link:../../../packages/utils",
     "@latticexyz/world": "link:../../../packages/world",
+    "@latticexyz/world-module-callwithsignature": "link:../../../packages/world-module-callwithsignature",
     "@latticexyz/world-modules": "link:../../../packages/world-modules",
     "@viem/anvil": "^0.0.6",
     "abitype": "1.0.6",

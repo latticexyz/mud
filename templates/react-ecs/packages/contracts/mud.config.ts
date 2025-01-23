@@ -15,11 +15,4 @@ export default defineWorld({
     Owner: { id: "Entity", owner: "address" },
     Position: { id: "Entity", x: "int32", y: "int32" },
   },
-  modules: [
-    {
-      artifactPath:
-        "@latticexyz/world-modules/out/Unstable_CallWithSignatureModule.sol/Unstable_CallWithSignatureModule.json",
-      root: true,
-    },
-  ],
 });

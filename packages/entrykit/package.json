@@ -50,7 +50,7 @@
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/world": "workspace:*",
-    "@latticexyz/world-modules": "workspace:*",
+    "@latticexyz/world-module-callwithsignature": "workspace:*",
     "@radix-ui/react-dialog": "^1.0.5",
     "@rainbow-me/rainbowkit": "2.1.7",
     "debug": "^4.3.4",
