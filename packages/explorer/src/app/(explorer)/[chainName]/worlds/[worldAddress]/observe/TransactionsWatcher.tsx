@@ -249,7 +249,8 @@ export function TransactionsWatcher() {
 
   useEffect(() => {
     if (indexedTransactions) {
-      for (const { tx_hash, tx_signer, tx_to, tx_value, tx_input, block_time, block_num } of indexedTransactions) {
+      for (const indexedTransaction of indexedTransactions) {
+        const { tx_hash, tx_signer, tx_to, tx_value, tx_input, block_time, block_num } = indexedTransaction;
         const transaction = transactions.find((tx) => tx.hash === tx_hash);
         if (!transaction) {
           handleTransaction({
