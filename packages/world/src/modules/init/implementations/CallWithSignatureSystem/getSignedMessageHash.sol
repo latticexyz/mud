@@ -42,8 +42,8 @@ function getSignedMessageHash(
           abi.encode(
             CALL_TYPEHASH,
             signer,
-            keccak256(abi.encodePacked(WorldResourceIdLib.toTrimmedString(systemId.getNamespace()))),
-            keccak256(abi.encodePacked(WorldResourceIdLib.toTrimmedString(systemId.getName()))),
+            keccak256(bytes(WorldResourceIdLib.toTrimmedString(systemId.getNamespace()))),
+            keccak256(bytes(WorldResourceIdLib.toTrimmedString(systemId.getName()))),
             keccak256(callData),
             nonce
           )
