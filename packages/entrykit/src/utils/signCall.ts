@@ -1,6 +1,6 @@
 import { Address, Chain, Client, Hex, OneOf, Transport, toHex } from "viem";
 import { signTypedData } from "viem/actions";
-import { callWithSignatureTypes } from "@latticexyz/world/internal";
+import { callWithSignatureTypes } from "@latticexyz/world-module-callwithsignature/internal";
 import { getRecord } from "@latticexyz/store/internal";
 import moduleConfig from "@latticexyz/world-module-callwithsignature/mud.config";
 import { hexToResource } from "@latticexyz/common";
