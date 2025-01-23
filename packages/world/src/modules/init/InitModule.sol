@@ -22,8 +22,8 @@ import { BatchCallSystem } from "./implementations/BatchCallSystem.sol";
 import { CallWithSignatureSystem } from "./implementations/CallWithSignatureSystem/CallWithSignatureSystem.sol";
 
 import { RegistrationSystem } from "./RegistrationSystem.sol";
-import { ACCESS_MANAGEMENT_SYSTEM_ID, BALANCE_TRANSFER_SYSTEM_ID, BATCH_CALL_SYSTEM_ID, REGISTRATION_SYSTEM_ID, DELEGATION_SYSTEM_ID } from "./constants.sol";
-import { getFunctionSignaturesAccessManagement, getFunctionSignaturesBalanceTransfer, getFunctionSignaturesBatchCall, getFunctionSignaturesRegistration, getFunctionSignaturesDelegation } from "./functionSignatures.sol";
+import { ACCESS_MANAGEMENT_SYSTEM_ID, BALANCE_TRANSFER_SYSTEM_ID, BATCH_CALL_SYSTEM_ID, REGISTRATION_SYSTEM_ID, CALL_WITH_SIGNATURE_SYSTEM_ID } from "./constants.sol";
+import { getFunctionSignaturesAccessManagement, getFunctionSignaturesBalanceTransfer, getFunctionSignaturesBatchCall, getFunctionSignaturesRegistration, getFunctionSignaturesCallWithSignature } from "./functionSignatures.sol";
 
 import { Systems } from "../../codegen/tables/Systems.sol";
 import { FunctionSelectors } from "../../codegen/tables/FunctionSelectors.sol";
@@ -114,7 +114,7 @@ contract InitModule is Module {
     _registerSystem(balanceTransferSystem, BALANCE_TRANSFER_SYSTEM_ID);
     _registerSystem(batchCallSystem, BATCH_CALL_SYSTEM_ID);
     _registerSystem(registrationSystem, REGISTRATION_SYSTEM_ID);
-    _registerSystem(delegationSystem, DELEGATION_SYSTEM_ID);
+    _registerSystem(delegationSystem, CALL_WITH_SIGNATURE_SYSTEM_ID);
   }
 
   /**
@@ -155,9 +155,9 @@ contract InitModule is Module {
       _registerRootFunctionSelector(REGISTRATION_SYSTEM_ID, functionSignaturesRegistration[i]);
     }
 
-    string[1] memory functionSignaturesDelegation = getFunctionSignaturesDelegation();
-    for (uint256 i = 0; i < functionSignaturesDelegation.length; i++) {
-      _registerRootFunctionSelector(DELEGATION_SYSTEM_ID, functionSignaturesDelegation[i]);
+    string[1] memory functionSignaturesCallWithSignature = getFunctionSignaturesCallWithSignature();
+    for (uint256 i = 0; i < functionSignaturesCallWithSignature.length; i++) {
+      _registerRootFunctionSelector(CALL_WITH_SIGNATURE_SYSTEM_ID, functionSignaturesCallWithSignature[i]);
     }
   }
 

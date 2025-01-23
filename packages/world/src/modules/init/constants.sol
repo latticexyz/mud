@@ -39,9 +39,9 @@ ResourceId constant REGISTRATION_SYSTEM_ID = ResourceId.wrap(
 );
 
 /**
- * @dev Resource ID for the delegation system.
+ * @dev Resource ID for the call with signature system.
  * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and the system name.
  */
-ResourceId constant DELEGATION_SYSTEM_ID = ResourceId.wrap(
-  (bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, "Delegation")))
+ResourceId constant CALL_WITH_SIGNATURE_SYSTEM_ID = ResourceId.wrap(
+  (bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, "CallWithSignature")))
 );
