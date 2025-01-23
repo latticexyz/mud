@@ -1,6 +1,6 @@
 import { Address, Chain, Client, Transport } from "viem";
 import { getRecord } from "@latticexyz/store/internal";
-import modulesConfig from "@latticexyz/world-modules/internal/mud.config";
+import moduleConfig from "@latticexyz/world-module-callwithsignature/mud.config";
 
 export type GetCallWithSignatureNonceParams = {
   client: Client<Transport, Chain>;
@@ -15,7 +15,7 @@ export async function getCallWithSignatureNonce({
 }: GetCallWithSignatureNonceParams) {
   const record = await getRecord(client, {
     address: worldAddress,
-    table: modulesConfig.tables.CallWithSignatureNonces,
+    table: moduleConfig.tables.CallWithSignatureNonces,
     key: { signer: userAddress },
     blockTag: "pending",
   });
