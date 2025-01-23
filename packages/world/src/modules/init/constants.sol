@@ -37,3 +37,11 @@ ResourceId constant BATCH_CALL_SYSTEM_ID = ResourceId.wrap(
 ResourceId constant REGISTRATION_SYSTEM_ID = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("Registration")))
 );
+
+/**
+ * @dev Resource ID for the delegation system.
+ * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and the system name.
+ */
+ResourceId constant DELEGATION_SYSTEM_ID = ResourceId.wrap(
+  (bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, "Delegation")))
+);
