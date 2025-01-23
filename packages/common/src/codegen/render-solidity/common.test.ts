@@ -62,8 +62,8 @@ describe("renderTableId", () => {
   it("returns Solidity code to compute table ID", () => {
     expect(renderTableId({ namespace: "somewhere", name: "Player", offchainOnly: false })).toMatchInlineSnapshot(`
       "
-          // Hex below is the result of \`WorldResourceIdLib.encode({ namespace: \\"somewhere\\", name: \\"Player\\", typeId: RESOURCE_TABLE });\`
-          ResourceId constant _tableId = ResourceId.wrap(0x7462736f6d6577686572650000000000506c6179657200000000000000000000);
+          // Hex below is the result of \`WorldResourceIdLib.encode({ namespace: "somewhere", name: "Player", typeId: RESOURCE_TABLE });\`
+    ResourceId constant _tableId = ResourceId.wrap(0x7462736f6d6577686572650000000000506c6179657200000000000000000000);
         "
     `);
   });
@@ -71,7 +71,7 @@ describe("renderTableId", () => {
   it("returns Solidity code to compute offchain table ID", () => {
     expect(renderTableId({ namespace: "somewhere", name: "Player", offchainOnly: true })).toMatchInlineSnapshot(`
       "
-          // Hex below is the result of \`WorldResourceIdLib.encode({ namespace: \\"somewhere\\", name: \\"Player\\", typeId: RESOURCE_OFFCHAIN_TABLE });\`
+          // Hex below is the result of \`WorldResourceIdLib.encode({ namespace: "somewhere", name: "Player", typeId: RESOURCE_OFFCHAIN_TABLE });\`
           ResourceId constant _tableId = ResourceId.wrap(0x6f74736f6d6577686572650000000000506c6179657200000000000000000000);
         "
     `);

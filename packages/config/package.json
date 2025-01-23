@@ -46,9 +46,6 @@
     "find-up": "^6.3.0",
     "tsx": "^4.19.1"
   },
-  "devDependencies": {
-    "viem": "2.21.19"
-  },
   "peerDependencies": {
     "viem": "2.x"
   }

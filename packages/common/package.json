@@ -81,10 +81,7 @@
     "prettier-plugin-solidity": "1.3.1"
   },
   "devDependencies": {
-    "@types/debug": "^4.1.7",
-    "@viem/anvil": "^0.0.7",
-    "viem": "2.21.19",
-    "vitest": "0.34.6"
+    "@types/debug": "^4.1.7"
   },
   "peerDependencies": {
     "@aws-sdk/client-kms": "3.x",

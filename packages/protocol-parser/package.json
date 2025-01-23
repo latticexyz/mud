@@ -42,10 +42,6 @@
     "@latticexyz/schema-type": "workspace:*",
     "abitype": "1.0.6"
   },
-  "devDependencies": {
-    "viem": "2.21.19",
-    "vitest": "0.34.6"
-  },
   "peerDependencies": {
     "viem": "2.x"
   },

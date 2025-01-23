@@ -42,9 +42,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "@types/yargs": "^17.0.10",
-    "tsup": "^6.7.0",
-    "vitest": "0.34.6"
+    "@types/yargs": "^17.0.10"
   },
   "publishConfig": {
     "access": "public"

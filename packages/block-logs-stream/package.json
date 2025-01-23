@@ -38,9 +38,7 @@
     "rxjs": "7.5.5"
   },
   "devDependencies": {
-    "@types/debug": "^4.1.7",
-    "viem": "2.21.19",
-    "vitest": "0.34.6"
+    "@types/debug": "^4.1.7"
   },
   "peerDependencies": {
     "viem": "2.x"
