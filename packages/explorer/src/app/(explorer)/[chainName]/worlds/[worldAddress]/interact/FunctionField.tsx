@@ -56,12 +56,14 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
   const [txHash, setTxHash] = useState<Hex>();
   const txUrl = blockExplorerTransactionUrl({ hash: txHash, chainId });
 
-  // Tuples are mapped to e.g. "[int16, int16, int16]" to inform the user what to input
-  const inputLabels = functionAbi.inputs.map((input) =>
-    input.type === "tuple" && "components" in input
-      ? `[${input.components.map((c) => c.type).join(", ")}]`
-      : input.type,
-  );
+  const inputLabels = functionAbi.inputs.map((input) => {
+    if (input.type === "tuple" && "components" in input) {
+      return `[${input.components.map((c) => c.type).join(", ")}]`;
+    } else if (input.type === "tuple[]" && "components" in input) {
+      return `[${input.components.map((c) => c.type).join(", ")}][]`;
+    }
+    return input.type;
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
