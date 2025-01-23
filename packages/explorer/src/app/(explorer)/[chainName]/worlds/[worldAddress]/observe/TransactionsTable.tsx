@@ -1,13 +1,23 @@
 "use client";
 
 import { BoxIcon, CheckCheckIcon, ReceiptTextIcon, UserPenIcon, XIcon } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Badge } from "../../../../../../components/ui/Badge";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../../../../../../components/ui/Table";
 import { TruncatedHex } from "../../../../../../components/ui/TruncatedHex";
+import { cn } from "../../../../../../utils";
+import { useTransactionsQuery } from "../../../../queries/useTransactionsQuery";
 import { BlockExplorerLink } from "./BlockExplorerLink";
 import { TimeAgo } from "./TimeAgo";
 import { TimingRowHeader } from "./TimingRowHeader";
@@ -102,7 +112,26 @@ export const columns = [
 
 export function TransactionsTable() {
   const transactions = useMergedTransactions();
+  const { isLoading, fetchNextPage } = useTransactionsQuery();
   const [expanded, setExpanded] = useState<ExpandedState>({});
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   const table = useReactTable({
     data: transactions,
@@ -145,6 +174,27 @@ export function TransactionsTable() {
           </TableRow>
         )}
       </TableBody>
+
+      <TableFooter
+        className={cn("border-t-transparent bg-transparent hover:bg-transparent", { "border-t-muted": !isLoading })}
+      >
+        <TableRow>
+          <TableCell colSpan={columns.length}>
+            <div
+              ref={loadMoreRef}
+              className={cn(
+                "hidden items-center justify-center gap-3 py-4 font-mono text-xs font-bold uppercase text-muted-foreground",
+                {
+                  flex: !isLoading,
+                },
+              )}
+            >
+              <span className="inline-block h-1.5 w-1.5 animate-ping rounded-full bg-muted-foreground" />
+              Loading more transactions...
+            </div>
+          </TableCell>
+        </TableRow>
+      </TableFooter>
     </Table>
   );
 }

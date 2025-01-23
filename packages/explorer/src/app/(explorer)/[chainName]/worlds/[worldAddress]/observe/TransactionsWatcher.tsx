@@ -3,7 +3,6 @@ import {
   Address,
   BaseError,
   Hash,
-  Hex,
   TransactionReceipt,
   decodeFunctionData,
   getAddress,
@@ -251,19 +250,18 @@ export function TransactionsWatcher() {
   useEffect(() => {
     if (indexedTransactions) {
       for (const { tx_hash, tx_signer, tx_to, tx_value, tx_input, block_time, block_num } of indexedTransactions) {
-        const hash: Hex = `0x${tx_hash}`;
-        const transaction = transactions.find((tx) => tx.hash === hash);
+        const transaction = transactions.find((tx) => tx.hash === tx_hash);
         if (!transaction) {
           handleTransaction({
-            hash,
-            writeId: hash,
+            hash: tx_hash,
+            writeId: tx_hash,
             timestamp: BigInt(block_time),
             transaction: {
-              hash,
-              from: `0x${tx_signer}`,
-              to: `0x${tx_to}`,
+              hash: tx_hash,
+              from: tx_signer,
+              to: tx_to,
               value: tx_value,
-              input: `0x${tx_input}`,
+              input: tx_input,
             },
             blockNumber: BigInt(block_num),
           });

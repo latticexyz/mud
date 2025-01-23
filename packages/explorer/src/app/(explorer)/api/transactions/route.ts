@@ -9,8 +9,8 @@ export async function GET(req: Request) {
   const client = new Client({ connectionString: postgresConnectionUrl });
   const { searchParams } = new URL(req.url);
   const worldAddress = searchParams.get("worldAddress") as Hex;
-  const offset = Number(searchParams.get("offset")) || 0;
-  const limit = Number(searchParams.get("limit")) || 10;
+  const pageSize = Number(searchParams.get("pageSize")) || 30;
+  const lastBlockNumber = searchParams.get("lastBlockNumber") as Hex;
 
   if (!worldAddress) {
     return Response.json({ error: "Missing worldAddress" }, { status: 400 });
@@ -22,17 +22,18 @@ export async function GET(req: Request) {
       `
         SELECT
           block_num,
-          encode(tx_hash, 'hex') as tx_hash,
-          encode(block_hash, 'hex') as block_hash,
-          encode(tx_to, 'hex') as tx_to,
-          encode(tx_signer, 'hex') as tx_signer,
-          tx_value, block_time,
-          encode(tx_input, 'hex') as tx_input
-        FROM transactions WHERE tx_to = decode($1, 'hex')
+          '0x' || encode(tx_hash, 'hex') as tx_hash,
+          '0x' || encode(block_hash, 'hex') as block_hash,
+          '0x' || encode(tx_to, 'hex') as tx_to,
+          '0x' || encode(tx_signer, 'hex') as tx_signer,
+          '0x' || encode(tx_input, 'hex') as tx_input,
+          tx_value, block_time
+        FROM transactions
+        WHERE tx_to = decode($1, 'hex') ${lastBlockNumber ? "AND block_num < $3" : ""}
         ORDER BY block_num DESC
-        OFFSET $2 LIMIT $3
+        LIMIT $2
       `,
-      [worldAddress.replace("0x", ""), offset, limit],
+      [worldAddress.replace("0x", ""), pageSize, ...(lastBlockNumber ? [lastBlockNumber] : [])],
     );
 
     return Response.json({ transactions: transactions.rows });
