@@ -11,3 +11,4 @@ export * from "./singletonEntity";
 export * from "./syncToRecs";
 export * from "./tableToComponent";
 export * from "./tablesToComponents";
+export * from "./getTableEntity";
