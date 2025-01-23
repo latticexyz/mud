@@ -19,7 +19,19 @@ export async function GET(req: Request) {
   try {
     await client.connect();
     const blocks = await client.query(
-      `SELECT DISTINCT encode(block_hash, 'hex') as block_hash, block_num, block_time FROM transactions WHERE tx_to = decode($1, 'hex') ORDER BY block_num DESC OFFSET $2 LIMIT $3`,
+      `
+        SELECT
+          block_num,
+          encode(tx_hash, 'hex') as tx_hash,
+          encode(block_hash, 'hex') as block_hash,
+          encode(tx_to, 'hex') as tx_to,
+          encode(tx_signer, 'hex') as tx_signer,
+          tx_value, block_time,
+          encode(tx_input, 'hex') as tx_input
+        FROM transactions WHERE tx_to = decode($1, 'hex')
+        ORDER BY block_num DESC
+        OFFSET $2 LIMIT $3
+      `,
       [worldAddress.replace("0x", ""), offset, limit],
     );
 

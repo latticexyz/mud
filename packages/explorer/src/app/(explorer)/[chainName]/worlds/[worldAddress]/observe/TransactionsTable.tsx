@@ -16,7 +16,7 @@ import { ObservedTransaction, useMergedTransactions } from "./useMergedTransacti
 
 const columnHelper = createColumnHelper<ObservedTransaction>();
 export const columns = [
-  columnHelper.accessor("receipt.blockNumber", {
+  columnHelper.accessor("blockNumber", {
     header: "Block",
     cell: (row) => {
       const status = row.row.original.status;

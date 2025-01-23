@@ -13,7 +13,7 @@ export function useBlocksQuery() {
     queryKey: ["blocks", worldAddress, chainName],
     queryFn: async () => {
       const offset = 0;
-      const limit = 10;
+      const limit = 20;
       const response = await fetch(
         `/api/blocks?${new URLSearchParams({
           worldAddress: worldAddress as Hex,

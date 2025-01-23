@@ -4,7 +4,6 @@ import {
   BaseError,
   Hash,
   Hex,
-  Transaction,
   TransactionReceipt,
   decodeFunctionData,
   getAddress,
@@ -23,6 +22,7 @@ import { useWorldAbiQuery } from "../../../../queries/useWorldAbiQuery";
 import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { store as worldStore } from "../store";
 import { userOperationEventAbi } from "./abis/userOperationEventAbi";
+import { PartialTransaction } from "./useMergedTransactions";
 import { getDecodedUserOperationCalls } from "./utils/getDecodedUserOperationCalls";
 
 export function TransactionsWatcher() {
@@ -32,7 +32,7 @@ export function TransactionsWatcher() {
   const wagmiConfig = useConfig();
   const { data: worldAbiData } = useWorldAbiQuery();
   const abi = worldAbiData?.abi;
-  const { data: blocks, error: blocksError } = useBlocksQuery();
+  const { data: indexedTransactions, error: indexedTransactionsError } = useBlocksQuery();
   const { transactions, setTransaction, updateTransaction } = useStore(worldStore);
   const observerWrites = useStore(observerStore, (state) => state.writes);
 
@@ -46,10 +46,11 @@ export function TransactionsWatcher() {
       userOperation,
     }: {
       hash: Hash;
+      blockNumber?: bigint;
       writeId?: string;
       timestamp: bigint;
       receipt: TransactionReceipt;
-      transaction: Transaction;
+      transaction: PartialTransaction;
       userOperation: UserOperation<"0.7">;
     }) => {
       if (!abi) return;
@@ -78,6 +79,7 @@ export function TransactionsWatcher() {
 
       setTransaction({
         hash,
+        blockNumber: receipt.blockNumber,
         writeId: writeId ?? hash,
         from: calls[0]?.from ?? transaction.from,
         timestamp,
@@ -93,7 +95,15 @@ export function TransactionsWatcher() {
   );
 
   const handleUserOperations = useCallback(
-    async ({ writeId, timestamp, transaction }: { writeId?: string; timestamp: bigint; transaction: Transaction }) => {
+    async ({
+      writeId,
+      timestamp,
+      transaction,
+    }: {
+      writeId?: string;
+      timestamp: bigint;
+      transaction: PartialTransaction;
+    }) => {
       if (!abi) return;
 
       const hash = transaction.hash;
@@ -117,11 +127,13 @@ export function TransactionsWatcher() {
       hash,
       timestamp,
       transaction,
+      blockNumber,
     }: {
       hash: Hash;
       writeId?: string;
       timestamp: bigint;
-      transaction: Transaction;
+      transaction: PartialTransaction;
+      blockNumber?: bigint;
     }) => {
       if (!abi || !transaction.to) return;
 
@@ -140,6 +152,7 @@ export function TransactionsWatcher() {
 
       setTransaction({
         hash,
+        blockNumber,
         writeId: writeId ?? hash,
         from: transaction.from,
         timestamp,
@@ -188,6 +201,7 @@ export function TransactionsWatcher() {
       });
 
       updateTransaction(hash, {
+        blockNumber: receipt?.blockNumber,
         receipt,
         logs,
         status,
@@ -198,14 +212,26 @@ export function TransactionsWatcher() {
   );
 
   const handleTransaction = useCallback(
-    async ({ hash, writeId, timestamp }: { hash: Hash; timestamp: bigint; writeId?: string }) => {
+    async ({
+      hash,
+      writeId,
+      timestamp,
+      transaction: initialTransaction,
+      blockNumber,
+    }: {
+      hash: Hash;
+      timestamp: bigint;
+      writeId?: string;
+      transaction?: PartialTransaction;
+      blockNumber?: bigint;
+    }) => {
       if (!abi) return;
 
-      const transaction = await getTransaction(wagmiConfig, { hash });
+      const transaction = initialTransaction ?? (await getTransaction(wagmiConfig, { hash }));
       if (transaction.to && getAddress(transaction.to) === getAddress(entryPoint07Address)) {
         handleUserOperations({ writeId, timestamp, transaction });
       } else if (transaction.to && getAddress(transaction.to) === getAddress(worldAddress)) {
-        handleAuthenticTransaction({ hash, writeId, timestamp, transaction });
+        handleAuthenticTransaction({ hash, writeId, timestamp, transaction, blockNumber });
       }
     },
     [abi, wagmiConfig, worldAddress, handleUserOperations, handleAuthenticTransaction],
@@ -223,21 +249,28 @@ export function TransactionsWatcher() {
   }, [handleTransaction, observerWrites, transactions, worldAddress]);
 
   useEffect(() => {
-    const handleBlock = async (blockHash: Hex, blockTime: bigint) => {
-      const block = await getBlock(wagmiConfig, { chainId, blockHash });
-      const blockTxs = block.transactions;
-      for (const hash of blockTxs) {
-        if (transactions.find((transaction) => transaction.hash === hash)) continue;
-        handleTransaction({ hash, timestamp: blockTime });
-      }
-    };
-
-    if (blocks) {
-      for (const { block_hash, block_time } of blocks) {
-        handleBlock(`0x${block_hash}`, BigInt(block_time));
+    if (indexedTransactions) {
+      for (const { tx_hash, tx_signer, tx_to, tx_value, tx_input, block_time, block_num } of indexedTransactions) {
+        const hash: Hex = `0x${tx_hash}`;
+        const transaction = transactions.find((tx) => tx.hash === hash);
+        if (!transaction) {
+          handleTransaction({
+            hash,
+            writeId: hash,
+            timestamp: BigInt(block_time),
+            transaction: {
+              hash,
+              from: `0x${tx_signer}`,
+              to: `0x${tx_to}`,
+              value: tx_value,
+              input: `0x${tx_input}`,
+            },
+            blockNumber: BigInt(block_num),
+          });
+        }
       }
     }
-  }, [blocks, chainId, handleTransaction, transactions, wagmiConfig]);
+  }, [abi, indexedTransactions, chainId, handleTransaction, setTransaction, transactions, wagmiConfig]);
 
   useWatchBlocks({
     chainId,
@@ -251,7 +284,7 @@ export function TransactionsWatcher() {
         handleTransaction({ hash, timestamp: block.timestamp });
       }
     },
-    enabled: indexer.type === "sqlite" || !!blocksError,
+    enabled: indexer.type === "sqlite" || !!indexedTransactionsError,
   });
 
   return null;
