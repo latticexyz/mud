@@ -31,10 +31,14 @@ export function useTransactionsQuery() {
     },
 
     initialPageParam: 0,
-    getNextPageParam: (lastPage) => lastPage.transactions[lastPage.transactions.length - 1].block_num,
+    getNextPageParam: (lastPage) => {
+      if (!lastPage?.transactions?.length) return null;
+      const lastTransaction = lastPage.transactions[lastPage.transactions.length - 1];
+      return lastTransaction?.block_num ?? null;
+    },
     select: (data) => data.pages[data.pages.length - 1].transactions,
     retry: false,
-    enabled: !!worldAddress && indexer.type === "hosted",
+    enabled: indexer.type === "hosted",
     refetchInterval: (query) => (!query.state.error ? 2000 : false),
   });
 }

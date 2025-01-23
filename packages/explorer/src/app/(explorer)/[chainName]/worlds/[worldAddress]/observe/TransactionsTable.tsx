@@ -18,7 +18,9 @@ import {
 } from "../../../../../../components/ui/Table";
 import { TruncatedHex } from "../../../../../../components/ui/TruncatedHex";
 import { cn } from "../../../../../../utils";
+import { useChain } from "../../../../hooks/useChain";
 import { useTransactionsQuery } from "../../../../queries/useTransactionsQuery";
+import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { BlockExplorerLink } from "./BlockExplorerLink";
 import { TimeAgo } from "./TimeAgo";
 import { TimingRowHeader } from "./TimingRowHeader";
@@ -113,6 +115,8 @@ export const columns = [
 
 export function TransactionsTable() {
   const { ref, inView } = useInView();
+  const { id: chainId } = useChain();
+  const indexer = indexerForChainId(chainId);
   const transactions = useMergedTransactions();
   const { isLoading, fetchNextPage } = useTransactionsQuery();
   const [expanded, setExpanded] = useState<ExpandedState>({});
@@ -165,26 +169,28 @@ export function TransactionsTable() {
         )}
       </TableBody>
 
-      <TableFooter
-        className={cn("border-t-transparent bg-transparent hover:bg-transparent", { "border-t-muted": !isLoading })}
-      >
-        <TableRow>
-          <TableCell colSpan={columns.length}>
-            <div
-              ref={ref}
-              className={cn(
-                "hidden items-center justify-center gap-3 py-4 font-mono text-xs font-bold uppercase text-muted-foreground",
-                {
-                  flex: !isLoading,
-                },
-              )}
-            >
-              <span className="inline-block h-1.5 w-1.5 animate-ping rounded-full bg-muted-foreground" />
-              Loading more transactions...
-            </div>
-          </TableCell>
-        </TableRow>
-      </TableFooter>
+      {indexer.type === "hosted" && (
+        <TableFooter
+          className={cn("border-t-transparent bg-transparent hover:bg-transparent", { "border-t-muted": !isLoading })}
+        >
+          <TableRow>
+            <TableCell colSpan={columns.length}>
+              <div
+                ref={ref}
+                className={cn(
+                  "hidden items-center justify-center gap-3 py-4 font-mono text-xs font-bold uppercase text-muted-foreground",
+                  {
+                    flex: !isLoading,
+                  },
+                )}
+              >
+                <span className="inline-block h-1.5 w-1.5 animate-ping rounded-full bg-muted-foreground" />
+                Loading more transactions...
+              </div>
+            </TableCell>
+          </TableRow>
+        </TableFooter>
+      )}
     </Table>
   );
 }
