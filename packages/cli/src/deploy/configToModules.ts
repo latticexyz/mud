@@ -9,6 +9,7 @@ import { importContractArtifact } from "../utils/importContractArtifact";
 import { resolveWithContext } from "@latticexyz/world/internal";
 import callWithSignatureModule from "@latticexyz/world-module-callwithsignature/out/CallWithSignatureModule.sol/CallWithSignatureModule.json" assert { type: "json" };
 import { getContractArtifact } from "../utils/getContractArtifact";
+import { excludeCallWithSignatureModule } from "./compat/excludeUnstableCallWithSignatureModule";
 
 const callWithSignatureModuleArtifact = getContractArtifact(callWithSignatureModule);
 
@@ -43,7 +44,7 @@ export async function configToModules<config extends World>(
   ];
 
   const modules = await Promise.all(
-    config.modules.map(async (mod): Promise<Module> => {
+    config.modules.filter(excludeCallWithSignatureModule).map(async (mod): Promise<Module> => {
       let artifactPath = mod.artifactPath;
 
       // Backwards compatibility
