@@ -43,5 +43,5 @@ ResourceId constant REGISTRATION_SYSTEM_ID = ResourceId.wrap(
  * @dev This ID is derived from the RESOURCE_SYSTEM type, the ROOT_NAMESPACE, and the system name.
  */
 ResourceId constant CALL_WITH_SIGNATURE_SYSTEM_ID = ResourceId.wrap(
-  (bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, "CallWithSignature")))
+  (bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("CallWithSignatur"))))
 );
