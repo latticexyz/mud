@@ -14,6 +14,8 @@ import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
 import { IWorldErrors } from "../src/IWorldErrors.sol";
 import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { SystemCallData, SystemCallFromData } from "../src/modules/init/types.sol";
+import { BATCH_CALL_SYSTEM_ID } from "../src/modules/init/constants.sol";
+import { BatchCallSystem } from "../src/modules/init/implementations/BatchCallSystem.sol";
 
 import { createWorld } from "./createWorld.sol";
 
@@ -174,5 +176,46 @@ contract BatchCallTest is Test, GasReporter {
 
     assertEq(abi.decode(returnDatas[0], (address)), delegatee, "wrong delegatee returned");
     assertEq(abi.decode(returnDatas[1], (address)), delegator, "wrong delegator returned");
+  }
+
+  /**
+   * If all calls come from the same delegation, it should be simpler and cheaper to compose
+   * calls via `callFrom(batchCall(...))` instead of `batchCallFrom(...)`.
+   */
+  function testCallFromBatchCall() public {
+    // Register a new system
+    TestSystem system = new TestSystem();
+    world.registerSystem(systemId, system, true);
+
+    // Try to increment the counter without creating a delegation
+    SystemCallData[] memory systemCalls = new SystemCallData[](1);
+    systemCalls[0] = SystemCallData(systemId, abi.encodeCall(TestSystem.increment, ()));
+
+    vm.prank(delegatee);
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_DelegationNotFound.selector, delegator, delegatee));
+    world.callFrom(delegator, BATCH_CALL_SYSTEM_ID, abi.encodeCall(BatchCallSystem.batchCall, (systemCalls)));
+
+    // Create an unlimited delegation
+    vm.prank(delegator);
+    world.registerDelegation(delegatee, UNLIMITED_DELEGATION, new bytes(0));
+
+    // Try to increment the counter without setting the admin
+    vm.prank(delegatee);
+    vm.expectRevert("sender is not admin");
+    world.callFrom(delegator, BATCH_CALL_SYSTEM_ID, abi.encodeCall(BatchCallSystem.batchCall, (systemCalls)));
+
+    assertEq(system.admin(), address(0));
+
+    // Set the admin and increment the counter twice
+    systemCalls = new SystemCallData[](3);
+    systemCalls[0] = SystemCallData(systemId, abi.encodeCall(TestSystem.setAdmin, (delegator)));
+    systemCalls[1] = SystemCallData(systemId, abi.encodeCall(TestSystem.increment, ()));
+    systemCalls[2] = SystemCallData(systemId, abi.encodeCall(TestSystem.increment, ()));
+
+    vm.prank(delegatee);
+    world.callFrom(delegator, BATCH_CALL_SYSTEM_ID, abi.encodeCall(BatchCallSystem.batchCall, (systemCalls)));
+
+    assertEq(system.admin(), delegator);
+    assertEq(system.counter(), 2, "wrong counter value");
   }
 }
