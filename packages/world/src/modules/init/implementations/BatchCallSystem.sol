@@ -6,6 +6,7 @@ import { IBaseWorld } from "../../../codegen/interfaces/IBaseWorld.sol";
 import { revertWithBytes } from "../../../revertWithBytes.sol";
 import { SystemCallData, SystemCallFromData } from "../types.sol";
 import { LimitedCallContext } from "../LimitedCallContext.sol";
+import { SystemCall } from "../../../SystemCall.sol";
 
 /**
  * @title Batch Call System
@@ -26,11 +27,12 @@ contract BatchCallSystem is System, LimitedCallContext {
     returnDatas = new bytes[](systemCalls.length);
 
     for (uint256 i; i < systemCalls.length; i++) {
-      (bool success, bytes memory returnData) = address(world).delegatecall(
-        abi.encodeCall(world.call, (systemCalls[i].systemId, systemCalls[i].callData))
+      bytes memory returnData = SystemCall.callWithHooksOrRevert(
+        address(world),
+        systemCalls[i].systemId,
+        systemCalls[i].callData,
+        0
       );
-      if (!success) revertWithBytes(returnData);
-
       returnDatas[i] = abi.decode(returnData, (bytes));
     }
   }
