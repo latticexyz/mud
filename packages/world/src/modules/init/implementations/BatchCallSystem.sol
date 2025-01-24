@@ -23,12 +23,11 @@ contract BatchCallSystem is System, LimitedCallContext {
   function batchCall(
     SystemCallData[] calldata systemCalls
   ) public onlyDelegatecall returns (bytes[] memory returnDatas) {
-    IBaseWorld world = IBaseWorld(_world());
     returnDatas = new bytes[](systemCalls.length);
 
     for (uint256 i; i < systemCalls.length; i++) {
       bytes memory returnData = SystemCall.callWithHooksOrRevert(
-        address(world),
+        _msgSender(),
         systemCalls[i].systemId,
         systemCalls[i].callData,
         0
