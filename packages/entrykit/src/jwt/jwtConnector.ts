@@ -70,6 +70,8 @@ export function jwtConnector({ chainId }: JwtConnectorOptions): CreateJwtConnect
       async generateJwtProof(jwt: string) {
         const jwtProof = await generateProof(jwt);
         cache.setState({ jwtProof });
+
+        console.log({ jwtProof });
         const account = await getAccount(client, jwtProof);
         this.onAccountsChanged([account.address]);
         this.onConnect?.({ chainId: numberToHex(chainId) });
