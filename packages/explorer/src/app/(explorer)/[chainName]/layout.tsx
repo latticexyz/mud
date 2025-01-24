@@ -1,16 +1,19 @@
 "use client";
 
 import { notFound } from "next/navigation";
+import { use } from "react";
 import { isValidChainName } from "../../../common";
 
-type Props = {
-  params: {
-    chainName: string;
-  };
+export default function ChainLayout({
+  params,
+  children,
+}: {
+  params: Promise<{ chainName: string }>;
   children: React.ReactNode;
-};
+}): React.ReactNode {
+  const resolvedParams = use(params);
+  const { chainName } = resolvedParams;
 
-export default function ChainLayout({ params: { chainName }, children }: Props) {
   if (!isValidChainName(chainName)) {
     return notFound();
   }
