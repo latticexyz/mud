@@ -2,4 +2,4 @@
 "@latticexyz/cli": patch
 ---
 
-Fixed an issue where 'mud verify' will crash after failing to resolve the full contract artifact paths.
+Fixed an issue with `mud verify` where system contract artifacts were being resolved incorrectly.

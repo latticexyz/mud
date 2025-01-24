@@ -74,7 +74,7 @@ const commandModule: CommandModule<Options, Options> = {
     const systems = configSystems.map((system) => {
       const contractData = getContractData(`${system.label}.sol`, system.label, outDir);
       return {
-        name: system.name,
+        name: system.label,
         bytecode: contractData.bytecode,
       };
     });
