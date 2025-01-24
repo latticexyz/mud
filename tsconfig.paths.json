@@ -20,6 +20,7 @@
       "@latticexyz/dev-tools": ["./packages/dev-tools/src/index.ts"],
       "@latticexyz/entrykit": ["./packages/entrykit/src/exports/index.ts"],
       "@latticexyz/entrykit/internal": ["./packages/entrykit/src/exports/internal.ts"],
+      "@latticexyz/entrykit/vanilla": ["./packages/entrykit/src/exports/vanilla.ts"],
       "@latticexyz/explorer/observer": ["./packages/explorer/src/exports/observer.ts"],
       "@latticexyz/gas-report/internal": ["./packages/gas-report/ts/exports/internal.ts"],
       "@latticexyz/protocol-parser": ["./packages/protocol-parser/src/index.ts"],
