@@ -1,4 +1,4 @@
-import { mergeIfUndefined, isObject } from "@latticexyz/store/config/v2";
+import { mergeIfUndefined, isObject } from "@latticexyz/store/internal";
 import { DEPLOY_DEFAULTS } from "./defaults";
 
 export type resolveDeploy<deploy> = deploy extends {} ? mergeIfUndefined<deploy, DEPLOY_DEFAULTS> : DEPLOY_DEFAULTS;

@@ -1,15 +1,14 @@
 import type { CommandModule, InferredOptionTypes } from "yargs";
 import { verify } from "../verify";
-import { loadConfig } from "@latticexyz/config/node";
+import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
-import { resolveWorldConfig } from "@latticexyz/world/internal";
-import { worldToV1 } from "@latticexyz/world/config/v2";
-import { getOutDirectory, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
-import { getExistingContracts } from "../utils/getExistingContracts";
+import { resolveSystems } from "@latticexyz/world/node";
+import { getOutDirectory, getRpcUrl } from "@latticexyz/common/foundry";
 import { getContractData } from "../utils/getContractData";
-import { defaultModuleContracts } from "../utils/defaultModuleContracts";
 import { Hex, createWalletClient, http } from "viem";
 import chalk from "chalk";
+import { configToModules } from "../deploy/configToModules";
+import path from "node:path";
 
 const verifyOptions = {
   deployerAddress: {
@@ -24,7 +23,6 @@ const verifyOptions = {
     type: "boolean",
     desc: "Enable batch processing of RPC requests in viem client (defaults to batch size of 100 and wait of 1s)",
   },
-  srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
   verifier: { type: "string", desc: "The verifier to use. Defaults to blockscout", default: "blockscout" },
   verifierUrl: {
     type: "string",
@@ -46,10 +44,11 @@ const commandModule: CommandModule<Options, Options> = {
   async handler(opts) {
     const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
 
-    const configV2 = (await loadConfig(opts.configPath)) as WorldConfig;
-    const config = worldToV1(configV2);
+    const configPath = await resolveConfigPath(opts.configPath);
+    const rootDir = path.dirname(configPath);
 
-    const srcDir = opts.srcDir ?? (await getSrcDirectory(profile));
+    const config = (await loadConfig(configPath)) as WorldConfig;
+
     const outDir = await getOutDirectory(profile);
 
     const rpc = opts.rpc ?? (await getRpcUrl(profile));
@@ -70,29 +69,17 @@ const commandModule: CommandModule<Options, Options> = {
       }),
     });
 
-    const contractNames = getExistingContracts(srcDir).map(({ basename }) => basename);
-    const resolvedWorldConfig = resolveWorldConfig(config, contractNames);
-
-    const systems = Object.keys(resolvedWorldConfig.systems).map((name) => {
-      const contractData = getContractData(`${name}.sol`, name, outDir);
-
+    // TODO: replace with `resolveConfig` and support for linked libs
+    const configSystems = await resolveSystems({ rootDir, config });
+    const systems = configSystems.map((system) => {
+      const contractData = getContractData(`${system.label}.sol`, system.label, outDir);
       return {
-        name,
+        name: system.label,
         bytecode: contractData.bytecode,
       };
     });
 
-    // Get modules
-    const modules = config.modules.map((mod) => {
-      const contractData =
-        defaultModuleContracts.find((defaultMod) => defaultMod.name === mod.name) ??
-        getContractData(`${mod.name}.sol`, mod.name, outDir);
-
-      return {
-        name: mod.name,
-        bytecode: contractData.bytecode,
-      };
-    });
+    const modules = await configToModules(config, outDir);
 
     await verify({
       client,

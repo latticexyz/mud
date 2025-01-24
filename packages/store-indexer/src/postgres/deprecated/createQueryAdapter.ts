@@ -1,7 +1,7 @@
 import { getAddress } from "viem";
 import { PgDatabase } from "drizzle-orm/pg-core";
-import { TableWithRecords, isTableRegistrationLog, logToTable, storeTables } from "@latticexyz/store-sync";
-import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
+import { TableWithRecords, isTableRegistrationLog, logToTable, schemasTable } from "@latticexyz/store-sync";
+import { KeySchema, decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
 import { QueryAdapter } from "@latticexyz/store-sync/trpc-indexer";
 import { debug } from "../../debug";
 import { getLogs } from "./getLogs";
@@ -25,19 +25,20 @@ export async function createQueryAdapter(database: PgDatabase<any>): Promise<Que
       const { blockNumber, logs } = await getLogs(database, {
         ...opts,
         // make sure we're always retrieving `store.Tables` table, so we can decode table values
-        filters: filters.length > 0 ? [...filters, { tableId: storeTables.Tables.tableId }] : [],
+        filters: filters.length > 0 ? [...filters, { tableId: schemasTable.tableId }] : [],
       });
 
       const tables = logs.filter(isTableRegistrationLog).map(logToTable);
 
       const logsByTable = groupBy(logs, (log) => `${getAddress(log.address)}:${log.args.tableId}`);
 
-      const tablesWithRecords: TableWithRecords[] = tables.map((table) => {
+      const tablesWithRecords: readonly TableWithRecords[] = tables.map((table) => {
         const tableLogs = logsByTable.get(`${getAddress(table.address)}:${table.tableId}`) ?? [];
-        const records = tableLogs.map((log) => ({
-          key: decodeKey(table.keySchema, log.args.keyTuple),
-          value: decodeValueArgs(table.valueSchema, log.args),
-        }));
+        const records = tableLogs.map((log) => {
+          const key = decodeKey(table.keySchema as KeySchema, log.args.keyTuple);
+          const value = decodeValueArgs(table.valueSchema, log.args);
+          return { key, value, fields: { ...key, ...value } };
+        });
 
         return {
           ...table,

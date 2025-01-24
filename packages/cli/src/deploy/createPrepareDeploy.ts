@@ -1,28 +1,35 @@
-import { DeterministicContract, Library, LibraryPlaceholder, salt } from "./common";
+import { DeterministicContract, LibraryPlaceholder } from "./common";
 import { spliceHex } from "@latticexyz/common";
-import { Hex, getCreate2Address, Address } from "viem";
+import { Hex, Address } from "viem";
+import { LibraryMap } from "./getLibraryMap";
+import { getContractAddress } from "@latticexyz/common/internal";
 
 export function createPrepareDeploy(
   bytecodeWithPlaceholders: Hex,
   placeholders: readonly LibraryPlaceholder[],
 ): DeterministicContract["prepareDeploy"] {
-  return function prepareDeploy(deployer: Address, libraries: readonly Library[]) {
+  return function prepareDeploy(deployerAddress: Address, libraryMap?: LibraryMap) {
     let bytecode = bytecodeWithPlaceholders;
+
+    if (placeholders.length === 0) {
+      return { bytecode, address: getContractAddress({ deployerAddress, bytecode }) };
+    }
+
+    if (!libraryMap) {
+      throw new Error("Libraries must be provided if there are placeholders");
+    }
+
     for (const placeholder of placeholders) {
-      const library = libraries.find((lib) => lib.path === placeholder.path && lib.name === placeholder.name);
-      if (!library) {
-        throw new Error(`Could not find library for bytecode placeholder ${placeholder.path}:${placeholder.name}`);
-      }
-      bytecode = spliceHex(
-        bytecode,
-        placeholder.start,
-        placeholder.length,
-        library.prepareDeploy(deployer, libraries).address,
-      );
+      const address = libraryMap.getAddress({
+        name: placeholder.name,
+        path: placeholder.path,
+        deployer: deployerAddress,
+      });
+      bytecode = spliceHex(bytecode, placeholder.start, placeholder.length, address);
     }
     return {
       bytecode,
-      address: getCreate2Address({ from: deployer, bytecode, salt }),
+      address: getContractAddress({ deployerAddress, bytecode }),
     };
   };
 }

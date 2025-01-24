@@ -1,3 +1,1410 @@
+## Version 2.2.16
+
+Release date: Fri Jan 17 2025
+
+### Patch changes
+
+**[docs: add changeset for bug fix (#3463)](https://github.com/latticexyz/mud/commit/59389b1e37bc84664972231989ce7fdc739cce42)** (@latticexyz/explorer)
+
+Fixed an issue where live queries were running while paused and vice versa.
+
+**[feat(explorer): copy button (#3423)](https://github.com/latticexyz/mud/commit/54e5c06dd4606d2484a790cd1d531931d634d7a1)** (@latticexyz/explorer)
+
+Added 'Copy to Clipboard' button to relevant sections for easier data copying.
+
+**[feat(explorer): query execution time (#3444)](https://github.com/latticexyz/mud/commit/05c7298412805fbc5a2eae489d567ec405414abc)** (@latticexyz/explorer)
+
+SQL query execution time in Explore table is now measured and displayed.
+
+---
+
+## Version 2.2.15
+
+Release date: Fri Jan 17 2025
+
+### Patch changes
+
+**[feat: add `getRecords` util to fetch records from indexer, update deployer and explorer to use indexer (#3385)](https://github.com/latticexyz/mud/commit/b819749268918559589c12451d88ec1f933182d8)** (@latticexyz/explorer)
+
+Improved the performance of the explorer's `Interact` tab by fetching the ABI from an indexer instead of from an Ethereum RPC if available.
+
+**[feat(explorer): buffer transactions (#3365)](https://github.com/latticexyz/mud/commit/07b6be82ace9654ce043e616e28b347f3121f415)** (@latticexyz/explorer)
+
+The transactions list in the explorer is now updated every 100ms instead of on every incoming transaction, to improve performance when there are many incoming transactions.
+
+**[feat(config): import mud config with tsx (#3290)](https://github.com/latticexyz/mud/commit/9580d29aa0a181e3ded9c79de185ff1778c6daf0)** (@latticexyz/config)
+
+Replaced esbuild with tsx to load MUD config in an effort to resolve issues with loading multiple MUD configs in parallel.
+
+**[feat(cli): fetch world deploy block number if available (#3417)](https://github.com/latticexyz/mud/commit/1e092407da570f8ba52e89e73dda50cdff161a93)** (@latticexyz/cli)
+
+When upgrading an existing world, the deployer now attempts to read the deploy block number from the `worlds.json` file. If it is found, the `HelloWorld` and `HelloStore` event are fetched from this block instead of searching for the events starting from the genesis block.
+
+**[feat(explorer): indicate unsaved query changes (#3446)](https://github.com/latticexyz/mud/commit/53f7906b37b8f6ae27bee3236f62787ffca35806)** (@latticexyz/explorer)
+
+The SQL editor now shows an indicator if the query has changed since it was last run.
+
+**[feat(entrykit): initial release (#3419)](https://github.com/latticexyz/mud/commit/971ffedb9cb88982bab1f03f4f3818dbae11c68a)** (@latticexyz/entrykit)
+
+Initial, experimental release of EntryKit.
+
+**[fix(explorer): type-based sorting (#3340)](https://github.com/latticexyz/mud/commit/722f4b4c48b9e49509a47e5a23f1ce45dbe9999d)** (@latticexyz/explorer)
+
+The columns in the Explore tab table are now sorted correctly according to their types.
+
+**[feat(store-sync): update watchLogs rpc response type (#3356)](https://github.com/latticexyz/mud/commit/1770620af19746578b99a996f380f5117bfdd053)** (@latticexyz/store-sync)
+
+Updated the `watchLogs` util to accept the updated RPC response type.
+
+**[feat(explorer): pause/resume live query (#3445)](https://github.com/latticexyz/mud/commit/35cb94ae06a24157303ec3311f2639f36d4e2e6f)** (@latticexyz/explorer)
+
+SQL live queries in the Explore view table can now be paused and resumed.
+
+**[feat(explorer): key columns indicator (#3447)](https://github.com/latticexyz/mud/commit/7fa68f6717ecd3fc2c734ca31c842c1242175cbe)** (@latticexyz/explorer)
+
+Indicated MUD schema key columns in the table view of the Explore tab.
+
+**[feat(explorer): show event logs for interact function (#3418)](https://github.com/latticexyz/mud/commit/1a2b3c8f585e72b0f8aae42a1c11abef7193059b)** (@latticexyz/explorer)
+
+The functions in the Interact tab now display the emitted logs with the block explorer URL for the submitted transaction.
+
+**[feat(explorer): bundled transactions support (#3313)](https://github.com/latticexyz/mud/commit/059240612a3ba74d3e16dfb3b1b2c7276a6ebe1d)** (@latticexyz/explorer)
+
+Added support for ERC-4337 bundled transactions, monitoring them by either listening to chain blocks or using the `observer` transport wrapper. Each user operation within a bundled transaction is displayed as an individual transaction in the Observe tab.
+
+**[fix(world): use WorldContextConsumerLib.\_msgSender() instead of msg.sender (#3436)](https://github.com/latticexyz/mud/commit/653f378403c7e4f234f87dec20c9dfe523f0def0)** (@latticexyz/world)
+
+Use `WorldContextConsumerLib._msgSender()` instead of `msg.sender` in system libraries.
+
+**[fix(explorer): format default sql query (#3363)](https://github.com/latticexyz/mud/commit/0facee02cd70b7f8cd09a7faec59972ba95453d1)** (@latticexyz/explorer)
+
+When accessing a new table in Explore tab, the SQL editor now encloses all column names in double quotes in order to prevent invalid queries.
+
+**[chore: add changeset for cli PR #3350 (#3353)](https://github.com/latticexyz/mud/commit/3168f1f56abce047a639582b50bf1aa2c7906c90)** (@latticexyz/cli)
+
+Deployer now retrieves resource tags by fetching logs to work around RPC rate limiting issues.
+
+**[feat(vite-plugin-mud): add MUD vite plugin (#3449)](https://github.com/latticexyz/mud/commit/70f224ac8214c54c9c55b170f9c900030967f1b1)** (vite-plugin-mud)
+
+Initial release of Vite plugin for MUD projects.
+
+This will soon be included by default in MUD templates, but you can add to an existing MUD project with:
+
+```
+pnpm add -D vite@^6 vite-plugin-mud
+```
+
+And use like:
+
+```ts
+// vite.config.ts
+import { defineConfig } from "vite";
+import { mud } from "vite-plugin-mud";
+
+export default defineConfig({
+  plugins: [mud({ worldsFile: "worlds.json" })],
+});
+```
+
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "types": ["vite/client", "vite-plugin-mud/env"]
+  }
+}
+```
+
+**[fix(explorer): fetch latest abi (#3370)](https://github.com/latticexyz/mud/commit/3258a6d66251aa87514e5e63456f989a34bd1b8b)** (@latticexyz/explorer)
+
+The latest ABI changes are now consistently fetched correctly.
+
+**[fix(explorer): switch to fetchBlockLogs (#3352)](https://github.com/latticexyz/mud/commit/2be543f7f0936f5dc94c13613da679d8634dfc27)** (@latticexyz/explorer)
+
+Fixed world ABI fetching in Rhodolite.
+
+**[fix(world): switch to TS for ABIs in utils (#3429)](https://github.com/latticexyz/mud/commit/2d2aa0867580dd910cc772b5cdd42c802e8652e3)** (@latticexyz/world)
+
+Moved TS utils over to using hardcoded ABIs instead of ones imported from `.abi.json` files to fix some internal type resolution issues.
+
+**[feat(store-sync): add react provider and hook (#3451)](https://github.com/latticexyz/mud/commit/5f493cd8368e6571ef196d607dcd6de2815f799e)** (@latticexyz/store-sync)
+
+Added an experimental `@latticexyz/store-sync/react` export with a `SyncProvider` and `useSync` hook. This allows for easier syncing MUD data to React apps.
+
+Note that this is currently only usable with Stash and assumes you are also using Wagmi in your React app.
+
+```tsx
+import { WagmiProvider } from "wagmi";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { SyncProvider } from "@latticexyz/store-sync/react";
+import { createSyncAdapter } from "@latticexyz/store-sync/internal";
+
+export function App() {
+  return (
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <SyncProvider
+          chainId={chainId}
+          address={worldAddress}
+          startBlock={startBlock}
+          adapter={createSyncAdapter({ stash })}
+        >
+          {children}
+        </SyncProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+```
+
+**[fix(store-sync): apply logs from buffer in watchLogs (#3346)](https://github.com/latticexyz/mud/commit/cd9fd0abd859f1d83baafc93a91e238d81726928)** (@latticexyz/store-sync)
+
+Fixed a bug in `watchLogs` where logs from the buffer were not applied during the initial sync.
+
+**[feat(explorer): decoded callFrom transactions (#3364)](https://github.com/latticexyz/mud/commit/d542357350b85654bc65f3befad22a3509c4ddb6)** (@latticexyz/explorer)
+
+Transactions in `Observe` tab now display decoded `callFrom` function calls.
+
+**[chore: remove catalog usage, move viem to peer deps (#3405)](https://github.com/latticexyz/mud/commit/09e9bd533704e7c1885872a8a1f9dca9e78bda4b)** (@latticexyz/block-logs-stream, @latticexyz/common, @latticexyz/config, @latticexyz/dev-tools, @latticexyz/explorer, @latticexyz/faucet, @latticexyz/protocol-parser, @latticexyz/schema-type, @latticexyz/stash, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world)
+
+Moved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.
+
+**[fix(cli): throw error on schema changes (#3336)](https://github.com/latticexyz/mud/commit/ee388ed599b051400a6f1fc5d4c5d369e466ad92)** (@latticexyz/cli)
+
+Deployer will now throw an error if it detects an already registered table with a different schema than the one you are trying to deploy.
+
+**[feat(store-consumer): extract store consumer contracts (#3345)](https://github.com/latticexyz/mud/commit/d17a9be933cf4dbf869e26e6f9ee070444048312)** (@latticexyz/store-consumer, @latticexyz/world-module-erc20)
+
+Extracted StoreConsumer base contracts into an independent package.
+Added a `registerNamespace` boolean to `WithWorld` to provide more control over namespace registration.
+
+**[feat(explorer): get observer url from chain config (#3366)](https://github.com/latticexyz/mud/commit/88b9daf1e01bd8675e31c455155759a3ef2af4f8)** (@latticexyz/explorer)
+
+Observer transport now uses the `blockExplorers.worldsExplorer.url` from the chain config if no `explorerUrl` is provided.
+
+**[feat(explorer): run query shortcut (#3443)](https://github.com/latticexyz/mud/commit/cfdfcc1c8e1d21a6336c608760bb76aa04aebefd)** (@latticexyz/explorer)
+
+SQL queries can be executed using the Cmd/Ctrl + Enter shortcut.
+
+**[fix(explorer): format default sql query (#3307)](https://github.com/latticexyz/mud/commit/9c1ca41560e2b3b319976794a73807f391e78b1b)** (@latticexyz/explorer)
+
+When accessing a new table in Explore tab, the SQL editor now encloses column names that are also PostgreSQL keywords in double quotes in order to prevent invalid queries.
+
+**[feat(stash): clean up mutations, emit updates as a list (#3376)](https://github.com/latticexyz/mud/commit/96f1473887e609cab366a4ba6caab9b62033cfb6)** (@latticexyz/stash)
+
+Consolidated how state changes are applied and subscribers notified. Stash subscribers now receive an ordered list of state updates rather than an object.
+
+**[fix(world): library imports and overloaded system functions (#3395)](https://github.com/latticexyz/mud/commit/ba5191c3d6f74b3c4982afd465cf449d23d70bb7)** (@latticexyz/world)
+
+Fixes relative system imports in system libraries and adds support for overloaded system functions.
+
+**[feat(cli): allow deploy salt to be a string (#3432)](https://github.com/latticexyz/mud/commit/74090950d81c6713d981806af5c1197e804b56bf)** (@latticexyz/cli)
+
+In addition to a hex `--salt`, deploy commands now accept a string salt for world deployment, which will get converted to a hex.
+
+```
+pnpm mud deploy --salt hello
+```
+
+**[fix(cli): don't overload system abi type (#3455)](https://github.com/latticexyz/mud/commit/8fcf9c8f508ec818696f366a41f2b8a2e42c11b1)** (@latticexyz/cli)
+
+Fixed an issue with overloaded system ABI types.
+
+**[feat(store): add getRecord and getStaticDataLocation helpers (#3430)](https://github.com/latticexyz/mud/commit/1b477d476a666ccffafc6eb266d1732b90bc28f9)** (@latticexyz/store)
+
+Added internal `getRecord` and `getStaticDataLocation` helpers.
+
+**[feat: add `getRecords` util to fetch records from indexer, update deployer and explorer to use indexer (#3385)](https://github.com/latticexyz/mud/commit/b819749268918559589c12451d88ec1f933182d8)** (@latticexyz/store-sync, @latticexyz/world)
+
+Added a `getRecords` util to fetch table records from an indexer or RPC.
+
+Migrated the `getFunctions` and `getWorldAbi` utils from `@latticexyz/world` to `@latticexyz/store-sync/world` to allow `getFunctions` and `getWorldAbi` to use `getRecords` internally without circular dependencies.
+
+**[feat: add `getRecords` util to fetch records from indexer, update deployer and explorer to use indexer (#3385)](https://github.com/latticexyz/mud/commit/b819749268918559589c12451d88ec1f933182d8)** (@latticexyz/cli)
+
+Added an `indexerUrl` option to the `mud deploy` and `mud pull` CLI commands to read table records from an indexer instead of fetching logs from an Ethereum RPC.
+
+**[feat(stash): add useRecord and useRecords hooks (#3450)](https://github.com/latticexyz/mud/commit/16242b74d5985720b4efca26e1e22e38bb463788)** (@latticexyz/stash)
+
+Added `useRecord` and `useRecords` hooks for convenience.
+
+```ts
+import { useRecords } from "@latticexyz/stash/react";
+
+const players = useRecords({ stash, table: Position });
+```
+
+```ts
+import { useRecord } from "@latticexyz/stash/react";
+
+const player = useRecord({ stash, table: Position, key: { player: "0x..." } });
+```
+
+**[fix(abi-ts): ts output should use as const (#3348)](https://github.com/latticexyz/mud/commit/534039428496bcededc62d2e450d29d7bac42475)** (@latticexyz/abi-ts)
+
+Using a TS extension (rather than DTS) now correctly includes `as const` in the TS output.
+
+**[fix(world): use fetchLogs in getFunctions (#3338)](https://github.com/latticexyz/mud/commit/22674ad244f59afd6bd364a3dd44df36992dd35f)** (@latticexyz/world)
+
+`getFunctions` now internally uses `fetchLogs` for better handling of block range errors.
+
+**[feat(explorer): export table data (#3380)](https://github.com/latticexyz/mud/commit/b0b42a9e0cca0e31fb31d1e00b78c3015b6f5663)** (@latticexyz/explorer)
+
+Added support for exporting table data in CSV, JSON, and TXT formats.
+
+**[feat(common): loosen client type in tx queue (#3408)](https://github.com/latticexyz/mud/commit/9d7188754ad7f6df6b190bf6618b598cb1d895c4)** (@latticexyz/common)
+
+Loosened `publicClient` type for `transactionQueue` action decorator and `writeContract` and `sendTransaction` actions so that they can be used with plain, undecorated Viem clients.
+
+**[feat(world): rework types for callFrom viem action (#3414)](https://github.com/latticexyz/mud/commit/509a3ccbac9b552a086f93b735d48e739153bead)** (@latticexyz/world)
+
+Reworked `callFrom` action to use `getAction` internally, rather than a decorated Viem client, and updated types to better match Viem.
+
+**[feat(explorer): show results from query functions (#3448)](https://github.com/latticexyz/mud/commit/c681aa6250eb8c3914a75fd45cdf32abc2d60746)** (@latticexyz/explorer)
+
+In the Explore tab, the view table now displays results generated by SQL query functions.
+
+**[fix(store-sync): reconnect unresponsive watchLogs socket (#3301)](https://github.com/latticexyz/mud/commit/9ddc874ecbe8671c197619a23bdeac2bee57174e)** (@latticexyz/store-sync)
+
+Experimental pending logs watcher now reconnects if it loses connection or times out.
+
+**[feat: system libraries (#3374)](https://github.com/latticexyz/mud/commit/09536b0614a03478fa0f53ec8beefef80455387d)** (@latticexyz/store, @latticexyz/world)
+
+Adds an experimental feature to automatically generate Solidity libraries from systems, making it easier to perform calls between systems.
+
+**[feat(store-sync): use client instead of decorated public client (#3441)](https://github.com/latticexyz/mud/commit/a6fe15cc524a7a2ed39a1f93d3e4f41a4e251697)** (@latticexyz/store-sync)
+
+All sync methods using a `publicClient` argument now accept a plain Viem `Client` rather than a decorated `PublicClient`, allowing for more flexibility and better tree-shaking for lighter bundles.
+
+**[feat(explorer): get observer url from chain config (#3366)](https://github.com/latticexyz/mud/commit/88b9daf1e01bd8675e31c455155759a3ef2af4f8)** (@latticexyz/common)
+
+Updated Rhodolite chain config.
+
+**[feat(world): add SystemCall.staticcall (#3381)](https://github.com/latticexyz/mud/commit/275c867182df9f1e22a6d4f0901a494c40e29f9a)** (@latticexyz/world)
+
+Add a SystemCall.staticcall function that performs a staticcall without executing hooks.
+
+**[feat(paymaster): add simple GenerousPaymaster for local development (#3422)](https://github.com/latticexyz/mud/commit/a7625b97410346b1187e66803dde5194084312fd)** (@latticexyz/paymaster)
+
+Added `GenerousPaymaster`, a simple paymaster that sponsors all user operations for local development purposes.
+
+---
+
+## Version 2.2.14
+
+Release date: Thu Oct 24 2024
+
+### Patch changes
+
+**[fix(cli): support public library methods in modules (#3308)](https://github.com/latticexyz/mud/commit/8eaad304db2fe9ae79f087ec7860928f734039d4)** (@latticexyz/cli)
+
+Added support for deploying public libraries used within modules.
+
+**[fix(cli): support public library methods in modules (#3308)](https://github.com/latticexyz/mud/commit/8eaad304db2fe9ae79f087ec7860928f734039d4)** (@latticexyz/world-module-erc20, @latticexyz/world-modules)
+
+Changed ERC20 and ERC721 related modules to use public library methods instead of manual `delegatecall`s.
+
+**[feat(stash): add useStash and improve other helpers (#3320)](https://github.com/latticexyz/mud/commit/93d0e763cca0facaaa20d7bde861c98c298f08ad)** (@latticexyz/stash)
+
+Added `useStash` React hook. It's heavily inspired by Zustand's `useStore` and accepts a stash, a state selector, an an optional equality function to avoid unnecessary re-render cycles when returning unstable values.
+
+Also updated `getRecord` and `getRecords` to each take either a `stash` or `state` object for more ergonomic use with `useStash`.
+
+```ts
+import { useStash } from "@latticexyz/stash/react";
+import { getRecord } from "@latticexyz/stash";
+import config from "../mud.config";
+
+const tables = config.namespaces.app.tables;
+
+export function PlayerName({ playerId }) {
+  const record = useStash(stash, (state) => getRecord({ state, table: tables.Player, key: { playerId } }));
+  ...
+}
+```
+
+```ts
+import isEqual from "fast-deep-equal";
+import { useStash } from "@latticexyz/stash/react";
+import { getRecords } from "@latticexyz/stash";
+import config from "../mud.config";
+
+export function PlayerNames() {
+  const record = useStash(stash, (state) => getRecords({ state, table: tables.Player }), { isEqual });
+  ...
+}
+```
+
+---
+
+## Version 2.2.13
+
+Release date: Wed Oct 23 2024
+
+### Patch changes
+
+**[fix(gas-report): include contract name in file of output (#3317)](https://github.com/latticexyz/mud/commit/d5c270023abc325f25af868d3db1a0bdc3e62d6d)** (@latticexyz/gas-report)
+
+Gas report output now include contract name as part of the `file` to help with stable ordering when sorting output.
+
+**[chore(world-module-erc20): export erc20 module from internal (#3319)](https://github.com/latticexyz/mud/commit/90803770ee72bfd2b9ba9a7990285d1c5866f362)** (@latticexyz/world-module-erc20)
+
+The new ERC20 World Module provides a simpler alternative to the ERC20 Puppet Module, while also being structured in a more extendable way so users can create tokens with custom functionality.
+
+To install this module, you can import and define the module configuration from the NPM package:
+
+```typescript
+import { defineERC20Module } from "@latticexyz/world-module-erc20/internal";
+
+// Add the output of this function to your World's modules
+const erc20Module = defineERC20Module({ namespace: "erc20Namespace", name: "MyToken", symbol: "MTK" });
+```
+
+For detailed installation instructions, please check out the [`@latticexyz/world-module-erc20` README.md](https://github.com/latticexyz/mud/blob/main/packages/world-module-erc20/README.md).
+
+**[feat(explorer): multi-line sql editor (#3311)](https://github.com/latticexyz/mud/commit/79d273a20b3dd50ab733b3261b830b0ef47bcebf)** (@latticexyz/explorer)
+
+The SQL query editor now supports multi-line input.
+
+**[feat(abi-ts): extension option (#3315)](https://github.com/latticexyz/mud/commit/75e93bac492f9000c482d6a26a5c8e29079dd32d)** (@latticexyz/abi-ts)
+
+Added an `--extension` option to customize the resulting TS or DTS output. It defaults to the previous behavior of `.json.d.ts`, but can now be set to `.d.json.ts` for compatibility with newer TS versions and `.json.ts` or just `.ts` for a pure TS file.
+
+**[fix(store-sync): update latest block for live logs API (#3323)](https://github.com/latticexyz/mud/commit/dfc2d6439ee7076cdccbf1a24b7423fb19a7771d)** (@latticexyz/store-sync)
+
+Fixed an issue where the sync progress was not moving to "live" when synced from the MUD indexer's live logs API.
+
+---
+
+## Version 2.2.12
+
+Release date: Fri Oct 18 2024
+
+### Patch changes
+
+**[feat(explorer): add functions filter to query state (#3268)](https://github.com/latticexyz/mud/commit/3d8db6f76f3634d532d39cf4091f22fee0a32b68)** (@latticexyz/explorer)
+
+Function filters in `Interact` tab are now included as part of the URL.
+
+**[feat(explorer): transaction timings (#3274)](https://github.com/latticexyz/mud/commit/1b0ffcf7a1a7daa2a87efe26059d6a142d257588)** (@latticexyz/explorer)
+
+Transactions in Observe tab are now populated with timing metrics when using the `observer` Viem decorator in local projects.
+
+You can wire up your local project to use transaction timings with:
+
+```
+import { observer } from "@latticexyz/explorer/observer";
+
+// Extend the Viem client that is performing writes
+walletClient.extend(observer());
+```
+
+**[fix(faucet,store-indexer): add bin wrappers (#3296)](https://github.com/latticexyz/mud/commit/20f44fbf733ff876d64a544c68a3cb1a4dc307a9)** (@latticexyz/faucet, @latticexyz/store-indexer)
+
+Added bin wrappers to resolve issues when installing the package locally as a dependency of another package.
+
+**[feat(explorer): show ABI errors in interact page (#3303)](https://github.com/latticexyz/mud/commit/d4c10c18ad853bed21c55fe92e2ba09c2382316d)** (@latticexyz/explorer)
+
+Interact tab now displays decoded ABI errors for failed transactions.
+
+**[chore: bump viem (#3273)](https://github.com/latticexyz/mud/commit/ea18f270c9a43dbe489b25f11b8379ccd969c02a)** (@latticexyz/block-logs-stream, @latticexyz/cli, @latticexyz/common, @latticexyz/config, @latticexyz/dev-tools, @latticexyz/explorer, @latticexyz/faucet, @latticexyz/protocol-parser, @latticexyz/schema-type, @latticexyz/stash, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world, create-mud)
+
+Bumped viem to v2.21.19.
+
+MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+```
+pnpm recursive up viem@2.21.19
+```
+
+**[fix(explorer): display nested inputs (#3266)](https://github.com/latticexyz/mud/commit/2c9240111ae11e6727d3581453fba2b866f4b4a0)** (@latticexyz/explorer)
+
+Fixed inputs display in the transactions table row.
+
+**[feat(common): add rhodolite chain (#3295)](https://github.com/latticexyz/mud/commit/41a6e2f83ac4d48a9dccf52d933c15074b9a724e)** (@latticexyz/common)
+
+Added Rhodolite devnet chain config and removed the old and now-defunct Lattice testnet chain config.
+
+**[feat(explorer): show explore table error message (#3286)](https://github.com/latticexyz/mud/commit/af725304e133f95b0b0eb827fdf7283e54ac8342)** (@latticexyz/explorer)
+
+Display error messages for failed queries within the Explore tab's table viewer.
+
+**[feat(explorer): sql editor (#3276)](https://github.com/latticexyz/mud/commit/3a80bed31b97d439025f68b8e4ded27354e102f1)** (@latticexyz/explorer)
+
+Explore page now has a full-featured SQL editor with syntax highlighting, autocomplete, and query validation.
+
+**[feat(explorer): front page (#3255)](https://github.com/latticexyz/mud/commit/6476dec94cf32275631d49c7e8fe8fe5a0708040)** (@latticexyz/explorer)
+
+Each chain's home page now lets you find and pick a world to explore.
+
+**[feat(store-sync): add support for watching pending logs (#3287)](https://github.com/latticexyz/mud/commit/84ae33b8af3ebeb90749c6e82250869b15d17ed1)** (@latticexyz/store-sync)
+
+Added experimental support for syncing state from pending logs.
+
+**[fix(explorer): various fixes (#3299)](https://github.com/latticexyz/mud/commit/9a43e87db302ec599fd1e97d8b77e2e68831017f)** (@latticexyz/explorer)
+
+- Not found page if invalid chain name.
+- Only show selector for worlds if options exist.
+- Remove "future time" from transactions table.
+- Improved layout for Interact tab.
+- Wrap long args in transactions table.
+- New tables polling.
+- Add logs (regression).
+
+**[fix(common): allow overriding fees in writeContract and sendTransaction (#3288)](https://github.com/latticexyz/mud/commit/fe98442d7ee82f0d41ba10f05a4ee1bafea69d48)** (@latticexyz/common)
+
+The `transactionQueue` decorator internally keeps an updated reference for the recommended `baseFeePerGas` and `maxPriorityFeePerGas` from the connected chain to avoid having to fetch it right before sending a transaction.
+However, due to the way the fee values were overridden, it wasn't possible for users to explicitly pass in custom fee values.
+Now explicitly provided fee values have precedence over the internally estimated fee values.
+
+**[feat(explorer): global transactions listener (#3285)](https://github.com/latticexyz/mud/commit/4b4640913d014fb3a0a5a417b84c91b247e08ffc)** (@latticexyz/explorer)
+
+Transactions are now monitored across all tabs while the World Explorer is open.
+
+---
+
+## Version 2.2.11
+
+Release date: Mon Oct 07 2024
+
+### Patch changes
+
+**[feat(explorer): show transactions (#3062)](https://github.com/latticexyz/mud/commit/bbd5e315d18e2a3cdbd9a20023b680eac77d74b6)** (@latticexyz/explorer)
+
+Observe tab is now populated by transactions flowing through the world, in addition to local transactions when using the `observer` transport wrapper.
+
+**[feat(cli,store): fetch table-specific logs (#3245)](https://github.com/latticexyz/mud/commit/7ddcf64a222f184b1902a1dc93089064465b6acf)** (@latticexyz/block-logs-stream)
+
+`fetchLogs` and `blockRangeToLogs` now accept a `getLogs` option to override the default behavior.
+
+**[feat(cli,store): fetch table-specific logs (#3245)](https://github.com/latticexyz/mud/commit/7ddcf64a222f184b1902a1dc93089064465b6acf)** (@latticexyz/store)
+
+Added `getStoreLogs` and `flattenStoreLogs` to aid in fetching data from store contracts. For now, these are internal exports and considered unstable/experimental.
+
+**[feat(store-sync): add client support for streaming logs from indexer (#3226)](https://github.com/latticexyz/mud/commit/61930eeade86d8ce46392449a797ef6291f0ce62)** (@latticexyz/store-sync)
+
+Added support for streaming logs from the indexer.
+
+**[fix(explorer): expand selected transaction table row by hash/writeId (#3263)](https://github.com/latticexyz/mud/commit/645b7e09f191b41ad296c23f212da1739f17add5)** (@latticexyz/explorer)
+
+Fixed row expansion in the transactions table where an incorrect row would expand when new transactions appeared.
+
+**[fix(cli): update state block in dev runner redeploy (#3243)](https://github.com/latticexyz/mud/commit/111bb1b6c767a6f9654dde1a711d1db784f0770a)** (@latticexyz/cli)
+
+Fixed a dev runner bug where the state block of a previous deploy was not updated during a redeploy, causing failed deploys due to fetching outdated world state.
+
+**[fix(explorer): allow overriding internal indexer env variables (#3237)](https://github.com/latticexyz/mud/commit/85bbeb8be12597f28cd1506dae0d44b34c1427e4)** (@latticexyz/explorer)
+
+It is now possible to pass in environment variables like `RPC_HTTP_URL` to the internal local indexer when running the explorer locally.
+
+**[feat(explorer): integrate rejected transactions (#3251)](https://github.com/latticexyz/mud/commit/71eb34804ee9a6c74a10f896f41bf6f74cfc889c)** (@latticexyz/explorer)
+
+Observe tab is now populated by rejected transactions coming from the `observer` transport wrapper.
+
+**[feat(cli,store): fetch table-specific logs (#3245)](https://github.com/latticexyz/mud/commit/7ddcf64a222f184b1902a1dc93089064465b6acf)** (@latticexyz/cli)
+
+Deployer now has a better method for fetching store logs from the world that should be more efficient and resilient to block range errors and rate limiting.
+
+**[feat(store): add unwrap() function to ResourceIdInstance (#3249)](https://github.com/latticexyz/mud/commit/13e56891c7d6b66d53047e0d2de38ffea6fd2524)** (@latticexyz/store)
+
+Added an `unwrap` function to the `ResourceIdInstance` library to make it easier to unwrap a `ResourceId` with `resourceId.unwrap()`.
+
+**[feat(cli,store): fetch table-specific logs (#3245)](https://github.com/latticexyz/mud/commit/7ddcf64a222f184b1902a1dc93089064465b6acf)** (@latticexyz/common)
+
+Added `logSort` method to help when sorting logs fetched from RPC, where they come back ordered relative to the topics used.
+
+```ts
+import { logSort } from "@latticexyz/common";
+
+const logs = getLogs(...);
+logs.sort(logSort);
+```
+
+**[feat(cli): mud pull (#3171)](https://github.com/latticexyz/mud/commit/9e53a51f3b6bf04f5a0074e2c61dc88a9a63ceec)** (@latticexyz/cli)
+
+Added a `mud pull` command that downloads state from an existing world and uses it to generate a MUD config with tables and system interfaces. This makes it much easier to extend worlds.
+
+```
+mud pull --worldAddress 0x… --rpc https://…
+```
+
+---
+
+## Version 2.2.10
+
+Release date: Thu Sep 26 2024
+
+### Patch changes
+
+**[fix(world): resolve system namespace label (#3232)](https://github.com/latticexyz/mud/commit/9d7fc8588ef045280b544d2aace0d53a4324c71a)** (@latticexyz/world)
+
+The `namespace` field in a multi-namespace config is now correctly resolved for systems.
+This fixes a bug with root systems in a multi-namespace project.
+
+**[fix(explorer): construct sqlite table names (#3234)](https://github.com/latticexyz/mud/commit/e39afda94e23cf11ade7bdc46c7ae6510ddc5e26)** (@latticexyz/explorer)
+
+Fixed table name construction in the explorer query for root tables for SQLite.
+
+**[fix(explorer): various fixes (#3235)](https://github.com/latticexyz/mud/commit/8858e52210693679e7626e25ee4dd9bcf30d7ae8)** (@latticexyz/explorer)
+
+- Tables can be searched by specific values.
+- Improved handling of dynamic SQL queries.
+- The "Connect" modal is triggered during a write action if the wallet is not connected.
+- Toast messages are now dismissible.
+
+**[fix(create-mud): upgrade mprocs (#3236)](https://github.com/latticexyz/mud/commit/af26487ed896a2734f50b16a54d585631b13110d)** (create-mud)
+
+Upgraded mprocs to fix issues with it not running when started via npm script.
+
+You can do the same in an existing MUD project with:
+
+```
+pnpm recursive up mprocs@latest
+```
+
+---
+
+## Version 2.2.9
+
+Release date: Wed Sep 25 2024
+
+### Patch changes
+
+**[feat(explorer): dozer integration (#3185)](https://github.com/latticexyz/mud/commit/2f2e63adbc90288d11e4a15d755167f9c97cbf74)** (@latticexyz/explorer)
+
+Exploring worlds on Redstone and Garnet chains will now retrieve data from the hosted SQL indexer.
+
+**[feat(explorer): local indexer inside explorer (#3229)](https://github.com/latticexyz/mud/commit/95aa3bb07df284a374e982ccea53d24df4d61219)** (@latticexyz/explorer, create-mud)
+
+Explorer now automatically starts a local indexer when using Anvil as the target chain.
+
+If you previously had an `indexer` entry in your `mprocs.yaml` file, it can now be removed.
+
+```diff
+-  indexer:
+-    cwd: packages/contracts
+-    shell: shx rm -rf $SQLITE_FILENAME && pnpm sqlite-indexer
+-    env:
+-      DEBUG: mud:*
+-      RPC_HTTP_URL: "http://127.0.0.1:8545"
+-      FOLLOW_BLOCK_TAG: "latest"
+-      SQLITE_FILENAME: "indexer.db"
+```
+
+**[feat(explorer): move filter state to url (#3225)](https://github.com/latticexyz/mud/commit/6c056de6090a6f4a9633b96513ca1738dc0993c1)** (@latticexyz/explorer)
+
+Table filters are now included as part of the URL. This enables deep links and improves navigating between pages without losing search state.
+
+**[refactor(cli): adjust deploy order (#3222)](https://github.com/latticexyz/mud/commit/9d990b5edc39c471929b2e6309bfa2ac448aa4c3)** (@latticexyz/cli)
+
+Adjusted deploy order so that the world deploy happens before everything else to avoid spending gas on system contract deploys, etc. if a world cannot be created first.
+
+---
+
+## Version 2.2.8
+
+Release date: Mon Sep 23 2024
+
+### Patch changes
+
+**[feat(store-sync): remove unused generics (#3218)](https://github.com/latticexyz/mud/commit/7c7bdb26d0f87e2a5fc20c4eb34abb5167000ab9)** (@latticexyz/common, @latticexyz/store-sync)
+
+Removed unused generics and ensure that we're only passing around the generics we need, when we need them. Hopefully this improves TS performance in MUD projects.
+
+**[fix(create-mud): add missing three deps, fix types (#3221)](https://github.com/latticexyz/mud/commit/4fffb79d433d1052e4b3c9cce0215cf81eba9b11)** (create-mud)
+
+Fixed types in threejs template after dependency bump.
+
+**[feat(cli): paginate world deploy logs (#3217)](https://github.com/latticexyz/mud/commit/0f5b2916edfa24b9d0ad1b82df56aed57f7e657d)** (@latticexyz/cli)
+
+When deploying to an existing world, the deployer now paginates with [`fetchLogs`](https://github.com/latticexyz/mud/blob/main/packages/block-logs-stream/src/fetchLogs.ts) to find the world deployment.
+
+**[feat(cli): paginate world deploy logs (#3217)](https://github.com/latticexyz/mud/commit/0f5b2916edfa24b9d0ad1b82df56aed57f7e657d)** (@latticexyz/block-logs-stream)
+
+- For block range size errors, `fetchLogs` now reduces the max block range for subsequent requests in its loop. For block out of range or response size errors, only the current request's block range is reduced until the request succeeds, then it resets to the max block range.
+- Added `fetchBlockLogs` to find all matching logs of the given block range, grouped by block number, in a single async call.
+- Loosened the `publicClient` type and switched to tree shakable actions.
+
+**[fix(cli): wait for world init before transferring ownership (#3220)](https://github.com/latticexyz/mud/commit/b0711983a5f72f9b3236e6cbcef3dae7a424a09c)** (@latticexyz/cli)
+
+If the project is using a custom world, the deployer now waits for the init transaction to be confirmed before transferring ownership of the world.
+
+---
+
+## Version 2.2.7
+
+Release date: Fri Sep 20 2024
+
+### Patch changes
+
+**[feat(cli): quieter automine (#3212)](https://github.com/latticexyz/mud/commit/58f101e45ad50e064779cbc441246a22b70efa07)** (@latticexyz/cli)
+
+Reduced the log noise from enabling/disabling automine on non-Anvil chains.
+
+**[fix(explorer): better observer decorator types (#3206)](https://github.com/latticexyz/mud/commit/5a6c03c6bc02c980ca051dadd8e20560ac25c771)** (@latticexyz/explorer)
+
+Fixed `observer` decorator types so it can be used in more places.
+
+**[feat(explorer): filterable tables selector (#3203)](https://github.com/latticexyz/mud/commit/7ac2a0d5ffd3f65d89318fc5778121ddf45bb5e1)** (@latticexyz/explorer)
+
+Table selector of the Explore tab now has an input for searching/filtering tables by name.
+
+**[fix(store): better enumValues type (#3211)](https://github.com/latticexyz/mud/commit/a08ba5e31e90bf3208919bc1d5e08c1ba9524130)** (@latticexyz/store)
+
+Improved config output type of `enumValues`.
+
+**[refactor: waitForStateChange -> waitForTransaction (#3210)](https://github.com/latticexyz/mud/commit/d21c1d1817ec2394007b28c90fec5a81f1fdd3d0)** (@latticexyz/explorer)
+
+Renamed optional `waitForStateChange` param in `observer()` decorator to `waitForTransaction` to better align with `@latticexyz/store-sync` packages.
+
+```diff
+ const { waitForTransaction } = syncToZustand(...);
+-observer({ waitForStateChange: waitForTransaction });
++observer({ waitForTransaction });
+```
+
+---
+
+## Version 2.2.6
+
+Release date: Thu Sep 19 2024
+
+### Patch changes
+
+**[feat(stash): release package to npm (#3184)](https://github.com/latticexyz/mud/commit/20fac30f2fb1e026f195ffe42c014cfaf9877376)** (@latticexyz/stash)
+
+Added `@latticexyz/stash` package, a TypeScript client state library optimized for the MUD Store data model.
+It uses the MUD store config to define local tables, which support writing, reading and subscribing to table updates.
+It comes with a query engine optimized for "ECS-style" queries (similar to `@latticexyz/recs`) but with native support for composite keys.
+
+You can find usage examples in the [`@latticexyz/stash` README.md](https://github.com/latticexyz/mud/blob/main/packages/stash/README.md).
+
+This package is experimental and will have breaking changes while we refine its APIs and implementation. All of its exports are temporarily under `@latticexyz/stash/internal` until we consider it stable.
+
+**[fix(cli): improve performance of linked library resolution during deployment (#3197)](https://github.com/latticexyz/mud/commit/22c37c3dbec5726f52055ed61c4e5f0e52ed30c1)** (@latticexyz/cli)
+
+Significantly improved the deployment performance for large projects with public libraries by implementing a more efficient algorithm to resolve public libraries during deployment.
+The local deployment time on a large reference project was reduced from over 10 minutes to 4 seconds.
+
+**[feat(store-sync): add syncToStash util (#3192)](https://github.com/latticexyz/mud/commit/8dc588918c488f98603cbb7e183c88129942debe)** (@latticexyz/store-sync)
+
+Added a `syncToStash` util to hydrate a `stash` client store from MUD contract state. This is currently exported from `@latticexyz/store-sync/internal` while Stash package is unstable/experimental.
+
+```ts
+import { createClient, http } from "viem";
+import { anvil } from "viem/chains";
+import { createStash } from "@latticexyz/stash/internal";
+import { syncToStash } from "@latticexyz/store-sync/internal";
+import config from "../mud.config";
+
+const client = createClient({
+  chain: anvil,
+  transport: http(),
+});
+
+const address = "0x...";
+
+const stash = createStash(config);
+const sync = await syncToStash({ stash, client, address });
+```
+
+---
+
+## Version 2.2.5
+
+Release date: Thu Sep 19 2024
+
+### Patch changes
+
+**[fix(explorer): various fixes (#3195)](https://github.com/latticexyz/mud/commit/55ae82299985fd927cb45cf0d262c7fded156763)** (@latticexyz/explorer)
+
+Refactored `observer` initialization to reuse bridge iframes with the same `url`.
+
+**[fix(explorer): various fixes (#3195)](https://github.com/latticexyz/mud/commit/55ae82299985fd927cb45cf0d262c7fded156763)** (@latticexyz/explorer)
+
+Fixed favicon paths and fixed a few issues where we were incorrectly redirecting based on the chain name or ID.
+
+**[fix(explorer): various fixes (#3195)](https://github.com/latticexyz/mud/commit/55ae82299985fd927cb45cf0d262c7fded156763)** (@latticexyz/explorer)
+
+Fixed an issue where the `observer` Viem client decorator required an empty object arg when no options are used.
+
+```diff
+-client.extend(observer({}));
++client.extend(observer());
+```
+
+---
+
+## Version 2.2.4
+
+Release date: Wed Sep 18 2024
+
+### Patch changes
+
+**[feat(explorer): anvil connector, connect external wallets (#3164)](https://github.com/latticexyz/mud/commit/e6147b2a9c92369d2ca26c60275c766da1a7d0d5)** (@latticexyz/explorer)
+
+World Explorer now supports connecting external wallets.
+
+**[fix(common): use latest block tag in nonce manager (#3180)](https://github.com/latticexyz/mud/commit/2f935cfd3fbc62f3c304e470751a26189523fcd2)** (@latticexyz/common)
+
+To reset an account's nonce, the nonce manager uses the [`eth_getTransactionCount`](https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_gettransactioncount) RPC method,
+which returns the number of transactions sent from the account.
+When using the `pending` block tag, this includes transactions in the mempool that have not been included in a block yet.
+If an account submits a transaction with a nonce higher than the next valid nonce, this transaction will stay in the mempool until the nonce gap is closed and the transactions nonce is the next valid nonce.
+This means if an account has gapped transactions "stuck in the mempool", the `eth_getTransactionCount` method with `pending` block tag can't be used to get the next valid nonce
+(since it includes the number of transactions stuck in the mempool).
+Since the nonce manager only resets the nonce on reload or in case of a nonce error, using the `latest` block tag by default is the safer choice to be able to recover from nonce gaps.
+
+Note that this change may reveal more "transaction underpriced" errors than before. These errors will now be retried automatically and should go through after the next block is mined.
+
+**[feat: bump wevm packages (#3178)](https://github.com/latticexyz/mud/commit/50010fb9fb6d21f69ba23c1eae14f4203919183d)** (@latticexyz/block-logs-stream, @latticexyz/cli, @latticexyz/common, @latticexyz/config, @latticexyz/dev-tools, @latticexyz/explorer, @latticexyz/faucet, @latticexyz/protocol-parser, @latticexyz/schema-type, @latticexyz/stash, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world, create-mud)
+
+Bumped viem, wagmi, and abitype packages to their latest release.
+
+MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+```
+pnpm recursive up viem@2.21.6 wagmi@2.12.11 @wagmi/core@2.13.5 abitype@1.0.6
+```
+
+**[feat(cli): register namespace labels (#3172)](https://github.com/latticexyz/mud/commit/d3acd9242da44d201ea99e04c1631ed687d30a80)** (@latticexyz/cli)
+
+Along with table and system labels, the MUD deployer now registers namespace labels. Additionally, labels will only be registered if they differ from the underlying resource name.
+
+**[feat(explorer): active chain as dynamic param (#3181)](https://github.com/latticexyz/mud/commit/20604952d33419f18ab93fcc048db564b56a54b4)** (@latticexyz/explorer)
+
+Added ability to connect World Explorer to Redstone and Garnet chains. The active chain is now passed as a dynamic route parameter.
+
+**[feat(explorer): write observer (#3169)](https://github.com/latticexyz/mud/commit/784e5a98e679388ad6bc941cd1bc9b6486cf276d)** (@latticexyz/explorer)
+
+World Explorer package now exports an `observer` Viem decorator that can be used to get visibility into contract writes initiated from your app. You can watch these writes stream in on the new "Observe" tab of the World Explorer.
+
+```ts
+import { createClient, publicActions, walletActions } from "viem";
+import { observer } from "@latticexyz/explorer/observer";
+
+const client = createClient({ ... })
+  .extend(publicActions)
+  .extend(walletActions)
+  .extend(observer());
+```
+
+By default, the `observer` action assumes the World Explorer is running at `http://localhost:13690`, but this can be customized with the `explorerUrl` option.
+
+```ts
+observer({
+  explorerUrl: "http://localhost:4444",
+});
+```
+
+If you want to measure the timing of transaction-to-state-change, you can also pass in a `waitForStateChange` function that takes a transaction hash and returns a partial [`TransactionReceipt`](https://viem.sh/docs/glossary/types#transactionreceipt) with `blockNumber`, `status`, and `transactionHash`. This mirrors the `waitForTransaction` function signature returned by `syncTo...` helper in `@latticexyz/store-sync`.
+
+```ts
+observer({
+  async waitForStateChange(hash) {
+    return await waitForTransaction(hash);
+  },
+});
+```
+
+**[fix(world): resolve module config (#3193)](https://github.com/latticexyz/mud/commit/1f24978894725dca13c2adfee384e12f53f05c26)** (@latticexyz/world)
+
+Added a config resolver to add default values for `modules` in the world config.
+
+**[feat(store-sync): add util to fetch snapshot from indexer with SQL API (#2996)](https://github.com/latticexyz/mud/commit/8b4110e5d9ca2b7a6553a2c4078b7a8b82c6f211)** (@latticexyz/protocol-parser, @latticexyz/store-sync)
+
+Added `store-sync` helper libraries to interact with the indexer's experimental SQL API endpoint. Documentation is available at [https://mud.dev/indexer/sql](https://mud.dev/indexer/sql).
+
+---
+
+## Version 2.2.3
+
+Release date: Tue Sep 10 2024
+
+### Patch changes
+
+**[feat(cli): deploy custom world (#3131)](https://github.com/latticexyz/mud/commit/854645260c41eaa89cdadad30bf8e70d5d2fd109)** (@latticexyz/cli, @latticexyz/world)
+
+MUD config now supports a `deploy.customWorld` option that, when used with the CLI, will deploy the specified custom World implementation.
+Custom implementations must still follow [the World protocol](https://github.com/latticexyz/mud/tree/main/packages/world/ts/protocol-snapshots).
+
+If you want to extend the world with new functions or override existing registered functions, we recommend using [root systems](https://mud.dev/world/systems#root-systems).
+However, there are rare cases where this may not be enough to modify the native/internal World behavior.
+Note that deploying a custom World opts out of the world factory, deterministic world deploys, and upgradeable implementation proxy.
+
+```ts
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
+  customWorld: {
+    // path to custom world source from project root
+    sourcePath: "src/CustomWorld.sol",
+    // custom world contract name
+    name: "CustomWorld",
+  },
+});
+```
+
+**[fix(explorer): world address cli option as hex (#3155)](https://github.com/latticexyz/mud/commit/b9c61a96082e62c4f1bec3a8ebb358ea30c315f0)** (@latticexyz/explorer)
+
+Fixed an issue with `--worldAddress` CLI flag being incorrectly interpreted as a number rather a hex string. Additionally, added `--hostname` option for specifying the hostname on which to start the application.
+
+**[feat(cli): speed up dev deploy with temporary automine during deploy (#3130)](https://github.com/latticexyz/mud/commit/d3ab5c3783265b3e82b76157bccedeae6b0445e1)** (@latticexyz/cli)
+
+Speed up deployment in development by temporarily enabling automine mode for the duration of the deployment.
+
+---
+
+## Version 2.2.2
+
+Release date: Tue Sep 03 2024
+
+### Patch changes
+
+**[style(explorer): format account balances (#3117)](https://github.com/latticexyz/mud/commit/fb9def83ddb128387b70edb6fe88064e234366ce)** (@latticexyz/explorer)
+
+Format account balances with comma-separated thousands and trimmed decimal places for better readability.
+
+**[feat(explorer): show error message in error page (#3121)](https://github.com/latticexyz/mud/commit/4b86c04dc703faf3bf12f6143781b5940b62cb17)** (@latticexyz/explorer)
+
+Added error messages to error page to facilitate easier troubleshooting.
+
+**[fix(cli): add missing await (#3119)](https://github.com/latticexyz/mud/commit/ef6f7c0c6afcc46e7463d18c00fa99c7cafcae65)** (@latticexyz/cli)
+
+Fixed regression in 2.2.1 where deployment of modules already installed would throw an error instead of skipping.
+
+---
+
+## Version 2.2.1
+
+Release date: Sun Sep 01 2024
+
+### Patch changes
+
+**[fix(store-sync): handle TransactionReceiptNotFoundError (#3115)](https://github.com/latticexyz/mud/commit/603b2ab6631c4f38fca0d9092d255578061987aa)** (@latticexyz/store-sync)
+
+Improved error handling of `TransactionReceiptNotFoundError` in `waitForTransaction` when Viem versions aren't aligned.
+
+**[fix(cli): deployer should wait for prereq txs (#3113)](https://github.com/latticexyz/mud/commit/0738d295f802be28524d517d75efe3b5837f10c1)** (@latticexyz/cli)
+
+Deployer now waits for prerequisite transactions before continuing.
+
+**[fix(common): use pending block tag in tx queue (#3073)](https://github.com/latticexyz/mud/commit/c0764a5e7d3a6a5291198dfe802fe060a0b54da9)** (@latticexyz/common)
+
+`writeContract` and `sendTransaction` actions now use `pending` block tag when estimating gas. This aligns with previous behavior before changes in the last version.
+
+---
+
+## Version 2.2.0
+
+Release date: Fri Aug 30 2024
+
+### Minor changes
+
+**[chore(explorer): update world explorer naming (#3069)](https://github.com/latticexyz/mud/commit/0eb25560cfc78354a5e6845c3244375759b71f4c)** (@latticexyz/explorer)
+
+Initial release of the `@latticexyz/explorer` package. World Explorer is a standalone tool designed to explore and manage worlds. This initial release supports local worlds, with plans to extend support to any world in the future.
+
+Read more on how to get started or contribute in the [World Explorer README](https://github.com/latticexyz/mud/blob/main/packages/explorer/README.md).
+
+### Patch changes
+
+**[fix(common): route all actions through viem client (#3071)](https://github.com/latticexyz/mud/commit/69cd0a1ba0450f3407ec5865334079653503fa86)** (@latticexyz/common)
+
+Updated all custom Viem actions to properly call other actions via `getAction` so they can be composed.
+
+**[build: use shx from dev deps (#3085)](https://github.com/latticexyz/mud/commit/c0bb0da58966b49c51570de9e3e031bee78b8473)** (create-mud)
+
+Templates now use `shx` to run shell commands in scripts for better Windows compatibility.
+
+**[feat(world): add namespaceLabel to system config (#3057)](https://github.com/latticexyz/mud/commit/04c675c946a0707956f38daad3fe516fde4a33a2)** (@latticexyz/config, @latticexyz/store)
+
+Fixed a few type issues with `namespaceLabel` in tables and added/clarified TSDoc for config input/output objects.
+
+**[fix(create-mud): update changeset package name + description (#3066)](https://github.com/latticexyz/mud/commit/bd4dffcabd6c6715df213e6c0c8b0631c9afc0b7)** (create-mud)
+
+New projects created with `pnpm create mud` now include the World Explorer and SQLite indexer running as additional services.
+
+**[feat(world): add namespaceLabel to system config (#3057)](https://github.com/latticexyz/mud/commit/04c675c946a0707956f38daad3fe516fde4a33a2)** (@latticexyz/cli, @latticexyz/world)
+
+Add a strongly typed `namespaceLabel` to the system config output.
+It corresponds to the `label` of the namespace the system belongs to and can't be set manually.
+
+**[feat(cli,world): register system ABI onchain (#3050)](https://github.com/latticexyz/mud/commit/31caecc95be72fe94efd1df8cba2b5435fa39bb4)** (@latticexyz/cli)
+
+In addition to table labels, system labels and ABIs are now registered onchain during deploy.
+
+---
+
+## Version 2.1.1
+
+Release date: Tue Aug 20 2024
+
+### Patch changes
+
+**[chore: upgrade zod to latest (#3020)](https://github.com/latticexyz/mud/commit/64354814ed325cefd1066282944408de7c40b4a7)** (@latticexyz/cli, @latticexyz/faucet, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/world-modules)
+
+Upgrade `zod` to `3.23.8` to avoid issues with [excessively deep type instantiations](https://github.com/colinhacks/zod/issues/577).
+
+**[chore: bump viem, abitype (#3038)](https://github.com/latticexyz/mud/commit/9e21e42c7e510cc595acddfbd3c9006f42fcf81e)** (@latticexyz/block-logs-stream, @latticexyz/cli, @latticexyz/common, @latticexyz/config, @latticexyz/dev-tools, @latticexyz/faucet, @latticexyz/protocol-parser, @latticexyz/query, @latticexyz/schema-type, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world, create-mud)
+
+Bumped viem to `2.19.8` and abitype to `1.0.5`.
+
+MUD projects using viem or abitype should do the same to ensure no type errors due to mismatched versions:
+
+```
+pnpm recursive up viem@2.19.8 abitype@1.0.5
+```
+
+**[refactor(world): make AccessControl lib usable outside of world package (#3034)](https://github.com/latticexyz/mud/commit/6a66f572039ea9193b2c4882943ab3a94ed3f844)** (@latticexyz/world-module-metadata, @latticexyz/world-modules, @latticexyz/world)
+
+Refactored `AccessControl` library exported from `@latticexyz/world` to be usable outside of the world package and updated module packages to use it.
+
+**[feat(world,cli): add system deploy config (#3011)](https://github.com/latticexyz/mud/commit/86a810488f7ffb481534062c9c3ff170a1120982)** (@latticexyz/world)
+
+Added `deploy` config options to systems in the MUD config:
+
+- `disabled` to toggle deploying the system (defaults to `false`)
+- `registerWorldFunctions` to toggle registering namespace-prefixed system functions on the world (defaults to `true`)
+
+```ts
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
+  systems: {
+    HiddenSystem: {
+      deploy: {
+        registerWorldFunctions: false,
+      },
+    },
+  },
+});
+```
+
+**[feat(world-module-metadata): add metadata module (#3026)](https://github.com/latticexyz/mud/commit/fad4e85853d9ee80753ae1b0b161b60bf9874846)** (@latticexyz/cli, @latticexyz/world-module-metadata)
+
+Added metadata module to be automatically installed during world deploy. This module allows for tagging any resource with arbitrary metadata. Internally, we'll use this to tag resources with labels onchain so that we can use labels to create a MUD project from an existing world.
+
+**[refactor(common): simplify writeContract/sendTransaction actions (#3043)](https://github.com/latticexyz/mud/commit/2daaab13a9387e661475aef9bafb938fa12f5eb9)** (@latticexyz/common)
+
+Refactored `writeContract` and `sendTransaction` actions for simplicity and better error messages.
+
+**[fix(world): worldgen should read system source from root dir (#3027)](https://github.com/latticexyz/mud/commit/542ea540329fce74d85c74368e26386682e39cce)** (@latticexyz/world)
+
+Fixed an issue with worldgen when using a different `rootDir` from the current working directory, where worldgen would read system source files from the wrong place.
+
+**[feat(config,store,world): add namespaceLabel to table config (#3039)](https://github.com/latticexyz/mud/commit/57bf8c361999c7210622466dadcba037d4fe1238)** (@latticexyz/config, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world)
+
+Add a strongly typed `namespaceLabel` to the table config output.
+It corresponds to the `label` of the namespace the table belongs to and can't be set manually.
+
+---
+
+## Version 2.1.0
+
+Release date: Mon Aug 05 2024
+
+### Minor changes
+
+**[docs: update resource labels changeset (#2985)](https://github.com/latticexyz/mud/commit/9145d0abc513b3f5976666f25f94c0c85d1be262)** (@latticexyz/config, @latticexyz/store, @latticexyz/world)
+
+Tables and systems in config output now include a `label` property. Labels are now used throughout the codebase as a user-friendly way to reference the given resource: config keys, contract names, generated libraries, etc.
+
+Inside `namespaces` config output, keys for tables and systems and their filenames will always correspond to their labels. This should make MUD tooling more intuitive and predictable. For backwards compatibility, `tables` config output still uses namespace-prefixed keys.
+
+Labels replace the previous resource `name` usage, which is truncated to `bytes16` to be used as part of the resource ID and, in the future, may not always be human-readable.
+
+These labels will soon be registered onchain so that developers can initialize a new MUD project from an existing world, generating config and interfaces with user-friendly names.
+
+**[docs: update namespaces changeset (#2989)](https://github.com/latticexyz/mud/commit/1fe57dea0553ab89ea1ecca0d4fe0cc8281ca09d)** (@latticexyz/cli, @latticexyz/store, @latticexyz/world)
+
+MUD projects can now use multiple namespaces via a new top-level `namespaces` config option.
+
+```ts
+import { defineWorld } from "@latticexyz/world";
+
+export default defineWorld({
+  namespaces: {
+    game: {
+      tables: {
+        Player: { ... },
+        Position: { ... },
+      },
+    },
+    guilds: {
+      tables: {
+        Guild: { ... },
+      },
+      systems: {
+        MembershipSystem: { ... },
+        TreasurySystem: { ... },
+      },
+    },
+  },
+});
+```
+
+Once you use the top-level `namespaces` config option, your project will be in "multiple namespaces mode", which expects a source directory structure similar to the config structure: a top-level `namespaces` directory with nested namespace directories that correspond to each namespace label in the config.
+
+```
+~/guilds
+├── mud.config.ts
+└── src
+    └── namespaces
+        ├── game
+        │   └── codegen
+        │       └── tables
+        │           ├── Player.sol
+        │           └── Position.sol
+        └── guilds
+            ├── MembershipSystem.sol
+            ├── TreasurySystem.sol
+            └── codegen
+                └── tables
+                    └── Guild.sol
+```
+
+### Patch changes
+
+**[fix(cli,store): don't deploy disabled tables (#2982)](https://github.com/latticexyz/mud/commit/24e285d5ae2d4f5791688d96ee7f8635551d3fb8)** (@latticexyz/store)
+
+Disabled deploy of `Hooks` table, as this was meant to be a generic, codegen-only table.
+
+**[refactor(store-sync): remove remaining refs to old config (#2938)](https://github.com/latticexyz/mud/commit/b62cf9fb061206a02a798403db0637e49fdabcfa)** (@latticexyz/store-sync)
+
+Refactored package to use the new Store/World configs under the hood, removing compatibility layers and improving performance.
+
+**[refactor(store-sync): remove remaining refs to old config (#2938)](https://github.com/latticexyz/mud/commit/b62cf9fb061206a02a798403db0637e49fdabcfa)** (@latticexyz/store-indexer)
+
+Updated return values to match updated types in `@latticexyz/store-sync`.
+
+**[refactor(world): update worldgen with namespaces output (#2974)](https://github.com/latticexyz/mud/commit/570086e7b4980639c0150a150eed1e09591e739a)** (@latticexyz/world)
+
+Refactored worldgen in preparation for multiple namespaces.
+
+**[chore(store-sync): simplify types (#2946)](https://github.com/latticexyz/mud/commit/f43f945eea9e948fa58550990b35c5dd2bc04678)** (@latticexyz/store-sync)
+
+Adjusted `SyncToRecsOptions` type intersection to improve TypeScript performance.
+
+**[refactor(cli): move off of old config (#2941)](https://github.com/latticexyz/mud/commit/3cbbc62c9ace1a5eb1a5cb832ff88f3d05c5722e)** (@latticexyz/cli)
+
+Refactored package to use the new Store/World configs under the hood, removing compatibility layers.
+
+Removed `--srcDir` option from all commands in favor of using `sourceDirectory` in the project's MUD config.
+
+**[fix: preserve JsDoc on defineWorld output, bump @arktype/util (#2815)](https://github.com/latticexyz/mud/commit/7129a16057a7fcc7195015a916bdf74e0809f3a2)** (@latticexyz/config, @latticexyz/query, @latticexyz/store, @latticexyz/world)
+
+Bumped `@arktype/util` and moved `evaluate`/`satisfy` usages to its `show`/`satisfy` helpers.
+
+**[refactor(store-sync): use config namespaces for tables (#2963)](https://github.com/latticexyz/mud/commit/3440a86b56823d0d54cd2e11ea4b90acc0e40682)** (@latticexyz/store-sync)
+
+Refactored `syncToRecs` and `syncToZustand` to use tables from config namespaces output. This is a precursor for supporting multiple namespaces.
+
+Note for library authors: If you were using `createStorageAdapter` from `@latticexyz/store-sync/recs`, this helper no longer appends MUD's built-in tables from Store and World packages. This behavior was moved into `syncToRecs` for consistency with `syncToZustand` and makes `createStorageAdapter` less opinionated.
+
+You can achieve the previous behavior with:
+
+```diff
+ import { createStorageAdapter } from "@latticexyz/store-sync/recs";
++import { mudTables } from "@latticexyz/store-sync";
+
+ createStorageAdapter({
+-  tables,
++  tables: { ...tables, ...mudTables },
+   ...
+ });
+```
+
+**[refactor(cli): move off of old config (#2941)](https://github.com/latticexyz/mud/commit/3cbbc62c9ace1a5eb1a5cb832ff88f3d05c5722e)** (@latticexyz/world)
+
+Refactored how worldgen resolves systems from the config and filesystem.
+
+**[fix(cli,store): don't deploy disabled tables (#2982)](https://github.com/latticexyz/mud/commit/24e285d5ae2d4f5791688d96ee7f8635551d3fb8)** (@latticexyz/cli)
+
+`mud deploy` will now correctly skip tables configured with `deploy: { disabled: true }`.
+
+**[refactor(cli): use config namespaces for tables (#2965)](https://github.com/latticexyz/mud/commit/2da9e48cd4bb8e3dafecf6c37799929b7bbbc39d)** (@latticexyz/cli)
+
+Refactored CLI commands to use tables from config namespaces output. This is a precursor for supporting multiple namespaces.
+
+**[fix: preserve JsDoc on defineWorld output, bump @arktype/util (#2815)](https://github.com/latticexyz/mud/commit/7129a16057a7fcc7195015a916bdf74e0809f3a2)** (@latticexyz/common)
+
+Removed `evaluate` and `satisfy` type utils in favor of `show` and `satisfy` from `@arktype/util`.
+
+**[refactor(cli): move off of old config (#2941)](https://github.com/latticexyz/mud/commit/3cbbc62c9ace1a5eb1a5cb832ff88f3d05c5722e)** (@latticexyz/world-modules)
+
+Moved build scripts to `mud build` now that CLI doesn't depend on this package.
+
+Removed generated world interfaces as this package isn't meant to be used as a "world", but as a set of individual modules.
+
+**[refactor(store-sync): move syncToZustand to new config (#2936)](https://github.com/latticexyz/mud/commit/9e05278de6730517647ae33fd9d46f2687ea5f93)** (@latticexyz/dev-tools)
+
+Updated Zustand components after changes to `syncToZustand`.
+
+**[refactor(cli): remove last ethers usage (#2952)](https://github.com/latticexyz/mud/commit/609de113f35e0e2a0fe4c6dafd25a900c6cd2cfa)** (@latticexyz/cli)
+
+Refactored `mud trace` command to use Viem instead of Ethers and removed Ethers dependencies from the package.
+
+**[refactor(store): update tablegen with namespaces output (#2972)](https://github.com/latticexyz/mud/commit/69eb63b5939c30515a62da9afbdd71f89a67f8a2)** (@latticexyz/store)
+
+Refactored tablegen in preparation for multiple namespaces and addressed a few edge cases:
+
+- User types configured with a relative `filePath` are now resolved relative to the project root (where the `mud.config.ts` lives) rather than the current working directory.
+- User types inside libraries now need to be referenced with their fully-qualified code path (e.g. `LibraryName.UserTypeName`).
+
+**[chore: bump glob (#2922)](https://github.com/latticexyz/mud/commit/e49059f057575614071ad992cd4df387ba10ca33)** (@latticexyz/abi-ts, @latticexyz/cli, @latticexyz/world-modules, @latticexyz/world, create-mud)
+
+Bumped `glob` dependency.
+
+**[feat(common): throw instead of truncating namespace (#2917)](https://github.com/latticexyz/mud/commit/8d0453e7b52e23da4ebe4eef30db734dd33c06b9)** (@latticexyz/common)
+
+`resourceToHex` will now throw if provided namespace is >14 characters. Since namespaces are used to determine access control, it's not safe to automatically truncate to fit into `bytes14` as that may change the indended namespace for resource access.
+
+**[refactor(store,world): simplify table shorthands (#2969)](https://github.com/latticexyz/mud/commit/fb1cfef0c19e7b9b5bb3ea5ef8b581e8db892fb7)** (@latticexyz/store, @latticexyz/world)
+
+Refactored how the config handles shorthand table definitions, greatly simplifying the codebase. This will make it easier to add support for multiple namespaces.
+
+---
+
+## Version 2.0.12
+
+Release date: Fri May 31 2024
+
+### Patch changes
+
+**[feat(store,world): add option to codegen tables into namespace dirs (#2840)](https://github.com/latticexyz/mud/commit/c10c9fb2dacc93bc58d013e74509180f90ac5b5a)** (@latticexyz/store)
+
+Internal `tablegen` function (exported from `@latticexyz/store/codegen`) now expects an object of options with a `configPath` to use as a base path to resolve other relative paths from.
+
+**[feat(store,world): add option to codegen tables into namespace dirs (#2840)](https://github.com/latticexyz/mud/commit/c10c9fb2dacc93bc58d013e74509180f90ac5b5a)** (@latticexyz/store, @latticexyz/world)
+
+Added `sourceDirectory` as a top-level config option for specifying contracts source (i.e. Solidity) directory relative to the MUD config. This is used to resolve other paths in the config, like codegen and user types. Like `foundry.toml`, this defaults to `src` and should be kept in sync with `foundry.toml`.
+
+Also added a `codegen.namespaceDirectories` option to organize codegen output (table libraries, etc.) into directories by namespace. For example, a `Counter` table in the `app` namespace will have codegen at `codegen/app/tables/Counter.sol`. If not set, defaults to `true` when using top-level `namespaces` key, `false` otherwise.
+
+**[fix(cli,world): resolve table by just name (#2850)](https://github.com/latticexyz/mud/commit/9be2bb863194e2beee03b3d783f925c79b3c8562)** (@latticexyz/cli, @latticexyz/world)
+
+Fixed `resolveTableId` usage within config's module `args` to allow referencing both namespaced tables (e.g. `resolveTableId("app_Tasks")`) as well as tables by just their name (e.g. `resolveTableId("Tasks")`). Note that using just the table name requires it to be unique among all tables within the config.
+
+This helper is now exported from `@latticexyz/world` package as intended. The previous, deprecated export has been removed.
+
+```diff
+-import { resolveTableId } from "@latticexyz/config/library";
++import { resolveTableId } from "@latticexyz/world/internal";
+```
+
+**[fix(world-modules): register total supply table in erc20 module (#2877)](https://github.com/latticexyz/mud/commit/36c8b5b2476281ef9f66347c798aa93454648572)** (@latticexyz/world-modules)
+
+Fixed `ERC20Module` to register the `TotalSupply` table when creating a new token.
+
+If you've deployed a world with the `ERC20Module`, we recommend patching your world to register this table so that indexers can properly decode its record. You can do so with a simple Forge script:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+
+import { Script } from "forge-std/Script.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { TotalSupply } from "@latticexyz/world-modules/src/modules/erc20-puppet/tables/TotalSupply.sol";
+import { _totalSupplyTableId } from "@latticexyz/world-modules/src/modules/erc20-puppet/utils.sol";
+
+contract RegisterTotalSupply is Script {
+  function run(address worldAddress, string memory namespaceString) external {
+    bytes14 namespace = bytes14(bytes(namespaceString));
+
+    StoreSwitch.setStoreAddress(worldAddress);
+
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    vm.startBroadcast(deployerPrivateKey);
+
+    TotalSupply.register(_totalSupplyTableId(namespace));
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+Then execute the transactions by running the following [`forge script`](https://book.getfoundry.sh/reference/forge/forge-script?highlight=script#forge-script) command:
+
+```shell
+forge script ./script/RegisterTotalSupply.s.sol --sig "run(address,string)" $WORLD_ADDRESS $NAMESPACE_STRING
+```
+
+**[feat(common): export base tsconfig (#2873)](https://github.com/latticexyz/mud/commit/f3180fe8437224d7a568f79ff60c9e70e9b48792)** (@latticexyz/abi-ts, @latticexyz/block-logs-stream, @latticexyz/cli, @latticexyz/common, @latticexyz/config, @latticexyz/dev-tools, @latticexyz/faucet, @latticexyz/gas-report, @latticexyz/protocol-parser, @latticexyz/query, @latticexyz/react, @latticexyz/recs, @latticexyz/schema-type, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store, @latticexyz/utils, @latticexyz/world-modules, @latticexyz/world, create-mud, solhint-config-mud, solhint-plugin-mud)
+
+TS source has been removed from published packages in favor of DTS in an effort to improve TS performance. All packages now inherit from a base TS config in `@latticexyz/common` to allow us to continue iterating on TS performance without requiring changes in your project code.
+
+If you have a MUD project that you're upgrading, we suggest adding a `tsconfig.json` file to your project workspace that extends this base config.
+
+```sh
+pnpm add -D @latticexyz/common
+echo "{\n  \"extends\": \"@latticexyz/common/tsconfig.base.json\"\n}" > tsconfig.json
+```
+
+Then in each package of your project, inherit from your workspace root's config.
+
+For example, your TS config in `packages/contracts/tsconfig.json` might look like:
+
+```json
+{
+  "extends": "../../tsconfig.json"
+}
+```
+
+And your TS config in `packages/client/tsconfig.json` might look like:
+
+```json
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "types": ["vite/client"],
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "include": ["src"]
+}
+```
+
+You may need to adjust the above configs to include any additional TS options you've set. This config pattern may also reveal new TS errors that need to be fixed or rules disabled.
+
+If you want to keep your existing TS configs, we recommend at least updating your `moduleResolution` setting.
+
+```diff
+-"moduleResolution": "node"
++"moduleResolution": "Bundler"
+```
+
+**[feat(create-mud): clean up template scripts, add garnet/redstone (#2839)](https://github.com/latticexyz/mud/commit/d75266073e9fa1c5ede61636a60557deead6ff8e)** (create-mud)
+
+Removed unnecessary build step in scripts and added deploy scripts for Redstone and Garnet chains.
+
+---
+
+## Version 2.0.11
+
+Release date: Wed May 15 2024
+
+### Patch changes
+
+**[build: bump to node 18.20.2, pnpm 9.1.1 (#2831)](https://github.com/latticexyz/mud/commit/63e5d2d51192adc0a1f977a269097a03d7bf119d)** (create-mud)
+
+Added pnpm 9 to project's `engines`.
+
+**[fix(cli): fixed module artifactPath imports (#2832)](https://github.com/latticexyz/mud/commit/fe9d726371ddfd99f0b4ffa4b1e64b817417cfd3)** (@latticexyz/cli)
+
+Fixed imports of module artifacts via `artifactPath` and removed unused `@latticexyz/world-modules` dependency.
+
+---
+
+## Version 2.0.10
+
+Release date: Tue May 14 2024
+
+### Patch changes
+
+**[fix(cli): function selector lookup during deploy (#2800)](https://github.com/latticexyz/mud/commit/0ae9189ca60e86f7b12994bcc89bc196871d0e7c)** (@latticexyz/cli)
+
+The deploy CLI now uses logs to find registered function selectors and their corresponding function signatures.
+Previously only function signatures were fetched via logs and then mapped to function selectors via `getRecord` calls,
+but this approach failed for namespaced function selectors of non-root system,
+because the function signature table includes both the namespaced and non-namespaced signature but the function selector table only includes the namespaced selector that is registered on the world.
+
+**[feat(cli): deploy with external modules (#2803)](https://github.com/latticexyz/mud/commit/a1b1ebf67367f91cea4000c073bc6b8da4601e3e)** (@latticexyz/cli, @latticexyz/world)
+
+Worlds can now be deployed with external modules, defined by a module's `artifactPath` in your MUD config, resolved with Node's module resolution. This allows for modules to be published to and imported from npm.
+
+```diff
+ defineWorld({
+   // …
+   modules: [
+     {
+-      name: "KeysWithValueModule",
++      artifactPath: "@latticexyz/world-modules/out/KeysWithValueModule.sol/KeysWithValueModule.json",
+       root: true,
+       args: [resolveTableId("Inventory")],
+     },
+   ],
+ });
+```
+
+Note that the above assumes `@latticexyz/world-modules` is included as a dependency of your project.
+
+**[chore: upgrade to ejs 3.1.10 (#2786)](https://github.com/latticexyz/mud/commit/4e4e9104e84a7cb7d041d2401f0a937e06251985)** (@latticexyz/world-modules, @latticexyz/store, @latticexyz/cli)
+
+Removed the unused `ejs` dependency.
+
+**[docs: fix create-mud package name in changeset (#2825)](https://github.com/latticexyz/mud/commit/de03e2a78e209c7eb509f986aa0ed0d1c2ae068d)** (create-mud)
+
+Templates now use an `app` namespace by default, instead of the root namespace. This helps keep the root namespace clear for intentionally root-level things and avoids pitfalls with root systems calling other root systems.
+
+**[chore: upgrade to ejs 3.1.10 (#2786)](https://github.com/latticexyz/mud/commit/4e4e9104e84a7cb7d041d2401f0a937e06251985)** (@latticexyz/world)
+
+Upgraded the `ejs` dependency to 3.1.10.
+
+**[fix(store-indexer): fix distance from follow block metric (#2791)](https://github.com/latticexyz/mud/commit/0d4e302f44c2ee52e9e14d24552499b7fb04306e)** (@latticexyz/store-indexer)
+
+Fixed the `distance_from_follow_block` gauge to be a positive number if the latest processed block is lagging behind the latest remote block.
+
+**[fix(common): extend OP contracts, add redstone ones (#2792)](https://github.com/latticexyz/mud/commit/51b137d3498a5d6235938cb93dc06ed0131fd7be)** (@latticexyz/common)
+
+Added OP predeploy contracts for Redstone and Garnet chain configs and added chain-specific contracts for Redstone chain config.
+
+**[chore: remove cli faucet command and services package (#2811)](https://github.com/latticexyz/mud/commit/4a61a128ca752aac5d86578573211304fbaf3c27)** (@latticexyz/cli)
+
+Removed broken `mud faucet` command.
+
+**[fix(world): config uses readonly arrays (#2805)](https://github.com/latticexyz/mud/commit/3dbf3bf3a3295ad63264044e315dec075de528fd)** (@latticexyz/world)
+
+Updated World config types to use readonly arrays.
+
+**[docs(store-sync): add changeset for #2808 (#2809)](https://github.com/latticexyz/mud/commit/36e1f7664f9234bf454e6d1f9c3806dfc695f219)** (@latticexyz/store-sync)
+
+Both `encodeEntity` and `decodeEntity` now use an LRU cache to avoid repeating work during iterations of thousands of entities.
+
+**[fix(store,world): throw on unexpected config keys (#2797)](https://github.com/latticexyz/mud/commit/32c1cda666bc8ccd6e083d8d94d96a42e65c3983)** (@latticexyz/store, @latticexyz/world)
+
+`defineStore` and `defineWorld` will now throw a type error if an unexpected config option is used.
+
+**[chore: remove cli faucet command and services package (#2811)](https://github.com/latticexyz/mud/commit/4a61a128ca752aac5d86578573211304fbaf3c27)** (create-mud)
+
+Removed usages of old testnet faucet in templates. The previous testnet faucet is broken, deprecated, and going offline soon. We'll be replacing the burner account pattern with something better very soon!
+
+**[chore: bump zod (#2804)](https://github.com/latticexyz/mud/commit/4caca05e34fd3647122bf2864f2c736e646614b6)** (@latticexyz/cli, @latticexyz/config, @latticexyz/faucet, @latticexyz/store-indexer, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world-modules, @latticexyz/world)
+
+Bumped zod dependency to comply with abitype peer dependencies.
+
+**[feat(store,world): usable enum values from config (#2807)](https://github.com/latticexyz/mud/commit/27f888c70a712cea7f9a157cc82892a884ecc1df)** (@latticexyz/store, @latticexyz/world)
+
+`defineStore` and `defineWorld` now maps your `enums` to usable, strongly-typed enums on `enumValues`.
+
+```ts
+const config = defineStore({
+  enums: {
+    TerrainType: ["Water", "Grass", "Sand"],
+  },
+});
+
+config.enumValues.TerrainType.Water;
+//                              ^? (property) Water: 0
+
+config.enumValues.TerrainType.Grass;
+//                              ^? (property) Grass: 1
+```
+
+This allows for easier referencing of enum values (i.e. `uint8` equivalent) in contract calls.
+
+```ts
+writeContract({
+  // …
+  functionName: "setTerrainType",
+  args: [config.enumValues.TerrainType.Grass],
+});
+```
+
+---
+
 ## Version 2.0.9
 
 Release date: Wed May 01 2024

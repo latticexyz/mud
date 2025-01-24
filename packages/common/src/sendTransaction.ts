@@ -1,19 +1,19 @@
 import {
   Account,
-  CallParameters,
   Chain,
   Client,
   SendTransactionParameters,
   Transport,
   SendTransactionReturnType,
-  PublicClient,
+  SendTransactionRequest,
 } from "viem";
-import { call, sendTransaction as viem_sendTransaction } from "viem/actions";
+import { sendTransaction as viem_sendTransaction } from "viem/actions";
 import pRetry from "p-retry";
 import { debug as parentDebug } from "./debug";
 import { getNonceManager } from "./getNonceManager";
 import { parseAccount } from "viem/accounts";
 import { getFeeRef } from "./getFeeRef";
+import { getAction } from "viem/utils";
 
 const debug = parentDebug.extend("sendTransaction");
 
@@ -24,7 +24,7 @@ export type SendTransactionExtraOptions<chain extends Chain | undefined> = {
    * viem client is a smart account client, like in [permissionless.js](https://github.com/pimlicolabs/permissionless.js),
    * where the transport is the bundler, not an RPC.
    */
-  publicClient?: PublicClient<Transport, chain>;
+  publicClient?: Client<Transport, chain>;
   /**
    * Adjust the number of concurrent calls to the mempool. This defaults to `1` to ensure transactions are ordered
    * and nonces are handled properly. Any number greater than that is likely to see nonce errors and/or transactions
@@ -38,10 +38,11 @@ export type SendTransactionExtraOptions<chain extends Chain | undefined> = {
 export async function sendTransaction<
   chain extends Chain | undefined,
   account extends Account | undefined,
-  chainOverride extends Chain | undefined,
+  const request extends SendTransactionRequest<chain, chainOverride>,
+  chainOverride extends Chain | undefined = undefined,
 >(
   client: Client<Transport, chain, account>,
-  request: SendTransactionParameters<chain, account, chainOverride>,
+  request: SendTransactionParameters<chain, account, chainOverride, request>,
   opts: SendTransactionExtraOptions<chain> = {},
 ): Promise<SendTransactionReturnType> {
   const rawAccount = request.account ?? client.account;
@@ -55,7 +56,6 @@ export async function sendTransaction<
   const nonceManager = await getNonceManager({
     client: opts.publicClient ?? client,
     address: account.address,
-    blockTag: "pending",
     queueConcurrency: opts.queueConcurrency,
   });
 
@@ -65,51 +65,39 @@ export async function sendTransaction<
     args: { chain },
   });
 
-  async function prepare(): Promise<SendTransactionParameters<chain, account, chainOverride>> {
-    if (request.gas) {
-      debug("gas provided, skipping simulate", request.to);
-      return request;
-    }
-
-    debug("simulating tx to", request.to);
-    await call(opts.publicClient ?? client, {
-      ...request,
-      blockTag: "pending",
-      account,
-    } as CallParameters<chain>);
-
-    return request;
-  }
-
   return await nonceManager.mempoolQueue.add(
     () =>
       pRetry(
         async () => {
-          const preparedRequest = await prepare();
-
-          if (!nonceManager.hasNonce()) {
-            await nonceManager.resetNonce();
-          }
-
           const nonce = nonceManager.nextNonce();
-          debug("sending tx with nonce", nonce, "to", preparedRequest.to);
-          const parameters: SendTransactionParameters<chain, account, chainOverride> = {
-            ...preparedRequest,
-            nonce,
+          const params = {
+            // viem_sendTransaction internally estimates gas, which we want to happen on the pending block
+            blockTag: "pending",
             ...feeRef.fees,
-          };
-          return await viem_sendTransaction(client, parameters);
+            ...request,
+            nonce,
+          } as const satisfies SendTransactionParameters<chain, account, chainOverride, request>;
+          debug("sending tx to", request.to, "with nonce", nonce);
+          return await getAction(client, viem_sendTransaction, "sendTransaction")(params as never);
         },
         {
           retries: 3,
           onFailedAttempt: async (error) => {
-            // On nonce errors, reset the nonce and retry
+            // in case this tx failed before hitting the mempool (i.e. gas estimation error), reset nonce so we don't skip past the unused nonce
+            debug("failed, resetting nonce");
+            await nonceManager.resetNonce();
+            // retry nonce errors
+            // TODO: upgrade p-retry and move this to shouldRetry
             if (nonceManager.shouldResetNonce(error)) {
               debug("got nonce error, retrying", error.message);
-              await nonceManager.resetNonce();
               return;
             }
-            // TODO: prepare again if there are gas errors?
+
+            if (String(error).includes("transaction underpriced")) {
+              debug("got transaction underpriced error, retrying", error.message);
+              return;
+            }
+
             throw error;
           },
         },

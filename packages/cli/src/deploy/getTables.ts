@@ -1,56 +1,70 @@
-import { Client, parseAbiItem, decodeAbiParameters, parseAbiParameters } from "viem";
-import { Table } from "./configToTables";
+import { Client, Hex, decodeAbiParameters, parseAbiParameters } from "viem";
 import { hexToResource } from "@latticexyz/common";
-import { WorldDeploy, storeTables } from "./common";
+import { CommonDeployOptions } from "./common";
 import { debug } from "./debug";
-import { storeSetRecordEvent } from "@latticexyz/store";
-import { getLogs } from "viem/actions";
-import { KeySchema, ValueSchema, decodeKey, decodeValueArgs, hexToSchema } from "@latticexyz/protocol-parser/internal";
+import { hexToSchema } from "@latticexyz/protocol-parser/internal";
+import { Schema, Table } from "@latticexyz/config";
+import storeConfig from "@latticexyz/store/mud.config";
+import { getRecords } from "@latticexyz/store-sync";
+
+// TODO: add label and namespaceLabel once we register it onchain
+type DeployedTable = Omit<Table, "label" | "namespaceLabel"> & {
+  readonly keySchema: Schema;
+  readonly keySchemaHex: Hex;
+  readonly valueSchema: Schema;
+  readonly valueSchemaHex: Hex;
+};
 
 export async function getTables({
   client,
   worldDeploy,
-}: {
-  readonly client: Client;
-  readonly worldDeploy: WorldDeploy;
-}): Promise<readonly Table[]> {
-  // This assumes we only use `Tables._set(...)`, which is true as of this writing.
-  // TODO: PR to viem's getLogs to accept topics array so we can filter on all store events and quickly recreate this table's current state
-  // TODO: consider moving this to a batched getRecord for Tables table
-
+  indexerUrl,
+  chainId,
+}: Omit<CommonDeployOptions, "client"> & { client: Client }): Promise<readonly Omit<DeployedTable, "label">[]> {
   debug("looking up tables for", worldDeploy.address);
-  const logs = await getLogs(client, {
-    strict: true,
-    // this may fail for certain RPC providers with block range limits
-    // if so, could potentially use our fetchLogs helper (which does pagination)
+
+  const { records } = await getRecords({
+    table: storeConfig.namespaces.store.tables.Tables,
+    worldAddress: worldDeploy.address,
+    indexerUrl,
+    chainId,
+    client,
     fromBlock: worldDeploy.deployBlock,
     toBlock: worldDeploy.stateBlock,
-    address: worldDeploy.address,
-    event: parseAbiItem(storeSetRecordEvent),
-    args: { tableId: storeTables.store_Tables.tableId },
   });
 
-  // TODO: combine with store-sync logToTable and export from somewhere
-  const tables = logs.map((log) => {
-    const { tableId } = decodeKey(storeTables.store_Tables.keySchema, log.args.keyTuple);
-    const { namespace, name } = hexToResource(tableId);
-    const value = decodeValueArgs(storeTables.store_Tables.valueSchema, log.args);
+  const tables = records.map((record) => {
+    const { type, namespace, name } = hexToResource(record.tableId);
 
-    // TODO: migrate to better helper
-    const keySchemaFields = hexToSchema(value.keySchema);
-    const valueSchemaFields = hexToSchema(value.valueSchema);
-    const keyNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedKeyNames)[0];
-    const fieldNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedFieldNames)[0];
+    const solidityKeySchema = hexToSchema(record.keySchema);
+    const solidityValueSchema = hexToSchema(record.valueSchema);
+    const keyNames = decodeAbiParameters(parseAbiParameters("string[]"), record.abiEncodedKeyNames)[0];
+    const fieldNames = decodeAbiParameters(parseAbiParameters("string[]"), record.abiEncodedFieldNames)[0];
 
-    const valueAbiTypes = [...valueSchemaFields.staticFields, ...valueSchemaFields.dynamicFields];
+    const valueAbiTypes = [...solidityValueSchema.staticFields, ...solidityValueSchema.dynamicFields];
 
     const keySchema = Object.fromEntries(
-      keySchemaFields.staticFields.map((abiType, i) => [keyNames[i], abiType]),
-    ) as KeySchema;
-    const valueSchema = Object.fromEntries(valueAbiTypes.map((abiType, i) => [fieldNames[i], abiType])) as ValueSchema;
+      solidityKeySchema.staticFields.map((abiType, i) => [keyNames[i], { type: abiType, internalType: abiType }]),
+    ) satisfies Schema;
 
-    return { namespace, name, tableId, keySchema, valueSchema } as const;
+    const valueSchema = Object.fromEntries(
+      valueAbiTypes.map((abiType, i) => [fieldNames[i], { type: abiType, internalType: abiType }]),
+    ) satisfies Schema;
+
+    return {
+      type: type as never,
+      namespace,
+      name,
+      tableId: record.tableId,
+      schema: { ...keySchema, ...valueSchema },
+      key: Object.keys(keySchema),
+      keySchema,
+      keySchemaHex: record.keySchema,
+      valueSchema,
+      valueSchemaHex: record.valueSchema,
+    };
   });
+
   // TODO: filter/detect duplicates?
 
   debug("found", tables.length, "tables for", worldDeploy.address);

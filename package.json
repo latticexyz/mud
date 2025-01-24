@@ -1,22 +1,22 @@
 {
-  "name": "mud",
-  "version": "0.0.0",
+  "name": "mud-monorepo",
   "private": true,
-  "description": "MUD is the fabric of autonomous worlds",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git"
   },
+  "type": "module",
   "scripts": {
-    "all-codegen": "for dir in packages/store packages/world packages/world-modules packages/cli test/mock-game-contracts e2e/packages/contracts examples/*/packages/contracts templates/*/packages/contracts; do (cd \"$dir\" && pwd && pnpm build); done",
+    "all-build": "for dir in packages/store packages/world packages/world-modules packages/cli test/mock-game-contracts test/puppet-modules e2e/packages/contracts examples/*/packages/contracts examples/multiple-namespaces templates/*/packages/contracts; do (cd \"$dir\" && pwd && pnpm build); done",
     "all-install": "for dir in . docs e2e examples/* templates/*; do (cd \"$dir\" && pwd && pnpm install); done",
     "bench": "pnpm run --recursive bench",
-    "build": "turbo run build",
-    "changelog:generate": "bun scripts/changelog.ts",
-    "clean": "turbo run clean",
-    "dev": "TSUP_SKIP_DTS=true turbo run dev --concurrency 100",
+    "build": "turbo run build --concurrency=100%",
+    "changelog:generate": "tsx scripts/changelog.ts",
+    "clean": "turbo run clean --concurrency=100%",
+    "dev": "turbo run dev --concurrency=999",
     "dist-tag-rm": "pnpm recursive exec -- sh -c 'npm dist-tag rm $(cat package.json | jq -r \".name\") $TAG || true'",
-    "docs:generate:api": "bun scripts/render-api-docs.ts",
+    "docs:generate:api": "tsx scripts/render-api-docs.ts",
+    "fix:package-json": "sort-package-json package.json 'packages/*/package.json' 'templates/*/package.json' 'templates/*/packages/*/package.json' 'examples/*/package.json' 'examples/*/packages/*/package.json' 'e2e/*/package.json' 'e2e/*/packages/*/package.json' 'docs/package.json' 'test/*/package.json'",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
     "gas-report": "pnpm run --recursive --parallel gas-report",
     "lint": "pnpm prettier:check && eslint . --ext .ts --ext .tsx",
@@ -26,38 +26,45 @@
     "release:check": "changeset status --verbose --since=origin/main",
     "release:publish": "pnpm install && pnpm build && changeset publish",
     "release:version": "changeset version && pnpm install --lockfile-only && pnpm run changelog:generate",
-    "sort-package-json": "npx sort-package-json package.json 'packages/*/package.json' 'templates/*/package.json' 'templates/*/packages/*/package.json' 'examples/*/package.json' 'examples/*/packages/*/package.json' 'e2e/*/package.json' 'e2e/*/packages/*/package.json' 'docs/package.json'",
-    "test": "pnpm run --recursive --filter=!@latticexyz/services test",
-    "test:ci": "pnpm run --recursive --parallel --filter=!@latticexyz/services test:ci",
-    "type-stats-repo": "attest stats packages/*"
+    "test": "pnpm run test:setup && pnpm run --recursive test",
+    "test:ci": "pnpm run test:setup && pnpm run --recursive test:ci",
+    "test:setup": "tsx test-setup/startAnvil.ts & pnpm run --filter mock-game-contracts build",
+    "type-bench": "pnpm --filter ./test/ts-benchmarks bench",
+    "type-stats-repo": "attest stats packages/*",
+    "vercel:prepare": "ln -sf /vercel/.foundry/bin/* node_modules/.bin/ && forge --version"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --cache --fix",
     "*.{ts,tsx,css,md,mdx,sol}": "prettier --write",
-    "package.json": "pnpm sort-package-json"
+    "package.json": "pnpm fix:package-json"
   },
   "devDependencies": {
-    "@arktype/attest": "0.6.4",
-    "@changesets/cli": "^2.26.1",
-    "@types/glob": "^7.2.0",
-    "@types/node": "^18.15.11",
+    "@ark/attest": "0.12.1",
+    "@changesets/cli": "^2.27.7",
+    "@types/node": "^18",
     "@typescript-eslint/eslint-plugin": "7.1.1",
     "@typescript-eslint/parser": "7.1.1",
-    "bun": "^1.0.11",
+    "@viem/anvil": "^0.0.7",
     "chalk": "^5.2.0",
     "eslint": "8.57.0",
-    "execa": "^7.0.0",
-    "glob": "^8.0.3",
+    "execa": "^9.4.0",
+    "glob": "^10.4.2",
     "husky": ">=6",
-    "lint-staged": ">=10",
+    "lint-staged": "^15.2.10",
     "prettier": "3.2.5",
     "prettier-plugin-solidity": "1.3.1",
-    "rimraf": "^3.0.2",
+    "shx": "^0.3.4",
+    "sort-package-json": "^2.10.1",
+    "tsup": "^8.3.5",
+    "tsx": "4.19.0",
     "turbo": "^1.9.3",
-    "typescript": "5.4.2"
+    "typescript": "5.4.2",
+    "viem": "2.21.19",
+    "vitest": "2.1.2"
   },
+  "packageManager": "pnpm@9.6.0",
   "engines": {
-    "node": "18.x",
-    "pnpm": "8.x"
+    "node": "18.x || 20.x",
+    "pnpm": "^9.6.0"
   }
 }

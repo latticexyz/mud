@@ -1,4 +1,4 @@
-import { Dict, evaluate } from "@arktype/util";
+import { Dict, show } from "@ark/util";
 import { SchemaInput } from "./input";
 import { StaticAbiType, schemaAbiTypes } from "@latticexyz/schema-type/internal";
 import { AbiType } from "./output";
@@ -24,8 +24,8 @@ export type getStaticAbiTypeKeys<
       [key in keyof schema]: scope["types"] extends { [_ in schema[key]]: StaticAbiType } ? key : never;
     }[keyof schema];
 
-export type extendScope<scope extends ScopeOptions, additionalTypes extends Dict<string, AbiType>> = evaluate<
-  ScopeOptions<evaluate<scope["types"] & additionalTypes>>
+export type extendScope<scope extends ScopeOptions, additionalTypes extends Dict<string, AbiType>> = show<
+  ScopeOptions<show<scope["types"] & additionalTypes>>
 >;
 
 export function extendScope<scope extends ScopeOptions, additionalTypes extends Dict<string, AbiType>>(

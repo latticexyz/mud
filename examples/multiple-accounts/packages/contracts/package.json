@@ -5,24 +5,22 @@
   "license": "MIT",
   "scripts": {
     "build": "mud build",
-    "clean": "forge clean && rimraf src/codegen",
-    "deploy:local": "pnpm run build && mud deploy",
-    "deploy:testnet": "pnpm run build && mud deploy --profile=lattice-testnet",
-    "dev": "pnpm mud dev-contracts",
+    "clean": "forge clean && shx rm -rf src/**/codegen",
+    "deploy:local": "mud deploy",
+    "dev": "mud dev-contracts",
     "lint": "pnpm run prettier && pnpm run solhint",
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
     "test": "tsc --noEmit && mud test"
   },
   "dependencies": {
-    "@latticexyz/cli": "link:../../packages/cli",
-    "@latticexyz/schema-type": "link:../../../../packages/schema-type",
-    "@latticexyz/store": "link:../../../../packages/store",
-    "@latticexyz/world": "link:../../../../packages/world",
-    "@latticexyz/world-modules": "link:../../../../packages/world-modules"
+    "@latticexyz/cli": "latest",
+    "@latticexyz/schema-type": "latest",
+    "@latticexyz/store": "latest",
+    "@latticexyz/world": "latest",
+    "@latticexyz/world-modules": "latest"
   },
   "devDependencies": {
-    "@types/node": "^18.15.11",
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
     "prettier": "3.2.5",

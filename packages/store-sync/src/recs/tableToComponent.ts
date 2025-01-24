@@ -1,38 +1,38 @@
 import { Component, Type, World, defineComponent } from "@latticexyz/recs";
 import { StoreComponentMetadata } from "./common";
 import { SchemaAbiTypeToRecsType, schemaAbiTypeToRecsType } from "./schemaAbiTypeToRecsType";
-import { SchemaAbiType } from "@latticexyz/schema-type/internal";
-import { Table } from "@latticexyz/store/internal";
+import { Table } from "@latticexyz/config";
 import { mapObject } from "@latticexyz/common/utils";
-import { ResourceLabel, resourceToLabel } from "@latticexyz/common";
+import { getKeySchema, getSchemaTypes, getValueSchema } from "@latticexyz/protocol-parser/internal";
+import { satisfy } from "@ark/util";
 
-export type TableToComponent<table extends Table> = Component<
+export type tableToComponent<table extends Table> = Component<
   {
     __staticData: Type.OptionalString;
     __encodedLengths: Type.OptionalString;
     __dynamicData: Type.OptionalString;
   } & {
-    [fieldName in keyof table["valueSchema"] & string]: Type &
-      SchemaAbiTypeToRecsType<SchemaAbiType & table["valueSchema"][fieldName]["type"]>;
+    [fieldName in keyof getValueSchema<table>]: Type & SchemaAbiTypeToRecsType<table["schema"][fieldName]["type"]>;
   },
-  StoreComponentMetadata & {
-    componentName: table["name"];
-    tableName: ResourceLabel;
-    keySchema: { [name in keyof table["keySchema"] & string]: table["keySchema"][name]["type"] };
-    valueSchema: { [name in keyof table["valueSchema"] & string]: table["valueSchema"][name]["type"] };
-  }
+  satisfy<
+    StoreComponentMetadata,
+    {
+      componentName: table["label"];
+      tableName: table["label"];
+      table: table;
+      keySchema: getSchemaTypes<getKeySchema<table>>;
+      valueSchema: getSchemaTypes<getValueSchema<table>>;
+    }
+  >
 >;
 
-export function tableToComponent<table extends Table>(world: World, table: table): TableToComponent<table> {
+export function tableToComponent<table extends Table>(world: World, table: table): tableToComponent<table> {
+  const keySchema = getSchemaTypes(getKeySchema(table));
+  const valueSchema = getSchemaTypes(getValueSchema(table));
   return defineComponent(
     world,
     {
-      ...Object.fromEntries(
-        Object.entries(table.valueSchema).map(([fieldName, { type: schemaAbiType }]) => [
-          fieldName,
-          schemaAbiTypeToRecsType[schemaAbiType as SchemaAbiType],
-        ]),
-      ),
+      ...mapObject(valueSchema, (type) => schemaAbiTypeToRecsType[type]),
       __staticData: Type.OptionalString,
       __encodedLengths: Type.OptionalString,
       __dynamicData: Type.OptionalString,
@@ -40,11 +40,12 @@ export function tableToComponent<table extends Table>(world: World, table: table
     {
       id: table.tableId,
       metadata: {
-        componentName: table.name,
-        tableName: resourceToLabel(table),
-        keySchema: mapObject(table.keySchema, ({ type }) => type),
-        valueSchema: mapObject(table.valueSchema, ({ type }) => type),
+        componentName: table.label,
+        tableName: table.label,
+        table,
+        keySchema,
+        valueSchema,
       },
     },
-  ) as TableToComponent<table>;
+  ) as never;
 }

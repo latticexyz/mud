@@ -1,11 +1,12 @@
 import { BlockNumber } from "viem";
-import { bigIntSort, isDefined } from "@latticexyz/common/utils";
+import { logSort } from "@latticexyz/common";
+import { bigIntSort, groupBy } from "@latticexyz/common/utils";
 
-type PartialLog = { blockNumber: bigint; logIndex: number };
+type PartialLog = { readonly blockNumber: bigint; readonly logIndex: number };
 
-export type GroupLogsByBlockNumberResult<TLog extends PartialLog> = {
-  blockNumber: TLog["blockNumber"];
-  logs: TLog[];
+export type GroupLogsByBlockNumberResult<log extends PartialLog> = {
+  readonly blockNumber: log["blockNumber"];
+  readonly logs: readonly log[];
 }[];
 
 /**
@@ -22,29 +23,19 @@ export type GroupLogsByBlockNumberResult<TLog extends PartialLog> = {
  * @returns An array of objects where each object represents a distinct block and includes the block number,
  * the block hash, and an array of logs for that block.
  */
-export function groupLogsByBlockNumber<TLog extends PartialLog>(
-  logs: readonly TLog[],
+export function groupLogsByBlockNumber<log extends PartialLog>(
+  logs: readonly log[],
   toBlock?: BlockNumber,
-): GroupLogsByBlockNumberResult<TLog> {
+): GroupLogsByBlockNumberResult<log> {
   const blockNumbers = Array.from(new Set(logs.map((log) => log.blockNumber)));
   blockNumbers.sort(bigIntSort);
 
-  const groupedBlocks = blockNumbers
-    .map((blockNumber) => {
-      const blockLogs = logs.filter((log) => log.blockNumber === blockNumber);
-      if (!blockLogs.length) return;
-      blockLogs.sort((a, b) => (a.logIndex < b.logIndex ? -1 : a.logIndex > b.logIndex ? 1 : 0));
+  const sortedLogs = logs.slice().sort(logSort);
+  const groupedBlocks = Array.from(groupBy(sortedLogs, (log) => log.blockNumber).entries())
+    .map(([blockNumber, logs]) => ({ blockNumber, logs }))
+    .filter((block) => block.logs.length > 0);
 
-      if (!blockLogs.length) return;
-
-      return {
-        blockNumber,
-        logs: blockLogs,
-      };
-    })
-    .filter(isDefined);
-
-  const lastBlockNumber = blockNumbers.length > 0 ? blockNumbers[blockNumbers.length - 1] : null;
+  const lastBlockNumber = blockNumbers.at(-1);
 
   if (toBlock != null && (lastBlockNumber == null || toBlock > lastBlockNumber)) {
     groupedBlocks.push({

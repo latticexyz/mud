@@ -49,7 +49,7 @@ library SystemCall {
     if (systemAddress == address(0)) revert IWorldErrors.World_ResourceNotFound(systemId, systemId.toString());
 
     // Allow access if the system is public or the caller has access to the namespace or name
-    if (!publicAccess) AccessControl.requireAccess(systemId, caller);
+    if (!publicAccess) AccessControl._requireAccess(systemId, caller);
 
     // If the msg.value is non-zero, update the namespace's balance
     if (value > 0) {
@@ -72,6 +72,58 @@ library SystemCall {
         target: systemAddress,
         callData: callData
       });
+  }
+
+  /**
+   * @notice Makes a staticcall to a system identified by its Resource ID while ensuring necessary access controls.
+   * @dev This function does not revert if the system staticcall fails. Instead, it returns a success flag.
+   * @param caller The address initiating the system staticcall.
+   * @param systemId The unique Resource ID of the system being called.
+   * @param callData The calldata to be executed in the system.
+   * @return success A flag indicating whether the system staticcall was successful.
+   * @return data The return data from the system staticcall.
+   */
+  function staticcall(
+    address caller,
+    ResourceId systemId,
+    bytes memory callData
+  ) internal view returns (bool success, bytes memory data) {
+    // Load the system data
+    (address systemAddress, bool publicAccess) = Systems._get(systemId);
+
+    // Check if the system exists
+    if (systemAddress == address(0)) revert IWorldErrors.World_ResourceNotFound(systemId, systemId.toString());
+
+    // Staticcalls are not supported for root systems yet, as it would require a runtime check
+    // that we are in the context of a staticcall before performing the delegatecall
+    if (systemId.getNamespace() == ROOT_NAMESPACE) revert IWorldErrors.World_InvalidNamespace(ROOT_NAMESPACE);
+
+    // Allow access if the system is public or the caller has access to the namespace or name
+    if (!publicAccess) AccessControl._requireAccess(systemId, caller);
+
+    // Call the system and forward any return data
+    (success, data) = WorldContextProviderLib.staticcallWithContext({
+      msgSender: caller,
+      target: systemAddress,
+      callData: callData
+    });
+  }
+
+  /**
+   * @notice Makes a staticcall to a system identified by its Resource ID, ensures access controls, and reverts on failure.
+   * @param caller The address initiating the system staticcall.
+   * @param systemId The unique Resource ID of the system being called.
+   * @param callData The calldata to be executed in the system.
+   * @return data The return data from the system staticcall.
+   */
+  function staticcallOrRevert(
+    address caller,
+    ResourceId systemId,
+    bytes memory callData
+  ) internal view returns (bytes memory data) {
+    (bool success, bytes memory returnData) = staticcall({ caller: caller, systemId: systemId, callData: callData });
+    if (!success) revertWithBytes(returnData);
+    return returnData;
   }
 
   /**

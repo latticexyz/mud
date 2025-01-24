@@ -37,7 +37,7 @@ export function createSystemCalls(
      * Because MoveSystem is in the root namespace, .move can be called directly
      * on the World contract.
      */
-    const tx = await worldContract.write.move([x, y, z]);
+    const tx = await worldContract.write.app__move([x, y, z]);
     await waitForTransaction(tx);
   };
 

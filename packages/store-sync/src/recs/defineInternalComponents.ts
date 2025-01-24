@@ -1,14 +1,9 @@
 import { World, defineComponent, Type, Component, Schema, Metadata } from "@latticexyz/recs";
-import { Table } from "../common";
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export type InternalComponents = ReturnType<typeof defineInternalComponents>;
+
 export function defineInternalComponents(world: World) {
   return {
-    RegisteredTables: defineComponent<{ table: Type.T }, Metadata, Table>(
-      world,
-      { table: Type.T },
-      { metadata: { componentName: "RegisteredTables" } },
-    ),
     SyncProgress: defineComponent(
       world,
       {

@@ -11,15 +11,13 @@ import { mudFoundry } from "@latticexyz/common/chains";
 import { encodeEntity } from "@latticexyz/store-sync/recs";
 import { callPageFunction } from "./data/callPageFunction";
 import worldConfig from "@latticexyz/world/mud.config";
-import { worldToV1 } from "@latticexyz/world/config/v2";
-import { callWithSignatureTypes } from "@latticexyz/world/internal";
+import { callWithSignatureTypes } from "@latticexyz/world-module-callwithsignature/internal";
 import { getWorld } from "./data/getWorld";
 import { callWithSignature } from "./data/callWithSignature";
 import IWorldAbi from "../contracts/out/IWorld.sol/IWorld.abi.json";
+import { getSchemaTypes, getKeySchema } from "@latticexyz/protocol-parser/internal";
 
 const DELEGATOR_PRIVATE_KEY = "0x67bbd1575ecc79b3247c7d7b87a5bc533ccb6a63955a9fefdfaf75853f7cd543";
-
-const worldConfigV1 = worldToV1(worldConfig);
 
 describe("callWithSignature", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
@@ -99,7 +97,7 @@ describe("callWithSignature", async () => {
     // Expect delegation to have been created
     const value = await callPageFunction(page, "getComponentValue", [
       "UserDelegationControl",
-      encodeEntity(worldConfigV1.tables.UserDelegationControl.keySchema, {
+      encodeEntity(getSchemaTypes(getKeySchema(worldConfig.tables.world__UserDelegationControl)), {
         delegator: delegator.address,
         delegatee,
       }),

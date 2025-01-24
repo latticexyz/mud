@@ -1,21 +1,22 @@
-import { Account, Chain, Client, Hex, Transport, getAddress } from "viem";
-import { WorldDeploy, worldAbi, worldTables } from "./common";
+import { Hex, getAddress } from "viem";
+import { CommonDeployOptions, worldAbi } from "./common";
 import { hexToResource, resourceToHex, writeContract } from "@latticexyz/common";
 import { getResourceIds } from "./getResourceIds";
 import { getTableValue } from "./getTableValue";
 import { debug } from "./debug";
+import worldConfig from "@latticexyz/world/mud.config";
 
 export async function ensureNamespaceOwner({
   client,
   worldDeploy,
   resourceIds,
-}: {
-  readonly client: Client<Transport, Chain | undefined, Account>;
-  readonly worldDeploy: WorldDeploy;
+  indexerUrl,
+  chainId,
+}: CommonDeployOptions & {
   readonly resourceIds: readonly Hex[];
 }): Promise<readonly Hex[]> {
   const desiredNamespaces = Array.from(new Set(resourceIds.map((resourceId) => hexToResource(resourceId).namespace)));
-  const existingResourceIds = await getResourceIds({ client, worldDeploy });
+  const existingResourceIds = await getResourceIds({ client, worldDeploy, indexerUrl, chainId });
   const existingNamespaces = new Set(existingResourceIds.map((resourceId) => hexToResource(resourceId).namespace));
   if (existingNamespaces.size) {
     debug(
@@ -35,7 +36,7 @@ export async function ensureNamespaceOwner({
       const { owner } = await getTableValue({
         client,
         worldDeploy,
-        table: worldTables.world_NamespaceOwner,
+        table: worldConfig.namespaces.world.tables.NamespaceOwner,
         key: { namespaceId: resourceToHex({ type: "namespace", namespace, name: "" }) },
       });
       return [namespace, owner];
@@ -53,7 +54,7 @@ export async function ensureNamespaceOwner({
   // Register missing namespaces
   const missingNamespaces = desiredNamespaces.filter((namespace) => !existingNamespaces.has(namespace));
   if (missingNamespaces.length > 0) {
-    debug("registering namespaces", Array.from(missingNamespaces).join(", "));
+    debug("registering namespaces:", Array.from(missingNamespaces).join(", "));
   }
   const registrationTxs = Promise.all(
     missingNamespaces.map((namespace) =>

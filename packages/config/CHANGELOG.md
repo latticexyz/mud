@@ -1,5 +1,262 @@
 # Change Log
 
+## 2.2.16
+
+### Patch Changes
+
+- @latticexyz/common@2.2.16
+- @latticexyz/schema-type@2.2.16
+
+## 2.2.15
+
+### Patch Changes
+
+- 9580d29: Replaced esbuild with tsx to load MUD config in an effort to resolve issues with loading multiple MUD configs in parallel.
+- 09e9bd5: Moved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.
+- Updated dependencies [09e9bd5]
+- Updated dependencies [9d71887]
+- Updated dependencies [88b9daf]
+  - @latticexyz/common@2.2.15
+  - @latticexyz/schema-type@2.2.15
+
+## 2.2.14
+
+### Patch Changes
+
+- @latticexyz/common@2.2.14
+- @latticexyz/schema-type@2.2.14
+
+## 2.2.13
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.13
+- @latticexyz/common@2.2.13
+
+## 2.2.12
+
+### Patch Changes
+
+- ea18f27: Bumped viem to v2.21.19.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.19
+  ```
+
+- Updated dependencies [ea18f27]
+- Updated dependencies [41a6e2f]
+- Updated dependencies [fe98442]
+  - @latticexyz/common@2.2.12
+  - @latticexyz/schema-type@2.2.12
+
+## 2.2.11
+
+### Patch Changes
+
+- Updated dependencies [7ddcf64]
+  - @latticexyz/common@2.2.11
+  - @latticexyz/schema-type@2.2.11
+
+## 2.2.10
+
+### Patch Changes
+
+- @latticexyz/common@2.2.10
+- @latticexyz/schema-type@2.2.10
+
+## 2.2.9
+
+### Patch Changes
+
+- @latticexyz/common@2.2.9
+- @latticexyz/schema-type@2.2.9
+
+## 2.2.8
+
+### Patch Changes
+
+- Updated dependencies [7c7bdb2]
+  - @latticexyz/common@2.2.8
+  - @latticexyz/schema-type@2.2.8
+
+## 2.2.7
+
+### Patch Changes
+
+- @latticexyz/common@2.2.7
+- @latticexyz/schema-type@2.2.7
+
+## 2.2.6
+
+### Patch Changes
+
+- @latticexyz/common@2.2.6
+- @latticexyz/schema-type@2.2.6
+
+## 2.2.5
+
+### Patch Changes
+
+- @latticexyz/common@2.2.5
+- @latticexyz/schema-type@2.2.5
+
+## 2.2.4
+
+### Patch Changes
+
+- 50010fb: Bumped viem, wagmi, and abitype packages to their latest release.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.6 wagmi@2.12.11 @wagmi/core@2.13.5 abitype@1.0.6
+  ```
+
+- Updated dependencies [2f935cf]
+- Updated dependencies [50010fb]
+  - @latticexyz/common@2.2.4
+  - @latticexyz/schema-type@2.2.4
+
+## 2.2.3
+
+### Patch Changes
+
+- @latticexyz/common@2.2.3
+- @latticexyz/schema-type@2.2.3
+
+## 2.2.2
+
+### Patch Changes
+
+- @latticexyz/common@2.2.2
+- @latticexyz/schema-type@2.2.2
+
+## 2.2.1
+
+### Patch Changes
+
+- Updated dependencies [c0764a5]
+  - @latticexyz/common@2.2.1
+  - @latticexyz/schema-type@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- 04c675c: Fixed a few type issues with `namespaceLabel` in tables and added/clarified TSDoc for config input/output objects.
+- Updated dependencies [69cd0a1]
+  - @latticexyz/common@2.2.0
+  - @latticexyz/schema-type@2.2.0
+
+## 2.1.1
+
+### Patch Changes
+
+- 9e21e42: Bumped viem to `2.19.8` and abitype to `1.0.5`.
+
+  MUD projects using viem or abitype should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.19.8 abitype@1.0.5
+  ```
+
+- 57bf8c3: Add a strongly typed `namespaceLabel` to the table config output.
+  It corresponds to the `label` of the namespace the table belongs to and can't be set manually.
+- Updated dependencies [9e21e42]
+- Updated dependencies [2daaab1]
+  - @latticexyz/common@2.1.1
+  - @latticexyz/schema-type@2.1.1
+
+## 2.1.0
+
+### Minor Changes
+
+- e85dc53: Tables and systems in config output now include a `label` property. Labels are now used throughout the codebase as a user-friendly way to reference the given resource: config keys, contract names, generated libraries, etc.
+
+  Inside `namespaces` config output, keys for tables and systems and their filenames will always correspond to their labels. This should make MUD tooling more intuitive and predictable. For backwards compatibility, `tables` config output still uses namespace-prefixed keys.
+
+  Labels replace the previous resource `name` usage, which is truncated to `bytes16` to be used as part of the resource ID and, in the future, may not always be human-readable.
+
+  These labels will soon be registered onchain so that developers can initialize a new MUD project from an existing world, generating config and interfaces with user-friendly names.
+
+### Patch Changes
+
+- 7129a16: Bumped `@arktype/util` and moved `evaluate`/`satisfy` usages to its `show`/`satisfy` helpers.
+- Updated dependencies [7129a16]
+- Updated dependencies [8d0453e]
+  - @latticexyz/common@2.1.0
+  - @latticexyz/schema-type@2.1.0
+
+## 2.0.12
+
+### Patch Changes
+
+- 96e7bf430: TS source has been removed from published packages in favor of DTS in an effort to improve TS performance. All packages now inherit from a base TS config in `@latticexyz/common` to allow us to continue iterating on TS performance without requiring changes in your project code.
+
+  If you have a MUD project that you're upgrading, we suggest adding a `tsconfig.json` file to your project workspace that extends this base config.
+
+  ```sh
+  pnpm add -D @latticexyz/common
+  echo "{\n  \"extends\": \"@latticexyz/common/tsconfig.base.json\"\n}" > tsconfig.json
+  ```
+
+  Then in each package of your project, inherit from your workspace root's config.
+
+  For example, your TS config in `packages/contracts/tsconfig.json` might look like:
+
+  ```json
+  {
+    "extends": "../../tsconfig.json"
+  }
+  ```
+
+  And your TS config in `packages/client/tsconfig.json` might look like:
+
+  ```json
+  {
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+      "types": ["vite/client"],
+      "target": "ESNext",
+      "lib": ["ESNext", "DOM"],
+      "jsx": "react-jsx",
+      "jsxImportSource": "react"
+    },
+    "include": ["src"]
+  }
+  ```
+
+  You may need to adjust the above configs to include any additional TS options you've set. This config pattern may also reveal new TS errors that need to be fixed or rules disabled.
+
+  If you want to keep your existing TS configs, we recommend at least updating your `moduleResolution` setting.
+
+  ```diff
+  -"moduleResolution": "node"
+  +"moduleResolution": "Bundler"
+  ```
+
+- Updated dependencies [96e7bf430]
+  - @latticexyz/common@2.0.12
+  - @latticexyz/schema-type@2.0.12
+
+## 2.0.11
+
+### Patch Changes
+
+- @latticexyz/common@2.0.11
+- @latticexyz/schema-type@2.0.11
+
+## 2.0.10
+
+### Patch Changes
+
+- 4caca05e: Bumped zod dependency to comply with abitype peer dependencies.
+- Updated dependencies [51b137d3]
+  - @latticexyz/common@2.0.10
+  - @latticexyz/schema-type@2.0.10
+
 ## 2.0.9
 
 ### Patch Changes

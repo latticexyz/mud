@@ -1,43 +1,19 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import {
-  EIP1193RequestFn,
-  LimitExceededRpcError,
-  RpcLog,
-  RpcRequestError,
-  Transport,
-  createPublicClient,
-  createTransport,
-  hexToNumber,
-} from "viem";
+import { describe, it, expect, vi } from "vitest";
+import { LimitExceededRpcError, RpcRequestError, createClient, http } from "viem";
 import { fetchLogs } from "./fetchLogs";
 
-const mockedTransportRequest = vi.fn<Parameters<EIP1193RequestFn>, ReturnType<EIP1193RequestFn>>();
-const mockTransport: Transport = () =>
-  createTransport({
-    key: "mock",
-    name: "Mock Transport",
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    request: mockedTransportRequest as any,
-    type: "mock",
-  });
-
-const publicClient = createPublicClient({
-  transport: mockTransport,
-});
-
 describe("fetchLogs", () => {
-  beforeEach(() => {
-    mockedTransportRequest.mockClear();
-  });
-
   it("yields chunks of logs for the block range", async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const requests: any[] = [];
-    mockedTransportRequest.mockImplementation(async ({ method, params }): Promise<RpcLog[]> => {
-      requests.push(params);
-      if (method !== "eth_getLogs") throw new Error("not implemented");
-      return [];
-    });
+    const publicClient = createClient({
+      transport: http("http://mock"),
+    }).extend(() => ({
+      getLogs: vi.fn(async (params) => {
+        requests.push(params);
+        return [];
+      }),
+    }));
 
     const results = [];
     for await (const result of fetchLogs({
@@ -53,56 +29,48 @@ describe("fetchLogs", () => {
 
     expect(requests).toMatchInlineSnapshot(`
       [
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x0",
-            "toBlock": "0x64",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x65",
-            "toBlock": "0xc9",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0xca",
-            "toBlock": "0x12e",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x12f",
-            "toBlock": "0x193",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x194",
-            "toBlock": "0x1f4",
-            "topics": [
-              [],
-            ],
-          },
-        ],
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 0n,
+          "strict": true,
+          "toBlock": 99n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 100n,
+          "strict": true,
+          "toBlock": 199n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 200n,
+          "strict": true,
+          "toBlock": 299n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 300n,
+          "strict": true,
+          "toBlock": 399n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 400n,
+          "strict": true,
+          "toBlock": 499n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 500n,
+          "strict": true,
+          "toBlock": 500n,
+        },
       ]
     `);
 
@@ -111,25 +79,30 @@ describe("fetchLogs", () => {
         {
           "fromBlock": 0n,
           "logs": [],
-          "toBlock": 100n,
+          "toBlock": 99n,
         },
         {
-          "fromBlock": 101n,
+          "fromBlock": 100n,
           "logs": [],
-          "toBlock": 201n,
+          "toBlock": 199n,
         },
         {
-          "fromBlock": 202n,
+          "fromBlock": 200n,
           "logs": [],
-          "toBlock": 302n,
+          "toBlock": 299n,
         },
         {
-          "fromBlock": 303n,
+          "fromBlock": 300n,
           "logs": [],
-          "toBlock": 403n,
+          "toBlock": 399n,
         },
         {
-          "fromBlock": 404n,
+          "fromBlock": 400n,
+          "logs": [],
+          "toBlock": 499n,
+        },
+        {
+          "fromBlock": 500n,
           "logs": [],
           "toBlock": 500n,
         },
@@ -140,27 +113,31 @@ describe("fetchLogs", () => {
   it("reduces block range if block range is exceeded", async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const requests: any[] = [];
-    mockedTransportRequest.mockImplementation(async ({ method, params }): Promise<RpcLog[]> => {
-      if (method !== "eth_getLogs") throw new Error("not implemented");
-      requests.push(params);
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if (hexToNumber((params as any)[0].toBlock) - hexToNumber((params as any)[0].fromBlock) > 500) {
-        throw new LimitExceededRpcError(
-          new RpcRequestError({
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            body: (params as any)[0],
-            url: "https://mud.dev",
-            error: {
-              code: -32005,
-              message: "block range exceeded",
-            },
-          }),
-        );
-      }
-
-      return [];
-    });
+    const publicClient = createClient({
+      transport: http("http://mock"),
+    }).extend(() => ({
+      getLogs: vi.fn(async (params) => {
+        requests.push(params);
+        if (
+          typeof params?.fromBlock === "bigint" &&
+          typeof params?.toBlock === "bigint" &&
+          params.toBlock - params.fromBlock + 1n > 500n
+        ) {
+          throw new LimitExceededRpcError(
+            new RpcRequestError({
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              body: (params as any)[0],
+              url: "https://mud.dev",
+              error: {
+                code: -32005,
+                message: "block range exceeded",
+              },
+            }),
+          );
+        }
+        return [];
+      }),
+    }));
 
     const results = [];
     for await (const result of fetchLogs({
@@ -175,166 +152,48 @@ describe("fetchLogs", () => {
 
     expect(requests).toMatchInlineSnapshot(`
       [
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x0",
-            "toBlock": "0x3e8",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x0",
-            "toBlock": "0x3e8",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x0",
-            "toBlock": "0x3e8",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x0",
-            "toBlock": "0x3e8",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x0",
-            "toBlock": "0x1f4",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x1f5",
-            "toBlock": "0x5dd",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x1f5",
-            "toBlock": "0x5dd",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x1f5",
-            "toBlock": "0x5dd",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x1f5",
-            "toBlock": "0x5dd",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x1f5",
-            "toBlock": "0x3e9",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x3ea",
-            "toBlock": "0x7d0",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x3ea",
-            "toBlock": "0x7d0",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x3ea",
-            "toBlock": "0x7d0",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x3ea",
-            "toBlock": "0x7d0",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x3ea",
-            "toBlock": "0x5dd",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x5de",
-            "toBlock": "0x7d0",
-            "topics": [
-              [],
-            ],
-          },
-        ],
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 0n,
+          "strict": true,
+          "toBlock": 999n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 0n,
+          "strict": true,
+          "toBlock": 499n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 500n,
+          "strict": true,
+          "toBlock": 999n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 1000n,
+          "strict": true,
+          "toBlock": 1499n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 1500n,
+          "strict": true,
+          "toBlock": 1999n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 2000n,
+          "strict": true,
+          "toBlock": 2000n,
+        },
       ]
     `);
 
@@ -343,20 +202,25 @@ describe("fetchLogs", () => {
         {
           "fromBlock": 0n,
           "logs": [],
-          "toBlock": 500n,
+          "toBlock": 499n,
         },
         {
-          "fromBlock": 501n,
+          "fromBlock": 500n,
           "logs": [],
-          "toBlock": 1001n,
+          "toBlock": 999n,
         },
         {
-          "fromBlock": 1002n,
+          "fromBlock": 1000n,
           "logs": [],
-          "toBlock": 1501n,
+          "toBlock": 1499n,
         },
         {
-          "fromBlock": 1502n,
+          "fromBlock": 1500n,
+          "logs": [],
+          "toBlock": 1999n,
+        },
+        {
+          "fromBlock": 2000n,
           "logs": [],
           "toBlock": 2000n,
         },
@@ -367,26 +231,29 @@ describe("fetchLogs", () => {
   it("retries if rate limit is exceeded", async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const requests: any[] = [];
-    mockedTransportRequest.mockImplementation(async ({ method, params }): Promise<RpcLog[]> => {
-      if (method !== "eth_getLogs") throw new Error("not implemented");
-      requests.push(params);
+    const publicClient = createClient({
+      transport: http("http://mock"),
+    }).extend(() => ({
+      getLogs: vi.fn(async (params) => {
+        requests.push(params);
 
-      if (requests.length < 3) {
-        throw new LimitExceededRpcError(
-          new RpcRequestError({
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            body: (params as any)[0],
-            url: "https://viem.sh",
-            error: {
-              code: -32005,
-              message: "rate limit exceeded",
-            },
-          }),
-        );
-      }
+        if (requests.length < 3) {
+          throw new LimitExceededRpcError(
+            new RpcRequestError({
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              body: (params as any)[0],
+              url: "https://viem.sh",
+              error: {
+                code: -32005,
+                message: "rate limit exceeded",
+              },
+            }),
+          );
+        }
 
-      return [];
-    });
+        return [];
+      }),
+    }));
 
     const results = [];
     for await (const result of fetchLogs({
@@ -401,36 +268,34 @@ describe("fetchLogs", () => {
 
     expect(requests).toMatchInlineSnapshot(`
       [
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x0",
-            "toBlock": "0x1f4",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x0",
-            "toBlock": "0x1f4",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x0",
-            "toBlock": "0x1f4",
-            "topics": [
-              [],
-            ],
-          },
-        ],
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 0n,
+          "strict": true,
+          "toBlock": 499n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 0n,
+          "strict": true,
+          "toBlock": 499n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 0n,
+          "strict": true,
+          "toBlock": 499n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 500n,
+          "strict": true,
+          "toBlock": 500n,
+        },
       ]
     `);
 
@@ -438,6 +303,11 @@ describe("fetchLogs", () => {
       [
         {
           "fromBlock": 0n,
+          "logs": [],
+          "toBlock": 499n,
+        },
+        {
+          "fromBlock": 500n,
           "logs": [],
           "toBlock": 500n,
         },

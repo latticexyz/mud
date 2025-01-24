@@ -1,40 +1,48 @@
-import { Address, Block, Hex, Log, PublicClient, TransactionReceipt } from "viem";
+import { Address, Block, Client, Hex, Log, TransactionReceipt } from "viem";
 import { StoreEventsAbiItem, StoreEventsAbi } from "@latticexyz/store";
-import { resolveConfig } from "@latticexyz/store/internal";
 import { Observable } from "rxjs";
 import { UnionPick } from "@latticexyz/common/type-utils";
-import { KeySchema, TableRecord, ValueSchema } from "@latticexyz/protocol-parser/internal";
+import {
+  ValueArgs,
+  getKeySchema,
+  getSchemaPrimitives,
+  getSchemaTypes,
+  getValueSchema,
+} from "@latticexyz/protocol-parser/internal";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
-import { flattenSchema } from "./flattenSchema";
-import { Store as StoreConfig } from "@latticexyz/store";
-import { storeToV1 } from "@latticexyz/store/config/v2";
+import { Table as ConfigTable, Schema } from "@latticexyz/config";
+import { configToTables } from "./configToTables";
 
-/** @internal Temporary workaround until we redo our config parsing and can pull this directly from the config (https://github.com/latticexyz/mud/issues/1668) */
-export const storeTables = resolveConfig(storeToV1(storeConfig)).tables;
-/** @internal Temporary workaround until we redo our config parsing and can pull this directly from the config (https://github.com/latticexyz/mud/issues/1668) */
-export const worldTables = resolveConfig(storeToV1(worldConfig)).tables;
+export const mudTables = {
+  ...configToTables(storeConfig),
+  ...configToTables(worldConfig),
+} as const;
+export type mudTables = typeof mudTables;
 
-export const internalTableIds = [...Object.values(storeTables), ...Object.values(worldTables)].map(
-  (table) => table.tableId,
-);
+export const internalTableIds = Object.values(mudTables).map((table) => table.tableId);
 
 export type ChainId = number;
 export type WorldId = `${ChainId}:${Address}`;
 
-export type TableNamespace = string;
-export type TableName = string;
+// TODO: add label and namespaceLabel once we register it onchain
+export type DeployedTable = Omit<ConfigTable, "label" | "namespaceLabel">;
 
-export type Table = {
-  address: Address;
-  tableId: Hex;
-  namespace: TableNamespace;
-  name: TableName;
-  keySchema: KeySchema;
-  valueSchema: ValueSchema;
+export type TableRecord<table extends DeployedTable = DeployedTable> = {
+  readonly key: getSchemaPrimitives<getKeySchema<table>>;
+  readonly value: getSchemaPrimitives<getValueSchema<table>>;
+  readonly fields: getSchemaPrimitives<table["schema"]>;
 };
 
-export type TableWithRecords = Table & { records: TableRecord[] };
+export type Table<table extends DeployedTable = DeployedTable> = table & {
+  readonly address: Address;
+  readonly keySchema: getSchemaTypes<DeployedTable extends table ? Schema : getKeySchema<table>>;
+  readonly valueSchema: getSchemaTypes<DeployedTable extends table ? Schema : getValueSchema<table>>;
+};
+
+export type TableWithRecords<table extends DeployedTable = DeployedTable> = Table<table> & {
+  readonly records: readonly TableRecord<table>[];
+};
 
 export type StoreEventsLog = Log<bigint, number, false, StoreEventsAbiItem, true, StoreEventsAbi>;
 export type BlockLogs = { blockNumber: StoreEventsLog["blockNumber"]; logs: readonly StoreEventsLog[] };
@@ -57,17 +65,13 @@ export type SyncFilter = {
   key1?: Hex;
 };
 
-export type SyncOptions<config extends StoreConfig = StoreConfig> = {
+export type SyncOptions = {
   /**
-   * MUD config
-   */
-  config?: config;
-  /**
-   * [viem `PublicClient`][0] used for fetching logs from the RPC.
+   * [viem `Client`][0] used for fetching logs from the RPC.
    *
-   * [0]: https://viem.sh/docs/clients/public.html
+   * [0]: https://viem.sh/docs/clients/custom
    */
-  publicClient: PublicClient;
+  publicClient: Client;
   /**
    * MUD Store/World contract address
    */
@@ -122,15 +126,21 @@ export type SyncResult = {
   waitForTransaction: (tx: Hex) => Promise<WaitForTransactionResult>;
 };
 
+export type SyncAdapter = (opts: SyncOptions) => Promise<SyncResult>;
+
 // TODO: add optional, original log to this?
 export type StorageAdapterLog = Partial<StoreEventsLog> & UnionPick<StoreEventsLog, "address" | "eventName" | "args">;
 export type StorageAdapterBlock = { blockNumber: BlockLogs["blockNumber"]; logs: readonly StorageAdapterLog[] };
 export type StorageAdapter = (block: StorageAdapterBlock) => Promise<void>;
 
-export const schemasTableId = storeTables.Tables.tableId;
 export const schemasTable = {
-  ...storeTables.Tables,
-  // TODO: remove once we've got everything using the new Table shape
-  keySchema: flattenSchema(storeTables.Tables.keySchema),
-  valueSchema: flattenSchema(storeTables.Tables.valueSchema),
+  ...mudTables.Tables,
+  keySchema: getSchemaTypes(getKeySchema(mudTables.Tables)),
+  valueSchema: getSchemaTypes(getValueSchema(mudTables.Tables)),
 };
+
+export const emptyValueArgs = {
+  staticData: "0x",
+  encodedLengths: "0x",
+  dynamicData: "0x",
+} as const satisfies ValueArgs;

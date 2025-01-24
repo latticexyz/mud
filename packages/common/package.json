@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/common",
-  "version": "2.0.9",
+  "version": "2.2.16",
   "description": "Common low level logic shared between packages",
   "repository": {
     "type": "git",
@@ -18,44 +18,53 @@
     "./foundry": "./dist/foundry.js",
     "./type-utils": "./dist/type-utils.js",
     "./utils": "./dist/utils.js",
-    "./kms": "./dist/kms.js"
+    "./kms": "./dist/kms.js",
+    "./internal": "./dist/internal.js",
+    "./tsconfig.base.json": "./tsconfig.base.json"
   },
   "typesVersions": {
     "*": {
       "index": [
-        "./src/index.ts"
+        "./dist/index.d.ts"
       ],
       "actions": [
-        "./src/actions/index.ts"
+        "./dist/actions.d.ts"
       ],
       "chains": [
-        "./src/chains/index.ts"
+        "./dist/chains.d.ts"
       ],
       "codegen": [
-        "./src/codegen/index.ts"
+        "./dist/codegen.d.ts"
       ],
       "errors": [
-        "./src/errors/index.ts"
+        "./dist/errors.d.ts"
       ],
       "foundry": [
-        "./src/foundry/index.ts"
+        "./dist/foundry.d.ts"
       ],
       "type-utils": [
-        "./src/type-utils/index.ts"
+        "./dist/type-utils.d.ts"
       ],
       "utils": [
-        "./src/utils/index.ts"
+        "./dist/utils.d.ts"
       ],
       "kms": [
-        "./src/exports/kms.ts"
+        "./dist/kms.d.ts"
+      ],
+      "internal": [
+        "./dist/internal.d.ts"
       ]
     }
   },
+  "files": [
+    "dist",
+    "tsconfig.base.json"
+  ],
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
-    "clean:js": "rimraf dist",
+    "clean:js": "shx rm -rf dist",
     "dev": "tsup --watch",
     "test": "vitest typecheck --run --passWithNoTests && vitest --run",
     "test:ci": "pnpm run test"
@@ -63,24 +72,24 @@
   "dependencies": {
     "@latticexyz/schema-type": "workspace:*",
     "@solidity-parser/parser": "^0.16.0",
+    "abitype": "1.0.6",
     "debug": "^4.3.4",
     "execa": "^7.0.0",
     "p-queue": "^7.4.1",
     "p-retry": "^5.1.2",
     "prettier": "3.2.5",
-    "prettier-plugin-solidity": "1.3.1",
-    "viem": "2.9.20"
+    "prettier-plugin-solidity": "1.3.1"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "@types/node": "^18.15.11",
     "@viem/anvil": "^0.0.7",
-    "tsup": "^6.7.0",
+    "viem": "2.21.19",
     "vitest": "0.34.6"
   },
   "peerDependencies": {
     "@aws-sdk/client-kms": "3.x",
-    "asn1.js": "5.x"
+    "asn1.js": "5.x",
+    "viem": "2.x"
   },
   "peerDependenciesMeta": {
     "@aws-sdk/client-kms": {

@@ -1,7 +1,7 @@
 # Introduction
 
 `Store` is an alternative to Solidity's storage engine.
-It enforces a data model that can be mapped directly to a relational database, enables [automatic indexing](../services/indexer) by emitting a common set of events for each mutation, and [packs data more tightly](./encoding) than native Solidity.
+It enforces a data model that can be mapped directly to a relational database, enables [automatic indexing](../indexer) by emitting a common set of events for each mutation, and [packs data more tightly](./encoding) than native Solidity.
 It also allows external contract storage to be read onchain without being limited by existing `view` functions and [without a new opcode](https://eips.ethereum.org/EIPS/eip-2330).
 
 ## Data model
@@ -11,7 +11,7 @@ You can think of tables in two ways, either [as a relational database](./how-mud
 
 ## Reading and writing data
 
-The [`StoreCore`](./reference) library implements low-level methods for reading and writing data in a `Store` contract and the [`IStore`](./reference) interface exposes some of these methods to external callers.
+The [`StoreCore`](/store/reference/store-core) library implements low-level methods for reading and writing data in a `Store` contract and the [`IStore`](/store/reference/store) interface exposes some of these methods to external callers.
 
 Note that when exposing `IStoreWrite` methods to external callers, it is necessary to implement an access control mechanism, or use the [access control mechanisms provided by `World`](/world/namespaces-access-control).
 
@@ -42,4 +42,4 @@ This allows advanced use cases like the [`World` protocol](../world/introduction
 ## Automatic indexing
 
 `Store` automatically emits events on every write operation, including when a new table is registered in the `Store` at runtime.
-These events allow [automatic indexers](../services/indexer) to [replicate the onchain state](/guides/replicating-onchain-state) of each table in each `Store` contract in a relational database for offchain use, without the need for custom integrations.
+These events allow [automatic indexers](../indexer) to [replicate the onchain state](/guides/replicating-onchain-state) of each table in each `Store` contract in a relational database for offchain use, without the need for custom integrations.

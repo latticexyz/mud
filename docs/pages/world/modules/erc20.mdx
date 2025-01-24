@@ -1,0 +1,173 @@
+import { CollapseCode } from "../../../components/CollapseCode";
+import { Callout } from "nextra/components";
+
+# ERC 20 (fungible tokens) module
+
+<Callout type="warning" emoji="⚠️">
+
+This module is unaudited and may change in the future.
+
+</Callout>
+
+The [`erc20` module](https://github.com/latticexyz/mud/tree/main/packages/world-module-erc20/) lets you create [ERC-20](https://ethereum.org/en/developers/docs/standards/tokens/erc-20/) tokens as part of a MUD `World`.
+The advantage of doing this, rather than creating a separate [ERC-20 contract](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/token/ERC20) and merely controlling it from MUD, is that all the information is in MUD tables and is immediately available in the client.
+
+The ERC20Module receives the namespace, name and symbol of the token as parameters, and deploys the new token. Currently it installs a [default ERC20](https://github.com/latticexyz/mud/tree/main/packages/world-module-erc20/src/examples/ERC20WithWorld.sol) with the following features:
+
+- ERC20Burnable: Allows users to burn their tokens (or the ones approved to them) using the `burn` and `burnFrom` function.
+- ERC20Pausable: Supports pausing and unpausing token operations. This is combined with the `pause` and `unpause` public functions that can be called by addresses with access to the token's namespace.
+- Minting: Addresses with namespace access can call the `mint` function to mint tokens to any address.
+
+## Installation
+
+The simplest way to install this module and register a new ERC20 token in your world is to import the `defineERC20Module` helper and use it to add the module's declaration to your MUD config:
+
+```typescript filename="mud.config.ts"
+import { defineWorld } from "@latticexyz/world";
+import { defineERC20Module } from "@latticexyz/world-module-erc20/internal";
+
+export default defineWorld({
+  namespace: "app",
+  tables: {
+    Counter: {
+      schema: {
+        value: "uint32",
+      },
+      key: [],
+    },
+  },
+  modules: [
+    defineERC20Module({
+      // The new namespace the module will register
+      namespace: "erc20Namespace",
+      // The metadata of the ERC20 token that will be deployed by the module
+      name: "MyToken",
+      symbol: "MTK",
+    }),
+  ],
+});
+```
+
+This will deploy the token and register it under the provided namespace. Note that the namespace must not exist beforehand, as the module will create it upon installation.
+The ownership of the new namespace will be transferred to the deployer after installation.
+
+## Usage
+
+You can use the token the same way you use any other ERC20 contract.
+For example, run this script.
+
+<CollapseCode>
+
+```solidity filename="ManageERC20.s.sol" copy showLineNumbers {16,34-38,43,48-56}
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
+import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { ERC20Registry } from "@latticexyz/world-module-erc20/src/codegen/index.sol";
+import { ERC20WithWorld as ERC20 } from "@latticexyz/world-module-erc20/src/examples/ERC20WithWorld.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+contract ManageERC20 is Script {
+  function reportBalances(ERC20 erc20, address myAddress) internal view {
+    address alice = address(0x600D);
+
+    console.log("     My balance:", erc20.balanceOf(myAddress));
+    console.log("Alice's balance:", erc20.balanceOf(alice));
+    console.log("--------------");
+  }
+
+  function run() external {
+    address worldAddress = address(0x8D8b6b8414E1e3DcfD4168561b9be6bD3bF6eC4B);
+
+    // Specify a store so that you can use tables directly in PostDeploy
+    StoreSwitch.setStoreAddress(worldAddress);
+
+    // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    address myAddress = vm.addr(deployerPrivateKey);
+
+    // Start broadcasting transactions from the deployer account
+    vm.startBroadcast(deployerPrivateKey);
+
+    // Get the ERC-20 token address
+    ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("erc20Namespace"));
+    ResourceId erc20RegistryResource = WorldResourceIdLib.encode(RESOURCE_TABLE, "erc20-module", "ERC20_REGISTRY");
+    address tokenAddress = ERC20Registry.getTokenAddress(erc20RegistryResource, namespaceResource);
+    console.log("Token address", tokenAddress);
+
+    address alice = address(0x600D);
+
+    // Use the token
+    ERC20 erc20 = ERC20(tokenAddress);
+
+    console.log("Initial state");
+    reportBalances(erc20, myAddress);
+
+    // Mint some tokens
+    console.log("Minting for myself");
+    erc20.mint(myAddress, 1000);
+    reportBalances(erc20, myAddress);
+
+    // Transfer tokens
+    console.log("Transfering to Alice");
+    erc20.transfer(alice, 750);
+    reportBalances(erc20, myAddress);
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```solidity
+    console.log("     My balance:", erc20.balanceOf(myAddress));
+```
+
+[The `balanceOf` function](https://eips.ethereum.org/EIPS/eip-20#balanceof) is the way ERC-20 specifies to get an address's balance.
+
+```solidity
+    // Get the ERC-20 token address
+    ResourceId namespaceResource = WorldResourceIdLib.encodeNamespace(bytes14("erc20Namespace"));
+    ResourceId erc20RegistryResource = WorldResourceIdLib.encode(RESOURCE_TABLE, "erc20-module", "ERC20_REGISTRY");
+    address tokenAddress = ERC20Registry.getTokenAddress(erc20RegistryResource, namespaceResource);
+    console.log("Token address", tokenAddress);
+```
+
+This is the process to get the address of our token contract.
+First, we get the [`resourceId` values](/world/resource-ids) for the `erc20-module__ERC20Registry` table and the namespace we are interested in (each namespace can only have one ERC-20 token).
+Then we use that table to get the token address.
+
+```solidity
+    // Use the token
+   ERC20 erc20 = ERC20(tokenAddress);
+```
+
+Cast the token address to an `ERC20` contract so we can call its methods.
+
+```solidity
+    console.log("Minting for myself");
+    erc20.mint(myAddress, 1000);
+    reportBalances(erc20, myAddress);
+```
+
+Mint tokens for your address.
+Note that only the owner of the name space is authorized to mint tokens.
+
+```solidity
+    console.log("Transfering to Alice");
+    erc20.transfer(alice, 750);
+    reportBalances(erc20, myAddress);
+```
+
+Transfer a token.
+We can only transfer tokens we own, or that we have approval to transfer from the current owner.
+
+</details>

@@ -79,16 +79,16 @@ export function getContract<
   TPublicClient,
   TWalletClient
 >): GetContractReturnType<TAbi, { public: TPublicClient; wallet: TWalletClient }, TAddress> {
-  const contract = viem_getContract({
+  const contract: GetContractReturnType<TAbi, { public: TPublicClient; wallet: TWalletClient }, TAddress> & {
+    write: unknown;
+  } = viem_getContract({
     abi,
     address,
     client: {
       public: publicClient,
       wallet: walletClient,
     },
-  }) as unknown as GetContractReturnType<TAbi, { public: TPublicClient; wallet: TWalletClient }, TAddress> & {
-    write: unknown;
-  };
+  }) as never;
 
   if (contract.write) {
     // Replace write calls with our own. Implemented ~the same as viem, but adds better handling of nonces (via queue + retries).
@@ -104,21 +104,21 @@ export function getContract<
             ]
           ) => {
             const { args, options } = getFunctionParameters(parameters);
-            const request = {
+            const request: WriteContractParameters<
+              TAbi,
+              ContractFunctionName<TAbi, "nonpayable" | "payable">,
+              ContractFunctionArgs<TAbi, "nonpayable" | "payable">,
+              TChain,
+              TAccount
+            > = {
               abi,
               address,
               functionName,
               args,
               ...options,
               onWrite,
-            } as unknown as WriteContractParameters<
-              TAbi,
-              ContractFunctionName<TAbi, "nonpayable" | "payable">,
-              ContractFunctionArgs<TAbi, "nonpayable" | "payable">,
-              TChain,
-              TAccount
-            >;
-            const result = writeContract(walletClient, request, { publicClient });
+            } as never;
+            const result = writeContract(walletClient, request, { publicClient }) as never;
 
             const id = `${walletClient.chain.id}:${walletClient.account.address}:${nextWriteId++}`;
             onWrite?.({
@@ -134,5 +134,5 @@ export function getContract<
     );
   }
 
-  return contract as unknown as GetContractReturnType<TAbi, { public: TPublicClient; wallet: TWalletClient }, TAddress>;
+  return contract;
 }

@@ -6,7 +6,6 @@ import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 import { ContractWrite, createBurnerAccount, getContract, resourceToHex, transportObserver } from "@latticexyz/common";
 import { Subject, share } from "rxjs";
 import mudConfig from "contracts/mud.config";
-import { createClient as createFaucetClient } from "@latticexyz/faucet";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
@@ -55,22 +54,6 @@ export async function setupNetwork() {
     publicClient,
     startBlock: BigInt(networkConfig.initialBlockNumber),
   } as const);
-
-  try {
-    console.log("creating faucet client");
-    const faucet = createFaucetClient({ url: "http://localhost:3002/trpc" });
-
-    const drip = async () => {
-      console.log("dripping");
-      const tx = await faucet.drip.mutate({ address: burnerAccount.address });
-      console.log("got drip", tx);
-    };
-
-    drip();
-    setInterval(drip, 20_000);
-  } catch (e) {
-    console.error(e);
-  }
 
   return {
     world,

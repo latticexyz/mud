@@ -1,4 +1,4 @@
-import type { Store as StoreConfig } from "@latticexyz/store/config/v2";
+import type { Store as StoreConfig } from "@latticexyz/store";
 import type { DevToolsOptions } from "./common";
 
 const containerId = "mud-dev-tools";

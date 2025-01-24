@@ -1,9 +1,8 @@
-import { Hex, PublicClient, concatHex, getAddress, size } from "viem";
+import { Client, Hex, concatHex, getAddress, size } from "viem";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
 import { buildTable } from "./buildTable";
-import { Store as StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import { getTableName } from "./getTableName";
 import { chainState, mudStoreTables } from "./internalTables";
@@ -13,19 +12,20 @@ import { StorageAdapter } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
-import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
+import { KeySchema, decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
+import { getChainId } from "viem/actions";
+import { getAction } from "viem/utils";
 
 // TODO: upgrade drizzle and use async sqlite interface for consistency
 
-export async function sqliteStorage<config extends StoreConfig = StoreConfig>({
+export async function sqliteStorage({
   database,
   publicClient,
 }: {
   database: BaseSQLiteDatabase<"sync", void>;
-  publicClient: PublicClient;
-  config?: config;
+  publicClient: Client;
 }): Promise<StorageAdapter> {
-  const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+  const chainId = publicClient.chain?.id ?? (await getAction(publicClient, getChainId, "getChainId")({}));
 
   // TODO: should these run lazily before first `registerTables`?
   database.run(sql.raw(sqliteTableToSql(chainState)));
@@ -46,7 +46,12 @@ export async function sqliteStorage<config extends StoreConfig = StoreConfig>({
           .values({
             schemaVersion,
             id: getTableName(table.address, table.namespace, table.name),
-            ...table,
+            address: table.address,
+            tableId: table.tableId,
+            namespace: table.namespace,
+            name: table.name,
+            keySchema: table.keySchema,
+            valueSchema: table.valueSchema,
             lastUpdatedBlockNumber: blockNumber,
           })
           .onConflictDoNothing()
@@ -97,7 +102,7 @@ export async function sqliteStorage<config extends StoreConfig = StoreConfig>({
 
         const sqlTable = buildTable(table);
         const uniqueKey = concatHex(log.args.keyTuple as Hex[]);
-        const key = decodeKey(table.keySchema, log.args.keyTuple);
+        const key = decodeKey(table.keySchema as KeySchema, log.args.keyTuple);
 
         if (log.eventName === "Store_SetRecord") {
           const value = decodeValueArgs(table.valueSchema, log.args);

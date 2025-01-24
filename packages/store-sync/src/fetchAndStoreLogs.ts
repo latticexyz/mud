@@ -12,7 +12,7 @@ export async function* fetchAndStoreLogs({
   logFilter,
   ...fetchLogsOptions
 }: FetchAndStoreLogsOptions): AsyncGenerator<StorageAdapterBlock> {
-  for await (const { logs, toBlock } of fetchLogs(fetchLogsOptions)) {
+  for await (const { logs, toBlock } of fetchLogs<StoreEventsAbi>(fetchLogsOptions)) {
     const blocks = groupLogsByBlockNumber(logFilter ? logs.filter(logFilter) : logs, toBlock);
     for (const block of blocks) {
       await storageAdapter(block);

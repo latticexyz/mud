@@ -1,4 +1,5 @@
-import { Table, SchemaToPrimitives } from "@latticexyz/store/internal";
+import { Table } from "@latticexyz/config";
+import { getKeySchema, getSchemaPrimitives, getValueSchema } from "@latticexyz/protocol-parser/internal";
 import { Hex } from "viem";
 
 export type RawRecord = {
@@ -16,6 +17,9 @@ export type TableRecord<table extends Table = Table> = {
   readonly id: string;
   readonly table: table;
   readonly keyTuple: readonly Hex[];
-  readonly key: SchemaToPrimitives<table["keySchema"]>;
-  readonly value: SchemaToPrimitives<table["valueSchema"]>;
+  readonly key: getSchemaPrimitives<getKeySchema<table>>;
+  readonly value: getSchemaPrimitives<getValueSchema<table>>;
+  readonly fields: getSchemaPrimitives<table["schema"]>;
 };
+
+export type { Table };

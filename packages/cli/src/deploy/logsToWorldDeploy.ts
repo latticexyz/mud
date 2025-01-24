@@ -1,4 +1,4 @@
-import { AbiEventSignatureNotFoundError, Log, decodeEventLog, hexToString, parseAbi } from "viem";
+import { AbiEventSignatureNotFoundError, Log, decodeEventLog, hexToString, parseAbi, getAddress } from "viem";
 import { WorldDeploy, worldDeployEvents } from "./common";
 import { isDefined } from "@latticexyz/common/utils";
 
@@ -14,6 +14,9 @@ export function logsToWorldDeploy(logs: readonly Log<bigint, number, false>[]): 
             topics: log.topics,
             data: log.data,
           }),
+          // Log addresses are not checksummed, but we want them checksummed before writing to disk.
+          // https://github.com/wevm/viem/issues/2207
+          address: getAddress(log.address),
         };
       } catch (error: unknown) {
         if (error instanceof AbiEventSignatureNotFoundError) {

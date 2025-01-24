@@ -1,9 +1,8 @@
 import type { CommandModule } from "yargs";
-import { loadConfig } from "@latticexyz/config/node";
+import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
-
-import { getSrcDirectory } from "@latticexyz/common/foundry";
 import { build } from "../build";
+import path from "node:path";
 
 type Options = {
   configPath?: string;
@@ -22,11 +21,11 @@ const commandModule: CommandModule<Options, Options> = {
     });
   },
 
-  async handler({ configPath, profile }) {
+  async handler(opts) {
+    const configPath = await resolveConfigPath(opts.configPath);
     const config = (await loadConfig(configPath)) as WorldConfig;
-    const srcDir = await getSrcDirectory();
 
-    await build({ config, srcDir, foundryProfile: profile });
+    await build({ rootDir: path.dirname(configPath), config, foundryProfile: opts.profile });
 
     process.exit(0);
   },

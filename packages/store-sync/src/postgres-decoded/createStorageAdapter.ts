@@ -1,13 +1,12 @@
-import { Hex, PublicClient, concatHex, getAddress } from "viem";
+import { Client, Hex, concatHex, getAddress } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { and, eq } from "drizzle-orm";
 import { buildTable } from "./buildTable";
-import { Store as StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
-import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
+import { KeySchema, decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
 import { tables as internalTables } from "../postgres/tables";
 import { createStorageAdapter as createBytesStorageAdapter } from "../postgres/createStorageAdapter";
 import { setupTables } from "../postgres/setupTables";
@@ -22,16 +21,14 @@ export type PostgresStorageAdapter = {
   cleanUp: () => Promise<void>;
 };
 
-export async function createStorageAdapter<config extends StoreConfig = StoreConfig>({
+export async function createStorageAdapter({
   database,
   publicClient,
-  config,
 }: {
   database: PgDatabase<QueryResultHKT>;
-  publicClient: PublicClient;
-  config?: config;
+  publicClient: Client;
 }): Promise<PostgresStorageAdapter> {
-  const bytesStorageAdapter = await createBytesStorageAdapter({ database, publicClient, config });
+  const bytesStorageAdapter = await createBytesStorageAdapter({ database, publicClient });
   const cleanUp: (() => Promise<void>)[] = [];
 
   async function postgresStorageAdapter({ blockNumber, logs }: StorageAdapterBlock): Promise<void> {
@@ -66,7 +63,7 @@ export async function createStorageAdapter<config extends StoreConfig = StoreCon
 
         const sqlTable = buildTable(table);
         const keyBytes = concatHex(log.args.keyTuple as Hex[]);
-        const key = decodeKey(table.keySchema, log.args.keyTuple);
+        const key = decodeKey(table.keySchema as KeySchema, log.args.keyTuple);
 
         if (
           log.eventName === "Store_SetRecord" ||

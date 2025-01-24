@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store-sync",
-  "version": "2.0.9",
+  "version": "2.2.16",
   "description": "Utilities to sync MUD Store events with a client or cache",
   "repository": {
     "type": "git",
@@ -12,60 +12,76 @@
   "exports": {
     ".": "./dist/index.js",
     "./indexer-client": "./dist/indexer-client/index.js",
+    "./internal": "./dist/exports/internal.js",
+    "./react": "./dist/exports/react.js",
     "./postgres": "./dist/postgres/index.js",
     "./postgres-decoded": "./dist/postgres-decoded/index.js",
     "./recs": "./dist/recs/index.js",
     "./sqlite": "./dist/sqlite/index.js",
     "./trpc-indexer": "./dist/trpc-indexer/index.js",
+    "./world": "./dist/world/index.js",
     "./zustand": "./dist/zustand/index.js"
   },
   "typesVersions": {
     "*": {
       "index": [
-        "./src/index.ts"
+        "./dist/index.d.ts"
       ],
       "indexer-client": [
-        "./src/indexer-client/index.ts"
+        "./dist/indexer-client/index.d.ts"
+      ],
+      "internal": [
+        "./dist/exports/internal.d.ts"
+      ],
+      "react": [
+        "./dist/exports/react.d.ts"
       ],
       "postgres": [
-        "./src/postgres/index.ts"
+        "./dist/postgres/index.d.ts"
       ],
       "postgres-decoded": [
-        "./src/postgres-decoded/index.ts"
+        "./dist/postgres-decoded/index.d.ts"
       ],
       "recs": [
-        "./src/recs/index.ts"
+        "./dist/recs/index.d.ts"
       ],
       "sqlite": [
-        "./src/sqlite/index.ts"
+        "./dist/sqlite/index.d.ts"
       ],
       "trpc-indexer": [
-        "./src/trpc-indexer/index.ts"
+        "./dist/trpc-indexer/index.d.ts"
+      ],
+      "world": [
+        "./dist/world/index.d.ts"
       ],
       "zustand": [
-        "./src/zustand/index.ts"
+        "./dist/zustand/index.d.ts"
       ]
     }
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "bench": "vitest bench",
     "build": "pnpm run build:js",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
-    "clean:js": "rimraf dist",
+    "clean:js": "shx rm -rf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
     "test": "DATABASE_URL=http://127.0.0.1:5432/postgres vitest",
     "test:ci": "vitest --run"
   },
   "dependencies": {
+    "@ark/util": "0.2.2",
     "@latticexyz/block-logs-stream": "workspace:*",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
-    "@latticexyz/query": "workspace:*",
     "@latticexyz/recs": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
+    "@latticexyz/stash": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/world": "workspace:*",
     "@trpc/client": "10.34.0",
@@ -79,17 +95,41 @@
     "rxjs": "7.5.5",
     "sql.js": "^1.8.0",
     "superjson": "^1.12.4",
-    "viem": "2.9.20",
-    "zod": "^3.21.4",
+    "zod": "3.23.8",
     "zustand": "^4.3.7"
   },
   "devDependencies": {
+    "@tanstack/react-query": "^5.56.2",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/react-hooks": "^8.0.1",
     "@types/debug": "^4.1.7",
+    "@types/react": "18.2.22",
     "@types/sql.js": "^1.4.4",
     "@viem/anvil": "^0.0.7",
-    "mock-game-contracts": "workspace:*",
-    "tsup": "^6.7.0",
-    "vitest": "0.34.6"
+    "eslint-plugin-react": "7.31.11",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "viem": "2.21.19",
+    "vitest": "0.34.6",
+    "wagmi": "2.12.11"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "5.x",
+    "react": "18.x",
+    "viem": "2.x",
+    "wagmi": "2.x"
+  },
+  "peerDependenciesMeta": {
+    "@tanstack/react-query": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "wagmi": {
+      "optional": true
+    }
   },
   "publishConfig": {
     "access": "public"

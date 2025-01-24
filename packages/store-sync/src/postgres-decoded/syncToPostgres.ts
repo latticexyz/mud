@@ -1,10 +1,9 @@
-import { Store as StoreConfig } from "@latticexyz/store";
 import { PgDatabase } from "drizzle-orm/pg-core";
 import { SyncOptions, SyncResult } from "../common";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { createStoreSync } from "../createStoreSync";
 
-type SyncToPostgresOptions<config extends StoreConfig = StoreConfig> = SyncOptions<config> & {
+export type SyncToPostgresOptions = SyncOptions & {
   /**
    * [Postgres database object from Drizzle][0].
    *
@@ -15,7 +14,7 @@ type SyncToPostgresOptions<config extends StoreConfig = StoreConfig> = SyncOptio
   startSync?: boolean;
 };
 
-type SyncToPostgresResult = SyncResult & {
+export type SyncToPostgresResult = SyncResult & {
   stopSync: () => void;
 };
 
@@ -25,20 +24,14 @@ type SyncToPostgresResult = SyncResult & {
  * @param {CreateIndexerOptions} options See `CreateIndexerOptions`.
  * @returns A function to unsubscribe from the block stream, effectively stopping the indexer.
  */
-export async function syncToPostgres<config extends StoreConfig = StoreConfig>({
-  config,
+export async function syncToPostgres({
   database,
   publicClient,
   startSync = true,
   ...syncOptions
-}: SyncToPostgresOptions<config>): Promise<SyncToPostgresResult> {
-  const { storageAdapter } = await createStorageAdapter({ database, publicClient, config });
-  const storeSync = await createStoreSync({
-    storageAdapter,
-    config,
-    publicClient,
-    ...syncOptions,
-  });
+}: SyncToPostgresOptions): Promise<SyncToPostgresResult> {
+  const { storageAdapter } = await createStorageAdapter({ database, publicClient });
+  const storeSync = await createStoreSync({ storageAdapter, publicClient, ...syncOptions });
 
   const sub = startSync ? storeSync.storedBlockLogs$.subscribe() : null;
   const stopSync = (): void => {

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/dev-tools",
-  "version": "2.0.9",
+  "version": "2.2.16",
   "description": "MUD developer tools",
   "repository": {
     "type": "git",
@@ -12,12 +12,21 @@
   "exports": {
     ".": "./dist/index.js"
   },
-  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
-    "clean:js": "rimraf dist",
+    "clean:js": "shx rm -rf dist",
     "dev": "tsup --watch",
     "test": "tsc --noEmit",
     "test:ci": "pnpm run test"
@@ -37,7 +46,6 @@
     "rxjs": "7.5.5",
     "tailwind-merge": "^1.12.0",
     "use-local-storage-state": "^18.3.2",
-    "viem": "2.9.20",
     "zustand": "^4.3.7"
   },
   "devDependencies": {
@@ -47,16 +55,17 @@
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.23",
     "tailwindcss": "^3.3.2",
-    "tsup": "^6.7.0",
+    "viem": "2.21.19",
     "vitest": "0.34.6"
   },
   "peerDependencies": {
-    "@latticexyz/common": "2.0.9",
-    "@latticexyz/recs": "2.0.9",
-    "@latticexyz/store": "2.0.9",
-    "@latticexyz/store-sync": "2.0.9",
-    "@latticexyz/utils": "2.0.9",
-    "@latticexyz/world": "2.0.9"
+    "@latticexyz/common": "2.x",
+    "@latticexyz/recs": "2.x",
+    "@latticexyz/store": "2.x",
+    "@latticexyz/store-sync": "2.x",
+    "@latticexyz/utils": "2.x",
+    "@latticexyz/world": "2.x",
+    "viem": "2.x"
   },
   "publishConfig": {
     "access": "public"

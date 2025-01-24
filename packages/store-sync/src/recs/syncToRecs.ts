@@ -1,50 +1,46 @@
-import { Table, ResolvedStoreConfig, resolveConfig } from "@latticexyz/store/internal";
+import { Tables } from "@latticexyz/config";
 import { Store as StoreConfig } from "@latticexyz/store";
-import { storeToV1 } from "@latticexyz/store/config/v2";
 import { Component as RecsComponent, World as RecsWorld, getComponentValue, setComponent } from "@latticexyz/recs";
 import { SyncOptions, SyncResult } from "../common";
-import { RecsStorageAdapter, recsStorage } from "./recsStorage";
+import { createStorageAdapter } from "./createStorageAdapter";
 import { createStoreSync } from "../createStoreSync";
 import { singletonEntity } from "./singletonEntity";
 import { SyncStep } from "../SyncStep";
+import { registerComponents } from "./registerComponents";
 
-type SyncToRecsOptions<config extends StoreConfig, extraTables extends Record<string, Table>> = Omit<
-  SyncOptions<config>,
-  "config"
-> & {
+export type SyncToRecsOptions<
+  config extends StoreConfig = StoreConfig,
+  extraTables extends Tables = Tables,
+> = SyncOptions & {
   world: RecsWorld;
   config: config;
   tables?: extraTables;
   startSync?: boolean;
 };
 
-type SyncToRecsResult<config extends StoreConfig, extraTables extends Record<string, Table>> = SyncResult & {
-  components: RecsStorageAdapter<ResolvedStoreConfig<storeToV1<config>>["tables"] & extraTables>["components"];
+export type SyncToRecsResult<config extends StoreConfig, extraTables extends Tables> = SyncResult & {
+  components: registerComponents<config, extraTables>;
   stopSync: () => void;
 };
 
-export async function syncToRecs<config extends StoreConfig, extraTables extends Record<string, Table>>({
+export async function syncToRecs<const config extends StoreConfig, const extraTables extends Tables = {}>({
   world,
   config,
-  tables: extraTables,
+  tables: extraTables = {} as extraTables,
   startSync = true,
   ...syncOptions
 }: SyncToRecsOptions<config, extraTables>): Promise<SyncToRecsResult<config, extraTables>> {
-  const tables = {
-    ...resolveConfig(storeToV1(config as StoreConfig)).tables,
-    ...extraTables,
-  } as ResolvedStoreConfig<storeToV1<config>>["tables"] & extraTables;
+  const components = registerComponents({ world, config, extraTables });
 
-  const { storageAdapter, components } = recsStorage({
+  const { storageAdapter } = createStorageAdapter({
     world,
-    tables,
+    tables: {},
     shouldSkipUpdateStream: (): boolean =>
       getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE,
   });
 
   const storeSync = await createStoreSync({
     storageAdapter,
-    config,
     ...syncOptions,
     onProgress: ({ step, percentage, latestBlockNumber, lastBlockNumberProcessed, message }) => {
       // already live, no need for more progress updates
@@ -83,5 +79,5 @@ export async function syncToRecs<config extends StoreConfig, extraTables extends
     ...storeSync,
     components,
     stopSync,
-  };
+  } as never;
 }

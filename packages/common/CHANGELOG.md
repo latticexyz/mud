@@ -1,5 +1,243 @@
 # Change Log
 
+## 2.2.16
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.16
+
+## 2.2.15
+
+### Patch Changes
+
+- 09e9bd5: Moved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.
+- 9d71887: Loosened `publicClient` type for `transactionQueue` action decorator and `writeContract` and `sendTransaction` actions so that they can be used with plain, undecorated Viem clients.
+- 88b9daf: Updated Rhodolite chain config.
+- Updated dependencies [09e9bd5]
+  - @latticexyz/schema-type@2.2.15
+
+## 2.2.14
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.14
+
+## 2.2.13
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.13
+
+## 2.2.12
+
+### Patch Changes
+
+- ea18f27: Bumped viem to v2.21.19.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.19
+  ```
+
+- 41a6e2f: Added Rhodolite devnet chain config and removed the old and now-defunct Lattice testnet chain config.
+- fe98442: The `transactionQueue` decorator internally keeps an updated reference for the recommended `baseFeePerGas` and `maxPriorityFeePerGas` from the connected chain to avoid having to fetch it right before sending a transaction.
+  However, due to the way the fee values were overridden, it wasn't possible for users to explicitly pass in custom fee values.
+  Now explicitly provided fee values have precedence over the internally estimated fee values.
+- Updated dependencies [ea18f27]
+  - @latticexyz/schema-type@2.2.12
+
+## 2.2.11
+
+### Patch Changes
+
+- 7ddcf64: Added `logSort` method to help when sorting logs fetched from RPC, where they come back ordered relative to the topics used.
+
+  ```ts
+  import { logSort } from "@latticexyz/common";
+
+  const logs = getLogs(...);
+  logs.sort(logSort);
+  ```
+
+  - @latticexyz/schema-type@2.2.11
+
+## 2.2.10
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.10
+
+## 2.2.9
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.9
+
+## 2.2.8
+
+### Patch Changes
+
+- 7c7bdb2: Removed unused generics and ensure that we're only passing around the generics we need, when we need them. Hopefully this improves TS performance in MUD projects.
+  - @latticexyz/schema-type@2.2.8
+
+## 2.2.7
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.7
+
+## 2.2.6
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.6
+
+## 2.2.5
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.5
+
+## 2.2.4
+
+### Patch Changes
+
+- 2f935cf: To reset an account's nonce, the nonce manager uses the [`eth_getTransactionCount`](https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_gettransactioncount) RPC method,
+  which returns the number of transactions sent from the account.
+  When using the `pending` block tag, this includes transactions in the mempool that have not been included in a block yet.
+  If an account submits a transaction with a nonce higher than the next valid nonce, this transaction will stay in the mempool until the nonce gap is closed and the transactions nonce is the next valid nonce.
+  This means if an account has gapped transactions "stuck in the mempool", the `eth_getTransactionCount` method with `pending` block tag can't be used to get the next valid nonce
+  (since it includes the number of transactions stuck in the mempool).
+  Since the nonce manager only resets the nonce on reload or in case of a nonce error, using the `latest` block tag by default is the safer choice to be able to recover from nonce gaps.
+
+  Note that this change may reveal more "transaction underpriced" errors than before. These errors will now be retried automatically and should go through after the next block is mined.
+
+- 50010fb: Bumped viem, wagmi, and abitype packages to their latest release.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.6 wagmi@2.12.11 @wagmi/core@2.13.5 abitype@1.0.6
+  ```
+
+- Updated dependencies [50010fb]
+  - @latticexyz/schema-type@2.2.4
+
+## 2.2.3
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.3
+
+## 2.2.2
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.2.2
+
+## 2.2.1
+
+### Patch Changes
+
+- c0764a5: `writeContract` and `sendTransaction` actions now use `pending` block tag when estimating gas. This aligns with previous behavior before changes in the last version.
+  - @latticexyz/schema-type@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- 69cd0a1: Updated all custom Viem actions to properly call other actions via `getAction` so they can be composed.
+  - @latticexyz/schema-type@2.2.0
+
+## 2.1.1
+
+### Patch Changes
+
+- 9e21e42: Bumped viem to `2.19.8` and abitype to `1.0.5`.
+
+  MUD projects using viem or abitype should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.19.8 abitype@1.0.5
+  ```
+
+- 2daaab1: Refactored `writeContract` and `sendTransaction` actions for simplicity and better error messages.
+- Updated dependencies [9e21e42]
+  - @latticexyz/schema-type@2.1.1
+
+## 2.1.0
+
+### Patch Changes
+
+- 7129a16: Removed `evaluate` and `satisfy` type utils in favor of `show` and `satisfy` from `@arktype/util`.
+- 8d0453e: `resourceToHex` will now throw if provided namespace is >14 characters. Since namespaces are used to determine access control, it's not safe to automatically truncate to fit into `bytes14` as that may change the indended namespace for resource access.
+  - @latticexyz/schema-type@2.1.0
+
+## 2.0.12
+
+### Patch Changes
+
+- 96e7bf430: TS source has been removed from published packages in favor of DTS in an effort to improve TS performance. All packages now inherit from a base TS config in `@latticexyz/common` to allow us to continue iterating on TS performance without requiring changes in your project code.
+
+  If you have a MUD project that you're upgrading, we suggest adding a `tsconfig.json` file to your project workspace that extends this base config.
+
+  ```sh
+  pnpm add -D @latticexyz/common
+  echo "{\n  \"extends\": \"@latticexyz/common/tsconfig.base.json\"\n}" > tsconfig.json
+  ```
+
+  Then in each package of your project, inherit from your workspace root's config.
+
+  For example, your TS config in `packages/contracts/tsconfig.json` might look like:
+
+  ```json
+  {
+    "extends": "../../tsconfig.json"
+  }
+  ```
+
+  And your TS config in `packages/client/tsconfig.json` might look like:
+
+  ```json
+  {
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+      "types": ["vite/client"],
+      "target": "ESNext",
+      "lib": ["ESNext", "DOM"],
+      "jsx": "react-jsx",
+      "jsxImportSource": "react"
+    },
+    "include": ["src"]
+  }
+  ```
+
+  You may need to adjust the above configs to include any additional TS options you've set. This config pattern may also reveal new TS errors that need to be fixed or rules disabled.
+
+  If you want to keep your existing TS configs, we recommend at least updating your `moduleResolution` setting.
+
+  ```diff
+  -"moduleResolution": "node"
+  +"moduleResolution": "Bundler"
+  ```
+
+- Updated dependencies [96e7bf430]
+  - @latticexyz/schema-type@2.0.12
+
+## 2.0.11
+
+### Patch Changes
+
+- @latticexyz/schema-type@2.0.11
+
+## 2.0.10
+
+### Patch Changes
+
+- 51b137d3: Added OP predeploy contracts for Redstone and Garnet chain configs and added chain-specific contracts for Redstone chain config.
+  - @latticexyz/schema-type@2.0.10
+
 ## 2.0.9
 
 ### Patch Changes

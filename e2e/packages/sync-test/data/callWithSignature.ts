@@ -1,11 +1,11 @@
 import { Page } from "@playwright/test";
 import { GetContractReturnType, PublicClient, WalletClient } from "viem";
 import { AbiParametersToPrimitiveTypes, ExtractAbiFunction, ExtractAbiFunctionNames } from "abitype";
-import CallWithSignatureAbi from "@latticexyz/world-modules/out/Unstable_CallWithSignatureSystem.sol/Unstable_CallWithSignatureSystem.abi.json";
+import CallWithSignatureAbi from "@latticexyz/world-module-callwithsignature/out/CallWithSignatureSystem.sol/CallWithSignatureSystem.abi.json";
 
 type CallWithSignatureAbi = typeof CallWithSignatureAbi;
 
-type WorldContract = GetContractReturnType<CallWithSignatureAbi, PublicClient, WalletClient>;
+type WorldContract = GetContractReturnType<CallWithSignatureAbi, PublicClient & WalletClient>;
 
 type WriteMethodName = ExtractAbiFunctionNames<CallWithSignatureAbi>;
 type WriteMethod<TMethod extends WriteMethodName> = ExtractAbiFunction<CallWithSignatureAbi, TMethod>;

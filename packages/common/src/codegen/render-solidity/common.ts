@@ -1,15 +1,7 @@
-import path from "path";
-import {
-  AbsoluteImportDatum,
-  RelativeImportDatum,
-  ImportDatum,
-  StaticResourceData,
-  RenderKeyTuple,
-  RenderType,
-} from "./types";
-import { posixPath } from "../utils";
+import { ImportDatum, StaticResourceData, RenderKeyTuple, RenderType } from "./types";
 import { resourceToHex } from "../../resourceToHex";
 import { hexToResource } from "../../hexToResource";
+import { renderImportPath } from "./renderImportPath";
 
 /**
  * Common header for all codegenerated solidity files
@@ -72,51 +64,11 @@ export function renderCommonData({
   };
 }
 
-/** For 2 paths which are relative to a common root, create a relative import path from one to another */
-export function solidityRelativeImportPath(fromPath: string, usedInPath: string): string {
-  // 1st "./" must be added because path strips it,
-  // but solidity expects it unless there's "../" ("./../" is fine).
-  // 2nd and 3rd "./" forcefully avoid absolute paths (everything is relative to `src`).
-  return posixPath("./" + path.relative("./" + usedInPath, "./" + fromPath));
-}
-
 /**
  * Aggregates, deduplicates and renders imports for symbols per path.
  * Identical symbols from different paths are NOT handled, they should be checked before rendering.
  */
 export function renderImports(imports: ImportDatum[]): string {
-  return renderAbsoluteImports(
-    imports.map((importDatum) => {
-      if ("path" in importDatum) {
-        return importDatum;
-      } else {
-        return {
-          symbol: importDatum.symbol,
-          path: solidityRelativeImportPath(importDatum.fromPath, importDatum.usedInPath),
-        };
-      }
-    }),
-  );
-}
-
-/**
- * Aggregates, deduplicates and renders imports for symbols per path.
- * Identical symbols from different paths are NOT handled, they should be checked before rendering.
- */
-export function renderRelativeImports(imports: RelativeImportDatum[]): string {
-  return renderAbsoluteImports(
-    imports.map(({ symbol, fromPath, usedInPath }) => ({
-      symbol,
-      path: solidityRelativeImportPath(fromPath, usedInPath),
-    })),
-  );
-}
-
-/**
- * Aggregates, deduplicates and renders imports for symbols per path.
- * Identical symbols from different paths are NOT handled, they should be checked before rendering.
- */
-export function renderAbsoluteImports(imports: AbsoluteImportDatum[]): string {
   // Aggregate symbols by import path, also deduplicating them
   const aggregatedImports = new Map<string, Set<string>>();
   for (const { symbol, path } of imports) {
@@ -129,7 +81,7 @@ export function renderAbsoluteImports(imports: AbsoluteImportDatum[]): string {
   const renderedImports = [];
   for (const [path, symbols] of aggregatedImports) {
     const renderedSymbols = [...symbols].join(", ");
-    renderedImports.push(`import { ${renderedSymbols} } from "${posixPath(path)}";`);
+    renderedImports.push(`import { ${renderedSymbols} } from "${renderImportPath(path)}";`);
   }
   return renderedImports.join("\n");
 }

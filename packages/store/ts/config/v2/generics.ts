@@ -1,4 +1,4 @@
-import { merge } from "@arktype/util";
+// TODO: move to common/utils
 
 export type get<input, key> = key extends keyof input ? input[key] : undefined;
 
@@ -31,23 +31,29 @@ export function isObject<input>(input: input): input is input & object {
   return input != null && typeof input === "object";
 }
 
-export type mergeIfUndefined<base, merged> = merge<
-  base,
-  {
-    [key in keyof merged]: key extends keyof base
-      ? undefined extends base[key]
-        ? merged[key]
+export type mergeIfUndefined<base, defaults> = {
+  readonly [key in keyof base | keyof defaults]: key extends keyof base
+    ? undefined extends base[key]
+      ? key extends keyof defaults
+        ? defaults[key]
         : base[key]
-      : merged[key];
-  }
->;
+      : base[key]
+    : key extends keyof defaults
+      ? defaults[key]
+      : never;
+};
 
-export function mergeIfUndefined<base extends object, merged extends object>(
+export function mergeIfUndefined<base extends object, defaults extends object>(
   base: base,
-  merged: merged,
-): mergeIfUndefined<base, merged> {
-  const allKeys = [...new Set([...Object.keys(base), ...Object.keys(merged)])];
+  defaults: defaults,
+): mergeIfUndefined<base, defaults> {
+  const keys = [...new Set([...Object.keys(base), ...Object.keys(defaults)])];
   return Object.fromEntries(
-    allKeys.map((key) => [key, base[key as keyof base] ?? merged[key as keyof merged]]),
+    keys.map((key) => [
+      key,
+      typeof base[key as keyof base] === "undefined" ? defaults[key as keyof defaults] : base[key as keyof base],
+    ]),
   ) as never;
 }
+
+export type parseNumber<T> = T extends `${infer N extends number}` ? N : never;

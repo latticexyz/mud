@@ -10,16 +10,24 @@ For the sake of simplicity, we will implement this in the `increment` function r
 [Create a new MUD application from the template](/quickstart).
 Use the `vanilla` template.
 
+```sh copy
+pnpm create mud@latest --name tutorial --template vanilla
+cd tutorial
+pnpm install
+pnpm dev
+```
+
 ## Modify the MUD configuration file
 
 1. In an editor, open `packages/contracts/mud.config.ts` and add a table definition for `History`.
 
    <CollapseCode>
 
-   ```ts filename="mud.config.ts" showLineNumbers copy {11-18}
+   ```ts filename="mud.config.ts" showLineNumbers copy {12-19}
    import { defineWorld } from "@latticexyz/world";
 
    export default defineWorld({
+     namespace: "app",
      tables: {
        Counter: {
          schema: {
@@ -126,7 +134,7 @@ The directions here apply to the `vanilla` client template, if you use anything 
 
    <CollapseCode>
 
-   ```ts filename="index.ts" copy showLineNumbers {3-4,18-29}
+   ```ts filename="index.ts" copy showLineNumbers {3-4,19-30}
    import { setup } from "./mud/setup";
    import mudConfig from "contracts/mud.config";
    import { encodeEntity, singletonEntity } from "@latticexyz/store-sync/recs";
@@ -158,12 +166,8 @@ The directions here apply to the `vanilla` client template, if you use anything 
      document.getElementById("history")!.innerHTML = `<table border>${table}</table>`;
    });
 
-   // Just for demonstration purposes: we create a global function that can be
-   // called to invoke the Increment system contract via the world.
-   // (See IncrementSystem.sol)
-   (window as any).increment = async () => {
-     console.log("new counter value:", await increment());
-   };
+   // Attach the increment function to the html element with ID `incrementButton` (if it exists)
+   document.querySelector("#incrementButton")?.addEventListener("click", increment);
 
    if (import.meta.env.DEV) {
      const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
@@ -244,7 +248,7 @@ This exclamation point tells the compiler that it's OK, there will be a real val
 
    <CollapseCode>
 
-   ```html filename="index.html" copy showLineNumbers {12-17}
+   ```html filename="index.html" copy showLineNumbers {12-14}
    <!doctype html>
    <html lang="en">
      <head>
@@ -255,7 +259,7 @@ This exclamation point tells the compiler that it's OK, there will be a real val
      <body>
        <script type="module" src="/src/index.ts"></script>
        <div>Counter: <span id="counter">0</span></div>
-       <button onclick="window.increment()">Increment</button>
+       <button id="incrementButton">Increment</button>
        <hr />
        <h2>History</h2>
        <div id="history"></div>

@@ -1,7 +1,0 @@
-*
-
-!dist/**
-!package.json
-!README.md
-!protobuf/**
-!ts/**

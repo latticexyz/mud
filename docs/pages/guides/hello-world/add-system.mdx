@@ -9,6 +9,13 @@ In this tutorial you add a system to decrement the counter and update the applic
 [Create a new MUD application from the template](../../templates/typescript/getting-started).
 Use the vanilla template.
 
+```sh copy
+pnpm create mud@latest --name tutorial --template vanilla
+cd tutorial
+pnpm install
+pnpm dev
+```
+
 ## Add a contract for the new system
 
 Create a file `packages/contracts/src/systems/DecrementSystem.sol`.
@@ -109,13 +116,13 @@ In this case, the vanilla getting started front end.
             * is in the root namespace, `.increment` can be called directly
             * on the World contract.
             */
-            const tx = await worldContract.write.increment();
+            const tx = await worldContract.write.app__increment();
             await waitForTransaction(tx);
             return getComponentValue(Counter, singletonEntity);
           };
 
           const decrement = async () => {
-            const tx = await worldContract.write.decrement();
+            const tx = await worldContract.write.app__decrement();
             await waitForTransaction(tx);
             return getComponentValue(Counter, singletonEntity);
           };

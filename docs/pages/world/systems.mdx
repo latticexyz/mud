@@ -106,6 +106,11 @@ The return data is of type [`bytes memory`](https://docs.soliditylang.org/en/lat
 
 ## Writing systems
 
+<Callout type="info" emoji="ℹ️">
+  This page is about the technical details of programming a `System`. [See
+  here](/guides/best-practices/system-best-practices) for design best practices.
+</Callout>
+
 A `System` should _not_ have any internal state, but store all of it in tables in the `World`.
 There are several reasons for this:
 
@@ -124,6 +129,11 @@ Use these substitutes:
 When calling other contracts from a `System`, be aware that if you use `delegatecall` the called contract inherits the `System`'s permissions and can modify data in the `World` on behalf of the `System`.
 
 ### Calling one `System` from another
+
+<Callout type="info" emoji="ℹ️">
+  Sometimes there are [easier alternatives than calling a `System` from
+  another](/guides/best-practices/dividing-into-systems).
+</Callout>
 
 There are two ways to call one `System` from another one.
 
@@ -216,6 +226,43 @@ If your `System` needs run both from the root namespace and from other namespace
    The second parameter is the data type (or types if there are multiple return values).
 
    </details>
+
+#### System Libraries
+
+<Callout type="warning" emoji="⚠️">
+  This is an experimental feature and is not recommended for production use yet. Its API is expected to change in the
+  future.
+</Callout>
+
+By setting the `generateSystemLibraries` codegen setting to true in your MUD config, the `worldgen` CLI will automatically generate a Solidity library for each system in your project. This feature simplifies inter-system communication by providing a convenient way of calling functions between systems.
+
+Each generated library defines and exports a custom user-defined type that includes all the functions defined in the corresponding system. Internally, these system libraries utilize the World's `call` and `callFrom` methods to execute the actual system contracts.
+
+```solidity filename="MySystem.sol"
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.24;
+
+import { System } from "@latticexyz/world/src/System.sol";
+
+// Library generated for MoveSystem,
+import { moveSystem } from "./codegen/systems/MoveSystemLib.sol";
+
+contract MySystem is System {
+  function someAction(uint256 x, uint256 y) external {
+    // All functions defined in the MoveSystem system are available globally for the exported `moveSystem` value
+    moveSystem.move(x, y);
+
+    // You can also use delegations (if they exist) by using `callFrom`
+    moveSystem.callFrom(_msgSender()).move(x, y);
+
+    // If MySystem is a root system, you need to use `callAsRoot`
+    moveSystem.callAsRoot().move(x, y);
+
+    // If MySystem is a root system, it can call other systems on behalf of any address with `callAsRootFrom`
+    moveSystem.callAsRootFrom(_msgSender()).move(x, y);
+  }
+}
+```
 
 ## Registering systems
 

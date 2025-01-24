@@ -1,5 +1,176 @@
 # Change Log
 
+## 2.2.16
+
+## 2.2.15
+
+## 2.2.14
+
+## 2.2.13
+
+## 2.2.12
+
+### Patch Changes
+
+- ea18f27: Bumped viem to v2.21.19.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.19
+  ```
+
+## 2.2.11
+
+## 2.2.10
+
+### Patch Changes
+
+- af26487: Upgraded mprocs to fix issues with it not running when started via npm script.
+
+  You can do the same in an existing MUD project with:
+
+  ```
+  pnpm recursive up mprocs@latest
+  ```
+
+## 2.2.9
+
+### Patch Changes
+
+- 95aa3bb: Explorer now automatically starts a local indexer when using Anvil as the target chain.
+
+  If you previously had an `indexer` entry in your `mprocs.yaml` file, it can now be removed.
+
+  ```diff
+  -  indexer:
+  -    cwd: packages/contracts
+  -    shell: shx rm -rf $SQLITE_FILENAME && pnpm sqlite-indexer
+  -    env:
+  -      DEBUG: mud:*
+  -      RPC_HTTP_URL: "http://127.0.0.1:8545"
+  -      FOLLOW_BLOCK_TAG: "latest"
+  -      SQLITE_FILENAME: "indexer.db"
+  ```
+
+## 2.2.8
+
+### Patch Changes
+
+- 4fffb79: Fixed types in threejs template after dependency bump.
+
+## 2.2.7
+
+## 2.2.6
+
+## 2.2.5
+
+## 2.2.4
+
+### Patch Changes
+
+- 50010fb: Bumped viem, wagmi, and abitype packages to their latest release.
+
+  MUD projects using these packages should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.21.6 wagmi@2.12.11 @wagmi/core@2.13.5 abitype@1.0.6
+  ```
+
+## 2.2.3
+
+## 2.2.2
+
+## 2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- 28fd732: Templates now use `shx` to run shell commands in scripts for better Windows compatibility.
+- 1a96544: New projects created with `pnpm create mud` now include the World Explorer and SQLite indexer running as additional services.
+
+## 2.1.1
+
+### Patch Changes
+
+- 9e21e42: Bumped viem to `2.19.8` and abitype to `1.0.5`.
+
+  MUD projects using viem or abitype should do the same to ensure no type errors due to mismatched versions:
+
+  ```
+  pnpm recursive up viem@2.19.8 abitype@1.0.5
+  ```
+
+## 2.1.0
+
+### Patch Changes
+
+- e49059f: Bumped `glob` dependency.
+
+## 2.0.12
+
+### Patch Changes
+
+- 96e7bf430: TS source has been removed from published packages in favor of DTS in an effort to improve TS performance. All packages now inherit from a base TS config in `@latticexyz/common` to allow us to continue iterating on TS performance without requiring changes in your project code.
+
+  If you have a MUD project that you're upgrading, we suggest adding a `tsconfig.json` file to your project workspace that extends this base config.
+
+  ```sh
+  pnpm add -D @latticexyz/common
+  echo "{\n  \"extends\": \"@latticexyz/common/tsconfig.base.json\"\n}" > tsconfig.json
+  ```
+
+  Then in each package of your project, inherit from your workspace root's config.
+
+  For example, your TS config in `packages/contracts/tsconfig.json` might look like:
+
+  ```json
+  {
+    "extends": "../../tsconfig.json"
+  }
+  ```
+
+  And your TS config in `packages/client/tsconfig.json` might look like:
+
+  ```json
+  {
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+      "types": ["vite/client"],
+      "target": "ESNext",
+      "lib": ["ESNext", "DOM"],
+      "jsx": "react-jsx",
+      "jsxImportSource": "react"
+    },
+    "include": ["src"]
+  }
+  ```
+
+  You may need to adjust the above configs to include any additional TS options you've set. This config pattern may also reveal new TS errors that need to be fixed or rules disabled.
+
+  If you want to keep your existing TS configs, we recommend at least updating your `moduleResolution` setting.
+
+  ```diff
+  -"moduleResolution": "node"
+  +"moduleResolution": "Bundler"
+  ```
+
+- d75266073: Removed unnecessary build step in scripts and added deploy scripts for Redstone and Garnet chains.
+
+## 2.0.11
+
+### Patch Changes
+
+- 63e5d2d5: Added pnpm 9 to project's `engines`.
+
+## 2.0.10
+
+### Patch Changes
+
+- 18360244: Templates now use an `app` namespace by default, instead of the root namespace. This helps keep the root namespace clear for intentionally root-level things and avoids pitfalls with root systems calling other root systems.
+- 4a61a128: Removed usages of old testnet faucet in templates. The previous testnet faucet is broken, deprecated, and going offline soon. We'll be replacing the burner account pattern with something better very soon!
+
 ## 2.0.9
 
 ### Patch Changes

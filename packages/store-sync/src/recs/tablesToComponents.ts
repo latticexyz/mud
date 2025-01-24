@@ -1,15 +1,17 @@
-import { Table } from "@latticexyz/store/internal";
-import { TableToComponent, tableToComponent } from "./tableToComponent";
-import { mapObject } from "@latticexyz/common/utils";
+import { Tables } from "@latticexyz/config";
+import { tableToComponent } from "./tableToComponent";
 import { World } from "@latticexyz/recs";
+import { show } from "@ark/util";
 
-export type TablesToComponents<tables extends Record<string, Table>> = {
-  [tableName in keyof tables]: TableToComponent<tables[tableName]>;
+export type tablesToComponents<tables extends Tables> = {
+  [label in keyof tables as tables[label]["label"]]: tableToComponent<tables[label]>;
 };
 
-export function tablesToComponents<tables extends Record<string, Table>>(
+export function tablesToComponents<tables extends Tables>(
   world: World,
   tables: tables,
-): TablesToComponents<tables> {
-  return mapObject(tables, (table) => tableToComponent(world, table));
+): show<tablesToComponents<tables>> {
+  return Object.fromEntries(
+    Object.entries(tables).map(([, table]) => [table.label, tableToComponent(world, table)]),
+  ) as never;
 }

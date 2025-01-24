@@ -58,11 +58,11 @@ export default defineWorld({
       key: [],
     },
   },
-  modules: [
-    {
-      name: "Unstable_CallWithSignatureModule",
-      root: true,
-      args: [],
+  systems: {
+    HiddenSystem: {
+      deploy: {
+        registerWorldFunctions: false,
+      },
     },
-  ],
+  },
 });

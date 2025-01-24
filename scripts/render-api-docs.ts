@@ -6,7 +6,7 @@ import { execa } from "execa";
 import prettier from "prettier";
 import { readFileSync, readdirSync, writeFileSync } from "fs";
 import path from "path";
-import prettierOptions from "../.prettierrc.js";
+import prettierOptions from "../.prettierrc.cjs";
 
 const DOCS_ROOT = "docs/pages";
 
@@ -15,6 +15,7 @@ const PUBLIC_APIS: PublicApis = {
   "store/reference/store-core.mdx": {
     inputFiles: [
       { source: "store/src/StoreCore.sol" },
+      { source: "store/src/StoreKernel.sol" },
       { source: "store/src/Store.sol" },
       { source: "store/src/StoreRead.sol" },
       { source: "store/src/StoreSwitch.sol" },
@@ -40,6 +41,7 @@ const PUBLIC_APIS: PublicApis = {
       { source: "store/src/IStoreRead.sol" },
       { source: "store/src/IStoreWrite.sol" },
       { source: "store/src/IStoreRegistration.sol" },
+      { source: "store/src/IStoreKernel.sol" },
     ],
     processContent: (content) => {
       content = removeAuthor(content);
@@ -156,9 +158,14 @@ const PUBLIC_APIS: PublicApis = {
       content = formatHeadings(content);
       content = fixGithubLinks(content, "world");
       content = fixInheritence(content);
-      return content
-        .replaceAll("{IERC165}", "[IERC165](./erc165-external#ierc165)")
-        .replaceAll("{IERC165-supportsInterface}", "[IERC165.supportsInterface](./erc165-external#supportsinterface)");
+      return (
+        content
+          // fix bad placeholder
+          .replaceAll(/\[IERC165-supportsInterface\]\(.+?\)/g, "{IERC165-supportsInterface}")
+          // replace placeholders
+          .replaceAll("{IERC165}", "[IERC165](./erc165-external#ierc165)")
+          .replaceAll("{IERC165-supportsInterface}", "[IERC165.supportsInterface](./erc165-external#supportsinterface)")
+      );
     },
   },
   "world/reference/internal/erc165-external.mdx": {
@@ -183,7 +190,7 @@ const PUBLIC_APIS: PublicApis = {
     },
   },
   "world/reference/module-external.mdx": {
-    inputFiles: [{ source: "world/src/IModule.sol" }],
+    inputFiles: [{ source: "world/src/IModule.sol" }, { source: "world/src/IModuleErrors.sol" }],
     processContent: (content) => {
       content = removeAuthor(content);
       content = formatHeadings(content);
@@ -260,6 +267,7 @@ const PUBLIC_APIS: PublicApis = {
       // Back to adding contracts and interfaces to the docs.
       { source: "world/src/IWorldKernel.sol" },
       { source: "world/src/IWorldErrors.sol" },
+      { source: "world/src/IWorldEvents.sol" },
       { source: "world/src/IWorldFactory.sol" },
     ],
     processContent: (content) => {
@@ -434,6 +442,9 @@ function removeAuthor(content: string) {
 const inheritence = [
   { contract: "StoreRead", link: "/store/reference/store-core#storeread" },
   { contract: "StoreData", link: "/store/reference/store-core#storedata" },
+  { contract: "StoreKernel", link: "/store/reference/store-core#storekernel" },
+  { contract: "IStore", link: "/store/reference/store#istore" },
+  { contract: "IStoreKernel", link: "/store/reference/store#istorekernel" },
   { contract: "IStoreData", link: "/store/reference/store#istoredata" },
   { contract: "IStoreRead", link: "/store/reference/store#istoreread" },
   { contract: "IStoreWrite", link: "/store/reference/store#istorewrite" },
@@ -445,13 +456,16 @@ const inheritence = [
   { contract: "IDelegationControl", link: "/world/reference/delegation-external#idelegationcontrol" },
   { contract: "IWorldContextConsumer", link: "/world/reference/world-context-external#iworldcontextconsumer" },
   { contract: "IModule", link: "/world/reference/module-external#imodule" },
+  { contract: "IModuleErrors", link: "/world/reference/module-external#imoduleerrors" },
   { contract: "WorldContextConsumer", link: "/world/reference/world-context#worldcontextconsumer" },
   { contract: "IERC165", link: "/world/reference/internal/erc165-external#ierc165" },
+  { contract: "supportsERC165", link: "/world/reference/internal/erc165#supportserc165" },
   { contract: "ISystemHook", link: "/world/reference/system-external#isystemhook" },
   { contract: "IWorldKernel", link: "/world/reference/world-external#iworldkernel" },
   { contract: "IWorldFactory", link: "/world/reference/world-external#iworldfactory" },
   { contract: "IWorldCall", link: "/world/reference/world-external#iworldcall" },
   { contract: "IWorldErrors", link: "/world/reference/world-external#iworlderrors" },
+  { contract: "IWorldEvents", link: "/world/reference/world-external#iworldevents" },
   { contract: "IWorldModuleInstallation", link: "/world/reference/world-external#iworldmoduleinstallation" },
   { contract: "IWorldContextConsumer", link: "/world/reference/world-context-external#iworldcontextconsumer" },
   { contract: "IAccessManagementSystem", link: "/world/reference/world-external#iaccessmanagementsystem" },

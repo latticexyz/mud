@@ -1,45 +1,49 @@
-import { hexToSchema, decodeValue, ValueSchema } from "@latticexyz/protocol-parser/internal";
-import { Hex, concatHex, decodeAbiParameters, parseAbiParameters } from "viem";
+import { hexToSchema, decodeValue, getSchemaTypes } from "@latticexyz/protocol-parser/internal";
+import { concatHex, decodeAbiParameters, parseAbiParameters } from "viem";
 import { StorageAdapterLog, Table, schemasTable } from "./common";
 import { hexToResource } from "@latticexyz/common";
+import { Schema } from "@latticexyz/config";
 
 /**
  * @internal
  */
-export function logToTable(log: StorageAdapterLog & { eventName: "Store_SetRecord" }): Table {
+export function logToTable(log: Extract<StorageAdapterLog, { eventName: "Store_SetRecord" }>): Table {
   const [tableId, ...otherKeys] = log.args.keyTuple;
   if (otherKeys.length) {
     console.warn("registerSchema event is expected to have only one key in key tuple, but got multiple", log);
   }
 
-  const table = hexToResource(tableId);
+  const resource = hexToResource(tableId);
 
   const value = decodeValue(
-    // TODO: remove cast when we have strong types for user types
-    schemasTable.valueSchema as ValueSchema,
+    schemasTable.valueSchema,
     concatHex([log.args.staticData, log.args.encodedLengths, log.args.dynamicData]),
   );
 
-  // TODO: remove cast when we have strong types for user types
-  const keySchema = hexToSchema(value.keySchema as Hex);
+  const solidityKeySchema = hexToSchema(value.keySchema);
+  const solidityValueSchema = hexToSchema(value.valueSchema);
+  const keyNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedKeyNames)[0];
+  const fieldNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedFieldNames)[0];
 
-  // TODO: remove cast when we have strong types for user types
-  const valueSchema = hexToSchema(value.valueSchema as Hex);
+  const valueAbiTypes = [...solidityValueSchema.staticFields, ...solidityValueSchema.dynamicFields];
 
-  // TODO: remove cast when we have strong types for user types
-  const keyNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedKeyNames as Hex)[0];
+  const keySchema = Object.fromEntries(
+    solidityKeySchema.staticFields.map((abiType, i) => [keyNames[i], { type: abiType, internalType: abiType }]),
+  ) satisfies Schema;
 
-  // TODO: remove cast when we have strong types for user types
-  const fieldNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedFieldNames as Hex)[0];
-
-  const valueAbiTypes = [...valueSchema.staticFields, ...valueSchema.dynamicFields];
+  const valueSchema = Object.fromEntries(
+    valueAbiTypes.map((abiType, i) => [fieldNames[i], { type: abiType, internalType: abiType }]),
+  ) satisfies Schema;
 
   return {
     address: log.address,
+    type: resource.type as never,
+    namespace: resource.namespace,
+    name: resource.name,
     tableId,
-    namespace: table.namespace,
-    name: table.name,
-    keySchema: Object.fromEntries(keySchema.staticFields.map((abiType, i) => [keyNames[i], abiType])),
-    valueSchema: Object.fromEntries(valueAbiTypes.map((abiType, i) => [fieldNames[i], abiType])),
+    schema: { ...keySchema, ...valueSchema },
+    key: Object.keys(keySchema),
+    keySchema: getSchemaTypes(keySchema),
+    valueSchema: getSchemaTypes(valueSchema),
   };
 }

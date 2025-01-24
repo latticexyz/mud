@@ -1,6 +1,6 @@
-import { Table } from "@latticexyz/store/internal";
 import { useDevToolsContext } from "../DevToolsContext";
 import { useEffect, useState } from "react";
+import { Table } from "@latticexyz/store-sync/zustand";
 
 export function useTables(): Table[] {
   const { useStore } = useDevToolsContext();

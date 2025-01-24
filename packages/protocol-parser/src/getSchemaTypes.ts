@@ -2,7 +2,7 @@ import { Schema } from "@latticexyz/config";
 import { mapObject } from "@latticexyz/common/utils";
 
 export type getSchemaTypes<schema extends Schema> = {
-  readonly [k in keyof schema]: schema[k]["type"];
+  readonly [fieldName in keyof schema]: schema[fieldName]["type"];
 };
 
 export function getSchemaTypes<schema extends Schema>(schema: schema): getSchemaTypes<schema> {

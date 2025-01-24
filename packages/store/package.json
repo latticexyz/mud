@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store",
-  "version": "2.0.9",
+  "version": "2.2.16",
   "description": "Store",
   "repository": {
     "type": "git",
@@ -14,72 +14,72 @@
     "./internal": "./dist/internal.js",
     "./mud.config": "./dist/mud.config.js",
     "./codegen": "./dist/codegen.js",
-    "./config": "./dist/config.js",
-    "./config/v2": "./dist/config/v2.js",
-    "./register": "./dist/register.js",
     "./out/*": "./out/*"
   },
   "typesVersions": {
     "*": {
       "index": [
-        "./ts/exports/index.ts"
+        "./dist/index.d.ts"
       ],
       "internal": [
-        "./ts/exports/internal.ts"
+        "./dist/internal.d.ts"
+      ],
+      "mud.config": [
+        "./dist/mud.config.d.ts"
       ],
       "codegen": [
-        "./ts/codegen/index.ts"
-      ],
-      "config": [
-        "./ts/config/index.ts"
-      ],
-      "config/v2": [
-        "./ts/config/v2/index.ts"
-      ],
-      "register": [
-        "./ts/register/index.ts"
+        "./dist/codegen.d.ts"
       ]
     }
   },
+  "files": [
+    "dist",
+    "out",
+    "src"
+  ],
   "scripts": {
     "build": "pnpm run build:tightcoder && pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts && pnpm run build:js",
     "build:abi": "forge build",
     "build:abi-ts": "abi-ts",
     "build:js": "tsup",
-    "build:mud": "tsx ./ts/scripts/tablegen.ts && tsx ./ts/scripts/generate-test-tables.ts",
+    "build:mud": "tsx ./ts/scripts/build.ts && tsx ./ts/scripts/generate-test-tables.ts",
     "build:tightcoder": "tsx ./ts/scripts/generate-tightcoder.ts",
     "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud",
     "clean:abi": "forge clean",
-    "clean:js": "rimraf dist",
-    "clean:mud": "rimraf src/codegen && rimraf test/codegen",
+    "clean:js": "shx rm -rf dist",
+    "clean:mud": "shx rm -rf src/**/codegen test/**/codegen",
     "dev": "tsup --watch",
     "gas-report": "gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
-    "test": "vitest --run --passWithNoTests && forge test",
+    "test": "vitest --run && forge test",
     "test:ci": "pnpm run test"
   },
   "dependencies": {
-    "@arktype/util": "0.0.29",
+    "@ark/util": "0.2.2",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "abitype": "1.0.0",
-    "arktype": "1.0.29-alpha",
-    "viem": "2.9.20",
-    "zod": "^3.21.4"
+    "abitype": "1.0.6",
+    "arktype": "2.0.0-beta.6",
+    "debug": "^4.3.4"
   },
   "devDependencies": {
     "@latticexyz/abi-ts": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
+    "@types/debug": "^4.1.7",
     "@types/ejs": "^3.1.1",
-    "@types/mocha": "^9.1.1",
-    "@types/node": "^18.15.11",
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
     "solhint": "^3.3.7",
-    "tsup": "^6.7.0",
-    "tsx": "^3.12.6",
-    "vitest": "0.34.6"
+    "viem": "2.21.19"
+  },
+  "peerDependencies": {
+    "viem": "2.x"
+  },
+  "peerDependenciesMeta": {
+    "viem": {
+      "optional": true
+    }
   }
 }

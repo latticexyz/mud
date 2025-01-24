@@ -1,19 +1,21 @@
-import path from "path";
-import { getRemappings, getSrcDirectory } from "@latticexyz/common/foundry";
 import { tablegen } from "@latticexyz/store/codegen";
 import { defineWorld } from "../config/v2/world";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
+
+const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 const config = defineWorld({
-  codegen: {
-    outputDirectory: "../test/codegen",
-  },
+  sourceDirectory: "test",
   tables: {
     Bool: {
       schema: {
         value: "bool",
       },
       key: [],
-      codegen: { tableIdArgument: true },
+      codegen: {
+        tableIdArgument: true,
+      },
     },
     TwoFields: {
       schema: {
@@ -21,7 +23,9 @@ const config = defineWorld({
         value2: "bool",
       },
       key: [],
-      codegen: { tableIdArgument: true },
+      codegen: {
+        tableIdArgument: true,
+      },
     },
     AddressArray: {
       schema: {
@@ -29,12 +33,11 @@ const config = defineWorld({
         value: "address[]",
       },
       key: ["key"],
-      codegen: { tableIdArgument: true },
+      codegen: {
+        tableIdArgument: true,
+      },
     },
   },
 });
 
-const srcDir = await getSrcDirectory();
-const remappings = await getRemappings();
-
-await tablegen(config, path.join(srcDir, config.codegen.outputDirectory), remappings);
+await tablegen({ rootDir, config });

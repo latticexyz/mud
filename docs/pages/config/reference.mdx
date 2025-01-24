@@ -1,0 +1,183 @@
+import { Params, Param } from "../../components/Params";
+
+# MUD config reference
+
+The MUD config has two modes: single namespace and multiple namespaces. By default, the config will assume a single namespace unless you start using the `namespaces` config option.
+
+## Single namespace
+
+<Params>
+  <Param name="namespace">
+    The namespace used for this project's resources and access control. The namespace must fit into a `bytes14`. Leaving
+    this blank will use the root namespace, which is [not
+    recommended](/guides/best-practices/system-best-practices#avoid-the-root-namespace-if-possible) for most use cases.
+  </Param>
+
+  <Param name="tables">
+    A mapping of table labels to their table config. Unless disabled, this will codegen a corresponding table library
+    for better UX when reading/writing records.
+    
+    <Params title="Table options">
+      <Param name="name">
+        The `bytes14` name used in the resource ID. Defaults to the first 14 characters of the table label.
+      </Param>
+      <Param name="type">
+        [Table type](/store/tables#types-of-tables), either `"table"` or `"offchainTable"`. Defaults to `"table"`.
+      </Param>
+      <Param name="schema">
+        An ordered mapping of field names to their schema type, `enums` label, or `userTypes` label. Static-length field types (e.g. `uint256`) must come before dynamic-length field types (e.g. `string` or `uint8[]`).
+      </Param>
+      <Param name="key">
+        A tuple of field names in the `schema` to be used as the primary key of table records. Only static-length fields
+        are supported as keys.
+      </Param>
+      <Param name="codegen">
+        Customize how codegen should behave when generating this table's corresponding Solidity library.
+        
+        <Params>
+          <Param name="outputDirectory">Output directory of codegen table library relative to top-level `codegen.outputDirectory`. Defaults to `"tables"`.</Param>
+          <Param name="dataStruct">Whether or not to use a struct for table data. Defaults to `true`.</Param>
+        </Params>
+
+      </Param>
+      <Param name="deploy">
+        Customize how to deploy this table.
+
+        <Params>
+          <Param name="disabled">Disable deployment of this table. Defaults to `false`.</Param>
+        </Params>
+
+      </Param>
+    </Params>
+
+    Tables can also be defined using shorthands.
+    For multi-field tables, the value in the mapping can be just the table schema, but must include a static-length `id` field to be used as the `key`.
+    For single-field tables, the value in the mapping can be just the field type, which assumes a schema of `{ id: "bytes32", value: … }` where `value` is the provided field type.
+
+  </Param>
+
+  <Param name="systems">
+    A mapping of system labels to their system config. All systems must be named using a `System` suffix. Systems only need to be included here if they are deviating from system config defaults.
+
+    <Params title="System options">
+      <Param name="name">
+        The `bytes14` name used in the resource ID. Defaults to the first 14 characters of the system label.
+      </Param>
+      <Param name="openAccess">Whether or not any address can call this system. Defaults to `true`.</Param>
+      <Param name="accessList">A list of contract addresses or system labels that can call this system, used with `openAccess: false`.</Param>
+      <Param name="deploy">
+        Customize how to deploy this system.
+
+        <Params>
+          <Param name="disabled">Disable deployment of this system. Defaults to `false`.</Param>
+          <Param name="registerWorldFunctions">Whether this system's functions should be registered on the world, prefixed with the system namespace. Defaults to `true`.</Param>
+        </Params>
+
+      </Param>
+    </Params>
+
+  </Param>
+</Params>
+
+## Multiple namespaces
+
+<Params>
+  <Param name="namespaces">
+    A mapping of namespace labels to their namespace config. Using this config option expects your project's source
+    directory to use a similar structure of namespace directories like `src/namespaces/[namespaceLabel]`.
+
+    <Params title="Namespace options">
+      <Param name="namespace">
+        The `bytes14` namespace used in the resource ID. Defaults to the first 14 characters of the namespace label.
+      </Param>
+      <Param name="tables">
+        Tables in this namespace. Same shape as `tables` in [single namespace mode](#single-namespace).
+      </Param>
+      <Param name="systems">
+        Systems in this namespace. Same shape as `systems` in [single namespace mode](#single-namespace).
+      </Param>
+    </Params>
+
+  </Param>
+</Params>
+
+## Additional options
+
+The following options are available in both single- and multiple-namespace modes.
+
+<Params>
+  <Param name="enums">
+    A mapping of enum labels to an array of string values. Enum labels can be used as schema types within tables.
+  </Param>
+  <Param name="userTypes">
+    A mapping of user type labels to their user type config. User type labels can be used as schema types within tables.
+
+    <Params title="User type options">
+      <Param name="type">Solidity-native schema type.</Param>
+      <Param name="filePath">
+        Path to source file relative to project root (must start with `./`) or import path from a package (must have
+        proper remappings set up).
+      </Param>
+    </Params>
+
+  </Param>
+
+  <Param name="modules">
+    <a id="modules" />  
+    A list of modules to install into the world during the deploy step.
+
+    <Params title="Module config options">
+      <Param name="artifactPath">Relative path to the module's compiled JSON artifact (usually in `out`) or an import path if using a module from an npm package. This path is resolved using [Node's module `require` API](https://nodejs.org/api/modules.html#modulerequireid).</Param>
+      <Param name="root">Whether or not to install this as a root module. Defaults to `false`.</Param>
+      <Param name="args">
+        A list of arguments used to call the module's install function. Each argument is a structure with two fields:
+
+        <Params>
+          <Param name="type">Solidity data type.</Param>
+          <Param name="value">
+            The value.
+            To encode a complex data type, such as a structure or an array, you can use Viem's [`encodeAbiParameters`](https://viem.sh/docs/abi/encodeAbiParameters.html).
+          </Param>
+        </Params>
+
+      </Param>
+    </Params>
+
+  </Param>
+  <Param name="excludeSystems">A list of system labels to exclude from codegen and deploy.</Param>
+  <Param name="sourceDirectory">Path to this project's Solidity source files, relative to the project root. Defaults to `"src"`. This should be kept in alignment with `foundry.toml`.</Param>
+  <Param name="codegen">
+    Customize how codegen should behave when generating this table's corresponding Solidity library.
+    
+    <Params>
+      <Param name="outputDirectory">Output directory of codegen relative to `sourceDirectory`. Defaults to `"codegen"`. When using multiple namespaces, this will be prefixed with `namespaces/[namespaceLabel]`.</Param>
+      <Param name="userTypesFilename">Filename relative to `outputDirectory` to codegen enums into. Defaults to `"common.sol"`.</Param>
+      <Param name="worldgenDirectory">Output directory of world interfaces relative to `outputDirectory`. Defaults to `"world"`.</Param>
+    </Params>
+
+  </Param>
+  <Param name="deploy">
+    Customize how to deploy the world.
+
+    <Params>
+      <Param name="deploysDirectory">Directory, relative to project root, to write the deployment artifacts to. Defaults to `"deploys"`.</Param>
+      <Param name="postDeployScript">Script name to execute after the deployment is complete. Defaults to `"PostDeploy"`.</Param>
+      <Param name="worldsFile">JSON filename, relative to project root, to write per-chain world deployment addresses. Defaults to `"worlds.json"`.</Param>
+      <Param name="upgradeableWorldImplementation">Whether or not to deploy the world with an upgradeable proxy, allowing for the core implementation to be upgraded. Defaults to `false`, but [we recommend `true`](/guides/best-practices/deployment-settings).</Param>
+      <Param name="customWorld">
+        Deploy the World using a custom implementation. This world must implement the same interface as `World.sol` so that it can initialize core modules, etc.
+        If you want to extend the world with new functions or override existing registered functions, we recommend using [root systems](/world/systems#root-systems).
+        However, there are rare cases where this may not be enough to modify the native/internal World behavior.
+        Note that deploying a custom World opts out of the world factory, deterministic world deploys, and upgradeable implementation proxy.
+
+        <Params>
+          <Param name="sourcePath">Path to custom world source file relative to project root dir.</Param>
+          <Param name="name">Contract name in custom world source file.</Param>
+        </Params>
+
+      </Param>
+    </Params>
+
+  </Param>
+
+</Params>

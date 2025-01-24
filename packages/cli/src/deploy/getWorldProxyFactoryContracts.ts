@@ -1,8 +1,8 @@
 import worldProxyFactoryBuild from "@latticexyz/world/out/WorldProxyFactory.sol/WorldProxyFactory.json" assert { type: "json" };
 import worldProxyFactoryAbi from "@latticexyz/world/out/WorldProxyFactory.sol/WorldProxyFactory.abi.json" assert { type: "json" };
-import { Hex, getCreate2Address, encodeDeployData, size } from "viem";
-import { salt } from "./common";
+import { Hex, encodeDeployData, size } from "viem";
 import { getWorldContracts } from "./getWorldContracts";
+import { getContractAddress } from "@latticexyz/common/internal";
 
 export function getWorldProxyFactoryContracts(deployerAddress: Hex) {
   const worldContracts = getWorldContracts(deployerAddress);
@@ -13,14 +13,14 @@ export function getWorldProxyFactoryContracts(deployerAddress: Hex) {
     abi: worldProxyFactoryAbi,
     args: [worldContracts.InitModule.address],
   });
-  const worldProxyFactory = getCreate2Address({ from: deployerAddress, bytecode: worldProxyFactoryBytecode, salt });
+  const worldProxyFactory = getContractAddress({ deployerAddress, bytecode: worldProxyFactoryBytecode });
 
   return {
     ...worldContracts,
     WorldProxyFactory: {
       bytecode: worldProxyFactoryBytecode,
       deployedBytecodeSize: worldProxyFactoryDeployedBytecodeSize,
-      label: "world proxy factory",
+      debugLabel: "world proxy factory",
       address: worldProxyFactory,
     },
   };

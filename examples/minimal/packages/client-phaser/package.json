@@ -17,7 +17,6 @@
     "@latticexyz/react": "link:../../../../packages/react",
     "@latticexyz/recs": "link:../../../../packages/recs",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
-    "@latticexyz/services": "link:../../../../packages/services",
     "@latticexyz/store-sync": "link:../../../../packages/store-sync",
     "@latticexyz/utils": "link:../../../../packages/utils",
     "@latticexyz/world": "link:../../../../packages/world",
@@ -27,6 +26,7 @@
     "mobx": "^6.7.0",
     "nice-grpc": "^2.0.1",
     "nice-grpc-web": "^2.0.1",
+    "phaser": "3.60.0-beta.14",
     "proxy-deep": "^3.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -35,18 +35,18 @@
     "styled-components": "^5.3.10",
     "threads": "^1.7.0",
     "use-resize-observer": "^9.1.0",
-    "viem": "2.9.20",
+    "viem": "2.21.19",
     "vite": "^4.2.1",
     "zustand": "^4.3.8"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.4",
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
     "@types/styled-components": "^5.1.26",
     "@typescript-eslint/eslint-plugin": "7.1.1",
     "@typescript-eslint/parser": "7.1.1",
     "@vitejs/plugin-react": "^3.1.0",
-    "eslint": "8.57.0",
-    "typescript": "5.4.2"
+    "eslint": "8.57.0"
   }
 }

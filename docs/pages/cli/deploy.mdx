@@ -21,7 +21,7 @@ There are several ways to do this:
   # This .env file is for demonstration purposes only.
   #
   # This should usually be excluded via .gitignore and the env vars attached to
-  # your deployment enviroment, but we're including this here for ease of local
+  # your deployment environment, but we're including this here for ease of local
   # development. Please do not commit changes to this file!
   #
   # Anvil default private key:
@@ -37,20 +37,22 @@ Again, there are several ways to do this:
 
 These are the command line options you can specify on `mud deploy`:
 
-| Option                  | Meaning                                          | Type    | Default value                                              |
-| ----------------------- | ------------------------------------------------ | ------- | ---------------------------------------------------------- |
-| `--configPath`          | Path to the config file                          | string  | `mud.config.ts`                                            |
-| `--printConfig`         | Print the resolved config                        | boolean | `false`                                                    |
-| `--saveDeployment`      | Save the deployment info to a file               | boolean | `true`                                                     |
-| `--profile`             | The foundry profile to use                       | string  | `local`                                                    |
-| `--rpc`<sup>1</sup>     | The RPC URL to use                               | string  | RPC url from `foundry.toml`                                |
-| `--rpcBatch`            | Enable batch processing of RPC requests          | boolean | `false`                                                    |
-| `--worldAddress`        | Deploy to an existing World at the given address | string  | Empty, deploy new `World`                                  |
-| `--srcDir`              | Source directory                                 | string  | Foundry `src` directory                                    |
-| `--skipBuild`           | Skip rebuilding the contracts before deploying   | boolean | `false`                                                    |
-| `--alwaysRunPostDeploy` | Run `PostDeploy.s.sol` after each deploy         | boolean | `false` (run the script only when deploying a new `World`) |
-| `--help`                | Show help                                        | boolean | `false`                                                    |
-| `--version`             | Show version number                              | boolean | `false`                                                    |
+| Option                  | Meaning                                                                          | Type    | Default value                                              |
+| ----------------------- | -------------------------------------------------------------------------------- | ------- | ---------------------------------------------------------- |
+| `--configPath`          | Path to the config file                                                          | string  | `mud.config.ts`                                            |
+| `--printConfig`         | Print the resolved config                                                        | boolean | `false`                                                    |
+| `--saveDeployment`      | Save the deployment info to a file                                               | boolean | `true`                                                     |
+| `--profile`             | The foundry profile to use                                                       | string  | `local`                                                    |
+| `--rpc`<sup>1</sup>     | The RPC URL to use                                                               | string  | RPC url from `foundry.toml`                                |
+| `--rpcBatch`            | Enable batch processing of RPC requests                                          | boolean | `false`                                                    |
+| `--worldAddress`        | Deploy to an existing World at the given address                                 | string  | Empty, deploy new `World`                                  |
+| `--srcDir`              | Source directory                                                                 | string  | Foundry `src` directory                                    |
+| `--skipBuild`           | Skip rebuilding the contracts before deploying                                   | boolean | `false`                                                    |
+| `--alwaysRunPostDeploy` | Run `PostDeploy.s.sol` after each deploy                                         | boolean | `false` (run the script only when deploying a new `World`) |
+| `--help`                | Show help                                                                        | boolean | `false`                                                    |
+| `--version`             | Show version number                                                              | boolean | `false`                                                    |
+| `--forgeScriptOptions`  | Command line options for forge                                                   | string  | empty                                                      |
+| `--indexerUrl`          | If provided, read records from the indexer instead of fetching logs from the RPC | string  | empty                                                      |
 
 (1) The hostname `localhost` may not work. If that is the case, use `127.0.0.1` instead.
 
@@ -59,6 +61,28 @@ These are the command line options you can specify on `mud deploy`:
   only works with the original source code, compiler options, and compiled artifacts. Otherwise, the generated bytecode
   is different and therefore verification fails.
 </Callout>
+
+### Interaction with the templates
+
+The [TypeScript templates](/quickstart#using-the-templates) provided by Lattice all include two packages:
+
+- `contracts`, which contain the onchain components: contracts, call to start `anvil` to have a local blockchain, etc.
+- `client`, which contains the offchain components: the `vite` HTTP server, the TypeScript code, etc.
+
+When you develop locally, you run `pnpm dev` from the root of the template and that runs both packages.
+However, when you deploy to a different blockchain you don't need `anvil` running anymore, so instead you:
+
+1. Use `pnpm mud deploy` in the `packages/contracts` directory to deploy to the appropriate blockchain.
+1. Specify the chain on which you installed the contracts in the `VITE_CHAIN_ID` environment variable.
+   For example, if you installed on [Garnet](https://garnetchain.com/docs/network-info), run this command.
+
+   ```sh copy
+   export VITE_CHAIN_ID=17069
+   ```
+
+1. Run `pnpm vite` in the `packages/clients` directory to start the user interface.
+   If you want to use a different chain ID than the one specified for vite, use the `chainId` URL parameter.
+   For example, if you deployed both to Garnet and a local `anvil` instance, you can use [`http://localhost:3000/?chainId=31337`](http://localhost:3000/?chainId=31337) to get to the local instance regardless of the `VITE_CHAIN_ID` value.
 
 ## Examples
 
@@ -72,7 +96,7 @@ pnpm mud deploy --rpc <url>
 
 This command also writes the `World`'s address to `worlds.json`.
 
-### Upgrading a World
+### Upgrading a `World`
 
 To upgrade a `World`'s `System`s and tables, you can use this command line:
 
@@ -88,4 +112,27 @@ To generate debug messages, use this command:
 
 ```sh copy
 export DEBUG=mud:cli:deploy
+```
+
+## Known issues
+
+### Out of gas
+
+When deploying to a blockchain, you might get an error due to the post-deploy script being out of gas:
+
+```
+Error: Error:
+Transaction Failure: <transaction hash>
+Error running "forge script PostDeploy --broadcast --sig run(address) <world address> --rpc-url <conduit URL> -vvv --legacy --no-gas-limit"
+    at o (file:/// < directory > /tutorial3/node_modules/.pnpm/@latticexyz+common@2.0.12_@aws-sdk+client-kms@3.598.0_asn1.js@5.4.1_typescript@5.4.2_zod@3.23.8/node_modules/@latticexyz/common/dist/foundry.js:2:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    (...)
+```
+
+In some cases, `forge`'s default gas estimates are too low, so the transaction runs out of gas.
+
+Until [the issue is fixed upstream](https://github.com/latticexyz/mud/issues/2907), you can get around it by using the `--forgeScriptOptions` command line parameter to specify [the gas estimate multiplier](https://book.getfoundry.sh/reference/forge/forge-script?highlight=gas-estimate-multiplier#options) `forge script` will use.
+
+```
+pnpm mud deploy --rpc $RPC_URL --forgeScriptOptions '\-\-gas-estimate-multiplier 200'
 ```

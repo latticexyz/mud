@@ -1,48 +1,33 @@
-import { Client, parseAbiItem, Hex, Address, getAddress } from "viem";
-import { WorldDeploy, worldTables } from "./common";
+import { Hex, Address, getAddress, Client } from "viem";
+import { CommonDeployOptions } from "./common";
 import { debug } from "./debug";
-import { storeSpliceStaticDataEvent } from "@latticexyz/store";
-import { getLogs } from "viem/actions";
-import { decodeKey } from "@latticexyz/protocol-parser/internal";
-import { getTableValue } from "./getTableValue";
+import worldConfig from "@latticexyz/world/mud.config";
+import { getRecords } from "@latticexyz/store-sync";
 
 export async function getResourceAccess({
   client,
   worldDeploy,
-}: {
-  readonly client: Client;
-  readonly worldDeploy: WorldDeploy;
-}): Promise<readonly { readonly resourceId: Hex; readonly address: Address }[]> {
-  // This assumes we only use `ResourceAccess._set(...)`, which is true as of this writing.
-  // TODO: PR to viem's getLogs to accept topics array so we can filter on all store events and quickly recreate this table's current state
-
+  indexerUrl,
+  chainId,
+}: Omit<CommonDeployOptions, "client"> & { client: Client }): Promise<
+  readonly { readonly resourceId: Hex; readonly address: Address }[]
+> {
   debug("looking up resource access for", worldDeploy.address);
 
-  const logs = await getLogs(client, {
-    strict: true,
+  const { records } = await getRecords({
+    table: worldConfig.namespaces.world.tables.ResourceAccess,
+    worldAddress: worldDeploy.address,
+    indexerUrl,
+    chainId,
+    client,
     fromBlock: worldDeploy.deployBlock,
     toBlock: worldDeploy.stateBlock,
-    address: worldDeploy.address,
-    // our usage of `ResourceAccess._set(...)` emits a splice instead of set record
-    // TODO: https://github.com/latticexyz/mud/issues/479
-    event: parseAbiItem(storeSpliceStaticDataEvent),
-    args: { tableId: worldTables.world_ResourceAccess.tableId },
   });
-
-  const keys = logs.map((log) => decodeKey(worldTables.world_ResourceAccess.keySchema, log.args.keyTuple));
-
-  const access = (
-    await Promise.all(
-      keys.map(
-        async (key) =>
-          [key, await getTableValue({ client, worldDeploy, table: worldTables.world_ResourceAccess, key })] as const,
-      ),
-    )
-  )
-    .filter(([, value]) => value.access)
-    .map(([key]) => ({
-      resourceId: key.resourceId,
-      address: getAddress(key.caller),
+  const access = records
+    .filter((record) => record.access)
+    .map((record) => ({
+      resourceId: record.resourceId,
+      address: getAddress(record.caller),
     }));
 
   debug("found", access.length, "resource<>address access pairs");

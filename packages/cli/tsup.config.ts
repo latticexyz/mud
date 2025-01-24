@@ -1,5 +1,5 @@
 import { defineConfig } from "tsup";
-import glob from "glob";
+import { globSync } from "glob";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { MudPackages } from "./src/common";
@@ -7,8 +7,8 @@ import { MudPackages } from "./src/common";
 const mudWorkspace = path.normalize(`${__dirname}/../..`);
 
 const mudPackages: MudPackages = Object.fromEntries(
-  glob
-    .sync(path.join(mudWorkspace, `packages/*/package.json`))
+  globSync(path.join(mudWorkspace, `packages/*/package.json`))
+    .sort()
     .map((filename) => [
       path.relative(mudWorkspace, path.dirname(filename)),
       JSON.parse(readFileSync(filename, "utf8")),
@@ -17,15 +17,20 @@ const mudPackages: MudPackages = Object.fromEntries(
     .map(([localPath, packageJson]) => [packageJson.name, { localPath }]),
 );
 
-export default defineConfig({
+export default defineConfig((opts) => ({
   entry: ["src/index.ts", "src/mud.ts"],
   target: "esnext",
   format: ["esm"],
-  dts: !process.env.TSUP_SKIP_DTS,
   sourcemap: true,
-  clean: true,
   minify: true,
   env: {
     MUD_PACKAGES: JSON.stringify(mudPackages),
   },
-});
+  // don't generate DTS during watch mode because it's slow
+  // we're likely using TS source in this mode anyway
+  dts: !opts.watch,
+  // don't clean during watch mode to avoid removing
+  // previously-built DTS files, which other build tasks
+  // depend on
+  clean: !opts.watch,
+}));

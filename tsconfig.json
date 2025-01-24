@@ -1,0 +1,4 @@
+{
+  "extends": ["./packages/common/tsconfig.base.json", "./tsconfig.paths.json"],
+  "exclude": ["**/dist", "**/node_modules", "**/docs", "**/e2e"]
+}

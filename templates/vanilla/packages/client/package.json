@@ -15,13 +15,12 @@
     "@latticexyz/dev-tools": "link:../../../../packages/dev-tools",
     "@latticexyz/recs": "link:../../../../packages/recs",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
-    "@latticexyz/services": "link:../../../../packages/services",
     "@latticexyz/store-sync": "link:../../../../packages/store-sync",
     "@latticexyz/utils": "link:../../../../packages/utils",
     "@latticexyz/world": "link:../../../../packages/world",
     "contracts": "workspace:*",
     "rxjs": "7.5.5",
-    "viem": "2.9.20"
+    "viem": "2.21.19"
   },
   "devDependencies": {
     "@types/react-dom": "18.2.7",

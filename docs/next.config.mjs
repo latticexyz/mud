@@ -1,3 +1,4 @@
+
 import nextra from "nextra";
 
 const withNextra = nextra({
@@ -9,8 +10,21 @@ export default withNextra({
   experimental: {
     appDir: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+      },
+    ],
+  },
   async redirects() {
     return [
+      {
+        source: "/day",
+        destination: "https://latticexyz.notion.site/MUD-DAY-AT-DEVCON-14-Nov-e62e5f83b8764b4eaf7b0d85f4ad03d5",
+        permanent: false,
+      },
       {
         source: "/what-is-mud",
         destination: "/introduction",
@@ -114,11 +128,6 @@ export default withNextra({
       {
         source: "/client-side",
         destination: "/state-query/typescript/recs",
-        permanent: false,
-      },
-      {
-        source: "/indexer",
-        destination: "/services/indexer",
         permanent: false,
       },
       {
@@ -229,6 +238,76 @@ export default withNextra({
       {
         source: "/templates/typescript/three",
         destination: "/templates/typescript/threejs",
+        permanent: false,
+      },
+      {
+        source: "/hello-world",
+        destination: "/guides/hello-world",
+        permanent: false,
+      },
+      {
+        source: "/references/store",
+        destination: "/store/reference/store",
+        permanent: false,
+      },
+      {
+        source: "/references/store-core",
+        destination: "/store/reference/store-core",
+        permanent: false,
+      },
+      {
+        source: "/store/how-mud-models-data",
+        destination: "/store/data-model",
+        permanent: false,
+      },
+      {
+        source: "/store/table-hooks",
+        destination: "/store/store-hooks",
+        permanent: false,
+      },
+      {
+        source: "/guides/best-practices/dividing-into-systems",
+        destination: "/best-practices/dividing-into-systems",
+        permanent: false,
+      },
+      {
+        source: "/guides/best-practices/system-best-practices",
+        destination: "/best-practices/system",
+        permanent: false,
+      },
+      {
+        source: "/guides/best-practices/deployment-settings",
+        destination: "/best-practices/deployment-settings",
+        permanent: false,
+      },
+      {
+        source: "/guides/best-practices/kms",
+        destination: "/best-practices/aws-kms",
+        permanent: false,
+      },
+      {
+        source: "/services/indexer/postgres-decoded",
+        destination: "/indexer/postgres-decoded",
+        permanent: false,
+      },
+      {
+        source: "/services/indexer/postgres-event-only",
+        destination: "/indexer/postgres-event-only",
+        permanent: false,
+      },
+      {
+        source: "/services/indexer/sqlite-indexer",
+        destination: "/indexer/sqlite",
+        permanent: false,
+      },
+      {
+        source: "/services/indexer/using-indexer",
+        destination: "/indexer/using",
+        permanent: false,
+      },
+      {
+        source: "/services/indexer",
+        destination: "/indexer",
         permanent: false,
       },
     ];

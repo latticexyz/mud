@@ -3,7 +3,7 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", "out/**", "build/**", "bin/**"]
+      "outputs": ["dist/**", "out/**", "build/**", "bin/**", ".next/**"]
     },
     "create-mud#build": {
       "dependsOn": ["^build"],
@@ -17,6 +17,23 @@
     },
     "clean": {
       "cache": false
+    },
+    "@latticexyz/store#clean": {
+      "dependsOn": [
+        "@latticexyz/world#clean",
+        "puppet-modules-test#clean",
+        "mock-game-contracts#clean"
+      ],
+      "cache": false
+    },
+    "@latticexyz/world#clean": {
+      "dependsOn": [
+        "@latticexyz/world-module-metadata#clean",
+        "@latticexyz/world-module-erc20#clean",
+        "@latticexyz/world-modules#clean"
+      ],
+      "cache": false
     }
-  }
+  },
+  "globalPassThroughEnv": ["COREPACK_HOME"]
 }

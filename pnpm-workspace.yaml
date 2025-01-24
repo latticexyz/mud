@@ -1,3 +1,6 @@
 packages:
   - packages/*
-  - test/*
+  - test/mock-game-contracts
+  - test/puppet-modules
+  - test/system-libraries
+  - test/ts-benchmarks

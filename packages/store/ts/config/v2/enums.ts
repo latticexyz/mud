@@ -1,7 +1,9 @@
-import { Enums } from "./output";
+import { flatMorph } from "@ark/util";
+import { EnumsInput } from "./input";
 import { AbiTypeScope, extendScope } from "./scope";
+import { parseNumber } from "./generics";
 
-function isEnums(enums: unknown): enums is Enums {
+function isEnums(enums: unknown): enums is EnumsInput {
   return (
     typeof enums === "object" &&
     enums != null &&
@@ -9,9 +11,9 @@ function isEnums(enums: unknown): enums is Enums {
   );
 }
 
-export type scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope> = Enums extends enums
+export type scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope> = EnumsInput extends enums
   ? scope
-  : enums extends Enums
+  : enums extends EnumsInput
     ? extendScope<scope, { [key in keyof enums]: "uint8" }>
     : scope;
 
@@ -26,4 +28,23 @@ export function scopeWithEnums<enums, scope extends AbiTypeScope = AbiTypeScope>
   return scope as never;
 }
 
-export type resolveEnums<enums> = { readonly [key in keyof enums]: Readonly<enums[key]> };
+export type resolveEnums<enums> = {
+  readonly [key in keyof enums]: Readonly<enums[key]>;
+};
+
+export function resolveEnums<enums extends EnumsInput>(enums: enums): resolveEnums<enums> {
+  return enums;
+}
+
+export type mapEnums<enums> = {
+  readonly [key in keyof enums]: {
+    readonly [element in keyof enums[key] & `${number}` as enums[key][element] & string]: parseNumber<element>;
+  };
+};
+
+export function mapEnums<enums extends EnumsInput>(enums: enums): resolveEnums<enums> {
+  return flatMorph(enums as EnumsInput, (enumName, enumElements) => [
+    enumName,
+    flatMorph(enumElements, (enumIndex, enumElement) => [enumElement, enumIndex]),
+  ]) as never;
+}

@@ -6,22 +6,21 @@ import {
   valueSchemaToHex,
 } from "@latticexyz/protocol-parser/internal";
 import { encodeAbiParameters, parseAbiParameters } from "viem";
-import { StorageAdapterLog, Table, storeTables } from "./common";
-import { flattenSchema } from "./flattenSchema";
+import { StorageAdapterLog, Table, schemasTable } from "./common";
 
 /**
  * @internal
  */
-export function tableToLog(table: Table): StorageAdapterLog & { eventName: "Store_SetRecord" } {
+export function tableToLog(table: Table): Extract<StorageAdapterLog, { eventName: "Store_SetRecord" }> {
   return {
     eventName: "Store_SetRecord",
     address: table.address,
     args: {
-      tableId: storeTables.Tables.tableId,
-      keyTuple: encodeKey(flattenSchema(storeTables.Tables.keySchema), { tableId: table.tableId }),
-      ...encodeValueArgs(flattenSchema(storeTables.Tables.valueSchema), {
+      tableId: schemasTable.tableId,
+      keyTuple: encodeKey(schemasTable.keySchema, { tableId: table.tableId }),
+      ...encodeValueArgs(schemasTable.valueSchema, {
         fieldLayout: valueSchemaToFieldLayoutHex(table.valueSchema),
-        keySchema: keySchemaToHex(table.keySchema),
+        keySchema: keySchemaToHex(table.keySchema as never),
         valueSchema: valueSchemaToHex(table.valueSchema),
         abiEncodedKeyNames: encodeAbiParameters(parseAbiParameters("string[]"), [Object.keys(table.keySchema)]),
         abiEncodedFieldNames: encodeAbiParameters(parseAbiParameters("string[]"), [Object.keys(table.valueSchema)]),

@@ -15,18 +15,21 @@ The onchain components can be divided into two types of functionality:
 #### `mud.config.ts`
 
 The table schema is declared in `packages/contracts/mud.config.ts`.
-[Read more details about the schema definition here](/cli/config).
+[Read more details about the schema definition here](/config).
 
 The table schema provided in the example is extremely simple (one singleton).
 
 ```ts filename="mud.config.ts" copy
-import { mudConfig } from "@latticexyz/world/register";
+import { defineWorld } from "@latticexyz/world";
 
-export default mudConfig({
+export default defineWorld({
+  namespace: "app",
   tables: {
     Counter: {
-      keySchema: {},
-      valueSchema: "uint32",
+      schema: {
+        value: "uint32",
+      },
+      key: [],
     },
   },
 });

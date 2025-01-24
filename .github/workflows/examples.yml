@@ -21,7 +21,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        example: [minimal]
+        example: [minimal, multiple-namespaces, custom-world]
+    env:
+      DEBUG: mud:*
+      # anvil default, prefunded account
+      PRIVATE_KEY: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
 
     steps:
       - name: Checkout

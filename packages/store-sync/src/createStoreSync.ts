@@ -1,5 +1,5 @@
 import { storeEventsAbi } from "@latticexyz/store";
-import { Hex, TransactionReceiptNotFoundError } from "viem";
+import { GetTransactionReceiptErrorType, Hex } from "viem";
 import {
   StorageAdapter,
   StorageAdapterBlock,
@@ -27,19 +27,27 @@ import {
   combineLatest,
   scan,
   mergeMap,
+  throwError,
+  mergeWith,
+  ignoreElements,
 } from "rxjs";
 import { debug as parentDebug } from "./debug";
 import { SyncStep } from "./SyncStep";
 import { bigIntMax, chunk, isDefined, waitForIdle } from "@latticexyz/common/utils";
 import { getSnapshot } from "./getSnapshot";
+import { fromEventSource } from "./fromEventSource";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
-import { Store as StoreConfig } from "@latticexyz/store";
+import { isLogsApiResponse } from "./indexer-client/isLogsApiResponse";
+import { toStorageAdatperBlock } from "./indexer-client/toStorageAdapterBlock";
+import { watchLogs } from "./watchLogs";
+import { getAction } from "viem/utils";
+import { getChainId, getTransactionReceipt } from "viem/actions";
 
 const debug = parentDebug.extend("createStoreSync");
 
 const defaultFilters: SyncFilter[] = internalTableIds.map((tableId) => ({ tableId }));
 
-type CreateStoreSyncOptions<config extends StoreConfig = StoreConfig> = SyncOptions<config> & {
+type CreateStoreSyncOptions = SyncOptions & {
   storageAdapter: StorageAdapter;
   onProgress?: (opts: {
     step: SyncStep;
@@ -50,7 +58,7 @@ type CreateStoreSyncOptions<config extends StoreConfig = StoreConfig> = SyncOpti
   }) => void;
 };
 
-export async function createStoreSync<config extends StoreConfig = StoreConfig>({
+export async function createStoreSync({
   storageAdapter,
   onProgress,
   publicClient,
@@ -62,8 +70,8 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
   maxBlockRange,
   initialState,
   initialBlockLogs,
-  indexerUrl,
-}: CreateStoreSyncOptions<config>): Promise<SyncResult> {
+  indexerUrl: initialIndexerUrl,
+}: CreateStoreSyncOptions): Promise<SyncResult> {
   const filters: SyncFilter[] =
     initialFilters.length || tableIds.length
       ? [...initialFilters, ...tableIds.map((tableId) => ({ tableId })), ...defaultFilters]
@@ -79,9 +87,17 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
         )
     : undefined;
 
-  const initialBlockLogs$ = defer(async (): Promise<StorageAdapterBlock | undefined> => {
-    const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+  const indexerUrl =
+    initialIndexerUrl !== false
+      ? initialIndexerUrl ??
+        (publicClient.chain && "indexerUrl" in publicClient.chain && typeof publicClient.chain.indexerUrl === "string"
+          ? publicClient.chain.indexerUrl
+          : undefined)
+      : undefined;
 
+  const chainId = publicClient.chain?.id ?? (await getAction(publicClient, getChainId, "getChainId")({}));
+
+  const initialBlockLogs$ = defer(async (): Promise<StorageAdapterBlock | undefined> => {
     onProgress?.({
       step: SyncStep.SNAPSHOT,
       percentage: 0,
@@ -96,15 +112,7 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
       filters,
       initialState,
       initialBlockLogs,
-      indexerUrl:
-        indexerUrl !== false
-          ? indexerUrl ??
-            (publicClient.chain &&
-            "indexerUrl" in publicClient.chain &&
-            typeof publicClient.chain.indexerUrl === "string"
-              ? publicClient.chain.indexerUrl
-              : undefined)
-          : undefined,
+      indexerUrl,
     });
 
     onProgress?.({
@@ -181,31 +189,74 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
     shareReplay(1),
   );
 
+  let startBlock: bigint | null = null;
   const startBlock$ = initialBlockLogs$.pipe(
     map((block) => bigIntMax(block?.blockNumber ?? 0n, initialStartBlock)),
     // TODO: if start block is still 0, find via deploy event
-    tap((startBlock) => debug("starting sync from block", startBlock)),
+    tap((blockNumber) => {
+      startBlock = blockNumber;
+      debug("starting sync from block", startBlock);
+    }),
   );
 
+  let latestBlockNumber: bigint | null = null;
   const latestBlock$ = createBlockStream({ publicClient, blockTag: followBlockTag }).pipe(shareReplay(1));
   const latestBlockNumber$ = latestBlock$.pipe(
     map((block) => block.number),
     tap((blockNumber) => {
+      latestBlockNumber = blockNumber;
       debug("on block number", blockNumber, "for", followBlockTag, "block tag");
     }),
     shareReplay(1),
   );
 
-  let startBlock: bigint | null = null;
-  let endBlock: bigint | null = null;
   let lastBlockNumberProcessed: bigint | null = null;
+  let caughtUp = false;
 
-  const storedBlock$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
+  const pendingLogsWebSocketUrl = publicClient.chain?.rpcUrls?.wiresaw?.webSocket?.[0];
+  const storedPendingLogs$ = pendingLogsWebSocketUrl
+    ? startBlock$.pipe(
+        mergeMap((startBlock) => watchLogs({ url: pendingLogsWebSocketUrl, address, fromBlock: startBlock }).logs$),
+        concatMap(async (block) => {
+          await storageAdapter(block);
+          return block;
+        }),
+        mergeWith(
+          // The watchLogs API doesn't emit on empty logs, but consumers expect an emission on empty logs
+          latestBlockNumber$.pipe(map((blockNumber) => ({ blockNumber, logs: [] }))),
+        ),
+      )
+    : throwError(() => new Error("No pending logs WebSocket RPC URL provided"));
+
+  const storedIndexerLogs$ = indexerUrl
+    ? startBlock$.pipe(
+        mergeMap((startBlock) => {
+          const url = new URL(
+            `api/logs-live?${new URLSearchParams({
+              input: JSON.stringify({ chainId, address, filters }),
+              block_num: startBlock.toString(),
+              include_tx_hash: "true",
+            })}`,
+            indexerUrl,
+          );
+          return fromEventSource<string>(url);
+        }),
+        map((messageEvent) => {
+          const data = JSON.parse(messageEvent.data);
+          if (!isLogsApiResponse(data)) {
+            throw new Error("Received unexpected from indexer:" + messageEvent.data);
+          }
+          return toStorageAdatperBlock(data);
+        }),
+        concatMap(async (block) => {
+          await storageAdapter(block);
+          return block;
+        }),
+      )
+    : throwError(() => new Error("No indexer URL provided"));
+
+  const storedEthRpcLogs$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
-    tap((range) => {
-      startBlock = range.startBlock;
-      endBlock = range.endBlock;
-    }),
     concatMap((range) => {
       const storedBlocks = fetchAndStoreLogs({
         publicClient,
@@ -216,32 +267,49 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
           ? bigIntMax(range.startBlock, lastBlockNumberProcessed + 1n)
           : range.startBlock,
         toBlock: range.endBlock,
-        storageAdapter,
         logFilter,
+        storageAdapter,
       });
 
       return from(storedBlocks);
     }),
-    tap(({ blockNumber, logs }) => {
+  );
+
+  const storedBlock$ = storedPendingLogs$.pipe(
+    catchError((error) => {
+      debug("failed to stream logs from pending log RPC:", error.message);
+      debug("falling back to streaming logs from indexer");
+      return storedIndexerLogs$;
+    }),
+    catchError((error) => {
+      debug("failed to stream logs from indexer:", error.message);
+      debug("falling back to streaming logs from ETH RPC");
+      return storedEthRpcLogs$;
+    }),
+    // subscribe to `latestBlockNumber$` so the sync progress is updated
+    // but don't merge/emit anything
+    mergeWith(latestBlockNumber$.pipe(ignoreElements())),
+    tap(async ({ logs, blockNumber }) => {
       debug("stored", logs.length, "logs for block", blockNumber);
       lastBlockNumberProcessed = blockNumber;
 
-      if (startBlock != null && endBlock != null) {
-        if (blockNumber < endBlock) {
-          const totalBlocks = endBlock - startBlock;
+      if (!caughtUp && startBlock != null && latestBlockNumber != null) {
+        if (lastBlockNumberProcessed < latestBlockNumber) {
+          const totalBlocks = latestBlockNumber - startBlock;
           const processedBlocks = lastBlockNumberProcessed - startBlock;
           onProgress?.({
             step: SyncStep.RPC,
             percentage: Number((processedBlocks * 1000n) / totalBlocks) / 10,
-            latestBlockNumber: endBlock,
+            latestBlockNumber,
             lastBlockNumberProcessed,
             message: "Hydrating from RPC",
           });
         } else {
+          caughtUp = true;
           onProgress?.({
             step: SyncStep.LIVE,
             percentage: 100,
-            latestBlockNumber: endBlock,
+            latestBlockNumber,
             lastBlockNumberProcessed,
             message: "All caught up!",
           });
@@ -286,18 +354,22 @@ export async function createStoreSync<config extends StoreConfig = StoreConfig>(
         try {
           const lastBlock = blocks[0];
           debug("fetching tx receipt for block", lastBlock.blockNumber);
-          const { status, blockNumber, transactionHash } = await publicClient.getTransactionReceipt({ hash: tx });
+          const { status, blockNumber, transactionHash } = await getAction(
+            publicClient,
+            getTransactionReceipt,
+            "getTransactionReceipt",
+          )({ hash: tx });
           if (lastBlock.blockNumber >= blockNumber) {
             return { status, blockNumber, transactionHash };
           }
-        } catch (error) {
-          if (error instanceof TransactionReceiptNotFoundError) {
+        } catch (e) {
+          const error = e as GetTransactionReceiptErrorType;
+          if (error.name === "TransactionReceiptNotFoundError") {
             return;
           }
           throw error;
         }
       }),
-      tap((result) => debug("has tx?", tx, result)),
     );
 
     return await firstValueFrom(hasTransaction$.pipe(filter(isDefined)));

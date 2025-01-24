@@ -1,21 +1,24 @@
-import path from "path";
 import { tablegen } from "@latticexyz/store/codegen";
 import { defineStore } from "@latticexyz/store";
-import { getRemappings, getSrcDirectory } from "@latticexyz/common/foundry";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
+
+const configPath = fileURLToPath(import.meta.url);
 
 // This config is used only for tests.
 // Aside from avoiding `mud.config.ts` in cli package (could cause issues),
 // this also tests that mudConfig and tablegen can work as standalone functions
 const config = defineStore({
+  sourceDirectory: "../contracts/src",
   enums: {
     Enum1: ["E1", "E2", "E3"],
     Enum2: ["E1"],
   },
   userTypes: {
-    TestTypeAddress: { filePath: "./contracts/src/types.sol", type: "address" },
-    TestTypeInt64: { filePath: "./contracts/src/types.sol", type: "int64" },
-    TestTypeBool: { filePath: "./contracts/src/types.sol", type: "bool" },
-    TestTypeUint128: { filePath: "./contracts/src/types.sol", type: "uint128" },
+    TestTypeAddress: { filePath: "../contracts/src/types.sol", type: "address" },
+    TestTypeInt64: { filePath: "../contracts/src/types.sol", type: "int64" },
+    "TestTypeLibrary.TestTypeBool": { filePath: "../contracts/src/types.sol", type: "bool" },
+    "TestTypeLibrary.TestTypeUint128": { filePath: "../contracts/src/types.sol", type: "uint128" },
     ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", type: "bytes32" },
   },
   tables: {
@@ -78,13 +81,13 @@ const config = defineStore({
       schema: {
         k1: "TestTypeAddress",
         k2: "TestTypeInt64",
-        k3: "TestTypeBool",
-        k4: "TestTypeUint128",
+        k3: "TestTypeLibrary.TestTypeBool",
+        k4: "TestTypeLibrary.TestTypeUint128",
         k5: "ResourceId",
         v1: "TestTypeAddress",
         v2: "TestTypeInt64",
-        v3: "TestTypeBool",
-        v4: "TestTypeUint128",
+        v3: "TestTypeLibrary.TestTypeBool",
+        v4: "TestTypeLibrary.TestTypeUint128",
         v5: "ResourceId",
       },
       key: ["k1", "k2", "k3", "k4", "k5"],
@@ -92,7 +95,4 @@ const config = defineStore({
   },
 });
 
-const srcDirectory = await getSrcDirectory();
-const remappings = await getRemappings();
-
-await tablegen(config, path.join(srcDirectory, config.codegen.outputDirectory), remappings);
+await tablegen({ rootDir: path.dirname(configPath), config });

@@ -5,7 +5,7 @@ import type { CommandModule } from "yargs";
 import { MUDError } from "@latticexyz/common/errors";
 import { logError } from "../utils/errors";
 import localPackageJson from "../../package.json" assert { type: "json" };
-import glob from "glob";
+import { globSync } from "glob";
 import { mudPackages } from "../mudPackages";
 
 type Options = {
@@ -63,7 +63,10 @@ const commandModule: CommandModule<Options, Options> = {
       }
 
       // Update all package.json below the current working directory (except in node_modules)
-      const packageJsons = glob.sync("**/package.json").filter((p) => !p.includes("node_modules"));
+      const packageJsons = globSync("**/package.json")
+        .sort()
+        .filter((p) => !p.includes("node_modules"));
+
       for (const packageJson of packageJsons) {
         updatePackageJson(packageJson, options);
       }
@@ -79,7 +82,10 @@ async function resolveVersion(options: Options) {
   // Backwards compatibility to previous behavior of this script where passing "canary" as the version resolved to the latest commit on main
   if (options.mudVersion === "canary") options.tag = "main";
 
-  let npmResult;
+  // TODO: it seems like this was already being treated as any due to fetch not
+  // resolving here. See comment at https://github.com/latticexyz/mud/pull/2828
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let npmResult: any;
   try {
     console.log(chalk.blue(`Fetching available versions`));
     npmResult = await (await fetch(`https://registry.npmjs.org/${localPackageJson.name}`)).json();

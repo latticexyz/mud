@@ -1,38 +1,24 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { blockRangeToLogs } from "./blockRangeToLogs";
 import { Subject, lastValueFrom, map, toArray } from "rxjs";
-import { EIP1193RequestFn, RpcLog, Transport, createPublicClient, createTransport } from "viem";
+import { createClient, http } from "viem";
 import { wait } from "@latticexyz/common/utils";
 
 vi.useFakeTimers();
 
-const mockedTransportRequest = vi.fn<Parameters<EIP1193RequestFn>, ReturnType<EIP1193RequestFn>>();
-const mockTransport: Transport = () =>
-  createTransport({
-    key: "mock",
-    name: "Mock Transport",
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    request: mockedTransportRequest as any,
-    type: "mock",
-  });
-
-const publicClient = createPublicClient({
-  transport: mockTransport,
-});
-
 describe("blockRangeToLogs", () => {
-  beforeEach(() => {
-    mockedTransportRequest.mockClear();
-  });
-
   it("processes block ranges in order", async () => {
-    const requests: unknown[] = [];
-    mockedTransportRequest.mockImplementation(async ({ method, params }): Promise<RpcLog[]> => {
-      requests.push(params);
-      if (method !== "eth_getLogs") throw new Error("not implemented");
-      await Promise.race([wait(450), vi.runAllTimersAsync()]);
-      return [];
-    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const requests: any[] = [];
+    const publicClient = createClient({
+      transport: http("http://mock"),
+    }).extend(() => ({
+      getLogs: vi.fn(async (params) => {
+        requests.push(params);
+        await Promise.race([wait(450), vi.runAllTimersAsync()]);
+        return [];
+      }),
+    }));
 
     const latestBlockNumber$ = new Subject<bigint>();
 
@@ -58,46 +44,48 @@ describe("blockRangeToLogs", () => {
 
     expect(requests).toMatchInlineSnapshot(`
       [
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x0",
-            "toBlock": "0x3e8",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x3e9",
-            "toBlock": "0x3ec",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x3ed",
-            "toBlock": "0x3f0",
-            "topics": [
-              [],
-            ],
-          },
-        ],
-        [
-          {
-            "address": "0x",
-            "fromBlock": "0x3f1",
-            "toBlock": "0x3f2",
-            "topics": [
-              [],
-            ],
-          },
-        ],
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 0n,
+          "strict": true,
+          "toBlock": 999n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 1000n,
+          "strict": true,
+          "toBlock": 1000n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 1001n,
+          "strict": true,
+          "toBlock": 1007n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 1008n,
+          "strict": true,
+          "toBlock": 1008n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 1009n,
+          "strict": true,
+          "toBlock": 1009n,
+        },
+        {
+          "address": "0x",
+          "events": [],
+          "fromBlock": 1010n,
+          "strict": true,
+          "toBlock": 1010n,
+        },
       ]
     `);
 
@@ -106,20 +94,30 @@ describe("blockRangeToLogs", () => {
         {
           "fromBlock": 0n,
           "logs": [],
+          "toBlock": 999n,
+        },
+        {
+          "fromBlock": 1000n,
+          "logs": [],
           "toBlock": 1000n,
         },
         {
           "fromBlock": 1001n,
           "logs": [],
-          "toBlock": 1004n,
+          "toBlock": 1007n,
         },
         {
-          "fromBlock": 1005n,
+          "fromBlock": 1008n,
           "logs": [],
           "toBlock": 1008n,
         },
         {
           "fromBlock": 1009n,
+          "logs": [],
+          "toBlock": 1009n,
+        },
+        {
+          "fromBlock": 1010n,
           "logs": [],
           "toBlock": 1010n,
         },

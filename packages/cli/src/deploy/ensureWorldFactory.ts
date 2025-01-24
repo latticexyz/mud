@@ -1,7 +1,7 @@
 import { Client, Transport, Chain, Account, Hex, Address } from "viem";
-import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { getWorldFactoryContracts } from "./getWorldFactoryContracts";
 import { getWorldProxyFactoryContracts } from "./getWorldProxyFactoryContracts";
+import { ensureContractsDeployed } from "@latticexyz/common/internal";
 
 export async function ensureWorldFactory(
   client: Client<Transport, Chain | undefined, Account>,

@@ -1,5 +1,227 @@
 # Change Log
 
+## 2.2.16
+
+### Patch Changes
+
+- @latticexyz/recs@2.2.16
+- @latticexyz/store@2.2.16
+
+## 2.2.15
+
+### Patch Changes
+
+- Updated dependencies [09e9bd5]
+- Updated dependencies [1b477d4]
+- Updated dependencies [09536b0]
+  - @latticexyz/store@2.2.15
+  - @latticexyz/recs@2.2.15
+
+## 2.2.14
+
+### Patch Changes
+
+- @latticexyz/recs@2.2.14
+- @latticexyz/store@2.2.14
+
+## 2.2.13
+
+### Patch Changes
+
+- @latticexyz/store@2.2.13
+- @latticexyz/recs@2.2.13
+
+## 2.2.12
+
+### Patch Changes
+
+- Updated dependencies [ea18f27]
+  - @latticexyz/store@2.2.12
+  - @latticexyz/recs@2.2.12
+
+## 2.2.11
+
+### Patch Changes
+
+- Updated dependencies [7ddcf64]
+- Updated dependencies [13e5689]
+  - @latticexyz/store@2.2.11
+  - @latticexyz/recs@2.2.11
+
+## 2.2.10
+
+### Patch Changes
+
+- @latticexyz/recs@2.2.10
+- @latticexyz/store@2.2.10
+
+## 2.2.9
+
+### Patch Changes
+
+- @latticexyz/recs@2.2.9
+- @latticexyz/store@2.2.9
+
+## 2.2.8
+
+### Patch Changes
+
+- @latticexyz/store@2.2.8
+- @latticexyz/recs@2.2.8
+
+## 2.2.7
+
+### Patch Changes
+
+- Updated dependencies [a08ba5e]
+  - @latticexyz/store@2.2.7
+  - @latticexyz/recs@2.2.7
+
+## 2.2.6
+
+### Patch Changes
+
+- @latticexyz/recs@2.2.6
+- @latticexyz/store@2.2.6
+
+## 2.2.5
+
+### Patch Changes
+
+- @latticexyz/recs@2.2.5
+- @latticexyz/store@2.2.5
+
+## 2.2.4
+
+### Patch Changes
+
+- Updated dependencies [50010fb]
+  - @latticexyz/store@2.2.4
+  - @latticexyz/recs@2.2.4
+
+## 2.2.3
+
+### Patch Changes
+
+- @latticexyz/recs@2.2.3
+- @latticexyz/store@2.2.3
+
+## 2.2.2
+
+### Patch Changes
+
+- @latticexyz/recs@2.2.2
+- @latticexyz/store@2.2.2
+
+## 2.2.1
+
+### Patch Changes
+
+- @latticexyz/store@2.2.1
+- @latticexyz/recs@2.2.1
+
+## 2.2.0
+
+### Patch Changes
+
+- Updated dependencies [04c675c]
+  - @latticexyz/store@2.2.0
+  - @latticexyz/recs@2.2.0
+
+## 2.1.1
+
+### Patch Changes
+
+- Updated dependencies [9e21e42]
+- Updated dependencies [57bf8c3]
+  - @latticexyz/store@2.1.1
+  - @latticexyz/recs@2.1.1
+
+## 2.1.0
+
+### Patch Changes
+
+- Updated dependencies [24e285d]
+- Updated dependencies [7129a16]
+- Updated dependencies [e85dc53]
+- Updated dependencies [a10b453]
+- Updated dependencies [69eb63b]
+- Updated dependencies [fb1cfef]
+  - @latticexyz/store@2.1.0
+  - @latticexyz/recs@2.1.0
+
+## 2.0.12
+
+### Patch Changes
+
+- 96e7bf430: TS source has been removed from published packages in favor of DTS in an effort to improve TS performance. All packages now inherit from a base TS config in `@latticexyz/common` to allow us to continue iterating on TS performance without requiring changes in your project code.
+
+  If you have a MUD project that you're upgrading, we suggest adding a `tsconfig.json` file to your project workspace that extends this base config.
+
+  ```sh
+  pnpm add -D @latticexyz/common
+  echo "{\n  \"extends\": \"@latticexyz/common/tsconfig.base.json\"\n}" > tsconfig.json
+  ```
+
+  Then in each package of your project, inherit from your workspace root's config.
+
+  For example, your TS config in `packages/contracts/tsconfig.json` might look like:
+
+  ```json
+  {
+    "extends": "../../tsconfig.json"
+  }
+  ```
+
+  And your TS config in `packages/client/tsconfig.json` might look like:
+
+  ```json
+  {
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+      "types": ["vite/client"],
+      "target": "ESNext",
+      "lib": ["ESNext", "DOM"],
+      "jsx": "react-jsx",
+      "jsxImportSource": "react"
+    },
+    "include": ["src"]
+  }
+  ```
+
+  You may need to adjust the above configs to include any additional TS options you've set. This config pattern may also reveal new TS errors that need to be fixed or rules disabled.
+
+  If you want to keep your existing TS configs, we recommend at least updating your `moduleResolution` setting.
+
+  ```diff
+  -"moduleResolution": "node"
+  +"moduleResolution": "Bundler"
+  ```
+
+- Updated dependencies [c10c9fb2d]
+- Updated dependencies [c10c9fb2d]
+- Updated dependencies [96e7bf430]
+  - @latticexyz/store@2.0.12
+  - @latticexyz/recs@2.0.12
+
+## 2.0.11
+
+### Patch Changes
+
+- @latticexyz/recs@2.0.11
+- @latticexyz/store@2.0.11
+
+## 2.0.10
+
+### Patch Changes
+
+- Updated dependencies [4e4e9104]
+- Updated dependencies [32c1cda6]
+- Updated dependencies [4caca05e]
+- Updated dependencies [27f888c7]
+  - @latticexyz/store@2.0.10
+  - @latticexyz/recs@2.0.10
+
 ## 2.0.9
 
 ### Patch Changes

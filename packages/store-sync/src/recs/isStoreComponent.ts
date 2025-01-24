@@ -7,6 +7,7 @@ export function isStoreComponent<S extends Schema = Schema>(
   return (
     component.metadata?.componentName != null &&
     component.metadata?.tableName != null &&
+    component.metadata?.table != null &&
     component.metadata?.keySchema != null &&
     component.metadata?.valueSchema != null
   );

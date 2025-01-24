@@ -1,3 +1,4 @@
+import { CollapseCode } from "../../components/CollapseCode";
 import { Callout } from "nextra/components";
 
 # Account delegation
@@ -33,6 +34,72 @@ With MUD delegation, you keep your existing account, but (temporarily) approve o
 
 The most common type of delegation is when a delegator address allows a specific delegatee address to act on its behalf.
 
+### Delegation types
+
+Delegation can either be unlimited or limited by various factors (time, calldata, etc.).
+To create a limited delegation you need a contract that implements the [`DelegationControl`](https://github.com/latticexyz/mud/blob/main/packages/world/src/DelegationControl.sol) interface to decide whether or not to approve a specific call.
+The [`StandardDelegationModule`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/StandardDelegationsModule.sol) includes three limited delegation control contracts. To use them, the owner of the root namespace needs to install this module.
+
+- [`CallboundDelegationControl`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/CallboundDelegationControl.sol)
+- [`SystemboundDelegationControl`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/SystemboundDelegationControl.sol)
+- [`TimeboundDelegationControl`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/TimeboundDelegationControl.sol)
+
+Alternatively, you can write your own `DelegationControl` contract with custom logic.
+
+<CollapseCode>
+
+```solidity filename="DeployDelegation.s.sol" copy showLineNumbers {19-20}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+import { StandardDelegationsModule } from "@latticexyz/world-modules/src/modules/std-delegations/StandardDelegationsModule.sol";
+
+contract DeployDelegation is Script {
+  function run() external {
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+
+    vm.startBroadcast(deployerPrivateKey);
+    IWorld world = IWorld(worldAddress);
+
+    StandardDelegationsModule standardDelegationsModule = new StandardDelegationsModule();
+    world.installRootModule(standardDelegationsModule, new bytes(0));
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+Other than boilerplate, this script does two things.
+
+```solidity
+StandardDelegationsModule standardDelegationsModule =
+  new StandardDelegationsModule();
+```
+
+Deploy a new [`StandardDelegationsModule`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/StandardDelegationsModule.sol) contract.
+[MUD modules](/world/modules) are onchain installation scripts, which can be used by multiple `World`s.
+
+```solidity
+world.installRootModule(standardDelegationsModule, new bytes(0));
+```
+
+Install the module.
+`StandardDelegationsModule` can only be installed as a root module (using `installRootModule`, not `installModule`), which can only be done by the owner of the root namespace.
+
+</details>
+
 ### Creating a user delegation
 
 First, the delegator has to call [`registerDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol#L251-L284).
@@ -49,6 +116,132 @@ This function takes three parameters:
 - `initCallData`, call data for a function that is called on the `delegationControlId` to inform it of the new delegation.
   This [call data](https://docs.soliditylang.org/en/latest/abi-spec.html) includes both the function selector of the function to call and arguments to pass to the function (the result of `abi.encodeCall`).
 
+<CollapseCode>
+
+```solidity filename="TestDelegation.s.sol" copy showLineNumbers {7-10,35-39}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+
+import { SystemboundDelegationControl } from "@latticexyz/world-modules/src/modules/std-delegations/SystemboundDelegationControl.sol";
+import { SYSTEMBOUND_DELEGATION } from "@latticexyz/world-modules/src/modules/std-delegations/StandardDelegationsModule.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+contract TestDelegation is Script {
+  using WorldResourceIdInstance for ResourceId;
+
+  function run() external {
+    // Load the configuration
+    uint256 userPrivateKey = vm.envUint("PRIVATE_KEY");
+    uint256 userPrivateKey2 = vm.envUint("PRIVATE_KEY_2");
+    address userAddress = vm.envAddress("USER_ADDRESS");
+    address userAddress2 = vm.envAddress("USER_ADDRESS_2");
+    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+
+    IWorld world = IWorld(worldAddress);
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "",
+      name: "IncrementSystem"
+    });
+
+    // Run as the first address
+    vm.startBroadcast(userPrivateKey);
+
+    world.registerDelegation(
+      userAddress2,
+      SYSTEMBOUND_DELEGATION,
+      abi.encodeCall(SystemboundDelegationControl.initDelegation, (userAddress2, systemId, 2))
+    );
+
+    vm.stopBroadcast();
+
+    // Run as the second address
+    vm.startBroadcast(userPrivateKey2);
+
+    bytes memory returnData = world.callFrom(userAddress, systemId, abi.encodeWithSignature("increment()"));
+    console.logBytes(returnData);
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+
+import { SystemboundDelegationControl } from "@latticexyz/world-modules/src/modules/std-delegations/SystemboundDelegationControl.sol";
+import { SYSTEMBOUND_DELEGATION } from "@latticexyz/world-modules/src/modules/std-delegations/StandardDelegationsModule.sol";
+```
+
+Import the contract definitions for the delegation system we use, [`SystemboundDelegationControl`](https://github.com/latticexyz/mud/blob/main/packages/world-modules/src/modules/std-delegations/SystemboundDelegationControl.sol), and the `System` identifier for that delegation type.
+
+```solidity
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+```
+
+We need to create the resource identifier for the target `System`, the one where `USER_ADDRESS` allows `USER_ADDRESS_2` to perform actions on its behalf.
+
+```solidity
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+contract TestDelegation is Script {
+  using WorldResourceIdInstance for ResourceId;
+
+  function run() external {
+
+    // Load the configuration
+    uint256 userPrivateKey = vm.envUint("PRIVATE_KEY");
+    uint256 userPrivateKey2 = vm.envUint("PRIVATE_KEY_2");
+    address userAddress = vm.envAddress("USER_ADDRESS");
+    address userAddress2 = vm.envAddress("USER_ADDRESS_2");
+    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+
+    IWorld world = IWorld(worldAddress);
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "",
+      name: "IncrementSystem"
+    });
+```
+
+The system where `increment`, the function to which we are delegating access, is located in `IncrementSystem` at the root namespace.
+
+```solidity
+
+    // Run as the first address
+    vm.startBroadcast(userPrivateKey);
+
+    world.registerDelegation(
+      userAddress2,
+      SYSTEMBOUND_DELEGATION,
+      abi.encodeCall(SystemboundDelegationControl.initDelegation, (userAddress2, systemId, 2))
+    );
+```
+
+This is how you register a delegation.
+The exact parameters depend on the delegation `System` we are using, so we call `registerDelegation` with some parameters, and then provide the exact call to the `System`, in this case `initDelegation(userAddress2, systemId, 2)`.
+
+The remaining code uses a user delegation, so you can see it in the next section.
+
+</details>
+
 ### Using a user delegation
 
 The delegatee can use [`callFrom`](https://github.com/latticexyz/mud/blob/main/packages/world/src/World.sol#L353-L394).
@@ -61,12 +254,127 @@ This function takes three parameters:
 Note that between a specific delegator and a specific delegatee there can only be one user delegation at a time.
 This means that if you need in a `World` to implement multiple delegation algorithms you might need to create a dispatcher delegation that calls different verification functions based on the `systemId` and `callData` it receives.
 
+<CollapseCode>
+
+```solidity copy filename="TestDelegation.s.sol" showLineNumbers {26-30,46-47}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+
+import { SystemboundDelegationControl } from "@latticexyz/world-modules/src/modules/std-delegations/SystemboundDelegationControl.sol";
+import { SYSTEMBOUND_DELEGATION } from "@latticexyz/world-modules/src/modules/std-delegations/StandardDelegationsModule.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
+
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+contract TestDelegation is Script {
+  using WorldResourceIdInstance for ResourceId;
+
+  function run() external {
+    // Load the configuration
+    uint256 userPrivateKey = vm.envUint("PRIVATE_KEY");
+    uint256 userPrivateKey2 = vm.envUint("PRIVATE_KEY_2");
+    address userAddress = vm.envAddress("USER_ADDRESS");
+    address userAddress2 = vm.envAddress("USER_ADDRESS_2");
+    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+
+    IWorld world = IWorld(worldAddress);
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "",
+      name: "IncrementSystem"
+    });
+
+    // Run as the first address
+    vm.startBroadcast(userPrivateKey);
+
+    world.registerDelegation(
+      userAddress2,
+      SYSTEMBOUND_DELEGATION,
+      abi.encodeCall(SystemboundDelegationControl.initDelegation, (userAddress2, systemId, 2))
+    );
+
+    vm.stopBroadcast();
+
+    // Run as the second address
+    vm.startBroadcast(userPrivateKey2);
+
+    bytes memory returnData = world.callFrom(userAddress, systemId, abi.encodeWithSignature("increment()"));
+    console.logBytes(returnData);
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+<details>
+
+<summary>Explanation</summary>
+
+This code explains how to use a user delegation.
+The beginning of the script, which registers a delegation, is in the previous section.
+
+```solidity
+    vm.stopBroadcast();
+
+    // Run as the second address
+    vm.startBroadcast(userPrivateKey2);
+
+    bytes memory returnData = world.callFrom(userAddress, systemId,
+      abi.encodeWithSignature("increment()"));
+    console.logBytes(returnData);
+```
+
+To actually use a delegation you use `world.callFrom` with the address of the user on whose behalf you are performing the action, the resource identifier of the `System` on which you perform the action, and the calldata to send that system (which includes the signature of the function name and parameters, followed by parameter values if any).
+
+The output is returned as `bytes memory`.
+
+```solidity
+    vm.stopBroadcast();
+  }
+}
+```
+
+</details>
+
 ### Removing a user delegation
 
 You can use [`unregisterDelegation`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/init/implementations/WorldRegistrationSystem.sol#L286-L294) to remove a delegation.
 
 Because of `unregisterDelegation` delegations cannot be used for a delegator to commit to allow something to be done in the future.
 If you need a _commitment_, create a table with a `System` that lets the address that commits write the commitment and have an action that other addresses can call only if the proper commitment is there - without giving the committed address an option to delete the entry.
+
+<CollapseCode>
+
+```solidity filename="RemoveDelegation.s.sol" copy showLineNumbers {17}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.21;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+contract RemoveDelegation is Script {
+  function run() external {
+    // Load the configuration
+    uint256 userPrivateKey = vm.envUint("PRIVATE_KEY");
+    address worldAddress = vm.envAddress("WORLD_ADDRESS");
+    address userAddress2 = vm.envAddress("USER_ADDRESS_2");
+
+    IWorld world = IWorld(worldAddress);
+    vm.startBroadcast(userPrivateKey);
+    world.unregisterDelegation(userAddress2);
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
 
 ## Namespace delegation
 

@@ -1,9 +1,24 @@
 import { CollapseCode } from "../../../components/CollapseCode";
+import FilterTypes from "../../../components/common-text/FilterTypes.mdx";
 
 # Filter data synchronization
 
 In this tutorial you modify `networkSetup.ts` to filter the information you synchronize.
 Filtering information this way allows you to reduce the use of network resources and makes loading times faster.
+
+<FilterTypes />
+
+<details>
+
+<summary>Why are only the first two key fields available for filtering?</summary>
+
+Ethereum log entries can have [up to four indexed fields](https://www.evm.codes/?fork=cancun#a4).
+However, Solidity only supports [three indexed fields](https://www.alchemy.com/overviews/solidity-events) because the first indexed field is used for the event name and type.
+In MUD, [this field](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreEvents.sol) specifies whether [a new record is created](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreEvents.sol#L26-L32), a record is changed (either [static fields](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreEvents.sol#L43) or [dynamic fields](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreEvents.sol#L56-L64)), or [a record is deleted](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStoreEvents.sol#L71).
+The second indexed fields is always the table's [resource ID](/world/resource-ids).
+This leaves two fields for key fields.
+
+</details>
 
 ## Setup
 
@@ -17,12 +32,11 @@ To see the effects of filtering we need a table with entries to filter. To get s
 Edit `packages/client/src/mud/setupNetwork.ts`.
 
 - Import [`pad`](https://viem.sh/docs/utilities/pad.html) from viem.
-- Import [`resourceToHex`](https://github.com/latticexyz/mud/blob/main/packages/common/src/resourceToHex.ts) to create resource identifiers.
 - Add a `filters` field to the `syncToRecs` call.
 
 <CollapseCode>
 
-```ts filename="setupNetwork.ts" copy showLineNumbers {25-26,96-108}
+```ts filename="setupNetwork.ts" copy showLineNumbers {23,93-105}
 /*
  * The MUD client code is built on top of viem
  * (https://viem.sh/docs/getting-started.html).
@@ -35,11 +49,9 @@ import {
   http,
   createWalletClient,
   Hex,
-  parseEther,
   ClientConfig,
   getContract,
 } from "viem";
-import { createFaucetService } from "@latticexyz/services/faucet";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 
 import { getNetworkConfig } from "./getNetworkConfig";
@@ -47,7 +59,6 @@ import { world } from "./world";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 import { createBurnerAccount, transportObserver, ContractWrite } from "@latticexyz/common";
 import { transactionQueue, writeObserver } from "@latticexyz/common/actions";
-import { resourceToHex } from "@latticexyz/common";
 import { pad } from "viem";
 
 import { Subject, share } from "rxjs";
@@ -120,46 +131,18 @@ export async function setupNetwork() {
     startBlock: BigInt(networkConfig.initialBlockNumber),
     filters: [
       {
-        tableId: resourceToHex({ type: "table", namespace: "", name: "Counter" }),
+        tableId: mudConfig.tables.app__Counter.tableId,
       },
       {
-        tableId: resourceToHex({ type: "table", namespace: "", name: "History" }),
+        tableId: mudConfig.tables.app__History.tableId,
         key0: pad("0x01"),
       },
       {
-        tableId: resourceToHex({ type: "table", namespace: "", name: "History" }),
+        tableId: mudConfig.tables.app__History.tableId,
         key0: pad("0x05"),
       },
     ],
   });
-
-  /*
-   * If there is a faucet, request (test) ETH if you have
-   * less than 1 ETH. Repeat every 20 seconds to ensure you don't
-   * run out.
-   */
-  if (networkConfig.faucetServiceUrl) {
-    const address = burnerAccount.address;
-    console.info("[Dev Faucet]: Player address -> ", address);
-
-    const faucet = createFaucetService(networkConfig.faucetServiceUrl);
-
-    const requestDrip = async () => {
-      const balance = await publicClient.getBalance({ address });
-      console.info(`[Dev Faucet]: Player balance -> ${balance}`);
-      const lowBalance = balance < parseEther("1");
-      if (lowBalance) {
-        console.info("[Dev Faucet]: Balance is low, dripping funds to player");
-        // Double drip
-        await faucet.dripDev({ address });
-        await faucet.dripDev({ address });
-      }
-    };
-
-    requestDrip();
-    // Request a drip every 20 seconds
-    setInterval(requestDrip, 20000);
-  }
 
   return {
     world,
@@ -179,7 +162,7 @@ export async function setupNetwork() {
 </CollapseCode>
 
 Click **Increment** a few times to see you only see the history for counter values 1 and 5.
-You can also go to the MUD Dev Tools and see that when you select **Components > History** it only has those lines.
+You can also go to the MUD Dev Tools and see that when you select **Components > app\_\_History** it only has those lines.
 
 ### Explanation
 
@@ -188,7 +171,7 @@ Only rows that match at least one line are synchronized.
 Each filter is a structure that can have up to three fields, and all the fields that are specified must match a row for the filter to match.
 
 - `tableId`, the table ID to synchronize.
-  You create this value using [`resourceToHex`](https://github.com/latticexyz/mud/blob/main/packages/common/src/resourceToHex.ts), the type can be either `table`, or `offchainTable`.
+  You can read this value from `mudConfig.tables`.
 - `key0`, the first key value (as a 32 byte hexadecimal string).
 - `key1`, the second key value (as a 32 byte hexadecimal string).
 
@@ -199,21 +182,21 @@ Each filter is a structure that can have up to three fields, and all the fields 
 ```ts
     filters: [
       {
-         tableId: resourceToHex({ type: "table", namespace: "", name: "Counter"}),
+         tableId: mudConfig.tables.app__Counter.tableId,
       },
 ```
 
-The first filter is for the `:Counter` table (`Counter` in the root namespace).
+The first filter is for the `app__Counter` table (`Counter` in the `app` namespace).
 We don't specify any keys, because we want all the rows of the table.
 It's a singleton so there is only one row anyway.
 
 ```ts
       {
-         tableId: resourceToHex({ type: "table", namespace: "", name: "History"}),
+         tableId: mudConfig.tables.app__History.tableId,
          key0: pad("0x01"),
       },
       {
-         tableId: resourceToHex({ type: "table", namespace: "", name: "History"}),
+         tableId: mudConfig.tables.app__History.tableId,
          key0: pad("0x05"),
       },
     ],

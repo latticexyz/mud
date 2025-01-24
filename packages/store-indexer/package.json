@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store-indexer",
-  "version": "2.0.9",
+  "version": "2.2.16",
   "description": "Minimal Typescript indexer for Store",
   "repository": {
     "type": "git",
@@ -12,18 +12,28 @@
   "exports": {
     ".": "./dist/index.js"
   },
-  "types": "src/index.ts",
-  "bin": {
-    "postgres-decoded-indexer": "./dist/bin/postgres-decoded-indexer.js",
-    "postgres-frontend": "./dist/bin/postgres-frontend.js",
-    "postgres-indexer": "./dist/bin/postgres-indexer.js",
-    "sqlite-indexer": "./dist/bin/sqlite-indexer.js"
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index.d.ts"
+      ]
+    }
   },
+  "bin": {
+    "postgres-decoded-indexer": "./bin/postgres-decoded-indexer.js",
+    "postgres-frontend": "./bin/postgres-frontend.js",
+    "postgres-indexer": "./bin/postgres-indexer.js",
+    "sqlite-indexer": "./bin/sqlite-indexer.js"
+  },
+  "files": [
+    "bin",
+    "dist"
+  ],
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
-    "clean:js": "rimraf dist",
+    "clean:js": "shx rm -rf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
     "start:postgres": "concurrently -n indexer,frontend -c cyan,magenta 'tsx bin/postgres-indexer' 'tsx bin/postgres-frontend'",
@@ -35,7 +45,7 @@
     "start:sqlite": "tsx bin/sqlite-indexer",
     "start:sqlite:local": "SQLITE_FILENAME=anvil.db RPC_HTTP_URL=http://127.0.0.1:8545 pnpm start:sqlite",
     "start:sqlite:testnet": "SQLITE_FILENAME=testnet.db RPC_HTTP_URL=https://rpc.holesky.redstone.xyz pnpm start:sqlite",
-    "test": "tsc --noEmit --skipLibCheck",
+    "test": "tsc --noEmit",
     "test:ci": "pnpm run test"
   },
   "dependencies": {
@@ -63,8 +73,7 @@
     "rxjs": "7.5.5",
     "superjson": "^1.12.4",
     "trpc-koa-adapter": "^1.1.3",
-    "viem": "2.9.20",
-    "zod": "^3.21.4"
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@types/accepts": "^1.3.7",
@@ -75,9 +84,11 @@
     "@types/koa__cors": "^4.0.3",
     "@types/koa__router": "^12.0.4",
     "concurrently": "^8.2.2",
-    "tsup": "^6.7.0",
-    "tsx": "^3.12.6",
+    "viem": "2.21.19",
     "vitest": "0.34.6"
+  },
+  "peerDependencies": {
+    "viem": "2.x"
   },
   "publishConfig": {
     "access": "public"
