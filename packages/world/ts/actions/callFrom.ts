@@ -67,7 +67,7 @@ export function callFrom(
         const batchCallArgs = writeArgs as unknown as WriteContractParameters<worldCallAbi, "batchCall">;
         const [systemCalls] = batchCallArgs.args;
         if (!systemCalls.length) {
-          throw new Error("`batchCall` should have at least one call.");
+          throw new Error("`batchCall` should have at least one system call.");
         }
 
         return _writeContract({
