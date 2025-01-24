@@ -1,4 +1,4 @@
-import { ArrowUpDownIcon, LoaderIcon, TriangleAlertIcon } from "lucide-react";
+import { ArrowUpDownIcon, KeyIcon, LoaderIcon, TriangleAlertIcon } from "lucide-react";
 import { parseAsJson, parseAsString, useQueryState } from "nuqs";
 import { useMemo } from "react";
 import { Table as TableType } from "@latticexyz/config";
@@ -18,16 +18,34 @@ import { Button } from "../../../../../../components/ui/Button";
 import { Input } from "../../../../../../components/ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
 import { cn } from "../../../../../../utils";
+import { useChain } from "../../../../hooks/useChain";
 import { TData, TDataRow, useTableDataQuery } from "../../../../queries/useTableDataQuery";
+import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { EditableTableCell } from "./EditableTableCell";
+import { ExportButton } from "./ExportButton";
 import { typeSortingFn } from "./utils/typeSortingFn";
 
 const initialSortingState: SortingState = [];
 const initialRows: TData["rows"] = [];
 
-export function TablesViewer({ table, query }: { table?: TableType; query?: string }) {
-  const { data: tableData, isLoading: isTDataLoading, isFetched, isError, error } = useTableDataQuery({ table, query });
-  const isLoading = isTDataLoading || !isFetched;
+type Props = {
+  table?: TableType;
+  query?: string;
+  isLiveQuery: boolean;
+};
+
+export function TablesViewer({ table, query, isLiveQuery }: Props) {
+  const { id: chainId } = useChain();
+  const indexer = indexerForChainId(chainId);
+  const {
+    data: tableData,
+    isLoading: isTDataLoading,
+    isRefetching,
+    isFetched,
+    isError,
+    error,
+  } = useTableDataQuery({ table, query, isLiveQuery });
+  const isLoading = isTDataLoading || isRefetching || !isFetched;
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
 
@@ -37,6 +55,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
     return tableData.columns.map((name) => {
       const schema = table?.schema[name];
       const type = schema?.type;
+      const keySchema = getKeySchema(table);
 
       return {
         accessorKey: name,
@@ -47,8 +66,9 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
               className="-ml-4"
               onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             >
+              {name in keySchema && <KeyIcon className="mr-2 h-3 w-3" />}
               <span className="text-orange-500">{name}</span>
-              <span className="ml-1 opacity-70">({type})</span>
+              {type && <span className="ml-1 opacity-70">({type})</span>}
               <ArrowUpDownIcon className="ml-2 h-4 w-4" />
             </Button>
           );
@@ -66,7 +86,6 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
             const keyTuple = getKeyTuple(table, row.original as never);
             return <EditableTableCell name={name} table={table} value={value} keyTuple={keyTuple} />;
           } catch (e) {
-            console.error(e);
             return value;
           }
         },
@@ -96,8 +115,12 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
   });
 
   return (
-    <>
-      <div className="flex items-center justify-between gap-4 pb-4">
+    <div
+      className={cn("space-y-4", {
+        "!-mt-10": indexer.type === "hosted",
+      })}
+    >
+      <div className="flex w-1/2 items-center gap-4">
         <Input
           placeholder="Filter..."
           value={globalFilter}
@@ -105,6 +128,8 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
           className="max-w-sm rounded border px-2 py-1"
           disabled={!tableData}
         />
+
+        <ExportButton tableData={tableData} isLoading={isLoading} />
       </div>
 
       <div
@@ -169,7 +194,7 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
         )}
       </div>
 
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-end space-x-2">
         <div className="flex-1 text-sm text-muted-foreground">
           {tableData && `Total rows: ${tableData.rows.length.toLocaleString()}`}
         </div>
@@ -193,6 +218,6 @@ export function TablesViewer({ table, query }: { table?: TableType; query?: stri
           </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 }

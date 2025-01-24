@@ -1,5 +1,69 @@
 # Change Log
 
+## 2.2.16
+
+### Patch Changes
+
+- @latticexyz/abi-ts@2.2.16
+- @latticexyz/block-logs-stream@2.2.16
+- @latticexyz/common@2.2.16
+- @latticexyz/config@2.2.16
+- @latticexyz/gas-report@2.2.16
+- @latticexyz/protocol-parser@2.2.16
+- @latticexyz/schema-type@2.2.16
+- @latticexyz/store@2.2.16
+- @latticexyz/store-sync@2.2.16
+- @latticexyz/utils@2.2.16
+- @latticexyz/world@2.2.16
+- @latticexyz/world-module-metadata@2.2.16
+
+## 2.2.15
+
+### Patch Changes
+
+- 1e09240: When upgrading an existing world, the deployer now attempts to read the deploy block number from the `worlds.json` file. If it is found, the `HelloWorld` and `HelloStore` event are fetched from this block instead of searching for the events starting from the genesis block.
+- 3168f1f: Deployer now retrieves resource tags by fetching logs to work around RPC rate limiting issues.
+- ee388ed: Deployer will now throw an error if it detects an already registered table with a different schema than the one you are trying to deploy.
+- 7409095: In addition to a hex `--salt`, deploy commands now accept a string salt for world deployment, which will get converted to a hex.
+
+  ```
+  pnpm mud deploy --salt hello
+  ```
+
+- 8fcf9c8: Fixed an issue with overloaded system ABI types.
+- b819749: Added an `indexerUrl` option to the `mud deploy` and `mud pull` CLI commands to read table records from an indexer instead of fetching logs from an Ethereum RPC.
+- Updated dependencies [9580d29]
+- Updated dependencies [1770620]
+- Updated dependencies [653f378]
+- Updated dependencies [2d2aa08]
+- Updated dependencies [5f493cd]
+- Updated dependencies [cd9fd0a]
+- Updated dependencies [09e9bd5]
+- Updated dependencies [ba5191c]
+- Updated dependencies [1b477d4]
+- Updated dependencies [b819749]
+- Updated dependencies [5340394]
+- Updated dependencies [22674ad]
+- Updated dependencies [9d71887]
+- Updated dependencies [509a3cc]
+- Updated dependencies [9ddc874]
+- Updated dependencies [09536b0]
+- Updated dependencies [a6fe15c]
+- Updated dependencies [88b9daf]
+- Updated dependencies [275c867]
+  - @latticexyz/config@2.2.15
+  - @latticexyz/store-sync@2.2.15
+  - @latticexyz/world@2.2.15
+  - @latticexyz/block-logs-stream@2.2.15
+  - @latticexyz/common@2.2.15
+  - @latticexyz/protocol-parser@2.2.15
+  - @latticexyz/schema-type@2.2.15
+  - @latticexyz/store@2.2.15
+  - @latticexyz/abi-ts@2.2.15
+  - @latticexyz/world-module-metadata@2.2.15
+  - @latticexyz/gas-report@2.2.15
+  - @latticexyz/utils@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes

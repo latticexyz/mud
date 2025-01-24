@@ -1,4 +1,4 @@
-import { Stash, deleteRecord, getRecord, setRecord } from "@latticexyz/stash/internal";
+import { Stash, PendingStashUpdate, TableRecord, applyUpdates, getRecord } from "@latticexyz/stash/internal";
 import {
   decodeKey,
   decodeValueArgs,
@@ -8,7 +8,7 @@ import {
   getValueSchema,
 } from "@latticexyz/protocol-parser/internal";
 import { spliceHex } from "@latticexyz/common";
-import { size } from "viem";
+import { Hex, concatHex, size } from "viem";
 import { Table } from "@latticexyz/config";
 import { StorageAdapter, StorageAdapterBlock, emptyValueArgs } from "../common";
 
@@ -23,10 +23,19 @@ export function createStorageAdapter({ stash }: CreateStorageAdapter): StorageAd
       .map((table) => [table.tableId, table]),
   );
 
+  function getRecordId(tableId: Hex, keyTuple: readonly Hex[]): string {
+    return `${tableId}:${concatHex(keyTuple)}`;
+  }
+
   return async function storageAdapter({ logs }: StorageAdapterBlock): Promise<void> {
+    const pendingRecords: Record<string, PendingStashUpdate> = {};
+    const updates: PendingStashUpdate[] = [];
+
     for (const log of logs) {
       const table = tablesById[log.args.tableId];
       if (!table) continue;
+
+      const id = getRecordId(log.args.tableId, log.args.keyTuple);
 
       const valueSchema = getSchemaTypes(getValueSchema(table));
       const keySchema = getSchemaTypes(getKeySchema(table));
@@ -34,9 +43,11 @@ export function createStorageAdapter({ stash }: CreateStorageAdapter): StorageAd
 
       if (log.eventName === "Store_SetRecord") {
         const value = decodeValueArgs(valueSchema, log.args);
-        setRecord({ stash, table, key, value });
+        updates.push((pendingRecords[id] = { table, key, value }));
       } else if (log.eventName === "Store_SpliceStaticData") {
-        const previousValue = getRecord({ stash, table, key });
+        const previousValue = pendingRecords[id]
+          ? ({ ...pendingRecords[id].key, ...pendingRecords[id].value } as TableRecord)
+          : getRecord({ stash, table, key });
 
         const {
           staticData: previousStaticData,
@@ -51,9 +62,11 @@ export function createStorageAdapter({ stash }: CreateStorageAdapter): StorageAd
           dynamicData,
         });
 
-        setRecord({ stash, table, key, value });
+        updates.push((pendingRecords[id] = { table, key, value }));
       } else if (log.eventName === "Store_SpliceDynamicData") {
-        const previousValue = getRecord({ stash, table, key });
+        const previousValue = pendingRecords[id]
+          ? ({ ...pendingRecords[id].key, ...pendingRecords[id].value } as TableRecord)
+          : getRecord({ stash, table, key });
 
         const { staticData, dynamicData: previousDynamicData } = previousValue
           ? encodeValueArgs(valueSchema, previousValue)
@@ -66,10 +79,12 @@ export function createStorageAdapter({ stash }: CreateStorageAdapter): StorageAd
           dynamicData,
         });
 
-        setRecord({ stash, table, key, value });
+        updates.push((pendingRecords[id] = { table, key, value }));
       } else if (log.eventName === "Store_DeleteRecord") {
-        deleteRecord({ stash, table, key });
+        updates.push((pendingRecords[id] = { table, key, value: undefined }));
       }
     }
+
+    applyUpdates({ stash, updates });
   };
 }

@@ -1,8 +1,9 @@
 import path from "node:path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import packageJson from "../package.json";
 import { InferredOptionTypes, Options } from "yargs";
 import { deploy } from "./deploy/deploy";
-import { createWalletClient, http, Hex, isHex } from "viem";
+import { createWalletClient, http, Hex, isHex, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
 import { World as WorldConfig } from "@latticexyz/world";
@@ -63,16 +64,15 @@ export type DeployOptions = InferredOptionTypes<typeof deployOptions>;
  * This is used by the deploy, test, and dev-contracts CLI commands.
  */
 export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
-  const salt = opts.salt;
-  if (salt != null && !isHex(salt)) {
-    throw new MUDError("Expected hex string for salt");
-  }
+  const salt = opts.salt != null ? (isHex(opts.salt) ? opts.salt : stringToHex(opts.salt)) : undefined;
 
   const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
 
   const configPath = await resolveConfigPath(opts.configPath);
   const config = (await loadConfig(configPath)) as WorldConfig;
   const rootDir = path.dirname(configPath);
+
+  console.log(chalk.green(`\nUsing ${packageJson.name}@${packageJson.version}`));
 
   if (opts.printConfig) {
     console.log(chalk.green("\nResolved config:\n"), JSON.stringify(config, null, 2));
@@ -144,6 +144,13 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
 
   const chainId = await getChainId(client);
   const indexerUrl = opts.indexerUrl ?? defaultChains.find((chain) => chain.id === chainId)?.indexerUrl;
+  const worldDeployBlock = opts.worldAddress
+    ? getWorldDeployBlock({
+        worldAddress: opts.worldAddress,
+        worldsFile: config.deploy.worldsFile,
+        chainId,
+      })
+    : undefined;
 
   console.log("Deploying from", client.account.address);
 
@@ -156,6 +163,7 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
     deployerAddress: opts.deployerAddress as Hex | undefined,
     salt,
     worldAddress: opts.worldAddress as Hex | undefined,
+    worldDeployBlock,
     client,
     tables,
     systems,
@@ -214,4 +222,18 @@ export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   console.log(deploymentInfo);
 
   return worldDeploy;
+}
+
+function getWorldDeployBlock({
+  chainId,
+  worldAddress,
+  worldsFile,
+}: {
+  chainId: number;
+  worldAddress: string;
+  worldsFile: string;
+}): bigint | undefined {
+  const deploys = existsSync(worldsFile) ? JSON.parse(readFileSync(worldsFile, "utf-8")) : {};
+  const worldDeployBlock = deploys[chainId]?.address === worldAddress ? deploys[chainId].blockNumber : undefined;
+  return worldDeployBlock ? BigInt(worldDeployBlock) : undefined;
 }

@@ -4,7 +4,6 @@ import { Address, Hex, getAddress } from "viem";
 
 // TODO: migrate these to same patterns in postgres/columnTypes
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const json = <TData>(name: string) =>
   customType<{ data: TData; driverData: string }>({
     dataType() {
@@ -18,7 +17,6 @@ export const json = <TData>(name: string) =>
     },
   })(name);
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const address = (name: string) =>
   customType<{ data: Address; driverData: string }>({
     dataType() {
@@ -32,7 +30,6 @@ export const address = (name: string) =>
     },
   })(name);
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const asHex = (name: string) =>
   customType<{ data: Hex; driverData: Hex }>({
     dataType() {

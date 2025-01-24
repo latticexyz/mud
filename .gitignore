@@ -5,8 +5,10 @@ node_modules
 package-lock.json
 yarn.lock
 
-*.log
+# npm pack
+*.tgz
 
+*.log
 .eslintcache
 .parcel-cache
 .docs

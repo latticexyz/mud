@@ -268,24 +268,6 @@ export default defineWorld({
         tableIdArgument: true,
       },
     },
-    /************************************************************************
-     *
-     *    REGISTER DELEGATION WITH SIGNATURE MODULE
-     *
-     ************************************************************************/
-    CallWithSignatureNonces: {
-      schema: { signer: "address", nonce: "uint256" },
-      key: ["signer"],
-      codegen: {
-        outputDirectory: "../modules/callwithsignature/tables",
-      },
-    },
   },
-  excludeSystems: [
-    "UniqueEntitySystem",
-    "PuppetFactorySystem",
-    "ERC20System",
-    "ERC721System",
-    "Unstable_CallWithSignatureSystem",
-  ],
+  excludeSystems: ["UniqueEntitySystem", "PuppetFactorySystem", "ERC20System", "ERC721System"],
 });

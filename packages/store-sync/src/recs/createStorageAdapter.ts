@@ -1,87 +1,58 @@
-import { Tables } from "@latticexyz/config";
+import { Table, Tables } from "@latticexyz/config";
 import { debug } from "./debug";
-import { World as RecsWorld, getComponentValue, hasComponent, removeComponent, setComponent } from "@latticexyz/recs";
-import { defineInternalComponents } from "./defineInternalComponents";
-import { getTableEntity } from "./getTableEntity";
+import { World as RecsWorld, getComponentValue, removeComponent, setComponent } from "@latticexyz/recs";
 import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
-import { decodeValueArgs } from "@latticexyz/protocol-parser/internal";
+import { decodeValueArgs, getSchemaTypes, getValueSchema } from "@latticexyz/protocol-parser/internal";
 import { Hex, size } from "viem";
-import { isTableRegistrationLog } from "../isTableRegistrationLog";
-import { logToTable } from "../logToTable";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
 import { singletonEntity } from "./singletonEntity";
 import { tablesToComponents } from "./tablesToComponents";
-import { merge } from "@ark/util";
 
-export type CreateStorageAdapterOptions<tables extends Tables> = {
+export type CreateStorageAdapterOptions<tables extends Tables = {}> = {
   world: RecsWorld;
+  /** @deprecated Use `const components = tablesToComponents(world, tables)` instead. */
   tables: tables;
   shouldSkipUpdateStream?: () => boolean;
 };
 
-export type CreateStorageAdapterResult<tables extends Tables> = {
+export type CreateStorageAdapterResult<tables extends Tables = {}> = {
   storageAdapter: StorageAdapter;
-  components: merge<tablesToComponents<tables>, ReturnType<typeof defineInternalComponents>>;
+  /** @deprecated Use `const components = tablesToComponents(world, tables)` instead. */
+  components: tablesToComponents<tables>;
 };
 
-export function createStorageAdapter<tables extends Tables>({
+export function createStorageAdapter<tables extends Tables = {}>({
   world,
-  tables,
+  tables = {} as tables,
   shouldSkipUpdateStream,
 }: CreateStorageAdapterOptions<tables>): CreateStorageAdapterResult<tables> {
   world.registerEntity({ id: singletonEntity });
 
-  const components = {
-    ...tablesToComponents(world, tables),
-    ...defineInternalComponents(world),
-  } as CreateStorageAdapterResult<tables>["components"];
+  // kept for backwards compat
+  const components = tablesToComponents(world, tables) as CreateStorageAdapterResult<tables>["components"];
 
-  async function recsStorageAdapter({ logs }: StorageAdapterBlock): Promise<void> {
-    const newTables = logs.filter(isTableRegistrationLog).map(logToTable);
-    for (const newTable of newTables) {
-      const tableEntity = getTableEntity(newTable);
-      if (hasComponent(components.RegisteredTables, tableEntity)) {
-        console.warn("table already registered, ignoring", {
-          newTable,
-          existingTable: getComponentValue(components.RegisteredTables, tableEntity)?.table,
-        });
-      } else {
-        setComponent(
-          components.RegisteredTables,
-          tableEntity,
-          { table: newTable },
-          { skipUpdateStream: shouldSkipUpdateStream?.() },
-        );
-      }
-    }
-
+  async function storageAdapter({ logs }: StorageAdapterBlock): Promise<void> {
     for (const log of logs) {
-      const { namespace, name } = hexToResource(log.args.tableId);
-      const table = getComponentValue(
-        components.RegisteredTables,
-        getTableEntity({ address: log.address, namespace, name }),
-      )?.table;
-      if (!table) {
-        debug(`skipping update for unknown table: ${resourceToLabel({ namespace, name })} at ${log.address}`);
-        continue;
-      }
-
-      const component = world.components.find((c) => c.id === table.tableId);
+      const tableId = log.args.tableId;
+      const component = world.components.find((c) => c.id === tableId);
       if (!component) {
         debug(
-          `skipping update for unknown component: ${table.tableId} (${resourceToLabel({
-            namespace,
-            name,
-          })}). Available components: ${Object.keys(components)}`,
+          `skipping update for unknown component: ${tableId} (${resourceToLabel(hexToResource(tableId))}). Available components: ${Object.keys(components)}`,
         );
         continue;
       }
+      const table = component.metadata?.table as Table | undefined;
+      if (!table) {
+        debug(`skipping update for unknown table: ${resourceToLabel(hexToResource(tableId))} at ${log.address}`);
+        continue;
+      }
 
+      const valueSchema = getSchemaTypes(getValueSchema(table));
       const entity = hexKeyTupleToEntity(log.args.keyTuple);
 
       if (log.eventName === "Store_SetRecord") {
-        const value = decodeValueArgs(table.valueSchema, log.args);
+        const value = decodeValueArgs(valueSchema, log.args);
         debug("setting component", {
           namespace: table.namespace,
           name: table.name,
@@ -104,7 +75,7 @@ export function createStorageAdapter<tables extends Tables>({
         const previousValue = getComponentValue(component, entity);
         const previousStaticData = (previousValue?.__staticData as Hex) ?? "0x";
         const newStaticData = spliceHex(previousStaticData, log.args.start, size(log.args.data), log.args.data);
-        const newValue = decodeValueArgs(table.valueSchema, {
+        const newValue = decodeValueArgs(valueSchema, {
           staticData: newStaticData,
           encodedLengths: (previousValue?.__encodedLengths as Hex) ?? "0x",
           dynamicData: (previousValue?.__dynamicData as Hex) ?? "0x",
@@ -132,7 +103,7 @@ export function createStorageAdapter<tables extends Tables>({
         const previousValue = getComponentValue(component, entity);
         const previousDynamicData = (previousValue?.__dynamicData as Hex) ?? "0x";
         const newDynamicData = spliceHex(previousDynamicData, log.args.start, log.args.deleteCount, log.args.data);
-        const newValue = decodeValueArgs(table.valueSchema, {
+        const newValue = decodeValueArgs(valueSchema, {
           staticData: (previousValue?.__staticData as Hex) ?? "0x",
           // TODO: handle unchanged encoded lengths
           encodedLengths: log.args.encodedLengths,
@@ -168,5 +139,9 @@ export function createStorageAdapter<tables extends Tables>({
     }
   }
 
-  return { storageAdapter: recsStorageAdapter, components };
+  return {
+    storageAdapter,
+    /** @deprecated Use `const components = tablesToComponents(world, tables)` instead. */
+    components,
+  };
 }

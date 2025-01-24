@@ -40,6 +40,8 @@ import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 import { isLogsApiResponse } from "./indexer-client/isLogsApiResponse";
 import { toStorageAdatperBlock } from "./indexer-client/toStorageAdapterBlock";
 import { watchLogs } from "./watchLogs";
+import { getAction } from "viem/utils";
+import { getChainId, getTransactionReceipt } from "viem/actions";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -96,7 +98,7 @@ export async function createStoreSync({
           : undefined)
       : undefined;
 
-  const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+  const chainId = publicClient.chain?.id ?? (await getAction(publicClient, getChainId, "getChainId")({}));
 
   const initialBlockLogs$ = defer(async (): Promise<StorageAdapterBlock | undefined> => {
     onProgress?.({
@@ -355,7 +357,11 @@ export async function createStoreSync({
         try {
           const lastBlock = blocks[0];
           debug("fetching tx receipt for block", lastBlock.blockNumber);
-          const { status, blockNumber, transactionHash } = await publicClient.getTransactionReceipt({ hash: tx });
+          const { status, blockNumber, transactionHash } = await getAction(
+            publicClient,
+            getTransactionReceipt,
+            "getTransactionReceipt",
+          )({ hash: tx });
           if (lastBlock.blockNumber >= blockNumber) {
             return { status, blockNumber, transactionHash };
           }

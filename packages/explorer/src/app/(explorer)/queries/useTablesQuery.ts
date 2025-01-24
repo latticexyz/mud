@@ -1,5 +1,5 @@
 import { useParams } from "next/navigation";
-import { Hex } from "viem";
+import { Hex, stringify } from "viem";
 import { isDefined } from "@latticexyz/common/utils";
 import { Table } from "@latticexyz/config";
 import mudConfig from "@latticexyz/store/mud.config";
@@ -29,7 +29,7 @@ export function useTablesQuery() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify([
+        body: stringify([
           {
             address: worldAddress as Hex,
             query,
@@ -55,6 +55,7 @@ export function useTablesQuery() {
         .filter(isDefined)
         .sort(({ namespace }) => (internalNamespaces.includes(namespace) ? 1 : -1));
     },
+    retry: false,
     refetchInterval: 5000,
   });
 }

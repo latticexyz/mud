@@ -9,6 +9,7 @@ import { createPrepareDeploy } from "./createPrepareDeploy";
 import { World } from "@latticexyz/world";
 import { findUp } from "find-up";
 import { createRequire } from "node:module";
+import { excludeCallWithSignatureModule } from "./compat/excludeUnstableCallWithSignatureModule";
 
 // TODO: replace this with a manifest/combined config output
 
@@ -28,7 +29,7 @@ export async function resolveConfig({
   if (!requirePath) throw new Error("Could not find package.json to import relative to.");
   const require = createRequire(requirePath);
 
-  const moduleOutDirs = config.modules.flatMap((mod) => {
+  const moduleOutDirs = config.modules.filter(excludeCallWithSignatureModule).flatMap((mod) => {
     if (mod.artifactPath == undefined) {
       return [];
     }
@@ -108,8 +109,11 @@ export async function resolveConfig({
         prepareDeploy: createPrepareDeploy(contractData.bytecode, contractData.placeholders),
         deployedBytecodeSize: contractData.deployedBytecodeSize,
         worldFunctions,
-        abi: manifest.abi,
-        worldAbi: manifest.worldAbi,
+        abi: contractData.abi,
+        metadata: {
+          abi: manifest.abi,
+          worldAbi: manifest.worldAbi,
+        },
       };
     });
 

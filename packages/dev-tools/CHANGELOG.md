@@ -1,5 +1,49 @@
 # @latticexyz/dev-tools
 
+## 2.2.16
+
+### Patch Changes
+
+- @latticexyz/common@2.2.16
+- @latticexyz/react@2.2.16
+- @latticexyz/recs@2.2.16
+- @latticexyz/schema-type@2.2.16
+- @latticexyz/store@2.2.16
+- @latticexyz/store-sync@2.2.16
+- @latticexyz/utils@2.2.16
+- @latticexyz/world@2.2.16
+
+## 2.2.15
+
+### Patch Changes
+
+- 09e9bd5: Moved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.
+- Updated dependencies [1770620]
+- Updated dependencies [653f378]
+- Updated dependencies [2d2aa08]
+- Updated dependencies [5f493cd]
+- Updated dependencies [cd9fd0a]
+- Updated dependencies [09e9bd5]
+- Updated dependencies [ba5191c]
+- Updated dependencies [1b477d4]
+- Updated dependencies [b819749]
+- Updated dependencies [22674ad]
+- Updated dependencies [9d71887]
+- Updated dependencies [509a3cc]
+- Updated dependencies [9ddc874]
+- Updated dependencies [09536b0]
+- Updated dependencies [a6fe15c]
+- Updated dependencies [88b9daf]
+- Updated dependencies [275c867]
+  - @latticexyz/store-sync@2.2.15
+  - @latticexyz/world@2.2.15
+  - @latticexyz/common@2.2.15
+  - @latticexyz/schema-type@2.2.15
+  - @latticexyz/store@2.2.15
+  - @latticexyz/recs@2.2.15
+  - @latticexyz/react@2.2.15
+  - @latticexyz/utils@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes

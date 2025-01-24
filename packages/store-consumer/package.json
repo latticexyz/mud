@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store-consumer",
-  "version": "2.2.14",
+  "version": "2.2.16",
   "description": "Store Consumer Contracts",
   "repository": {
     "type": "git",
@@ -39,7 +39,6 @@
   "devDependencies": {
     "@latticexyz/abi-ts": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
-    "@types/node": "^18.15.11",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#1eea5bae12ae557d589f9f0f0edae2faa47cb262",
     "solhint": "^3.3.7"
   },

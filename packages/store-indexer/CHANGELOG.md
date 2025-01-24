@@ -1,5 +1,37 @@
 # @latticexyz/store-indexer
 
+## 2.2.16
+
+### Patch Changes
+
+- @latticexyz/block-logs-stream@2.2.16
+- @latticexyz/common@2.2.16
+- @latticexyz/protocol-parser@2.2.16
+- @latticexyz/store@2.2.16
+- @latticexyz/store-sync@2.2.16
+
+## 2.2.15
+
+### Patch Changes
+
+- 09e9bd5: Moved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.
+- Updated dependencies [1770620]
+- Updated dependencies [5f493cd]
+- Updated dependencies [cd9fd0a]
+- Updated dependencies [09e9bd5]
+- Updated dependencies [1b477d4]
+- Updated dependencies [b819749]
+- Updated dependencies [9d71887]
+- Updated dependencies [9ddc874]
+- Updated dependencies [09536b0]
+- Updated dependencies [a6fe15c]
+- Updated dependencies [88b9daf]
+  - @latticexyz/store-sync@2.2.15
+  - @latticexyz/block-logs-stream@2.2.15
+  - @latticexyz/common@2.2.15
+  - @latticexyz/protocol-parser@2.2.15
+  - @latticexyz/store@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes

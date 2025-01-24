@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.2.16
+
+## 2.2.15
+
+### Patch Changes
+
+- 09e9bd5: Moved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.
+
 ## 2.2.14
 
 ## 2.2.13

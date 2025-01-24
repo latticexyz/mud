@@ -1,5 +1,30 @@
 # Change Log
 
+## 2.2.16
+
+### Patch Changes
+
+- @latticexyz/common@2.2.16
+- @latticexyz/config@2.2.16
+- @latticexyz/protocol-parser@2.2.16
+- @latticexyz/schema-type@2.2.16
+
+## 2.2.15
+
+### Patch Changes
+
+- 09e9bd5: Moved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.
+- 1b477d4: Added internal `getRecord` and `getStaticDataLocation` helpers.
+- 09536b0: Adds an experimental feature to automatically generate Solidity libraries from systems, making it easier to perform calls between systems.
+- Updated dependencies [9580d29]
+- Updated dependencies [09e9bd5]
+- Updated dependencies [9d71887]
+- Updated dependencies [88b9daf]
+  - @latticexyz/config@2.2.15
+  - @latticexyz/common@2.2.15
+  - @latticexyz/protocol-parser@2.2.15
+  - @latticexyz/schema-type@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes

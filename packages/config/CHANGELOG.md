@@ -1,5 +1,24 @@
 # Change Log
 
+## 2.2.16
+
+### Patch Changes
+
+- @latticexyz/common@2.2.16
+- @latticexyz/schema-type@2.2.16
+
+## 2.2.15
+
+### Patch Changes
+
+- 9580d29: Replaced esbuild with tsx to load MUD config in an effort to resolve issues with loading multiple MUD configs in parallel.
+- 09e9bd5: Moved viem to peer dependencies to ensure a single, consistent version is installed in downstream projects.
+- Updated dependencies [09e9bd5]
+- Updated dependencies [9d71887]
+- Updated dependencies [88b9daf]
+  - @latticexyz/common@2.2.15
+  - @latticexyz/schema-type@2.2.15
+
 ## 2.2.14
 
 ### Patch Changes

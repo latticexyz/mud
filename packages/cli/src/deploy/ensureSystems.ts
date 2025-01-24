@@ -5,8 +5,8 @@ import { debug } from "./debug";
 import { getSystems } from "./getSystems";
 import { getResourceAccess } from "./getResourceAccess";
 import pRetry from "p-retry";
-import { ensureContractsDeployed } from "./ensureContractsDeployed";
 import { LibraryMap } from "./getLibraryMap";
+import { ensureContractsDeployed } from "@latticexyz/common/internal";
 
 // TODO: move each system registration+access to batch call to be atomic
 

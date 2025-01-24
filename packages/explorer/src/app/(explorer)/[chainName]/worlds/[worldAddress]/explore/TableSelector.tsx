@@ -2,8 +2,7 @@ import { CheckIcon, ChevronsUpDownIcon, Link2Icon, Link2OffIcon } from "lucide-r
 import { useParams } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { Hex } from "viem";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Table } from "@latticexyz/config";
 import { Button } from "../../../../../../components/ui/Button";
 import {
@@ -36,6 +35,7 @@ export function TableSelector({ tables }: { tables?: Table[] }) {
   const { id: chainId } = useChain();
   const [selectedTableId, setTableId] = useQueryState("tableId");
   const [open, setOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
   const selectedTableConfig = tables?.find(({ tableId }) => tableId === selectedTableId);
 
   useEffect(() => {
@@ -44,8 +44,18 @@ export function TableSelector({ tables }: { tables?: Table[] }) {
     }
   }, [selectedTableId, setTableId, tables]);
 
+  useLayoutEffect(() => {
+    if (open && selectedTableId && selectedTableConfig) {
+      setTimeout(() => {
+        const selectedTableId = constructTableName(selectedTableConfig, worldAddress as Hex, chainId);
+        const selectedElement = document.querySelector(`[data-value="${selectedTableId}"]`);
+        selectedElement?.scrollIntoView({ behavior: "instant", block: "center" });
+      }, 0);
+    }
+  }, [chainId, open, selectedTableConfig, selectedTableId, worldAddress]);
+
   return (
-    <div className="w-full py-4">
+    <div className="w-full">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -68,9 +78,16 @@ export function TableSelector({ tables }: { tables?: Table[] }) {
 
         <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
           <Command>
-            <CommandInput placeholder="Search tables..." className="font-mono" />
+            <CommandInput
+              placeholder="Search tables..."
+              className="font-mono"
+              value={searchValue}
+              onValueChange={setSearchValue}
+            />
             <CommandList>
-              <CommandEmpty className="py-4 text-center font-mono text-sm">No table found.</CommandEmpty>
+              <CommandEmpty className="py-4 text-center font-mono text-sm text-muted-foreground">
+                No table found.
+              </CommandEmpty>
               <CommandGroup>
                 {tables?.map((table) => {
                   return (
