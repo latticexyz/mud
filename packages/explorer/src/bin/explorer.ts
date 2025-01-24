@@ -20,6 +20,12 @@ const argv = yargs(process.argv.slice(2))
       type: "number",
       default: process.env.PORT || 13690,
     },
+    indexerPort: {
+      alias: "pI",
+      description: "Port number for the indexer",
+      type: "number",
+      default: process.env.INDEXER_PORT || 3001,
+    },
     hostname: {
       alias: "H",
       description: "Host for the server",
@@ -50,7 +56,7 @@ const argv = yargs(process.argv.slice(2))
   })
   .parseSync();
 
-const { port, hostname, chainId, indexerDatabase, dev } = argv;
+const { port, indexerPort, hostname, chainId, indexerDatabase, dev } = argv;
 const indexerDatabasePath = path.join(packageRoot, indexerDatabase);
 
 let explorerProcess: ChildProcess;
@@ -104,6 +110,7 @@ async function startStoreIndexer() {
       FOLLOW_BLOCK_TAG: "latest",
       SQLITE_FILENAME: indexerDatabase,
       ...process.env,
+      PORT: indexerPort.toString(),
     },
   });
 }
