@@ -64,14 +64,14 @@ export function callFrom(
 
       // Wrap system calls from `batchCall` with delegator for a `batchCallFrom`
       if (writeArgs.functionName === "batchCall") {
-        const _writeArgs = writeArgs as unknown as WriteContractParameters<worldCallAbi, "batchCall">;
-        const [systemCalls] = _writeArgs.args;
+        const batchCallArgs = writeArgs as unknown as WriteContractParameters<worldCallAbi, "batchCall">;
+        const [systemCalls] = batchCallArgs.args;
         if (!systemCalls.length) {
           throw new Error("`batchCall` should have at least one call.");
         }
 
         return _writeContract({
-          ..._writeArgs,
+          ...batchCallArgs,
           functionName: "batchCallFrom",
           args: [systemCalls.map((systemCall) => ({ from: params.delegatorAddress, ...systemCall }))],
         });
