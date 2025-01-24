@@ -63,6 +63,7 @@ export function callFrom(
       }
 
       // Wrap system calls from `batchCall` with delegator for a `batchCallFrom`
+      // TODO: remove this specific workaround once https://github.com/latticexyz/mud/pull/3506 lands
       if (writeArgs.functionName === "batchCall") {
         const batchCallArgs = writeArgs as unknown as WriteContractParameters<worldCallAbi, "batchCall">;
         const [systemCalls] = batchCallArgs.args;
