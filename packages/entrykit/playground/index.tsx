@@ -17,7 +17,13 @@ root.render(
   <StrictMode>
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <EntryKitConfigProvider config={defineConfig({ chainId, worldAddress })}>
+        <EntryKitConfigProvider
+          config={defineConfig({
+            chainId,
+            worldAddress,
+            googleClientId: "188183665112-uafieilii1f4rklscv0b7gj6e42lao42.apps.googleusercontent.com",
+          })}
+        >
           <App />
           <AccountModal />
         </EntryKitConfigProvider>
