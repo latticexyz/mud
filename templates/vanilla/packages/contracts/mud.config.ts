@@ -2,12 +2,13 @@ import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
   namespace: "app",
+  enums: {
+    Direction: ["North", "East", "South", "West"],
+  },
   tables: {
-    Counter: {
-      schema: {
-        value: "uint32",
-      },
-      key: [],
+    Position: {
+      schema: { player: "address", x: "int32", y: "int32" },
+      key: ["player"],
     },
   },
 });

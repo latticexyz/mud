@@ -1,5 +1,7 @@
 import { Options, defineConfig } from "tsup";
 
+// TODO: returning multiple configs are supported but doesn't work in watch mode
+
 export default defineConfig((opts) => {
   const commonConfig: Options = {
     target: "esnext",
@@ -23,12 +25,19 @@ export default defineConfig((opts) => {
   return [
     {
       ...commonConfig,
-      entry: ["src/exports/index.ts", "src/exports/internal.ts", "src/bin/deploy-local-prereqs.ts"],
+      entry: {
+        "exports/index": "src/exports/index.ts",
+        "exports/internal": "src/exports/internal.ts",
+        "exports/bin/deploy-local-prereqs": "src/bin/deploy-local-prereqs.ts",
+      },
     },
     {
       ...commonConfig,
-      entry: ["src/exports/vanilla.ts"],
+      entry: {
+        "exports/vanilla": "src/exports/vanilla.ts",
+      },
       noExternal: ["react", "react-dom", "@tanstack/react-query"],
+      splitting: false,
     },
   ];
 });

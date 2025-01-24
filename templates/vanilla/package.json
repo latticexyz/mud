@@ -1,5 +1,5 @@
 {
-  "name": "mud-template-vanilla",
+  "name": "mud-template-react",
   "private": true,
   "scripts": {
     "build": "pnpm recursive run build",
@@ -15,9 +15,7 @@
     "@latticexyz/cli": "link:../../packages/cli",
     "@latticexyz/common": "link:../../packages/common",
     "@latticexyz/explorer": "link:../../packages/explorer",
-    "@latticexyz/store-indexer": "link:../../packages/store-indexer",
     "@types/debug": "4.1.7",
-    "@types/node": "^18",
     "@typescript-eslint/eslint-plugin": "7.1.1",
     "@typescript-eslint/parser": "7.1.1",
     "eslint": "8.57.0",
@@ -28,5 +26,12 @@
   "engines": {
     "node": "^18",
     "pnpm": "^8 || ^9"
+  },
+  "pnpm": {
+    "overrides": {
+      "@tanstack/react-query": "link:../../packages/entrykit/node_modules/@tanstack/react-query",
+      "@types/react": "link:../../packages/entrykit/node_modules/@types/react",
+      "wagmi": "link:../../packages/entrykit/node_modules/wagmi"
+    }
   }
 }

@@ -32,7 +32,7 @@ export function mount({
   async function setup() {
     // TODO: do async imports like this help us at all with bundle sizes/code splitting?
     const React = await import("react");
-    const ReactDOM = await import("react-dom/client");
+    const { createRoot } = await import("react-dom/client");
     const { WagmiProvider } = await import("wagmi");
     const { QueryClientProvider, QueryClient } = await import("@tanstack/react-query");
     const { EntryKitProvider } = await import("../EntryKitProvider");
@@ -40,7 +40,7 @@ export function mount({
 
     const queryClient = initialQueryClient ?? new QueryClient();
 
-    const root = ReactDOM.createRoot(rootContainer);
+    const root = createRoot(rootContainer);
     root.render(
       <React.StrictMode>
         <WagmiProvider config={wagmiConfig}>
