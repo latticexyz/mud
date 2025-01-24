@@ -78,7 +78,7 @@ export function callFrom(
         };
 
         // Call `writeContract` with the new args.
-        return getAction(client, writeContract, "writeContract")(batchCallFromArgs);
+        return _writeContract(batchCallFromArgs);
       }
 
       // Encode the World's calldata (which includes the World's function selector).
