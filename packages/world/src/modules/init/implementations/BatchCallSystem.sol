@@ -26,13 +26,12 @@ contract BatchCallSystem is System, LimitedCallContext {
     returnDatas = new bytes[](systemCalls.length);
 
     for (uint256 i; i < systemCalls.length; i++) {
-      bytes memory returnData = SystemCall.callWithHooksOrRevert(
+      returnDatas[i] = SystemCall.callWithHooksOrRevert(
         _msgSender(),
         systemCalls[i].systemId,
         systemCalls[i].callData,
         0
       );
-      returnDatas[i] = abi.decode(returnData, (bytes));
     }
   }
 
@@ -49,11 +48,11 @@ contract BatchCallSystem is System, LimitedCallContext {
     returnDatas = new bytes[](systemCalls.length);
 
     for (uint256 i; i < systemCalls.length; i++) {
+      // TODO: swap this with SystemCall.callFromWithHooksOrRevert once available
       (bool success, bytes memory returnData) = address(world).delegatecall(
         abi.encodeCall(world.callFrom, (systemCalls[i].from, systemCalls[i].systemId, systemCalls[i].callData))
       );
       if (!success) revertWithBytes(returnData);
-
       returnDatas[i] = abi.decode(returnData, (bytes));
     }
   }
