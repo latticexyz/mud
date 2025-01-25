@@ -40,9 +40,8 @@ export async function buildSystemsManifest(opts: { rootDir: string; config: Worl
 
   const systems = await resolveSystems(opts);
 
-  // TODO: expose a `cwd` option to make sure this runs relative to `rootDir`
-  const forgeOutDir = await getForgeOutDirectory();
-  const contractArtifacts = await findContractArtifacts({ forgeOutDir });
+  const forgeOutDir = await getForgeOutDirectory({ cwd: opts.rootDir });
+  const contractArtifacts = await findContractArtifacts({ forgeOutDir: path.join(opts.rootDir, forgeOutDir) });
 
   function getSystemArtifact(system: ResolvedSystem): ContractArtifact {
     const artifact = contractArtifacts.find((a) => a.sourcePath === system.sourcePath && a.name === system.label);

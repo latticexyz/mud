@@ -23,5 +23,5 @@ export async function build({
   await Promise.all([tablegen({ rootDir, config }), worldgen({ rootDir, config })]);
   await forge(["build"], { profile: foundryProfile });
   await buildSystemsManifest({ rootDir, config });
-  await execa("mud", ["abi-ts"], { stdio: "inherit" });
+  await execa("mud", ["abi-ts"], { stdio: "inherit", cwd: rootDir });
 }
