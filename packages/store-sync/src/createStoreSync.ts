@@ -88,10 +88,11 @@ export async function createStoreSync({
     : undefined;
 
   const publicClient = getRpcClient(opts);
-  const indexerUrl =
-    opts.indexerUrl === false
-      ? undefined
-      : opts.indexerUrl ?? (publicClient.chain ? (publicClient.chain as MUDChain).indexerUrl : undefined);
+  const indexerUrl = ((): string | undefined => {
+    if (opts.indexerUrl === false) return;
+    if (opts.indexerUrl) return opts.indexerUrl;
+    if (publicClient.chain) return (publicClient.chain as MUDChain).indexerUrl;
+  })();
 
   const chainId = publicClient.chain?.id ?? (await getAction(publicClient, getChainId, "getChainId")({}));
 
