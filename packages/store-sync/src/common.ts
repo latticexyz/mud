@@ -92,7 +92,7 @@ export type SyncOptions = GetRpcClientOptions & {
    */
   maxBlockRange?: bigint;
   /**
-   * Optional MUD tRPC indexer URL to fetch initial state from.
+   * Optional MUD indexer URL to fetch initial state from.
    */
   indexerUrl?: string | false;
   /**
