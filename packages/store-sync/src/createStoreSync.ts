@@ -1,5 +1,6 @@
+import { MUDChain } from "@latticexyz/common/chains";
 import { storeEventsAbi } from "@latticexyz/store";
-import { GetTransactionReceiptErrorType, Hex, createPublicClient, http } from "viem";
+import { GetTransactionReceiptErrorType, Hex } from "viem";
 import {
   StorageAdapter,
   StorageAdapterBlock,
@@ -10,7 +11,7 @@ import {
   internalTableIds,
   WaitForTransactionResult,
 } from "./common";
-import { createBlockStream } from "@latticexyz/block-logs-stream";
+import { createBlockStream, getRpcClient } from "@latticexyz/block-logs-stream";
 import {
   filter,
   map,
@@ -38,7 +39,7 @@ import { getSnapshot } from "./getSnapshot";
 import { fromEventSource } from "./fromEventSource";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 import { isLogsApiResponse } from "./indexer-client/isLogsApiResponse";
-import { toStorageAdatperBlock } from "./indexer-client/toStorageAdapterBlock";
+import { toStorageAdapterBlock } from "./indexer-client/toStorageAdapterBlock";
 import { watchLogs } from "./watchLogs";
 import { getAction } from "viem/utils";
 import { getChainId, getTransactionReceipt } from "viem/actions";
@@ -69,12 +70,8 @@ export async function createStoreSync({
   maxBlockRange,
   initialState,
   initialBlockLogs,
-  indexerUrl: initialIndexerUrl,
   ...opts
 }: CreateStoreSyncOptions): Promise<SyncResult> {
-  const publicClient =
-    "publicClient" in opts ? opts.publicClient : createPublicClient({ transport: http(opts.httpRpcUrl) });
-
   const filters: SyncFilter[] =
     initialFilters.length || tableIds.length
       ? [...initialFilters, ...tableIds.map((tableId) => ({ tableId })), ...defaultFilters]
@@ -90,13 +87,13 @@ export async function createStoreSync({
         )
     : undefined;
 
+  const publicClient = getRpcClient(opts);
   const indexerUrl =
-    initialIndexerUrl !== false
-      ? initialIndexerUrl ??
-        (publicClient.chain && "indexerUrl" in publicClient.chain && typeof publicClient.chain.indexerUrl === "string"
-          ? publicClient.chain.indexerUrl
-          : undefined)
-      : undefined;
+    opts.indexerUrl === false
+      ? undefined
+      : publicClient.chain
+        ? (publicClient.chain as MUDChain).indexerUrl
+        : undefined;
 
   const chainId = publicClient.chain?.id ?? (await getAction(publicClient, getChainId, "getChainId")({}));
 
@@ -203,7 +200,7 @@ export async function createStoreSync({
   );
 
   let latestBlockNumber: bigint | null = null;
-  const latestBlock$ = createBlockStream({ publicClient, blockTag: followBlockTag }).pipe(shareReplay(1));
+  const latestBlock$ = createBlockStream({ ...opts, blockTag: followBlockTag }).pipe(shareReplay(1));
   const latestBlockNumber$ = latestBlock$.pipe(
     map((block) => block.number),
     tap((blockNumber) => {
@@ -249,7 +246,7 @@ export async function createStoreSync({
           if (!isLogsApiResponse(data)) {
             throw new Error("Received unexpected from indexer:" + messageEvent.data);
           }
-          return toStorageAdatperBlock(data);
+          return toStorageAdapterBlock(data);
         }),
         concatMap(async (block) => {
           await storageAdapter(block);

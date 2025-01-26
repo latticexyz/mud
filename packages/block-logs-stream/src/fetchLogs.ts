@@ -1,20 +1,11 @@
-import { Address, Client, BlockNumber, GetLogsReturnType, OneOf, AbiEvent } from "viem";
+import { Address, BlockNumber, GetLogsReturnType, OneOf, AbiEvent, toEventSelector, parseEventLogs } from "viem";
 import { bigIntMax, bigIntMin, wait } from "@latticexyz/common/utils";
 import { debug } from "./debug";
-import { getAction } from "viem/utils";
-import { getLogs as viem_getLogs } from "viem/actions";
-import { getLogsFromLoadBalancedRpc } from "./getLogsFromLoadBalancedRpc";
-import { HttpRpcUrl, blockNotFoundMessage } from "./common";
+import { getLogs } from "./getLogs";
+import { BlockRange } from "./common";
+import { GetRpcClientOptions } from "./getRpcClient";
 
-export type FetchLogsOptions<abiEvents extends readonly AbiEvent[]> = {
-  /**
-   * The block number to start fetching logs from (inclusive).
-   */
-  fromBlock: BlockNumber;
-  /**
-   * The block number to stop fetching logs at (inclusive).
-   */
-  toBlock: BlockNumber;
+export type FetchLogsOptions<abiEvents extends readonly AbiEvent[]> = BlockRange & {
   /**
    * Optional maximum block range, if your RPC limits the amount of blocks fetched at a time. Defaults to 1000n.
    */
@@ -24,55 +15,28 @@ export type FetchLogsOptions<abiEvents extends readonly AbiEvent[]> = {
    */
   maxRetryCount?: number;
 } & OneOf<
-  | {
-      /**
-       * Async function to return logs for the given block range.
-       */
-      getLogs: (args: {
-        fromBlock: bigint;
-        toBlock: bigint;
-      }) => Promise<GetLogsReturnType<undefined, abiEvents, true, BlockNumber, BlockNumber>>;
-    }
-  | {
-      /**
-       * [viem `Client`][0] used for fetching logs from the RPC.
-       *
-       * [0]: https://viem.sh/docs/clients/public.html
-       */
-      publicClient: Client;
-      /**
-       * Optional contract address(es) to fetch logs for.
-       */
-      address?: Address | Address[];
-      /**
-       * Events to fetch logs for.
-       */
-      events: abiEvents;
-    }
-  | {
-      /**
-       * Explicitly handle potentially unsynced load balanced RPCs by using a batch call with `eth_getLogs` and `eth_getBlockByNumber`.
-       * See https://indexsupply.com/shovel/docs/#unsynchronized-ethereum-nodes
-       */
-      handleUnsyncedLoadBalancedRpc: true;
-      /**
-       * The HTTP URL of the load balanced RPC.
-       */
-      httpRpcUrl: HttpRpcUrl;
-      /**
-       * Optional contract address(es) to fetch logs for.
-       */
-      address?: Address | Address[];
-      /**
-       * Events to fetch logs for.
-       */
-      events: abiEvents;
-    }
->;
+    | {
+        /**
+         * Async function to return logs for the given block range.
+         */
+        getLogs: (args: {
+          fromBlock: bigint;
+          toBlock: bigint;
+        }) => Promise<GetLogsReturnType<undefined, abiEvents, true, BlockNumber, BlockNumber>>;
+      }
+    | (GetRpcClientOptions & {
+        /**
+         * Optional contract address(es) to fetch logs for.
+         */
+        address?: Address | Address[];
+        /**
+         * Events to fetch logs for.
+         */
+        events: abiEvents;
+      })
+  >;
 
-export type FetchLogsResult<abiEvents extends readonly AbiEvent[]> = {
-  fromBlock: BlockNumber;
-  toBlock: BlockNumber;
+export type FetchLogsResult<abiEvents extends readonly AbiEvent[]> = BlockRange & {
   logs: GetLogsReturnType<undefined, abiEvents, true, BlockNumber, BlockNumber>;
 };
 
@@ -110,7 +74,7 @@ const BLOCK_RANGE_ERRORS = [
   "query exceeds max results",
 ];
 
-const UNSYNCED_RPC_ERRORS = [blockNotFoundMessage];
+const MISSING_BLOCK_ERRORS = ["block not found", "unknown block", "Unknown block"];
 
 /**
  * An asynchronous generator function that fetches logs from the blockchain in a range of blocks.
@@ -134,23 +98,19 @@ export async function* fetchLogs<abiEvents extends readonly AbiEvent[]>({
   toBlock: initialToBlock,
   ...opts
 }: FetchLogsOptions<abiEvents>): AsyncGenerator<FetchLogsResult<abiEvents>> {
-  const getLogs =
+  const requestLogs =
     opts.getLogs ??
-    (opts.handleUnsyncedLoadBalancedRpc
-      ? async (blockRange): Promise<GetLogsReturnType<undefined, abiEvents, true, BlockNumber, BlockNumber>> =>
-          getLogsFromLoadBalancedRpc({
-            ...blockRange,
-            httpRpcUrl: opts.httpRpcUrl,
-            address: opts.address,
-            events: opts.events,
-            strict: true,
-          })
-      : async (blockRange): Promise<GetLogsReturnType<undefined, abiEvents, true, BlockNumber, BlockNumber>> =>
-          getAction(
-            opts.publicClient,
-            viem_getLogs,
-            "getLogs",
-          )({ ...blockRange, address: opts.address, events: opts.events, strict: true }));
+    (async (
+      blockRange: BlockRange,
+    ): Promise<GetLogsReturnType<undefined, abiEvents, true, BlockNumber, BlockNumber>> => {
+      const topics = opts.events ? [opts.events.map((event) => toEventSelector(event))] : undefined;
+      const logs = await getLogs({
+        ...opts,
+        ...blockRange,
+        topics,
+      });
+      return opts.events ? parseEventLogs({ logs, abi: opts.events }) : (logs as FetchLogsResult<abiEvents>["logs"]);
+    });
 
   let fromBlock = initialFromBlock;
   let blockRange = bigIntMin(maxBlockRange, initialToBlock - fromBlock);
@@ -160,7 +120,7 @@ export async function* fetchLogs<abiEvents extends readonly AbiEvent[]>({
     try {
       const toBlock = fromBlock + bigIntMax(0n, blockRange - 1n);
       debug(`getting logs for blocks ${fromBlock}-${toBlock} (${blockRange} blocks, ${maxBlockRange} max)`);
-      const logs = await getLogs({ fromBlock, toBlock });
+      const logs = await requestLogs({ fromBlock, toBlock });
       yield { fromBlock, toBlock, logs };
       fromBlock = toBlock + 1n;
       blockRange = bigIntMin(maxBlockRange, initialToBlock - fromBlock);
@@ -190,9 +150,10 @@ export async function* fetchLogs<abiEvents extends readonly AbiEvent[]>({
         continue;
       }
 
-      if (opts.handleUnsyncedLoadBalancedRpc && UNSYNCED_RPC_ERRORS.some((e) => error.message.includes(e))) {
-        debug(`got unsynced rpc error, retrying`);
-        await wait(1000);
+      if (MISSING_BLOCK_ERRORS.some((e) => error.message.includes(e))) {
+        const seconds = 2 * retryCount;
+        debug(`missing block, retrying in ${seconds}s`);
+        await wait(1000 * seconds);
         continue;
       }
 
