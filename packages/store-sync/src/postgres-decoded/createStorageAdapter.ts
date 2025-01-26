@@ -1,4 +1,4 @@
-import { Client, Hex, concatHex, getAddress } from "viem";
+import { Hex, concatHex, getAddress } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { and, eq } from "drizzle-orm";
 import { buildTable } from "./buildTable";
@@ -12,6 +12,7 @@ import { createStorageAdapter as createBytesStorageAdapter } from "../postgres/c
 import { setupTables } from "../postgres/setupTables";
 import { getTables } from "./getTables";
 import { hexToResource, resourceToLabel } from "@latticexyz/common";
+import { GetRpcClientOptions } from "@latticexyz/block-logs-stream";
 
 // Currently assumes one DB per chain ID
 
@@ -23,12 +24,11 @@ export type PostgresStorageAdapter = {
 
 export async function createStorageAdapter({
   database,
-  publicClient,
-}: {
+  ...opts
+}: GetRpcClientOptions & {
   database: PgDatabase<QueryResultHKT>;
-  publicClient: Client;
 }): Promise<PostgresStorageAdapter> {
-  const bytesStorageAdapter = await createBytesStorageAdapter({ database, publicClient });
+  const bytesStorageAdapter = await createBytesStorageAdapter({ ...opts, database });
   const cleanUp: (() => Promise<void>)[] = [];
 
   async function postgresStorageAdapter({ blockNumber, logs }: StorageAdapterBlock): Promise<void> {
