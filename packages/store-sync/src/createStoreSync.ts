@@ -91,9 +91,7 @@ export async function createStoreSync({
   const indexerUrl =
     opts.indexerUrl === false
       ? undefined
-      : publicClient.chain
-        ? (publicClient.chain as MUDChain).indexerUrl
-        : undefined;
+      : opts.indexerUrl ?? (publicClient.chain ? (publicClient.chain as MUDChain).indexerUrl : undefined);
 
   const chainId = publicClient.chain?.id ?? (await getAction(publicClient, getChainId, "getChainId")({}));
 
