@@ -26,7 +26,10 @@ export function SyncProvider({ chainId, adapter, children, ...syncOptions }: Pro
 
   const result = useQuery({
     queryKey: ["sync", chainId],
-    queryFn: () => adapter({ chain, ...syncOptions }),
+    queryFn: () =>
+      // TODO: decide if we want to pass in publicClient when not using `internal_validateBlockRange`
+      //       so that the rpc client inherits transports from wagmi config
+      adapter({ chain, ...syncOptions }),
     staleTime: Infinity,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
