@@ -4,17 +4,19 @@ import { verifyContract } from "./verify/verifyContract";
 import PQueue from "p-queue";
 import { getWorldProxyFactoryContracts } from "./deploy/getWorldProxyFactoryContracts";
 import { MUDError } from "@latticexyz/common/errors";
-import { Module } from "./deploy/common";
+import { Library, Module, System } from "./deploy/common";
 import { getStorageAt } from "viem/actions";
 import { execa } from "execa";
 import { getContractAddress, getDeployer } from "@latticexyz/common/internal";
+import { getLibraryMap } from "./deploy/getLibraryMap";
 
 type VerifyOptions = {
   client: Client<Transport, Chain | undefined>;
   rpc: string;
   verifier: string;
   verifierUrl?: string;
-  systems: { name: string; bytecode: Hex }[];
+  libraries: readonly Library[];
+  systems: readonly System[];
   modules: readonly Module[];
   worldAddress: Hex;
   /**
@@ -31,6 +33,7 @@ export async function verify({
   client,
   rpc,
   systems,
+  libraries,
   modules,
   worldAddress,
   deployerAddress: initialDeployerAddress,
@@ -51,21 +54,25 @@ export async function verify({
 
   const verifyQueue = new PQueue({ concurrency: 4 });
 
-  systems.map(({ name, bytecode }) =>
-    verifyQueue.add(() =>
-      verifyContract({
-        name,
+  const libraryMap = getLibraryMap(libraries);
+
+  systems.map((system) =>
+    verifyQueue.add(() => {
+      const address = getContractAddress({
+        deployerAddress,
+        bytecode: system.prepareDeploy(deployerAddress, libraryMap).bytecode,
+      });
+
+      return verifyContract({
+        name: system.label,
         rpc,
         verifier,
         verifierUrl,
-        address: getContractAddress({
-          deployerAddress,
-          bytecode: bytecode,
-        }),
+        address,
       }).catch((error) => {
-        console.error(`Error verifying system contract ${name}:`, error);
-      }),
-    ),
+        console.error(`Error verifying system contract ${system.label}:`, error);
+      });
+    }),
   );
 
   // If the verifier is Sourcify, attempt to verify MUD core contracts
