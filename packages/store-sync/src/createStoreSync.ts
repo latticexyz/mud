@@ -259,6 +259,7 @@ export async function createStoreSync({
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
     concatMap((range) => {
       const storedBlocks = fetchAndStoreLogs({
+        ...opts,
         address,
         events: storeEventsAbi,
         maxBlockRange,
@@ -268,7 +269,6 @@ export async function createStoreSync({
         toBlock: range.endBlock,
         logFilter,
         storageAdapter,
-        ...opts,
       });
 
       return from(storedBlocks);
