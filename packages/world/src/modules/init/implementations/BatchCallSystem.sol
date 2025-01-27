@@ -6,6 +6,7 @@ import { IBaseWorld } from "../../../codegen/interfaces/IBaseWorld.sol";
 import { revertWithBytes } from "../../../revertWithBytes.sol";
 import { SystemCallData, SystemCallFromData } from "../types.sol";
 import { LimitedCallContext } from "../LimitedCallContext.sol";
+import { SystemCall } from "../../../SystemCall.sol";
 
 /**
  * @title Batch Call System
@@ -22,16 +23,15 @@ contract BatchCallSystem is System, LimitedCallContext {
   function batchCall(
     SystemCallData[] calldata systemCalls
   ) public onlyDelegatecall returns (bytes[] memory returnDatas) {
-    IBaseWorld world = IBaseWorld(_world());
     returnDatas = new bytes[](systemCalls.length);
 
     for (uint256 i; i < systemCalls.length; i++) {
-      (bool success, bytes memory returnData) = address(world).delegatecall(
-        abi.encodeCall(world.call, (systemCalls[i].systemId, systemCalls[i].callData))
+      returnDatas[i] = SystemCall.callWithHooksOrRevert(
+        _msgSender(),
+        systemCalls[i].systemId,
+        systemCalls[i].callData,
+        0
       );
-      if (!success) revertWithBytes(returnData);
-
-      returnDatas[i] = abi.decode(returnData, (bytes));
     }
   }
 
@@ -48,11 +48,11 @@ contract BatchCallSystem is System, LimitedCallContext {
     returnDatas = new bytes[](systemCalls.length);
 
     for (uint256 i; i < systemCalls.length; i++) {
+      // TODO: swap this with SystemCall.callFromWithHooksOrRevert once available
       (bool success, bytes memory returnData) = address(world).delegatecall(
         abi.encodeCall(world.callFrom, (systemCalls[i].from, systemCalls[i].systemId, systemCalls[i].callData))
       );
       if (!success) revertWithBytes(returnData);
-
       returnDatas[i] = abi.decode(returnData, (bytes));
     }
   }
