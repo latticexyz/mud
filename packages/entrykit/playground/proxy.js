@@ -9,6 +9,7 @@ app.use(express.json());
 app.post("/", async (req, res) => {
   try {
     console.log("generating proof");
+    // const response = await fetch("https://zkemail--jwt-prover-v0-1-4-flask-app.modal.run/prove/jwt", {
     const response = await fetch("https://zkemail--jwt-auth-prover-v0-1-0-flask-app.modal.run/prove/jwt", {
       method: "POST",
       headers: {

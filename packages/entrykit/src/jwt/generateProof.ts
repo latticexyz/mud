@@ -2,7 +2,11 @@
 import { generateJWTAuthenticatorInputs } from "@zk-email/jwt-tx-builder-helpers/src/input-generators";
 import { Hex, encodeAbiParameters, parseAbiParameters } from "viem";
 const proverUrl = "http://localhost:3001";
+
 export async function generateProof(jwt: string) {
+  const startTime = performance.now();
+  let lastTime = startTime;
+
   const header = JSON.parse(Buffer.from(jwt.split(".")[0], "base64").toString("utf-8"));
   const payload = JSON.parse(Buffer.from(jwt.split(".")[1], "base64").toString("utf-8"));
 
@@ -15,6 +19,10 @@ export async function generateProof(jwt: string) {
   const circuitInputs = await generateJWTAuthenticatorInputs(jwt, pubkey, accountCode, {
     maxMessageLength: 1024,
   });
+
+  const inputGenTime = performance.now();
+  console.log(`Circuit input generation took ${(inputGenTime - lastTime).toFixed(2)}ms`);
+  lastTime = inputGenTime;
 
   const serializedInputs = JSON.parse(
     JSON.stringify(circuitInputs, (_, value) => (typeof value === "bigint" ? value.toString() : value)),
@@ -35,6 +43,9 @@ export async function generateProof(jwt: string) {
   }
 
   const result = await response.json();
+  const proofGenTime = performance.now();
+  console.log(`Proof generation took ${(proofGenTime - lastTime).toFixed(2)}ms`);
+  console.log(`Total time: ${(proofGenTime - startTime).toFixed(2)}ms`);
 
   const { proof, pub_signals } = result;
 

@@ -7,6 +7,7 @@ import {
   decodeFunctionData,
   encodeFunctionData,
   encodeAbiParameters,
+  recoverMessageAddress,
 } from "viem";
 import {
   type SmartAccount,
@@ -109,6 +110,7 @@ export async function toJwtSmartAccount(parameters: ToJwtSmartAccountParameters)
   };
 
   const getFactoryArgs = async () => {
+    console.log("getFactoryArgs, salt ", jwtProof.accountSalt);
     return {
       factory: factoryAddress,
       factoryData: await getAccountInitCode(jwtProof.accountSalt),
@@ -349,7 +351,6 @@ export async function toJwtSmartAccount(parameters: ToJwtSmartAccountParameters)
     },
     async signUserOperation(parameters) {
       const { chainId = await getMemoizedChainId(), ...userOperation } = parameters;
-      console.log({ entryPoint, chainId, userOperation, address: await this.getAddress() });
       const hash = getUserOperationHash({
         userOperation: {
           ...userOperation,
@@ -361,14 +362,14 @@ export async function toJwtSmartAccount(parameters: ToJwtSmartAccountParameters)
         chainId,
       });
 
+      console.log({ userOperation });
+
       const userOpHashSig = await signMessage(client, {
         account: signer,
         message: {
           raw: hash,
         },
       });
-
-      console.log({ command: jwtProof.maskedCommand, userOpHashSig, hash, signer: signer.address });
 
       const sig = encodeAbiParameters(
         [
