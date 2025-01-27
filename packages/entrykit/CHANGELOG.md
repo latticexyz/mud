@@ -1,5 +1,39 @@
 # @latticexyz/entrykit
 
+## 2.2.17
+
+### Patch Changes
+
+- d5f4e1e: Bumped react-error-boundary dependency.
+- ffefc8f: `CallWithSignature` module has been moved out of `@latticexyz/world-modules` and into its own package at `@latticexyz/world-module-callwithsignature`. This module is now installed by default during deploy as its needed by EntryKit.
+
+  If you previously had this module installed in your MUD config, you can now remove it.
+
+  ```diff
+   export default defineConfig({
+     tables: {
+       ...
+     },
+  -  modules: [
+  -    {
+  -      artifactPath:
+  -        "@latticexyz/world-modules/out/Unstable_CallWithSignatureModule.sol/Unstable_CallWithSignatureModule.json",
+  -      root: true,
+  -    },
+  -  ],
+   });
+  ```
+
+- Updated dependencies [94d82cf]
+- Updated dependencies [ffefc8f]
+  - @latticexyz/world@2.2.17
+  - @latticexyz/world-module-callwithsignature@2.2.17
+  - @latticexyz/common@2.2.17
+  - @latticexyz/config@2.2.17
+  - @latticexyz/paymaster@2.2.17
+  - @latticexyz/protocol-parser@2.2.17
+  - @latticexyz/store@2.2.17
+
 ## 2.2.16
 
 ### Patch Changes

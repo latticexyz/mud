@@ -1,5 +1,20 @@
 # @latticexyz/dev-tools
 
+## 2.2.17
+
+### Patch Changes
+
+- Updated dependencies [94d82cf]
+- Updated dependencies [227db4d]
+  - @latticexyz/world@2.2.17
+  - @latticexyz/store-sync@2.2.17
+  - @latticexyz/common@2.2.17
+  - @latticexyz/react@2.2.17
+  - @latticexyz/recs@2.2.17
+  - @latticexyz/schema-type@2.2.17
+  - @latticexyz/store@2.2.17
+  - @latticexyz/utils@2.2.17
+
 ## 2.2.16
 
 ### Patch Changes

@@ -1,3 +1,112 @@
+## Version 2.2.17
+
+Release date: Mon Jan 27 2025
+
+### Patch changes
+
+**[fix(world): namespaceLabel should be compared to namespaceLabel not namespace (#3515)](https://github.com/latticexyz/mud/commit/94d82cfafbdbee448884643681b0b8db53eedfda)** (@latticexyz/world)
+
+Fixed an issue in system resolving helper used by CLI was not correctly comparing `namespaceLabel`s.
+
+**[feat(create-mud): new react template with stash/entrykit (#3478)](https://github.com/latticexyz/mud/commit/d5f4e1e44bbc260ff21dacdfab0e0f8389e9f304)** (@latticexyz/entrykit)
+
+Bumped react-error-boundary dependency.
+
+**[feat(explorer): save searched namespace (#3470)](https://github.com/latticexyz/mud/commit/dab0d08d3c8f18adcab7bcd4a6a7eafc941ac4e6)** (@latticexyz/explorer)
+
+The context for the searched namespace and selected table is now preserved when reopening the table search and selection menu.
+
+**[fix(cli): support verifying systems with linked libraries (#3514)](https://github.com/latticexyz/mud/commit/452d3e53db2768f2e296ea7560c9bdd6560cd797)** (@latticexyz/cli)
+
+The `verify` command should now be able to correctly verify systems using public libraries.
+
+**[feat(create-mud): new react template with stash/entrykit (#3478)](https://github.com/latticexyz/mud/commit/d5f4e1e44bbc260ff21dacdfab0e0f8389e9f304)** (create-mud)
+
+Updated React template with Stash client state library, EntryKit for wallet support, and a cleaned up app structure.
+
+**[feat(create-mud): new react-ecs template (#3485)](https://github.com/latticexyz/mud/commit/09846f2926132e17477b4d0d1e64b795fbd4485f)** (create-mud)
+
+Updated React ECS template with EntryKit for wallet support and a cleaned up app structure.
+
+**[feat(create-mud): rip out create-create-app (#3479)](https://github.com/latticexyz/mud/commit/e45e3751c0ea10c7b1f0088d674121419b0d0acb)** (create-mud)
+
+Replaced internal usage of `create-create-app` with a simpler recursive copy operation.
+
+**[feat(store-sync): recs sync adapter (#3486)](https://github.com/latticexyz/mud/commit/227db4d37db5dd26607f77e805d91701ba2e38db)** (@latticexyz/store-sync)
+
+Added an RECS sync adapter to be used with `SyncProvider` in React apps.
+
+```tsx
+import { WagmiProvider } from "wagmi";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { SyncProvider } from "@latticexyz/store-sync/react";
+import { createSyncAdapter } from "@latticexyz/store-sync/recs";
+import { createWorld } from "@latticexyz/recs";
+import config from "./mud.config";
+
+const world = createWorld();
+const { syncAdapter, components } = createSyncAdapter({ world, config });
+
+export function App() {
+  return (
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <SyncProvider chainId={chainId} address={worldAddress} startBlock={startBlock} adapter={syncAdapter}>
+          {children}
+        </SyncProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+```
+
+**[fix(explorer): create a separate flag and port for the indexer created by the explorer (#3511)](https://github.com/latticexyz/mud/commit/3d5b7b75c5c68f4c7499ecd2fcf6e3b2b40c6ad5)** (@latticexyz/explorer)
+
+Add a separate flag and port for the indexer created by the Explorer.
+
+**[feat(explorer): enable re-executing query (#3471)](https://github.com/latticexyz/mud/commit/32649080323d2a27cdf4a189917a70b958d062da)** (@latticexyz/explorer)
+
+Previously, queries could only be executed if they had changed, as data fetching was tied to query updates. Now, it’s possible to trigger a new table data fetch explicitly, regardless of whether the query has changed.
+
+**[fix(cli): use system label when verifying (#3503)](https://github.com/latticexyz/mud/commit/5aa8a3ad00aa591f9c3a60526b045257dc8a0bb5)** (@latticexyz/cli)
+
+Fixed an issue with `mud verify` where system contract artifacts were being resolved incorrectly.
+
+**[feat: move CallWithSignature module to its own package (#3491)](https://github.com/latticexyz/mud/commit/ffefc8f000769d5ca625dd19290007a853a21788)** (@latticexyz/cli, @latticexyz/entrykit, @latticexyz/world-module-callwithsignature, @latticexyz/world-modules)
+
+`CallWithSignature` module has been moved out of `@latticexyz/world-modules` and into its own package at `@latticexyz/world-module-callwithsignature`. This module is now installed by default during deploy as its needed by EntryKit.
+
+If you previously had this module installed in your MUD config, you can now remove it.
+
+```diff
+ export default defineConfig({
+   tables: {
+     ...
+   },
+-  modules: [
+-    {
+-      artifactPath:
+-        "@latticexyz/world-modules/out/Unstable_CallWithSignatureModule.sol/Unstable_CallWithSignatureModule.json",
+-      root: true,
+-    },
+-  ],
+ });
+```
+
+**[fix(explorer): return empty array for empty results (sqlite indexer) (#3469)](https://github.com/latticexyz/mud/commit/0812178a8a873aa728358040d1d494385f78566f)** (@latticexyz/explorer)
+
+The Explorer now returns an empty array for empty results, instead of throwing an error, when using the local indexer.
+
+**[fix(cli): checksum deployed world addresses (#3465)](https://github.com/latticexyz/mud/commit/090c9224b80ab949997e0463f9ec0df953c731b5)** (@latticexyz/cli)
+
+The world address stored in `worlds.json` and `deploys/latest.json` is now checksummed.
+
+**[chore(cli): print mud version in deploy (#3476)](https://github.com/latticexyz/mud/commit/f52b1476f04ce0be68691e3b021a81e0fb9cce99)** (@latticexyz/cli)
+
+Deploy now prints the current MUD CLI version for easier debugging.
+
+---
+
 ## Version 2.2.16
 
 Release date: Fri Jan 17 2025

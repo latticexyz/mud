@@ -1,5 +1,46 @@
 # @latticexyz/store-sync
 
+## 2.2.17
+
+### Patch Changes
+
+- 227db4d: Added an RECS sync adapter to be used with `SyncProvider` in React apps.
+
+  ```tsx
+  import { WagmiProvider } from "wagmi";
+  import { QueryClientProvider } from "@tanstack/react-query";
+  import { SyncProvider } from "@latticexyz/store-sync/react";
+  import { createSyncAdapter } from "@latticexyz/store-sync/recs";
+  import { createWorld } from "@latticexyz/recs";
+  import config from "./mud.config";
+
+  const world = createWorld();
+  const { syncAdapter, components } = createSyncAdapter({ world, config });
+
+  export function App() {
+    return (
+      <WagmiProvider config={wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
+          <SyncProvider chainId={chainId} address={worldAddress} startBlock={startBlock} adapter={syncAdapter}>
+            {children}
+          </SyncProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    );
+  }
+  ```
+
+- Updated dependencies [94d82cf]
+  - @latticexyz/world@2.2.17
+  - @latticexyz/block-logs-stream@2.2.17
+  - @latticexyz/common@2.2.17
+  - @latticexyz/config@2.2.17
+  - @latticexyz/protocol-parser@2.2.17
+  - @latticexyz/recs@2.2.17
+  - @latticexyz/schema-type@2.2.17
+  - @latticexyz/stash@2.2.17
+  - @latticexyz/store@2.2.17
+
 ## 2.2.16
 
 ### Patch Changes
