@@ -1,5 +1,14 @@
 # @latticexyz/world-module-metadata
 
+## 2.2.17
+
+### Patch Changes
+
+- Updated dependencies [94d82cf]
+  - @latticexyz/world@2.2.17
+  - @latticexyz/schema-type@2.2.17
+  - @latticexyz/store@2.2.17
+
 ## 2.2.16
 
 ### Patch Changes
