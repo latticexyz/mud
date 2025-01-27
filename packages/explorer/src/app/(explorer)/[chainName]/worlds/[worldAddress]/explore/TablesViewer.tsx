@@ -37,15 +37,7 @@ type Props = {
 export function TablesViewer({ table, query, isLiveQuery }: Props) {
   const { id: chainId } = useChain();
   const indexer = indexerForChainId(chainId);
-  const {
-    data: tableData,
-    isLoading: isTDataLoading,
-    isRefetching,
-    isFetched,
-    isError,
-    error,
-  } = useTableDataQuery({ table, query, isLiveQuery });
-  const isLoading = isTDataLoading || isRefetching || !isFetched;
+  const { data: tableData, isPending, isError, error } = useTableDataQuery({ table, query, isLiveQuery });
   const [globalFilter, setGlobalFilter] = useQueryState("filter", parseAsString.withDefault(""));
   const [sorting, setSorting] = useQueryState("sort", parseAsJson<SortingState>().withDefault(initialSortingState));
 
@@ -129,7 +121,7 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
           disabled={!tableData}
         />
 
-        <ExportButton tableData={tableData} isLoading={isLoading} />
+        <ExportButton tableData={tableData} isLoading={isPending} />
       </div>
 
       <div
@@ -137,12 +129,12 @@ export function TablesViewer({ table, query, isLiveQuery }: Props) {
           "border-red-400": isError,
         })}
       >
-        {isLoading && (
+        {isPending && (
           <div className="flex h-24 items-center justify-center">
             <LoaderIcon className="h-5 w-5 animate-spin" />
           </div>
         )}
-        {!isLoading && (
+        {!isPending && (
           <div className="relative w-full overflow-auto">
             <Table>
               <TableHeader>
