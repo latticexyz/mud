@@ -21,7 +21,7 @@ const argv = yargs(process.argv.slice(2))
       default: process.env.PORT || 13690,
     },
     indexerPort: {
-      alias: "pI",
+      alias: "pi",
       description: "Port number for the indexer",
       type: "number",
       default: process.env.INDEXER_PORT || 3001,
