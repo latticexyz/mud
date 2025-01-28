@@ -1,4 +1,4 @@
-import { Client, Hex, concatHex, getAddress, size } from "viem";
+import { Hex, concatHex, getAddress, size } from "viem";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
@@ -15,16 +15,17 @@ import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
 import { KeySchema, decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser/internal";
 import { getChainId } from "viem/actions";
 import { getAction } from "viem/utils";
+import { GetRpcClientOptions, getRpcClient } from "@latticexyz/block-logs-stream";
 
 // TODO: upgrade drizzle and use async sqlite interface for consistency
 
 export async function sqliteStorage({
   database,
-  publicClient,
-}: {
+  ...opts
+}: GetRpcClientOptions & {
   database: BaseSQLiteDatabase<"sync", void>;
-  publicClient: Client;
 }): Promise<StorageAdapter> {
+  const publicClient = getRpcClient(opts);
   const chainId = publicClient.chain?.id ?? (await getAction(publicClient, getChainId, "getChainId")({}));
 
   // TODO: should these run lazily before first `registerTables`?
