@@ -457,12 +457,12 @@ describe("fetchLogs", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const results: any[] = [];
     for await (const result of fetchLogs({
-      chain,
+      internal_chain: chain,
+      internal_validateBlockRange: true,
       address: "0x",
       events: [],
       fromBlock: 0n,
       toBlock: 500n,
-      internal_validateBlockRange: true,
     })) {
       results.push(result);
     }

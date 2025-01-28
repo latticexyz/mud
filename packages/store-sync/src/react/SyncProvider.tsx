@@ -7,7 +7,7 @@ import { SyncAdapter, SyncOptions, SyncResult } from "../common";
 /** @internal */
 export const SyncContext = createContext<UseQueryResult<SyncResult> | null>(null);
 
-export type Props = Omit<SyncOptions, "publicClient" | "chain"> & {
+export type Props = Omit<SyncOptions, "publicClient" | "internal_chain"> & {
   chainId: number;
   adapter: SyncAdapter;
   children: ReactNode;
@@ -30,7 +30,7 @@ export function SyncProvider({ chainId, adapter, children, ...syncOptions }: Pro
       }
 
       if (syncOptions.internal_validateBlockRange) {
-        return await adapter({ ...syncOptions, chain: client.chain });
+        return await adapter({ ...syncOptions, internal_chain: client.chain });
       }
 
       return await adapter({ ...syncOptions, publicClient: client, internal_validateBlockRange: undefined });

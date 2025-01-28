@@ -39,7 +39,7 @@ export async function getLogs(opts: GetLogsOptions): Promise<Log[]> {
   }
 
   // TODO: websocket support?
-  const [url] = opts.chain.rpcUrls.default.http;
+  const [url] = opts.internal_chain.rpcUrls.default.http;
   const rpcClient = getHttpRpcClient(url);
 
   const blockRequest = defineRpcRequest({

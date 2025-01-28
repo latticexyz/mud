@@ -17,8 +17,9 @@ export type GetRpcClientOptions = OneOf<
        *
        * [0]: https://viem.sh/docs/glossary/types#chain
        *
+       * @internal
        */
-      chain: Chain;
+      internal_chain: Chain;
       /**
        * Validate `toBlock` for each fetched block range to handle potentially [unsynced load balanced RPCs][0].
        * This assumes the RPC supports atomic batches and may increase RPC load as it adds an RPC call per fetched block range.
@@ -40,7 +41,7 @@ export function getRpcClient(opts: GetRpcClientOptions): Client {
   return (
     opts.publicClient ??
     createClient({
-      chain: opts.chain,
+      chain: opts.internal_chain,
       // TODO: conditional websocket?
       transport: http(),
     })
