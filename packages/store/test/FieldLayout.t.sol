@@ -36,11 +36,13 @@ contract FieldLayoutTest is Test, GasReporter {
     assertEq(fieldLayout.atIndex(5), 0);
   }
 
+  /// forge-config: default.allow_internal_expect_revert = true
   function testInvalidFieldLayoutStaticTypeIsZero() public {
     vm.expectRevert(abi.encodeWithSelector(IFieldLayoutErrors.FieldLayout_StaticLengthIsZero.selector, 1));
     FieldLayoutEncodeHelper.encode(1, 0, 1);
   }
 
+  /// forge-config: default.allow_internal_expect_revert = true
   function testInvalidFieldLayoutStaticTypeDoesNotFitInAWord() public {
     vm.expectRevert(abi.encodeWithSelector(IFieldLayoutErrors.FieldLayout_StaticLengthDoesNotFitInAWord.selector, 1));
     FieldLayoutEncodeHelper.encode(1, 33, 1);
@@ -76,6 +78,7 @@ contract FieldLayoutTest is Test, GasReporter {
     assertEq(encodedFieldLayout.numStaticFields() + encodedFieldLayout.numDynamicFields(), 28);
   }
 
+  /// forge-config: default.allow_internal_expect_revert = true
   function testEncodeTooLong() public {
     uint256[] memory fieldLayout = new uint256[](17);
     uint256 dynamicFields = 12;
@@ -113,6 +116,7 @@ contract FieldLayoutTest is Test, GasReporter {
     assertEq(encodedFieldLayout.numDynamicFields(), MAX_DYNAMIC_FIELDS);
   }
 
+  /// forge-config: default.allow_internal_expect_revert = true
   function testEncodeTooManyDynamic() public {
     uint256[] memory fieldLayout = new uint256[](0);
     uint256 dynamicFields = 6;
@@ -198,6 +202,7 @@ contract FieldLayoutTest is Test, GasReporter {
     endGasReport();
   }
 
+  /// forge-config: default.allow_internal_expect_revert = true
   function testValidateInvalidLayout() public {
     FieldLayout encodedFieldLayout = FieldLayout.wrap(keccak256("some invalid field layout"));
 
