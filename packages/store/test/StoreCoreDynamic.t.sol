@@ -208,6 +208,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     assertEq(length, thirdDataBytes.length);
   }
 
+  /// forge-config: default.allow_internal_expect_revert = true
   function testGetDynamicFieldSlice() public {
     ResourceId tableId = _tableId;
     bytes32[] memory keyTuple = _keyTuple;

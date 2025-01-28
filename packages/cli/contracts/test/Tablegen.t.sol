@@ -153,6 +153,7 @@ contract TablegenTest is Test, StoreMock {
     assertEq(Dynamics2.getU64(key).length, 0);
   }
 
+  /// forge-config: default.allow_internal_expect_revert = true
   function testSingletonSetAndGet() public {
     Singleton.register();
 
