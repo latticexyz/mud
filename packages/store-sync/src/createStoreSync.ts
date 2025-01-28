@@ -346,10 +346,9 @@ export async function createStoreSync({
       // instead of sending the next request only when the previous one completed.
       mergeMap(async (blocks) => {
         for (const block of blocks) {
-          // If block had Store event logs associated with tx, it must have succeeded.
-          const hasStoreLogs = block.logs.some((log) => log.transactionHash === tx);
-          if (hasStoreLogs) {
-            return { blockNumber: block.blockNumber, status: "success" as const, transactionHash: tx };
+          // If storage adapter block had Store event logs associated with tx, it must have succeeded.
+          if (block.logs.some((log) => log.transactionHash === tx)) {
+            return { blockNumber: block.blockNumber, status: "success", transactionHash: tx } as const;
           }
         }
 
