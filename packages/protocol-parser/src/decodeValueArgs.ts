@@ -1,4 +1,4 @@
-import { concatHex } from "viem";
+import { concatHex, padHex } from "viem";
 import { isStaticAbiType } from "@latticexyz/schema-type/internal";
 import { SchemaToPrimitives, ValueArgs, ValueSchema } from "./common";
 import { decodeValue } from "./decodeValue";
@@ -13,7 +13,7 @@ export function decodeValueArgs<TSchema extends ValueSchema>(
     valueSchema,
     concatHex([
       readHex(staticData, 0, staticDataLength(Object.values(valueSchema).filter(isStaticAbiType))),
-      encodedLengths,
+      padHex(encodedLengths, { size: 32 }),
       dynamicData,
     ]),
   );
