@@ -1023,7 +1023,7 @@ contract StoreCoreTest is Test, StoreMock {
     vm.expectRevert(
       abi.encodeWithSelector(
         IStoreErrors.Store_IndexOutOfBounds.selector,
-        data.newThirdDataBytes.length,
+        data.newThirdDataBytes.length - uint40(data.thirdDataForUpdate.length),
         uint40(type(uint56).max)
       )
     );
