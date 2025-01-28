@@ -9,15 +9,18 @@ import { CollapseCode } from "../../components/CollapseCode";
 
 These environment variables need to be provided to the indexer to work:
 
-| Type     | Variable      | Meaning                                                                                                  | Sample value (using `anvil` running on the host)          |
-| -------- | ------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| Required | RPC_HTTP_URL  | The URL to access the blockchain using HTTP                                                              | http://host.docker.internal:8545 (when running in Docker) |
-| Optional | RPC_WS_URL    | The URL to access the blockchain using WebSocket                                                         |
-| Optional | START_BLOCK   | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. | 1                                                         |
-| Optional | DEBUG=mud:\*  | Turn on debugging                                                                                        |                                                           |
-| Optional | STORE_ADDRESS | Only index tables from this `World`                                                                      |
-| Required | DATABASE_URL  | URL for the database, of the form `postgres://<host>/<database>`                                         |
-| Optional | PORT          | The port on which the indexer listens                                                                    | `3001` (the default)                                      |
+| Type     | Variable         | Meaning                                                                                                  | Sample value (using `anvil` running on the host)          |
+| -------- | ---------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| Required | RPC_HTTP_URL     | The URL to access the blockchain using HTTP                                                              | http://host.docker.internal:8545 (when running in Docker) |
+| Optional | RPC_WS_URL       | The URL to access the blockchain using WebSocket                                                         |
+| Optional | START_BLOCK      | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. | 1                                                         |
+| Optional | DEBUG=mud:\*     | Turn on debugging                                                                                        |                                                           |
+| Optional | STORE_ADDRESS    | Only index tables from this `World`                                                                      |
+| Required | DATABASE_URL     | URL for the database, of the form `postgres://<host>/<database>`                                         |
+| Optional | PORT             | The port on which the indexer listens                                                                    | `3001` (the default)                                      |
+| Optional | FOLLOW_BLOCK_TAG | The block tag to index. Options: `latest`, `safe`, `finalized`. Defaults to `safe`.                      | safe                                                      |
+| Optional | MAX_BLOCK_RANGE  | The maximum number of blocks to index in a single batch. Defaults to 1000.                               | 1000                                                      |
+| Optional | POLL_INTERVAL    | The interval in milliseconds to poll for new blocks. Defaults to 1000.                                   | 1000                                                      |
 
 ### Using npx
 
