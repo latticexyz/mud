@@ -1,5 +1,6 @@
 import { storeEventsAbi } from "@latticexyz/store";
-import { GetTransactionReceiptErrorType, Hex } from "viem";
+import { GetTransactionReceiptErrorType, Hex, parseEventLogs } from "viem";
+import { entryPoint07Abi } from "viem/account-abstraction";
 import {
   StorageAdapter,
   StorageAdapterBlock,
@@ -42,6 +43,7 @@ import { toStorageAdatperBlock } from "./indexer-client/toStorageAdapterBlock";
 import { watchLogs } from "./watchLogs";
 import { getAction } from "viem/utils";
 import { getChainId, getTransactionReceipt } from "viem/actions";
+import packageJson from "../package.json";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -324,7 +326,7 @@ export async function createStoreSync({
   // keep 10 blocks worth processed transactions in memory
   const recentBlocksWindow = 10;
   // most recent block first, for ease of pulling the first one off the array
-  const recentBlocks$ = storedBlockLogs$.pipe(
+  const recentStoredBlocks$ = storedBlockLogs$.pipe(
     scan<StorageAdapterBlock, StorageAdapterBlock[]>(
       (recentBlocks, block) => [block, ...recentBlocks].slice(0, recentBlocksWindow),
       [],
@@ -339,29 +341,56 @@ export async function createStoreSync({
 
     // This currently blocks for async call on each block processed
     // We could potentially speed this up a tiny bit by racing to see if 1) tx exists in processed block or 2) fetch tx receipt for latest block processed
-    const hasTransaction$ = recentBlocks$.pipe(
+    const hasTransaction$ = recentStoredBlocks$.pipe(
       // We use `mergeMap` instead of `concatMap` here to send the fetch request immediately when a new block range appears,
       // instead of sending the next request only when the previous one completed.
-      mergeMap(async (blocks) => {
-        for (const block of blocks) {
-          const txs = block.logs.map((op) => op.transactionHash);
-          // If the transaction caused a log, it must have succeeded
-          if (txs.includes(tx)) {
-            return { blockNumber: block.blockNumber, status: "success" as const, transactionHash: tx };
+      mergeMap(async (storedBlocks) => {
+        for (const storedBlock of storedBlocks) {
+          // If stored block had Store event logs associated with tx, it must have succeeded.
+          if (storedBlock.logs.some((log) => log.transactionHash === tx)) {
+            return { blockNumber: storedBlock.blockNumber, status: "success", transactionHash: tx } as const;
           }
         }
 
         try {
-          const lastBlock = blocks[0];
-          debug("fetching tx receipt for block", lastBlock.blockNumber);
-          const { status, blockNumber, transactionHash } = await getAction(
-            publicClient,
-            getTransactionReceipt,
-            "getTransactionReceipt",
-          )({ hash: tx });
-          if (lastBlock.blockNumber >= blockNumber) {
-            return { status, blockNumber, transactionHash };
+          const lastStoredBlock = storedBlocks[0];
+          debug("fetching tx receipt for block", lastStoredBlock.blockNumber);
+          const receipt = await getAction(publicClient, getTransactionReceipt, "getTransactionReceipt")({ hash: tx });
+
+          // Skip if sync hasn't caught up to this transaction's block.
+          if (lastStoredBlock.blockNumber < receipt.blockNumber) return;
+
+          // Check if this was a user op so we can get the internal user op status.
+          const userOpEvents = parseEventLogs({
+            logs: receipt.logs,
+            abi: entryPoint07Abi,
+            eventName: "UserOperationEvent" as const,
+          });
+          if (userOpEvents.length) {
+            debug("tx receipt appears to be a user op, using user op status instead");
+            if (userOpEvents.length > 1) {
+              const issueLink = `https://github.com/latticexyz/mud/issues/new${new URLSearchParams({
+                title: "waitForTransaction found more than one user op",
+                body: `MUD version: ${packageJson.version}\nChain ID: ${chainId}\nTransaction: ${tx}\n`,
+              })}`;
+              console.warn(
+                // eslint-disable-next-line max-len
+                `Receipt for transaction ${tx} had more than one \`UserOperationEvent\`. This may have unexpected behavior.\n\nIf you encounter this, please open an issue:\n${issueLink}`,
+              );
+            }
+
+            return {
+              status: userOpEvents[0].args.success ? "success" : "reverted",
+              blockNumber: receipt.blockNumber,
+              transactionHash: receipt.transactionHash,
+            } as const;
           }
+
+          return {
+            status: receipt.status,
+            blockNumber: receipt.blockNumber,
+            transactionHash: receipt.transactionHash,
+          };
         } catch (e) {
           const error = e as GetTransactionReceiptErrorType;
           if (error.name === "TransactionReceiptNotFoundError") {
