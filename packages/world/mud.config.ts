@@ -109,6 +109,10 @@ export const configInput = {
       },
       key: [],
     },
+    CallWithSignatureNonces: {
+      schema: { signer: "address", nonce: "uint256" },
+      key: ["signer"],
+    },
   },
   excludeSystems: [
     // Worldgen currently does not support systems inheriting logic
