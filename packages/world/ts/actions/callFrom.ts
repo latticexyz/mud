@@ -6,9 +6,10 @@ import {
   type Account,
   type Hex,
   type WalletActions,
+  type Client,
+  type PublicActions,
+  type WriteContractParameters,
   type EncodeFunctionDataParameters,
-  Client,
-  PublicActions,
 } from "viem";
 import { getAction, encodeFunctionData } from "viem/utils";
 import { readContract, writeContract as viem_writeContract } from "viem/actions";
@@ -21,6 +22,7 @@ import {
   encodeKey,
 } from "@latticexyz/protocol-parser/internal";
 import worldConfig from "../../mud.config";
+import { worldCallAbi } from "../worldCallAbi";
 
 type CallFromParameters = {
   worldAddress: Hex;
@@ -46,7 +48,6 @@ export function callFrom(
   client: Client<Transport, chain, account>,
 ) => Pick<WalletActions<chain, account>, "writeContract"> {
   return (client) => ({
-    // Applies to: `client.writeContract`, `getContract(client, ...).write`
     async writeContract(writeArgs) {
       const _writeContract = getAction(client, viem_writeContract, "writeContract");
 
@@ -55,9 +56,26 @@ export function callFrom(
         writeArgs.address !== params.worldAddress ||
         writeArgs.functionName === "call" ||
         writeArgs.functionName === "callFrom" ||
+        writeArgs.functionName === "batchCallFrom" ||
         writeArgs.functionName === "callWithSignature"
       ) {
         return _writeContract(writeArgs);
+      }
+
+      // Wrap system calls from `batchCall` with delegator for a `batchCallFrom`
+      // TODO: remove this specific workaround once https://github.com/latticexyz/mud/pull/3506 lands
+      if (writeArgs.functionName === "batchCall") {
+        const batchCallArgs = writeArgs as unknown as WriteContractParameters<worldCallAbi, "batchCall">;
+        const [systemCalls] = batchCallArgs.args;
+        if (!systemCalls.length) {
+          throw new Error("`batchCall` should have at least one system call.");
+        }
+
+        return _writeContract({
+          ...batchCallArgs,
+          functionName: "batchCallFrom",
+          args: [systemCalls.map((systemCall) => ({ from: params.delegatorAddress, ...systemCall }))],
+        });
       }
 
       // Encode the World's calldata (which includes the World's function selector).
@@ -81,15 +99,12 @@ export function callFrom(
       // Use `readHex` instead of `slice` to prevent out-of-bounds errors with calldata that has no args.
       const systemCalldata = concat([systemFunctionSelector, readHex(worldCalldata, 4)]);
 
-      // Construct args for `callFrom`.
-      const callFromArgs: typeof writeArgs = {
-        ...writeArgs,
+      // Call `writeContract` with the new args.
+      return _writeContract({
+        ...(writeArgs as unknown as WriteContractParameters<worldCallAbi, "callFrom">),
         functionName: "callFrom",
         args: [params.delegatorAddress, systemId, systemCalldata],
-      };
-
-      // Call `writeContract` with the new args.
-      return _writeContract(callFromArgs);
+      });
     },
   });
 }
