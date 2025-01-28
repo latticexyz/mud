@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import { createClient, hexToBigInt } from "viem";
 import { fetchLogs } from "./fetchLogs";
 import { createMockTransport } from "../test/createMockTransport";
+import { anvil } from "viem/chains";
+import { MockedRpcResponse, createRpcMock } from "../test/createRpcMock";
 
 describe("fetchLogs", () => {
   it("yields chunks of logs for the block range", async () => {
@@ -428,5 +430,211 @@ describe("fetchLogs", () => {
         },
       ]
     `);
+  });
+
+  it("retries when load balanced RPC is out of sync", { timeout: 10_000 }, async () => {
+    const blocks = [{ result: null }, { error: { message: "block not found" } }];
+    const rpcMock = createRpcMock({
+      async request(req) {
+        const res = (Array.isArray(req) ? req : [req]).map(({ method, params }): MockedRpcResponse => {
+          if (method === "eth_getLogs") {
+            return { result: [] };
+          }
+          if (method === "eth_getBlockByNumber") {
+            const block = blocks.shift();
+            if (block) return block;
+            return { result: { number: params[0] } };
+          }
+          throw new Error(`RPC method "${method}" not implemented.`);
+        });
+        return Array.isArray(req) ? res : res[0];
+      },
+    });
+
+    const chain = { ...anvil, rpcUrls: { default: { http: [rpcMock.url] } } };
+    global.fetch = rpcMock.fetchMock;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const results: any[] = [];
+    for await (const result of fetchLogs({
+      chain,
+      address: "0x",
+      events: [],
+      fromBlock: 0n,
+      toBlock: 500n,
+      internal_validateBlockRange: true,
+    })) {
+      results.push(result);
+    }
+
+    expect(results).toMatchInlineSnapshot(`
+        [
+          {
+            "fromBlock": 0n,
+            "logs": [],
+            "toBlock": 499n,
+          },
+          {
+            "fromBlock": 500n,
+            "logs": [],
+            "toBlock": 500n,
+          },
+        ]
+      `);
+
+    expect(rpcMock.calls).toMatchInlineSnapshot(`
+        [
+          {
+            "request": [
+              {
+                "id": 0,
+                "jsonrpc": "2.0",
+                "method": "eth_getBlockByNumber",
+                "params": [
+                  "0x1f3",
+                  false,
+                ],
+              },
+              {
+                "id": 1,
+                "jsonrpc": "2.0",
+                "method": "eth_getLogs",
+                "params": [
+                  {
+                    "address": "0x",
+                    "fromBlock": "0x0",
+                    "toBlock": "0x1f3",
+                    "topics": [
+                      [],
+                    ],
+                  },
+                ],
+              },
+            ],
+            "response": [
+              {
+                "result": null,
+              },
+              {
+                "result": [],
+              },
+            ],
+          },
+          {
+            "request": [
+              {
+                "id": 2,
+                "jsonrpc": "2.0",
+                "method": "eth_getBlockByNumber",
+                "params": [
+                  "0x1f3",
+                  false,
+                ],
+              },
+              {
+                "id": 3,
+                "jsonrpc": "2.0",
+                "method": "eth_getLogs",
+                "params": [
+                  {
+                    "address": "0x",
+                    "fromBlock": "0x0",
+                    "toBlock": "0x1f3",
+                    "topics": [
+                      [],
+                    ],
+                  },
+                ],
+              },
+            ],
+            "response": [
+              {
+                "error": {
+                  "message": "block not found",
+                },
+              },
+              {
+                "result": [],
+              },
+            ],
+          },
+          {
+            "request": [
+              {
+                "id": 4,
+                "jsonrpc": "2.0",
+                "method": "eth_getBlockByNumber",
+                "params": [
+                  "0x1f3",
+                  false,
+                ],
+              },
+              {
+                "id": 5,
+                "jsonrpc": "2.0",
+                "method": "eth_getLogs",
+                "params": [
+                  {
+                    "address": "0x",
+                    "fromBlock": "0x0",
+                    "toBlock": "0x1f3",
+                    "topics": [
+                      [],
+                    ],
+                  },
+                ],
+              },
+            ],
+            "response": [
+              {
+                "result": {
+                  "number": "0x1f3",
+                },
+              },
+              {
+                "result": [],
+              },
+            ],
+          },
+          {
+            "request": [
+              {
+                "id": 6,
+                "jsonrpc": "2.0",
+                "method": "eth_getBlockByNumber",
+                "params": [
+                  "0x1f4",
+                  false,
+                ],
+              },
+              {
+                "id": 7,
+                "jsonrpc": "2.0",
+                "method": "eth_getLogs",
+                "params": [
+                  {
+                    "address": "0x",
+                    "fromBlock": "0x1f4",
+                    "toBlock": "0x1f4",
+                    "topics": [
+                      [],
+                    ],
+                  },
+                ],
+              },
+            ],
+            "response": [
+              {
+                "result": {
+                  "number": "0x1f4",
+                },
+              },
+              {
+                "result": [],
+              },
+            ],
+          },
+        ]
+      `);
   });
 });

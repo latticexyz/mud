@@ -1,4 +1,13 @@
-import { Address, BlockNumber, GetLogsReturnType, OneOf, AbiEvent, toEventSelector, parseEventLogs } from "viem";
+import {
+  Address,
+  BlockNumber,
+  GetLogsReturnType,
+  OneOf,
+  AbiEvent,
+  toEventSelector,
+  parseEventLogs,
+  BlockNotFoundError,
+} from "viem";
 import { bigIntMax, bigIntMin, wait } from "@latticexyz/common/utils";
 import { debug } from "./debug";
 import { getLogs } from "./getLogs";
@@ -117,9 +126,10 @@ export async function* fetchLogs<abiEvents extends readonly AbiEvent[]>({
   let retryCount = 0;
 
   while (fromBlock <= initialToBlock) {
+    const toBlock = fromBlock + bigIntMax(0n, blockRange - 1n);
+    debug(`getting logs for blocks ${fromBlock}-${toBlock} (${blockRange} blocks, ${maxBlockRange} max)`);
+
     try {
-      const toBlock = fromBlock + bigIntMax(0n, blockRange - 1n);
-      debug(`getting logs for blocks ${fromBlock}-${toBlock} (${blockRange} blocks, ${maxBlockRange} max)`);
       const logs = await requestLogs({ fromBlock, toBlock });
       yield { fromBlock, toBlock, logs };
       fromBlock = toBlock + 1n;
@@ -150,10 +160,15 @@ export async function* fetchLogs<abiEvents extends readonly AbiEvent[]>({
         continue;
       }
 
-      if (MISSING_BLOCK_ERRORS.some((e) => error.message.includes(e))) {
+      if (
+        retryCount < maxRetryCount &&
+        (MISSING_BLOCK_ERRORS.some((e) => error.message.includes(e)) ||
+          error.message === new BlockNotFoundError({ blockNumber: toBlock }).message)
+      ) {
         const seconds = 2 * retryCount;
         debug(`missing block, retrying in ${seconds}s`);
         await wait(1000 * seconds);
+        retryCount += 1;
         continue;
       }
 

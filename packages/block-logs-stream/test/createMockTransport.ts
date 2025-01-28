@@ -1,10 +1,14 @@
 import { vi } from "vitest";
 import { Transport, createTransport } from "viem";
 
+// TODO: refine types based on RpcSchema for better autocomplete/inference
+
 export function createMockTransport(
-  // TODO: refine types for better autocomplete/inference
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  request: (args: { method: string; params: any }) => Promise<unknown>,
+  request: (args: {
+    method: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    params?: any;
+  }) => Promise<unknown>,
 ): Transport {
   return () =>
     createTransport({
