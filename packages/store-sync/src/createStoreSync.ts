@@ -344,16 +344,16 @@ export async function createStoreSync({
     const hasTransaction$ = recentStoredBlocks$.pipe(
       // We use `mergeMap` instead of `concatMap` here to send the fetch request immediately when a new block range appears,
       // instead of sending the next request only when the previous one completed.
-      mergeMap(async (blocks) => {
-        for (const block of blocks) {
-          // If storage adapter block had Store event logs associated with tx, it must have succeeded.
-          if (block.logs.some((log) => log.transactionHash === tx)) {
-            return { blockNumber: block.blockNumber, status: "success", transactionHash: tx } as const;
+      mergeMap(async (storedBlocks) => {
+        for (const storedBlock of storedBlocks) {
+          // If stored block had Store event logs associated with tx, it must have succeeded.
+          if (storedBlock.logs.some((log) => log.transactionHash === tx)) {
+            return { blockNumber: storedBlock.blockNumber, status: "success", transactionHash: tx } as const;
           }
         }
 
         try {
-          const lastStoredBlock = blocks[0];
+          const lastStoredBlock = storedBlocks[0];
           debug("fetching tx receipt for block", lastStoredBlock.blockNumber);
           const receipt = await getAction(publicClient, getTransactionReceipt, "getTransactionReceipt")({ hash: tx });
 
