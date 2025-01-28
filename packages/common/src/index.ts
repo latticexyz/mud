@@ -18,6 +18,7 @@ export * from "./sendTransaction";
 export * from "./spliceHex";
 export * from "./transportObserver";
 export * from "./writeContract";
+export * from "./getFeeRef";
 
 /** @deprecated use `getContract` instead */
 export { createContract } from "./deprecated/createContract";
