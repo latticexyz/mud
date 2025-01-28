@@ -24,6 +24,9 @@ contract PuppetModule is Module {
   PuppetFactorySystem private immutable puppetFactorySystem = new PuppetFactorySystem();
 
   function installRoot(bytes memory) public {
+    // Require the module to not be installed
+    requireNotInstalled(__self, new bytes(0));
+
     IBaseWorld world = IBaseWorld(_world());
 
     // Register namespace
@@ -49,6 +52,9 @@ contract PuppetModule is Module {
   }
 
   function install(bytes memory) public {
+    // Require the module to not be installed
+    requireNotInstalled(__self, new bytes(0));
+
     IBaseWorld world = IBaseWorld(_world());
 
     // Register namespace
