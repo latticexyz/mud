@@ -7,7 +7,7 @@ import {
   getSchemaTypes,
   getValueSchema,
 } from "@latticexyz/protocol-parser/internal";
-import { hexToResource, resourceToLabel, spliceHex } from "@latticexyz/common";
+import { spliceHex } from "@latticexyz/common";
 import { Hex, concatHex, size } from "viem";
 import { Table } from "@latticexyz/config";
 import { StorageAdapter, StorageAdapterBlock, emptyValueArgs } from "../common";
@@ -32,63 +32,56 @@ export function createStorageAdapter({ stash }: CreateStorageAdapter): StorageAd
     const updates: PendingStashUpdate[] = [];
 
     for (const log of logs) {
-      try {
-        const table = tablesById[log.args.tableId];
-        if (!table) continue;
+      const table = tablesById[log.args.tableId];
+      if (!table) continue;
 
-        const id = getRecordId(log.args.tableId, log.args.keyTuple);
+      const id = getRecordId(log.args.tableId, log.args.keyTuple);
 
-        const valueSchema = getSchemaTypes(getValueSchema(table));
-        const keySchema = getSchemaTypes(getKeySchema(table));
-        const key = decodeKey(keySchema, log.args.keyTuple);
+      const valueSchema = getSchemaTypes(getValueSchema(table));
+      const keySchema = getSchemaTypes(getKeySchema(table));
+      const key = decodeKey(keySchema, log.args.keyTuple);
 
-        if (log.eventName === "Store_SetRecord") {
-          const value = decodeValueArgs(valueSchema, log.args);
-          updates.push((pendingRecords[id] = { table, key, value }));
-        } else if (log.eventName === "Store_SpliceStaticData") {
-          const previousValue = pendingRecords[id]
-            ? ({ ...pendingRecords[id].key, ...pendingRecords[id].value } as TableRecord)
-            : getRecord({ stash, table, key });
+      if (log.eventName === "Store_SetRecord") {
+        const value = decodeValueArgs(valueSchema, log.args);
+        updates.push((pendingRecords[id] = { table, key, value }));
+      } else if (log.eventName === "Store_SpliceStaticData") {
+        const previousValue = pendingRecords[id]
+          ? ({ ...pendingRecords[id].key, ...pendingRecords[id].value } as TableRecord)
+          : getRecord({ stash, table, key });
 
-          const {
-            staticData: previousStaticData,
-            encodedLengths,
-            dynamicData,
-          } = previousValue ? encodeValueArgs(valueSchema, previousValue) : emptyValueArgs;
+        const {
+          staticData: previousStaticData,
+          encodedLengths,
+          dynamicData,
+        } = previousValue ? encodeValueArgs(valueSchema, previousValue) : emptyValueArgs;
 
-          const staticData = spliceHex(previousStaticData, log.args.start, size(log.args.data), log.args.data);
-          const value = decodeValueArgs(valueSchema, {
-            staticData,
-            encodedLengths,
-            dynamicData,
-          });
+        const staticData = spliceHex(previousStaticData, log.args.start, size(log.args.data), log.args.data);
+        const value = decodeValueArgs(valueSchema, {
+          staticData,
+          encodedLengths,
+          dynamicData,
+        });
 
-          updates.push((pendingRecords[id] = { table, key, value }));
-        } else if (log.eventName === "Store_SpliceDynamicData") {
-          const previousValue = pendingRecords[id]
-            ? ({ ...pendingRecords[id].key, ...pendingRecords[id].value } as TableRecord)
-            : getRecord({ stash, table, key });
+        updates.push((pendingRecords[id] = { table, key, value }));
+      } else if (log.eventName === "Store_SpliceDynamicData") {
+        const previousValue = pendingRecords[id]
+          ? ({ ...pendingRecords[id].key, ...pendingRecords[id].value } as TableRecord)
+          : getRecord({ stash, table, key });
 
-          const { staticData, dynamicData: previousDynamicData } = previousValue
-            ? encodeValueArgs(valueSchema, previousValue)
-            : emptyValueArgs;
+        const { staticData, dynamicData: previousDynamicData } = previousValue
+          ? encodeValueArgs(valueSchema, previousValue)
+          : emptyValueArgs;
 
-          const dynamicData = spliceHex(previousDynamicData, log.args.start, log.args.deleteCount, log.args.data);
-          const value = decodeValueArgs(valueSchema, {
-            staticData,
-            encodedLengths: log.args.encodedLengths,
-            dynamicData,
-          });
+        const dynamicData = spliceHex(previousDynamicData, log.args.start, log.args.deleteCount, log.args.data);
+        const value = decodeValueArgs(valueSchema, {
+          staticData,
+          encodedLengths: log.args.encodedLengths,
+          dynamicData,
+        });
 
-          updates.push((pendingRecords[id] = { table, key, value }));
-        } else if (log.eventName === "Store_DeleteRecord") {
-          updates.push((pendingRecords[id] = { table, key, value: undefined }));
-        }
-      } catch (e) {
-        throw new Error(
-          `Error processing log for table ${resourceToLabel(hexToResource(log.args.tableId))}:\n\n${JSON.stringify(log, null, 2)}`,
-          { cause: e },
-        );
+        updates.push((pendingRecords[id] = { table, key, value }));
+      } else if (log.eventName === "Store_DeleteRecord") {
+        updates.push((pendingRecords[id] = { table, key, value: undefined }));
       }
     }
 
