@@ -1,5 +1,6 @@
 import { storeEventsAbi } from "@latticexyz/store";
-import { GetTransactionReceiptErrorType, Hex } from "viem";
+import { GetTransactionReceiptErrorType, Hex, parseEventLogs } from "viem";
+import { entryPoint07Abi } from "viem/account-abstraction";
 import {
   StorageAdapter,
   StorageAdapterBlock,
@@ -42,6 +43,7 @@ import { toStorageAdatperBlock } from "./indexer-client/toStorageAdapterBlock";
 import { watchLogs } from "./watchLogs";
 import { getAction } from "viem/utils";
 import { getChainId, getTransactionReceipt } from "viem/actions";
+import packageJson from "../package.json";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -344,9 +346,9 @@ export async function createStoreSync({
       // instead of sending the next request only when the previous one completed.
       mergeMap(async (blocks) => {
         for (const block of blocks) {
-          const txs = block.logs.map((op) => op.transactionHash);
-          // If the transaction caused a log, it must have succeeded
-          if (txs.includes(tx)) {
+          // If block had Store event logs associated with tx, it must have succeeded.
+          const hasStoreLogs = block.logs.some((log) => log.transactionHash === tx);
+          if (hasStoreLogs) {
             return { blockNumber: block.blockNumber, status: "success" as const, transactionHash: tx };
           }
         }
@@ -354,13 +356,40 @@ export async function createStoreSync({
         try {
           const lastBlock = blocks[0];
           debug("fetching tx receipt for block", lastBlock.blockNumber);
-          const { status, blockNumber, transactionHash } = await getAction(
-            publicClient,
-            getTransactionReceipt,
-            "getTransactionReceipt",
-          )({ hash: tx });
-          if (lastBlock.blockNumber >= blockNumber) {
-            return { status, blockNumber, transactionHash };
+          const receipt = await getAction(publicClient, getTransactionReceipt, "getTransactionReceipt")({ hash: tx });
+
+          if (lastBlock.blockNumber >= receipt.blockNumber) {
+            // Check if this was a user op so we can get the internal user op status.
+            const userOpEvents = parseEventLogs({
+              logs: receipt.logs,
+              abi: entryPoint07Abi,
+              eventName: "UserOperationEvent" as const,
+            });
+            if (userOpEvents.length) {
+              debug("tx receipt appears to be a user op, using user op status instead");
+              if (userOpEvents.length > 1) {
+                const issueLink = `https://github.com/latticexyz/mud/issues/new${new URLSearchParams({
+                  title: "waitForTransaction found more than one user op",
+                  body: `MUD version: ${packageJson.version}\nChain ID: ${chainId}\nTransaction: ${tx}\n`,
+                })}`;
+                console.warn(
+                  // eslint-disable-next-line max-len
+                  `Receipt for transaction ${tx} had more than one \`UserOperationEvent\`. This may have unexpected behavior.\n\nIf you encounter this, please open an issue:\n${issueLink}`,
+                );
+              }
+
+              return {
+                status: userOpEvents[0].args.success ? "success" : "reverted",
+                blockNumber: receipt.blockNumber,
+                transactionHash: receipt.transactionHash,
+              } as const;
+            }
+
+            return {
+              status: receipt.status,
+              blockNumber: receipt.blockNumber,
+              transactionHash: receipt.transactionHash,
+            };
           }
         } catch (e) {
           const error = e as GetTransactionReceiptErrorType;
