@@ -1035,6 +1035,23 @@ contract StoreCoreTest is Test, StoreMock {
       uint40(data.thirdDataForUpdate.length),
       data.thirdDataForUpdate
     );
+
+    // startByteIndex + deleteCount must not overflow
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IStoreErrors.Store_IndexOutOfBounds.selector,
+        data.newThirdDataBytes.length - 8,
+        data.newThirdDataBytes.length
+      )
+    );
+    this.spliceDynamicData(
+      data.tableId,
+      data.keyTuple,
+      1,
+      uint40(data.newThirdDataBytes.length), // set start to end of the field
+      uint40(8), // delete 8 bytes (after the start index, so after the size of the field)
+      abi.encodePacked(uint64(1)) // append 8 bytes
+    );
   }
 
   function testAccessEmptyData() public {
