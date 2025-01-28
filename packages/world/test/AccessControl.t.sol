@@ -77,6 +77,7 @@ contract AccessControlTest is Test, GasReporter, StoreMock {
     assertFalse(AccessControl.hasAccess(tableId, caller), "access to the table should have been revoked");
   }
 
+  /// forge-config: default.allow_internal_expect_revert = true
   function testRequireAccess() public {
     ResourceId tableId = _tableId;
 
@@ -97,6 +98,7 @@ contract AccessControlTest is Test, GasReporter, StoreMock {
     endGasReport();
   }
 
+  /// forge-config: default.allow_internal_expect_revert = true
   function testRequireAccessRevert() public {
     ResourceId tableId = _tableId;
 
@@ -116,6 +118,7 @@ contract AccessControlTest is Test, GasReporter, StoreMock {
     endGasReport();
   }
 
+  /// forge-config: default.allow_internal_expect_revert = true
   function testRequireOwnerRevert() public {
     ResourceId tableId = _tableId;
 
