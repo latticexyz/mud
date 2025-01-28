@@ -19,7 +19,7 @@ async function fetchWorlds(chainName: supportedChainName): Promise<Address[]> {
   let worldsApiUrl: string | null = null;
 
   if (indexer.type === "sqlite") {
-    const headersList = headers();
+    const headersList = await headers();
     const host = headersList.get("host") || "";
     const protocol = headersList.get("x-forwarded-proto") || "http";
     const baseUrl = `${protocol}://${host}`;
@@ -46,12 +46,16 @@ async function fetchWorlds(chainName: supportedChainName): Promise<Address[]> {
 }
 
 type Props = {
-  params: {
+  params: Promise<{
     chainName: supportedChainName;
-  };
+  }>;
 };
 
-export default async function WorldsPage({ params: { chainName } }: Props) {
+export default async function WorldsPage(props: Props) {
+  const params = await props.params;
+
+  const { chainName } = params;
+
   const worlds = await fetchWorlds(chainName);
   if (worlds.length === 1) {
     return redirect(`/${chainName}/worlds/${worlds[0]}`);
