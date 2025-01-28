@@ -1,5 +1,6 @@
 import { ReactNode, createContext, useContext, useEffect } from "react";
-import { useChains } from "wagmi";
+import { useConfig } from "wagmi";
+import { getClient } from "wagmi/actions";
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { SyncAdapter, SyncOptions, SyncResult } from "../common";
 
@@ -18,18 +19,22 @@ export function SyncProvider({ chainId, adapter, children, ...syncOptions }: Pro
     throw new Error("A `SyncProvider` cannot be nested inside another.");
   }
 
-  const chains = useChains();
-  const chain = chains.find((c) => c.id === chainId);
-  if (!chain) {
-    throw new Error(`No chain configured for chain ID ${chainId}.`);
-  }
+  const config = useConfig();
 
   const result = useQuery({
     queryKey: ["sync", chainId],
-    queryFn: () =>
-      // TODO: decide if we want to pass in publicClient when not using `internal_validateBlockRange`
-      //       so that the rpc client inherits transports from wagmi config
-      adapter({ chain, ...syncOptions }),
+    queryFn: async () => {
+      const client = getClient(config, { chainId });
+      if (!client) {
+        throw new Error(`Unable to retrieve Viem client for chain ${chainId}.`);
+      }
+
+      if (syncOptions.internal_validateBlockRange) {
+        return await adapter({ ...syncOptions, chain: client.chain });
+      }
+
+      return await adapter({ ...syncOptions, publicClient: client, internal_validateBlockRange: undefined });
+    },
     staleTime: Infinity,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
