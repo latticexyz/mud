@@ -7,6 +7,9 @@ export type CreateWagmiConfigOptions<
   chains extends readonly [Chain, ...Chain[]] = readonly [Chain, ...Chain[]],
   transports extends Record<chains[number]["id"], Transport> = Record<chains[number]["id"], Transport>,
 > = {
+  /**
+   * The chain ID where the world is deployed, for chain-bound, smart contract wallets.
+   */
   readonly chainId: number;
   readonly chains: chains;
   readonly transports: transports;
