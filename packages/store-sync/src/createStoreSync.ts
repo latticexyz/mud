@@ -8,6 +8,7 @@ import {
   SyncOptions,
   SyncResult,
   internalTableIds,
+  schemasTable,
   WaitForTransactionResult,
 } from "./common";
 import { createBlockStream } from "@latticexyz/block-logs-stream";
@@ -38,7 +39,7 @@ import { getSnapshot } from "./getSnapshot";
 import { fromEventSource } from "./fromEventSource";
 import { fetchAndStoreLogs } from "./fetchAndStoreLogs";
 import { isLogsApiResponse } from "./indexer-client/isLogsApiResponse";
-import { toStorageAdatperBlock } from "./indexer-client/toStorageAdapterBlock";
+import { toStorageAdapterBlock } from "./indexer-client/toStorageAdapterBlock";
 import { watchLogs } from "./watchLogs";
 import { getAction } from "viem/utils";
 import { getChainId, getTransactionReceipt } from "viem/actions";
@@ -72,10 +73,17 @@ export async function createStoreSync({
   initialBlockLogs,
   indexerUrl: initialIndexerUrl,
 }: CreateStoreSyncOptions): Promise<SyncResult> {
-  const filters: SyncFilter[] =
+  const filters: SyncFilter[] = (
     initialFilters.length || tableIds.length
       ? [...initialFilters, ...tableIds.map((tableId) => ({ tableId })), ...defaultFilters]
-      : [];
+      : []
+  ).concat([
+    // The schemas table is always added to the filters in order for the storage adapters
+    // to process table registration logs (necessary for initializing the storage).
+    {
+      tableId: schemasTable.tableId,
+    },
+  ]);
 
   const logFilter = filters.length
     ? (log: StoreEventsLog): boolean =>
@@ -246,7 +254,7 @@ export async function createStoreSync({
           if (!isLogsApiResponse(data)) {
             throw new Error("Received unexpected from indexer:" + messageEvent.data);
           }
-          return toStorageAdatperBlock(data);
+          return toStorageAdapterBlock(data);
         }),
         concatMap(async (block) => {
           await storageAdapter(block);
