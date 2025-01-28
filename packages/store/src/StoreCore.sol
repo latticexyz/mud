@@ -1003,8 +1003,8 @@ library StoreCoreInternal {
     }
 
     // The start index can't be larger than the previous length of the field
-    if (startWithinField > previousFieldLength) {
-      revert IStoreErrors.Store_IndexOutOfBounds(previousFieldLength, startWithinField);
+    if (startWithinField > previousFieldLength - deleteCount) {
+      revert IStoreErrors.Store_IndexOutOfBounds(previousFieldLength - deleteCount, startWithinField);
     }
 
     // Update the encoded length
