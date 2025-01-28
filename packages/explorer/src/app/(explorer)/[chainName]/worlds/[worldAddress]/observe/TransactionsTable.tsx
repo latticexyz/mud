@@ -1,13 +1,26 @@
 "use client";
 
 import { BoxIcon, CheckCheckIcon, ReceiptTextIcon, UserPenIcon, XIcon } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
 import { ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Badge } from "../../../../../../components/ui/Badge";
 import { Skeleton } from "../../../../../../components/ui/Skeleton";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../../components/ui/Table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../../../../../../components/ui/Table";
 import { TruncatedHex } from "../../../../../../components/ui/TruncatedHex";
+import { cn } from "../../../../../../utils";
+import { useChain } from "../../../../hooks/useChain";
+import { useTransactionsQuery } from "../../../../queries/useTransactionsQuery";
+import { indexerForChainId } from "../../../../utils/indexerForChainId";
 import { BlockExplorerLink } from "./BlockExplorerLink";
 import { TimeAgo } from "./TimeAgo";
 import { TimingRowHeader } from "./TimingRowHeader";
@@ -16,7 +29,7 @@ import { ObservedTransaction, useMergedTransactions } from "./useMergedTransacti
 
 const columnHelper = createColumnHelper<ObservedTransaction>();
 export const columns = [
-  columnHelper.accessor("receipt.blockNumber", {
+  columnHelper.accessor("blockNumber", {
     header: "Block",
     cell: (row) => {
       const status = row.row.original.status;
@@ -101,8 +114,19 @@ export const columns = [
 ];
 
 export function TransactionsTable() {
+  const { ref, inView } = useInView();
+  const { id: chainId } = useChain();
+  const indexer = indexerForChainId(chainId);
   const transactions = useMergedTransactions();
+  const { data: indexedTransactions, fetchNextPage } = useTransactionsQuery();
+  const loadedInitialTransactions = Array.isArray(indexedTransactions) && indexedTransactions.length > 0;
   const [expanded, setExpanded] = useState<ExpandedState>({});
+
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, inView]);
 
   const table = useReactTable({
     data: transactions,
@@ -145,6 +169,31 @@ export function TransactionsTable() {
           </TableRow>
         )}
       </TableBody>
+
+      {indexer.type === "hosted" && (
+        <TableFooter
+          className={cn("border-t-transparent bg-transparent hover:bg-transparent", {
+            "border-t-muted": loadedInitialTransactions,
+          })}
+        >
+          <TableRow>
+            <TableCell colSpan={columns.length}>
+              <div
+                ref={ref}
+                className={cn(
+                  "hidden items-center justify-center gap-3 py-4 font-mono text-xs font-bold uppercase text-muted-foreground",
+                  {
+                    flex: loadedInitialTransactions,
+                  },
+                )}
+              >
+                <span className="inline-block h-1.5 w-1.5 animate-ping rounded-full bg-muted-foreground" />
+                Loading more transactions...
+              </div>
+            </TableCell>
+          </TableRow>
+        </TableFooter>
+      )}
     </Table>
   );
 }
