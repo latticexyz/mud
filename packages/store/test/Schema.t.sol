@@ -89,6 +89,7 @@ contract SchemaTest is Test, GasReporter {
     assertEq(uint8(schema.atIndex(5)), uint8(SchemaType.UINT32_ARRAY));
   }
 
+  /// forge-config: default.allow_internal_expect_revert = true
   function testInvalidSchemaStaticAfterDynamic() public {
     vm.expectRevert(abi.encodeWithSelector(ISchemaErrors.Schema_StaticTypeAfterDynamicType.selector));
     SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT32_ARRAY, SchemaType.UINT16);
@@ -129,6 +130,7 @@ contract SchemaTest is Test, GasReporter {
     assertEq(encodedSchema.numStaticFields() + encodedSchema.numDynamicFields(), 28);
   }
 
+  /// forge-config: default.allow_internal_expect_revert = true
   function testEncodeTooLong() public {
     SchemaType[] memory schema = new SchemaType[](29);
     schema[0] = SchemaType.UINT256;
@@ -176,6 +178,7 @@ contract SchemaTest is Test, GasReporter {
     assertEq(encodedSchema.numDynamicFields(), 5);
   }
 
+  /// forge-config: default.allow_internal_expect_revert = true
   function testEncodeTooManyDynamic() public {
     SchemaType[] memory schema = new SchemaType[](6);
     schema[0] = SchemaType.UINT32_ARRAY;
@@ -293,6 +296,7 @@ contract SchemaTest is Test, GasReporter {
     endGasReport();
   }
 
+  /// forge-config: default.allow_internal_expect_revert = true
   function testValidateInvalidLength() public {
     Schema encodedSchema = Schema.wrap(keccak256("some invalid schema"));
 
@@ -303,6 +307,7 @@ contract SchemaTest is Test, GasReporter {
     encodedSchema.validate({ allowEmpty: false });
   }
 
+  /// forge-config: default.allow_internal_expect_revert = true
   function testValidateInvalidSchemaStaticAfterDynamic() public {
     SchemaType[] memory schema = new SchemaType[](28);
     schema[0] = SchemaType.UINT256;
