@@ -66,7 +66,7 @@ export type DeployOptions = InferredOptionTypes<typeof deployOptions>;
 export async function runDeploy(opts: DeployOptions): Promise<WorldDeploy> {
   const salt = opts.salt != null ? (isHex(opts.salt) ? opts.salt : stringToHex(opts.salt)) : undefined;
 
-  const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
+  const profile = opts.profile;
 
   const configPath = await resolveConfigPath(opts.configPath);
   const config = (await loadConfig(configPath)) as WorldConfig;

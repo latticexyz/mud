@@ -2,13 +2,13 @@ import "dotenv/config";
 import {
   Hex,
   concatHex,
-  createWalletClient,
   http,
   isHex,
   parseAbiParameters,
   encodeAbiParameters,
   size,
   parseEther,
+  createClient,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { getRpcUrl } from "@latticexyz/common/foundry";
@@ -38,15 +38,9 @@ to use a prefunded Anvil account.`,
   );
 }
 const account = privateKeyToAccount(privateKey);
+const rpcUrl = await getRpcUrl();
 
-// TODO: rpc url flag/env var?
-// TODO: foundry profile flag/env var?
-const rpc = await getRpcUrl();
-
-const client = createWalletClient({
-  transport: http(rpc),
-  account,
-});
+const client = createClient({ account, transport: http(rpcUrl) });
 
 const chainId = await getChainId(client);
 

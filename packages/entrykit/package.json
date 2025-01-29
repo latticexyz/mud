@@ -24,7 +24,7 @@
     }
   },
   "bin": {
-    "deploy-local-prereqs": "./bin/deploy-local-prereqs.js"
+    "entrykit-deploy": "./bin/deploy.js"
   },
   "files": [
     "dist"
