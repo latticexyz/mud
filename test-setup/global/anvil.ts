@@ -12,8 +12,8 @@ export default async () => {
   console.log("building mock game contracts");
   await execa("pnpm", ["build"], {
     cwd: `${__dirname}/../../test/mock-game-contracts`,
-    stdout: "inherit",
-    stderr: "inherit",
+    stdout: ["inherit"],
+    stderr: ["inherit"],
   });
 
   console.log("starting anvil proxy");
