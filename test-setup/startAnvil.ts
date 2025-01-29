@@ -1,8 +1,11 @@
-import { startProxy as startAnvilProxy } from "@viem/anvil";
+import { createServer } from "prool";
+import { anvil } from "prool/instances";
 import { anvilHost, anvilPort } from "./common";
 
+const server = createServer({ instance: anvil({ host: anvilHost, port: anvilPort }) });
+
 console.log("starting anvil proxy");
-await startAnvilProxy({ host: anvilHost, port: anvilPort });
+await server.start();
 
 // ensure anvil dies
 process.on("SIGINT", () => process.exit());
