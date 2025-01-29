@@ -2,6 +2,7 @@ import { Abi, EncodeFunctionDataParameters, encodeFunctionData, type ContractFun
 import { SystemCall } from "./encodeSystemCall";
 import type { AbiParametersToPrimitiveTypes, ExtractAbiFunction } from "abitype";
 import { worldCallAbi } from "./worldCallAbi";
+import { internal_normalizeSystemFunctionName } from "./normalizeSystemFunctionName";
 
 /** Encode system calls to be passed as arguments into `World.batchCall` */
 export function encodeSystemCalls<abi extends Abi, functionName extends ContractFunctionName<abi>>(
@@ -13,7 +14,7 @@ export function encodeSystemCalls<abi extends Abi, functionName extends Contract
       systemId,
       callData: encodeFunctionData<abi, functionName>({
         abi,
-        functionName,
+        functionName: internal_normalizeSystemFunctionName(systemId, functionName),
         args,
       } as EncodeFunctionDataParameters<abi, functionName>),
     })),
