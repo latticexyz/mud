@@ -47,6 +47,7 @@ export async function startIndexer(opts: StartIndexerOptions) {
   const proc = execa("pnpm", opts.indexer === "postgres" ? ["start:postgres"] : ["start:sqlite"], {
     cwd: path.join(__dirname, "..", "..", "..", "..", "packages", "store-indexer"),
     env,
+    forceKillAfterDelay: 5000,
   });
 
   proc.on("error", (error) => {
@@ -71,8 +72,8 @@ export async function startIndexer(opts: StartIndexerOptions) {
     console.log(chalk.magentaBright("[indexer]:", data));
   }
 
-  proc.stdout?.on("data", (data) => onLog(data.toString()));
-  proc.stderr?.on("data", (data) => onLog(data.toString()));
+  proc.stdout.on("data", (data) => onLog(data.toString()));
+  proc.stderr.on("data", (data) => onLog(data.toString()));
 
   async function cleanUp() {
     // attempt to clean up sqlite file
@@ -110,9 +111,7 @@ export async function startIndexer(opts: StartIndexerOptions) {
           return resolve();
         }
         proc.once("exit", resolve);
-        proc.kill("SIGTERM", {
-          forceKillAfterTimeout: 5000,
-        });
+        proc.kill("SIGTERM");
       }),
   };
 }
