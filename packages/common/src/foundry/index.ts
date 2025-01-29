@@ -68,7 +68,13 @@ export async function getOutDirectory(profile?: string): Promise<string> {
  * @returns The rpc url
  */
 export async function getRpcUrl(profile?: string): Promise<string> {
-  return (await getForgeConfig(profile)).eth_rpc_url || "http://127.0.0.1:8545";
+  return (
+    process.env.FOUNDRY_ETH_RPC_URL ||
+    process.env.RPC_HTTP_URL ||
+    process.env.RPC_URL ||
+    (await getForgeConfig(profile)).eth_rpc_url ||
+    "http://127.0.0.1:8545"
+  );
 }
 
 /**

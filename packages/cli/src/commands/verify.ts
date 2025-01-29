@@ -41,7 +41,7 @@ const commandModule: CommandModule<Options, Options> = {
   },
 
   async handler(opts) {
-    const profile = opts.profile ?? process.env.FOUNDRY_PROFILE;
+    const profile = opts.profile;
 
     const configPath = await resolveConfigPath(opts.configPath);
     const rootDir = path.dirname(configPath);
