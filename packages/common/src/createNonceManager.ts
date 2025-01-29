@@ -1,4 +1,4 @@
-import { BaseError, BlockTag, Client, Hex, NonceTooHighError, NonceTooLowError } from "viem";
+import { BlockTag, Client, Hex } from "viem";
 import { debug as parentDebug } from "./debug";
 import { getNonceManagerId } from "./getNonceManagerId";
 import { getTransactionCount } from "viem/actions";
@@ -20,7 +20,7 @@ export type CreateNonceManagerResult = {
   getNonce: () => number;
   nextNonce: () => number;
   resetNonce: () => Promise<void>;
-  shouldResetNonce: (error: unknown) => boolean;
+  shouldResetNonce: (error: Error) => boolean;
   mempoolQueue: PQueue;
 };
 
@@ -75,11 +75,8 @@ export function createNonceManager({
     await ref.noncePromise;
   }
 
-  function shouldResetNonce(error: unknown): boolean {
-    return (
-      error instanceof BaseError &&
-      error.walk((e) => e instanceof NonceTooLowError || e instanceof NonceTooHighError) != null
-    );
+  function shouldResetNonce(error: Error): boolean {
+    return error.name === "NonceTooLowError" || error.name === "NonceTooHighError";
   }
 
   const mempoolQueue = new PQueue({ concurrency: queueConcurrency });
