@@ -6,7 +6,7 @@ import { useBalance } from "wagmi";
 import { useEntryKitConfig } from "../EntryKitConfigProvider";
 import relayChains from "../data/relayChains.json";
 import { useSetBalance } from "./useSetBalance";
-import { minGasBalance } from "./common";
+import { RelayChains, minGasBalance } from "./common";
 import { TruncatedHex } from "../ui/TruncatedHex";
 
 export type Props = {
@@ -24,7 +24,7 @@ export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
 
   // TODO: show error if balance/setBalance fails?
 
-  const relayChain = (relayChains as Partial<Record<number, { bridgeUrl: string }>>)[chain.id];
+  const relayChain = (relayChains as RelayChains)[chain.id];
 
   return (
     <div className="flex flex-col gap-4">
@@ -54,9 +54,7 @@ export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
         ) : relayChain != null ? (
           // TODO: convert this to a <ButtonLink>
           <a
-            href={`${relayChain.bridgeUrl}?${new URLSearchParams({
-              toAddress: sessionAddress,
-            })}`}
+            href={`${relayChain.bridgeUrl}?${new URLSearchParams({ toAddress: sessionAddress })}`}
             target="_blank"
             rel="noopener noreferrer"
           >
