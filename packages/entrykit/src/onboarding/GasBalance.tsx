@@ -24,7 +24,7 @@ export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
 
   // TODO: show error if balance/setBalance fails?
 
-  const relayChainName = (relayChains as Partial<Record<number, string>>)[chain.id];
+  const relayChain = (relayChains as Partial<Record<number, { bridgeUrl: string }>>)[chain.id];
 
   return (
     <div className="flex flex-col gap-4">
@@ -51,10 +51,10 @@ export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
           >
             Top up
           </Button>
-        ) : relayChainName != null ? (
+        ) : relayChain != null ? (
           // TODO: convert this to a <ButtonLink>
           <a
-            href={`https://relay.link/bridge/${relayChainName}?${new URLSearchParams({
+            href={`${relayChain.bridgeUrl}?${new URLSearchParams({
               toAddress: sessionAddress,
             })}`}
             target="_blank"
@@ -74,16 +74,13 @@ export function GasBalance({ isActive, isExpanded, sessionAddress }: Props) {
       {isExpanded ? (
         <>
           <p className="text-sm">Your session&apos;s gas balance is used to pay for onchain computation.</p>
-          {relayChainName == null ? (
-            // TODO: consider replacing this with a "Top up" button that leads to a docs page
-            <p className="text-sm">
-              Send funds to{" "}
-              <span className="font-mono text-white">
-                <TruncatedHex hex={sessionAddress} />
-              </span>{" "}
-              on {chain.name} to top up your session balance.
-            </p>
-          ) : null}
+          <p className="text-sm">
+            Send funds to{" "}
+            <span className="font-mono text-white">
+              <TruncatedHex hex={sessionAddress} />
+            </span>{" "}
+            on {chain.name} to top up your session balance.
+          </p>
         </>
       ) : null}
     </div>

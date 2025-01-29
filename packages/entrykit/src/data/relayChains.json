@@ -1,81 +1,239 @@
 {
-  "1": "ethereum",
-  "10": "optimism",
-  "56": "bnb",
-  "100": "gnosis",
-  "111": "bob",
-  "137": "polygon",
-  "185": "mint",
-  "288": "boba",
-  "324": "zksync",
-  "360": "shape",
-  "480": "world-chain",
-  "690": "redstone",
-  "919": "mode-testnet",
-  "1101": "polygon-zkevm",
-  "1135": "lisk",
-  "1301": "unichain-sepolia",
-  "1329": "sei",
-  "1625": "gravity",
-  "1868": "soneium",
-  "1993": "b3",
-  "1996": "sanko",
-  "2741": "abstract",
-  "2911": "hychain",
-  "4202": "lisk-sepolia",
-  "4321": "echos",
-  "5000": "mantle",
-  "5112": "ham",
-  "7560": "cyber",
-  "7865": "powerloom",
-  "7897": "arena-z",
-  "8333": "B3",
-  "8453": "base",
-  "9897": "arena-z-testnet",
-  "11011": "shape-sepolia",
-  "11124": "abstract",
-  "13746": "game7-testnet",
-  "17000": "holesky",
-  "17069": "garnet",
-  "17071": "onchain-points",
-  "33139": "apechain",
-  "33979": "funki",
-  "34443": "mode",
-  "42161": "arbitrum",
-  "42170": "arbitrum-nova",
-  "43114": "avalanche",
-  "55244": "superposition",
-  "57073": "ink",
-  "59144": "linea",
-  "60808": "bob",
-  "70700": "apex",
-  "70701": "boss",
-  "70800": "apex-testnet",
-  "70805": "cloud",
-  "80002": "amoy",
-  "81457": "blast",
-  "84532": "base-sepolia",
-  "167009": "hekla",
-  "421614": "arbitrum-sepolia",
-  "534352": "scroll",
-  "543210": "zero-network",
-  "660279": "xai",
-  "911867": "odyssey",
-  "984122": "forma",
-  "1118190": "eclipse-testnet",
-  "3397901": "funki-testnet",
-  "4457845": "zero-sepolia",
-  "7777777": "zora",
-  "8253038": "bitcoin",
-  "9092725": "bitcoin-testnet4",
-  "9286185": "eclipse",
-  "11155111": "sepolia",
-  "11155420": "op-sepolia",
-  "666666666": "degen",
-  "792703809": "solana",
-  "888888888": "ancient8",
-  "999999999": "zora-sepolia",
-  "1380012617": "rari",
-  "1936682084": "solana-devnet",
-  "88153591557": "arbitrum-blueberry"
+  "1": {
+    "bridgeUrl": "https://relay.link/bridge/ethereum"
+  },
+  "10": {
+    "bridgeUrl": "https://relay.link/bridge/optimism"
+  },
+  "56": {
+    "bridgeUrl": "https://relay.link/bridge/bnb"
+  },
+  "100": {
+    "bridgeUrl": "https://relay.link/bridge/gnosis"
+  },
+  "111": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/bob"
+  },
+  "137": {
+    "bridgeUrl": "https://relay.link/bridge/polygon"
+  },
+  "185": {
+    "bridgeUrl": "https://relay.link/bridge/mint"
+  },
+  "288": {
+    "bridgeUrl": "https://relay.link/bridge/boba"
+  },
+  "324": {
+    "bridgeUrl": "https://relay.link/bridge/zksync"
+  },
+  "360": {
+    "bridgeUrl": "https://relay.link/bridge/shape"
+  },
+  "480": {
+    "bridgeUrl": "https://relay.link/bridge/world-chain"
+  },
+  "690": {
+    "bridgeUrl": "https://relay.link/bridge/redstone"
+  },
+  "919": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/mode-testnet"
+  },
+  "1101": {
+    "bridgeUrl": "https://relay.link/bridge/polygon-zkevm"
+  },
+  "1135": {
+    "bridgeUrl": "https://relay.link/bridge/lisk"
+  },
+  "1301": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/unichain-sepolia"
+  },
+  "1329": {
+    "bridgeUrl": "https://relay.link/bridge/sei"
+  },
+  "1625": {
+    "bridgeUrl": "https://relay.link/bridge/gravity"
+  },
+  "1868": {
+    "bridgeUrl": "https://relay.link/bridge/soneium"
+  },
+  "1993": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/b3"
+  },
+  "1996": {
+    "bridgeUrl": "https://relay.link/bridge/sanko"
+  },
+  "2741": {
+    "bridgeUrl": "https://relay.link/bridge/abstract"
+  },
+  "2911": {
+    "bridgeUrl": "https://relay.link/bridge/hychain"
+  },
+  "4202": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/lisk-sepolia"
+  },
+  "4321": {
+    "bridgeUrl": "https://relay.link/bridge/echos"
+  },
+  "5000": {
+    "bridgeUrl": "https://relay.link/bridge/mantle"
+  },
+  "5112": {
+    "bridgeUrl": "https://relay.link/bridge/ham"
+  },
+  "7560": {
+    "bridgeUrl": "https://relay.link/bridge/cyber"
+  },
+  "7865": {
+    "bridgeUrl": "https://relay.link/bridge/powerloom"
+  },
+  "7897": {
+    "bridgeUrl": "https://relay.link/bridge/arena-z"
+  },
+  "8333": {
+    "bridgeUrl": "https://relay.link/bridge/B3"
+  },
+  "8453": {
+    "bridgeUrl": "https://relay.link/bridge/base"
+  },
+  "9897": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/arena-z-testnet"
+  },
+  "11011": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/shape-sepolia"
+  },
+  "11124": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/abstract"
+  },
+  "13746": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/game7-testnet"
+  },
+  "17000": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/holesky"
+  },
+  "17069": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/garnet"
+  },
+  "17071": {
+    "bridgeUrl": "https://relay.link/bridge/onchain-points"
+  },
+  "33139": {
+    "bridgeUrl": "https://relay.link/bridge/apechain"
+  },
+  "33979": {
+    "bridgeUrl": "https://relay.link/bridge/funki"
+  },
+  "34443": {
+    "bridgeUrl": "https://relay.link/bridge/mode"
+  },
+  "42161": {
+    "bridgeUrl": "https://relay.link/bridge/arbitrum"
+  },
+  "42170": {
+    "bridgeUrl": "https://relay.link/bridge/arbitrum-nova"
+  },
+  "43114": {
+    "bridgeUrl": "https://relay.link/bridge/avalanche"
+  },
+  "55244": {
+    "bridgeUrl": "https://relay.link/bridge/superposition"
+  },
+  "57073": {
+    "bridgeUrl": "https://relay.link/bridge/ink"
+  },
+  "59144": {
+    "bridgeUrl": "https://relay.link/bridge/linea"
+  },
+  "60808": {
+    "bridgeUrl": "https://relay.link/bridge/bob"
+  },
+  "70700": {
+    "bridgeUrl": "https://relay.link/bridge/apex"
+  },
+  "70701": {
+    "bridgeUrl": "https://relay.link/bridge/boss"
+  },
+  "70800": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/apex-testnet"
+  },
+  "70805": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/cloud"
+  },
+  "80002": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/amoy"
+  },
+  "81457": {
+    "bridgeUrl": "https://relay.link/bridge/blast"
+  },
+  "84532": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/base-sepolia"
+  },
+  "167009": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/hekla"
+  },
+  "421614": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/arbitrum-sepolia"
+  },
+  "534352": {
+    "bridgeUrl": "https://relay.link/bridge/scroll"
+  },
+  "543210": {
+    "bridgeUrl": "https://relay.link/bridge/zero-network"
+  },
+  "660279": {
+    "bridgeUrl": "https://relay.link/bridge/xai"
+  },
+  "911867": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/odyssey"
+  },
+  "984122": {
+    "bridgeUrl": "https://relay.link/bridge/forma"
+  },
+  "1118190": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/eclipse-testnet"
+  },
+  "3397901": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/funki-testnet"
+  },
+  "4457845": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/zero-sepolia"
+  },
+  "7777777": {
+    "bridgeUrl": "https://relay.link/bridge/zora"
+  },
+  "8253038": {
+    "bridgeUrl": "https://relay.link/bridge/bitcoin"
+  },
+  "9092725": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/bitcoin-testnet4"
+  },
+  "9286185": {
+    "bridgeUrl": "https://relay.link/bridge/eclipse"
+  },
+  "11155111": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/sepolia"
+  },
+  "11155420": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/op-sepolia"
+  },
+  "666666666": {
+    "bridgeUrl": "https://relay.link/bridge/degen"
+  },
+  "792703809": {
+    "bridgeUrl": "https://relay.link/bridge/solana"
+  },
+  "888888888": {
+    "bridgeUrl": "https://relay.link/bridge/ancient8"
+  },
+  "999999999": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/zora-sepolia"
+  },
+  "1380012617": {
+    "bridgeUrl": "https://relay.link/bridge/rari"
+  },
+  "1936682084": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/solana-devnet"
+  },
+  "88153591557": {
+    "bridgeUrl": "https://testnets.relay.link/bridge/arbitrum-blueberry"
+  }
 }
