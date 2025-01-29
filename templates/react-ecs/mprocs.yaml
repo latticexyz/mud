@@ -8,7 +8,7 @@ procs:
     shell: pnpm mud dev-contracts --rpc http://127.0.0.1:8545
   deploy-prereqs:
     cwd: packages/contracts
-    shell: pnpm deploy-local-prereqs
+    shell: pnpm entrykit-deploy
     env:
       DEBUG: "mud:*"
       # Anvil default account (0x70997970C51812dc3A010C7d01b50e0d17dc79C8)
