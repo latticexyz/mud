@@ -80,12 +80,12 @@ export async function forge(
   args: string[],
   options?: { profile?: string; silent?: boolean; env?: NodeJS.ProcessEnv; cwd?: string },
 ): Promise<void> {
-  const execOptions: Options<string> = {
+  const execOptions = {
     env: { FOUNDRY_PROFILE: options?.profile, ...options?.env },
     stdout: "inherit",
     stderr: "pipe",
     cwd: options?.cwd,
-  };
+  } satisfies Options;
 
   await (options?.silent ? execa("forge", args, execOptions) : execLog("forge", args, execOptions));
 }
@@ -117,11 +117,17 @@ export async function anvil(args: string[]): Promise<string> {
  * @param args The arguments to pass to the command
  * @returns The stdout of the command
  */
-async function execLog(command: string, args: string[], options?: Options<string>): Promise<string> {
+async function execLog(command: string, args: string[], options?: Options): Promise<string> {
   const commandString = `${command} ${args.join(" ")}`;
   try {
     console.log(`running "${commandString}"`);
-    const { stdout } = await execa(command, args, { stdout: "pipe", stderr: "pipe", ...options });
+    const { stdout } = await execa(command, args, {
+      ...options,
+      stdout: "pipe",
+      stderr: "pipe",
+      lines: false,
+      encoding: "utf8",
+    });
     return stdout;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
