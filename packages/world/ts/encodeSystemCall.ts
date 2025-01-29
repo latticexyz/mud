@@ -4,8 +4,17 @@ import { worldCallAbi } from "./worldCallAbi";
 import { internal_normalizeSystemFunctionName } from "./normalizeSystemFunctionName";
 
 export type SystemCall<abi extends Abi, functionName extends ContractFunctionName<abi>> = {
+  /**
+   * System ABI
+   */
   readonly abi: abi;
+  /**
+   * System's resource ID
+   */
   readonly systemId: Hex;
+  /**
+   * System function name to call
+   */
   readonly functionName: functionName;
 } & Pick<EncodeFunctionDataParameters<abi, functionName>, "args">;
 
