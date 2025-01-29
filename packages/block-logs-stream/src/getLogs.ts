@@ -33,13 +33,13 @@ export async function getLogs(opts: GetLogsOptions): Promise<Log[]> {
     ],
   });
 
-  if (!opts.internal_validateBlockRange) {
+  if (!opts.internal_clientOptions) {
     const logs = await getRpcClient(opts).request(logsRequest);
     return logs.map((log) => formatLog(log));
   }
 
   // TODO: websocket support?
-  const [url] = opts.internal_chain.rpcUrls.default.http;
+  const [url] = opts.internal_clientOptions.chain.rpcUrls.default.http;
   const rpcClient = getHttpRpcClient(url);
 
   const blockRequest = defineRpcRequest({

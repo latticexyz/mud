@@ -2,8 +2,6 @@
 import "dotenv/config";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
-import { createPublicClient, fallback, webSocket, http, Transport } from "viem";
-import { isDefined } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
@@ -13,6 +11,9 @@ import { indexerEnvSchema, parseEnv } from "./parseEnv";
 import { sentry } from "../koa-middleware/sentry";
 import { healthcheck } from "../koa-middleware/healthcheck";
 import { helloWorld } from "../koa-middleware/helloWorld";
+import { getClientOptions } from "./getClientOptions";
+import { getChainId } from "viem/actions";
+import { getRpcClient } from "@latticexyz/block-logs-stream";
 
 const env = parseEnv(
   z.intersection(
@@ -26,22 +27,12 @@ const env = parseEnv(
   ),
 );
 
-const transports: Transport[] = [
-  // prefer WS when specified
-  env.RPC_WS_URL ? webSocket(env.RPC_WS_URL) : undefined,
-  // otherwise use or fallback to HTTP
-  env.RPC_HTTP_URL ? http(env.RPC_HTTP_URL) : undefined,
-].filter(isDefined);
+const clientOptions = await getClientOptions(env);
 
-const publicClient = createPublicClient({
-  transport: fallback(transports),
-  pollingInterval: env.POLLING_INTERVAL,
-});
-
-const chainId = await publicClient.getChainId();
+const chainId = await getChainId(getRpcClient(clientOptions));
 const database = drizzle(postgres(env.DATABASE_URL, { prepare: false }));
 
-const { storageAdapter, tables } = await createStorageAdapter({ database, publicClient });
+const { storageAdapter, tables } = await createStorageAdapter({ ...clientOptions, database });
 
 let startBlock = env.START_BLOCK;
 
@@ -67,8 +58,8 @@ try {
 }
 
 const { latestBlockNumber$, storedBlockLogs$ } = await createStoreSync({
+  ...clientOptions,
   storageAdapter,
-  publicClient,
   followBlockTag: env.FOLLOW_BLOCK_TAG,
   startBlock,
   maxBlockRange: env.MAX_BLOCK_RANGE,

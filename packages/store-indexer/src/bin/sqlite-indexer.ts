@@ -5,14 +5,12 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import Database from "better-sqlite3";
-import { createPublicClient, fallback, webSocket, http, Transport } from "viem";
 import Koa from "koa";
 import cors from "@koa/cors";
 import { createKoaMiddleware } from "trpc-koa-adapter";
 import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { chainState, schemaVersion, syncToSqlite } from "@latticexyz/store-sync/sqlite";
 import { createQueryAdapter } from "../sqlite/createQueryAdapter";
-import { isDefined } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
 import { frontendEnvSchema, indexerEnvSchema, parseEnv } from "./parseEnv";
 import { healthcheck } from "../koa-middleware/healthcheck";
@@ -20,6 +18,9 @@ import { helloWorld } from "../koa-middleware/helloWorld";
 import { apiRoutes } from "../sqlite/apiRoutes";
 import { sentry } from "../koa-middleware/sentry";
 import { metrics } from "../koa-middleware/metrics";
+import { getClientOptions } from "./getClientOptions";
+import { getRpcClient } from "@latticexyz/block-logs-stream";
+import { getBlock, getChainId } from "viem/actions";
 
 const env = parseEnv(
   z.intersection(
@@ -31,19 +32,9 @@ const env = parseEnv(
   ),
 );
 
-const transports: Transport[] = [
-  // prefer WS when specified
-  env.RPC_WS_URL ? webSocket(env.RPC_WS_URL) : undefined,
-  // otherwise use or fallback to HTTP
-  env.RPC_HTTP_URL ? http(env.RPC_HTTP_URL) : undefined,
-].filter(isDefined);
+const clientOptions = await getClientOptions(env);
 
-const publicClient = createPublicClient({
-  transport: fallback(transports),
-  pollingInterval: env.POLLING_INTERVAL,
-});
-
-const chainId = await publicClient.getChainId();
+const chainId = await getChainId(getRpcClient(clientOptions));
 const database = drizzle(new Database(env.SQLITE_FILENAME));
 
 let startBlock = env.START_BLOCK;
@@ -76,7 +67,7 @@ async function getLatestStoredBlockNumber(): Promise<bigint | undefined> {
 async function getDistanceFromFollowBlock(): Promise<bigint> {
   const [latestStoredBlockNumber, latestFollowBlock] = await Promise.all([
     getLatestStoredBlockNumber(),
-    publicClient.getBlock({ blockTag: env.FOLLOW_BLOCK_TAG }),
+    getBlock(getRpcClient(clientOptions), { blockTag: env.FOLLOW_BLOCK_TAG }),
   ]);
   return latestFollowBlock.number - (latestStoredBlockNumber ?? -1n);
 }
@@ -101,8 +92,8 @@ if (currentChainState) {
 }
 
 const { latestBlockNumber$, storedBlockLogs$ } = await syncToSqlite({
+  ...clientOptions,
   database,
-  publicClient,
   followBlockTag: env.FOLLOW_BLOCK_TAG,
   startBlock,
   maxBlockRange: env.MAX_BLOCK_RANGE,
