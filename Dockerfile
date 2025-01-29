@@ -38,7 +38,7 @@ COPY . /app
 WORKDIR /app
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN NODE_OPTIONS=--max-old-space-size=4096 pnpm run -r build
+RUN NODE_OPTIONS=--max-old-space-size=4096 pnpm run build --force
 
 FROM mud AS store-indexer
 WORKDIR /app/packages/store-indexer

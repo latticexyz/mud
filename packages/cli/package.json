@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/cli",
-  "version": "2.2.15",
+  "version": "2.2.16",
   "description": "Command line interface for mud",
   "repository": {
     "type": "git",
@@ -52,6 +52,7 @@
     "@latticexyz/store-sync": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
+    "@latticexyz/world-module-callwithsignature": "workspace:*",
     "@latticexyz/world-module-metadata": "workspace:*",
     "abitype": "1.0.6",
     "asn1.js": "^5.4.1",
@@ -69,7 +70,6 @@
     "rxjs": "7.5.5",
     "throttle-debounce": "^5.0.0",
     "toposort": "^2.0.2",
-    "typescript": "5.4.2",
     "viem": "2.21.19",
     "yargs": "^17.7.1",
     "zod": "3.23.8",
@@ -84,7 +84,6 @@
     "@types/yargs": "^17.0.10",
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
-    "tsup": "^6.7.0",
     "vitest": "0.34.6"
   }
 }

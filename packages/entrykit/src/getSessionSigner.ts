@@ -1,16 +1,19 @@
-import { Address } from "viem";
+import { Address, isHex } from "viem";
 import { store } from "./store";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
 export function getSessionSigner(userAddress: Address) {
+  const label = userAddress.toLowerCase() as Address;
   const sessionSignerPrivateKey =
-    store.getState().signers[userAddress] ??
+    store.getState().signers[label] ??
     (() => {
-      const privateKey = generatePrivateKey();
+      // attempt to reuse previous AccountKit session
+      const deprecatedPrivateKey = localStorage.getItem(`mud:appSigner:privateKey:${userAddress.toLowerCase()}`);
+      const privateKey = isHex(deprecatedPrivateKey) ? deprecatedPrivateKey : generatePrivateKey();
       store.setState((state) => ({
         signers: {
           ...state.signers,
-          [userAddress]: privateKey,
+          [label]: privateKey,
         },
       }));
       return privateKey;

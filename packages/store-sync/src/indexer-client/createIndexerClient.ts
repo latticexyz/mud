@@ -3,7 +3,7 @@ import { input } from "./input";
 import { StorageAdapterBlock } from "../common";
 import { Result } from "@latticexyz/common";
 import { isLogsApiResponse } from "./isLogsApiResponse";
-import { toStorageAdatperBlock } from "./toStorageAdapterBlock";
+import { toStorageAdapterBlock } from "./toStorageAdapterBlock";
 
 export type CreateIndexerClientOptions = {
   /**
@@ -36,7 +36,7 @@ export function createIndexerClient({ url }: CreateIndexerClientOptions): Indexe
           return { error: result };
         }
 
-        return { ok: toStorageAdatperBlock(result) };
+        return { ok: toStorageAdapterBlock(result) };
       } catch (error) {
         return { error };
       }

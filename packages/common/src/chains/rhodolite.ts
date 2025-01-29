@@ -2,7 +2,7 @@ import { chainConfig } from "viem/op-stack";
 import { MUDChain } from "./types";
 import { Chain } from "viem";
 
-const sourceId = 17001;
+const sourceId = 17000;
 
 const defaultRpcUrls = {
   http: ["https://rpc.rhodolitechain.com"],
@@ -24,9 +24,13 @@ export const rhodolite = {
   },
   contracts: {
     ...chainConfig.contracts,
+    l1StandardBridge: {
+      [sourceId]: {
+        address: "0x6487446e0B9FAEa90F6a9772A6448cFa780E30F9",
+      },
+    },
     quarryPaymaster: {
-      address: "0x61f22c3827d90c390e0e2aaf220971524ac0a68d",
-      blockCreated: 11262,
+      address: "0x7ca1b85aca23fccf2fbac14c02b5e8a6432639b9",
     },
   },
   blockExplorers: {

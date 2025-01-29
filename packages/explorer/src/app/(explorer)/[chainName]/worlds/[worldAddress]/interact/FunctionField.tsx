@@ -4,7 +4,7 @@ import { Coins, ExternalLinkIcon, Eye, LoaderIcon, Send } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
-import { Abi, AbiFunction, Address, Hex, decodeEventLog } from "viem";
+import { Abi, AbiFunction, Address, Hex, decodeEventLog, stringify } from "viem";
 import { useAccount, useConfig } from "wagmi";
 import { readContract, waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { z } from "zod";
@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { CopyButton } from "../../../../../../components/CopyButton";
 import { Button } from "../../../../../../components/ui/Button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../../../../../components/ui/Form";
 import { Input } from "../../../../../../components/ui/Input";
@@ -79,7 +80,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
           chainId,
         });
 
-        setResult(JSON.stringify(result, null, 2));
+        setResult(stringify(result, null, 2));
       } else {
         toastId = toast.loading("Transaction submitted");
         const txHash = await writeContract(wagmiConfig, {
@@ -167,9 +168,14 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
         </form>
       </Form>
 
-      {result && <pre className="text-md mt-4 rounded border p-3 text-sm">{result}</pre>}
+      {result && (
+        <pre className="text-md relative mt-4 rounded border p-3 text-sm">
+          {result}
+          <CopyButton value={result} className="absolute right-1.5 top-1.5" />
+        </pre>
+      )}
       {events && (
-        <div className="mt-4 flex-grow break-all border border-white/20 p-2 pb-3">
+        <div className="relative mt-4 flex-grow break-all rounded border border-white/20 p-2 pb-3">
           <ul>
             {events.map((event, idx) => (
               <li key={idx}>
@@ -188,6 +194,8 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
               </li>
             ))}
           </ul>
+
+          <CopyButton value={stringify(events, null, 2)} className="absolute right-1.5 top-1.5" />
         </div>
       )}
       {txUrl && (

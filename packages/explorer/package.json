@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/explorer",
-  "version": "2.2.15",
+  "version": "2.2.16",
   "description": "World Explorer is a tool for visually exploring and manipulating the state of worlds",
   "type": "module",
   "exports": {
@@ -54,6 +54,7 @@
     "@radix-ui/react-select": "^2.1.1",
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
+    "@radix-ui/react-tooltip": "^1.1.6",
     "@radix-ui/themes": "^3.0.5",
     "@rainbow-me/rainbowkit": "^2.1.5",
     "@tanstack/react-query": "^5.51.3",
@@ -75,7 +76,6 @@
     "sonner": "^1.5.0",
     "sql-autocomplete": "^1.1.1",
     "tailwind-merge": "^1.12.0",
-    "tsup": "^6.7.0",
     "wagmi": "2.12.11",
     "yargs": "^17.7.1",
     "zod": "3.23.8",

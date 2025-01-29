@@ -11,8 +11,10 @@ Note that this is not required if you are going to use Lattice chains, [redstone
 Use the vanilla template.
 
 ```sh copy
-pnpm create mud@latest tutorial --template vanilla
+pnpm create mud@latest --name tutorial --template vanilla
 cd tutorial
+pnpm install
+pnpm dev
 ```
 
 You can also use the `react-ecs` or `threejs` templates without any changes to the tutorial.

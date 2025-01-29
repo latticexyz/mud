@@ -27,5 +27,12 @@
   "engines": {
     "node": "^20",
     "pnpm": "^9"
+  },
+  "pnpm": {
+    "overrides": {
+      "@tanstack/react-query": "link:../../packages/entrykit/node_modules/@tanstack/react-query",
+      "@types/react": "link:../../packages/entrykit/node_modules/@types/react",
+      "wagmi": "link:../../packages/entrykit/node_modules/wagmi"
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { Address, Block, Client, Hex, Log, TransactionReceipt } from "viem";
+import { Address, Block, Hex, Log, TransactionReceipt } from "viem";
 import { StoreEventsAbiItem, StoreEventsAbi } from "@latticexyz/store";
 import { Observable } from "rxjs";
 import { UnionPick } from "@latticexyz/common/type-utils";
@@ -13,6 +13,7 @@ import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { Table as ConfigTable, Schema } from "@latticexyz/config";
 import { configToTables } from "./configToTables";
+import { GetRpcClientOptions } from "@latticexyz/block-logs-stream";
 
 export const mudTables = {
   ...configToTables(storeConfig),
@@ -65,13 +66,7 @@ export type SyncFilter = {
   key1?: Hex;
 };
 
-export type SyncOptions = {
-  /**
-   * [viem `Client`][0] used for fetching logs from the RPC.
-   *
-   * [0]: https://viem.sh/docs/clients/custom
-   */
-  publicClient: Client;
+export type SyncOptions = GetRpcClientOptions & {
   /**
    * MUD Store/World contract address
    */
@@ -97,7 +92,7 @@ export type SyncOptions = {
    */
   maxBlockRange?: bigint;
   /**
-   * Optional MUD tRPC indexer URL to fetch initial state from.
+   * Optional MUD indexer URL to fetch initial state from.
    */
   indexerUrl?: string | false;
   /**

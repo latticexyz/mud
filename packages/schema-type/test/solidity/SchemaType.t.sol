@@ -50,6 +50,7 @@ contract SchemaTypeTest is Test, GasReporter {
     assertEq(SchemaType(SCHEMA_TYPE_LENGTH - 1).getStaticByteLength(), 0);
   }
 
+  /// forge-config: default.allow_internal_expect_revert = true
   function testSchemaTypeOverMaxLength() public {
     vm.expectRevert(stdError.enumConversionError);
     SchemaType(SCHEMA_TYPE_LENGTH).getStaticByteLength();

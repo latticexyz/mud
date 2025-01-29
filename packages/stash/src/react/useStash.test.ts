@@ -15,18 +15,11 @@ describe("useStash", () => {
     vi.useFakeTimers({ toFake: ["queueMicrotask"] });
 
     const config = defineStore({
-      enums: {
-        Direction: ["North", "East", "South", "West"],
-      },
       namespaces: {
         game: {
           tables: {
             Position: {
               schema: { player: "address", x: "uint32", y: "uint32" },
-              key: ["player"],
-            },
-            Heading: {
-              schema: { player: "address", heading: "Direction" },
               key: ["player"],
             },
           },

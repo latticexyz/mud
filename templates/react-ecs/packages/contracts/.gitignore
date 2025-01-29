@@ -1,9 +1,13 @@
-out/
-cache/
-node_modules/
-bindings/
-artifacts/
-broadcast/
+# foundry
+cache
+broadcast
+out/*
+!out/IWorld.sol
+out/IWorld.sol/*
+!out/IWorld.sol/IWorld.abi.json
+!out/IWorld.sol/IWorld.abi.d.json.ts
 
-# Ignore MUD deploy artifacts
-deploys/**/*.json
+# mud
+.mud
+deploys
+*.db*

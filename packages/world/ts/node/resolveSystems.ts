@@ -20,7 +20,8 @@ export async function resolveSystems({
   // validate every system in config refers to an existing system contract
   const configSystems = Object.values(config.namespaces).flatMap((namespace) => Object.values(namespace.systems));
   const missingSystems = configSystems.filter(
-    (system) => !systemContracts.some((s) => s.namespaceLabel === system.namespace && s.systemLabel === system.label),
+    (system) =>
+      !systemContracts.some((s) => s.namespaceLabel === system.namespaceLabel && s.systemLabel === system.label),
   );
   if (missingSystems.length > 0) {
     throw new Error(

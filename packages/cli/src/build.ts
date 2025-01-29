@@ -15,11 +15,7 @@ type BuildOptions = {
   config: WorldConfig;
 };
 
-export async function build({
-  rootDir,
-  config,
-  foundryProfile = process.env.FOUNDRY_PROFILE,
-}: BuildOptions): Promise<void> {
+export async function build({ rootDir, config, foundryProfile }: BuildOptions): Promise<void> {
   await Promise.all([tablegen({ rootDir, config }), worldgen({ rootDir, config })]);
   await forge(["build"], { profile: foundryProfile });
   await buildSystemsManifest({ rootDir, config });

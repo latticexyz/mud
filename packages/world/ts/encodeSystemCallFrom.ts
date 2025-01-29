@@ -2,6 +2,7 @@ import { Abi, EncodeFunctionDataParameters, encodeFunctionData, Address, type Co
 import type { AbiParametersToPrimitiveTypes, ExtractAbiFunction } from "abitype";
 import { SystemCall } from "./encodeSystemCall";
 import { worldCallAbi } from "./worldCallAbi";
+import { internal_normalizeSystemFunctionName } from "./normalizeSystemFunctionName";
 
 export type SystemCallFrom<abi extends Abi, functionName extends ContractFunctionName<abi>> = SystemCall<
   abi,
@@ -25,8 +26,8 @@ export function encodeSystemCallFrom<abi extends Abi, functionName extends Contr
     systemId,
     encodeFunctionData<abi, functionName>({
       abi,
-      functionName,
+      functionName: internal_normalizeSystemFunctionName(systemId, functionName),
       args,
-    } as unknown as EncodeFunctionDataParameters<abi, functionName>),
+    } as EncodeFunctionDataParameters<abi, functionName>),
   ];
 }

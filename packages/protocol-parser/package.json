@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/protocol-parser",
-  "version": "2.2.15",
+  "version": "2.2.16",
   "description": "Parser utilities for the MUD protocol",
   "repository": {
     "type": "git",
@@ -43,7 +43,6 @@
     "abitype": "1.0.6"
   },
   "devDependencies": {
-    "tsup": "^6.7.0",
     "viem": "2.21.19",
     "vitest": "0.34.6"
   },

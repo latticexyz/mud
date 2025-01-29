@@ -4,9 +4,14 @@ node_modules
 *.md
 dist
 **/dist
-**/out/
 **/cache/
 **/bindings/
 **/artifacts/
 **/broadcast/
 **/deploys/
+
+**/out/*
+!**/out/IWorld.sol
+**/out/IWorld.sol/*
+!**/out/IWorld.sol/IWorld.abi.json
+!**/out/IWorld.sol/IWorld.abi.d.json.ts
