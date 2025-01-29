@@ -5,9 +5,9 @@ import { SyncAdapter } from "../common";
 import { createStoreSync } from "../createStoreSync";
 import { SyncProgress } from "./common";
 
-export type CreateSyncAdapterOptions = { stash: Stash };
+export type CreateSyncAdapterOptions = { stash: Stash, alwaysUpdateSyncProgress?: boolean };
 
-export function createSyncAdapter({ stash }: CreateSyncAdapterOptions): SyncAdapter {
+export function createSyncAdapter({ stash, alwaysUpdateSyncProgress = false }: CreateSyncAdapterOptions): SyncAdapter {
   return (opts) => {
     // TODO: clear stash?
 
@@ -20,8 +20,8 @@ export function createSyncAdapter({ stash }: CreateSyncAdapterOptions): SyncAdap
       storageAdapter,
       onProgress: (nextValue) => {
         const currentValue = getRecord({ stash, table: SyncProgress, key: {} });
-        // update sync progress until we're caught up and live
-        if (currentValue?.step !== SyncStep.LIVE) {
+        // update sync progress until we're caught up and live (unless alwaysUpdateSyncProgress is set)
+        if (alwaysUpdateSyncProgress || currentValue?.step !== SyncStep.LIVE) {
           setRecord({ stash, table: SyncProgress, key: {}, value: nextValue });
         }
       },
