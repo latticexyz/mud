@@ -5,11 +5,11 @@
 
 Added an experimental option to help sync from load balanced RPCs, where nodes may be slightly out of sync, causing data inconsistencies while fetching logs.
 
-To enable this, replace `publicClient: Client` in your sync method (e.g. `syncToStash`) with `internal_chain: Chain` and `internal_validateBlockRange: true`. For `<SyncProvider>`, only the `internal_validateBlockRange` prop is needed.
+To enable this, replace `publicClient: Client` in your sync method (e.g. `syncToStash`) with `internal_clientOptions: { chain: Chain, validateBlockRange: true }`. For `<SyncProvider>`, only a `internal_validateBlockRange` prop is needed.
 
 ```diff
 -syncToStash({ publicClient, ... });
-+syncToStash({ internal_chain: chain, internal_validateBlockRange: true, ... });
++syncToStash({ internal_clientOptions: { chain, validateBlockRange: true }, ... });
 ```
 
 ```diff
