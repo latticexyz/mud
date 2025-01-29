@@ -7,10 +7,7 @@ import { SyncProgress } from "./common";
 
 export type CreateSyncAdapterOptions = { stash: Stash; alwaysUpdateSyncProgress?: boolean };
 
-export function createSyncAdapter({
-  stash,
-  alwaysUpdateSyncProgress = false,
-}: CreateSyncAdapterOptions): SyncAdapter {
+export function createSyncAdapter({ stash, alwaysUpdateSyncProgress = false }: CreateSyncAdapterOptions): SyncAdapter {
   return (opts) => {
     // TODO: clear stash?
 
