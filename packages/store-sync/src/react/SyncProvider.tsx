@@ -7,7 +7,7 @@ import { SyncAdapter, SyncOptions, SyncResult } from "../common";
 /** @internal */
 export const SyncContext = createContext<UseQueryResult<SyncResult> | null>(null);
 
-export type Props = Omit<SyncOptions, "publicClient"> & {
+export type Props = Omit<SyncOptions, "publicClient" | "internal_chain"> & {
   chainId: number;
   adapter: SyncAdapter;
   children: ReactNode;
@@ -28,7 +28,12 @@ export function SyncProvider({ chainId, adapter, children, ...syncOptions }: Pro
       if (!client) {
         throw new Error(`Unable to retrieve Viem client for chain ${chainId}.`);
       }
-      return await adapter({ publicClient: client, ...syncOptions });
+
+      if (syncOptions.internal_validateBlockRange) {
+        return await adapter({ ...syncOptions, internal_chain: client.chain });
+      }
+
+      return await adapter({ ...syncOptions, publicClient: client, internal_validateBlockRange: undefined });
     },
     staleTime: Infinity,
     refetchOnMount: false,
