@@ -5,6 +5,7 @@ import { cleanDatabase } from "@latticexyz/store-sync/postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import path from "node:path";
+import { exitCode } from "node:process";
 
 type IndexerOptions =
   | {
@@ -48,6 +49,7 @@ export async function startIndexer(opts: StartIndexerOptions) {
     cwd: path.join(__dirname, "..", "..", "..", "..", "packages", "store-indexer"),
     env,
     forceKillAfterDelay: 5000,
+    exitCode: 0,
   });
 
   proc.on("error", (error) => {
@@ -110,6 +112,7 @@ export async function startIndexer(opts: StartIndexerOptions) {
         if (exited) {
           return resolve();
         }
+        console.log("killing indexer");
         proc.once("exit", resolve);
         proc.kill("SIGTERM");
       }),
