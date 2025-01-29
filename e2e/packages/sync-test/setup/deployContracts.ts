@@ -1,3 +1,4 @@
+// @vitest-environment node
 import chalk from "chalk";
 import { execa } from "execa";
 
