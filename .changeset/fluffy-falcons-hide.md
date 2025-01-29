@@ -16,3 +16,5 @@ To enable this, replace `publicClient: Client` in your sync method (e.g. `syncTo
 -<SyncProvider adapter={createSyncAdapter(...)}>
 +<SyncProvider adapter={createSyncAdapter(...)} internal_validateBlockRange>
 ```
+
+Note that using this option expects support for batched RPC calls and each call to `eth_getLogs` will make an additional call to `eth_getBlockByNumber`.
