@@ -29,12 +29,11 @@
     "dotenv": "^16.0.3",
     "drizzle-orm": "^0.28.5",
     "execa": "^9.5.2",
-    "happy-dom": "^12.10.3",
     "postgres": "3.3.5",
     "typescript": "5.4.2",
     "viem": "2.21.19",
     "vite": "^4.2.1",
-    "vitest": "0.34.6",
+    "vitest": "2.1.2",
     "zod": "3.23.8"
   }
 }
