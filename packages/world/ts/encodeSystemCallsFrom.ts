@@ -1,5 +1,5 @@
-import { Abi, Address, type ContractFunctionName } from "viem";
-import { SystemCallFrom, encodeSystemCallFrom } from "./encodeSystemCallFrom";
+import { Abi, Address, EncodeFunctionDataParameters, encodeFunctionData, type ContractFunctionName } from "viem";
+import { SystemCallFrom } from "./encodeSystemCallFrom";
 import type { AbiParametersToPrimitiveTypes, ExtractAbiFunction } from "abitype";
 import { worldCallAbi } from "./worldCallAbi";
 
@@ -8,8 +8,16 @@ export function encodeSystemCallsFrom<abi extends Abi, functionName extends Cont
   abi: abi,
   from: Address,
   systemCalls: readonly Omit<SystemCallFrom<abi, functionName>, "abi" | "from">[],
-): AbiParametersToPrimitiveTypes<ExtractAbiFunction<worldCallAbi, "callFrom">["inputs"]>[] {
-  return systemCalls.map((systemCall) =>
-    encodeSystemCallFrom({ ...systemCall, abi, from } as SystemCallFrom<abi, functionName>),
-  );
+): AbiParametersToPrimitiveTypes<ExtractAbiFunction<worldCallAbi, "batchCallFrom">["inputs"]> {
+  return [
+    systemCalls.map(({ systemId, functionName, args }) => ({
+      from,
+      systemId,
+      callData: encodeFunctionData<abi, functionName>({
+        abi,
+        functionName,
+        args,
+      } as EncodeFunctionDataParameters<abi, functionName>),
+    })),
+  ];
 }
