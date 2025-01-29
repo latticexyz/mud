@@ -22,6 +22,6 @@ export function encodeSystemCall<abi extends Abi, functionName extends ContractF
       abi,
       functionName,
       args,
-    } as unknown as EncodeFunctionDataParameters<abi, functionName>),
+    } as EncodeFunctionDataParameters<abi, functionName>),
   ];
 }
