@@ -14,5 +14,5 @@ const chains = Object.fromEntries([...mainnetChains.chains, ...testnetChains.cha
 console.log(chains);
 
 const filename = path.join(__dirname, "..", "data", "relayChains.json");
-await fs.writeFile(filename, JSON.stringify(chains) + "\n");
+await fs.writeFile(filename, JSON.stringify(chains, null, 2) + "\n");
 console.log("wrote chains to", filename);
