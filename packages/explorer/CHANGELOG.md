@@ -1,5 +1,35 @@
 # @latticexyz/explorer
 
+## 2.2.17
+
+### Patch Changes
+
+- dab0d08: The context for the searched namespace and selected table is now preserved when reopening the table search and selection menu.
+- 3d5b7b7: Add a separate flag and port for the indexer created by the Explorer.
+- 3264908: Previously, queries could only be executed if they had changed, as data fetching was tied to query updates. Now, it’s possible to trigger a new table data fetch explicitly, regardless of whether the query has changed.
+- 0812178: The Explorer now returns an empty array for empty results, instead of throwing an error, when using the local indexer.
+- 0ea31c3: The loader in the Explore table now appears only during the initial data load. Additionally, a loading spinner has been added to the query submit button for non-live queries to indicate when a query is being refetched.
+- Updated dependencies [94d82cf]
+- Updated dependencies [40aaf97]
+- Updated dependencies [5a9e238]
+- Updated dependencies [9321a5c]
+- Updated dependencies [589fd3a]
+- Updated dependencies [7c3df69]
+- Updated dependencies [40aaf97]
+- Updated dependencies [227db4d]
+- Updated dependencies [dead80e]
+- Updated dependencies [56e65f6]
+- Updated dependencies [7385948]
+  - @latticexyz/world@2.2.17
+  - @latticexyz/store-indexer@2.2.17
+  - @latticexyz/store-sync@2.2.17
+  - @latticexyz/block-logs-stream@2.2.17
+  - @latticexyz/common@2.2.17
+  - @latticexyz/protocol-parser@2.2.17
+  - @latticexyz/config@2.2.17
+  - @latticexyz/store@2.2.17
+  - @latticexyz/schema-type@2.2.17
+
 ## 2.2.16
 
 ### Patch Changes

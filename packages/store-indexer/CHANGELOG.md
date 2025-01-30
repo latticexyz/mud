@@ -1,5 +1,28 @@
 # @latticexyz/store-indexer
 
+## 2.2.17
+
+### Patch Changes
+
+- 40aaf97: Added an experimental option to help sync from load balanced RPCs, where nodes may be slightly out of sync, causing data inconsistencies while fetching logs.
+
+  To enable this, use `INTERNAL__VALIDATE_BLOCK_RANGE=true` environment variable when starting up any of the indexers. This requires `RPC_HTTP_URL` to also be set.
+
+  Note that using this option makes an additional call to `eth_getBlockByNumber` for each `eth_getLogs` call and expects the RPC to support batched calls.
+
+- Updated dependencies [5a9e238]
+- Updated dependencies [9321a5c]
+- Updated dependencies [589fd3a]
+- Updated dependencies [40aaf97]
+- Updated dependencies [227db4d]
+- Updated dependencies [dead80e]
+- Updated dependencies [7385948]
+  - @latticexyz/store-sync@2.2.17
+  - @latticexyz/block-logs-stream@2.2.17
+  - @latticexyz/common@2.2.17
+  - @latticexyz/protocol-parser@2.2.17
+  - @latticexyz/store@2.2.17
+
 ## 2.2.16
 
 ### Patch Changes

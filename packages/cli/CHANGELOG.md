@@ -1,5 +1,59 @@
 # Change Log
 
+## 2.2.17
+
+### Patch Changes
+
+- 452d3e5: The `verify` command should now be able to correctly verify systems using public libraries.
+- 7385948: Added an empty line to the end of `.json` output files for consistency.
+  Removed some unnecessary defaults to allow them to pass through via environment variables.
+- 5aa8a3a: Fixed an issue with `mud verify` where system contract artifacts were being resolved incorrectly.
+- ffefc8f: `CallWithSignature` module has been moved out of `@latticexyz/world-modules` and into its own package at `@latticexyz/world-module-callwithsignature`. This module is now installed by default during deploy as its needed by EntryKit.
+
+  If you previously had this module installed in your MUD config, you can now remove it.
+
+  ```diff
+   export default defineConfig({
+     tables: {
+       ...
+     },
+  -  modules: [
+  -    {
+  -      artifactPath:
+  -        "@latticexyz/world-modules/out/Unstable_CallWithSignatureModule.sol/Unstable_CallWithSignatureModule.json",
+  -      root: true,
+  -    },
+  -  ],
+   });
+  ```
+
+- 090c922: The world address stored in `worlds.json` and `deploys/latest.json` is now checksummed.
+- f52b147: Deploy now prints the current MUD CLI version for easier debugging.
+- Updated dependencies [94d82cf]
+- Updated dependencies [5a9e238]
+- Updated dependencies [9321a5c]
+- Updated dependencies [589fd3a]
+- Updated dependencies [7c3df69]
+- Updated dependencies [40aaf97]
+- Updated dependencies [227db4d]
+- Updated dependencies [dead80e]
+- Updated dependencies [56e65f6]
+- Updated dependencies [ffefc8f]
+- Updated dependencies [7385948]
+  - @latticexyz/world@2.2.17
+  - @latticexyz/store-sync@2.2.17
+  - @latticexyz/block-logs-stream@2.2.17
+  - @latticexyz/common@2.2.17
+  - @latticexyz/protocol-parser@2.2.17
+  - @latticexyz/world-module-callwithsignature@2.2.17
+  - @latticexyz/world-module-metadata@2.2.17
+  - @latticexyz/config@2.2.17
+  - @latticexyz/store@2.2.17
+  - @latticexyz/abi-ts@2.2.17
+  - @latticexyz/gas-report@2.2.17
+  - @latticexyz/schema-type@2.2.17
+  - @latticexyz/utils@2.2.17
+
 ## 2.2.16
 
 ### Patch Changes
