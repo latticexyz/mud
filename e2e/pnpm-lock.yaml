@@ -174,9 +174,6 @@ importers:
       execa:
         specifier: ^7.1.1
         version: 7.1.1
-      happy-dom:
-        specifier: ^12.10.3
-        version: 12.10.3
       postgres:
         specifier: 3.3.5
         version: 3.3.5
@@ -1687,7 +1684,8 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
-  css.escape@1.5.1: {}
+  css.escape@1.5.1:
+    optional: true
 
   debug@4.3.4:
     dependencies:
@@ -1709,7 +1707,8 @@ snapshots:
 
   emoji-regex@8.0.0: {}
 
-  entities@4.5.0: {}
+  entities@4.5.0:
+    optional: true
 
   esbuild@0.17.18:
     optionalDependencies:
@@ -1827,6 +1826,7 @@ snapshots:
       webidl-conversions: 7.0.0
       whatwg-encoding: 2.0.0
       whatwg-mimetype: 3.0.0
+    optional: true
 
   hasown@2.0.2:
     dependencies:
@@ -1845,6 +1845,7 @@ snapshots:
   iconv-lite@0.6.3:
     dependencies:
       safer-buffer: 2.1.2
+    optional: true
 
   inflight@1.0.6:
     dependencies:
@@ -2042,7 +2043,8 @@ snapshots:
     dependencies:
       tslib: 2.5.0
 
-  safer-buffer@2.1.2: {}
+  safer-buffer@2.1.2:
+    optional: true
 
   shebang-command@2.0.0:
     dependencies:
@@ -2213,13 +2215,16 @@ snapshots:
       '@noble/curves': 1.6.0
       '@noble/hashes': 1.5.0
 
-  webidl-conversions@7.0.0: {}
+  webidl-conversions@7.0.0:
+    optional: true
 
   whatwg-encoding@2.0.0:
     dependencies:
       iconv-lite: 0.6.3
+    optional: true
 
-  whatwg-mimetype@3.0.0: {}
+  whatwg-mimetype@3.0.0:
+    optional: true
 
   which@2.0.2:
     dependencies:
