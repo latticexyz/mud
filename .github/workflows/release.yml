@@ -3,12 +3,16 @@ name: Release 🔖
 on:
   workflow_call:
 
+# Ensure only one workflow/job is publishing to npm at a time
+concurrency: publish-to-npm
+
 env:
   NODE_OPTIONS: "--max-old-space-size=4096"
 
 jobs:
   release:
     name: Release
+    if: github.repository == 'latticexyz/mud'
     runs-on: ubuntu-latest
     # Permissions necessary for Changesets to push a new branch and open PRs
     # (for automated Version Packages PRs), and request the JWT for provenance.
@@ -18,7 +22,7 @@ jobs:
       pull-requests: write
       id-token: write
     steps:
-      - name: Checkout Repo
+      - name: Checkout repo
         uses: actions/checkout@v3
         with:
           submodules: recursive
@@ -29,7 +33,7 @@ jobs:
         with:
           files: ".changeset/pre.json"
 
-      - name: "Setup"
+      - name: Setup
         if: steps.check_files.outputs.files_exists == 'false'
         uses: ./.github/actions/setup
 
@@ -39,10 +43,19 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Get next release version
+        if: steps.check_files.outputs.files_exists == 'false'
+        id: next-version
+        run: |
+          pnpm changeset status --output=release.json
+          echo "version=$(cat release.json | jq -r '.releases[0].newVersion')" >> "$GITHUB_OUTPUT"
+
       - name: Create version PR or publish 🚀
         if: steps.check_files.outputs.files_exists == 'false'
         uses: changesets/action@v1
         with:
+          title: "chore: release v${{steps.next-version.outputs.version}}"
+          commit: "chore: release v${{steps.next-version.outputs.version}}"
           publish: pnpm release:publish
           version: pnpm release:version
         env:
