@@ -157,7 +157,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
                 name={`${fieldArrayName}.${itemIndex}.${component.name}`}
                 render={({ field }) => (
                   <FormItem className="flex-1">
-                    <FormLabel className="text-xs">{component.name}</FormLabel>
+                    {itemIndex === 0 && <FormLabel className="text-xs">{component.name}</FormLabel>}
                     <FormControl>
                       <Input placeholder={component.type} {...field} />
                     </FormControl>
@@ -194,7 +194,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
           }}
         >
           <PlusCircle className="mr-2 h-4 w-4" />
-          Add Item
+          Add item
         </Button>
       </div>
     );
