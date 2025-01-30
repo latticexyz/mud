@@ -23,22 +23,22 @@ contract ERC20WithWorld is WithWorld, MUDERC20, ERC20Pausable, ERC20Burnable {
     world.transferOwnership(getNamespaceId(), _msgSender());
   }
 
-  function mint(address to, uint256 value) public onlyWorld {
+  function mint(address to, uint256 value) public onlyNamespace {
     _mint(to, value);
   }
 
-  function pause() public onlyWorld {
+  function pause() public onlyNamespace {
     _pause();
   }
 
-  function unpause() public onlyWorld {
+  function unpause() public onlyNamespace {
     _unpause();
   }
 
   // The following functions are overrides required by Solidity.
 
   function _msgSender() public view override(Context, WithWorld) returns (address sender) {
-    return super._msgSender();
+    return WithWorld._msgSender();
   }
 
   function _update(address from, address to, uint256 value) internal override(MUDERC20, ERC20Pausable) {

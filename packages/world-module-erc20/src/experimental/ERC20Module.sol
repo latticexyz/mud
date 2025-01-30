@@ -44,8 +44,8 @@ contract ERC20Module is Module {
     // Grant access to the token so it can write to tables after transferring ownership
     world.grantAccess(namespaceId, address(token));
 
-    // Register token as a system so `onlyWorld` functions can be called through the world
-    world.registerSystem(systemId, token, false);
+    // Register token as a system so its functions can be called through the world
+    world.registerSystem(systemId, token, true);
 
     // The token should have transferred the namespace ownership to this module in its constructor
     world.transferOwnership(namespaceId, _msgSender());

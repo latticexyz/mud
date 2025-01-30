@@ -18,11 +18,20 @@ abstract contract WithWorld is WithStore, System {
   error WithWorld_RootNamespaceNotAllowed();
   error WithWorld_NamespaceAlreadyExists();
   error WithWorld_NamespaceDoesNotExists();
+  error WithWorld_CallerHasNoNamespaceAccess();
   error WithWorld_CallerIsNotWorld();
 
   modifier onlyWorld() {
     if (!_callerIsWorld()) {
       revert WithWorld_CallerIsNotWorld();
+    }
+    _;
+  }
+
+  modifier onlyNamespace() {
+    // We use WorldContextConsumer directly as we already know the world is the caller
+    if (!_callerIsWorld() || !ResourceAccess.get(getNamespaceId(), WorldContextConsumer._msgSender())) {
+      revert WithWorld_CallerHasNoNamespaceAccess();
     }
     _;
   }
