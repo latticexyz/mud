@@ -49,6 +49,7 @@ jobs:
         run: |
           pnpm changeset status --output=release.json
           echo "version=$(cat release.json | jq -r '.releases[0].newVersion')" >> "$GITHUB_OUTPUT"
+          rm release.json
 
       - name: Create version PR or publish 🚀
         if: steps.check_files.outputs.files_exists == 'false'
