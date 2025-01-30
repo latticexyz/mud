@@ -14,12 +14,15 @@ export type DecodedUserOperationCall = {
   value?: bigint;
 };
 
+export type PartialTransaction = Pick<Transaction, "hash" | "from" | "to" | "value" | "input">;
+
 export type ObservedTransaction = {
   writeId: string;
   hash?: Hex;
+  blockNumber?: bigint;
   from?: Address;
   timestamp?: bigint;
-  transaction?: Transaction;
+  transaction?: PartialTransaction;
   calls: DecodedUserOperationCall[];
   value?: bigint;
   receipt?: TransactionReceipt;
