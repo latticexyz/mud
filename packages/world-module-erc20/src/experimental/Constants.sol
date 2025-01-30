@@ -6,7 +6,7 @@ import { ResourceId, WorldResourceIdLib } from "@latticexyz/world/src/WorldResou
 
 library ModuleConstants {
   bytes14 internal constant NAMESPACE = "erc20-module";
-  bytes16 internal constant REGISTRY_TABLE_NAME = "ERC20Registry";
+  bytes16 internal constant REGISTRY_TABLE_NAME = "ERC20_REGISTRY";
 
   function namespaceId() internal pure returns (ResourceId) {
     return WorldResourceIdLib.encodeNamespace(NAMESPACE);
@@ -18,19 +18,19 @@ library ModuleConstants {
 }
 
 library ERC20TableNames {
-  bytes16 internal constant TOTAL_SUPPLY = "TotalSupply";
+  bytes16 internal constant TOTAL_SUPPLY = "TOTAL_SUPPLY";
 
-  bytes16 internal constant BALANCES = "Balances";
+  bytes16 internal constant BALANCES = "BALANCES";
 
-  bytes16 internal constant ALLOWANCES = "Allowances";
+  bytes16 internal constant ALLOWANCES = "ALLOWANCES";
 
-  bytes16 internal constant METADATA = "Metadata";
+  bytes16 internal constant METADATA = "METADATA";
 }
 
 library OwnableTableNames {
-  bytes16 internal constant OWNER = "Owner";
+  bytes16 internal constant OWNER = "OWNER";
 }
 
 library PausableTableNames {
-  bytes16 internal constant PAUSED = "Paused";
+  bytes16 internal constant PAUSED = "PAUSED";
 }
