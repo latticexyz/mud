@@ -5,6 +5,7 @@ import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.so
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 import { Module } from "@latticexyz/world/src/Module.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
@@ -21,9 +22,13 @@ contract ERC20Module is Module {
     // TODO: we should probably check just for namespace, not for all args
     requireNotInstalled(__self, encodedArgs);
 
-    (bytes14 namespace, string memory name, string memory symbol) = abi.decode(encodedArgs, (bytes14, string, string));
+    (bytes14 namespace, bytes16 systemName, string memory name, string memory symbol) = abi.decode(
+      encodedArgs,
+      (bytes14, bytes16, string, string)
+    );
 
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
+    ResourceId systemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, namespace, systemName);
 
     // Require the namespace to not be the module's namespace
     if (namespace == ModuleConstants.NAMESPACE) {
@@ -38,6 +43,9 @@ contract ERC20Module is Module {
 
     // Grant access to the token so it can write to tables after transferring ownership
     world.grantAccess(namespaceId, address(token));
+
+    // Register token as a system so `onlyWorld` functions can be called through the world
+    world.registerSystem(systemId, token, false);
 
     // The token should have transferred the namespace ownership to this module in its constructor
     world.transferOwnership(namespaceId, _msgSender());

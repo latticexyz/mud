@@ -9,8 +9,8 @@ export type DefineERC20ModuleInput = {
 
 export function defineERC20Module({ namespace, name, symbol }: DefineERC20ModuleInput): ModuleInput {
   const erc20ModuleArgs = encodeAbiParameters(
-    [{ type: "bytes14" }, { type: "string" }, { type: "string" }],
-    [stringToHex(namespace, { size: 14 }), name, symbol],
+    [{ type: "bytes14" }, { type: "bytes16" }, { type: "string" }, { type: "string" }],
+    [stringToHex(namespace, { size: 14 }), stringToHex(name, { size: 16 }), name, symbol],
   );
 
   return {

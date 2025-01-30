@@ -43,7 +43,7 @@ contract MockERC20WithWorldPausable is MockERC20WithWorld, MockERC20Pausable {
   }
 
   function _msgSender() public view override(Context, MockERC20WithWorld) returns (address sender) {
-    return super._msgSender();
+    return MockERC20WithWorld._msgSender();
   }
 }
 

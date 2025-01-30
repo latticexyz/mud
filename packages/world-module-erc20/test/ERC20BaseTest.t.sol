@@ -46,7 +46,7 @@ contract MockERC20WithWorld is WithWorld, MockERC20Base {
   constructor() WithWorld(createWorld(), TestConstants.ERC20_NAMESPACE, true) {}
 
   function _msgSender() public view virtual override(Context, WithWorld) returns (address sender) {
-    return super._msgSender();
+    return WithWorld._msgSender();
   }
 }
 
