@@ -4,6 +4,9 @@ on:
   workflow_call:
   workflow_dispatch:
 
+# Usually we'd restrict concurrency here, but this causes a deadlock with
+# called workflows. See https://github.com/latticexyz/mud/pull/2784
+
 env:
   NODE_OPTIONS: "--max-old-space-size=4096"
 

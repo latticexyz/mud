@@ -3,8 +3,8 @@ name: Release 🔖
 on:
   workflow_call:
 
-# Ensure only one workflow/job is publishing to npm at a time
-concurrency: publish-to-npm
+# Usually we'd restrict concurrency here, but this causes a deadlock with
+# called workflows. See https://github.com/latticexyz/mud/pull/2784
 
 env:
   NODE_OPTIONS: "--max-old-space-size=4096"
