@@ -1,5 +1,409 @@
 [
   {
+    "version": "2.2.17",
+    "date": "2025-01-30T10:57:44.407Z",
+    "changes": {
+      "patch": [
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixed an issue in system resolving helper used by CLI was not correctly comparing `namespaceLabel`s.",
+          "type": 0,
+          "commitHash": "94d82cfafbdbee448884643681b0b8db53eedfda",
+          "authorName": "Dhvani Patel",
+          "authorEmail": "dhvani.patel@uwaterloo.ca",
+          "title": "fix(world): namespaceLabel should be compared to namespaceLabel not namespace (#3515)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nBumped react-error-boundary dependency.",
+          "type": 0,
+          "commitHash": "d5f4e1e44bbc260ff21dacdfab0e0f8389e9f304",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(create-mud): new react template with stash/entrykit (#3478)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-indexer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded an experimental option to help sync from load balanced RPCs, where nodes may be slightly out of sync, causing data inconsistencies while fetching logs.\n\nTo enable this, use `INTERNAL__VALIDATE_BLOCK_RANGE=true` environment variable when starting up any of the indexers. This requires `RPC_HTTP_URL` to also be set.\n\nNote that using this option makes an additional call to `eth_getBlockByNumber` for each `eth_getLogs` call and expects the RPC to support batched calls.",
+          "type": 0,
+          "commitHash": "40aaf970a122151852d3d3f02383f44bffed85b9",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(store-indexer): add flag to validate block ranges (#3531)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe context for the searched namespace and selected table is now preserved when reopening the table search and selection menu.",
+          "type": 0,
+          "commitHash": "dab0d08d3c8f18adcab7bcd4a6a7eafc941ac4e6",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): save searched namespace (#3470)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUpdated `waitForTransaction` to handle receipt status for user operations.",
+          "type": 0,
+          "commitHash": "5a9e238e660bfa670cef673b2e34bbde7f860720",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "fix(store-sync): handle user ops in waitForTransaction (#3518)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe `verify` command should now be able to correctly verify systems using public libraries.",
+          "type": 0,
+          "commitHash": "452d3e53db2768f2e296ea7560c9bdd6560cd797",
+          "authorName": "Jackson Ernst - jaxer.eth",
+          "authorEmail": "51183683+jaxernst@users.noreply.github.com",
+          "title": "fix(cli): support verifying systems with linked libraries (#3514)"
+        },
+        {
+          "packages": [
+            {
+              "package": "create-mud",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUpdated React template with Stash client state library, EntryKit for wallet support, and a cleaned up app structure.",
+          "type": 0,
+          "commitHash": "d5f4e1e44bbc260ff21dacdfab0e0f8389e9f304",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(create-mud): new react template with stash/entrykit (#3478)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/block-logs-stream",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded an experimental option to help sync from load balanced RPCs, where nodes may be slightly out of sync, causing data inconsistencies while fetching logs.\n\nTo enable this, replace `publicClient: Client` with `internal_clientOptions: { chain: Chain, validateBlockRange: true }` when calling any sync method (e.g. `syncToStash`). For `<SyncProvider>`, only a `internal_validateBlockRange` prop is needed.\n\n```diff\n-syncToStash({ publicClient, ... });\n+syncToStash({ internal_clientOptions: { chain, validateBlockRange: true }, ... });\n```\n\n```diff\n-<SyncProvider adapter={createSyncAdapter(...)}>\n+<SyncProvider adapter={createSyncAdapter(...)} internal_validateBlockRange>\n```\n\nNote that using this option makes an additional call to `eth_getBlockByNumber` for each `eth_getLogs` call and expects the RPC to support batched calls.",
+          "type": 0,
+          "commitHash": "40aaf970a122151852d3d3f02383f44bffed85b9",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(store-indexer): add flag to validate block ranges (#3531)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/common",
+              "type": "patch"
+            }
+          ],
+          "description": "\nImproved approach for checking for nonce errors.",
+          "type": 0,
+          "commitHash": "589fd3ae0e2dde80d259e64ac0d4f7f17a43afdc",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "docs: changeset for #3538 (#3539)"
+        },
+        {
+          "packages": [
+            {
+              "package": "create-mud",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUpdated React ECS template with EntryKit for wallet support and a cleaned up app structure.",
+          "type": 0,
+          "commitHash": "09846f2926132e17477b4d0d1e64b795fbd4485f",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(create-mud): new react-ecs template (#3485)"
+        },
+        {
+          "packages": [
+            {
+              "package": "create-mud",
+              "type": "patch"
+            }
+          ],
+          "description": "\nReplaced internal usage of `create-create-app` with a simpler recursive copy operation.",
+          "type": 0,
+          "commitHash": "e45e3751c0ea10c7b1f0088d674121419b0d0acb",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(create-mud): rip out create-create-app (#3479)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUsing `encodeSystemCall` (and others) with a world ABI and namespace-prefixed function name will now attempt to strip the prefix when encoding it as a system call.\n\nIt's recommended to use a system ABI with these functions rather than a world ABI.\n\n```ts\nimport systemAbi from \"contracts/out/ISomeSystem.sol/ISomeSystem.sol.abi.json\";\nencodeSystemCall({ abi: systemAbi, ... });\n```",
+          "type": 0,
+          "commitHash": "7c3df691b30f031202ab184345cbb76bb113c2cd",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(world): strip world prefix from function names when encoding system calls (#3527)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            }
+          ],
+          "description": "\nRenamed `deploy-local-prereqs` bin to `entrykit-deploy`, which now accepts an RPC URL so that you can deploy the EntryKit prerequisites to your chain of choice.\n\n```\nRPC_URL=http://rpc.garnetchain.com pnpm entrykit-deploy\n```\n\nThis bin supports specifying the RPC URL via `RPC_URL`, `RPC_HTTP_URL`, `FOUNDRY_ETH_RPC_URL` environment variables or `FOUNDRY_PROFILE` if using `eth_rpc_url` in `foundry.toml`.",
+          "type": 0,
+          "commitHash": "73859484bb53c1a4066de028a3ad7d3a4284e4da",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(entrykit): deploy prereqs to any chain (#3529)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/block-logs-stream",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded an experimental option to help sync from load balanced RPCs, where nodes may be slightly out of sync, causing data inconsistencies while fetching logs.\n\nTo enable this, replace `publicClient: Client` with `internal_clientOptions: { chain: Chain, validateBlockRange: true }` when calling `fetchLogs` or `fetchBlockLogs`.\n\n```diff\n-fetchLogs({ publicClient, ... });\n+fetchLogs({ internal_clientOptions: { chain, validateBlockRange: true }, ... });\n```\n\nNote that using this option makes an additional call to `eth_getBlockByNumber` for each `eth_getLogs` call and expects the RPC to support batched calls.",
+          "type": 0,
+          "commitHash": "40aaf970a122151852d3d3f02383f44bffed85b9",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(store-indexer): add flag to validate block ranges (#3531)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/store-sync",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded an RECS sync adapter to be used with `SyncProvider` in React apps.\n\n```tsx\nimport { WagmiProvider } from \"wagmi\";\nimport { QueryClientProvider } from \"@tanstack/react-query\";\nimport { SyncProvider } from \"@latticexyz/store-sync/react\";\nimport { createSyncAdapter } from \"@latticexyz/store-sync/recs\";\nimport { createWorld } from \"@latticexyz/recs\";\nimport config from \"./mud.config\";\n\nconst world = createWorld();\nconst { syncAdapter, components } = createSyncAdapter({ world, config });\n\nexport function App() {\n  return (\n    <WagmiProvider config={wagmiConfig}>\n      <QueryClientProvider client={queryClient}>\n        <SyncProvider chainId={chainId} address={worldAddress} startBlock={startBlock} adapter={syncAdapter}>\n          {children}\n        </SyncProvider>\n      </QueryClientProvider>\n    </WagmiProvider>\n  );\n}\n```",
+          "type": 0,
+          "commitHash": "227db4d37db5dd26607f77e805d91701ba2e38db",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(store-sync): recs sync adapter (#3486)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdd a separate flag and port for the indexer created by the Explorer.",
+          "type": 0,
+          "commitHash": "3d5b7b75c5c68f4c7499ecd2fcf6e3b2b40c6ad5",
+          "authorName": "Dhvani Patel",
+          "authorEmail": "dhvani.patel@uwaterloo.ca",
+          "title": "fix(explorer): create a separate flag and port for the indexer created by the explorer (#3511)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded an empty line to the end of `.json` output files for consistency.\nRemoved some unnecessary defaults to allow them to pass through via environment variables.",
+          "type": 0,
+          "commitHash": "73859484bb53c1a4066de028a3ad7d3a4284e4da",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(entrykit): deploy prereqs to any chain (#3529)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nPreviously, queries could only be executed if they had changed, as data fetching was tied to query updates. Now, it’s possible to trigger a new table data fetch explicitly, regardless of whether the query has changed.",
+          "type": 0,
+          "commitHash": "32649080323d2a27cdf4a189917a70b958d062da",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "feat(explorer): enable re-executing query (#3471)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/protocol-parser",
+              "type": "patch"
+            }
+          ],
+          "description": "\nAdded padding to make sure the `encodedLengths` field of a Store log is always 32 bytes.",
+          "type": 0,
+          "commitHash": "dead80e682bfa1bd23f4d3b9bac338aee38c281e",
+          "authorName": "alvarius",
+          "authorEmail": "alvarius@lattice.xyz",
+          "title": "fix(protocol-parser): add padding for encodedLengths (#3507)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/world",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUpdated `callFrom` action to automatically translate `batchCall` to `batchCallFrom`.\nAlso fixed `encodeSystemCallFrom` and `encodeSystemCallsFrom` to return the right format for use with `batchCall` and `batchCallFrom` respectively.",
+          "type": 0,
+          "commitHash": "56e65f64186741cf38a7dc0bf62e2d22bbe8fed2",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(world): support batchCall in callFrom action (#2796)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            }
+          ],
+          "description": "\nFixed an issue with `mud verify` where system contract artifacts were being resolved incorrectly.",
+          "type": 0,
+          "commitHash": "5aa8a3ad00aa591f9c3a60526b045257dc8a0bb5",
+          "authorName": "Jackson Ernst - jaxer.eth",
+          "authorEmail": "51183683+jaxernst@users.noreply.github.com",
+          "title": "fix(cli): use system label when verifying (#3503)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/entrykit",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world-module-callwithsignature",
+              "type": "patch"
+            },
+            {
+              "package": "@latticexyz/world-modules",
+              "type": "patch"
+            }
+          ],
+          "description": "\n`CallWithSignature` module has been moved out of `@latticexyz/world-modules` and into its own package at `@latticexyz/world-module-callwithsignature`. This module is now installed by default during deploy as its needed by EntryKit.\n\nIf you previously had this module installed in your MUD config, you can now remove it.\n\n```diff\n export default defineConfig({\n   tables: {\n     ...\n   },\n-  modules: [\n-    {\n-      artifactPath:\n-        \"@latticexyz/world-modules/out/Unstable_CallWithSignatureModule.sol/Unstable_CallWithSignatureModule.json\",\n-      root: true,\n-    },\n-  ],\n });\n```",
+          "type": 0,
+          "commitHash": "ffefc8f000769d5ca625dd19290007a853a21788",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat: move CallWithSignature module to its own package (#3491)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe Explorer now returns an empty array for empty results, instead of throwing an error, when using the local indexer.",
+          "type": 0,
+          "commitHash": "0812178a8a873aa728358040d1d494385f78566f",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): return empty array for empty results (sqlite indexer) (#3469)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/explorer",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe loader in the Explore table now appears only during the initial data load. Additionally, a loading spinner has been added to the query submit button for non-live queries to indicate when a query is being refetched.",
+          "type": 0,
+          "commitHash": "0ea31c36119277e7f6cad3c71ef2b012856ead41",
+          "authorName": "Karolis Ramanauskas",
+          "authorEmail": "hello@karolisram.com",
+          "title": "fix(explorer): show loader only on initial table data load (#3517)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/common",
+              "type": "patch"
+            }
+          ],
+          "description": "\nUpdated Rhodolite chain config with new contract addresses.",
+          "type": 0,
+          "commitHash": "73859484bb53c1a4066de028a3ad7d3a4284e4da",
+          "authorName": "Kevin Ingersoll",
+          "authorEmail": "kingersoll@gmail.com",
+          "title": "feat(entrykit): deploy prereqs to any chain (#3529)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            }
+          ],
+          "description": "\nThe world address stored in `worlds.json` and `deploys/latest.json` is now checksummed.",
+          "type": 0,
+          "commitHash": "090c9224b80ab949997e0463f9ec0df953c731b5",
+          "authorName": "James Lefrère",
+          "authorEmail": "james@lefrere.com",
+          "title": "fix(cli): checksum deployed world addresses (#3465)"
+        },
+        {
+          "packages": [
+            {
+              "package": "@latticexyz/cli",
+              "type": "patch"
+            }
+          ],
+          "description": "\nDeploy now prints the current MUD CLI version for easier debugging.",
+          "type": 0,
+          "commitHash": "f52b1476f04ce0be68691e3b021a81e0fb9cce99",
+          "authorName": "James Lefrère",
+          "authorEmail": "james@lefrere.com",
+          "title": "chore(cli): print mud version in deploy (#3476)"
+        }
+      ],
+      "minor": [],
+      "major": []
+    }
+  },
+  {
     "version": "2.2.16",
     "date": "2025-01-17T16:14:48.470Z",
     "changes": {

@@ -1,5 +1,70 @@
 # @latticexyz/store-sync
 
+## 2.2.17
+
+### Patch Changes
+
+- 5a9e238: Updated `waitForTransaction` to handle receipt status for user operations.
+- 9321a5c: Added an experimental option to help sync from load balanced RPCs, where nodes may be slightly out of sync, causing data inconsistencies while fetching logs.
+
+  To enable this, replace `publicClient: Client` with `internal_clientOptions: { chain: Chain, validateBlockRange: true }` when calling any sync method (e.g. `syncToStash`). For `<SyncProvider>`, only a `internal_validateBlockRange` prop is needed.
+
+  ```diff
+  -syncToStash({ publicClient, ... });
+  +syncToStash({ internal_clientOptions: { chain, validateBlockRange: true }, ... });
+  ```
+
+  ```diff
+  -<SyncProvider adapter={createSyncAdapter(...)}>
+  +<SyncProvider adapter={createSyncAdapter(...)} internal_validateBlockRange>
+  ```
+
+  Note that using this option makes an additional call to `eth_getBlockByNumber` for each `eth_getLogs` call and expects the RPC to support batched calls.
+
+- 227db4d: Added an RECS sync adapter to be used with `SyncProvider` in React apps.
+
+  ```tsx
+  import { WagmiProvider } from "wagmi";
+  import { QueryClientProvider } from "@tanstack/react-query";
+  import { SyncProvider } from "@latticexyz/store-sync/react";
+  import { createSyncAdapter } from "@latticexyz/store-sync/recs";
+  import { createWorld } from "@latticexyz/recs";
+  import config from "./mud.config";
+
+  const world = createWorld();
+  const { syncAdapter, components } = createSyncAdapter({ world, config });
+
+  export function App() {
+    return (
+      <WagmiProvider config={wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
+          <SyncProvider chainId={chainId} address={worldAddress} startBlock={startBlock} adapter={syncAdapter}>
+            {children}
+          </SyncProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    );
+  }
+  ```
+
+- Updated dependencies [94d82cf]
+- Updated dependencies [9321a5c]
+- Updated dependencies [589fd3a]
+- Updated dependencies [7c3df69]
+- Updated dependencies [40aaf97]
+- Updated dependencies [dead80e]
+- Updated dependencies [56e65f6]
+- Updated dependencies [7385948]
+  - @latticexyz/world@2.2.17
+  - @latticexyz/block-logs-stream@2.2.17
+  - @latticexyz/common@2.2.17
+  - @latticexyz/protocol-parser@2.2.17
+  - @latticexyz/config@2.2.17
+  - @latticexyz/stash@2.2.17
+  - @latticexyz/store@2.2.17
+  - @latticexyz/recs@2.2.17
+  - @latticexyz/schema-type@2.2.17
+
 ## 2.2.16
 
 ### Patch Changes

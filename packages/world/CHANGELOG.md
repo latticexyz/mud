@@ -1,5 +1,33 @@
 # Change Log
 
+## 2.2.17
+
+### Patch Changes
+
+- 94d82cf: Fixed an issue in system resolving helper used by CLI was not correctly comparing `namespaceLabel`s.
+- 7c3df69: Using `encodeSystemCall` (and others) with a world ABI and namespace-prefixed function name will now attempt to strip the prefix when encoding it as a system call.
+
+  It's recommended to use a system ABI with these functions rather than a world ABI.
+
+  ```ts
+  import systemAbi from "contracts/out/ISomeSystem.sol/ISomeSystem.sol.abi.json";
+  encodeSystemCall({ abi: systemAbi, ... });
+  ```
+
+- 56e65f6: Updated `callFrom` action to automatically translate `batchCall` to `batchCallFrom`.
+  Also fixed `encodeSystemCallFrom` and `encodeSystemCallsFrom` to return the right format for use with `batchCall` and `batchCallFrom` respectively.
+- Updated dependencies [9321a5c]
+- Updated dependencies [589fd3a]
+- Updated dependencies [40aaf97]
+- Updated dependencies [dead80e]
+- Updated dependencies [7385948]
+  - @latticexyz/block-logs-stream@2.2.17
+  - @latticexyz/common@2.2.17
+  - @latticexyz/protocol-parser@2.2.17
+  - @latticexyz/config@2.2.17
+  - @latticexyz/store@2.2.17
+  - @latticexyz/schema-type@2.2.17
+
 ## 2.2.16
 
 ### Patch Changes

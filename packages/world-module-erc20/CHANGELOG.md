@@ -1,5 +1,17 @@
 # @latticexyz/world-module-erc20
 
+## 2.2.17
+
+### Patch Changes
+
+- Updated dependencies [94d82cf]
+- Updated dependencies [7c3df69]
+- Updated dependencies [56e65f6]
+  - @latticexyz/world@2.2.17
+  - @latticexyz/store-consumer@2.2.17
+  - @latticexyz/store@2.2.17
+  - @latticexyz/schema-type@2.2.17
+
 ## 2.2.16
 
 ### Patch Changes
