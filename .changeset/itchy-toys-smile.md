@@ -2,4 +2,4 @@
 "@latticexyz/explorer": patch
 ---
 
-Use change-case package in explorer to make it consistent with how `store-sync` package computes table names.
+Fixed an issue with how MUD table names were translated SQLite table names when querying.
