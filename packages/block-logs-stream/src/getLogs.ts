@@ -33,7 +33,7 @@ export async function getLogs(opts: GetLogsOptions): Promise<Log[]> {
     ],
   });
 
-  if (!opts.internal_clientOptions) {
+  if (!opts.internal_clientOptions?.validateBlockRange) {
     const logs = await getRpcClient(opts).request(logsRequest);
     return logs.map((log) => formatLog(log));
   }
