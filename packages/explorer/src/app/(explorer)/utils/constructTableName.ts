@@ -1,6 +1,6 @@
 import { Hex } from "viem";
+import { snakeCase } from "change-case";
 import { Table } from "@latticexyz/config";
-import { snakeCase } from "../../../utils";
 import { indexerForChainId } from "./indexerForChainId";
 
 export function constructTableName(table: Table, worldAddress: Hex, chainId: number) {

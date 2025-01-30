@@ -6,10 +6,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function snakeCase(str: string) {
-  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`).replace(/^_/, "");
-}
-
 export function formatBalance(wei: bigint) {
   const formatted = formatEther(wei);
   const magnitude = Math.floor(parseFloat(formatted)).toString().length;
