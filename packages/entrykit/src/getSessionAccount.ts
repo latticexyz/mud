@@ -10,6 +10,7 @@ export async function getSessionAccount<chain extends Chain>({
   client: Client<Transport, chain>;
   userAddress: Address;
 }): Promise<SmartAccount> {
-  const sessionSigner = getSessionSigner(userAddress);
-  return await toSimpleSmartAccount({ client, owner: sessionSigner });
+  const signer = getSessionSigner(userAddress);
+  const account = await toSimpleSmartAccount({ client, owner: signer });
+  return account;
 }
