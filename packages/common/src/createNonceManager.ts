@@ -1,9 +1,10 @@
-import { BaseError, BlockTag, Client, Hex } from "viem";
+import { BlockTag, Client, Hex } from "viem";
 import { debug as parentDebug } from "./debug";
 import { getNonceManagerId } from "./getNonceManagerId";
 import { getTransactionCount } from "viem/actions";
 import PQueue from "p-queue";
 import { getAction } from "viem/utils";
+import { findCause } from "./findCause";
 
 const debug = parentDebug.extend("createNonceManager");
 
@@ -76,13 +77,8 @@ export function createNonceManager({
   }
 
   function shouldResetNonce(error: Error): boolean {
-    return (
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      typeof (error as any).walk === "function" && // Check if it has a `walk` method (indicating it's a `BaseError`)
-      (error as BaseError).walk(
-        (e) => e instanceof Error && (e.name === "NonceTooLowError" || e.name === "NonceTooHighError"),
-      ) != null
-    );
+    const nonceError = findCause(error, ({ name }) => name === "NonceTooLowError" || name === "NonceTooHighError");
+    return nonceError != null;
   }
 
   const mempoolQueue = new PQueue({ concurrency: queueConcurrency });
