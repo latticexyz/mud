@@ -14,6 +14,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { WithStore } from "@latticexyz/store-consumer/src/experimental/WithStore.sol";
 import { WithWorld } from "@latticexyz/store-consumer/src/experimental/WithWorld.sol";
+import { Context } from "@latticexyz/store-consumer/src/experimental/Context.sol";
 
 import { ERC20MetadataData } from "../src/codegen/tables/ERC20Metadata.sol";
 import { IERC20 } from "../src/interfaces/IERC20.sol";
@@ -43,6 +44,10 @@ contract MockERC20WithInternalStore is WithStore(address(this)), MockERC20Base {
 
 contract MockERC20WithWorld is WithWorld, MockERC20Base {
   constructor() WithWorld(createWorld(), TestConstants.ERC20_NAMESPACE, true) {}
+
+  function _msgSender() public view virtual override(Context, WithWorld) returns (address sender) {
+    return super._msgSender();
+  }
 }
 
 abstract contract ERC20BehaviorTest is Test, GasReporter, IERC20Events, IERC20Errors {

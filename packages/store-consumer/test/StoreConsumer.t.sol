@@ -9,6 +9,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 import { ResourceAccess } from "@latticexyz/world/src/codegen/tables/ResourceAccess.sol";
 import { WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 import { createWorld } from "@latticexyz/world/test/createWorld.sol";
 
 import { ResourceId, ResourceIdLib } from "@latticexyz/store/src/ResourceId.sol";
@@ -51,7 +52,7 @@ contract MockWithWorld is WithWorld, MockStoreConsumer {
     getWorld().transferOwnership(getNamespaceId(), to);
   }
 
-  function onlyCallableByNamespace() external view onlyNamespace {}
+  function onlyCallableByWorld() external view onlyWorld {}
 }
 
 contract StoreConsumerTest is Test, GasReporter {
@@ -77,23 +78,27 @@ contract StoreConsumerTest is Test, GasReporter {
     assertTrue(ResourceIds.getExists(namespaceId), "Namespace not registered");
   }
 
-  function testOnlyNamespace() public {
+  function testOnlyWorld() public {
     IBaseWorld world = createWorld();
     StoreSwitch.setStoreAddress(address(world));
 
+    bytes16 systemName = "mySystem";
     bytes14 namespace = "myNamespace";
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
+    ResourceId systemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, namespace, systemName);
     MockWithWorld mock = new MockWithWorld(world, namespace, true);
     mock.transferNamespaceOwnership(address(this));
+
+    // Register the mock as a system
+    world.registerSystem(systemId, mock, false);
 
     address alice = address(0x1234);
 
     vm.prank(alice);
     vm.expectRevert();
-    mock.onlyCallableByNamespace();
+    mock.onlyCallableByWorld();
 
     world.grantAccess(namespaceId, alice);
-    vm.prank(alice);
-    mock.onlyCallableByNamespace();
+    world.call(systemId, abi.encodeCall(mock.onlyCallableByWorld, ()));
   }
 }

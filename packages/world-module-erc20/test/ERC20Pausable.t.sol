@@ -7,6 +7,8 @@ import { console } from "forge-std/console.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";
 
+import { Context } from "@latticexyz/store-consumer/src/experimental/Context.sol";
+
 import { ERC20MetadataData } from "../src/codegen/tables/ERC20Metadata.sol";
 import { IERC20Errors } from "../src/interfaces/IERC20Errors.sol";
 import { IERC20Events } from "../src/interfaces/IERC20Events.sol";
@@ -38,6 +40,10 @@ contract MockERC20WithInternalStorePausable is MockERC20WithInternalStore, MockE
 contract MockERC20WithWorldPausable is MockERC20WithWorld, MockERC20Pausable {
   function _update(address from, address to, uint256 value) internal override(MUDERC20, MockERC20Pausable) {
     super._update(from, to, value);
+  }
+
+  function _msgSender() public view override(Context, MockERC20WithWorld) returns (address sender) {
+    return super._msgSender();
   }
 }
 
