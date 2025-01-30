@@ -77,7 +77,8 @@ export function createNonceManager({
 
   function shouldResetNonce(error: Error): boolean {
     return (
-      error.name === "BaseError" &&
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      typeof (error as any).walk === "function" && // Check if it has a `walk` method (indicating it's a `BaseError`)
       (error as BaseError).walk(
         (e) => e instanceof Error && (e.name === "NonceTooLowError" || e.name === "NonceTooHighError"),
       ) != null
