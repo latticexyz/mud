@@ -46,10 +46,10 @@ describe("sqliteStorage", async () => {
 
   it("should create tables and data from block log", async () => {
     expect(() => db.select().from(chainState).all()).toThrowErrorMatchingInlineSnapshot(
-      '"no such table: __chainState"',
+      `[Error: no such table: __chainState]`,
     );
     expect(() => db.select().from(mudStoreTables).all()).toThrowErrorMatchingInlineSnapshot(
-      '"no such table: __mudStoreTables"',
+      `[Error: no such table: __mudStoreTables]`,
     );
 
     const storageAdapter = await sqliteStorage({ database: db, publicClient });

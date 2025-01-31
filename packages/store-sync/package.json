@@ -105,13 +105,11 @@
     "@types/debug": "^4.1.7",
     "@types/react": "18.2.22",
     "@types/sql.js": "^1.4.4",
-    "@viem/anvil": "^0.0.7",
     "eslint-plugin-react": "7.31.11",
     "eslint-plugin-react-hooks": "4.6.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "viem": "2.21.19",
-    "vitest": "0.34.6",
     "wagmi": "2.12.11"
   },
   "peerDependencies": {
