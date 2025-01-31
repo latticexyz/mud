@@ -1,6 +1,6 @@
 "use client";
 
-import { Coins, ExternalLinkIcon, Eye, LoaderIcon, Send } from "lucide-react";
+import { Coins, ExternalLinkIcon, Eye, LoaderIcon, PlusCircle, Send, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
@@ -36,9 +36,13 @@ type DecodedEvent = {
 };
 
 const formSchema = z.object({
-  inputs: z.array(z.string()),
+  inputs: z.array(z.union([z.string(), z.array(z.any()), z.record(z.any())])),
   value: z.string().optional(),
 });
+
+function isArrayOrTuple(type: string) {
+  return type.includes("[]") || type.includes("tuple");
+}
 
 export function FunctionField({ worldAbi, functionAbi }: Props) {
   const operationType: FunctionType =
@@ -56,12 +60,35 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
   const [txHash, setTxHash] = useState<Hex>();
   const txUrl = blockExplorerTransactionUrl({ hash: txHash, chainId });
 
+  const createEmptyInput = (input: (typeof functionAbi.inputs)[0]) => {
+    if (input.type.includes("[]") && input.components) {
+      return input.components.reduce((acc: Record<string, string>, component) => {
+        acc[component.name] = "";
+        return acc;
+      }, {});
+    }
+    return "";
+  };
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      inputs: [],
+      inputs: functionAbi.inputs.map((input) =>
+        input.type.includes("[]") && input.components ? [createEmptyInput(input)] : "",
+      ),
     },
   });
+
+  const parseInput = (value: string, type: string) => {
+    try {
+      if (isArrayOrTuple(type)) {
+        return JSON.parse(value);
+      }
+      return value;
+    } catch (e) {
+      return value;
+    }
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!account.isConnected) {
@@ -71,12 +98,16 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
     setIsLoading(true);
     let toastId;
     try {
+      const parsedInputs = values.inputs.map((input, index) =>
+        parseInput(input as string, functionAbi.inputs[index].type),
+      );
+
       if (operationType === FunctionType.READ) {
         const result = await readContract(wagmiConfig, {
           abi: worldAbi,
           address: worldAddress as Address,
           functionName: functionAbi.name,
-          args: values.inputs,
+          args: parsedInputs,
           chainId,
         });
 
@@ -87,7 +118,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
           abi: worldAbi,
           address: worldAddress as Address,
           functionName: functionAbi.name,
-          args: values.inputs,
+          args: parsedInputs,
           ...(values.value && { value: BigInt(values.value) }),
           chainId,
         });
@@ -112,6 +143,64 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
   }
 
   const inputsLabel = functionAbi?.inputs.map((input) => input.type).join(", ");
+
+  const renderArrayInputs = (input: (typeof functionAbi.inputs)[0], fieldArrayName: string) => {
+    const values = form.watch(fieldArrayName) || [];
+
+    return (
+      <div className="space-y-2">
+        {values.map((_, itemIndex) => (
+          <div key={itemIndex} className="flex gap-2">
+            {input.components?.map((component, componentIndex) => (
+              <FormField
+                key={`${itemIndex}-${component.name}`}
+                control={form.control}
+                name={`${fieldArrayName}.${itemIndex}.${component.name}`}
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    {itemIndex === 0 && <FormLabel className="text-xs">{component.name}</FormLabel>}
+                    <FormControl>
+                      <Input placeholder={component.type} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ))}
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="self-end"
+              onClick={() => {
+                const currentValues = form.getValues(fieldArrayName) as any[];
+                form.setValue(
+                  fieldArrayName,
+                  currentValues.filter((_, idx) => idx !== itemIndex),
+                );
+              }}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        ))}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="w-full"
+          onClick={() => {
+            const currentValues = form.getValues(fieldArrayName) || [];
+            form.setValue(fieldArrayName, [...currentValues, createEmptyInput(input)]);
+          }}
+        >
+          <PlusCircle className="mr-2 h-4 w-4" />
+          Add item
+        </Button>
+      </div>
+    );
+  };
+
   return (
     <div className="pb-6">
       <Form {...form}>
@@ -135,9 +224,22 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
               name={`inputs.${index}`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{input.name}</FormLabel>
+                  <FormLabel>
+                    {input.name}
+                    {input.type.includes("[]") && (
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        {/* (Array of {input.type.replace("[]", "")}) */}
+                        (SystemCallData[])
+                        {/* -> (bytes32 systemId, bytes callData)[] */}
+                      </span>
+                    )}
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder={input.type} {...field} />
+                    {input.type.includes("[]") && input.components ? (
+                      renderArrayInputs(input, `inputs.${index}`)
+                    ) : (
+                      <Input placeholder={input.type} {...field} />
+                    )}
                   </FormControl>
                   <FormMessage />
                 </FormItem>
