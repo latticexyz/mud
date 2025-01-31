@@ -6,6 +6,7 @@ import { getSessionClient } from "./getSessionClient";
 import { SessionClient } from "./common";
 import { SmartAccount } from "viem/account-abstraction";
 import { useSessionAccount } from "./useSessionAccount";
+import { useEffect } from "react";
 
 export function getSessionClientQueryOptions({
   sessionAccount,
@@ -39,7 +40,14 @@ export function getSessionClientQueryOptions({
 export function useSessionClient(userAddress: Address | undefined): UseQueryResult<SessionClient> {
   const { chainId, worldAddress } = useEntryKitConfig();
   const client = useClient({ chainId });
-  const { data: sessionAccount } = useSessionAccount(userAddress);
+  const { data: sessionAccount, error: sessionAccountError } = useSessionAccount(userAddress);
+
+  useEffect(() => {
+    if (sessionAccountError) {
+      console.error("Could not get session account", sessionAccountError);
+    }
+  }, [sessionAccountError]);
+
   return useQuery(
     getSessionClientQueryOptions({
       sessionAccount,

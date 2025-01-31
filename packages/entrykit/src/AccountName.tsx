@@ -4,14 +4,21 @@ import { Logo } from "./icons/Logo";
 import { TruncatedHex } from "./ui/TruncatedHex";
 import { usePreloadImage } from "./usePreloadImage";
 import { twMerge } from "tailwind-merge";
+import { useEffect } from "react";
 
 export type Props = {
   address: Hex;
 };
 
 export function AccountName({ address }: Props) {
-  const { data: ens } = useENS(address);
+  const { data: ens, error: ensError } = useENS(address);
   const avatar = usePreloadImage(ens?.avatar);
+
+  useEffect(() => {
+    if (ensError) {
+      console.log("Could not get ENS", ensError);
+    }
+  }, [ensError]);
 
   return (
     <>
