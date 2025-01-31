@@ -7,7 +7,7 @@ import { anvilRpcUrl, testClient } from "../../../test/common";
 import { waitForTransaction } from "../../test/waitForTransaction";
 import { getTransactionReceipt, sendTransaction } from "viem/actions";
 
-describe("kmsKeyToAccount", () => {
+describe.skipIf(!process.env.AWS_ENDPOINT_URL)("kmsKeyToAccount", () => {
   let account: KmsAccount;
   let keyId: string;
 
