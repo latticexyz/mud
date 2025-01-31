@@ -2,7 +2,11 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    globalSetup: [`${__dirname}/test-setup/global/arktype.ts`, `${__dirname}/test-setup/global/anvil.ts`],
+    globalSetup: [
+      `${__dirname}/test-setup/global/polyfill.ts`,
+      `${__dirname}/test-setup/global/arktype.ts`,
+      `${__dirname}/test-setup/global/anvil.ts`,
+    ],
     setupFiles: [],
     passWithNoTests: true,
     // Temporarily set a low teardown timeout because anvil hangs otherwise
