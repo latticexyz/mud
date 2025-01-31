@@ -1,4 +1,4 @@
-import { testClient } from "../../test/common";
+import { testClient } from "../../../../test-setup/common";
 
 export async function minePending(): Promise<void> {
   const content = await testClient.getTxpoolContent();

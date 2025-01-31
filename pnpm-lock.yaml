@@ -294,15 +294,9 @@ importers:
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.7
-      '@viem/anvil':
-        specifier: ^0.0.7
-        version: 0.0.7(bufferutil@4.0.8)(debug@4.3.4)(utf-8-validate@5.0.10)
       viem:
         specifier: 2.21.19
         version: 2.21.19(bufferutil@4.0.8)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.23.8)
-      vitest:
-        specifier: 0.34.6
-        version: 0.34.6(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.34.1)
 
   packages/config:
     dependencies:

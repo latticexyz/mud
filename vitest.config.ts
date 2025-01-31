@@ -7,7 +7,7 @@ export default defineConfig({
       `${__dirname}/test-setup/global/arktype.ts`,
       `${__dirname}/test-setup/global/anvil.ts`,
     ],
-    setupFiles: [],
+    setupFiles: [`${__dirname}/test-setup/anvil.ts`],
     passWithNoTests: true,
     // Temporarily set a low teardown timeout because anvil hangs otherwise
     // Could move this timeout to anvil setup after https://github.com/wevm/anvil.js/pull/46

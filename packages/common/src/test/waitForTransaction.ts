@@ -1,6 +1,6 @@
 import { Hex } from "viem";
 import { getTransactionReceipt } from "viem/actions";
-import { testClient } from "../../test/common";
+import { testClient } from "../../../../test-setup/common";
 import { minePending } from "./minePending";
 
 export async function waitForTransaction(hash: Hex): Promise<void> {
