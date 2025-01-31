@@ -28,8 +28,5 @@
     "rxjs": "7.5.5",
     "threads": "^1.7.0",
     "viem": "2.21.19"
-  },
-  "devDependencies": {
-    "vite": "^4.2.1"
   }
 }
