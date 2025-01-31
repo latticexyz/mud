@@ -78,9 +78,6 @@ importers:
         specifier: 2.21.19
         version: 2.21.19(typescript@5.4.2)(zod@3.23.8)
     devDependencies:
-      happy-dom:
-        specifier: ^12.10.3
-        version: 12.10.3
       vite:
         specifier: ^4.2.1
         version: 4.3.5(@types/node@20.1.3)
