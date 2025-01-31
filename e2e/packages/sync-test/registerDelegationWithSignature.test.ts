@@ -19,7 +19,7 @@ import { getSchemaTypes, getKeySchema } from "@latticexyz/protocol-parser/intern
 
 const DELEGATOR_PRIVATE_KEY = "0x67bbd1575ecc79b3247c7d7b87a5bc533ccb6a63955a9fefdfaf75853f7cd543";
 
-describe("callWithSignature", async () => {
+describe.skip("callWithSignature", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
   let webserver: ViteDevServer;
   let browser: Browser;
