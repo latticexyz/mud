@@ -26,17 +26,19 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [isUserTriggeredRefetch, setIsUserTriggeredRefetch] = useState(false);
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
   const validateQuery = useQueryValidator(table);
   const {
     data: tableData,
     refetch,
-    isRefetching,
+    isRefetching: isTableDataRefetching,
   } = useTableDataQuery({
     table,
     query,
     isLiveQuery,
   });
+  const isRefetching = isTableDataRefetching && isUserTriggeredRefetch;
   useMonacoSuggestions(table);
 
   const form = useForm({
@@ -49,7 +51,9 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   const handleSubmit = form.handleSubmit((data) => {
     if (validateQuery(data.query)) {
       setQuery(data.query);
-      refetch();
+
+      setIsUserTriggeredRefetch(true);
+      refetch().finally(() => setIsUserTriggeredRefetch(false));
     }
   });
 
@@ -97,6 +101,7 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
                       label: "Execute SQL command",
                       keybindings: [KeyMod.CtrlCmd | KeyCode.Enter],
                       run: () => {
+                        console.log("EXECUTING SQL COMMAND");
                         handleSubmit();
                       },
                     });
@@ -140,7 +145,15 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
               </span>
 
               <Tooltip text={isLiveQuery ? "Pause live query" : "Start live query"}>
-                <Button variant="outline" size="icon" onClick={() => setIsLiveQuery(!isLiveQuery)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsLiveQuery(!isLiveQuery);
+                  }}
+                >
                   {isLiveQuery ? <PauseIcon className="h-4 w-4" /> : <PlayIcon className="h-4 w-4" />}
                 </Button>
               </Tooltip>
