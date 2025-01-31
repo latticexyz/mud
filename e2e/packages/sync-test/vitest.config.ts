@@ -6,6 +6,7 @@ export default defineConfig({
     hookTimeout: 1000 * 60 * 2,
     singleThread: true,
     maxConcurrency: 1,
+    bail: 1,
     globalSetup: [`${__dirname}/setup/globalSetup.ts`],
     exclude: [...configDefaults.exclude, "compare"],
   },
