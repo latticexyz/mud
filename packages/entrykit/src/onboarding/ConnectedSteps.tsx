@@ -22,7 +22,13 @@ export function ConnectedSteps({ userClient, initialUserAddress }: Props) {
   const paymaster = getPaymaster(chain);
 
   const userAddress = userClient.account.address;
-  const { data: prerequisites } = usePrerequisites(userAddress);
+  const { data: prerequisites, error: prerequisitesError } = usePrerequisites(userAddress);
+
+  useEffect(() => {
+    if (prerequisitesError) {
+      console.error("Could not get prerequisites", prerequisitesError);
+    }
+  }, [prerequisitesError]);
 
   const { closeAccountModal } = useAccountModal();
   const isNewConnection = userAddress !== initialUserAddress;
