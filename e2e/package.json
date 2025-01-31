@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@playwright/test": "1.35.1",
-    "shx": "^0.3.4"
+    "shx": "^0.3.4",
+    "vitest": "2.1.8"
   }
 }

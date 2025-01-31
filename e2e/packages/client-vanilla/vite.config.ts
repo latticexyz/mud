@@ -6,4 +6,7 @@ export default defineConfig({
     minify: true,
     sourcemap: true,
   },
+  test: {
+    environment: "happy-dom",
+  },
 });
