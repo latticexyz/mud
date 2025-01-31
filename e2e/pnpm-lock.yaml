@@ -11,6 +11,9 @@ importers:
       '@playwright/test':
         specifier: 1.35.1
         version: 1.35.1
+      happy-dom:
+        specifier: ^12.10.3
+        version: 12.10.3
       shx:
         specifier: ^0.3.4
         version: 0.3.4

@@ -1,3 +1,5 @@
+// @vitest-environment happy-dom
+
 import { describe, expect, it } from "vitest";
 import { rpcHttpUrl } from "./setup/constants";
 import { deployContracts } from "./setup";
