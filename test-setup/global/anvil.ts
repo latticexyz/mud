@@ -3,7 +3,7 @@ import { anvil } from "prool/instances";
 import { anvilHost, anvilPort } from "../common";
 import { execa } from "execa";
 
-process.env.FOUNDRY_DISABLE_NIGHTLY_WARNING = "1";
+process.env.FOUNDRY_DISABLE_NIGHTLY_WARNING ??= "1";
 
 const server = createServer({
   instance: anvil(),
