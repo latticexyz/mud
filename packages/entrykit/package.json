@@ -36,7 +36,7 @@
     "clean:js": "shx rm -rf dist",
     "data:relay-chains": "tsx src/scripts/get-relay-chains.ts",
     "dev": "tsup --watch",
-    "proxy": "node ./playground/proxy.js",
+    "proxy": "tsx ./playground/proxy.ts",
     "playground": "mprocs",
     "playground:deploy": "mprocs --config mprocs.deploy.yaml",
     "test": "tsc --noEmit && vitest",
@@ -62,11 +62,14 @@
     "react-merge-refs": "^2.1.1",
     "tailwind-merge": "^1.12.0",
     "usehooks-ts": "^3.1.0",
+    "uuid": "^11.0.5",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@tanstack/react-query": "^5.56.2",
+    "@types/cors": "^2.8.17",
     "@types/debug": "^4.1.7",
+    "@types/express": "^5.0.0",
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
     "@types/ws": "^8.5.4",

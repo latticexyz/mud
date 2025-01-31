@@ -38,6 +38,7 @@ export function ConnectWallet() {
     window.google.accounts.id.initialize({
       client_id: clientId,
       callback: handleCredentialResponse,
+      auto_select: false,
       nonce: jwtSigner.address,
     });
     window.google.accounts.id.renderButton(buttonRef.current, {
@@ -45,7 +46,7 @@ export function ConnectWallet() {
       size: "large",
       shape: "rectangular",
     });
-  }, [jwtSigner, handleCredentialResponse]);
+  }, [jwtSigner, handleCredentialResponse, buttonRef.current]);
 
   // automatically open connect modal once
   // TODO: remove this once we have more than "connect wallet" as an option

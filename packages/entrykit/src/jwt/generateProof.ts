@@ -1,6 +1,7 @@
 // TODO: for some reason the package doesn't include a dist directory
 import { generateJWTAuthenticatorInputs } from "@zk-email/jwt-tx-builder-helpers/src/input-generators";
 import { Hex, encodeAbiParameters, parseAbiParameters } from "viem";
+
 const proverUrl = "http://localhost:3001";
 
 export async function generateProof(jwt: string) {
@@ -35,7 +36,9 @@ export async function generateProof(jwt: string) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ input: serializedInputs }),
+    body: JSON.stringify({
+      input: serializedInputs,
+    }),
   });
 
   if (!response.ok) {
