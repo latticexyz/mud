@@ -3,6 +3,7 @@ import { anvil } from "prool/instances";
 import { anvilHost, anvilPort } from "../common";
 import { execa } from "execa";
 
+// The nightly warning from Foundry causes anvil to not start up properly.
 process.env.FOUNDRY_DISABLE_NIGHTLY_WARNING ??= "1";
 
 const server = createServer({
