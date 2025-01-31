@@ -1,5 +1,40 @@
 # @latticexyz/block-logs-stream
 
+## 2.2.17
+
+### Patch Changes
+
+- 9321a5c: Added an experimental option to help sync from load balanced RPCs, where nodes may be slightly out of sync, causing data inconsistencies while fetching logs.
+
+  To enable this, replace `publicClient: Client` with `internal_clientOptions: { chain: Chain, validateBlockRange: true }` when calling any sync method (e.g. `syncToStash`). For `<SyncProvider>`, only a `internal_validateBlockRange` prop is needed.
+
+  ```diff
+  -syncToStash({ publicClient, ... });
+  +syncToStash({ internal_clientOptions: { chain, validateBlockRange: true }, ... });
+  ```
+
+  ```diff
+  -<SyncProvider adapter={createSyncAdapter(...)}>
+  +<SyncProvider adapter={createSyncAdapter(...)} internal_validateBlockRange>
+  ```
+
+  Note that using this option makes an additional call to `eth_getBlockByNumber` for each `eth_getLogs` call and expects the RPC to support batched calls.
+
+- 40aaf97: Added an experimental option to help sync from load balanced RPCs, where nodes may be slightly out of sync, causing data inconsistencies while fetching logs.
+
+  To enable this, replace `publicClient: Client` with `internal_clientOptions: { chain: Chain, validateBlockRange: true }` when calling `fetchLogs` or `fetchBlockLogs`.
+
+  ```diff
+  -fetchLogs({ publicClient, ... });
+  +fetchLogs({ internal_clientOptions: { chain, validateBlockRange: true }, ... });
+  ```
+
+  Note that using this option makes an additional call to `eth_getBlockByNumber` for each `eth_getLogs` call and expects the RPC to support batched calls.
+
+- Updated dependencies [589fd3a]
+- Updated dependencies [7385948]
+  - @latticexyz/common@2.2.17
+
 ## 2.2.16
 
 ### Patch Changes

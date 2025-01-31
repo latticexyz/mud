@@ -3,7 +3,7 @@ import { defineConfig } from "tsup";
 
 export default defineConfig((opts) => ({
   outDir: "dist/tsup",
-  entry: ["src/exports/index.ts", "src/exports/internal.ts", "src/bin/deploy-local-prereqs.ts"],
+  entry: ["src/exports/index.ts", "src/exports/internal.ts", "src/bin/deploy.ts"],
   target: "esnext",
   format: ["esm"],
   sourcemap: true,

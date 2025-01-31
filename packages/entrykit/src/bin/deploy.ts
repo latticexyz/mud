@@ -2,13 +2,13 @@ import "dotenv/config";
 import {
   Hex,
   concatHex,
-  createWalletClient,
   http,
   isHex,
   parseAbiParameters,
   encodeAbiParameters,
   size,
   parseEther,
+  createClient,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { getRpcUrl } from "@latticexyz/common/foundry";
@@ -20,9 +20,10 @@ import {
 } from "@latticexyz/common/internal";
 import entryPointArtifact from "@account-abstraction/contracts/artifacts/EntryPoint.json" assert { type: "json" };
 import simpleAccountFactoryArtifact from "@account-abstraction/contracts/artifacts/SimpleAccountFactory.json" assert { type: "json" };
-import paymasterArtifact from "@latticexyz/paymaster/out/GenerousPaymaster.sol/GenerousPaymaster.json" assert { type: "json" };
+import localPaymasterArtifact from "@latticexyz/paymaster/out/GenerousPaymaster.sol/GenerousPaymaster.json" assert { type: "json" };
 import { getChainId } from "viem/actions";
 import { writeContract } from "@latticexyz/common";
+import { entryPoint07Address } from "viem/account-abstraction";
 
 // TODO: parse env with arktype (to avoid zod dep) and throw when absent
 
@@ -38,15 +39,9 @@ to use a prefunded Anvil account.`,
   );
 }
 const account = privateKeyToAccount(privateKey);
+const rpcUrl = await getRpcUrl();
 
-// TODO: rpc url flag/env var?
-// TODO: foundry profile flag/env var?
-const rpc = await getRpcUrl();
-
-const client = createWalletClient({
-  transport: http(rpc),
-  account,
-});
+const client = createClient({ account, transport: http(rpcUrl) });
 
 const chainId = await getChainId(client);
 
@@ -60,7 +55,11 @@ const entryPointAddress = getContractAddress({
   bytecode: entryPointArtifact.bytecode as Hex,
   salt: entryPointSalt,
 });
-// TODO: assert that this matches Viem's entryPoint07Address
+if (entryPointAddress !== entryPoint07Address) {
+  throw new Error(
+    `Unexpected EntryPoint v0.7 address\n\n  Expected: ${entryPoint07Address}\nActual: ${entryPointAddress}`,
+  );
+}
 
 // Deploy entrypoint first, because following deploys need to be able to call it.
 await ensureContractsDeployed({
@@ -76,12 +75,6 @@ await ensureContractsDeployed({
   ],
 });
 
-const paymasterBytecode = concatHex([
-  paymasterArtifact.bytecode.object as Hex,
-  encodeAbiParameters(parseAbiParameters("address"), [entryPointAddress]),
-]);
-const paymasterAddress = getContractAddress({ deployerAddress, bytecode: paymasterBytecode });
-
 await ensureContractsDeployed({
   client,
   deployerAddress,
@@ -94,17 +87,28 @@ await ensureContractsDeployed({
       deployedBytecodeSize: size(simpleAccountFactoryArtifact.deployedBytecode as Hex),
       debugLabel: "SimpleAccountFactory",
     },
-    {
-      bytecode: paymasterBytecode,
-      deployedBytecodeSize: size(paymasterArtifact.deployedBytecode.object as Hex),
-      debugLabel: "GenerousPaymaster",
-    },
   ],
 });
 
-console.log("\nContracts deployed!\n");
-
 if (chainId === 31337) {
+  const localPaymasterBytecode = concatHex([
+    localPaymasterArtifact.bytecode.object as Hex,
+    encodeAbiParameters(parseAbiParameters("address"), [entryPointAddress]),
+  ]);
+  const localPaymasterAddress = getContractAddress({ deployerAddress, bytecode: localPaymasterBytecode });
+
+  await ensureContractsDeployed({
+    client,
+    deployerAddress,
+    contracts: [
+      {
+        bytecode: localPaymasterBytecode,
+        deployedBytecodeSize: size(localPaymasterArtifact.deployedBytecode.object as Hex),
+        debugLabel: "GenerousPaymaster",
+      },
+    ],
+  });
+
   const tx = await writeContract(client, {
     chain: null,
     address: entryPointAddress,
@@ -118,18 +122,12 @@ if (chainId === 31337) {
       },
     ],
     functionName: "depositTo",
-    args: [paymasterAddress],
+    args: [localPaymasterAddress],
     value: parseEther("100"),
   });
   await waitForTransactions({ client, hashes: [tx] });
-  console.log("\nFunded paymaster at:", paymasterAddress, "\n");
-} else {
-  console.log(`
-Be sure to fund the paymaster by making a deposit in the entrypoint contract. For example:
-
-  cast send ${entryPointAddress} "depositTo(address)" ${paymasterAddress} --value 1ether
-`);
+  console.log("\nFunded local paymaster at:", localPaymasterAddress, "\n");
 }
 
-console.log("\nEntryKit prerequisites complete!\n");
+console.log("\nEntryKit contracts are ready!\n");
 process.exit(0);

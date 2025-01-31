@@ -40,7 +40,7 @@
   "devDependencies": {
     "@ark/attest": "0.12.1",
     "@changesets/cli": "^2.27.7",
-    "@types/node": "^18",
+    "@types/node": "^20",
     "@typescript-eslint/eslint-plugin": "7.1.1",
     "@typescript-eslint/parser": "7.1.1",
     "@viem/anvil": "^0.0.7",
@@ -54,16 +54,16 @@
     "prettier-plugin-solidity": "1.3.1",
     "shx": "^0.3.4",
     "sort-package-json": "^2.10.1",
-    "tsup": "^8.3.5",
+    "tsup": "8.3.0",
     "tsx": "4.19.0",
     "turbo": "^1.9.3",
     "typescript": "5.4.2",
     "viem": "2.21.19",
     "vitest": "2.1.2"
   },
-  "packageManager": "pnpm@9.6.0",
+  "packageManager": "pnpm@9.15.4",
   "engines": {
-    "node": "18.x || 20.x",
-    "pnpm": "^9.6.0"
+    "node": "^20",
+    "pnpm": "^9"
   }
 }

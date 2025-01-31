@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.2.17
+
+### Patch Changes
+
+- 589fd3a: Improved approach for checking for nonce errors.
+- 7385948: Updated Rhodolite chain config with new contract addresses.
+  - @latticexyz/schema-type@2.2.17
+
 ## 2.2.16
 
 ### Patch Changes

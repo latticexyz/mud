@@ -8,3 +8,10 @@ export type Step = {
 };
 
 export const minGasBalance = parseEther("0.01");
+
+export type RelayChain = {
+  bridgeUrl: string;
+};
+export type RelayChains = {
+  [chainId: number]: RelayChain | undefined;
+};

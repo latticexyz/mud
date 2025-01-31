@@ -1,5 +1,18 @@
 # @latticexyz/stash
 
+## 2.2.17
+
+### Patch Changes
+
+- Updated dependencies [589fd3a]
+- Updated dependencies [dead80e]
+- Updated dependencies [7385948]
+  - @latticexyz/common@2.2.17
+  - @latticexyz/protocol-parser@2.2.17
+  - @latticexyz/config@2.2.17
+  - @latticexyz/store@2.2.17
+  - @latticexyz/schema-type@2.2.17
+
 ## 2.2.16
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.2.17
+
+### Patch Changes
+
+- d5f4e1e: Updated React template with Stash client state library, EntryKit for wallet support, and a cleaned up app structure.
+- 09846f2: Updated React ECS template with EntryKit for wallet support and a cleaned up app structure.
+- e45e375: Replaced internal usage of `create-create-app` with a simpler recursive copy operation.
+
 ## 2.2.16
 
 ## 2.2.15

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/entrykit",
-  "version": "2.2.16",
+  "version": "2.2.17",
   "description": "User onboarding flows for MUD apps",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
     }
   },
   "bin": {
-    "deploy-local-prereqs": "./bin/deploy-local-prereqs.js"
+    "entrykit-deploy": "./bin/deploy.js"
   },
   "files": [
     "dist"
@@ -35,6 +35,7 @@
     "clean": "pnpm run clean:js",
     "clean:js": "shx rm -rf dist",
     "data:relay-chains": "tsx src/scripts/get-relay-chains.ts",
+    "deploy": "tsx src/bin/deploy.ts",
     "dev": "tsup --watch",
     "playground": "mprocs",
     "playground:deploy": "mprocs --config mprocs.deploy.yaml",

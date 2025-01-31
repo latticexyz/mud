@@ -8,7 +8,9 @@ export function getSessionSigner(userAddress: Address) {
     store.getState().signers[label] ??
     (() => {
       // attempt to reuse previous AccountKit session
-      const deprecatedPrivateKey = localStorage.getItem(`mud:appSigner:privateKey:${userAddress.toLowerCase()}`);
+      const deprecatedPrivateKey = localStorage
+        .getItem(`mud:appSigner:privateKey:${userAddress.toLowerCase()}`)
+        ?.replace(/^"(.*)"$/, "$1");
       const privateKey = isHex(deprecatedPrivateKey) ? deprecatedPrivateKey : generatePrivateKey();
       store.setState((state) => ({
         signers: {

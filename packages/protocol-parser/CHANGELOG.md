@@ -1,5 +1,16 @@
 # @latticexyz/protocol-parser
 
+## 2.2.17
+
+### Patch Changes
+
+- dead80e: Added padding to make sure the `encodedLengths` field of a Store log is always 32 bytes.
+- Updated dependencies [589fd3a]
+- Updated dependencies [7385948]
+  - @latticexyz/common@2.2.17
+  - @latticexyz/config@2.2.17
+  - @latticexyz/schema-type@2.2.17
+
 ## 2.2.16
 
 ### Patch Changes
