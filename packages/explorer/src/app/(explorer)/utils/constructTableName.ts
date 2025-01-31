@@ -1,6 +1,6 @@
 import { Hex } from "viem";
-import { snakeCase } from "change-case";
 import { Table } from "@latticexyz/config";
+import { getTableName } from "@latticexyz/store-sync/sqlite";
 import { indexerForChainId } from "./indexerForChainId";
 
 export function constructTableName(table: Table, worldAddress: Hex, chainId: number) {
@@ -9,7 +9,7 @@ export function constructTableName(table: Table, worldAddress: Hex, chainId: num
 }
 
 function constructSqliteTableName(table: Table, worldAddress: Hex) {
-  return `${worldAddress}__${snakeCase(table.namespace)}__${snakeCase(table.name)}`;
+  return getTableName(worldAddress, table.namespace, table.name);
 }
 
 function constructDozerTableName(table: Table) {

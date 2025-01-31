@@ -619,9 +619,6 @@ importers:
       better-sqlite3:
         specifier: ^8.6.0
         version: 8.6.0
-      change-case:
-        specifier: ^5.2.0
-        version: 5.2.0
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
