@@ -1,11 +1,16 @@
 /* eslint-disable max-len */
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { getStoreLogs } from "./getStoreLogs";
 import config from "../mud.config";
 import { testClient } from "../../../test-setup/common";
+import { deployMockGame } from "../../../test-setup/mockGame";
 import { summarizeLogs } from "./test/summarizeLogs";
 
 describe("getStoreLogs", async () => {
+  beforeAll(async () => {
+    await deployMockGame();
+  });
+
   it("fetches only store logs", async () => {
     const logs = await getStoreLogs(testClient, { fromBlock: "earliest", toBlock: "latest" });
     expect(summarizeLogs(logs)).toMatchInlineSnapshot(`
