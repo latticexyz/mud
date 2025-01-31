@@ -4,7 +4,7 @@ import { Coins, ExternalLinkIcon, Eye, LoaderIcon, Send } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
-import { Abi, AbiFunction, Address, Hex, decodeEventLog, stringify } from "viem";
+import { Abi, AbiFunction, AbiParameter, Address, Hex, decodeEventLog, stringify } from "viem";
 import { useAccount, useConfig } from "wagmi";
 import { readContract, waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import { z } from "zod";
@@ -40,6 +40,31 @@ const formSchema = z.object({
   value: z.string().optional(),
 });
 
+const getInputLabel = (input: AbiParameter): string => {
+  if (!("components" in input)) {
+    return input.type;
+  }
+
+  if (input.type === "tuple") {
+    return input.name || input.type;
+  } else if (input.type === "tuple[]") {
+    return `${input.name}[]`;
+  }
+  return input.type;
+};
+
+const getInputPlaceholder = (input: AbiParameter): string => {
+  if (!("components" in input)) {
+    return input.type;
+  }
+
+  const componentsString = input.components.map(getInputLabel).join(", ");
+  if (input.type === "tuple[]") {
+    return `[${componentsString}][]`;
+  }
+  return `[${componentsString}]`;
+};
+
 export function FunctionField({ worldAbi, functionAbi }: Props) {
   const operationType: FunctionType =
     functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure"
@@ -55,6 +80,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
   const [events, setEvents] = useState<DecodedEvent[]>();
   const [txHash, setTxHash] = useState<Hex>();
   const txUrl = blockExplorerTransactionUrl({ hash: txHash, chainId });
+  const inputLabels = functionAbi.inputs.map(getInputLabel);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -87,7 +113,9 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
           abi: worldAbi,
           address: worldAddress as Address,
           functionName: functionAbi.name,
-          args: values.inputs,
+          args: values.inputs.map((value, index) =>
+            functionAbi.inputs[index]?.type === "tuple" ? JSON.parse(value) : value,
+          ),
           ...(values.value && { value: BigInt(values.value) }),
           chainId,
         });
@@ -111,14 +139,13 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
     }
   }
 
-  const inputsLabel = functionAbi?.inputs.map((input) => input.type).join(", ");
   return (
     <div className="pb-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} id={functionAbi.name} className="space-y-4">
           <h3 className="font-semibold">
-            <span className="text-orange-500">{functionAbi?.name}</span>
-            <span className="opacity-50">{inputsLabel && ` (${inputsLabel})`}</span>
+            <span className="text-orange-500">{functionAbi.name}</span>
+            <span className="opacity-50"> ({inputLabels.join(", ")})</span>
             <span className="ml-2 opacity-50">
               {functionAbi.stateMutability === "payable" && <Coins className="mr-2 inline-block h-4 w-4" />}
               {(functionAbi.stateMutability === "view" || functionAbi.stateMutability === "pure") && (
@@ -128,7 +155,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
             </span>
           </h3>
 
-          {functionAbi?.inputs.map((input, index) => (
+          {functionAbi.inputs.map((input, index) => (
             <FormField
               key={index}
               control={form.control}
@@ -137,7 +164,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
                 <FormItem>
                   <FormLabel>{input.name}</FormLabel>
                   <FormControl>
-                    <Input placeholder={input.type} {...field} />
+                    <Input placeholder={getInputPlaceholder(input)} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
