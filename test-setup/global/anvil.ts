@@ -1,12 +1,17 @@
-import { startProxy as startAnvilProxy } from "@viem/anvil";
+import { createServer } from "prool";
+import { anvil } from "prool/instances";
 import { anvilHost, anvilPort } from "../common";
 import { execa } from "execa";
 
-// ensure anvil dies
-// TODO: maybe don't need this once we move to prool
-process.on("SIGINT", () => process.exit());
-process.on("SIGTERM", () => process.exit());
-process.on("SIGQUIT", () => process.exit());
+// The nightly warning from Foundry causes anvil to not start up properly.
+// https://github.com/wevm/prool/issues/35
+process.env.FOUNDRY_DISABLE_NIGHTLY_WARNING ??= "1";
+
+const server = createServer({
+  instance: anvil(),
+  host: anvilHost,
+  port: anvilPort,
+});
 
 export default async () => {
   console.log("building mock game contracts");
@@ -17,5 +22,9 @@ export default async () => {
   });
 
   console.log("starting anvil proxy");
-  return startAnvilProxy({ host: anvilHost, port: anvilPort });
+  const stopServer = await server.start();
+
+  return async () => {
+    await stopServer();
+  };
 };
