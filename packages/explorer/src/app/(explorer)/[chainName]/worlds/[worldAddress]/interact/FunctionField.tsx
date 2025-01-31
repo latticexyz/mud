@@ -45,13 +45,24 @@ const getInputLabel = (input: AbiParameter): string => {
     return input.type;
   }
 
-  const componentsString = input.components.map(getInputLabel).join(", ");
   if (input.type === "tuple") {
-    return `[${componentsString}]`;
+    return input.name || input.type;
   } else if (input.type === "tuple[]") {
-    return `[${componentsString}][]`;
+    return `${input.name}[]`;
   }
   return input.type;
+};
+
+const getInputPlaceholder = (input: AbiParameter): string => {
+  if (!("components" in input)) {
+    return input.type;
+  }
+
+  const componentsString = input.components.map(getInputLabel).join(", ");
+  if (input.type === "tuple[]") {
+    return `[${componentsString}][]`;
+  }
+  return `[${componentsString}]`;
 };
 
 export function FunctionField({ worldAbi, functionAbi }: Props) {
@@ -153,7 +164,7 @@ export function FunctionField({ worldAbi, functionAbi }: Props) {
                 <FormItem>
                   <FormLabel>{input.name}</FormLabel>
                   <FormControl>
-                    <Input placeholder={inputLabels[index]} {...field} />
+                    <Input placeholder={getInputPlaceholder(input)} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
