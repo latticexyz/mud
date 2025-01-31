@@ -1,6 +1,6 @@
 "use client";
 
-import { CommandIcon, CornerDownLeft, PauseIcon, PlayIcon } from "lucide-react";
+import { CommandIcon, CornerDownLeft, LoaderIcon, PauseIcon, PlayIcon } from "lucide-react";
 import { KeyCode, KeyMod, editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
@@ -28,7 +28,11 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
   const [isFocused, setIsFocused] = useState(false);
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
   const validateQuery = useQueryValidator(table);
-  const { data: tableData, refetch } = useTableDataQuery({
+  const {
+    data: tableData,
+    refetch,
+    isRefetching,
+  } = useTableDataQuery({
     table,
     query,
     isLiveQuery,
@@ -143,20 +147,23 @@ export function SQLEditor({ table, isLiveQuery, setIsLiveQuery }: Props) {
             </>
           ) : null}
 
-          <Button className="flex gap-2 pl-4 pr-3" type="submit">
+          <Button className="group relative flex gap-2 pl-4 pr-3" type="submit" disabled={isRefetching}>
             Run
-            <span className="flex items-center gap-0.5 text-white/60">
-              {navigator.platform.toLowerCase().includes("mac") ? (
-                <>
-                  <CommandIcon className="h-3 w-3" />
-                  <CornerDownLeft className="h-3 w-3" />
-                </>
-              ) : (
-                <>
-                  <span className="text-xs">CTRL</span>
-                  <CornerDownLeft className="h-3 w-3" />
-                </>
-              )}
+            <span className="relative flex items-center gap-0.5 text-white/60">
+              <LoaderIcon className="absolute h-4 w-4 animate-spin opacity-0 group-disabled:opacity-100" />
+              <span className="flex items-center gap-0.5 opacity-100 group-disabled:opacity-0">
+                {navigator.platform.toLowerCase().includes("mac") ? (
+                  <>
+                    <CommandIcon className="h-3 w-3" />
+                    <CornerDownLeft className="h-3 w-3" />
+                  </>
+                ) : (
+                  <>
+                    <span className="text-xs">CTRL</span>
+                    <CornerDownLeft className="h-3 w-3" />
+                  </>
+                )}
+              </span>
             </span>
           </Button>
         </div>
