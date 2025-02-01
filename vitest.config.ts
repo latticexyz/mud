@@ -9,12 +9,16 @@ export default defineConfig({
     ],
     setupFiles: [`${__dirname}/test-setup/anvil.ts`],
     passWithNoTests: true,
+    typecheck: { enabled: true },
     // Temporarily set a low teardown timeout because anvil hangs otherwise
     // Could move this timeout to anvil setup after https://github.com/wevm/anvil.js/pull/46
-    teardownTimeout: 500,
+    teardownTimeout: 30_000,
     hookTimeout: 15000,
     // Temporarily disable file parallelism until we improve MUD config imports (https://github.com/latticexyz/mud/pull/3290)
     fileParallelism: false,
+    env: {
+      VITEST_PID: String(process.pid),
+    },
   },
   server: {
     watch: {
