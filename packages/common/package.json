@@ -66,7 +66,7 @@
     "clean": "pnpm run clean:js",
     "clean:js": "shx rm -rf dist",
     "dev": "tsup --watch",
-    "test": "vitest --run",
+    "test": "vitest typecheck --run --passWithNoTests && vitest --run",
     "test:ci": "pnpm run test"
   },
   "dependencies": {
