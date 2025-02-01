@@ -15,7 +15,7 @@ export function mud(opts: { worldsFile: string }): Plugin {
       const chainId = Number(env.VITE_CHAIN_ID) || 31337;
 
       config.define ??= {};
-      config.define["import.meta.env.CHAIN_ID"] = chainId;
+      config.define["import.meta.env.CHAIN_ID"] = JSON.stringify(chainId);
 
       if (!(await isReadable(worldsFile))) {
         console.log("no worlds file");
@@ -29,7 +29,8 @@ export function mud(opts: { worldsFile: string }): Plugin {
       const world = worlds[chainId];
       if (world) {
         config.define["import.meta.env.WORLD_ADDRESS"] = JSON.stringify(world.address);
-        config.define["import.meta.env.START_BLOCK"] = world.blockNumber != null ? `${world.blockNumber}n` : undefined;
+        config.define["import.meta.env.START_BLOCK"] =
+          world.blockNumber != null ? JSON.stringify(world.blockNumber) : undefined;
       } else {
         console.log("no world deploy for chain ID", chainId);
       }
