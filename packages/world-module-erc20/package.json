@@ -42,7 +42,7 @@
     "dev": "tsup --watch",
     "gas-report": "gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
-    "test": "forge test",
+    "test": "tsc --noEmit && forge test",
     "test:ci": "pnpm run test"
   },
   "dependencies": {
@@ -57,8 +57,7 @@
     "@latticexyz/gas-report": "workspace:*",
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
-    "solhint": "^3.3.7",
-    "vitest": "0.34.6"
+    "solhint": "^3.3.7"
   },
   "publishConfig": {
     "access": "public"
