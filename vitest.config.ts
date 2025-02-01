@@ -8,7 +8,6 @@ export default defineConfig({
     // Could move this timeout to anvil setup after https://github.com/wevm/anvil.js/pull/46
     teardownTimeout: 500,
     hookTimeout: 15000,
-    fileParallelism: false,
     env: {
       // For MacOS users, set up PostgreSQL with
       //   brew update
