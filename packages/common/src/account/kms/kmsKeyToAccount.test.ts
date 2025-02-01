@@ -3,9 +3,9 @@ import { KmsAccount, kmsKeyToAccount } from "./kmsKeyToAccount";
 import { CreateKeyCommand, KMSClient } from "@aws-sdk/client-kms";
 import { parseGwei, http, verifyMessage, verifyTypedData, createClient, parseEther } from "viem";
 import { foundry } from "viem/chains";
-import { getAnvilRpcUrl, getTestClient, snapshotAnvilState } from "../../../../../test-setup/common";
+import { getAnvilRpcUrl, createTestClient, snapshotAnvilState } from "with-anvil";
 import { waitForTransaction } from "../../test/waitForTransaction";
-import { getTransactionReceipt, sendTransaction } from "viem/actions";
+import { getTransactionReceipt, sendTransaction, setBalance } from "viem/actions";
 
 describe.skipIf(!process.env.AWS_ENDPOINT_URL)("kmsKeyToAccount", () => {
   let account: KmsAccount;
@@ -110,7 +110,7 @@ describe.skipIf(!process.env.AWS_ENDPOINT_URL)("kmsKeyToAccount", () => {
 
   it("can execute transactions", async () => {
     // Fund the KMS account
-    getTestClient().setBalance({ address: account.address, value: parseEther("1") });
+    setBalance(createTestClient(), { address: account.address, value: parseEther("1") });
 
     const kmsClient = createClient({
       chain: foundry,

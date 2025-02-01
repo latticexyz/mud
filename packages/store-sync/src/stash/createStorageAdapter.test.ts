@@ -3,9 +3,9 @@ import { storeEventsAbi } from "@latticexyz/store";
 import { createStorageAdapter } from "./createStorageAdapter";
 import { config, deployMockGame } from "../../../../test-setup/mockGame";
 import { fetchAndStoreLogs } from "../fetchAndStoreLogs";
-import { getTestClient, snapshotAnvilState } from "../../../../test-setup/common";
 import { getBlockNumber } from "viem/actions";
 import { createStash } from "@latticexyz/stash/internal";
+import { createTestClient, snapshotAnvilState } from "with-anvil";
 
 describe("createStorageAdapter", async () => {
   beforeAll(snapshotAnvilState);
@@ -16,7 +16,7 @@ describe("createStorageAdapter", async () => {
   });
 
   it("sets component values from logs", async () => {
-    const testClient = getTestClient();
+    const testClient = createTestClient();
     const stash = createStash(config);
     const storageAdapter = createStorageAdapter({ stash });
 

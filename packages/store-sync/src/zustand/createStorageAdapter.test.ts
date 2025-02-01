@@ -4,9 +4,9 @@ import { createStorageAdapter } from "./createStorageAdapter";
 import { createStore } from "./createStore";
 import { config, deployMockGame } from "../../../../test-setup/mockGame";
 import { fetchAndStoreLogs } from "../fetchAndStoreLogs";
-import { getTestClient, snapshotAnvilState } from "../../../../test-setup/common";
 import { getBlockNumber } from "viem/actions";
 import { Address } from "viem";
+import { createTestClient, snapshotAnvilState } from "with-anvil";
 
 describe("createStorageAdapter", async () => {
   beforeAll(snapshotAnvilState);
@@ -19,7 +19,7 @@ describe("createStorageAdapter", async () => {
   });
 
   it("sets component values from logs", async () => {
-    const testClient = getTestClient();
+    const testClient = createTestClient();
     const useStore = createStore({ tables: config.tables });
     const storageAdapter = createStorageAdapter({ store: useStore });
 
