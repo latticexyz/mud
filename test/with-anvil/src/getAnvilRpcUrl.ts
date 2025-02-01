@@ -1,3 +1,8 @@
+// Usually you'd use something like `VITEST_POOL_ID` here, but we can't because
+// we might be running many instances of Vitest in parallel with Turbo.
+// Instead, we'll just pick a random ID. We do this out here instead of inside
+// the function to guarantee that each importing context (i.e. Vitest worker)
+// has a stable ID.
 const instanceId = Math.floor(Math.random() * 100000);
 
 export function getAnvilRpcUrl() {
