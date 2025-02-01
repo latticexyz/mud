@@ -4,10 +4,11 @@ export default defineConfig({
   test: {
     globalSetup: [`${__dirname}/test-setup/global/arktype.ts`],
     passWithNoTests: true,
-    // Temporarily set a low teardown timeout because anvil hangs otherwise
-    // Could move this timeout to anvil setup after https://github.com/wevm/anvil.js/pull/46
-    teardownTimeout: 500,
+    teardownTimeout: 1000,
     hookTimeout: 15000,
+    // doing parallel MUD deploys from the same project dir
+    // still seems to have race conditions so disable for now
+    fileParallelism: false,
     env: {
       // For MacOS users, set up PostgreSQL with
       //   brew update
