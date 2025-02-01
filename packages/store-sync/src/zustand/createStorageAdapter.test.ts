@@ -5,17 +5,14 @@ import { createStore } from "./createStore";
 import { config, deployMockGame } from "mock-game-contracts";
 import { fetchAndStoreLogs } from "../fetchAndStoreLogs";
 import { getBlockNumber } from "viem/actions";
-import { Address } from "viem";
 import { createTestClient, snapshotAnvilState } from "with-anvil";
 
 describe("createStorageAdapter", async () => {
   beforeAll(snapshotAnvilState);
   beforeEach(snapshotAnvilState);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let worldAddress: Address;
   beforeAll(async () => {
-    worldAddress = await deployMockGame();
+    await deployMockGame();
   });
 
   it("sets component values from logs", async () => {

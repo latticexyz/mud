@@ -8,7 +8,7 @@ export { config, worldAbi };
 
 export async function deployMockGame(): Promise<Hex> {
   console.log("deploying mock game to", getAnvilRpcUrl());
-  const { stdout, stderr } = await execa(
+  const { stdout } = await execa(
     "pnpm",
     [
       ["mud", "deploy"],
@@ -27,16 +27,16 @@ export async function deployMockGame(): Promise<Hex> {
         PRIVATE_KEY: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
         DEBUG: "mud:*",
       },
+      stdout: ["pipe", "inherit"],
+      stderr: "inherit",
     },
   );
-  if (stderr) console.error(stderr);
-  if (stdout) console.log(stdout);
 
   const [, worldAddress] = stdout.match(/worldAddress: '(0x[0-9a-f]+)'/i) ?? [];
   if (!isHex(worldAddress)) {
     throw new Error("world address not found in output, did the deploy fail?");
   }
-  console.log("deployed mock game", worldAddress);
+  console.log("deployed mock game world", worldAddress);
 
   return worldAddress;
 }
