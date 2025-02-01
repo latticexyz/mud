@@ -74,6 +74,9 @@ importers:
       vitest:
         specifier: 2.1.2
         version: 2.1.2(@types/node@20.17.16)(jsdom@22.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.34.1)
+      with-anvil:
+        specifier: workspace:*
+        version: link:test/with-anvil
 
   packages/abi-ts:
     dependencies:
@@ -1611,6 +1614,8 @@ importers:
       vite:
         specifier: ^4.2.1
         version: 4.5.5(@types/node@22.7.4)(terser@5.34.1)
+
+  test/with-anvil: {}
 
 packages:
 
