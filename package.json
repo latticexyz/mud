@@ -26,8 +26,8 @@
     "release:check": "changeset status --verbose --since=origin/main",
     "release:publish": "pnpm install && pnpm build && changeset publish",
     "release:version": "changeset version && pnpm install --lockfile-only && pnpm run changelog:generate",
-    "test": "with-anvil turbo run test",
-    "test:ci": "with-anvil turbo run test:ci",
+    "test": "with-anvil turbo run test --concurrency=100%",
+    "test:ci": "with-anvil turbo run test:ci --concurrency=100%",
     "type-bench": "pnpm --filter ./test/ts-benchmarks bench",
     "type-stats-repo": "attest stats packages/*",
     "vercel:prepare": "ln -sf /vercel/.foundry/bin/* node_modules/.bin/ && forge --version"
